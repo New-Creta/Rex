@@ -1,0 +1,11 @@
+# ------------------------------- 
+# API Targets     
+# ------------------------------- 
+SET(DIRECTX DIRECTX)
+SET(OPENGL OPENGL)
+
+SET(API_TARGETS ${DIRECTX} ${OPENGL})
+SET(REX_API_TARGET ${OPENGL} CACHE STRING "Setup solution for the specific api target")
+
+STRING(TOLOWER ${REX_API_TARGET} LOWER_API_TARGET)
+STRING(TOUPPER ${REX_API_TARGET} UPPER_API_TARGET)

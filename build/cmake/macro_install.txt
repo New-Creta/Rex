@@ -1,0 +1,24 @@
+##########################################################################################################
+#  Macro to setup install directories
+##########################################################################################################
+macro(SETUP_INSTALL_DIRECTORIES LIBNAME LIBEXPORTNAME)
+
+install(TARGETS ${LIBNAME} EXPORT ${LIBEXPORTNAME}
+    RUNTIME       DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FRAMEWORK     DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+endmacro(SETUP_INSTALL_DIRECTORIES)
+
+##########################################################################################################
+#  Macro to install directories
+##########################################################################################################
+macro(INSTALL_DIRECTORY INSTALLDIRECTORY INSTALLLOCATION)
+
+install(DIRECTORY ${INSTALLDIRECTORY}
+    DESTINATION ${INSTALLLOCATION}
+    FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ WORLD_READ
+    DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+endmacro(INSTALL_DIRECTORY)

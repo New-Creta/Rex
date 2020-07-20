@@ -1,0 +1,16 @@
+# -----------------
+# Directories       
+# ----------------- 
+SET (SRC_DIR src)
+SET (INCLUDE_DIR include)
+SET (BIN_DIR bin)
+SET (INSTALL_DIR install)
+SET (RESOURCES_DIR resources)
+
+SET (OUTPUT_BINDIR "${PROJECT_BINARY_DIR}/${BIN_DIR}")
+IF(NOT EXISTS ${OUTPUT_BINDIR} OR NOT IS_DIRECTORY "${OUTPUT_BINDIR}")
+    file(MAKE_DIRECTORY ${OUTPUT_BINDIR})
+    message(STATUS "creating output directory, ${OUTPUT_BINDIR}.")
+ENDIF()
+
+SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${INSTALL_DIR}" CACHE STRING "InstallPrefix" FORCE)
