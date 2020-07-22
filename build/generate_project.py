@@ -60,29 +60,33 @@ if __name__ == '__main__':
     __create_path_if_non_existing(shadow_build_directory)
     shadow_build_directory = os.path.normpath(shadow_build_directory)
 
-    os.chdir(shadow_build_directory)
-
     print('\n')
     if args.update_submodules:
         print('#--------------------- Load submodules ---------------------')
-    
+
         git_executable_path = repository_helpers.get_git_executable()
 
         git_cmd = git_executable_path
-        git_cmd = "%s %s" %(git_cmd, "submodule")
+        git_cmd = "\"%s\" %s" %(git_cmd, "submodule")
         git_cmd = "%s %s" %(git_cmd, "update")
 
+        print("Starting git command: \"%s\"" %git_cmd)
         os.system(git_cmd)
 
         git_cmd = git_executable_path
-        git_cmd = "%s %s" %(git_cmd, "submodule")
+        git_cmd = "\"%s\" %s" %(git_cmd, "submodule")
         git_cmd = "%s %s" %(git_cmd, "status")
 
+        print("Starting git command: \"%s\"" %git_cmd)
         os.system(git_cmd)
 
         print('\n')
 
     print('#--------------------- CMake preparation -------------------')
+    
+    # Change directoy to our shadow build directory
+    os.chdir(shadow_build_directory)
+
     print('Generating cmake command ...')
     cmake_cmd = "cmake -S\"%s\" -B\"%s\"" %(root_directory, shadow_build_directory)
     cmake_cmd = "%s %s" %(cmake_cmd, "-G\"" + args.generator + "\"")
@@ -97,7 +101,7 @@ if __name__ == '__main__':
     print("\t- api target: \t\t%s" %args.api_target)
     print("\t- build target: \t%s" %args.build_target)
 
-    print("Starting %s" % cmake_cmd)
+    print("Starting cmake command: %s" % cmake_cmd)
     print('\n')
 
     # Execute cmake batch command
