@@ -69,6 +69,8 @@ if __name__ == '__main__':
         git_cmd = git_executable_path
         git_cmd = "\"%s\" %s" %(git_cmd, "submodule")
         git_cmd = "%s %s" %(git_cmd, "update")
+        git_cmd = "%s %s" %(git_cmd, "--init")
+        git_cmd = "%s %s" %(git_cmd, "--remote")
 
         print("Starting git command: \"%s\"" %git_cmd)
         os.system(git_cmd)
