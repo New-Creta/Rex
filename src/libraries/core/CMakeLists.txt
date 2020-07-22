@@ -43,6 +43,11 @@ target_include_directories(${CORE_LIBRARY_NAME} PUBLIC
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${CORE_LIBRARY_NAME}>)
 
 # --------------------------
+# Target link libraries.
+# --------------------------
+target_link_libraries(${CORE_LIBRARY_NAME} PUBLIC rex_diagnostics)
+
+# --------------------------
 # Install.
 # --------------------------
 SETUP_INSTALL_DIRECTORIES(${CORE_LIBRARY_NAME} rex_core_targets)

@@ -39,6 +39,12 @@ set_target_properties( ${DIAGNOSTICS_LIBRARY_NAME} PROPERTIES   VS_DEBUGGER_WORK
 target_include_directories(${DIAGNOSTICS_LIBRARY_NAME} PUBLIC     
                                                 $<BUILD_INTERFACE:${CURRENT_DIAGNOSTICS_PATH}/include>
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${DIAGNOSTICS_LIBRARY_NAME}>)
+
+# --------------------------
+# Target link libraries.
+# --------------------------
+target_link_libraries(${DIAGNOSTICS_LIBRARY_NAME} PUBLIC spdlog_interface)
+
 # --------------------------
 # Install.
 # --------------------------
