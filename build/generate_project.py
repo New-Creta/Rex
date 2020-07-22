@@ -50,7 +50,7 @@ if __name__ == '__main__':
     parser.add_argument("-bt", "--build_target", help="The platform we would like to use", default="WINDOWS")
 
     ## Check parse args
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     shadow_build_directory = args.output
     __create_path_if_non_existing(shadow_build_directory)
