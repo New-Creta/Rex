@@ -1,3 +1,4 @@
 [submodule "src/extern/spdlog"]
 	path = src/extern/spdlog
 	url = https://github.com/Dyronix/spdlog.git
+	branch = rex_spdlog
