@@ -17,6 +17,25 @@ SET(DIAGNOSTICS_SOURCE_DIRECTORY ${CURRENT_DIAGNOSTICS_PATH}/src)
 SET (DIAGNOSTICS_LIBRARY_NAME rex_diagnostics)
 
 # --------------------------------
+# Setup utilities path
+# --------------------------------
+set(UTILITIES_FOLDER "utilities")
+
+set(CURRENT_UTILITIES_PATH ${CMAKE_CURRENT_LIST_DIR}/${UTILITIES_FOLDER})
+
+IF(NOT EXISTS ${CURRENT_UTILITIES_PATH} OR NOT IS_DIRECTORY "${CURRENT_UTILITIES_PATH}")
+    file(MAKE_DIRECTORY ${CURRENT_UTILITIES_PATH})
+    message(FATAL_ERROR "Directory, ${CURRENT_UTILITIES_PATH} does not exist, directory was generated but configuration will be stopped.")
+ENDIF()
+
+SET(UTILITIES_INCLUDE_DIRECTORY ${CURRENT_UTILITIES_PATH}/include)
+SET(UTILITIES_RESOURCES_DIRECTORY ${CURRENT_UTILITIES_PATH}/resources)
+SET(UTILITIES_SOURCE_DIRECTORY ${CURRENT_UTILITIES_PATH}/src)
+
+SET (UTILITIES_LIBRARY_NAME rex_utilities)
+SET (UTILITIES_INTERFACE_NAME ${UTILITIES_LIBRARY_NAME}_inferface)
+
+# --------------------------------
 # Setup core path
 # --------------------------------
 set(CORE_FOLDER "core")
