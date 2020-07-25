@@ -1,17 +1,17 @@
 # --------------------------
 # Setup sources
 # --------------------------
-SET (CORE_LIBRARY_NAME rex_core)
-
 message(STATUS "Generating ${CORE_LIBRARY_NAME}")
 
-file(GLOB_RECURSE TARGET_INC    "${CURRENT_CORE_PATH}/include/*.h")
-file(GLOB_RECURSE TARGET_RC     "${CURRENT_CORE_PATH}/resources/core.manifest" "resources/Core.rc" "resources/resource.h")
-file(GLOB_RECURSE TARGET_SRC    "${CURRENT_CORE_PATH}/src/*.cpp")
+file(GLOB_RECURSE TARGET_INC    "${CORE_INCLUDE_DIRECTORY}/*.h")
+file(GLOB_RECURSE TARGET_RC     "${CORE_RESOURCES_DIRECTORY}/core.manifest" "${CORE_RESOURCES_DIRECTORY}/Core.rc" "${CORE_RESOURCES_DIRECTORY}/resource.h")
+file(GLOB_RECURSE TARGET_SRC    "${CORE_SOURCE_DIRECTORY}/*.cpp")
 
-GROUPSOURCES("include")
-GROUPSOURCES("resources")
-GROUPSOURCES("src")
+if(MSVC)
+    GROUPSOURCES("include")
+    GROUPSOURCES("resources")
+    GROUPSOURCES("src")
+endif()
 
 # --------------------------
 # Setup library
@@ -33,23 +33,28 @@ STRING(TOUPPER ${CORE_LIBRARY_NAME} UPPER_LIB_NAME)
 
 set_target_properties( ${CORE_LIBRARY_NAME} PROPERTIES      VS_DEBUGGER_WORKING_DIRECTORY    "${OUTPUT_BINDIR}"             # Working directory
                                                             FOLDER                           "1. Core Libraries"            # Project filter location
-                                                            DEFINE_SYMBOL                    "${UPPER_LIB_NAME}_LIB" )      # Default library symbol can be empty ( already set )
+                                                            DEFINE_SYMBOL                    "${UPPER_LIB_NAME}_LIB" )      # Library symbol
 
 # --------------------------
 # Target include directories.
 # --------------------------
 target_include_directories(${CORE_LIBRARY_NAME} PUBLIC     
-                                                $<BUILD_INTERFACE:${CURRENT_CORE_PATH}/include>
+                                                $<BUILD_INTERFACE:${CORE_INCLUDE_DIRECTORY}>
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${CORE_LIBRARY_NAME}>)
+
+target_include_directories(${CORE_LIBRARY_NAME} PUBLIC ${UTILITIES_INCLUDE_DIRECTORY})
+target_include_directories(${CORE_LIBRARY_NAME} PUBLIC ${DIAGNOSTICS_INCLUDE_DIRECTORY})
 
 # --------------------------
 # Target link libraries.
 # --------------------------
-target_link_libraries(${CORE_LIBRARY_NAME} PUBLIC rex_diagnostics)
+target_link_libraries(${CORE_LIBRARY_NAME} PUBLIC ${DIAGNOSTICS_LIBRARY_NAME})
 
 # --------------------------
 # Install.
 # --------------------------
-SETUP_INSTALL_DIRECTORIES(${CORE_LIBRARY_NAME} rex_core_targets)
+SET(EXPORT_TARGETS ${CORE_LIBRARY_NAME})
+SET(EXPORT_TARGETS_NAME ${CORE_LIBRARY_NAME}_targets_name)
 
-INSTALL_DIRECTORY("${CURRENT_CORE_PATH}/${INCLUDE_DIR}/" ${CMAKE_INSTALL_INCLUDEDIR}/${CORE_LIBRARY_NAME})
+INSTAll_TARGETS(${EXPORT_TARGETS} ${EXPORT_TARGETS_NAME})
+INSTALL_HEADERS(${CORE_INCLUDE_DIRECTORY} ${CMAKE_INSTALL_INCLUDEDIR}/${CORE_LIBRARY_NAME})

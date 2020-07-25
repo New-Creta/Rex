@@ -1,24 +1,29 @@
 ##########################################################################################################
 #  Macro to setup install directories
 ##########################################################################################################
-macro(SETUP_INSTALL_DIRECTORIES LIBNAME LIBEXPORTNAME)
+macro(INSTALL_TARGETS TARGET TARGETNAME)
 
-install(TARGETS ${LIBNAME} EXPORT ${LIBEXPORTNAME}
+install(
+    TARGETS                   ${TARGET} 
+    EXPORT                    ${TARGETNAME}
     RUNTIME       DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    FRAMEWORK     DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    FRAMEWORK     DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
 
-endmacro(SETUP_INSTALL_DIRECTORIES)
+endmacro(INSTALL_TARGETS)
 
 ##########################################################################################################
 #  Macro to install directories
 ##########################################################################################################
-macro(INSTALL_DIRECTORY INSTALLDIRECTORY INSTALLLOCATION)
+macro(INSTALL_HEADERS SOURCES_DIRECTORY_TO_INSTALL INSTALL_LOCATION)
 
-install(DIRECTORY ${INSTALLDIRECTORY}
-    DESTINATION ${INSTALLLOCATION}
+install(
+    DIRECTORY ${SOURCES_DIRECTORY_TO_INSTALL}
+    DESTINATION ${INSTALL_LOCATION}
     FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ WORLD_READ
-    DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
 
-endmacro(INSTALL_DIRECTORY)
+endmacro(INSTALL_HEADERS)

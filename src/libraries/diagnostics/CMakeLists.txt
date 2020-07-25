@@ -1,15 +1,17 @@
 # --------------------------
 # Setup sources
 # --------------------------
-SET (DIAGNOSTICS_LIBRARY_NAME rex_diagnostics)
+message(CHECK_START "Generating ${DIAGNOSTICS_LIBRARY_NAME}")
 
-message(STATUS "Generating ${DIAGNOSTICS_LIBRARY_NAME}")
+file(GLOB_RECURSE TARGET_INC    "${DIAGNOSTICS_INCLUDE_DIRECTORY}/*.h")
+file(GLOB_RECURSE TARGET_RC     "${DIAGNOSTICS_RESOURCES_DIRECTORY}/diagnostics.manifest" "${DIAGNOSTICS_RESOURCES_DIRECTORY}/Diagnostics.rc" "${DIAGNOSTICS_RESOURCES_DIRECTORY}/resource.h")
+file(GLOB_RECURSE TARGET_SRC    "${DIAGNOSTICS_SOURCE_DIRECTORY}/*.cpp")
 
-file(GLOB_RECURSE TARGET_INC    "${CURRENT_DIAGNOSTICS_PATH}/include/*.h")
-file(GLOB_RECURSE TARGET_SRC    "${CURRENT_DIAGNOSTICS_PATH}/src/*.cpp")
-
-GROUPSOURCES("include")
-GROUPSOURCES("src")
+if(MSVC)
+    GROUPSOURCES("include")
+    GROUPSOURCES("resources")
+    GROUPSOURCES("src")
+endif()
 
 # --------------------------
 # Setup library
@@ -37,7 +39,7 @@ set_target_properties( ${DIAGNOSTICS_LIBRARY_NAME} PROPERTIES   VS_DEBUGGER_WORK
 # Target include directories.
 # --------------------------
 target_include_directories(${DIAGNOSTICS_LIBRARY_NAME} PUBLIC     
-                                                $<BUILD_INTERFACE:${CURRENT_DIAGNOSTICS_PATH}/include>
+                                                $<BUILD_INTERFACE:${DIAGNOSTICS_INCLUDE_DIRECTORY}>
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${DIAGNOSTICS_LIBRARY_NAME}>)
 
 # --------------------------
@@ -48,6 +50,10 @@ target_link_libraries(${DIAGNOSTICS_LIBRARY_NAME} PUBLIC spdlog_interface)
 # --------------------------
 # Install.
 # --------------------------
-SETUP_INSTALL_DIRECTORIES(${DIAGNOSTICS_LIBRARY_NAME} rex_diagnostics_targets)
+SET(EXPORT_TARGETS ${DIAGNOSTICS_LIBRARY_NAME})
+SET(EXPORT_TARGETS_NAME ${DIAGNOSTICS_LIBRARY_NAME}_targets_name)
 
-INSTALL_DIRECTORY("${CURRENT_DIAGNOSTICS_PATH}/${INCLUDE_DIR}/" ${CMAKE_INSTALL_INCLUDEDIR}/${DIAGNOSTICS_LIBRARY_NAME})
+INSTAll_TARGETS(${EXPORT_TARGETS} ${EXPORT_TARGETS_NAME})
+INSTALL_HEADERS(${DIAGNOSTICS_INCLUDE_DIRECTORY} ${CMAKE_INSTALL_INCLUDEDIR}/${DIAGNOSTICS_LIBRARY_NAME})
+
+message(CHECK_PASS "Done")

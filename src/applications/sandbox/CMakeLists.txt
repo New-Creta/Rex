@@ -1,17 +1,17 @@
 # --------------------------
 # Setup sources
 # --------------------------
-SET (APPLICATION_NAME sandbox)
-
-message(STATUS "Generating ${APPLICATION_NAME}")
+message(CHECK_START "Generating ${APPLICATION_NAME}")
 
 file(GLOB_RECURSE TARGET_INC    "${CURRENT_SANDBOX_PATH}/include/*.h")
 file(GLOB_RECURSE TARGET_RC     "${CURRENT_SANDBOX_PATH}/resources/sandbox.manifest" "resources/Sandbox.rc" "resources/resource.h")
 file(GLOB_RECURSE TARGET_SRC    "${CURRENT_SANDBOX_PATH}/src/*.cpp")
 
-GROUPSOURCES("include")
-GROUPSOURCES("resources")
-GROUPSOURCES("src")
+if(MSVC)
+    GROUPSOURCES("include")
+    GROUPSOURCES("resources")
+    GROUPSOURCES("src")
+endif()
 
 ADD_EXECUTABLE(${APPLICATION_NAME}
                ${TARGET_INC}   
@@ -31,18 +31,22 @@ set_target_properties(${APPLICATION_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTO
 # --------------------------
 # Target include directories.
 # --------------------------
-target_include_directories(${APPLICATION_NAME} PUBLIC     
+target_include_directories(${APPLICATION_NAME} PRIVATE     
                                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                                                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${APPLICATION_NAME}>)
 
 # --------------------------
 # Target link libraries
 # --------------------------
-target_link_libraries(${APPLICATION_NAME} PUBLIC rex_core)
+target_link_libraries(${APPLICATION_NAME} PRIVATE rex_core)
 
 # --------------------------
 # Install.
 # --------------------------
-SETUP_INSTALL_DIRECTORIES(${APPLICATION_NAME} sandbox_targets)
+SET(EXPORT_TARGETS ${APPLICATION_NAME})
+SET(EXPORT_TARGETS_NAME ${APPLICATION_NAME}_targets_name)
 
-INSTALL_DIRECTORY("${CURRENT_SANDBOX_PATH}/${INCLUDE_DIR}" ${CMAKE_INSTALL_INCLUDEDIR}/${APPLICATION_NAME})
+INSTAll_TARGETS(${EXPORT_TARGETS} ${EXPORT_TARGETS_NAME})
+INSTALL_HEADERS(${SANDBOX_INCLUDE_DIRECTORY} ${CMAKE_INSTALL_INCLUDEDIR}/${APPLICATION_NAME})
+
+message(CHECK_PASS "Done")

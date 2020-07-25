@@ -2,7 +2,6 @@
 # Setup CMake minimum version
 # -------------------------------
 cmake_minimum_required(VERSION 3.8)
-cmake_policy(VERSION 3.8)
 
 # -------------------------------
 # Rex Version
@@ -29,8 +28,9 @@ message(STATUS "#--------------------- Starting project generation -------------
 SET_PROPERTY(CACHE REX_BUILD_TARGET PROPERTY STRINGS ${BUILD_TARGETS})
 SET_PROPERTY(CACHE REX_API_TARGET PROPERTY STRINGS ${API_TARGETS})
 
-message("Build Target: \t\t${REX_BUILD_TARGET} ${CMAKE_GENERATOR_PLATFORM}")
-message("API Target: \t\t${REX_API_TARGET}")
+message(STATUS "Log Level: \t\t${REX_LOG_LEVEL}")
+message(STATUS "Build Target: \t\t${REX_BUILD_TARGET} ${CMAKE_GENERATOR_PLATFORM}")
+message(STATUS "API Target: \t\t${REX_API_TARGET}")
 
 # -------------------------------
 # Setup the "Rex Engine" solution
@@ -44,8 +44,8 @@ project(rex_${LOWER_BUILD_TARGET}_${LOWER_API_TARGET}
 # -------------------------------
 include(build\\cmake\\directories.txt)
 
-message("CMake Version: \t\t${CMAKE_VERSION}")
-message("Generating project: \t${PROJECT_NAME} v${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+message(STATUS "CMake Version: \t\t${CMAKE_VERSION}")
+message(STATUS "Generating project: \t${PROJECT_NAME} v${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # --------------------------------
 # Setup properties
@@ -97,7 +97,7 @@ SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE 		"${OUTPUT_BINDIR}")
 SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE 		"${OUTPUT_BINDIR}")
 SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE 		"${OUTPUT_BINDIR}")
 
-message("Output directory: \t${OUTPUT_BINDIR}")
+message(STATUS "Output directory: \t\t${OUTPUT_BINDIR}")
 
 # Add application and libraries
 add_subdirectory(src)
