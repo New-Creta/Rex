@@ -41,15 +41,26 @@ const std::string rex::Logger::CLIENT_LOGGER_NAME = "APP";
 std::unordered_map<std::string, std::shared_ptr<spdlog::logger>> rex::Logger::s_loggers = {};
 
 //-------------------------------------------------------------------------
-bool rex::Logger::initialize(rex::LogLevel logLevel)
+bool rex::Logger::initialize(const std::string& logLevel)
 {
+    const std::unordered_map<std::string, rex::LogLevel> levels =
+    {
+        {   "Off",     rex::LogLevel::OFF      },
+        {   "Fatal",   rex::LogLevel::FATAL    },
+        {   "Error",   rex::LogLevel::ERROR    },
+        {   "Warning", rex::LogLevel::WARN     },
+        {   "Info",    rex::LogLevel::INFO     },
+        {   "Debug",   rex::LogLevel::DEBUG    },
+        {   "Trace",   rex::LogLevel::TRACE    },
+    };
+
+    if (levels.find(logLevel) == std::cend(levels))
+        return false;
+
     bool result = true;
 
-    result &= addLogger(rex::Logger::ENGINE_LOGGER_NAME, DEFAULT_PATTERN, logLevel);
-    result &= addLogger(rex::Logger::CLIENT_LOGGER_NAME, DEFAULT_PATTERN, logLevel);
-
-    //RX_INFO("Creating logger, Log Level: {}", REX_LOGLEVEL);
-    //RX_INFO("---------------------------------------------");
+    result &= addLogger(rex::Logger::ENGINE_LOGGER_NAME, DEFAULT_PATTERN, levels.at(logLevel));
+    result &= addLogger(rex::Logger::CLIENT_LOGGER_NAME, DEFAULT_PATTERN, levels.at(logLevel));
 
     return result;
 }

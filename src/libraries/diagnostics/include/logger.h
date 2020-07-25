@@ -22,7 +22,7 @@ namespace rex
         REX_DIAGNOSTICS_EXPORT static const std::string ENGINE_LOGGER_NAME;
         REX_DIAGNOSTICS_EXPORT static const std::string CLIENT_LOGGER_NAME;
 
-        REX_DIAGNOSTICS_EXPORT static bool initialize(rex::LogLevel logLevel);
+        REX_DIAGNOSTICS_EXPORT static bool initialize(const std::string& loglevel);
         REX_DIAGNOSTICS_EXPORT static bool shutdown();
 
         REX_DIAGNOSTICS_EXPORT static bool addLogger(const std::string& name);
