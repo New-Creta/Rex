@@ -13,6 +13,9 @@ SET(VERSION_PATCH 0)
 # -------------------------------
 # CMake dependencies
 # -------------------------------
+include(build\\cmake\\log_levels.txt)
+include(build\\cmake\\configuration_targets.txt)
+
 include(build\\cmake\\api_targets.txt)
 include(build\\cmake\\build_targets.txt)
 
