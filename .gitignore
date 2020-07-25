@@ -31,5 +31,11 @@
 *.out
 *.app
 
-# Rex
+#-------------------------------------------------------------------------
+# Rex files that can be ignored.
+
+# Rex generated directories
 build/__pycache__/
+
+# Rex generated source code
+src/libraries/diagnostics/include/rex_diagnostics_defines.h
