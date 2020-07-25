@@ -1,10 +1,8 @@
 #pragma once
 
-// rex - core
 #include "core/application.h"
 
-// rex - diagnostics
-#include "logger.h"
+#include "rex_debug.h"
 
 #include <memory>
 
@@ -24,9 +22,17 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     UNREFERENCED_PARAMETER(pCmdLine);
     UNREFERENCED_PARAMETER(nCmdShow);
 
+    // Before we start the application we initialize the logger
+    RX_INITIALIZE_LOGGER();
+
     std::unique_ptr<rex::CoreApplication> application(rex::createApplication());
 
-    return application->run();
+    int result = application->run();
+
+    // Before we close down the application we shutdown the logger.
+    RX_SHUTDOWN_LOGGER();
+
+    return result;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -35,13 +41,6 @@ int main(int argc, char** argv)
 {
     UNREFERENCED_PARAMETER(argc);
     UNREFERENCED_PARAMETER(argv);
-
-    rex::Logger::initialize(rex::LogLevel::INFO);
-
-    rex::Logger::getLogger(rex::Logger::ENGINE_LOGGER_NAME).log(spdlog::level::level_enum::trace,   "Trace Test");
-    rex::Logger::getLogger(rex::Logger::ENGINE_LOGGER_NAME).log(spdlog::level::level_enum::info,    "Info Test");
-    rex::Logger::getLogger(rex::Logger::ENGINE_LOGGER_NAME).log(spdlog::level::level_enum::warn,    "Warning Test");
-    rex::Logger::getLogger(rex::Logger::ENGINE_LOGGER_NAME).log(spdlog::level::level_enum::err,     "Error Test");
 
     HINSTANCE   h_instance = GetModuleHandle(NULL);  // The operating system uses this value to identify the executable (EXE/DLL) when it is loaded in memory.
     HINSTANCE   h_prev_instance = NULL;              // Has no meaning, it was used in 16-bit Windows, but is now always zero.
