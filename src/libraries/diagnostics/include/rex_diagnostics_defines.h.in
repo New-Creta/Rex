@@ -1,0 +1,3 @@
+#pragma once
+
+#define REX_LOGLEVEL "@REX_LOG_LEVEL@"
