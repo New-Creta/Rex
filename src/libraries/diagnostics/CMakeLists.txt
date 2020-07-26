@@ -56,4 +56,9 @@ SET(EXPORT_TARGETS_NAME ${DIAGNOSTICS_LIBRARY_NAME}_targets_name)
 INSTAll_TARGETS(${EXPORT_TARGETS} ${EXPORT_TARGETS_NAME})
 INSTALL_HEADERS(${DIAGNOSTICS_INCLUDE_DIRECTORY} ${CMAKE_INSTALL_INCLUDEDIR}/${DIAGNOSTICS_LIBRARY_NAME})
 
+# --------------------------
+# Precompiled Header
+# --------------------------
+add_precompiled_header(${DIAGNOSTICS_LIBRARY_NAME} "${DIAGNSOTICS_INCLUDE_DIRECTORY}/rex_diagnostics_pch.h" "${DIAGNOSTICS_SOURCE_DIRECTORY}/rex_diagnostics_pch.cpp")
+
 message(CHECK_PASS "Done")

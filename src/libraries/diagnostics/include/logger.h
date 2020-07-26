@@ -2,18 +2,13 @@
 
 #include "rex_diagnostics_global.h"
 
-#include "loglevel.h"
-
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/ostr.h>
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <unordered_map>
-
 namespace rex
 {
+    enum class LogLevel;
+
     class Logger
     {
     public:

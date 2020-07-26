@@ -1,4 +1,6 @@
+#include "rex_diagnostics_pch.h"
 #include "logger.h"
+#include "loglevel.h"
 
 #ifdef _WINDOWS
     #undef ERROR    // Defined in wingdi.h
