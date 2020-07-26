@@ -58,3 +58,8 @@ SET(EXPORT_TARGETS_NAME ${CORE_LIBRARY_NAME}_targets_name)
 
 INSTAll_TARGETS(${EXPORT_TARGETS} ${EXPORT_TARGETS_NAME})
 INSTALL_HEADERS(${CORE_INCLUDE_DIRECTORY} ${CMAKE_INSTALL_INCLUDEDIR}/${CORE_LIBRARY_NAME})
+
+# --------------------------
+# Precompiled Header
+# --------------------------
+add_precompiled_header(${CORE_LIBRARY_NAME} "${CORE_INCLUDE_DIRECTORY}/rex_core_pch.h" "${CORE_SOURCE_DIRECTORY}/rex_core_pch.cpp")

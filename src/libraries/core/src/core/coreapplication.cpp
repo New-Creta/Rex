@@ -1,4 +1,8 @@
+#include "rex_core_pch.h"
+
 #include "core/coreapplication.h"
+
+#include "events/windowresizedevent.h"
 
 //-------------------------------------------------------------------------
 rex::CoreApplication::CoreApplication() = default;
