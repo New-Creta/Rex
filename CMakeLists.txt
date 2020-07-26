@@ -23,6 +23,7 @@ include(build\\cmake\\macro_helpers.txt)
 include(build\\cmake\\macro_libraries.txt)
 include(build\\cmake\\macro_applications.txt)
 include(build\\cmake\\macro_install.txt)
+include(build\\cmake\\macro_precompiled_header.txt)
 
 message(STATUS "#--------------------- Starting project generation ---------------------")
 # --------------------------------
