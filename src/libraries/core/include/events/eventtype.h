@@ -2,8 +2,6 @@
 
 #include "rex_core_global.h"
 
-#include "helpers/types.h"
-
 #ifdef _WINDOWS
     #undef MOUSE_MOVED
 #endif
@@ -18,7 +16,7 @@ namespace rex
             enum Type
             {
                 NONE = 0,
-                WINDOW_CLOSED, WINDOW_RESIZE,
+                WINDOW_CLOSED, WINDOW_RESIZE, WINDOW_ACTIVATED, WINDOW_DEACTIVATED, WINDOW_OPEN,
                 KEY_PRESSED, KEY_RELEASED,
                 MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED, MOUSE_MOVED, MOUSE_SCROLLED
             };

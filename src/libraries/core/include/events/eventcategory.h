@@ -2,9 +2,6 @@
 
 #include "rex_core_global.h"
 
-#include "helpers/types.h"
-#include "helpers/defines.h"
-
 namespace rex
 {
     namespace events
