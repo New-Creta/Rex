@@ -4,6 +4,13 @@
 
 namespace rex
 {
+    namespace events
+    {
+        class Event;
+    }
+
+    class Window;
+
     class CoreApplication
     {
     public:
@@ -11,6 +18,14 @@ namespace rex
         REX_CORE_EXPORT virtual ~CoreApplication();
 
         REX_CORE_EXPORT int run();
+
+    protected:
+        REX_CORE_EXPORT void onEvent(const events::Event& event);
+
+        virtual std::unique_ptr<rex::Window> createWindow() = 0;
+
+    private:
+        std::unique_ptr<Window> m_window;
     };
 
     // 
