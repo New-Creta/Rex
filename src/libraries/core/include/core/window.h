@@ -33,7 +33,7 @@ namespace rex
             ,event_callback(callback)
         {}
 
-        const std::string title;
+        std::string title;
         
         unsigned int width;
         unsigned int height;
@@ -46,8 +46,8 @@ namespace rex
     public:
         using EventCallbackFn = std::function<void(const events::Event&)>;
 
-        REX_CORE_EXPORT Window() = default;
-        REX_CORE_EXPORT virtual ~Window() = default;
+        Window() = default;
+        virtual ~Window() = default;
 
         virtual void show() = 0;
         virtual void hide() = 0;
