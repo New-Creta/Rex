@@ -39,3 +39,4 @@ build/__pycache__/
 
 # Rex generated source code
 src/libraries/diagnostics/include/rex_diagnostics_defines.h
+src/libraries/diagnostics/include/rex_platform_defines.h
