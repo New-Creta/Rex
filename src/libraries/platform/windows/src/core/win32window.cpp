@@ -87,7 +87,7 @@ rex::win32::Window::Window(const WindowProperties& properties)
     ,m_visible(false)
     ,m_hinstance(NULL)
     ,m_hwnd(NULL)
-    ,m_wndproc(NULL)
+    ,m_wndproc((WNDPROC)wndProc)
     ,m_event_processor(this, properties.event_callback)
     ,m_width(properties.width)
     ,m_height(properties.height)
@@ -110,11 +110,7 @@ void rex::win32::Window::show()
 
     m_visible = true;
 
-    if (!ShowWindow(m_hwnd, SW_SHOW))
-    {
-        RX_ERROR("Could not make the window visible");
-        return;
-    }
+    ShowWindow(m_hwnd, SW_SHOW);
 
     if (!SetForegroundWindow(m_hwnd))
     {
@@ -184,9 +180,7 @@ LRESULT CALLBACK rex::win32::Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam
 //-------------------------------------------------------------------------
 void rex::win32::Window::setupWindowClass()
 {
-    const char* classname = typeid(this).name();
-
-    WNDCLASS wndClass = createWindowClass(classname, m_hinstance, m_wndproc);
+    WNDCLASS wndClass = createWindowClass(m_title, m_hinstance, m_wndproc);
 
     auto result = RegisterClass(&wndClass);
     if (!result)
