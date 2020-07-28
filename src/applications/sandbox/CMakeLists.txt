@@ -24,7 +24,7 @@ SETUP_APPLICATION(${APPLICATION_NAME})
 # Target properties
 # --------------------------
 set_target_properties(${APPLICATION_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY      "${OUTPUT_BINDIR}"      # Working directory
-                                                     FOLDER                             "2. Applications"       # Project filter location
+                                                     FOLDER                             "3. Applications"       # Project filter location
                                                      DEBUG_POSTFIX                      ${CMAKE_DEBUG_POSTFIX}  # Postfix for a debug application ( this is not set automatically like a library )
                                                      DEFINE_SYMBOL                      "" )                    # Default library symbol can be empty ( already set )
 

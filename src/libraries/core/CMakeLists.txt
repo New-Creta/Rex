@@ -1,7 +1,7 @@
 # --------------------------
 # Setup sources
 # --------------------------
-message(STATUS "Generating ${CORE_LIBRARY_NAME}")
+message(CHECK_START "Generating ${CORE_LIBRARY_NAME}")
 
 file(GLOB_RECURSE TARGET_INC    "${CORE_INCLUDE_DIRECTORY}/*.h")
 file(GLOB_RECURSE TARGET_RC     "${CORE_RESOURCES_DIRECTORY}/core.manifest" "${CORE_RESOURCES_DIRECTORY}/Core.rc" "${CORE_RESOURCES_DIRECTORY}/resource.h")
