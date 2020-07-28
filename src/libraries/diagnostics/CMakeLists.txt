@@ -27,6 +27,14 @@ ADD_LIBRARY(${DIAGNOSTICS_LIBRARY_NAME} SHARED
 SETUP_LIBRARY(${DIAGNOSTICS_LIBRARY_NAME})
 
 # --------------------------
+# Configure definition file
+# --------------------------
+configure_file (
+    "${DIAGNOSTICS_INCLUDE_DIRECTORY}/rex_diagnostics_defines.h.in"
+    "${DIAGNOSTICS_INCLUDE_DIRECTORY}/rex_diagnostics_defines.h"
+    @ONLY
+)
+# --------------------------
 # Target properties
 # --------------------------
 STRING(TOUPPER ${DIAGNOSTICS_LIBRARY_NAME} UPPER_LIB_NAME)
