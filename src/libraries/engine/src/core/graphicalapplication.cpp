@@ -1,7 +1,10 @@
 #include "core/graphicalapplication.h"
+#include "core/layer.h"
 
 #include "events/event.h"
 #include "events/input/keydown.h"
+
+#include "events/eventdispatcher.h"
 
 //-------------------------------------------------------------------------
 rex::engine::GraphicalApplication::GraphicalApplication()
@@ -11,18 +14,29 @@ rex::engine::GraphicalApplication::GraphicalApplication()
 rex::engine::GraphicalApplication::~GraphicalApplication() = default;
 
 //-------------------------------------------------------------------------
-void rex::engine::GraphicalApplication::onEvent(const events::Event& event)
+void rex::engine::GraphicalApplication::pushBackLayer(std::unique_ptr<Layer> layer)
 {
-    RX_INFO(event.toString());
+    m_layer_stack.pushBack(std::move(layer));
+}
+//-------------------------------------------------------------------------
+void rex::engine::GraphicalApplication::pushFrontLayer(std::unique_ptr<Layer> layer)
+{
+    m_layer_stack.pushFront(std::move(layer));
+}
 
-    if (event.getType() == events::EventType::KEY_PRESSED)
+//-------------------------------------------------------------------------
+void rex::engine::GraphicalApplication::onEvent(events::Event& event)
+{
+    RX_TRACE(event.toString());
+
+    for (auto it = m_layer_stack.crbegin(); it != m_layer_stack.rend() && event.isHandled() == false; ++it)
     {
-        const events::KeyDown& keydown = static_cast<const events::KeyDown&>(event);
-        if (keydown.getKeyCode() == KeyCode::ESCAPE)
-        {
-            quit();
-        }
+        (*it)->onEvent(event);
     }
+
+    events::EventDispatcher dispatcher(event);
+
+    dispatcher.dispatch<events::KeyDown>(std::bind(&rex::engine::GraphicalApplication::escapeButtonPressed, this, std::placeholders::_1));
 }
 
 //-------------------------------------------------------------------------
@@ -37,6 +51,11 @@ void rex::engine::GraphicalApplication::appUpdate(float dTime)
     UNUSED_PARAM(dTime);
 
     m_window->update();
+
+    for (const std::unique_ptr<Layer>& layer : m_layer_stack)
+    {
+        layer->onUpdate();
+    }
 }
 //-------------------------------------------------------------------------
 void rex::engine::GraphicalApplication::appQuit()
@@ -55,6 +74,17 @@ const rex::engine::ApplicationWindow* rex::engine::GraphicalApplication::getWind
     return m_window.get();
 }
 
+//-------------------------------------------------------------------------
+bool rex::engine::GraphicalApplication::escapeButtonPressed(events::KeyDown& keyEvent)
+{
+    if (keyEvent.getKeyCode() == KeyCode::ESCAPE)
+    {
+        quit();
+        return true;
+    }
+
+    return false;
+}
 
 //-------------------------------------------------------------------------
 std::unique_ptr<rex::engine::ApplicationWindow> rex::engine::GraphicalApplication::createWindow()
