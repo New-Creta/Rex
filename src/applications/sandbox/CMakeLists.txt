@@ -24,7 +24,7 @@ SETUP_APPLICATION(${APPLICATION_NAME})
 # Target properties
 # --------------------------
 set_target_properties(${APPLICATION_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY      "${OUTPUT_BINDIR}"      # Working directory
-                                                     FOLDER                             "3. Applications"       # Project filter location
+                                                     FOLDER                             "4. Applications"       # Project filter location
                                                      DEBUG_POSTFIX                      ${CMAKE_DEBUG_POSTFIX}  # Postfix for a debug application ( this is not set automatically like a library )
                                                      DEFINE_SYMBOL                      "" )                    # Default library symbol can be empty ( already set )
 
@@ -38,8 +38,7 @@ target_include_directories(${APPLICATION_NAME} PRIVATE
 # --------------------------
 # Target link libraries
 # --------------------------
-target_link_libraries(${APPLICATION_NAME} PRIVATE rex_core)
-target_link_libraries(${APPLICATION_NAME} PRIVATE rex_platform)
+target_link_libraries(${APPLICATION_NAME} PRIVATE rex_engine)
 
 # --------------------------
 # Install.
