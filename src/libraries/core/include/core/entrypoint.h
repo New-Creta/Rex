@@ -4,10 +4,22 @@
 
 #include "core/coreapplication.h"
 
-#ifdef _WINDOWS
-
 //--------------------------------------------------------------------------------------------
 extern rex::CoreApplication* rex::createApplication();
+
+//--------------------------------------------------------------------------------------------
+int runProgram()
+{
+    rex::CoreApplication* application = rex::createApplication();
+
+    int result = application->run();
+
+    delete application;
+
+    return result;
+}
+
+#ifdef _WINDOWS
 
 //--------------------------------------------------------------------------------------------
 // Universal entry point
@@ -19,9 +31,7 @@ int main(int argc, char** argv)
     // Before we start the application we initialize the logger
     RX_INITIALIZE_LOGGER();
 
-    std::unique_ptr<rex::CoreApplication> application(rex::createApplication());
-
-    int result = application->run();
+    int result = runProgram();
 
     // Before we close down the application we shutdown the logger.
     RX_SHUTDOWN_LOGGER();
