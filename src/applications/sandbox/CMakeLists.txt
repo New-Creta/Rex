@@ -39,6 +39,7 @@ target_include_directories(${APPLICATION_NAME} PRIVATE
 # Target link libraries
 # --------------------------
 target_link_libraries(${APPLICATION_NAME} PRIVATE rex_core)
+target_link_libraries(${APPLICATION_NAME} PRIVATE rex_platform)
 
 # --------------------------
 # Install.
