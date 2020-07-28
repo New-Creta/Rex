@@ -100,7 +100,11 @@ rex::win32::Window::Window(const WindowProperties& properties)
     setupPixelFormat();
 }
 //-------------------------------------------------------------------------
-rex::win32::Window::~Window() = default;
+rex::win32::Window::~Window()
+{
+    destroyHwnd();
+    destroyWindowClass();
+}
 
 //-------------------------------------------------------------------------
 void rex::win32::Window::show()
@@ -131,7 +135,7 @@ void rex::win32::Window::hide()
 
     m_visible = false;
 
-
+    ShowWindow(m_hwnd, SW_HIDE);
 }
 
 //-------------------------------------------------------------------------
@@ -192,6 +196,8 @@ void rex::win32::Window::setupWindowClass()
 //-------------------------------------------------------------------------
 void rex::win32::Window::setupHwnd()
 {
+    m_event_processor.enableEventProcessing();
+
     rex::BoundsI bounds = createWindowBounds(getWidth(), getHeight());
 
     m_hwnd = CreateWindowEx(0,
@@ -226,4 +232,36 @@ void rex::win32::Window::setupPixelFormat()
 
     auto release_dc = ReleaseDC(m_hwnd, hdc);
     RX_ASSERT_X(release_dc != NULL, "Failed to release DC");
+}
+
+//-------------------------------------------------------------------------
+void rex::win32::Window::destroyWindowClass()
+{
+    const int8* wndclass_name = m_title.c_str();
+
+    WNDCLASS wnd_class;
+    if (GetClassInfo(m_hinstance, wndclass_name, &wnd_class) != NULL)
+    {
+        auto result = UnregisterClass(wndclass_name, m_hinstance);
+        if (result == NULL)
+        {
+            RX_ERROR("Failed to unregistger window class!");
+        }
+    }
+}
+
+//-------------------------------------------------------------------------
+void rex::win32::Window::destroyHwnd()
+{
+    RX_ASSERT_X(m_hwnd, "Window is already destroyed!");
+
+    BOOL result = DestroyWindow(m_hwnd);
+    if (result == NULL)
+    {
+        RX_ERROR("Failed to destroy the window");
+    }
+
+    m_hwnd = NULL;
+
+    m_event_processor.disableEventProcessing();
 }

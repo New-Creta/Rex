@@ -33,6 +33,9 @@ namespace rex
             void setupHwnd();
             void setupPixelFormat();
 
+            void destroyWindowClass();
+            void destroyHwnd();
+
             bool                m_visible;
 
             HINSTANCE           m_hinstance;
