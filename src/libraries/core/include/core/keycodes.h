@@ -8,6 +8,8 @@ namespace rex
 {
     enum class KeyCode
     {
+		UNKNOWN				= -1,
+
 		SPACE               = 32,
 		APOSTROPHE          = 39, /* ' */
 		COMMA               = 44, /* , */
@@ -146,6 +148,9 @@ namespace rex
         os << static_cast<uint16>(keyCode);
         return os;
     }
+
+	//-------------------------------------------------------------------------
+	KeyCode keyNameToKeyCode(const int8* keyName);
 }
 
 #define RX_KEY_SPACE           rex::KeyCode::SPACE

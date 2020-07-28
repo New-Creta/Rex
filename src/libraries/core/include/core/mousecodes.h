@@ -4,9 +4,9 @@ namespace rex
 {
     enum class MouseCode
     {
-        Button0 = 0,
-        Button1 = 1,
-        Button2 = 2,
+        LEFT = 0,
+        MIDDLE = 1,
+        RIGHT = 2,
     };
 
     inline std::ostream& operator<<(std::ostream& os, MouseCode mouseCode)
@@ -16,6 +16,6 @@ namespace rex
     }
 }
 
-#define RX_MOUSE_BUTTON_0 rex::MouseCode::Button0
-#define RX_MOUSE_BUTTON_1 rex::MouseCode::Button1
-#define RX_MOUSE_BUTTON_2 rex::MouseCode::Button2
+#define RX_MOUSE_BUTTON_LEFT rex::MouseCode::LEFT
+#define RX_MOUSE_BUTTON_MIDDLE rex::MouseCode::MIDDLE
+#define RX_MOUSE_BUTTON_RIGHT rex::MouseCode::RIGHT
