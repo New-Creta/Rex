@@ -31,6 +31,9 @@ std::string rex::events::EventType::toString() const
     case rex::events::EventType::MOUSE_SCROLLED:            return "Mouse Scrolled";
     case rex::events::EventType::WINDOW_CLOSED:             return "Window Closed";
     case rex::events::EventType::WINDOW_RESIZE:             return "Window Resized";
+    case rex::events::EventType::WINDOW_ACTIVATED:          return "Window Activated";
+    case rex::events::EventType::WINDOW_DEACTIVATED:        return "Window Deactivated";
+    case rex::events::EventType::WINDOW_OPEN:               return "Window Open";
     }
 
     //RX_ASSERT_X(false ,"Invalid event category!");

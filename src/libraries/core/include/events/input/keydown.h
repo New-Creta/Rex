@@ -20,6 +20,8 @@ namespace rex
 
 			REX_CORE_EXPORT KeyCode getKeyCode() const;
 
+			REX_CORE_EXPORT std::string toString() const override;
+
 		private:
 			KeyCode m_key_code;
 		};

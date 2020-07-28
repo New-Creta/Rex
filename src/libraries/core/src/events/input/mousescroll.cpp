@@ -21,3 +21,11 @@ int32 rex::events::MouseScroll::getScrollDelta() const
 {
     return m_wheel_delta;
 }
+
+//-------------------------------------------------------------------------
+std::string rex::events::MouseScroll::toString() const
+{
+    std::stringstream s;
+    s << "Mouse Scrolled: [" << m_wheel_delta << "]" "[" << getScreenPosition().x << "," << getScreenPosition().y << "]";
+    return s.str();
+}

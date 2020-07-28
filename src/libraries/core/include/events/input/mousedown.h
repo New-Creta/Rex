@@ -25,6 +25,8 @@ namespace rex
 			REX_CORE_EXPORT MouseCode getButton() const;
 			REX_CORE_EXPORT IsDoubleClick isDoubleClick() const;
 
+			REX_CORE_EXPORT std::string toString() const override;
+
 		private:
 			MouseCode m_button;
 			IsDoubleClick m_is_double_click;

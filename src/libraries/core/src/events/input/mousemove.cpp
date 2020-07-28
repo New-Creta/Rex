@@ -8,3 +8,11 @@ rex::events::MouseMove::MouseMove(rex::Window* window, const MouseKeyMetaData& k
 }
 
 rex::events::MouseMove::~MouseMove() = default;
+
+//-------------------------------------------------------------------------
+std::string rex::events::MouseMove::toString() const
+{
+    std::stringstream s;
+    s << "Mouse Moved: [" << getScreenPosition().x << "," << getScreenPosition().y << "]";
+    return s.str();
+}

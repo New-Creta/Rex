@@ -15,6 +15,8 @@ namespace rex
 
 			REX_CORE_EXPORT MouseMove(rex::Window* window, const MouseKeyMetaData& keyMetaData, const MousePosition& mousePos);
 			REX_CORE_EXPORT ~MouseMove() override;
+
+			REX_CORE_EXPORT std::string toString() const override;
 		};
 	}
 }

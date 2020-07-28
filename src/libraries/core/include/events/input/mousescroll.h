@@ -20,6 +20,8 @@ namespace rex
 			REX_CORE_EXPORT ScrollDirection getScrollDirection() const;
 			REX_CORE_EXPORT int32 getScrollDelta() const;
 
+			REX_CORE_EXPORT std::string toString() const override;
+
 		private:
 			ScrollDirection m_direction;
 			int32 m_wheel_delta;

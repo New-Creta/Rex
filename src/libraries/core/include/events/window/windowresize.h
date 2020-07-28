@@ -13,8 +13,10 @@ namespace rex
 
 			REX_CORE_EXPORT WindowResize(rex::Window* window, uint32 width, uint32 height);
 
-			uint32 getWidth() const;
-			uint32 getHeight() const;
+			REX_CORE_EXPORT uint32 getWidth() const;
+			REX_CORE_EXPORT uint32 getHeight() const;
+
+			REX_CORE_EXPORT std::string toString() const override;
 
 		private:
 			uint32 m_width;

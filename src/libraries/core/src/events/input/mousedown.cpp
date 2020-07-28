@@ -17,3 +17,11 @@ rex::MouseCode rex::events::MouseDown::getButton() const
 {
     return m_button;
 }
+
+//-------------------------------------------------------------------------
+std::string rex::events::MouseDown::toString() const
+{
+    std::stringstream s;
+    s << "Mouse Down: " << m_button;
+    return s.str();
+}

@@ -18,3 +18,11 @@ uint32 rex::events::WindowResize::getHeight() const
 {
     return m_height; 
 }
+
+//-------------------------------------------------------------------------
+std::string rex::events::WindowResize::toString() const
+{
+    std::stringstream s;
+    s << "Window Resized: [" << getWidth() << "," << getHeight() << "]";
+    return s.str();
+}

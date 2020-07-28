@@ -20,6 +20,8 @@ namespace rex
 
 			REX_CORE_EXPORT MouseCode getButton() const;
 
+			REX_CORE_EXPORT std::string toString() const override;
+
 		private:
 			MouseCode m_button;
 		};
