@@ -54,8 +54,27 @@ SET(CORE_SOURCE_DIRECTORY ${CURRENT_CORE_PATH}/src)
 SET (CORE_LIBRARY_NAME rex_core)
 
 # --------------------------------
+# Setup platform path
+# --------------------------------
+set(PLATFORM_FOLDER "platform")
+
+set(CURRENT_PLATFORM_PATH ${CMAKE_CURRENT_LIST_DIR}/${PLATFORM_FOLDER}/${LOWER_BUILD_TARGET})
+
+IF(NOT EXISTS ${CURRENT_PLATFORM_PATH} OR NOT IS_DIRECTORY "${CURRENT_PLATFORM_PATH}")
+    file(MAKE_DIRECTORY ${CURRENT_PLATFORM_PATH})
+    message(FATAL_ERROR "Directory, ${CURRENT_PLATFORM_PATH} does not exist, directory was generated but configuration will be stopped.")
+ENDIF()
+
+SET(PLATFORM_INCLUDE_DIRECTORY ${CURRENT_PLATFORM_PATH}/include)
+SET(PLATFORM_RESOURCES_DIRECTORY ${CURRENT_PLATFORM_PATH}/resources)
+SET(PLATFORM_SOURCE_DIRECTORY ${CURRENT_PLATFORM_PATH}/src)
+
+SET (PLATFORM_LIBRARY_NAME rex_platform)
+
+# --------------------------------
 # Add subdirectories
 # --------------------------------
 add_subdirectory(${DIAGNOSTICS_FOLDER})
 add_subdirectory(${UTILITIES_FOLDER})
 add_subdirectory(${CORE_FOLDER})
+add_subdirectory(${PLATFORM_FOLDER})
