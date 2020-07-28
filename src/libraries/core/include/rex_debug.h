@@ -13,7 +13,7 @@
 //-------------------------------------------------------------------------
 // Assembly instruction to break execution.
 #ifdef x64
-    #define DEBUG_BREAK __asm { int 3 }
+    #define DEBUG_BREAK __debugbreak()
 #else
     #error DEBUG_BREAK unsupported machine instruction ...
 #endif
