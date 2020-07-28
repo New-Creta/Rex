@@ -1,31 +1,61 @@
 #include "rex_core_pch.h"
 
 #include "core/coreapplication.h"
-#include "core/window.h"
 
-#include "events/event.h"
+namespace
+{
+    float FRAMERATE = 1.0f / 60.0f;
+}
 
 //-------------------------------------------------------------------------
-rex::CoreApplication::CoreApplication() = default;
+rex::CoreApplication* rex::CoreApplication::s_application_instance = nullptr;
+
 //-------------------------------------------------------------------------
-rex::CoreApplication::~CoreApplication() = default;
+rex::CoreApplication::CoreApplication()
+    :m_running(true)
+{
+    RX_INFO("Creating application");
+
+    RX_ASSERT_X(!s_application_instance, "There can only be one application at the time");
+    s_application_instance = this;
+}
+//-------------------------------------------------------------------------
+rex::CoreApplication::~CoreApplication()
+{
+    m_running = false;
+
+    s_application_instance = nullptr;
+
+    RX_INFO("Destroying application");
+}
 
 //-------------------------------------------------------------------------
 int rex::CoreApplication::run()
 {
-    m_window = createWindow();
-    m_window->show();
+    RX_TRACE("Initialize CoreApplication");
 
-    while (true)
+    platformInitialize();
+
+    while (m_running)
     {
-        m_window->update();
+        platformUpdate(FRAMERATE);
     }
+
+    RX_TRACE("Quit CoreApplication");
+
+    platformQuit();
 
     return 0;
 }
 
 //-------------------------------------------------------------------------
-void rex::CoreApplication::onEvent(const rex::events::Event& event)
+void rex::CoreApplication::quit()
 {
-    UNUSED_PARAM(event);
+    markForDestroy();
+}
+
+//-------------------------------------------------------------------------
+void rex::CoreApplication::markForDestroy()
+{
+    m_running = false;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/coreapplication.h"
+#include "core/graphicalapplication.h"
 
 namespace rex
 {
@@ -9,13 +9,10 @@ namespace rex
 
 namespace sandbox
 {
-    class Application : public rex::CoreApplication
+    class Application : public rex::engine::GraphicalApplication
     {
     public:
         Application();
         ~Application() override;
-
-    protected:
-        std::unique_ptr<rex::Window> createWindow() override;
     };
 }

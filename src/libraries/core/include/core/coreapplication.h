@@ -4,13 +4,6 @@
 
 namespace rex
 {
-    namespace events
-    {
-        class Event;
-    }
-
-    class Window;
-
     class CoreApplication
     {
     public:
@@ -18,14 +11,23 @@ namespace rex
         REX_CORE_EXPORT virtual ~CoreApplication();
 
         REX_CORE_EXPORT int run();
+        REX_CORE_EXPORT void quit();
 
     protected:
-        REX_CORE_EXPORT void onEvent(const events::Event& event);
+        REX_CORE_EXPORT void markForDestroy();
 
-        virtual std::unique_ptr<rex::Window> createWindow() = 0;
+        //
+        // Application runtime
+        //
+        REX_CORE_EXPORT virtual void platformInitialize() = 0;
+        REX_CORE_EXPORT virtual void platformUpdate(float dTime) = 0;
+        REX_CORE_EXPORT virtual void platformQuit() = 0;
 
     private:
-        std::unique_ptr<Window> m_window;
+        bool m_running;
+
+        // There will only be 1 application running at the time.
+        static CoreApplication* s_application_instance;
     };
 
     // 
