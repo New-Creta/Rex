@@ -98,13 +98,28 @@ namespace
 rex::win32::EventProcessor::EventProcessor(rex::Window* window, EventCallbackFn callback)
     :m_window(window)
     ,m_callback(callback)
+	,m_enabled(false)
 {}
 //-------------------------------------------------------------------------
 rex::win32::EventProcessor::~EventProcessor() = default;
 
 //-------------------------------------------------------------------------
+void rex::win32::EventProcessor::enableEventProcessing()
+{
+	m_enabled = true;
+}
+//-------------------------------------------------------------------------
+void rex::win32::EventProcessor::disableEventProcessing()
+{
+	m_enabled = false;
+}
+
+//-------------------------------------------------------------------------
 LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::MessageParameters parameters)
 {
+	if (!m_enabled)
+		return 0;
+
 	switch (msg)
 	{
 	case WM_SYSCOMMAND:
@@ -134,10 +149,14 @@ LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::Mes
 	case WM_KEYDOWN:
 		if (is_non_character_key(parameters.wparam))
 		{
-							m_callback(NonCharacterKeyDown(m_window, parameters));											return 0;
+							m_callback(NonCharacterKeyDown(m_window, parameters));									return 0;
+		}
+		else
+		{
+							m_callback(KeyDown(m_window, parameters));												return 0;
 		}
 
-	case WM_CHAR:           m_callback(KeyDown(m_window, parameters));												return 0;
+	//case WM_CHAR:           m_callback(KeyDown(m_window, parameters));											return 0;
 	case WM_KEYUP:          m_callback(KeyUp(m_window, parameters));												return 0;
 
 		//
@@ -148,17 +167,17 @@ LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::Mes
 	case WM_ACTIVATE:
 		if (parameters.wparam == WA_ACTIVE || parameters.wparam == WA_CLICKACTIVE)
 		{
-			m_callback(events::WindowActivated(m_window));																	return 0;
+			m_callback(events::WindowActivated(m_window));															return 0;
 		}
 		else if (parameters.wparam == WA_INACTIVE)
 		{
-			m_callback(events::WindowDeactivated(m_window));																return 0;
+			m_callback(events::WindowDeactivated(m_window));														return 0;
 		}
 
-	case WM_SHOWWINDOW:		m_callback(events::WindowOpen(m_window));														return 0;
-	case WM_CLOSE:			m_callback(events::WindowClose(m_window));														return 0;
+	case WM_SHOWWINDOW:		m_callback(events::WindowOpen(m_window));												return 0;
+	case WM_CLOSE:			m_callback(events::WindowClose(m_window));												return 0;
 
-	case WM_DESTROY:		PostQuitMessage(0);																														return 0;
+	case WM_DESTROY:		PostQuitMessage(0);																		return 0;
 	}
 
 	return DefWindowProc(hwnd, msg, parameters.wparam, parameters.lparam);
