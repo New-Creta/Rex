@@ -72,9 +72,28 @@ SET(PLATFORM_SOURCE_DIRECTORY ${CURRENT_PLATFORM_PATH}/src)
 SET (PLATFORM_LIBRARY_NAME rex_platform)
 
 # --------------------------------
+# Setup engine path
+# --------------------------------
+set(ENGINE_FOLDER "engine")
+
+set(CURRENT_ENGINE_PATH ${CMAKE_CURRENT_LIST_DIR}/${ENGINE_FOLDER})
+
+IF(NOT EXISTS ${CURRENT_ENGINE_PATH} OR NOT IS_DIRECTORY "${CURRENT_ENGINE_PATH}")
+    file(MAKE_DIRECTORY ${CURRENT_ENGINE_PATH})
+    message(FATAL_ERROR "Directory, ${CURRENT_ENGINE_PATH} does not exist, directory was generated but configuration will be stopped.")
+ENDIF()
+
+SET(ENGINE_INCLUDE_DIRECTORY ${CURRENT_ENGINE_PATH}/include)
+SET(ENGINE_RESOURCES_DIRECTORY ${CURRENT_ENGINE_PATH}/resources)
+SET(ENGINE_SOURCE_DIRECTORY ${CURRENT_ENGINE_PATH}/src)
+
+SET (ENGINE_LIBRARY_NAME rex_engine)
+
+# --------------------------------
 # Add subdirectories
 # --------------------------------
 add_subdirectory(${DIAGNOSTICS_FOLDER})
 add_subdirectory(${UTILITIES_FOLDER})
 add_subdirectory(${CORE_FOLDER})
 add_subdirectory(${PLATFORM_FOLDER})
+add_subdirectory(${ENGINE_FOLDER})
