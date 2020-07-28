@@ -11,7 +11,7 @@ namespace rex
 
     struct WindowProperties
     {
-        using EventCallbackFn = std::function<void(const events::Event&)>;
+        using EventCallbackFn = std::function<void(events::Event&)>;
 
         //-------------------------------------------------------------------------
         WindowProperties()
@@ -44,7 +44,7 @@ namespace rex
     class Window
     {
     public:
-        using EventCallbackFn = std::function<void(const events::Event&)>;
+        using EventCallbackFn = std::function<void(events::Event&)>;
 
         Window() = default;
         virtual ~Window() = default;

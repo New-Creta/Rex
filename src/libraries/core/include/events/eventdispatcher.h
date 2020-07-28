@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rex_core_global.h"
+
 #include "event.h"
 
 namespace rex
@@ -9,13 +11,13 @@ namespace rex
         class EventDispatcher
         {
         public:
-            EventDispatcher(Event& event);
+            REX_CORE_EXPORT EventDispatcher(Event& event);
 
             template<typename T, typename F>
             bool dispatch(F func);
 
         private:
-            const Event& m_event;
+            Event& m_event;
         };
 
         //-------------------------------------------------------------------------
@@ -24,7 +26,7 @@ namespace rex
         {
             if (m_event.getType() == T::getStaticType())
             {
-                if (func(static_cast<const T&>(m_event)))
+                if (func(static_cast<T&>(m_event)))
                     m_event.handle();
 
                 return true;

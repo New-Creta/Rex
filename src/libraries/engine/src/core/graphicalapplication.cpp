@@ -101,7 +101,7 @@ std::unique_ptr<rex::engine::ApplicationWindow> rex::engine::GraphicalApplicatio
         WINDOW_WIDTH,
         WINDOW_HEIGHT,
     
-        [this](const events::Event& event) { GraphicalApplication::onEvent(event); }
+        [this](events::Event& event) { GraphicalApplication::onEvent(event); }
     };
 
     return std::make_unique<ApplicationWindow>(properties);

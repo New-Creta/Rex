@@ -114,6 +114,9 @@ void rex::win32::EventProcessor::disableEventProcessing()
 	m_enabled = false;
 }
 
+#pragma warning( push )
+#pragma warning( disable : 4239 )
+
 //-------------------------------------------------------------------------
 LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::MessageParameters parameters)
 {
@@ -182,3 +185,5 @@ LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::Mes
 
 	return DefWindowProc(hwnd, msg, parameters.wparam, parameters.lparam);
 }
+
+#pragma warning( pop )

@@ -16,7 +16,7 @@ namespace rex
         class EventProcessor
         {
         public:
-            using EventCallbackFn = std::function<void(const events::Event&)>;
+            using EventCallbackFn = std::function<void(events::Event&)>;
 
             EventProcessor(rex::Window* window, EventCallbackFn callback);
             ~EventProcessor();

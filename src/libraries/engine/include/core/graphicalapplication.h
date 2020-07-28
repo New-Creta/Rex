@@ -12,6 +12,7 @@ namespace rex
     namespace events
     {
         class Event;
+        class KeyDown;
     }
 
     namespace engine
@@ -22,10 +23,10 @@ namespace rex
             REX_ENGINE_EXPORT GraphicalApplication();
             REX_ENGINE_EXPORT ~GraphicalApplication() override;
 
-            REX_ENGINE_EXPORT void onEvent(const events::Event& event);
             REX_ENGINE_EXPORT void pushBackLayer(std::unique_ptr<Layer> layer);
             REX_ENGINE_EXPORT void pushFrontLayer(std::unique_ptr<Layer> layer);
 
+            REX_ENGINE_EXPORT void onEvent(events::Event& event);
 
         protected:
             REX_ENGINE_EXPORT void appInitialize() override;
