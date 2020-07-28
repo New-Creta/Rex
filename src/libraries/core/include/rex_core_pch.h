@@ -16,6 +16,9 @@
 
 #include "rex_debug.h"
 
+#include "helpers/defines.h"
+#include "helpers/types.h"
+
 #ifdef _WINDOWS
 	#include <Windows.h>
 #endif
