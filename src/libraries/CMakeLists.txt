@@ -1,3 +1,16 @@
+if(${REX_API_TARGET} STREQUAL ${OPENGL})
+    include(FindOpenGL)
+
+    if(OPENGL_FOUND)
+        message(STATUS "\tOpenGL was found!")
+        foreach(lib ${OPENGL_LIBRARIES})
+            message(STATUS "\tOpenGL Library: ${lib}")
+        endforeach()
+    else()
+        message(FATAL_ERROR "OpenGL was NOT found!")
+    endif()
+endif()
+
 # --------------------------------
 # Setup diagnostics path
 # --------------------------------
@@ -54,6 +67,24 @@ SET(CORE_SOURCE_DIRECTORY ${CURRENT_CORE_PATH}/src)
 SET (CORE_LIBRARY_NAME rex_core)
 
 # --------------------------------
+# Setup graphics path
+# --------------------------------
+set(GRAPHICS_FOLDER "graphics")
+
+set(CURRENT_GRAPHICS_PATH ${CMAKE_CURRENT_LIST_DIR}/${GRAPHICS_FOLDER}/${LOWER_API_TARGET})
+
+IF(NOT EXISTS ${CURRENT_GRAPHICS_PATH} OR NOT IS_DIRECTORY "${CURRENT_GRAPHICS_PATH}")
+    file(MAKE_DIRECTORY ${CURRENT_GRAPHICS_PATH})
+    message(FATAL_ERROR "Directory, ${CURRENT_GRAPHICS_PATH} does not exist, directory was generated but configuration will be stopped.")
+ENDIF()
+
+SET(GRAPHICS_INCLUDE_DIRECTORY ${CURRENT_GRAPHICS_PATH}/include)
+SET(GRAPHICS_RESOURCES_DIRECTORY ${CURRENT_GRAPHICS_PATH}/resources)
+SET(GRAPHICS_SOURCE_DIRECTORY ${CURRENT_GRAPHICS_PATH}/src)
+
+SET (GRAPHICS_LIBRARY_NAME rex_graphics)
+
+# --------------------------------
 # Setup platform path
 # --------------------------------
 set(PLATFORM_FOLDER "platform")
@@ -95,5 +126,6 @@ SET (ENGINE_LIBRARY_NAME rex_engine)
 add_subdirectory(${DIAGNOSTICS_FOLDER})
 add_subdirectory(${UTILITIES_FOLDER})
 add_subdirectory(${CORE_FOLDER})
+add_subdirectory(${GRAPHICS_FOLDER})
 add_subdirectory(${PLATFORM_FOLDER})
 add_subdirectory(${ENGINE_FOLDER})
