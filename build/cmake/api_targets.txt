@@ -18,7 +18,7 @@ MACRO(SETUP_OPENGL LIBNAME)
 add_definitions(-DGLEW_STATIC)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-target_include_directories(${LIBNAME} PUBLIC ${OPENGL_INCLUDE_DIRS} )
+target_include_directories(${LIBNAME} PUBLIC ${OPENGL_INCLUDE_DIR} )
 
 target_link_libraries(${LIBNAME} PUBLIC ${OPENGL_LIBRARIES})
 target_link_libraries(${LIBNAME} PUBLIC glew)
