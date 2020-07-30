@@ -60,6 +60,11 @@ target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC ${DIAGNOSTICS_LIBRARY_NAME
 target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC ${CORE_LIBRARY_NAME})
 
 # --------------------------
+# Rendering API
+# --------------------------
+SETUP_RENDERINGAPI(${PLATFORM_LIBRARY_NAME})
+
+# --------------------------
 # Install.
 # --------------------------
 SET(EXPORT_TARGETS ${PLATFORM_LIBRARY_NAME})
