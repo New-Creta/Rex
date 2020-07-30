@@ -1,0 +1,3 @@
+#pragma once
+
+#define REX_API_TARGET "@REX_API_TARGET@"
