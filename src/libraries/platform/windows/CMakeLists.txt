@@ -52,12 +52,14 @@ target_include_directories(${PLATFORM_LIBRARY_NAME} PUBLIC
 
 target_include_directories(${PLATFORM_LIBRARY_NAME} PUBLIC ${DIAGNOSTICS_INCLUDE_DIRECTORY})
 target_include_directories(${PLATFORM_LIBRARY_NAME} PUBLIC ${CORE_INCLUDE_DIRECTORY})
+target_include_directories(${PLATFORM_LIBRARY_NAME} PUBLIC ${GRAPHICS_INCLUDE_DIRECTORY})
 
 # --------------------------
 # Target link libraries.
 # --------------------------
 target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC ${DIAGNOSTICS_LIBRARY_NAME})
 target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC ${CORE_LIBRARY_NAME})
+target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC ${GRAPHICS_LIBRARY_NAME})
 
 # --------------------------
 # Rendering API
