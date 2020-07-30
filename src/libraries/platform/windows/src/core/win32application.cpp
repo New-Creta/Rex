@@ -1,8 +1,7 @@
 #include "rex_platform_pch.h"
+#include "rex_platform_defines.h"
 
 #include "core/win32application.h"
-
-#include "rex_platform_defines.h"
 
 #include <VersionHelpers.h>
 
