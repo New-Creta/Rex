@@ -32,8 +32,6 @@ if(${REX_API_TARGET} STREQUAL ${OPENGL})
 	SET(GLEW_SOURCE_DIRECTORY ${CURRENT_GLEW_PATH}/src)
 
 	SET(GLEW_LIBRARY_NAME glew)
-else()
-	message(FATAL_ERROR "Unsupported rendering API")
 endif()
 
 # --------------------------------
@@ -54,6 +52,4 @@ if(${REX_API_TARGET} STREQUAL ${OPENGL})
 	else()
 		message(WARNING "Could not find \"${GLEW_FOLDER}\"")
 	endif()
-else()
-	message(FATAL_ERROR "Unsupported rendering API")
 endif()

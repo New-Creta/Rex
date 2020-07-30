@@ -32,7 +32,7 @@ SETUP_LIBRARY(${ENGINE_LIBRARY_NAME})
 STRING(TOUPPER ${ENGINE_LIBRARY_NAME} UPPER_LIB_NAME)
 
 set_target_properties( ${ENGINE_LIBRARY_NAME} PROPERTIES    VS_DEBUGGER_WORKING_DIRECTORY    "${OUTPUT_BINDIR}"             # Working directory
-                                                            FOLDER                           "3. Application Libraries"        # Project filter location
+                                                            FOLDER                           "3. Application Libraries"     # Project filter location
                                                             DEFINE_SYMBOL                    "${UPPER_LIB_NAME}_LIB" )      # Library symbol
 
 # --------------------------
