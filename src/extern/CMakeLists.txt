@@ -45,8 +45,6 @@ else()
 endif()
 # -----GLEW-----------------------
 if(${REX_API_TARGET} STREQUAL ${OPENGL})
-	find_package(OpenGL REQUIRED)
-
 	if(EXISTS "${PROJECT_SOURCE_DIR}/src/extern/${GLEW_FOLDER}")
 		add_subdirectory(${GLEW_FOLDER})
 	else()

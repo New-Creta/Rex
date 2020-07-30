@@ -1,3 +1,6 @@
+# --------------------------------
+# Setup OpenGL if required
+# --------------------------------
 if(${REX_API_TARGET} STREQUAL ${OPENGL})
     include(FindOpenGL)
 
