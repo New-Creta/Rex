@@ -9,3 +9,42 @@ SET(REX_API_TARGET ${OPENGL} CACHE STRING "Setup solution for the specific api t
 
 STRING(TOLOWER ${REX_API_TARGET} LOWER_API_TARGET)
 STRING(TOUPPER ${REX_API_TARGET} UPPER_API_TARGET)
+
+##########################################################################################################
+# Macro that will setup our rendering api includes and link libraries for GL
+########################################################################################################## 
+MACRO(SETUP_OPENGL LIBNAME)
+
+add_definitions(-DGLEW_STATIC)
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+
+target_include_directories(${LIBNAME} PUBLIC ${OPENGL_INCLUDE_DIRS} )
+
+target_link_libraries(${LIBNAME} PUBLIC ${OPENGL_LIBRARIES})
+target_link_libraries(${LIBNAME} PUBLIC glew)
+
+ENDMACRO(SETUP_OPENGL)
+
+##########################################################################################################
+# Macro that will setup our rendering api includes and link libraries for DX
+##########################################################################################################
+MACRO(SETUP_DIRECTX LIBNAME)
+
+# Nothing to implement
+
+ENDMACRO(SETUP_DIRECTX)
+
+##########################################################################################################
+# Macro that will setup our rendering api includes and link libraries
+##########################################################################################################
+MACRO(SETUP_RENDERINGAPI LIBNAME)
+
+if(${REX_API_TARGET} STREQUAL ${OPENGL})
+	SETUP_OPENGL(${LIBNAME})
+elseif(${REX_API_TARGET} STREQUAL ${DIRECTX})
+	SETUP_DIRECTX(${LIBNAME})
+else()
+	message(FATAL_ERROR "Unsupported rendering API")
+endif()
+
+ENDMACRO(SETUP_RENDERINGAPI)
