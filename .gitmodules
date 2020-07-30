@@ -2,3 +2,6 @@
 	path = src/extern/spdlog
 	url = https://github.com/Dyronix/spdlog.git
 	branch = rex_spdlog
+[submodule "src/extern/glew"]
+	path = src/extern/glew
+	url = https://github.com/Dyronix/glew.git
