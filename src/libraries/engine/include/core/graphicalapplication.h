@@ -4,6 +4,7 @@
 
 #include "core/applicationconfig.h"
 #include "core/windowconfig.h"
+#include "core/contextconfig.h"
 
 #include "core/layerstack.h"
 
@@ -40,8 +41,10 @@ namespace rex
             bool escapeButtonPressed(events::KeyDown& keyEvent);
 
             std::unique_ptr<ApplicationWindow> createWindow();
+            std::unique_ptr<ApplicationContext> createContext(void* handle);
 
             std::unique_ptr<ApplicationWindow> m_window;
+            std::unique_ptr<ApplicationContext> m_context;
 
             LayerStack m_layer_stack;
         };

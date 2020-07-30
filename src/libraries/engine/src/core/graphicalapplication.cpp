@@ -43,6 +43,8 @@ void rex::engine::GraphicalApplication::onEvent(events::Event& event)
 void rex::engine::GraphicalApplication::appInitialize()
 {
     m_window = createWindow();
+    m_context = createContext(m_window->getHandle());
+
     m_window->show();
 }
 //-------------------------------------------------------------------------
@@ -105,4 +107,11 @@ std::unique_ptr<rex::engine::ApplicationWindow> rex::engine::GraphicalApplicatio
     };
 
     return std::make_unique<ApplicationWindow>(properties);
+}
+//-------------------------------------------------------------------------
+std::unique_ptr<rex::engine::ApplicationContext> rex::engine::GraphicalApplication::createContext(void* handle)
+{
+    auto context = std::make_unique<ApplicationContext>(gl::DriverData(handle));
+    context->initialize();
+    return context;
 }
