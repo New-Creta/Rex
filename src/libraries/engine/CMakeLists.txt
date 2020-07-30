@@ -49,6 +49,7 @@ target_include_directories(${ENGINE_LIBRARY_NAME} PUBLIC ${PLATFORM_INCLUDE_DIRE
 # Target link libraries.
 # --------------------------
 target_link_libraries(${ENGINE_LIBRARY_NAME} PUBLIC ${PLATFORM_LIBRARY_NAME})
+target_link_libraries(${ENGINE_LIBRARY_NAME} PUBLIC ${GRAPHICS_LIBRARY_NAME})
 
 # --------------------------
 # Install.
