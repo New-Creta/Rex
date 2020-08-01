@@ -33,7 +33,6 @@ namespace rex
             void setupWindowClass();
             void setupHwnd();
             void setupHdc();
-            void setupPixelFormat();
 
             void destroyWindowClass();
             void destroyHwnd();

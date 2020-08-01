@@ -64,21 +64,6 @@ namespace
 
         return wc;
     }
-    //-------------------------------------------------------------------------
-    PIXELFORMATDESCRIPTOR createWindowPixelFormatDescription()
-    {
-        PIXELFORMATDESCRIPTOR result = {};
-        result.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-        result.nVersion = 1;
-        result.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-        result.iPixelType = PFD_TYPE_RGBA;
-        result.cColorBits = 32;
-        result.cDepthBits = 24;
-        result.cStencilBits = 8;
-        result.cAuxBuffers = 0;
-        result.iLayerType = PFD_MAIN_PLANE;
-        return result;
-    }
 }
 
 //-------------------------------------------------------------------------
@@ -98,7 +83,6 @@ rex::win32::Window::Window(const WindowProperties& properties)
     setupWindowClass();
     setupHwnd();
     setupHdc();
-    setupPixelFormat();
 }
 //-------------------------------------------------------------------------
 rex::win32::Window::~Window()
@@ -230,18 +214,6 @@ void rex::win32::Window::setupHwnd()
 void rex::win32::Window::setupHdc()
 {
     m_hdc = GetDC(m_hwnd);
-}
-
-//-------------------------------------------------------------------------
-void rex::win32::Window::setupPixelFormat()
-{
-    PIXELFORMATDESCRIPTOR pfd = createWindowPixelFormatDescription();
-
-    auto choose_pixel_format = ChoosePixelFormat(m_hdc, &pfd);
-    RX_ASSERT_X(choose_pixel_format != NULL, "Pixel format is null");
-
-    auto set_pixel_format = SetPixelFormat(m_hdc, choose_pixel_format, &pfd);
-    RX_ASSERT_X(set_pixel_format == TRUE, "Failed to set pixel format");
 }
 
 //-------------------------------------------------------------------------
