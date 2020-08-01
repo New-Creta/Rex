@@ -103,7 +103,9 @@ SET (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE 		"${OUTPUT_BINDIR}")
 
 message(STATUS "Output directory: \t\t${OUTPUT_BINDIR}")
 
+# --------------------------------
 # Add application and libraries
+# --------------------------------
 add_subdirectory(src)
 
 message(STATUS "#--------------------- Finished project generation ---------------------")
