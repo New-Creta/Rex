@@ -19,9 +19,10 @@
 #include "helpers/defines.h"
 #include "helpers/types.h"
 
-#include <GL/glew.h>
-#include <GL/wglew.h>
-
 #ifdef _WINDOWS
 	#include <Windows.h>
 #endif
+
+#include <GL/glew.h>
+#include <GL/GL.h>
+#include <GL/GLU.h>
