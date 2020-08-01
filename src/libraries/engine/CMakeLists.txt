@@ -42,14 +42,17 @@ target_include_directories(${ENGINE_LIBRARY_NAME} PUBLIC
                                                 $<BUILD_INTERFACE:${ENGINE_INCLUDE_DIRECTORY}>
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${ENGINE_LIBRARY_NAME}>)
 
-target_include_directories(${ENGINE_LIBRARY_NAME} PUBLIC ${UTILITIES_INCLUDE_DIRECTORY})
 target_include_directories(${ENGINE_LIBRARY_NAME} PUBLIC ${PLATFORM_INCLUDE_DIRECTORY})
 
 # --------------------------
 # Target link libraries.
 # --------------------------
 target_link_libraries(${ENGINE_LIBRARY_NAME} PUBLIC ${PLATFORM_LIBRARY_NAME})
-target_link_libraries(${ENGINE_LIBRARY_NAME} PUBLIC ${GRAPHICS_LIBRARY_NAME})
+
+# --------------------------
+# Rendering API
+# --------------------------
+SETUP_RENDERINGAPI(${ENGINE_LIBRARY_NAME})
 
 # --------------------------
 # Install.

@@ -35,6 +35,22 @@ if(${REX_API_TARGET} STREQUAL ${OPENGL})
 endif()
 
 # --------------------------------
+# Setup imgui path
+# --------------------------------
+set(IMGUI_FOLDER "imgui")
+
+set(CURRENT_IMGUI_PATH ${CMAKE_CURRENT_LIST_DIR}/${IMGUI_FOLDER})
+
+IF(NOT EXISTS ${CURRENT_IMGUI_PATH} OR NOT IS_DIRECTORY "${CURRENT_IMGUI_PATH}")
+    file(MAKE_DIRECTORY ${CURRENT_IMGUI_PATH})
+    message(FATAL_ERROR "Directory, ${CURRENT_IMGUI_PATH} does not exist, directory was generated but configuration will be stopped.")
+ENDIF()
+
+SET(IMGUI_INCLUDE_DIRECTORY ${CURRENT_IMGUI_PATH})
+
+SET(IMGUI_LIBRARY_NAME imgui)
+
+# --------------------------------
 # Add subdirectories
 # --------------------------------
 # -----SPDLOG---------------------
@@ -50,4 +66,10 @@ if(${REX_API_TARGET} STREQUAL ${OPENGL})
 	else()
 		message(WARNING "Could not find \"${GLEW_FOLDER}\"")
 	endif()
+endif()
+# -----IMGUI----------------------
+if(EXISTS "${PROJECT_SOURCE_DIR}/src/extern/${IMGUI_FOLDER}")
+	add_subdirectory(${IMGUI_FOLDER})
+else()
+	message(WARNING "Could not find \"${IMGUI_FOLDER}\"")
 endif()
