@@ -20,6 +20,9 @@ namespace rex
             REX_ENGINE_EXPORT void enable();
             REX_ENGINE_EXPORT void disable();
 
+            virtual void onAttach() {};
+            virtual void onDetach() {};
+
             REX_ENGINE_EXPORT virtual void onUpdate();
             REX_ENGINE_EXPORT virtual void onEvent(events::Event& event);
 
