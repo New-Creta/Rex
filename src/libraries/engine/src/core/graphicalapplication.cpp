@@ -1,3 +1,5 @@
+#include "rex_engine_pch.h"
+
 #include "core/graphicalapplication.h"
 #include "core/layer.h"
 
@@ -14,6 +16,17 @@ rex::engine::GraphicalApplication::GraphicalApplication()
 rex::engine::GraphicalApplication::~GraphicalApplication() = default;
 
 //-------------------------------------------------------------------------
+rex::Window* rex::engine::GraphicalApplication::getWindow()
+{
+    return m_window.get();
+}
+//-------------------------------------------------------------------------
+const rex::Window* rex::engine::GraphicalApplication::getWindow() const
+{
+    return m_window.get();
+}
+
+//-------------------------------------------------------------------------
 void rex::engine::GraphicalApplication::pushBackLayer(std::unique_ptr<Layer> layer)
 {
     m_layer_stack.pushBack(std::move(layer));
@@ -25,7 +38,7 @@ void rex::engine::GraphicalApplication::pushFrontLayer(std::unique_ptr<Layer> la
 }
 
 //-------------------------------------------------------------------------
-void rex::engine::GraphicalApplication::onEvent(events::Event& event)
+void rex::engine::GraphicalApplication::onEvent(events::Event & event)
 {
     RX_TRACE(event.toString());
 
@@ -43,7 +56,16 @@ void rex::engine::GraphicalApplication::onEvent(events::Event& event)
 void rex::engine::GraphicalApplication::appInitialize()
 {
     m_window = createWindow();
-    m_context = createContext(m_window->getHandle());
+    m_context = createContext();
+
+#ifdef _OPENGL
+    ApplicationContext::makeCurrent(m_context.get());
+
+    if (glewInit() != GLEW_OK)
+    {
+        RX_ERROR("Failed to init GLEW");
+    }
+#endif
 
     m_window->show();
 }
@@ -52,32 +74,36 @@ void rex::engine::GraphicalApplication::appUpdate(float dTime)
 {
     UNUSED_PARAM(dTime);
 
-    m_window->update();
+    unsigned int width = m_window->getWidth();
+    unsigned int height = m_window->getHeight();
+
+    m_window->processEvents();
+
+    ApplicationContext::makeCurrent(m_context.get());
+
+#ifdef _OPENGL
+    glViewport(0, 0, width, height);
+    glClearColor(1, 0, 1, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+#endif
 
     for (const std::unique_ptr<Layer>& layer : m_layer_stack)
     {
         layer->onUpdate();
     }
+
+    m_window->update();
 }
 //-------------------------------------------------------------------------
 void rex::engine::GraphicalApplication::appQuit()
 {
     m_window->hide();
+
+    ApplicationContext::destroy(m_context.get());
 }
 
 //-------------------------------------------------------------------------
-rex::engine::ApplicationWindow* rex::engine::GraphicalApplication::getWindow()
-{
-    return m_window.get();
-}
-//-------------------------------------------------------------------------
-const rex::engine::ApplicationWindow* rex::engine::GraphicalApplication::getWindow() const
-{
-    return m_window.get();
-}
-
-//-------------------------------------------------------------------------
-bool rex::engine::GraphicalApplication::escapeButtonPressed(events::KeyDown& keyEvent)
+bool rex::engine::GraphicalApplication::escapeButtonPressed(events::KeyDown & keyEvent)
 {
     if (keyEvent.getKeyCode() == KeyCode::ESCAPE)
     {
@@ -96,22 +122,20 @@ std::unique_ptr<rex::engine::ApplicationWindow> rex::engine::GraphicalApplicatio
     const int WINDOW_WIDTH = 1280;
     const int WINDOW_HEIGHT = 720;
 
-    rex::WindowProperties properties = 
+    rex::WindowProperties properties =
     {
         WINDOW_TITLE,
-    
+
         WINDOW_WIDTH,
         WINDOW_HEIGHT,
-    
+
         [this](events::Event& event) { GraphicalApplication::onEvent(event); }
     };
 
     return std::make_unique<ApplicationWindow>(properties);
 }
 //-------------------------------------------------------------------------
-std::unique_ptr<rex::engine::ApplicationContext> rex::engine::GraphicalApplication::createContext(void* handle)
+std::unique_ptr<rex::engine::ApplicationContext> rex::engine::GraphicalApplication::createContext()
 {
-    auto context = std::make_unique<ApplicationContext>(gl::DriverData(handle));
-    context->initialize();
-    return context;
+    return ApplicationContext::create(m_window->getHandle());
 }
