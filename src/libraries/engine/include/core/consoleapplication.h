@@ -2,8 +2,6 @@
 
 #include "rex_engine_global.h"
 
-#include "core/applicationconfig.h"
-
 namespace rex
 {
     namespace engine
@@ -13,6 +11,9 @@ namespace rex
         public:
             REX_ENGINE_EXPORT ConsoleApplication();
             REX_ENGINE_EXPORT ~ConsoleApplication() override;
+
+            rex::Window* getWindow() override;
+            const rex::Window* getWindow() const override;
 
         protected:
             REX_ENGINE_EXPORT void appInitialize() override;
