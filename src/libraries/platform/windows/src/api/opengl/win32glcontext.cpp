@@ -1,4 +1,5 @@
 #include "rex_platform_pch.h"
+#include "rex_platform_defines.h"
 
 #include "api/opengl/win32glcontext.h"
 
@@ -33,7 +34,9 @@ rex::win32::Context::Context(HWND hwnd)
     :m_hwnd(hwnd)
     ,m_hdc(GetDC(hwnd))
     ,m_context(NULL)
-{}
+{
+    RX_INFO("API target: {}", REX_API_TARGET);
+}
 //-------------------------------------------------------------------------
 rex::win32::Context::~Context()
 {

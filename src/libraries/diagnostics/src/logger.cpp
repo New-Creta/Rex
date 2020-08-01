@@ -106,7 +106,7 @@ bool rex::Logger::addLogger(const std::string& name, const std::string& pattern,
 //-------------------------------------------------------------------------
 spdlog::logger& rex::Logger::getLogger(const std::string& name)
 {
-    #if !defined (REX_CORE_LIB) && !defined (REX_DIAGNOSTICS_LIB)
+    #if !defined (REX_CORE_LIB) && !defined (REX_DIAGNOSTICS_LIB) && !defined(REX_PLATFORM_LIB) && !defined(REX_GRAPHICS_LIB) && !defined(REX_ENGINE_LIB)
         assert(name != ENGINE_LOGGER_NAME && "The \"Engine\", logger is for internal use only");
     #endif
 

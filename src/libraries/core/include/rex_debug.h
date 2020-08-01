@@ -20,7 +20,7 @@
 
 //-------------------------------------------------------------------------
 // Rex Logger Names
-#if defined (REX_CORE_LIB) || defined (REX_DIAGNOSTICS_LIB)
+#if defined (REX_CORE_LIB) || defined (REX_DIAGNOSTICS_LIB) || defined (REX_PLATFORM_LIB) || defined (REX_GRAPHICS_LIB) || defined (REX_ENGINE_LIB)
     #define REX_LOGGER_NAME rex::Logger::ENGINE_LOGGER_NAME
 #else
     #define REX_LOGGER_NAME rex::Logger::CLIENT_LOGGER_NAME
