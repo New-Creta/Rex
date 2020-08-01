@@ -19,6 +19,7 @@ namespace rex
             REX_PLATFORM_EXPORT void show() override;
             REX_PLATFORM_EXPORT void hide() override;
                 
+            REX_PLATFORM_EXPORT void processEvents() override;
             REX_PLATFORM_EXPORT void update() override;
                 
             REX_PLATFORM_EXPORT unsigned int getWidth() const override;
@@ -31,6 +32,7 @@ namespace rex
 
             void setupWindowClass();
             void setupHwnd();
+            void setupHdc();
             void setupPixelFormat();
 
             void destroyWindowClass();
@@ -41,6 +43,7 @@ namespace rex
             HINSTANCE           m_hinstance;
             HWND                m_hwnd;
             WNDPROC             m_wndproc;
+            HDC                 m_hdc;
 
             EventProcessor      m_event_processor;
 

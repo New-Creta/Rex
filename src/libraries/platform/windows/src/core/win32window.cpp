@@ -54,8 +54,8 @@ namespace
         wc.cbWndExtra = 0;
         wc.hInstance = hInst;
 
-        wc.hIcon = NULL;
-        wc.hCursor = NULL;
+        wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+        wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 
         wc.hbrBackground = NULL;
         wc.lpszMenuName = NULL;
@@ -97,11 +97,14 @@ rex::win32::Window::Window(const WindowProperties& properties)
 
     setupWindowClass();
     setupHwnd();
+    setupHdc();
     setupPixelFormat();
 }
 //-------------------------------------------------------------------------
 rex::win32::Window::~Window()
 {
+    ReleaseDC(m_hwnd, m_hdc);
+
     destroyHwnd();
     destroyWindowClass();
 }
@@ -139,7 +142,7 @@ void rex::win32::Window::hide()
 }
 
 //-------------------------------------------------------------------------
-void rex::win32::Window::update()
+void rex::win32::Window::processEvents()
 {
     if (m_visible == false)
         return;
@@ -150,6 +153,12 @@ void rex::win32::Window::update()
         TranslateMessage(&message);
         DispatchMessage(&message);
     }
+}
+
+//-------------------------------------------------------------------------
+void rex::win32::Window::update()
+{
+    SwapBuffers(m_hdc);
 }
 
 //-------------------------------------------------------------------------
@@ -218,20 +227,21 @@ void rex::win32::Window::setupHwnd()
     }
 }
 //-------------------------------------------------------------------------
+void rex::win32::Window::setupHdc()
+{
+    m_hdc = GetDC(m_hwnd);
+}
+
+//-------------------------------------------------------------------------
 void rex::win32::Window::setupPixelFormat()
 {
-    HDC hdc = GetDC(m_hwnd);
-
     PIXELFORMATDESCRIPTOR pfd = createWindowPixelFormatDescription();
 
-    auto choose_pixel_format = ChoosePixelFormat(hdc, &pfd);
+    auto choose_pixel_format = ChoosePixelFormat(m_hdc, &pfd);
     RX_ASSERT_X(choose_pixel_format != NULL, "Pixel format is null");
 
-    auto set_pixel_format = SetPixelFormat(hdc, choose_pixel_format, &pfd);
+    auto set_pixel_format = SetPixelFormat(m_hdc, choose_pixel_format, &pfd);
     RX_ASSERT_X(set_pixel_format == TRUE, "Failed to set pixel format");
-
-    auto release_dc = ReleaseDC(m_hwnd, hdc);
-    RX_ASSERT_X(release_dc != NULL, "Failed to release DC");
 }
 
 //-------------------------------------------------------------------------

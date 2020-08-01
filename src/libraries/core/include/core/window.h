@@ -52,6 +52,7 @@ namespace rex
         virtual void show() = 0;
         virtual void hide() = 0;
 
+        virtual void processEvents() = 0;
         virtual void update() = 0;
 
         virtual unsigned int getWidth() const = 0;
