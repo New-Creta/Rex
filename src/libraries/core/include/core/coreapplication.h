@@ -13,6 +13,8 @@ namespace rex
         REX_CORE_EXPORT int run();
         REX_CORE_EXPORT void quit();
 
+        static CoreApplication* getInstance() { return s_application_instance; }
+
     protected:
         REX_CORE_EXPORT void markForDestroy();
 
@@ -27,7 +29,7 @@ namespace rex
         bool m_running;
 
         // There will only be 1 application running at the time.
-        static CoreApplication* s_application_instance;
+        REX_CORE_EXPORT static CoreApplication* s_application_instance;
     };
 
     // 
