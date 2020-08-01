@@ -16,6 +16,9 @@ namespace rex
             REX_PLATFORM_EXPORT Application();
             REX_PLATFORM_EXPORT ~Application() override;
 
+            virtual rex::Window* getWindow() = 0;
+            virtual const rex::Window* getWindow() const = 0;
+
         protected:
             virtual void appInitialize() = 0;
             virtual void appUpdate(float dTime) = 0;
