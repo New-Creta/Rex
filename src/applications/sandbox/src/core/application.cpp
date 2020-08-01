@@ -1,6 +1,7 @@
 #include "core/entrypoint.h"
 #include "core/application.h"
 #include "core/layer.h"
+#include "core/imguilayer.h"
 
 #include "events/event.h"
 
@@ -24,12 +25,18 @@ public:
 };
 
 //-------------------------------------------------------------------------
-sandbox::Application::Application()
-{
-    pushBackLayer(std::make_unique<ExampleLayer>());
-}
+sandbox::Application::Application() = default;
 //-------------------------------------------------------------------------
 sandbox::Application::~Application() = default;
+
+//-------------------------------------------------------------------------
+void sandbox::Application::appInitialize()
+{
+    rex::engine::GraphicalApplication::appInitialize();
+
+    pushBackLayer(std::make_unique<ExampleLayer>());
+    pushBackLayer(std::make_unique<rex::engine::ImGUILayer>());
+}
 
 //-------------------------------------------------------------------------
 rex::CoreApplication* rex::createApplication()

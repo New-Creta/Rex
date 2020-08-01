@@ -14,5 +14,8 @@ namespace sandbox
     public:
         Application();
         ~Application() override;
+
+    protected:
+        void appInitialize() override;
     };
 }
