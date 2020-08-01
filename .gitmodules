@@ -5,6 +5,8 @@
 [submodule "src/extern/glew"]
 	path = src/extern/glew
 	url = https://github.com/Dyronix/glew.git
+	branch = rex_glew
 [submodule "src/extern/imgui"]
 	path = src/extern/imgui
 	url = https://github.com/Dyronix/imgui.git
+	branch = rex_imgui
