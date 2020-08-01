@@ -2,27 +2,32 @@
 
 #include "rex_platform_global.h"
 
-#include "core/glcontext.h"
+#include "core/context.h"
 
 namespace rex
 {
     namespace win32
     {
-        class Context : public gl::Context
+        class Context : public graphics::Context
         {
         public:
-            REX_PLATFORM_EXPORT Context(const gl::DriverData& data);
-            REX_PLATFORM_EXPORT ~Context() override;
+            Context(HWND hwnd);
+            ~Context() final;
 
-        protected:
-            REX_PLATFORM_EXPORT void* createLegacyContext() override;
-            REX_PLATFORM_EXPORT void* createModernContext() override;
-
-            REX_PLATFORM_EXPORT void makeCurrent(void* context) override;
-            REX_PLATFORM_EXPORT void deleteContext(void* context) override;
+            REX_PLATFORM_EXPORT static std::unique_ptr<Context> create(void* handle);
+            REX_PLATFORM_EXPORT static void destroy(Context* context);
+            
+            REX_PLATFORM_EXPORT static void makeCurrent(Context* context);
 
         private:
-            void* initializeTemporaryContext();
+            bool create() override;
+            bool destroy() override;
+
+            void setAsCurrent() override;
+
+            HWND m_hwnd;
+            HDC m_hdc;
+            HGLRC m_context;
         };
     }
 }
