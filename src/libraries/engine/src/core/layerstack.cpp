@@ -11,11 +11,13 @@ rex::engine::LayerStack::~LayerStack() = default;
 //-------------------------------------------------------------------------
 void rex::engine::LayerStack::pushBack(std::unique_ptr<Layer> layer)
 {
+    layer->onAttach();
     m_layers.push_back(std::move(layer));
 }
 //-------------------------------------------------------------------------
 void rex::engine::LayerStack::pushFront(std::unique_ptr<Layer> layer)
 {
+    layer->onAttach();
     m_layers.insert(std::cbegin(m_layers), std::move(layer));
 }
 //-------------------------------------------------------------------------
@@ -27,25 +29,38 @@ void rex::engine::LayerStack::insert(std::unique_ptr<Layer> layer, int index)
 
     std::advance(where, index);
     m_layers.insert(where, std::move(layer));
+    layer->onAttach();
 }
 
 //-------------------------------------------------------------------------
-void rex::engine::LayerStack::removeLayer(const std::string& layer)
+void rex::engine::LayerStack::removeLayer(const std::string & layer)
 {
-    m_layers.erase(std::remove_if(std::begin(m_layers), std::end(m_layers),
-        [&layer](const std::unique_ptr<Layer>& l)
+    auto it = std::find_if(std::cbegin(m_layers), std::cend(m_layers),
+        [&layername = layer](const std::unique_ptr<Layer>& layer)
         {
-            return layer == l->getName();
-        }), m_layers.end());
+            return layername == layer->getName();
+        });
+
+    if (it == std::cend(m_layers))
+        return;
+
+    (*it)->onDetach();
+    m_layers.erase(it);
 }
 //-------------------------------------------------------------------------
-void rex::engine::LayerStack::removeLayer(Layer* layer)
+void rex::engine::LayerStack::removeLayer(Layer * layer)
 {
-    m_layers.erase(std::remove_if(std::begin(m_layers), std::end(m_layers),
-        [&layer](const std::unique_ptr<Layer>& l)
+    auto it = std::find_if(std::cbegin(m_layers), std::cend(m_layers),
+        [layer](const std::unique_ptr<Layer>& l)
         {
             return layer == l.get();
-        }), m_layers.end());
+        });
+
+    if (it == std::cend(m_layers))
+        return;
+
+    (*it)->onDetach();
+    m_layers.erase(it);
 }
 
 //-------------------------------------------------------------------------
