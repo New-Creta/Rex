@@ -20,6 +20,24 @@
 namespace
 {
     float FRAMERATE = 1.0f / 60.0f;
+
+    //-------------------------------------------------------------------------
+    int convertToImGuiKeyCode(rex::MouseCode code)
+    {
+        // A mouse button identifier inside ImGui look like this (0 = left, 1 = right, 2 = middle)
+
+        switch (code)
+        {
+        case rex::MouseCode::LEFT:      return 0;
+        case rex::MouseCode::RIGHT:     return 1;
+        case rex::MouseCode::MIDDLE:    return 2;
+        case rex::MouseCode::X1:        return 0;   // we will treat this as a left click for now
+        case rex::MouseCode::X2:        return 0;   // we will treat this as a left click for now
+        }
+
+        RX_ERROR("Invalid mouse code given.");
+        return -1;
+    }
 }
 
 //-------------------------------------------------------------------------
@@ -104,16 +122,20 @@ void rex::engine::ImGUILayer::onEvent(events::Event& event)
 //-------------------------------------------------------------------------
 bool rex::engine::ImGUILayer::onMouseButtonPressedEvent(events::MouseDown& e)
 {
+    rex::MouseCode code = e.getButton();
+
     ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[(int)e.getButton()] = true;
+    io.MouseDown[convertToImGuiKeyCode(code)] = true;
 
     return false;
 }
 //-------------------------------------------------------------------------
 bool rex::engine::ImGUILayer::onMouseButtonReleasedEvent(events::MouseUp& e)
 {
+    rex::MouseCode code = e.getButton();
+
     ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[(int)e.getButton()] = false;
+    io.MouseDown[convertToImGuiKeyCode(code)] = false;
 
     return false;
 }
