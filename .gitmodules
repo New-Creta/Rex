@@ -10,3 +10,6 @@
 	path = src/extern/imgui
 	url = https://github.com/Dyronix/imgui.git
 	branch = rex_imgui
+[submodule "src/extern/glm"]
+	path = src/extern/glm
+	url = https://github.com/Dyronix/glm.git
