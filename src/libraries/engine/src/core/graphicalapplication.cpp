@@ -46,10 +46,6 @@ void rex::engine::GraphicalApplication::onEvent(events::Event & event)
     {
         (*it)->onEvent(event);
     }
-
-    events::EventDispatcher dispatcher(event);
-
-    dispatcher.dispatch<events::KeyDown>(std::bind(&rex::engine::GraphicalApplication::escapeButtonPressed, this, std::placeholders::_1));
 }
 
 //-------------------------------------------------------------------------
@@ -104,18 +100,6 @@ void rex::engine::GraphicalApplication::appQuit()
     m_window->hide();
 
     ApplicationContext::destroy(m_context.get());
-}
-
-//-------------------------------------------------------------------------
-bool rex::engine::GraphicalApplication::escapeButtonPressed(events::KeyDown & keyEvent)
-{
-    if (keyEvent.getKeyCode() == KeyCode::ESCAPE)
-    {
-        quit();
-        return true;
-    }
-
-    return false;
 }
 
 //-------------------------------------------------------------------------

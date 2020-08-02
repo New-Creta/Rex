@@ -36,8 +36,6 @@ namespace rex
             REX_ENGINE_EXPORT void appQuit() override;
 
         private:
-            bool escapeButtonPressed(events::KeyDown& keyEvent);
-
             std::unique_ptr<ApplicationWindow> createWindow();
             std::unique_ptr<ApplicationContext> createContext();
 
