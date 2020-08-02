@@ -3,8 +3,6 @@
 
 #include "api/opengl/win32glcontext.h"
 
-#ifdef _OPENGL
-
 namespace
 {
     //-------------------------------------------------------------------------
@@ -113,5 +111,3 @@ void rex::win32::Context::setAsCurrent()
         return;
     }
 }
-
-#endif

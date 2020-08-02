@@ -1,5 +1,3 @@
-#ifdef _OPENGL
-
 #include "rex_platform_global.h"
 
 #include "core/context.h"
@@ -31,5 +29,3 @@ namespace rex
         };
     }
 }
-
-#endif
