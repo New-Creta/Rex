@@ -58,6 +58,8 @@ void rex::engine::GraphicalApplication::appInitialize()
     m_window = createWindow();
     m_context = createContext();
 
+    Input::createInstance();
+
 #ifdef _OPENGL
     ApplicationContext::makeCurrent(m_context.get());
 
@@ -97,6 +99,8 @@ void rex::engine::GraphicalApplication::appUpdate(float dTime)
 //-------------------------------------------------------------------------
 void rex::engine::GraphicalApplication::appQuit()
 {
+    Input::destroyInstance();
+
     m_window->hide();
 
     ApplicationContext::destroy(m_context.get());
