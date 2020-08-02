@@ -17,7 +17,7 @@ namespace rex
             {
                 NONE = 0,
                 WINDOW_CLOSED, WINDOW_RESIZE, WINDOW_ACTIVATED, WINDOW_DEACTIVATED, WINDOW_OPEN,
-                KEY_PRESSED, KEY_RELEASED,
+                KEY_PRESSED, KEY_RELEASED, KEY_TYPED,
                 MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED, MOUSE_MOVED, MOUSE_SCROLLED
             };
 
