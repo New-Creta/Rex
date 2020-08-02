@@ -16,6 +16,25 @@ SET(SPDLOG_LIBRARY_NAME spdlog)
 SET(SPDLOG_INTERFACE_NAME ${SPDLOG_LIBRARY_NAME}_interface)
 
 # --------------------------------
+# Setup glm path
+# --------------------------------
+set(GLM_FOLDER "glm")
+
+set(CURRENT_GLM_PATH ${CMAKE_CURRENT_LIST_DIR}/${GLM_FOLDER})
+
+IF(NOT EXISTS ${CURRENT_GLM_PATH} OR NOT IS_DIRECTORY "${CURRENT_GLM_PATH}")
+    file(MAKE_DIRECTORY ${CURRENT_GLM_PATH})
+    message(FATAL_ERROR "Directory, ${CURRENT_GLM_PATH} does not exist, directory was generated but configuration will be stopped.")
+ENDIF()
+
+SET(GLM_INCLUDE_DIRECTORY ${CURRENT_GLM_PATH})
+
+SET(GLM_LIBRARY_NAME glm)
+SET(GLM_INTERFACE_NAME ${GLM_LIBRARY_NAME}_interface)
+
+SET(BUILD_STATIC_LIBS TRUE)
+
+# --------------------------------
 # Setup glew path
 # --------------------------------
 if(${REX_API_TARGET} STREQUAL ${OPENGL})
@@ -66,6 +85,12 @@ if(${REX_API_TARGET} STREQUAL ${OPENGL})
 	else()
 		message(WARNING "Could not find \"${GLEW_FOLDER}\"")
 	endif()
+endif()
+# -----GLM------------------------
+if(EXISTS "${PROJECT_SOURCE_DIR}/src/extern/${GLM_FOLDER}")
+	add_subdirectory(${GLM_FOLDER})
+else()
+	message(WARNING "Could not find \"${GLM_FOLDER}\"")
 endif()
 # -----IMGUI----------------------
 if(EXISTS "${PROJECT_SOURCE_DIR}/src/extern/${IMGUI_FOLDER}")
