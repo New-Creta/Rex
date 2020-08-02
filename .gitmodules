@@ -13,3 +13,4 @@
 [submodule "src/extern/glm"]
 	path = src/extern/glm
 	url = https://github.com/Dyronix/glm.git
+	branch = rex_glm
