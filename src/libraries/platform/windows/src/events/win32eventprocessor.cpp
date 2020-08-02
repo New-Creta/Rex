@@ -2,8 +2,8 @@
 
 // input events
 #include "events/input/win32keydown.h"
-#include "events/input/win32noncharacterdown.h"
 #include "events/input/win32keyup.h"
+#include "events/input/win32keytyped.h"
 #include "events/input/win32mousemove.h"
 #include "events/input/win32mousedown.h"
 #include "events/input/win32mouseup.h"
@@ -16,83 +16,6 @@
 #include "events/window/windowclose.h"
 
 #include "events/window/win32windowresize.h"
-
-namespace
-{
-	//-------------------------------------------------------------------------
-	bool is_non_character_key(WPARAM param)
-	{
-		switch (param)
-		{
-		case NULL:
-
-			// Control keys
-		case VK_CLEAR:
-		case VK_MENU:
-		case VK_PAUSE:
-		case VK_CAPITAL:
-		case VK_SHIFT:
-		case VK_CONTROL:
-		case VK_ESCAPE:
-		case VK_PRIOR:
-		case VK_NEXT:
-		case VK_END:
-		case VK_HOME:
-
-			// Arrow keys
-		case VK_LEFT:
-		case VK_UP:
-		case VK_RIGHT:
-		case VK_DOWN:
-
-			// Extended keys
-		case VK_SELECT:
-		case VK_PRINT:
-		case VK_SNAPSHOT:
-		case VK_INSERT:
-		case VK_DELETE:
-		case VK_HELP:
-		case VK_SLEEP:
-
-			// Function keys
-		case VK_F1:
-		case VK_F2:
-		case VK_F3:
-		case VK_F4:
-		case VK_F5:
-		case VK_F6:
-		case VK_F7:
-		case VK_F8:
-		case VK_F9:
-		case VK_F10:
-		case VK_F11:
-		case VK_F12:
-		case VK_F13:
-		case VK_F14:
-		case VK_F15:
-		case VK_F16:
-		case VK_F17:
-		case VK_F18:
-		case VK_F19:
-		case VK_F20:
-		case VK_F21:
-		case VK_F22:
-		case VK_F23:
-		case VK_F24:
-		case VK_NUMLOCK:
-		case VK_SCROLL:
-		case VK_LSHIFT:
-		case VK_RSHIFT:
-		case VK_LCONTROL:
-		case VK_RCONTROL:
-		case VK_LWIN:
-		case VK_RWIN:
-		case VK_APPS:
-			return true;
-		}
-		return false;
-	}
-}
 
 //-------------------------------------------------------------------------
 rex::win32::EventProcessor::EventProcessor(rex::Window* window, EventCallbackFn callback)
@@ -149,17 +72,9 @@ LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::Mes
 	case WM_RBUTTONDBLCLK:  m_callback(MouseDown(m_window, MouseCode::RIGHT, IsDoubleClick::YES, parameters));		return 0;
 
 		// Key events
-	case WM_KEYDOWN:
-		if (is_non_character_key(parameters.wparam))
-		{
-							m_callback(NonCharacterKeyDown(m_window, parameters));									return 0;
-		}
-		else
-		{
-							m_callback(KeyDown(m_window, parameters));												return 0;
-		}
+	case WM_KEYDOWN:		m_callback(KeyDown(m_window, parameters));												return 0;
 
-	//case WM_CHAR:           m_callback(KeyDown(m_window, parameters));											return 0;
+	case WM_CHAR:           m_callback(KeyTyped(m_window, parameters));												return 0;
 	case WM_KEYUP:          m_callback(KeyUp(m_window, parameters));												return 0;
 
 		//
