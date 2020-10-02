@@ -92,6 +92,9 @@ add_definitions(-D${CMAKE_GENERATOR_PLATFORM}) 	 # architecture definition
 add_definitions(-D_${UPPER_BUILD_TARGET})      	 # build target definition
 add_definitions(-D_${UPPER_API_TARGET})        	 # api target definition
 
+STRING(TOUPPER ${CORE_LIBRARY_NAME} UPPER_LIB_NAME)
+add_definitions(-D${UPPER_LIB_NAME}_LIB)         # library symbol
+
 target_compile_options(${LIB_NAME} PRIVATE /W4 /WX /Zi /GF /MP)
 
 endmacro(SETUP_LIBRARY)
