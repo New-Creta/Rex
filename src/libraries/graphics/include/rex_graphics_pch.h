@@ -23,6 +23,8 @@
 	#include <Windows.h>
 #endif
 
-#include <GL/glew.h>
-#include <GL/GL.h>
-#include <GL/GLU.h>
+#ifdef _OPENGL
+	#include <GL/glew.h>
+	#include <GL/GL.h>
+	#include <GL/GLU.h>
+#endif
