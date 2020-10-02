@@ -78,6 +78,23 @@ rex::win32::Context::~Context()
 }
 
 //-------------------------------------------------------------------------
+void rex::win32::Context::resize(int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+//-------------------------------------------------------------------------
+void rex::win32::Context::clear()
+{
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+//-------------------------------------------------------------------------
+void rex::win32::Context::swapBuffers()
+{
+    SwapBuffers(m_hdc);
+}
+
+//-------------------------------------------------------------------------
 bool rex::win32::Context::create()
 {
     /* Create the GL 3.x context */
