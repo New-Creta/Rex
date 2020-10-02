@@ -24,7 +24,7 @@ namespace rex
             void enableEventProcessing();
             void disableEventProcessing();
 
-            LRESULT process(HWND hwnd, UINT msg, rex::win32::MessageParameters parameters);
+            LRESULT process(HWND hwnd, rex::win32::MessageParameters parameters);
 
         private:
             Window* m_window;

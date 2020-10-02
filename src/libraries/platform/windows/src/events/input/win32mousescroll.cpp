@@ -7,8 +7,9 @@
 #include "events/win32iohelper.h"
 
 //-------------------------------------------------------------------------
-rex::win32::MouseScroll::MouseScroll(rex::Window* window, rex::win32::MessageParameters parameters)
-	: rex::events::MouseScroll(window, getMouseKeyMetaData(parameters.wparam), getScrollMetaData(parameters.wparam), getMousePositionFromScreen(window, parameters.lparam))
+rex::win32::MouseScroll::MouseScroll(rex::Window* window, rex::win32::MessageParameters params)
+	: rex::events::MouseScroll(window, getMouseKeyMetaData(params.wparam), getScrollMetaData(params.wparam), getMousePositionFromScreen(window, params.lparam))
+	, rex::win32::NativeEvent(params)
 {}
 
 //-------------------------------------------------------------------------

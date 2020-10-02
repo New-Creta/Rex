@@ -9,6 +9,8 @@ namespace rex
 {
     namespace events
     {
+        class NativeEvent;
+
         #define EVENT_CLASS_TYPE(type)          static EventType getStaticType() { return type; }                   \
 								                EventType getType() const override { return getStaticType(); }      \
 
@@ -19,14 +21,15 @@ namespace rex
         public:
             REX_CORE_EXPORT virtual ~Event();
 
-            REX_CORE_EXPORT void                    handle();
+            REX_CORE_EXPORT void                        handle();
 
-            REX_CORE_EXPORT virtual EventType       getType() const = 0;
-            REX_CORE_EXPORT virtual EventCategory   getCategory() const = 0;
-            REX_CORE_EXPORT virtual std::string     toString() const;
+            REX_CORE_EXPORT virtual EventType           getType() const = 0;
+            REX_CORE_EXPORT virtual EventCategory       getCategory() const = 0;
+            REX_CORE_EXPORT virtual const NativeEvent*  getNativeEvent() const = 0;
+            REX_CORE_EXPORT virtual std::string         toString() const;
             
-            REX_CORE_EXPORT bool                    isInCategory(EventCategory category) const;
-            REX_CORE_EXPORT bool                    isHandled() const;
+            REX_CORE_EXPORT bool                        isInCategory(EventCategory category) const;
+            REX_CORE_EXPORT bool                        isHandled() const;
 
         protected:
             REX_CORE_EXPORT Event();

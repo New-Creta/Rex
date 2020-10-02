@@ -6,6 +6,8 @@ namespace rex
 	{
 		struct MessageParameters
 		{
+			UINT   msg;
+
 			WPARAM wparam;
 			LPARAM lparam;
 		};

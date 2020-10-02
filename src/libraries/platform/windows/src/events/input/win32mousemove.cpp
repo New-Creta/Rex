@@ -7,4 +7,5 @@
 //-------------------------------------------------------------------------
 rex::win32::MouseMove::MouseMove(rex::Window* window, rex::win32::MessageParameters params)
 	: rex::events::MouseMove(window, rex::win32::getMouseKeyMetaData(params.wparam), rex::win32::getMousePositionFromClient(window, params.lparam))
+	, rex::win32::NativeEvent(params)
 {}

@@ -41,19 +41,32 @@ void rex::win32::EventProcessor::disableEventProcessing()
 #pragma warning( disable : 4239 )
 
 //-------------------------------------------------------------------------
-LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::MessageParameters parameters)
+LRESULT rex::win32::EventProcessor::process(HWND hwnd, rex::win32::MessageParameters parameters)
 {
 	if (!m_enabled)
 		return 0;
 
+	//
+	// The event message from windows
+	//
+	UINT msg = parameters.msg;
+
 	switch (msg)
 	{
+#ifdef _OPENGL
+    case WM_ERASEBKGND:
+        return 0;
+#endif
+
 	case WM_SYSCOMMAND:
 	{
+		// Disable ALT application menu
+        if ((parameters.wparam & 0xfff0) == SC_KEYMENU)																return 0;
+
 		switch (parameters.wparam)
 		{
-		case SC_SCREENSAVE:																																			return 0;
-		case SC_MONITORPOWER:																																		return 0;
+		case SC_SCREENSAVE:																							return 0;
+		case SC_MONITORPOWER:																						return 0;
 		}
 		break;
 	}
@@ -71,7 +84,7 @@ LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::Mes
 	case WM_RBUTTONUP:      m_callback(MouseUp(m_window, MouseCode::RIGHT, parameters));							return 0;
 	case WM_RBUTTONDBLCLK:  m_callback(MouseDown(m_window, MouseCode::RIGHT, IsDoubleClick::YES, parameters));		return 0;
 
-		// Key events
+	// Key events
 	case WM_KEYDOWN:		m_callback(KeyDown(m_window, parameters));												return 0;
 
 	case WM_CHAR:           m_callback(KeyTyped(m_window, parameters));												return 0;
@@ -80,7 +93,12 @@ LRESULT rex::win32::EventProcessor::process(HWND hwnd, UINT msg, rex::win32::Mes
 		//
 		// Window events
 		//
-	case WM_SIZE:			m_callback(WindowResize(m_window, parameters.lparam));									return 0;
+	case WM_SIZE:			        
+		if (parameters.wparam != SIZE_MINIMIZED)
+		{
+			m_callback(WindowResize(m_window, parameters));
+			return 0;
+		}
 
 	case WM_ACTIVATE:
 		if (parameters.wparam == WA_ACTIVE || parameters.wparam == WA_CLICKACTIVE)
