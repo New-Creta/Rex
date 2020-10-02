@@ -2,15 +2,16 @@
 
 #include "core/graphicalapplication.h"
 #include "core/layer.h"
+#include "core/imguilayer.h"
 
 #include "events/event.h"
-#include "events/input/keydown.h"
-
 #include "events/eventdispatcher.h"
+#include "events/window/windowclose.h"
 
 //-------------------------------------------------------------------------
 rex::engine::GraphicalApplication::GraphicalApplication()
     :m_window(nullptr)
+    ,m_context(nullptr)
 {}
 //-------------------------------------------------------------------------
 rex::engine::GraphicalApplication::~GraphicalApplication() = default;
@@ -24,6 +25,17 @@ rex::Window* rex::engine::GraphicalApplication::getWindow()
 const rex::Window* rex::engine::GraphicalApplication::getWindow() const
 {
     return m_window.get();
+}
+
+//-------------------------------------------------------------------------
+rex::Context* rex::engine::GraphicalApplication::getContext()
+{
+    return m_context.get();
+}
+//-------------------------------------------------------------------------
+const rex::Context* rex::engine::GraphicalApplication::getContext() const
+{
+    return m_context.get();
 }
 
 //-------------------------------------------------------------------------
@@ -46,6 +58,10 @@ void rex::engine::GraphicalApplication::onEvent(events::Event & event)
     {
         (*it)->onEvent(event);
     }
+
+    events::EventDispatcher dispatcher(event);
+
+    dispatcher.dispatch<events::WindowClose>(std::bind(&rex::engine::GraphicalApplication::onWindowClose, this, std::placeholders::_1));
 }
 
 //-------------------------------------------------------------------------
@@ -53,6 +69,8 @@ void rex::engine::GraphicalApplication::appInitialize()
 {
     m_window = createWindow();
     m_context = createContext();
+
+    pushBackLayer(createImGUILayer());
 
     Input::createInstance();
 
@@ -75,7 +93,8 @@ void rex::engine::GraphicalApplication::appUpdate(float dTime)
     unsigned int width = m_window->getWidth();
     unsigned int height = m_window->getHeight();
 
-    m_window->processEvents();
+    if (m_window->processEvents())  // Do not do anything when an event is handled.
+        return;
 
     ApplicationContext::makeCurrent(m_context.get());
 
@@ -90,6 +109,17 @@ void rex::engine::GraphicalApplication::appUpdate(float dTime)
         layer->onUpdate();
     }
 
+    for (const std::unique_ptr<Layer>& layer : m_layer_stack)
+    {
+        ImGUILayer* imgui_layer = dynamic_cast<ImGUILayer*>(layer.get());
+        if (imgui_layer == nullptr)
+            continue;
+
+        imgui_layer->onBeginRender();
+        imgui_layer->onRender();
+        imgui_layer->onEndRender();
+    }
+
     m_window->update();
 }
 //-------------------------------------------------------------------------
@@ -100,6 +130,17 @@ void rex::engine::GraphicalApplication::appQuit()
     m_window->hide();
 
     ApplicationContext::destroy(m_context.get());
+}
+
+//-------------------------------------------------------------------------
+bool rex::engine::GraphicalApplication::onWindowClose(events::WindowClose& e)
+{
+    UNUSED_PARAM(e);
+
+    // This will terminate the application
+    markForDestroy();
+
+    return true;
 }
 
 //-------------------------------------------------------------------------
@@ -125,5 +166,10 @@ std::unique_ptr<rex::engine::ApplicationWindow> rex::engine::GraphicalApplicatio
 //-------------------------------------------------------------------------
 std::unique_ptr<rex::engine::ApplicationContext> rex::engine::GraphicalApplication::createContext()
 {
-    return ApplicationContext::create(m_window->getHandle());
+    return ApplicationContext::create(m_window->getNativeWindow());
+}
+//-------------------------------------------------------------------------
+std::unique_ptr<rex::engine::ImGUILayer> rex::engine::GraphicalApplication::createImGUILayer()
+{
+    return std::make_unique<ImGUILayer>();
 }
