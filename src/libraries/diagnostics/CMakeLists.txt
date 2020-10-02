@@ -41,7 +41,7 @@ STRING(TOUPPER ${DIAGNOSTICS_LIBRARY_NAME} UPPER_LIB_NAME)
 
 set_target_properties( ${DIAGNOSTICS_LIBRARY_NAME} PROPERTIES   VS_DEBUGGER_WORKING_DIRECTORY    "${OUTPUT_BINDIR}"             # Working directory
                                                             	FOLDER                           "1. Core Libraries"            # Project filter location
-                                                            	DEFINE_SYMBOL                    "${UPPER_LIB_NAME}_LIB" )      # Default library symbol can be empty ( already set )
+                                                            	DEFINE_SYMBOL                    "" )                           # Library symbol
 
 # --------------------------
 # Target include directories.

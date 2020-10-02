@@ -29,11 +29,9 @@ SETUP_LIBRARY(${CORE_LIBRARY_NAME})
 # --------------------------
 # Target properties
 # --------------------------
-STRING(TOUPPER ${CORE_LIBRARY_NAME} UPPER_LIB_NAME)
-
 set_target_properties( ${CORE_LIBRARY_NAME} PROPERTIES      VS_DEBUGGER_WORKING_DIRECTORY    "${OUTPUT_BINDIR}"             # Working directory
                                                             FOLDER                           "1. Core Libraries"            # Project filter location
-                                                            DEFINE_SYMBOL                    "${UPPER_LIB_NAME}_LIB" )      # Library symbol
+                                                            DEFINE_SYMBOL                    "" )                           # Library symbol
 
 # --------------------------
 # Target include directories.

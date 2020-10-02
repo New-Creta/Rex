@@ -41,7 +41,7 @@ STRING(TOUPPER ${GRAPHICS_LIBRARY_NAME} UPPER_LIB_NAME)
 
 set_target_properties( ${GRAPHICS_LIBRARY_NAME} PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY    "${OUTPUT_BINDIR}"             # Working directory
                                                             FOLDER                           "2. Platform Libraries"        # Project filter location
-                                                            DEFINE_SYMBOL                    "${UPPER_LIB_NAME}_LIB" )      # Library symbol
+                                                            DEFINE_SYMBOL                    "" )                           # Library symbol
 
 # --------------------------
 # Target include directories.

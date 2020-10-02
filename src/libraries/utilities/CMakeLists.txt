@@ -38,6 +38,6 @@ add_custom_target(${UTILITIES_LIBRARY_NAME} SOURCES ${TARGET_INC} ${TARGET_RC})
 
 set_target_properties( ${UTILITIES_LIBRARY_NAME} PROPERTIES      VS_DEBUGGER_WORKING_DIRECTORY  "${OUTPUT_BINDIR}"             # Working directory
                                                                  FOLDER                         "1. Core Libraries"            # Project filter location
-                                                                 DEFINE_SYMBOL                  "${UPPER_LIB_NAME}_LIB" )      # Default library symbol can be empty ( already set )
+                                                                DEFINE_SYMBOL                    "" )                           # Library symbol
 
 message(CHECK_PASS "Done")
