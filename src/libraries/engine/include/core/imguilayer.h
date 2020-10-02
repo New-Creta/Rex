@@ -31,20 +31,17 @@ namespace rex
             REX_ENGINE_EXPORT void onAttach() override;
             REX_ENGINE_EXPORT void onDetach() override;
 
-            REX_ENGINE_EXPORT void onUpdate() override;
             REX_ENGINE_EXPORT void onEvent(events::Event& event) override;
+            
+            REX_ENGINE_EXPORT virtual void onBeginRender();
+            REX_ENGINE_EXPORT virtual void onRender();
+            REX_ENGINE_EXPORT virtual void onEndRender();
 
         private:
-            bool onMouseButtonPressedEvent(events::MouseDown& e);
-            bool onMouseButtonReleasedEvent(events::MouseUp& e);
-            bool onMouseMovedEvent(events::MouseMove& e);
-            bool onMouseScrolledEvent(events::MouseScroll& e);
-            bool onKeyPressedEvent(events::KeyDown& e);
-            bool onKeyReleasedEvent(events::KeyUp& e);
-            bool onKeyTypedEvent(events::KeyTyped& e);
-            bool onWindowResizedEvent(events::WindowResize& e);
+            bool onProcessImGuiEvent(events::Event& event);
 
             ApplicationWindow* m_window;
+            ApplicationContext* m_context;
 
             bool m_imgui_context_created;
         };
