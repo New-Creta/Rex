@@ -14,6 +14,13 @@ namespace rex
         class KeyDown;
     }
 
+    namespace graphics
+    {
+        class Shader;
+        class VertexBuffer;
+        class IndexBuffer;
+    }
+
     namespace engine
     {
         class GraphicalApplication : public BaseApplication
@@ -43,6 +50,14 @@ namespace rex
             std::unique_ptr<ApplicationContext> m_context;
 
             LayerStack m_layer_stack;
+
+#ifdef _OPENGL
+            unsigned int m_vertex_array;
+
+            std::unique_ptr<graphics::Shader> m_shader;
+            std::unique_ptr<graphics::VertexBuffer> m_vertex_buffer;
+            std::unique_ptr<graphics::IndexBuffer> m_index_buffer;
+#endif
         };
     }
 }
