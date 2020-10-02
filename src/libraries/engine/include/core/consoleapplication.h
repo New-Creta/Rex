@@ -14,6 +14,8 @@ namespace rex
 
             rex::Window* getWindow() override;
             const rex::Window* getWindow() const override;
+            rex::Context* getContext() override;
+            const rex::Context* getContext() const override;
 
         protected:
             REX_ENGINE_EXPORT void appInitialize() override;
