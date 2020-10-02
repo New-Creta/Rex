@@ -7,6 +7,7 @@
 namespace rex
 {
     class Window;
+    class Context;
 
     namespace win32
     {
@@ -18,6 +19,8 @@ namespace rex
 
             virtual rex::Window* getWindow() = 0;
             virtual const rex::Window* getWindow() const = 0;
+            virtual rex::Context* getContext() = 0;
+            virtual const rex::Context* getContext() const = 0;
 
         protected:
             virtual void appInitialize() = 0;
