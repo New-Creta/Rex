@@ -35,7 +35,6 @@ void sandbox::Application::appInitialize()
     rex::engine::GraphicalApplication::appInitialize();
 
     pushBackLayer(std::make_unique<ExampleLayer>());
-    pushBackLayer(std::make_unique<rex::engine::ImGUILayer>());
 }
 
 //-------------------------------------------------------------------------

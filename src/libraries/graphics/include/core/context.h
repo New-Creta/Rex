@@ -2,19 +2,18 @@
 
 namespace rex
 {
-    namespace graphics
+    class Context
     {
-        class Context
-        {
-        public:
-            Context() = default;
-            virtual ~Context() = default;
+    public:
+        Context() = default;
+        virtual ~Context() = default;
 
-        protected:
-            virtual bool create() = 0;
-            virtual bool destroy() = 0;
-             
-            virtual void setAsCurrent() = 0;
-        };
-    }
+        virtual void* getNativeContext() const = 0;
+
+    protected:
+        virtual bool create() = 0;
+        virtual bool destroy() = 0;
+
+        virtual void setAsCurrent() = 0;
+    };
 }
