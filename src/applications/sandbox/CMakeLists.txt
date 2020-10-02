@@ -31,14 +31,19 @@ set_target_properties(${APPLICATION_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTO
 # --------------------------
 # Target include directories.
 # --------------------------
-target_include_directories(${APPLICATION_NAME} PRIVATE     
+target_include_directories(${APPLICATION_NAME} PUBLIC     
                                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                                                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${APPLICATION_NAME}>)
 
 # --------------------------
 # Target link libraries
 # --------------------------
-target_link_libraries(${APPLICATION_NAME} PRIVATE rex_engine)
+target_link_libraries(${APPLICATION_NAME} PUBLIC rex_engine)
+
+# --------------------------
+# Rendering API
+# --------------------------
+SETUP_RENDERINGAPI(${APPLICATION_NAME})
 
 # --------------------------
 # Install.

@@ -19,7 +19,7 @@ endif()
 # Compiler flag /MD
 SETUP_MULTITHREADING_MD()
 
-ADD_LIBRARY(${CORE_LIBRARY_NAME} SHARED
+ADD_LIBRARY(${CORE_LIBRARY_NAME} STATIC
             ${TARGET_INC}
             ${TARGET_RC}
             ${TARGET_SRC}) 

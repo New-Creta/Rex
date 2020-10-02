@@ -9,14 +9,14 @@ SET(TARGET_SRC)
 file(GLOB TARGET_GLOBAL_INC             "${PLATFORM_INCLUDE_DIRECTORY}/*.h")
 file(GLOB TARGET_CORE_INC               "${PLATFORM_INCLUDE_DIRECTORY}/core/*.h")
 file(GLOB_RECURSE TARGET_EVENTS_INC     "${PLATFORM_INCLUDE_DIRECTORY}/events/*.h")
-file(GLOB TARGET_API_INC                "${PLATFORM_INCLUDE_DIRECTORY}/api/${LOWER_API_TARGET}/*.h")
+file(GLOB_RECURSE TARGET_API_INC        "${PLATFORM_INCLUDE_DIRECTORY}/api/${LOWER_API_TARGET}/*.h")
 
 file(GLOB TARGET_RC                     "${PLATFORM_RESOURCES_DIRECTORY}/platform.manifest" "${PLATFORM_RESOURCES_DIRECTORY}/Platform.rc" "${PLATFORM_RESOURCES_DIRECTORY}/resource.h")
 
 file(GLOB TARGET_GLOBAL_SRC             "${PLATFORM_SOURCE_DIRECTORY}/*.cpp")
 file(GLOB TARGET_CORE_SRC               "${PLATFORM_SOURCE_DIRECTORY}/core/*.cpp")
 file(GLOB_RECURSE TARGET_EVENTS_SRC     "${PLATFORM_SOURCE_DIRECTORY}/events/*.cpp")
-file(GLOB TARGET_API_SRC                "${PLATFORM_SOURCE_DIRECTORY}/api/${LOWER_API_TARGET}/*.cpp")
+file(GLOB_RECURSE TARGET_API_SRC        "${PLATFORM_SOURCE_DIRECTORY}/api/${LOWER_API_TARGET}/*.cpp")
 
 LIST(APPEND TARGET_INC ${TARGET_GLOBAL_INC} ${TARGET_CORE_INC} ${TARGET_EVENTS_INC} ${TARGET_API_INC})
 LIST(APPEND TARGET_SRC ${TARGET_GLOBAL_SRC} ${TARGET_CORE_SRC} ${TARGET_EVENTS_SRC} ${TARGET_API_SRC})
@@ -33,7 +33,7 @@ endif()
 # Compiler flag /MD
 SETUP_MULTITHREADING_MD()
 
-ADD_LIBRARY(${PLATFORM_LIBRARY_NAME} SHARED
+ADD_LIBRARY(${PLATFORM_LIBRARY_NAME} STATIC
             ${TARGET_INC}
             ${TARGET_RC}
             ${TARGET_SRC}) 
@@ -55,7 +55,7 @@ STRING(TOUPPER ${PLATFORM_LIBRARY_NAME} UPPER_LIB_NAME)
 
 set_target_properties( ${PLATFORM_LIBRARY_NAME} PROPERTIES  VS_DEBUGGER_WORKING_DIRECTORY    "${OUTPUT_BINDIR}"             # Working directory
                                                             FOLDER                           "2. Platform Libraries"        # Project filter location
-                                                            DEFINE_SYMBOL                    "${UPPER_LIB_NAME}_LIB" )      # Library symbol
+                                                            DEFINE_SYMBOL                    "" )                           # Library symbol
 
 # --------------------------
 # Target include directories.
@@ -70,7 +70,7 @@ target_include_directories(${PLATFORM_LIBRARY_NAME} PUBLIC ${GRAPHICS_INCLUDE_DI
 # Target link libraries.
 # --------------------------
 target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC ${CORE_LIBRARY_NAME})
-#target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC ${GRAPHICS_LIBRARY_NAME})    There is nothing to link towards yet ...
+target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC ${GRAPHICS_LIBRARY_NAME})
 target_link_libraries(${PLATFORM_LIBRARY_NAME} PUBLIC imgui)
 
 # --------------------------
