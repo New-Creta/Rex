@@ -115,6 +115,8 @@ void rex::engine::GraphicalApplication::appUpdate(float dTime)
 
     ApplicationContext::makeCurrent(m_context.get());
 
+    Input::instance()->poll();
+
     m_context->resize(width, height);
 
     for (const std::unique_ptr<Layer>& layer : m_layer_stack)
