@@ -19,6 +19,8 @@
 #include "helpers/defines.h"
 #include "helpers/types.h"
 
+#include <glm/glm.hpp>
+
 #ifdef _WINDOWS
 	#include <Windows.h>
 #endif
