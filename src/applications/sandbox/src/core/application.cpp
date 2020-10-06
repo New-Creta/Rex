@@ -190,6 +190,10 @@ public:
     bool onKeyPressed(rex::engine::KeyDown& keyEvent)
     {
         // TODO: implement key events here
+
+        UNUSED_PARAM(keyEvent);
+
+        return false;
     }
 
 private:
