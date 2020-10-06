@@ -14,7 +14,6 @@ rex::CoreApplication* rex::CoreApplication::s_application_instance = nullptr;
 rex::CoreApplication::CoreApplication()
     :m_running(true)
 {
-    RX_INITIALIZE_LOGGER();
     RX_INFO("Creating application");
 
     RX_ASSERT_X(s_application_instance == nullptr, "There can only be one application at the time");
@@ -28,7 +27,6 @@ rex::CoreApplication::~CoreApplication()
     s_application_instance = nullptr;
 
     RX_INFO("Destroying application");
-    RX_SHUTDOWN_LOGGER();
 }
 
 //-------------------------------------------------------------------------
