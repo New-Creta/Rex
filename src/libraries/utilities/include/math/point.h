@@ -1,18 +1,24 @@
 #pragma once
 
-
-
 namespace rex
 {
-    struct Point
+    template<typename T>
+    struct BasePoint
     {
         //-------------------------------------------------------------------------
-        Point(int32 xPos = 0, int32 yPos = 0)
+        BasePoint(T xPos = 0, T yPos = 0)
             :x(xPos)
-            ,y(yPos)
+            , y(yPos)
         {}
 
-        int32 x;
-        int32 y;
+        T x;
+        T y;
     };
+
+    struct Point32 : public BasePoint<int32>
+    {};
+    struct Point64 : public BasePoint<int64>
+    {};
+
+    using Point = Point32;
 }

@@ -9,7 +9,12 @@ namespace
 	//-------------------------------------------------------------------------
 	rex::Point getPosition(LPARAM param)
 	{
-		return { (uint32)GET_X_LPARAM(param), (uint32)GET_Y_LPARAM(param) };
+		rex::Point point;
+
+		point.x = (int32)GET_X_LPARAM(param);
+		point.y = (int32)GET_Y_LPARAM(param);
+
+		return point;
 	}
 	//-------------------------------------------------------------------------
 	int32 getWheelDelta(WPARAM param)
