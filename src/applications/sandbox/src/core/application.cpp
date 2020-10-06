@@ -3,6 +3,7 @@
 #include "core/application.h"
 #include "core/layer.h"
 #include "core/imguilayer.h"
+#include "core/keycodes.h"
 
 #include "core/vertexarray.h"
 #include "core/bufferlayout.h"
@@ -146,6 +147,8 @@ namespace
 				color = vec4(0.2, 0.3, 0.8, 1.0);
 			}
         )";
+
+    const float FRAME_RATE = 1.0f / 60.0f;
 }
 
 class ExampleLayer : public rex::engine::Layer 
@@ -159,7 +162,14 @@ public:
         , m_triangle(nullptr)
         , m_quad(nullptr)
         , m_camera(-1.6f, 1.6f, -0.9f, 0.9f)
-    {}
+        , m_camera_position(0.0f, 0.0f, 0.0f)
+        , m_camera_rotation(0.0f)
+        , m_camera_speed(5.0f)
+        , m_camera_rotation_speed(5.0f)
+    {
+        m_camera.setPosition(m_camera_position);
+        m_camera.setRotation(m_camera_rotation);
+    }
 
     //-------------------------------------------------------------------------
     void onAttach() override
@@ -174,6 +184,36 @@ public:
     //-------------------------------------------------------------------------
     void onUpdate() override
     {
+        if(rex::engine::Input::instance()->isKeyDown(rex::KeyCode::LEFT))
+        {
+            m_camera_position.x -= m_camera_speed * FRAME_RATE;
+        }
+        else if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::RIGHT))
+        {
+            m_camera_position.x += m_camera_speed * FRAME_RATE;
+        }
+        
+        if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::DOWN))
+        {
+            m_camera_position.y -= m_camera_speed * FRAME_RATE;
+        }
+        else if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::UP))
+        {
+            m_camera_position.y += m_camera_speed * FRAME_RATE;
+        }
+
+        if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::KEY_Q))
+        {
+            m_camera_rotation -= m_camera_rotation_speed * FRAME_RATE;
+        }
+        else if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::KEY_W))
+        {
+            m_camera_rotation += m_camera_rotation_speed * FRAME_RATE;
+        }
+
+        m_camera.setPosition(m_camera_position);
+        m_camera.setRotation(m_camera_rotation);
+
         rex::graphics::Renderer::beginScene(m_camera);
         rex::graphics::Renderer::submit(m_quad.get());
         rex::graphics::Renderer::submit(m_triangle.get());
@@ -189,9 +229,10 @@ public:
     //-------------------------------------------------------------------------
     bool onKeyPressed(rex::engine::KeyDown& keyEvent)
     {
-        // TODO: implement key events here
-
-        UNUSED_PARAM(keyEvent);
+        switch (*keyEvent.getKey())
+        {
+        case RX_KEY_ESCAPE: rex::CoreApplication::getInstance()->quit(); break;
+        }
 
         return false;
     }
@@ -204,6 +245,12 @@ private:
 
     std::unique_ptr<rex::graphics::Mesh> m_triangle;
     std::unique_ptr<rex::graphics::Mesh> m_quad;
+
+    glm::vec3 m_camera_position;
+    float m_camera_rotation;
+
+    float m_camera_speed;
+    float m_camera_rotation_speed;
 };
 
 //-------------------------------------------------------------------------
