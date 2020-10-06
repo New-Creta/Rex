@@ -3,6 +3,7 @@
 #include "rex_engine_global.h"
 
 #include "core/layerstack.h"
+#include "core/orthographiccamera.h"
 
 #include "config/config.h"
 
@@ -17,6 +18,9 @@ namespace rex
     namespace graphics
     {
         class Shader;
+        class Mesh;
+
+        class VertexArray;
         class VertexBuffer;
         class IndexBuffer;
     }
@@ -38,9 +42,13 @@ namespace rex
             REX_ENGINE_EXPORT void onEvent(events::Event& event);
 
         protected:
-            REX_ENGINE_EXPORT void appInitialize() override;
-            REX_ENGINE_EXPORT void appUpdate(float dTime) override;
-            REX_ENGINE_EXPORT void appQuit() override;
+            REX_ENGINE_EXPORT void appInitialize() final;
+            REX_ENGINE_EXPORT void appUpdate(float dTime) final;
+            REX_ENGINE_EXPORT void appQuit() final;
+
+            virtual void onInitialize() {}
+            virtual void onUpdate(float dTime) { UNUSED_PARAM(dTime); }
+            virtual void onQuit() {}
 
         private:
             std::unique_ptr<ApplicationWindow> createWindow();
@@ -50,14 +58,6 @@ namespace rex
             std::unique_ptr<ApplicationContext> m_context;
 
             LayerStack m_layer_stack;
-
-#ifdef _OPENGL
-            unsigned int m_vertex_array;
-
-            std::unique_ptr<graphics::Shader> m_shader;
-            std::unique_ptr<graphics::VertexBuffer> m_vertex_buffer;
-            std::unique_ptr<graphics::IndexBuffer> m_index_buffer;
-#endif
         };
     }
 }
