@@ -14,8 +14,6 @@ namespace rex
     //-------------------------------------------------------------------------
     inline std::ostream& operator<<(std::ostream& os, MouseCode mouseCode)
     {
-        
-
         os << static_cast<uint16>(mouseCode);
         return os;
     }
