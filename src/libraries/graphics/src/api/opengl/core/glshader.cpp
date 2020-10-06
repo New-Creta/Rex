@@ -1,9 +1,16 @@
 #include "rex_graphics_pch.h"
+
 #include "api/opengl/core/glshader.h"
+
+#pragma warning( push )
+#pragma warning( disable : 4201 )
+#include <glm/gtc/type_ptr.hpp>
+#pragma warning( pop )
 
 //-------------------------------------------------------------------------
 rex::opengl::Shader::Shader(const std::string& vertexSource, const std::string& fragmentSource)
 	:m_shader_id(0)
+	,m_is_bound(false)
 {
 	// Read our shaders into the appropriate buffers
 	// Create an empty vertex shader handle
@@ -116,13 +123,31 @@ rex::opengl::Shader::~Shader()
 }
 
 //-------------------------------------------------------------------------
-void rex::opengl::Shader::bind() const
+void rex::opengl::Shader::bind()
 {
 	glUseProgram(m_shader_id);
+	m_is_bound = true;
 }
 
 //-------------------------------------------------------------------------
-void rex::opengl::Shader::unbind() const
+void rex::opengl::Shader::unbind()
 {
 	glUseProgram(0);
+	m_is_bound = false;
+}
+
+//-------------------------------------------------------------------------
+bool rex::opengl::Shader::isBound() const
+{
+	return m_is_bound;
+}
+	
+//-------------------------------------------------------------------------
+void rex::opengl::Shader::uploadMat4(const std::string& name, const glm::mat4& mat)
+{
+	if (!isBound())
+		return;
+
+	GLint location = glGetUniformLocation(m_shader_id, name.c_str());
+	glUniformMatrix4fv(location, 1, false, glm::value_ptr(mat));
 }

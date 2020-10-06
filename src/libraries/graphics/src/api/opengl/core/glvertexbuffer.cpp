@@ -3,6 +3,7 @@
 
 //-------------------------------------------------------------------------
 rex::opengl::VertexBuffer::VertexBuffer(float* vertices, uint32_t size)
+    :m_is_bound(false)
 {
     glCreateBuffers(1, &m_buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer_id);
@@ -16,15 +17,23 @@ rex::opengl::VertexBuffer::~VertexBuffer()
 }
 
 //-------------------------------------------------------------------------
-void rex::opengl::VertexBuffer::bind() const
+void rex::opengl::VertexBuffer::bind()
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_buffer_id);
+    m_is_bound = true;
 }
 
 //-------------------------------------------------------------------------
-void rex::opengl::VertexBuffer::unbind() const
+void rex::opengl::VertexBuffer::unbind()
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    m_is_bound = false;
+}
+
+//-------------------------------------------------------------------------
+bool rex::opengl::VertexBuffer::isBound() const
+{
+    return m_is_bound;
 }
 
 //-------------------------------------------------------------------------
