@@ -6,12 +6,12 @@
 #include "api/opengl/core/glindexbuffer.h"
 
 //-------------------------------------------------------------------------
-rex::graphics::IndexBuffer* rex::graphics::IndexBuffer::create(uint32_t* indices, uint32_t size)
+std::shared_ptr<rex::graphics::IndexBuffer> rex::graphics::IndexBuffer::create(uint32_t* indices, uint32_t size)
 {
     switch (rex::graphics::Renderer::getAPI())
     {
-    case RendererAPI::NONE:    RX_ASSERT_X(false, "RendererAPI::NONE is currently not supported!"); return nullptr;
-    case RendererAPI::OPENGL:  return new rex::opengl::IndexBuffer(indices, size);
+    case RendererAPI::Type::NONE:    RX_ASSERT_X(false, "RendererAPI::NONE is currently not supported!"); return nullptr;
+    case RendererAPI::Type::OPENGL:  return std::make_shared<rex::opengl::IndexBuffer>(indices, size);
     }
 
     RX_ASSERT_X(false, "Unknown RendererAPI!");
