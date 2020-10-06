@@ -16,6 +16,6 @@ namespace sandbox
         ~Application() override;
 
     protected:
-        void appInitialize() override;
+        void onInitialize() override;
     };
 }
