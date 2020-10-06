@@ -13,7 +13,6 @@ namespace rex
             ~Context() final;
 
             REX_PLATFORM_EXPORT void resize(int width, int height) override;
-            REX_PLATFORM_EXPORT void clear() override;
             REX_PLATFORM_EXPORT void swapBuffers() override;
 
             REX_PLATFORM_EXPORT static std::unique_ptr<Context> create(void* handle);
@@ -30,6 +29,8 @@ namespace rex
             HWND m_hwnd;
             HDC m_hdc;
             HGLRC m_context;
+
+            static bool s_glew_initialized;
         };
     }
 }

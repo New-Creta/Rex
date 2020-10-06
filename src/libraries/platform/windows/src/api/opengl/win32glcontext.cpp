@@ -35,6 +35,9 @@ namespace
 }
 
 //-------------------------------------------------------------------------
+bool rex::win32::Context::s_glew_initialized = false;
+
+//-------------------------------------------------------------------------
 std::unique_ptr<rex::win32::Context> rex::win32::Context::create(void* handle)
 {
     HWND hwnd = static_cast<HWND>(handle);
@@ -83,12 +86,6 @@ void rex::win32::Context::resize(int width, int height)
     glViewport(0, 0, width, height);
 }
 //-------------------------------------------------------------------------
-void rex::win32::Context::clear()
-{
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-}
-//-------------------------------------------------------------------------
 void rex::win32::Context::swapBuffers()
 {
     SwapBuffers(m_hdc);
@@ -116,15 +113,32 @@ bool rex::win32::Context::destroy()
         return false;
     }
 
+    s_glew_initialized = false;
+
     return true;
 }
 
 //-------------------------------------------------------------------------
 void rex::win32::Context::setAsCurrent()
 {
+    if (m_context == wglGetCurrentContext())
+        return;     // We do not need to swap context when we are already the active context
+
     if (wglMakeCurrent(m_hdc, m_context) == false)
     {
         RX_ERROR("Could not make the given context the current one");
         return;
+    }
+
+    if (!s_glew_initialized)
+    {
+        if (glewInit() != GLEW_OK)
+        {
+            RX_ERROR("Could not initialize GLEW");
+            return;
+        }
+
+        RX_INFO("OpenGL Version: {0}", glGetString(GL_VERSION));
+        s_glew_initialized = true;
     }
 }
