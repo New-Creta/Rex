@@ -1,17 +1,20 @@
 #pragma once
 
+#include "core/buffer.h"
+
+#include <glm/glm.hpp>
+
 namespace rex
 {
     namespace graphics
     {
-        class Shader
+        class Shader : public Buffer
         {
         public:
             Shader();
-            virtual ~Shader();
+            ~Shader() override;
 
-            virtual void bind() const = 0;
-            virtual void unbind() const = 0;
+            virtual void uploadMat4(const std::string& name, const glm::mat4& mat) = 0;
         };
     }
 }
