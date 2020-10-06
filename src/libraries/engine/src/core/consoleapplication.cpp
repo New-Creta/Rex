@@ -24,17 +24,15 @@ const rex::Window* rex::engine::ConsoleApplication::getWindow() const
 //-------------------------------------------------------------------------
 void rex::engine::ConsoleApplication::appInitialize()
 {
-    // Nothing to implement
+    onInitialize();
 }
 //-------------------------------------------------------------------------
 void rex::engine::ConsoleApplication::appUpdate(float dTime)
 {
-    UNUSED_PARAM(dTime);
-
-    // Nothing to implement
+    onUpdate(dTime);
 }
 //-------------------------------------------------------------------------
 void rex::engine::ConsoleApplication::appQuit()
 {
-    // Nothing to implement
+    onQuit();
 }

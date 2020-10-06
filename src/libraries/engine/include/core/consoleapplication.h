@@ -16,9 +16,13 @@ namespace rex
             const rex::Window* getWindow() const override;
 
         protected:
-            REX_ENGINE_EXPORT void appInitialize() override;
-            REX_ENGINE_EXPORT void appUpdate(float dTime) override;
-            REX_ENGINE_EXPORT void appQuit() override;
+            REX_ENGINE_EXPORT void appInitialize() final;
+            REX_ENGINE_EXPORT void appUpdate(float dTime) final;
+            REX_ENGINE_EXPORT void appQuit() final;
+
+            virtual void onInitialize() {}
+            virtual void onUpdate(float dTime) { UNUSED_PARAM(dTime); }
+            virtual void onQuit() {}
         };
     }
 }
