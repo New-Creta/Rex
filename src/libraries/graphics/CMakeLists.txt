@@ -4,13 +4,13 @@
 message(CHECK_START "Generating ${GRAPHICS_LIBRARY_NAME}")
 
 file(GLOB TARGET_GLOBAL_INC         "${GRAPHICS_INCLUDE_DIRECTORY}/*.h")
-file(GLOB TARGET_CORE_INC           "${GRAPHICS_INCLUDE_DIRECTORY}/core/*.h")
+file(GLOB_RECURSE TARGET_CORE_INC   "${GRAPHICS_INCLUDE_DIRECTORY}/core/*.h")
 file(GLOB_RECURSE TARGET_API_INC    "${GRAPHICS_INCLUDE_DIRECTORY}/api/${LOWER_API_TARGET}/*.h")
 
 file(GLOB_RECURSE TARGET_RC         "${GRAPHICS_RESOURCES_DIRECTORY}/graphics.manifest" "${GRAPHICS_RESOURCES_DIRECTORY}/Graphics.rc" "${GRAPHICS_RESOURCES_DIRECTORY}/resource.h")
 
 file(GLOB TARGET_GLOBAL_SRC         "${GRAPHICS_SOURCE_DIRECTORY}/*.cpp")
-file(GLOB TARGET_CORE_SRC           "${GRAPHICS_SOURCE_DIRECTORY}/core/*.cpp")
+file(GLOB_RECURSE TARGET_CORE_SRC   "${GRAPHICS_SOURCE_DIRECTORY}/core/*.cpp")
 file(GLOB_RECURSE TARGET_API_SRC    "${GRAPHICS_SOURCE_DIRECTORY}/api/${LOWER_API_TARGET}/*.cpp")
 
 LIST(APPEND TARGET_INC ${TARGET_GLOBAL_INC} ${TARGET_CORE_INC} ${TARGET_API_INC})
@@ -58,10 +58,12 @@ set_target_properties( ${GRAPHICS_LIBRARY_NAME} PROPERTIES  VS_DEBUGGER_WORKING_
 target_include_directories(${GRAPHICS_LIBRARY_NAME} PUBLIC     
                                                 $<BUILD_INTERFACE:${GRAPHICS_INCLUDE_DIRECTORY}>
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${GRAPHICS_LIBRARY_NAME}>)
+
 # --------------------------
 # Target link libraries.
 # --------------------------
 target_link_libraries(${GRAPHICS_LIBRARY_NAME} PUBLIC ${CORE_LIBRARY_NAME})
+target_link_libraries(${GRAPHICS_LIBRARY_NAME} PUBLIC glm_interface)
 
 # --------------------------
 # Rendering API
