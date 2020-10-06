@@ -12,16 +12,22 @@ namespace rex
     class InputImpl
     {
     public:
+        virtual void poll() = 0;
+
         virtual bool isKeyPressed(KeyCode code) const = 0;
+        virtual bool isKeyDown(KeyCode code) const = 0;
         virtual bool isKeyReleased(KeyCode code) const = 0;
+        virtual bool isKeyUp(KeyCode code) const = 0;
 
         virtual bool isMouseButtonPressed(MouseCode button) const = 0;
+        virtual bool isMouseButtonDown(MouseCode button) const = 0;
         virtual bool isMouseButtonReleased(MouseCode button) const = 0;
+        virtual bool isMouseButtonUp(MouseCode button) const = 0;
 
-        virtual Point getMousePosition() const = 0;
+        virtual Point64 getMousePosition(bool previousFrame = false) const = 0;
 
-        virtual unsigned int getMouseX() const = 0;
-        virtual unsigned int getMouseY() const = 0;
+        virtual int64 getMouseX(bool previousFrame = false) const = 0;
+        virtual int64 getMouseY(bool previousFrame = false) const = 0;
     };
 
     template <typename T>
