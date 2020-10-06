@@ -19,7 +19,7 @@ endif()
 # Compiler flag /MD
 SETUP_MULTITHREADING_MD()
 
-ADD_LIBRARY(${ENGINE_LIBRARY_NAME} SHARED
+ADD_LIBRARY(${ENGINE_LIBRARY_NAME} STATIC
             ${TARGET_INC}
             ${TARGET_RC}
             ${TARGET_SRC}) 
@@ -29,11 +29,9 @@ SETUP_LIBRARY(${ENGINE_LIBRARY_NAME})
 # --------------------------
 # Target properties
 # --------------------------
-STRING(TOUPPER ${ENGINE_LIBRARY_NAME} UPPER_LIB_NAME)
-
 set_target_properties( ${ENGINE_LIBRARY_NAME} PROPERTIES    VS_DEBUGGER_WORKING_DIRECTORY    "${OUTPUT_BINDIR}"             # Working directory
                                                             FOLDER                           "3. Application Libraries"     # Project filter location
-                                                            DEFINE_SYMBOL                    "${UPPER_LIB_NAME}_LIB" )      # Library symbol
+                                                            DEFINE_SYMBOL                    "" )                           # Library symbol
 
 # --------------------------
 # Target include directories.

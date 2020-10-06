@@ -37,8 +37,6 @@ configure_file (
 # --------------------------
 # Target properties
 # --------------------------
-STRING(TOUPPER ${DIAGNOSTICS_LIBRARY_NAME} UPPER_LIB_NAME)
-
 set_target_properties( ${DIAGNOSTICS_LIBRARY_NAME} PROPERTIES   VS_DEBUGGER_WORKING_DIRECTORY    "${OUTPUT_BINDIR}"             # Working directory
                                                             	FOLDER                           "1. Core Libraries"            # Project filter location
                                                             	DEFINE_SYMBOL                    "" )                           # Library symbol
