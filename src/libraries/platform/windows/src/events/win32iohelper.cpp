@@ -31,7 +31,7 @@ rex::MousePosition rex::win32::getMousePositionFromClient(Window* window, LPARAM
 
 	mouse_pos.local_position = getPosition(param);
 
-	HWND hwnd = static_cast<HWND>(window->getHandle());
+	HWND hwnd = static_cast<HWND>(window->getNativeWindow());
 
 	RECT rect;
 	GetWindowRect(hwnd, &rect);
@@ -50,7 +50,7 @@ rex::MousePosition rex::win32::getMousePositionFromScreen(Window* window, LPARAM
 	mouse_pos.screen_position = getPosition(param);
 	mouse_pos.local_position = getPosition(param);
 
-	HWND hwnd = static_cast<HWND>(window->getHandle());
+	HWND hwnd = static_cast<HWND>(window->getNativeWindow());
 
 	RECT rect;
 	GetWindowRect(hwnd, &rect);

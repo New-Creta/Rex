@@ -12,11 +12,13 @@ namespace rex
     namespace events
     {
         class Event;
-        class KeyDown;
+        class WindowClose;
     }
 
     namespace graphics
     {
+        class Graphics;
+
         class Shader;
         class Mesh;
 
@@ -27,6 +29,8 @@ namespace rex
 
     namespace engine
     {
+        class ImGUILayer;
+
         class GraphicalApplication : public BaseApplication
         {
         public:
@@ -35,6 +39,8 @@ namespace rex
 
             REX_ENGINE_EXPORT Window* getWindow() override;
             REX_ENGINE_EXPORT const Window* getWindow() const override;
+            REX_ENGINE_EXPORT rex::graphics::Context* getContext() override;
+            REX_ENGINE_EXPORT const rex::graphics::Context* getContext() const override;
 
             REX_ENGINE_EXPORT void pushBackLayer(std::unique_ptr<Layer> layer);
             REX_ENGINE_EXPORT void pushFrontLayer(std::unique_ptr<Layer> layer);
@@ -51,8 +57,11 @@ namespace rex
             virtual void onQuit() {}
 
         private:
+            bool onWindowClose(events::WindowClose& e);
+
             std::unique_ptr<ApplicationWindow> createWindow();
             std::unique_ptr<ApplicationContext> createContext();
+            std::unique_ptr<ImGUILayer> createImGUILayer();
 
             std::unique_ptr<ApplicationWindow> m_window;
             std::unique_ptr<ApplicationContext> m_context;

@@ -9,6 +9,7 @@
 //-------------------------------------------------------------------------
 rex::win32::MouseDown::MouseDown(rex::Window* window, MouseCode button, IsDoubleClick isDoubleClick, rex::win32::MessageParameters params)
 	: rex::events::MouseDown(window, getMouseKeyMetaData(params.wparam), button, isDoubleClick , getMousePositionFromClient(window, params.lparam))
+	, rex::win32::NativeEvent(params)
 {}
 
 //-------------------------------------------------------------------------

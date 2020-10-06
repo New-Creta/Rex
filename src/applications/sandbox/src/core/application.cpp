@@ -215,7 +215,6 @@ sandbox::Application::~Application() = default;
 void sandbox::Application::onInitialize()
 {
     pushBackLayer(std::make_unique<ExampleLayer>());
-    pushBackLayer(std::make_unique<rex::engine::ImGUILayer>());
 }
 
 //-------------------------------------------------------------------------

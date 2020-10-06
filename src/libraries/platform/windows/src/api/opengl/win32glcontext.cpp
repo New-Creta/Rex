@@ -35,6 +35,8 @@ namespace
 }
 
 //-------------------------------------------------------------------------
+rex::win32::Context* rex::win32::Context::s_current = nullptr;
+//-------------------------------------------------------------------------
 bool rex::win32::Context::s_glew_initialized = false;
 
 //-------------------------------------------------------------------------
@@ -64,6 +66,13 @@ void rex::win32::Context::destroy(Context* context)
 void rex::win32::Context::makeCurrent(Context* context)
 {
     context->setAsCurrent();
+
+    s_current = context;
+}
+//-------------------------------------------------------------------------
+rex::win32::Context* rex::win32::Context::getCurrent()
+{
+    return s_current;
 }
 
 //-------------------------------------------------------------------------
@@ -78,6 +87,12 @@ rex::win32::Context::Context(HWND hwnd)
 rex::win32::Context::~Context()
 {
     ReleaseDC(m_hwnd, m_hdc);
+}
+
+//-------------------------------------------------------------------------
+void* rex::win32::Context::getNativeContext() const
+{
+    return m_context;
 }
 
 //-------------------------------------------------------------------------

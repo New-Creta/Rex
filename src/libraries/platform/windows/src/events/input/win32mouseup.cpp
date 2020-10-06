@@ -11,6 +11,7 @@
 //-------------------------------------------------------------------------
 rex::win32::MouseUp::MouseUp(rex::Window* window, MouseCode mouse_button, rex::win32::MessageParameters params)
 	: rex::events::MouseUp(window, rex::win32::getMouseKeyMetaData(params.wparam), mouse_button, getMousePositionFromClient(window, params.lparam))
+	, rex::win32::NativeEvent(params)
 {}
 
 //-------------------------------------------------------------------------

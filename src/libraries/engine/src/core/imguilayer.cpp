@@ -14,8 +14,12 @@
 
 #include "events/eventdispatcher.h"
 
+// Temp
 #include "imgui_impl_win32.h"
 #include "imgui_impl_opengl3.h"
+
+#include "events/win32nativeevent.h"
+#include "events/win32messageparameters.h"
 
 namespace
 {
@@ -47,24 +51,19 @@ rex::engine::ImGUILayer::ImGUILayer()
     , m_imgui_context_created(false)
 {}
 //-------------------------------------------------------------------------
-rex::engine::ImGUILayer::~ImGUILayer()
-{
-    if (m_imgui_context_created)
-    {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui::DestroyContext();
-
-        ImGui_ImplWin32_Shutdown();
-    }
-}
+rex::engine::ImGUILayer::~ImGUILayer() = default;
 
 //-------------------------------------------------------------------------
 void rex::engine::ImGUILayer::onAttach()
 {
     BaseApplication* application = static_cast<BaseApplication*>(CoreApplication::getInstance());
     ApplicationWindow* window = static_cast<ApplicationWindow*>(application->getWindow());
+    ApplicationContext* context = static_cast<ApplicationContext*>(application->getContext());
 
     m_window = window;
+    m_context = context;
+
+    ImGui_ImplWin32_EnableDpiAwareness();
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -72,144 +71,101 @@ void rex::engine::ImGUILayer::onAttach()
     if (!m_imgui_context_created)
     {
         ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;     // Enable Viewports
 
-        ImGui_ImplWin32_Init(m_window->getHandle());
-        ImGui_ImplOpenGL3_Init("#version 460");
-
+        io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleFonts;
+        io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
+        
         ImGui::StyleColorsDark();
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            style.WindowRounding = 0.0f;
+            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        }
+
+        ImGui_ImplWin32_Init(m_window->getNativeWindow(), m_context->getNativeContext());
+        ImGui_ImplOpenGL3_Init("#version 460");
 
         m_imgui_context_created = true;
     }
 }
 //-------------------------------------------------------------------------
 void rex::engine::ImGUILayer::onDetach()
-{}
-
-//-------------------------------------------------------------------------
-void rex::engine::ImGUILayer::onUpdate()
 {
-    ImGuiIO& io = ImGui::GetIO();
+    if (m_imgui_context_created)
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplWin32_Shutdown();
 
-    io.DeltaTime = FRAMERATE;
-    io.DisplaySize = { (float)m_window->getWidth(), (float)m_window->getHeight() };
+        ImGui::DestroyContext();
 
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-
-    ImGui::ShowDemoWindow();
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        m_imgui_context_created = false;
+    }
 }
+
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 //-------------------------------------------------------------------------
 void rex::engine::ImGUILayer::onEvent(events::Event& event)
 {
-    events::EventDispatcher dispatcher(event);
+    UNUSED_PARAM(event);
 
-    dispatcher.dispatch<events::MouseDown>(std::bind(&rex::engine::ImGUILayer::onMouseButtonPressedEvent, this, std::placeholders::_1));
-    dispatcher.dispatch<events::MouseUp>(std::bind(&rex::engine::ImGUILayer::onMouseButtonReleasedEvent, this, std::placeholders::_1));
-    dispatcher.dispatch<events::MouseMove>(std::bind(&rex::engine::ImGUILayer::onMouseMovedEvent, this, std::placeholders::_1));
-    dispatcher.dispatch<events::MouseScroll>(std::bind(&rex::engine::ImGUILayer::onMouseScrolledEvent, this, std::placeholders::_1));
-
-    dispatcher.dispatch<events::KeyDown>(std::bind(&rex::engine::ImGUILayer::onKeyPressedEvent, this, std::placeholders::_1));
-    dispatcher.dispatch<events::KeyUp>(std::bind(&rex::engine::ImGUILayer::onKeyReleasedEvent, this, std::placeholders::_1));
-    dispatcher.dispatch<events::KeyTyped>(std::bind(&rex::engine::ImGUILayer::onKeyTypedEvent, this, std::placeholders::_1));
-
-    dispatcher.dispatch<events::WindowResize>(std::bind(&rex::engine::ImGUILayer::onWindowResizedEvent, this, std::placeholders::_1));
+    onProcessImGuiEvent(event);
 }
 
 //-------------------------------------------------------------------------
-bool rex::engine::ImGUILayer::onMouseButtonPressedEvent(events::MouseDown& e)
+void rex::engine::ImGUILayer::onBeginRender()
 {
-    rex::MouseCode code = e.getButton();
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[convertToImGuiKeyCode(code)] = true;
-
-    return false;
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
 }
 //-------------------------------------------------------------------------
-bool rex::engine::ImGUILayer::onMouseButtonReleasedEvent(events::MouseUp& e)
+void rex::engine::ImGUILayer::onRender()
 {
-    rex::MouseCode code = e.getButton();
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.MouseDown[convertToImGuiKeyCode(code)] = false;
-
-    return false;
+    ImGui::ShowDemoWindow();
 }
 //-------------------------------------------------------------------------
-bool rex::engine::ImGUILayer::onMouseMovedEvent(events::MouseMove& e)
+void rex::engine::ImGUILayer::onEndRender()
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.MousePos = { (float)e.getScreenPosition().x, (float)e.getScreenPosition().y };
 
-    return false;
-}
-//-------------------------------------------------------------------------
-bool rex::engine::ImGUILayer::onMouseScrolledEvent(events::MouseScroll& e)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.MouseWheel += e.getScrollDelta();
+    io.DisplaySize = { (float)m_window->getWidth(), (float)m_window->getHeight() };
 
-    return false;
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        ApplicationContext* current = ApplicationContext::getCurrent();
+
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+
+        ApplicationContext::makeCurrent(current);
+    }
 }
 
 //-------------------------------------------------------------------------
-bool rex::engine::ImGUILayer::onKeyPressedEvent(events::KeyDown& e)
+bool rex::engine::ImGUILayer::onProcessImGuiEvent(events::Event& event)
 {
-    ImGuiIO& io = ImGui::GetIO();
+    const win32::NativeEvent* native_event = dynamic_cast<const win32::NativeEvent*>(event.getNativeEvent());
+    if (native_event == nullptr)
+        return false;
 
-    RX_TODO("Change to REX keycode!");
-    const int8 c = *e.getKey();
+    const win32::MessageParameters* data = reinterpret_cast<const win32::MessageParameters*>(native_event->getData());
 
-    io.KeysDown[c] = true;
+    //
+    // ImGui Implementation of the WND PROC
+    //
+    HWND hwnd = static_cast<HWND>(m_window->getNativeWindow());
 
-    io.KeyCtrl = io.KeysDown[RX_KEY_LEFTCONTROL] || io.KeysDown[RX_KEY_RIGHTCONTROL];
-    io.KeyShift = io.KeysDown[RX_KEY_LEFTSHIFT] || io.KeysDown[RX_KEY_RIGHTSHIFT];
-    io.KeyAlt = io.KeysDown[RX_KEY_LEFTALT] || io.KeysDown[RX_KEY_RIGHTALT];
-    io.KeySuper = io.KeysDown[RX_KEY_LEFTSUPER] || io.KeysDown[RX_KEY_RIGHTSUPER];
-    return false;
-}
-//-------------------------------------------------------------------------
-bool rex::engine::ImGUILayer::onKeyReleasedEvent(events::KeyUp& e)
-{
-    ImGuiIO& io = ImGui::GetIO();
-
-    RX_TODO("Change to REX keycode!");
-    const int8 c = *e.getKey(); // This is a WIN32 key code.
-
-    io.KeysDown[c] = false;
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, data->msg, data->wparam, data->lparam))
+        return true;
 
     return false;
 }
-//-------------------------------------------------------------------------
-bool rex::engine::ImGUILayer::onKeyTypedEvent(events::KeyTyped& e)
-{
-    ImGuiIO& io = ImGui::GetIO();
-
-    const int8 c = *e.getKey();
-
-    if (c > 0 && c < 0x10000)
-        io.AddInputCharacterUTF16((unsigned short)c);
-
-    return false;
-}
-
-//-------------------------------------------------------------------------
-bool rex::engine::ImGUILayer::onWindowResizedEvent(events::WindowResize& e)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = { (float)e.getWidth(), (float)e.getHeight() };
-    io.DisplayFramebufferScale = { 1.0f, 1.0f };
-
-#ifdef _OPENGL
-
-    glViewport(0, 0, e.getWidth(), e.getHeight());
-
-#endif
-
-    return false;
-}
-

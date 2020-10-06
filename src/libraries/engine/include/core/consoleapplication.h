@@ -4,6 +4,11 @@
 
 namespace rex
 {
+    namespace graphics
+    {
+        class Context;
+    }
+
     namespace engine
     {
         class ConsoleApplication : public BaseApplication
@@ -14,6 +19,8 @@ namespace rex
 
             rex::Window* getWindow() override;
             const rex::Window* getWindow() const override;
+            rex::graphics::Context* getContext() override;
+            const rex::graphics::Context* getContext() const override;
 
         protected:
             REX_ENGINE_EXPORT void appInitialize() final;

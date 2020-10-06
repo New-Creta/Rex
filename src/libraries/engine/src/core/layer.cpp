@@ -24,16 +24,13 @@ void rex::engine::Layer::disable()
 //-------------------------------------------------------------------------
 void rex::engine::Layer::onUpdate()
 {
-    if (!m_enabled)
-        return;
+    // Nothing to implement
 }
-
 //-------------------------------------------------------------------------
 void rex::engine::Layer::onEvent(events::Event & event)
 {
     UNUSED_PARAM(event);
 
-    if (!m_enabled)
-        return;
+    // Nothing to implement
 }
 

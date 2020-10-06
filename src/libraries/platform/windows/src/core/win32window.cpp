@@ -6,7 +6,7 @@
 
 namespace
 {
-    const DWORD STYLE = WS_POPUPWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    const DWORD STYLE = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 
     //-------------------------------------------------------------------------
     rex::win32::EventProcessor* getUserData(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -48,19 +48,13 @@ namespace
         WNDCLASS wc;
         memset(&wc, NULL, sizeof(WNDCLASS));
 
-        wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-        wc.lpfnWndProc = windowProcedure;
-        wc.cbClsExtra = 0;
-        wc.cbWndExtra = 0;
-        wc.hInstance = hInst;
-
         wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
         wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-
-        wc.hbrBackground = NULL;
-        wc.lpszMenuName = NULL;
-
+        wc.lpfnWndProc = windowProcedure;
+        wc.hInstance = hInst;
+        wc.hbrBackground = (HBRUSH)(COLOR_BACKGROUND);
         wc.lpszClassName = appName.c_str();
+        wc.style = CS_OWNDC;
 
         return wc;
     }
@@ -101,7 +95,7 @@ void rex::win32::Window::show()
 
     m_visible = true;
 
-    ShowWindow(m_hwnd, SW_SHOW);
+    ShowWindow(m_hwnd, SW_SHOWDEFAULT);
 
     if (!SetForegroundWindow(m_hwnd))
     {
@@ -123,20 +117,25 @@ void rex::win32::Window::hide()
     m_visible = false;
 
     ShowWindow(m_hwnd, SW_HIDE);
+    UpdateWindow(m_hwnd);
 }
 
 //-------------------------------------------------------------------------
-void rex::win32::Window::processEvents()
+bool rex::win32::Window::processEvents()
 {
     if (m_visible == false)
-        return;
+        return false;
 
     MSG message;
-    while (PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE) > 0)
+    if (PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE))
     {
         TranslateMessage(&message);
         DispatchMessage(&message);
+
+        return true;
     }
+
+    return false;
 }
 
 //-------------------------------------------------------------------------
@@ -157,7 +156,7 @@ unsigned int rex::win32::Window::getHeight() const
 }
 
 //-------------------------------------------------------------------------
-void* rex::win32::Window::getHandle()
+void* rex::win32::Window::getNativeWindow() const
 {
     return (void*)m_hwnd;
 }
@@ -168,7 +167,7 @@ LRESULT CALLBACK rex::win32::Window::wndProc(HWND hWnd, UINT uMsg, WPARAM wParam
     rex::win32::EventProcessor* event_processor = getUserData(hWnd, uMsg, wParam, lParam);
     if (event_processor != nullptr)
     {
-        return event_processor->process(hWnd, uMsg, { wParam, lParam });
+        return event_processor->process(hWnd, { uMsg, wParam, lParam });
     }
 
     return DefWindowProc(hWnd, uMsg, wParam, lParam);

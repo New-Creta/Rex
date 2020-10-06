@@ -19,13 +19,13 @@ namespace rex
             REX_PLATFORM_EXPORT void show() override;
             REX_PLATFORM_EXPORT void hide() override;
                 
-            REX_PLATFORM_EXPORT void processEvents() override;
+            REX_PLATFORM_EXPORT bool processEvents() override;
             REX_PLATFORM_EXPORT void update() override;
                 
             REX_PLATFORM_EXPORT unsigned int getWidth() const override;
             REX_PLATFORM_EXPORT unsigned int getHeight() const override;
                 
-            REX_PLATFORM_EXPORT void* getHandle() override;
+            REX_PLATFORM_EXPORT void* getNativeWindow() const override;
 
         private:
             static LRESULT CALLBACK wndProc(HWND, UINT, WPARAM, LPARAM);

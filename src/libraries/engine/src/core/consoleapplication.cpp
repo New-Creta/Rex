@@ -22,6 +22,22 @@ const rex::Window* rex::engine::ConsoleApplication::getWindow() const
 }
 
 //-------------------------------------------------------------------------
+rex::graphics::Context* rex::engine::ConsoleApplication::getContext()
+{
+    RX_WARN("A console application does not have a context.");
+
+    return nullptr;
+}
+//-------------------------------------------------------------------------
+const rex::graphics::Context* rex::engine::ConsoleApplication::getContext() const
+{
+    RX_WARN("A console application does not have a context.");
+
+    return nullptr;
+}
+
+
+//-------------------------------------------------------------------------
 void rex::engine::ConsoleApplication::appInitialize()
 {
     onInitialize();

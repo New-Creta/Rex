@@ -8,6 +8,11 @@ namespace rex
 {
     class Window;
 
+    namespace graphics
+    {
+        class Context;
+    }
+
     namespace win32
     {
         class Application : public CoreApplication
@@ -18,6 +23,8 @@ namespace rex
 
             virtual rex::Window* getWindow() = 0;
             virtual const rex::Window* getWindow() const = 0;
+            virtual rex::graphics::Context* getContext() = 0;
+            virtual const rex::graphics::Context* getContext() const = 0;
 
         protected:
             virtual void appInitialize() = 0;
