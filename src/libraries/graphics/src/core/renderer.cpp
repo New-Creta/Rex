@@ -45,8 +45,14 @@ void rex::graphics::Renderer::endScene()
 //-------------------------------------------------------------------------
 void rex::graphics::Renderer::submit(Mesh* mesh)
 {
+    submit(mesh, glm::mat4(1.0f));
+}
+//-------------------------------------------------------------------------
+void rex::graphics::Renderer::submit(Mesh* mesh, const glm::mat4& modelMat)
+{
     mesh->getShader()->bind();
     mesh->getShader()->uploadMat4("u_ViewProjection", s_scene_data->m_viewprojection_matrix);
+    mesh->getShader()->uploadMat4("u_Model", modelMat);
 
     s_renderer_api->drawIndexed(mesh->getShader(), mesh->getVertexArray());
 }

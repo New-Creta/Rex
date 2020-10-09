@@ -21,6 +21,7 @@ namespace rex
             REX_GRAPHICS_EXPORT static void endScene();
 
             REX_GRAPHICS_EXPORT static void submit(Mesh* mesh);
+            REX_GRAPHICS_EXPORT static void submit(Mesh* mesh, const glm::mat4& modelMat);
             REX_GRAPHICS_EXPORT static void flush();
 
             inline static RendererAPI::Type getAPI() { return s_renderer_api->getAPI(); }
