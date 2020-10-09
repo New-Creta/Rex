@@ -22,9 +22,9 @@ void rex::engine::Layer::disable()
 }
 
 //-------------------------------------------------------------------------
-void rex::engine::Layer::onUpdate()
+void rex::engine::Layer::onUpdate(const DeltaTime& dTime)
 {
-    // Nothing to implement
+    UNUSED_PARAM(dTime);
 }
 //-------------------------------------------------------------------------
 void rex::engine::Layer::onEvent(events::Event & event)

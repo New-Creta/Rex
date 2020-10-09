@@ -24,11 +24,11 @@ namespace rex
 
         protected:
             REX_ENGINE_EXPORT void appInitialize() final;
-            REX_ENGINE_EXPORT void appUpdate(float dTime) final;
+            REX_ENGINE_EXPORT void appUpdate(const DeltaTime& dTime) final;
             REX_ENGINE_EXPORT void appQuit() final;
 
             virtual void onInitialize() {}
-            virtual void onUpdate(float dTime) { UNUSED_PARAM(dTime); }
+            virtual void onUpdate(const DeltaTime& dTime) { UNUSED_PARAM(dTime); }
             virtual void onQuit() {}
         };
     }

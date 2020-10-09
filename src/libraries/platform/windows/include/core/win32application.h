@@ -28,13 +28,13 @@ namespace rex
 
         protected:
             virtual void appInitialize() = 0;
-            virtual void appUpdate(float dTime) = 0;
+            virtual void appUpdate(const DeltaTime& dTime) = 0;
             virtual void appQuit() = 0;
 
         private:
-            REX_PLATFORM_EXPORT void platformInitialize() final;            // Functions need to be exported because they are protected in the base class.
-            REX_PLATFORM_EXPORT void platformUpdate(float dTime) final;     // Functions need to be exported because they are protected in the base class.
-            REX_PLATFORM_EXPORT void platformQuit() final;                  // Functions need to be exported because they are protected in the base class.
+            REX_PLATFORM_EXPORT void platformInitialize() final;                        // Functions need to be exported because they are protected in the base class.
+            REX_PLATFORM_EXPORT void platformUpdate(const DeltaTime& dTime) final;      // Functions need to be exported because they are protected in the base class.
+            REX_PLATFORM_EXPORT void platformQuit() final;                              // Functions need to be exported because they are protected in the base class.
         };
     }
 }

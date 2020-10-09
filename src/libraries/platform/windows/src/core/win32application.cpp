@@ -24,7 +24,7 @@ void rex::win32::Application::platformInitialize()
 }
 
 //-------------------------------------------------------------------------
-void rex::win32::Application::platformUpdate(float dTime)
+void rex::win32::Application::platformUpdate(const DeltaTime& dTime)
 {
     appUpdate(dTime);
 }

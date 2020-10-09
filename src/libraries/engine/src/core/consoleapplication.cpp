@@ -43,7 +43,7 @@ void rex::engine::ConsoleApplication::appInitialize()
     onInitialize();
 }
 //-------------------------------------------------------------------------
-void rex::engine::ConsoleApplication::appUpdate(float dTime)
+void rex::engine::ConsoleApplication::appUpdate(const DeltaTime& dTime)
 {
     onUpdate(dTime);
 }

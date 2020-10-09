@@ -1,11 +1,9 @@
 #include "rex_core_pch.h"
 
 #include "core/coreapplication.h"
+#include "core/deltatime.h"
 
-namespace
-{
-    float FRAMERATE = 1.0f / 60.0f;
-}
+#include <chrono>
 
 //-------------------------------------------------------------------------
 rex::CoreApplication* rex::CoreApplication::s_application_instance = nullptr;
@@ -38,7 +36,11 @@ int rex::CoreApplication::run()
 
     while (m_running)
     {
-        platformUpdate(FRAMERATE);
+        std::chrono::steady_clock::time_point current = std::chrono::steady_clock::now();
+        DeltaTime delta_time = fmiliseconds(current - m_last_time_point);
+        m_last_time_point = current;
+
+        platformUpdate(delta_time);
     }
 
     RX_TRACE("Quit CoreApplication");

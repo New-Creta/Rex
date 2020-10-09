@@ -23,7 +23,7 @@ namespace rex
             virtual void onAttach() {};
             virtual void onDetach() {};
 
-            REX_ENGINE_EXPORT virtual void onUpdate();
+            REX_ENGINE_EXPORT virtual void onUpdate(const DeltaTime& dTime);
             REX_ENGINE_EXPORT virtual void onEvent(events::Event& event);
 
             inline const std::string& getName() const { return m_name; }

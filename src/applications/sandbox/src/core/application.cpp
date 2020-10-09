@@ -4,6 +4,7 @@
 #include "core/layer.h"
 #include "core/imguilayer.h"
 #include "core/keycodes.h"
+#include "core/deltatime.h"
 
 #include "core/vertexarray.h"
 #include "core/bufferlayout.h"
@@ -16,6 +17,8 @@
 
 #include "events/event.h"
 #include "events/eventdispatcher.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace
 {
@@ -61,10 +64,10 @@ namespace
             setVertexArray(rex::graphics::VertexArray::create());
 
             float vertices[3 * 4] = {
-                -0.75f, -0.75f, 0.0f,
-                 0.75f, -0.75f, 0.0f,
-                 0.75f,  0.75f, 0.0f,
-                -0.75f,  0.75f, 0.0f
+                -0.5f, -0.5f, 0.0f,
+                 0.5f, -0.5f, 0.0f,
+                 0.5f,  0.5f, 0.0f,
+                -0.5f,  0.5f, 0.0f
             };
 
             auto vertex_buffer = rex::graphics::VertexBuffer::create(vertices, sizeof(vertices));
@@ -92,6 +95,7 @@ namespace
             layout(location = 1) in vec4 a_Color;
 
             uniform mat4 u_ViewProjection;
+            uniform mat4 u_Model;
 
             out vec3 v_Position;
             out vec4 v_Color;
@@ -101,7 +105,7 @@ namespace
                 v_Position = a_Position;
                 v_Color = a_Color;
 
-                gl_Position = u_ViewProjection * vec4(a_Position, 1.0);    
+                gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);    
             }
         )";
     const std::string quad_vertex_shader = R"(
@@ -110,6 +114,7 @@ namespace
 			layout(location = 0) in vec3 a_Position;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Model;
 
 			out vec3 v_Position;
 
@@ -117,7 +122,7 @@ namespace
 			{
 				v_Position = a_Position;
 
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);	
+				gl_Position = u_ViewProjection * u_Model * vec4(a_Position, 1.0);	
 			}
         )";
 
@@ -147,8 +152,6 @@ namespace
 				color = vec4(0.2, 0.3, 0.8, 1.0);
 			}
         )";
-
-    const float FRAME_RATE = 1.0f / 60.0f;
 }
 
 class ExampleLayer : public rex::engine::Layer 
@@ -182,33 +185,33 @@ public:
     }
 
     //-------------------------------------------------------------------------
-    void onUpdate() override
+    void onUpdate(const rex::DeltaTime& dTime) override
     {
         if(rex::engine::Input::instance()->isKeyDown(rex::KeyCode::LEFT))
         {
-            m_camera_position.x -= m_camera_speed * FRAME_RATE;
+            m_camera_position.x -= m_camera_speed * dTime.toSeconds();
         }
         else if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::RIGHT))
         {
-            m_camera_position.x += m_camera_speed * FRAME_RATE;
+            m_camera_position.x += m_camera_speed * dTime.toSeconds();
         }
         
         if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::DOWN))
         {
-            m_camera_position.y -= m_camera_speed * FRAME_RATE;
+            m_camera_position.y -= m_camera_speed * dTime.toSeconds();
         }
         else if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::UP))
         {
-            m_camera_position.y += m_camera_speed * FRAME_RATE;
+            m_camera_position.y += m_camera_speed * dTime.toSeconds();
         }
 
         if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::KEY_Q))
         {
-            m_camera_rotation -= m_camera_rotation_speed * FRAME_RATE;
+            m_camera_rotation -= m_camera_rotation_speed * dTime.toSeconds();
         }
         else if (rex::engine::Input::instance()->isKeyDown(rex::KeyCode::KEY_W))
         {
-            m_camera_rotation += m_camera_rotation_speed * FRAME_RATE;
+            m_camera_rotation += m_camera_rotation_speed * dTime.toSeconds();
         }
 
         m_camera.setPosition(m_camera_position);

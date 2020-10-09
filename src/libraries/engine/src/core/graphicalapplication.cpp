@@ -105,7 +105,7 @@ void rex::engine::GraphicalApplication::appInitialize()
     m_window->show();
 }
 //-------------------------------------------------------------------------
-void rex::engine::GraphicalApplication::appUpdate(float dTime)
+void rex::engine::GraphicalApplication::appUpdate(const DeltaTime& dTime)
 {
     unsigned int width = m_window->getWidth();
     unsigned int height = m_window->getHeight();
@@ -121,7 +121,7 @@ void rex::engine::GraphicalApplication::appUpdate(float dTime)
 
     for (const std::unique_ptr<Layer>& layer : m_layer_stack)
     {
-        layer->onUpdate();
+        layer->onUpdate(dTime);
     }
 
     onUpdate(dTime);
