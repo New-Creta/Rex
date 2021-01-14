@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <functional>
 #include <typeinfo>
+#include <chrono>
 
 #include <string>
 #include <sstream>
@@ -14,11 +15,11 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#ifdef _WINDOWS
+    #include <Windows.h>
+#endif
+
 #include "rex_debug.h"
 
 #include "helpers/defines.h"
 #include "helpers/types.h"
-
-#ifdef _WINDOWS
-	#include <Windows.h>
-#endif
