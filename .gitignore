@@ -30,15 +30,3 @@
 *.exe
 *.out
 *.app
-
-#-------------------------------------------------------------------------
-# Rex files that can be ignored.
-
-# Rex generated directories
-build/__pycache__/
-
-# Rex generated source code
-src/libraries/diagnostics/include/rex_diagnostics_defines.h
-src/libraries/platform/windows/include/rex_platform_defines.h
-src/libraries/graphics/opengl/include/rex_graphics_defines.h
-src/libraries/graphics/include/rex_graphics_defines.h
