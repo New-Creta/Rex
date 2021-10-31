@@ -21,7 +21,7 @@ SET(CONFIGURATION_RELEASE Release)
 # -------------------------------
 # Setup the "Rex Engine" solution
 # -------------------------------
-project(Rex VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+project(rex VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
 				  LANGUAGES C;CXX)
 
 message(STATUS "#--------------------- Starting project generation ---------------------")
