@@ -26,8 +26,7 @@ def get_git_directory():
     max_while_counter = 100
     while_counter = 0
 
-    script_directory = os.path.normpath(os.getcwd())
-    current_working_directory = script_directory + "/.."
+    current_working_directory = os.path.normpath(os.getcwd())
     print("\tCurrent working directory: " + current_working_directory)
     current_working_drive = os.path.splitdrive(current_working_directory) 
     if current_working_drive[0] == None:
