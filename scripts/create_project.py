@@ -8,6 +8,10 @@ import repository_directories
 
 ##-------------------------------------------------------------------------------
 ## PRIVATE FUNCTIONS
+# Create a relative path to use in CMAKE script
+def __make_cmake_relative(path):
+    root_directory = repository_directories.get_root_directory()
+    return path.replace(root_directory, "${CMAKE_SOURCE_DIR}")
 
 ##-------------------------------------------------------------------------------
 # Create build directory if non existing
@@ -126,6 +130,8 @@ if __name__ == "__main__":
 
     print("GROUPSOURCES(" + os.path.join("..", os.path.join(source_folder_name, include_project_folder)) + " " + include_folder_name + ")")
 
+    print(__make_cmake_relative(include_project_folder))
+
     template =      "" 
 
     template +=     "\n\n"
@@ -133,23 +139,23 @@ if __name__ == "__main__":
     template +=     "# Command: generate_project(type project_name solution_folder project_folder pch_header_name = project_folder pch_src_name = project_folder)\n"
     template +=     "# Example: generate_project(static CoreLibs 1_common core_libs)\n"
     template +=     "\n\n"
-    template +=     "# include path: "  + include_project_folder    + "\n"
-    template +=     "# src path: "      + src_project_folder        + "\n"
+    template +=     "# include path: "  + __make_cmake_relative(include_project_folder)    + "\n"
+    template +=     "# src path: "      + __make_cmake_relative(src_project_folder)        + "\n"
     template +=     "\n\n"
     template +=     "# Project Name Project\n"
     template +=     "# -------------------------\n"
-    template +=     "file(GLOB_RECURSE " + project_name + "_LIBS_INC    " + include_project_folder + "\*.h)\n"
-    template +=     "file(GLOB_RECURSE " + project_name + "_LIBS_SRC    " + src_project_folder     + "\*.cpp)\n"
+    template +=     "file(GLOB_RECURSE " + project_name + "_LIBS_INC    " + __make_cmake_relative(include_project_folder) + "\*.h)\n"
+    template +=     "file(GLOB_RECURSE " + project_name + "_LIBS_SRC    " + __make_cmake_relative(src_project_folder)     + "\*.cpp)\n"
     template +=     "\n\n"
     template +=     "# Create the project filters\n"
-    template +=     "GROUPSOURCES(" + include_project_folder + " " + include_folder_name + ")\n"
-    template +=     "GROUPSOURCES(" + src_project_folder     + " " + src_folder_name + ")\n"
+    template +=     "GROUPSOURCES(" + __make_cmake_relative(include_project_folder) + " " + include_folder_name + ")\n"
+    template +=     "GROUPSOURCES(" + __make_cmake_relative(src_project_folder)     + " " + src_folder_name + ")\n"
     template +=     "\n\n"
     template +=     "# Create the project\n"
     template +=     "add_library(" + project_name + " " + library_type + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"
     template +=     "\n\n"
     template +=     "# Set the include directories\n"
-    template +=     "target_include_directories(" + project_name + " PUBLIC " + include_project_folder   + ")\n"
+    template +=     "target_include_directories(" + project_name + " PUBLIC " + __make_cmake_relative(include_project_folder)   + ")\n"
     template +=     "\n\n"
     template +=     "# Set project properties\n"
     template +=     "set_target_properties(" + project_name + " PROPERTIES FOLDER                                         " + solution_folder + ")   \t\t# solution folder\n"
