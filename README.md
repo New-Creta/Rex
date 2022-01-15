@@ -21,13 +21,13 @@ Configure description here ...
 
 ## Development 
 
-Dave De Breuck a.k.a. REX00
+Dave De Breuck a.k.a. REX1
 
 3D Developer @ Twikit
 
 davedebreuck.gamedeveloper@gmail.com
 
-Nick De Breuck a.k.a. REX01
+Nick De Breuck a.k.a. REX2
 
 Engine Programmer @ Creative Assembly
 
