@@ -36,3 +36,5 @@ __pycache__
 
 # CMake Shadow Build
 build/
+
+.vscode/
