@@ -2,6 +2,7 @@
 # Directories       
 # ----------------- 
 SET (SRC_DIR source)
+SET (EXTERNALS_DIR externals)
 SET (BIN_DIR bin)
 SET (INSTALL_DIR install)
 SET (CONTENT_DIR content)

@@ -4,6 +4,11 @@
 cmake_minimum_required(VERSION 3.16)
 
 # -------------------------------
+# Options
+# -------------------------------
+option(FETCH_EXTERNALS "Fetch externals" ON)
+
+# -------------------------------
 # Rex Version
 # -------------------------------
 SET(VERSION_MAJOR 0)
@@ -63,10 +68,36 @@ SET (CMAKE_CXX_STANDARD_REQUIRED ON)
 SET (CMAKE_CXX_EXTENSIONS OFF)
 
 message("Output directory: \t\t${OUTPUT_BINDIR}")
+message("Project Source directory: \t\t${PROJECT_SOURCE_DIR}")
+
+# -------------------------------
+# Check if we need to update our submodules
+# -------------------------------
+IF(FETCH_EXTERNALS)
+    find_package(Git)
+    IF(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+        # Update submodules as needed
+        message(STATUS "Submodule update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                        RESULT_VARIABLE GIT_SUBMOD_RESULT
+                        OUTPUT_VARIABLE GIT_SUBMOD_OUTPUT)
+        IF(NOT GIT_SUBMOD_RESULT EQUAL "0")
+            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+        ELSE()
+            message(STATUS ${GIT_SUBMOD_OUTPUT})
+        ENDIF()
+    ENDIF()
+
+    IF(NOT EXISTS "${PROJECT_SOURCE_DIR}/externals/CMakeLists.txt")
+        message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+    ENDIF()
+ENDIF()
 
 # --------------------------------
 # Add subdirectories
 # --------------------------------
+add_subdirectory(${EXTERNALS_DIR})
 add_subdirectory(${SRC_DIR})
 
 message(STATUS "#---------------------- Ending project generation ----------------------")	
