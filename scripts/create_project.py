@@ -185,7 +185,7 @@ if __name__ == "__main__":
     cmake_project_file_location = os.path.join(cmake_files_directory, project_name + ".cmake")
 
     if not os.path.exists(cmake_project_file_location):
-        cmake_list_file_to_write = "\ninclude("+ cmake_project_file_location +")"
+        cmake_list_file_to_write = "\ninclude("+ __make_cmake_relative(cmake_project_file_location) +")"
         cmake_list_file_to_write = cmake_list_file_to_write.replace("\\", "/")
         cmake_list_file_location = os.path.join(source_files_directory, "CMakeLists.txt")
         cmake_list_file = open(cmake_list_file_location, "a")
