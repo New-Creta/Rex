@@ -37,7 +37,7 @@ nick.debreuck@outlook.com
 
 ## Responsibilities
 
-REX00
+Dave De Breuck - REX1
 
 Graphics
 
@@ -45,7 +45,7 @@ Graphics
 - System 01
 - ...
 
-REX01
+Nick De Breuck - REX2
 
 Engine Core Systems
 
