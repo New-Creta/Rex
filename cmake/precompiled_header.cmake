@@ -27,8 +27,8 @@
 # Sets a precompiled header for a given target
 # Args:
 # TARGET_NAME - Name of the target. Only valid after add_library or add_executable
-# PCH_NAME - Header file name to precompile
-# PCH_SOURCE_NAME - MSVC specific source file name. Ignored on other platforms
+# PCH_TARGET - Header file name to precompile
+# PCH_SOURCE_TARGET - MSVC specific source file name. Ignored on other platforms
 #
 # Example Usage
 # add_executable(myproj
@@ -40,28 +40,30 @@
 #   )
 # add_precompiled_header(myproj src/myproj.pch.h src/myproj.pch.cpp)
 #
-macro(add_precompiled_header TARGET_NAME PCH_NAME PCH_SOURCE_NAME)
+macro(add_precompiled_header TARGET_NAME PCH_TARGET PCH_SOURCE_TARGET)
     message(STATUS "Precompiled header generation")
     if(MSVC)
-        get_filename_component(PCH_DIRECTORY ${PCH_NAME} DIRECTORY)
+        get_filename_component(PCH_DIRECTORY ${PCH_TARGET} DIRECTORY)
         target_include_directories(${TARGET_NAME} PRIVATE ${PCH_DIRECTORY}) # fixes occasional IntelliSense glitches
 
-        get_filename_component(PCH_NAME_WE ${PCH_NAME} NAME_WE)
-        set(PRECOMPILED_BINARY "$(IntDir)/${PCH_NAME_WE}.pch")
-        message(STATUS "\tPrecompiled header: ${PCH_NAME}")
-        message(STATUS "\tPrecompiled source: ${PCH_SOURCE_NAME}")
-
+        get_filename_component(PCH_TARGET_WE ${PCH_TARGET} NAME_WE)
+        get_filename_component(PCH_SOURCE_NAME ${PCH_SOURCE_TARGET} NAME)
+        set(PRECOMPILED_BINARY "$(IntDir)/${PCH_TARGET_WE}.pch")
+        message(STATUS "\tPrecompiled header: ${PCH_TARGET}")
+        message(STATUS "\tPrecompiled source: ${PCH_SOURCE_TARGET}")
+        MESSAGE(STATUS, "TRALALALAL")
         get_target_property(SOURCE_FILES ${TARGET_NAME} SOURCES)
         set(SOURCE_FILE_FOUND FALSE)
         foreach(SOURCE_FILE ${SOURCE_FILES})
             get_filename_component(SOURCE_FILE_NAME ${SOURCE_FILE} NAME)
+            MESSAGE(STATUS "${SOURCE_FILE_NAME}")
             if(SOURCE_FILE MATCHES \\.\(c|cc|cxx|cpp\)$)
                 if(${PCH_SOURCE_NAME} STREQUAL ${SOURCE_FILE_NAME})
                     # Set source file to generate header
                     set_source_files_properties(
                         ${SOURCE_FILE}
                         PROPERTIES
-                        COMPILE_FLAGS "/Yc\"${PCH_NAME}\" /Fp\"${PRECOMPILED_BINARY}\""
+                        COMPILE_FLAGS "/Yc\"${PCH_TARGET}\" /Fp\"${PRECOMPILED_BINARY}\""
                         OBJECT_OUTPUTS "${PRECOMPILED_BINARY}")
                     set(SOURCE_FILE_FOUND TRUE)
                 else()
@@ -69,7 +71,7 @@ macro(add_precompiled_header TARGET_NAME PCH_NAME PCH_SOURCE_NAME)
                     set_source_files_properties(
                         ${SOURCE_FILE}
                         PROPERTIES
-                        COMPILE_FLAGS "/Yu\"${PCH_NAME}\" /Fp\"${PRECOMPILED_BINARY}\" /FI\"${PCH_NAME}\""
+                        COMPILE_FLAGS "/Yu\"${PCH_TARGET}\" /Fp\"${PRECOMPILED_BINARY}\" /FI\"${PCH_TARGET}\""
                         OBJECT_DEPENDS "${PRECOMPILED_BINARY}")
                 endif()
             endif()
@@ -77,23 +79,23 @@ macro(add_precompiled_header TARGET_NAME PCH_NAME PCH_SOURCE_NAME)
         if(SOURCE_FILE_FOUND)
             message(STATUS "\tSuccess")
         else()
-            message(FATAL_ERROR "\tA source file for ${PCH_NAME} was not found. Required for MSVC builds.")
+            message(FATAL_ERROR "\tA source file for ${PCH_TARGET} was not found. Required for MSVC builds.")
         endif(SOURCE_FILE_FOUND)
     elseif(CMAKE_GENERATOR STREQUAL Xcode)
         set_target_properties(
             ${TARGET_NAME}
             PROPERTIES
-            XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${PCH_NAME}"
+            XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${PCH_TARGET}"
             XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER "YES"
             )
     elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         # Create and set output directory.
-        set(OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${PCH_NAME}.gch")
+        set(OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${PCH_TARGET}.gch")
         make_directory(${OUTPUT_DIR})
-        set(OUTPUT_NAME "${OUTPUT_DIR}/${PCH_NAME}.gch")
+        set(OUTPUT_NAME "${OUTPUT_DIR}/${PCH_TARGET}.gch")
 
     # Export compiler flags via a generator to a response file
-        set(PCH_FLAGS_FILE "${OUTPUT_DIR}/${PCH_NAME}.rsp")
+        set(PCH_FLAGS_FILE "${OUTPUT_DIR}/${PCH_TARGET}.rsp")
         set(_include_directories "$<TARGET_PROPERTY:${TARGET_NAME},INCLUDE_DIRECTORIES>")
         set(_compile_definitions "$<TARGET_PROPERTY:${TARGET_NAME},COMPILE_DEFINITIONS>")
         set(_compile_flags "$<TARGET_PROPERTY:${TARGET_NAME},COMPILE_FLAGS>")
@@ -119,18 +121,18 @@ macro(add_precompiled_header TARGET_NAME PCH_NAME PCH_SOURCE_NAME)
         endif()
         add_custom_command(
             OUTPUT ${OUTPUT_NAME}
-            COMMAND ${CMAKE_CXX_COMPILER} @${PCH_FLAGS_FILE} ${COMPILER_FLAGS} -x c++-header -std=${CXX_STD} -o ${OUTPUT_NAME} ${PCH_NAME}
-            DEPENDS ${PCH_NAME})
+            COMMAND ${CMAKE_CXX_COMPILER} @${PCH_FLAGS_FILE} ${COMPILER_FLAGS} -x c++-header -std=${CXX_STD} -o ${OUTPUT_NAME} ${PCH_TARGET}
+            DEPENDS ${PCH_TARGET})
         add_custom_target(${TARGET_NAME}_gch DEPENDS ${OUTPUT_NAME})
         add_dependencies(${TARGET_NAME} ${TARGET_NAME}_gch)
 
-        # set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "-include ${PCH_NAME} -Winvalid-pch")
+        # set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "-include ${PCH_TARGET} -Winvalid-pch")
         get_target_property(SOURCE_FILES ${TARGET_NAME} SOURCES)
         get_target_property(asdf ${TARGET_NAME} COMPILE_FLAGS)
         foreach(SOURCE_FILE ${SOURCE_FILES})
             if(SOURCE_FILE MATCHES \\.\(c|cc|cxx|cpp\)$)
                 set_source_files_properties(${SOURCE_FILE} PROPERTIES
-                   COMPILE_FLAGS "-include ${OUTPUT_DIR}/${PCH_NAME} -Winvalid-pch"
+                   COMPILE_FLAGS "-include ${OUTPUT_DIR}/${PCH_TARGET} -Winvalid-pch"
                 )
             endif()
         endforeach()
