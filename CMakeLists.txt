@@ -68,6 +68,7 @@ SET (CMAKE_CXX_STANDARD_REQUIRED ON)
 SET (CMAKE_CXX_EXTENSIONS OFF)
 
 message("Output directory: \t\t${OUTPUT_BINDIR}")
+message("Rex Stl directory: \t\t${REX_STL_DIR}")
 message("Project Source directory: \t\t${PROJECT_SOURCE_DIR}")
 
 # -------------------------------
