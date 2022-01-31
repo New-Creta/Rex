@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 # -------------------------------
 # Options
 # -------------------------------
-option(FETCH_EXTERNALS "Fetch externals" ON)
+option(FETCH_EXTERNALS "Fetch externals" OFF)
 
 # -------------------------------
 # Rex Version
