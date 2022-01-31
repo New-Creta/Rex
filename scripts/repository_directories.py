@@ -1,3 +1,4 @@
+from logging import error
 import os
 
 ##-------------------------------------------------------------------------------
@@ -6,6 +7,8 @@ import os
 ##-------------------------------------------------------------------------------
 ## A git directory is always named the following =>
 git_directory_name = '.git'
+externals_directory_name = "externals"
+rex_stl_directory_name = "rex-stl"
 
 ##------------------------------------------------------------------------------
 cached_git_directory = ""
@@ -23,47 +26,8 @@ def get_git_directory():
 
     print("Looking for git directory ... ")
 
-    max_while_counter = 100
-    while_counter = 0
-
     current_working_directory = os.path.normpath(os.getcwd())
-    print("\tCurrent working directory: " + current_working_directory)
-    current_working_drive = os.path.splitdrive(current_working_directory) 
-    if current_working_drive[0] == None:
-        print("\tOperating system does not support drive letters")
-        return None
-
-    git_directory = ""
-    active_directory = current_working_directory
-
-    directories = __get_subfolders(current_working_directory)
-    while git_directory == "" and while_counter < max_while_counter:
-        ## Prevent infinite loop
-        while_counter += 1
-
-        for d in directories:
-            print("\tdepth: " , while_counter , "found directories: " , os.path.normpath(d))
-
-        indices = [i for i, elem in enumerate(directories) if elem.endswith(git_directory_name)]
-        if not indices:
-            active_directory = os.path.join(active_directory, os.pardir)
-            active_directory = os.path.normpath(active_directory)
-            if active_directory == os.path.normpath(current_working_drive[0] + os.path.sep):
-                print("\t\tWe reached the root of our directory")
-                print("\t\tWe will default to our current directory")
-                break
-            directories = __get_subfolders(active_directory)
-            continue
-
-        git_directory = directories[indices[0]]
-        git_directory = os.path.normpath(git_directory)
-
-    # fail safe
-    if git_directory == "":
-        print("\tFAILSAFE - Could not find the git directory using: " + current_working_directory)
-        git_directory = current_working_directory
-        git_directory = os.path.normpath(git_directory)
-
+    git_directory = __find_folder_in_current_or_above(git_directory_name, current_working_directory)
 
     print("Git directory found: " + git_directory)
     cached_git_directory = git_directory
@@ -86,8 +50,57 @@ def get_root_directory():
     return root_directory
 
 ##-------------------------------------------------------------------------------
+## Retrieve rex-stl directory
+def get_rex_stl_directory():
+    root_dir = get_root_directory()
+    externals_directory = __find_folder_in_current_or_above(externals_directory_name, root_dir)
+    rex_stl_directory = __find_folder_in_current_or_above(rex_stl_directory_name, externals_directory)
+
+    return rex_stl_directory
+
+
+##-------------------------------------------------------------------------------
 ## PRIVATE FUNCTIONS
 
+##-------------------------------------------------------------------------------
+## Find dirname in currentdir or above recursively
+def __find_folder_in_current_or_above(dirname, currentdir):
+    while_counter = 0
+    max_while_counter = 100
+    
+    print("Looking for " + dirname)
+    
+    dirname_target = ""
+    active_directory = currentdir
+
+    while dirname_target == "" and while_counter < max_while_counter:
+        ## Prevent infinite loop
+        sub_folders = __get_subfolders(active_directory)
+        while_counter += 1
+
+        # for sf in sub_folders:
+        #     print("\tdepth: " , while_counter , "found directories: " , os.path.normpath(sf))
+
+        indices = [i for i, elem in enumerate(sub_folders) if elem.endswith(dirname)]
+        if not indices:
+            prev_active_directory = active_directory
+            active_directory = os.path.join(active_directory, os.pardir)
+            active_directory = os.path.normpath(active_directory)
+            
+            if active_directory == prev_active_directory:
+                print("\t\tWe reached the root of our directory")
+                error("\t\tCould not find directory " + dirname)
+                break
+
+            continue
+
+        dirname_target = sub_folders[indices[0]]
+        dirname_target = os.path.normpath(dirname_target)
+    
+    if dirname_target == "":
+        error("\t\tCould not find directory " + dirname +". Max iterations reached(=100)")
+
+    return dirname_target
 ##-------------------------------------------------------------------------------
 ## Get all subfolders inside the given directory
 def __get_subfolders(dirname):
