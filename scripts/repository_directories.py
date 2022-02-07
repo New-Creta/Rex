@@ -50,10 +50,17 @@ def get_root_directory():
     return root_directory
 
 ##-------------------------------------------------------------------------------
-## Retrieve rex-stl directory
-def get_rex_stl_directory():
+## Retrieve external directory
+def get_externals_directory():
     root_dir = get_root_directory()
     externals_directory = __find_folder_in_current_or_above(externals_directory_name, root_dir)
+
+    return externals_directory
+
+##-------------------------------------------------------------------------------
+## Retrieve rex-stl directory
+def get_rex_stl_directory():
+    externals_directory = get_externals_directory()
     rex_stl_directory = __find_folder_in_current_or_above(rex_stl_directory_name, externals_directory)
 
     return rex_stl_directory
