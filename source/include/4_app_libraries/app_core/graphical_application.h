@@ -18,8 +18,8 @@ namespace rex
         void app_update(const FrameInfo& info) override;
         void app_shutdown() override;
 
-        virtual initialize() {};
-        virtual update(const FrameInfo& /*info*/) {};
-        virtual shutdown() {};
-    }
+        virtual void initialize() {};
+        virtual void update(const FrameInfo& /*info*/) {};
+        virtual void shutdown() {};
+    };
 }

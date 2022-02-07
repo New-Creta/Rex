@@ -7,7 +7,7 @@ namespace regina
     class Regina : public rex::GraphicalApplication
     {
     public:
-        Regina(const engine::ApplicationDescription& description);
+        Regina(const rex::ApplicationDescription& description);
         ~Regina() override;
-    }
+    };
 }

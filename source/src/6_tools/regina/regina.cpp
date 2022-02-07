@@ -3,7 +3,7 @@
 #include "regina.h"
 
 //-----------------------------------------------------------------------
-rex::CoreApplication* rex::createApplication()
+rex::CoreApplication* rex::create_application()
 {
     rex::ApplicationDescription description;
 
@@ -15,10 +15,10 @@ rex::CoreApplication* rex::createApplication()
 namespace regina
 {
     //-------------------------------------------------------------------------
-    Application::Application(const rex::ApplicationDescription& description)
+    Regina::Regina(const rex::ApplicationDescription& description)
         : rex::GraphicalApplication(description)
     {
     }
     //-------------------------------------------------------------------------
-    Application::~Application() = default;
+    Regina::~Regina() = default;
 }

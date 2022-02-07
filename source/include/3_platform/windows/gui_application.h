@@ -1,6 +1,6 @@
 #pragma once
 
-#include "coreapplication.h"
+#include "core_application.h"
 
 namespace rex
 {
@@ -22,6 +22,6 @@ namespace rex
             virtual void app_initialize() = 0;
             virtual void app_update(const FrameInfo& info) = 0;
             virtual void app_shutdown() = 0;
-        }
+        };
     }
 }
