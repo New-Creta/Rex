@@ -23,10 +23,14 @@ GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/3_platform/windows src)
 # Create the project
 add_library(Windows STATIC ${Windows_LIBS_INC} ${Windows_LIBS_SRC})
 
+# Compiler definitions
+add_definitions(-DREX_PLATFORM_WINDOWS)
 
 # Set the include directories
 target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows)
 
+# Set the link libraries
+target_link_libraries(Windows PUBLIC Engine)
 
 # Set project properties
 set_target_properties(Windows PROPERTIES FOLDER                                         3_platform)   		# solution folder

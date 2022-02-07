@@ -21,12 +21,14 @@ GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/6_tools/regina src)
 
 
 # Create the project
-add_library(Regina STATIC ${Regina_LIBS_INC} ${Regina_LIBS_SRC})
+add_executable(Regina ${Regina_LIBS_INC} ${Regina_LIBS_SRC})
 
 
 # Set the include directories
 target_include_directories(Regina PUBLIC ${CMAKE_SOURCE_DIR}/source/include/6_tools/regina)
 
+# Set the link libraries
+target_link_libraries(Regina PUBLIC AppCore)
 
 # Set project properties
 set_target_properties(Regina PROPERTIES FOLDER                                         6_tools)   		# solution folder

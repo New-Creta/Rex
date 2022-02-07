@@ -27,6 +27,8 @@ add_library(AppCore STATIC ${AppCore_LIBS_INC} ${AppCore_LIBS_SRC})
 # Set the include directories
 target_include_directories(AppCore PUBLIC ${CMAKE_SOURCE_DIR}/source/include/4_app_libraries/app_core)
 
+# Set the link libraries
+target_link_libraries(AppCore PUBLIC Windows)
 
 # Set project properties
 set_target_properties(AppCore PROPERTIES FOLDER                                         4_app_libraries)   		# solution folder
