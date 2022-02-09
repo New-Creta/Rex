@@ -35,6 +35,9 @@ set_target_properties(AppCore PROPERTIES FOLDER                                 
 set_target_properties(AppCore PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
 	set_target_properties(AppCore PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_target_properties(AppCore PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
+    set_target_properties(AppCore PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
+    set_target_properties(AppCore PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
 
 
 	set_target_properties(AppCore PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    		# unit builds on visual studio

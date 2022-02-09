@@ -37,6 +37,9 @@ set_target_properties(Windows PROPERTIES FOLDER                                 
 set_target_properties(Windows PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
 	set_target_properties(Windows PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_target_properties(Windows PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
+    set_target_properties(Windows PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
+    set_target_properties(Windows PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
 
 
 	set_target_properties(Windows PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    		# unit builds on visual studio

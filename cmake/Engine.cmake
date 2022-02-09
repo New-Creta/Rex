@@ -33,6 +33,9 @@ set_target_properties(Engine PROPERTIES FOLDER                                  
 set_target_properties(Engine PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
 	set_target_properties(Engine PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_target_properties(Engine PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
+    set_target_properties(Engine PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
+    set_target_properties(Engine PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
 
 
 	set_target_properties(Engine PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    		# unit builds on visual studio
