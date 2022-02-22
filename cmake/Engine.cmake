@@ -26,7 +26,10 @@ add_library(Engine STATIC ${Engine_LIBS_INC} ${Engine_LIBS_SRC})
 
 # Set the include directories
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_engine/engine)
+target_include_directories(Engine PUBLIC ${REX_STL_DIR}/source/include/1_Core)
 
+# Set the link libraries
+target_link_libraries(Engine PUBLIC RexStd)
 
 # Set project properties
 set_target_properties(Engine PROPERTIES FOLDER                                         2_engine)   		# solution folder

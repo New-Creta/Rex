@@ -26,9 +26,12 @@ add_executable(Regina ${Regina_LIBS_INC} ${Regina_LIBS_SRC})
 
 # Set the include directories
 target_include_directories(Regina PUBLIC ${CMAKE_SOURCE_DIR}/source/include/6_tools/regina)
+target_include_directories(Regina PUBLIC ${CMAKE_SOURCE_DIR}/source/include/4_app_libraries/app_core)
+target_include_directories(Regina PUBLIC ${REX_STL_DIR}/source/include/1_Core)
 
 # Set the link libraries
 target_link_libraries(Regina PUBLIC AppCore)
+target_link_libraries(Regina PUBLIC RexStd)
 
 # Set project properties
 set_target_properties(Regina PROPERTIES FOLDER                                         6_tools)   		# solution folder
