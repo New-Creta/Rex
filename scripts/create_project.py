@@ -169,8 +169,9 @@ if __name__ == "__main__":
         template +=     "STRING(TOUPPER " + project_name + " UPPER_LIB_NAME)\n"
         template +=     "add_definitions(-D${UPPER_LIB_NAME}_LIB)\n"
     else:
-        template +=     "add_executable(" + project_name + " " + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"    template +=     "\n\n"
+        template +=     "add_executable(" + project_name + " " + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"  
     
+    template +=     "\n\n"
     template +=     "# Set the include directories\n"
     template +=     "target_include_directories(" + project_name + " PUBLIC " + __make_cmake_relative(include_project_folder)   + ")\n"
     template +=     "\n\n"
