@@ -1,3 +1,4 @@
+from http.server import executable
 import os
 import sys
 import datetime
@@ -51,16 +52,24 @@ if __name__ == "__main__":
     if not args.type:
         raise Exception("Please setup the \"type (-t, --type)\" for the project you'd like to generate.")
 
+    is_library = False
+
     static_library_type = "static"
     dynamic_library_type = "dynamic"
+    executable_type = "executable"
 
-    if args.type != static_library_type and args.type != dynamic_library_type:
+    if args.type != static_library_type and args.type != dynamic_library_type and args.type != executable_type:
         raise Exception("Only \"static\" or \"dynamic\" are possible options for the \"type\" argument")
 
     if args.type == static_library_type:
         library_type = static_library_type.upper()
+        is_library = True
     elif args.type == dynamic_library_type:
         library_type = dynamic_library_type.upper()
+        is_library = True
+    elif args.type == executable_type:
+        library_type = executable_type.upper()
+        is_library = False            
     else:
         raise Exception("Unreachable code!")
 
@@ -152,8 +161,16 @@ if __name__ == "__main__":
     template +=     "GROUPSOURCES(" + __make_cmake_relative(src_project_folder)     + " " + src_folder_name + ")\n"
     template +=     "\n\n"
     template +=     "# Create the project\n"
-    template +=     "add_library(" + project_name + " " + library_type + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"
-    template +=     "\n\n"
+    
+    # library or executable
+    if is_library:
+        template +=     "add_library(" + project_name + " " + library_type + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"
+        template +=     "\n"
+        template +=     "STRING(TOUPPER " + project_name + " UPPER_LIB_NAME)\n"
+        template +=     "add_definitions(-D${UPPER_LIB_NAME}_LIB)\n"
+    else:
+        template +=     "add_executable(" + project_name + " " + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"    template +=     "\n\n"
+    
     template +=     "# Set the include directories\n"
     template +=     "target_include_directories(" + project_name + " PUBLIC " + __make_cmake_relative(include_project_folder)   + ")\n"
     template +=     "\n\n"
