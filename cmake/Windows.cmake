@@ -39,7 +39,7 @@ target_link_libraries(Windows PUBLIC glfw)
 set_target_properties(Windows PROPERTIES FOLDER                                         3_platform)   		# solution folder
 set_target_properties(Windows PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
-	set_target_properties(Windows PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_property(Windows PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
 	set_target_properties(Windows PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(Windows PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(Windows PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
@@ -55,7 +55,6 @@ IF(MSVC)
 		set_target_properties(AppCore PROPERTIES VS_GLOBAL_MinUnityFiles                      1)
 		set_target_properties(AppCore PROPERTIES VS_GLOBAL_UnityFilesDirectory                .)
 	ENDIF()
-
 ENDIF()
 
 

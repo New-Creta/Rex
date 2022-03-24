@@ -37,7 +37,7 @@ target_link_libraries(Regina PUBLIC RexStd)
 set_target_properties(Regina PROPERTIES FOLDER                                         6_tools)   		# solution folder
 set_target_properties(Regina PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
-	set_target_properties(Regina PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_property(Regina PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
 	set_target_properties(Regina PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(Regina PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(Regina PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
