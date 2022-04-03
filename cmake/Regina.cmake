@@ -37,21 +37,21 @@ target_link_libraries(Regina PUBLIC RexStd)
 set_target_properties(Regina PROPERTIES FOLDER                                         6_tools)   		# solution folder
 set_target_properties(Regina PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
-	set_property(Regina PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_property(TARGET Regina PROPERTY VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
 	set_target_properties(Regina PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(Regina PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(Regina PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
 
 
 	if (REX_UNITY) # unity builds on visual studio
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    		
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_IncludeInUnityFile                 True)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_OrderInUnityFile                   100)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_CombineFilesOnlyFromTheSameFolder  false)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_MinFilesInUnityFile                2)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_MaxFilesInUnityFile                0)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_MinUnityFiles                      1)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_UnityFilesDirectory                .)
+		set_target_properties(Regina PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    		
+		set_target_properties(Regina PROPERTIES VS_GLOBAL_IncludeInUnityFile                 True)
+		set_target_properties(Regina PROPERTIES VS_GLOBAL_OrderInUnityFile                   100)
+		set_target_properties(Regina PROPERTIES VS_GLOBAL_CombineFilesOnlyFromTheSameFolder  false)
+		set_target_properties(Regina PROPERTIES VS_GLOBAL_MinFilesInUnityFile                2)
+		set_target_properties(Regina PROPERTIES VS_GLOBAL_MaxFilesInUnityFile                0)
+		set_target_properties(Regina PROPERTIES VS_GLOBAL_MinUnityFiles                      1)
+		set_target_properties(Regina PROPERTIES VS_GLOBAL_UnityFilesDirectory                .)
 	ENDIF()
 
 ENDIF()

@@ -35,7 +35,7 @@ target_link_libraries(AppCore PUBLIC Windows)
 set_target_properties(AppCore PROPERTIES FOLDER                                         4_app_libraries)   		# solution folder
 set_target_properties(AppCore PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
-	set_property(AppCore PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_property(TARGET AppCore PROPERTY VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
 	set_target_properties(AppCore PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(AppCore PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(AppCore PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
