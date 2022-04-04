@@ -25,6 +25,9 @@ add_library(Windows STATIC ${Windows_LIBS_INC} ${Windows_LIBS_SRC})
 
 # Compiler definitions
 add_definitions(-DREX_PLATFORM_WINDOWS)
+add_definitions(-DREX_ENABLE_WIN_CALL)
+add_definitions(-DREX_ENABLE_LOGGING)
+add_definitions(-DREX_ENABLE_ASSERTS)
 
 # Set the include directories
 target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows)
