@@ -3,6 +3,8 @@
 #include "gui_application.h"
 #include "window.h"
 
+#include "event_system.h"
+
 #include <rex_stl/memory/unique_ptr.h>
 
 namespace rex
@@ -27,11 +29,15 @@ namespace rex
         {
             m_internal_ptr->window.reset(create_window());
 
+            event_system::subscribe(event_system::EventType::WindowClose, [this]() { mark_for_destroy(); });
+
             app_initialize();
         }
         //-------------------------------------------------------------------------
         void GuiApplication::platform_update(const FrameInfo& info)
         {
+            m_internal_ptr->window->update();
+
             app_update(info);
         }
         //-------------------------------------------------------------------------
