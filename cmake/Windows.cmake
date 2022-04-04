@@ -32,11 +32,9 @@ add_definitions(-DREX_ENABLE_ASSERTS)
 # Set the include directories
 target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows)
 target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_engine/engine)
-target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/externals/glfw/include)
 
 # Set the link libraries
 target_link_libraries(Windows PUBLIC Engine)
-target_link_libraries(Windows PUBLIC glfw)
 
 # Set project properties
 set_target_properties(Windows PROPERTIES FOLDER                                         3_platform)   		# solution folder

@@ -1,6 +1,9 @@
 #pragma once
 
 #include "core_window.h"
+#include "win_types.h"
+
+#include <rex_stl/memory/unique_ptr.h>
 
 struct GLFWwindow;
 
@@ -8,6 +11,8 @@ namespace rex
 {
     namespace win32
     {
+        class WindowClass;
+
         class Window : public CoreWindow
         {
         public:
@@ -18,20 +23,22 @@ namespace rex
 
             void show() override;
             void hide() override;
+            void focus() override;
+            void close() override;
 
-            void make_windowed(int32 newWidth = -1, int32 newHeight = -1) override;
-            void make_fullscreen(int32 newWidth = -1, int32 newHeight = -1) override;
+            int32 width() const override;
+            int32 height() const override;
 
-            int32 get_width() const override;
-            int32 get_height() const override;
+            LResult on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam);
 
         private:
             int32 m_width;
             int32 m_height;
 
-            bool m_fullscreen;
+            rtl::UniquePtr<WindowClass> m_window_class;
 
-            GLFWwindow* m_glfw_window;
+            Hwnd m_hwnd;
+            bool m_is_destroyed;
         };
     }
 }
