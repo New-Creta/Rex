@@ -4,10 +4,14 @@
 
 #include "internal/win_window_class.h"
 
+#include "event_system.h"
+
 #include <rex_stl/algorithms.h>
 #include <rex_stl/math/point.h>
 #include <rex_stl/diagnostics/logging.h>
 #include <rex_stl/diagnostics/win/win_call.h> 
+
+#include <rex_stl/utilities/scopeguard.h>
 
 #include <comdef.h>
 
@@ -47,6 +51,7 @@ namespace rex
         Window::Window(const WindowDescription& description)
             :m_width(description.width)
             ,m_height(description.height)
+            , m_is_destroyed(false)
         {
             m_window_class = rtl::make_unique<WindowClass>(description.title, default_win_procedure);
 
@@ -140,16 +145,17 @@ namespace rex
             // to make sure our messages are successful
             DWORD last_windows_error = GetLastError();
             rtl::win::clear_win_errors();
+            
+            rtl::ScopeGuard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
 
             switch (msg)
             {
             case WM_DESTROY: 
                 m_is_destroyed = true; 
                 PostQuitMessage(0); 
+                event_system::fire_event(event_system::EventType::WindowClose);
                 return 0;
             }
-
-            SetLastError(last_windows_error);
 
             return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
         }
