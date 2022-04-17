@@ -1,2 +1,0 @@
-scripts\update_submodule.py
-scripts\generate_solution.py
