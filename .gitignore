@@ -37,4 +37,11 @@ __pycache__
 # CMake Shadow Build
 build/
 
+# VS Code folder
 .vscode/
+
+# Rex Repository
+_setup_windows.bat
+_run_windows.bat
+_generate_windows.bat
+_build_windows.bat
