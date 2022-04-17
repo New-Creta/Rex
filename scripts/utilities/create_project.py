@@ -92,6 +92,10 @@ if __name__ == "__main__":
     if not os.path.exists(cmake_files_directory):
         raise Exception("\"" + cmake_folder_name + "\" directory was not found.")
 
+    cmake_generated_files_directory = os.path.join(cmake_files_directory, "generated")
+
+    __create_path_if_non_existing(cmake_generated_files_directory)
+
     print("source directory: " + source_files_directory)
     print("cmake directory: " + cmake_files_directory)
 
@@ -177,15 +181,17 @@ if __name__ == "__main__":
     template +=     "ENDIF()\n"
     template +=     "\n\n"
     template +=     "# Compiler options\n"
-    template +=     "target_compile_options(" + project_name + " PRIVATE /W4 /WX /MP)\n"
+    template +=     "IF(MSVC)\n"
+    template +=     "\ttarget_compile_options(" + project_name + " PRIVATE /W4 /WX /MP)\n"
     template +=     "\n\n"
+    template +=     "ENDIF()\n"
     template +=     "# Set precompiled header\n"
     template +=     "add_precompiled_header(" + project_name + " \"" + project_folder + "_pch.h\" \"" + project_folder + "_pch.cpp\")"
 
     template = template.replace("\\", "/")
 
     cmake_project_file_to_write = template
-    cmake_project_file_location = os.path.join(cmake_files_directory, project_name + ".cmake")
+    cmake_project_file_location = os.path.join(cmake_generated_files_directory, project_name + ".cmake")
 
     if not os.path.exists(cmake_project_file_location):
         cmake_list_file_to_write = "\ninclude("+ __make_cmake_relative(cmake_project_file_location) +")"
