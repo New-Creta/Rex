@@ -26,8 +26,7 @@ project(rex VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
 
 message(STATUS "#--------------------- Starting project generation ---------------------")
 message("CMake Version: \t\t${CMAKE_VERSION}")
-message("Architecture: \t\t${CMAKE_GENERATOR_PLATFORM}")
-message("Generating project: \t${PROJECT_NAME} v${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+message("Generating project: \t\t${PROJECT_NAME} v${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # -------------------------------
 # CMake dependencies
@@ -64,7 +63,7 @@ SET (CMAKE_CXX_EXTENSIONS OFF)
 
 message("Output directory: \t\t${OUTPUT_BINDIR}")
 message("Rex Stl directory: \t\t${REX_STL_DIR}")
-message("Project Source directory: \t\t${PROJECT_SOURCE_DIR}")
+message("Project Source directory: \t${PROJECT_SOURCE_DIR}")
 
 # --------------------------------
 # Add subdirectories
