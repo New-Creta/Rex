@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rex_stl/string/string_view.h>
+
 namespace rex
 {
     DEFINE_YES_NO_ENUM(FullScreen);
@@ -7,13 +9,13 @@ namespace rex
     struct WindowDescription
     {
         WindowDescription()
-            :title("rex")
+            : title("rex")
             , width(1280)
             , height(720)
             , fullscreen(FullScreen::No)
         {}
 
-        std::string title;
+        rtl::StringView title;
         int32 width;
         int32 height;
         FullScreen fullscreen;
@@ -28,11 +30,10 @@ namespace rex
 
         virtual void show() = 0;
         virtual void hide() = 0;
+        virtual void focus() = 0;
+        virtual void close() = 0;
 
-        virtual void make_windowed(int32 newWidth = -1, int32 newHeight = -1) = 0;
-        virtual void make_fullscreen(int32 newWidth = -1, int32 newHeight = -1) = 0;
-
-        virtual int32 get_width() const = 0;
-        virtual int32 get_height() const = 0;
+        virtual int32 width() const = 0;
+        virtual int32 height() const = 0;
     };
 }

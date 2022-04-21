@@ -25,35 +25,36 @@ add_library(Windows STATIC ${Windows_LIBS_INC} ${Windows_LIBS_SRC})
 
 # Compiler definitions
 add_definitions(-DREX_PLATFORM_WINDOWS)
+add_definitions(-DREX_ENABLE_WIN_CALL)
+add_definitions(-DREX_ENABLE_LOGGING)
+add_definitions(-DREX_ENABLE_ASSERTS)
 
 # Set the include directories
 target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows)
 target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_engine/engine)
-target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/externals/glfw/include)
 
 # Set the link libraries
 target_link_libraries(Windows PUBLIC Engine)
-target_link_libraries(Windows PUBLIC glfw)
 
 # Set project properties
 set_target_properties(Windows PROPERTIES FOLDER                                         3_platform)   		# solution folder
 set_target_properties(Windows PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
-	set_property(Windows PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_property(TARGET Windows PROPERTY VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
 	set_target_properties(Windows PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(Windows PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(Windows PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
 
 
 	if (REX_UNITY) # unity builds on visual studio
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    		
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_IncludeInUnityFile                 True)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_OrderInUnityFile                   100)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_CombineFilesOnlyFromTheSameFolder  false)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_MinFilesInUnityFile                2)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_MaxFilesInUnityFile                0)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_MinUnityFiles                      1)
-		set_target_properties(AppCore PROPERTIES VS_GLOBAL_UnityFilesDirectory                .)
+		set_target_properties(Windows PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    		
+		set_target_properties(Windows PROPERTIES VS_GLOBAL_IncludeInUnityFile                 True)
+		set_target_properties(Windows PROPERTIES VS_GLOBAL_OrderInUnityFile                   100)
+		set_target_properties(Windows PROPERTIES VS_GLOBAL_CombineFilesOnlyFromTheSameFolder  false)
+		set_target_properties(Windows PROPERTIES VS_GLOBAL_MinFilesInUnityFile                2)
+		set_target_properties(Windows PROPERTIES VS_GLOBAL_MaxFilesInUnityFile                0)
+		set_target_properties(Windows PROPERTIES VS_GLOBAL_MinUnityFiles                      1)
+		set_target_properties(Windows PROPERTIES VS_GLOBAL_UnityFilesDirectory                .)
 	ENDIF()
 ENDIF()
 

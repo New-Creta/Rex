@@ -2,93 +2,163 @@
 
 #include "window.h"
 
-#include <GLFW/glfw3.h>
+#include "internal/win_window_class.h"
+
+#include "event_system.h"
+
+#include <rex_stl/algorithms.h>
+#include <rex_stl/math/point.h>
+#include <rex_stl/diagnostics/logging.h>
+#include <rex_stl/diagnostics/win/win_call.h> 
+
+#include <rex_stl/utilities/scopeguard.h>
+
+#include <comdef.h>
 
 namespace rex
 {
     namespace win32
     {
+        rtl::Point screen_center()
+        {
+            card32 screen_width = GetSystemMetrics(SM_CXSCREEN);
+            card32 screen_height = GetSystemMetrics(SM_CYSCREEN);
+
+            return { static_cast<int16>(screen_width * 0.5f), static_cast<int16>(screen_height * 0.5f) };
+        }
+
+        LResult __stdcall default_win_procedure(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
+        {
+            HWND win_hwnd = reinterpret_cast<HWND>(hwnd);
+            if (msg == WM_CREATE)
+            {
+                CREATESTRUCT* create_struct = reinterpret_cast<CREATESTRUCT*>(lparam);
+                SetWindowLongPtr(win_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(create_struct->lpCreateParams));
+            }
+            else
+            {
+                Window* this_window = reinterpret_cast<Window*>(GetWindowLongPtrW(win_hwnd, GWLP_USERDATA));
+                if (this_window)
+                {
+                    return this_window->on_event(hwnd, msg, wparam, lparam);
+                }
+            }
+
+            return DefWindowProc(win_hwnd, msg, wparam, lparam);
+        }
+
         //-----------------------------------------------------------------
         Window::Window(const WindowDescription& description)
             :m_width(description.width)
             ,m_height(description.height)
-            ,m_fullscreen(description.fullscreen)
+            , m_is_destroyed(false)
         {
-            m_glfw_window = glfwCreateWindow(description.width, description.height, description.title.c_str(), description.fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+            m_window_class = rtl::make_unique<WindowClass>(description.title, default_win_procedure);
 
-            REX_ASSERT(m_glfw_window != nullptr);
-            if (m_glfw_window == nullptr)
+            rtl::Point window_left_top = screen_center();
+            window_left_top.x -= static_cast<int16>(m_width * 0.5f);
+            window_left_top.y -= static_cast<int16>(m_height * 0.5f);
+
+            m_hwnd = WIN_CALL(CreateWindow(
+                m_window_class->class_name().data(),
+                description.title.data(),
+                WS_OVERLAPPED,
+                window_left_top.x, window_left_top.y,
+                m_width, m_height,
+                NULL,
+                NULL,
+                (HINSTANCE)m_window_class->hinstance(),
+                this
+            ));
+
+            if (!m_hwnd)
             {
-                std::cout << "Failed to create GLFW window" << std::endl;
+                REX_ERROR("Failed to create window");
             }
+
+            show();
+            focus();
+
         }
         //-----------------------------------------------------------------
         Window::~Window()
         {
-            glfwDestroyWindow(m_glfw_window);
+            if (!m_is_destroyed)
+            {
+                close();
+            }
         }
 
         //-----------------------------------------------------------------
         void Window::update()
         {
-            while (!glfwWindowShouldClose(m_glfw_window))
+            MSG message = { 0 };
+            while (PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE) > 0)
             {
-                glfwSwapBuffers(m_glfw_window);
-                glfwPollEvents();
+                TranslateMessage(&message);
+                DispatchMessage(&message);
             }
         }
 
         //-----------------------------------------------------------------
         void Window::show()
         {
-            glfwShowWindow(m_glfw_window);
+            ShowWindow((HWND)m_hwnd, SW_SHOW);
         }
         //-----------------------------------------------------------------
         void Window::hide()
         {
-            glfwHideWindow(m_glfw_window);
+            CloseWindow((HWND)m_hwnd);
         }
         //-----------------------------------------------------------------
-        void Window::make_windowed(int32 newWidth /*= -1*/, int32 newHeight /*= -1*/)
+        void Window::focus()
         {
-            m_width = newWidth != -1 && newWidth != m_width ? newWidth : m_width;
-            m_height = newHeight != -1 && newHeight != m_height ? newHeight : m_height;
-
-            const GLFWvidmode* desktop = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-            int32 posx = 0;
-            int32 posy = 0;
-            if (desktop)
-            {
-                posx = static_cast<int32>(std::round((desktop->width - m_width) * 0.5f));
-                posy = static_cast<int32>(std::round((desktop->height - m_height) * 0.5f));
-            }
-
-            const int32 refresh_rate = GLFW_DONT_CARE;
-            glfwSetWindowMonitor(m_glfw_window, NULL, posx, posy, m_width, m_height, refresh_rate);
-
-            m_fullscreen = false;
+            WIN_CALL(SetFocus((HWND)m_hwnd));
         }
         //-----------------------------------------------------------------
-        void Window::make_fullscreen(int32 newWidth /*= -1*/, int32 newHeight /*= -1*/)
+        void Window::close()
         {
-            m_width = newWidth != -1 && newWidth != m_width ? newWidth : m_width;
-            m_height = newHeight != -1 && newHeight != m_height ? newHeight : m_height;
-
-            const int32 refresh_rate = GLFW_DONT_CARE;
-            glfwSetWindowMonitor(m_glfw_window, glfwGetPrimaryMonitor(), 0, 0, m_width, m_height, refresh_rate);
-
-            m_fullscreen = true;
+            m_is_destroyed = true;
+            DestroyWindow((HWND)m_hwnd);
         }
         //-----------------------------------------------------------------
-        int32 Window::get_width() const
+        int32 Window::width() const
         {
             return m_width;
         }
         //-----------------------------------------------------------------
-        int32 Window::get_height() const
+        int32 Window::height() const
         {
             return m_height;
         }
+
+        //-----------------------------------------------------------------
+        LResult Window::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
+        {
+            if (m_is_destroyed)
+            {
+                return 0;
+            }
+
+            // Sometimes Windows set error states between messages
+            // becasue these aren't our fault, we'll ignore those
+            // to make sure our messages are successful
+            DWORD last_windows_error = GetLastError();
+            rtl::win::clear_win_errors();
+            
+            rtl::ScopeGuard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
+
+            switch (msg)
+            {
+            case WM_DESTROY: 
+                m_is_destroyed = true; 
+                PostQuitMessage(0); 
+                event_system::fire_event(event_system::EventType::WindowClose);
+                return 0;
+            }
+
+            return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
+        }
+
     }
 }

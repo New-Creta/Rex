@@ -23,6 +23,9 @@ GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/4_app_libraries/app_core src)
 # Create the project
 add_library(AppCore STATIC ${AppCore_LIBS_INC} ${AppCore_LIBS_SRC})
 
+# Compiler defines
+add_definitions(-DREX_ENABLE_LOGGING)
+add_definitions(-DREX_ENABLE_ASSERTS)
 
 # Set the include directories
 target_include_directories(AppCore PUBLIC ${CMAKE_SOURCE_DIR}/source/include/4_app_libraries/app_core)
@@ -35,7 +38,7 @@ target_link_libraries(AppCore PUBLIC Windows)
 set_target_properties(AppCore PROPERTIES FOLDER                                         4_app_libraries)   		# solution folder
 set_target_properties(AppCore PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
-	set_property(AppCore PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
+	set_property(TARGET AppCore PROPERTY VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
 	set_target_properties(AppCore PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(AppCore PROPERTIES LIBRARY_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
     set_target_properties(AppCore PROPERTIES RUNTIME_OUTPUT_DIRECTORY 					  ${OUTPUT_BINDIR})				# output directory
