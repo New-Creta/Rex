@@ -11,39 +11,39 @@ namespace rex::win32
     struct WindowClass::Internal
     {
         Internal(const rtl::StringView name, WindowProcedureFunc wnd_proc)
-            : m_window_class()
-            , m_name(name)
-            , m_hinstance((HINSTANCE)GetModuleHandleA(NULL))
+            : window_class()
+            , name(name)
+            , hinstance((HINSTANCE)GetModuleHandleA(NULL))
         {
-            ZeroMemory(&m_window_class, sizeof(m_window_class));
+            ZeroMemory(&window_class, sizeof(window_class));
 
             REX_TODO("Make window style data driven");
             REX_TODO("Make window icon data driven");
             REX_TODO("Make window cursor data driven");
 
-            m_window_class.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-            m_window_class.lpfnWndProc = (WNDPROC)wnd_proc;
-            m_window_class.hInstance = m_hinstance;
-            m_window_class.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-            m_window_class.hCursor = LoadCursor(NULL, IDC_ICON);
-            m_window_class.lpszClassName = name.data();
+            window_class.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+            window_class.lpfnWndProc = (WNDPROC)wnd_proc;
+            window_class.hInstance = (HINSTANCE)GetModuleHandleA(NULL);
+            window_class.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+            window_class.hCursor = LoadCursor(NULL, IDC_ICON);
+            window_class.lpszClassName = name.data();
 
-            if (WIN_FAILED(RegisterClass(&m_window_class)))
+            if (WIN_FAILED(RegisterClass(&window_class)))
             {
                 REX_ERROR("Failed to create window class!");
             }
         }
         ~Internal()
         {
-            if (WIN_FAILED(UnregisterClass(m_name.data(), (HINSTANCE)m_hinstance)))
+            if (WIN_FAILED(UnregisterClass(name.data(), (HINSTANCE)hinstance)))
             {
                 REX_ERROR("Failed to destroy window class!");
             }
         }
 
-        WNDCLASS m_window_class;
-        rtl::StringView m_name;
-        HInstance m_hinstance;
+        WNDCLASS window_class;
+        rtl::StringView name;
+        HInstance hinstance;
     };
 }
 
@@ -51,3 +51,13 @@ namespace rex::win32
 rex::win32::WindowClass::WindowClass(const rtl::StringView name, WindowProcedureFunc wnd_proc)
     : m_internal_ptr(std::make_unique<Internal>(wnd_proc))
 {}
+
+const rtl::StringView rex::win32::WindowClass::class_name() const
+{
+    return m_internal_ptr->name;
+}
+
+rex::win32::HInstance rex::win32::WindowClass::hinstance() const
+{
+    return m_internal_ptr->hinstance;
+}

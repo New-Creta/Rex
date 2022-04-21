@@ -19,6 +19,7 @@ namespace rex
 {
     namespace win32
     {
+        //-----------------------------------------------------------------
         rtl::Point screen_center()
         {
             card32 screen_width = GetSystemMetrics(SM_CXSCREEN);
@@ -27,6 +28,7 @@ namespace rex
             return { static_cast<int16>(screen_width * 0.5f), static_cast<int16>(screen_height * 0.5f) };
         }
 
+        //-----------------------------------------------------------------
         LResult __stdcall default_win_procedure(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
         {
             HWND win_hwnd = reinterpret_cast<HWND>(hwnd);
@@ -49,25 +51,23 @@ namespace rex
 
         //-----------------------------------------------------------------
         Window::Window(const WindowDescription& description)
-            :m_width(description.width)
-            ,m_height(description.height)
-            , m_is_destroyed(false)
+            : m_width(description.width)
+            , m_height(description.height)
+            , m_window_class(description.title, default_win_procedure)
         {
-            m_window_class = rtl::make_unique<WindowClass>(description.title, default_win_procedure);
-
             rtl::Point window_left_top = screen_center();
             window_left_top.x -= static_cast<int16>(m_width * 0.5f);
             window_left_top.y -= static_cast<int16>(m_height * 0.5f);
 
             m_hwnd = WIN_CALL(CreateWindow(
-                m_window_class->class_name().data(),
+                m_window_class.class_name().data(),
                 description.title.data(),
                 WS_OVERLAPPED,
                 window_left_top.x, window_left_top.y,
                 m_width, m_height,
                 NULL,
                 NULL,
-                (HINSTANCE)m_window_class->hinstance(),
+                (HINSTANCE)m_window_class.hinstance(),
                 this
             ));
 
@@ -79,14 +79,6 @@ namespace rex
             show();
             focus();
 
-        }
-        //-----------------------------------------------------------------
-        Window::~Window()
-        {
-            if (!m_is_destroyed)
-            {
-                close();
-            }
         }
 
         //-----------------------------------------------------------------
@@ -118,7 +110,6 @@ namespace rex
         //-----------------------------------------------------------------
         void Window::close()
         {
-            m_is_destroyed = true;
             DestroyWindow((HWND)m_hwnd);
         }
         //-----------------------------------------------------------------
@@ -135,11 +126,6 @@ namespace rex
         //-----------------------------------------------------------------
         LResult Window::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
         {
-            if (m_is_destroyed)
-            {
-                return 0;
-            }
-
             // Sometimes Windows set error states between messages
             // becasue these aren't our fault, we'll ignore those
             // to make sure our messages are successful
@@ -150,8 +136,9 @@ namespace rex
 
             switch (msg)
             {
+            case WM_CLOSE:
+                close();
             case WM_DESTROY: 
-                m_is_destroyed = true; 
                 PostQuitMessage(0); 
                 event_system::fire_event(event_system::EventType::WindowClose);
                 return 0;
@@ -159,6 +146,5 @@ namespace rex
 
             return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
         }
-
     }
 }
