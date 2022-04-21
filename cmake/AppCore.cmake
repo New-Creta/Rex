@@ -23,10 +23,6 @@ GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/4_app_libraries/app_core src)
 # Create the project
 add_library(AppCore STATIC ${AppCore_LIBS_INC} ${AppCore_LIBS_SRC})
 
-# Compiler defines
-add_definitions(-DREX_ENABLE_LOGGING)
-add_definitions(-DREX_ENABLE_ASSERTS)
-
 # Set the include directories
 target_include_directories(AppCore PUBLIC ${CMAKE_SOURCE_DIR}/source/include/4_app_libraries/app_core)
 target_include_directories(AppCore PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows)

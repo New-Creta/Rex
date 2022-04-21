@@ -23,10 +23,6 @@ GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/2_engine/engine src)
 # Create the project
 add_library(Engine STATIC ${Engine_LIBS_INC} ${Engine_LIBS_SRC})
 
-# Compiler defines
-add_definitions(-DREX_ENABLE_LOGGING)
-add_definitions(-DREX_ENABLE_ASSERTS)
-
 # Set the include directories
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_engine/engine)
 target_include_directories(Engine PUBLIC ${REX_STL_DIR}/source/include/1_Core)
