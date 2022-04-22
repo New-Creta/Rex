@@ -2,7 +2,7 @@
 $ErrorActionPreference = "Stop"
 
 $cwd = Get-Location
-$external_dir = "$cwd\external"
+$external_dir = "$cwd\externals"
 
 Write-Host "Executing windows\setup.ps1" -ForegroundColor Green
 Write-Host "Current working directory: $cwd"

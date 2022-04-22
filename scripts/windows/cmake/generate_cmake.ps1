@@ -76,7 +76,7 @@ Function generate_cmake
     $cmake_build_command = "--no-warn-unused-cli -H""$cwd"" -B""$cwd\build\$outputDir"" -G ""Visual Studio 16 2019"" -T host=x64 -A x64"
 
     $cmake_build_command += add_cmake_command " -DSBT_PROFILE=1" " -DSBT_PROFILE=0" -switchValue:$profiling
-    $cmake_build_command += add_cmake_command " -DREX_UNITY_BUILD=1" " -DREX_UNITY_BUILD=0" -switchValue:$skip_unity
+    $cmake_build_command += add_cmake_command " -DREX_UNITY_BUILD=0" " -DREX_UNITY_BUILD=1" -switchValue:$skip_unity
 
     Write-Host "Running command: cmake $cmake_build_command"
     $process = Start-Process cmake -ArgumentList $cmake_build_command -NoNewWindow -PassThru -Wait
