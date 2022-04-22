@@ -56,7 +56,7 @@ set(GUI_ONLY_BINARIES boing gears heightmap particles sharing simple splitview
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
-                      FOLDER "GLFW3/Examples")
+                      FOLDER ${EXTERNALS_VS_SF}/GLFW3/Examples)
 
 if (GLFW_USE_OSMESA)
     target_compile_definitions(offscreen PRIVATE USE_NATIVE_OSMESA)

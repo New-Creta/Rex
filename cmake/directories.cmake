@@ -9,3 +9,8 @@ SET (CONTENT_DIR content)
 
 SET (OUTPUT_BINDIR "${PROJECT_BINARY_DIR}/${BIN_DIR}/${REX_BUILD_TARGET}")
 SET (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${INSTALL_DIR}" CACHE STRING "InstallPrefix" FORCE)
+
+# -----------------
+# VS Solution Folder       
+# ----------------- 
+SET (EXTERNALS_VS_SF 0_extern)

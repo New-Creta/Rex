@@ -5,19 +5,19 @@
 # Example: generate_project(static CoreLibs 1_common core_libs)
 
 
-# include path: ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows
-# src path: ${CMAKE_SOURCE_DIR}/source/src/3_platform/windows
+# include path: ${CMAKE_SOURCE_DIR}/source/include/2_platform/windows
+# src path: ${CMAKE_SOURCE_DIR}/source/src/2_platform/windows
 
 
 # Project Name Project
 # -------------------------
-file(GLOB_RECURSE Windows_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows/*.h)
-file(GLOB_RECURSE Windows_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/3_platform/windows/*.cpp)
+file(GLOB_RECURSE Windows_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/2_platform/windows/*.h)
+file(GLOB_RECURSE Windows_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/2_platform/windows/*.cpp)
 
 
 # Create the project filters
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/3_platform/windows include)
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/3_platform/windows src)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/2_platform/windows include)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/2_platform/windows src)
 
 
 # Create the project
@@ -27,14 +27,14 @@ add_library(Windows STATIC ${Windows_LIBS_INC} ${Windows_LIBS_SRC})
 add_definitions(-DREX_PLATFORM_WINDOWS)
 
 # Set the include directories
-target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows)
-target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_engine/engine)
+target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_platform/windows)
+target_include_directories(Windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/1_engine/engine)
 
 # Set the link libraries
 target_link_libraries(Windows PUBLIC Engine)
 
 # Set project properties
-set_target_properties(Windows PROPERTIES FOLDER                                         3_platform)   		# solution folder
+set_target_properties(Windows PROPERTIES FOLDER                                         2_platform)   		# solution folder
 set_target_properties(Windows PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
 	set_property(TARGET Windows PROPERTY VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory

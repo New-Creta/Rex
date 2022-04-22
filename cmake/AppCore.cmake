@@ -5,33 +5,33 @@
 # Example: generate_project(static CoreLibs 1_common core_libs)
 
 
-# include path: ${CMAKE_SOURCE_DIR}/source/include/4_app_libraries/app_core
-# src path: ${CMAKE_SOURCE_DIR}/source/src/4_app_libraries/app_core
+# include path: ${CMAKE_SOURCE_DIR}/source/include/3_app_libraries/app_core
+# src path: ${CMAKE_SOURCE_DIR}/source/src/3_app_libraries/app_core
 
 
 # Project Name Project
 # -------------------------
-file(GLOB_RECURSE AppCore_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/4_app_libraries/app_core/*.h)
-file(GLOB_RECURSE AppCore_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/4_app_libraries/app_core/*.cpp)
+file(GLOB_RECURSE AppCore_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/3_app_libraries/app_core/*.h)
+file(GLOB_RECURSE AppCore_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/3_app_libraries/app_core/*.cpp)
 
 
 # Create the project filters
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/4_app_libraries/app_core include)
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/4_app_libraries/app_core src)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/3_app_libraries/app_core include)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/3_app_libraries/app_core src)
 
 
 # Create the project
 add_library(AppCore STATIC ${AppCore_LIBS_INC} ${AppCore_LIBS_SRC})
 
 # Set the include directories
-target_include_directories(AppCore PUBLIC ${CMAKE_SOURCE_DIR}/source/include/4_app_libraries/app_core)
-target_include_directories(AppCore PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_platform/windows)
+target_include_directories(AppCore PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_app_libraries/app_core)
+target_include_directories(AppCore PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_platform/windows)
 
 # Set the link libraries
 target_link_libraries(AppCore PUBLIC Windows)
 
 # Set project properties
-set_target_properties(AppCore PROPERTIES FOLDER                                         4_app_libraries)   		# solution folder
+set_target_properties(AppCore PROPERTIES FOLDER                                         3_app_libraries)   		# solution folder
 set_target_properties(AppCore PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
 	set_property(TARGET AppCore PROPERTY VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory

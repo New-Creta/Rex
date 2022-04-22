@@ -5,33 +5,33 @@
 # Example: generate_project(static CoreLibs 1_common core_libs)
 
 
-# include path: ${CMAKE_SOURCE_DIR}/source/include/2_engine/engine
-# src path: ${CMAKE_SOURCE_DIR}/source/src/2_engine/engine
+# include path: ${CMAKE_SOURCE_DIR}/source/include/1_engine/engine
+# src path: ${CMAKE_SOURCE_DIR}/source/src/1_engine/engine
 
 
 # Project Name Project
 # -------------------------
-file(GLOB_RECURSE Engine_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/2_engine/engine/*.h)
-file(GLOB_RECURSE Engine_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/2_engine/engine/*.cpp)
+file(GLOB_RECURSE Engine_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/1_engine/engine/*.h)
+file(GLOB_RECURSE Engine_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/1_engine/engine/*.cpp)
 
 
 # Create the project filters
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/2_engine/engine include)
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/2_engine/engine src)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/1_engine/engine include)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/1_engine/engine src)
 
 
 # Create the project
 add_library(Engine STATIC ${Engine_LIBS_INC} ${Engine_LIBS_SRC})
 
 # Set the include directories
-target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_engine/engine)
+target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/1_engine/engine)
 target_include_directories(Engine PUBLIC ${REX_STL_DIR}/source/include/1_Core)
 
 # Set the link libraries
 target_link_libraries(Engine PUBLIC RexStd)
 
 # Set project properties
-set_target_properties(Engine PROPERTIES FOLDER                                         2_engine)   		# solution folder
+set_target_properties(Engine PROPERTIES FOLDER                                         1_engine)   		# solution folder
 set_target_properties(Engine PROPERTIES DEFINE_SYMBOL                                  "" )                     		# defines
 IF(MSVC)
 	set_property(TARGET Engine PROPERTY VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        		# working directory
