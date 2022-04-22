@@ -1,3 +1,4 @@
+from http.server import executable
 import os
 import sys
 import datetime
@@ -51,16 +52,24 @@ if __name__ == "__main__":
     if not args.type:
         raise Exception("Please setup the \"type (-t, --type)\" for the project you'd like to generate.")
 
+    is_library = False
+
     static_library_type = "static"
     dynamic_library_type = "dynamic"
+    executable_type = "executable"
 
-    if args.type != static_library_type and args.type != dynamic_library_type:
+    if args.type != static_library_type and args.type != dynamic_library_type and args.type != executable_type:
         raise Exception("Only \"static\" or \"dynamic\" are possible options for the \"type\" argument")
 
     if args.type == static_library_type:
         library_type = static_library_type.upper()
+        is_library = True
     elif args.type == dynamic_library_type:
         library_type = dynamic_library_type.upper()
+        is_library = True
+    elif args.type == executable_type:
+        library_type = executable_type.upper()
+        is_library = False            
     else:
         raise Exception("Unreachable code!")
 
@@ -152,7 +161,16 @@ if __name__ == "__main__":
     template +=     "GROUPSOURCES(" + __make_cmake_relative(src_project_folder)     + " " + src_folder_name + ")\n"
     template +=     "\n\n"
     template +=     "# Create the project\n"
-    template +=     "add_library(" + project_name + " " + library_type + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"
+    
+    # library or executable
+    if is_library:
+        template +=     "add_library(" + project_name + " " + library_type + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"
+        template +=     "\n"
+        template +=     "STRING(TOUPPER " + project_name + " UPPER_LIB_NAME)\n"
+        template +=     "add_definitions(-D${UPPER_LIB_NAME}_LIB)\n"
+    else:
+        template +=     "add_executable(" + project_name + " " + " ${" + project_name + "_LIBS_INC} ${" + project_name + "_LIBS_SRC})\n"  
+    
     template +=     "\n\n"
     template +=     "# Set the include directories\n"
     template +=     "target_include_directories(" + project_name + " PUBLIC " + __make_cmake_relative(include_project_folder)   + ")\n"
@@ -161,23 +179,27 @@ if __name__ == "__main__":
     template +=     "set_target_properties(" + project_name + " PROPERTIES FOLDER                                         " + solution_folder + ")   \t\t# solution folder\n"
     template +=     "set_target_properties(" + project_name + " PROPERTIES DEFINE_SYMBOL                                  \"\" )                     \t\t# defines\n"
     template +=     "IF(MSVC)\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        \t\t# working directory\n"
+    template +=     "\tset_property(" + project_name + " PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                ${OUTPUT_BINDIR})        \t\t# working directory\n"
     template +=     "\tset_target_properties(" + project_name + " PROPERTIES ARCHIVE_OUTPUT_DIRECTORY                     ${OUTPUT_BINDIR})        \t\t# output directory\n"
     template +=     "\tset_target_properties(" + project_name + " PROPERTIES LIBRARY_OUTPUT_DIRECTORY                     ${OUTPUT_BINDIR})        \t\t# output directory\n"
     template +=     "\tset_target_properties(" + project_name + " PROPERTIES RUNTIME_OUTPUT_DIRECTORY                     ${OUTPUT_BINDIR})        \t\t# output directory\n"
     template +=     "\n\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    \t\t# unit builds on visual studio\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_IncludeInUnityFile                 True)\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_OrderInUnityFile                   100)\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_CombineFilesOnlyFromTheSameFolder  false)\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_MinFilesInUnityFile                2)\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_MaxFilesInUnityFile                0)\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_MinUnityFiles                      1)\n"
-    template +=     "\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_UnityFilesDirectory                .)\n"
+    template +=     "\t\tIF(REX_UNITY)\n"
+    template +=     "\t\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_EnableUnitySupport                 True)                    \t\t# unit builds on visual studio\n"
+    template +=     "\t\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_IncludeInUnityFile                 True)\n"
+    template +=     "\t\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_OrderInUnityFile                   100)\n"
+    template +=     "\t\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_CombineFilesOnlyFromTheSameFolder  false)\n"
+    template +=     "\t\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_MinFilesInUnityFile                2)\n"
+    template +=     "\t\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_MaxFilesInUnityFile                0)\n"
+    template +=     "\t\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_MinUnityFiles                      1)\n"
+    template +=     "\t\tset_target_properties(" + project_name + " PROPERTIES VS_GLOBAL_UnityFilesDirectory                .)\n"
+    template +=     "\tENDIF()\n"
     template +=     "ENDIF()\n"
     template +=     "\n\n"
     template +=     "# Compiler options\n"
-    template +=     "target_compile_options(" + project_name + " PRIVATE /W4 /WX /MP)\n"
+    template +=     "IF(MSVC)\n"
+    template +=     "\ttarget_compile_options(" + project_name + " PRIVATE /W4 /WX /MP)\n"
+    template +=     "ENDIF()\n"
     template +=     "\n\n"
     template +=     "# Set precompiled header\n"
     template +=     "add_precompiled_header(" + project_name + " \"" + project_folder + "_pch.h\" \"" + project_folder + "_pch.cpp\")"
