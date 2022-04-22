@@ -3,6 +3,7 @@
 #include "win_types.h"
 
 #include <rex_stl/string/string_view.h>
+#include <rex_stl/memory/unique_ptr.h>
 
 namespace rex
 {
@@ -18,7 +19,7 @@ namespace rex
 
         private:
             struct Internal;
-            std::unique_ptr<Internal> m_internal_ptr;
+            rtl::UniquePtr<Internal> m_internal_ptr;
         };
     }
 }

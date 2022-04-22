@@ -49,7 +49,7 @@ namespace rex::win32
 
 //-----------------------------------------------------------------
 rex::win32::WindowClass::WindowClass(const rtl::StringView name, WindowProcedureFunc wnd_proc)
-    : m_internal_ptr(std::make_unique<Internal>(wnd_proc))
+    : m_internal_ptr(rtl::make_unique<Internal>(wnd_proc))
 {}
 
 const rtl::StringView rex::win32::WindowClass::class_name() const
