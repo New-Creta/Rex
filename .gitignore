@@ -39,6 +39,7 @@ build/
 
 # VS Code folder
 .vscode/
+*.bak
 
 # Rex Repository
 _setup_windows.bat
