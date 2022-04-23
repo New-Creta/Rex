@@ -5,19 +5,19 @@
 # Example: generate_project(static CoreLibs 1_common core_libs)
 
 
-# include path: ${CMAKE_SOURCE_DIR}/source/include/6_tools/regina
-# src path: ${CMAKE_SOURCE_DIR}/source/src/6_tools/regina
+# include path: ${CMAKE_SOURCE_DIR}/source/include/5_tools/regina
+# src path: ${CMAKE_SOURCE_DIR}/source/src/5_tools/regina
 
 
 # Project Name Project
 # -------------------------
-file(GLOB_RECURSE regina_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/6_tools/regina/*.h)
-file(GLOB_RECURSE regina_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/6_tools/regina/*.cpp)
+file(GLOB_RECURSE regina_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/5_tools/regina/*.h)
+file(GLOB_RECURSE regina_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/5_tools/regina/*.cpp)
 
 
 # Create the project filters
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/6_tools/regina include)
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/6_tools/regina src)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/5_tools/regina include)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/5_tools/regina src)
 
 
 # Create the project
@@ -25,14 +25,15 @@ add_executable(regina ${regina_LIBS_INC} ${regina_LIBS_SRC})
 
 
 # Set the include directories
-target_include_directories(regina PUBLIC ${CMAKE_SOURCE_DIR}/source/include/6_tools/regina)
+target_include_directories(regina PUBLIC ${CMAKE_SOURCE_DIR}/source/include/5_tools/regina)
 
 # Set the link libraries
 target_link_libraries(regina PUBLIC rex_application_core)
 
 # Set project properties
-set_target_properties(regina PROPERTIES FOLDER                                         	6_tools)   		# solution folder
+set_target_properties(regina PROPERTIES FOLDER                                         	5_tools)   						# solution folder
 set_target_properties(regina PROPERTIES DEFINE_SYMBOL                                  	"" )                     		# defines
+set_target_properties(regina PROPERTIES DEBUG_POSTFIX 									${CMAKE_DEBUG_POSTFIX})			# debug post fix
 IF(MSVC)
 	set_target_properties(regina PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY               ${OUTPUT_BINDIR})        		# working directory
 	set_target_properties(regina PROPERTIES ARCHIVE_OUTPUT_DIRECTORY 					${OUTPUT_BINDIR})				# output directory

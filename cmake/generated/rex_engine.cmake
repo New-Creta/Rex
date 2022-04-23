@@ -5,19 +5,20 @@
 # Example: generate_project(static CoreLibs 1_common core_libs)
 
 
-# include path: ${CMAKE_SOURCE_DIR}/source/include/2_engine/rex_engine
-# src path: ${CMAKE_SOURCE_DIR}/source/src/2_engine/rex_engine
+# include path: ${CMAKE_SOURCE_DIR}/source/include/1_engine/rex_engine
+# src path: ${CMAKE_SOURCE_DIR}/source/src/1_engine/rex_engine
 
 
 # Project Name Project
 # -------------------------
-file(GLOB_RECURSE rex_engine_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/2_engine/rex_engine/*.h)
-file(GLOB_RECURSE rex_engine_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/2_engine/rex_engine/*.cpp)
+file(GLOB_RECURSE rex_engine_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/1_engine/rex_engine/*.h)
+file(GLOB_RECURSE rex_engine_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/1_engine/rex_engine/*.cpp)
 
 
 # Create the project filters
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/2_engine/rex_engine include)
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/2_engine/rex_engine src)
+message(STATUS "sourcedir: ${CMAKE_SOURCE_DIR}")
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/1_engine/rex_engine include)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/1_engine/rex_engine src)
 
 
 # Create the project
@@ -25,11 +26,13 @@ add_library(rex_engine STATIC ${rex_engine_LIBS_INC} ${rex_engine_LIBS_SRC})
 
 
 # Set the include directories
-target_include_directories(rex_engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_engine/rex_engine)
+target_include_directories(rex_engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/1_engine/rex_engine)
+target_include_directories(rex_engine PUBLIC ${REX_STL_DIR}/include/1_Core)
 
+target_link_libraries(rex_engine PUBLIC RexStd)
 
 # Set project properties
-set_target_properties(rex_engine PROPERTIES FOLDER                                         		2_engine)   					# solution folder
+set_target_properties(rex_engine PROPERTIES FOLDER                                         		1_engine)   					# solution folder
 set_target_properties(rex_engine PROPERTIES DEFINE_SYMBOL                                  		"" )                     		# defines
 IF(MSVC)
 	set_target_properties(rex_engine PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                	${OUTPUT_BINDIR})        		# working directory

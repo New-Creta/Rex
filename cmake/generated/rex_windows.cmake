@@ -5,18 +5,18 @@
 # Example: generate_project(static CoreLibs 1_common core_libs)
 
 
-# include path: ${CMAKE_SOURCE_DIR}/source/include/3_platform/rex_windows
-# src path: ${CMAKE_SOURCE_DIR}/source/src/3_platform/rex_windows
+# include path: ${CMAKE_SOURCE_DIR}/source/include/2_platform/rex_windows
+# src path: ${CMAKE_SOURCE_DIR}/source/src/2_platform/rex_windows
 
 
 # Project Name Project
 # -------------------------
-file(GLOB_RECURSE rex_windows_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/3_platform/rex_windows/*.h)
-file(GLOB_RECURSE rex_windows_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/3_platform/rex_windows/*.cpp)
+file(GLOB_RECURSE rex_windows_LIBS_INC    ${CMAKE_SOURCE_DIR}/source/include/2_platform/rex_windows/*.h)
+file(GLOB_RECURSE rex_windows_LIBS_SRC    ${CMAKE_SOURCE_DIR}/source/src/2_platform/rex_windows/*.cpp)
 
 # Create the project filters
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/3_platform/rex_windows include)
-GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/3_platform/rex_windows src)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/include/2_platform/rex_windows include)
+GROUPSOURCES(${CMAKE_SOURCE_DIR}/source/src/2_platform/rex_windows src)
 
 # Create the project
 add_library(rex_windows STATIC ${rex_windows_LIBS_INC} ${rex_windows_LIBS_SRC})
@@ -25,13 +25,13 @@ add_library(rex_windows STATIC ${rex_windows_LIBS_INC} ${rex_windows_LIBS_SRC})
 add_definitions(-DREX_PLATFORM_WINDOWS)
 
 # Set the include directories
-target_include_directories(rex_windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/3_platform/rex_windows)
+target_include_directories(rex_windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_platform/rex_windows)
 
 # Set the link libraries
 target_link_libraries(rex_windows PUBLIC rex_engine)
 
 # Set project properties
-set_target_properties(rex_windows PROPERTIES FOLDER                                         	3_platform)   					# solution folder
+set_target_properties(rex_windows PROPERTIES FOLDER                                         	2_platform)   					# solution folder
 set_target_properties(rex_windows PROPERTIES DEFINE_SYMBOL                                  	"" )                     		# defines
 IF(MSVC)
 	set_target_properties(rex_windows PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY                	${OUTPUT_BINDIR})        		# working directory
