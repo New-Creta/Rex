@@ -1,8 +1,8 @@
 param (
      [string]$output_dir = "windows",       		# where to output the shadow build
-	 [string]$project_name = "rex",	# which project to build
+	 [string]$project_name = "rex",	                # which project to build
 
-     [switch]$clear = $false,        				# Should we clear instead of building the soluction
+     [switch]$clear = $false        				# Should we clear instead of building the soluction
 )
 
 # Don't allow our script to continue if any errors are observed

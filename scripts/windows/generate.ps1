@@ -10,7 +10,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 $cwd = Get-Location
-$external_dir = "$cwd\externals"
+$external_dir = "$cwd/externals"
 
 Write-Host "Executing windows/generate.ps1" -ForegroundColor Green
 Write-Host "Current working directory: $cwd"
@@ -33,7 +33,7 @@ if($clear)
 else
 {
     Write-Host "Execute Windows project generation ..."
-    generate_cmake $output_dir -unity:$skip_unity -profiling:$profiling
+    generate_cmake $output_dir $external_dir -unity:$skip_unity -profiling:$profiling
 }
 
 Write-Host "Generation script completed" -ForegroundColor green

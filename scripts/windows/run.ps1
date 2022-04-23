@@ -20,7 +20,7 @@ if($help)
 $ErrorActionPreference = "Stop"
 
 $cwd = Get-Location
-$build_dir = $cwd\build
+$build_dir = "$cwd\build"
 $bin_dir = "$build_dir\$output_dir\bin"
 
 Write-Host "Executing windows/run.ps1" -ForegroundColor Green
