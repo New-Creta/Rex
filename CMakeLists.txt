@@ -35,6 +35,26 @@ include(cmake\\precompiled_header.cmake)
 include(cmake\\utilities.cmake)
 include(cmake\\directories.cmake)
 
+# -------------------------------
+# Setup project output directories
+# -------------------------------
+# Debug
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG 			"${OUTPUT_BINDIR}")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG 			"${OUTPUT_BINDIR}")
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG 			"${OUTPUT_BINDIR}")
+# Release configuration with minimum size
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL 		"${OUTPUT_BINDIR}")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_MINSIZEREL 		"${OUTPUT_BINDIR}")
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_MINSIZEREL 		"${OUTPUT_BINDIR}")
+# Release configuration with debug information
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO 	"${OUTPUT_BINDIR}")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELWITHDEBINFO 	"${OUTPUT_BINDIR}")
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELWITHDEBINFO 	"${OUTPUT_BINDIR}")
+# Release configuration
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE 		"${OUTPUT_BINDIR}")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE 		"${OUTPUT_BINDIR}")
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE 		"${OUTPUT_BINDIR}")
+
 # --------------------------
 # Setup global properties
 # --------------------------
@@ -61,6 +81,9 @@ SET (CMAKE_CXX_STANDARD 20)
 SET (CMAKE_CXX_STANDARD_REQUIRED ON)
 SET (CMAKE_CXX_EXTENSIONS OFF)
 
+# Convert the incoming path to a path CMAKE understands
+file(TO_CMAKE_PATH ${REX_STL_DIR} REX_STL_DIR)
+
 message("Output directory: \t\t${OUTPUT_BINDIR}")
 message("Rex Stl directory: \t\t${REX_STL_DIR}")
 message("Project Source directory: \t${PROJECT_SOURCE_DIR}")
@@ -68,6 +91,7 @@ message("Project Source directory: \t${PROJECT_SOURCE_DIR}")
 # --------------------------------
 # Add subdirectories
 # --------------------------------
+
 add_subdirectory(${EXTERNALS_DIR})
 add_subdirectory(${SRC_DIR})
 
