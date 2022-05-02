@@ -1,22 +1,22 @@
 #pragma once
 
 #include "platform.h"
-#include "gui_application.h"
+#include "win32_application.h"
 
 namespace rex
 {
     struct FrameInfo;
 
-    class GraphicalApplication : public GuiApplication
+    class GraphicalApplication : public win32::Application
     {
     public:
         GraphicalApplication(const ApplicationDescription& description);
         ~GraphicalApplication() override;
 
     protected:
-        void app_initialize() override;
-        void app_update(const FrameInfo& info) override;
-        void app_shutdown() override;
+        void on_app_initialize() override;
+        void on_app_update(const FrameInfo& info) override;
+        void on_app_shutdown() override;
 
         virtual void initialize() {};
         virtual void update(const FrameInfo& /*info*/) {};

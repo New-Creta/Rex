@@ -4,38 +4,47 @@
 
 namespace rex
 {
-    struct FrameInfo;
+    class ApplicationArguments;
 
     struct ApplicationDescription
     {
         ApplicationDescription()
             :max_fps(144)
+            ,window_width(1280)
+            ,window_height(720)
         {}
 
-        int max_fps;
+        int32 max_fps;
+
+        int32 window_width;
+        int32 window_height;
     };
 
     class CoreApplication
     {
     public:
+        static CoreApplication* get_instance();
+
         CoreApplication(const ApplicationDescription& description);
         virtual ~CoreApplication();
 
-        bool is_running() const;
+        int32 run();
 
-        int run();
-        void quit();
+        virtual void quit() = 0;
 
     protected:
-        void mark_for_destroy();
+        const ApplicationDescription& get_application_description() const;
 
-        virtual void platform_initialize() = 0;
-        virtual void platform_update(const FrameInfo& info) = 0;
-        virtual void platform_shutdown() = 0;
+        bool initialize();
+        bool shutdown();
+        
+        virtual bool platform_initialize() = 0;
+        virtual bool platform_shutdown() = 0;
 
     private:
-        struct Internal;
-        std::unique_ptr<Internal> m_internal_ptr;
+        static CoreApplication* s_instance;
+
+        ApplicationDescription m_description;
     };
 
     // This will be implemented by the CLIENT!

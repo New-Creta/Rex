@@ -6,23 +6,23 @@ namespace rex
 {
     //-------------------------------------------------------------------------
     GraphicalApplication::GraphicalApplication(const ApplicationDescription& description)
-        :GuiApplication(description)
+        :win32::Application(description)
     {}
     //-------------------------------------------------------------------------
     GraphicalApplication::~GraphicalApplication() = default;
 
     //-------------------------------------------------------------------------
-    void GraphicalApplication::app_initialize()
+    void GraphicalApplication::on_app_initialize()
     {
         initialize();
     }
     //-------------------------------------------------------------------------
-    void GraphicalApplication::app_update(const FrameInfo& info)
+    void GraphicalApplication::on_app_update(const FrameInfo& info)
     {
         update(info);
     }
     //-------------------------------------------------------------------------
-    void GraphicalApplication::app_shutdown()
+    void GraphicalApplication::on_app_shutdown()
     {
         shutdown();
     }

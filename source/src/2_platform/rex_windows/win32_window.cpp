@@ -1,6 +1,6 @@
 #include "rex_windows_pch.h"
 
-#include "window.h"
+#include "win32_window.h"
 
 #include "internal/win_window_class.h"
 

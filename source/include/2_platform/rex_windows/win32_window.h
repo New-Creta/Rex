@@ -21,6 +21,7 @@ namespace rex
 
             void show() override;
             void hide() override;
+            
             void focus() override;
             void close() override;
 

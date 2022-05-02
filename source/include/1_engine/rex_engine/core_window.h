@@ -12,13 +12,12 @@ namespace rex
             : title("rex")
             , width(1280)
             , height(720)
-            , fullscreen(FullScreen::No)
         {}
 
         rtl::StringView title;
+        
         int32 width;
         int32 height;
-        FullScreen fullscreen;
     };
 
     class CoreWindow
