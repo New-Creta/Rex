@@ -26,9 +26,13 @@ add_definitions(-DREX_PLATFORM_WINDOWS)
 
 # Set the include directories
 target_include_directories(rex_windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_platform/rex_windows)
+target_include_directories(rex_windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_platform/rex_std)
+target_include_directories(rex_windows PUBLIC ${CMAKE_SOURCE_DIR}/source/include/2_platform/rex_events)
 
 # Set the link libraries
 target_link_libraries(rex_windows PUBLIC rex_engine)
+target_link_libraries(rex_windows PUBLIC rex_std)
+target_link_libraries(rex_windows PUBLIC rex_events)
 
 # Set project properties
 set_target_properties(rex_windows PROPERTIES FOLDER                                         	2_platform)   					# solution folder

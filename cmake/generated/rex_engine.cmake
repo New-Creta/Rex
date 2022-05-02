@@ -27,9 +27,13 @@ add_library(rex_engine STATIC ${rex_engine_LIBS_INC} ${rex_engine_LIBS_SRC})
 
 # Set the include directories
 target_include_directories(rex_engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/1_engine/rex_engine)
+target_include_directories(rex_engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/1_engine/rex_std)
+target_include_directories(rex_engine PUBLIC ${CMAKE_SOURCE_DIR}/source/include/1_engine/rex_events)
 target_include_directories(rex_engine PUBLIC ${REX_STL_DIR}/include/1_Core)
 
 target_link_libraries(rex_engine PUBLIC RexStd)
+target_link_libraries(rex_engine PUBLIC rex_std)
+target_link_libraries(rex_engine PUBLIC rex_events)
 
 # Set project properties
 set_target_properties(rex_engine PROPERTIES FOLDER                                         		1_engine)   					# solution folder
