@@ -17,12 +17,7 @@ namespace rex
                 return;
             }
 
-            if (dst.m_size == 0)
-            {
-                dst.allocate(src.m_size);
-                dst.zero_initialize();
-            }
-
+            // R_ASSERT(dst.m_size != 0)
             // R_ASSERT(dst.m_size >= src.m_size);
 
             memcpy(dst.m_data.get(), src.m_data.get(), src.m_size);
@@ -47,12 +42,7 @@ namespace rex
             // R_ASSERT(src != nullptr);
             // R_ASSERT(size != 0);
 
-            if (dst.m_size == 0)
-            {
-                dst.allocate(size);
-                dst.zero_initialize();
-            }
-
+            // R_ASSERT(dst.m_size != 0)
             // R_ASSERT(dst.m_size >= size);
 
             memcpy(dst.m_data.get(), src, size);
@@ -64,64 +54,28 @@ namespace rex
             , m_size(0_bytes)
         {
         }
-        //-------------------------------------------------------------------------
-        Blob::Blob(const Blob& other)
-        {
-            if (m_data)
-            {
-                release();
-            }
 
-            allocate(other.m_size);
-            zero_initialize();
-
-            memcpy(m_data.get(), other.m_data.get(), m_size);
-        }
         //-------------------------------------------------------------------------
         Blob::Blob(Blob&& other) noexcept 
             : m_data(std::exchange(other.m_data, nullptr))
-            , m_size(std::exchange(other.m_size, 0))
+            , m_size(std::exchange(other.m_size, 0_bytes))
         {
         }
         //-------------------------------------------------------------------------
         Blob::Blob(rtl::UniquePtr<memory::byte> data, const rtl::MemorySize& dataSize)
-            : m_data(std::exchange(fileData, nullptr))
-            , m_size(fileSize)
+            : m_data(std::exchange(data, nullptr))
+            , m_size(dataSize)
         {
         }
 
-        //-------------------------------------------------------------------------
-        Blob& Blob::operator=(const Blob& other)
-        {
-            // Guard self assignment
-            if (this == &other)
-            {
-                return *this;
-            }
-
-            if (m_data)
-            {
-                release();
-            }
-
-            allocate(other.m_size);
-            zero_initialize();
-
-            memcpy(m_data.get(), other.m_data.get(), m_size);
-
-            return *this;
-        }
         //-------------------------------------------------------------------------
         Blob& Blob::operator=(Blob&& other) noexcept
         {
             // Guard self assignment
-            if (this == &other)
-            {
-                return *this;
-            }
+            //R_ASSERT(this == &other);
 
             m_data = std::exchange(other.m_data, nullptr);
-            m_size = std::exchange(other.m_size, 0);
+            m_size = std::exchange(other.m_size, 0_bytes);
 
             return *this;
         }
@@ -135,7 +89,7 @@ namespace rex
         //-------------------------------------------------------------------------
         memory::byte& Blob::operator[](int32 index)
         {
-            return ((byte*)m_data.get())[index];
+            return m_data.get()[index];
         }
         //-------------------------------------------------------------------------
         const memory::byte& Blob::operator[](int32 index) const
@@ -155,14 +109,14 @@ namespace rex
                 return;
             }
 
-            m_data = std::unique_ptr<memory::byte>(new memory::byte[inSize]);
+            m_data = rtl::UniquePtr<memory::byte>(new memory::byte[inSize]);
             m_size = inSize;
         }
         //-------------------------------------------------------------------------
         void Blob::release()
         {
             m_data.reset();
-            m_size = 0;
+            m_size = 0_bytes;
         }
         //-------------------------------------------------------------------------
         void Blob::zero_initialize()
@@ -174,13 +128,21 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        memory::byte* Blob::read_bytes(const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset) const
+        rex::memory::byte* Blob::read_bytes(memory::byte* dst, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset)
         {
             // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
 
-            byte* buffer = new byte[inSize];
-            memcpy(buffer, (byte*)m_data.get() + inOffset, inSize);
-            return buffer;
+            memcpy(dst, (byte*)m_data.get() + inOffset, inSize);
+            return dst;
+        }
+
+        //-------------------------------------------------------------------------
+        const memory::byte* Blob::read_bytes(memory::byte* dst, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset) const
+        {
+            // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
+
+            memcpy(dst, (byte*)m_data.get() + inOffset, inSize);
+            return dst;
         }
 
         //-------------------------------------------------------------------------
@@ -192,18 +154,18 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        memory::byte* Blob::get_data()
+        memory::byte* Blob::data()
         {
             return m_data.get();
         }
         //-------------------------------------------------------------------------
-        const memory::byte* Blob::get_data() const
+        const memory::byte* Blob::data() const
         {
             return m_data.get();
         }
 
         //-------------------------------------------------------------------------
-        const rtl::MemorySize& Blob::get_size() const
+        const rtl::MemorySize& Blob::size() const
         {
             return m_size;
         }

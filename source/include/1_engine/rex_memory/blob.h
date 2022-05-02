@@ -1,8 +1,5 @@
 #pragma once
 
-#include "memory/memory_size.h"
-#include "memory/unique_ptr.h"
-
 namespace rex
 {
     namespace memory
@@ -15,14 +12,14 @@ namespace rex
             static void copy(void* src, const rtl::MemorySize& size, Blob& dst);
 
             Blob();
-            Blob(const Blob& other);
+            Blob(const Blob& other) = delete;
             Blob(Blob&& other) noexcept;
             Blob(rtl::UniquePtr<memory::byte> data, const rtl::MemorySize& dataSize);
 
-            Blob& operator=(const Blob& other);
+            Blob& operator=(const Blob& other) = delete;
             Blob& operator=(Blob&& other) noexcept;
 
-            operator bool() const;
+            explicit operator bool() const;
 
             memory::byte& operator[](int32 index);
             const memory::byte& operator[](int32 index) const;
@@ -31,25 +28,29 @@ namespace rex
             void release();
             void zero_initialize();
 
-            memory::byte* get_data();
-            const memory::byte* get_data() const;
+            memory::byte* data();
+            const memory::byte* data() const;
 
-            const rtl::MemorySize& get_size() const;
+            const rtl::MemorySize& size() const;
 
             template <typename T>
-            T* get_data_as();
+            T* data_as();
             template <typename T>
-            const T* get_data_as() const;
+            const T* data_as() const;
 
         private:
-            friend struct BlobWriter;
-            friend struct BlobReader;
+            friend class BlobWriter;
+            friend class BlobReader;
 
             template <typename T>
-            T& read(const rtl::MemorySize& offset = 0) const;
-            memory::byte* read_bytes(const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset) const;
+            T& read(const rtl::MemorySize& offset = 0);
+            template <typename T>
+            const T& read(const rtl::MemorySize& offset = 0) const;
 
-            void write(const void* inData, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset = 0);
+            memory::byte* read_bytes(memory::byte* dst, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset);
+            const memory::byte* read_bytes(memory::byte* dst, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset) const;
+
+            void write(const void* inData, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset = 0_bytes);
 
             rtl::UniquePtr<memory::byte> m_data;
             rtl::MemorySize m_size;
@@ -60,20 +61,27 @@ namespace rex
 
         //-------------------------------------------------------------------------
         template <typename T>
-        T& Blob::read(const rtl::MemorySize& offset) const
+        T& Blob::read(const rtl::MemorySize& offset /*= 0*/)
         {
-            return *(T*)((memory::byte*)m_data.get() + offset);
+            return *(T*)m_data.get() + offset;
         }
 
         //-------------------------------------------------------------------------
         template <typename T>
-        T* Blob::get_data_as()
+        const T& Blob::read(const rtl::MemorySize& offset) const
+        {
+            return *(T*)(m_data.get() + offset);
+        }
+
+        //-------------------------------------------------------------------------
+        template <typename T>
+        T* Blob::data_as()
         {
             return reinterpret_cast<T*>(m_data.get());
         }
         //-------------------------------------------------------------------------
         template <typename T>
-        const T* Blob::get_data_as() const
+        const T* Blob::data_as() const
         {
             return reinterpret_cast<const T*>(m_data.get());
         }
