@@ -10,7 +10,7 @@ namespace rex
         {
         public:
             BlobReader(const memory::Blob& b);
-            BlobReader(const memory::Blob& b, card64 offset);
+            BlobReader(const memory::Blob& b, const rtl::MemorySize& offset);
 
             template <typename T>
             T read();
@@ -19,7 +19,7 @@ namespace rex
 
         private:
             const memory::Blob& m_blob;
-            card64 m_read_offset;
+            rtl::MemorySize m_read_offset;
         };
 
         //-------------------------------------------------------------------------
@@ -35,14 +35,14 @@ namespace rex
         {
             //-------------------------------------------------------------------------
             template <typename T>
-            inline T read(const memory::Blob& b)
+            T read(const memory::Blob& b)
             {
                 BlobReader reader(b);
                 return reader.template read<T>();
             }
             //-------------------------------------------------------------------------
             template <typename T>
-            inline T read(const memory::Blob& b, const rtl::MemorySize& offset)
+            T read(const memory::Blob& b, const rtl::MemorySize& offset)
             {
                 BlobReader reader(b, offset);
                 return reader.template read<T>();

@@ -8,8 +8,7 @@ namespace rex
     {
         //-------------------------------------------------------------------------
         BlobWriter::BlobWriter(memory::Blob& b)
-            : m_blob(b)
-            , m_write_offset(0)
+            : BlobWriter(b, 0_bytes)
         {
         }
         //-------------------------------------------------------------------------
@@ -27,7 +26,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        card64 BlobWriter::get_write_offset() const
+        card64 BlobWriter::write_offset() const
         {
             return m_write_offset;
         }

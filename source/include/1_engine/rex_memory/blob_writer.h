@@ -16,11 +16,11 @@ namespace rex
             void write(const T& data);
             void write(const void* inData, const rtl::MemorySize& inSize);
 
-            card64 get_write_offset() const;
+            card64 write_offset() const;
 
         private:
             memory::Blob& m_blob;
-            card64 m_write_offset;
+            rtl::MemorySize m_write_offset;
         };
 
         //-------------------------------------------------------------------------
@@ -35,7 +35,7 @@ namespace rex
         {
             //-------------------------------------------------------------------------
             template <typename T>
-            inline void write(memory::Blob& b, const T& data)
+            void write(memory::Blob& b, const T& data)
             {
                 BlobWriter writer(b);
 
