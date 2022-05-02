@@ -1,6 +1,10 @@
 #pragma once
 
-#include "types.h"
+#include <memory>
+
+#include "rex_stl/memory/unique_ptr.h"
+#include "rex_stl/memory/memory_size.h"
+#include "rex_stl/types.h"
 
 namespace rex
 {
