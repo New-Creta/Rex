@@ -7,7 +7,14 @@
 #include "layer.h"
 #include "layer_stack.h"
 
-#include "event_system.h"
+#include "event_dispatcher.h"
+#include "event_queue.h"
+#include "event_bus.h"
+
+#include "window/window_close.h"
+
+#include "display.h"
+#include "display_manager.h"
 
 #include "world.h"
 #include "frameinfo/frameinfo.h"
@@ -17,6 +24,10 @@ namespace rex
 {
     namespace win32
     {
+        //-------------------------------------------------------------------------
+        const int32 g_main_display = 0;
+        const int32 g_main_display_mode = 0;
+
         //-------------------------------------------------------------------------
         Application::Application(const ApplicationDescription& description)
             : CoreApplication(description)
@@ -69,6 +80,7 @@ namespace rex
         {
             // R_INFO("[APPLICATION] Successfully initialized SDL!");
 
+            create_display_manager();
             create_layer_stack();
             create_event_queue();
             create_window();
@@ -95,9 +107,12 @@ namespace rex
             m_layer_stack->clear();
             m_layer_stack.reset();
 
+            events::EventBus::destroy_instance();
+
             m_application_loop.reset();
 
             m_window.reset();
+            m_display_manager.reset();
 
             return true;
         }
@@ -115,7 +130,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void Application::on_app_event()
+        void Application::on_app_event(events::Event& event)
         {
             // Implement in derived class
         }
@@ -134,26 +149,42 @@ namespace rex
             process_window(info);
         }
         //-------------------------------------------------------------------------
-        void Application::platform_event()
+        void Application::platform_event(events::Event& event)
         {
-            std::for_each(m_layer_stack->rbegin(), m_layer_stack->rend(), [](rtl::UniquePtr<Layer>& layer) mutable
+            std::for_each(m_layer_stack->rbegin(), m_layer_stack->rend(), [&event](rtl::UniquePtr<Layer>& layer) mutable
                           {
-                              layer->handle_event();
+                              layer->handle_event(event);
                           });
 
-            on_app_event();
+            on_app_event(event);
+
+            events::EventDispatcher dispatcher(event);
+            dispatcher.dispatch<events::WindowClose>([&](const events::WindowClose& closeEvent)
+                                                     {
+                                                         return on_window_close(closeEvent);
+                                                     });
         }
 
         //-------------------------------------------------------------------------
         void Application::process_events()
         {
+            if (!m_event_queue->empty())
+            {
+                int32 pump_count = 0;
+                events::Event evt = m_event_queue->next();
+                while (evt != nullptr && pump_count < events::EventQueue::EVENT_QUEUE_PUMP_COUNT)
+                {
+                    platform_event(evt);
 
+                    evt = m_event_queue->next();
+                    ++pump_count;
+                }
+            }
         }
         //-------------------------------------------------------------------------
         void Application::process_render_queue(const FrameInfo& info)
         {
-            // bool is_visible = m_window->is_visible();
-            constexpr bool is_visible = true;
+            bool is_visible = m_window->is_visible();
 
             if (is_visible)
             {
@@ -186,6 +217,15 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
+        void Application::create_display_manager()
+        {
+            m_display_manager = rtl::make_unique<DisplayManager>();
+            m_display_manager->set_active(g_main_display, g_main_display_mode);
+
+            //R_INFO("[APPLICATION] Display manager initialized with {0} display(s).", m_display_manager->display_count());
+        }
+
+        //-------------------------------------------------------------------------
         void Application::create_layer_stack()
         {
             m_layer_stack = rtl::make_unique<LayerStack>();
@@ -194,7 +234,12 @@ namespace rex
         //-------------------------------------------------------------------------
         void Application::create_event_queue()
         {
-            event_system::subscribe(event_system::EventType::WindowClose, [this]() { mark_for_destroy(); });
+            // event_system::subscribe(event_system::EventType::WindowClose, [this]() { mark_for_destroy(); });
+
+            m_event_queue = rtl::make_unique<events::EventQueue>();
+
+            events::EventBus::create_instance();
+            events::EventBus::instance()->push_event_queue(m_event_queue.get(), events::EventBusImpl::Activate::Yes);
         }
 
         //-------------------------------------------------------------------------
@@ -205,6 +250,11 @@ namespace rex
             window_description.title = "rex";
             window_description.width = get_application_description().window_width;
             window_description.height = get_application_description().window_height;
+            window_description.display = m_display_manager->get_active();
+            window_description.event_callback = [&event_queue = *m_event_queue](events::Event& event)
+            {
+                event_queue.enqueue(event);
+            };
 
             m_window = rtl::make_unique<Window>(window_description);
 
@@ -214,14 +264,31 @@ namespace rex
         //-------------------------------------------------------------------------
         void Application::create_application_loop()
         {
-            constexpr RefreshRate refresh_rate = 60_hz;
+            auto display = m_display_manager->get_active();
+            auto display_mode = display->get_active_mode();
 
             auto fn = [&](const FrameInfo& info)
             {
                 platform_update(info);
             };
 
-            m_application_loop = rtl::make_unique<ApplicationLoop>(fn, refresh_rate);
+            m_application_loop = rtl::make_unique<ApplicationLoop>(fn, RefreshRate(display_mode->get_refresh_rate()));
+
+            // R_INFO("[APPLICATION] Application loop ({0} hz) initialized.", display_mode->get_refresh_rate());
+        }
+
+        //-------------------------------------------------------------------------
+        bool Application::on_window_close(const events::WindowClose& evt)
+        {
+            // uint32 main_window_id = SDL_GetWindowID(m_window->get_sdl_window());
+            // if (main_window_id != evt.get_window_id())
+            // {
+            //     return false;
+            // }
+
+            mark_for_destroy();
+
+            return true;
         }
     } // namespace win32
 }
