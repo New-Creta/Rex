@@ -5,16 +5,16 @@
 namespace rex
 {
     //-------------------------------------------------------------------------
-    DeltaTime  World::s_delta_time;
-    FPS        World::s_frames_per_second;
+    DeltaTime World::s_delta_time;
+    FPS World::s_frames_per_second;
 
     //-------------------------------------------------------------------------
-    const DeltaTime& World::getDeltaTime()
+    const DeltaTime& World::get_delta_time()
     {
         return World::s_delta_time;
     }
     //-------------------------------------------------------------------------
-    const FPS& World::getFramesPerSecond()
+    const FPS& World::get_frames_per_second()
     {
         return World::s_frames_per_second;
     }
