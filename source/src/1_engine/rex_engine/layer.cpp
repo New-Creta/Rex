@@ -46,9 +46,9 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void Layer::handle_event()
+    void Layer::handle_event(events::Event& evt)
     {
-        on_event();
+        on_event(evt);
     }
 
     //-------------------------------------------------------------------------
@@ -74,7 +74,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void Layer::on_event()
+    void Layer::on_event(events::Event& /* evt */)
     {
         // Nothing to implement
     }

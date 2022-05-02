@@ -1,5 +1,7 @@
 #pragma once
 
+#include "event.h"
+
 namespace rex
 {
     struct FrameInfo;
@@ -19,7 +21,7 @@ namespace rex
         void detach();
 
         void update(const FrameInfo& info);
-        void handle_event();
+        void handle_event(events::Event& evt);
 
         const std::string& get_name() const;
         const StackOrder get_order() const;
@@ -31,7 +33,7 @@ namespace rex
         virtual void on_detach(){/* Nothing to implement */};
 
         virtual void on_update(const FrameInfo& /* info */);
-        virtual void on_event();
+        virtual void on_event(events::Event& evt);
 
     private:
         std::string m_name;
