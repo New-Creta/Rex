@@ -1,17 +1,16 @@
 #include "rex_windows_pch.h"
 
 #include "win32_window.h"
+#include "win32_event_processor.h"
+#include "win32_event_handler.h"
+
+#include "display_mode.h"
+#include "display.h"
 
 #include "internal/win_window_class.h"
 
-#include "event_system.h"
-
-#include <rex_stl/algorithms.h>
 #include <rex_stl/math/point.h>
-#include <rex_stl/diagnostics/logging.h>
 #include <rex_stl/diagnostics/win/win_call.h> 
-
-#include <rex_stl/utilities/scopeguard.h>
 
 #include <comdef.h>
 
@@ -19,6 +18,12 @@ namespace rex
 {
     namespace win32
     {
+        const int32 g_min_window_width = 16;
+        const int32 g_min_window_height = 16;
+
+        const int32 g_max_window_width = 32767;
+        const int32 g_max_window_height = 32767;
+
         //-----------------------------------------------------------------
         rtl::Point screen_center()
         {
@@ -39,10 +44,10 @@ namespace rex
             }
             else
             {
-                Window* this_window = reinterpret_cast<Window*>(GetWindowLongPtrW(win_hwnd, GWLP_USERDATA));
-                if (this_window)
+                EventHandler* this_event_handler = reinterpret_cast<EventHandler*>(GetWindowLongPtrW(win_hwnd, GWLP_USERDATA));
+                if (this_event_handler)
                 {
-                    return this_window->on_event(hwnd, msg, wparam, lparam);
+                    return this_event_handler->on_event(hwnd, msg, wparam, lparam);
                 }
             }
 
@@ -51,10 +56,26 @@ namespace rex
 
         //-----------------------------------------------------------------
         Window::Window(const WindowDescription& description)
-            : m_width(description.width)
-            , m_height(description.height)
+            : m_visible(false)
+            , m_width(description.width != 0 ? description.width : 1280)
+            , m_height(description.height != 0 ? description.height : 720)
             , m_window_class(description.title, default_win_procedure)
         {
+            // R_ASSERT(m_width > g_min_window_width && m_width < g_max_window_width);
+            // R_ASSERT(m_height > g_min_window_height && m_height < g_max_window_height);
+
+            m_event_processor = rtl::make_unique<EventProcessor>(this, description.event_callback);
+            m_event_processor->enable_event_processing();
+
+            WindowCallbackFunctions callback_functions;
+
+            callback_functions.window_callback = [&](Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
+            {
+                handle_window_events(hwnd, msg, wparam, lparam);
+            };
+
+            m_event_handler = rtl::make_unique<EventHandler>(*m_event_processor, callback_functions);
+
             rtl::Point window_left_top = screen_center();
             window_left_top.x -= static_cast<int16>(m_width * 0.5f);
             window_left_top.y -= static_cast<int16>(m_height * 0.5f);
@@ -68,7 +89,7 @@ namespace rex
                 NULL,
                 NULL,
                 (HINSTANCE)m_window_class.hinstance(),
-                this
+                m_event_handler.get()
             ));
 
             if (!m_hwnd)
@@ -83,23 +104,32 @@ namespace rex
         //-----------------------------------------------------------------
         void Window::update()
         {
-            MSG message = { 0 };
-            while (PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE) > 0)
-            {
-                TranslateMessage(&message);
-                DispatchMessage(&message);
-            }
+            m_event_handler->peek_events();
         }
 
         //-----------------------------------------------------------------
         void Window::show()
         {
+            if (is_visible())
+            {
+                return;
+            }
+
             ShowWindow((HWND)m_hwnd, SW_SHOW);
+
+            m_visible = true;
         }
         //-----------------------------------------------------------------
         void Window::hide()
         {
+            if (!is_visible())
+            {
+                return;
+            }
+
             CloseWindow((HWND)m_hwnd);
+
+            m_visible = false;
         }
         //-----------------------------------------------------------------
         void Window::focus()
@@ -110,7 +140,16 @@ namespace rex
         void Window::close()
         {
             DestroyWindow((HWND)m_hwnd);
+
+            m_visible = false;
         }
+
+        //-------------------------------------------------------------------------
+        bool Window::is_visible() const
+        {
+            return m_visible;
+        }
+
         //-----------------------------------------------------------------
         int32 Window::width() const
         {
@@ -122,28 +161,26 @@ namespace rex
             return m_height;
         }
 
-        //-----------------------------------------------------------------
-        LResult Window::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
+        //-------------------------------------------------------------------------
+        int32 Window::get_id() const
         {
-            // Sometimes Windows set error states between messages
-            // becasue these aren't our fault, we'll ignore those
-            // to make sure our messages are successful
-            DWORD last_windows_error = GetLastError();
-            rtl::win::clear_win_errors();
-            
-            rtl::ScopeGuard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
+            return GetDlgCtrlID((HWND)m_hwnd);
+        }
 
+        //-------------------------------------------------------------------------
+        void Window::handle_window_events(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
+        {
             switch (msg)
             {
-            case WM_CLOSE:
-                close();
-            case WM_DESTROY: 
-                PostQuitMessage(0); 
-                event_system::fire_event(event_system::EventType::WindowClose);
-                return 0;
-            }
+                case WM_SIZE:
+                {
+                    m_width = LOWORD(lparam);
+                    m_height = HIWORD(lparam);
+                }
 
-            return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
+                break;
+            }
         }
+
     }
 }
