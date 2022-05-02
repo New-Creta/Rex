@@ -26,7 +26,9 @@ add_library(rex_memory STATIC ${rex_memory_LIBS_INC} ${rex_memory_LIBS_SRC})
 
 # Set the include directories
 target_include_directories(rex_memory PUBLIC ${CMAKE_SOURCE_DIR}/source/include/1_engine/rex_memory)
+target_include_directories(rex_memory PUBLIC ${REX_STL_DIR}/include/1_Core)
 
+target_link_libraries(rex_memory PUBLIC RexStd)
 
 # Set project properties
 set_target_properties(rex_memory PROPERTIES FOLDER                                         1_engine)   		# solution folder
