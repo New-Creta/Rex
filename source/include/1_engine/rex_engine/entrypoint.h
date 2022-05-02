@@ -1,14 +1,17 @@
 #pragma once
 
 #include "core_application.h"
+#include "application_arguments.h"
 
 //--------------------------------------------------------------------------------------------
-extern rex::CoreApplication* rex::create_application();
+extern rex::CoreApplication* rex::create_application(const ApplicationArguments& arguments);
 
 //--------------------------------------------------------------------------------------------
-int run_program(int /*argc*/, char** /*argv*/)
+int run_program(int argc, char** argv)
 {
-    rex::CoreApplication* application = rex::create_application();
+    rex::ApplicationArguments application_arguments(argc, argv);
+
+    rex::CoreApplication* application = rex::create_application(application_arguments);
 
     int result = application->run();
 

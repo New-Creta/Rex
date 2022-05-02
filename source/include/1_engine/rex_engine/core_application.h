@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 namespace rex
 {
     class ApplicationArguments;
@@ -9,12 +7,12 @@ namespace rex
     struct ApplicationDescription
     {
         ApplicationDescription()
-            :max_fps(144)
+            :name()
             ,window_width(1280)
             ,window_height(720)
         {}
 
-        int32 max_fps;
+        std::string name;
 
         int32 window_width;
         int32 window_height;
@@ -48,5 +46,5 @@ namespace rex
     };
 
     // This will be implemented by the CLIENT!
-    CoreApplication* create_application();
+    CoreApplication* create_application(const ApplicationArguments& arguments);
 }
