@@ -1,11 +1,11 @@
-#include "rex_std_pch.h"
+#include "rex_engine_pch.h"
 
 #include "string/string_id.h"
 #include "string/string_pool.h"
 
 namespace rex
 {
-    std::vector<std::unique_ptr<char>> g_allocated_strings;
+    rtl::Vector<rtl::UniquePtr<char>> g_allocated_strings;
 
     /**
     * Create an empty StringID.
@@ -14,6 +14,26 @@ namespace rex
     StringID::StringID()
         : StringID(ESID::SID_None)
     {
+    }
+
+    /**
+    * Copy ctor StringID
+    */
+    //-------------------------------------------------------------------------
+    StringID(const StringID& other);
+        :m_comparison_index(other.m_comparison_index)
+    {
+
+    }
+
+    /**
+    * Move ctor StringID
+    */
+    //-------------------------------------------------------------------------
+    StringID(StringID&& other) noexcept
+        :m_comparison_index(std::exchange(other.m_comparison_index, make(ESID::None)))
+    {
+
     }
 
     /**
@@ -38,9 +58,20 @@ namespace rex
     * Create an StringID with characters and a predefined size.
     */
     //-------------------------------------------------------------------------
-    StringID::StringID(const char* characters, size_t size)
+    StringID::StringID(const char* characters, card64 size)
         : m_comparison_index(make(characters, size))
     {
+    }
+
+    //-------------------------------------------------------------------------
+    StringID& StringID::operator=(const StringID& other)
+    {
+        m_comparison_index = other.m_comparison_index;
+    }
+    //-------------------------------------------------------------------------
+    StringID& StringID::operator=(StringID&& other) noexcept
+    {
+        m_comparison_index = std::exchange(other.m_comparison_index, make(ESID::SID_None));
     }
 
     /**
@@ -59,7 +90,7 @@ namespace rex
     * Converts an FName to a readable format, in place
     */
     //-------------------------------------------------------------------------
-    void StringID::to_string(std::string& out) const
+    void StringID::to_string(rtl::Out<std::string> out) const
     {
         string_pool::resolve(m_comparison_index, out);
     }
@@ -70,18 +101,9 @@ namespace rex
     * Note that a default constructed StringID returns "None" instead of ""
     */
     //-------------------------------------------------------------------------
-    void StringID::to_string(char** out, size_t& outSize) const
+    void StringID::to_string(rtl::Out<char*> out, rtl::Out<card64> outSize) const
     {
         string_pool::resolve(m_comparison_index, out, outSize);
-    }
-
-    /**
-    * Retrieve the hashed value
-    */
-    //-------------------------------------------------------------------------
-    const uint32 StringID::get_value() const
-    {
-        return m_comparison_index;
     }
 
     /**
@@ -140,7 +162,7 @@ namespace rex
         return name == ESID::SID_None ? StringEntryID() : *string_pool::store(name);
     }
     //-------------------------------------------------------------------------
-    StringEntryID StringID::make(const char* characters, size_t size)
+    StringEntryID StringID::make(const char* characters, card64 size)
     {
         if (characters == nullptr || size == 0)
         {
@@ -149,4 +171,60 @@ namespace rex
 
         return *string_pool::store(characters, size);
     }
+
+        //-------------------------------------------------------------------------
+    StringID create_sid(const ESID& name)
+    {
+        return StringID(name);
+    }
+    //-------------------------------------------------------------------------
+    StringID create_sid(const char* characters)
+    {
+        return StringID(characters, std::strlen(characters));
+    }
+    //-------------------------------------------------------------------------
+    StringID create_sid(const char* characters, card64 size)
+    {
+        return StringID(characters, size);
+    }
+    //-------------------------------------------------------------------------
+    StringID create_sid(const std::string& string)
+    {
+        return StringID(string.data(), string.size());
+    }
+
+    //-------------------------------------------------------------------------
+    bool operator==(const std::string& s, const StringID& sid)
+    {
+        return create_sid(s) == sid;
+    }
+    //-------------------------------------------------------------------------
+    bool operator!=(const std::string& s, const StringID& sid)
+    {
+        return create_sid(s) != sid;
+    }
+    //-------------------------------------------------------------------------
+    bool operator==(const StringID& sid, const std::string& s)
+    {
+        return s == sid;
+    }
+    //-------------------------------------------------------------------------
+    bool operator!=(const StringID& sid, const std::string& s)
+    {
+        return s != sid;
+    }
+}
+
+//-------------------------------------------------------------------------
+rex::StringID operator""_sid(const char* string, card64 size)
+{
+    return rex::StringID(string, size);
+}
+
+//-------------------------------------------------------------------------
+std::ostream& operator<<(std::ostream& os, const rex::StringID& stringID)
+{
+    os << stringID.to_string();
+
+    return os;
 }

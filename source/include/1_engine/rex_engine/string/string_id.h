@@ -11,17 +11,21 @@ namespace rex
     {
     public:
         StringID();
+        StringID(const StringID& other);
+        StringID(StringID&& other) noexcept;
         StringID(const ESID& name);
         StringID(const char* characters);
-        StringID(const char* characters, size_t size);
+        StringID(const char* characters, card64 size);
+
+        StringID& operator=(const StringID& other);
+        StringID& operator=(StringID&& other) noexcept;
 
         std::string to_string() const;
-        void to_string(std::string& out) const;
-        void to_string(char** out, size_t& outSize) const;
 
-        const uint32 get_value() const;
+        void to_string(rtl::Out<std::string> out) const;
+        void to_string(rtl::Out<char*> out, rtl::Out<card64> outSize) const;
 
-        operator const uint32() const;
+        explicit operator const uint32() const;
 
         bool operator==(const StringID& other) const;
         bool operator!=(const StringID& other) const;
@@ -34,68 +38,25 @@ namespace rex
 
     private:
         StringEntryID make(const ESID& name);
-        StringEntryID make(const char* characters, size_t size);
+        StringEntryID make(const char* characters, card64 size);
 
         /** Index into the StringID array (used to find String portion of the string/number pair used for comparison) */
         StringEntryID m_comparison_index;
     };
 
-    //-------------------------------------------------------------------------
-    inline StringID create_sid(const ESID& name)
-    {
-        return StringID(name);
-    }
-    //-------------------------------------------------------------------------
-    inline StringID create_sid(const char* characters)
-    {
-        return StringID(characters, std::strlen(characters));
-    }
-    //-------------------------------------------------------------------------
-    inline StringID create_sid(const char* characters, size_t size)
-    {
-        return StringID(characters, size);
-    }
-    //-------------------------------------------------------------------------
-    inline StringID create_sid(const std::string& string)
-    {
-        return StringID(string.data(), string.size());
-    }
+    StringID create_sid(const ESID& name);
+    StringID create_sid(const char* characters);
+    StringID create_sid(const char* characters, card64 size);
+    StringID create_sid(const std::string& string);
 
-    //-------------------------------------------------------------------------
-    inline bool operator==(const std::string& s, const StringID& sid)
-    {
-        return create_sid(s) == sid;
-    }
-    //-------------------------------------------------------------------------
-    inline bool operator!=(const std::string& s, const StringID& sid)
-    {
-        return create_sid(s) != sid;
-    }
-    //-------------------------------------------------------------------------
-    inline bool operator==(const StringID& sid, const std::string& s)
-    {
-        return s == sid;
-    }
-    //-------------------------------------------------------------------------
-    inline bool operator!=(const StringID& sid, const std::string& s)
-    {
-        return s != sid;
-    }
+    bool operator==(const std::string& s, const StringID& sid);
+    bool operator!=(const std::string& s, const StringID& sid);
+    bool operator==(const StringID& sid, const std::string& s);
+    bool operator!=(const StringID& sid, const std::string& s);
 }
 
-//-------------------------------------------------------------------------
-inline rex::StringID operator""_sid(const char* string, size_t size)
-{
-    return rex::StringID(string, size);
-}
-
-//-------------------------------------------------------------------------
-inline std::ostream& operator<<(std::ostream& os, const rex::StringID& stringID)
-{
-    os << stringID.to_string();
-
-    return os;
-}
+rex::StringID operator""_sid(const char* string, card64 size);
+std::ostream& operator<<(std::ostream& os, const rex::StringID& stringID);
 
 // custom specialization of std::hash can be injected in namespace std
 namespace std
@@ -104,7 +65,7 @@ namespace std
     template <>
     struct hash<rex::StringID>
     {
-        std::size_t operator()(const rex::StringID& s) const noexcept
+        std::card64 operator()(const rex::StringID& s) const noexcept
         {
             return s.get_value();
         }
