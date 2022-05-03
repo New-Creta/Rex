@@ -5,48 +5,49 @@ namespace rex
     class StringEntry
     {
     public:
-        StringEntry(const char* chars, size_t charCount) noexcept;
+        StringEntry();
+        StringEntry(const StringEntry& other) = delete;
         StringEntry(StringEntry&& other) noexcept;
+        StringEntry(const char* chars, card64 charCount) noexcept;
         ~StringEntry();
 
-        void get_characters(char** characters, size_t& characterCount) const;
+        StringEntry& operator=(const StringEntry& other) = delete;
+        StringEntry& operator=(StringEntry&& other) noexcept;
 
-        char* get_characters();
-        const char* get_characters() const;
+        void characters(char** characters, card64& characterCount) const;
 
-        size_t get_size();
-        const size_t get_size() const;
+        const char* characters() const;
+        const card64 size() const;
 
     private:
-        std::unique_ptr<char> m_characters;
-        size_t m_size;
+        rtl::UniquePtr<char8> m_characters;
+        card64 m_size;
     };
 
     class StringEntryID
     {
     public:
         StringEntryID();
+        StringEntryID(const StringEntryID& other);
+        StringEntryID(StringEntryID&& other) noexcept;
         StringEntryID(uint32 value);
+
+        StringEntryID& operator=(const StringEntryID& other);
+        StringEntryID& operator=(StringEntryID&& other) noexcept;
 
         bool operator<(const StringEntryID& rhs) const;
         bool operator>(const StringEntryID& rhs) const;
 
         bool operator==(const StringEntryID& rhs) const;
-        bool operator==(const uint32& rhs) const;
+        bool operator==(uint32 rhs) const;
         bool operator!=(const StringEntryID& rhs) const;
-        bool operator!=(const uint32& rhs) const;
+        bool operator!=(uint32 rhs) const;
 
-        constexpr operator bool() const
-        {
-            return value != 0;
-        }
-        constexpr operator uint32() const
-        {
-            return value;
-        }
+        explicit operator bool() const;
+        explicit operator uint32() const;
 
     private:
-        uint32 value;
+        uint32 cvalue;
     };
 }
 
@@ -55,7 +56,7 @@ namespace std
     template <>
     struct hash<rex::StringEntryID>
     {
-        std::size_t operator()(const rex::StringEntryID& k) const
+        std::card64 operator()(const rex::StringEntryID& k) const
         {
             return static_cast<uint32>(k);
         }
