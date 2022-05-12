@@ -29,7 +29,7 @@ davedebreuck.gamedeveloper@gmail.com
 
 Nick De Breuck a.k.a. REX2
 
-Engine Programmer @ Creative Assembly
+Senior Core Engine Programmer @ Rocksteady
 
 nick.debreuck@outlook.com
 
