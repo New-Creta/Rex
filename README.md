@@ -53,6 +53,9 @@ Engine Core Systems
 - System 01
 - ...
 
+Rex STL
+https://github.com/RisingLiberty/Rex-STL
+
 ## Roadmap
 
 *Note: this is subject to change at any time! Follow the roadmap over at https://trello.com/b/mvhu3JnX/rex*
