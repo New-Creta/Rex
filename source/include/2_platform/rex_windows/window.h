@@ -4,7 +4,7 @@
 #include "win_types.h"
 #include "internal/win_window_class.h"
 
-#include <rex_stl/memory/unique_ptr.h>
+#include "rex_std/memory.h"
 
 struct GLFWwindow;
 

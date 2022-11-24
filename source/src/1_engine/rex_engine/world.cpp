@@ -1,5 +1,3 @@
-#include "rex_engine_pch.h"
-
 #include "world.h"
 
 namespace rex

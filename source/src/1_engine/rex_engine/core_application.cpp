@@ -1,5 +1,3 @@
-#include "rex_engine_pch.h"
-
 #include "core_application.h"
 
 #include "world.h"

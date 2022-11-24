@@ -1,6 +1,8 @@
 #pragma once
 
 #include "blob.h"
+#include "rex_std/memory.h"
+#include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
 {
@@ -10,16 +12,16 @@ namespace rex
         {
         public:
             BlobReader(const memory::Blob& b);
-            BlobReader(const memory::Blob& b, const rtl::MemorySize& offset);
+            BlobReader(const memory::Blob& b, const rsl::MemorySize& offset);
 
             template <typename T>
             T read();
 
-            memory::byte* read(const rtl::MemorySize& bytesToRead);
+            rsl::byte* read(const rsl::MemorySize& bytesToRead);
 
         private:
             const memory::Blob& m_blob;
-            rtl::MemorySize m_read_offset;
+            rsl::MemorySize m_read_offset;
         };
 
         //-------------------------------------------------------------------------
@@ -42,14 +44,14 @@ namespace rex
             }
             //-------------------------------------------------------------------------
             template <typename T>
-            T read(const memory::Blob& b, const rtl::MemorySize& offset)
+            T read(const memory::Blob& b, const rsl::MemorySize& offset)
             {
                 BlobReader reader(b, offset);
                 return reader.template read<T>();
             }
 
             //-------------------------------------------------------------------------
-            memory::byte* read(const memory::Blob& b, const rtl::MemorySize& bytesToRead, const rtl::MemorySize& offset);
+            rsl::byte* read(const memory::Blob& b, const rsl::MemorySize& bytesToRead, const rsl::MemorySize& offset);
         }
     }
 }

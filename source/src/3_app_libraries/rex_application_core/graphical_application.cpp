@@ -1,5 +1,3 @@
-#include "rex_application_core_pch.h"
-
 #include "graphical_application.h"
 
 namespace rex

@@ -1,7 +1,7 @@
 #include "internal/win_window_class.h"
 
-#include <rex_stl/diagnostics/win/win_call.h>
-#include <rex_stl/diagnostics/logging.h>
+#include "rex_std_extra/diagnostics/logging.h"
+#include "rex_std_extra/diagnostics/win/win_call.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -10,7 +10,7 @@ namespace rex::win32
 {
     struct WindowClass::Internal
     {
-        Internal(const rtl::StringView name, WindowProcedureFunc wnd_proc)
+        Internal(const rsl::string_view name, WindowProcedureFunc wnd_proc)
             : window_class()
             , name(name)
             , hinstance((HINSTANCE)GetModuleHandleA(NULL))
@@ -42,17 +42,17 @@ namespace rex::win32
         }
 
         WNDCLASS window_class;
-        rtl::StringView name;
+        rsl::string_view name;
         HInstance hinstance;
     };
 }
 
 //-----------------------------------------------------------------
-rex::win32::WindowClass::WindowClass(const rtl::StringView name, WindowProcedureFunc wnd_proc)
-    : m_internal_ptr(rtl::make_unique<Internal>(name, wnd_proc))
+rex::win32::WindowClass::WindowClass(const rsl::string_view name, WindowProcedureFunc wnd_proc)
+    : m_internal_ptr(rsl::make_unique<Internal>(name, wnd_proc))
 {}
 
-const rtl::StringView rex::win32::WindowClass::class_name() const
+const rsl::string_view rex::win32::WindowClass::class_name() const
 {
     return m_internal_ptr->name;
 }

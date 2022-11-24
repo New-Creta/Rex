@@ -1,17 +1,16 @@
-#include "rex_windows_pch.h"
-
 #include "window.h"
 
 #include "internal/win_window_class.h"
 
 #include "event_system.h"
 
-#include <rex_stl/algorithms.h>
-#include <rex_stl/math/point.h>
-#include <rex_stl/diagnostics/logging.h>
-#include <rex_stl/diagnostics/win/win_call.h> 
+#include "rex_std_extra/utilities/scopeguard.h"
 
-#include <rex_stl/utilities/scopeguard.h>
+#include "rex_std_extra/math/point.h"
+#include "rex_std_extra/diagnostics/logging.h"
+#include "rex_std_extra/diagnostics/win/win_call.h" 
+
+#include "rex_std_extra/utilities/scopeguard.h"
 
 #include <comdef.h>
 
@@ -20,7 +19,7 @@ namespace rex
     namespace win32
     {
         //-----------------------------------------------------------------
-        rtl::Point screen_center()
+        rsl::Point screen_center()
         {
             card32 screen_width = GetSystemMetrics(SM_CXSCREEN);
             card32 screen_height = GetSystemMetrics(SM_CYSCREEN);
@@ -55,7 +54,7 @@ namespace rex
             , m_height(description.height)
             , m_window_class(description.title, default_win_procedure)
         {
-            rtl::Point window_left_top = screen_center();
+            rsl::Point window_left_top = screen_center();
             window_left_top.x -= static_cast<int16>(m_width * 0.5f);
             window_left_top.y -= static_cast<int16>(m_height * 0.5f);
 
@@ -129,9 +128,9 @@ namespace rex
             // becasue these aren't our fault, we'll ignore those
             // to make sure our messages are successful
             DWORD last_windows_error = GetLastError();
-            rtl::win::clear_win_errors();
+            rsl::win::clear_win_errors();
             
-            rtl::ScopeGuard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
+            rsl::ScopeGuard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
 
             switch (msg)
             {

@@ -1,6 +1,7 @@
 #pragma once
 
-#include <rex_stl/string/string_view.h>
+#include "rex_std/string_view.h"
+#include "rex_std_extra/utilities/yes_no_enum.h"
 
 namespace rex
 {
@@ -15,7 +16,7 @@ namespace rex
             , fullscreen(FullScreen::No)
         {}
 
-        rtl::StringView title;
+        rsl::string_view title;
         int32 width;
         int32 height;
         FullScreen fullscreen;

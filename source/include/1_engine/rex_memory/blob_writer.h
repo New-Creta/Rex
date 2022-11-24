@@ -14,13 +14,13 @@ namespace rex
 
             template <typename T>
             void write(const T& data);
-            void write(const void* inData, const rtl::MemorySize& inSize);
+            void write(const void* inData, const rsl::MemorySize& inSize);
 
             card64 write_offset() const;
 
         private:
             memory::Blob& m_blob;
-            rtl::MemorySize m_write_offset;
+            rsl::MemorySize m_write_offset;
         };
 
         //-------------------------------------------------------------------------
@@ -42,8 +42,8 @@ namespace rex
                 writer.template write<T>(data);
             }
 
-            void write(memory::Blob& b, const void* inData, const rtl::MemorySize& inSize);
-            void write(memory::Blob& b, const void* inData, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset);
+            void write(memory::Blob& b, const void* inData, const rsl::MemorySize& inSize);
+            void write(memory::Blob& b, const void* inData, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset);
         }
     }
 }

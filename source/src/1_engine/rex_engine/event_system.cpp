@@ -9,13 +9,13 @@
 
 #include "event_system.h"
 
-#include <rex_stl/containers/vector.h>
+#include "rex_std/vector.h"
 
 #include <unordered_map>
 
 namespace rex
 {
-    std::unordered_map<event_system::EventType, rtl::vector<event_system::EventFunction>> g_delegates;
+    std::unordered_map<event_system::EventType, rsl::vector<event_system::EventFunction>> g_delegates;
 
     void event_system::subscribe(EventType type, EventFunction function)
     {
@@ -24,7 +24,7 @@ namespace rex
 
     void event_system::fire_event(EventType type)
     {
-        const rtl::vector<EventFunction>& delegates = g_delegates[type];
+        const rsl::vector<EventFunction>& delegates = g_delegates[type];
 
         for (const EventFunction& delegate : delegates)
         {

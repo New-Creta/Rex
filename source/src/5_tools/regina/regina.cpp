@@ -1,4 +1,3 @@
-#include "regina_pch.h"
 #include "entrypoint.h"
 #include "window.h"
 #include "regina.h"

@@ -1,11 +1,9 @@
-#include "rex_windows_pch.h"
-
 #include "gui_application.h"
 #include "window.h"
 
 #include "event_system.h"
 
-#include <rex_stl/memory/unique_ptr.h>
+#include "rex_std/memory.h"
 
 namespace rex
 {
@@ -13,7 +11,7 @@ namespace rex
     {
         struct GuiApplication::Internal
         {
-            rtl::UniquePtr<CoreWindow> window;
+            rsl::unique_ptr<CoreWindow> window;
         };
 
         //-------------------------------------------------------------------------
