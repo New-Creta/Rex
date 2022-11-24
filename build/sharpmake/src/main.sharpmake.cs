@@ -38,22 +38,6 @@ public class BaseProject : Project
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
     conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
 
-    if (target.Compiler == Compiler.MSVC)
-    {
-      conf.IncludeSystemPaths.Add(@"D:\Tools\Windows SDK\10.0.19041.0\include\um");
-      conf.IncludeSystemPaths.Add(@"D:\Tools\Windows SDK\10.0.19041.0\include\shared");
-      conf.IncludeSystemPaths.Add(@"D:\Tools\Windows SDK\10.0.19041.0\include\winrt");
-      conf.IncludeSystemPaths.Add(@"D:\Tools\Windows SDK\10.0.19041.0\include\cppwinrt");
-      conf.IncludeSystemPaths.Add(@"D:\Tools\Windows SDK\10.0.19041.0\include\ucrt");
-      conf.IncludeSystemPaths.Add(@"D:\Tools\MSVC\install\14.29.30133\include");
-      conf.IncludeSystemPaths.Add(@"D:\Tools\MSVC\install\14.29.30133\atlmfc\include");
-    }
-
-    if (target.Compiler == Compiler.GCC && conf.Output == Configuration.OutputType.Dll) // Sharpmake doesn't support DLLs for GCC
-    {
-      conf.Output = Configuration.OutputType.Lib;
-    }
-
     //conf.IncludePaths.Add(IncludeFolder);
     conf.IncludePaths.Add(Path.Combine(IncludeFolder, ".."));
 
@@ -79,6 +63,28 @@ public class BaseProject : Project
         conf.Options.Add(Options.Vc.General.DebugInformation.Disable);
         conf.Options.Add(Options.Vc.General.WholeProgramOptimization.Optimize);
         conf.enable_optimization();
+        break;
+    }
+
+    switch (target.Config)
+    {
+      case Config.assert:
+        break;
+      case Config.debug:
+        conf.add_public_define("REX_ENABLE_LOGGING");
+        conf.add_public_define("REX_ENABLE_HR_CALL");
+        conf.add_public_define("REX_ENABLE_WIN_CALL");
+        break;
+      case Config.debug_opt:
+        conf.add_public_define("REX_ENABLE_LOGGING");
+        conf.add_public_define("REX_ENABLE_HR_CALL");
+        conf.add_public_define("REX_ENABLE_WIN_CALL");
+        break;
+      case Config.release:
+        break;
+      case Config.tests:
+        break;
+      default:
         break;
     }
   }
@@ -182,10 +188,9 @@ public class RexStandardLibrary : ThirdPartyProject
     AdditionalSourceRootPaths.Add(IncludeFolder);
 
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-    RexTarget ninjaTarget = new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
 
     // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget, ninjaTarget);
+    AddTargets(vsTarget);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -226,10 +231,9 @@ public class RexStandardExtraLibrary : ThirdPartyProject
     AdditionalSourceRootPaths.Add(IncludeFolder);
 
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-    RexTarget ninjaTarget = new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
 
     // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget, ninjaTarget);
+    AddTargets(vsTarget);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -259,10 +263,9 @@ public class RexEngine : EngineProject
     AdditionalSourceRootPaths.Add(IncludeFolder);
 
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-    RexTarget ninjaTarget = new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
 
     // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget, ninjaTarget);
+    AddTargets(vsTarget);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -293,10 +296,9 @@ public class RexMemory : EngineProject
     AdditionalSourceRootPaths.Add(IncludeFolder);
 
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-    RexTarget ninjaTarget = new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
 
     // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget, ninjaTarget);
+    AddTargets(vsTarget);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -327,10 +329,9 @@ public class RexWindows : PlatformProject
     AdditionalSourceRootPaths.Add(IncludeFolder);
 
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-    RexTarget ninjaTarget = new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
 
     // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget, ninjaTarget);
+    AddTargets(vsTarget);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -364,10 +365,9 @@ public class RexApplicationCore : AppLibrariesProject
     AdditionalSourceRootPaths.Add(IncludeFolder);
 
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-    RexTarget ninjaTarget = new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
 
     // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget, ninjaTarget);
+    AddTargets(vsTarget);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -398,10 +398,9 @@ public class Regina : ToolsProject
     AdditionalSourceRootPaths.Add(IncludeFolder);
 
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-    RexTarget ninjaTarget = new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
 
     // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget, ninjaTarget);
+    AddTargets(vsTarget);
 
     CustomFilterMapping.Add(IncludeFolder, "");
   }
@@ -430,10 +429,9 @@ public class MainSolution : Solution
     // As with the project, define which target this solution builds for.
     // It's usually the same thing.
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-    RexTarget ninjaTarget = new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
 
     // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget, ninjaTarget);
+    AddTargets(vsTarget);
   }
 
   // Configure for all 4 generated targets. Note that the type of the
