@@ -7,9 +7,10 @@ public class RexTarget : ITarget
   public Platform Platform;
   public Config Config;
   public Compiler Compiler;
+  public DotNetFramework DotNetFramework = DotNetFramework.v4_7_2;
   public RexTarget()
   { }
-  public RexTarget(Platform platform, DevEnv devEnv, Config config, Compiler compiler)
+  public RexTarget(Platform platform, DevEnv devEnv, Config config, Compiler compiler = Compiler.MSVC)
   {
     DevEnv = devEnv;
     Platform = platform;

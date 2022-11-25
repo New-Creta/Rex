@@ -416,6 +416,45 @@ public class Regina : ToolsProject
   }
 }
 
+[Generate]
+public class SharpmakeProject : CSharpProject
+{
+  public SharpmakeProject() : base(typeof(RexTarget), typeof(RexConfiguration))
+  {
+    SourceRootPath = "[project.SharpmakeCsPath]";
+
+    AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release));
+  }
+
+  [Configure()]
+  public virtual void ConfigureAll(RexConfiguration conf, RexTarget target)
+  {
+    conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "build", target.DevEnv.ToString(), Name);
+    conf.Output = Configuration.OutputType.DotNetClassLibrary;
+
+    string sharpmakeAppPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+    string sharpmakeDllPath = Path.Combine(Path.GetDirectoryName(sharpmakeAppPath), "sharpmake.dll");
+
+    conf.ReferencesByPath.Add(sharpmakeDllPath);
+    conf.ReferencesByName.AddRange(new Strings("System",
+                                               "System.Core",
+                                               "System.Xml.Linq",
+                                               "System.Data.DataSetExtensions",
+                                               "System.Data",
+                                               "System.Xml"));
+
+    conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
+    conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
+
+    string quote = "\'"; // Use single quote that is cross platform safe
+    conf.CsprojUserFile.StartArguments = $@"/sources(@{quote}{string.Join($"{quote},@{quote}", "src/main.sharpmake.cs")}{quote})";
+    conf.CsprojUserFile.StartProgram = sharpmakeAppPath;
+    conf.CsprojUserFile.WorkingDirectory = Directory.GetCurrentDirectory();
+
+    //conf.EventPostBuild.Add("sharpmake.application.exe /sources(\"src/main.sharpmake.s\") /generateDebugSolution /debugSolutionPath(\".\")");
+  }
+}
+
 // Represents the solution that will be generated and that will contain the
 // project with the sample code.
 [Generate]
@@ -429,7 +468,6 @@ public class MainSolution : Solution
     // As with the project, define which target this solution builds for.
     // It's usually the same thing.
     RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-
     // Specify the targets for which we want to generate a configuration for.
     AddTargets(vsTarget);
   }
@@ -450,6 +488,7 @@ public class MainSolution : Solution
     // You could, for example, exclude a project that only supports 64-bit
     // from the 32-bit targets.
     conf.AddProject<Regina>(target);
+    conf.AddProject<SharpmakeProject>(target);
   }
 }
 
