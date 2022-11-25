@@ -430,6 +430,8 @@ public class SharpmakeProject : CSharpProject
   public virtual void ConfigureAll(RexConfiguration conf, RexTarget target)
   {
     conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "build", target.DevEnv.ToString(), Name);
+    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
+    conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
     conf.Output = Configuration.OutputType.DotNetClassLibrary;
 
     string sharpmakeAppPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
