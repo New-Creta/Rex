@@ -47,6 +47,8 @@ public class BaseProject : Project
     conf.use_compiler_options();
     conf.use_linker_options();
 
+    conf.add_dependency<SharpmakeProject>(target);
+
     switch (target.Optimization)
     {
       case Optimization.NoOpt:
@@ -491,7 +493,6 @@ public class MainSolution : Solution
     // You could, for example, exclude a project that only supports 64-bit
     // from the 32-bit targets.
     conf.AddProject<Regina>(target);
-    conf.AddProject<SharpmakeProject>(target);
   }
 }
 
