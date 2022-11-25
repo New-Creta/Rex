@@ -6,6 +6,7 @@ public class Globals
   static readonly private string folder_in_root = "source";
   static private string root;
   static private string source_root;
+  static private string sharpmake_root;
 
   static public string Root
   {
@@ -19,6 +20,13 @@ public class Globals
     get
     {
       return source_root;
+    }
+  }
+  static public string SharpmakeRoot
+  {
+    get
+    {
+      return sharpmake_root;
     }
   }
 
@@ -37,6 +45,7 @@ public class Globals
 
     root = current_directory;
     source_root = Path.Combine(root, "source");
+    sharpmake_root = Path.Combine(root, "build", "sharpmake");
     System.Console.WriteLine($"Root path:{root}");
   }
 }

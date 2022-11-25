@@ -433,6 +433,7 @@ public class SharpmakeProject : CSharpProject
     conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
     conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
     conf.Output = Configuration.OutputType.DotNetClassLibrary;
+    conf.StartWorkingDirectory = Globals.SharpmakeRoot;
 
     string sharpmakeAppPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
     string sharpmakeDllPath = Path.Combine(Path.GetDirectoryName(sharpmakeAppPath), "sharpmake.dll");
@@ -449,11 +450,11 @@ public class SharpmakeProject : CSharpProject
     conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
 
     string quote = "\'"; // Use single quote that is cross platform safe
-    conf.CsprojUserFile.StartArguments = $@"/sources(@{quote}{string.Join($"{quote},@{quote}", "src/main.sharpmake.cs")}{quote})";
+    conf.CsprojUserFile.StartArguments = $@"/sources(@{quote}{string.Join($"{quote},@{quote}", Path.Combine(Globals.SharpmakeRoot, "src/main.sharpmake.cs"))}{quote})";
     conf.CsprojUserFile.StartProgram = sharpmakeAppPath;
     conf.CsprojUserFile.WorkingDirectory = Directory.GetCurrentDirectory();
 
-    //conf.EventPostBuild.Add("sharpmake.application.exe /sources(\"src/main.sharpmake.s\") /generateDebugSolution /debugSolutionPath(\".\")");
+    conf.EventPostBuild.Add($"{sharpmakeAppPath} {$@"/sources(@{quote}{string.Join($"{quote},@{quote}", Path.Combine(Globals.SharpmakeRoot, "src/main.sharpmake.cs"))}{quote})"}");
   }
 }
 
