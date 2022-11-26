@@ -1,4 +1,0 @@
-[submodule "externals/rex-stl"]
-	path = externals/rex-stl
-	url = https://github.com/RisingLiberty/Rex-STL.git
-	branch = main

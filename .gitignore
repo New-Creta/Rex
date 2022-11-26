@@ -51,3 +51,4 @@ build/sharpmake/.ninja/
 build/sharpmake/bin/
 build/sharpmake/obj/
 docs/book/
+build/tools/
