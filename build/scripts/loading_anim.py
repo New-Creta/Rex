@@ -16,6 +16,7 @@ def animate():
     sys.stdout.write('\rDone!     ')
 
 def stop_animation():
+  global done
   done = True
   global animation_thread
   animation_thread.join()

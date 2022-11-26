@@ -6,7 +6,7 @@ import input
 def main():
   install_modules.run()
   
-  if verify.verify_tools():
+  if not verify.verify_tools():
     download_tools.run()
 
   # Tools are now download to build/tools

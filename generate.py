@@ -24,7 +24,7 @@ def __find_sharpmake_path():
   if len(path) > 0:
     return path
     
-  sharpmakePathFromSetup = "build/tools/sharpmake/sharpmake.application.exe"
+  sharpmakePathFromSetup = os.path.join("build", "tools", "sharpmake", "sharpmake.application.exe")
   if os.path.exists(sharpmakePathFromSetup):
     return sharpmakePathFromSetup
 
