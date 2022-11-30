@@ -1,17 +1,13 @@
 import install_modules
-import download_tools
-import verify
-import input
+import required_tools
+import rex_json
 
 def main():
   install_modules.run()
   
-  if not verify.verify_tools():
-    download_tools.run()
+  if not required_tools.are_installed():
+    required_tools.download()
+    required_tools.install()
 
-  # Tools are now download to build/tools
-  # The user can relocate these to a different folder that's in PATH and should
-  
-    
 if __name__ == "__main__":
   main()

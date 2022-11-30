@@ -3,7 +3,7 @@ import diagnostics
 import argparse
 
 def run(projectName, config):
-  run_clang_tools.run(projectName, config)
+  # run_clang_tools.run(projectName, config)
   return
 
 def main():

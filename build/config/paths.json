@@ -1,0 +1,11 @@
+{
+  "msvc_compiler_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\cl.exe",
+  "msvc_linker_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\link.exe",
+  "msvc_archiver_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.29.30133\\bin\\Hostx64\\x64\\lib.exe",
+  "clang_compiler_path": "D:\\Tools\\LLVM\\install\\bin\\clang++.exe",
+  "clang_linker_path": "D:\\Tools\\LLVM\\install\\bin\\clang++.exe",
+  "clang_archiver_path": "D:\\Tools\\LLVM\\install\\bin\\llvm-ar.exe",
+  "clang_ranlib_path": "D:\\Tools\\LLVM\\install\\bin\\llvm-ranlib.exe",
+  "ninja_path": "D:\\Tools\\Ninja\\install\\ninja.exe",
+  "sharpmake_path": "D:\\Engines\\Rex\\build\\tools\\Sharpmake\\Sharpmake.Application.exe"
+}
