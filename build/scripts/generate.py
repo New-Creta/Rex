@@ -1,9 +1,10 @@
 import os
 import rex_json
 import util
+import required_tools
 
 root = util.find_root()
-tool_paths = rex_json.load_file(os.path.join(root, "build", "config", "paths.json"))
+tool_paths = required_tools.tool_paths
 
 def run():
   sharpmake_path = tool_paths["sharpmake_path"]

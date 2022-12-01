@@ -12,16 +12,17 @@ from pathlib import Path
 
 root = util.find_root()
 build_dir = os.path.join(root, "build")
-tools_install_dir = os.path.join(root, "build", "tools")
-config_dir = os.path.join(root, "build", "config")
-tool_paths = rex_json.load_file(os.path.join(config_dir, "paths.json"))
-zipDownloads = os.path.join(tools_install_dir, "zips")
+temp_dir = os.path.join(root, ".rex")
+tools_install_dir = os.path.join(temp_dir, "tools")
+tool_paths_filepath = os.path.join(tools_install_dir, "paths.json")
+tool_paths = rex_json.load_file(tool_paths_filepath)
+zip_downloads_path = os.path.join(tools_install_dir, "zips")
 required_tools = []
 not_found_tools = []
 
 def __load_tool_requirements():
   tools_required = []
-  json_blob = rex_json.load_file(os.path.join(root, "build", "config", "required_tools.json"))
+  json_blob = rex_json.load_file(os.path.join(root, "build", "required_tools.json"))
   for object in json_blob:
     tools_required.append(json_blob[object])
 
@@ -79,7 +80,7 @@ def are_installed():
 
   if len(not_found_tools) == 0:
     print("All tools found")
-    rex_json.save_file(os.path.join(config_dir, "paths.json"), tool_paths)
+    rex_json.save_file(tool_paths_filepath, tool_paths)
     return True
   else:
     print(f"Tools that weren't found: ")
@@ -121,19 +122,19 @@ def install():
     tool_paths[tool_config_name] = path
   
   # save cached paths to disk
-  rex_json.save_file(os.path.join(config_dir, "paths.json"), tool_paths)
+  rex_json.save_file(tool_paths_filepath, tool_paths)
 
 def __download_file(url):
   filename = os.path.basename(url)
-  filePath = os.path.join(zipDownloads, filename)
+  filePath = os.path.join(zip_downloads_path, filename)
   
   if not os.path.exists(filePath):
     response = requests.get(url)
     open(filePath, "wb").write(response.content)
   
 def __make_zip_download_path():
-  if not os.path.exists(zipDownloads):
-    os.makedirs(zipDownloads)
+  if not os.path.exists(zip_downloads_path):
+    os.makedirs(zip_downloads_path)
 
 def __download_tools_archive():
   print("Downloading tools archive")
@@ -163,7 +164,7 @@ def __download_tools_archive():
 def __unzip_tools():
   task_print = task_raii_printing.TaskRaiiPrint("Unzipping files")
 
-  zipPath = zipDownloads
+  zipPath = zip_downloads_path
   toolsZipFile = "tools.zip"
   zips = os.listdir(zipPath)
   for zipName in zips:
@@ -177,7 +178,7 @@ def __unzip_tools():
   print(f"tools unzipped to {tools_install_dir}")
 
 def __delete_tmp_folders():
-  shutil.rmtree(zipDownloads)
+  shutil.rmtree(zip_downloads_path)
 
 def __launch_download_thread(url):
     thread = threading.Thread(target=__download_file, args=(url,))
