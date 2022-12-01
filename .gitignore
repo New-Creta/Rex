@@ -39,10 +39,6 @@ __pycache__
 *.bak
 
 # Rex Repository
-_setup_windows.bat
-_run_windows.bat
-_generate_windows.bat
-_build_windows.bat
 .rex/
 rex.ninja
 rex.sln
@@ -50,5 +46,3 @@ rex.sln
 build/sharpmake/.ninja/
 build/sharpmake/bin/
 build/sharpmake/obj/
-docs/book/
-build/tools/

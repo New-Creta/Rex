@@ -529,8 +529,6 @@ public static class Main
 
   private static void InitializeSharpmake()
   {
-    KitsRootPaths.InitializeForNinja();
-
     // Initialize Visual Studio settings
     KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
   }
