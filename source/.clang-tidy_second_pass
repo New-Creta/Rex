@@ -1,0 +1,519 @@
+# ============================================ 
+#
+# Author: Nick De Breuck
+# Twitter: @nick_debreuck
+# 
+# File: .clang-tidy_second_pass
+# Copyright (c) Nick De Breuck 2023
+#
+# ============================================
+#
+
+---
+# Configure clang-tidy for this project.
+
+# DISABLED CLANG-TIDY CHECKS
+# --------------------------
+# [altera-id-dependent-backward-branch]
+#  We disable the altera loops cause they don't apply to us.
+#
+# [altera-struct-pack-align]
+#  We disable the altera loops cause they don't apply to us.
+#
+# [altera-unroll-loops]
+#  We disable the altera loops cause they don't apply to us.
+#
+# [bugprone-easily-swappable-parameters]
+#  this would break too many C functions
+#
+# [bugprone-exception-escape]
+#  we don't use exceptions so makes no sense in having this
+#
+# [bugprone-forward-declaration-namespace]
+#  this would be resolved when all includes to C++ STL have been removed
+#
+# [bugprone-forwarding-reference-overload]
+#  this is caused because clang-tidy can't resolve rsl::enable_if to avoid overloading
+#
+# [bugprone-macro-parentheses]
+#  this can cause some compilation issues
+#
+# [cert-dcl21-cpp]
+#  it's possible some operator++ or operator-- return constexpr instead of const.
+#  such cases prompt a false positive with this enabled.
+#
+# [cert-dcl50-cpp]
+#  in a way, this is an alias of cppcoreguidelines-pro-type-vararg, although this is not document
+#  we disable it so we don't have to double disable it in the codebase
+#
+# [cert-err58-cpp]
+#  this check flags all static or thread_local variable declarations where the initializer for the object may throw an exception
+#  because we don't exceptions in rex, so there's no point in having this enabled
+#
+# [cppcoreguidelines-macro-usage]
+#  this breaks too much C code, so we're disabling this for now
+#
+# [cppcoreguidelines-owning-memory]
+#  we're not using gsl::owner in the codebase yet and heavily rely on smart pointers.
+#  because we try to step away from the C standard library, we don't need to use this check
+#
+# [cppcoreguidelines-pro-bounds-array-to-pointer-decay]
+#  pointers should not be used as arrays, span should be used instead.
+#  span is not implemented yet, which is why this check is disabled at the moment
+#
+# [cppcoreguidelines-pro-bounds-constant-array-index]
+#  this check would break too much C code, which is why we disable it for now
+#
+# [cppcoreguidelines-pro-bounds-pointer-arithmetic]
+#  this comes from the statement that pointers should only point to single objects
+#  this check would break too much C code, which is why we disable it for now
+#
+# [cppcoreguidelines-pro-type-vararg]
+#  C-style vararg functions is not allowed in Rex
+#
+# [fuchsia-default-arguments-calls]
+#  Rex allows default arguments, although they're not recommended
+#
+# [fuchsia-default-arguments-declarations]
+#  Rex allows default arguments, although they're not recommended
+#
+# [fuchsia-overloaded-operator]
+#  We allow operator overloads in Rex, they're required by a lot of classes
+#
+# [fuchsia-virtual-inheritance]
+#  virtual inheritance is not recommended in Rex, it hurts performance
+#
+# [google-readability-todo]
+#  this needs to get enabled again when we have better parsing of our todos in the codebase
+#
+# [google-runtime-int]
+#  we use shorts sometimes to improve memory usage
+#
+# [llvm-header-guard]
+#  we use #pragma once instead of header guards
+#
+# [llvmlibc-callee-namespace]
+#  this check doesn't apply to us, we're creating our own standard library after all
+#
+# [llvmlibc-implementation-in-namespace]
+#  this check doesn't apply to us, we're creating our own standard library after all
+#
+# [llvmlibc-restrict-system-libc-headers]
+#  this check doesn't apply to us, we're creating our own standard library after all
+#
+# [modernize-concat-nested-namespaces]
+#  we don't use concatenated namespaces 
+#
+# [modernize-macro-to-enum]
+#  this would break too many C macros
+#
+# [modernize-return-braced-init-list]
+#  this is not following the rex guidelines, this hurts readability
+#
+# [modernize-use-auto]
+#  rex has strict rules regarding auto
+#
+# [modernize-use-default-member-init]
+#  we don't use default member init for now
+#  as we'd have to recompile a lot when we change a value
+#
+# [modernize-use-nodiscard]
+#  nodiscard clutters up the codebase, we don't have many issues yet by not using it
+#
+# [modernize-use-trailing-return-type]
+#  we don't use trailing return type
+#
+# [performance-noexcept-move-constructor]
+#  we don't use exceptions, so no point in using this
+#
+# [readability-else-after-return]
+#  we don't follow the single return design
+#
+# [readability-identifier-length]
+#  some variables names can be short, we have rules for that
+#
+# [readability-magic-number]
+#  this would break too much C code
+#
+# [readability-redundant-access-specifiers]
+#  for readability, we specify extra access specifiers to split functions from fields
+#
+# [readability-redundant-member-init]
+#  for readability, we define member inits, even when they're not needed
+#
+# [readability-uppercase-literal-suffix]
+#  we use lowercase literal suffix
+#
+#
+# 
+#
+# The following checks are disabled because they are aliases
+# we don't want to ignore multiple checks in the code so we ignore all aliases here
+#
+# [bugprone-narrowing-conversions]
+# [cert-con36-c]
+# [cert-con54-cpp]
+# [cert-dcl03-c]
+# [cert-dcl16-c]
+# [cert-dcl37-c]
+# [cert-dcl51-cpp]
+# [cert-dcl54-cpp]
+# [cert-dcl59-cpp]
+# [cert-err09-cpp]
+# [cert-err61-cpp]
+# [cert-exp42-c]
+# [cert-fio38-c]
+# [cert-flp37-c]
+# [cert-msc30-c]
+# [cert-msc32-c]
+# [cert-msc54-cpp]
+# [cert-oop11-cpp]
+# [cert-oop54-cpp]
+# [cert-pos44-c]
+# [cert-pos47-c]
+# [cert-sig30-c]
+# [cert-str34-c]
+# [clang-analyzer-core.CallAndMessage]
+# [clang-analyzer-core.DivideZero]
+# [clang-analyzer-core.NonNullParamChecker]
+# [clang-analyzer-core.NullDereference]
+# [clang-analyzer-core.StackAddressEscape]
+# [clang-analyzer-core.UndefinedBinaryOperatorResult]
+# [clang-analyzer-core.VLASize]
+# [clang-analyzer-core.uninitialized.ArraySubscript]
+# [clang-analyzer-core.uninitialized.Assign]
+# [clang-analyzer-core.uninitialized.Branch]
+# [clang-analyzer-core.uninitialized.UndefReturn]
+# [clang-analyzer-cplusplus.Move]
+# [clang-analyzer-cplusplus.NewDelete]
+# [clang-analyzer-cplusplus.NewDeleteLeaks]
+# [clang-analyzer-deadcode.DeadStores]
+# [clang-analyzer-nullability.NullPassedToNonnull]
+# [clang-analyzer-nullability.NullReturnedFromNonnull]
+# [clang-analyzer-nullability.NullableDereferenced]
+# [clang-analyzer-nullability.NullablePassedToNonnull]
+# [clang-analyzer-optin.cplusplus.UninitializedObject]
+# [clang-analyzer-optin.cplusplus.VirtualCall]
+# [clang-analyzer-optin.mpi.MPI-Checker]
+# [clang-analyzer-optin.osx.cocoa.localizability.EmptyLocalizationContextChecker]
+# [clang-analyzer-optin.osx.cocoa.localizability.NonLocalizedStringChecker]
+# [clang-analyzer-osx.API]
+# [clang-analyzer-osx.SecKeychainAPI]
+# [clang-analyzer-osx.cocoa.AtSync]
+# [clang-analyzer-osx.cocoa.ClassRelease]
+# [clang-analyzer-osx.cocoa.Dealloc]
+# [clang-analyzer-osx.cocoa.IncompatibleMethodTypes]
+# [clang-analyzer-osx.cocoa.NSAutoreleasePool]
+# [clang-analyzer-osx.cocoa.NSError]
+# [clang-analyzer-osx.cocoa.NilArg]
+# [clang-analyzer-osx.cocoa.ObjCGenerics]
+# [clang-analyzer-osx.cocoa.RetainCount]
+# [clang-analyzer-osx.cocoa.SelfInit]
+# [clang-analyzer-osx.cocoa.SuperDealloc]
+# [clang-analyzer-osx.cocoa.UnusedIvars]
+# [clang-analyzer-osx.cocoa.VariadicMethodTypes]
+# [clang-analyzer-osx.coreFoundation.CFError]
+# [clang-analyzer-osx.coreFoundation.CFNumber]
+# [clang-analyzer-osx.coreFoundation.CFRetainRelease]
+# [clang-analyzer-osx.coreFoundation.containers.OutOfBounds]
+# [clang-analyzer-osx.coreFoundation.containers.PointerSizedValues]
+# [clang-analyzer-security.FloatLoopCounter]
+# [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+# [clang-analyzer-security.insecureAPI.UncheckedReturn]
+# [clang-analyzer-security.insecureAPI.bcmp]
+# [clang-analyzer-security.insecureAPI.bcopy]
+# [clang-analyzer-security.insecureAPI.bzero]
+# [clang-analyzer-security.insecureAPI.getpw]
+# [clang-analyzer-security.insecureAPI.gets]
+# [clang-analyzer-security.insecureAPI.mkstemp]
+# [clang-analyzer-security.insecureAPI.mktemp]
+# [clang-analyzer-security.insecureAPI.rand]
+# [clang-analyzer-security.insecureAPI.strcpy]
+# [clang-analyzer-security.insecureAPI.vfork]
+# [clang-analyzer-unix.API]
+# [clang-analyzer-unix.Malloc]
+# [clang-analyzer-unix.MallocSizeof]
+# [clang-analyzer-unix.MismatchedDeallocator]
+# [clang-analyzer-unix.Vfork]
+# [clang-analyzer-unix.cstring.BadSizeArg]
+# [clang-analyzer-unix.cstring.NullArg]
+# [cppcoreguidelines-avoid-c-arrays]
+# [cppcoreguidelines-avoid-magic-numbers]
+# [cppcoreguidelines-c-copy-assignment-signature]
+# [cppcoreguidelines-explicit-virtual-functions]
+# [cppcoreguidelines-macro-to-enum]
+# [cppcoreguidelines-non-private-member-variables-in-classes]
+# [fuchsia-header-anon-namespaces]
+# [google-readability-braces-around-statements]
+# [google-readability-function-size]
+# [google-readability-namespace-comments]
+# [hicpp-avoid-c-arrays]
+# [hicpp-braces-around-statements]
+# [hicpp-deprecated-headers]
+# [hicpp-explicit-conversions]
+# [hicpp-function-size]
+# [hicpp-invalid-access-moved]
+# [hicpp-member-init]
+# [hicpp-move-const-arg]
+# [hicpp-named-parameter]
+# [hicpp-new-delete-operators]
+# [hicpp-no-array-decay]
+# [hicpp-no-malloc]
+# [hicpp-noexcept-move]
+# [hicpp-special-member-functions]
+# [hicpp-static-assert]
+# [hicpp-undelegated-constructor]
+# [hicpp-uppercase-literal-suffix]
+# [hicpp-use-auto]
+# [hicpp-use-emplace]
+# [hicpp-use-equals-default]
+# [hicpp-use-equals-delete]
+# [hicpp-use-noexcept]
+# [hicpp-use-nullptr]
+# [hicpp-use-override]
+# [hicpp-vararg]
+# [llvm-else-after-return]
+# [llvm-qualified-auto]
+
+Checks: >
+  *,
+
+  -altera-id-dependent-backward-branch, 
+  -altera-struct-pack-align,
+  -altera-unroll-loops,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-exception-escape,
+  -bugprone-forward-declaration-namespace,
+  -bugprone-forwarding-reference-overload,
+  -bugprone-macro-parentheses,
+  -cert-dcl21-cpp,
+  -cert-dcl50-cpp,
+  -cert-err58-cpp,
+  -cppcoreguidelines-macro-usage,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-vararg,
+  -fuchsia-default-arguments-calls,
+  -fuchsia-default-arguments-declarations,
+  -fuchsia-overloaded-operator,
+  -fuchsia-virtual-inheritance,
+  -google-readability-todo,
+  -google-runtime-int,
+  -llvm-header-guard,
+  -llvmlibc-callee-namespace,
+  -llvmlibc-implementation-in-namespace,
+  -llvmlibc-restrict-system-libc-headers,
+  -modernize-concat-nested-namespaces,
+  -modernize-macro-to-enum,
+  -modernize-return-braced-init-list,
+  -modernize-use-auto,
+  -modernize-use-default-member-init,
+  -modernize-use-nodiscard,
+  -modernize-use-trailing-return-type, 
+  -performance-noexcept-move-constructor,
+  -readability-else-after-return,
+  -readability-identifier-length,
+  -readability-magic-numbers,
+  -readability-redundant-access-specifiers,
+  -readability-redundant-member-init,
+  -readability-uppercase-literal-suffix,
+
+
+
+  -bugprone-narrowing-conversions,
+  -cert-con36-c,
+  -cert-con54-cpp,
+  -cert-dcl03-c,
+  -cert-dcl16-c,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
+  -cert-dcl54-cpp,
+  -cert-dcl59-cpp,
+  -cert-err09-cpp,
+  -cert-err61-cpp,
+  -cert-exp42-c,
+  -cert-fio38-c,
+  -cert-flp37-c,
+  -cert-msc30-c,
+  -cert-msc32-c,
+  -cert-msc54-cpp,
+  -cert-oop11-cpp,
+  -cert-oop54-cpp,
+  -cert-pos44-c,
+  -cert-pos47-c,
+  -cert-sig30-c,
+  -cert-str34-c,
+  -clang-analyzer-core.CallAndMessage,
+  -clang-analyzer-core.DivideZero,
+  -clang-analyzer-core.NonNullParamChecker,
+  -clang-analyzer-core.NullDereference,
+  -clang-analyzer-core.StackAddressEscape,
+  -clang-analyzer-core.UndefinedBinaryOperatorResult,
+  -clang-analyzer-core.VLASize,
+  -clang-analyzer-core.uninitialized.ArraySubscript,
+  -clang-analyzer-core.uninitialized.Assign,
+  -clang-analyzer-core.uninitialized.Branch,
+  -clang-analyzer-core.uninitialized.UndefReturn,
+  -clang-analyzer-cplusplus.Move,
+  -clang-analyzer-cplusplus.NewDelete,
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
+  -clang-analyzer-deadcode.DeadStores,
+  -clang-analyzer-nullability.NullPassedToNonnull,
+  -clang-analyzer-nullability.NullReturnedFromNonnull,
+  -clang-analyzer-nullability.NullableDereferenced,
+  -clang-analyzer-nullability.NullablePassedToNonnull,
+  -clang-analyzer-optin.cplusplus.UninitializedObject,
+  -clang-analyzer-optin.cplusplus.VirtualCall,
+  -clang-analyzer-optin.mpi.MPI-Checker,
+  -clang-analyzer-optin.osx.cocoa.localizability.EmptyLocalizationContextChecker,
+  -clang-analyzer-optin.osx.cocoa.localizability.NonLocalizedStringChecker,
+  -clang-analyzer-osx.API,
+  -clang-analyzer-osx.SecKeychainAPI,
+  -clang-analyzer-osx.cocoa.AtSync,
+  -clang-analyzer-osx.cocoa.ClassRelease,
+  -clang-analyzer-osx.cocoa.Dealloc,
+  -clang-analyzer-osx.cocoa.IncompatibleMethodTypes,
+  -clang-analyzer-osx.cocoa.NSAutoreleasePool,
+  -clang-analyzer-osx.cocoa.NSError,
+  -clang-analyzer-osx.cocoa.NilArg,
+  -clang-analyzer-osx.cocoa.ObjCGenerics,
+  -clang-analyzer-osx.cocoa.RetainCount,
+  -clang-analyzer-osx.cocoa.SelfInit,
+  -clang-analyzer-osx.cocoa.SuperDealloc,
+  -clang-analyzer-osx.cocoa.UnusedIvars,
+  -clang-analyzer-osx.cocoa.VariadicMethodTypes,
+  -clang-analyzer-osx.coreFoundation.CFError,
+  -clang-analyzer-osx.coreFoundation.CFNumber,
+  -clang-analyzer-osx.coreFoundation.CFRetainRelease,
+  -clang-analyzer-osx.coreFoundation.containers.OutOfBounds,
+  -clang-analyzer-osx.coreFoundation.containers.PointerSizedValues,
+  -clang-analyzer-security.FloatLoopCounter,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -clang-analyzer-security.insecureAPI.UncheckedReturn,
+  -clang-analyzer-security.insecureAPI.bcmp,
+  -clang-analyzer-security.insecureAPI.bcopy,
+  -clang-analyzer-security.insecureAPI.bzero,
+  -clang-analyzer-security.insecureAPI.getpw,
+  -clang-analyzer-security.insecureAPI.gets,
+  -clang-analyzer-security.insecureAPI.mkstemp,
+  -clang-analyzer-security.insecureAPI.mktemp,
+  -clang-analyzer-security.insecureAPI.rand,
+  -clang-analyzer-security.insecureAPI.strcpy,
+  -clang-analyzer-security.insecureAPI.vfork,
+  -clang-analyzer-unix.API,
+  -clang-analyzer-unix.Malloc,
+  -clang-analyzer-unix.MallocSizeof,
+  -clang-analyzer-unix.MismatchedDeallocator,
+  -clang-analyzer-unix.Vfork,
+  -clang-analyzer-unix.cstring.BadSizeArg,
+  -clang-analyzer-unix.cstring.NullArg,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-c-copy-assignment-signature,
+  -cppcoreguidelines-explicit-virtual-functions,
+  -cppcoreguidelines-macro-to-enum,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -fuchsia-header-anon-namespaces,
+  -google-readability-braces-around-statements,
+  -google-readability-function-size,
+  -google-readability-namespace-comments,
+  -hicpp-avoid-c-arrays,
+  -hicpp-braces-around-statements,
+  -hicpp-deprecated-headers,
+  -hicpp-explicit-conversions,
+  -hicpp-function-size,
+  -hicpp-invalid-access-moved,
+  -hicpp-member-init,
+  -hicpp-move-const-arg,
+  -hicpp-named-parameter,
+  -hicpp-new-delete-operators,
+  -hicpp-no-array-decay,
+  -hicpp-no-malloc,
+  -hicpp-noexcept-move,
+  -hicpp-special-member-functions,
+  -hicpp-static-assert,
+  -hicpp-undelegated-constructor,
+  -hicpp-uppercase-literal-suffix,
+  -hicpp-use-auto,
+  -hicpp-use-emplace,
+  -hicpp-use-equals-default,
+  -hicpp-use-equals-delete,
+  -hicpp-use-noexcept,
+  -hicpp-use-nullptr,
+  -hicpp-use-override,
+  -hicpp-vararg,
+  -llvm-else-after-return,
+  -llvm-qualified-auto,
+
+
+WarningsAsErrors: "*"
+
+CheckOptions:
+  - { key: hicpp-signed-bitwise.IgnorePositiveIntegerLiterals,                                            value: 1          }
+  - { key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic,   value: 1          }
+  - { key: cppcoreguidelines-special-member-functions.AllowMissingMoveFunctions,                          value: 1          }
+  - { key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor,                               value: 1          }
+  - { key: readability-braces-around-statements.ShortStatementLines,                                      value: 2          }
+  - { key: readability-identifier-naming.AbstractClassCase,                                               value: lower_case }
+  - { key: readability-identifier-naming.ClassCase,                                                       value: lower_case }
+  - { key: readability-identifier-naming.ClassConstantCase,                                               value: lower_case }
+  - { key: readability-identifier-naming.ClassConstantPrefix,                                             value: s_         }
+  - { key: readability-identifier-naming.ClassMemberCase,                                                 value: lower_case }
+  - { key: readability-identifier-naming.ClassMemberPrefix,                                               value: s_         }
+  - { key: readability-identifier-naming.ClassMethodCase,                                                 value: lower_case }
+  - { key: readability-identifier-naming.ConstantCase,                                                    value: lower_case }
+  - { key: readability-identifier-naming.ConstantMemberCase,                                              value: lower_case }
+  - { key: readability-identifier-naming.ConstantMemberPrefix,                                            value: m_         }
+  - { key: readability-identifier-naming.ConstantParameterCase,                                           value: camelBack  }
+  - { key: readability-identifier-naming.ConstantPointerParameterCase,                                    value: camelBack  }
+  - { key: readability-identifier-naming.ConstexprFunctionCase,                                           value: lower_case }
+  - { key: readability-identifier-naming.ConstexprMethodCase,                                             value: lower_case }
+  - { key: readability-identifier-naming.ConstexprVariableCase,                                           value: lower_case }
+  - { key: readability-identifier-naming.EnumCase,                                                        value: lower_case }
+  - { key: readability-identifier-naming.EnumConstantCase,                                                value: lower_case }
+  - { key: readability-identifier-naming.FunctionCase,                                                    value: lower_case }
+  - { key: readability-identifier-naming.GlobalConstantCase,                                              value: lower_case }
+  - { key: readability-identifier-naming.GlobalConstantPrefix,                                            value: g_         }
+  - { key: readability-identifier-naming.GlobalConstantPointerCase,                                       value: lower_case }
+  - { key: readability-identifier-naming.GlobalConstantPointerPrefix,                                     value: g_         }
+  - { key: readability-identifier-naming.GlobalFunctionCase,                                              value: lower_case }
+  - { key: readability-identifier-naming.GlobalPointerCase,                                               value: lower_case }
+  - { key: readability-identifier-naming.GlobalPointerPrefix,                                             value: g_         }
+  - { key: readability-identifier-naming.GlobalVariableCase,                                              value: lower_case }
+  - { key: readability-identifier-naming.GlobalVariablePrefix,                                            value: g_         }
+  - { key: readability-identifier-naming.InlineNamespaceCase,                                             value: lower_case }
+  - { key: readability-identifier-naming.LocalConstantCase,                                               value: lower_case }
+  - { key: readability-identifier-naming.LocalConstantPointerCase,                                        value: lower_case }
+  - { key: readability-identifier-naming.LocalPointerCase,                                                value: lower_case }
+  - { key: readability-identifier-naming.LocalVariableCase,                                               value: lower_case }
+  - { key: readability-identifier-naming.MacroDefinitionCase,                                             value: UPPER_CASE }
+  - { key: readability-identifier-naming.MemberCase,                                                      value: lower_case }
+  - { key: readability-identifier-naming.MethodCase,                                                      value: lower_case }
+  - { key: readability-identifier-naming.NamespaceCase,                                                   value: lower_case }
+  - { key: readability-identifier-naming.ParameterCase,                                                   value: camelBack  }
+  - { key: readability-identifier-naming.ParameterPackCase,                                               value: camelBack  }
+  - { key: readability-identifier-naming.PointerParameterCase,                                            value: camelBack  }
+  - { key: readability-identifier-naming.PrivateMemberCase,                                               value: lower_case }
+  - { key: readability-identifier-naming.PrivateMemberPrefix,                                             value: m_         }
+  - { key: readability-identifier-naming.PrivateMethodCase,                                               value: lower_case }
+  - { key: readability-identifier-naming.ProtectedMemberCase,                                             value: lower_case }
+  - { key: readability-identifier-naming.ProtectedMemberPrefix,                                           value: m_         }
+  - { key: readability-identifier-naming.ProtectedMethodCase,                                             value: lower_case }
+  - { key: readability-identifier-naming.PublicMemberCase,                                                value: lower_case }
+  - { key: readability-identifier-naming.PublicMethodCase,                                                value: lower_case }
+  - { key: readability-identifier-naming.ScopedEnumConstantCase,                                          value: lower_case }
+  - { key: readability-identifier-naming.StaticConstantCase,                                              value: lower_case }
+  - { key: readability-identifier-naming.StaticConstantPrefix,                                            value: s_         }
+  - { key: readability-identifier-naming.StaticVariableCase,                                              value: lower_case }
+  - { key: readability-identifier-naming.StructCase,                                                      value: lower_case }
+  - { key: readability-identifier-naming.TemplateParameterCase,                                           value: CamelCase  }
+  - { key: readability-identifier-naming.TemplateTemplateParameterCase,                                   value: CamelCase  }
+  - { key: readability-identifier-naming.TypedefCase,                                                     value: CamelCase  }
+  - { key: readability-identifier-naming.TypeTemplateParameterCase,                                       value: CamelCase  }
+  - { key: readability-identifier-naming.TypeTemplateParameterIgnoredRegexp,                              value: expr-type  } # https://github.com/llvm/llvm-project/issues/46097 (clang-tidy emits an error for its own generated code)
+  - { key: readability-identifier-naming.UnionCase,                                                       value: lower_case  }
+  - { key: readability-identifier-naming.ValueTemplateParameterCase,                                      value: CamelCase  }
+  - { key: readability-identifier-naming.VariableCase,                                                    value: lower_case }
+  - { key: readability-identifier-naming.VirtualMethodCase,                                               value: lower_case }
