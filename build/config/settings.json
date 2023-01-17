@@ -1,0 +1,11 @@
+{
+  "intermediate_folder": ".rex",
+  "build_folder": "build",
+  "tests_folder": "tests",
+  "tools_folder": "tools",
+  "libs_folder": "libs",
+  "source_folder": "source",
+  "coverage_folder": "tests/coverage",
+  "asan_folder": "tests/coverage",
+  "ubsan_folder": "tests/ubsan"
+}
