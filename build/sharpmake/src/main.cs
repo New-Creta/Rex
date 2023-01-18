@@ -228,6 +228,76 @@ public class TestProject : BaseProject
   }
 }
 
+// All projects sitting in 0_thirdparty folder should inherit from this
+public class ThirdPartyProject : BasicCPPProject
+{
+  public ThirdPartyProject() : base()
+  { }
+
+  public override void Configure(RexConfiguration conf, RexTarget target)
+  {
+    base.Configure(conf, target);
+
+    conf.SolutionFolder = "0_thirdparty";
+  }
+}
+
+// All projects sitting in 1_engine folder should inherit from this
+public class EngineProject : BasicCPPProject
+{
+  public EngineProject() : base()
+  { }
+
+  public override void Configure(RexConfiguration conf, RexTarget target)
+  {
+    base.Configure(conf, target);
+
+    conf.SolutionFolder = "1_engine";
+  }
+}
+
+// All projects sitting in 2_platform folder should inherit from this
+public class PlatformProject : BasicCPPProject
+{
+  public PlatformProject() : base()
+  { }
+
+  public override void Configure(RexConfiguration conf, RexTarget target)
+  {
+    base.Configure(conf, target);
+
+    conf.SolutionFolder = "2_platform";
+  }
+}
+
+// All projects sitting in 3_app_libs folder should inherit from this
+public class AppLibrariesProject : BasicCPPProject
+{
+  public AppLibrariesProject() : base()
+  { }
+
+  public override void Configure(RexConfiguration conf, RexTarget target)
+  {
+    base.Configure(conf, target);
+
+    conf.SolutionFolder = "3_app_libs";
+  }
+}
+
+// All projects sitting in 5_tools folder should inherit from this
+public class ToolsProject : BasicCPPProject
+{
+  public ToolsProject() : base()
+  { }
+
+  public override void Configure(RexConfiguration conf, RexTarget target)
+  {
+    base.Configure(conf, target);
+
+    conf.SolutionFolder = "5_tools";
+  }
+}
+
 // The sharpmake project that generates the solution
 // It makes life a lot easier if this is directly in the solution.
 [Generate]
@@ -310,21 +380,7 @@ public class MainSolution : Solution
       conf.AddProject<SharpmakeProject>(target);
     }
 
-    conf.AddProject<RexStd>(target);
-
-    if (GenerateSettings.UnitTestsEnabled)
-    {
-      conf.AddProject<RexStdTest>(target);
-    }
-
-    if (GenerateSettings.FuzzyTestingEnabled)
-    {
-      conf.AddProject<RexStdFuzzy>(target);
-    }
-    else
-    {
-      conf.AddProject<RexStdExe>(target);
-    }
+    conf.AddProject<Regina>(target);
   }
 
   protected string GenerateName(string baseName)

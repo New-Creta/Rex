@@ -1,7 +1,7 @@
-#include "rex_memory_pch.h"
 
-#include "blob.h"
-#include "blob_writer.h"
+
+#include "rex_memory/blob.h"
+#include "rex_memory/blob_writer.h"
 
 namespace rex
 {
@@ -20,7 +20,7 @@ namespace rex
             // R_ASSERT(dst.m_size != 0)
             // R_ASSERT(dst.m_size >= src.m_size);
 
-            memcpy(dst.m_data.get(), src.m_data.get(), src.m_size);
+            rsl::memcpy(dst.m_data.get(), src.m_data.get(), src.m_size);
         }
         //-------------------------------------------------------------------------
         void Blob::copy(const Blob& src, void* dst)
@@ -34,10 +34,10 @@ namespace rex
 
             // R_ASSERT(dst != nullptr);
 
-            memcpy(dst, src.m_data.get(), src.m_size);
+            rsl::memcpy(dst, src.m_data.get(), src.m_size);
         }
         //-------------------------------------------------------------------------
-        void Blob::copy(void* src, const rtl::MemorySize& size, Blob& dst)
+        void Blob::copy(void* src, const rsl::MemorySize& size, Blob& dst)
         {
             // R_ASSERT(src != nullptr);
             // R_ASSERT(size != 0);
@@ -45,7 +45,7 @@ namespace rex
             // R_ASSERT(dst.m_size != 0)
             // R_ASSERT(dst.m_size >= size);
 
-            memcpy(dst.m_data.get(), src, size);
+          rsl::memcpy(dst.m_data.get(), src, size);
         }
 
         //-------------------------------------------------------------------------
@@ -62,7 +62,7 @@ namespace rex
         {
         }
         //-------------------------------------------------------------------------
-        Blob::Blob(rtl::UniquePtr<memory::byte> data, const rtl::MemorySize& dataSize)
+        Blob::Blob(rsl::unique_ptr<rsl::byte> data, const rsl::MemorySize& dataSize)
             : m_data(std::exchange(data, nullptr))
             , m_size(dataSize)
         {
@@ -87,18 +87,18 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        memory::byte& Blob::operator[](int32 index)
+        rsl::byte& Blob::operator[](int32 index)
         {
             return m_data.get()[index];
         }
         //-------------------------------------------------------------------------
-        const memory::byte& Blob::operator[](int32 index) const
+        const rsl::byte& Blob::operator[](int32 index) const
         {
-            return ((byte*)m_data.get())[index];
+            return ((rsl::byte*)m_data.get())[index];
         }
 
         //-------------------------------------------------------------------------
-        void Blob::allocate(const rtl::MemorySize& inSize)
+        void Blob::allocate(const rsl::MemorySize& inSize)
         {
             release();
 
@@ -109,7 +109,7 @@ namespace rex
                 return;
             }
 
-            m_data = rtl::UniquePtr<memory::byte>(new memory::byte[inSize]);
+            m_data = rsl::unique_ptr<rsl::byte>(new rsl::byte[inSize]);
             m_size = inSize;
         }
         //-------------------------------------------------------------------------
@@ -128,50 +128,50 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        rex::memory::byte* Blob::read_bytes(memory::byte* dst, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset)
+        rsl::byte* Blob::read_bytes(rsl::byte* dst, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset)
         {
             // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
 
-            memcpy(dst, (byte*)m_data.get() + inOffset, inSize);
+            rsl::memcpy(dst, (rsl::byte*)m_data.get() + inOffset, inSize);
             return dst;
         }
 
         //-------------------------------------------------------------------------
-        const memory::byte* Blob::read_bytes(memory::byte* dst, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset) const
+        const rsl::byte* Blob::read_bytes(rsl::byte* dst, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset) const
         {
             // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
 
-            memcpy(dst, (byte*)m_data.get() + inOffset, inSize);
+            rsl::memcpy(dst, (rsl::byte*)m_data.get() + inOffset, inSize);
             return dst;
         }
 
         //-------------------------------------------------------------------------
-        void Blob::write(const void* inData, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset)
+        void Blob::write(const void* inData, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset)
         {
             // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
 
-            memcpy((byte*)m_data.get() + inOffset, inData, inSize);
+            rsl::memcpy((rsl::byte*)m_data.get() + inOffset, inData, inSize);
         }
 
         //-------------------------------------------------------------------------
-        memory::byte* Blob::data()
+        rsl::byte* Blob::data()
         {
             return m_data.get();
         }
         //-------------------------------------------------------------------------
-        const memory::byte* Blob::data() const
+        const rsl::byte* Blob::data() const
         {
             return m_data.get();
         }
 
         //-------------------------------------------------------------------------
-        const rtl::MemorySize& Blob::size() const
+        const rsl::MemorySize& Blob::size() const
         {
             return m_size;
         }
 
         //-------------------------------------------------------------------------
-        Blob make_blob(const memory::byte* inData, const rtl::MemorySize& inSize)
+        Blob make_blob(const rsl::byte* inData, const rsl::MemorySize& inSize)
         {
             Blob blob;
 

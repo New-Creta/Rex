@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core_application.h"
+#include "rex_engine/core_application.h"
 
 namespace rex
 {

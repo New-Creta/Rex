@@ -1,7 +1,7 @@
-#include "gui_application.h"
-#include "window.h"
+#include "rex_windows/gui_application.h"
+#include "rex_windows/window.h"
 
-#include "event_system.h"
+#include "rex_engine/event_system.h"
 
 #include "rex_std/memory.h"
 

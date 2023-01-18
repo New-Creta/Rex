@@ -1,8 +1,8 @@
-#include "window.h"
+#include "rex_windows/window.h"
 
-#include "internal/win_window_class.h"
+#include "rex_windows/internal/win_window_class.h"
 
-#include "event_system.h"
+#include "rex_engine/event_system.h"
 
 #include "rex_std_extra/utilities/scopeguard.h"
 

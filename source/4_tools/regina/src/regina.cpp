@@ -1,6 +1,6 @@
-#include "entrypoint.h"
-#include "window.h"
-#include "regina.h"
+#include "rex_engine/entrypoint.h"
+#include "rex_windows/window.h"
+#include "regina/regina.h"
 
 //-----------------------------------------------------------------------
 rex::CoreApplication* rex::create_application()

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "blob.h"
+#include "rex_memory/blob.h"
 #include "rex_std/memory.h"
 #include "rex_std_extra/memory/memory_size.h"
 

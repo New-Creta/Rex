@@ -1,6 +1,6 @@
 #pragma once
 
-#include "blob.h"
+#include "rex_memory/blob.h"
 
 namespace rex
 {

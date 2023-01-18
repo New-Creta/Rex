@@ -7,7 +7,7 @@
 // Copyright (c) REX
 //--------------------------------------------------
 
-#include "event_system.h"
+#include "rex_engine/event_system.h"
 
 #include "rex_std/vector.h"
 

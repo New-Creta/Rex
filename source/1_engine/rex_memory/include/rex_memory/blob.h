@@ -1,5 +1,8 @@
 #pragma once
 
+#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/memory.h"
+
 namespace rex
 {
     namespace memory

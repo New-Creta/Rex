@@ -1,8 +1,8 @@
-#include "core_application.h"
+#include "rex_engine/core_application.h"
 
-#include "world.h"
+#include "rex_engine/world.h"
 
-#include "frameinfo/frameinfo.h"
+#include "rex_engine/frameinfo/frameinfo.h"
 
 #include <functional>
 #include <thread>

@@ -1,6 +1,6 @@
-#include "rex_memory_pch.h"
 
-#include "blob_reader.h"
+
+#include "rex_memory/blob_reader.h"
 
 namespace rex
 {
@@ -12,16 +12,16 @@ namespace rex
         {
         }
         //-------------------------------------------------------------------------
-        BlobReader::BlobReader(const memory::Blob& b, const rtl::MemorySize& offset)
+        BlobReader::BlobReader(const memory::Blob& b, const rsl::MemorySize& offset)
             : m_blob(b)
             , m_read_offset(offset)
         {
         }
 
         //-------------------------------------------------------------------------
-        memory::byte* BlobReader::read(const rtl::MemorySize& bytesToRead)
+        rsl::byte* BlobReader::read(const rsl::MemorySize& bytesToRead)
         {
-            memory::byte* dst = new memory::byte[bytesToRead];
+            rsl::byte* dst = new rsl::byte[bytesToRead];
             
             m_blob.read_bytes(dst, bytesToRead, m_read_offset);
             m_read_offset += bytesToRead;
@@ -32,7 +32,7 @@ namespace rex
         namespace reader
         {
             //-------------------------------------------------------------------------
-            rex::memory::byte* read(const memory::Blob& b, const rtl::MemorySize& bytesToRead, const rtl::MemorySize& offset)
+            rsl::byte* read(const memory::Blob& b, const rsl::MemorySize& bytesToRead, const rsl::MemorySize& offset)
             {
                 BlobReader reader(b, offset);
                 return reader.read(bytesToRead);

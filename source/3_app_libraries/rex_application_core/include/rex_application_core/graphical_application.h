@@ -1,7 +1,7 @@
 #pragma once
 
-#include "platform.h"
-#include "gui_application.h"
+#include "rex_windows/platform.h"
+#include "rex_windows/gui_application.h"
 
 namespace rex
 {

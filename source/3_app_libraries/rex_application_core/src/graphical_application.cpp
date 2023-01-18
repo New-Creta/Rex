@@ -1,4 +1,4 @@
-#include "graphical_application.h"
+#include "rex_application_core/graphical_application.h"
 
 namespace rex
 {

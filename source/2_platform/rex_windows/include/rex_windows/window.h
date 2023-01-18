@@ -1,8 +1,8 @@
 #pragma once
 
-#include "core_window.h"
-#include "win_types.h"
-#include "internal/win_window_class.h"
+#include "rex_engine/core_window.h"
+#include "rex_windows/win_types.h"
+#include "rex_windows/internal/win_window_class.h"
 
 #include "rex_std/memory.h"
 

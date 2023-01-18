@@ -1,7 +1,7 @@
 #pragma once
 
-#include "frameinfo/deltatime.h"
-#include "frameinfo/fps.h"
+#include "rex_engine/frameinfo/deltatime.h"
+#include "rex_engine/frameinfo/fps.h"
 
 namespace rex
 {

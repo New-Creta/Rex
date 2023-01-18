@@ -1,6 +1,4 @@
-#include "rex_memory_pch.h"
-
-#include "blob_writer.h"
+#include "rex_memory/blob_writer.h"
 
 namespace rex
 {
@@ -19,7 +17,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void BlobWriter::write(const void* inData, const rtl::MemorySize& inSize)
+        void BlobWriter::write(const void* inData, const rsl::MemorySize& inSize)
         {
             m_blob.write(inData, inSize, m_write_offset);
             m_write_offset += inSize;
@@ -34,14 +32,14 @@ namespace rex
         namespace writer
         {
             //-------------------------------------------------------------------------
-            void write(memory::Blob& b, const void* inData, const rtl::MemorySize& inSize)
+            void write(memory::Blob& b, const void* inData, const rsl::MemorySize& inSize)
             {
                 BlobWriter writer(b);
                 writer.write(inData, inSize);
             }
 
             //-------------------------------------------------------------------------
-            void write(memory::Blob& b, const void* inData, const rtl::MemorySize& inSize, const rtl::MemorySize& inOffset)
+            void write(memory::Blob& b, const void* inData, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset)
             {
                 BlobWriter writer(b, inOffset);
                 writer.write(inData, inSize);
