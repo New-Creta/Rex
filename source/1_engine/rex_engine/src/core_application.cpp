@@ -4,9 +4,11 @@
 
 #include "rex_engine/frameinfo/frameinfo.h"
 
-#include <functional>
+#include "rex_std/chrono.h"
+#include "rex_std/functional.h"
+#include "rex_std/memory.h"
+
 #include <thread>
-#include <chrono>
 
 #include <assert.h>
 
@@ -60,13 +62,13 @@ namespace rex
             // Cap framerate to "max_fps".
             // Safe resources of the machine we are running on.
             //
-            std::chrono::milliseconds actual_time(static_cast<int>(std::lrint(1000.0f / g_world.getFramesPerSecond().get())));
-            std::chrono::milliseconds desired_time(static_cast<int>(std::lrint(1000.0f / app_description.max_fps)));
+            rsl::chrono::milliseconds actual_time(static_cast<int>(std::lrint(1000.0f / g_world.getFramesPerSecond().get())));
+            rsl::chrono::milliseconds desired_time(static_cast<int>(std::lrint(1000.0f / app_description.max_fps)));
 
-            std::chrono::duration<float> elapsed_time = desired_time - actual_time;
-            if (elapsed_time > std::chrono::milliseconds(0ms))
+            rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
+            if (elapsed_time > rsl::chrono::milliseconds(0ms))
             {
-                std::this_thread::sleep_for(elapsed_time);
+                //std::this_thread::sleep_for(elapsed_time);
             }
         }
 
@@ -87,7 +89,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     CoreApplication::CoreApplication(const ApplicationDescription& description)
-        :m_internal_ptr(std::make_unique<Internal>(description))
+        :m_internal_ptr(rsl::make_unique<Internal>(description))
     {
         m_internal_ptr->on_initialize = [&]() { platform_initialize(); };
         m_internal_ptr->on_update = [&](const FrameInfo& info) { platform_update(info); };

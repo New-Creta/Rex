@@ -1,6 +1,6 @@
 #pragma once
 
-#include <chrono>
+#include "rex_std/chrono.h"
 
 namespace rex
 {
@@ -8,7 +8,7 @@ namespace rex
     // simulation of Windows GetTickCount()
     inline int64_t getTickCount()
     {
-        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+        return rsl::chrono::duration_cast<rsl::chrono::milliseconds>(rsl::chrono::steady_clock::now().time_since_epoch()).count();
     }
 
     //-------------------------------------------------------------------------
@@ -16,9 +16,9 @@ namespace rex
     struct TickCountClock
     {
         typedef int64_t                                  rep;
-        typedef std::milli                               period;
-        typedef std::chrono::duration<rep, period>       duration;
-        typedef std::chrono::time_point<TickCountClock>  time_point;
+        typedef rsl::milli                               period;
+        typedef rsl::chrono::duration<rep, period>       duration;
+        typedef rsl::chrono::time_point<TickCountClock>  time_point;
 
         static const bool is_steady = true;
 

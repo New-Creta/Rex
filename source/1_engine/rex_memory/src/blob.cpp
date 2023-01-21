@@ -2,6 +2,8 @@
 
 #include "rex_memory/blob.h"
 #include "rex_memory/blob_writer.h"
+#include "rex_std/utility.h"
+#include "rex_std/memory.h"
 
 namespace rex
 {
@@ -57,13 +59,13 @@ namespace rex
 
         //-------------------------------------------------------------------------
         Blob::Blob(Blob&& other) noexcept 
-            : m_data(std::exchange(other.m_data, nullptr))
-            , m_size(std::exchange(other.m_size, 0_bytes))
+            : m_data(rsl::exchange(other.m_data, nullptr))
+            , m_size(rsl::exchange(other.m_size, 0_bytes))
         {
         }
         //-------------------------------------------------------------------------
         Blob::Blob(rsl::unique_ptr<rsl::byte> data, const rsl::MemorySize& dataSize)
-            : m_data(std::exchange(data, nullptr))
+            : m_data(rsl::exchange(data, nullptr))
             , m_size(dataSize)
         {
         }
@@ -74,8 +76,8 @@ namespace rex
             // Guard self assignment
             //R_ASSERT(this == &other);
 
-            m_data = std::exchange(other.m_data, nullptr);
-            m_size = std::exchange(other.m_size, 0_bytes);
+            m_data = rsl::exchange(other.m_data, nullptr);
+            m_size = rsl::exchange(other.m_size, 0_bytes);
 
             return *this;
         }
@@ -123,7 +125,7 @@ namespace rex
         {
             if (m_data)
             {
-                std::memset(m_data.get(), 0, m_size);
+                rsl::memset(m_data.get(), 0, m_size);
             }
         }
 

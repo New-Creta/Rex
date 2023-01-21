@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <functional>
+#include "rex_std/functional.h"
 
 namespace rex
 {
@@ -20,7 +20,7 @@ namespace rex
             WindowClose
         };
 
-        using EventFunction = std::function<void()>;
+        using EventFunction = rsl::function<void()>;
 
         void subscribe(EventType type, EventFunction function);
 

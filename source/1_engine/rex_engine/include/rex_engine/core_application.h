@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include "rex_std/memory.h"
 
 namespace rex
 {
@@ -35,7 +35,7 @@ namespace rex
 
     private:
         struct Internal;
-        std::unique_ptr<Internal> m_internal_ptr;
+        rsl::unique_ptr<Internal> m_internal_ptr;
     };
 
     // This will be implemented by the CLIENT!

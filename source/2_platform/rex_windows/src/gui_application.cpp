@@ -17,7 +17,7 @@ namespace rex
         //-------------------------------------------------------------------------
         GuiApplication::GuiApplication(const ApplicationDescription& appDescription)
             :CoreApplication(appDescription)
-            ,m_internal_ptr(std::make_unique<Internal>())
+            ,m_internal_ptr(rsl::make_unique<Internal>())
         {}
         //-------------------------------------------------------------------------
         GuiApplication::~GuiApplication() = default;

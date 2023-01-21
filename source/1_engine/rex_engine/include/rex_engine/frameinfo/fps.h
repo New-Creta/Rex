@@ -2,9 +2,9 @@
 
 #include "rex_engine/timing/interval.h"
 
-#include <chrono>
+#include "rex_std/chrono.h"
 
-using namespace std::chrono_literals;
+using namespace rsl::chrono_literals;
 
 namespace rex
 {
@@ -23,7 +23,7 @@ namespace rex
         {
             ++m_fps_count;
 
-            if (m_fps_interval.value() > std::chrono::duration_cast<std::chrono::milliseconds>(1s).count())
+            if (m_fps_interval.value() > rsl::chrono::duration_cast<rsl::chrono::milliseconds>(1s).count())
             {
                 m_fps = m_fps_count;
 
