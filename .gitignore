@@ -46,3 +46,4 @@ rex.sln
 build/sharpmake/.ninja/
 build/sharpmake/bin/
 build/sharpmake/obj/
+.ninja/

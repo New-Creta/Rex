@@ -7,10 +7,9 @@
 #include "rex_std_extra/utilities/scopeguard.h"
 
 #include "rex_std_extra/math/point.h"
-#include "rex_std_extra/diagnostics/logging.h"
-#include "rex_std_extra/diagnostics/win/win_call.h" 
 
-#include "rex_std_extra/utilities/scopeguard.h"
+#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/win/win_call.h"
 
 #include <comdef.h>
 
@@ -19,7 +18,7 @@ namespace rex
     namespace win32
     {
         //-----------------------------------------------------------------
-        rsl::Point screen_center()
+        rsl::point screen_center()
         {
             card32 screen_width = GetSystemMetrics(SM_CXSCREEN);
             card32 screen_height = GetSystemMetrics(SM_CYSCREEN);
@@ -54,7 +53,7 @@ namespace rex
             , m_height(description.height)
             , m_window_class(description.title, default_win_procedure)
         {
-            rsl::Point window_left_top = screen_center();
+            rsl::point window_left_top = screen_center();
             window_left_top.x -= static_cast<int16>(m_width * 0.5f);
             window_left_top.y -= static_cast<int16>(m_height * 0.5f);
 
@@ -128,7 +127,7 @@ namespace rex
             // becasue these aren't our fault, we'll ignore those
             // to make sure our messages are successful
             DWORD last_windows_error = GetLastError();
-            rsl::win::clear_win_errors();
+            rex::win::clear_win_errors();
             
             rsl::ScopeGuard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
 

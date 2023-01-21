@@ -1,7 +1,7 @@
 #include "rex_windows/internal/win_window_class.h"
 
-#include "rex_std_extra/diagnostics/logging.h"
-#include "rex_std_extra/diagnostics/win/win_call.h"
+#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/win/win_call.h"
 
 #define NOMINMAX
 #include <Windows.h>
