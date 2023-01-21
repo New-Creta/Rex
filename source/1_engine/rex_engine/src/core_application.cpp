@@ -74,9 +74,9 @@ namespace rex
 
         ApplicationDescription app_description;
 
-        std::function<void()> on_initialize;
-        std::function<void(const FrameInfo& info)> on_update;
-        std::function<void()> on_shutdown;
+        rsl::function<void()> on_initialize;
+        rsl::function<void(const FrameInfo& info)> on_update;
+        rsl::function<void()> on_shutdown;
 
         bool is_marked_for_destroy;
         bool is_running;

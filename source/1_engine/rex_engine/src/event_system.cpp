@@ -11,11 +11,11 @@
 
 #include "rex_std/vector.h"
 
-#include <unordered_map>
+#include "rex_std/unordered_map.h"
 
 namespace rex
 {
-    std::unordered_map<event_system::EventType, rsl::vector<event_system::EventFunction>> g_delegates;
+    rsl::unordered_map<event_system::EventType, rsl::vector<event_system::EventFunction>> g_delegates;
 
     void event_system::subscribe(EventType type, EventFunction function)
     {
