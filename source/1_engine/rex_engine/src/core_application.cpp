@@ -7,6 +7,7 @@
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
+#include "rex_std/math.h"
 
 #include <thread>
 
@@ -62,8 +63,8 @@ namespace rex
             // Cap framerate to "max_fps".
             // Safe resources of the machine we are running on.
             //
-            rsl::chrono::milliseconds actual_time(static_cast<int>(std::lrint(1000.0f / g_world.getFramesPerSecond().get())));
-            rsl::chrono::milliseconds desired_time(static_cast<int>(std::lrint(1000.0f / app_description.max_fps)));
+            rsl::chrono::milliseconds actual_time(static_cast<int>(rsl::lrint(1000.0f / g_world.getFramesPerSecond().get())));
+            rsl::chrono::milliseconds desired_time(static_cast<int>(rsl::lrint(1000.0f / app_description.max_fps)));
 
             rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
             if (elapsed_time > rsl::chrono::milliseconds(0ms))
