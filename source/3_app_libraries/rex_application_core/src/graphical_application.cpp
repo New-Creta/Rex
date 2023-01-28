@@ -1,4 +1,6 @@
 #include "rex_application_core/graphical_application.h"
+#include "rex_engine/diagnostics/logging.h"
+#include "rex_renderer/renderer.h"
 
 namespace rex
 {
@@ -12,6 +14,12 @@ namespace rex
     //-------------------------------------------------------------------------
     void GraphicalApplication::app_initialize()
     {
+        if (!renderer::initialize())
+        {
+            REX_ERROR("The renderer did not initialize correctly.");
+            return;
+        }
+
         initialize();
     }
     //-------------------------------------------------------------------------
