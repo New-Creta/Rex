@@ -1,7 +1,7 @@
 
 
-#include "rex_memory/blob.h"
-#include "rex_memory/blob_writer.h"
+#include "rex_engine/memory/blob.h"
+#include "rex_engine/memory/blob_writer.h"
 #include "rex_std/utility.h"
 #include "rex_std/memory.h"
 

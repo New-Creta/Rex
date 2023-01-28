@@ -2,13 +2,13 @@ using Sharpmake;
 using System.IO;
 
 [Generate]
-public class RexMemory : EngineProject
+public class RexRenderer : EngineProject
 {
-  public RexMemory() : base()
+  public RexRenderer() : base()
   {
     // The name of the project in Visual Studio. The default is the name of
     // the class, but you usually want to override that.
-    Name = "RexMemory";
+    Name = "RexRenderer";
     GenerateTargets();
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
@@ -22,5 +22,6 @@ public class RexMemory : EngineProject
     conf.Output = Configuration.OutputType.Lib;
 
     conf.add_dependency<RexStdExtra>(target);
+    conf.add_dependency<RexEngine>(target);
   }
 }
