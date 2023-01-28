@@ -22,7 +22,7 @@ public class RexWindows : PlatformProject
     conf.Output = Configuration.OutputType.Lib;
 
     conf.add_dependency<RexEngine>(target);
-    conf.add_dependency<RexMemory>(target);
+    conf.add_dependency<RexRenderer>(target);
 
     conf.add_public_define("REX_PLATFORM_WINDOWS");
   }
