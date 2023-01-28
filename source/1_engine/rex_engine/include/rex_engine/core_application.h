@@ -12,7 +12,7 @@ namespace rex
             :max_fps(144)
         {}
 
-        int max_fps;
+        s32 max_fps;
     };
 
     class CoreApplication
