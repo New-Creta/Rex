@@ -40,6 +40,12 @@ public class BaseProject : Project
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
     conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
 
+    // workaround for rex_std
+    if (Utils.FindInParent(SourceRootPath, "0_thirdparty") != "")
+    {
+      conf.SolutionFolder = "0_thirdparty";
+    }
+
     if (conf.Compiler == DevEnv.ninja && target.Compiler == Compiler.MSVC)
     {
       string tools_json_path = Path.Combine(Globals.LibsRoot, "lib_paths.json");
