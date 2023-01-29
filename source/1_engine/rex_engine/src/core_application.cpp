@@ -8,8 +8,7 @@
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
 #include "rex_std/math.h"
-
-#include <thread>
+#include "rex_std/thread.h"
 
 #include <assert.h>
 
@@ -69,7 +68,7 @@ namespace rex
             rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
             if (elapsed_time > rsl::chrono::milliseconds(0ms))
             {
-                //std::this_thread::sleep_for(elapsed_time);
+                rsl::this_thread::sleep_for(elapsed_time);
             }
         }
 
