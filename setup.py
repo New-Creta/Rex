@@ -32,7 +32,7 @@ def install_rexpy(forceInstall):
   # we don't have access to rexpy yet, we'll have to manually
   # check if we're in the root.
 
-  # let's assume if "build", "source" and "tests" are found, we're in the root
+  # let's assume if "build" and "source"are found, we're in the root
   build_exists = os.path.exists("./build")
   source_exists = os.path.exists("./source")
 
