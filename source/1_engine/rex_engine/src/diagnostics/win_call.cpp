@@ -24,10 +24,10 @@ namespace rex::win
     _com_error err(hr);
     rsl::medium_stack_string error_message(err.ErrorMessage());
     REX_ERROR("Windows Error");
-    REX_ERROR("File: ", file);
-    REX_ERROR("Function: ", function);
-    REX_ERROR("On line: ", line_nr);
-    REX_ERROR("Windows error: ", error_message);
+    REX_ERROR("File: {}", file);
+    REX_ERROR("Function: {}", function);
+    REX_ERROR("On line: {}", line_nr);
+    REX_ERROR("Windows error: {}", error_message);
 
     return error_message;
   }

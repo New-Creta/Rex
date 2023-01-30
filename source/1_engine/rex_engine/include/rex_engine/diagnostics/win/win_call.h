@@ -52,14 +52,15 @@ namespace rex
   }
 }
 
+#define REX_ENABLE_WIN_CALL
 #ifdef REX_ENABLE_WIN_CALL
-#define CHECK_FOR_WIN_ERRORS() rsl::win::check_for_win_errors(__FILE__, __FUNCTION__, __LINE__)
+#define CHECK_FOR_WIN_ERRORS() rex::win::check_for_win_errors(__FILE__, __FUNCTION__, __LINE__)
 
 #define WIN_CALL_IGNORE(function, error_success) rsl::win::call_to_win32_api<decltype(function)>([&]() { return function; }, error_success, __FILE__, __FUNCTION__, __LINE__)
 
-#define WIN_CALL(function)    rsl::win::call_to_win32_api<decltype(function)>([&]() { return function; }, ERROR_SUCCESS, __FILE__, __FUNCTION__, __LINE__)
-#define WIN_SUCCESS(function) rsl::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
-#define WIN_FAILED(function)  rsl::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_failed()
+#define WIN_CALL(function)    rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, ERROR_SUCCESS, __FILE__, __FUNCTION__, __LINE__)
+#define WIN_SUCCESS(function) rex::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
+#define WIN_FAILED(function)  rex::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_failed()
 
 #else
 
