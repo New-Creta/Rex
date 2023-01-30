@@ -1,40 +1,43 @@
 #pragma once
 
-#include "rex_std/string_view.h"
-#include "rex_std_extra/utilities/yes_no_enum.h"
+#include "rex_engine/types.h"
 
 namespace rex
 {
-    DEFINE_YES_NO_ENUM(FullScreen);
+  struct WindowViewport
+  {
+    s32 x;
+    s32 y;
+    s32 width;
+    s32 height;
+  };
 
-    struct WindowDescription
-    {
-        WindowDescription()
-            : title("rex")
-            , width(1280)
-            , height(720)
-            , fullscreen(FullScreen::No)
-        {}
+  struct WindowDescription
+  {
+    WindowDescription()
+      : title("rex")
+      , viewport({ 0,0, 1280,720 })
+    {}
 
-        rsl::string_view title;
-        int32 width;
-        int32 height;
-        FullScreen fullscreen;
-    };
+    const c8* title;
+    WindowViewport viewport;
+  };
 
-    class CoreWindow
-    {
-    public:
-        virtual ~CoreWindow();
+  class IWindow
+  {
+  public:
+    virtual ~IWindow();
 
-        virtual void update() = 0;
+    virtual void update() = 0;
+    virtual void show() = 0;
+    virtual void hide() = 0;
+    virtual void close() = 0;
 
-        virtual void show() = 0;
-        virtual void hide() = 0;
-        virtual void focus() = 0;
-        virtual void close() = 0;
+    virtual void* get_primary_display_handle() = 0;
 
-        virtual int32 width() const = 0;
-        virtual int32 height() const = 0;
-    };
+    virtual s32 width() const = 0;
+    virtual s32 height() const = 0;
+
+    virtual f32 get_aspect() const = 0;
+  };
 }
