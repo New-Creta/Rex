@@ -1,34 +1,10 @@
 #pragma once
 
-#include "core_application.h"
+#include "rex_engine/types.h"
 
-//--------------------------------------------------------------------------------------------
-extern rex::CoreApplication* rex::create_application();
-
-//--------------------------------------------------------------------------------------------
-int run_program(int /*argc*/, char** /*argv*/)
+namespace rex
 {
-    rex::CoreApplication* application = rex::create_application();
+  struct ApplicationCreationParams;
 
-    int result = application->run();
-
-    delete application;
-
-    return result;
+  extern ApplicationCreationParams app_entry(s32 argc, c8** argv);
 }
-
-#if defined REX_PLATFORM_WINDOWS
-
-//--------------------------------------------------------------------------------------------
-int main(int argc, char** argv)
-{
-    int result = run_program(argc, argv);
-
-    return result;
-}
-
-#else
-
-    #error Unsupported platform
-
-#endif

@@ -1,37 +1,25 @@
 #include "rex_engine/entrypoint.h"
-#include "rex_windows/window.h"
-#include "regina/regina.h"
+#include "rex_engine/core_application_params.h"
+#include "rex_engine/defines.h"
 
-//-----------------------------------------------------------------------
-rex::CoreApplication* rex::create_application()
+namespace rex
 {
-    rex::ApplicationDescription description;
+  ApplicationCreationParams app_entry(s32 argc, c8** argv)
+  {
+    UNUSED_PARAM(argc);
+    UNUSED_PARAM(argv);
 
-    description.max_fps = 60u;
+    ApplicationCreationParams params;
 
-    return new regina::Regina(description);
-}
+    params.window_width = 1280;
+    params.window_height = 720;
+    params.window_title = "Sandbox";
 
-//-----------------------------------------------------------------------
-rex::CoreWindow* rex::create_window()
-{
-    rex::WindowDescription description;
-
-    description.title = "Regina";
-    description.fullscreen = rex::FullScreen::No;
-    description.width = 1280;
-    description.height = 720;
-
-    return new rex::Window(description);
+    return params;
+  }
 }
 
 namespace regina
 {
-    //-------------------------------------------------------------------------
-    Regina::Regina(const rex::ApplicationDescription& description)
-        : rex::GraphicalApplication(description)
-    {
-    }
-    //-------------------------------------------------------------------------
-    Regina::~Regina() = default;
+
 }
