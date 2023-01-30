@@ -2,42 +2,25 @@
 
 #include "rex_std/memory.h"
 
+#include "rex_engine/types.h"
+
 namespace rex
 {
     struct FrameInfo;
 
-    struct ApplicationDescription
-    {
-        ApplicationDescription()
-            :max_fps(144)
-        {}
-
-        s32 max_fps;
-    };
-
-    class CoreApplication
+    class ICoreApplication
     {
     public:
-        CoreApplication(const ApplicationDescription& description);
-        virtual ~CoreApplication();
+        ICoreApplication();
+        virtual ~ICoreApplication();
 
-        bool is_running() const;
+        virtual bool is_running() const = 0;
 
-        int run();
-        void quit();
-
-    protected:
-        void mark_for_destroy();
-
-        virtual void platform_initialize() = 0;
-        virtual void platform_update(const FrameInfo& info) = 0;
-        virtual void platform_shutdown() = 0;
+        virtual s32 run() = 0;
+        virtual void quit() = 0;
 
     private:
-        struct Internal;
-        rsl::unique_ptr<Internal> m_internal_ptr;
+      struct Internal;
+      rsl::unique_ptr<Internal> m_internal_ptr;
     };
-
-    // This will be implemented by the CLIENT!
-    CoreApplication* create_application();
 }

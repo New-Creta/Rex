@@ -1,37 +1,40 @@
 #pragma once
 
 #include "rex_engine/core_application.h"
+#include "rex_engine/defines.h"
+
+#include "rex_windows/win_types.h"
+
 #include "rex_std/memory.h"
 
 namespace rex
 {
     struct FrameInfo;
-    struct WindowDescription;
-    
-    class CoreWindow;
+    struct ApplicationCreationParams;
 
     namespace win32
     {
-        class GuiApplication : public CoreApplication
+        class GuiApplication : public ICoreApplication
         {
         public:
-            GuiApplication(const ApplicationDescription& description);
-            ~GuiApplication() override;
+          GuiApplication(HInstance hInstance, HInstance hPrevInstance, LPtStr lpCmdLine, s32 nCmdShow, ApplicationCreationParams&& creationParams);
+          ~GuiApplication() override;
+
+          bool is_running() const override;
+
+          s32 run() override;
+          void quit() override;
 
         protected:
-            void platform_initialize() override;
-            void platform_update(const FrameInfo& info) override;
-            void platform_shutdown() override;
+          void mark_for_destroy();
 
-            virtual void app_initialize() = 0;
-            virtual void app_update(const FrameInfo& info) = 0;
-            virtual void app_shutdown() = 0;
+          virtual bool app_initialize() { return true; };
+          virtual void app_update(const FrameInfo& info) { UNUSED_PARAM(info); };
+          virtual void app_shutdown() {};
 
         private:
-            struct Internal;
-            rsl::unique_ptr<Internal> m_internal_ptr;
+          struct Internal;
+          rsl::unique_ptr<Internal> m_internal_ptr;
         };
     }
-
-    extern rex::CoreWindow* create_window();
 }
