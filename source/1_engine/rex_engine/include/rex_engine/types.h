@@ -19,22 +19,21 @@ using f32 = float;
 using f64 = double;
 
 using ulong = unsigned long;
-using dword = unsigned long; // for win32
 
 // allow single threaded platforms to avoid use of atomic
-#if CERA_WEB || CERA_WINDOWS
-#define CERA_SINGLE_THREADED 1
+#if REX_WEB || REX_WINDOWS
+#define REX_SINGLE_THREADED 1
 #else
-#define CERA_SINGLE_THREADED 0
+#define REX_SINGLE_THREADED 0
 #endif
 
-#if CERA_SINGLE_THREADED
+#if REX_SINGLE_THREADED
 typedef u8     a_u8;
 typedef u32    a_u32;
 typedef u64    a_u64;
 typedef bool   a_bool;
 typedef s32    a_s32;
-#define cera_atomic_load(a) a
+#define rex_atomic_load(a) a
 #else
 #include <atomic>
 typedef std::atomic<uint8_t>  a_u8;
@@ -42,5 +41,5 @@ typedef std::atomic<uint32_t> a_u32;
 typedef std::atomic<uint64_t> a_u64;
 typedef std::atomic<bool>     a_bool;
 typedef std::atomic<s32>      a_s32;
-#define cera_atomic_load(a) a.load()
+#define rex_atomic_load(a) a.load()
 #endif
