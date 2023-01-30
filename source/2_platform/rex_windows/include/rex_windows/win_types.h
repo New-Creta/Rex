@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "rex_std/bonus/types.h"
+#include "rex_engine/types.h"
 
 namespace rex
 {
@@ -23,7 +23,13 @@ namespace rex
         using LParam = size_t;
         using LResult = size_t;
 
+#ifndef UNICODE
+        using LPtStr = char*;
+#else 
+        using LPtStr = wchar_t*
+#endif
+
         using DWord = unsigned long;
-        using WindowProcedureFunc = LResult(__stdcall*)(Hwnd, card32, WParam, LParam);
+        using WindowProcedureFunc = LResult(__stdcall*)(Hwnd, s32, WParam, LParam);
     }
 }
