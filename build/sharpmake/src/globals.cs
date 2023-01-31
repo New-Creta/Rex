@@ -60,19 +60,7 @@ public class Globals
 
   static public void Init()
   {
-    string current_directory = Directory.GetCurrentDirectory();
-
-    while (Directory.GetDirectories(current_directory).ToList().FindIndex(x => Path.GetFileName(x) == folder_in_root) == -1)
-    {
-      if (Directory.GetDirectoryRoot(current_directory) == current_directory)
-      {
-        throw new System.Exception("Failed to find root directory");
-      }
-      current_directory = Directory.GetParent(current_directory).FullName;
-    }
-
-
-    root = current_directory;
+    root = Utils.FindInParent(Directory.GetCurrentDirectory(), folder_in_root);
 
     string settings_json_path = Path.Combine(root, "build", "config", "settings.json");
     string json_blob = File.ReadAllText(settings_json_path);

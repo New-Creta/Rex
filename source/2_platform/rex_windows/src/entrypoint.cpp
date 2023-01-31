@@ -111,18 +111,6 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
   rex::ApplicationCreationParams acp = rex::app_entry(arguments.count, arguments.values);
 
-#ifdef REX_DEBUG
-  // console for std output..
-  if (!AttachConsole(ATTACH_PARENT_PROCESS))
-  {
-    AllocConsole();
-  }
-
-  freopen("CONIN$", "r", stdin);
-  freopen("CONOUT$", "w", stdout);
-  freopen("CONOUT$", "w", stderr);
-#endif
-
   rex::win32::GuiApplication application((rex::win32::HInstance)hInstance, (rex::win32::HInstance)hPrevInstance, (rex::win32::LPtStr)lpCmdLine, nCmdShow, std::move(acp));
 
   s32 result = application.run();
@@ -130,6 +118,11 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
   REX_INFO("Application completed with result: {0}", result);
 
   return result;
+}
+
+int main(REX_MAYBE_UNUSED card32 argc, REX_MAYBE_UNUSED char8* argv)
+{
+  WinMain(GetModuleHandle(NULL), NULL, GetCommandLine(), SW_SHOW);
 }
 
 #ifdef _MSC_VER
