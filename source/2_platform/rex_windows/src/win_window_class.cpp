@@ -22,7 +22,7 @@ namespace rex
 
       }
 
-      bool create(HInstance hInstance, WindowProcedureFunc wnd_proc, const c8* title)
+      bool create(HInstance hInstance, WindowProcedureFunc wnd_proc, const char8* title)
       {
         name = title;
         hinstance = hInstance == NULL ? (HInstance)GetModuleHandleA(NULL) : hInstance;
@@ -74,7 +74,7 @@ namespace rex
       }
 
       WNDCLASS window_class;
-      const c8* name;
+      const char8* name;
       HInstance hinstance;
       bool registered;
     };
@@ -91,7 +91,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    bool WindowClass::create(HInstance hInstance, WindowProcedureFunc wndProc, const c8* title)
+    bool WindowClass::create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title)
     {
       return m_internal_ptr->create(hInstance, wndProc, title);
     }
@@ -103,7 +103,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const c8* WindowClass::class_name() const
+    const char8* WindowClass::class_name() const
     {
       return m_internal_ptr->name;
     }

@@ -15,10 +15,10 @@ namespace rex
       WindowClass();
       ~WindowClass();
 
-      bool create(HInstance hInstance, WindowProcedureFunc wndProc, const c8* title);
+      bool create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title);
       bool destroy();
 
-      const c8* class_name() const;
+      const char8* class_name() const;
 
       HInstance hinstance() const;
 

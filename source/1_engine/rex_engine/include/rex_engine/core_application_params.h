@@ -8,7 +8,7 @@ namespace rex
   {
     s32 window_width = 1280;
     s32 window_height = 720;
-    c8* window_title = "Application";
+    char8* window_title = "Application";
 
     s32 max_render_commands = 1 << 16;
     s32 max_fps = 60;

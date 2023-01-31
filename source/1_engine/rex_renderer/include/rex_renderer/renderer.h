@@ -6,10 +6,10 @@ namespace rex
 {
     struct renderer_info
     {
-        const c8* api_version;
-        const c8* shader_version;
-        const c8* renderer;
-        const c8* vendor;
+        const char8* api_version;
+        const char8* shader_version;
+        const char8* renderer;
+        const char8* vendor;
     };
 
     namespace renderer

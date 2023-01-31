@@ -4,7 +4,7 @@
 
 namespace rex
 {
-  ApplicationCreationParams app_entry(s32 argc, c8** argv)
+  ApplicationCreationParams app_entry(s32 argc, char8** argv)
   {
     UNUSED_PARAM(argc);
     UNUSED_PARAM(argv);

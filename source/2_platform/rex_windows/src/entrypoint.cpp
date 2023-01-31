@@ -32,7 +32,7 @@ namespace rex
       if (other.count != 0)
       {
         count = other.count;
-        values = new c8 * [other.count];
+        values = new char8 * [other.count];
         std::memcpy(values, other.values, other.count);
       }
     }
@@ -58,7 +58,7 @@ namespace rex
       if (other.count != 0)
       {
         count = other.count;
-        values = new c8 * [other.count];
+        values = new char8 * [other.count];
         std::memcpy(values, other.values, other.count);
       }
       else
@@ -78,7 +78,7 @@ namespace rex
     }
 
     s32 count;
-    c8** values;
+    char8** values;
   };
 
   //-------------------------------------------------------------------------
@@ -89,7 +89,7 @@ namespace rex
 
     command_line_arguments arguments;
     arguments.count = argc;
-    arguments.values = new c8 * [argc];
+    arguments.values = new char8 * [argc];
 
     for (s32 i = 0; i < argc; ++i)
     {

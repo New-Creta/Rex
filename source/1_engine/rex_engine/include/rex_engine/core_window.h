@@ -19,7 +19,7 @@ namespace rex
       , viewport({ 0,0, 1280,720 })
     {}
 
-    const c8* title;
+    const char8* title;
     WindowViewport viewport;
   };
 

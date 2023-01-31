@@ -12,8 +12,8 @@ using s64 = int64_t;
 using u64 = uint64_t;
 using hash_id = uint32_t;
 
-using c8 = char;
-using c16 = wchar_t;
+using char8 = char;
+using tchar = wchar_t;
 
 using f32 = float;
 using f64 = double;
