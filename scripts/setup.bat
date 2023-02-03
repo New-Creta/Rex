@@ -1,1 +1,1 @@
-python utilities/repository_setup.py
+py utilities/repository_setup.py
