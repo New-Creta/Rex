@@ -1,1 +1,1 @@
-%LocalAppData%\Programs\Python\Python310\python.exe utilities/repository_setup.py
+py utilities/repository_setup.py
