@@ -12,11 +12,6 @@
 
 #include <iostream>
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4996) // _CRT_SECURE_NO_WARNINGS
-#endif
-
 namespace rex
 {
   //-------------------------------------------------------------------------
@@ -95,7 +90,8 @@ namespace rex
     {
       arguments.values[i] = new char[256];
 
-      wcstombs(arguments.values[i], argv[i], 256);
+      size_t num_converted = 0;
+      wcstombs_s(&num_converted, arguments.values[i], 256, argv[i], 256);
     }
 
     LocalFree(argv);
@@ -120,11 +116,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
   return result;
 }
 
-int main(REX_MAYBE_UNUSED card32 argc, REX_MAYBE_UNUSED char8* argv)
+int main()
 {
   WinMain(GetModuleHandle(NULL), NULL, GetCommandLine(), SW_SHOW);
 }
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif

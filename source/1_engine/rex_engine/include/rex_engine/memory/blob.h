@@ -46,9 +46,9 @@ namespace rex
             friend class BlobReader;
 
             template <typename T>
-            T& read(const rsl::MemorySize& offset = 0);
+            T& read(const rsl::MemorySize& offset = 0_bytes);
             template <typename T>
-            const T& read(const rsl::MemorySize& offset = 0) const;
+            const T& read(const rsl::MemorySize& offset = 0_bytes) const;
 
             rsl::byte* read_bytes(rsl::byte* dst, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset);
             const rsl::byte* read_bytes(rsl::byte* dst, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset) const;

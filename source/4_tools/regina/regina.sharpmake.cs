@@ -31,6 +31,10 @@ public class Regina : ToolsProject
         {
           conf.Options.Add(Options.Vc.Linker.SubSystem.Windows);
         }
+        else
+        {
+          conf.Options.Add(Options.Vc.Linker.SubSystem.Console);
+        }
 
         break;
     }

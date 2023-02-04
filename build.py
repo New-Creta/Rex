@@ -12,6 +12,7 @@ import os
 import argparse
 import rexpy.build
 import rexpy.util
+import rexpy.diagnostics
 
 from pathlib import Path
 
@@ -62,5 +63,12 @@ if __name__ == "__main__":
   if build_any_special_tests == True and not args.unittests:
     ninja_files = [file for file in ninja_files if __is_special_test_file(file)]
 
+  result = 0
+
   for ninja_file in ninja_files:
-    rexpy.build.new_build(ninja_file, args.clean)
+    result |= rexpy.build.new_build(ninja_file, args.clean)
+
+  if result != 0:
+    rexpy.diagnostics.log_err("Not all builds succeeded")
+  else:
+    rexpy.diagnostics.log_info("Build successful")
