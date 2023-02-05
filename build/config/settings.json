@@ -7,5 +7,6 @@
   "source_folder": "source",
   "coverage_folder": "tests/coverage",
   "asan_folder": "tests/coverage",
-  "ubsan_folder": "tests/ubsan"
+  "ubsan_folder": "tests/ubsan",
+  "ninja_launcher": "build/scripts/rexpy/rexpy/ninja_launcher.py"
 }

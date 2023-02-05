@@ -14,6 +14,7 @@ public class Globals
   static private string sharpmake_root;
   static private string tools_root;
   static private string libs_root;
+  static private string ninja_launcher;
 
   static public string Root
   {
@@ -57,6 +58,13 @@ public class Globals
       return libs_root;
     }
   }
+  static public string NinjaLauncher
+  {
+    get
+    {
+      return ninja_launcher;
+    }
+  }
 
   static public void Init()
   {
@@ -72,6 +80,7 @@ public class Globals
     sharpmake_root = Path.Combine(root, "build", "sharpmake");
     tools_root = Path.Combine(root, settings["intermediate_folder"], settings["tools_folder"]);
     libs_root = Path.Combine(root, settings["intermediate_folder"], settings["libs_folder"]);
+    ninja_launcher = Path.Combine(root, settings["ninja_launcher"]);
     System.Console.WriteLine($"Root path:{root}");
   }
 }
