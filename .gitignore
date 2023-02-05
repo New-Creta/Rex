@@ -34,15 +34,16 @@
 # Python Cache
 __pycache__
 
-# CMake Shadow Build
-build/
-
 # VS Code folder
 .vscode/
 *.bak
 
 # Rex Repository
-_setup_windows.bat
-_run_windows.bat
-_generate_windows.bat
-_build_windows.bat
+.rex/
+rex.ninja
+rex.sln
+.vs/
+build/sharpmake/.ninja/
+build/sharpmake/bin/
+build/sharpmake/obj/
+.ninja/
