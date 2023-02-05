@@ -15,24 +15,24 @@
 
 namespace rex
 {
-    struct ICoreApplication::Internal
+    struct IApplication::Internal
     {
-        static ICoreApplication* s_instance;
+        static IApplication* s_instance;
     };
 
     //-------------------------------------------------------------------------
-    ICoreApplication* ICoreApplication::Internal::s_instance = nullptr;
+    IApplication* IApplication::Internal::s_instance = nullptr;
 
     //-------------------------------------------------------------------------
-    ICoreApplication::ICoreApplication()
+    IApplication::IApplication()
         :m_internal_ptr(rsl::make_unique<Internal>())
     {
-        assert(ICoreApplication::Internal::s_instance == nullptr && "There can only be one application at the time");
-        ICoreApplication::Internal::s_instance = this;
+        assert(IApplication::Internal::s_instance == nullptr && "There can only be one application at the time");
+        IApplication::Internal::s_instance = this;
     }
     //-------------------------------------------------------------------------
-    ICoreApplication::~ICoreApplication()
+    IApplication::~IApplication()
     {
-        ICoreApplication::Internal::s_instance = nullptr;
+        IApplication::Internal::s_instance = nullptr;
     }
 }

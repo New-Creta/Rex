@@ -140,7 +140,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     GuiApplication::GuiApplication(HInstance hInstance, HInstance hPrevInstance, LPtStr lpCmdLine, s32 nCmdShow, ApplicationCreationParams&& creationParams)
-      :ICoreApplication()
+      :IApplication()
       , m_internal_ptr(rsl::make_unique<Internal>(GuiApplicationCreationParamters{ hInstance, hPrevInstance, lpCmdLine, nCmdShow }, std::move(creationParams)))
     {
       m_internal_ptr->on_initialize = [&]() { return app_initialize(); };

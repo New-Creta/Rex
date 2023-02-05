@@ -8,11 +8,11 @@ namespace rex
 {
     struct FrameInfo;
 
-    class ICoreApplication
+    class IApplication
     {
     public:
-        ICoreApplication();
-        virtual ~ICoreApplication();
+        IApplication();
+        virtual ~IApplication();
 
         virtual bool is_running() const = 0;
 

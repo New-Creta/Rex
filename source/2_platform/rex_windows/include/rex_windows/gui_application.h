@@ -14,7 +14,7 @@ namespace rex
 
     namespace win32
     {
-        class GuiApplication : public ICoreApplication
+        class GuiApplication : public IApplication
         {
         public:
           GuiApplication(HInstance hInstance, HInstance hPrevInstance, LPtStr lpCmdLine, s32 nCmdShow, ApplicationCreationParams&& creationParams);
