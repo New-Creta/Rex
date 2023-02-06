@@ -118,5 +118,5 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 int main()
 {
-  WinMain(GetModuleHandle(NULL), NULL, GetCommandLine(), SW_SHOW);
+  return WinMain(GetModuleHandle(NULL), NULL, GetCommandLine(), SW_SHOW);
 }
