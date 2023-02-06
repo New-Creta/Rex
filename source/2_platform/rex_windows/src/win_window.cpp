@@ -4,7 +4,7 @@
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 
-#include "rex_std_extra/utilities/scopeguard.h"
+#include "rex_std/bonus/utility/scopeguard.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -179,7 +179,7 @@ namespace rex
       DWORD last_windows_error = GetLastError();
       rex::win::clear_win_errors();
 
-      rsl::ScopeGuard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
+      rsl::scopeguard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
 
       switch (msg)
       {

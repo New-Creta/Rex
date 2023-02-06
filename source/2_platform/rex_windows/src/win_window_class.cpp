@@ -35,15 +35,15 @@ namespace rex
 
         window_class.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
         window_class.lpfnWndProc = (WNDPROC)wnd_proc;
-        //window_class.cbClsExtra = 0;
-        //window_class.cbWndExtra = 0;
-        //window_class.hInstance = (HINSTANCE)hinstance;
+        window_class.cbClsExtra = 0;
+        window_class.cbWndExtra = 0;
+        window_class.hInstance = (HINSTANCE)hinstance;
         window_class.hInstance = (HINSTANCE)GetModuleHandleA(NULL);
         window_class.hIcon = LoadIcon(NULL, IDI_APPLICATION);
         window_class.hCursor = LoadCursor(NULL, IDC_ICON);
-        //window_class.hbrBackground = (HBRUSH)(COLOR_WINDOWFRAME);
+        window_class.hbrBackground = (HBRUSH)(COLOR_WINDOWFRAME);
         window_class.lpszClassName = name;
-        //window_class.lpszMenuName = nullptr;
+        window_class.lpszMenuName = nullptr;
 
         if (WIN_FAILED(RegisterClass(&window_class)))
         {

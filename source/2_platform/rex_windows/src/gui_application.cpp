@@ -10,7 +10,7 @@
 #include "rex_std/memory.h"
 #include "rex_std/math.h"
 
-#include "rex_std_extra/utilities/scopeguard.h"
+#include "rex_std/bonus/utility/scopeguard.h"
 
 namespace rex
 {
@@ -163,7 +163,7 @@ namespace rex
     {
       // Always make sure we close down the application properly
       Internal* instance = m_internal_ptr.get();
-      rsl::ScopeGuard shutdown_scopeguard([instance]() { instance->shutdown(); });
+      rsl::scopeguard shutdown_scopeguard([instance]() { instance->shutdown(); });
 
       if (m_internal_ptr->initialize() == false)
       {
