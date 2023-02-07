@@ -36,16 +36,16 @@ namespace rex
       rsl::medium_stack_string m_error_message;
     };
   } // namespace win
-}
+} // namespace rex
 
 #ifdef REX_ENABLE_HR_CALL
-#define HR_CALL(function)    rsl::win::HrCall(function, __FILE__, __FUNCTION__, __LINE__)
-#define HR_SUCCESS(function) rsl::win::HrCall(function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
-#define HR_FAILED(function)  rsl::win::HrCall(function, __FILE__, __FUNCTION__, __LINE__).has_failed()
+  #define HR_CALL(function)    rsl::win::HrCall(function, __FILE__, __FUNCTION__, __LINE__)
+  #define HR_SUCCESS(function) rsl::win::HrCall(function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
+  #define HR_FAILED(function)  rsl::win::HrCall(function, __FILE__, __FUNCTION__, __LINE__).has_failed()
 
 #else
 
-#define HR_CALL(function)    function
-#define HR_SUCCESS(function) function
-#define HR_FAILED(function)  function
+  #define HR_CALL(function)    function
+  #define HR_SUCCESS(function) function
+  #define HR_FAILED(function)  function
 #endif

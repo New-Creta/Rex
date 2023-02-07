@@ -10,8 +10,9 @@
 //
 // ============================================
 
-#include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
+
+#include "rex_engine/diagnostics/logging.h"
 
 #define NOMINMAX
 #include <comdef.h>
@@ -31,19 +32,19 @@ namespace rex::win
 
     return error_message;
   }
-}
+} // namespace rex::win
 
 rex::win::WinCall::WinCall(const rsl::string_view file, const rsl::string_view function, card32 line_nr)
-  : WinCall(ERROR_SUCCESS, file, function, line_nr)
+    : WinCall(ERROR_SUCCESS, file, function, line_nr)
 {
 }
 
 rex::win::WinCall::WinCall(DWord error_success, const rsl::string_view file, const rsl::string_view function, card32 line_nr)
-  : m_error(GetLastError())
+    : m_error(GetLastError())
 {
-  if (m_error != error_success && m_error != ERROR_SUCCESS)
+  if(m_error != error_success && m_error != ERROR_SUCCESS)
   {
-    HRESULT hr = HRESULT_FROM_WIN32(m_error);
+    HRESULT hr      = HRESULT_FROM_WIN32(m_error);
     m_error_message = report_hr_error(hr, file, function, line_nr);
   }
 
@@ -74,7 +75,7 @@ void rex::win::check_for_win_errors(const rsl::string_view file, const rsl::stri
   DWord err = GetLastError();
   clear_win_errors();
 
-  if (err != ERROR_SUCCESS)
+  if(err != ERROR_SUCCESS)
   {
     REX_WARN("Still Windows errors in pool!");
 

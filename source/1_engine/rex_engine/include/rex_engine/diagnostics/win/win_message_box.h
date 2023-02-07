@@ -3,7 +3,7 @@
 // Created: 1/21/2023 1:04:17 AM
 //
 // Created By: nickdb
-// 
+//
 // Copyright (c) REX
 //--------------------------------------------------
 
@@ -19,4 +19,4 @@ namespace rex::win
   // Returns true if yes is pressed
   bool yes_no_message_box(const rsl::string_view msg);
   bool yes_no_message_box(const rsl::string_view msg, const rsl::string_view title);
-}
+} // namespace rex::win

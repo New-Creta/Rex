@@ -11,6 +11,7 @@
 // ============================================
 
 #include "rex_engine/diagnostics/win/win_debug.h"
+
 #include "rex_engine/diagnostics/win/win_message_box.h"
 
 #define NOMINMAX
@@ -26,7 +27,7 @@ void rex::win::exit_process(int32 exit_code)
 }
 void rex::win::exit_confirm(int32 exit_code)
 {
-  if (yes_no_message_box("Are you sure you want to abort the process?"))
+  if(yes_no_message_box("Are you sure you want to abort the process?"))
   {
     exit_process(exit_code);
   }

@@ -4,4 +4,4 @@ namespace rex
 {
   //-----------------------------------------------------------------
   IWindow::~IWindow() = default;
-}
+} // namespace rex

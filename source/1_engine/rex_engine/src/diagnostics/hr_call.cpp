@@ -19,9 +19,9 @@
 #include <windows.h>
 
 rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED const rsl::string_view file, REX_MAYBE_UNUSED const rsl::string_view function, REX_MAYBE_UNUSED card32 line_nr)
-  : m_has_failed(FAILED(hr))
+    : m_has_failed(FAILED(hr))
 {
-  if (has_failed())
+  if(has_failed())
   {
     _com_error err(hr);
     m_error_message = err.ErrorMessage();

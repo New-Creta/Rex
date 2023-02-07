@@ -1,9 +1,8 @@
 #include "rex_windows/win_window.h"
 
-#include "rex_engine/event_system.h"
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
-
+#include "rex_engine/event_system.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 
 #define NOMINMAX
@@ -17,7 +16,7 @@ namespace rex
     LResult __stdcall default_win_procedure(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
     {
       HWND win_hwnd = reinterpret_cast<HWND>(hwnd);
-      if (msg == WM_CREATE)
+      if(msg == WM_CREATE)
       {
         CREATESTRUCT* create_struct = reinterpret_cast<CREATESTRUCT*>(lparam);
         SetWindowLongPtr(win_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(create_struct->lpCreateParams));
@@ -25,7 +24,7 @@ namespace rex
       else
       {
         Window* this_window = reinterpret_cast<Window*>(GetWindowLongPtrW(win_hwnd, GWLP_USERDATA));
-        if (this_window)
+        if(this_window)
         {
           return this_window->on_event(hwnd, msg, wparam, lparam);
         }
@@ -36,28 +35,27 @@ namespace rex
 
     //-------------------------------------------------------------------------
     Window::Window()
-      :m_wnd_class()
-      ,m_hwnd(NULL)
-      ,m_destroyed(false)
+        : m_wnd_class()
+        , m_hwnd(NULL)
+        , m_destroyed(false)
     {
-
     }
 
     //-------------------------------------------------------------------------
     bool Window::create(HInstance hInstance, s32 cmdShow, const WindowDescription& description)
     {
-      if (!m_wnd_class.create(hInstance, default_win_procedure, description.title))
+      if(!m_wnd_class.create(hInstance, default_win_procedure, description.title))
       {
         REX_ERROR("Failed to create window class");
         return false;
       }
 
-      s32 x = description.viewport.x;
-      s32 y = description.viewport.y;
-      s32 width = description.viewport.width;
+      s32 x      = description.viewport.x;
+      s32 y      = description.viewport.y;
+      s32 width  = description.viewport.width;
       s32 height = description.viewport.height;
 
-      RECT rc = { 0, 0, (LONG)width, (LONG)height };
+      RECT rc = {0, 0, (LONG)width, (LONG)height};
       AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
       RECT desktop_rect;
@@ -69,19 +67,10 @@ namespace rex
       LONG half_x = (rc.right - rc.left) / 2;
       LONG half_y = (rc.bottom - rc.top) / 2;
 
-      m_hwnd = WIN_CALL((HWND)CreateWindowA(description.title
-        , description.title
-        , WS_OVERLAPPEDWINDOW
-        , x == 0 ? screen_mid_x - half_x : x
-        , y == 0 ? screen_mid_y - half_y : y
-        , rc.right - rc.left
-        , rc.bottom - rc.top
-        , nullptr
-        , nullptr
-        , (HINSTANCE)hInstance
-        , this));
+      m_hwnd = WIN_CALL(
+          (HWND)CreateWindowA(description.title, description.title, WS_OVERLAPPEDWINDOW, x == 0 ? screen_mid_x - half_x : x, y == 0 ? screen_mid_y - half_y : y, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, (HINSTANCE)hInstance, this));
 
-      if (m_hwnd == NULL)
+      if(m_hwnd == NULL)
       {
         REX_ERROR("Window creation failed");
         return false;
@@ -96,7 +85,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::destroy()
     {
-      if (m_destroyed == false)
+      if(m_destroyed == false)
       {
         DestroyWindow((HWND)m_hwnd);
 
@@ -115,8 +104,8 @@ namespace rex
     //-------------------------------------------------------------------------
     void Window::update()
     {
-      MSG message = { 0 };
-      while (PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE) > 0)
+      MSG message = {0};
+      while(PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE) > 0)
       {
         TranslateMessage(&message);
         DispatchMessage(&message);
@@ -181,17 +170,16 @@ namespace rex
 
       rsl::scopeguard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
 
-      switch (msg)
+      switch(msg)
       {
-      case WM_CLOSE:
-        close();
-      case WM_DESTROY:
-        PostQuitMessage(0);
-        event_system::fire_event(event_system::EventType::WindowClose);
-        return 0;
+        case WM_CLOSE: close();
+        case WM_DESTROY:
+          PostQuitMessage(0);
+          event_system::fire_event(event_system::EventType::WindowClose);
+          return 0;
       }
 
       return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
     }
-  }
-}
+  } // namespace win32
+} // namespace rex

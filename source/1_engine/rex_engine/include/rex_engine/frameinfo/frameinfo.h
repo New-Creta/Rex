@@ -5,15 +5,16 @@
 
 namespace rex
 {
-    struct FrameInfo
+  struct FrameInfo
+  {
+    //--------------------------------------------------------------------------------------------
+    FrameInfo(const DeltaTime& dTime, const FPS& framesPerSecond)
+        : delta_time(dTime)
+        , fps(framesPerSecond)
     {
-        //--------------------------------------------------------------------------------------------
-        FrameInfo(const DeltaTime& dTime, const FPS& framesPerSecond)
-            :delta_time(dTime)
-            ,fps(framesPerSecond)
-        {}
+    }
 
-        const DeltaTime& delta_time;
-        const FPS& fps;
-    };
-}
+    const DeltaTime& delta_time;
+    const FPS& fps;
+  };
+} // namespace rex

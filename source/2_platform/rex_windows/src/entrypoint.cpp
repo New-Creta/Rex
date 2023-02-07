@@ -1,16 +1,15 @@
+#include "rex_engine/entrypoint.h"
+
+#include "rex_engine/core_application_params.h"
+#include "rex_engine/diagnostics/logging.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/win_types.h"
 
-#include "rex_engine/entrypoint.h"
-#include "rex_engine/core_application_params.h"
-#include "rex_engine/diagnostics/logging.h"
-
 #define NOMINMAX
 #include <Windows.h>
+#include <iostream>
 #include <shellapi.h>
 #include <stdlib.h>
-
-#include <iostream>
 
 namespace rex
 {
@@ -18,28 +17,31 @@ namespace rex
   struct command_line_arguments
   {
     command_line_arguments()
-      : count(0), values(nullptr)
+        : count(0)
+        , values(nullptr)
     {
     }
     command_line_arguments(const command_line_arguments& other)
-      : count(0), values(nullptr)
+        : count(0)
+        , values(nullptr)
     {
-      if (other.count != 0)
+      if(other.count != 0)
       {
-        count = other.count;
-        values = new char8 * [other.count];
+        count  = other.count;
+        values = new char8*[other.count];
         std::memcpy(values, other.values, other.count);
       }
     }
     command_line_arguments(command_line_arguments&& other) noexcept
-      : count(std::exchange(other.count, 0)), values(std::exchange(other.values, nullptr))
+        : count(std::exchange(other.count, 0))
+        , values(std::exchange(other.values, nullptr))
     {
     }
     ~command_line_arguments()
     {
-      if (values != nullptr)
+      if(values != nullptr)
       {
-        for (s32 i = 0; i < count; ++i)
+        for(s32 i = 0; i < count; ++i)
         {
           delete values[i];
         }
@@ -50,15 +52,15 @@ namespace rex
 
     command_line_arguments& operator=(const command_line_arguments& other)
     {
-      if (other.count != 0)
+      if(other.count != 0)
       {
-        count = other.count;
-        values = new char8 * [other.count];
+        count  = other.count;
+        values = new char8*[other.count];
         std::memcpy(values, other.values, other.count);
       }
       else
       {
-        count = 0;
+        count  = 0;
         values = nullptr;
       }
 
@@ -66,7 +68,7 @@ namespace rex
     }
     command_line_arguments& operator=(command_line_arguments&& other) noexcept
     {
-      count = std::exchange(other.count, 0);
+      count  = std::exchange(other.count, 0);
       values = std::exchange(other.values, nullptr);
 
       return *this;
@@ -83,10 +85,10 @@ namespace rex
     LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
     command_line_arguments arguments;
-    arguments.count = argc;
-    arguments.values = new char8 * [argc];
+    arguments.count  = argc;
+    arguments.values = new char8*[argc];
 
-    for (s32 i = 0; i < argc; ++i)
+    for(s32 i = 0; i < argc; ++i)
     {
       arguments.values[i] = new char[256];
 
@@ -98,7 +100,7 @@ namespace rex
 
     return arguments;
   }
-}
+} // namespace rex
 
 //-------------------------------------------------------------------------
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)

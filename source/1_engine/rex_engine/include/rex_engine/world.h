@@ -5,19 +5,19 @@
 
 namespace rex
 {
-    class World
-    {
-    public:
-        static const DeltaTime& getDeltaTime();
-        static const FPS& getFramesPerSecond();
+  class World
+  {
+  public:
+    static const DeltaTime& getDeltaTime();
+    static const FPS& getFramesPerSecond();
 
-        World();
-        ~World();
+    World();
+    ~World();
 
-        void update();
+    void update();
 
-    private:
-        static DeltaTime   s_delta_time;
-        static FPS         s_frames_per_second;
-    };
-}
+  private:
+    static DeltaTime s_delta_time;
+    static FPS s_frames_per_second;
+  };
+} // namespace rex

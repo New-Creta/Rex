@@ -1,7 +1,6 @@
 #include "rex_windows/win_window_class.h"
 
 #include "rex_engine/diagnostics/logging.h"
-
 #include "rex_engine/diagnostics/win/win_call.h"
 
 #define NOMINMAX
@@ -14,17 +13,16 @@ namespace rex
     struct WindowClass::Internal
     {
       Internal()
-        : window_class()
-        , name()
-        , hinstance(NULL)
-        , registered(false)
+          : window_class()
+          , name()
+          , hinstance(NULL)
+          , registered(false)
       {
-
       }
 
       bool create(HInstance hInstance, WindowProcedureFunc wnd_proc, const char8* title)
       {
-        name = title;
+        name      = title;
         hinstance = hInstance == NULL ? (HInstance)GetModuleHandleA(NULL) : hInstance;
 
         ZeroMemory(&window_class, sizeof(window_class));
@@ -33,19 +31,19 @@ namespace rex
         REX_TODO("Make window icon data driven");
         REX_TODO("Make window cursor data driven");
 
-        window_class.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-        window_class.lpfnWndProc = (WNDPROC)wnd_proc;
-        window_class.cbClsExtra = 0;
-        window_class.cbWndExtra = 0;
-        window_class.hInstance = (HINSTANCE)hinstance;
-        window_class.hInstance = (HINSTANCE)GetModuleHandleA(NULL);
-        window_class.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-        window_class.hCursor = LoadCursor(NULL, IDC_ICON);
+        window_class.style         = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+        window_class.lpfnWndProc   = (WNDPROC)wnd_proc;
+        window_class.cbClsExtra    = 0;
+        window_class.cbWndExtra    = 0;
+        window_class.hInstance     = (HINSTANCE)hinstance;
+        window_class.hInstance     = (HINSTANCE)GetModuleHandleA(NULL);
+        window_class.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
+        window_class.hCursor       = LoadCursor(NULL, IDC_ICON);
         window_class.hbrBackground = (HBRUSH)(COLOR_WINDOWFRAME);
         window_class.lpszClassName = name;
-        window_class.lpszMenuName = nullptr;
+        window_class.lpszMenuName  = nullptr;
 
-        if (WIN_FAILED(RegisterClass(&window_class)))
+        if(WIN_FAILED(RegisterClass(&window_class)))
         {
           REX_ERROR("Failed to create window class!");
           return false;
@@ -60,7 +58,7 @@ namespace rex
 
       bool destroy()
       {
-        if (WIN_FAILED(UnregisterClass(name, (HINSTANCE)hinstance)))
+        if(WIN_FAILED(UnregisterClass(name, (HINSTANCE)hinstance)))
         {
           REX_ERROR("Failed to destroy window class!");
           return false;
@@ -81,8 +79,9 @@ namespace rex
 
     //-----------------------------------------------------------------
     WindowClass::WindowClass()
-      : m_internal_ptr(rsl::make_unique<Internal>())
-    {}
+        : m_internal_ptr(rsl::make_unique<Internal>())
+    {
+    }
 
     //-------------------------------------------------------------------------
     WindowClass::~WindowClass()
@@ -113,5 +112,5 @@ namespace rex
     {
       return m_internal_ptr->hinstance;
     }
-  }
-}
+  } // namespace win32
+} // namespace rex

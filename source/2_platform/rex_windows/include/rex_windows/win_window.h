@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_engine/core_window.h"
-
 #include "rex_windows/win_types.h"
 #include "rex_windows/win_window_class.h"
 
@@ -37,5 +36,5 @@ namespace rex
       Hwnd m_hwnd;
       bool m_destroyed;
     };
-  }
-}
+  } // namespace win32
+} // namespace rex

@@ -1,16 +1,14 @@
 #include "rex_windows/gui_application.h"
-#include "rex_windows/win_window.h"
 
 #include "rex_engine/core_application_params.h"
-#include "rex_engine/event_system.h"
-#include "rex_engine/world.h"
-#include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/diagnostics/logging.h"
-
-#include "rex_std/memory.h"
-#include "rex_std/math.h"
-
+#include "rex_engine/event_system.h"
+#include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/world.h"
 #include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_std/math.h"
+#include "rex_std/memory.h"
+#include "rex_windows/win_window.h"
 
 namespace rex
 {
@@ -27,14 +25,15 @@ namespace rex
     struct GuiApplication::Internal
     {
       Internal(GuiApplicationCreationParamters&& guiCreationParams, ApplicationCreationParams&& genericCreationParams)
-        :gui_creation_params(std::move(guiCreationParams))
-        ,generic_creation_params(std::move(genericCreationParams))
-      {}
+          : gui_creation_params(std::move(guiCreationParams))
+          , generic_creation_params(std::move(genericCreationParams))
+      {
+      }
 
       bool initialize()
       {
         window = create_window();
-        if (window == nullptr)
+        if(window == nullptr)
         {
           return false;
         }
@@ -45,7 +44,7 @@ namespace rex
       {
         is_running = true;
 
-        while (is_running)
+        while(is_running)
         {
           loop();
 
@@ -56,7 +55,7 @@ namespace rex
       {
         on_shutdown();
 
-        if (window)
+        if(window)
         {
           window->destroy();
         }
@@ -64,7 +63,7 @@ namespace rex
 
       void loop()
       {
-        FrameInfo info = { World::getDeltaTime(), World::getFramesPerSecond() };
+        FrameInfo info = {World::getDeltaTime(), World::getFramesPerSecond()};
 
         on_update(info);
 
@@ -81,9 +80,9 @@ namespace rex
         rsl::chrono::milliseconds desired_time(static_cast<int>(rsl::lrint(1000.0f / generic_creation_params.max_fps)));
 
         rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
-        if (elapsed_time > rsl::chrono::milliseconds(0ms))
+        if(elapsed_time > rsl::chrono::milliseconds(0ms))
         {
-          //std::this_thread::sleep_for(elapsed_time);
+          // std::this_thread::sleep_for(elapsed_time);
         }
       }
 
@@ -92,10 +91,10 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title = generic_creation_params.window_title;
-        wnd_description.viewport = { 0,0, generic_creation_params.window_width, generic_creation_params.window_height };
+        wnd_description.title    = generic_creation_params.window_title;
+        wnd_description.viewport = {0, 0, generic_creation_params.window_width, generic_creation_params.window_height};
 
-        if (wnd->create(gui_creation_params.h_instance, gui_creation_params.cmd_show, wnd_description))
+        if(wnd->create(gui_creation_params.h_instance, gui_creation_params.cmd_show, wnd_description))
         {
           return wnd;
         }
@@ -123,7 +122,7 @@ namespace rex
         is_marked_for_destroy = true;
       }
 
-      bool is_running = false;
+      bool is_running            = false;
       bool is_marked_for_destroy = false;
 
       World world;
@@ -140,17 +139,16 @@ namespace rex
 
     //-------------------------------------------------------------------------
     GuiApplication::GuiApplication(HInstance hInstance, HInstance hPrevInstance, LPtStr lpCmdLine, s32 nCmdShow, ApplicationCreationParams&& creationParams)
-      :IApplication()
-      , m_internal_ptr(rsl::make_unique<Internal>(GuiApplicationCreationParamters{ hInstance, hPrevInstance, lpCmdLine, nCmdShow }, std::move(creationParams)))
+        : IApplication()
+        , m_internal_ptr(rsl::make_unique<Internal>(GuiApplicationCreationParamters {hInstance, hPrevInstance, lpCmdLine, nCmdShow}, std::move(creationParams)))
     {
       m_internal_ptr->on_initialize = [&]() { return app_initialize(); };
-      m_internal_ptr->on_update = [&](const FrameInfo& info) { app_update(info); };
-      m_internal_ptr->on_shutdown = [&]() { app_shutdown(); };
+      m_internal_ptr->on_update     = [&](const FrameInfo& info) { app_update(info); };
+      m_internal_ptr->on_shutdown   = [&]() { app_shutdown(); };
     }
 
     //-------------------------------------------------------------------------
-    GuiApplication::~GuiApplication()
-    {}
+    GuiApplication::~GuiApplication() {}
 
     //-------------------------------------------------------------------------
     bool GuiApplication::is_running() const
@@ -165,7 +163,7 @@ namespace rex
       Internal* instance = m_internal_ptr.get();
       rsl::scopeguard shutdown_scopeguard([instance]() { instance->shutdown(); });
 
-      if (m_internal_ptr->initialize() == false)
+      if(m_internal_ptr->initialize() == false)
       {
         REX_ERROR("Application initialization failed");
         return EXIT_FAILURE;
@@ -187,5 +185,5 @@ namespace rex
     {
       m_internal_ptr->mark_for_destroy();
     }
-  }
-}
+  } // namespace win32
+} // namespace rex

@@ -3,7 +3,7 @@
 // Created: 3/24/2022 3:44:15 PM
 //
 // Created By: nickdb
-// 
+//
 // Copyright (c) REX
 //--------------------------------------------------
 
@@ -13,23 +13,23 @@
 
 namespace rex
 {
-    namespace win32
-    {
-        using HInstance = void*;
-        using Hwnd = void*;
-        using Hdc = void*;
+  namespace win32
+  {
+    using HInstance = void*;
+    using Hwnd      = void*;
+    using Hdc       = void*;
 
-        using WParam = size_t;
-        using LParam = size_t;
-        using LResult = size_t;
+    using WParam  = size_t;
+    using LParam  = size_t;
+    using LResult = size_t;
 
 #ifndef UNICODE
-        using LPtStr = char*;
-#else 
-        using LPtStr = wchar_t*
+    using LPtStr = char*;
+#else
+    using LPtStr = wchar_t*
 #endif
 
-        using DWord = unsigned long;
-        using WindowProcedureFunc = LResult(__stdcall*)(Hwnd, s32, WParam, LParam);
-    }
-}
+    using DWord               = unsigned long;
+    using WindowProcedureFunc = LResult(__stdcall*)(Hwnd, s32, WParam, LParam);
+  } // namespace win32
+} // namespace rex
