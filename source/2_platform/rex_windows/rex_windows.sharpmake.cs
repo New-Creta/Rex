@@ -21,17 +21,9 @@ public class RexWindows : PlatformProject
 
         conf.Output = Configuration.OutputType.Lib;
 
-        conf.add_dependency<RexEngine>(target);
-        conf.add_dependency<RexRenderer>(target);
+        conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+        conf.AddPublicDependency<RexRenderer>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
 
         conf.add_public_define("REX_PLATFORM_WINDOWS");
-
-        if (target.Compiler == Compiler.Clang && conf.is_config_for_testing() == false)
-        {
-            conf.NinjaGenerateCompilerDB = true;
-            string compdbPath = Path.Combine(conf.ProjectPath, "clang_tools", target.Compiler.ToString(), conf.Name);
-            string postbuildCommandScript = Path.Combine(Globals.SourceRoot, $"post_build.py -p={Name} -comp={target.Compiler} -conf={conf.Name} -compdb={compdbPath} -srcroot={SourceRootPath}");
-            conf.EventPostBuild.Add($"py {postbuildCommandScript}");
-        }
     }
 }

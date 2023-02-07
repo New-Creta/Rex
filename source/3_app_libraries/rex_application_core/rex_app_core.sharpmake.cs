@@ -21,14 +21,6 @@ public class RexApplicationCore : AppLibrariesProject
 
     conf.Output = Configuration.OutputType.Lib;
 
-    conf.add_dependency<RexWindows>(target);
-
-    if (target.Compiler == Compiler.Clang && conf.is_config_for_testing() == false)
-    {
-      conf.NinjaGenerateCompilerDB = true;
-      string compdbPath = Path.Combine(conf.ProjectPath, "clang_tools", target.Compiler.ToString(), conf.Name);
-      string postbuildCommandScript = Path.Combine(Globals.SourceRoot, $"post_build.py -p={Name} -comp={target.Compiler} -conf={conf.Name} -compdb={compdbPath} -srcroot={SourceRootPath}");
-      conf.EventPostBuild.Add($"py {postbuildCommandScript}");
-    }
+    conf.AddPublicDependency<RexWindows>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }
 }

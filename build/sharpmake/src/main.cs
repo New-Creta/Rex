@@ -40,6 +40,8 @@ public class BaseProject : Project
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
     conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
 
+    conf.DumpDependencyGraph = true;
+
     // workaround for rex_std
     if (Utils.FindInParent(SourceRootPath, "0_thirdparty") != "")
     {
@@ -106,7 +108,7 @@ public class BaseProject : Project
 
     //if (target.DevEnv == DevEnv.vs2019)
     //{
-    //  conf.add_dependency<SharpmakeProject>(target);
+    //  conf.AddPublicDependency<SharpmakeProject>(target);
     //}
 
     switch (target.Optimization)
@@ -191,9 +193,62 @@ public class BaseProject : Project
 
 public class BasicCPPProject : BaseProject
 {
+  protected string CompilerDBPath { get; set; }
+
   public override void Configure(RexConfiguration conf, RexTarget target)
   {
     base.Configure(conf, target);
+
+    if (target.Compiler == Compiler.Clang && conf.is_config_for_testing() == false)
+    {
+      conf.NinjaGenerateCompilerDB = true;
+      string compilerDBPath = GenerateCompilerDBPath(conf);
+      string postbuildCommandScript = Path.Combine(Globals.SourceRoot, $"post_build.py -p={Name} -comp={target.Compiler} -conf={conf.Name} -compdb={compilerDBPath} -srcroot={SourceRootPath}");
+      conf.EventPostBuild.Add($"py {postbuildCommandScript}");
+    }
+  }
+
+  protected string GenerateCompilerDBPath(RexConfiguration conf)
+  {
+    return Path.Combine(conf.ProjectPath, "clang_tools", conf.Target.GetFragment<Compiler>().ToString(), conf.Name);
+  }
+
+  public override void PostLink()
+  {
+    base.PostLink();
+
+    // dependencies are resolved now, we can generate the clang-tool project files
+    foreach (Configuration config in Configurations)
+    {
+      RexConfiguration rexConfig = config as RexConfiguration;
+      RexTarget rexTarget = config.Target as RexTarget;
+      if (rexTarget.Compiler == Compiler.Clang && rexConfig.is_config_for_testing() == false)
+      {
+        GenerateClangToolProjectFile(rexConfig, rexTarget);
+      }
+    }
+  }
+
+  private void GenerateClangToolProjectFile(RexConfiguration conf, RexTarget target)
+  {
+    string clangToolsProjectPath = GenerateCompilerDBPath(conf);
+
+    ClangToolsProject project = new ClangToolsProject(Name, clangToolsProjectPath);
+    project.HeaderFilters = conf.ClangToolHeaderFilterList.ToList();
+
+    var options = new JsonSerializerOptions
+    {
+      WriteIndented = true
+    };
+
+    string jsonBlob = JsonSerializer.Serialize(project, options);
+
+    if (!Directory.Exists(clangToolsProjectPath))
+    {
+      Directory.CreateDirectory(clangToolsProjectPath);
+    }
+
+    File.WriteAllText(project.ProjectPath, jsonBlob);
   }
 }
 

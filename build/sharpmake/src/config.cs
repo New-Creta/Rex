@@ -118,11 +118,6 @@ public class RexConfiguration : Sharpmake.Project.Configuration
     Options.Add(Sharpmake.Options.Vc.Linker.GenerateDebugInformation.Enable);
   }
 
-  public void add_dependency<TPROJECT>(ITarget target)
-  {
-    AddPublicDependency<TPROJECT>(target, DependencySetting.Default | DependencySetting.Defines);
-  }
-
   public void add_public_define(string define)
   {
     Defines.Add(define);
