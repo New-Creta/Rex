@@ -33,5 +33,13 @@ public class RexEngine : EngineProject
                 conf.add_public_define("REX_DEBUG");
                 break;
         }
+
+        if (target.Compiler == Compiler.Clang && conf.is_config_for_testing() == false)
+        {
+            conf.NinjaGenerateCompilerDB = true;
+            string compdbPath = Path.Combine(conf.ProjectPath, "clang_tools", target.Compiler.ToString(), conf.Name);
+            string postbuildCommandScript = Path.Combine(Globals.SourceRoot, $"post_build.py -p={Name} -comp={target.Compiler} -conf={conf.Name} -compdb={compdbPath} -srcroot={SourceRootPath}");
+            conf.EventPostBuild.Add($"py {postbuildCommandScript}");
+        }
     }
 }

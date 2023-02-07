@@ -12,12 +12,12 @@ namespace rex
         public:
             static void copy(const Blob& src, Blob& dst);
             static void copy(const Blob& src, void* dst);
-            static void copy(void* src, const rsl::MemorySize& size, Blob& dst);
+            static void copy(void* src, const rsl::memory_size& size, Blob& dst);
 
             Blob();
             Blob(const Blob& other) = delete;
             Blob(Blob&& other) noexcept;
-            Blob(rsl::unique_ptr<rsl::byte> data, const rsl::MemorySize& dataSize);
+            Blob(rsl::unique_ptr<rsl::byte> data, const rsl::memory_size& dataSize);
 
             Blob& operator=(const Blob& other) = delete;
             Blob& operator=(Blob&& other) noexcept;
@@ -27,14 +27,14 @@ namespace rex
             rsl::byte& operator[](int32 index);
             const rsl::byte& operator[](int32 index) const;
 
-            void allocate(const rsl::MemorySize& inSize);
+            void allocate(const rsl::memory_size& inSize);
             void release();
             void zero_initialize();
 
             rsl::byte* data();
             const rsl::byte* data() const;
 
-            const rsl::MemorySize& size() const;
+            const rsl::memory_size& size() const;
 
             template <typename T>
             T* data_as();
@@ -46,32 +46,32 @@ namespace rex
             friend class BlobReader;
 
             template <typename T>
-            T& read(const rsl::MemorySize& offset = 0_bytes);
+            T& read(const rsl::memory_size& offset = 0_bytes);
             template <typename T>
-            const T& read(const rsl::MemorySize& offset = 0_bytes) const;
+            const T& read(const rsl::memory_size& offset = 0_bytes) const;
 
-            rsl::byte* read_bytes(rsl::byte* dst, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset);
-            const rsl::byte* read_bytes(rsl::byte* dst, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset) const;
+            rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset);
+            const rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
 
-            void write(const void* inData, const rsl::MemorySize& inSize, const rsl::MemorySize& inOffset = 0_bytes);
+            void write(const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset = 0_bytes);
 
             rsl::unique_ptr<rsl::byte> m_data;
-            rsl::MemorySize m_size;
+            rsl::memory_size m_size;
         };
 
         //-------------------------------------------------------------------------
-        Blob make_blob(const rsl::byte* inData, const rsl::MemorySize& inSize);
+        Blob make_blob(const rsl::byte* inData, const rsl::memory_size& inSize);
 
         //-------------------------------------------------------------------------
         template <typename T>
-        T& Blob::read(const rsl::MemorySize& offset /*= 0*/)
+        T& Blob::read(const rsl::memory_size& offset /*= 0*/)
         {
             return *(T*)m_data.get() + offset;
         }
 
         //-------------------------------------------------------------------------
         template <typename T>
-        const T& Blob::read(const rsl::MemorySize& offset) const
+        const T& Blob::read(const rsl::memory_size& offset) const
         {
             return *(T*)(m_data.get() + offset);
         }
