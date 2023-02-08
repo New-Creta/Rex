@@ -55,7 +55,7 @@ namespace rex
       s32 width  = description.viewport.width;
       s32 height = description.viewport.height;
 
-      RECT rc = {0, 0, (LONG)width, (LONG)height};
+      RECT rc = {0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
       AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
       RECT desktop_rect;
@@ -76,8 +76,8 @@ namespace rex
         return false;
       }
 
-      ShowWindow((HWND)m_hwnd, cmdShow);
-      SetForegroundWindow((HWND)m_hwnd);
+      ShowWindow(static_cast<HWND>(m_hwnd), cmdShow);
+      SetForegroundWindow(static_cast<HWND>(m_hwnd));
 
       return true;
     }
@@ -87,7 +87,7 @@ namespace rex
     {
       if(m_destroyed == false)
       {
-        DestroyWindow((HWND)m_hwnd);
+        DestroyWindow(static_cast<HWND>(m_hwnd));
 
         m_wnd_class.destroy();
       }
@@ -114,12 +114,12 @@ namespace rex
     //-----------------------------------------------------------------
     void Window::show()
     {
-      ShowWindow((HWND)m_hwnd, SW_SHOW);
+      ShowWindow(static_cast<HWND>(m_hwnd), SW_SHOW);
     }
     //-----------------------------------------------------------------
     void Window::hide()
     {
-      CloseWindow((HWND)m_hwnd);
+      CloseWindow(static_cast<HWND>(m_hwnd));
     }
     //-----------------------------------------------------------------
     void Window::close()
@@ -137,7 +137,7 @@ namespace rex
     s32 Window::width() const
     {
       RECT r;
-      GetWindowRect((HWND)m_hwnd, &r);
+      GetWindowRect(static_cast<HWND>(m_hwnd), &r);
 
       return r.right - r.left;
     }
@@ -145,7 +145,7 @@ namespace rex
     s32 Window::height() const
     {
       RECT r;
-      GetWindowRect((HWND)m_hwnd, &r);
+      GetWindowRect(static_cast<HWND>(m_hwnd), &r);
 
       return r.bottom - r.top;
     }
@@ -156,7 +156,7 @@ namespace rex
       s32 w = width();
       s32 h = height();
 
-      return (f32)w / (f32)h;
+      return static_cast<f32>(w) / static_cast<f32>(h);
     }
 
     //-----------------------------------------------------------------
@@ -165,10 +165,10 @@ namespace rex
       // Sometimes Windows set error states between messages
       // becasue these aren't our fault, we'll ignore those
       // to make sure our messages are successful
-      DWORD last_windows_error = GetLastError();
+      const DWORD last_windows_error = GetLastError();
       rex::win::clear_win_errors();
 
-      rsl::scopeguard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
+      const rsl::scopeguard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
 
       switch(msg)
       {
@@ -177,9 +177,10 @@ namespace rex
           PostQuitMessage(0);
           event_system::fire_event(event_system::EventType::WindowClose);
           return 0;
-      }
 
-      return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
+        default: 
+          return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
+      }
     }
   } // namespace win32
 } // namespace rex

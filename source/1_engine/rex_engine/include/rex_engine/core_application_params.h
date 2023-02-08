@@ -4,9 +4,6 @@
 
 namespace rex
 {
-  inline void ThisIsATestFunc()
-  {}
-
   struct ApplicationCreationParams
   {
     s32 window_width          = 1280;
