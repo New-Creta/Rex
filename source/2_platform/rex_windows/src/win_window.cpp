@@ -69,20 +69,19 @@ namespace rex
 
       // clang-format off
       m_hwnd = WIN_CALL(
-          static_cast<HWND>(CreateWindowA(
-            description.title, 
-            description.title, 
-            WS_OVERLAPPEDWINDOW, x == 0
-             ? screen_mid_x - half_x 
-             : x,
-             y == 0 
-             ? screen_mid_y - half_y 
-             : y, rc.right - rc.left, 
-            rc.bottom - rc.top, 
-            nullptr, 
-            nullptr, 
-            static_cast<HINSTANCE>(hInstance), 
-            this)));
+          static_cast<HWND>(CreateWindowA(description.title, 
+                                          description.title, 
+                                          WS_OVERLAPPEDWINDOW, x == 0
+                                           ? screen_mid_x - half_x 
+                                           : x,
+                                           y == 0 
+                                           ? screen_mid_y - half_y 
+                                           : y, rc.right - rc.left, 
+                                          rc.bottom - rc.top, 
+                                          nullptr, 
+                                          nullptr, 
+                                          static_cast<HINSTANCE>(hInstance), 
+                                          this)));
       // clang-format on
 
       if(m_hwnd == nullptr)
