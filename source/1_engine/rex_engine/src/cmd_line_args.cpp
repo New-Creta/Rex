@@ -18,7 +18,7 @@ namespace rex
     REX_ASSERT_X(start_pos != -1, "No arguments given to your exe, there should always be at least 1 arg.");
 
     count_t space_pos = cmdLine.find_first_of(' ', start_pos);
-    while (start_pos != -1 && space_pos != -1)
+    while(start_pos != -1 && space_pos != -1)
     {
       count_t length = space_pos - start_pos;
       m_arguments.push_back(cmdLine.substr(start_pos, length));
@@ -26,10 +26,10 @@ namespace rex
       space_pos = cmdLine.find_first_of(' ', start_pos);
     }
 
-    if (start_pos != -1)
+    if(start_pos != -1)
     {
       m_arguments.push_back(cmdLine.substr(start_pos));
     }
   }
 
-}
+} // namespace rex
