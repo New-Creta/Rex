@@ -20,7 +20,7 @@
 int32 rex::win::message_box(rsl::string_view msg)
 {
   rsl::medium_stack_string title;
-  GetModuleFileName(nullptr, title.data(), static_cast<DWORD>(title.max_size()));
+  GetModuleFileName(nullptr, title.data(), static_cast<DWORD>(title.max_size())); // NOLINT(readability-static-accessed-through-instance)
   title.reset_null_termination_offset();
   return message_box(msg, title);
 }
@@ -34,7 +34,7 @@ int32 rex::win::message_box(rsl::string_view msg, rsl::string_view title)
 bool rex::win::yes_no_message_box(rsl::string_view msg)
 {
   rsl::medium_stack_string title;
-  GetModuleFileName(nullptr, title.data(), static_cast<DWORD>(title.max_size()));
+  GetModuleFileName(nullptr, title.data(), static_cast<DWORD>(title.max_size())); // NOLINT(readability-static-accessed-through-instance)
   title.reset_null_termination_offset();
   return yes_no_message_box(msg, title);
 }

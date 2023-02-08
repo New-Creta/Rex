@@ -24,7 +24,7 @@ namespace rex
     class HrCall
     {
     public:
-      HrCall(HResult hr, const rsl::string_view file, rsl::string_view function, card32 lineNr);
+      HrCall(HResult hr, rsl::string_view file, rsl::string_view function, card32 lineNr);
 
       bool has_failed() const;
       bool has_succeeded() const;

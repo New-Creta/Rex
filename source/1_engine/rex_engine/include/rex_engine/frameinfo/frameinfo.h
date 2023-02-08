@@ -7,6 +7,7 @@ namespace rex
 {
   struct FrameInfo
   {
+  public:
     //--------------------------------------------------------------------------------------------
     FrameInfo(const DeltaTime& dTime, const FPS& framesPerSecond)
         : delta_time(dTime)
@@ -14,7 +15,7 @@ namespace rex
     {
     }
 
-    const DeltaTime delta_time;
-    const FPS fps;
+    DeltaTime delta_time;
+    FPS fps;
   };
 } // namespace rex

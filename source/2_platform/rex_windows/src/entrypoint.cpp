@@ -7,21 +7,21 @@
 
 #define NOMINMAX
 #include <Windows.h>
+#include <cstdlib>
 #include <iostream>
 #include <shellapi.h>
-#include <stdlib.h>
 
 namespace rex
 {
   //-------------------------------------------------------------------------
-  struct command_line_arguments
+  struct CommandLineArguments
   {
-    command_line_arguments()
+    CommandLineArguments()
         : count(0)
         , values(nullptr)
     {
     }
-    command_line_arguments(const command_line_arguments& other)
+    CommandLineArguments(const CommandLineArguments& other)
         : count(0)
         , values(nullptr)
     {
@@ -32,12 +32,12 @@ namespace rex
         std::memcpy(values, other.values, other.count);
       }
     }
-    command_line_arguments(command_line_arguments&& other) noexcept
+    CommandLineArguments(CommandLineArguments&& other) noexcept
         : count(std::exchange(other.count, 0))
         , values(std::exchange(other.values, nullptr))
     {
     }
-    ~command_line_arguments()
+    ~CommandLineArguments()
     {
       if(values != nullptr)
       {
@@ -50,8 +50,10 @@ namespace rex
       }
     }
 
-    command_line_arguments& operator=(const command_line_arguments& other)
+    CommandLineArguments& operator=(const CommandLineArguments& other) // NOLINT(bugprone-unhandled-self-assignment)
     {
+      REX_ASSERT_X(this != &other, "self assignment in copy assignment");
+
       if(other.count != 0)
       {
         count  = other.count;
@@ -66,8 +68,10 @@ namespace rex
 
       return *this;
     }
-    command_line_arguments& operator=(command_line_arguments&& other) noexcept
+    CommandLineArguments& operator=(CommandLineArguments&& other) noexcept
     {
+      REX_ASSERT_X(this != &other, "self assignment in move assignment");
+
       count  = std::exchange(other.count, 0);
       values = std::exchange(other.values, nullptr);
 
@@ -79,12 +83,12 @@ namespace rex
   };
 
   //-------------------------------------------------------------------------
-  command_line_arguments get_command_line_arguments()
+  CommandLineArguments get_command_line_arguments()
   {
-    s32 argc;
+    s32 argc     = 0;
     LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
-    command_line_arguments arguments;
+    CommandLineArguments arguments;
     arguments.count  = argc;
     arguments.values = new char8*[argc];
 
@@ -93,7 +97,7 @@ namespace rex
       arguments.values[i] = new char[256];
 
       size_t num_converted = 0;
-      wcstombs_s(&num_converted, arguments.values[i], 256, argv[i], 256);
+      (void)wcstombs_s(&num_converted, arguments.values[i], 256, argv[i], 256); // casting to void to silence clang-tidy warning
     }
 
     LocalFree(argv);
@@ -103,16 +107,16 @@ namespace rex
 } // namespace rex
 
 //-------------------------------------------------------------------------
-INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
-  rex::command_line_arguments arguments = rex::get_command_line_arguments();
+  const rex::CommandLineArguments arguments = rex::get_command_line_arguments();
 
   rex::ApplicationCreationParams acp = rex::app_entry(arguments.count, arguments.values);
 
-  const rex::win32::HInstance hinstance      = static_cast<rex::win32::HInstance>(hInstance);
-  const rex::win32::HInstance hprev_instance = static_cast<rex::win32::HInstance>(hPrevInstance);
-  const rex::win32::LPtStr cmd_line          = static_cast<rex::win32::LPtStr>(lpCmdLine);
-  rex::win32::GuiApplication application(hinstance, hprev_instance, cmd_line, nCmdShow, rsl::move(acp));
+  rex::win32::HInstance hinstance      = static_cast<rex::win32::HInstance>(hInstance);
+  rex::win32::HInstance hprev_instance = static_cast<rex::win32::HInstance>(hPrevInstance);
+  rex::win32::LPtStr cmd_line          = static_cast<rex::win32::LPtStr>(lpCmdLine);
+  rex::win32::GuiApplication application(hinstance, hprev_instance, cmd_line, nShowCmd, rsl::move(acp));
 
   s32 result = application.run();
 
@@ -123,5 +127,5 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 int main()
 {
-  return WinMain(GetModuleHandle(NULL), NULL, GetCommandLine(), SW_SHOW);
+  return WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), SW_SHOW);
 }

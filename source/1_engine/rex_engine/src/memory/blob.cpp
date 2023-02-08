@@ -72,6 +72,9 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
+    Blob::~Blob() = default;
+
+    //-------------------------------------------------------------------------
     Blob& Blob::operator=(Blob&& other) noexcept
     {
       // Guard self assignment
@@ -97,7 +100,7 @@ namespace rex
     //-------------------------------------------------------------------------
     const rsl::byte& Blob::operator[](int32 index) const
     {
-      return ((rsl::byte*)m_data.get())[index];
+      return (static_cast<const rsl::byte*>(m_data.get()))[index];
     }
 
     //-------------------------------------------------------------------------
@@ -135,7 +138,7 @@ namespace rex
     {
       // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
 
-      rsl::memcpy(dst, (rsl::byte*)m_data.get() + inOffset, inSize);
+      rsl::memcpy(dst, static_cast<rsl::byte*>(m_data.get()) + inOffset, inSize);
       return dst;
     }
 
@@ -144,7 +147,7 @@ namespace rex
     {
       // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
 
-      rsl::memcpy(dst, (rsl::byte*)m_data.get() + inOffset, inSize);
+      rsl::memcpy(dst, static_cast<const rsl::byte*>(m_data.get()) + inOffset, inSize);
       return dst;
     }
 
@@ -153,7 +156,7 @@ namespace rex
     {
       // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
 
-      rsl::memcpy((rsl::byte*)m_data.get() + inOffset, inData, inSize);
+      rsl::memcpy(static_cast<rsl::byte*>(m_data.get()) + inOffset, inData, inSize);
     }
 
     //-------------------------------------------------------------------------

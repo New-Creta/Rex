@@ -18,6 +18,7 @@ namespace rex
       Blob(const Blob& other) = delete;
       Blob(Blob&& other) noexcept;
       Blob(rsl::unique_ptr<rsl::byte> data, const rsl::memory_size& dataSize);
+      ~Blob();
 
       Blob& operator=(const Blob& other) = delete;
       Blob& operator=(Blob&& other) noexcept;

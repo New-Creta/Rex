@@ -23,7 +23,7 @@ namespace rex
       }
       else
       {
-        Window* this_window = reinterpret_cast<Window*>(GetWindowLongPtrW(win_hwnd, GWLP_USERDATA));
+        Window* this_window = reinterpret_cast<Window*>(GetWindowLongPtrW(win_hwnd, GWLP_USERDATA)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
         if(this_window)
         {
           return this_window->on_event(hwnd, msg, wparam, lparam);
@@ -36,7 +36,7 @@ namespace rex
     //-------------------------------------------------------------------------
     Window::Window()
         : m_wnd_class()
-        , m_hwnd(NULL)
+        , m_hwnd(nullptr)
         , m_destroyed(false)
     {
     }
@@ -50,10 +50,10 @@ namespace rex
         return false;
       }
 
-      s32 x      = description.viewport.x;
-      s32 y      = description.viewport.y;
-      s32 width  = description.viewport.width;
-      s32 height = description.viewport.height;
+      const s32 x      = description.viewport.x;
+      const s32 y      = description.viewport.y;
+      const s32 width  = description.viewport.width;
+      const s32 height = description.viewport.height;
 
       RECT rc = {0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
       AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
@@ -67,10 +67,24 @@ namespace rex
       LONG half_x = (rc.right - rc.left) / 2;
       LONG half_y = (rc.bottom - rc.top) / 2;
 
+      // clang-format off
       m_hwnd = WIN_CALL(
-          (HWND)CreateWindowA(description.title, description.title, WS_OVERLAPPEDWINDOW, x == 0 ? screen_mid_x - half_x : x, y == 0 ? screen_mid_y - half_y : y, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, (HINSTANCE)hInstance, this));
+          static_cast<HWND>(CreateWindowA(description.title, 
+                                          description.title, 
+                                          WS_OVERLAPPEDWINDOW, x == 0
+                                           ? screen_mid_x - half_x 
+                                           : x,
+                                           y == 0 
+                                           ? screen_mid_y - half_y 
+                                           : y, rc.right - rc.left, 
+                                          rc.bottom - rc.top, 
+                                          nullptr, 
+                                          nullptr, 
+                                          static_cast<HINSTANCE>(hInstance), 
+                                          this)));
+      // clang-format on
 
-      if(m_hwnd == NULL)
+      if(m_hwnd == nullptr)
       {
         REX_ERROR("Window creation failed");
         return false;
@@ -85,7 +99,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::destroy()
     {
-      if(m_destroyed == false)
+      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
       {
         DestroyWindow(static_cast<HWND>(m_hwnd));
 
@@ -104,8 +118,8 @@ namespace rex
     //-------------------------------------------------------------------------
     void Window::update()
     {
-      MSG message = {0};
-      while(PeekMessage(&message, NULL, NULL, NULL, PM_REMOVE) > 0)
+      MSG message = {};
+      while(PeekMessage(&message, nullptr, NULL, NULL, PM_REMOVE) > 0)
       {
         TranslateMessage(&message);
         DispatchMessage(&message);
@@ -153,8 +167,8 @@ namespace rex
     //-------------------------------------------------------------------------
     f32 Window::get_aspect() const
     {
-      s32 w = width();
-      s32 h = height();
+      const s32 w = width();
+      const s32 h = height();
 
       return static_cast<f32>(w) / static_cast<f32>(h);
     }
