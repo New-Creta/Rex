@@ -1,20 +1,20 @@
-#include "rex_engine/core_application_params.h"
 #include "rex_engine/defines.h"
 #include "rex_engine/entrypoint.h"
 
+#include "rex_windows/gui_application.h"
+
 namespace rex
 {
-  ApplicationCreationParams app_entry(s32 argc, char8** argv)
+  s32 app_entry(const PlatformCreationParams& platformParams, CommandLineArguments&& cmdArgs)
   {
-    UNUSED_PARAM(argc);
-    UNUSED_PARAM(argv);
+    rex::win32::ApplicationCreationParams app_params;
 
-    ApplicationCreationParams params;
+    app_params.window_width = 1280;
+    app_params.window_height = 720;
+    app_params.window_title = "Sandbox";
 
-    params.window_width  = 1280;
-    params.window_height = 720;
-    params.window_title  = "Sandbox";
+    rex::win32::GuiApplication application(platformParams, app_params, rsl::move(cmdArgs));
 
-    return params;
+    return application.run();
   }
 } // namespace rex

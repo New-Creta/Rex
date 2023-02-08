@@ -1,120 +1,30 @@
 #include "rex_engine/entrypoint.h"
 
-#include "rex_engine/core_application_params.h"
+#include "rex_std/vector.h"
+#include "rex_std/string_view.h"
+
 #include "rex_engine/diagnostics/logging.h"
+#include "rex_windows/platform_creation_params.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/win_types.h"
 
 #define NOMINMAX
 #include <Windows.h>
+#include <cstdlib>
 #include <iostream>
 #include <shellapi.h>
-#include <stdlib.h>
-
-namespace rex
-{
-  //-------------------------------------------------------------------------
-  struct command_line_arguments
-  {
-    command_line_arguments()
-        : count(0)
-        , values(nullptr)
-    {
-    }
-    command_line_arguments(const command_line_arguments& other)
-        : count(0)
-        , values(nullptr)
-    {
-      if(other.count != 0)
-      {
-        count  = other.count;
-        values = new char8*[other.count];
-        std::memcpy(values, other.values, other.count);
-      }
-    }
-    command_line_arguments(command_line_arguments&& other) noexcept
-        : count(std::exchange(other.count, 0))
-        , values(std::exchange(other.values, nullptr))
-    {
-    }
-    ~command_line_arguments()
-    {
-      if(values != nullptr)
-      {
-        for(s32 i = 0; i < count; ++i)
-        {
-          delete values[i];
-        }
-
-        delete[] values;
-      }
-    }
-
-    command_line_arguments& operator=(const command_line_arguments& other)
-    {
-      if(other.count != 0)
-      {
-        count  = other.count;
-        values = new char8*[other.count];
-        std::memcpy(values, other.values, other.count);
-      }
-      else
-      {
-        count  = 0;
-        values = nullptr;
-      }
-
-      return *this;
-    }
-    command_line_arguments& operator=(command_line_arguments&& other) noexcept
-    {
-      count  = std::exchange(other.count, 0);
-      values = std::exchange(other.values, nullptr);
-
-      return *this;
-    }
-
-    s32 count;
-    char8** values;
-  };
-
-  //-------------------------------------------------------------------------
-  command_line_arguments get_command_line_arguments()
-  {
-    s32 argc;
-    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-
-    command_line_arguments arguments;
-    arguments.count  = argc;
-    arguments.values = new char8*[argc];
-
-    for(s32 i = 0; i < argc; ++i)
-    {
-      arguments.values[i] = new char[256];
-
-      size_t num_converted = 0;
-      wcstombs_s(&num_converted, arguments.values[i], 256, argv[i], 256);
-    }
-
-    LocalFree(argv);
-
-    return arguments;
-  }
-} // namespace rex
 
 //-------------------------------------------------------------------------
-INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
-  rex::command_line_arguments arguments = rex::get_command_line_arguments();
+  rex::CommandLineArguments cmd_args(GetCommandLineA());
+  rex::PlatformCreationParams creation_params;
+  creation_params.instance = hInstance;
+  creation_params.prev_instance = hPrevInstance;
+  creation_params.cmd_line = lpCmdLine;
+  creation_params.show_cmd = nShowCmd;
 
-  rex::ApplicationCreationParams acp = rex::app_entry(arguments.count, arguments.values);
-
-  const rex::win32::HInstance hinstance      = static_cast<rex::win32::HInstance>(hInstance);
-  const rex::win32::HInstance hprev_instance = static_cast<rex::win32::HInstance>(hPrevInstance);
-  const rex::win32::LPtStr cmd_line          = static_cast<rex::win32::LPtStr>(lpCmdLine);
-  rex::win32::GuiApplication application(hinstance, hprev_instance, cmd_line, nCmdShow, rsl::move(acp));
-
-  s32 result = application.run();
+  s32 result = rex::app_entry(creation_params, rsl::move(cmd_args));
 
   REX_INFO("Application completed with result: {0}", result);
 
@@ -123,5 +33,5 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 int main()
 {
-  return WinMain(GetModuleHandle(NULL), NULL, GetCommandLine(), SW_SHOW);
+  return WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), SW_SHOW);
 }

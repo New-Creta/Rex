@@ -1,10 +1,10 @@
 #pragma once
 
 #include "rex_engine/types.h"
+#include "rex_engine/cmd_line_args.h"
 
 namespace rex
 {
-  struct ApplicationCreationParams;
-
-  extern ApplicationCreationParams app_entry(s32 argc, char8** argv);
+  struct PlatformCreationParams;
+  s32 app_entry(const PlatformCreationParams& platformParams, CommandLineArguments&& cmdArgs);
 } // namespace rex

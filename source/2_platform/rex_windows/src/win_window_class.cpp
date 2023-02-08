@@ -2,6 +2,7 @@
 
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
+#include "rex_std/bonus/memory/zero_memory.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -25,7 +26,7 @@ namespace rex
         name      = title;
         hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandleA(NULL)) : hInstance;
 
-        ZeroMemory(&window_class, sizeof(window_class));
+        rsl::zero_memory(&window_class, sizeof(window_class));
 
         REX_TODO("Make window style data driven");
         REX_TODO("Make window icon data driven");

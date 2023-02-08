@@ -1,6 +1,5 @@
 #include "rex_windows/gui_application.h"
 
-#include "rex_engine/core_application_params.h"
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/event_system.h"
 #include "rex_engine/frameinfo/frameinfo.h"
@@ -10,24 +9,18 @@
 #include "rex_std/memory.h"
 #include "rex_std/thread.h"
 #include "rex_windows/win_window.h"
+#include "rex_windows/platform_creation_params.h"
 
 namespace rex
 {
   namespace win32
   {
-    struct GuiApplicationCreationParamters
-    {
-      HInstance h_instance;
-      HInstance h_prev_instance;
-      LPtStr cmd_line;
-      s32 cmd_show;
-    };
-
     struct GuiApplication::Internal
     {
-      Internal(GuiApplicationCreationParamters&& guiCreationParams, ApplicationCreationParams&& genericCreationParams)
-          : gui_creation_params(rsl::move(guiCreationParams))
-          , generic_creation_params(rsl::move(genericCreationParams))
+      Internal(const PlatformCreationParams& guiCreationParams, const ApplicationCreationParams& appParams, CommandLineArguments&& genericCreationParams)
+          : platform_creation_params(rsl::move(guiCreationParams))
+          , app_params(appParams)
+          , cmd_line_args(rsl::move(genericCreationParams))
       {
       }
 
@@ -93,10 +86,10 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title    = generic_creation_params.window_title;
-        wnd_description.viewport = {0, 0, generic_creation_params.window_width, generic_creation_params.window_height};
+        wnd_description.title    = app_params.window_title;
+        wnd_description.viewport = {0, 0, app_params.window_width, app_params.window_height};
 
-        if(wnd->create(gui_creation_params.h_instance, gui_creation_params.cmd_show, wnd_description))
+        if(wnd->create(platform_creation_params.instance, platform_creation_params.show_cmd, wnd_description))
         {
           return wnd;
         }
@@ -135,14 +128,15 @@ namespace rex
       rsl::function<void(const FrameInfo& info)> on_update;
       rsl::function<void()> on_shutdown;
 
-      GuiApplicationCreationParamters gui_creation_params;
-      ApplicationCreationParams generic_creation_params;
+      PlatformCreationParams platform_creation_params;
+      ApplicationCreationParams app_params;
+      CommandLineArguments cmd_line_args;
     };
 
     //-------------------------------------------------------------------------
-    GuiApplication::GuiApplication(HInstance hInstance, HInstance hPrevInstance, LPtStr lpCmdLine, s32 nCmdShow, ApplicationCreationParams&& creationParams)
+    GuiApplication::GuiApplication(const PlatformCreationParams& platformParams, const ApplicationCreationParams& appParams, CommandLineArguments&& cmdArgs)
         : IApplication()
-        , m_internal_ptr(rsl::make_unique<Internal>(GuiApplicationCreationParamters {hInstance, hPrevInstance, lpCmdLine, nCmdShow}, std::move(creationParams)))
+        , m_internal_ptr(rsl::make_unique<Internal>(platformParams, appParams, std::move(cmdArgs)))
     {
       m_internal_ptr->on_initialize = [&]() { return app_initialize(); };
       m_internal_ptr->on_update     = [&](const FrameInfo& info) { app_update(info); };
