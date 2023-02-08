@@ -11,7 +11,7 @@ namespace rex
     class BlobReader
     {
     public:
-      BlobReader(const memory::Blob& b);
+      explicit BlobReader(const memory::Blob& b);
       BlobReader(const memory::Blob& b, const rsl::memory_size& offset);
 
       template <typename T>
@@ -20,7 +20,7 @@ namespace rex
       rsl::byte* read(const rsl::memory_size& bytesToRead);
 
     private:
-      const memory::Blob& m_blob;
+      const memory::Blob* m_blob;
       rsl::memory_size m_read_offset;
     };
 

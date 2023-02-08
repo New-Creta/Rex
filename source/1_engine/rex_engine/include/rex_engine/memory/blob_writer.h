@@ -9,7 +9,7 @@ namespace rex
     class BlobWriter
     {
     public:
-      BlobWriter(memory::Blob& b);
+      explicit BlobWriter(memory::Blob& b);
       BlobWriter(memory::Blob& b, card64 offset);
 
       template <typename T>
@@ -19,7 +19,7 @@ namespace rex
       card64 write_offset() const;
 
     private:
-      memory::Blob& m_blob;
+      memory::Blob* m_blob;
       rsl::memory_size m_write_offset;
     };
 

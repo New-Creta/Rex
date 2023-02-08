@@ -22,7 +22,7 @@ namespace rex
 
     using EventFunction = rsl::function<void()>;
 
-    void subscribe(EventType type, EventFunction function);
+    void subscribe(EventType type, const EventFunction& function);
 
     void fire_event(EventType type);
   } // namespace event_system

@@ -4,7 +4,6 @@
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/event_system.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_engine/world.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
@@ -64,12 +63,10 @@ namespace rex
 
       void loop()
       {
-        FrameInfo info = {World::get_delta_time(), World::get_frames_per_seconds()};
-
+        const FrameInfo info;
         on_update(info);
 
         window->update();
-        world.update();
 
         is_running = !is_marked_for_destroy;
 
@@ -77,15 +74,6 @@ namespace rex
         // Cap framerate to "max_fps".
         // Safe resources of the machine we are running on.
         //
-        const rsl::chrono::milliseconds actual_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(world.get_frames_per_seconds().get()))));
-        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(generic_creation_params.max_fps))));
-
-        rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
-        using namespace rsl::chrono_literals;
-        if(elapsed_time > 0ms)
-        {
-          rsl::this_thread::sleep_for(elapsed_time);
-        }
       }
 
       rsl::unique_ptr<Window> create_window()
@@ -126,8 +114,6 @@ namespace rex
 
       bool is_running            = false;
       bool is_marked_for_destroy = false;
-
-      World world;
 
       rsl::unique_ptr<Window> window;
 
