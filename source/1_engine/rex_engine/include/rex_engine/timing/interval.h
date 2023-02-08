@@ -9,7 +9,7 @@ namespace rex
   public:
     //-------------------------------------------------------------------------
     Interval()
-        : m_initial(getTickCount())
+        : m_initial(get_tick_count())
     {
     }
     //-------------------------------------------------------------------------
@@ -18,7 +18,7 @@ namespace rex
     //-------------------------------------------------------------------------
     inline int64_t value() const
     {
-      return getTickCount() - m_initial;
+      return get_tick_count() - m_initial;
     }
 
   private:

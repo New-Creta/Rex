@@ -13,10 +13,10 @@
 
 namespace rex::win
 {
-  int32 message_box(const rsl::string_view msg);
-  int32 message_box(const rsl::string_view msg, const rsl::string_view title);
+  int32 message_box(rsl::string_view msg);
+  int32 message_box(rsl::string_view msg, rsl::string_view title);
 
   // Returns true if yes is pressed
-  bool yes_no_message_box(const rsl::string_view msg);
-  bool yes_no_message_box(const rsl::string_view msg, const rsl::string_view title);
+  bool yes_no_message_box(rsl::string_view msg);
+  bool yes_no_message_box(rsl::string_view msg, rsl::string_view title);
 } // namespace rex::win

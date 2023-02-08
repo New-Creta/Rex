@@ -15,11 +15,11 @@ namespace rex
     //-----------------------------------------------------------------
     LResult __stdcall default_win_procedure(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
     {
-      HWND win_hwnd = reinterpret_cast<HWND>(hwnd);
+      HWND win_hwnd = static_cast<HWND>(hwnd);
       if(msg == WM_CREATE)
       {
-        CREATESTRUCT* create_struct = reinterpret_cast<CREATESTRUCT*>(lparam);
-        SetWindowLongPtr(win_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(create_struct->lpCreateParams));
+        CREATESTRUCT* create_struct = reinterpret_cast<CREATESTRUCT*>(lparam);                                // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
+        SetWindowLongPtr(win_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(create_struct->lpCreateParams)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
       }
       else
       {
@@ -178,7 +178,7 @@ namespace rex
           event_system::fire_event(event_system::EventType::WindowClose);
           return 0;
 
-        default: return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
+        default: return DefWindowProc(static_cast<HWND>(hwnd), msg, wparam, lparam);
       }
     }
   } // namespace win32

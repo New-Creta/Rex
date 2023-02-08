@@ -12,7 +12,12 @@ namespace rex
     {
     public:
       WindowClass();
+      WindowClass(const WindowClass&) = delete;
+      WindowClass(WindowClass&&)      = delete;
       ~WindowClass();
+
+      WindowClass& operator=(const WindowClass&) = delete;
+      WindowClass& operator=(WindowClass&&)      = delete;
 
       bool create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title);
       bool destroy();

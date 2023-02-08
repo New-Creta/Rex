@@ -16,7 +16,12 @@ namespace rex
     {
     public:
       GuiApplication(HInstance hInstance, HInstance hPrevInstance, LPtStr lpCmdLine, s32 nCmdShow, ApplicationCreationParams&& creationParams);
+      GuiApplication(const GuiApplication&) = delete;
+      GuiApplication(GuiApplication&&)      = delete;
       ~GuiApplication() override;
+
+      GuiApplication& operator=(const GuiApplication&) = delete;
+      GuiApplication& operator=(GuiApplication&&)      = delete;
 
       bool is_running() const override;
 

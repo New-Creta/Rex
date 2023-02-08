@@ -20,19 +20,19 @@ namespace rex
     //-------------------------------------------------------------------------
     void update()
     {
-      rsl::chrono::steady_clock::time_point current = rsl::chrono::steady_clock::now();
+      const rsl::chrono::steady_clock::time_point current = rsl::chrono::steady_clock::now();
 
       m_current_time_point = fmiliseconds(current - m_last_time_point);
       m_last_time_point    = current;
     }
 
     //--------------------------------------------------------------------------------------------
-    float toSeconds() const
+    float to_seconds() const
     {
       return fseconds {m_current_time_point}.count();
     }
     //--------------------------------------------------------------------------------------------
-    float toMilliseconds() const
+    float to_milliseconds() const
     {
       return m_current_time_point.count();
     }

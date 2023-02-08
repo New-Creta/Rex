@@ -14,7 +14,7 @@ namespace rex
     {
     }
 
-    const DeltaTime& delta_time;
-    const FPS& fps;
+    const DeltaTime delta_time;
+    const FPS fps;
   };
 } // namespace rex

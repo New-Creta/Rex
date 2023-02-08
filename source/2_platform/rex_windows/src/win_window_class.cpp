@@ -20,10 +20,10 @@ namespace rex
       {
       }
 
-      bool create(HInstance hInstance, WindowProcedureFunc wnd_proc, const char8* title)
+      bool create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title)
       {
         name      = title;
-        hinstance = hInstance == NULL ? (HInstance)GetModuleHandleA(NULL) : hInstance;
+        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandleA(NULL)) : hInstance;
 
         ZeroMemory(&window_class, sizeof(window_class));
 
@@ -32,14 +32,13 @@ namespace rex
         REX_TODO("Make window cursor data driven");
 
         window_class.style         = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-        window_class.lpfnWndProc   = (WNDPROC)wnd_proc;
+        window_class.lpfnWndProc   = reinterpret_cast<WNDPROC>(wndProc);
         window_class.cbClsExtra    = 0;
         window_class.cbWndExtra    = 0;
-        window_class.hInstance     = (HINSTANCE)hinstance;
-        window_class.hInstance     = (HINSTANCE)GetModuleHandleA(NULL);
-        window_class.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
-        window_class.hCursor       = LoadCursor(NULL, IDC_ICON);
-        window_class.hbrBackground = (HBRUSH)(COLOR_WINDOWFRAME);
+        window_class.hInstance     = static_cast<HINSTANCE>(hinstance);
+        window_class.hIcon         = LoadIcon(nullptr, IDI_APPLICATION);
+        window_class.hCursor       = LoadCursor(nullptr, IDC_ICON);
+        window_class.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOWFRAME);
         window_class.lpszClassName = name;
         window_class.lpszMenuName  = nullptr;
 
@@ -58,7 +57,7 @@ namespace rex
 
       bool destroy()
       {
-        if(WIN_FAILED(UnregisterClass(name, (HINSTANCE)hinstance)))
+        if(WIN_FAILED(UnregisterClass(name, static_cast<HINSTANCE>(hinstance))))
         {
           REX_ERROR("Failed to destroy window class!");
           return false;

@@ -3,8 +3,6 @@
 #include "rex_engine/timing/interval.h"
 #include "rex_std/chrono.h"
 
-using namespace rsl::chrono_literals;
-
 namespace rex
 {
   class FPS
@@ -21,6 +19,7 @@ namespace rex
     void update()
     {
       ++m_fps_count;
+      using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
 
       if(m_fps_interval.value() > rsl::chrono::duration_cast<rsl::chrono::milliseconds>(1s).count())
       {

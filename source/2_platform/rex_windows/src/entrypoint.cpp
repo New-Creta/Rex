@@ -109,7 +109,10 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
   rex::ApplicationCreationParams acp = rex::app_entry(arguments.count, arguments.values);
 
-  rex::win32::GuiApplication application((rex::win32::HInstance)hInstance, (rex::win32::HInstance)hPrevInstance, (rex::win32::LPtStr)lpCmdLine, nCmdShow, std::move(acp));
+  const rex::win32::HInstance hinstance      = static_cast<rex::win32::HInstance>(hInstance);
+  const rex::win32::HInstance hprev_instance = static_cast<rex::win32::HInstance>(hPrevInstance);
+  const rex::win32::LPtStr cmd_line          = static_cast<rex::win32::LPtStr>(lpCmdLine);
+  rex::win32::GuiApplication application(hinstance, hprev_instance, cmd_line, nCmdShow, rsl::move(acp));
 
   s32 result = application.run();
 

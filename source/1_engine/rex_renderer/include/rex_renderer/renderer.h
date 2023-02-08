@@ -4,7 +4,7 @@
 
 namespace rex
 {
-  struct renderer_info
+  struct RendererInfo
   {
     const char8* api_version;
     const char8* shader_version;

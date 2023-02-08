@@ -8,6 +8,7 @@
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
+#include "rex_std/thread.h"
 #include "rex_windows/win_window.h"
 
 namespace rex
@@ -25,8 +26,8 @@ namespace rex
     struct GuiApplication::Internal
     {
       Internal(GuiApplicationCreationParamters&& guiCreationParams, ApplicationCreationParams&& genericCreationParams)
-          : gui_creation_params(std::move(guiCreationParams))
-          , generic_creation_params(std::move(genericCreationParams))
+          : gui_creation_params(rsl::move(guiCreationParams))
+          , generic_creation_params(rsl::move(genericCreationParams))
       {
       }
 
@@ -63,7 +64,7 @@ namespace rex
 
       void loop()
       {
-        FrameInfo info = {World::getDeltaTime(), World::getFramesPerSecond()};
+        FrameInfo info = {World::get_delta_time(), World::get_frames_per_seconds()};
 
         on_update(info);
 
@@ -76,13 +77,14 @@ namespace rex
         // Cap framerate to "max_fps".
         // Safe resources of the machine we are running on.
         //
-        rsl::chrono::milliseconds actual_time(static_cast<int>(rsl::lrint(1000.0f / world.getFramesPerSecond().get())));
-        rsl::chrono::milliseconds desired_time(static_cast<int>(rsl::lrint(1000.0f / generic_creation_params.max_fps)));
+        const rsl::chrono::milliseconds actual_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(world.get_frames_per_seconds().get()))));
+        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(generic_creation_params.max_fps))));
 
         rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
-        if(elapsed_time > rsl::chrono::milliseconds(0ms))
+        using namespace rsl::chrono_literals;
+        if(elapsed_time > 0ms)
         {
-          // std::this_thread::sleep_for(elapsed_time);
+          rsl::this_thread::sleep_for(elapsed_time);
         }
       }
 
@@ -148,7 +150,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GuiApplication::~GuiApplication() {}
+    GuiApplication::~GuiApplication() = default;
 
     //-------------------------------------------------------------------------
     bool GuiApplication::is_running() const
@@ -161,9 +163,9 @@ namespace rex
     {
       // Always make sure we close down the application properly
       Internal* instance = m_internal_ptr.get();
-      rsl::scopeguard shutdown_scopeguard([instance]() { instance->shutdown(); });
+      const rsl::scopeguard shutdown_scopeguard([instance]() { instance->shutdown(); });
 
-      if(m_internal_ptr->initialize() == false)
+      if(m_internal_ptr->initialize() == false) // NOLINT(readability-simplify-boolean-expr)
       {
         REX_ERROR("Application initialization failed");
         return EXIT_FAILURE;

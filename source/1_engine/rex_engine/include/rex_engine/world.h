@@ -8,8 +8,8 @@ namespace rex
   class World
   {
   public:
-    static const DeltaTime& getDeltaTime();
-    static const FPS& getFramesPerSecond();
+    static const DeltaTime& get_delta_time();
+    static const FPS& get_frames_per_seconds();
 
     World();
     ~World();

@@ -18,12 +18,12 @@
 #include <comdef.h>
 #include <windows.h>
 
-rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED const rsl::string_view file, REX_MAYBE_UNUSED const rsl::string_view function, REX_MAYBE_UNUSED card32 lineNr)
+rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED rsl::string_view file, REX_MAYBE_UNUSED rsl::string_view function, REX_MAYBE_UNUSED card32 lineNr)
     : m_has_failed(FAILED(hr))
 {
   if(has_failed())
   {
-    _com_error err(hr);
+    const _com_error err(hr);
     m_error_message = err.ErrorMessage();
     REX_ERROR("WINDOWS ERROR");
     REX_ERROR("File: ", file);
