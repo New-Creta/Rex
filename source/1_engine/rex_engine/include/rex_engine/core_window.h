@@ -27,12 +27,13 @@ namespace rex
   class IWindow
   {
   public:
+    IWindow()               = default;
     IWindow(const IWindow&) = delete;
-    IWindow(IWindow&&) = delete;
+    IWindow(IWindow&&)      = delete;
     virtual ~IWindow();
 
     IWindow& operator=(const IWindow&) = delete;
-    IWindow& operator=(IWindow&&) = delete;
+    IWindow& operator=(IWindow&&)      = delete;
 
     virtual void update() = 0;
     virtual void show()   = 0;

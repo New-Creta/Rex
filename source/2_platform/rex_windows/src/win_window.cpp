@@ -178,8 +178,7 @@ namespace rex
           event_system::fire_event(event_system::EventType::WindowClose);
           return 0;
 
-        default: 
-          return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
+        default: return DefWindowProc((HWND)hwnd, msg, wparam, lparam);
       }
     }
   } // namespace win32

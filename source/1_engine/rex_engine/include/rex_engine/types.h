@@ -28,18 +28,18 @@ using ulong = unsigned long;
 #endif
 
 #if REX_SINGLE_THREADED
-using a_u8 = u8;
-using a_u32 = u32;
-using a_u64 = u64;
+using a_u8   = u8;
+using a_u32  = u32;
+using a_u64  = u64;
 using a_bool = bool;
-using a_s32 = s32;
-#define rex_atomic_load(a) a // NOLINT(readability-identifier-naming)
+using a_s32  = s32;
+  #define rex_atomic_load(a) a // NOLINT(readability-identifier-naming)
 #else
   #include <atomic>
-using a_u8 = std::atomic<u8>;
-using a_u32 = std::atomic<u32>;
-using a_u64 = std::atomic<u64>;
+using a_u8   = std::atomic<u8>;
+using a_u32  = std::atomic<u32>;
+using a_u64  = std::atomic<u64>;
 using a_bool = std::atomic<bool>;
-using a_s32 = std::atomic<s32>;
+using a_s32  = std::atomic<s32>;
   #define rex_atomic_load(a) a.load() // NOLINT(readability-identifier-naming)
 #endif

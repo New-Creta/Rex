@@ -20,32 +20,32 @@
 
 namespace rex::win
 {
-  rsl::medium_stack_string report_hr_error(HRESULT hr, [[maybe_unused]] const rsl::string_view file, [[maybe_unused]] const rsl::string_view function, [[maybe_unused]] card32 line_nr)
+  rsl::medium_stack_string report_hr_error(HRESULT hr, [[maybe_unused]] const rsl::string_view file, [[maybe_unused]] const rsl::string_view function, [[maybe_unused]] card32 lineNr)
   {
     _com_error err(hr);
     rsl::medium_stack_string error_message(err.ErrorMessage());
     REX_ERROR("Windows Error");
     REX_ERROR("File: {}", file);
     REX_ERROR("Function: {}", function);
-    REX_ERROR("On line: {}", line_nr);
+    REX_ERROR("On line: {}", lineNr);
     REX_ERROR("Windows error: {}", error_message);
 
     return error_message;
   }
 } // namespace rex::win
 
-rex::win::WinCall::WinCall(const rsl::string_view file, const rsl::string_view function, card32 line_nr)
-    : WinCall(ERROR_SUCCESS, file, function, line_nr)
+rex::win::WinCall::WinCall(const rsl::string_view file, const rsl::string_view function, card32 lineNr)
+    : WinCall(ERROR_SUCCESS, file, function, lineNr)
 {
 }
 
-rex::win::WinCall::WinCall(DWord error_success, const rsl::string_view file, const rsl::string_view function, card32 line_nr)
+rex::win::WinCall::WinCall(DWord errorSuccess, const rsl::string_view file, const rsl::string_view function, card32 lineNr)
     : m_error(GetLastError())
 {
-  if(m_error != error_success && m_error != ERROR_SUCCESS)
+  if(m_error != errorSuccess && m_error != ERROR_SUCCESS)
   {
     HRESULT hr      = HRESULT_FROM_WIN32(m_error);
-    m_error_message = report_hr_error(hr, file, function, line_nr);
+    m_error_message = report_hr_error(hr, file, function, lineNr);
   }
 
   // GetLastError() is not always cleared when a function succeeds
@@ -67,7 +67,7 @@ rsl::string_view rex::win::WinCall::error_message() const
   return m_error_message.to_view();
 }
 
-void rex::win::check_for_win_errors(const rsl::string_view file, const rsl::string_view function, card32 line_nr)
+void rex::win::check_for_win_errors(const rsl::string_view file, const rsl::string_view function, card32 lineNr)
 {
 #ifdef REX_SUPRESS_PRE_CHECK_WINDOWS_ERRORS
   clear_win_errors();
@@ -80,7 +80,7 @@ void rex::win::check_for_win_errors(const rsl::string_view file, const rsl::stri
     REX_WARN("Still Windows errors in pool!");
 
     HRESULT hr = HRESULT_FROM_WIN32(err);
-    report_hr_error(hr, file, function, line_nr);
+    report_hr_error(hr, file, function, lineNr);
   }
 #endif
 }

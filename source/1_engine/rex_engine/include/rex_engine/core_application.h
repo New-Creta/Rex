@@ -12,11 +12,11 @@ namespace rex
   public:
     IApplication();
     IApplication(const IApplication&) = delete;
-    IApplication(IApplication&&) = delete;
+    IApplication(IApplication&&)      = delete;
     virtual ~IApplication();
 
     IApplication& operator=(const IApplication&) = delete;
-    IApplication& operator=(IApplication&&) = delete;
+    IApplication& operator=(IApplication&&)      = delete;
 
     virtual bool is_running() const = 0;
 
