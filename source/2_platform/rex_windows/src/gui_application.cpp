@@ -3,6 +3,8 @@
 #include "rex_engine/core_application_params.h"
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/event_system.h"
+#include "rex_engine/frameinfo/deltatime.h"
+#include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/math.h"
@@ -63,9 +65,11 @@ namespace rex
 
       void loop()
       {
-        const FrameInfo info;
+        FrameInfo info = {m_delta_time, m_fps};
         on_update(info);
 
+        m_delta_time.update();
+        m_fps.update();
         window->update();
 
         is_running = !is_marked_for_destroy;
@@ -114,6 +118,9 @@ namespace rex
 
       bool is_running            = false;
       bool is_marked_for_destroy = false;
+
+      DeltaTime m_delta_time;
+      FPS m_fps;
 
       rsl::unique_ptr<Window> window;
 
