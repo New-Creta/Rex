@@ -33,5 +33,14 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 int main()
 {
-  return WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), SW_SHOW);
+  STARTUPINFOW si;
+  GetStartupInfoW(&si);
+
+  if (si.dwFlags & STARTF_USESHOWWINDOW)
+  {
+    return WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), si.wShowWindow);
+  }
+  
+  REX_ERROR("ShowWindow flag was not set, something is preventing use from showing the window, exiting application.");
+  return 0;
 }
