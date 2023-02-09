@@ -19,10 +19,7 @@ namespace rex
       mem_manager().initialize(256_kib);
     }
 
-
     static RexApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-    
-
   };
   
   //-------------------------------------------------------------------------
