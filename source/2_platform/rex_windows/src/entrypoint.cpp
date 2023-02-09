@@ -37,7 +37,7 @@ int main()
   STARTUPINFOW si;
   GetStartupInfoW(&si);
 
-  int showWindow = si.wShowWindow;
+  s32 showWindow = si.wShowWindow;
 
   if (!rsl::has_flag(si.dwFlags, STARTF_USESHOWWINDOW)) // this happens when running from the debugger
   {
