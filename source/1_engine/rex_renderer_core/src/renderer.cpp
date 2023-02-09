@@ -13,7 +13,12 @@ namespace rex
       UNUSED_PARAM(userData);
       UNUSED_PARAM(maxCommands);
 
-      return true;
+      return backend::initialize();
+    }
+    //-------------------------------------------------------------------------
+    void shutdown()
+    {
+      backend::shutdown();
     }
 
   } // namespace renderer
