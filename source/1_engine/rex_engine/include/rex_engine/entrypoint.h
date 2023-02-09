@@ -6,5 +6,7 @@
 namespace rex
 {
   struct PlatformCreationParams;
-  s32 app_entry(const PlatformCreationParams& platformParams, CommandLineArguments&& cmdArgs);
+  struct ApplicationCreationParams;
+
+  ApplicationCreationParams app_entry(const PlatformCreationParams& platformParams, const CommandLineArguments& cmdArgs);
 } // namespace rex
