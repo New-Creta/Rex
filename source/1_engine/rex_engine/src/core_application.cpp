@@ -1,6 +1,7 @@
 #include "rex_engine/core_application.h"
 
 #include "rex_engine/frameinfo/frameinfo.h"
+
 #include "rex_std/assert.h"
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
