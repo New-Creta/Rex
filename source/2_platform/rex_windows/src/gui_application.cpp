@@ -14,7 +14,7 @@
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
 
-#include "rex_renderer/renderer.h"
+#include "rex_renderer_core/renderer.h"
 
 #include <Windows.h>
 
@@ -45,7 +45,7 @@
 
       namespace opengl
       {
-          void create_gl_context(HWND hwnd)
+          bool create_gl_context(HWND hwnd)
           {
               s_glctx.dc = GetDC(hwnd);
 
@@ -83,13 +83,15 @@
               {
                   s_glctx.glrc = temp;
               }
+
+              return true;
           }
       }
     }
 
-    #define create_ctx(wnd) rex::opengl::create_gl_context(wnd)
+    #define create_ctx(hwnd) rex::opengl::create_gl_context(hwnd)
 #else
-    #define create_ctx(wnd) (wnd != nullptr)
+    #define create_ctx(hwnd) (hwnd == nullptr)
 #endif
 
 namespace rex
@@ -119,7 +121,7 @@ namespace rex
           return false;
         }
         
-        if(renderer::initialize((void*)&hwnd, appParams.max_render_commands) == false)
+        if(renderer::initialize((void*)&hwnd, app_params.max_render_commands) == false)
         {
           return false;
         }
@@ -150,10 +152,12 @@ namespace rex
       void loop()
       {
         const FrameInfo info = {m_delta_time, m_fps};
+        
         on_update(info);
 
         m_delta_time.update();
         m_fps.update();
+
         window->update();
 
         is_running = !is_marked_for_destroy;
