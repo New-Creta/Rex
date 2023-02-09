@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-#if REX_PLATFORM_WIN32
+#if REX_PLATFORM_X64
     #define GLEW_STATIC
     #include "GL/glew.h"
     #include "GL/wglew.h"
