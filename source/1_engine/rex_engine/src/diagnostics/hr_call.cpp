@@ -1,15 +1,3 @@
-// ============================================
-//
-// REX GAME ENGINE
-//
-// Author: Nick De Breuck
-// Twitter: @nick_debreuck
-//
-// File: hr_call.cpp
-// Copyright (c) Nick De Breuck 2023
-//
-// ============================================
-
 #include "rex_engine/diagnostics/win/hr_call.h"
 
 #include "rex_engine/diagnostics/logging.h"
