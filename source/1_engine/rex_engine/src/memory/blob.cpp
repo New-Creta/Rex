@@ -1,10 +1,10 @@
-
-
 #include "rex_engine/memory/blob.h"
-
 #include "rex_engine/memory/blob_writer.h"
+#include "rex_engine/diagnostics/logging.h"
+
 #include "rex_std/memory.h"
 #include "rex_std/utility.h"
+#include "rex_std/assert.h"
 
 namespace rex
 {
@@ -15,13 +15,13 @@ namespace rex
     {
       if(src.m_size == 0)
       {
-        // R_WARN("size of src == 0, nothing to copy ...");
+        REX_WARN("size of src == 0, nothing to copy ...");
 
         return;
       }
 
-      // R_ASSERT(dst.m_size != 0)
-      // R_ASSERT(dst.m_size >= src.m_size);
+      REX_ASSERT(dst.m_size != 0);
+      REX_ASSERT(dst.m_size >= src.m_size);
 
       rsl::memcpy(dst.m_data.get(), src.m_data.get(), src.m_size);
     }
@@ -30,23 +30,23 @@ namespace rex
     {
       if(src.m_size == 0)
       {
-        // R_WARN("size of src == 0, nothing to copy ...");
+        REX_WARN("size of src == 0, nothing to copy ...");
 
         return;
       }
 
-      // R_ASSERT(dst != nullptr);
+      REX_ASSERT(dst != nullptr);
 
       rsl::memcpy(dst, src.m_data.get(), src.m_size);
     }
     //-------------------------------------------------------------------------
     void Blob::copy(void* src, const rsl::memory_size& size, Blob& dst)
     {
-      // R_ASSERT(src != nullptr);
-      // R_ASSERT(size != 0);
+      REX_ASSERT(src != nullptr);
+      REX_ASSERT(size != 0);
 
-      // R_ASSERT(dst.m_size != 0)
-      // R_ASSERT(dst.m_size >= size);
+      REX_ASSERT(dst.m_size != 0);
+      REX_ASSERT(dst.m_size >= size);
 
       rsl::memcpy(dst.m_data.get(), src, size);
     }
@@ -78,7 +78,7 @@ namespace rex
     Blob& Blob::operator=(Blob&& other) noexcept
     {
       // Guard self assignment
-      // R_ASSERT(this == &other);
+      REX_ASSERT(this == &other);
 
       m_data = rsl::exchange(other.m_data, nullptr);
       m_size = rsl::exchange(other.m_size, 0_bytes);
@@ -110,7 +110,7 @@ namespace rex
 
       if(inSize == 0)
       {
-        // R_WARN("allocation of size equal to 0");
+        REX_WARN("allocation of size equal to 0");
 
         return;
       }
@@ -136,7 +136,7 @@ namespace rex
     //-------------------------------------------------------------------------
     rsl::byte* Blob::read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset)
     {
-      // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
+      REX_ASSERT(inOffset + inSize <= m_size);
 
       rsl::memcpy(dst, static_cast<rsl::byte*>(m_data.get()) + inOffset, inSize);
       return dst;
@@ -145,7 +145,7 @@ namespace rex
     //-------------------------------------------------------------------------
     const rsl::byte* Blob::read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const
     {
-      // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
+      REX_ASSERT(inOffset + inSize <= m_size);
 
       rsl::memcpy(dst, static_cast<const rsl::byte*>(m_data.get()) + inOffset, inSize);
       return dst;
@@ -154,7 +154,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void Blob::write(const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset)
     {
-      // R_ASSERT_X(inOffset + inSize <= m_size, "Buffer overflow!");
+      REX_ASSERT(inOffset + inSize <= m_size);
 
       rsl::memcpy(static_cast<rsl::byte*>(m_data.get()) + inOffset, inData, inSize);
     }

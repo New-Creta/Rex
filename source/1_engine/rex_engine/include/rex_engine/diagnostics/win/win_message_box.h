@@ -1,12 +1,3 @@
-//--------------------------------------------------
-// File:    win_message_box.h
-// Created: 1/21/2023 1:04:17 AM
-//
-// Created By: nickdb
-//
-// Copyright (c) REX
-//--------------------------------------------------
-
 #pragma once
 
 #include "rex_std/string_view.h"
