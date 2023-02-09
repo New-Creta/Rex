@@ -20,13 +20,13 @@ namespace rex
     using Hdc       = void*;
 
     using WParam  = size_t;
-    using LParam  = size_t;
+    using LParam  = long long;
     using LResult = size_t;
 
 #ifndef UNICODE
     using LPtStr = char*;
 #else
-    using LPtStr = wchar_t*
+    using LPtStr = wchar_t*;
 #endif
 
     using DWord               = unsigned long;

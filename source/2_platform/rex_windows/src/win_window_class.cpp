@@ -16,7 +16,7 @@ namespace rex
       Internal()
           : window_class()
           , name()
-          , hinstance(NULL)
+          , hinstance(nullptr)
           , registered(false)
       {
       }
@@ -24,7 +24,7 @@ namespace rex
       bool create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title)
       {
         name      = title;
-        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandleA(NULL)) : hInstance;
+        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandleA(nullptr)) : hInstance;
 
         rsl::zero_memory(&window_class, sizeof(window_class));
 
@@ -33,13 +33,13 @@ namespace rex
         REX_TODO("Make window cursor data driven");
 
         window_class.style         = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-        window_class.lpfnWndProc   = reinterpret_cast<WNDPROC>(wndProc);
+        window_class.lpfnWndProc   = reinterpret_cast<WNDPROC>(wndProc); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         window_class.cbClsExtra    = 0;
         window_class.cbWndExtra    = 0;
         window_class.hInstance     = static_cast<HINSTANCE>(hinstance);
         window_class.hIcon         = LoadIcon(nullptr, IDI_APPLICATION);
         window_class.hCursor       = LoadCursor(nullptr, IDC_ICON);
-        window_class.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOWFRAME);
+        window_class.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOWFRAME); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         window_class.lpszClassName = name;
         window_class.lpszMenuName  = nullptr;
 
