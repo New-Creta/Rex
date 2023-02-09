@@ -2,6 +2,7 @@
 
 #include "rex_std/vector.h"
 #include "rex_std/string_view.h"
+#include "rex_std/bonus/utility/has_flag.h"
 
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_windows/platform_creation_params.h"
@@ -36,11 +37,12 @@ int main()
   STARTUPINFOW si;
   GetStartupInfoW(&si);
 
-  if (si.dwFlags & STARTF_USESHOWWINDOW)
+  int showWindow = si.wShowWindow;
+
+  if (!rsl::has_flag(si.dwFlags, STARTF_USESHOWWINDOW)) // this happens when running from the debugger
   {
-    return WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), si.wShowWindow);
+    showWindow = SW_SHOWNORMAL;
   }
   
-  REX_ERROR("ShowWindow flag was not set, something is preventing use from showing the window, exiting application.");
-  return 0;
+  return WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), showWindow);
 }
