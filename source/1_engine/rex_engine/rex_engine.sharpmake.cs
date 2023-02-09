@@ -16,6 +16,8 @@ public class RexEngine : EngineProject
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     SourceRootPath = ThisFileFolder;
+
+    SourceFilesExcludeFromJumboRegex.Add("new_delete.cpp"); // needs to be excluded to avoid linker issues
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
