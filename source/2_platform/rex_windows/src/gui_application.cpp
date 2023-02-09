@@ -5,12 +5,92 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/frameinfo/frameinfo.h"
+
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std/thread.h"
+
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
+
+#include "rex_renderer/renderer.h"
+
+#include <Windows.h>
+
+#if REX_RENDERER_OPENGL
+    #define GLEW_STATIC
+
+    #include "GL/glew.h"
+    #include "GL/wglew.h"
+    
+    struct wgl_context
+    {
+        HDC   dc;
+        HGLRC glrc;
+    };
+
+    wgl_context s_glctx;
+
+    namespace rex
+    {
+      extern bool rex_make_gl_context_current()
+      {
+          return wglMakeCurrent(s_glctx.dc, s_glctx.glrc);
+      }
+      extern void rex_gl_swap_buffers()
+      {
+          SwapBuffers(s_glctx.dc);
+      }
+
+      namespace opengl
+      {
+          void create_gl_context(HWND hwnd)
+          {
+              s_glctx.dc = GetDC(hwnd);
+
+              PIXELFORMATDESCRIPTOR pfd;
+              memset(&pfd, 0, sizeof(pfd));
+
+              pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+              pfd.nVersion = 1;
+              pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+              pfd.iPixelType = PFD_TYPE_RGBA;
+              pfd.cColorBits = 32;
+              pfd.cAlphaBits = 8;
+              pfd.cDepthBits = 24;
+              pfd.cStencilBits = 8;
+              pfd.iLayerType = PFD_MAIN_PLANE;
+
+              int pf = ChoosePixelFormat(s_glctx.dc, &pfd);
+              DescribePixelFormat(s_glctx.dc, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+              int   result = SetPixelFormat(s_glctx.dc, pf, &pfd);
+              HGLRC temp = wglCreateContext(s_glctx.dc);
+              wglMakeCurrent(s_glctx.dc, temp);
+
+              int attribs[] = { WGL_CONTEXT_MAJOR_VERSION_ARB, 4, WGL_CONTEXT_MINOR_VERSION_ARB, 3, WGL_CONTEXT_FLAGS_ARB, 0, 0 };
+
+              // Create OpenGL context
+              int error = glewInit();
+              if (wglewIsSupported("WGL_ARB_create_context") == 1)
+              {
+                  s_glctx.glrc = wglCreateContextAttribsARB(s_glctx.dc, 0, attribs);
+                  wglMakeCurrent(NULL, NULL);
+                  wglDeleteContext(temp);
+                  result = wglMakeCurrent(s_glctx.dc, s_glctx.glrc);
+              }
+              else
+              {
+                  s_glctx.glrc = temp;
+              }
+          }
+      }
+    }
+
+    #define create_ctx(wnd) rex::opengl::create_gl_context(wnd)
+#else
+    #define create_ctx(wnd) (wnd != nullptr)
+#endif
 
 namespace rex
 {
@@ -29,6 +109,17 @@ namespace rex
       {
         window = create_window();
         if(window == nullptr)
+        {
+          return false;
+        }
+
+        HWND hwnd = (HWND)window->get_primary_display_handle();
+        if(create_ctx(hwnd) == false)
+        {
+          return false;
+        }
+        
+        if(renderer::initialize((void*)&hwnd, appParams.max_render_commands) == false)
         {
           return false;
         }

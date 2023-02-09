@@ -24,7 +24,7 @@ namespace rex
       bool create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title)
       {
         name      = title;
-        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandleA(nullptr)) : hInstance;
+        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandle(nullptr)) : hInstance;
 
         rsl::zero_memory(&window_class, sizeof(window_class));
 
