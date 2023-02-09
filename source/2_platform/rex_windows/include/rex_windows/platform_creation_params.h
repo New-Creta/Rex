@@ -14,4 +14,4 @@ namespace rex
     rex::win32::LPtStr cmd_line;
     s32 show_cmd;
   };
-}
+} // namespace rex

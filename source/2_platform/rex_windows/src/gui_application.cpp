@@ -9,8 +9,8 @@
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std/thread.h"
-#include "rex_windows/win_window.h"
 #include "rex_windows/platform_creation_params.h"
+#include "rex_windows/win_window.h"
 
 namespace rex
 {
@@ -58,7 +58,7 @@ namespace rex
 
       void loop()
       {
-        FrameInfo info = {m_delta_time, m_fps};
+        const FrameInfo info = {m_delta_time, m_fps};
         on_update(info);
 
         m_delta_time.update();
@@ -74,8 +74,8 @@ namespace rex
         const rsl::chrono::milliseconds actual_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_fps.get()))));
         const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(app_params.max_fps))));
 
-        rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
-        using namespace rsl::chrono_literals;
+        const rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
+        using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
         if(elapsed_time > 0ms)
         {
           rsl::this_thread::sleep_for(elapsed_time);

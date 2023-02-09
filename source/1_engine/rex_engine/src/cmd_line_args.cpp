@@ -20,7 +20,7 @@ namespace rex
     count_t space_pos = cmdLine.find_first_of(' ', start_pos);
     while(start_pos != -1 && space_pos != -1)
     {
-      count_t length = space_pos - start_pos;
+      const count_t length = space_pos - start_pos;
       m_arguments.push_back(cmdLine.substr(start_pos, length));
       start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
       space_pos = cmdLine.find_first_of(' ', start_pos);
