@@ -1,12 +1,3 @@
-//--------------------------------------------------
-// File:    event_system.cpp
-// Created: 4/4/2022 10:58:59 PM
-//
-// Created By: nickdb
-//
-// Copyright (c) REX
-//--------------------------------------------------
-
 #include "rex_engine/event_system.h"
 
 #include "rex_std/unordered_map.h"

@@ -1,15 +1,3 @@
-// ============================================
-//
-// REX GAME ENGINE
-//
-// Author: Nick De Breuck
-// Twitter: @nick_debreuck
-//
-// File: win_message_box.cpp
-// Copyright (c) Nick De Breuck 2023
-//
-// ============================================
-
 #include "rex_engine/diagnostics/win/win_message_box.h"
 
 #include "rex_std/bonus/string/stack_string.h"

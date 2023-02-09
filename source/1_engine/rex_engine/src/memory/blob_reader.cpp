@@ -1,5 +1,3 @@
-
-
 #include "rex_engine/memory/blob_reader.h"
 
 namespace rex
