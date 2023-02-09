@@ -25,7 +25,7 @@
 [&](){\
   if (!(cond)) \
   {\
-    rsl::cout << "INFO: " << rsl::format(msg, __VA_ARGS__) << "\n"; \
+    REX_INFO(msg, __VA_ARGS__); \
     return true;\
   } \
   return false;\
@@ -34,7 +34,7 @@
 [&](){\
   if (!(cond)) \
   {\
-    rsl::cout << "WARN: " << rsl::format(msg, __VA_ARGS__) << "\n"; \
+    REX_WARN(msg, __VA_ARGS__); \
     return true;\
   } \
   return false;\
@@ -43,7 +43,7 @@
 [&](){\
   if (!(cond)) \
   {\
-    rsl::cout << "ERR: " << rsl::format(msg, __VA_ARGS__) << "\n"; \
+    REX_ERROR(msg, __VA_ARGS__); \
     return true;\
   } \
   return false;\
@@ -53,7 +53,7 @@
 [&](){\
   if (!(cond)) \
   {\
-    rsl::cout << "TODO: " << rsl::format(msg, __VA_ARGS__) << "\n"; \
+    REX_TODO(msg, __VA_ARGS__); \
     return true;\
   } \
   return false;\
