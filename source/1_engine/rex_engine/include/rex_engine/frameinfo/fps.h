@@ -10,8 +10,9 @@ namespace rex
   public:
     //--------------------------------------------------------------------------------------------
     FPS()
-        : m_fps(0)
+        : m_fps(1) // initialize to 1 in case we get to the update too quickly
         , m_fps_count(0)
+        , m_fps_interval()
     {
     }
 
