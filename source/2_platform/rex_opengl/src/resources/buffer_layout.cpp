@@ -67,7 +67,7 @@ namespace rex
     {
         BufferElements new_buffer_elements;
 
-        new_buffer_elements.reserve(m_layout.size() + 1u);
+        new_buffer_elements.reserve(static_cast<rsl::count_t>(m_layout.size() + 1));
         new_buffer_elements.insert(rsl::end(new_buffer_elements), rsl::begin(m_layout.get_buffer_elements()), rsl::end(m_layout.get_buffer_elements()));
         new_buffer_elements.push_back(BufferElement(inType, buffer_layout::get_data_type_byte_size(inType), buffer_layout::get_data_type_component_count(inType), inShouldNormalize));
 
@@ -143,7 +143,7 @@ namespace rex
         return m_elements.empty();
     }
     //-----------------------------------------------------------------------
-    size_t BufferLayout::size() const
+    s32 BufferLayout::size() const
     {
         return m_elements.size();
     }
