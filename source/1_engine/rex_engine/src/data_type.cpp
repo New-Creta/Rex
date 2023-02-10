@@ -1,20 +1,24 @@
 #include "rex_engine/data_type.h"
+#include "rex_engine/types.h"
+#include "rex_engine/diagnostics/logging.h"
+
+#include "rex_std/unordered_map.h"
 
 #include <glm/glm.hpp>
 
-namespace pic
+namespace rex
 {
     namespace data_type
     {
         //-----------------------------------------------------------------------
-        std::unordered_map<DataType::Value, size_t>& get_data_type_typeid_map()
+        rsl::unordered_map<DataType::Value, size_t>& get_data_type_typeid_map()
         {
-            static std::unordered_map<DataType::Value, size_t> type_map = 
+            static rsl::unordered_map<DataType::Value, size_t> type_map = 
             {
-                {DataType::Value::INT8, typeid(int8).hash_code()},
-                {DataType::Value::INT16, typeid(int16).hash_code()},
-                {DataType::Value::INT32, typeid(int32).hash_code()},
-                {DataType::Value::INT64, typeid(int64).hash_code()},
+                {DataType::Value::INT8, typeid(s8).hash_code()},
+                {DataType::Value::INT16, typeid(s16).hash_code()},
+                {DataType::Value::INT32, typeid(s32).hash_code()},
+                {DataType::Value::INT64, typeid(s64).hash_code()},
 
                 {DataType::Value::UNSIGNED_INT8, typeid(uint8).hash_code()},
                 {DataType::Value::UNSIGNED_INT16, typeid(uint16).hash_code()},
@@ -48,14 +52,14 @@ namespace pic
         }
 
         //-----------------------------------------------------------------------
-        std::unordered_map<DataType::Value, size_t>& get_data_type_size_map()
+        rsl::unordered_map<DataType::Value, size_t>& get_data_type_size_map()
         {
-            static std::unordered_map<DataType::Value, size_t> type_map =
+            static rsl::unordered_map<DataType::Value, size_t> type_map =
             {
-                {DataType::Value::INT8, sizeof(int8)},
-                {DataType::Value::INT16, sizeof(int16)},
-                {DataType::Value::INT32, sizeof(int32)},
-                {DataType::Value::INT64, sizeof(int64)},
+                {DataType::Value::INT8, sizeof(s8)},
+                {DataType::Value::INT16, sizeof(s16)},
+                {DataType::Value::INT32, sizeof(s32)},
+                {DataType::Value::INT64, sizeof(s64)},
 
                 {DataType::Value::UNSIGNED_INT8, sizeof(uint8)},
                 {DataType::Value::UNSIGNED_INT16, sizeof(uint16)},
@@ -103,13 +107,13 @@ namespace pic
     }
 
     //-----------------------------------------------------------------------
-    pic::DataType::Value DataType::get() const
+    DataType::Value DataType::get() const
     {
         return m_value;
     }
 
     //-----------------------------------------------------------------------
-    pic::DataType& DataType::operator=(const DataType& other)
+    DataType& DataType::operator=(const DataType& other)
     {
         if (*this == other)
         {
@@ -121,7 +125,7 @@ namespace pic
         return *this;
     }
     //-----------------------------------------------------------------------
-    pic::DataType& DataType::operator=(DataType&& other) noexcept
+    DataType& DataType::operator=(DataType&& other) noexcept
     {
         if (*this == other)
         {
@@ -148,11 +152,11 @@ namespace pic
 
         if (typeid_it == std::cend(typeid_map))
         {
-            S_ERROR("Unsupported DataType to convert to typeid: {0}", (int32)m_value);
+            REX_ERROR("Unsupported DataType to convert to typeid: {0}", (int32)m_value);
             return 0;
         }
 
-        return typeid_it->second;
+        return typeid_it->second();
     }
     //-----------------------------------------------------------------------
     size_t DataType::to_byte_size() const
@@ -162,11 +166,11 @@ namespace pic
 
         if (size_it == std::cend(size_map))
         {
-            S_ERROR("Unsupported DataType to convert to byte size: {0}", (int32)m_value);
+            REX_ERROR("Unsupported DataType to convert to byte size: {0}", (int32)m_value);
             return 0;
         }
 
-        return size_it->second;
+        return size_it->second();
     }
 
     //-----------------------------------------------------------------------

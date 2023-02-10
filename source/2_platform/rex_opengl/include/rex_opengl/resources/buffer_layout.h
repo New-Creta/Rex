@@ -58,7 +58,7 @@ namespace rex
         BufferLayout(const BufferElements& elements);
 
         bool empty() const;
-        size_t size() const;
+        s32 size() const;
 
         const BufferElements& get_buffer_elements() const;
 
