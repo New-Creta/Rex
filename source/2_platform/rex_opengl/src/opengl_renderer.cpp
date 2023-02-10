@@ -86,10 +86,6 @@ namespace rex
       str_gl_renderer = rsl::string((const char8*)gl_renderer);
       str_gl_vendor = rsl::string((const char8*)gl_vendor);
 
-      // version ints
-      u32 major_pos = str_gl_version.find(".", 0);
-      u32 minor_pos = str_gl_version.find(".", major_pos + 1);
-
       s_renderer_info.shader_version = str_glsl_version.c_str();
       s_renderer_info.api_version = str_gl_version.c_str();
       s_renderer_info.renderer = str_gl_renderer.c_str();
