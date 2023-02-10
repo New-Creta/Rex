@@ -42,7 +42,8 @@ namespace rex
             stream << "Could not compile ";
             stream << conversions::to_string(shaderType);
 
-            return stream.str();
+            REX_TODO("Make sure we use an rsl::string here, this can only happen if rsl::stringstream is implemented properly.");
+            return rsl::string(stream.str().c_str());
         }
 
         //-----------------------------------------------------------------------
