@@ -1,4 +1,4 @@
-#include "rex_renderer/renderer.h"
+#include "rex_renderer_core/renderer.h"
 
 #include "rex_engine/defines.h"
 

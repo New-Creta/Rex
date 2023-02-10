@@ -19,7 +19,7 @@ namespace rex
 
     // general accessors
     const RendererInfo& get_info();
-    const c8* shader_platform();
+    const char8* shader_platform();
 
     bool is_y_up();
     bool is_depth_0_to_1();
