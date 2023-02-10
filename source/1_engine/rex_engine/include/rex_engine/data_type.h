@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pic
+namespace rex
 {
     class DataType
     {
