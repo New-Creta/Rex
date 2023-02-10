@@ -187,14 +187,14 @@ namespace rex
 
       switch(msg)
       {
-        case WM_CLOSE: close();
-        case WM_DESTROY:
+      case WM_CLOSE: close(); break;
+      case WM_DESTROY:
           PostQuitMessage(0);
           event_system::fire_event(event_system::EventType::WindowClose);
           return 0;
 
-        default: return DefWindowProc(static_cast<HWND>(hwnd), msg, wparam, lparam);
       }
+      return DefWindowProc(static_cast<HWND>(hwnd), msg, wparam, lparam);
     }
   } // namespace win32
 } // namespace rex

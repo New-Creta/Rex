@@ -32,6 +32,7 @@ namespace rex
         {
           return false;
         }
+        subscribe_window_events();
 
         return on_initialize();
       }
