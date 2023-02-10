@@ -22,6 +22,7 @@ public class RexOpenGL : PlatformProject
     conf.Output = Configuration.OutputType.Lib;
 
     conf.AddPublicDependency<GLEW>(target);
+    conf.AddPublicDependency<GLM>(target);
     conf.AddPublicDependency<RexStdExtra>(target);
     conf.AddPublicDependency<RexRendererCore>(target);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
