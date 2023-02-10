@@ -143,6 +143,8 @@ namespace rex
       {
         on_shutdown();
 
+        renderer::shutdown();
+
         if(window)
         {
           window->destroy();
