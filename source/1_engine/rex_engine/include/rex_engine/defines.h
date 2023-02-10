@@ -35,3 +35,8 @@
 #endif
 
 #endif
+
+//-------------------------------------------------------------------------
+// BIT TWIDDLING
+#define BITS_IN_BYTE 8
+#define BIT(x)       (1 << x)
