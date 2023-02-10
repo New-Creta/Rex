@@ -13,6 +13,16 @@
 #error "Unsupported platform"
 #endif
 
+// TODO:  sstream define REX_ENABLE_STD_ALIAS(stringstream) is not working properly
+//        adding workaround here
+namespace rsl
+{
+  inline namespace v1
+  {
+    using stringstream = std::stringstream;
+  }
+} // namespace rsl
+
 namespace rex
 {
     namespace conversions
