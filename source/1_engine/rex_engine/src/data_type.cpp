@@ -1,6 +1,4 @@
-#include "pic_engine_core_pch.h"
-
-#include "utils/data_type.h"
+#include "rex_engine/data_type.h"
 
 #include <glm/glm.hpp>
 
