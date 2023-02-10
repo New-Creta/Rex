@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rex_engine/types.h"
+
 namespace rex
 {
     u32 create_vertex_shader(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength = nullptr);

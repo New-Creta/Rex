@@ -1,6 +1,6 @@
 #pragma once
 
-#include "resources/buffer.h"
+#include "rex_opengl/resources/buffer.h"
 
 namespace rex
 {

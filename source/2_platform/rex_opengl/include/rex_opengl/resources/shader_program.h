@@ -1,6 +1,10 @@
 #pragma once
 
-#include "resources/resource.h"
+#include "rex_opengl/resources/resource.h"
+
+#include "rex_engine/types.h"
+
+#include "rex_std/unordered_map.h"
 
 #include <glm/glm.hpp>
 

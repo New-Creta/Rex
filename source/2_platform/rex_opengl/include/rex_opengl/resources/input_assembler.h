@@ -1,7 +1,9 @@
 #pragma once
 
-#include "resources/buffer_layout.h"
-#include "resources/vertex.h"
+#include "rex_opengl/resources/buffer_layout.h"
+#include "rex_opengl/resources/vertex.h"
+
+#include "rex_engine/diagnostics/logging.h"
 
 namespace rex
 {

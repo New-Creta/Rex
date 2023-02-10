@@ -1,8 +1,17 @@
-#include "resources/shader_program.h"
-#include "resources/shader.h"
+#include "rex_opengl/resources/shader_program.h"
+#include "rex_opengl/resources/shader.h"
 
-#define GLAD_GL_IMPLEMENTATION
-#include <glad/glad.h>
+#include "rex_engine/diagnostics/logging.h"
+
+#include "rex_std/sstream.h"
+
+#if REX_PLATFORM_X64
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include "GL/wglew.h"
+#else
+#error "Unsupported platform"
+#endif
 
 #if defined _MSC_VER
 #   pragma warning (push)
@@ -37,11 +46,7 @@ namespace rex
         //-----------------------------------------------------------------------
         rsl::string create_shader_program_linking_error_message()
         {
-            rsl::stringstream stream;
-
-            stream << "Could not link shader program";
-
-            return stream.str();
+            return rsl::string("Could not link shader program");
         }
 
         //-------------------------------------------------------------------------

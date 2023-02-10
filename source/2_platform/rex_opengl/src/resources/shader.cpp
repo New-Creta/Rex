@@ -1,14 +1,24 @@
-#include "resources/shader.h"
+#include "rex_opengl/resources/shader.h"
 
-#define GLAD_GL_IMPLEMENTATION
-#include <glad/glad.h>
+#include "rex_engine/diagnostics/logging.h"
+
+#define REX_ENABLE_STD_ALIAS
+#include "rex_std/sstream.h"
+
+#if REX_PLATFORM_X64
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include "GL/wglew.h"
+#else
+#error "Unsupported platform"
+#endif
 
 namespace rex
 {
     namespace conversions
     {
         //-----------------------------------------------------------------------
-        rsl::string to_string(u32 shaderType)
+        char8* to_string(u32 shaderType)
         {
             switch (shaderType)
             {
@@ -88,3 +98,5 @@ namespace rex
     }
 
 }
+
+#undef REX_ENABLE_STD_ALIAS

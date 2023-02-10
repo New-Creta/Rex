@@ -1,4 +1,4 @@
-#include "resources/vertex.h"
+#include "rex_opengl/resources/vertex.h"
 
 namespace rex
 {

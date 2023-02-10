@@ -1,8 +1,9 @@
 #pragma once
 
-#include "resources/resource.h"
+#include "rex_opengl/resources/resource.h"
 
-#include "data_type.h"
+#include "rex_engine/data_type.h"
+#include "rex_engine/types.h"
 
 namespace rex
 {

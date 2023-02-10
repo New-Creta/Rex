@@ -1,7 +1,14 @@
-#include "resources/buffer.h"
+#include "rex_opengl/resources/buffer.h"
 
-#define GLAD_GL_IMPLEMENTATION
-#include <glad/glad.h>
+#include "rex_engine/diagnostics/logging.h"
+
+#if REX_PLATFORM_X64
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include "GL/wglew.h"
+#else
+#error "Unsupported platform"
+#endif
 
 namespace rex
 {

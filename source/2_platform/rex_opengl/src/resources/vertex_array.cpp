@@ -1,7 +1,12 @@
-#include "resources/vertex_array.h"
+#include "rex_opengl/resources/vertex_array.h"
 
-#define GLAD_GL_IMPLEMENTATION
-#include <glad/glad.h>
+#if REX_PLATFORM_X64
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include "GL/wglew.h"
+#else
+#error "Unsupported platform"
+#endif
 
 namespace rex
 {

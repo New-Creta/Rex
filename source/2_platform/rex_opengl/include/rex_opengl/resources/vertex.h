@@ -1,6 +1,8 @@
 #pragma once
 
-#include "resources/buffer_layout.h"
+#include "rex_opengl/resources/buffer_layout.h"
+
+#include "rex_std/unordered_map.h"
 
 #include <glm/glm.hpp>
 

@@ -1,4 +1,4 @@
-#include "resources/resource.h"
+#include "rex_opengl/resources/resource.h"
 
 namespace rex
 {
