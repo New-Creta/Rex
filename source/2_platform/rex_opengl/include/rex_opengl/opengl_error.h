@@ -1,5 +1,16 @@
 #pragma once
 
+#include "rex_engine/defines.h"
+#include "rex_engine/diagnostics/logging.h"
+
+#if REX_PLATFORM_X64
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include "GL/wglew.h"
+#else
+#error "Unsupported platform"
+#endif
+
 #if defined _MSC_VER
     #pragma warning( push )
     #pragma warning( disable : 4505 )
@@ -9,7 +20,7 @@ namespace rex
 {
 #ifdef REX_DEBUG
     //-------------------------------------------------------------------------
-    inline rsl::string gl_get_error_message(u32 error)
+    inline char8* gl_get_error_message(u32 error)
     {
         switch (error)
         {
