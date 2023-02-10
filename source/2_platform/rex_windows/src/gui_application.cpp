@@ -137,7 +137,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     GuiApplication::GuiApplication(const PlatformCreationParams& platformParams, const ApplicationCreationParams& appParams, CommandLineArguments&& cmdArgs)
-        : RexApplication()
+        : CoreApplication()
         , m_internal_ptr(rsl::make_unique<Internal>(platformParams, appParams, std::move(cmdArgs)))
     {
       m_internal_ptr->on_initialize = [&]() { return app_initialize(); };

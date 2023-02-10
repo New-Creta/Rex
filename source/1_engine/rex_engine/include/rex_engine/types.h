@@ -22,12 +22,12 @@ using ulong = unsigned long;
 
 // allow single threaded platforms to avoid use of atomic
 #if REX_WEB || REX_WINDOWS
-  #define REX_SINGLEHREADED 1
+  #define REX_SINGLE_THREADED 1
 #else
-  #define REX_SINGLEHREADED 0
+  #define REX_SINGLE_THREADED 0
 #endif
 
-#if REX_SINGLEHREADED
+#if REX_SINGLE_THREADED
 using a_u8   = u8;
 using a_u32  = u32;
 using a_u64  = u64;

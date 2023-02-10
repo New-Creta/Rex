@@ -11,30 +11,30 @@
 
 namespace rex
 {
-  struct RexApplication::Internal
+  struct CoreApplication::Internal
   {
   public:
-    RexApplication::Internal()
+    CoreApplication::Internal()
     {
       mem_manager().initialize(256_kib);
     }
 
-    static RexApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+    static CoreApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
   };
   
   //-------------------------------------------------------------------------
-  RexApplication* RexApplication::Internal::s_instance = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+  CoreApplication* CoreApplication::Internal::s_instance = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
   //-------------------------------------------------------------------------
-  RexApplication::RexApplication()
+  CoreApplication::CoreApplication()
       : m_internal_ptr(rsl::make_unique<Internal>())
   {
-    REX_ASSERT_X(RexApplication::Internal::s_instance == nullptr, "There can only be one application at the time");
-    RexApplication::Internal::s_instance = this;
+    REX_ASSERT_X(CoreApplication::Internal::s_instance == nullptr, "There can only be one application at the time");
+    CoreApplication::Internal::s_instance = this;
   }
   //-------------------------------------------------------------------------
-  RexApplication::~RexApplication()
+  CoreApplication::~CoreApplication()
   {
-    RexApplication::Internal::s_instance = nullptr;
+    CoreApplication::Internal::s_instance = nullptr;
   }
 } // namespace rex

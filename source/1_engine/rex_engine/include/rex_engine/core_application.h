@@ -7,16 +7,16 @@ namespace rex
 {
   struct FrameInfo;
 
-  class RexApplication
+  class CoreApplication
   {
   public:
-    RexApplication();
-    RexApplication(const RexApplication&) = delete;
-    RexApplication(RexApplication&&)      = delete;
-    virtual ~RexApplication();
+    CoreApplication();
+    CoreApplication(const CoreApplication&) = delete;
+    CoreApplication(CoreApplication&&)      = delete;
+    virtual ~CoreApplication();
 
-    RexApplication& operator=(const RexApplication&) = delete;
-    RexApplication& operator=(RexApplication&&)      = delete;
+    CoreApplication& operator=(const CoreApplication&) = delete;
+    CoreApplication& operator=(CoreApplication&&)      = delete;
 
     virtual bool is_running() const = 0;
 

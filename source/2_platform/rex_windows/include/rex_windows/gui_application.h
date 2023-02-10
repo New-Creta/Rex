@@ -24,7 +24,7 @@ namespace rex
 
   namespace win32
   {
-    class GuiApplication : public RexApplication
+    class GuiApplication : public CoreApplication
     {
     public:
       GuiApplication(const PlatformCreationParams& platformParams, const ApplicationCreationParams& appParams, CommandLineArguments&& cmdArgs);
