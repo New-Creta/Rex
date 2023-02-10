@@ -27,6 +27,7 @@ public class RexEngine : EngineProject
     conf.Output = Configuration.OutputType.Lib;
 
     conf.AddPublicDependency<RexStdExtra>(target, DependencySetting.Default);
+    conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
 
     switch (target.Config)
     {
