@@ -2,8 +2,8 @@ using Sharpmake;
 using System.IO;
 using System.Diagnostics;
 
-[Generate]
-public class GLEW : BasicCPPProject
+[Export]
+public class GLEW : ThirdPartyProject
 {
   public GLEW() : base()
   {
@@ -16,7 +16,7 @@ public class GLEW : BasicCPPProject
     // same as this one. This string essentially means "the directory of
     // the script you're reading right now."
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
-    SourceRootPath = Path.Combine(ThisFileFolder, @"include");
+    SourceRootPath = ThisFileFolder;
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -24,10 +24,9 @@ public class GLEW : BasicCPPProject
     base.Configure(conf, target);
 
     conf.IncludePaths.Add(SourceRootPath);
-    conf.Output = Configuration.OutputType.Lib;
     conf.Options.Remove(Options.Vc.General.TreatWarningsAsErrors.Enable);
 
-    string library_path = Path.Combine(Path.GetDirectoryName(Utils.CurrentFile()), "lib");
+    string library_path = Path.Combine(SourceRootPath, "lib");
 
     switch(conf.Platform)
     {
@@ -35,14 +34,18 @@ public class GLEW : BasicCPPProject
         if (target.Config == Config.release)
         {
           string release_library_path = Path.Combine(library_path, "Release");
-          conf.TargetPath = Path.Combine(release_library_path, "x64");
-          conf.TargetFileName = "glew32s";
+          conf.LibraryPaths.Add(Path.Combine(release_library_path, "x64"));
+          conf.LibraryFiles.Add("glew32s.lib");
+          conf.LibraryFiles.Add("Opengl32.lib");
+          Debug.WriteLine(release_library_path);
         }
         else
         {
           string debug_library_path = Path.Combine(library_path, "Debug");
-          conf.TargetPath = Path.Combine(debug_library_path, "x64");	
-          conf.TargetFileName = "glew32sd";
+          conf.LibraryPaths.Add(Path.Combine(debug_library_path, "x64"));
+          conf.LibraryFiles.Add("glew32sd.lib");
+          conf.LibraryFiles.Add("Opengl32.lib");
+          Debug.WriteLine(debug_library_path);
         }
         break;
       default:
