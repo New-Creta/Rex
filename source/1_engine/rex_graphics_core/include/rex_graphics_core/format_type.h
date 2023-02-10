@@ -1,5 +1,9 @@
 #pragma once
 
+#include "rex_engine/types.h"
+
+#include "rex_std/ostream.h"
+
 namespace rex
 {
     enum class FormatType
