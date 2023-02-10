@@ -62,16 +62,22 @@
               pfd.cStencilBits = 8;
               pfd.iLayerType = PFD_MAIN_PLANE;
 
-              int pf = ChoosePixelFormat(s_glctx.dc, &pfd);
+              s32 pf = ChoosePixelFormat(s_glctx.dc, &pfd);
               DescribePixelFormat(s_glctx.dc, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-              int   result = SetPixelFormat(s_glctx.dc, pf, &pfd);
+              s32   result = SetPixelFormat(s_glctx.dc, pf, &pfd);
               HGLRC temp = wglCreateContext(s_glctx.dc);
               wglMakeCurrent(s_glctx.dc, temp);
 
-              int attribs[] = { WGL_CONTEXT_MAJOR_VERSION_ARB, 4, WGL_CONTEXT_MINOR_VERSION_ARB, 3, WGL_CONTEXT_FLAGS_ARB, 0, 0 };
+              s32 attribs[] = { WGL_CONTEXT_MAJOR_VERSION_ARB, 4, WGL_CONTEXT_MINOR_VERSION_ARB, 3, WGL_CONTEXT_FLAGS_ARB, 0, 0 };
 
               // Create OpenGL context
-              int error = glewInit();
+              s32 error = glewInit();
+              if (error != GLEW_OK)
+              {
+                REX_ERROR("Could not initialize GLEW");
+                return false;
+              }
+
               if (wglewIsSupported("WGL_ARB_create_context") == 1)
               {
                   s_glctx.glrc = wglCreateContextAttribsARB(s_glctx.dc, 0, attribs);
