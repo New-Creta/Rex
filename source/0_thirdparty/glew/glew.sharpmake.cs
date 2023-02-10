@@ -25,6 +25,7 @@ public class GLEW : BasicCPPProject
 
     conf.IncludePaths.Add(SourceRootPath);
     conf.Output = Configuration.OutputType.Lib;
+    conf.Options.Remove(Options.Vc.General.TreatWarningsAsErrors.Enable);
 
     string library_path = Path.Combine(Path.GetDirectoryName(Utils.CurrentFile()), "lib");
 
