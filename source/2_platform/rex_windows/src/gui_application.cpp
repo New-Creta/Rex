@@ -21,8 +21,7 @@
 #if REX_RENDERER_OPENGL
     #define GLEW_STATIC
 
-    #include "GL/glew.h"
-    #include "GL/wglew.h"
+    #include <glad/glad_wgl.h>
     
     struct wgl_context
     {

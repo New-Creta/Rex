@@ -4,9 +4,7 @@
 #include "rex_engine/diagnostics/logging.h"
 
 #if REX_PLATFORM_X64
-#define GLEW_STATIC
-#include "GL/glew.h"
-#include "GL/wglew.h"
+#include "glad/glad.h"
 #else
 #error "Unsupported platform"
 #endif
