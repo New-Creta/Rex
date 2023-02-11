@@ -62,9 +62,19 @@
               pfd.iLayerType = PFD_MAIN_PLANE;
 
               s32 pf = ChoosePixelFormat(s_glctx.dc, &pfd);
-              DescribePixelFormat(s_glctx.dc, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-              s32   result = SetPixelFormat(s_glctx.dc, pf, &pfd);
+              if (pf == NULL || SetPixelFormat(s_glctx.dc, pf, &pfd) == FALSE)
+              {
+                REX_ERROR("Failed to set a compatible pixel format");
+                return false;
+              }
+
               HGLRC temp = wglCreateContext(s_glctx.dc);
+              if (temp == NULL)
+              {
+                REX_ERROR("Failed to create the initial rendering context");
+                return false;
+              }
+
               wglMakeCurrent(s_glctx.dc, temp);
 
               // Create OpenGL context
