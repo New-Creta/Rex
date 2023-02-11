@@ -26,19 +26,19 @@ namespace rex
 
     namespace backend
     {
-        // Platform specific implementation, implements these function
-        bool initialize();
-        void shutdown();
+      // Platform specific implementation, implements these function
+      bool initialize();
+      void shutdown();
 
-        // functions to synchronize the render and main threads
-        void new_frame();
-        void end_frame();
+      // functions to synchronize the render and main threads
+      void new_frame();
+      void end_frame();
 
-        // clears
-        void clear();
+      // clears
+      void clear();
 
-        // swap / present / vsync
-        void present();
+      // swap / present / vsync
+      void present();
     }
   } // namespace renderer
 } // namespace rex

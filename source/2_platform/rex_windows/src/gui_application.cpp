@@ -68,17 +68,22 @@
               HGLRC temp = wglCreateContext(s_glctx.dc);
               wglMakeCurrent(s_glctx.dc, temp);
 
-              s32 attribs[] = { WGL_CONTEXT_MAJOR_VERSION_ARB, 4, WGL_CONTEXT_MINOR_VERSION_ARB, 3, WGL_CONTEXT_FLAGS_ARB, 0, 0 };
-
               // Create OpenGL context
-              s32 error = glewInit();
-              if (error != GLEW_OK)
+              if (!gladLoadWGL(s_glctx.dc))
               {
-                REX_ERROR("Could not initialize GLEW");
-                return false;
+                // handle error
+
               }
 
-              if (wglewIsSupported("WGL_ARB_create_context") == 1)
+              s32 attribs[] = 
+              {
+                WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+                WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+                WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+                0 
+              };
+
+              if (gladIsWGLExtensionSupported(s_glctx.dc, "WGL_ARB_create_context"))
               {
                   s_glctx.glrc = wglCreateContextAttribsARB(s_glctx.dc, 0, attribs);
                   wglMakeCurrent(NULL, NULL);
