@@ -18,10 +18,10 @@ namespace rex
   {
     struct GuiApplication::Internal
     {
-      Internal(const PlatformCreationParams& guiCreationParams, const ApplicationCreationParams& appParams, CommandLineArguments&& genericCreationParams)
-          : platform_creation_params(rsl::move(guiCreationParams))
-          , app_params(appParams)
-          , cmd_line_args(rsl::move(genericCreationParams))
+      Internal(const PlatformCreationParams& platformCreationParams, const GuiParams& guiParams, const CommandLineArguments& genericCreationParams)
+          : platform_creation_params(platformCreationParams)
+          , gui_params(guiParams)
+          , cmd_line_args(genericCreationParams)
       {
       }
 
@@ -73,7 +73,7 @@ namespace rex
         // Safe resources of the machine we are running on.
         //
         const rsl::chrono::milliseconds actual_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_fps.get()))));
-        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(app_params.max_fps))));
+        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(gui_params.max_fps))));
 
         const rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
@@ -88,8 +88,8 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title    = app_params.window_title;
-        wnd_description.viewport = {0, 0, app_params.window_width, app_params.window_height};
+        wnd_description.title    = gui_params.window_title;
+        wnd_description.viewport = {0, 0, gui_params.window_width, gui_params.window_height};
 
         if(wnd->create(platform_creation_params.instance, platform_creation_params.show_cmd, wnd_description))
         {
@@ -132,14 +132,14 @@ namespace rex
       rsl::function<void()> on_shutdown;
 
       PlatformCreationParams platform_creation_params;
-      ApplicationCreationParams app_params;
+      GuiParams gui_params;
       CommandLineArguments cmd_line_args;
     };
 
     //-------------------------------------------------------------------------
-    GuiApplication::GuiApplication(const PlatformCreationParams& platformParams, const ApplicationCreationParams& appParams, CommandLineArguments&& cmdArgs)
-        : CoreApplication()
-        , m_internal_ptr(rsl::make_unique<Internal>(platformParams, appParams, std::move(cmdArgs)))
+    GuiApplication::GuiApplication(const ApplicationCreationParams appParams)
+        : CoreApplication(appParams.engine_params, appParams.cmd_args)
+        , m_internal_ptr(rsl::make_unique<Internal>(appParams.platform_params, appParams.gui_params, appParams.cmd_args))
     {
       m_internal_ptr->on_initialize = [&]() { return app_initialize(); };
       m_internal_ptr->on_update     = [&](const FrameInfo& info) { app_update(info); };
