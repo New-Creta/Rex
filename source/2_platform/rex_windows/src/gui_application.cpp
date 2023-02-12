@@ -50,11 +50,6 @@ namespace rex
       void shutdown()
       {
         on_shutdown();
-
-        if(window)
-        {
-          window->destroy();
-        }
       }
 
       void loop()

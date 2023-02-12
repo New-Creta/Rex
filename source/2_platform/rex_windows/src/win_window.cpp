@@ -98,25 +98,6 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    bool Window::destroy()
-    {
-      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
-      {
-        DestroyWindow(static_cast<HWND>(m_hwnd));
-
-        m_wnd_class.destroy();
-      }
-      else
-      {
-        REX_WARN("Window already destroyed");
-        return false;
-      }
-
-      m_destroyed = true;
-      return true;
-    }
-
-    //-------------------------------------------------------------------------
     void Window::update()
     {
       MSG message = {};
@@ -174,6 +155,25 @@ namespace rex
       return static_cast<f32>(w) / static_cast<f32>(h);
     }
 
+    //-------------------------------------------------------------------------
+    bool Window::destroy()
+    {
+      if (m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
+      {
+        DestroyWindow(static_cast<HWND>(m_hwnd));
+
+        m_wnd_class.destroy();
+      }
+      else
+      {
+        REX_WARN("Window already destroyed");
+        return false;
+      }
+
+      m_destroyed = true;
+      return true;
+    }
+
     //-----------------------------------------------------------------
     LResult Window::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
     {
@@ -187,7 +187,7 @@ namespace rex
 
       switch(msg)
       {
-      case WM_CLOSE: close(); break;
+      case WM_CLOSE: REX_TODO("Verify if the user really wants to close"); break;
       case WM_DESTROY:
           PostQuitMessage(0);
           event_system::fire_event(event_system::EventType::WindowClose);
