@@ -40,6 +40,7 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   
   parser.add_argument("-clean", help="clean all intermediate files first", action="store_true")
+  parser.add_argument("-config", help="configuration to build for")
   parser.add_argument("-unittests", help="generate unit tests", action="store_true")
   parser.add_argument("-coverage", help="generate coverage", action="store_true")
   parser.add_argument("-asan", help="generate address sanitizer", action="store_true")
