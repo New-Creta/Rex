@@ -19,9 +19,9 @@ namespace rex
   //-------------------------------------------------------------------------
   enum ClearBits
   {
-    REX_CLEAR_COLOUR_BUFFER = BIT(0),
-    REX_CLEAR_DEPTH_BUFFER = BIT(1),
-    REX_CLEAR_STENCIL_BUFFER = BIT(2),
+    REX_CLEAR_COLOUR_BUFFER = GL_COLOR_BUFFER_BIT,
+    REX_CLEAR_DEPTH_BUFFER = GL_DEPTH_BUFFER_BIT,
+    REX_CLEAR_STENCIL_BUFFER = GL_STENCIL_BUFFER_BIT,
   };
 
   //-------------------------------------------------------------------------
@@ -36,32 +36,33 @@ namespace rex
   RendererInfo s_renderer_info;
   ClearState s_clear_state{ 0.0f, 0.3f, 0.2f, 1.0f, 1.0f, 0x00, REX_CLEAR_COLOUR_BUFFER };
 
-  //-------------------------------------------------------------------------
-  // general accessors
-  const RendererInfo& get_info()
-  {
-    return s_renderer_info;
-  }
-
-  //-------------------------------------------------------------------------
-  const char8* shader_platform()
-  {
-    return "glsl";
-  }
-
-  //-------------------------------------------------------------------------
-  bool is_y_up()
-  {
-    return true;
-  }
-
-  //-------------------------------------------------------------------------
-  bool is_depth_0_to_1()
-  {
-    return false; // opengl has -1 to 1 z value
-  }
   namespace renderer
   {
+    //-------------------------------------------------------------------------
+    // general accessors
+    const RendererInfo& get_info()
+    {
+      return s_renderer_info;
+    }
+
+    //-------------------------------------------------------------------------
+    const char8* shader_platform()
+    {
+      return "glsl";
+    }
+
+    //-------------------------------------------------------------------------
+    bool is_y_up()
+    {
+      return true;
+    }
+
+    //-------------------------------------------------------------------------
+    bool is_depth_0_to_1()
+    {
+      return false; // opengl has -1 to 1 z value
+    }
+
     namespace backend
     {
       GLint s_backbuffer_fbo = -1;
@@ -85,10 +86,10 @@ namespace rex
         str_gl_renderer = rsl::string((const char8*)gl_renderer);
         str_gl_vendor = rsl::string((const char8*)gl_vendor);
 
-        s_renderer_info.shader_version = str_glsl_version.c_str();
-        s_renderer_info.api_version = str_gl_version.c_str();
-        s_renderer_info.renderer = str_gl_renderer.c_str();
-        s_renderer_info.vendor = str_gl_vendor.c_str();
+        s_renderer_info.shader_version = rsl::move(str_glsl_version);
+        s_renderer_info.api_version = rsl::move(str_gl_version);
+        s_renderer_info.renderer = rsl::move(str_gl_renderer);
+        s_renderer_info.vendor = rsl::move(str_gl_vendor);
 
         // gles base fbo is not 0
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &s_backbuffer_fbo);
