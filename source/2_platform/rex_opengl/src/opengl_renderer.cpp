@@ -5,9 +5,7 @@
 #include "rex_std/string.h"
 
 #if REX_PLATFORM_X64
-#define GLEW_STATIC
-#include "GL/glew.h"
-#include "GL/wglew.h"
+#include <glad/gl.h>
 #else
 #error "Unsupported platform"
 #endif

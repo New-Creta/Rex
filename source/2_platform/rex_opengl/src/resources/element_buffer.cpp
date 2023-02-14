@@ -1,7 +1,7 @@
 #include "rex_opengl/resources/element_buffer.h"
 
 #if REX_PLATFORM_X64
-#include "glad/glad.h"
+#include <glad/gl.h>
 #else
 #error "Unsupported platform"
 #endif
