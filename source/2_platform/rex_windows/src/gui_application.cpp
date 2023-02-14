@@ -172,6 +172,12 @@ namespace rex
           return false;
         }
 
+        RendererInfo info = renderer::get_info();
+        REX_INFO("Renderer Info - API Version: {}", info.api_version);
+        REX_INFO("Renderer Info - Renderer: {}", info.renderer);
+        REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
+        REX_INFO("Renderer Info - Vendor: {}", info.vendor);
+
         return on_initialize();
       }
       void update()
