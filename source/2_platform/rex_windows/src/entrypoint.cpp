@@ -24,9 +24,9 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
   creation_params.cmd_line      = lpCmdLine;
   creation_params.show_cmd      = nShowCmd;
 
-  rex::ApplicationCreationParams app_params = rex::app_entry(creation_params, cmd_args);
+  rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
 
-  rex::win32::GuiApplication application(creation_params, app_params, rsl::move(cmd_args));
+  rex::win32::GuiApplication application(app_params);
   s32 result = application.run();
 
   REX_INFO("Application completed with result: {0}", result);

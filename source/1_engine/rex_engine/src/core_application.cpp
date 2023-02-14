@@ -14,9 +14,15 @@ namespace rex
   struct CoreApplication::Internal
   {
   public:
-    CoreApplication::Internal()
+    CoreApplication::Internal(const RexEngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
     {
-      mem_manager().initialize(256_kib);
+      // load memory config file from disk
+      // this file only has high level memory settings
+      // eg. how much memory we're max allowed to use
+      // it can't split this up in domains as the engine
+      // doesn't know which domains you will have
+      // this is app specific and is managed by the client
+      mem_manager().initialize(engineParams.max_memory);
     }
 
     static CoreApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
@@ -26,8 +32,8 @@ namespace rex
   CoreApplication* CoreApplication::Internal::s_instance = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication()
-      : m_internal_ptr(rsl::make_unique<Internal>())
+  CoreApplication::CoreApplication(const RexEngineParams& engineParams, const CommandLineArguments& cmdArgs)
+      : m_internal_ptr(rsl::make_unique<Internal>(engineParams, cmdArgs))
   {
     REX_ASSERT_X(CoreApplication::Internal::s_instance == nullptr, "There can only be one application at the time");
     CoreApplication::Internal::s_instance = this;
