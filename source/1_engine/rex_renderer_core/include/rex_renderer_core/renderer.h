@@ -1,15 +1,16 @@
 #pragma once
 
 #include "rex_engine/types.h"
+#include "rex_std/string.h"
 
 namespace rex
 {
   struct RendererInfo
   {
-    const char8* api_version;
-    const char8* shader_version;
-    const char8* renderer;
-    const char8* vendor;
+    rsl::string api_version;
+    rsl::string shader_version;
+    rsl::string renderer;
+    rsl::string vendor;
   };
 
   namespace renderer
