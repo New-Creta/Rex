@@ -20,6 +20,7 @@ public class RexOpenGL : PlatformProject
     base.Configure(conf, target);
 
     conf.Output = Configuration.OutputType.Lib;
+    conf.LibraryFiles.Add("opengl32.lib");
 
     conf.AddPublicDependency<GLAD>(target);
     conf.AddPublicDependency<GLM>(target);

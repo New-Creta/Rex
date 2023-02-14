@@ -2,7 +2,7 @@ using Sharpmake;
 using System.IO;
 using System.Diagnostics;
 
-[Export]
+[Generate]
 public class GLM : ThirdPartyProject
 {
   public GLM() : base()
@@ -24,7 +24,7 @@ public class GLM : ThirdPartyProject
     base.Configure(conf, target);
 
     conf.IncludePaths.Add(SourceRootPath);
-    conf.Output = Configuration.OutputType.Utility;
+    conf.Output = Configuration.OutputType.Lib;
     conf.Options.Remove(Options.Vc.General.TreatWarningsAsErrors.Enable);
   }
 }
