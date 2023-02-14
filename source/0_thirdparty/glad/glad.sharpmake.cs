@@ -2,7 +2,7 @@ using Sharpmake;
 using System.IO;
 using System.Diagnostics;
 
-[Export]
+[Generate]
 public class GLAD : ThirdPartyProject
 {
   public GLAD() : base()
@@ -24,6 +24,7 @@ public class GLAD : ThirdPartyProject
     base.Configure(conf, target);
 
     conf.IncludePaths.Add(SourceRootPath);
-    conf.Options.Remove(Options.Vc.General.TreatWarningsAsErrors.Enable);  
+    conf.Options.Remove(Options.Vc.General.TreatWarningsAsErrors.Enable);
+    conf.Output = Configuration.OutputType.Lib;
   }
 }
