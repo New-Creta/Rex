@@ -70,26 +70,16 @@ namespace rex
       //-------------------------------------------------------------------------
       bool initialize()
       {
-        rsl::string str_glsl_version;
-        rsl::string str_gl_version;
-        rsl::string str_gl_renderer;
-        rsl::string str_gl_vendor;
-
         // todo renderer caps
         const GLubyte* glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
         const GLubyte* gl_version = glGetString(GL_VERSION);
         const GLubyte* gl_renderer = glGetString(GL_RENDERER);
         const GLubyte* gl_vendor = glGetString(GL_VENDOR);
 
-        str_glsl_version = rsl::string((const char8*)glsl_version);
-        str_gl_version = rsl::string((const char8*)gl_version);
-        str_gl_renderer = rsl::string((const char8*)gl_renderer);
-        str_gl_vendor = rsl::string((const char8*)gl_vendor);
-
-        s_renderer_info.shader_version = rsl::move(str_glsl_version);
-        s_renderer_info.api_version = rsl::move(str_gl_version);
-        s_renderer_info.renderer = rsl::move(str_gl_renderer);
-        s_renderer_info.vendor = rsl::move(str_gl_vendor);
+        s_renderer_info.shader_version = rsl::small_stack_string((const char8*)glsl_version);
+        s_renderer_info.api_version = rsl::small_stack_string((const char8*)gl_version);
+        s_renderer_info.renderer = rsl::small_stack_string((const char8*)gl_renderer);
+        s_renderer_info.vendor = rsl::small_stack_string((const char8*)gl_vendor);
 
         // gles base fbo is not 0
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &s_backbuffer_fbo);
