@@ -24,10 +24,10 @@
 
 //-------------------------------------------------------------------------
 // Assembly instruction to break execution.
-#if defined _MSC_VER
+#if defined __clang__
+    #define DEBUG_BREAK() __builtin_trap()
+#elif defined _MSC_VER
     #define DEBUG_BREAK() __debugbreak()
-#elif defined __clang__
-    #define DEBUG_BREAK()
 #elif defined __GNUC__
     #define DEBUG_BREAK()
 #else
@@ -38,5 +38,4 @@
 
 //-------------------------------------------------------------------------
 // BIT TWIDDLING
-#define BITS_IN_BYTE 8
 #define BIT(x)       (1 << x)
