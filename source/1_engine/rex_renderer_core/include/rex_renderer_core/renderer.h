@@ -13,6 +13,12 @@ namespace rex
     rsl::small_stack_string vendor;
   };
 
+  enum class ShaderPlatform
+  {
+    GLSL,
+    HLSL
+  };
+
   namespace renderer
   {
     bool initialize(void* userData, u32 maxCommands);
@@ -20,7 +26,7 @@ namespace rex
 
     // general accessors
     const RendererInfo& get_info();
-    const char8* shader_platform();
+    const ShaderPlatform shader_platform();
 
     bool is_y_up();
     bool is_depth_0_to_1();
