@@ -32,11 +32,11 @@ wgl_context s_glctx;
 
 namespace rex
 {
-  extern bool rex_make_gl_context_current()
+  bool rex_make_gl_context_current()
   {
     return wglMakeCurrent(s_glctx.dc, s_glctx.glrc);
   }
-  extern void rex_gl_swap_buffers()
+  void rex_gl_swap_buffers()
   {
     SwapBuffers(s_glctx.dc);
   }
