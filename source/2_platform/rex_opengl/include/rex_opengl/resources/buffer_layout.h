@@ -24,6 +24,9 @@ namespace rex
         bool normalized;
     };
 
+    bool operator==(const BufferElement& element1, const BufferElement& element2);
+    bool operator!=(const BufferElement& element1, const BufferElement& element2);
+
     using BufferElements = rsl::vector<BufferElement>;
 
     class BufferLayout
