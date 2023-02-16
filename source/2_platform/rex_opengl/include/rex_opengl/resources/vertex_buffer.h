@@ -8,7 +8,6 @@ namespace rex
     {
     public:
         VertexBuffer();
-        ~VertexBuffer() override;
 
         void set_data(u64 size, const void* data, BufferUsage usage = BufferUsage::STATIC_DRAW);
     };
