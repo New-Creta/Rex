@@ -63,26 +63,15 @@ namespace rex
 
     }
     //-----------------------------------------------------------------------
-    BufferLayout& BufferLayoutBuilder::add_buffer_element(DataType inType, bool inShouldNormalize /*= false*/)
+    BufferLayout& BufferLayoutBuilder::add_buffer_element(DataType inType, ShouldNormalize inShouldNormalize /*= ShouldNormalize::no*/)
     {
         BufferElements new_buffer_elements;
 
-        new_buffer_elements.reserve(static_cast<rsl::count_t>(m_layout.size() + 1));
+        new_buffer_elements.reserve(m_layout.size() + 1);
         new_buffer_elements.insert(rsl::end(new_buffer_elements), rsl::begin(m_layout.get_buffer_elements()), rsl::end(m_layout.get_buffer_elements()));
-        new_buffer_elements.push_back(BufferElement(inType, buffer_layout::get_data_type_byte_size(inType), buffer_layout::get_data_type_component_count(inType), inShouldNormalize));
+        new_buffer_elements.emplace_back(BufferElement(inType, buffer_layout::get_data_type_component_count(inType), inShouldNormalize));
 
-        u64 stride = 0;
-        for (const BufferElement& element : new_buffer_elements)
-        {
-            stride += buffer_layout::get_data_type_byte_size(element.type);
-        }
-
-        for (BufferElement& element : new_buffer_elements)
-        {
-            element.stride = stride;
-        }
-
-        m_layout = BufferLayout(new_buffer_elements);
+        m_layout = BufferLayout(rsl::move(new_buffer_elements));
 
         return m_layout;
     }
@@ -90,44 +79,6 @@ namespace rex
     BufferLayout& BufferLayoutBuilder::build()
     {
         return m_layout;
-    }
-
-    //-----------------------------------------------------------------------
-    BufferLayout::BufferLayout(const BufferLayout& other)
-        : m_elements(other.m_elements)
-    {
-
-    }
-    //-----------------------------------------------------------------------
-    BufferLayout::BufferLayout(BufferLayout&& other) noexcept
-        :m_elements(rsl::exchange(other.m_elements, {}))
-    {
-
-    }
-
-    //-----------------------------------------------------------------------
-    BufferLayout& BufferLayout::operator=(const BufferLayout& other)
-    {
-        if (*this == other)
-        {
-            return *this;
-        }
-
-        m_elements = other.m_elements;
-
-        return *this;
-    }
-    //-----------------------------------------------------------------------
-    BufferLayout& BufferLayout::operator=(BufferLayout&& other) noexcept
-    {
-        if (*this == other)
-        {
-            return *this;
-        }
-
-        m_elements = rsl::exchange(other.m_elements, {});
-
-        return *this;
     }
 
     //-----------------------------------------------------------------------
@@ -162,7 +113,7 @@ namespace rex
             return false;
         }
 
-        return layout1 == layout2;
+        return layout1.get_buffer_elements() == layout2.get_buffer_elements();
     }
     //-----------------------------------------------------------------------
     bool operator!=(const BufferLayout& layout1, const BufferLayout& layout2)

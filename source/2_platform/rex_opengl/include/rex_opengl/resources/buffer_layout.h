@@ -4,21 +4,22 @@
 #include "rex_engine/types.h"
 
 #include "rex_std/vector.h"
+#include "rex_std_extra/utilities/yes_no.h"
+
+DEFINE_YES_NO_ENUM(ShouldNormalize);
 
 namespace rex
 {
     struct BufferElement
     {
         //-----------------------------------------------------------------------
-        BufferElement(DataType inType, u64 inStride, u32 inComponentCount, bool inShouldNormalize = false)
+        BufferElement(DataType inType, u32 inComponentCount, ShouldNormalize inShouldNormalize = ShouldNormalize::no)
             :type(inType)
-            ,stride(inStride)
             ,component_count(inComponentCount)
             ,normalized(inShouldNormalize)
         {}
 
         DataType type;
-        u64 stride;
         u32 component_count;
         bool normalized;
     };
@@ -33,34 +34,34 @@ namespace rex
         using ReverseBufferLayoutIt = BufferElements::reverse_iterator;
         using ConstReverseBufferLayoutIt = BufferElements::const_reverse_iterator;
 
-        inline BufferLayoutIt                 begin() { return m_elements.begin(); }
-        inline ConstBufferLayoutIt            begin() const { return m_elements.begin(); }
-        inline ConstBufferLayoutIt            cbegin() const { return begin(); }
-        inline BufferLayoutIt                 end() { return m_elements.end(); }
-        inline ConstBufferLayoutIt            end() const { return m_elements.end(); }
-        inline ConstBufferLayoutIt            cend() const { return end(); }
-
-        inline ReverseBufferLayoutIt          rbegin() { return m_elements.rbegin(); }
-        inline ConstReverseBufferLayoutIt     rbegin() const { return m_elements.rbegin(); }
-        inline ConstReverseBufferLayoutIt     crbegin() const { return m_elements.rbegin(); }
-        inline ReverseBufferLayoutIt          rend() { return m_elements.rend(); }
-        inline ConstReverseBufferLayoutIt     rend() const { return m_elements.rend(); }
-        inline ConstReverseBufferLayoutIt     crend() const { return m_elements.crend(); }
-
-    public:
-        BufferLayout(const BufferLayout& other);
-        BufferLayout(BufferLayout&& other) noexcept;
-
-        BufferLayout& operator=(const BufferLayout& other);
-        BufferLayout& operator=(BufferLayout&& other) noexcept;
-
     public:
         BufferLayout(const BufferElements& elements);
+
+        BufferLayout(const BufferLayout&) = default;
+        BufferLayout(BufferLayout&&) = default;
+
+        BufferLayout& operator=(const BufferLayout& other) = default;
+        BufferLayout& operator=(BufferLayout&& other) noexcept = default;
 
         bool empty() const;
         s32 size() const;
 
         const BufferElements& get_buffer_elements() const;
+
+    public:
+        BufferLayoutIt                 begin() { return m_elements.begin(); }
+        ConstBufferLayoutIt            begin() const { return m_elements.begin(); }
+        ConstBufferLayoutIt            cbegin() const { return begin(); }
+        BufferLayoutIt                 end() { return m_elements.end(); }
+        ConstBufferLayoutIt            end() const { return m_elements.end(); }
+        ConstBufferLayoutIt            cend() const { return end(); }
+
+        ReverseBufferLayoutIt          rbegin() { return m_elements.rbegin(); }
+        ConstReverseBufferLayoutIt     rbegin() const { return m_elements.rbegin(); }
+        ConstReverseBufferLayoutIt     crbegin() const { return m_elements.rbegin(); }
+        ReverseBufferLayoutIt          rend() { return m_elements.rend(); }
+        ConstReverseBufferLayoutIt     rend() const { return m_elements.rend(); }
+        ConstReverseBufferLayoutIt     crend() const { return m_elements.crend(); }
 
     private:
         BufferElements m_elements;
@@ -74,7 +75,7 @@ namespace rex
     public:
         BufferLayoutBuilder();
 
-        BufferLayout& add_buffer_element(DataType inType, bool inShouldNormalize = false);
+        BufferLayout& add_buffer_element(DataType inType, ShouldNormalize inShouldNormalize = ShouldNormalize::no);
         BufferLayout& build();
 
     private:
