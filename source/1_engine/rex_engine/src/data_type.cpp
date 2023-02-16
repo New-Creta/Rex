@@ -11,130 +11,88 @@ namespace rex
   namespace data_type
   {
     //-----------------------------------------------------------------------
-    rsl::unordered_map<DataType::Value, size_t>& get_data_type_typeid_map()
+    size_t get_data_type_typeid(const DataType::Value& dataTypeValue)
     {
-      static rsl::unordered_map<DataType::Value, size_t> type_map =
+      switch(dataTypeValue)
       {
-          {DataType::Value::INT8, typeid(s8).hash_code()},
-          {DataType::Value::INT16, typeid(s16).hash_code()},
-          {DataType::Value::INT32, typeid(s32).hash_code()},
-          {DataType::Value::INT64, typeid(s64).hash_code()},
+        case DataType::Value::INT8: return typeid(s8).hash_code();
+        case DataType::Value::INT16: return typeid(s16).hash_code();
+        case DataType::Value::INT32: return typeid(s32).hash_code();
+        case DataType::Value::INT64: return typeid(s64).hash_code();
 
-          {DataType::Value::UNSIGNED_INT8, typeid(uint8).hash_code()},
-          {DataType::Value::UNSIGNED_INT16, typeid(uint16).hash_code()},
-          {DataType::Value::UNSIGNED_INT32, typeid(uint32).hash_code()},
-          {DataType::Value::UNSIGNED_INT64, typeid(uint64).hash_code()},
+        case DataType::Value::UNSIGNED_INT8: return typeid(uint8).hash_code();
+        case DataType::Value::UNSIGNED_INT16: return typeid(uint16).hash_code();
+        case DataType::Value::UNSIGNED_INT32: return typeid(uint32).hash_code();
+        case DataType::Value::UNSIGNED_INT64: return typeid(uint64).hash_code();
 
-          {DataType::Value::FLOAT32, typeid(float).hash_code()},
-          {DataType::Value::FLOAT64, typeid(double).hash_code()},
+        case DataType::Value::FLOAT32: return typeid(float).hash_code();
+        case DataType::Value::FLOAT64: return typeid(double).hash_code();
 
-          {DataType::Value::MAT3, typeid(glm::mat3).hash_code()},
-          {DataType::Value::MAT4, typeid(glm::mat4).hash_code()},
+        case DataType::Value::MAT3: return typeid(glm::mat3).hash_code();
+        case DataType::Value::MAT4: return typeid(glm::mat4).hash_code();
 
-          {DataType::Value::VEC2, typeid(glm::vec2).hash_code()},
-          {DataType::Value::VEC3, typeid(glm::vec3).hash_code()},
-          {DataType::Value::VEC4, typeid(glm::vec4).hash_code()},
+        case DataType::Value::VEC2: return typeid(glm::vec2).hash_code();
+        case DataType::Value::VEC3: return typeid(glm::vec3).hash_code();
+        case DataType::Value::VEC4: return typeid(glm::vec4).hash_code();
 
-          {DataType::Value::IVEC2, typeid(glm::ivec2).hash_code()},
-          {DataType::Value::IVEC3, typeid(glm::ivec3).hash_code()},
-          {DataType::Value::IVEC4, typeid(glm::ivec4).hash_code()},
+        case DataType::Value::IVEC2: return typeid(glm::ivec2).hash_code();
+        case DataType::Value::IVEC3: return typeid(glm::ivec3).hash_code();
+        case DataType::Value::IVEC4: return typeid(glm::ivec4).hash_code();
 
-          {DataType::Value::UIVEC2, typeid(glm::uvec2).hash_code()},
-          {DataType::Value::UIVEC3, typeid(glm::uvec3).hash_code()},
-          {DataType::Value::UIVEC4, typeid(glm::uvec4).hash_code()},
+        case DataType::Value::UIVEC2: return typeid(glm::uvec2).hash_code();
+        case DataType::Value::UIVEC3: return typeid(glm::uvec3).hash_code();
+        case DataType::Value::UIVEC4: return typeid(glm::uvec4).hash_code();
 
-          {DataType::Value::BOOL, typeid(bool).hash_code()},
+        case DataType::Value::BOOL: return typeid(bool).hash_code();
 
-          {DataType::Value::STRING, typeid(std::string).hash_code()}
-      };
+        case DataType::Value::STRING: return typeid(std::string).hash_code();
+      }
 
-      return type_map;
+      REX_ERROR("Unknown DataType::Value");
+      return 0;
     }
 
     //-----------------------------------------------------------------------
-    rsl::unordered_map<DataType::Value, size_t>& get_data_type_size_map()
+    size_t get_data_type_size(const DataType::Value& dataTypeValue)
     {
-      static rsl::unordered_map<DataType::Value, size_t> type_map =
+      switch(dataTypeValue)
       {
-          {DataType::Value::INT8, sizeof(s8)},
-          {DataType::Value::INT16, sizeof(s16)},
-          {DataType::Value::INT32, sizeof(s32)},
-          {DataType::Value::INT64, sizeof(s64)},
+          case DataType::Value::INT8: return sizeof(s8);
+          case DataType::Value::INT16: return sizeof(s16);
+          case DataType::Value::INT32: return sizeof(s32);
+          case DataType::Value::INT64: return sizeof(s64);
 
-          {DataType::Value::UNSIGNED_INT8, sizeof(uint8)},
-          {DataType::Value::UNSIGNED_INT16, sizeof(uint16)},
-          {DataType::Value::UNSIGNED_INT32, sizeof(uint32)},
-          {DataType::Value::UNSIGNED_INT64, sizeof(uint64)},
+          case DataType::Value::UNSIGNED_INT8: return sizeof(uint8);
+          case DataType::Value::UNSIGNED_INT16: return sizeof(uint16);
+          case DataType::Value::UNSIGNED_INT32: return sizeof(uint32);
+          case DataType::Value::UNSIGNED_INT64: return sizeof(uint64);
 
-          {DataType::Value::FLOAT32, sizeof(float)},
-          {DataType::Value::FLOAT64, sizeof(double)},
+          case DataType::Value::FLOAT32: return sizeof(float);
+          case DataType::Value::FLOAT64: return sizeof(double);
 
-          {DataType::Value::MAT3, sizeof(glm::mat3)},
-          {DataType::Value::MAT4, sizeof(glm::mat4)},
+          case DataType::Value::MAT3: return sizeof(glm::mat3);
+          case DataType::Value::MAT4: return sizeof(glm::mat4);
 
-          {DataType::Value::VEC2, sizeof(glm::vec2)},
-          {DataType::Value::VEC3, sizeof(glm::vec3)},
-          {DataType::Value::VEC4, sizeof(glm::vec4)},
+          case DataType::Value::VEC2: return sizeof(glm::vec2);
+          case DataType::Value::VEC3: return sizeof(glm::vec3);
+          case DataType::Value::VEC4: return sizeof(glm::vec4);
 
-          {DataType::Value::IVEC2, sizeof(glm::ivec2)},
-          {DataType::Value::IVEC3, sizeof(glm::ivec3)},
-          {DataType::Value::IVEC4, sizeof(glm::ivec4)},
+          case DataType::Value::IVEC2: return sizeof(glm::ivec2);
+          case DataType::Value::IVEC3: return sizeof(glm::ivec3);
+          case DataType::Value::IVEC4: return sizeof(glm::ivec4);
 
-          {DataType::Value::UIVEC2, sizeof(glm::uvec2)},
-          {DataType::Value::UIVEC3, sizeof(glm::uvec3)},
-          {DataType::Value::UIVEC4, sizeof(glm::uvec4)},
+          case DataType::Value::UIVEC2: return sizeof(glm::uvec2);
+          case DataType::Value::UIVEC3: return sizeof(glm::uvec3);
+          case DataType::Value::UIVEC4: return sizeof(glm::uvec4);
 
-          {DataType::Value::BOOL, sizeof(bool)},
+          case DataType::Value::BOOL: return sizeof(bool);
 
-          {DataType::Value::STRING, sizeof(std::string)}
-      };
+          case DataType::Value::STRING: return sizeof(std::string);
+      }
 
-      return type_map;
+      REX_ERROR("Unknown DataType::Value");
+      return 0;
     }
-  }
-
-  //-----------------------------------------------------------------------
-  DataType::DataType(const DataType& other)
-    :m_value(other.m_value)
-  {
-
-  }
-  //-----------------------------------------------------------------------
-  DataType::DataType(DataType&& other) noexcept
-    :m_value(std::exchange(other.m_value, DataType::Value::NONE))
-  {
-
-  }
-
-  //-----------------------------------------------------------------------
-  DataType::Value DataType::get() const
-  {
-    return m_value;
-  }
-
-  //-----------------------------------------------------------------------
-  DataType& DataType::operator=(const DataType& other)
-  {
-    if (*this == other)
-    {
-      return *this;
-    }
-
-    m_value = other.m_value;
-
-    return *this;
-  }
-  //-----------------------------------------------------------------------
-  DataType& DataType::operator=(DataType&& other) noexcept
-  {
-    if (*this == other)
-    {
-      return *this;
-    }
-
-    m_value = std::exchange(other.m_value, DataType::Value::NONE);
-
-    return *this;
   }
 
   //-----------------------------------------------------------------------
@@ -145,32 +103,22 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  size_t DataType::to_type_id() const
+  DataType& DataType::operator=(const DataType& other)
   {
-    auto& typeid_map = data_type::get_data_type_typeid_map();
-    auto typeid_it = typeid_map.find(m_value);
+    REX_ASSERT(*this != other);
 
-    if (typeid_it == std::cend(typeid_map))
-    {
-      REX_ERROR("Unsupported DataType to convert to typeid: {0}", (int32)m_value);
-      return 0;
-    }
+    m_value = other.m_value;
 
-    return typeid_it->second();
+    return *this;
   }
   //-----------------------------------------------------------------------
-  size_t DataType::to_byte_size() const
+  DataType& DataType::operator=(DataType&& other) noexcept
   {
-    auto& size_map = data_type::get_data_type_size_map();
-    auto size_it = size_map.find(m_value);
+    REX_ASSERT(*this != other);
 
-    if (size_it == std::cend(size_map))
-    {
-      REX_ERROR("Unsupported DataType to convert to byte size: {0}", (int32)m_value);
-      return 0;
-    }
+    m_value = std::exchange(other.m_value, DataType::Value::NONE);
 
-    return size_it->second();
+    return *this;
   }
 
   //-----------------------------------------------------------------------
@@ -182,5 +130,36 @@ namespace rex
   bool DataType::operator!=(const DataType& other) const
   {
     return !(*this == other);
+  }
+
+  //-----------------------------------------------------------------------
+  DataType::Value DataType::get() const
+  {
+    return m_value;
+  }
+
+  //-----------------------------------------------------------------------
+  size_t DataType::to_type_id() const
+  {
+    size_t datatype_id = data_type::get_data_type_typeid(m_value);
+
+    if (datatype_id == 0)
+    {
+      REX_ERROR("Unsupported DataType to convert to typeid: {0}", (int32)m_value);
+    }
+
+    return datatype_id;
+  }
+  //-----------------------------------------------------------------------
+  size_t DataType::to_byte_size() const
+  {
+    size_t datatype_size = data_type::get_data_type_size(m_value);
+
+    if (datatype_size == 0)
+    {
+      REX_ERROR("Unsupported DataType to convert to byte size: {0}", (int32)m_value);
+    }
+
+    return datatype_size;
   }
 }
