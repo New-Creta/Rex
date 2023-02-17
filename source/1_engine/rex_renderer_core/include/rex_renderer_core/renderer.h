@@ -9,7 +9,7 @@ namespace rex
   {
     rsl::small_stack_string api_version;
     rsl::small_stack_string shader_version;
-    rsl::small_stack_string renderer;
+    rsl::small_stack_string adaptor;
     rsl::small_stack_string vendor;
   };
 

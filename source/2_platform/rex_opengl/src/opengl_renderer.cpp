@@ -95,7 +95,7 @@ namespace rex
 
         opengl::s_renderer_info.shader_version = rsl::small_stack_string((const char8*)glsl_version);
         opengl::s_renderer_info.api_version = rsl::small_stack_string((const char8*)gl_version);
-        opengl::s_renderer_info.renderer = rsl::small_stack_string((const char8*)gl_renderer);
+        opengl::s_renderer_info.adaptor = rsl::small_stack_string((const char8*)gl_renderer);
         opengl::s_renderer_info.vendor = rsl::small_stack_string((const char8*)gl_vendor);
 
         // gles base fbo is not 0
