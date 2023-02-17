@@ -40,12 +40,6 @@ namespace rex
     public:
         BufferLayout(const BufferElements& elements);
 
-        BufferLayout(const BufferLayout&) = default;
-        BufferLayout(BufferLayout&&) = default;
-
-        BufferLayout& operator=(const BufferLayout& other) = default;
-        BufferLayout& operator=(BufferLayout&& other) noexcept = default;
-
         bool empty() const;
         s32 size() const;
 
