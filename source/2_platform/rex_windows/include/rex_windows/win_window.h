@@ -14,7 +14,6 @@ namespace rex
       Window();
 
       bool create(HInstance hInstance, s32 cmdShow, const WindowDescription& description);
-      bool destroy();
 
       LResult on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam);
 
@@ -30,6 +29,9 @@ namespace rex
       s32 height() const override;
 
       f32 get_aspect() const override;
+
+    private:
+      bool destroy();
 
     private:
       WindowClass m_wnd_class;

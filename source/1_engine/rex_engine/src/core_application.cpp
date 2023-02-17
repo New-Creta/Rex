@@ -1,32 +1,46 @@
 #include "rex_engine/core_application.h"
 
-#include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/memory/memory_manager.h"
+
 #include "rex_std/assert.h"
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
+#include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
 {
-  struct IApplication::Internal
+  struct CoreApplication::Internal
   {
-    static IApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+  public:
+    CoreApplication::Internal(const RexEngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
+    {
+      // load memory config file from disk
+      // this file only has high level memory settings
+      // eg. how much memory we're max allowed to use
+      // it can't split this up in domains as the engine
+      // doesn't know which domains you will have
+      // this is app specific and is managed by the client
+      mem_manager().initialize(engineParams.max_memory);
+    }
+
+    static CoreApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
   };
+  
+  //-------------------------------------------------------------------------
+  CoreApplication* CoreApplication::Internal::s_instance = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
   //-------------------------------------------------------------------------
-  IApplication* IApplication::Internal::s_instance = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-
-  //-------------------------------------------------------------------------
-  IApplication::IApplication()
-      : m_internal_ptr(rsl::make_unique<Internal>())
+  CoreApplication::CoreApplication(const RexEngineParams& engineParams, const CommandLineArguments& cmdArgs)
+      : m_internal_ptr(rsl::make_unique<Internal>(engineParams, cmdArgs))
   {
-    REX_ASSERT_X(IApplication::Internal::s_instance == nullptr, "There can only be one application at the time");
-    IApplication::Internal::s_instance = this;
+    REX_ASSERT_X(CoreApplication::Internal::s_instance == nullptr, "There can only be one application at the time");
+    CoreApplication::Internal::s_instance = this;
   }
   //-------------------------------------------------------------------------
-  IApplication::~IApplication()
+  CoreApplication::~CoreApplication()
   {
-    IApplication::Internal::s_instance = nullptr;
+    CoreApplication::Internal::s_instance = nullptr;
   }
 } // namespace rex
