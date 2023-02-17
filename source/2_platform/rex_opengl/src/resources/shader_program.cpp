@@ -125,7 +125,7 @@ namespace rex
   //-----------------------------------------------------------------------
   void ShaderProgram::bind() const
   {
-    REX_ASSERT(m_resource_id);
+    REX_ASSERT_X(m_resource_id != 0, "Binding an invalid resource id");
 
     GL_CALL(glUseProgram(m_resource_id));
 

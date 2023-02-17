@@ -1,5 +1,7 @@
 #include "rex_opengl/resources/vertex_array.h"
 
+#include "rex_engine/diagnostics/logging.h"
+
 #if REX_PLATFORM_X64
 #include <glad/gl.h>
 #else
@@ -8,40 +10,42 @@
 
 namespace rex
 {
-    //-----------------------------------------------------------------------
-    VertexArray::VertexArray()
-        :m_resource_id(0)
-    {
-        glGenVertexArrays(1, &m_resource_id);
-    }
-    //-----------------------------------------------------------------------
-    VertexArray::~VertexArray()
-    {
-        release();
-    }
+  //-----------------------------------------------------------------------
+  VertexArray::VertexArray()
+    :m_resource_id(0)
+  {
+    glGenVertexArrays(1, &m_resource_id);
+  }
+  //-----------------------------------------------------------------------
+  VertexArray::~VertexArray()
+  {
+    release();
+  }
 
-    //-----------------------------------------------------------------------
-    u32 VertexArray::get_resource_id() const
-    {
-        return m_resource_id;
-    }
+  //-----------------------------------------------------------------------
+  u32 VertexArray::get_resource_id() const
+  {
+    return m_resource_id;
+  }
 
-    //-----------------------------------------------------------------------
-    void VertexArray::bind() const
-    {
-        glBindVertexArray(m_resource_id);
-    }
-    //-----------------------------------------------------------------------
-    void VertexArray::unbind() const
-    {
-        glBindVertexArray(0);
-    }
+  //-----------------------------------------------------------------------
+  void VertexArray::bind() const
+  {
+    REX_ASSERT_X(m_resource_id != 0, "Binding an invalid resource id");
 
-    //-----------------------------------------------------------------------
-    void VertexArray::release()
-    {
-        glDeleteVertexArrays(1, &m_resource_id);
+    glBindVertexArray(m_resource_id);
+  }
+  //-----------------------------------------------------------------------
+  void VertexArray::unbind() const
+  {
+    glBindVertexArray(0);
+  }
 
-        m_resource_id = 0;
-    }
+  //-----------------------------------------------------------------------
+  void VertexArray::release()
+  {
+    glDeleteVertexArrays(1, &m_resource_id);
+
+    m_resource_id = 0;
+  }
 }
