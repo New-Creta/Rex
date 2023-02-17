@@ -43,7 +43,7 @@ namespace rex
     rsl::Color4f rgba;
     f32 depth;
     u8  stencil;
-    u32 flags;
+    ClearBits flags;
   };
 
   //-------------------------------------------------------------------------
@@ -54,7 +54,7 @@ namespace rex
     cs.rgba = rsl::colors::MediumSeaGreen;
     cs.depth = 1.0f;
     cs.stencil = 0x00;
-    cs.flags = REX_CLEAR_COLOUR_BUFFER;
+    cs.flags = ClearBits::REX_CLEAR_COLOUR_BUFFER;
 
     return cs;
   }
@@ -143,20 +143,20 @@ namespace rex
         GL_CALL(glClearDepth(cs.depth));
         GL_CALL(glClearStencil(cs.stencil));
 
-        if (cs.flags & GL_DEPTH_BUFFER_BIT)
+        if (cs.flags & ClearBits::REX_CLEAR_DEPTH_BUFFER)
         {
           GL_CALL(glEnable(GL_DEPTH_TEST));
           GL_CALL(glDepthMask(true));
         }
 
-        if (cs.flags & GL_STENCIL_BUFFER_BIT)
+        if (cs.flags & ClearBits::REX_CLEAR_STENCIL_BUFFER)
         {
           GL_CALL(glEnable(GL_STENCIL_TEST));
           GL_CALL(glStencilMask(0xff));
         }
 
         GL_CALL(glClearColor(cs.rgba.red, cs.rgba.green, cs.rgba.blue, cs.rgba.alpha));
-        GL_CALL(glClear(cs.flags));
+        GL_CALL(glClear((u32)cs.flags));
       }
 
       // swap / present / vsync
