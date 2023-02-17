@@ -14,11 +14,6 @@ namespace rex
     {
 
     }
-    //-----------------------------------------------------------------------
-    VertexBuffer::~VertexBuffer()
-    {
-
-    }
 
     //-----------------------------------------------------------------------
     void VertexBuffer::set_data(u64 size, const void* data, BufferUsage usage)

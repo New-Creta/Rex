@@ -9,8 +9,14 @@ namespace rex
   {
     rsl::small_stack_string api_version;
     rsl::small_stack_string shader_version;
-    rsl::small_stack_string renderer;
+    rsl::small_stack_string adaptor;
     rsl::small_stack_string vendor;
+  };
+
+  enum class ShaderPlatform
+  {
+    GLSL,
+    HLSL
   };
 
   namespace renderer
@@ -20,7 +26,7 @@ namespace rex
 
     // general accessors
     const RendererInfo& get_info();
-    const char8* shader_platform();
+    const ShaderPlatform shader_platform();
 
     bool is_y_up();
     bool is_depth_0_to_1();

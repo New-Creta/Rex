@@ -1,5 +1,6 @@
 #include "rex_opengl/resources/shader_program.h"
 #include "rex_opengl/resources/shader.h"
+#include "rex_opengl/opengl_error.h"
 
 #include "rex_engine/diagnostics/logging.h"
 
@@ -11,330 +12,326 @@
 #error "Unsupported platform"
 #endif
 
-#if defined _MSC_VER
+#if defined REX_COMPILER_MSVC
 #   pragma warning (push)
-#   pragma warning (disable : 4018)
-#   pragma warning (disable : 4100)
-#   pragma warning (disable : 4127)
-#   pragma warning (disable : 4189)
-#   pragma warning (disable : 4201)
-#   pragma warning (disable : 4244)
-#   pragma warning (disable : 4245)
-#   pragma warning (disable : 4267)
-#   pragma warning (disable : 4389)
-#   pragma warning (disable : 4456)
-#   pragma warning (disable : 4457)
-#   pragma warning (disable : 4458)
-#   pragma warning (disable : 4459)
-#   pragma warning (disable : 4701)
-#   pragma warning (disable : 4996)
+#   pragma warning (disable : 4018) // 'token' : signed/unsigned mismatch
+#   pragma warning (disable : 4100) // 'identifier' : unreferenced formal parameter 
+#   pragma warning (disable : 4127) // conditional expression is constant
+#   pragma warning (disable : 4189) // 'identifier' : local variable is initialized but not referenced
+#   pragma warning (disable : 4201) // nonstandard extension used : nameless struct/union
+#   pragma warning (disable : 4244) // 'conversion' conversion from 'type1' to 'type2', possible loss of data
+#   pragma warning (disable : 4245) // 'conversion' : conversion from 'type1' to 'type2', signed/unsigned mismatch
+#   pragma warning (disable : 4267) // 'var' : conversion from 'size_t' to 'type', possible loss of data
+#   pragma warning (disable : 4389) // 'equality-operator' : signed/unsigned mismatch
+#   pragma warning (disable : 4456) // declaration of 'identifier' hides previous local declaration
+#   pragma warning (disable : 4457) // declaration of 'identifier' hides function parameter
+#   pragma warning (disable : 4458) // declaration of 'identifier' hides class member
+#   pragma warning (disable : 4459) // declaration of 'identifier' hides global declaration
+#   pragma warning (disable : 4701) // Potentially uninitialized local variable 'name' used
+#   pragma warning (disable : 4996) // Your code uses a function, class member, variable, or typedef that's marked deprecated.
 #endif
 
 #include <glm/gtc/type_ptr.hpp>
 
-#if defined _MSC_VER
+#if defined REX_COMPILER_MSVC
 #   pragma warning (pop)
 #endif
 
 
 namespace rex
 {
-    namespace shader_program
+  namespace shader_program
+  {
+    //-------------------------------------------------------------------------
+    bool find_and_cache_uniform(const u32& programID, const rsl::small_stack_string& inName, rsl::unordered_map<rsl::small_stack_string, ShaderUniformLocation>& uniformLocations)
     {
-        //-----------------------------------------------------------------------
-        rsl::string create_shader_program_linking_error_message()
+      if (uniformLocations.find(inName) == rsl::end(uniformLocations))
+      {
+        REX_TRACE("Caching uniform: {0}, for shader program with ID: {1}", inName, programID);
+
+        s32 location = glGetUniformLocation(programID, inName.c_str());
+        uniformLocations[inName] = { location };
+
+        if (location == -1)
         {
-            return rsl::string("Could not link shader program");
+          REX_WARN("Uniform with name: \"{0}\" was not found", inName);
+          return false;
         }
+      }
 
-        //-------------------------------------------------------------------------
-        bool find_and_cache_uniform(const u32& programID, const rsl::string& inName, rsl::unordered_map<size_t, ShaderUniformLocation>& uniformLocations)
-        {
-            size_t hash = rsl::hash<rsl::string>{}(inName);
-
-            if (uniformLocations.find(hash) == rsl::end(uniformLocations))
-            {
-                REX_TRACE("Caching uniform: {0}, for shader program with ID: {1}", inName, programID);
-
-                s32 location = glGetUniformLocation(programID, inName.c_str());
-                uniformLocations[hash] = { location };
-
-                if (location == -1)
-                {
-                    REX_WARN("Uniform with name: \"{0}\" was not found", inName);
-                    return false;
-                }
-            }
-
-            return true;
-        }
+      return true;
     }
+  }
 
-    //-----------------------------------------------------------------------
-    ShaderProgram::ShaderProgram()
-        :m_resource_id(0)
-        ,m_bound(false)
+  //-----------------------------------------------------------------------
+  ShaderProgram::ShaderProgram()
+    :m_resource_id(0)
+    , m_bound(false)
+  {
+
+  }
+  //-----------------------------------------------------------------------
+  ShaderProgram::ShaderProgram(const char* vertexShaderCode, const char* fragmentShaderCode)
+    :m_resource_id(0)
+    , m_bound(false)
+  {
+    u32 vertex_shader_id = create_vertex_shaders(1, &vertexShaderCode);
+    u32 fragment_shader_id = create_fragment_shaders(1, &fragmentShaderCode);
+
+    GL_CALL(m_resource_id = glCreateProgram());
+
+    GL_CALL(glAttachShader(m_resource_id, vertex_shader_id));
+    GL_CALL(glAttachShader(m_resource_id, fragment_shader_id));
+
+    GL_CALL(glLinkProgram(m_resource_id));
+
+    s32  success;
+    GL_CALL(glGetProgramiv(m_resource_id, GL_LINK_STATUS, &success));
+
+    if (!success)
     {
+      // Don't forget to delete the shader objects once we've linked (or failed to link) them into the program object; we no longer need them anymore
+      GL_CALL(glDeleteShader(vertex_shader_id));
+      GL_CALL(glDeleteShader(fragment_shader_id));
 
+      char infoLog[512];
+      GL_CALL(glGetProgramInfoLog(m_resource_id, 512, NULL, infoLog));
+
+      REX_ERROR(infoLog);
+      REX_ERROR("Could not link shader program");
+
+      m_resource_id = 0;
+
+      return;
     }
-    //-----------------------------------------------------------------------
-    ShaderProgram::ShaderProgram(const char* vertexShaderCode, const char* fragmentShaderCode)
-        :m_resource_id(0)
-        ,m_bound(false)
+
+    // Don't forget to delete the shader objects once we've linked (or failed to link) them into the program object; we no longer need them anymore
+    GL_CALL(glDeleteShader(vertex_shader_id));
+    GL_CALL(glDeleteShader(fragment_shader_id));
+  }
+
+  //-----------------------------------------------------------------------
+  ShaderProgram::~ShaderProgram()
+  {
+    release();
+  }
+
+  //-----------------------------------------------------------------------
+  u32 ShaderProgram::get_resource_id() const
+  {
+    return m_resource_id;
+  }
+
+  //-----------------------------------------------------------------------
+  void ShaderProgram::bind() const
+  {
+    REX_ASSERT(m_resource_id);
+
+    GL_CALL(glUseProgram(m_resource_id));
+
+    m_bound = true;
+  }
+  //-----------------------------------------------------------------------
+  void ShaderProgram::unbind() const
+  {
+    GL_CALL(glUseProgram(0));
+
+    m_bound = false;
+  }
+
+  //-----------------------------------------------------------------------
+  void ShaderProgram::release()
+  {
+    GL_CALL(glDeleteProgram(m_resource_id));
+
+    m_resource_id = 0;
+    m_bound = false;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const glm::mat3& mat)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        u32 vertex_shader_id = create_vertex_shader(1, &vertexShaderCode);
-        u32 fragment_shader_id = create_fragment_shader(1, &fragmentShaderCode);
-
-        m_resource_id = glCreateProgram();
-
-        glAttachShader(m_resource_id, vertex_shader_id);
-        glAttachShader(m_resource_id, fragment_shader_id);
-
-        glLinkProgram(m_resource_id);
-
-        s32  success;
-        char infoLog[512];
-        glGetProgramiv(m_resource_id, GL_LINK_STATUS, &success);
-
-        if (!success) 
-        {
-            // Don't forget to delete the shader objects once we've linked (or failed to link) them into the program object; we no longer need them anymore
-            glDeleteShader(vertex_shader_id);
-            glDeleteShader(fragment_shader_id);
-
-            glGetProgramInfoLog(m_resource_id, 512, NULL, infoLog);
-            REX_ERROR(shader_program::create_shader_program_linking_error_message());
-
-            m_resource_id = 0;
-
-            return;
-        }
-
-        // Don't forget to delete the shader objects once we've linked (or failed to link) them into the program object; we no longer need them anymore
-        glDeleteShader(vertex_shader_id);
-        glDeleteShader(fragment_shader_id);
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    ShaderProgram::~ShaderProgram()
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniformMatrix3fv(location, 1, false, glm::value_ptr(mat)));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const glm::mat4& mat)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        release();
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    u32 ShaderProgram::get_resource_id() const
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniformMatrix4fv(location, 1, false, glm::value_ptr(mat)));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const float value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        return m_resource_id;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    void ShaderProgram::bind() const
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform1f(location, value));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const glm::vec2& value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        glUseProgram(m_resource_id);
-
-        m_bound = true;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
-    //-----------------------------------------------------------------------
-    void ShaderProgram::unbind() const
+
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform2f(location, value.x, value.y));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const glm::vec3& value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        glUseProgram(0);
-
-        m_bound = false;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    void ShaderProgram::release()
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform3f(location, value.x, value.y, value.z));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const glm::vec4& value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        glDeleteProgram(m_resource_id);
-
-        m_resource_id = 0;
-        m_bound = false;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const glm::mat3& mat)
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform4f(location, value.x, value.y, value.z, value.w));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const glm::ivec2& value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniformMatrix3fv(location, 1, false, glm::value_ptr(mat));
-
-        return true;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const glm::mat4& mat)
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform2i(location, value.x, value.y));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const glm::ivec3& value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniformMatrix4fv(location, 1, false, glm::value_ptr(mat));
-
-        return true;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const float value)
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform3i(location, value.x, value.y, value.z));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const glm::ivec4& value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform1f(location, value);
-
-        return true;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const glm::vec2& value)
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform4i(location, value.x, value.y, value.z, value.w));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const float* values, u32 size)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform2f(location, value.x, value.y);
-
-        return true;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const glm::vec3& value)
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform1fv(location, size, values));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const s32 value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform3f(location, value.x, value.y, value.z);
-
-        return true;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const glm::vec4& value)
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform1i(location, value));
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const u32 value)
+  {
+    if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform4f(location, value.x, value.y, value.z, value.w);
-
-        return true;
+      REX_WARN("Uniform ({0}) not found on shader.", name);
+      return false;
     }
 
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const glm::ivec2& value)
-    {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
+    s32 location = m_uniform_locations.at(name);
+    GL_CALL(glUniform1ui(location, value));
 
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform2i(location, value.x, value.y);
+    return true;
+  }
 
-        return true;
-    }
-
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const glm::ivec3& value)
-    {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform3i(location, value.x, value.y, value.z);
-
-        return true;
-    }
-
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const glm::ivec4& value)
-    {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform4i(location, value.x, value.y, value.z, value.w);
-
-        return true;
-    }
-
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const float* values, u32 size)
-    {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform1fv(location, size, values);
-
-        return true;
-    }
-
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const s32 value)
-    {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform1i(location, value);
-
-        return true;
-    }
-
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const u32 value)
-    {
-        if (!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
-        {
-            REX_WARN("Uniform ({0}) not found on shader.", name);
-            return false;
-        }
-
-        s32 location = m_uniform_locations.at(rsl::hash<rsl::string>{}(name));
-        glUniform1ui(location, value);
-
-        return true;
-    }
-
-    //-----------------------------------------------------------------------
-    bool ShaderProgram::set_uniform(const rsl::string& name, const bool value)
-    {
-        return set_uniform(name, value ? 1 : 0);
-    }
+  //-----------------------------------------------------------------------
+  bool ShaderProgram::set_uniform(const rsl::small_stack_string& name, const bool value)
+  {
+    return set_uniform(name, value ? 1 : 0);
+  }
 
 }

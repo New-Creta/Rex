@@ -32,11 +32,11 @@ wgl_context s_glctx;
 
 namespace rex
 {
-  extern bool rex_make_gl_context_current()
+  bool rex_make_gl_context_current()
   {
     return wglMakeCurrent(s_glctx.dc, s_glctx.glrc);
   }
-  extern void rex_gl_swap_buffers()
+  void rex_gl_swap_buffers()
   {
     SwapBuffers(s_glctx.dc);
   }
@@ -174,7 +174,7 @@ namespace rex
 
         RendererInfo info = renderer::get_info();
         REX_INFO("Renderer Info - API Version: {}", info.api_version);
-        REX_INFO("Renderer Info - Renderer: {}", info.renderer);
+        REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
         REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
         REX_INFO("Renderer Info - Vendor: {}", info.vendor);
 

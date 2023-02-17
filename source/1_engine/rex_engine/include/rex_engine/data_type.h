@@ -47,17 +47,16 @@ namespace rex
         };
 
     public:
-        DataType(const DataType& other);
-        DataType(DataType&& other) noexcept;
+        DataType(Value value);
+        
+        DataType(const DataType& other) = default;
+        DataType(DataType&& other) noexcept = default;
         
         DataType& operator= (const DataType& other);
         DataType& operator= (DataType&& other) noexcept;
 
         bool operator==(const DataType& other) const;
         bool operator!=(const DataType& other) const;
-
-    public:
-        DataType(Value value);
 
         Value get() const;
 

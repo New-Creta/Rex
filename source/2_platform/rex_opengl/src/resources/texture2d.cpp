@@ -57,8 +57,8 @@ namespace rex
                 return GL_LINEAR_MIPMAP_NEAREST;
             }
 
-            REX_ERROR("Unknown \"Texture Filter\", returning \"GL_LINEAR\"");
-            return GL_LINEAR;
+            REX_ERROR("Unknown \"Texture Filter\", returning \"GL_LINEAR_MIPMAP_LINEAR\"");
+            return GL_LINEAR_MIPMAP_LINEAR;
         }
 
         //-------------------------------------------------------------------------
@@ -81,7 +81,7 @@ namespace rex
             }
 
             REX_ERROR("Unknown \"TextureStorageFormat\", returning \"GL_RGB\"");
-            return GL_LINEAR;
+            return GL_RGB;
         }
 
         //-------------------------------------------------------------------------
@@ -111,7 +111,7 @@ namespace rex
             }
 
             REX_ERROR("Unknown \"Texture Pixel Format\", returning \"GL_RGB\"");
-            return GL_LINEAR;
+            return GL_RGB;
         }
 
         //-------------------------------------------------------------------------

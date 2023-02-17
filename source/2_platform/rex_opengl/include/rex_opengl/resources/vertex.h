@@ -20,13 +20,6 @@ namespace rex
         static BufferLayout get_layout();
 
         VertexPos();
-        VertexPos(const VertexPos& other);
-        VertexPos(VertexPos&& other) noexcept;
-
-        VertexPos& operator=(const VertexPos& other);
-        VertexPos& operator=(VertexPos&& other) noexcept;
-
-    public:
         VertexPos(const glm::vec3& position);
 
         const glm::vec3& get_position() const;
@@ -51,13 +44,6 @@ namespace rex
         static BufferLayout get_layout();
 
         VertexPosCol();
-        VertexPosCol(const VertexPosCol& other);
-        VertexPosCol(VertexPosCol&& other) noexcept;
-
-        VertexPosCol& operator=(const VertexPosCol& other);
-        VertexPosCol& operator=(VertexPosCol&& other) noexcept;
-
-    public:
         VertexPosCol(const glm::vec3& position, const glm::vec3& color);
 
         const glm::vec3& get_position() const;
@@ -84,13 +70,6 @@ namespace rex
         static BufferLayout get_layout();
 
         VertexPosTex();
-        VertexPosTex(const VertexPosTex& other);
-        VertexPosTex(VertexPosTex&& other) noexcept;
-
-        VertexPosTex& operator=(const VertexPosTex& other);
-        VertexPosTex& operator=(VertexPosTex&& other) noexcept;
-
-    public:
         VertexPosTex(const glm::vec3& position, const glm::vec2& uv);
 
         const glm::vec3& get_position() const;
@@ -118,13 +97,6 @@ namespace rex
         static BufferLayout get_layout();
 
         VertexPosColTex();
-        VertexPosColTex(const VertexPosColTex& other);
-        VertexPosColTex(VertexPosColTex&& other) noexcept;
-
-        VertexPosColTex& operator=(const VertexPosColTex& other);
-        VertexPosColTex& operator=(VertexPosColTex&& other) noexcept;
-
-    public:
         VertexPosColTex(const glm::vec3& position, const glm::vec3& color, const glm::vec2& uv);
 
         const glm::vec3& get_position() const;
@@ -142,5 +114,5 @@ namespace rex
 
     //-----------------------------------------------------------------------
     // All available vertex layouts
-    rsl::unordered_map<u64, BufferLayout>& get_buffer_layouts();
+    const rsl::unordered_map<u64, BufferLayout>& get_buffer_layouts();
 }

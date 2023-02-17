@@ -53,7 +53,7 @@ namespace rex
         {
             const BufferElement& element = bufferLayout.get_buffer_elements()[i];
 
-            glVertexAttribPointer(i, element.component_count, input_assembler::get_gl_data_type(element.type), element.normalized, (GLsizei)element.stride, (void*)offset);
+            glVertexAttribPointer(i, element.component_count, input_assembler::get_gl_data_type(element.type), element.normalized, 0, (void*)offset);
             glEnableVertexAttribArray(i);
 
             offset += element.type.to_byte_size();

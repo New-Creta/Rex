@@ -22,7 +22,7 @@ namespace rex
     template<typename T>
     static void InputAssembler::build()
     {
-        auto& layouts = get_buffer_layouts();
+        const auto& layouts = get_buffer_layouts();
         auto it = layouts.find(typeid(T).hash_code());
         if (it == rsl::cend(layouts))
         {
@@ -30,7 +30,7 @@ namespace rex
             return;
         }
 
-        auto& layout = it->second;
+        const auto& layout = it->second;
 
         enable_vertex_attribute_array(layout);
     }
