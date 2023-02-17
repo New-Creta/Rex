@@ -5,6 +5,7 @@
 #include "rex_engine/types.h"
 
 #include "rex_std/unordered_map.h"
+#include "rex_std/bonus/string/stack_string.h"
 
 #include <glm/glm.hpp>
 
@@ -13,7 +14,7 @@ namespace rex
     class ShaderUniformLocation
     {
     public:
-        static ShaderUniformLocation EMPTY;
+        static ShaderUniformLocation s_empty;
 
         //-------------------------------------------------------------------------
         ShaderUniformLocation()
@@ -45,7 +46,8 @@ namespace rex
         s32 m_location;
     };
 
-    using UniformLocationMap = rsl::unordered_map<size_t, ShaderUniformLocation>;
+    // Uniform Location Map = <Name of the Uniform, Location of the Uniform>
+    using UniformLocationMap = rsl::unordered_map<rsl::small_stack_string, ShaderUniformLocation>;
 
     class ShaderProgram : public Resource
     {
@@ -61,23 +63,23 @@ namespace rex
 
         void release();
 
-        bool set_uniform(const rsl::string& name, const glm::mat3& mat);
-        bool set_uniform(const rsl::string& name, const glm::mat4& mat);
+        bool set_uniform(const rsl::small_stack_string& name, const glm::mat3& mat);
+        bool set_uniform(const rsl::small_stack_string& name, const glm::mat4& mat);
 
-        bool set_uniform(const rsl::string& name, const float value);
-        bool set_uniform(const rsl::string& name, const glm::vec2& value);
-        bool set_uniform(const rsl::string& name, const glm::vec3& value);
-        bool set_uniform(const rsl::string& name, const glm::vec4& value);
+        bool set_uniform(const rsl::small_stack_string& name, const float value);
+        bool set_uniform(const rsl::small_stack_string& name, const glm::vec2& value);
+        bool set_uniform(const rsl::small_stack_string& name, const glm::vec3& value);
+        bool set_uniform(const rsl::small_stack_string& name, const glm::vec4& value);
 
-        bool set_uniform(const rsl::string& name, const glm::ivec2& value);
-        bool set_uniform(const rsl::string& name, const glm::ivec3& value);
-        bool set_uniform(const rsl::string& name, const glm::ivec4& value);
+        bool set_uniform(const rsl::small_stack_string& name, const glm::ivec2& value);
+        bool set_uniform(const rsl::small_stack_string& name, const glm::ivec3& value);
+        bool set_uniform(const rsl::small_stack_string& name, const glm::ivec4& value);
 
-        bool set_uniform(const rsl::string& name, const float* values, u32 size);
+        bool set_uniform(const rsl::small_stack_string& name, const float* values, u32 size);
 
-        bool set_uniform(const rsl::string& name, const s32 value);
-        bool set_uniform(const rsl::string& name, const u32 value);
-        bool set_uniform(const rsl::string& name, const bool value);
+        bool set_uniform(const rsl::small_stack_string& name, const s32 value);
+        bool set_uniform(const rsl::small_stack_string& name, const u32 value);
+        bool set_uniform(const rsl::small_stack_string& name, const bool value);
 
     private:
         u32 m_resource_id;

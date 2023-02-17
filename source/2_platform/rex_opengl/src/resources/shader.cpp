@@ -11,8 +11,8 @@
 #error "Unsupported platform"
 #endif
 
-// TODO:  sstream define REX_ENABLE_STD_ALIAS(stringstream) is not working properly
-//        adding workaround here
+REX_STATIC_TODO("sstream define REX_ENABLE_STD_ALIAS(stringstream) is not working properly, adding workaround here");
+
 namespace rsl
 {
   inline namespace v1
@@ -26,7 +26,7 @@ namespace rex
     namespace conversions
     {
         //-----------------------------------------------------------------------
-        char8* to_string(u32 shaderType)
+        rsl::string_view to_string(u32 shaderType)
         {
             switch (shaderType)
             {
@@ -48,7 +48,7 @@ namespace rex
             rsl::stringstream stream;
 
             stream << "Could not compile ";
-            stream << conversions::to_string(shaderType);
+            stream << conversions::to_string(shaderType).data();
 
             REX_TODO("Make sure we use an rsl::string here, this can only happen if rsl::stringstream is implemented properly.");
             return rsl::string(stream.str().c_str());
@@ -63,12 +63,14 @@ namespace rex
             glCompileShader(shader);
             
             s32  success;
-            char infoLog[512];
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
             if (!success)
             {
+                char infoLog[512];
                 glGetShaderInfoLog(shader, 512, NULL, infoLog);
+
+                REX_ERROR(infoLog);
                 REX_ERROR(create_shader_compilation_error_message(shaderType));
 
                 return 0;
@@ -85,12 +87,12 @@ namespace rex
     }
 
     //-----------------------------------------------------------------------
-    u32 create_vertex_shader(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
+    u32 create_vertex_shaders(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
     {
         return shader::create_shader(GL_VERTEX_SHADER, shaderElementCount, shaderElements, shaderElementLength);
     }
     //-----------------------------------------------------------------------
-    u32 create_fragment_shader(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
+    u32 create_fragment_shaders(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
     {
         return shader::create_shader(GL_FRAGMENT_SHADER, shaderElementCount, shaderElements, shaderElementLength);
     }

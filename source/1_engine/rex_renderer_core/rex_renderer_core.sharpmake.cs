@@ -22,7 +22,6 @@ public class RexRendererCore : EngineProject
     conf.Output = Configuration.OutputType.Lib;
 
     conf.AddPublicDependency<RexStdExtra>(target);
-    conf.AddPublicDependency<RexGraphicsCore>(target);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }
 }

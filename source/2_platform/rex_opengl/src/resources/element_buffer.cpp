@@ -1,4 +1,5 @@
 #include "rex_opengl/resources/element_buffer.h"
+#include "rex_opengl/opengl_error.h"
 
 #if REX_PLATFORM_X64
 #include <glad/gl.h>
@@ -14,16 +15,11 @@ namespace rex
     {
 
     }
-    //-----------------------------------------------------------------------
-    ElementBuffer::~ElementBuffer()
-    {
-
-    }
 
     //-----------------------------------------------------------------------
     void ElementBuffer::set_data(u64 size, const void* data, BufferUsage usage)
     {
-        glBufferData(get_resource_target(), size, data, get_gl_usage(usage));
+        GL_CALL(glBufferData(get_resource_target(), size, data, get_gl_usage(usage)));
     }
 
 }

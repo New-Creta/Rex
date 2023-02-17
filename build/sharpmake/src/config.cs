@@ -71,7 +71,7 @@ public class RexConfiguration : Sharpmake.Project.Configuration
     Options.Add(Sharpmake.Options.Vc.Linker.LargeAddress.SupportLargerThan2Gb);
     Options.Add(Sharpmake.Options.Vc.Linker.GenerateMapFile.Disable);
     Options.Add(Sharpmake.Options.Vc.Linker.GenerateManifest.Disable);
-    //Options.Add(Sharpmake.Options.Vc.Linker.TreatLinkerWarningAsErrors.Enable);
+    Options.Add(Sharpmake.Options.Vc.Linker.TreatLinkerWarningAsErrors.Enable);
   }
 
   public void enable_optimization()
