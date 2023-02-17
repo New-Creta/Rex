@@ -17,12 +17,24 @@ namespace rex
   extern void rex_gl_swap_buffers();
 
   //-------------------------------------------------------------------------
-  enum ClearBits
+  enum class ClearBits
   {
     REX_CLEAR_COLOUR_BUFFER = GL_COLOR_BUFFER_BIT,
     REX_CLEAR_DEPTH_BUFFER = GL_DEPTH_BUFFER_BIT,
     REX_CLEAR_STENCIL_BUFFER = GL_STENCIL_BUFFER_BIT,
   };
+
+  //-------------------------------------------------------------------------
+  bool operator& (ClearBits bits1, ClearBits bits2)
+  {
+    return static_cast<s32>(bits1) & static_cast<s32>(bits2);
+  }
+
+  //-------------------------------------------------------------------------
+  bool operator| (ClearBits bits1, ClearBits bits2)
+  {
+    return static_cast<s32>(bits1) | static_cast<s32>(bits2);
+  }
 
   //-------------------------------------------------------------------------
   struct ClearState
