@@ -10,7 +10,7 @@ namespace rex
     class InputAssembler
     {
     public:
-        template <typename T>
+        template <typename TVertexType>
         static void build();
 
     private:
@@ -19,14 +19,14 @@ namespace rex
     };
 
     //-----------------------------------------------------------------------
-    template<typename T>
+    template<typename TVertexType>
     static void InputAssembler::build()
     {
         const auto& layouts = get_buffer_layouts();
-        auto it = layouts.find(typeid(T).hash_code());
+        auto it = layouts.find(typeid(TVertexType).hash_code());
         if (it == rsl::cend(layouts))
         {
-            REX_ERROR("\"Vertex Layout\" for vertex type: {0} was not found!", typeid(T).name());
+            REX_ERROR("\"Vertex Layout\" for vertex type: {0} was not found!", typeid(TVertexType).name());
             return;
         }
 
