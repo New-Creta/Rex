@@ -81,7 +81,7 @@ namespace rex
 
     new_buffer_elements.reserve(m_layout.size() + 1);
     new_buffer_elements.insert(rsl::end(new_buffer_elements), rsl::begin(m_layout.get_buffer_elements()), rsl::end(m_layout.get_buffer_elements()));
-    new_buffer_elements.emplace_back(BufferElement(inType, buffer_layout::get_data_type_component_count(inType), inShouldNormalize));
+    new_buffer_elements.emplace_back(inType, buffer_layout::get_data_type_component_count(inType), inShouldNormalize);
 
     m_layout = BufferLayout(rsl::move(new_buffer_elements));
 
