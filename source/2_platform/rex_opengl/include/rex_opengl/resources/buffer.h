@@ -17,11 +17,11 @@ namespace rex
     public:
         Buffer(u32 target);
         Buffer(const Buffer&) = delete;
-        Buffer(Buffer&&) = default;
+        Buffer(Buffer&&) noexcept;
         ~Buffer() override;
 
         Buffer& operator=(const Buffer&) = delete;
-        Buffer& operator=(Buffer&&) = default;
+        Buffer& operator=(Buffer&&) noexcept;
 
         u32 get_resource_id() const override;
         u32 get_resource_target() const;
