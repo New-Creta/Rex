@@ -126,7 +126,7 @@ namespace rex
       {
         ClearState& cs = s_clear_state;
 
-        REX_ASSERT(cs.flags);
+        REX_ASSERT_X(cs.flags, "No clear flags given but renderer::backend::clear was called.");
 
         GL_CALL(glClearDepth(cs.depth));
         GL_CALL(glClearStencil(cs.stencil));
