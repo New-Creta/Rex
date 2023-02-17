@@ -55,17 +55,19 @@ namespace rex
   //-----------------------------------------------------------------------
   void Buffer::bind() const
   {
-#if REX_PLATFORM_X64
+    // When using OpenGL ES ( GLES ) the default framebuffer is not 0.
+    // When Emscripten is enabled OpenGL ES will always be used.
+#if __EMSCRIPTEN__
+    REX_ASSERT_X(m_resource_id != 0, "Binding an invalid resource id");
+#else
     if (m_resource_target != GL_FRAMEBUFFER)
     {
       REX_ASSERT_X(m_resource_id != 0, "Binding an invalid resource id");
-    }
-#else
-    REX_ASSERT_X(m_resource_id != 0, "Binding an invalid resource id");
+  }
 #endif
 
     glBindBuffer((GLenum)m_resource_target, m_resource_id);
-  }
+}
   //-----------------------------------------------------------------------
   void Buffer::unbind() const
   {
