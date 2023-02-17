@@ -35,10 +35,7 @@ namespace rex
       void new_frame();
       void end_frame();
 
-      // clears
       void clear();
-
-      // swap / present / vsync
       void present();
     }
   } // namespace renderer
