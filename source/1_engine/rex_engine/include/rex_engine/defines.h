@@ -1,21 +1,18 @@
 #ifndef REX_DEFINES
 #define REX_DEFINES
 
+#include "rex_std/bonus/compiler.h"
+
 //-------------------------------------------------------------------------
 // Unused parameter.
-#if defined __clang__
+#if defined REX_COMPILER_CLANG
   #define UNUSED_PARAM(...)                                                                                                                                                                                                                              \
     _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wunused-value\"")                                                                                                                                                              \
     {                                                                                                                                                                                                                                                    \
       __VA_ARGS__;                                                                                                                                                                                                                                       \
     }                                                                                                                                                                                                                                                    \
     _Pragma("clang diagnostic pop")
-#elif defined _MSC_VER
-  #define UNUSED_PARAM(...)                                                                                                                                                                                                                              \
-    {                                                                                                                                                                                                                                                    \
-      __VA_ARGS__;                                                                                                                                                                                                                                       \
-    }
-#elif defined __GNUC__
+#elif defined REX_COMPILER_MSVC
   #define UNUSED_PARAM(...)                                                                                                                                                                                                                              \
     {                                                                                                                                                                                                                                                    \
       __VA_ARGS__;                                                                                                                                                                                                                                       \
@@ -24,12 +21,10 @@
 
 //-------------------------------------------------------------------------
 // Assembly instruction to break execution.
-#if defined __clang__
+#if defined REX_COMPILER_CLANG
     #define DEBUG_BREAK() __builtin_trap()
-#elif defined _MSC_VER
+#elif defined REX_COMPILER_MSVC
     #define DEBUG_BREAK() __debugbreak()
-#elif defined __GNUC__
-    #define DEBUG_BREAK()
 #else
     #error DEBUG_BREAK unsupported machine instruction ...
 #endif
