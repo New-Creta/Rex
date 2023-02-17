@@ -84,28 +84,53 @@ namespace rex
         }
     }
 
-    //-----------------------------------------------------------------------
-    u32 create_vertex_shader(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
+    enum class ShaderType
     {
-        return shader::create_shader(GL_VERTEX_SHADER, shaderElementCount, shaderElements, shaderElementLength);
+        VERTEX,
+        FRAGMENT
+    };
+
+    //-----------------------------------------------------------------------
+    Shader create_vertex_shader(const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
+    {
+        return Shader(ShaderType::VERTEX, shaderElements, shaderElementLength);
     }
     //-----------------------------------------------------------------------
-    u32 create_fragment_shader(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
+    Shader create_fragment_shader(const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
     {
-        return shader::create_shader(GL_FRAGMENT_SHADER, shaderElementCount, shaderElements, shaderElementLength);
+        return Shader(ShaderType::FRAGMENT, shaderElements, shaderElementLength);
     }
 
     //-----------------------------------------------------------------------
-    void destroy_vertex_shader(u32 shader)
+    Shader::Shader(const ShaderType& inType, const char** shaderElements, s32* shaderElementLength = nullptr)
     {
-        shader::destroy_shader(shader);
+        u32 gl_shader_type = 0;
+
+        switch(inType)
+        {
+            case ShaderType::VERTEX: gl_shader_type = GL_VERTEX_SHADER; break;                
+            case ShaderType::FRAGMENT: gl_shader_type = GL_FRAGMENT_SHADER; break;
+        }
+
+        m_resource_id = shader::create_shader(gl_shader_type, 1, shaderElements, shaderElementLength);
     }
     //-----------------------------------------------------------------------
-    void destroy_fragment_shader(u32 shader)
+    Shader::~Shader()
     {
-        shader::destroy_shader(shader);
+        release();
     }
 
+    //-----------------------------------------------------------------------
+    u32 Shader::get_resource_id() const
+    {
+        return m_resource_id;
+    }
+
+    //-----------------------------------------------------------------------
+    void Shader::release()
+    {
+        shader::destroy_shader(m_resource_id);
+    }
 }
 
 #undef REX_ENABLE_STD_ALIAS

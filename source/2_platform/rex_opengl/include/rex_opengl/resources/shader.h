@@ -4,9 +4,22 @@
 
 namespace rex
 {
-    u32 create_vertex_shader(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength = nullptr);
-    u32 create_fragment_shader(u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength = nullptr);
+    enum class ShaderType;
 
-    void destroy_vertex_shader(u32 shader);
-    void destroy_fragment_shader(u32 shader);
+    class Shader
+    {
+    public:
+        Shader(const ShaderType& inType, const char** shaderElements, s32* shaderElementLength = nullptr);
+        ~Shader();
+
+        u32 get_resource_id() const;
+        
+        void release();
+
+    private:
+        u32 m_resource_id;
+    };
+
+    Shader create_vertex_shader(const char** shaderElements, s32* shaderElementLength = nullptr);
+    Shader create_fragment_shader(const char** shaderElements, s32* shaderElementLength = nullptr);
 }

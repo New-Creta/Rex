@@ -82,13 +82,13 @@ namespace rex
         :m_resource_id(0)
         ,m_bound(false)
     {
-        u32 vertex_shader_id = create_vertex_shader(1, &vertexShaderCode);
-        u32 fragment_shader_id = create_fragment_shader(1, &fragmentShaderCode);
+        Shader vertex_shader = create_vertex_shader(1, &vertexShaderCode);
+        Shader fragment_shader = create_fragment_shader(1, &fragmentShaderCode);
 
         m_resource_id = glCreateProgram();
 
-        glAttachShader(m_resource_id, vertex_shader_id);
-        glAttachShader(m_resource_id, fragment_shader_id);
+        glAttachShader(m_resource_id, vertex_shader.get_resource_id());
+        glAttachShader(m_resource_id, fragment_shader.get_resource_id());
 
         glLinkProgram(m_resource_id);
 
@@ -98,10 +98,6 @@ namespace rex
 
         if (!success) 
         {
-            // Don't forget to delete the shader objects once we've linked (or failed to link) them into the program object; we no longer need them anymore
-            glDeleteShader(vertex_shader_id);
-            glDeleteShader(fragment_shader_id);
-
             glGetProgramInfoLog(m_resource_id, 512, NULL, infoLog);
             REX_ERROR(shader_program::create_shader_program_linking_error_message());
 
@@ -109,10 +105,6 @@ namespace rex
 
             return;
         }
-
-        // Don't forget to delete the shader objects once we've linked (or failed to link) them into the program object; we no longer need them anymore
-        glDeleteShader(vertex_shader_id);
-        glDeleteShader(fragment_shader_id);
     }
 
     //-----------------------------------------------------------------------
