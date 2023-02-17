@@ -45,7 +45,7 @@ namespace rex
 
         case DataType::Value::BOOL: return typeid(bool).hash_code();
 
-        case DataType::Value::STRING: return typeid(std::string).hash_code();
+        case DataType::Value::STRING: return typeid(rsl::string).hash_code();
       }
 
       REX_ERROR("Unknown DataType::Value");
@@ -87,7 +87,7 @@ namespace rex
 
           case DataType::Value::BOOL: return sizeof(bool);
 
-          case DataType::Value::STRING: return sizeof(std::string);
+          case DataType::Value::STRING: return sizeof(rsl::string);
       }
 
       REX_ERROR("Unknown DataType::Value");
@@ -116,7 +116,7 @@ namespace rex
   {
     REX_ASSERT(*this != other);
 
-    m_value = std::exchange(other.m_value, DataType::Value::NONE);
+    m_value = rsl::exchange(other.m_value, DataType::Value::NONE);
 
     return *this;
   }
