@@ -5,8 +5,8 @@
 #include "rex_engine/defines.h"
 #include "rex_std/memory.h"
 #include "rex_std/utility.h"
-#include "rex_windows/win_types.h"
 #include "rex_windows/platform_creation_params.h"
+#include "rex_windows/win_types.h"
 
 namespace rex
 {
@@ -26,11 +26,12 @@ namespace rex
   {
   public:
     ApplicationCreationParams(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
-    : engine_params()
-    , platform_params(rsl::move(platformParams))
-    , gui_params()
-    , cmd_args(rsl::move(cmdArgs))
-  {}
+        : engine_params()
+        , platform_params(rsl::move(platformParams))
+        , gui_params()
+        , cmd_args(rsl::move(cmdArgs))
+    {
+    }
 
   public:
     RexEngineParams engine_params;

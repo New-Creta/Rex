@@ -3,26 +3,25 @@
 #include "rex_engine/diagnostics/logging.h"
 
 #if REX_PLATFORM_X64
-#include <glad/gl.h>
+  #include <glad/gl.h>
 #else
-#error "Unsupported platform"
+  #error "Unsupported platform"
 #endif
 
 namespace rex
 {
   //-----------------------------------------------------------------------
   Buffer::Buffer(u32 target)
-    :m_resource_id(0)
-    , m_resource_target(target)
+      : m_resource_id(0)
+      , m_resource_target(target)
   {
     glGenBuffers(1, &m_resource_id);
   }
   //-----------------------------------------------------------------------
   Buffer::Buffer(Buffer&& other) noexcept
-    :m_resource_id(rsl::exchange(other.m_resource_id, 0))
-    , m_resource_target(rsl::exchange(other.m_resource_target, 0))
+      : m_resource_id(rsl::exchange(other.m_resource_id, 0))
+      , m_resource_target(rsl::exchange(other.m_resource_target, 0))
   {
-
   }
   //-----------------------------------------------------------------------
   Buffer::~Buffer()
@@ -35,7 +34,7 @@ namespace rex
   {
     REX_ASSERT(*this != other);
 
-    this->m_resource_id = rsl::exchange(other.m_resource_id, 0);
+    this->m_resource_id     = rsl::exchange(other.m_resource_id, 0);
     this->m_resource_target = rsl::exchange(other.m_resource_target, 0);
 
     return *this;
@@ -60,14 +59,14 @@ namespace rex
 #if __EMSCRIPTEN__
     REX_ASSERT_X(m_resource_id != 0, "Binding an invalid resource id");
 #else
-    if (m_resource_target != GL_FRAMEBUFFER)
+    if(m_resource_target != GL_FRAMEBUFFER)
     {
       REX_ASSERT_X(m_resource_id != 0, "Binding an invalid resource id");
-  }
+    }
 #endif
 
     glBindBuffer((GLenum)m_resource_target, m_resource_id);
-}
+  }
   //-----------------------------------------------------------------------
   void Buffer::unbind() const
   {
@@ -85,16 +84,14 @@ namespace rex
   //-----------------------------------------------------------------------
   u32 get_gl_usage(const BufferUsage& usage)
   {
-    switch (usage)
+    switch(usage)
     {
-    case BufferUsage::STATIC_DRAW:
-      return GL_STATIC_DRAW;
-    case BufferUsage::DYNAMIC_DRAW:
-      return GL_DYNAMIC_DRAW;
+      case BufferUsage::STATIC_DRAW: return GL_STATIC_DRAW;
+      case BufferUsage::DYNAMIC_DRAW: return GL_DYNAMIC_DRAW;
     }
 
     REX_ERROR("Unknown buffer usage: {0}, returing \"Static Draw\"", (s32)usage);
     return GL_STATIC_DRAW;
   }
 
-}
+} // namespace rex

@@ -1,14 +1,12 @@
-#include "rex_renderer_core/renderer.h"
-
 #include "rex_opengl/opengl_error.h"
-
+#include "rex_renderer_core/renderer.h"
 #include "rex_std/string.h"
 #include "rex_std_extra/math/color.h"
 
 #if REX_PLATFORM_X64
-#include <glad/gl.h>
+  #include <glad/gl.h>
 #else
-#error "Unsupported platform"
+  #error "Unsupported platform"
 #endif
 
 namespace rex
@@ -20,19 +18,19 @@ namespace rex
   //-------------------------------------------------------------------------
   enum class ClearBits
   {
-    REX_CLEAR_COLOUR_BUFFER = GL_COLOR_BUFFER_BIT,
-    REX_CLEAR_DEPTH_BUFFER = GL_DEPTH_BUFFER_BIT,
+    REX_CLEAR_COLOUR_BUFFER  = GL_COLOR_BUFFER_BIT,
+    REX_CLEAR_DEPTH_BUFFER   = GL_DEPTH_BUFFER_BIT,
     REX_CLEAR_STENCIL_BUFFER = GL_STENCIL_BUFFER_BIT,
   };
 
   //-------------------------------------------------------------------------
-  bool operator& (ClearBits bits1, ClearBits bits2)
+  bool operator&(ClearBits bits1, ClearBits bits2)
   {
     return static_cast<s32>(bits1) & static_cast<s32>(bits2);
   }
 
   //-------------------------------------------------------------------------
-  bool operator| (ClearBits bits1, ClearBits bits2)
+  bool operator|(ClearBits bits1, ClearBits bits2)
   {
     return static_cast<s32>(bits1) | static_cast<s32>(bits2);
   }
@@ -42,7 +40,7 @@ namespace rex
   {
     rsl::Color4f rgba;
     f32 depth;
-    u8  stencil;
+    u8 stencil;
     ClearBits flags;
   };
 
@@ -51,10 +49,10 @@ namespace rex
   {
     ClearState cs;
 
-    cs.rgba = rsl::colors::MediumSeaGreen;
-    cs.depth = 1.0f;
+    cs.rgba    = rsl::colors::MediumSeaGreen;
+    cs.depth   = 1.0f;
     cs.stencil = 0x00;
-    cs.flags = ClearBits::REX_CLEAR_COLOUR_BUFFER;
+    cs.flags   = ClearBits::REX_CLEAR_COLOUR_BUFFER;
 
     return cs;
   }
@@ -64,7 +62,7 @@ namespace rex
     namespace opengl
     {
       RendererInfo s_renderer_info;
-    }
+    } // namespace opengl
 
     //-------------------------------------------------------------------------
     // general accessors
@@ -74,7 +72,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const ShaderPlatform shader_platform()
+    ShaderPlatform shader_platform()
     {
       return ShaderPlatform::GLSL;
     }
@@ -94,21 +92,21 @@ namespace rex
     namespace backend
     {
       ClearState s_clear_state = make_default_clear_state();
-      s32 s_backbuffer_fbo = -1;
+      s32 s_backbuffer_fbo     = -1;
 
       //-------------------------------------------------------------------------
       bool initialize()
       {
         // todo renderer caps
         const GLubyte* glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
-        const GLubyte* gl_version = glGetString(GL_VERSION);
-        const GLubyte* gl_renderer = glGetString(GL_RENDERER);
-        const GLubyte* gl_vendor = glGetString(GL_VENDOR);
+        const GLubyte* gl_version   = glGetString(GL_VERSION);
+        const GLubyte* gl_renderer  = glGetString(GL_RENDERER);
+        const GLubyte* gl_vendor    = glGetString(GL_VENDOR);
 
         opengl::s_renderer_info.shader_version = rsl::small_stack_string((const char8*)glsl_version);
-        opengl::s_renderer_info.api_version = rsl::small_stack_string((const char8*)gl_version);
-        opengl::s_renderer_info.adaptor = rsl::small_stack_string((const char8*)gl_renderer);
-        opengl::s_renderer_info.vendor = rsl::small_stack_string((const char8*)gl_vendor);
+        opengl::s_renderer_info.api_version    = rsl::small_stack_string((const char8*)gl_version);
+        opengl::s_renderer_info.adaptor        = rsl::small_stack_string((const char8*)gl_renderer);
+        opengl::s_renderer_info.vendor         = rsl::small_stack_string((const char8*)gl_vendor);
 
         // gles base fbo is not 0
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &s_backbuffer_fbo);
@@ -143,13 +141,13 @@ namespace rex
         GL_CALL(glClearDepth(cs.depth));
         GL_CALL(glClearStencil(cs.stencil));
 
-        if (cs.flags & ClearBits::REX_CLEAR_DEPTH_BUFFER)
+        if(cs.flags & ClearBits::REX_CLEAR_DEPTH_BUFFER)
         {
           GL_CALL(glEnable(GL_DEPTH_TEST));
           GL_CALL(glDepthMask(true));
         }
 
-        if (cs.flags & ClearBits::REX_CLEAR_STENCIL_BUFFER)
+        if(cs.flags & ClearBits::REX_CLEAR_STENCIL_BUFFER)
         {
           GL_CALL(glEnable(GL_STENCIL_TEST));
           GL_CALL(glStencilMask(0xff));
@@ -164,6 +162,6 @@ namespace rex
       {
         rex_gl_swap_buffers();
       }
-    }
-  }
-}
+    } // namespace backend
+  }   // namespace renderer
+} // namespace rex

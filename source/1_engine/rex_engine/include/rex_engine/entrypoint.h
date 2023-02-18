@@ -7,6 +7,6 @@ namespace rex
   struct PlatformCreationParams;
   struct ApplicationCreationParams;
   class CommandLineArguments;
-  
-  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs);
+
+  extern ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs);
 } // namespace rex

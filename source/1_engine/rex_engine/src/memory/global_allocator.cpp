@@ -1,4 +1,5 @@
 #include "rex_engine/memory/global_allocator.h"
+
 #include "rex_engine/memory/memory_manager.h"
 
 namespace rex
@@ -28,4 +29,4 @@ namespace rex
     static GlobalAllocator alloc;
     return alloc;
   }
-}
+} // namespace rex

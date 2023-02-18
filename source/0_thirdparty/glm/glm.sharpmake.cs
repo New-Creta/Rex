@@ -26,5 +26,7 @@ public class GLM : ThirdPartyProject
     conf.IncludePaths.Add(SourceRootPath);
     conf.Output = Configuration.OutputType.Lib;
     conf.Options.Remove(Options.Vc.General.TreatWarningsAsErrors.Enable);
+    conf.NinjaGenerateCompilerDB = false;
+    conf.EventPostBuild.Clear();
   }
 }

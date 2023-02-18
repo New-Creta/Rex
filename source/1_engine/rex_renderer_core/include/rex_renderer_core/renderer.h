@@ -26,7 +26,7 @@ namespace rex
 
     // general accessors
     const RendererInfo& get_info();
-    const ShaderPlatform shader_platform();
+    ShaderPlatform shader_platform();
 
     bool is_y_up();
     bool is_depth_0_to_1();
@@ -43,6 +43,6 @@ namespace rex
 
       void clear();
       void present();
-    }
-  } // namespace renderer
+    } // namespace backend
+  }   // namespace renderer
 } // namespace rex

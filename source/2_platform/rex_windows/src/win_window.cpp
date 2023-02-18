@@ -158,7 +158,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::destroy()
     {
-      if (m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
+      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
       {
         DestroyWindow(static_cast<HWND>(m_hwnd));
 
@@ -187,12 +187,11 @@ namespace rex
 
       switch(msg)
       {
-      case WM_CLOSE: REX_TODO("Verify if the user really wants to close"); break;
-      case WM_DESTROY:
+        case WM_CLOSE: REX_TODO("Verify if the user really wants to close"); break;
+        case WM_DESTROY:
           PostQuitMessage(0);
           event_system::fire_event(event_system::EventType::WindowClose);
           return 0;
-
       }
       return DefWindowProc(static_cast<HWND>(hwnd), msg, wparam, lparam);
     }

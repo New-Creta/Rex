@@ -26,5 +26,7 @@ public class GLAD : ThirdPartyProject
     conf.IncludePaths.Add(SourceRootPath);
     conf.Options.Remove(Options.Vc.General.TreatWarningsAsErrors.Enable);
     conf.Output = Configuration.OutputType.Lib;
+    conf.NinjaGenerateCompilerDB = false;
+    conf.EventPostBuild.Clear();
   }
 }

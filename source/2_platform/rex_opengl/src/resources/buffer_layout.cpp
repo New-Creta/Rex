@@ -15,46 +15,46 @@ namespace rex
     //-----------------------------------------------------------------------
     u32 get_data_type_component_count(const DataType& type)
     {
-      switch (type.get())
+      switch(type.get())
       {
-      case DataType::Value::INT8:
-      case DataType::Value::INT16:
-      case DataType::Value::INT32:
-      case DataType::Value::INT64:
+        case DataType::Value::INT8:
+        case DataType::Value::INT16:
+        case DataType::Value::INT32:
+        case DataType::Value::INT64:
 
-      case DataType::Value::UNSIGNED_INT8:
-      case DataType::Value::UNSIGNED_INT16:
-      case DataType::Value::UNSIGNED_INT32:
-      case DataType::Value::UNSIGNED_INT64:
+        case DataType::Value::UNSIGNED_INT8:
+        case DataType::Value::UNSIGNED_INT16:
+        case DataType::Value::UNSIGNED_INT32:
+        case DataType::Value::UNSIGNED_INT64:
 
-      case DataType::Value::FLOAT32:
-      case DataType::Value::FLOAT64:
-      case DataType::Value::BOOL:
-        return 1u;
+        case DataType::Value::FLOAT32:
+        case DataType::Value::FLOAT64:
+        case DataType::Value::BOOL:
+        case DataType::Value::SAMPLER2D:
+        case DataType::Value::SAMPLER3D:
+        case DataType::Value::SAMPLERCUBE: return 1u;
 
-      case DataType::Value::MAT3:
-        return 3u * 3u;
-      case DataType::Value::MAT4:
-        return 4u * 4u;
+        case DataType::Value::MAT3: return 3u * 3u;
+        case DataType::Value::MAT4: return 4u * 4u;
 
-      case DataType::Value::VEC2:
-      case DataType::Value::IVEC2:
-      case DataType::Value::UIVEC2:
-        return 2u;
-      case DataType::Value::IVEC3:
-      case DataType::Value::UIVEC3:
-      case DataType::Value::VEC3:
-        return 3u;
-      case DataType::Value::IVEC4:
-      case DataType::Value::UIVEC4:
-      case DataType::Value::VEC4:
-        return 4u;
+        case DataType::Value::VEC2:
+        case DataType::Value::IVEC2:
+        case DataType::Value::UIVEC2: return 2u;
+        case DataType::Value::IVEC3:
+        case DataType::Value::UIVEC3:
+        case DataType::Value::VEC3: return 3u;
+        case DataType::Value::IVEC4:
+        case DataType::Value::UIVEC4:
+        case DataType::Value::VEC4: return 4u;
+
+        case DataType::Value::STRING:
+        case DataType::Value::NONE: break;
       }
 
       REX_ERROR("Unsupported Data Type to retrieve the component count: {0}", (s32)type.get());
       return 0;
     }
-  }
+  } // namespace buffer_layout
 
   //-------------------------------------------------------------------------
   bool operator==(const BufferElement& element1, const BufferElement& element2)
@@ -70,9 +70,8 @@ namespace rex
 
   //-----------------------------------------------------------------------
   BufferLayoutBuilder::BufferLayoutBuilder()
-    :m_layout({})
+      : m_layout({})
   {
-
   }
   //-----------------------------------------------------------------------
   BufferLayout& BufferLayoutBuilder::add_buffer_element(DataType inType, ShouldNormalize inShouldNormalize /*= ShouldNormalize::no*/)
@@ -95,9 +94,8 @@ namespace rex
 
   //-----------------------------------------------------------------------
   BufferLayout::BufferLayout(const BufferElements& elements)
-    :m_elements(elements)
+      : m_elements(elements)
   {
-
   }
 
   //-----------------------------------------------------------------------
@@ -120,7 +118,7 @@ namespace rex
   //-----------------------------------------------------------------------
   bool operator==(const BufferLayout& layout1, const BufferLayout& layout2)
   {
-    if (layout1.get_buffer_elements().size() != layout2.get_buffer_elements().size())
+    if(layout1.get_buffer_elements().size() != layout2.get_buffer_elements().size())
     {
       return false;
     }
@@ -132,4 +130,4 @@ namespace rex
   {
     return !(layout1 == layout2);
   }
-}
+} // namespace rex

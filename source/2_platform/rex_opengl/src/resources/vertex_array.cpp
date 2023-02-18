@@ -3,16 +3,16 @@
 #include "rex_engine/diagnostics/logging.h"
 
 #if REX_PLATFORM_X64
-#include <glad/gl.h>
+  #include <glad/gl.h>
 #else
-#error "Unsupported platform"
+  #error "Unsupported platform"
 #endif
 
 namespace rex
 {
   //-----------------------------------------------------------------------
   VertexArray::VertexArray()
-    :m_resource_id(0)
+      : m_resource_id(0)
   {
     glGenVertexArrays(1, &m_resource_id);
   }
@@ -48,4 +48,4 @@ namespace rex
 
     m_resource_id = 0;
   }
-}
+} // namespace rex
