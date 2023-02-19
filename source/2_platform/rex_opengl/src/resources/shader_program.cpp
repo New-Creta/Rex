@@ -154,7 +154,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniformMatrix3fv(location, 1, false, glm::value_ptr(mat)));
 
     return true;
@@ -169,7 +169,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniformMatrix4fv(location, 1, false, glm::value_ptr(mat)));
 
     return true;
@@ -184,7 +184,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform1f(location, value));
 
     return true;
@@ -199,7 +199,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform2f(location, value.x, value.y)); //NOLINT (cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
 
     return true;
@@ -214,7 +214,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform3f(location, value.x, value.y, value.z)); //NOLINT (cppcoreguidelines-pro-type-union-access,-warnings-as-errors
 
     return true;
@@ -229,7 +229,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform4f(location, value.x, value.y, value.z, value.w)); //NOLINT (cppcoreguidelines-pro-type-union-access,-warnings-as-errors
 
     return true;
@@ -244,7 +244,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform2i(location, value.x, value.y)); //NOLINT (cppcoreguidelines-pro-type-union-access,-warnings-as-errors
 
     return true;
@@ -259,7 +259,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform3i(location, value.x, value.y, value.z)); //NOLINT (cppcoreguidelines-pro-type-union-access,-warnings-as-errors
 
     return true;
@@ -274,7 +274,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform4i(location, value.x, value.y, value.z, value.w)); //NOLINT (cppcoreguidelines-pro-type-union-access,-warnings-as-errors
 
     return true;
@@ -289,7 +289,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform1fv(location, size, values));
 
     return true;
@@ -304,7 +304,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform1i(location, value));
 
     return true;
@@ -319,7 +319,7 @@ namespace rex
       return false;
     }
 
-    const s32 location = m_uniform_locations.at(name);
+    const s32 location = static_cast<s32>(m_uniform_locations.at(name));
     GL_CALL(glUniform1ui(location, value));
 
     return true;
