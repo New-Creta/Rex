@@ -155,25 +155,6 @@ namespace rex
       return static_cast<f32>(w) / static_cast<f32>(h);
     }
 
-    //-------------------------------------------------------------------------
-    bool Window::destroy()
-    {
-      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
-      {
-        DestroyWindow(static_cast<HWND>(m_hwnd));
-
-        m_wnd_class.destroy();
-      }
-      else
-      {
-        REX_WARN("Window already destroyed");
-        return false;
-      }
-
-      m_destroyed = true;
-      return true;
-    }
-
     //-----------------------------------------------------------------
     LResult Window::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
     {
@@ -194,6 +175,25 @@ namespace rex
           return 0;
       }
       return DefWindowProc(static_cast<HWND>(hwnd), msg, wparam, lparam);
+    }
+    
+    //-------------------------------------------------------------------------
+    bool Window::destroy()
+    {
+      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
+      {
+        DestroyWindow(static_cast<HWND>(m_hwnd));
+
+        m_wnd_class.destroy();
+      }
+      else
+      {
+        REX_WARN("Window already destroyed");
+        return false;
+      }
+
+      m_destroyed = true;
+      return true;
     }
   } // namespace win32
 } // namespace rex
