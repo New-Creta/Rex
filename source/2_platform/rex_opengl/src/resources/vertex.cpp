@@ -12,7 +12,7 @@ namespace rex
   // ATTRIBUTES:
   //  - POSITION
   //-----------------------------------------------------------------------
-  BufferLayout VertexPos::get_layout()
+  BufferLayout VertexPos::layout()
   {
     BufferLayoutBuilder builder;
     builder.add_buffer_element(DataType::Value::Vec3);
@@ -32,7 +32,7 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  const glm::vec3& VertexPos::get_position() const
+  const glm::vec3& VertexPos::position() const
   {
     return m_position;
   }
@@ -40,7 +40,7 @@ namespace rex
   //-----------------------------------------------------------------------
   bool operator==(const VertexPos& v1, const VertexPos& v2)
   {
-    return v1.get_position().x == v2.get_position().x && v1.get_position().y == v2.get_position().y && v1.get_position().z == v2.get_position().z;
+    return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z;
   }
   //-----------------------------------------------------------------------
   bool operator!=(const VertexPos& v1, const VertexPos& v2)
@@ -55,7 +55,7 @@ namespace rex
   //  - POSITION
   //  - COLOR
   //-----------------------------------------------------------------------
-  BufferLayout VertexPosCol::get_layout()
+  BufferLayout VertexPosCol::layout()
   {
     BufferLayoutBuilder builder;
     builder.add_buffer_element(DataType::Value::Vec3);
@@ -78,12 +78,12 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  const glm::vec3& VertexPosCol::get_position() const
+  const glm::vec3& VertexPosCol::position() const
   {
     return m_position;
   }
   //-----------------------------------------------------------------------
-  const glm::vec3& VertexPosCol::get_color() const
+  const glm::vec3& VertexPosCol::color() const
   {
     return m_color;
   }
@@ -91,8 +91,8 @@ namespace rex
   //-----------------------------------------------------------------------
   bool operator==(const VertexPosCol& v1, const VertexPosCol& v2)
   {
-    return v1.get_position().x == v2.get_position().x && v1.get_position().y == v2.get_position().y && v1.get_position().z == v2.get_position().z && v1.get_color().x == v2.get_color().x && v1.get_color().y == v2.get_color().y &&
-           v1.get_color().z == v2.get_color().z;
+    return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.color().x == v2.color().x && v1.color().y == v2.color().y &&
+           v1.color().z == v2.color().z;
   }
   //-----------------------------------------------------------------------
   bool operator!=(const VertexPosCol& v1, const VertexPosCol& v2)
@@ -107,7 +107,7 @@ namespace rex
   //  - POSITION
   //  - UV
   //-----------------------------------------------------------------------
-  BufferLayout VertexPosTex::get_layout()
+  BufferLayout VertexPosTex::layout()
   {
     BufferLayoutBuilder builder;
     builder.add_buffer_element(DataType::Value::Vec3);
@@ -130,12 +130,12 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  const glm::vec3& VertexPosTex::get_position() const
+  const glm::vec3& VertexPosTex::position() const
   {
     return m_position;
   }
   //-----------------------------------------------------------------------
-  const glm::vec2& VertexPosTex::get_uv() const
+  const glm::vec2& VertexPosTex::uv() const
   {
     return m_uv;
   }
@@ -143,7 +143,7 @@ namespace rex
   //-----------------------------------------------------------------------
   bool operator==(const VertexPosTex& v1, const VertexPosTex& v2)
   {
-    return v1.get_position().x == v2.get_position().x && v1.get_position().y == v2.get_position().y && v1.get_position().z == v2.get_position().z && v1.get_uv().x == v2.get_uv().x && v1.get_uv().y == v2.get_uv().y;
+    return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.uv().x == v2.uv().x && v1.uv().y == v2.uv().y;
   }
   //-----------------------------------------------------------------------
   bool operator!=(const VertexPosTex& v1, const VertexPosTex& v2)
@@ -159,7 +159,7 @@ namespace rex
   //  - COLOR
   //  - UV
   //-----------------------------------------------------------------------
-  BufferLayout VertexPosColTex::get_layout()
+  BufferLayout VertexPosColTex::layout()
   {
     BufferLayoutBuilder builder;
     builder.add_buffer_element(DataType::Value::Vec3);
@@ -185,17 +185,17 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  const glm::vec3& VertexPosColTex::get_position() const
+  const glm::vec3& VertexPosColTex::position() const
   {
     return m_position;
   }
   //-----------------------------------------------------------------------
-  const glm::vec3& VertexPosColTex::get_color() const
+  const glm::vec3& VertexPosColTex::color() const
   {
     return m_color;
   }
   //-------------------------------------------------------------------------
-  const glm::vec2& VertexPosColTex::get_uv() const
+  const glm::vec2& VertexPosColTex::uv() const
   {
     return m_uv;
   }
@@ -203,8 +203,8 @@ namespace rex
   //-----------------------------------------------------------------------
   bool operator==(const VertexPosColTex& v1, const VertexPosColTex& v2)
   {
-    return v1.get_position().x == v2.get_position().x && v1.get_position().y == v2.get_position().y && v1.get_position().z == v2.get_position().z && v1.get_color().x == v2.get_color().x && v1.get_color().y == v2.get_color().y &&
-           v1.get_color().z == v2.get_color().z && v1.get_uv().x == v2.get_uv().x && v1.get_uv().y == v2.get_uv().y;
+    return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.color().x == v2.color().x && v1.color().y == v2.color().y &&
+           v1.color().z == v2.color().z && v1.uv().x == v2.uv().x && v1.uv().y == v2.uv().y;
   }
   //-----------------------------------------------------------------------
   bool operator!=(const VertexPosColTex& v1, const VertexPosColTex& v2)
@@ -213,13 +213,13 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  const rsl::unordered_map<u64, BufferLayout>& get_buffer_layouts()
+  const rsl::unordered_map<u64, BufferLayout>& buffer_layouts()
   {
     static const rsl::unordered_map<u64, BufferLayout> s_buffer_layouts = {
-        {rsl::type_id<VertexPos>().hash_code(), VertexPos::get_layout()},
-        {rsl::type_id<VertexPosCol>().hash_code(), VertexPosCol::get_layout()},
-        {rsl::type_id<VertexPosTex>().hash_code(), VertexPosTex::get_layout()},
-        {rsl::type_id<VertexPosColTex>().hash_code(), VertexPosColTex::get_layout()},
+        {rsl::type_id<VertexPos>().hash_code(), VertexPos::layout()},
+        {rsl::type_id<VertexPosCol>().hash_code(), VertexPosCol::layout()},
+        {rsl::type_id<VertexPosTex>().hash_code(), VertexPosTex::layout()},
+        {rsl::type_id<VertexPosColTex>().hash_code(), VertexPosColTex::layout()},
     };
 
     return s_buffer_layouts;

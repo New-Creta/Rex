@@ -7,13 +7,13 @@ namespace rex
   namespace buffer_layout
   {
     //-----------------------------------------------------------------------
-    u64 get_data_type_byte_size(const DataType& type)
+    u64 data_type_byte_size(const DataType& type)
     {
       return type.to_byte_size();
     }
 
     //-----------------------------------------------------------------------
-    u32 get_data_type_component_count(const DataType::Value& type)
+    u32 data_type_component_count(const DataType::Value& type)
     {
       switch(type)
       {
@@ -83,8 +83,8 @@ namespace rex
     BufferElements new_buffer_elements;
 
     new_buffer_elements.reserve(m_layout.size() + 1);
-    new_buffer_elements.insert(rsl::end(new_buffer_elements), rsl::begin(m_layout.get_buffer_elements()), rsl::end(m_layout.get_buffer_elements()));
-    new_buffer_elements.emplace_back(inType, buffer_layout::get_data_type_component_count(inType), inShouldNormalize);
+    new_buffer_elements.insert(rsl::end(new_buffer_elements), rsl::begin(m_layout.buffer_elements()), rsl::end(m_layout.buffer_elements()));
+    new_buffer_elements.emplace_back(inType, buffer_layout::data_type_component_count(inType), inShouldNormalize);
 
     m_layout = BufferLayout(rsl::move(new_buffer_elements));
 
@@ -114,7 +114,7 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  const BufferElements& BufferLayout::get_buffer_elements() const
+  const BufferElements& BufferLayout::buffer_elements() const
   {
     return m_elements;
   }
@@ -122,12 +122,12 @@ namespace rex
   //-----------------------------------------------------------------------
   bool operator==(const BufferLayout& layout1, const BufferLayout& layout2)
   {
-    if(layout1.get_buffer_elements().size() != layout2.get_buffer_elements().size())
+    if(layout1.buffer_elements().size() != layout2.buffer_elements().size())
     {
       return false;
     }
 
-    return layout1.get_buffer_elements() == layout2.get_buffer_elements();
+    return layout1.buffer_elements() == layout2.buffer_elements();
   }
   //-----------------------------------------------------------------------
   bool operator!=(const BufferLayout& layout1, const BufferLayout& layout2)

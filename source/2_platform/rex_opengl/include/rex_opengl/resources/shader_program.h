@@ -51,10 +51,15 @@ namespace rex
   {
   public:
     ShaderProgram();
+    ShaderProgram(const ShaderProgram& other) = delete;
+    ShaderProgram(ShaderProgram&& other) noexcept;
     ShaderProgram(const char* vertexShaderCode, const char* fragmentShaderCode);
     ~ShaderProgram() override;
 
-    u32 get_resource_id() const override;
+    ShaderProgram& operator=(const ShaderProgram& other) = delete;
+    ShaderProgram& operator=(ShaderProgram&& other) noexcept;
+
+    u32 resource_id() const override;
 
     void bind() const override;
     void unbind() const override;

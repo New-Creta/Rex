@@ -11,7 +11,7 @@ namespace rex
   namespace input_assembler
   {
     //-----------------------------------------------------------------------
-    u32 get_gl_data_type(const DataType& type)
+    u32 gl_data_type(const DataType& type)
     {
       switch(type.get())
       {
@@ -57,9 +57,9 @@ namespace rex
 
     for(s32 i = 0; i < bufferLayout.size(); ++i)
     {
-      const BufferElement& element = bufferLayout.get_buffer_elements()[i];
+      const BufferElement& element = bufferLayout.buffer_elements()[i];
 
-      glVertexAttribPointer(i, element.component_count, input_assembler::get_gl_data_type(element.type), static_cast<GLboolean>(element.normalized), 0,
+      glVertexAttribPointer(i, element.component_count, input_assembler::gl_data_type(element.type), static_cast<GLboolean>(element.normalized), 0,
                             reinterpret_cast<void*>(offset)); // NOLINT (cppcoreguidelines-pro-type-reinterpret-cast,-warnings-as-errors)
       glEnableVertexAttribArray(i);
 

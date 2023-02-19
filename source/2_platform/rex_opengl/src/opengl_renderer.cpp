@@ -74,7 +74,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     // general accessors
-    const RendererInfo& get_info()
+    const RendererInfo& info()
     {
       return opengl::g_renderer_info;
     }

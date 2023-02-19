@@ -27,7 +27,7 @@ struct WglContext
   HGLRC glrc;
 };
 
-WglContext g_glctx;
+WglContext g_glctx; // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
 
 namespace rex
 {
@@ -88,18 +88,18 @@ namespace rex
       // Load WGL Extensions:
       gladLoaderLoadWGL(g_glctx.dc);
 
-      s32 attribs[] = {WGL_CONTEXT_MAJOR_VERSION_ARB,
-                       3, // Set the MAJOR version of OpenGL to 3
-                       WGL_CONTEXT_MINOR_VERSION_ARB,
-                       2, // Set the MINOR version of OpenGL to 2
-                       WGL_CONTEXT_FLAGS_ARB,
-                       WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, // Set our OpenGL context to be forward compatible
-                       0};
+      rsl::array attribs = {WGL_CONTEXT_MAJOR_VERSION_ARB,
+                            3, // Set the MAJOR version of OpenGL to 3
+                            WGL_CONTEXT_MINOR_VERSION_ARB,
+                            2, // Set the MINOR version of OpenGL to 2
+                            WGL_CONTEXT_FLAGS_ARB,
+                            WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, // Set our OpenGL context to be forward compatible
+                            0};
 
       const char* extensions = wglGetExtensionsStringARB(g_glctx.dc);
       if(strstr(extensions, "WGL_ARB_create_context") == NULL)
       {
-        g_glctx.glrc = wglCreateContextAttribsARB(g_glctx.dc, NULL, attribs);
+        g_glctx.glrc = wglCreateContextAttribsARB(g_glctx.dc, NULL, attribs.data());
         if(g_glctx.glrc == NULL)
         {
           wglDeleteContext(temp);
@@ -144,10 +144,10 @@ namespace rex
   {
     struct GuiApplication::Internal
     {
-      Internal(const PlatformCreationParams& platformCreationParams, const GuiParams& guiParams, const CommandLineArguments& genericCreationParams)
+      Internal(const PlatformCreationParams& platformCreationParams, const GuiParams& guiParams, CommandLineArguments genericCreationParams)
           : platform_creation_params(platformCreationParams)
           , gui_params(guiParams)
-          , cmd_line_args(genericCreationParams)
+          , cmd_line_args(rsl::move(genericCreationParams))
       {
       }
 
@@ -160,8 +160,8 @@ namespace rex
         }
         subscribe_window_events();
 
-        HWND hwnd = (HWND)window->get_primary_display_handle();
-        if(CREATE_CTX(hwnd) == false)
+        HWND hwnd = static_cast<HWND>(window->primary_display_handle());
+        if(CREATE_CTX(hwnd) == 0)
         {
           return false;
         }
@@ -172,7 +172,7 @@ namespace rex
         }
 
         REX_STATIC_TODO("We should find a solution to convert from OpenGL unsigned byte pointers without upsetting the LINTER");
-        // RendererInfo info = renderer::get_info();
+        // RendererInfo info = renderer::info();
         // REX_INFO("Renderer Info - API Version: {}", info.api_version);
         // REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
         // REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
@@ -191,7 +191,7 @@ namespace rex
           is_running = !is_marked_for_destroy;
         }
       }
-      void shutdown()
+      void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {
         on_shutdown();
         renderer::shutdown();

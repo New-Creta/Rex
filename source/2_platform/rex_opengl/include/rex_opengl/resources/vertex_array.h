@@ -16,7 +16,7 @@ namespace rex
     VertexArray& operator=(const VertexArray& other) = delete;
     VertexArray& operator=(VertexArray&& other) noexcept;
 
-    u32 get_resource_id() const override;
+    u32 resource_id() const override;
 
     void bind() const override;
     void unbind() const override;

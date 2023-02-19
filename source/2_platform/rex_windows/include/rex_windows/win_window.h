@@ -22,12 +22,12 @@ namespace rex
       void hide() override;
       void close() override;
 
-      void* get_primary_display_handle() override;
+      void* primary_display_handle() override;
 
       s32 width() const override;
       s32 height() const override;
 
-      f32 get_aspect() const override;
+      f32 aspect() const override;
 
     private:
       bool destroy();

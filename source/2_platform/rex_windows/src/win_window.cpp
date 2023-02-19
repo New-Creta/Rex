@@ -123,7 +123,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void* Window::get_primary_display_handle()
+    void* Window::primary_display_handle()
     {
       return m_hwnd;
     }
@@ -146,7 +146,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    f32 Window::get_aspect() const
+    f32 Window::aspect() const
     {
       const s32 w = width();
       const s32 h = height();

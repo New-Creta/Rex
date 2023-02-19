@@ -21,7 +21,7 @@ namespace rex
   template <typename TVertexType>
   void InputAssembler::build()
   {
-    const auto& layouts = get_buffer_layouts();
+    const auto& layouts = buffer_layouts();
     auto it             = layouts.find(typeid(TVertexType).hash_code());
     if(it == rsl::cend(layouts))
     {

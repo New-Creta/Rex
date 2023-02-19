@@ -13,7 +13,7 @@ namespace rex
   namespace texture2d
   {
     //-------------------------------------------------------------------------
-    GLint get_texture_wrapping(const TextureWrap& wrap)
+    GLint texture_wrapping(const TextureWrap& wrap)
     {
       switch(wrap)
       {
@@ -30,7 +30,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLint get_texture_filter(const TextureFilter& filter)
+    GLint texture_filter(const TextureFilter& filter)
     {
       switch(filter)
       {
@@ -45,7 +45,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLint get_texture_min_filter(const TextureFilter& filter)
+    GLint texture_min_filter(const TextureFilter& filter)
     {
       switch(filter)
       {
@@ -60,7 +60,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLint get_texture_internal_format(const TextureStorageFormat& format)
+    GLint texture_internal_format(const TextureStorageFormat& format)
     {
       switch(format)
       {
@@ -79,7 +79,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLint get_texture_pixel_format(const TexturePixelFormat& format)
+    GLint texture_pixel_format(const TexturePixelFormat& format)
     {
       switch(format)
       {
@@ -103,7 +103,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLint get_texture_pixel_type(const DataType& type)
+    GLint texture_pixel_type(const DataType& type)
     {
       switch(type.get())
       {
@@ -152,15 +152,15 @@ namespace rex
     glGenTextures(1, &m_resource_id);
     glBindTexture(GL_TEXTURE_2D, m_resource_id);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture2d::get_texture_wrapping(m_description.s_wrap));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture2d::get_texture_wrapping(m_description.t_wrap));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture2d::get_texture_min_filter(m_description.filter));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture2d::get_texture_filter(m_description.filter));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture2d::texture_wrapping(m_description.s_wrap));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture2d::texture_wrapping(m_description.t_wrap));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture2d::texture_min_filter(m_description.filter));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture2d::texture_filter(m_description.filter));
 
     REX_ASSERT(data != nullptr);
 
-    glTexImage2D(GL_TEXTURE_2D, m_description.mipmap_level, texture2d::get_texture_internal_format(m_description.storage_format), m_description.width, m_description.height, 0, texture2d::get_texture_pixel_format(m_description.pixel_format),
-                 texture2d::get_texture_pixel_type(m_description.pixel_data_type), data);
+    glTexImage2D(GL_TEXTURE_2D, m_description.mipmap_level, texture2d::texture_internal_format(m_description.storage_format), m_description.width, m_description.height, 0, texture2d::texture_pixel_format(m_description.pixel_format),
+                 texture2d::texture_pixel_type(m_description.pixel_data_type), data);
 
     glGenerateMipmap(GL_TEXTURE_2D);
   }
@@ -190,7 +190,7 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  u32 Texture2D::get_resource_id() const
+  u32 Texture2D::resource_id() const
   {
     return m_resource_id;
   }

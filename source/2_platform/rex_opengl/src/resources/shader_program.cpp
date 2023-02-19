@@ -107,14 +107,35 @@ namespace rex
     GL_CALL(glDeleteShader(fragment_shader_id));
   }
 
+  //-------------------------------------------------------------------------
+  ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
+    :m_resource_id(rsl::exchange(other.m_resource_id, 0))
+    ,m_uniform_locations(rsl::exchange(other.m_uniform_locations, rsl::unordered_map<rsl::small_stack_string, ShaderUniformLocation>()))
+    ,m_bound(rsl::exchange(other.m_bound, false))
+  {
+
+  }
+
   //-----------------------------------------------------------------------
   ShaderProgram::~ShaderProgram()
   {
     release();
   }
 
+  //-------------------------------------------------------------------------
+  rex::ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept
+  {
+    REX_ASSERT(*this == other);
+
+    m_resource_id = rsl::exchange(other.m_resource_id, 0);
+    m_uniform_locations = rsl::exchange(other.m_uniform_locations, rsl::unordered_map<rsl::small_stack_string, ShaderUniformLocation>());
+    m_bound = rsl::exchange(other.m_bound, false);
+
+    return *this;
+  }
+
   //-----------------------------------------------------------------------
-  u32 ShaderProgram::get_resource_id() const
+  u32 ShaderProgram::resource_id() const
   {
     return m_resource_id;
   }

@@ -22,8 +22,8 @@ namespace rex
     Buffer& operator=(const Buffer& other) = delete;
     Buffer& operator=(Buffer&& other) noexcept;
 
-    u32 get_resource_id() const override;
-    u32 get_resource_target() const;
+    u32 resource_id() const override;
+    u32 resource_target() const;
 
     void bind() const override;
     void unbind() const override;
@@ -35,5 +35,5 @@ namespace rex
     u32 m_resource_target;
   };
 
-  u32 get_gl_usage(const BufferUsage& usage);
+  u32 gl_usage(const BufferUsage& usage);
 } // namespace rex

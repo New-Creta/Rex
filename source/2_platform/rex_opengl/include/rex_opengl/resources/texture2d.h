@@ -55,7 +55,7 @@ namespace rex
 
   struct TextureDescription
   {
-    static TextureDescription make_default_texture_description(u32 width = 1u, u32 height = 1u)
+    static TextureDescription make_default_texture_description(s32 width = 1, s32 height = 1)
     {
       TextureDescription desc;
 
@@ -113,7 +113,7 @@ namespace rex
     Texture2D& operator=(const Texture2D& other) = delete;
     Texture2D& operator=(Texture2D&& other) noexcept;
 
-    u32 get_resource_id() const override;
+    u32 resource_id() const override;
 
     void bind() const override;
     void unbind() const override;

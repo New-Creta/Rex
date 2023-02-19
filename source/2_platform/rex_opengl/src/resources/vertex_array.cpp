@@ -38,7 +38,7 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  u32 VertexArray::get_resource_id() const
+  u32 VertexArray::resource_id() const
   {
     return m_resource_id;
   }

@@ -43,7 +43,7 @@ namespace rex
     bool empty() const;
     s32 size() const;
 
-    const BufferElements& get_buffer_elements() const;
+    const BufferElements& buffer_elements() const;
 
   public:
     BufferLayoutIt begin()

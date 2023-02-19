@@ -19,7 +19,7 @@ namespace rex
   //-----------------------------------------------------------------------
   void ElementBuffer::set_data(u64 size, const void* data, BufferUsage usage)
   {
-    GL_CALL(glBufferData(get_resource_target(), size, data, get_gl_usage(usage)));
+    GL_CALL(glBufferData(resource_target(), size, data, gl_usage(usage)));
   }
 
 } // namespace rex

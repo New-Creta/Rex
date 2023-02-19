@@ -25,7 +25,7 @@ namespace rex
     void shutdown();
 
     // general accessors
-    const RendererInfo& get_info();
+    const RendererInfo& info();
     ShaderPlatform shader_platform();
 
     bool is_y_up();

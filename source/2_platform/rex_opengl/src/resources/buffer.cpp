@@ -41,12 +41,12 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  u32 Buffer::get_resource_id() const
+  u32 Buffer::resource_id() const
   {
     return m_resource_id;
   }
   //-----------------------------------------------------------------------
-  u32 Buffer::get_resource_target() const
+  u32 Buffer::resource_target() const
   {
     return m_resource_target;
   }
@@ -82,7 +82,7 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  u32 get_gl_usage(const BufferUsage& usage)
+  u32 gl_usage(const BufferUsage& usage)
   {
     switch(usage)
     {

@@ -16,12 +16,12 @@ namespace rex
   class VertexPos
   {
   public:
-    static BufferLayout get_layout();
+    static BufferLayout layout();
 
     VertexPos();
     explicit VertexPos(const glm::vec3& position);
 
-    const glm::vec3& get_position() const;
+    const glm::vec3& position() const;
 
   private:
     glm::vec3 m_position;
@@ -40,13 +40,13 @@ namespace rex
   class VertexPosCol
   {
   public:
-    static BufferLayout get_layout();
+    static BufferLayout layout();
 
     VertexPosCol();
     VertexPosCol(const glm::vec3& position, const glm::vec3& color);
 
-    const glm::vec3& get_position() const;
-    const glm::vec3& get_color() const;
+    const glm::vec3& position() const;
+    const glm::vec3& color() const;
 
   private:
     glm::vec3 m_position;
@@ -66,13 +66,13 @@ namespace rex
   class VertexPosTex
   {
   public:
-    static BufferLayout get_layout();
+    static BufferLayout layout();
 
     VertexPosTex();
     VertexPosTex(const glm::vec3& position, const glm::vec2& uv);
 
-    const glm::vec3& get_position() const;
-    const glm::vec2& get_uv() const;
+    const glm::vec3& position() const;
+    const glm::vec2& uv() const;
 
   private:
     glm::vec3 m_position;
@@ -93,14 +93,14 @@ namespace rex
   class VertexPosColTex
   {
   public:
-    static BufferLayout get_layout();
+    static BufferLayout layout();
 
     VertexPosColTex();
     VertexPosColTex(const glm::vec3& position, const glm::vec3& color, const glm::vec2& uv);
 
-    const glm::vec3& get_position() const;
-    const glm::vec3& get_color() const;
-    const glm::vec2& get_uv() const;
+    const glm::vec3& position() const;
+    const glm::vec3& color() const;
+    const glm::vec2& uv() const;
 
   private:
     glm::vec3 m_position;
@@ -113,5 +113,5 @@ namespace rex
 
   //-----------------------------------------------------------------------
   // All available vertex layouts
-  const rsl::unordered_map<u64, BufferLayout>& get_buffer_layouts();
+  const rsl::unordered_map<u64, BufferLayout>& buffer_layouts();
 } // namespace rex
