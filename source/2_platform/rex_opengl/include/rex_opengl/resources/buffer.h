@@ -7,20 +7,20 @@ namespace rex
 {
   enum class BufferUsage
   {
-    STATIC_DRAW,
-    DYNAMIC_DRAW
+    StaticDraw,
+    DynamicDraw
   };
 
   class Buffer : public Resource
   {
   public:
-    Buffer(u32 target);
-    Buffer(const Buffer&) = delete;
-    Buffer(Buffer&&) noexcept;
+    explicit Buffer(u32 target);
+    Buffer(const Buffer& other) = delete;
+    Buffer(Buffer&& other) noexcept;
     ~Buffer() override;
 
-    Buffer& operator=(const Buffer&) = delete;
-    Buffer& operator=(Buffer&&) noexcept;
+    Buffer& operator=(const Buffer& other) = delete;
+    Buffer& operator=(Buffer&& other) noexcept;
 
     u32 get_resource_id() const override;
     u32 get_resource_target() const;

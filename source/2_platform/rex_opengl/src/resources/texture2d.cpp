@@ -13,16 +13,16 @@ namespace rex
   namespace texture2d
   {
     //-------------------------------------------------------------------------
-    GLenum get_texture_wrapping(const TextureWrap& wrap)
+    GLint get_texture_wrapping(const TextureWrap& wrap)
     {
       switch(wrap)
       {
-        case TextureWrap::REPEAT: return GL_REPEAT;
-        case TextureWrap::MIRRORED_REPEAT: return GL_MIRRORED_REPEAT;
-        case TextureWrap::CLAMP_TO_EDGE: return GL_CLAMP_TO_EDGE;
-        case TextureWrap::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
+        case TextureWrap::Repeat: return GL_REPEAT;
+        case TextureWrap::MirroredRepeat: return GL_MIRRORED_REPEAT;
+        case TextureWrap::ClampToEdge: return GL_CLAMP_TO_EDGE;
+        case TextureWrap::ClampToBorder: return GL_CLAMP_TO_BORDER;
 
-        case TextureWrap::UNKNOWN: break;
+        case TextureWrap::Unknown: break;
       }
 
       REX_ERROR("Unknown \"Texture Wrap\", returning \"GL_REPEAT\"");
@@ -30,14 +30,14 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLenum get_texture_filter(const TextureFilter& filter)
+    GLint get_texture_filter(const TextureFilter& filter)
     {
       switch(filter)
       {
-        case TextureFilter::LINEAR: return GL_LINEAR;
-        case TextureFilter::NEAREST: return GL_NEAREST;
+        case TextureFilter::Linear: return GL_LINEAR;
+        case TextureFilter::Nearest: return GL_NEAREST;
 
-        case TextureFilter::UNKNOWN: break;
+        case TextureFilter::Unknown: break;
       }
 
       REX_ERROR("Unknown \"Texture Filter\", returning \"GL_LINEAR\"");
@@ -45,14 +45,14 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLenum get_texture_min_filter(const TextureFilter& filter)
+    GLint get_texture_min_filter(const TextureFilter& filter)
     {
       switch(filter)
       {
-        case TextureFilter::LINEAR: return GL_LINEAR_MIPMAP_LINEAR;
-        case TextureFilter::NEAREST: return GL_LINEAR_MIPMAP_NEAREST;
+        case TextureFilter::Linear: return GL_LINEAR_MIPMAP_LINEAR;
+        case TextureFilter::Nearest: return GL_LINEAR_MIPMAP_NEAREST;
 
-        case TextureFilter::UNKNOWN: break;
+        case TextureFilter::Unknown: break;
       }
 
       REX_ERROR("Unknown \"Texture Filter\", returning \"GL_LINEAR_MIPMAP_LINEAR\"");
@@ -60,18 +60,18 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLenum get_texture_internal_format(const TextureStorageFormat& format)
+    GLint get_texture_internal_format(const TextureStorageFormat& format)
     {
       switch(format)
       {
         case TextureStorageFormat::R: return GL_RED;
-        case TextureStorageFormat::RG: return GL_RG;
-        case TextureStorageFormat::RGB: return GL_RGB;
-        case TextureStorageFormat::RGBA: return GL_RGBA;
-        case TextureStorageFormat::DEPTH: return GL_DEPTH_COMPONENT;
-        case TextureStorageFormat::DEPTH_STENCIL: return GL_DEPTH_STENCIL;
+        case TextureStorageFormat::Rg: return GL_RG;
+        case TextureStorageFormat::Rgb: return GL_RGB;
+        case TextureStorageFormat::Rgba: return GL_RGBA;
+        case TextureStorageFormat::Depth: return GL_DEPTH_COMPONENT;
+        case TextureStorageFormat::DepthStencil: return GL_DEPTH_STENCIL;
 
-        case TextureStorageFormat::UNKNOWN: break;
+        case TextureStorageFormat::Unknown: break;
       }
 
       REX_ERROR("Unknown \"TextureStorageFormat\", returning \"GL_RGB\"");
@@ -79,23 +79,23 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLenum get_texture_pixel_format(const TexturePixelFormat& format)
+    GLint get_texture_pixel_format(const TexturePixelFormat& format)
     {
       switch(format)
       {
-        case TexturePixelFormat::DEPTH: return GL_DEPTH_COMPONENT;
+        case TexturePixelFormat::Depth: return GL_DEPTH_COMPONENT;
 
-        case TexturePixelFormat::DEPTH_STENCIL: return GL_DEPTH_STENCIL;
+        case TexturePixelFormat::DepthStencil: return GL_DEPTH_STENCIL;
 
         case TexturePixelFormat::R: return GL_RED;
-        case TexturePixelFormat::RG: return GL_RG;
-        case TexturePixelFormat::RGB: return GL_RGB;
-        case TexturePixelFormat::RGBA: return GL_RGBA;
+        case TexturePixelFormat::Rg: return GL_RG;
+        case TexturePixelFormat::Rgb: return GL_RGB;
+        case TexturePixelFormat::Rgba: return GL_RGBA;
 
         case TexturePixelFormat::BGR: return GL_BGR;
         case TexturePixelFormat::BGRA: return GL_BGRA;
 
-        case TexturePixelFormat::UNKNOWN: break;
+        case TexturePixelFormat::Unknown: break;
       }
 
       REX_ERROR("Unknown \"Texture Pixel Format\", returning \"GL_RGB\"");
@@ -103,38 +103,41 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    GLenum get_texture_pixel_type(const DataType& type)
+    GLint get_texture_pixel_type(const DataType& type)
     {
       switch(type.get())
       {
-        case DataType::Value::UNSIGNED_INT8: return GL_UNSIGNED_BYTE;
+        case DataType::Value::UnsignedInt8: 
+          return GL_UNSIGNED_BYTE;
 
         case DataType::Value::NONE:
-        case DataType::Value::INT8:
-        case DataType::Value::INT16:
-        case DataType::Value::INT32:
-        case DataType::Value::INT64:
-        case DataType::Value::UNSIGNED_INT16:
-        case DataType::Value::UNSIGNED_INT32:
-        case DataType::Value::UNSIGNED_INT64:
-        case DataType::Value::FLOAT32:
-        case DataType::Value::FLOAT64:
-        case DataType::Value::MAT3:
-        case DataType::Value::MAT4:
-        case DataType::Value::VEC2:
-        case DataType::Value::VEC3:
-        case DataType::Value::VEC4:
-        case DataType::Value::IVEC2:
-        case DataType::Value::IVEC3:
-        case DataType::Value::IVEC4:
-        case DataType::Value::UIVEC2:
-        case DataType::Value::UIVEC3:
-        case DataType::Value::UIVEC4:
-        case DataType::Value::BOOL:
-        case DataType::Value::SAMPLER2D:
-        case DataType::Value::SAMPLER3D:
-        case DataType::Value::SAMPLERCUBE:
-        case DataType::Value::STRING: break;
+        case DataType::Value::Int8:
+        case DataType::Value::Int16:
+        case DataType::Value::Int32:
+        case DataType::Value::Int64:
+        case DataType::Value::UnsignedInt16:
+        case DataType::Value::UnsignedInt32:
+        case DataType::Value::UnsignedInt64:
+        case DataType::Value::Float32:
+        case DataType::Value::Float64:
+        case DataType::Value::Mat3:
+        case DataType::Value::Mat4:
+        case DataType::Value::Vec2:
+        case DataType::Value::Vec3:
+        case DataType::Value::Vec4:
+        case DataType::Value::Ivec2:
+        case DataType::Value::Ivec3:
+        case DataType::Value::Ivec4:
+        case DataType::Value::Uvec2:
+        case DataType::Value::Uvec3:
+        case DataType::Value::Uvec4:
+        case DataType::Value::Bool:
+        case DataType::Value::Sampler2D:
+        case DataType::Value::Sampler3D:
+        case DataType::Value::SamplerCube:
+        case DataType::Value::String: 
+          // Nothing to implement
+        break;
       }
 
       REX_ERROR("Unknown \"Data Type\", returning \"GL_UNSIGNED_BYTE\"");
@@ -143,9 +146,9 @@ namespace rex
   } // namespace texture2d
 
   //-------------------------------------------------------------------------
-  Texture2D::Texture2D(const TextureDescription& desc, void* data)
+  Texture2D::Texture2D(TextureDescription desc, void* data)
       : m_resource_id(0)
-      , m_description(desc)
+      , m_description(rsl::move(desc))
   {
     glGenTextures(1, &m_resource_id);
     glBindTexture(GL_TEXTURE_2D, m_resource_id);
@@ -162,11 +165,30 @@ namespace rex
 
     glGenerateMipmap(GL_TEXTURE_2D);
   }
+  
+  //-------------------------------------------------------------------------
+  Texture2D::Texture2D(Texture2D&& other) noexcept
+    :m_resource_id(rsl::exchange(other.m_resource_id, 0))
+    ,m_description(rsl::exchange(other.m_desc, {}))
+  {
+
+  }
 
   //-------------------------------------------------------------------------
   Texture2D::~Texture2D()
   {
     release();
+  }
+
+  //-------------------------------------------------------------------------
+  Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
+  {
+    REX_ASSERT(*this != other);
+
+    m_resource_id = rsl::exchange(other.m_resource_id, 0);
+    m_description = rsl::exchange(other.m_description, {});
+
+    return *this;
   }
 
   //-------------------------------------------------------------------------

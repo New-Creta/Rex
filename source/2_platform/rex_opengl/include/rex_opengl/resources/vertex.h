@@ -19,7 +19,7 @@ namespace rex
     static BufferLayout get_layout();
 
     VertexPos();
-    VertexPos(const glm::vec3& position);
+    explicit VertexPos(const glm::vec3& position);
 
     const glm::vec3& get_position() const;
 

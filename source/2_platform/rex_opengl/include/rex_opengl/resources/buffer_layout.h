@@ -5,22 +5,22 @@
 #include "rex_std/vector.h"
 #include "rex_std_extra/utility/yes_no.h"
 
-DEFINE_YES_NO_ENUM(ShouldNormalize);
+DEFINE_YES_NO_ENUM(ShouldNormalize);  //NOLINT(google-explicit-constructor,-warnings-as-errors)
 
 namespace rex
 {
   struct BufferElement
   {
     //-----------------------------------------------------------------------
-    BufferElement(DataType inType, u32 inComponentCount, ShouldNormalize inShouldNormalize = ShouldNormalize::no)
-        : type(inType)
+    BufferElement(DataType inType, s32 inComponentCount, ShouldNormalize inShouldNormalize = ShouldNormalize::no)
+        : type(rsl::move(inType))
         , component_count(inComponentCount)
         , normalized(inShouldNormalize)
     {
     }
 
     DataType type;
-    u32 component_count;
+    s32 component_count;
     bool normalized;
   };
 
@@ -38,7 +38,7 @@ namespace rex
     using ConstReverseBufferLayoutIt = BufferElements::const_reverse_iterator;
 
   public:
-    BufferLayout(const BufferElements& elements);
+    explicit BufferLayout(BufferElements elements);
 
     bool empty() const;
     s32 size() const;

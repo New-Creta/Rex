@@ -65,12 +65,12 @@ namespace rex
     }
 #endif
 
-    glBindBuffer((GLenum)m_resource_target, m_resource_id);
+    glBindBuffer(static_cast<GLenum>(m_resource_target), m_resource_id);
   }
   //-----------------------------------------------------------------------
   void Buffer::unbind() const
   {
-    glBindBuffer((GLenum)m_resource_target, 0);
+    glBindBuffer(static_cast<GLenum>(m_resource_target), 0);
   }
 
   //-----------------------------------------------------------------------
@@ -86,8 +86,8 @@ namespace rex
   {
     switch(usage)
     {
-      case BufferUsage::STATIC_DRAW: return GL_STATIC_DRAW;
-      case BufferUsage::DYNAMIC_DRAW: return GL_DYNAMIC_DRAW;
+      case BufferUsage::StaticDraw: return GL_STATIC_DRAW;
+      case BufferUsage::DynamicDraw: return GL_DYNAMIC_DRAW;
     }
 
     REX_ERROR("Unknown buffer usage: {0}, returing \"Static Draw\"", (s32)usage);

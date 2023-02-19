@@ -9,7 +9,12 @@ namespace rex
   {
   public:
     VertexArray();
+    VertexArray(const VertexArray& other) = delete;
+    VertexArray(VertexArray&& other) noexcept;
     ~VertexArray() override;
+
+    VertexArray& operator=(const VertexArray& other) = delete;
+    VertexArray& operator=(VertexArray&& other) noexcept;
 
     u32 get_resource_id() const override;
 

@@ -2,6 +2,8 @@
 
 #include "rex_std_extra/utility/type_id.h"
 
+//NOLINTBEGIN(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
+
 namespace rex
 {
   //-----------------------------------------------------------------------
@@ -13,7 +15,7 @@ namespace rex
   BufferLayout VertexPos::get_layout()
   {
     BufferLayoutBuilder builder;
-    builder.add_buffer_element(DataType::Value::VEC3);
+    builder.add_buffer_element(DataType::Value::Vec3);
     return builder.build();
   }
 
@@ -56,8 +58,8 @@ namespace rex
   BufferLayout VertexPosCol::get_layout()
   {
     BufferLayoutBuilder builder;
-    builder.add_buffer_element(DataType::Value::VEC3);
-    builder.add_buffer_element(DataType::Value::VEC3);
+    builder.add_buffer_element(DataType::Value::Vec3);
+    builder.add_buffer_element(DataType::Value::Vec3);
     return builder.build();
   }
 
@@ -108,8 +110,8 @@ namespace rex
   BufferLayout VertexPosTex::get_layout()
   {
     BufferLayoutBuilder builder;
-    builder.add_buffer_element(DataType::Value::VEC3);
-    builder.add_buffer_element(DataType::Value::VEC2);
+    builder.add_buffer_element(DataType::Value::Vec3);
+    builder.add_buffer_element(DataType::Value::Vec2);
     return builder.build();
   }
 
@@ -160,9 +162,9 @@ namespace rex
   BufferLayout VertexPosColTex::get_layout()
   {
     BufferLayoutBuilder builder;
-    builder.add_buffer_element(DataType::Value::VEC3);
-    builder.add_buffer_element(DataType::Value::VEC3);
-    builder.add_buffer_element(DataType::Value::VEC2);
+    builder.add_buffer_element(DataType::Value::Vec3);
+    builder.add_buffer_element(DataType::Value::Vec3);
+    builder.add_buffer_element(DataType::Value::Vec2);
     return builder.build();
   }
 
@@ -213,7 +215,7 @@ namespace rex
   //-----------------------------------------------------------------------
   const rsl::unordered_map<u64, BufferLayout>& get_buffer_layouts()
   {
-    static rsl::unordered_map<u64, BufferLayout> buffer_layouts = {
+    static const rsl::unordered_map<u64, BufferLayout> s_buffer_layouts = {
         {rsl::type_id<VertexPos>().hash_code(), VertexPos::get_layout()},
         {rsl::type_id<VertexPosCol>().hash_code(), VertexPosCol::get_layout()},
         {rsl::type_id<VertexPosTex>().hash_code(), VertexPosTex::get_layout()},
@@ -223,3 +225,5 @@ namespace rex
     return buffer_layouts;
   }
 } // namespace rex
+
+//NOLINTEND(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)

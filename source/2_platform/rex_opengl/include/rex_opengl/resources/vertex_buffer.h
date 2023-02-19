@@ -9,6 +9,6 @@ namespace rex
   public:
     VertexBuffer();
 
-    void set_data(u64 size, const void* data, BufferUsage usage = BufferUsage::STATIC_DRAW);
+    void set_data(u64 size, const void* data, BufferUsage usage = BufferUsage::StaticDraw);
   };
 } // namespace rex

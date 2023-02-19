@@ -17,38 +17,48 @@ namespace rex
     {
       switch(type.get())
       {
-        case DataType::Value::INT8:
-        case DataType::Value::INT16:
-        case DataType::Value::INT32:
-        case DataType::Value::INT64:
+        case DataType::Value::Int8:
+        case DataType::Value::Int16:
+        case DataType::Value::Int32:
+        case DataType::Value::Int64:
 
-        case DataType::Value::UNSIGNED_INT8:
-        case DataType::Value::UNSIGNED_INT16:
-        case DataType::Value::UNSIGNED_INT32:
-        case DataType::Value::UNSIGNED_INT64:
+        case DataType::Value::UnsignedInt8:
+        case DataType::Value::UnsignedInt16:
+        case DataType::Value::UnsignedInt32:
+        case DataType::Value::UnsignedInt64:
 
-        case DataType::Value::FLOAT32:
-        case DataType::Value::FLOAT64:
-        case DataType::Value::BOOL:
-        case DataType::Value::SAMPLER2D:
-        case DataType::Value::SAMPLER3D:
-        case DataType::Value::SAMPLERCUBE: return 1u;
+        case DataType::Value::Float32:
+        case DataType::Value::Float64:
+        case DataType::Value::Bool:
+        case DataType::Value::Sampler2D:
+        case DataType::Value::Sampler3D:
+        case DataType::Value::SamplerCube: 
+          return 1u;
 
-        case DataType::Value::MAT3: return 3u * 3u;
-        case DataType::Value::MAT4: return 4u * 4u;
+        case DataType::Value::Mat3: 
+          return 3u * 3u;
+        case DataType::Value::Mat4: 
+          return 4u * 4u;
 
-        case DataType::Value::VEC2:
-        case DataType::Value::IVEC2:
-        case DataType::Value::UIVEC2: return 2u;
-        case DataType::Value::IVEC3:
-        case DataType::Value::UIVEC3:
-        case DataType::Value::VEC3: return 3u;
-        case DataType::Value::IVEC4:
-        case DataType::Value::UIVEC4:
-        case DataType::Value::VEC4: return 4u;
+        case DataType::Value::Vec2:
+        case DataType::Value::Ivec2:
+        case DataType::Value::Uvec2: 
+          return 2u;
 
-        case DataType::Value::STRING:
-        case DataType::Value::NONE: break;
+        case DataType::Value::Ivec3:
+        case DataType::Value::Uvec3:
+        case DataType::Value::Vec3: 
+          return 3u;
+
+        case DataType::Value::Ivec4:
+        case DataType::Value::Uvec4:
+        case DataType::Value::Vec4: 
+          return 4u;
+
+        case DataType::Value::String:
+        case DataType::Value::NONE: 
+          // Nothing to implement
+        break;
       }
 
       REX_ERROR("Unsupported Data Type to retrieve the component count: {0}", (s32)type.get());
@@ -93,8 +103,8 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  BufferLayout::BufferLayout(const BufferElements& elements)
-      : m_elements(elements)
+  BufferLayout::BufferLayout(BufferElements elements)
+      : m_elements(rsl::move(elements))
   {
   }
 

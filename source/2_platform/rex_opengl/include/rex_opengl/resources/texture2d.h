@@ -8,28 +8,28 @@ namespace rex
 {
   enum class TextureStorageFormat
   {
-    UNKNOWN,
+    Unknown,
 
-    DEPTH,
-    DEPTH_STENCIL,
+    Depth,
+    DepthStencil,
 
     R,
-    RG,
-    RGB,
-    RGBA
+    Rg,
+    Rgb,
+    Rgba
   };
 
   enum class TexturePixelFormat
   {
-    UNKNOWN,
+    Unknown,
 
-    DEPTH,
-    DEPTH_STENCIL,
+    Depth,
+    DepthStencil,
 
     R,
-    RG,
-    RGB,
-    RGBA,
+    Rg,
+    Rgb,
+    Rgba,
 
     BGR,
     BGRA,
@@ -37,20 +37,20 @@ namespace rex
 
   enum class TextureWrap
   {
-    UNKNOWN,
+    Unknown,
 
-    REPEAT,
-    MIRRORED_REPEAT,
-    CLAMP_TO_EDGE,
-    CLAMP_TO_BORDER
+    Repeat,
+    MirroredRepeat,
+    ClampToEdge,
+    ClampToBorder
   };
 
   enum class TextureFilter
   {
-    UNKNOWN,
+    Unknown,
 
-    NEAREST,
-    LINEAR
+    Nearest,
+    Linear
   };
 
   struct TextureDescription
@@ -59,42 +59,42 @@ namespace rex
     {
       TextureDescription desc;
 
-      desc.storage_format  = TextureStorageFormat::RGB;
+      desc.storage_format  = TextureStorageFormat::Rgb;
       desc.width           = width;
       desc.height          = height;
-      desc.pixel_format    = TexturePixelFormat::RGB;
-      desc.pixel_data_type = DataType::Value::UNSIGNED_INT8;
+      desc.pixel_format    = TexturePixelFormat::Rgb;
+      desc.pixel_data_type = DataType::Value::UnsignedInt8;
       desc.mipmap_level    = 0;
-      desc.filter          = TextureFilter::LINEAR;
-      desc.min_filter      = TextureFilter::LINEAR;
-      desc.mag_filter      = TextureFilter::LINEAR;
-      desc.s_wrap          = TextureWrap::REPEAT;
-      desc.t_wrap          = TextureWrap::REPEAT;
+      desc.filter          = TextureFilter::Linear;
+      desc.min_filter      = TextureFilter::Linear;
+      desc.mag_filter      = TextureFilter::Linear;
+      desc.s_wrap          = TextureWrap::Repeat;
+      desc.t_wrap          = TextureWrap::Repeat;
 
       return desc;
     }
 
     TextureDescription()
-        : storage_format(TextureStorageFormat::UNKNOWN)
+        : storage_format(TextureStorageFormat::Unknown)
         , width(0)
         , height(0)
-        , pixel_format(TexturePixelFormat::UNKNOWN)
+        , pixel_format(TexturePixelFormat::Unknown)
         , pixel_data_type(DataType::Value::NONE)
         , mipmap_level(0)
-        , filter(TextureFilter::UNKNOWN)
-        , min_filter(TextureFilter::UNKNOWN)
-        , mag_filter(TextureFilter::UNKNOWN)
-        , s_wrap(TextureWrap::UNKNOWN)
-        , t_wrap(TextureWrap::UNKNOWN)
+        , filter(TextureFilter::Unknown)
+        , min_filter(TextureFilter::Unknown)
+        , mag_filter(TextureFilter::Unknown)
+        , s_wrap(TextureWrap::Unknown)
+        , t_wrap(TextureWrap::Unknown)
     {
     }
 
     TextureStorageFormat storage_format;
-    u32 width;
-    u32 height;
+    s32 width;
+    s32 height;
     TexturePixelFormat pixel_format;
     DataType pixel_data_type;
-    u32 mipmap_level;
+    s32 mipmap_level;
     TextureFilter filter;
     TextureFilter min_filter;
     TextureFilter mag_filter;
@@ -105,8 +105,13 @@ namespace rex
   class Texture2D : public Resource
   {
   public:
-    Texture2D(const TextureDescription& desc, void* data);
+    Texture2D(TextureDescription desc, void* data);
+    Texture2D(const Texture2D& other) = delete;
+    Texture2D(Texture2D&& other) noexcept;
     ~Texture2D() override;
+
+    Texture2D& operator=(const Texture2D& other) = delete;
+    Texture2D& operator=(Texture2D&& other) noexcept;
 
     u32 get_resource_id() const override;
 

@@ -15,7 +15,6 @@ namespace rex
 
       bool create(HInstance hInstance, s32 cmdShow, const WindowDescription& description);
 
-      LResult on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam);
 
     public:
       void update() override;
@@ -31,6 +30,8 @@ namespace rex
       f32 get_aspect() const override;
 
     private:
+      LResult on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam);
+      
       bool destroy();
 
     private:

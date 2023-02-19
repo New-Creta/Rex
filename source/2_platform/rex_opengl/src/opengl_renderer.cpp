@@ -18,26 +18,33 @@ namespace rex
   //-------------------------------------------------------------------------
   enum class ClearBits
   {
-    REX_CLEAR_COLOUR_BUFFER  = GL_COLOR_BUFFER_BIT,
-    REX_CLEAR_DEPTH_BUFFER   = GL_DEPTH_BUFFER_BIT,
-    REX_CLEAR_STENCIL_BUFFER = GL_STENCIL_BUFFER_BIT,
+    RexClearColorBuffer  = GL_COLOR_BUFFER_BIT,
+    RexClearDepthBuffer   = GL_DEPTH_BUFFER_BIT,
+    RexClearStencilBuffer = GL_STENCIL_BUFFER_BIT,
   };
 
   //-------------------------------------------------------------------------
   bool operator&(ClearBits bits1, ClearBits bits2)
   {
-    return static_cast<s32>(bits1) & static_cast<s32>(bits2);
+    return (static_cast<u32>(bits1) & static_cast<u32>(bits2)) != 0;
   }
 
   //-------------------------------------------------------------------------
   bool operator|(ClearBits bits1, ClearBits bits2)
   {
-    return static_cast<s32>(bits1) | static_cast<s32>(bits2);
+    return (static_cast<u32>(bits1) | static_cast<u32>(bits2)) != 0;
   }
 
   //-------------------------------------------------------------------------
   struct ClearState
   {
+    ClearState()
+      :rgba(0.0f, 0.0f, 0.0f, 1.0f)
+      ,depth(1.0f)
+      ,stencil(0x00)
+      ,flags(ClearBits::RexClearColorBuffer)
+    {}
+
     rsl::Color4f rgba;
     f32 depth;
     u8 stencil;
@@ -52,7 +59,7 @@ namespace rex
     cs.rgba    = rsl::colors::MediumSeaGreen;
     cs.depth   = 1.0f;
     cs.stencil = 0x00;
-    cs.flags   = ClearBits::REX_CLEAR_COLOUR_BUFFER;
+    cs.flags   = ClearBits::RexClearColorBuffer;
 
     return cs;
   }
@@ -61,14 +68,14 @@ namespace rex
   {
     namespace opengl
     {
-      RendererInfo s_renderer_info;
+      RendererInfo g_renderer_info; // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
     } // namespace opengl
 
     //-------------------------------------------------------------------------
     // general accessors
     const RendererInfo& get_info()
     {
-      return opengl::s_renderer_info;
+      return opengl::g_renderer_info;
     }
 
     //-------------------------------------------------------------------------
@@ -91,8 +98,8 @@ namespace rex
 
     namespace backend
     {
-      ClearState s_clear_state = make_default_clear_state();
-      s32 s_backbuffer_fbo     = -1;
+      ClearState g_clear_state = make_default_clear_state();  // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
+      s32 g_backbuffer_fbo     = -1;                          // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
 
       //-------------------------------------------------------------------------
       bool initialize()
@@ -103,13 +110,13 @@ namespace rex
         const GLubyte* gl_renderer  = glGetString(GL_RENDERER);
         const GLubyte* gl_vendor    = glGetString(GL_VENDOR);
 
-        opengl::s_renderer_info.shader_version = rsl::small_stack_string((const char8*)glsl_version);
-        opengl::s_renderer_info.api_version    = rsl::small_stack_string((const char8*)gl_version);
-        opengl::s_renderer_info.adaptor        = rsl::small_stack_string((const char8*)gl_renderer);
-        opengl::s_renderer_info.vendor         = rsl::small_stack_string((const char8*)gl_vendor);
+        opengl::g_renderer_info.shader_version = rsl::stack_string<u8, 64>(static_cast<const u8*>(glsl_version));
+        opengl::g_renderer_info.api_version    = rsl::stack_string<u8, 64>(static_cast<const u8*>(gl_version));
+        opengl::g_renderer_info.adaptor        = rsl::stack_string<u8, 64>(static_cast<const u8*>(gl_renderer));
+        opengl::g_renderer_info.vendor         = rsl::stack_string<u8, 64>(static_cast<const u8*>(gl_vendor));
 
         // gles base fbo is not 0
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &s_backbuffer_fbo);
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &g_backbuffer_fbo);
 
         return true;
       }
@@ -134,26 +141,26 @@ namespace rex
 
       void clear()
       {
-        ClearState& cs = s_clear_state;
+        const ClearState& cs = g_clear_state;
 
         REX_ASSERT_X(cs.flags, "No clear flags given but renderer::backend::clear was called.");
 
         GL_CALL(glClearDepth(cs.depth));
         GL_CALL(glClearStencil(cs.stencil));
 
-        if(cs.flags & ClearBits::REX_CLEAR_DEPTH_BUFFER)
+        if(cs.flags & ClearBits::RexClearDepthBuffer)
         {
           GL_CALL(glEnable(GL_DEPTH_TEST));
           GL_CALL(glDepthMask(true));
         }
 
-        if(cs.flags & ClearBits::REX_CLEAR_STENCIL_BUFFER)
+        if(cs.flags & ClearBits::RexClearStencilBuffer)
         {
           GL_CALL(glEnable(GL_STENCIL_TEST));
           GL_CALL(glStencilMask(0xff));
         }
 
-        GL_CALL(glClearColor(cs.rgba.red, cs.rgba.green, cs.rgba.blue, cs.rgba.alpha));
+        GL_CALL(glClearColor(cs.rgba.red, cs.rgba.green, cs.rgba.blue, cs.rgba.alpha)); // NOLINT(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
         GL_CALL(glClear((u32)cs.flags));
       }
 

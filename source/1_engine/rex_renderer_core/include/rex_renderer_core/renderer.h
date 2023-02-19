@@ -7,10 +7,10 @@ namespace rex
 {
   struct RendererInfo
   {
-    rsl::small_stack_string api_version;
-    rsl::small_stack_string shader_version;
-    rsl::small_stack_string adaptor;
-    rsl::small_stack_string vendor;
+    rsl::stack_string<u8, 64> api_version;
+    rsl::stack_string<u8, 64> shader_version;
+    rsl::stack_string<u8, 64> adaptor;
+    rsl::stack_string<u8, 64> vendor;
   };
 
   enum class ShaderPlatform

@@ -45,7 +45,7 @@ namespace rex
     class GuiApplication : public CoreApplication
     {
     public:
-      GuiApplication(const ApplicationCreationParams appParams);
+      explicit GuiApplication(const ApplicationCreationParams& appParams);
       GuiApplication(const GuiApplication&) = delete;
       GuiApplication(GuiApplication&&)      = delete;
       ~GuiApplication() override;

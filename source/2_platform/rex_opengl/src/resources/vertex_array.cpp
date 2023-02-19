@@ -17,9 +17,25 @@ namespace rex
     glGenVertexArrays(1, &m_resource_id);
   }
   //-----------------------------------------------------------------------
+  VertexArray::VertexArray(VertexArray&& other) noexcept
+    :m_resource_id(rsl::exchange(other.m_resource_id, 0))
+  {
+
+  }
+  //-----------------------------------------------------------------------
   VertexArray::~VertexArray()
   {
     release();
+  }
+
+  //-----------------------------------------------------------------------
+  VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
+  {
+    REX_ASSERT(*this != other);
+
+    this->m_resource_id = rsl::exchange(other.m_resource_id, 0);
+
+    return *this;
   }
 
   //-----------------------------------------------------------------------

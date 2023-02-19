@@ -15,23 +15,25 @@
 
 #include <Windows.h>
 
+//NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
+
 #if REX_RENDERER_OPENGL
   #include <glad/gl.h>
   #include <glad/wgl.h>
 
-struct wgl_context
+struct WglContext
 {
   HDC dc;
   HGLRC glrc;
 };
 
-wgl_context s_glctx;
+WglContext g_glctx;
 
 namespace rex
 {
   bool rex_make_gl_context_current()
   {
-    return wglMakeCurrent(s_glctx.dc, s_glctx.glrc);
+    return static_cast<bool>(wglMakeCurrent(s_glctx.dc, s_glctx.glrc));
   }
   void rex_gl_swap_buffers()
   {
@@ -65,7 +67,7 @@ namespace rex
       pfd.cStencilBits = 8;
       pfd.iLayerType   = PFD_MAIN_PLANE;
 
-      s32 pf = ChoosePixelFormat(s_glctx.dc, &pfd);
+      const s32 pf = ChoosePixelFormat(s_glctx.dc, &pfd);
       if(pf == NULL || SetPixelFormat(s_glctx.dc, pf, &pfd) == FALSE)
       {
         release_device_context(hwnd, s_glctx.dc);
@@ -94,7 +96,7 @@ namespace rex
                        WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, // Set our OpenGL context to be forward compatible
                        0};
 
-      const char* extensions = (const char*)wglGetExtensionsStringARB(s_glctx.dc);
+      const char* extensions = wglGetExtensionsStringARB(s_glctx.dc);
       if(strstr(extensions, "WGL_ARB_create_context") == NULL)
       {
         s_glctx.glrc = wglCreateContextAttribsARB(s_glctx.dc, NULL, attribs);
@@ -116,7 +118,7 @@ namespace rex
         s_glctx.glrc = temp;
       }
 
-      if(!gladLoaderLoadGL())
+      if(gladLoaderLoadGL() == NULL)
       {
         wglMakeCurrent(NULL, NULL);
         wglDeleteContext(s_glctx.glrc);
@@ -131,9 +133,9 @@ namespace rex
   } // namespace opengl
 } // namespace rex
 
-  #define create_ctx(hwnd) rex::opengl::create_gl_context(hwnd)
+  #define CREATE_CTX(hwnd) rex::opengl::create_gl_context(hwnd)
 #else
-  #define create_ctx(hwnd) (hwnd == nullptr)
+  #define CREATE_CTX(hwnd) (hwnd == nullptr)
 #endif
 
 namespace rex
@@ -159,7 +161,7 @@ namespace rex
         subscribe_window_events();
 
         HWND hwnd = (HWND)window->get_primary_display_handle();
-        if(create_ctx(hwnd) == false)
+        if(CREATE_CTX(hwnd) == false)
         {
           return false;
         }
@@ -279,7 +281,7 @@ namespace rex
     };
 
     //-------------------------------------------------------------------------
-    GuiApplication::GuiApplication(const ApplicationCreationParams appParams)
+    GuiApplication::GuiApplication(const ApplicationCreationParams& appParams)
         : CoreApplication(appParams.engine_params, appParams.cmd_args)
         , m_internal_ptr(rsl::make_unique<Internal>(appParams.platform_params, appParams.gui_params, appParams.cmd_args))
     {
@@ -328,3 +330,5 @@ namespace rex
     }
   } // namespace win32
 } // namespace rex
+
+//NOLINTEND(modernize-use-nullptr,-warnings-as-errors)

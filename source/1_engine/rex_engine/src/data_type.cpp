@@ -16,43 +16,45 @@ namespace rex
     {
       switch(dataTypeValue)
       {
-        case DataType::Value::INT8: return rsl::type_id<s8>().hash_code();
-        case DataType::Value::INT16: return rsl::type_id<s16>().hash_code();
-        case DataType::Value::INT32: return rsl::type_id<s32>().hash_code();
-        case DataType::Value::INT64: return rsl::type_id<s64>().hash_code();
+        case DataType::Value::Int8: return rsl::type_id<s8>().hash_code();
+        case DataType::Value::Int16: return rsl::type_id<s16>().hash_code();
+        case DataType::Value::Int32: return rsl::type_id<s32>().hash_code();
+        case DataType::Value::Int64: return rsl::type_id<s64>().hash_code();
 
-        case DataType::Value::UNSIGNED_INT8: return rsl::type_id<uint8>().hash_code();
-        case DataType::Value::UNSIGNED_INT16: return rsl::type_id<uint16>().hash_code();
-        case DataType::Value::UNSIGNED_INT32: return rsl::type_id<uint32>().hash_code();
-        case DataType::Value::UNSIGNED_INT64: return rsl::type_id<uint64>().hash_code();
+        case DataType::Value::UnsignedInt8: return rsl::type_id<u8>().hash_code();
+        case DataType::Value::UnsignedInt16: return rsl::type_id<u16>().hash_code();
+        case DataType::Value::UnsignedInt32: return rsl::type_id<u32>().hash_code();
+        case DataType::Value::UnsignedInt64: return rsl::type_id<u64>().hash_code();
 
-        case DataType::Value::FLOAT32: return rsl::type_id<f32>().hash_code();
-        case DataType::Value::FLOAT64: return rsl::type_id<f64>().hash_code();
+        case DataType::Value::Float32: return rsl::type_id<f32>().hash_code();
+        case DataType::Value::Float64: return rsl::type_id<f64>().hash_code();
 
-        case DataType::Value::MAT3: return rsl::type_id<glm::mat3>().hash_code();
-        case DataType::Value::MAT4: return rsl::type_id<glm::mat4>().hash_code();
+        case DataType::Value::Mat3: return rsl::type_id<glm::mat3>().hash_code();
+        case DataType::Value::Mat4: return rsl::type_id<glm::mat4>().hash_code();
 
-        case DataType::Value::VEC2: return rsl::type_id<glm::vec2>().hash_code();
-        case DataType::Value::VEC3: return rsl::type_id<glm::vec3>().hash_code();
-        case DataType::Value::VEC4: return rsl::type_id<glm::vec4>().hash_code();
+        case DataType::Value::Vec2: return rsl::type_id<glm::vec2>().hash_code();
+        case DataType::Value::Vec3: return rsl::type_id<glm::vec3>().hash_code();
+        case DataType::Value::Vec4: return rsl::type_id<glm::vec4>().hash_code();
 
-        case DataType::Value::IVEC2: return rsl::type_id<glm::ivec2>().hash_code();
-        case DataType::Value::IVEC3: return rsl::type_id<glm::ivec3>().hash_code();
-        case DataType::Value::IVEC4: return rsl::type_id<glm::ivec4>().hash_code();
+        case DataType::Value::Ivec2: return rsl::type_id<glm::ivec2>().hash_code();
+        case DataType::Value::Ivec3: return rsl::type_id<glm::ivec3>().hash_code();
+        case DataType::Value::Ivec4: return rsl::type_id<glm::ivec4>().hash_code();
 
-        case DataType::Value::UIVEC2: return rsl::type_id<glm::uvec2>().hash_code();
-        case DataType::Value::UIVEC3: return rsl::type_id<glm::uvec3>().hash_code();
-        case DataType::Value::UIVEC4: return rsl::type_id<glm::uvec4>().hash_code();
+        case DataType::Value::Uvec2: return rsl::type_id<glm::uvec2>().hash_code();
+        case DataType::Value::Uvec3: return rsl::type_id<glm::uvec3>().hash_code();
+        case DataType::Value::Uvec4: return rsl::type_id<glm::uvec4>().hash_code();
 
-        case DataType::Value::BOOL: return rsl::type_id<bool>().hash_code();
+        case DataType::Value::Bool: return rsl::type_id<bool>().hash_code();
 
-        case DataType::Value::STRING: return rsl::type_id<rsl::string>().hash_code();
+        case DataType::Value::String: return rsl::type_id<rsl::string>().hash_code();
 
-        case DataType::Value::SAMPLER2D: return rsl::type_id<s32>().hash_code();
-        case DataType::Value::SAMPLER3D: return rsl::type_id<s32>().hash_code();
-        case DataType::Value::SAMPLERCUBE: return rsl::type_id<s32>().hash_code();
+        case DataType::Value::Sampler2D:
+        case DataType::Value::Sampler3D:
+        case DataType::Value::SamplerCube: return rsl::type_id<s32>().hash_code();
 
-        case DataType::Value::NONE: return 0;
+        case DataType::Value::NONE:
+          // Nothing to implement
+          break;
       }
 
       REX_ERROR("Unknown DataType::Value");
@@ -64,43 +66,45 @@ namespace rex
     {
       switch(dataTypeValue)
       {
-        case DataType::Value::INT8: return sizeof(s8);
-        case DataType::Value::INT16: return sizeof(s16);
-        case DataType::Value::INT32: return sizeof(s32);
-        case DataType::Value::INT64: return sizeof(s64);
+        case DataType::Value::Int8: return sizeof(s8);
+        case DataType::Value::Int16: return sizeof(s16);
+        case DataType::Value::Int32: return sizeof(s32);
+        case DataType::Value::Int64: return sizeof(s64);
 
-        case DataType::Value::UNSIGNED_INT8: return sizeof(uint8);
-        case DataType::Value::UNSIGNED_INT16: return sizeof(uint16);
-        case DataType::Value::UNSIGNED_INT32: return sizeof(uint32);
-        case DataType::Value::UNSIGNED_INT64: return sizeof(uint64);
+        case DataType::Value::UnsignedInt8: return sizeof(uint8);
+        case DataType::Value::UnsignedInt16: return sizeof(uint16);
+        case DataType::Value::UnsignedInt32: return sizeof(uint32);
+        case DataType::Value::UnsignedInt64: return sizeof(uint64);
 
-        case DataType::Value::FLOAT32: return sizeof(float);
-        case DataType::Value::FLOAT64: return sizeof(double);
+        case DataType::Value::Float32: return sizeof(float);
+        case DataType::Value::Float64: return sizeof(double);
 
-        case DataType::Value::MAT3: return sizeof(glm::mat3);
-        case DataType::Value::MAT4: return sizeof(glm::mat4);
+        case DataType::Value::Mat3: return sizeof(glm::mat3);
+        case DataType::Value::Mat4: return sizeof(glm::mat4);
 
-        case DataType::Value::VEC2: return sizeof(glm::vec2);
-        case DataType::Value::VEC3: return sizeof(glm::vec3);
-        case DataType::Value::VEC4: return sizeof(glm::vec4);
+        case DataType::Value::Vec2: return sizeof(glm::vec2);
+        case DataType::Value::Vec3: return sizeof(glm::vec3);
+        case DataType::Value::Vec4: return sizeof(glm::vec4);
 
-        case DataType::Value::IVEC2: return sizeof(glm::ivec2);
-        case DataType::Value::IVEC3: return sizeof(glm::ivec3);
-        case DataType::Value::IVEC4: return sizeof(glm::ivec4);
+        case DataType::Value::Ivec2: return sizeof(glm::ivec2);
+        case DataType::Value::Ivec3: return sizeof(glm::ivec3);
+        case DataType::Value::Ivec4: return sizeof(glm::ivec4);
 
-        case DataType::Value::UIVEC2: return sizeof(glm::uvec2);
-        case DataType::Value::UIVEC3: return sizeof(glm::uvec3);
-        case DataType::Value::UIVEC4: return sizeof(glm::uvec4);
+        case DataType::Value::Uvec2: return sizeof(glm::uvec2);
+        case DataType::Value::Uvec3: return sizeof(glm::uvec3);
+        case DataType::Value::Uvec4: return sizeof(glm::uvec4);
 
-        case DataType::Value::BOOL: return sizeof(bool);
+        case DataType::Value::Bool: return sizeof(bool);
 
-        case DataType::Value::STRING: return sizeof(rsl::string);
+        case DataType::Value::String: return sizeof(rsl::string);
 
-        case DataType::Value::SAMPLER2D: return sizeof(s32);
-        case DataType::Value::SAMPLER3D: return sizeof(s32);
-        case DataType::Value::SAMPLERCUBE: return sizeof(s32);
+        case DataType::Value::Sampler2D:
+        case DataType::Value::Sampler3D:
+        case DataType::Value::SamplerCube: return sizeof(s32);
 
-        case DataType::Value::NONE: return 0;
+        case DataType::Value::NONE:
+          // Nothing to implement
+          break;
       }
 
       REX_ERROR("Unknown DataType::Value");
@@ -124,11 +128,29 @@ namespace rex
     return *this;
   }
   //-----------------------------------------------------------------------
+  DataType& DataType::operator=(const Value& other)
+  {
+    REX_ASSERT(*this != other);
+
+    m_value = other;
+
+    return *this;
+  }
+  //-----------------------------------------------------------------------
   DataType& DataType::operator=(DataType&& other) noexcept
   {
     REX_ASSERT(*this != other);
 
     m_value = rsl::exchange(other.m_value, DataType::Value::NONE);
+
+    return *this;
+  }
+  //-----------------------------------------------------------------------
+  DataType& DataType::operator=(Value&& other) noexcept
+  {
+    REX_ASSERT(*this != other);
+
+    m_value = rsl::exchange(other, DataType::Value::NONE);
 
     return *this;
   }
@@ -139,7 +161,17 @@ namespace rex
     return this->m_value == other.m_value;
   }
   //-----------------------------------------------------------------------
+  bool DataType::operator==(const Value& other) const
+  {
+    return this->m_value == other;
+  }
+  //-----------------------------------------------------------------------
   bool DataType::operator!=(const DataType& other) const
+  {
+    return !(*this == other);
+  }
+  //-----------------------------------------------------------------------
+  bool DataType::operator!=(const Value& other) const
   {
     return !(*this == other);
   }
@@ -153,7 +185,7 @@ namespace rex
   //-----------------------------------------------------------------------
   size_t DataType::to_type_id() const
   {
-    size_t datatype_id = data_type::get_data_type_typeid(m_value);
+    const size_t datatype_id = data_type::get_data_type_typeid(m_value);
 
     if(datatype_id == 0)
     {
@@ -165,7 +197,7 @@ namespace rex
   //-----------------------------------------------------------------------
   size_t DataType::to_byte_size() const
   {
-    size_t datatype_size = data_type::get_data_type_size(m_value);
+    const size_t datatype_size = data_type::get_data_type_size(m_value);
 
     if(datatype_size == 0)
     {
