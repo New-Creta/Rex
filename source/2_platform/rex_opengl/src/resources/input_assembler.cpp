@@ -60,7 +60,7 @@ namespace rex
       const BufferElement& element = bufferLayout.buffer_elements()[i];
 
       glVertexAttribPointer(i, element.component_count, input_assembler::gl_data_type(element.type), static_cast<GLboolean>(element.normalized), 0,
-                            reinterpret_cast<void*>(offset)); // NOLINT (cppcoreguidelines-pro-type-reinterpret-cast,-warnings-as-errors)
+                            reinterpret_cast<void*>(offset)); // NOLINT (cppcoreguidelines-pro-type-reinterpret-cast)
       glEnableVertexAttribArray(i);
 
       offset += element.type.to_byte_size();

@@ -171,12 +171,11 @@ namespace rex
           return false;
         }
 
-        REX_STATIC_TODO("We should find a solution to convert from OpenGL unsigned byte pointers without upsetting the LINTER");
-        // RendererInfo info = renderer::info();
-        // REX_INFO("Renderer Info - API Version: {}", info.api_version);
-        // REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
-        // REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
-        // REX_INFO("Renderer Info - Vendor: {}", info.vendor);
+        RendererInfo info = renderer::info();
+        REX_INFO("Renderer Info - API Version: {}", info.api_version);
+        REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
+        REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
+        REX_INFO("Renderer Info - Vendor: {}", info.vendor);
 
         return on_initialize();
       }
