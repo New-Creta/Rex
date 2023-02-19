@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/vertex_buffer.h"
 
-#include "rex_std_extra/utilities/casting.h"
+#include "rex_std_extra/utility/casting.h"
 
 #if REX_PLATFORM_X64
   #include <glad/gl.h>
