@@ -4,6 +4,7 @@
 
 #define REX_ENABLE_STD_ALIAS
 #include "rex_std/sstream.h"
+#include "rex_std_extra/utilities/casting.h"
 
 #if REX_PLATFORM_X64
   #include <glad/gl.h>
@@ -32,6 +33,9 @@ namespace rex
       {
         case GL_VERTEX_SHADER: return "Vertex Shader";
         case GL_FRAGMENT_SHADER: return "Fragment Shader";
+        default:
+          // Nothing to implement
+        break;
       }
 
       REX_ERROR("Could not convert \"shaderType\" of type: {0}", shaderType);
@@ -55,20 +59,20 @@ namespace rex
     //-----------------------------------------------------------------------
     u32 create_shader(u32 shaderType, u64 shaderElementCount, const char** shaderElements, s32* shaderElementLength)
     {
-      u32 shader = glCreateShader((GLenum)shaderType);
+      const u32 shader = glCreateShader(static_cast<GLenum>(shaderType));
 
-      glShaderSource(shader, (GLsizei)shaderElementCount, shaderElements, shaderElementLength);
+      glShaderSource(shader, rsl::safe_numeric_cast<GLsizei>(shaderElementCount), shaderElements, shaderElementLength);
       glCompileShader(shader);
 
-      s32 success;
+      s32 success = 0;
       glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
-      if(!success)
+      if(success == 0)
       {
-        char infoLog[512];
-        glGetShaderInfoLog(shader, 512, NULL, infoLog);
+        rsl::array<char, 512> info_log;
+        glGetShaderInfoLog(shader, 512, nullptrx, info_log.data());
 
-        REX_ERROR(infoLog);
+        REX_ERROR(info_log.data());
         REX_ERROR(create_shader_compilation_error_message(shaderType));
 
         return 0;
