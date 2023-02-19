@@ -222,7 +222,7 @@ namespace rex
         {rsl::type_id<VertexPosColTex>().hash_code(), VertexPosColTex::get_layout()},
     };
 
-    return buffer_layouts;
+    return s_buffer_layouts;
   }
 } // namespace rex
 

@@ -13,9 +13,9 @@ namespace rex
     }
 
     //-----------------------------------------------------------------------
-    u32 get_data_type_component_count(const DataType& type)
+    u32 get_data_type_component_count(const DataType::Value& type)
     {
-      switch(type.get())
+      switch(type)
       {
         case DataType::Value::Int8:
         case DataType::Value::Int16:
@@ -61,7 +61,7 @@ namespace rex
         break;
       }
 
-      REX_ERROR("Unsupported Data Type to retrieve the component count: {0}", (s32)type.get());
+      REX_ERROR("Unsupported Data Type to retrieve the component count: {0}", (s32)type);
       return 0;
     }
   } // namespace buffer_layout
@@ -84,7 +84,7 @@ namespace rex
   {
   }
   //-----------------------------------------------------------------------
-  BufferLayout& BufferLayoutBuilder::add_buffer_element(DataType inType, ShouldNormalize inShouldNormalize /*= ShouldNormalize::no*/)
+  BufferLayout& BufferLayoutBuilder::add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize /*= ShouldNormalize::no*/)
   {
     BufferElements new_buffer_elements;
 

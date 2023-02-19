@@ -70,9 +70,9 @@ namespace rex
       if(success == 0)
       {
         rsl::array<char, 512> info_log;
-        glGetShaderInfoLog(shader, 512, nullptrx, info_log.data());
+        glGetShaderInfoLog(shader, 512, nullptr, info_log.data());
 
-        REX_ERROR(info_log.data());
+        REX_ERROR(rsl::string(info_log.data()));
         REX_ERROR(create_shader_compilation_error_message(shaderType));
 
         return 0;

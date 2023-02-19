@@ -94,7 +94,7 @@ namespace rex
       rsl::array<char, 512> info_log;
       GL_CALL(glGetProgramInfoLog(m_resource_id, 512, nullptr, info_log.data()));
 
-      REX_ERROR(info_log.data());
+      REX_ERROR(rsl::string(info_log.data()));
       REX_ERROR("Could not link shader program");
 
       m_resource_id = 0;

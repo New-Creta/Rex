@@ -12,7 +12,7 @@ namespace rex
   struct BufferElement
   {
     //-----------------------------------------------------------------------
-    BufferElement(DataType inType, s32 inComponentCount, ShouldNormalize inShouldNormalize = ShouldNormalize::no)
+    BufferElement(DataType::Value inType, s32 inComponentCount, ShouldNormalize inShouldNormalize = ShouldNormalize::no)
         : type(rsl::move(inType))
         , component_count(inComponentCount)
         , normalized(inShouldNormalize)
@@ -108,7 +108,7 @@ namespace rex
   public:
     BufferLayoutBuilder();
 
-    BufferLayout& add_buffer_element(DataType inType, ShouldNormalize inShouldNormalize = ShouldNormalize::no);
+    BufferLayout& add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize = ShouldNormalize::no);
     BufferLayout& build();
 
   private:

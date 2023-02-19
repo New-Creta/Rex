@@ -33,11 +33,11 @@ namespace rex
 {
   bool rex_make_gl_context_current()
   {
-    return static_cast<bool>(wglMakeCurrent(s_glctx.dc, s_glctx.glrc));
+    return static_cast<bool>(wglMakeCurrent(g_glctx.dc, g_glctx.glrc));
   }
   void rex_gl_swap_buffers()
   {
-    SwapBuffers(s_glctx.dc);
+    SwapBuffers(g_glctx.dc);
   }
 
   namespace opengl
@@ -52,7 +52,7 @@ namespace rex
 
     bool create_gl_context(HWND hwnd)
     {
-      s_glctx.dc = GetDC(hwnd);
+      g_glctx.dc = GetDC(hwnd);
 
       PIXELFORMATDESCRIPTOR pfd;
       memset(&pfd, 0, sizeof(pfd));
@@ -67,26 +67,26 @@ namespace rex
       pfd.cStencilBits = 8;
       pfd.iLayerType   = PFD_MAIN_PLANE;
 
-      const s32 pf = ChoosePixelFormat(s_glctx.dc, &pfd);
-      if(pf == NULL || SetPixelFormat(s_glctx.dc, pf, &pfd) == FALSE)
+      const s32 pf = ChoosePixelFormat(g_glctx.dc, &pfd);
+      if(pf == NULL || SetPixelFormat(g_glctx.dc, pf, &pfd) == FALSE)
       {
-        release_device_context(hwnd, s_glctx.dc);
+        release_device_context(hwnd, g_glctx.dc);
         REX_ERROR("Failed to set a compatible pixel format");
         return false;
       }
 
-      HGLRC temp = wglCreateContext(s_glctx.dc);
+      HGLRC temp = wglCreateContext(g_glctx.dc);
       if(temp == NULL)
       {
-        release_device_context(hwnd, s_glctx.dc);
+        release_device_context(hwnd, g_glctx.dc);
         REX_ERROR("Failed to create the initial rendering context");
         return false;
       }
 
-      wglMakeCurrent(s_glctx.dc, temp);
+      wglMakeCurrent(g_glctx.dc, temp);
 
       // Load WGL Extensions:
-      gladLoaderLoadWGL(s_glctx.dc);
+      gladLoaderLoadWGL(g_glctx.dc);
 
       s32 attribs[] = {WGL_CONTEXT_MAJOR_VERSION_ARB,
                        3, // Set the MAJOR version of OpenGL to 3
@@ -96,14 +96,14 @@ namespace rex
                        WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, // Set our OpenGL context to be forward compatible
                        0};
 
-      const char* extensions = wglGetExtensionsStringARB(s_glctx.dc);
+      const char* extensions = wglGetExtensionsStringARB(g_glctx.dc);
       if(strstr(extensions, "WGL_ARB_create_context") == NULL)
       {
-        s_glctx.glrc = wglCreateContextAttribsARB(s_glctx.dc, NULL, attribs);
-        if(s_glctx.glrc == NULL)
+        g_glctx.glrc = wglCreateContextAttribsARB(g_glctx.dc, NULL, attribs);
+        if(g_glctx.glrc == NULL)
         {
           wglDeleteContext(temp);
-          release_device_context(hwnd, s_glctx.dc);
+          release_device_context(hwnd, g_glctx.dc);
           REX_ERROR("Failed to create Windows OpenGL Context");
 
           return false;
@@ -111,18 +111,18 @@ namespace rex
 
         wglMakeCurrent(NULL, NULL);
         wglDeleteContext(temp);
-        wglMakeCurrent(s_glctx.dc, s_glctx.glrc);
+        wglMakeCurrent(g_glctx.dc, g_glctx.glrc);
       }
       else
       {
-        s_glctx.glrc = temp;
+        g_glctx.glrc = temp;
       }
 
       if(gladLoaderLoadGL() == NULL)
       {
         wglMakeCurrent(NULL, NULL);
-        wglDeleteContext(s_glctx.glrc);
-        release_device_context(hwnd, s_glctx.dc);
+        wglDeleteContext(g_glctx.glrc);
+        release_device_context(hwnd, g_glctx.dc);
         REX_ERROR("Glad Loader failed!");
 
         return false;
@@ -171,11 +171,12 @@ namespace rex
           return false;
         }
 
-        RendererInfo info = renderer::get_info();
-        REX_INFO("Renderer Info - API Version: {}", info.api_version);
-        REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
-        REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
-        REX_INFO("Renderer Info - Vendor: {}", info.vendor);
+        REX_STATIC_TODO("We should find a solution to convert from OpenGL unsigned byte pointers without upsetting the LINTER");
+        //RendererInfo info = renderer::get_info();
+        //REX_INFO("Renderer Info - API Version: {}", info.api_version);
+        //REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
+        //REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
+        //REX_INFO("Renderer Info - Vendor: {}", info.vendor);
 
         return on_initialize();
       }
