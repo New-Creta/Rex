@@ -48,7 +48,7 @@ namespace rex
         REX_TRACE("Caching uniform: {0}, for shader program with ID: {1}", inName, programID);
 
         const s32 location       = glGetUniformLocation(programID, inName.c_str());
-        uniformLocations[inName] = {location};
+        uniformLocations[inName] = ShaderUniformLocation(location);
 
         if(location == -1)
         {
