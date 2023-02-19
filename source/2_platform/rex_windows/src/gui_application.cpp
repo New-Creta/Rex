@@ -166,7 +166,7 @@ namespace rex
           return false;
         }
 
-        if(renderer::initialize((void*)&hwnd, gui_params.max_render_commands) == false)
+        if(renderer::initialize((void*)&hwnd, gui_params.max_render_commands) == false) // NOLINT (google-readability-casting,-warnings-as-errors, readability-simplify-boolean-expr,-warnings-as-errors)
         {
           return false;
         }

@@ -91,8 +91,7 @@ namespace rex
   //-----------------------------------------------------------------------
   bool operator==(const VertexPosCol& v1, const VertexPosCol& v2)
   {
-    return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.color().x == v2.color().x && v1.color().y == v2.color().y &&
-           v1.color().z == v2.color().z;
+    return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.color().x == v2.color().x && v1.color().y == v2.color().y && v1.color().z == v2.color().z;
   }
   //-----------------------------------------------------------------------
   bool operator!=(const VertexPosCol& v1, const VertexPosCol& v2)
@@ -203,8 +202,8 @@ namespace rex
   //-----------------------------------------------------------------------
   bool operator==(const VertexPosColTex& v1, const VertexPosColTex& v2)
   {
-    return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.color().x == v2.color().x && v1.color().y == v2.color().y &&
-           v1.color().z == v2.color().z && v1.uv().x == v2.uv().x && v1.uv().y == v2.uv().y;
+    return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.color().x == v2.color().x && v1.color().y == v2.color().y && v1.color().z == v2.color().z && v1.uv().x == v2.uv().x &&
+           v1.uv().y == v2.uv().y;
   }
   //-----------------------------------------------------------------------
   bool operator!=(const VertexPosColTex& v1, const VertexPosColTex& v2)

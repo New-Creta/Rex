@@ -9,7 +9,7 @@
 #include <Windows.h>
 
 //-------------------------------------------------------------------------
-rex::win32::LResult rex::win32::EventHandler::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam) //NOLINT (readability-convert-member-functions-to-static,-warnings-as-errors)
+rex::win32::LResult rex::win32::EventHandler::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam) // NOLINT (readability-convert-member-functions-to-static,-warnings-as-errors)
 {
   // Sometimes Windows set error states between messages
   // becasue these aren't our fault, we'll ignore those

@@ -82,7 +82,7 @@ namespace rex
 
     GL_CALL(glLinkProgram(m_resource_id));
 
-    s32 success;
+    s32 success = 0;
     GL_CALL(glGetProgramiv(m_resource_id, GL_LINK_STATUS, &success));
 
     if(success == 0)
@@ -109,11 +109,10 @@ namespace rex
 
   //-------------------------------------------------------------------------
   ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
-    :m_resource_id(rsl::exchange(other.m_resource_id, 0))
-    ,m_uniform_locations(rsl::exchange(other.m_uniform_locations, rsl::unordered_map<rsl::small_stack_string, ShaderUniformLocation>()))
-    ,m_bound(rsl::exchange(other.m_bound, false))
+      : m_resource_id(rsl::exchange(other.m_resource_id, 0))
+      , m_uniform_locations(rsl::exchange(other.m_uniform_locations, rsl::unordered_map<rsl::small_stack_string, ShaderUniformLocation>()))
+      , m_bound(rsl::exchange(other.m_bound, false))
   {
-
   }
 
   //-----------------------------------------------------------------------
@@ -127,9 +126,9 @@ namespace rex
   {
     REX_ASSERT(*this == other);
 
-    m_resource_id = rsl::exchange(other.m_resource_id, 0);
+    m_resource_id       = rsl::exchange(other.m_resource_id, 0);
     m_uniform_locations = rsl::exchange(other.m_uniform_locations, rsl::unordered_map<rsl::small_stack_string, ShaderUniformLocation>());
-    m_bound = rsl::exchange(other.m_bound, false);
+    m_bound             = rsl::exchange(other.m_bound, false);
 
     return *this;
   }
