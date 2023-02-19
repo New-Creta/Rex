@@ -1,16 +1,16 @@
 #pragma once
 
 #include "rex_engine/types.h"
-#include "rex_std/bonus/string/stack_string.h"
+#include "rex_std/string.h"
 
 namespace rex
 {
   struct RendererInfo
   {
-    rsl::stack_string<u8, 64> api_version;
-    rsl::stack_string<u8, 64> shader_version;
-    rsl::stack_string<u8, 64> adaptor;
-    rsl::stack_string<u8, 64> vendor;
+    const u8* api_version;
+    const u8* shader_version;
+    const u8* adaptor;
+    const u8* vendor;
   };
 
   enum class ShaderPlatform

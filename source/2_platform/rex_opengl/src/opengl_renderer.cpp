@@ -104,16 +104,15 @@ namespace rex
       //-------------------------------------------------------------------------
       bool initialize()
       {
-        // todo renderer caps
         const GLubyte* glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
         const GLubyte* gl_version   = glGetString(GL_VERSION);
         const GLubyte* gl_renderer  = glGetString(GL_RENDERER);
         const GLubyte* gl_vendor    = glGetString(GL_VENDOR);
 
-        opengl::g_renderer_info.shader_version = rsl::stack_string<u8, 64>(static_cast<const u8*>(glsl_version));
-        opengl::g_renderer_info.api_version    = rsl::stack_string<u8, 64>(static_cast<const u8*>(gl_version));
-        opengl::g_renderer_info.adaptor        = rsl::stack_string<u8, 64>(static_cast<const u8*>(gl_renderer));
-        opengl::g_renderer_info.vendor         = rsl::stack_string<u8, 64>(static_cast<const u8*>(gl_vendor));
+        opengl::g_renderer_info.shader_version = static_cast<const u8*>(glsl_version);
+        opengl::g_renderer_info.api_version    = static_cast<const u8*>(gl_version);
+        opengl::g_renderer_info.adaptor        = static_cast<const u8*>(gl_renderer);
+        opengl::g_renderer_info.vendor         = static_cast<const u8*>(gl_vendor);
 
         // gles base fbo is not 0
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &g_backbuffer_fbo);
