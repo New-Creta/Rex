@@ -15,37 +15,31 @@ namespace rex
     {
       switch(type.get())
       {
-        case DataType::Value::Int8: 
-        case DataType::Value::Int16: 
-        case DataType::Value::Int32: 
-        case DataType::Value::Int64: 
-        case DataType::Value::Bool: 
-        case DataType::Value::Ivec2: 
-        case DataType::Value::Ivec3: 
-        case DataType::Value::Ivec4: 
-          return GL_INT;
-        case DataType::Value::UnsignedInt8: 
-        case DataType::Value::UnsignedInt16: 
-        case DataType::Value::UnsignedInt32: 
-        case DataType::Value::UnsignedInt64: 
-        case DataType::Value::Uvec2: 
-        case DataType::Value::Uvec3: 
-        case DataType::Value::Uvec4: 
-          return GL_UNSIGNED_INT;
-        case DataType::Value::Float32: 
-        case DataType::Value::Float64: 
-        case DataType::Value::Mat3: 
-        case DataType::Value::Mat4: 
-        case DataType::Value::Vec2: 
-        case DataType::Value::Vec3: 
-        case DataType::Value::Vec4: 
-          return GL_FLOAT;
-        case DataType::Value::Sampler2D: 
-          return GL_SAMPLER_2D;
-        case DataType::Value::Sampler3D: 
-          return GL_SAMPLER_3D;
-        case DataType::Value::SamplerCube: 
-          return GL_SAMPLER_CUBE;
+        case DataType::Value::Int8:
+        case DataType::Value::Int16:
+        case DataType::Value::Int32:
+        case DataType::Value::Int64:
+        case DataType::Value::Bool:
+        case DataType::Value::Ivec2:
+        case DataType::Value::Ivec3:
+        case DataType::Value::Ivec4: return GL_INT;
+        case DataType::Value::UnsignedInt8:
+        case DataType::Value::UnsignedInt16:
+        case DataType::Value::UnsignedInt32:
+        case DataType::Value::UnsignedInt64:
+        case DataType::Value::Uvec2:
+        case DataType::Value::Uvec3:
+        case DataType::Value::Uvec4: return GL_UNSIGNED_INT;
+        case DataType::Value::Float32:
+        case DataType::Value::Float64:
+        case DataType::Value::Mat3:
+        case DataType::Value::Mat4:
+        case DataType::Value::Vec2:
+        case DataType::Value::Vec3:
+        case DataType::Value::Vec4: return GL_FLOAT;
+        case DataType::Value::Sampler2D: return GL_SAMPLER_2D;
+        case DataType::Value::Sampler3D: return GL_SAMPLER_3D;
+        case DataType::Value::SamplerCube: return GL_SAMPLER_CUBE;
 
         case DataType::Value::String:
         case DataType::Value::NONE: break;
@@ -65,7 +59,8 @@ namespace rex
     {
       const BufferElement& element = bufferLayout.get_buffer_elements()[i];
 
-      glVertexAttribPointer(i, element.component_count, input_assembler::get_gl_data_type(element.type), static_cast<GLboolean>(element.normalized), 0, reinterpret_cast<void*>(offset)); //NOLINT (cppcoreguidelines-pro-type-reinterpret-cast,-warnings-as-errors)
+      glVertexAttribPointer(i, element.component_count, input_assembler::get_gl_data_type(element.type), static_cast<GLboolean>(element.normalized), 0,
+                            reinterpret_cast<void*>(offset)); // NOLINT (cppcoreguidelines-pro-type-reinterpret-cast,-warnings-as-errors)
       glEnableVertexAttribArray(i);
 
       offset += element.type.to_byte_size();

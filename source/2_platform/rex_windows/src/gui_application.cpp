@@ -15,7 +15,7 @@
 
 #include <Windows.h>
 
-//NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
+// NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
 
 #if REX_RENDERER_OPENGL
   #include <glad/gl.h>
@@ -172,11 +172,11 @@ namespace rex
         }
 
         REX_STATIC_TODO("We should find a solution to convert from OpenGL unsigned byte pointers without upsetting the LINTER");
-        //RendererInfo info = renderer::get_info();
-        //REX_INFO("Renderer Info - API Version: {}", info.api_version);
-        //REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
-        //REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
-        //REX_INFO("Renderer Info - Vendor: {}", info.vendor);
+        // RendererInfo info = renderer::get_info();
+        // REX_INFO("Renderer Info - API Version: {}", info.api_version);
+        // REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
+        // REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
+        // REX_INFO("Renderer Info - Vendor: {}", info.vendor);
 
         return on_initialize();
       }
@@ -332,4 +332,4 @@ namespace rex
   } // namespace win32
 } // namespace rex
 
-//NOLINTEND(modernize-use-nullptr,-warnings-as-errors)
+// NOLINTEND(modernize-use-nullptr,-warnings-as-errors)

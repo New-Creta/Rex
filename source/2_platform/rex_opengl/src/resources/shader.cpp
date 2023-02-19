@@ -35,7 +35,7 @@ namespace rex
         case GL_FRAGMENT_SHADER: return "Fragment Shader";
         default:
           // Nothing to implement
-        break;
+          break;
       }
 
       REX_ERROR("Could not convert \"shaderType\" of type: {0}", shaderType);

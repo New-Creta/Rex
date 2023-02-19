@@ -153,7 +153,7 @@ namespace rex
 
       return static_cast<f32>(w) / static_cast<f32>(h);
     }
-   
+
     //-------------------------------------------------------------------------
     bool Window::destroy()
     {

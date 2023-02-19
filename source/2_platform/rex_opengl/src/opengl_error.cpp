@@ -26,7 +26,7 @@ namespace rex
         case GL_INVALID_FRAMEBUFFER_OPERATION: return "Invalid Framebuffer Operation";
         default:
           // Nothing to implement
-        break;
+          break;
       }
 
       return "Unknown error";

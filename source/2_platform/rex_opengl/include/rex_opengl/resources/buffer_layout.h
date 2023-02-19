@@ -5,7 +5,7 @@
 #include "rex_std/vector.h"
 #include "rex_std_extra/utility/yes_no.h"
 
-DEFINE_YES_NO_ENUM(ShouldNormalize);  //NOLINT(google-explicit-constructor,-warnings-as-errors)
+DEFINE_YES_NO_ENUM(ShouldNormalize); // NOLINT(google-explicit-constructor,-warnings-as-errors)
 
 namespace rex
 {

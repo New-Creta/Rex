@@ -18,7 +18,7 @@ namespace rex
   //-------------------------------------------------------------------------
   enum class ClearBits
   {
-    RexClearColorBuffer  = GL_COLOR_BUFFER_BIT,
+    RexClearColorBuffer   = GL_COLOR_BUFFER_BIT,
     RexClearDepthBuffer   = GL_DEPTH_BUFFER_BIT,
     RexClearStencilBuffer = GL_STENCIL_BUFFER_BIT,
   };
@@ -39,11 +39,12 @@ namespace rex
   struct ClearState
   {
     ClearState()
-      :rgba(0.0f, 0.0f, 0.0f, 1.0f)
-      ,depth(1.0f)
-      ,stencil(0x00)
-      ,flags(ClearBits::RexClearColorBuffer)
-    {}
+        : rgba(0.0f, 0.0f, 0.0f, 1.0f)
+        , depth(1.0f)
+        , stencil(0x00)
+        , flags(ClearBits::RexClearColorBuffer)
+    {
+    }
 
     rsl::Color4f rgba;
     f32 depth;
@@ -69,7 +70,7 @@ namespace rex
     namespace opengl
     {
       RendererInfo g_renderer_info; // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
-    } // namespace opengl
+    }                               // namespace opengl
 
     //-------------------------------------------------------------------------
     // general accessors
@@ -98,8 +99,8 @@ namespace rex
 
     namespace backend
     {
-      ClearState g_clear_state = make_default_clear_state();  // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
-      s32 g_backbuffer_fbo     = -1;                          // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
+      ClearState g_clear_state = make_default_clear_state(); // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
+      s32 g_backbuffer_fbo     = -1;                         // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
 
       //-------------------------------------------------------------------------
       bool initialize()

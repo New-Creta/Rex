@@ -32,33 +32,27 @@ namespace rex
         case DataType::Value::Bool:
         case DataType::Value::Sampler2D:
         case DataType::Value::Sampler3D:
-        case DataType::Value::SamplerCube: 
-          return 1u;
+        case DataType::Value::SamplerCube: return 1u;
 
-        case DataType::Value::Mat3: 
-          return 3u * 3u;
-        case DataType::Value::Mat4: 
-          return 4u * 4u;
+        case DataType::Value::Mat3: return 3u * 3u;
+        case DataType::Value::Mat4: return 4u * 4u;
 
         case DataType::Value::Vec2:
         case DataType::Value::Ivec2:
-        case DataType::Value::Uvec2: 
-          return 2u;
+        case DataType::Value::Uvec2: return 2u;
 
         case DataType::Value::Ivec3:
         case DataType::Value::Uvec3:
-        case DataType::Value::Vec3: 
-          return 3u;
+        case DataType::Value::Vec3: return 3u;
 
         case DataType::Value::Ivec4:
         case DataType::Value::Uvec4:
-        case DataType::Value::Vec4: 
-          return 4u;
+        case DataType::Value::Vec4: return 4u;
 
         case DataType::Value::String:
-        case DataType::Value::NONE: 
+        case DataType::Value::NONE:
           // Nothing to implement
-        break;
+          break;
       }
 
       REX_ERROR("Unsupported Data Type to retrieve the component count: {0}", (s32)type);

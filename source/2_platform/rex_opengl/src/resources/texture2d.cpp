@@ -107,8 +107,7 @@ namespace rex
     {
       switch(type.get())
       {
-        case DataType::Value::UnsignedInt8: 
-          return GL_UNSIGNED_BYTE;
+        case DataType::Value::UnsignedInt8: return GL_UNSIGNED_BYTE;
 
         case DataType::Value::NONE:
         case DataType::Value::Int8:
@@ -135,9 +134,9 @@ namespace rex
         case DataType::Value::Sampler2D:
         case DataType::Value::Sampler3D:
         case DataType::Value::SamplerCube:
-        case DataType::Value::String: 
+        case DataType::Value::String:
           // Nothing to implement
-        break;
+          break;
       }
 
       REX_ERROR("Unknown \"Data Type\", returning \"GL_UNSIGNED_BYTE\"");
@@ -165,13 +164,12 @@ namespace rex
 
     glGenerateMipmap(GL_TEXTURE_2D);
   }
-  
+
   //-------------------------------------------------------------------------
   Texture2D::Texture2D(Texture2D&& other) noexcept
-    :m_resource_id(rsl::exchange(other.m_resource_id, 0))
-    ,m_description(rsl::exchange(other.m_description, {}))
+      : m_resource_id(rsl::exchange(other.m_resource_id, 0))
+      , m_description(rsl::exchange(other.m_description, {}))
   {
-
   }
 
   //-------------------------------------------------------------------------

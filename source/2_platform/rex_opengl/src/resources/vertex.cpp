@@ -2,7 +2,7 @@
 
 #include "rex_std_extra/utility/type_id.h"
 
-//NOLINTBEGIN(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
 
 namespace rex
 {
@@ -226,4 +226,4 @@ namespace rex
   }
 } // namespace rex
 
-//NOLINTEND(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
+// NOLINTEND(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)

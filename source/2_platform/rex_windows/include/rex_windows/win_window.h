@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rex_engine/core_window.h"
+#include "rex_windows/win_event_handler.h"
 #include "rex_windows/win_types.h"
 #include "rex_windows/win_window_class.h"
-#include "rex_windows/win_event_handler.h"
 
 namespace rex
 {
@@ -29,7 +29,7 @@ namespace rex
 
       f32 get_aspect() const override;
 
-    private:     
+    private:
       bool destroy();
 
     private:
