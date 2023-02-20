@@ -1,35 +1,39 @@
 #pragma once
 
-#include "rex_opengl/resources/resource.h"
-
 #include "rex_engine/types.h"
+#include "rex_opengl/resources/resource.h"
 
 namespace rex
 {
-    enum class BufferUsage
-    {
-        STATIC_DRAW,
-        DYNAMIC_DRAW
-    };
+  enum class BufferUsage
+  {
+    StaticDraw,
+    DynamicDraw
+  };
 
-    class Buffer : public Resource
-    {
-    public:
-        Buffer(u32 target);
-        ~Buffer() override;
+  class Buffer : public Resource
+  {
+  public:
+    explicit Buffer(u32 target);
+    Buffer(const Buffer& other) = delete;
+    Buffer(Buffer&& other) noexcept;
+    ~Buffer() override;
 
-        u32 get_resource_id() const override;
-        u32 get_resource_target() const;
+    Buffer& operator=(const Buffer& other) = delete;
+    Buffer& operator=(Buffer&& other) noexcept;
 
-        void bind() const override;
-        void unbind() const override;
+    u32 resource_id() const override;
+    u32 resource_target() const;
 
-        void release() override;
+    void bind() const override;
+    void unbind() const override;
 
-    private:
-        u32 m_resource_id;
-        u32 m_resource_target;
-    };
+    void release() override;
 
-    u32 get_gl_usage(const BufferUsage& usage);
-}
+  private:
+    u32 m_resource_id;
+    u32 m_resource_target;
+  };
+
+  u32 gl_usage(const BufferUsage& usage);
+} // namespace rex

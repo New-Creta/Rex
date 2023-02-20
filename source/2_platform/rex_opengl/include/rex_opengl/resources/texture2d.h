@@ -1,96 +1,127 @@
 #pragma once
 
-#include "rex_opengl/resources/resource.h"
-
 #include "rex_engine/data_type.h"
 #include "rex_engine/types.h"
+#include "rex_opengl/resources/resource.h"
 
 namespace rex
 {
-    enum class TextureStorageFormat
+  enum class TextureStorageFormat
+  {
+    Unknown,
+
+    Depth,
+    DepthStencil,
+
+    R,
+    Rg,
+    Rgb,
+    Rgba
+  };
+
+  enum class TexturePixelFormat
+  {
+    Unknown,
+
+    Depth,
+    DepthStencil,
+
+    R,
+    Rg,
+    Rgb,
+    Rgba,
+
+    BGR,
+    BGRA,
+  };
+
+  enum class TextureWrap
+  {
+    Unknown,
+
+    Repeat,
+    MirroredRepeat,
+    ClampToEdge,
+    ClampToBorder
+  };
+
+  enum class TextureFilter
+  {
+    Unknown,
+
+    Nearest,
+    Linear
+  };
+
+  struct TextureDescription
+  {
+    static TextureDescription make_default_texture_description(s32 width = 1, s32 height = 1)
     {
-        DEPTH,
-        DEPTH_STENCIL,
+      TextureDescription desc;
 
-        R,
-        RG,
-        RGB,
-        RGBA
-    };
+      desc.storage_format  = TextureStorageFormat::Rgb;
+      desc.width           = width;
+      desc.height          = height;
+      desc.pixel_format    = TexturePixelFormat::Rgb;
+      desc.pixel_data_type = DataType::Value::UnsignedInt8;
+      desc.mipmap_level    = 0;
+      desc.filter          = TextureFilter::Linear;
+      desc.min_filter      = TextureFilter::Linear;
+      desc.mag_filter      = TextureFilter::Linear;
+      desc.s_wrap          = TextureWrap::Repeat;
+      desc.t_wrap          = TextureWrap::Repeat;
 
-    enum class TexturePixelFormat
+      return desc;
+    }
+
+    TextureDescription()
+        : storage_format(TextureStorageFormat::Unknown)
+        , width(0)
+        , height(0)
+        , pixel_format(TexturePixelFormat::Unknown)
+        , pixel_data_type(DataType::Value::None)
+        , mipmap_level(0)
+        , filter(TextureFilter::Unknown)
+        , min_filter(TextureFilter::Unknown)
+        , mag_filter(TextureFilter::Unknown)
+        , s_wrap(TextureWrap::Unknown)
+        , t_wrap(TextureWrap::Unknown)
     {
-        DEPTH,
-        DEPTH_STENCIL,
+    }
 
-        R,
-        RG,
-        RGB,
-        RGBA,
+    TextureStorageFormat storage_format;
+    s32 width;
+    s32 height;
+    TexturePixelFormat pixel_format;
+    DataType pixel_data_type;
+    s32 mipmap_level;
+    TextureFilter filter;
+    TextureFilter min_filter;
+    TextureFilter mag_filter;
+    TextureWrap s_wrap;
+    TextureWrap t_wrap;
+  };
 
-        BGR,
-        BGRA,
-    };
+  class Texture2D : public Resource
+  {
+  public:
+    Texture2D(TextureDescription desc, void* data);
+    Texture2D(const Texture2D& other) = delete;
+    Texture2D(Texture2D&& other) noexcept;
+    ~Texture2D() override;
 
-    enum class TextureWrap
-    {
-        REPEAT,
-        MIRRORED_REPEAT,
-        CLAMP_TO_EDGE,
-        CLAMP_TO_BORDER
-    };
+    Texture2D& operator=(const Texture2D& other) = delete;
+    Texture2D& operator=(Texture2D&& other) noexcept;
 
-    enum class TextureFilter
-    {
-        NEAREST,
-        LINEAR
-    };
+    u32 resource_id() const override;
 
-    struct TextureDescription
-    {
-        TextureDescription()
-            :storage_format(TextureStorageFormat::RGB)
-            ,width(1)
-            ,height(1)
-            ,pixel_format(TexturePixelFormat::RGB)
-            ,pixel_data_type(DataType::Value::UNSIGNED_INT8)
-            ,mipmap_level(0)
-            ,filter(TextureFilter::LINEAR)
-            ,min_filter(TextureFilter::LINEAR)
-            ,mag_filter(TextureFilter::LINEAR)
-            ,s_wrap(TextureWrap::REPEAT)
-            ,t_wrap(TextureWrap::REPEAT)
-        {}
+    void bind() const override;
+    void unbind() const override;
 
-        TextureStorageFormat storage_format;
-        u32 width;
-        u32 height;
-        TexturePixelFormat pixel_format;
-        DataType pixel_data_type;
-        u32 mipmap_level;
-        TextureFilter filter;
-        TextureFilter min_filter;
-        TextureFilter mag_filter;
-        TextureWrap s_wrap;
-        TextureWrap t_wrap;
-        
-    };
+    void release() override;
 
-    class Texture2D : public Resource
-    {
-    public:
-        Texture2D(const TextureDescription& desc, void* data);
-        ~Texture2D() override;
-
-        u32 get_resource_id() const override;
-
-        void bind() const override;
-        void unbind() const override;
-
-        void release() override;
-
-    private:
-        u32 m_resource_id;
-        TextureDescription m_description;
-    };
-}
+  private:
+    u32 m_resource_id;
+    TextureDescription m_description;
+  };
+} // namespace rex

@@ -1,17 +1,19 @@
 #include "rex_engine/memory/new_delete.h"
 
-#include <cstdlib>
+#include "rex_engine/memory/global_allocator.h"
 
-void operator delete(void* ptr) noexcept // NOLINT(readability-inconsistent-declaration-parameter-name)
-{
-  free(ptr); // NOLINT(cppcoreguidelines-no-malloc)
-}
-void operator delete(void* ptr, size_t /*size*/) noexcept // NOLINT(readability-inconsistent-declaration-parameter-name)
-{
-  free(ptr); // NOLINT(cppcoreguidelines-no-malloc)
-}
+#include <cstdlib>
 
 void* operator new(u64 size) // NOLINT(readability-inconsistent-declaration-parameter-name)
 {
-  return malloc(size); // NOLINT(cppcoreguidelines-no-malloc)
+  return rex::global_allocator().allocate(static_cast<card64>(size));
+}
+
+void operator delete(void* ptr) noexcept // NOLINT(readability-inconsistent-declaration-parameter-name)
+{
+  rex::global_allocator().deallocate(ptr, -1); // unknown size
+}
+void operator delete(void* ptr, u64 size) noexcept // NOLINT(readability-inconsistent-declaration-parameter-name)
+{
+  rex::global_allocator().deallocate(ptr, static_cast<card64>(size));
 }

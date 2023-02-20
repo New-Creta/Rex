@@ -1,19 +1,21 @@
 #include "rex_engine/defines.h"
 #include "rex_engine/entrypoint.h"
+#include "rex_std/iostream.h"
+#include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/gui_application.h"
 
 namespace rex
 {
-  s32 app_entry(const PlatformCreationParams& platformParams, CommandLineArguments&& cmdArgs)
+  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
   {
-    rex::win32::ApplicationCreationParams app_params;
+    ApplicationCreationParams app_params(rsl::move(platformParams), rsl::move(cmdArgs));
 
-    app_params.window_width  = 1280;
-    app_params.window_height = 720;
-    app_params.window_title  = "Sandbox";
+    app_params.gui_params.window_width  = 1280;
+    app_params.gui_params.window_height = 720;
+    app_params.gui_params.window_title  = "Regina";
 
-    rex::win32::GuiApplication application(platformParams, app_params, rsl::move(cmdArgs));
+    app_params.engine_params.max_memory = 256_kb;
 
-    return application.run();
+    return app_params;
   }
 } // namespace rex

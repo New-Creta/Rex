@@ -1,42 +1,36 @@
 #ifndef REX_DEFINES
-#define REX_DEFINES
+  #define REX_DEFINES
 
-//-------------------------------------------------------------------------
-// Unused parameter.
-#if defined __clang__
-  #define UNUSED_PARAM(...)                                                                                                                                                                                                                              \
-    _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wunused-value\"")                                                                                                                                                              \
-    {                                                                                                                                                                                                                                                    \
-      __VA_ARGS__;                                                                                                                                                                                                                                       \
-    }                                                                                                                                                                                                                                                    \
-    _Pragma("clang diagnostic pop")
-#elif defined _MSC_VER
-  #define UNUSED_PARAM(...)                                                                                                                                                                                                                              \
-    {                                                                                                                                                                                                                                                    \
-      __VA_ARGS__;                                                                                                                                                                                                                                       \
-    }
-#elif defined __GNUC__
-  #define UNUSED_PARAM(...)                                                                                                                                                                                                                              \
-    {                                                                                                                                                                                                                                                    \
-      __VA_ARGS__;                                                                                                                                                                                                                                       \
-    }
-#endif
+  #include "rex_std/bonus/compiler.h"
 
-//-------------------------------------------------------------------------
-// Assembly instruction to break execution.
-#if defined _MSC_VER
+  //-------------------------------------------------------------------------
+  // Unused parameter.
+  #if defined REX_COMPILER_CLANG
+    #define UNUSED_PARAM(...)                                                                                                                                                                                                                            \
+      _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wunused-value\"")                                                                                                                                                            \
+      {                                                                                                                                                                                                                                                  \
+        __VA_ARGS__;                                                                                                                                                                                                                                     \
+      }                                                                                                                                                                                                                                                  \
+      _Pragma("clang diagnostic pop")
+  #elif defined REX_COMPILER_MSVC
+    #define UNUSED_PARAM(...)                                                                                                                                                                                                                            \
+      {                                                                                                                                                                                                                                                  \
+        __VA_ARGS__;                                                                                                                                                                                                                                     \
+      }
+  #endif
+
+  //-------------------------------------------------------------------------
+  // Assembly instruction to break execution.
+  #if defined REX_COMPILER_CLANG
+    #define DEBUG_BREAK() __builtin_trap()
+  #elif defined REX_COMPILER_MSVC
     #define DEBUG_BREAK() __debugbreak()
-#elif defined __clang__
-    #define DEBUG_BREAK()
-#elif defined __GNUC__
-    #define DEBUG_BREAK()
-#else
+  #else
     #error DEBUG_BREAK unsupported machine instruction ...
-#endif
+  #endif
 
 #endif
 
 //-------------------------------------------------------------------------
 // BIT TWIDDLING
-#define BITS_IN_BYTE 8
-#define BIT(x)       (1 << x)
+#define BIT(x) (1 << x)

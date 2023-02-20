@@ -1,25 +1,29 @@
 #pragma once
 
-#include "rex_opengl/resources/resource.h"
-
 #include "rex_engine/types.h"
+#include "rex_opengl/resources/resource.h"
 
 namespace rex
 {
-    class VertexArray : public Resource
-    {
-    public:
-        VertexArray();
-        ~VertexArray() override;
+  class VertexArray : public Resource
+  {
+  public:
+    VertexArray();
+    VertexArray(const VertexArray& other) = delete;
+    VertexArray(VertexArray&& other) noexcept;
+    ~VertexArray() override;
 
-        u32 get_resource_id() const override;
+    VertexArray& operator=(const VertexArray& other) = delete;
+    VertexArray& operator=(VertexArray&& other) noexcept;
 
-        void bind() const override;
-        void unbind() const override;
+    u32 resource_id() const override;
 
-        void release() override;
+    void bind() const override;
+    void unbind() const override;
 
-    private:
-        u32 m_resource_id;
-    };
-}
+    void release() override;
+
+  private:
+    u32 m_resource_id;
+  };
+} // namespace rex

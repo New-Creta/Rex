@@ -5,40 +5,39 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-
+#include "rex_renderer_core/renderer.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std/thread.h"
-
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
 
-#include "rex_renderer_core/renderer.h"
-
 #include <Windows.h>
 
-#if REX_RENDERER_OPENGL
-#include <glad/wgl.h>
-#include <glad/gl.h>
+// NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
 
-struct wgl_context
+#if REX_RENDERER_OPENGL
+  #include <glad/gl.h>
+  #include <glad/wgl.h>
+
+struct WglContext
 {
-  HDC   dc;
+  HDC dc;
   HGLRC glrc;
 };
 
-wgl_context s_glctx;
+WglContext g_glctx; // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
 
 namespace rex
 {
-  extern bool rex_make_gl_context_current()
+  bool rex_make_gl_context_current()
   {
-    return wglMakeCurrent(s_glctx.dc, s_glctx.glrc);
+    return static_cast<bool>(wglMakeCurrent(g_glctx.dc, g_glctx.glrc));
   }
-  extern void rex_gl_swap_buffers()
+  void rex_gl_swap_buffers()
   {
-    SwapBuffers(s_glctx.dc);
+    SwapBuffers(g_glctx.dc);
   }
 
   namespace opengl
@@ -53,59 +52,58 @@ namespace rex
 
     bool create_gl_context(HWND hwnd)
     {
-      s_glctx.dc = GetDC(hwnd);
+      g_glctx.dc = GetDC(hwnd);
 
       PIXELFORMATDESCRIPTOR pfd;
       memset(&pfd, 0, sizeof(pfd));
 
-      pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-      pfd.nVersion = 1;
-      pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-      pfd.iPixelType = PFD_TYPE_RGBA;
-      pfd.cColorBits = 32;
-      pfd.cAlphaBits = 8;
-      pfd.cDepthBits = 24;
+      pfd.nSize        = sizeof(PIXELFORMATDESCRIPTOR);
+      pfd.nVersion     = 1;
+      pfd.dwFlags      = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+      pfd.iPixelType   = PFD_TYPE_RGBA;
+      pfd.cColorBits   = 32;
+      pfd.cAlphaBits   = 8;
+      pfd.cDepthBits   = 24;
       pfd.cStencilBits = 8;
-      pfd.iLayerType = PFD_MAIN_PLANE;
+      pfd.iLayerType   = PFD_MAIN_PLANE;
 
-      s32 pf = ChoosePixelFormat(s_glctx.dc, &pfd);
-      if (pf == NULL || SetPixelFormat(s_glctx.dc, pf, &pfd) == FALSE)
+      const s32 pf = ChoosePixelFormat(g_glctx.dc, &pfd);
+      if(pf == NULL || SetPixelFormat(g_glctx.dc, pf, &pfd) == FALSE)
       {
-        release_device_context(hwnd, s_glctx.dc);
+        release_device_context(hwnd, g_glctx.dc);
         REX_ERROR("Failed to set a compatible pixel format");
         return false;
       }
 
-      HGLRC temp = wglCreateContext(s_glctx.dc);
-      if (temp == NULL)
+      HGLRC temp = wglCreateContext(g_glctx.dc);
+      if(temp == NULL)
       {
-        release_device_context(hwnd, s_glctx.dc);
+        release_device_context(hwnd, g_glctx.dc);
         REX_ERROR("Failed to create the initial rendering context");
         return false;
       }
 
-      wglMakeCurrent(s_glctx.dc, temp);
+      wglMakeCurrent(g_glctx.dc, temp);
 
       // Load WGL Extensions:
-      gladLoaderLoadWGL(s_glctx.dc);
+      gladLoaderLoadWGL(g_glctx.dc);
 
-      s32 attribs[] =
-      {
-        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,       // Set the MAJOR version of OpenGL to 3
-        WGL_CONTEXT_MINOR_VERSION_ARB, 2,       // Set the MINOR version of OpenGL to 2
-        WGL_CONTEXT_FLAGS_ARB, 
-        WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, // Set our OpenGL context to be forward compatible
-        0
-      };
+      rsl::array attribs = {WGL_CONTEXT_MAJOR_VERSION_ARB,
+                            3, // Set the MAJOR version of OpenGL to 3
+                            WGL_CONTEXT_MINOR_VERSION_ARB,
+                            2, // Set the MINOR version of OpenGL to 2
+                            WGL_CONTEXT_FLAGS_ARB,
+                            WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, // Set our OpenGL context to be forward compatible
+                            0};
 
-      const char* extensions = (const char*)wglGetExtensionsStringARB(s_glctx.dc);
-      if (strstr(extensions, "WGL_ARB_create_context") == NULL)
+      const char* extensions = wglGetExtensionsStringARB(g_glctx.dc);
+      if(strstr(extensions, "WGL_ARB_create_context") == NULL)
       {
-        s_glctx.glrc = wglCreateContextAttribsARB(s_glctx.dc, NULL, attribs);
-        if (s_glctx.glrc == NULL)
+        g_glctx.glrc = wglCreateContextAttribsARB(g_glctx.dc, NULL, attribs.data());
+        if(g_glctx.glrc == NULL)
         {
           wglDeleteContext(temp);
-          release_device_context(hwnd, s_glctx.dc);
+          release_device_context(hwnd, g_glctx.dc);
           REX_ERROR("Failed to create Windows OpenGL Context");
 
           return false;
@@ -113,31 +111,31 @@ namespace rex
 
         wglMakeCurrent(NULL, NULL);
         wglDeleteContext(temp);
-        wglMakeCurrent(s_glctx.dc, s_glctx.glrc);
+        wglMakeCurrent(g_glctx.dc, g_glctx.glrc);
       }
       else
       {
-        s_glctx.glrc = temp;
+        g_glctx.glrc = temp;
       }
 
-      if (!gladLoaderLoadGL()) 
+      if(gladLoaderLoadGL() == NULL)
       {
         wglMakeCurrent(NULL, NULL);
-        wglDeleteContext(s_glctx.glrc);
-        release_device_context(hwnd, s_glctx.dc);
+        wglDeleteContext(g_glctx.glrc);
+        release_device_context(hwnd, g_glctx.dc);
         REX_ERROR("Glad Loader failed!");
-        
+
         return false;
       }
 
       return true;
     }
-  }
-}
+  } // namespace opengl
+} // namespace rex
 
-#define create_ctx(hwnd) rex::opengl::create_gl_context(hwnd)
+  #define CREATE_CTX(hwnd) rex::opengl::create_gl_context(hwnd)
 #else
-#define create_ctx(hwnd) (hwnd == nullptr)
+  #define CREATE_CTX(hwnd) (hwnd == nullptr)
 #endif
 
 namespace rex
@@ -146,35 +144,36 @@ namespace rex
   {
     struct GuiApplication::Internal
     {
-      Internal(const PlatformCreationParams& guiCreationParams, const ApplicationCreationParams& appParams, CommandLineArguments&& genericCreationParams)
-        : platform_creation_params(rsl::move(guiCreationParams))
-        , app_params(appParams)
-        , cmd_line_args(rsl::move(genericCreationParams))
+      Internal(const PlatformCreationParams& platformCreationParams, const GuiParams& guiParams, CommandLineArguments genericCreationParams)
+          : platform_creation_params(platformCreationParams)
+          , gui_params(guiParams)
+          , cmd_line_args(rsl::move(genericCreationParams))
       {
       }
 
       bool initialize()
       {
         window = create_window();
-        if (window == nullptr)
+        if(window == nullptr)
+        {
+          return false;
+        }
+        subscribe_window_events();
+
+        HWND hwnd = static_cast<HWND>(window->primary_display_handle());
+        if(CREATE_CTX(hwnd) == 0)
         {
           return false;
         }
 
-        HWND hwnd = (HWND)window->get_primary_display_handle();
-        if (create_ctx(hwnd) == false)
+        if(renderer::initialize((void*)&hwnd, gui_params.max_render_commands) == false) // NOLINT (google-readability-casting,-warnings-as-errors, readability-simplify-boolean-expr,-warnings-as-errors)
         {
           return false;
         }
 
-        if (renderer::initialize((void*)&hwnd, app_params.max_render_commands) == false)
-        {
-          return false;
-        }
-
-        RendererInfo info = renderer::get_info();
+        RendererInfo info = renderer::info();
         REX_INFO("Renderer Info - API Version: {}", info.api_version);
-        REX_INFO("Renderer Info - Renderer: {}", info.renderer);
+        REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
         REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
         REX_INFO("Renderer Info - Vendor: {}", info.vendor);
 
@@ -184,28 +183,22 @@ namespace rex
       {
         is_running = true;
 
-        while (is_running)
+        while(is_running)
         {
           loop();
 
           is_running = !is_marked_for_destroy;
         }
       }
-      void shutdown()
+      void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {
         on_shutdown();
-
         renderer::shutdown();
-
-        if (window)
-        {
-          window->destroy();
-        }
       }
 
       void loop()
       {
-        const FrameInfo info = { m_delta_time, m_fps };
+        const FrameInfo info = {m_delta_time, m_fps};
 
         on_update(info);
 
@@ -224,11 +217,11 @@ namespace rex
         // Safe resources of the machine we are running on.
         //
         const rsl::chrono::milliseconds actual_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_fps.get()))));
-        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(app_params.max_fps))));
+        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(gui_params.max_fps))));
 
         const rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
-        if (elapsed_time > 0ms)
+        if(elapsed_time > 0ms)
         {
           rsl::this_thread::sleep_for(elapsed_time);
         }
@@ -239,10 +232,10 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title = app_params.window_title;
-        wnd_description.viewport = { 0, 0, app_params.window_width, app_params.window_height };
+        wnd_description.title    = gui_params.window_title;
+        wnd_description.viewport = {0, 0, gui_params.window_width, gui_params.window_height};
 
-        if (wnd->create(platform_creation_params.instance, platform_creation_params.show_cmd, wnd_description))
+        if(wnd->create(platform_creation_params.instance, platform_creation_params.show_cmd, wnd_description))
         {
           return wnd;
         }
@@ -270,7 +263,7 @@ namespace rex
         is_marked_for_destroy = true;
       }
 
-      bool is_running = false;
+      bool is_running            = false;
       bool is_marked_for_destroy = false;
 
       DeltaTime m_delta_time;
@@ -283,18 +276,18 @@ namespace rex
       rsl::function<void()> on_shutdown;
 
       PlatformCreationParams platform_creation_params;
-      ApplicationCreationParams app_params;
+      GuiParams gui_params;
       CommandLineArguments cmd_line_args;
     };
 
     //-------------------------------------------------------------------------
-    GuiApplication::GuiApplication(const PlatformCreationParams& platformParams, const ApplicationCreationParams& appParams, CommandLineArguments&& cmdArgs)
-      : IApplication()
-      , m_internal_ptr(rsl::make_unique<Internal>(platformParams, appParams, std::move(cmdArgs)))
+    GuiApplication::GuiApplication(const ApplicationCreationParams& appParams)
+        : CoreApplication(appParams.engine_params, appParams.cmd_args)
+        , m_internal_ptr(rsl::make_unique<Internal>(appParams.platform_params, appParams.gui_params, appParams.cmd_args))
     {
       m_internal_ptr->on_initialize = [&]() { return app_initialize(); };
-      m_internal_ptr->on_update = [&](const FrameInfo& info) { app_update(info); };
-      m_internal_ptr->on_shutdown = [&]() { app_shutdown(); };
+      m_internal_ptr->on_update     = [&](const FrameInfo& info) { app_update(info); };
+      m_internal_ptr->on_shutdown   = [&]() { app_shutdown(); };
     }
 
     //-------------------------------------------------------------------------
@@ -313,7 +306,7 @@ namespace rex
       Internal* instance = m_internal_ptr.get();
       const rsl::scopeguard shutdown_scopeguard([instance]() { instance->shutdown(); });
 
-      if (m_internal_ptr->initialize() == false) // NOLINT(readability-simplify-boolean-expr)
+      if(m_internal_ptr->initialize() == false) // NOLINT(readability-simplify-boolean-expr)
       {
         REX_ERROR("Application initialization failed");
         return EXIT_FAILURE;
@@ -337,3 +330,5 @@ namespace rex
     }
   } // namespace win32
 } // namespace rex
+
+// NOLINTEND(modernize-use-nullptr,-warnings-as-errors)

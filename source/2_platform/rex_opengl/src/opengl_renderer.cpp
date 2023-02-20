@@ -1,13 +1,12 @@
-#include "rex_renderer_core/renderer.h"
-
 #include "rex_opengl/opengl_error.h"
-
+#include "rex_renderer_core/renderer.h"
 #include "rex_std/string.h"
+#include "rex_std_extra/math/color.h"
 
 #if REX_PLATFORM_X64
-#include <glad/gl.h>
+  #include <glad/gl.h>
 #else
-#error "Unsupported platform"
+  #error "Unsupported platform"
 #endif
 
 namespace rex
@@ -17,38 +16,73 @@ namespace rex
   extern void rex_gl_swap_buffers();
 
   //-------------------------------------------------------------------------
-  enum ClearBits
+  enum class ClearBits
   {
-    REX_CLEAR_COLOUR_BUFFER = GL_COLOR_BUFFER_BIT,
-    REX_CLEAR_DEPTH_BUFFER = GL_DEPTH_BUFFER_BIT,
-    REX_CLEAR_STENCIL_BUFFER = GL_STENCIL_BUFFER_BIT,
+    ClearColorBuffer   = GL_COLOR_BUFFER_BIT,
+    ClearDepthBuffer   = GL_DEPTH_BUFFER_BIT,
+    ClearStencilBuffer = GL_STENCIL_BUFFER_BIT,
   };
+
+  //-------------------------------------------------------------------------
+  bool operator&(ClearBits bits1, ClearBits bits2)
+  {
+    return (static_cast<u32>(bits1) & static_cast<u32>(bits2)) != 0;
+  }
+
+  //-------------------------------------------------------------------------
+  bool operator|(ClearBits bits1, ClearBits bits2)
+  {
+    return (static_cast<u32>(bits1) | static_cast<u32>(bits2)) != 0;
+  }
 
   //-------------------------------------------------------------------------
   struct ClearState
   {
-    f32 rgba[4];
+    ClearState()
+        : rgba(0.0f, 0.0f, 0.0f, 1.0f)
+        , depth(1.0f)
+        , stencil(0x00)
+        , flags(ClearBits::ClearColorBuffer)
+    {
+    }
+
+    rsl::Color4f rgba;
     f32 depth;
-    u8  stencil;
-    u32 flags;
+    u8 stencil;
+    ClearBits flags;
   };
 
-  RendererInfo s_renderer_info;
-  ClearState s_clear_state{ 0.0f, 0.3f, 0.2f, 1.0f, 1.0f, 0x00, REX_CLEAR_COLOUR_BUFFER };
+  //-------------------------------------------------------------------------
+  ClearState make_default_clear_state()
+  {
+    ClearState cs;
+
+    cs.rgba    = rsl::colors::MediumSeaGreen;
+    cs.depth   = 1.0f;
+    cs.stencil = 0x00;
+    cs.flags   = ClearBits::ClearColorBuffer;
+
+    return cs;
+  }
 
   namespace renderer
   {
+    namespace opengl
+    {
+      RendererInfo g_renderer_info; // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
+    }                               // namespace opengl
+
     //-------------------------------------------------------------------------
     // general accessors
-    const RendererInfo& get_info()
+    const RendererInfo& info()
     {
-      return s_renderer_info;
+      return opengl::g_renderer_info;
     }
 
     //-------------------------------------------------------------------------
-    const char8* shader_platform()
+    ShaderPlatform shader_platform()
     {
-      return "glsl";
+      return ShaderPlatform::GLSL;
     }
 
     //-------------------------------------------------------------------------
@@ -65,24 +99,26 @@ namespace rex
 
     namespace backend
     {
-      GLint s_backbuffer_fbo = -1;
+      ClearState g_clear_state = make_default_clear_state(); // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
+      s32 g_backbuffer_fbo     = -1;                         // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
 
       //-------------------------------------------------------------------------
       bool initialize()
       {
-        // todo renderer caps
         const GLubyte* glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
-        const GLubyte* gl_version = glGetString(GL_VERSION);
-        const GLubyte* gl_renderer = glGetString(GL_RENDERER);
-        const GLubyte* gl_vendor = glGetString(GL_VENDOR);
+        const GLubyte* gl_version   = glGetString(GL_VERSION);
+        const GLubyte* gl_renderer  = glGetString(GL_RENDERER);
+        const GLubyte* gl_vendor    = glGetString(GL_VENDOR);
 
-        s_renderer_info.shader_version = rsl::small_stack_string((const char8*)glsl_version);
-        s_renderer_info.api_version = rsl::small_stack_string((const char8*)gl_version);
-        s_renderer_info.renderer = rsl::small_stack_string((const char8*)gl_renderer);
-        s_renderer_info.vendor = rsl::small_stack_string((const char8*)gl_vendor);
+        // need to reinterpret cast here to convert them to actual string literals (const char8*)
+        // providing no lint here to make clang-tidy happy
+        opengl::g_renderer_info.shader_version = reinterpret_cast<const char8*>(glsl_version); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        opengl::g_renderer_info.api_version    = reinterpret_cast<const char8*>(gl_version); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        opengl::g_renderer_info.adaptor        = reinterpret_cast<const char8*>(gl_renderer); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        opengl::g_renderer_info.vendor         = reinterpret_cast<const char8*>(gl_vendor); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
         // gles base fbo is not 0
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &s_backbuffer_fbo);
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &g_backbuffer_fbo);
 
         return true;
       }
@@ -102,37 +138,32 @@ namespace rex
       //-------------------------------------------------------------------------
       void end_frame()
       {
-        // unused on this platform
+        // Nothing to implement
       }
 
-      // clears
       void clear()
       {
-        ClearState& cs = s_clear_state;
+        const ClearState& cs = g_clear_state;
+
+        REX_ASSERT_X(cs.flags, "No clear flags given but renderer::backend::clear was called.");
 
         GL_CALL(glClearDepth(cs.depth));
         GL_CALL(glClearStencil(cs.stencil));
 
-        if (cs.flags & GL_DEPTH_BUFFER_BIT)
+        if(cs.flags & ClearBits::ClearDepthBuffer)
         {
           GL_CALL(glEnable(GL_DEPTH_TEST));
           GL_CALL(glDepthMask(true));
         }
 
-        if (cs.flags & GL_STENCIL_BUFFER_BIT)
+        if(cs.flags & ClearBits::ClearStencilBuffer)
         {
           GL_CALL(glEnable(GL_STENCIL_TEST));
           GL_CALL(glStencilMask(0xff));
         }
 
-        GL_CALL(glClearColor(cs.rgba[0], cs.rgba[1], cs.rgba[2], cs.rgba[3]));
-
-        if (!cs.flags)
-        {
-          return;
-        }
-
-        GL_CALL(glClear(cs.flags));
+        GL_CALL(glClearColor(cs.rgba.red, cs.rgba.green, cs.rgba.blue, cs.rgba.alpha)); // NOLINT(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
+        GL_CALL(glClear((u32)cs.flags));
       }
 
       // swap / present / vsync
@@ -140,6 +171,6 @@ namespace rex
       {
         rex_gl_swap_buffers();
       }
-    }
-  }
-}
+    } // namespace backend
+  }   // namespace renderer
+} // namespace rex

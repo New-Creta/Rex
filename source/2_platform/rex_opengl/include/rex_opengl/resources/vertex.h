@@ -1,146 +1,126 @@
 #pragma once
 
 #include "rex_opengl/resources/buffer_layout.h"
-
 #include "rex_std/unordered_map.h"
+
+#ifdef REX_COMPILER_MSVC
+  #pragma warning(push)
+  #pragma warning(disable : 4201) // nonstandard extension used: nameless struct/union
+#endif
 
 #include <glm/glm.hpp>
 
+#ifdef REX_COMPILER_MSVC
+  #pragma warning(pop)
+#endif
+
 namespace rex
 {
-    //-----------------------------------------------------------------------
-    // VERTEX POS
-    // 
-    // ATTRIBUTES:
-    //  - POSITION
-    //-----------------------------------------------------------------------
-    class VertexPos
-    {
-    public:
-        static BufferLayout get_layout();
+  //-----------------------------------------------------------------------
+  // VERTEX POS
+  //
+  // ATTRIBUTES:
+  //  - POSITION
+  //-----------------------------------------------------------------------
+  class VertexPos
+  {
+  public:
+    static BufferLayout layout();
 
-        VertexPos();
-        VertexPos(const VertexPos& other);
-        VertexPos(VertexPos&& other) noexcept;
+    VertexPos();
+    explicit VertexPos(const glm::vec3& position);
 
-        VertexPos& operator=(const VertexPos& other);
-        VertexPos& operator=(VertexPos&& other) noexcept;
+    const glm::vec3& position() const;
 
-    public:
-        VertexPos(const glm::vec3& position);
+  private:
+    glm::vec3 m_position;
+  };
 
-        const glm::vec3& get_position() const;
+  bool operator==(const VertexPos& v1, const VertexPos& v2);
+  bool operator!=(const VertexPos& v1, const VertexPos& v2);
 
-    private:
-        glm::vec3 m_position;
-    };
+  //-----------------------------------------------------------------------
+  // VERTEX POS COL
+  //
+  // ATTRIBUTES:
+  //  - POSITION
+  //  - COLOR
+  //-----------------------------------------------------------------------
+  class VertexPosCol
+  {
+  public:
+    static BufferLayout layout();
 
-    bool operator==(const VertexPos& v1, const VertexPos& v2);
-    bool operator!=(const VertexPos& v1, const VertexPos& v2);
+    VertexPosCol();
+    VertexPosCol(const glm::vec3& position, const glm::vec3& color);
 
-    //-----------------------------------------------------------------------
-    // VERTEX POS COL
-    // 
-    // ATTRIBUTES:
-    //  - POSITION
-    //  - COLOR
-    //-----------------------------------------------------------------------
-    class VertexPosCol
-    {
-    public:
-        static BufferLayout get_layout();
+    const glm::vec3& position() const;
+    const glm::vec3& color() const;
 
-        VertexPosCol();
-        VertexPosCol(const VertexPosCol& other);
-        VertexPosCol(VertexPosCol&& other) noexcept;
+  private:
+    glm::vec3 m_position;
+    glm::vec3 m_color;
+  };
 
-        VertexPosCol& operator=(const VertexPosCol& other);
-        VertexPosCol& operator=(VertexPosCol&& other) noexcept;
+  bool operator==(const VertexPosCol& v1, const VertexPosCol& v2);
+  bool operator!=(const VertexPosCol& v1, const VertexPosCol& v2);
 
-    public:
-        VertexPosCol(const glm::vec3& position, const glm::vec3& color);
+  //-----------------------------------------------------------------------
+  // VERTEX POS TEX
+  //
+  // ATTRIBUTES:
+  //  - POSITION
+  //  - UV
+  //-----------------------------------------------------------------------
+  class VertexPosTex
+  {
+  public:
+    static BufferLayout layout();
 
-        const glm::vec3& get_position() const;
-        const glm::vec3& get_color() const;
+    VertexPosTex();
+    VertexPosTex(const glm::vec3& position, const glm::vec2& uv);
 
-    private:
-        glm::vec3 m_position;
-        glm::vec3 m_color;
-    };
+    const glm::vec3& position() const;
+    const glm::vec2& uv() const;
 
-    bool operator==(const VertexPosCol& v1, const VertexPosCol& v2);
-    bool operator!=(const VertexPosCol& v1, const VertexPosCol& v2);
+  private:
+    glm::vec3 m_position;
+    glm::vec2 m_uv;
+  };
 
-    //-----------------------------------------------------------------------
-    // VERTEX POS TEX
-    // 
-    // ATTRIBUTES:
-    //  - POSITION
-    //  - UV
-    //-----------------------------------------------------------------------
-    class VertexPosTex
-    {
-    public:
-        static BufferLayout get_layout();
+  bool operator==(const VertexPosTex& v1, const VertexPosTex& v2);
+  bool operator!=(const VertexPosTex& v1, const VertexPosTex& v2);
 
-        VertexPosTex();
-        VertexPosTex(const VertexPosTex& other);
-        VertexPosTex(VertexPosTex&& other) noexcept;
+  //-----------------------------------------------------------------------
+  // VERTEX POS COL TEX
+  //
+  // ATTRIBUTES:
+  //  - POSITION
+  //  - COLOR
+  //  - UV
+  //-----------------------------------------------------------------------
+  class VertexPosColTex
+  {
+  public:
+    static BufferLayout layout();
 
-        VertexPosTex& operator=(const VertexPosTex& other);
-        VertexPosTex& operator=(VertexPosTex&& other) noexcept;
+    VertexPosColTex();
+    VertexPosColTex(const glm::vec3& position, const glm::vec3& color, const glm::vec2& uv);
 
-    public:
-        VertexPosTex(const glm::vec3& position, const glm::vec2& uv);
+    const glm::vec3& position() const;
+    const glm::vec3& color() const;
+    const glm::vec2& uv() const;
 
-        const glm::vec3& get_position() const;
-        const glm::vec2& get_uv() const;
+  private:
+    glm::vec3 m_position;
+    glm::vec3 m_color;
+    glm::vec2 m_uv;
+  };
 
-    private:
-        glm::vec3 m_position;
-        glm::vec2 m_uv;
-    };
+  bool operator==(const VertexPosColTex& v1, const VertexPosColTex& v2);
+  bool operator!=(const VertexPosColTex& v1, const VertexPosColTex& v2);
 
-    bool operator==(const VertexPosTex& v1, const VertexPosTex& v2);
-    bool operator!=(const VertexPosTex& v1, const VertexPosTex& v2);
-
-    //-----------------------------------------------------------------------
-    // VERTEX POS COL TEX
-    // 
-    // ATTRIBUTES:
-    //  - POSITION
-    //  - COLOR
-    //  - UV
-    //-----------------------------------------------------------------------
-    class VertexPosColTex
-    {
-    public:
-        static BufferLayout get_layout();
-
-        VertexPosColTex();
-        VertexPosColTex(const VertexPosColTex& other);
-        VertexPosColTex(VertexPosColTex&& other) noexcept;
-
-        VertexPosColTex& operator=(const VertexPosColTex& other);
-        VertexPosColTex& operator=(VertexPosColTex&& other) noexcept;
-
-    public:
-        VertexPosColTex(const glm::vec3& position, const glm::vec3& color, const glm::vec2& uv);
-
-        const glm::vec3& get_position() const;
-        const glm::vec3& get_color() const;
-        const glm::vec2& get_uv() const;
-
-    private:
-        glm::vec3 m_position;
-        glm::vec3 m_color;
-        glm::vec2 m_uv;
-    };
-
-    bool operator==(const VertexPosColTex& v1, const VertexPosColTex& v2);
-    bool operator!=(const VertexPosColTex& v1, const VertexPosColTex& v2);
-
-    //-----------------------------------------------------------------------
-    // All available vertex layouts
-    rsl::unordered_map<u64, BufferLayout>& get_buffer_layouts();
-}
+  //-----------------------------------------------------------------------
+  // All available vertex layouts
+  const rsl::unordered_map<u64, BufferLayout>& buffer_layouts();
+} // namespace rex

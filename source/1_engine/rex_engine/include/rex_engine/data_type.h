@@ -2,69 +2,69 @@
 
 namespace rex
 {
-    class DataType
+  class DataType
+  {
+  public:
+    enum class Value
     {
-    public:
-        enum class Value
-        {
-            NONE = 0,
+      None = 0,
 
-            INT8,
-            INT16,
-            INT32,
-            INT64,
+      Int8,
+      Int16,
+      Int32,
+      Int64,
 
-            UNSIGNED_INT8,
-            UNSIGNED_INT16,
-            UNSIGNED_INT32,
-            UNSIGNED_INT64,
+      UnsignedInt8,
+      UnsignedInt16,
+      UnsignedInt32,
+      UnsignedInt64,
 
-            FLOAT32,
-            FLOAT64,
+      Float32,
+      Float64,
 
-            MAT3,
-            MAT4,
+      Mat3,
+      Mat4,
 
-            VEC2,
-            VEC3,
-            VEC4,
+      Vec2,
+      Vec3,
+      Vec4,
 
-            IVEC2,
-            IVEC3,
-            IVEC4,
+      Ivec2,
+      Ivec3,
+      Ivec4,
 
-            UIVEC2,
-            UIVEC3,
-            UIVEC4,
+      Uvec2,
+      Uvec3,
+      Uvec4,
 
-            BOOL,
+      Bool,
 
-            SAMPLER2D,
-            SAMPLER3D,
-            SAMPLERCUBE,
+      Sampler2D,
+      Sampler3D,
+      SamplerCube,
 
-            STRING
-        };
-
-    public:
-        DataType(const DataType& other);
-        DataType(DataType&& other) noexcept;
-        
-        DataType& operator= (const DataType& other);
-        DataType& operator= (DataType&& other) noexcept;
-
-        bool operator==(const DataType& other) const;
-        bool operator!=(const DataType& other) const;
-
-    public:
-        DataType(Value value);
-
-        Value get() const;
-
-        size_t to_type_id() const;
-        size_t to_byte_size() const;
-
-    private:
-        Value m_value;
+      String
     };
-}
+
+  public:
+    DataType(Value value); //NOLINT(google-explicit-constructor)
+    ~DataType() = default;
+
+    DataType(const DataType& other) = default;
+    DataType(DataType&& other) noexcept;
+
+    DataType& operator=(const DataType& other) = default;
+    DataType& operator=(DataType&& other) noexcept;
+
+    bool operator==(const DataType& other) const;
+    bool operator!=(const DataType& other) const;
+
+    Value get() const;
+
+    size_t to_type_id() const;
+    size_t to_byte_size() const;
+
+  private:
+    Value m_value;
+  };
+} // namespace rex
