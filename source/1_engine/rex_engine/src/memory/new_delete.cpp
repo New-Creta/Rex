@@ -1,7 +1,6 @@
 #include "rex_engine/memory/new_delete.h"
 
 #include "rex_engine/memory/global_allocator.h"
-#include <cstdlib>
 
 void* operator new(u64 size) // NOLINT(readability-inconsistent-declaration-parameter-name)
 {
