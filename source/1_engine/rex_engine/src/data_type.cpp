@@ -52,7 +52,7 @@ namespace rex
         case DataType::Value::Sampler3D:
         case DataType::Value::SamplerCube: return rsl::type_id<s32>().hash_code();
 
-        case DataType::Value::NONE:
+        case DataType::Value::None:
           // Nothing to implement
           break;
       }
@@ -102,7 +102,7 @@ namespace rex
         case DataType::Value::Sampler3D:
         case DataType::Value::SamplerCube: return sizeof(s32);
 
-        case DataType::Value::NONE:
+        case DataType::Value::None:
           // Nothing to implement
           break;
       }
@@ -119,38 +119,16 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  DataType& DataType::operator=(const DataType& other)
-  {
-    REX_ASSERT(*this != other);
+  DataType::DataType(DataType&& other)
+    : m_value(rsl::exchange(other.m_value, DataType::Value::None))
+  {}
 
-    m_value = other.m_value;
-
-    return *this;
-  }
-  //-----------------------------------------------------------------------
-  DataType& DataType::operator=(const Value& other)
-  {
-    REX_ASSERT(*this != other);
-
-    m_value = other;
-
-    return *this;
-  }
   //-----------------------------------------------------------------------
   DataType& DataType::operator=(DataType&& other) noexcept
   {
     REX_ASSERT(*this != other);
 
-    m_value = rsl::exchange(other.m_value, DataType::Value::NONE);
-
-    return *this;
-  }
-  //-----------------------------------------------------------------------
-  DataType& DataType::operator=(Value&& other) noexcept
-  {
-    REX_ASSERT(*this != other);
-
-    m_value = rsl::exchange(other, DataType::Value::NONE);
+    m_value = rsl::exchange(other.m_value, DataType::Value::None);
 
     return *this;
   }
@@ -160,18 +138,9 @@ namespace rex
   {
     return this->m_value == other.m_value;
   }
-  //-----------------------------------------------------------------------
-  bool DataType::operator==(const Value& other) const
-  {
-    return this->m_value == other;
-  }
+  
   //-----------------------------------------------------------------------
   bool DataType::operator!=(const DataType& other) const
-  {
-    return !(*this == other);
-  }
-  //-----------------------------------------------------------------------
-  bool DataType::operator!=(const Value& other) const
   {
     return !(*this == other);
   }

@@ -42,7 +42,7 @@ namespace rex
         case DataType::Value::SamplerCube: return GL_SAMPLER_CUBE;
 
         case DataType::Value::String:
-        case DataType::Value::NONE: break;
+        case DataType::Value::None: break;
       }
 
       REX_ERROR("Unsupported Data Type to retrieve the OpenGL data type: {0}", (s32)type.get());

@@ -79,7 +79,7 @@ namespace rex
         , width(0)
         , height(0)
         , pixel_format(TexturePixelFormat::Unknown)
-        , pixel_data_type(DataType::Value::NONE)
+        , pixel_data_type(DataType::Value::None)
         , mipmap_level(0)
         , filter(TextureFilter::Unknown)
         , min_filter(TextureFilter::Unknown)

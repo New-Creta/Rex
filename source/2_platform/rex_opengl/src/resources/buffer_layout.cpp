@@ -50,7 +50,7 @@ namespace rex
         case DataType::Value::Vec4: return 4u;
 
         case DataType::Value::String:
-        case DataType::Value::NONE:
+        case DataType::Value::None:
           // Nothing to implement
           break;
       }

@@ -7,7 +7,7 @@ namespace rex
   public:
     enum class Value
     {
-      NONE = 0,
+      None = 0,
 
       Int8,
       Int16,
@@ -47,21 +47,17 @@ namespace rex
     };
 
   public:
-    explicit DataType(Value value);
+    DataType(Value value);
     ~DataType() = default;
 
-    DataType(const DataType& other)     = default;
-    DataType(DataType&& other) noexcept = default;
+    DataType(const DataType& other) = default;
+    DataType(DataType&& other) noexcept;
 
-    DataType& operator=(const DataType& other);
-    DataType& operator=(const Value& other);
+    DataType& operator=(const DataType& other) = default;
     DataType& operator=(DataType&& other) noexcept;
-    DataType& operator=(Value&& other) noexcept;
 
     bool operator==(const DataType& other) const;
-    bool operator==(const Value& other) const;
     bool operator!=(const DataType& other) const;
-    bool operator!=(const Value& other) const;
 
     Value get() const;
 

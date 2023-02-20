@@ -109,7 +109,7 @@ namespace rex
       {
         case DataType::Value::UnsignedInt8: return GL_UNSIGNED_BYTE;
 
-        case DataType::Value::NONE:
+        case DataType::Value::None:
         case DataType::Value::Int8:
         case DataType::Value::Int16:
         case DataType::Value::Int32:
