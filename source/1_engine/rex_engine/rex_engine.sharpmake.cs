@@ -39,5 +39,8 @@ public class RexEngine : EngineProject
         conf.add_public_define("REX_DEBUG");
         break;
     }
+
+    conf.add_public_define("REX_PLATFORM_WINDOWS");
+    conf.add_public_define("REX_API_OPENGL");
   }
 }
