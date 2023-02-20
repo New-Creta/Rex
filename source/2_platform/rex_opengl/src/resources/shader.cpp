@@ -7,9 +7,9 @@
 #include "rex_std_extra/utility/casting.h"
 
 #if REX_PLATFORM_X64
-#include <glad/gl.h>
+  #include <glad/gl.h>
 #else
-#error "Unsupported platform"
+  #error "Unsupported platform"
 #endif
 
 REX_STATIC_TODO("sstream define REX_ENABLE_STD_ALIAS(stringstream) is not working properly, adding workaround here");
@@ -29,13 +29,13 @@ namespace rex
     //-----------------------------------------------------------------------
     rsl::string_view to_string(u32 shaderType)
     {
-      switch (shaderType)
+      switch(shaderType)
       {
-      case GL_VERTEX_SHADER: return "Vertex Shader";
-      case GL_FRAGMENT_SHADER: return "Fragment Shader";
-      default:
-        // Nothing to implement
-        break;
+        case GL_VERTEX_SHADER: return "Vertex Shader";
+        case GL_FRAGMENT_SHADER: return "Fragment Shader";
+        default:
+          // Nothing to implement
+          break;
       }
 
       REX_ERROR("Could not convert \"shaderType\" of type: {0}", shaderType);
@@ -67,7 +67,7 @@ namespace rex
       s32 success = 0;
       glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 
-      if (success == 0)
+      if(success == 0)
       {
         rsl::array<char, 512> info_log;
         glGetShaderInfoLog(shader, 512, nullptr, info_log.data());
@@ -110,18 +110,31 @@ namespace rex
   {
     u32 gl_shader_type = 0;
 
-    switch (inType)
+    switch(inType)
     {
-    case ShaderType::VERTEX: gl_shader_type = GL_VERTEX_SHADER; break;
-    case ShaderType::FRAGMENT: gl_shader_type = GL_FRAGMENT_SHADER; break;
+      case ShaderType::VERTEX: gl_shader_type = GL_VERTEX_SHADER; break;
+      case ShaderType::FRAGMENT: gl_shader_type = GL_FRAGMENT_SHADER; break;
     }
 
     m_resource_id = shader::create_shader(gl_shader_type, 1, shaderElements, shaderElementLength);
   }
   //-----------------------------------------------------------------------
+  Shader::Shader(Shader&& other)
+    : m_resource_id(rsl::exchange(other.m_resource_id, 0))
+  {}
+
+  //-----------------------------------------------------------------------
   Shader::~Shader()
   {
     release();
+  }
+
+  //--------------------------------------------------------------------------------------------
+  Shader& Shader::operator=(Shader&& other)
+  {
+    m_resource_id = rsl::exchange(other.m_resource_id, 0);
+
+    return *this;
   }
 
   //-----------------------------------------------------------------------
@@ -131,10 +144,10 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  void Shader::release()
+  void Shader::release() const
   {
     shader::destroy_shader(m_resource_id);
   }
 
-}
+} // namespace rex
 #undef REX_ENABLE_STD_ALIAS

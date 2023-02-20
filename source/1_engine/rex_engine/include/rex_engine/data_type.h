@@ -47,7 +47,7 @@ namespace rex
     };
 
   public:
-    DataType(Value value); //NOLINT(google-explicit-constructor)
+    DataType(Value value); // NOLINT(google-explicit-constructor)
     ~DataType() = default;
 
     DataType(const DataType& other) = default;

@@ -13,9 +13,15 @@ namespace rex
     Shader(const ShaderType& inType, const char** shaderElements, s32* shaderElementLength = nullptr);
     ~Shader();
 
+    Shader(const Shader&) = delete;
+    Shader(Shader&& other);
+
+    Shader& operator=(const Shader&) = delete;
+    Shader& operator=(Shader&& other);
+
     u32 resource_id() const;
 
-    void release();
+    void release() const;
 
   private:
     u32 m_resource_id;
@@ -23,4 +29,4 @@ namespace rex
 
   Shader create_vertex_shader(const char** shaderElements, s32* shaderElementLength = nullptr);
   Shader create_fragment_shader(const char** shaderElements, s32* shaderElementLength = nullptr);
-}
+} // namespace rex

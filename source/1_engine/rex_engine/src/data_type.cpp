@@ -10,7 +10,7 @@
   #pragma warning(disable : 4201) // nonstandard extension used: nameless struct/union
 #endif
 
-  #include <glm/glm.hpp>
+#include <glm/glm.hpp>
 
 #ifdef REX_COMPILER_MSVC
   #pragma warning(pop)
@@ -129,13 +129,14 @@ namespace rex
 
   //-----------------------------------------------------------------------
   DataType::DataType(DataType&& other) noexcept
-    : m_value(rsl::exchange(other.m_value, DataType::Value::None))
-  {}
+      : m_value(rsl::exchange(other.m_value, DataType::Value::None))
+  {
+  }
 
   //-----------------------------------------------------------------------
   DataType& DataType::operator=(DataType&& other) noexcept
   {
-    REX_ASSERT(*this != other);
+    REX_ASSERT(this != &other);
 
     m_value = rsl::exchange(other.m_value, DataType::Value::None);
 

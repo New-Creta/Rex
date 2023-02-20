@@ -30,7 +30,7 @@ namespace rex
   //-----------------------------------------------------------------------
   VertexArray& VertexArray::operator=(VertexArray&& other) noexcept
   {
-    REX_ASSERT(*this != other);
+    REX_ASSERT(this != &other);
 
     this->m_resource_id = rsl::exchange(other.m_resource_id, 0);
 

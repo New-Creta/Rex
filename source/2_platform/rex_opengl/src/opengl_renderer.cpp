@@ -113,9 +113,9 @@ namespace rex
         // need to reinterpret cast here to convert them to actual string literals (const char8*)
         // providing no lint here to make clang-tidy happy
         opengl::g_renderer_info.shader_version = reinterpret_cast<const char8*>(glsl_version); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-        opengl::g_renderer_info.api_version    = reinterpret_cast<const char8*>(gl_version); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-        opengl::g_renderer_info.adaptor        = reinterpret_cast<const char8*>(gl_renderer); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-        opengl::g_renderer_info.vendor         = reinterpret_cast<const char8*>(gl_vendor); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        opengl::g_renderer_info.api_version    = reinterpret_cast<const char8*>(gl_version);   // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        opengl::g_renderer_info.adaptor        = reinterpret_cast<const char8*>(gl_renderer);  // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        opengl::g_renderer_info.vendor         = reinterpret_cast<const char8*>(gl_vendor);    // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
         // gles base fbo is not 0
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &g_backbuffer_fbo);

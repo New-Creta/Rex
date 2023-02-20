@@ -181,7 +181,7 @@ namespace rex
   //-------------------------------------------------------------------------
   Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
   {
-    REX_ASSERT(*this != other);
+    REX_ASSERT(this != &other);
 
     m_resource_id = rsl::exchange(other.m_resource_id, 0);
     m_description = rsl::exchange(other.m_description, {});
