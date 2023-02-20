@@ -9,9 +9,9 @@ namespace rex
     };
 
     #ifdef REX_RENDERER_OPENGL
-        constexpr GraphicsAPI g_graphics_api = GraphicsAPI::OpenGL;
+        inline constexpr GraphicsAPI g_graphics_api = GraphicsAPI::OpenGL;
     #elif REX_RENDERER_DIRECTX
-        constexpr GraphicsAPI g_graphics_api = GraphicsAPI::DirectX;
+        inline constexpr GraphicsAPI g_graphics_api = GraphicsAPI::DirectX;
     #else
         #error unknown graphics API
     #endif
