@@ -16,3 +16,7 @@ rex.sln
 build/sharpmake/.ninja/
 build/sharpmake/bin/
 build/sharpmake/obj/
+
+build/scripts/rexpy
+
+source/0_thirdparty/rex_std
