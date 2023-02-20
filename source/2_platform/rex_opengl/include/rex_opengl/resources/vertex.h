@@ -3,7 +3,16 @@
 #include "rex_opengl/resources/buffer_layout.h"
 #include "rex_std/unordered_map.h"
 
+#ifdef REX_COMPILER_MSVC
+  #pragma warning(push)
+  #pragma warning(disable : 4201) // nonstandard extension used: nameless struct/union
+#endif
+
 #include <glm/glm.hpp>
+
+#ifdef REX_COMPILER_MSVC
+  #pragma warning(pop)
+#endif
 
 namespace rex
 {
