@@ -23,7 +23,5 @@ public class RexRendererCore : EngineProject
 
     conf.AddPublicDependency<RexStdExtra>(target);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-
-    conf.add_public_define("REX_RENDERER_OPENGL");
   }
 }
