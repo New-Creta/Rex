@@ -40,7 +40,23 @@ public class RexEngine : EngineProject
         break;
     }
 
-    conf.add_public_define("REX_PLATFORM_WINDOWS");
+    switch (conf.Platform)
+    {
+      case Platform.win32:
+        conf.add_public_define("REX_PLATFORM_X86");
+        conf.add_public_define("REX_PLATFORM_WINDOWS");
+        break;
+      case Platform.win64:
+        conf.add_public_define("REX_PLATFORM_X64");
+        conf.add_public_define("REX_PLATFORM_WINDOWS");
+        break;
+      case Platform.linux:
+        conf.add_public_define("REX_PLATFORM_LINUX");
+        break;
+      default:
+        break;
+    }
+
     conf.add_public_define("REX_API_OPENGL");
   }
 }
