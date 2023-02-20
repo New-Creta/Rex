@@ -1,6 +1,6 @@
 #include "rex_engine/system_info.h"
 
-// NOLINTBEGIN(cppcoreguidelines-prefer-member-initializer,-warnings-as-errors)
+// NOLINTBEGIN(cppcoreguidelines-prefer-member-initializer,readability-convert-member-functions-to-static)
 
 namespace rex
 {
@@ -115,10 +115,10 @@ namespace rex
   //-------------------------------------------------------------------------
   const SystemInfo& system_info()
   {
-    static SystemInfo s_system_info;
+    static const SystemInfo s_system_info;
 
     return s_system_info;
   }
 } // namespace rex
 
-// NOLINTEND(modernize-use-nullptr,-warnings-as-errors)
+// NOLINTEND(cppcoreguidelines-prefer-member-initializer,readability-convert-member-functions-to-static)
