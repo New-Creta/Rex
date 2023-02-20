@@ -119,7 +119,7 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  DataType::DataType(DataType&& other)
+  DataType::DataType(DataType&& other) noexcept
     : m_value(rsl::exchange(other.m_value, DataType::Value::None))
   {}
 
@@ -138,7 +138,7 @@ namespace rex
   {
     return this->m_value == other.m_value;
   }
-  
+
   //-----------------------------------------------------------------------
   bool DataType::operator!=(const DataType& other) const
   {
