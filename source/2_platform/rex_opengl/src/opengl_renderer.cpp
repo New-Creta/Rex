@@ -18,9 +18,9 @@ namespace rex
   //-------------------------------------------------------------------------
   enum class ClearBits
   {
-    RexClearColorBuffer   = GL_COLOR_BUFFER_BIT,
-    RexClearDepthBuffer   = GL_DEPTH_BUFFER_BIT,
-    RexClearStencilBuffer = GL_STENCIL_BUFFER_BIT,
+    ClearColorBuffer   = GL_COLOR_BUFFER_BIT,
+    ClearDepthBuffer   = GL_DEPTH_BUFFER_BIT,
+    ClearStencilBuffer = GL_STENCIL_BUFFER_BIT,
   };
 
   //-------------------------------------------------------------------------
@@ -42,7 +42,7 @@ namespace rex
         : rgba(0.0f, 0.0f, 0.0f, 1.0f)
         , depth(1.0f)
         , stencil(0x00)
-        , flags(ClearBits::RexClearColorBuffer)
+        , flags(ClearBits::ClearColorBuffer)
     {
     }
 
@@ -60,7 +60,7 @@ namespace rex
     cs.rgba    = rsl::colors::MediumSeaGreen;
     cs.depth   = 1.0f;
     cs.stencil = 0x00;
-    cs.flags   = ClearBits::RexClearColorBuffer;
+    cs.flags   = ClearBits::ClearColorBuffer;
 
     return cs;
   }
@@ -150,13 +150,13 @@ namespace rex
         GL_CALL(glClearDepth(cs.depth));
         GL_CALL(glClearStencil(cs.stencil));
 
-        if(cs.flags & ClearBits::RexClearDepthBuffer)
+        if(cs.flags & ClearBits::ClearDepthBuffer)
         {
           GL_CALL(glEnable(GL_DEPTH_TEST));
           GL_CALL(glDepthMask(true));
         }
 
-        if(cs.flags & ClearBits::RexClearStencilBuffer)
+        if(cs.flags & ClearBits::ClearStencilBuffer)
         {
           GL_CALL(glEnable(GL_STENCIL_TEST));
           GL_CALL(glStencilMask(0xff));
