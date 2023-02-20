@@ -13,7 +13,7 @@ namespace rex
     Shader(const ShaderType& inType, const char** shaderElements, s32* shaderElementLength = nullptr);
     ~Shader();
 
-    u32 get_resource_id() const;
+    u32 resource_id() const;
 
     void release();
 

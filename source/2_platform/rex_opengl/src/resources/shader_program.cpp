@@ -77,8 +77,8 @@ namespace rex
 
     GL_CALL(m_resource_id = glCreateProgram()); // NOLINT (cppcoreguidelines-prefer-member-initializer,-warnings-as-errors)
 
-    glAttachShader(m_resource_id, vertex_shader.get_resource_id());
-    glAttachShader(m_resource_id, fragment_shader.get_resource_id());
+    glAttachShader(m_resource_id, vertex_shader.resource_id());
+    glAttachShader(m_resource_id, fragment_shader.resource_id());
 
     GL_CALL(glLinkProgram(m_resource_id));
 
