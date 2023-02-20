@@ -1,4 +1,5 @@
 #include "rex_engine/system_info.h"
+#include "rex_engine/types.h"
 
 // NOLINTBEGIN(cppcoreguidelines-prefer-member-initializer,readability-convert-member-functions-to-static)
 
@@ -43,14 +44,33 @@ namespace rex
     m_graphics_api = GraphicsAPIType::Unspecified;
 #endif
 
-    constexpr int c_bits_32 = 4;
-    constexpr int c_bits_64 = 8;
-    switch(sizeof(void*))
-    {
-      case c_bits_32: m_architecture = ArchitectureType::Bit32; break;
-      case c_bits_64: m_architecture = ArchitectureType::Bit64; break;
-      default: m_architecture = ArchitectureType::Unspecified; break;
-    }
+#if defined REX_PLATFORM_WINDOWS
+  #if defined REX_PLATFORM_X64
+      m_architecture = ArchitectureType::Bit64;
+  #elif defined REX_PLATFORM_X86
+      m_architecture = ArchitectureType::Bit32;
+  #else
+      m_architecture = ArchitectureType::Unspecified;
+  #endif
+#elif defined REX_PLATFORM_LINUX
+  #if defined REX_PLATFORM_X64
+      m_architecture = ArchitectureType::Bit64;
+  #elif defined REX_PLATFORM_X86
+      m_architecture = ArchitectureType::Bit32;
+  #else
+      m_architecture = ArchitectureType::Unspecified;
+  #endif
+#elif defined REX_PLATFORM_EMSCRIPTEN
+  #if defined REX_PLATFORM_X64
+      m_architecture = ArchitectureType::Bit64;
+  #elif defined REX_PLATFORM_X86
+      m_architecture = ArchitectureType::Bit32;
+  #else
+      m_architecture = ArchitectureType::Unspecified;
+  #endif
+#else
+    m_architecture = PlatformType::Unspecified;
+#endif
   }
 
   //-------------------------------------------------------------------------
