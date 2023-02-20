@@ -2,6 +2,8 @@
 
 #include "rex_engine/memory/memory_manager.h"
 
+#include <cstdlib>
+
 namespace rex
 {
   void* GlobalAllocator::allocate(rsl::memory_size size)

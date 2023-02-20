@@ -23,3 +23,4 @@ namespace rex
 
   Shader create_vertex_shader(const char** shaderElements, s32* shaderElementLength = nullptr);
   Shader create_fragment_shader(const char** shaderElements, s32* shaderElementLength = nullptr);
+}

@@ -4,7 +4,7 @@
 
 #define REX_ENABLE_STD_ALIAS
 #include "rex_std/sstream.h"
-#include "rex_std_extra/utilities/casting.h"
+#include "rex_std_extra/utility/casting.h"
 
 #if REX_PLATFORM_X64
 #include <glad/gl.h>
@@ -106,7 +106,7 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  Shader::Shader(const ShaderType& inType, const char** shaderElements, s32* shaderElementLength = nullptr)
+  Shader::Shader(const ShaderType& inType, const char** shaderElements, s32* shaderElementLength /*= nullptr*/)
   {
     u32 gl_shader_type = 0;
 
@@ -136,4 +136,5 @@ namespace rex
     shader::destroy_shader(m_resource_id);
   }
 
+}
 #undef REX_ENABLE_STD_ALIAS
