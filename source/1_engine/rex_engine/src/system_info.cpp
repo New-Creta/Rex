@@ -1,136 +1,124 @@
 #include "rex_engine/system_info.h"
 
+// NOLINTBEGIN(cppcoreguidelines-prefer-member-initializer,-warnings-as-errors)
+
 namespace rex
 {
   //-------------------------------------------------------------------------
   SystemInfo::SystemInfo()
   {
 #if defined REX_PLATFORM_WINDOWS
-    m_platform = platform::Type::Windows;
+    m_platform = PlatformType::Windows;
 #elif defined REX_PLATFORM_LINUX
-    m_platform     = platform::Type::Linux;
+    m_platform = PlatformType::Linux;
 #elif defined REX_PLATFORM_EMSCRIPTEN
-    m_platform     = platform::Type::Emscripten;
+    m_platform = PlatformType::Emscripten;
 #else
-    m_platform     = platform::Type::Unspecified;
+    m_platform = PlatformType::Unspecified;
 #endif
 
 #if defined REX_PLATFORM_WINDOWS
   #if defined REX_API_OPENGL
-    m_graphics_api = graphics_api::Type::OpenGL;
+    m_graphics_api = GraphicsAPIType::OpenGL;
   #elif defined REX_API_OPENGLES
-    m_graphics_api = graphics_api::Type::OpenGLES;
+    m_graphics_api = GraphicsAPIType::OpenGLES;
   #elif defined REX_API_DIRECTX12
-    m_graphics_api = graphics_api::Type::DirectX12;
+    m_graphics_api = GraphicsAPIType::DirectX12;
   #else
-    m_graphics_api = graphics_api::Type::Unspecified;
+    m_graphics_api = GraphicsAPIType::Unspecified;
   #endif
 #elif defined REX_PLATFORM_LINUX
   #if defined REX_API_OPENGL
-    m_graphics_api = graphics_api::Type::OpenGL;
+    m_graphics_api = GraphicsAPIType::OpenGL;
   #else
-    m_graphics_api = graphics_api::Type::Unspecified;
+    m_graphics_api = GraphicsAPIType::Unspecified;
   #endif
 #elif defined REX_PLATFORM_EMSCRIPTEN
   #if defined REX_API_OPENGLES
-    m_graphics_api = graphics_api::Type::OpenGLES;
+    m_graphics_api = GraphicsAPIType::OpenGLES;
   #else
-    m_graphics_api = graphics_api::Type::Unspecified;
+    m_graphics_api = GraphicsAPIType::Unspecified;
   #endif
 #else
-    m_graphics_api = graphics_api::Type::Unspecified;
+    m_graphics_api = GraphicsAPIType::Unspecified;
 #endif
 
     constexpr int c_bits_32 = 4;
     constexpr int c_bits_64 = 8;
     switch(sizeof(void*))
     {
-      case c_bits_32: m_architecture = architecture::Type::Bit32; break;
-      case c_bits_64: m_architecture = architecture::Type::Bit64; break;
-      default: m_architecture = architecture::Type::Unspecified; break;
+      case c_bits_32: m_architecture = ArchitectureType::Bit32; break;
+      case c_bits_64: m_architecture = ArchitectureType::Bit64; break;
+      default: m_architecture = ArchitectureType::Unspecified; break;
     }
   }
 
   //-------------------------------------------------------------------------
-  platform::Type SystemInfo::get_active_platform()
+  PlatformType SystemInfo::active_platform() const
   {
     return m_platform;
   }
   //-------------------------------------------------------------------------
-  graphics_api::Type SystemInfo::get_active_graphics_api()
+  GraphicsAPIType SystemInfo::active_graphics_api() const
   {
     return m_graphics_api;
   }
   //-------------------------------------------------------------------------
-  architecture::Type SystemInfo::get_active_architecture()
+  ArchitectureType SystemInfo::active_architecture() const
   {
     return m_architecture;
   }
 
   //-------------------------------------------------------------------------
-  rsl::array<platform::Type, 3> SystemInfo::get_supported_platforms()
+  bool SystemInfo::is_windows() const
   {
-    return {platform::Type::Windows, platform::Type::Linux, platform::Type::Emscripten};
+    return active_platform() == PlatformType::Windows;
   }
   //-------------------------------------------------------------------------
-  rsl::array<graphics_api::Type, 3> SystemInfo::get_supported_graphics_apis()
+  bool SystemInfo::is_linux() const
   {
-    return {graphics_api::Type::OpenGL, graphics_api::Type::OpenGLES, graphics_api::Type::DirectX12};
+    return active_platform() == PlatformType::Linux;
   }
   //-------------------------------------------------------------------------
-  rsl::array<architecture::Type, 2> SystemInfo::get_supported_architectures()
+  bool SystemInfo::is_emscripten() const
   {
-    return {architecture::Type::Bit32, architecture::Type::Bit64};
-  }
-
-  //-------------------------------------------------------------------------
-  bool SystemInfo::is_windows()
-  {
-    return get_active_platform() == platform::Type::Windows;
-  }
-  //-------------------------------------------------------------------------
-  bool SystemInfo::is_linux()
-  {
-    return get_active_platform() == platform::Type::Linux;
-  }
-  //-------------------------------------------------------------------------
-  bool SystemInfo::is_emscripten()
-  {
-    return get_active_platform() == platform::Type::Emscripten;
+    return active_platform() == PlatformType::Emscripten;
   }
 
   //-------------------------------------------------------------------------
-  bool SystemInfo::is_opengl()
+  bool SystemInfo::is_opengl() const
   {
-    return get_active_graphics_api() == graphics_api::Type::OpenGL;
+    return active_graphics_api() == GraphicsAPIType::OpenGL;
   }
   //-------------------------------------------------------------------------
-  bool SystemInfo::is_opengles()
+  bool SystemInfo::is_opengles() const
   {
-    return get_active_graphics_api() == graphics_api::Type::OpenGLES;
+    return active_graphics_api() == GraphicsAPIType::OpenGLES;
   }
   //-------------------------------------------------------------------------
-  bool SystemInfo::is_directx12()
+  bool SystemInfo::is_directx12() const
   {
-    return get_active_graphics_api() == graphics_api::Type::DirectX12;
-  }
-
-  //-------------------------------------------------------------------------
-  bool SystemInfo::is_32bit()
-  {
-    return get_active_architecture() == architecture::Type::Bit32;
-  }
-  //-------------------------------------------------------------------------
-  bool SystemInfo::is_64bit()
-  {
-    return get_active_architecture() == architecture::Type::Bit64;
+    return active_graphics_api() == GraphicsAPIType::DirectX12;
   }
 
   //-------------------------------------------------------------------------
-  const SystemInfo& get_system_info()
+  bool SystemInfo::is_32bit() const
+  {
+    return active_architecture() == ArchitectureType::Bit32;
+  }
+  //-------------------------------------------------------------------------
+  bool SystemInfo::is_64bit() const
+  {
+    return active_architecture() == ArchitectureType::Bit64;
+  }
+
+  //-------------------------------------------------------------------------
+  const SystemInfo& system_info()
   {
     static SystemInfo s_system_info;
 
     return s_system_info;
   }
 } // namespace rex
+
+// NOLINTEND(modernize-use-nullptr,-warnings-as-errors)
