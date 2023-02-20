@@ -59,8 +59,8 @@ namespace rex
   #endif
 #else
     m_platform = PlatformType::Unspecified;
-    m_graphics_api = PlatformType::Unspecified;
-    m_architecture = PlatformType::Unspecified;
+    m_graphics_api = GraphicsAPIType::Unspecified;
+    m_architecture = ArchitectureType::Unspecified;
 #endif
   }
 
