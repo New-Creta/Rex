@@ -44,7 +44,7 @@ def install_rexpy(forceInstall):
     return
   elif forceInstall == True:
     if is_rexpy_installed():
-      print(f"remove the already install rexpy")
+      print(f"removing the already installed rexpy")
       shutil.rmtree(__rexpy_path())
 
   __fetch_rexpy()
@@ -55,7 +55,7 @@ def install_rexstd(forceInstall):
     return
   elif forceInstall == True:
     if is_rexstd_installed():
-      print(f"removing the already install rexstd")
+      print(f"removing the already installed rexstd")
       shutil.rmtree(__rexstd_path())
 
   __fetch_rexstd()
