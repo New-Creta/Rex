@@ -17,6 +17,6 @@ if __name__ == "__main__":
     # cwd: given current working directory ( this can be different from the script cwd )
     # cod: given current output directory ( this can be different from the script cwd )
     cwd = args.cwd
-    cod = "rexpy"
+    cod = os.path.join("build", os.path.join("scripts","rexpy"))
     
     git_repository.fetch(url,cod,cwd)

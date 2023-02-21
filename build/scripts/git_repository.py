@@ -86,9 +86,7 @@ def fetch(url, cod, cwd):
     else:
         print("No directories where extracted.")
         os.remove(desired_full_path)
-        return 1
-    
-
+        return 1  
 
     # remove the created zip file
     os.remove(url_basename)
