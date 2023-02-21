@@ -55,7 +55,7 @@ def install_rexstd(forceInstall):
     return
   elif forceInstall == True:
     if is_rexstd_installed():
-      print(f"remove the already install rexstd")
+      print(f"removing the already install rexstd")
       shutil.rmtree(__rexstd_path())
 
   __fetch_rexstd()
@@ -78,12 +78,12 @@ def __main():
   install_rexpy(args.update_rexpy)
   install_rexstd(args.update_rexstd)
 
-  # # now that rexpy and rexstd is installed, we can safely call the rest of the code
-  # arguments_to_pass_on = ""
-  # for arg in unknown:
-  #   arguments_to_pass_on += f" {arg}"
+  # now that rexpy and rexstd is installed, we can safely call the rest of the code
+  arguments_to_pass_on = ""
+  for arg in unknown:
+    arguments_to_pass_on += f" {arg}"
 
-  # os.system(f"py build/scripts/rexpy/rexpy/setup.py{arguments_to_pass_on}")
+  os.system(f"py build/scripts/rexpy/rexpy/setup.py{arguments_to_pass_on}")
 
 if __name__ == "__main__":
   start_time = time.time()
