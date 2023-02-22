@@ -71,7 +71,7 @@ namespace rex
       }
       virtual void app_shutdown() 
       {
-          // Nothin to implement
+          // Nothing to implement
       }
 
     private:
