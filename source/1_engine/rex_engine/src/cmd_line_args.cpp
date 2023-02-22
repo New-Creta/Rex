@@ -1,9 +1,16 @@
 #include "rex_engine/cmd_line_args.h"
+#include "rex_engine/diagnostics/logging.h"
 
 namespace rex
 {
   CommandLineArguments::CommandLineArguments(const char8* cmdLine)
   {
+    if(cmdLine == nullptr)
+    {
+      REX_INFO("No command line arguments to parse");
+      return;
+    }
+
     parse_cmd_line(rsl::string_view(cmdLine));
   }
 

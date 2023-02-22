@@ -13,7 +13,7 @@ namespace rex
   struct CoreApplication::Internal
   {
   public:
-    Internal(const RexEngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
+    Internal(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
     {
       // load memory config file from disk
       // this file only has high level memory settings
@@ -31,7 +31,7 @@ namespace rex
   CoreApplication* CoreApplication::Internal::s_instance = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const RexEngineParams& engineParams, const CommandLineArguments& cmdArgs)
+  CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& cmdArgs)
       : m_internal_ptr(rsl::make_unique<Internal>(engineParams, cmdArgs))
   {
     REX_ASSERT_X(CoreApplication::Internal::s_instance == nullptr, "There can only be one application at the time");
