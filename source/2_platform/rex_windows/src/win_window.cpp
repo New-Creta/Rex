@@ -2,7 +2,6 @@
 
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
-#include "rex_engine/event_system.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 
 #define NOMINMAX
@@ -23,10 +22,10 @@ namespace rex
       }
       else
       {
-        Window* this_window = reinterpret_cast<Window*>(GetWindowLongPtrW(win_hwnd, GWLP_USERDATA)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
-        if(this_window)
+        EventHandler* event_handler = reinterpret_cast<EventHandler*>(GetWindowLongPtrW(win_hwnd, GWLP_USERDATA)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
+        if(event_handler)
         {
-          return this_window->on_event(hwnd, msg, wparam, lparam);
+          return event_handler->on_event(hwnd, msg, wparam, lparam);
         }
       }
 
@@ -82,7 +81,7 @@ namespace rex
                                           nullptr, 
                                           nullptr, 
                                           static_cast<HINSTANCE>(hInstance), 
-                                          this)));
+                                          &m_event_handler)));
       // clang-format on
 
       if(m_hwnd == nullptr)
@@ -94,25 +93,6 @@ namespace rex
       ShowWindow(static_cast<HWND>(m_hwnd), cmdShow);
       SetForegroundWindow(static_cast<HWND>(m_hwnd));
 
-      return true;
-    }
-
-    //-------------------------------------------------------------------------
-    bool Window::destroy()
-    {
-      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
-      {
-        DestroyWindow(static_cast<HWND>(m_hwnd));
-
-        m_wnd_class.destroy();
-      }
-      else
-      {
-        REX_WARN("Window already destroyed");
-        return false;
-      }
-
-      m_destroyed = true;
       return true;
     }
 
@@ -143,7 +123,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void* Window::get_primary_display_handle()
+    void* Window::primary_display_handle()
     {
       return m_hwnd;
     }
@@ -166,7 +146,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    f32 Window::get_aspect() const
+    f32 Window::aspect() const
     {
       const s32 w = width();
       const s32 h = height();
@@ -174,27 +154,23 @@ namespace rex
       return static_cast<f32>(w) / static_cast<f32>(h);
     }
 
-    //-----------------------------------------------------------------
-    LResult Window::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
+    //-------------------------------------------------------------------------
+    bool Window::destroy()
     {
-      // Sometimes Windows set error states between messages
-      // becasue these aren't our fault, we'll ignore those
-      // to make sure our messages are successful
-      const DWORD last_windows_error = GetLastError();
-      rex::win::clear_win_errors();
-
-      const rsl::scopeguard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
-
-      switch(msg)
+      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
       {
-      case WM_CLOSE: close(); break;
-      case WM_DESTROY:
-          PostQuitMessage(0);
-          event_system::fire_event(event_system::EventType::WindowClose);
-          return 0;
+        DestroyWindow(static_cast<HWND>(m_hwnd));
 
+        m_wnd_class.destroy();
       }
-      return DefWindowProc(static_cast<HWND>(hwnd), msg, wparam, lparam);
+      else
+      {
+        REX_WARN("Window already destroyed");
+        return false;
+      }
+
+      m_destroyed = true;
+      return true;
     }
   } // namespace win32
 } // namespace rex

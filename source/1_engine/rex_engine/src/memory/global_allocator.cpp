@@ -1,5 +1,8 @@
 #include "rex_engine/memory/global_allocator.h"
+
 #include "rex_engine/memory/memory_manager.h"
+
+#include <cstdlib>
 
 namespace rex
 {
@@ -7,7 +10,7 @@ namespace rex
   {
     return allocate(size.size_in_bytes());
   }
-  void* GlobalAllocator::allocate(card64 size)
+  void* GlobalAllocator::allocate(card64 size) // NOLINT(readability-convert-member-functions-to-static)
   {
     mem_manager().track_alloc(size);
     return malloc(size); // NOLINT(cppcoreguidelines-no-malloc)
@@ -17,7 +20,7 @@ namespace rex
   {
     deallocate(ptr, size.size_in_bytes());
   }
-  void GlobalAllocator::deallocate(void* ptr, card64 size)
+  void GlobalAllocator::deallocate(void* ptr, card64 size) // NOLINT(readability-convert-member-functions-to-static)
   {
     mem_manager().track_dealloc(size);
     free(ptr); // NOLINT(cppcoreguidelines-no-malloc)
@@ -28,4 +31,4 @@ namespace rex
     static GlobalAllocator alloc;
     return alloc;
   }
-}
+} // namespace rex

@@ -16,4 +16,4 @@ namespace rex
   };
 
   GlobalAllocator& global_allocator();
-}
+} // namespace rex

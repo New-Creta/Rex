@@ -2,7 +2,7 @@
 
 #include "rex_engine/types.h"
 #include "rex_std_extra/memory/memory_size.h"
-#include "rex_std_extra/utilities/high_water_mark.h"
+#include "rex_std_extra/utility/high_water_mark.h"
 
 namespace rex
 {
@@ -18,8 +18,8 @@ namespace rex
 
   private:
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
-    s64 m_max_mem_usage; // maximum allowed memory usage
+    s64 m_max_mem_usage;                   // maximum allowed memory usage
   };
 
   MemoryManager& mem_manager();
-}
+} // namespace rex

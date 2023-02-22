@@ -24,7 +24,7 @@ namespace rex
       bool create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title)
       {
         name      = title;
-        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandleA(nullptr)) : hInstance;
+        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandle(nullptr)) : hInstance;
 
         rsl::zero_memory(&window_class, sizeof(window_class));
 
@@ -43,7 +43,7 @@ namespace rex
         window_class.lpszClassName = name;
         window_class.lpszMenuName  = nullptr;
 
-        // RegisterClass does call SetLastError on success.
+        // RegisterClass doesn't call SetLastError on success.
         // so if anything fails before this is called, then the following call will also fail
         // please check if the issue is not coming from somewhere else.
         if(WIN_FAILED(RegisterClass(&window_class)))
