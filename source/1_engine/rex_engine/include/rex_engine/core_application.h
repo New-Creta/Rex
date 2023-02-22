@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  struct RexEngineParams
+  struct EngineParams
   {
     // how much memory is the entire app allowed to use.
     // by default, there's no limit on this.
@@ -17,7 +17,7 @@ namespace rex
   class CoreApplication
   {
   public:
-    CoreApplication(const RexEngineParams& engineParams, const CommandLineArguments& cmdArgs);
+    CoreApplication(const EngineParams& engineParams, const CommandLineArguments& cmdArgs);
     CoreApplication(const CoreApplication&) = delete;
     CoreApplication(CoreApplication&&)      = delete;
     virtual ~CoreApplication();
