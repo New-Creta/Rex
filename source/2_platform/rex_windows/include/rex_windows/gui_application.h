@@ -34,7 +34,7 @@ namespace rex
     }
 
   public:
-    RexEngineParams engine_params;
+    EngineParams engine_params;
     PlatformCreationParams platform_params;
     GuiParams gui_params;
     CommandLineArguments cmd_args;
@@ -64,12 +64,15 @@ namespace rex
       virtual bool app_initialize()
       {
         return true;
-      };
+      }
       virtual void app_update(const FrameInfo& info)
       {
         UNUSED_PARAM(info);
-      };
-      virtual void app_shutdown() {};
+      }
+      virtual void app_shutdown() 
+      {
+          // Nothin to implement
+      }
 
     private:
       struct Internal;
