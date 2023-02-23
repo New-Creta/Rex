@@ -3,6 +3,12 @@ import json
 import requests
 import zipfile
 import shutil
+from enum import Enum
+
+class Host(Enum):
+    UNKNOWN = 0
+    GITLAB = 1
+    GITHUB = 2
 
 def __get_script_path():
     return os.path.dirname(os.path.realpath(__file__))
@@ -11,6 +17,39 @@ def __get_root_path():
     root = os.path.join(root, os.path.join("..", ".."))
 
     return root
+
+def __get_host(path):
+    if "gitlab" in path:
+        return Host.GITLAB
+    elif "github" in path:
+        return Host.GITHUB
+    
+    print("Unknown host!")
+    return Host.UNKNOWN
+
+def __build_gitlab_path(baseUrl, name, tag):
+    url = os.path.join(baseUrl, "-")
+    url = os.path.join(url, "archive")
+    url = os.path.join(url, tag)
+    url = os.path.join(url, name+"-"+tag+".zip")
+    url = url.replace("\\", "/")
+    return url
+def __build_github_path(baseUrl, tag):
+    url = os.path.join(baseUrl, "archive")
+    url = os.path.join(url, "refs")
+    url = os.path.join(url, "tags")
+    url = os.path.join(url, tag+".zip")
+    url = url.replace("\\", "/")
+    return url
+def __build_host_path(baseUrl, name, tag):
+    host = __get_host(baseUrl)
+    match host:
+        case Host.GITHUB:
+            return __build_github_path(baseUrl, tag)
+        case Host.GITLAB:
+            return __build_gitlab_path(baseUrl, name, tag)
+        case Host.UNKNOWN:
+            return ""
 
 def __load_json(path):
   if not os.path.exists(path):
@@ -84,15 +123,11 @@ def __download_external(url):
 def __install_external(external):
     root = __get_root_path()
 
-    external_name = external["name"]
     external_url = external["url"]
+    external_name = external["name"]
     external_tag = external["tag"]
     
-    url = os.path.join(external_url, "-")
-    url = os.path.join(url, "archive")
-    url = os.path.join(url, external_tag)
-    url = os.path.join(url, external_name+"-"+external_tag+".zip")
-    url = url.replace("\\", "/")
+    url = __build_host_path(external_url, external_name, external_tag)
     
     added_directories = __download_external(url)
     
@@ -101,7 +136,7 @@ def __install_external(external):
     
     if len(added_directories) == 1:
         # move to output directory
-        shutil.move(os.path.join(__get_script_path(), added_directories[0]), external_store)
+        shutil.move(os.path.join(__get_script_path(), added_directories[0]), os.path.join(external_store, added_directories[0]))
         # change directory name
         cwd = os.getcwd()
         os.chdir(external_store)
