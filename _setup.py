@@ -41,7 +41,7 @@ def __main():
   for arg in unknown:
     arguments_to_pass_on += f" {arg}"
 
-  os.system(f"py build/scripts/rexpy/rexpy/setup.py{arguments_to_pass_on}")
+  os.system(f"py build/scripts/rex-py/rexpy/setup.py{arguments_to_pass_on}")
 
 if __name__ == "__main__":
   start_time = time.time()
