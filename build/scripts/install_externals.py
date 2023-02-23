@@ -120,38 +120,77 @@ def __download_external(url):
 
     return added_directory_names
 
+def __touch_externals_dir(externalsDir, tag):
+    version = {
+        "tag": tag
+    }
+
+    json_object = json.dumps(version, indent=4)
+
+    # Writing to version.json
+    with open(os.path.join(externalsDir, "version.json"), "w") as out:
+        out.write(json_object)
+
 def __install_external(external):
+    cwd = os.getcwd()
     root = __get_root_path()
 
     external_url = external["url"]
     external_name = external["name"]
     external_tag = external["tag"]
-    
-    url = __build_host_path(external_url, external_name, external_tag)
-    
-    added_directories = __download_external(url)
-    
     external_store = external["storage"]
     external_store = external_store.replace("~", root)
-    
-    if len(added_directories) == 1:
-        # move to output directory
-        shutil.move(os.path.join(__get_script_path(), added_directories[0]), os.path.join(external_store, added_directories[0]))
-        # change directory name
-        cwd = os.getcwd()
-        os.chdir(external_store)
-        os.rename(added_directories[0], external_name)
+
+    # if the external is already present we need to check if we need to redownload anything
+    should_download = False
+    externals_dir = os.path.join(external_store, external_name)
+    if os.path.exists(externals_dir):
+        print("External found: " + external_name + " validating version ...")
+        os.chdir(externals_dir)
+        version_file = os.path.join(externals_dir, "version.json")
+        if os.path.exists(version_file):
+            version_data = __load_json(version_file)           
+            if version_data == None:
+                print("Invalid version data found, redownloading external: " + external_name)
+                should_download = True              
+            if not version_data["tag"] == external_tag:
+                should_download = True
+            else:
+                print("External: " + external_name + " is up to date (" + external_name + " " + external_tag + ")")
+        else:
+            should_download = True
         os.chdir(cwd)
-    elif len(added_directories) > 1:
-        # create output directory
-        output_directory = os.path.join(external_store, external_name)
-        os.makedirs(output_directory)
-        # move to output directory
-        for added_directory in added_directories:
-            shutil.move(os.path.join(__get_script_path(), added_directory), output_directory)
+
+        # any data that was already available will be deleted 
+        # the data will be out of date anyway when a download is triggered
+        if should_download:
+            shutil.rmtree(externals_dir)
     else:
-        print("No directories where extracted.")
-        return   
+        should_download = True
+
+    if should_download:    
+        url = __build_host_path(external_url, external_name, external_tag)
+        
+        added_directories = __download_external(url)       
+        if len(added_directories) == 1:
+            # move to output directory
+            shutil.move(os.path.join(__get_script_path(), added_directories[0]), os.path.join(external_store, added_directories[0]))
+            # change directory name
+            os.chdir(external_store)
+            os.rename(added_directories[0], external_name)
+            os.chdir(cwd)
+        elif len(added_directories) > 1:
+            # create output directory
+            if not os.path.exists(externals_dir):
+                os.makedirs(externals_dir)
+            # move to output directory
+            for added_directory in added_directories:
+                shutil.move(os.path.join(__get_script_path(), added_directory), externals_dir)
+        else:
+            print("No directories where extracted.")
+            return
+
+        __touch_externals_dir(externals_dir, external_tag)   
 
 def __main():
     print("Start installing externals ...")
