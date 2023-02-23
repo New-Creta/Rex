@@ -1,0 +1,14 @@
+{
+    "rex_glad" : {
+      "name": "rex-glad",
+      "url": "https://gitlab.com/rex-externals/rex-glad/",
+      "tag": "v1.0.0",
+      "storage": "~/source/0_thirdparty"
+    },
+    "rex_glm" : {
+      "name": "rex-glm",
+      "url": "https://gitlab.com/rex-externals/rex-glm/",
+      "tag": "v1.0.0",
+      "storage": "~/source/0_thirdparty"
+    }
+  }
