@@ -17,6 +17,6 @@ build/sharpmake/.ninja/
 build/sharpmake/bin/
 build/sharpmake/obj/
 
-build/scripts/rexpy
+build/scripts/rex-py
 
-source/0_thirdparty/rex_std
+source/0_thirdparty
