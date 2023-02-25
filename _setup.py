@@ -26,7 +26,7 @@ def __main():
   parser = argparse.ArgumentParser()
   args, unknown = parser.parse_known_args()
 
-  # let's assume if "build" and "source"are found, we're in the root
+  # let's assume if "build" and "source" are found, we're in the root
   build_exists = os.path.exists("./build")
   source_exists = os.path.exists("./source")
 
@@ -36,12 +36,12 @@ def __main():
 
   __install_externals()
 
-  # now that rexpy and rexstd is installed, we can safely call the rest of the code
+  # now that the externals are installed, we can safely call the rest of the code
   arguments_to_pass_on = ""
   for arg in unknown:
     arguments_to_pass_on += f" {arg}"
 
-  os.system(f"py build/scripts/rex-py/rexpy/setup.py{arguments_to_pass_on}")
+  os.system(f"py build/scripts/rex_py/rexpy/setup.py{arguments_to_pass_on}")
 
 if __name__ == "__main__":
   start_time = time.time()
