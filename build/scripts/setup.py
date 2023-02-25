@@ -5,16 +5,32 @@ import rexpy.rex_json
 import rexpy.required_tools
 import rexpy.required_libs
 import rexpy.install_externals
+import rexpy.diagnostics
 import shutil
 
 root_path = rexpy.util.find_root()
 settings = rexpy.rex_json.load_file(os.path.join(root_path, "build", "config", "settings.json"))
 intermediate_dir = os.path.join(rexpy.util.find_root(), settings["intermediate_folder"])
+misc_folders = settings["misc_folders"]
+misc_extensions = settings["misc_extensions"]
 
 def __clean_intermediate():
+  rexpy.diagnostics.log_info(f"cleaning intermediates")
+  
   # this clean the entire intermediate directory and all sub folders
   if os.path.exists(intermediate_dir):
     shutil.rmtree(intermediate_dir)
+
+  for misc_folder in misc_folders:
+    if os.path.exists(misc_folder):
+      shutil.rmtree(misc_folder)
+
+  files = os.listdir()
+  for file in files:
+    if os.path.isfile(file):
+      for misc_extension in misc_extensions:
+        if misc_extension in file:
+          os.remove(file)
 
 def run(shouldClean):
   if shouldClean:

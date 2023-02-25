@@ -5,12 +5,6 @@
     "tag": "v1.0.0",
     "storage": "~/source/0_thirdparty"
   },
-  "rex_py": {
-    "name": "rex_py",
-    "url": "https://github.com/RisingLiberty/RexPy/",
-    "tag": "v1.0.0",
-    "storage": "~/build/scripts"
-  },
   "rex_glad": {
     "name": "rex_glad",
     "url": "https://gitlab.com/rex-externals/rex-glad/",
