@@ -1,6 +1,0 @@
-[submodule "build/scripts/rexpy"]
-	path = build/scripts/rexpy
-	url = https://github.com/RisingLiberty/RexPy
-[submodule "source/0_thirdparty/rex_std"]
-	path = source/0_thirdparty/rex_std
-	url = https://github.com/RisingLiberty/RexStl
