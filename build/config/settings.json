@@ -1,5 +1,7 @@
 {
   "intermediate_folder": ".rex",
+  "misc_folders": [".ninja",".vs",".vscode"],
+  "misc_extensions": [".ninja",".sln"],
   "build_folder": "build",
   "tests_folder": "tests",
   "tools_folder": "tools",
@@ -8,5 +10,5 @@
   "coverage_folder": "tests/coverage",
   "asan_folder": "tests/coverage",
   "ubsan_folder": "tests/ubsan",
-  "ninja_launcher": "build/scripts/rexpy/rexpy/ninja_launcher.py"
+  "ninja_launcher": "build/scripts/rex_py/rexpy/ninja_launcher.py"
 }
