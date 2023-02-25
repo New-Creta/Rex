@@ -10,5 +10,4 @@
   "coverage_folder": "tests/coverage",
   "asan_folder": "tests/coverage",
   "ubsan_folder": "tests/ubsan",
-  "ninja_launcher": "build/scripts/rex_py/rexpy/ninja_launcher.py"
 }

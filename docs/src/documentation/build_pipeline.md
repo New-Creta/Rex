@@ -8,7 +8,7 @@ The build pipeline scripts is only supposed to launch multiple intermediate step
 ## Setup
 To setup Rex Engine after an initial clone from [github](https://github.com/Dyronix/Rex) run `_setup.py`
 
-Setup.py will read some configuration files, looking for dependencies needed for by Rex Engine based on your platform (eg. Windows SDK).
+_setup.py will read some configuration files, looking for dependencies needed for by Rex Engine based on your platform (eg. Windows -> Windows SDK).
 
 If these dependencies aren't found, it'll download these over the network and cache their install paths.
 

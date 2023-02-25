@@ -32,7 +32,7 @@ def __clean_intermediate():
         if misc_extension in file:
           os.remove(file)
 
-def run(shouldClean):
+def run(rexpyInstallDir, shouldClean):
   if shouldClean:
     __clean_intermediate()
 
@@ -45,7 +45,7 @@ def run(shouldClean):
 
   # Next, install all required libraries for the compilers and platforms (eg. C++ standard library, Windows SDK)
   # Rex itself doesn't use C++ standard library, but thirdparty libraries might, so we still have to provide it.
-  rexpy.required_libs.run()
+  rexpy.required_libs.run(rexpyInstallDir)
 
   # Lastly we need to install all the externals used by rex itself
   # the difference between these libraries and the libraries of the previous step is that
@@ -57,6 +57,7 @@ def run(shouldClean):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
+  parser.add_argument("-rexpy", help="rexpy installation directory")
   args, unknown = parser.parse_known_args()
 
-  run(args.clean)
+  run(args.rexpy, args.clean)
