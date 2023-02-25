@@ -1,24 +1,28 @@
 {
   "rex_std": {
-    "name": "rex-std",
+    "repository_name": "rex-std",
+    "directory_name": "rex_std",
     "url": "https://github.com/RisingLiberty/RexStl/",
     "tag": "v1.0.0",
     "storage": "~/source/0_thirdparty"
   },
   "rex_py": {
-    "name": "rex-py",
+    "repository_name": "rex-py",
+    "directory_name": "rex_py",
     "url": "https://github.com/RisingLiberty/RexPy/",
     "tag": "v1.0.0",
     "storage": "~/build/scripts"
   },
   "rex_glad": {
-    "name": "rex-glad",
+    "repository_name": "rex-glad",
+    "directory_name": "rex_glad",
     "url": "https://gitlab.com/rex-externals/rex-glad/",
     "tag": "v1.0.0",
     "storage": "~/source/0_thirdparty"
   },
   "rex_glm": {
-    "name": "rex-glm",
+    "repository_name": "rex-glm",
+    "directory_name": "rex_glm",
     "url": "https://gitlab.com/rex-externals/rex-glm/",
     "tag": "v1.0.0",
     "storage": "~/source/0_thirdparty"

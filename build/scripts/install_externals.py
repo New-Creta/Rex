@@ -136,30 +136,32 @@ def __install_external(external):
     root = __get_root_path()
 
     external_url = external["url"]
-    external_name = external["name"]
+    external_repository_name = external["repository_name"]
+    external_directory_name = external["directory_name"]
     external_tag = external["tag"]
     external_store = external["storage"]
     external_store = external_store.replace("~", root)
 
+    url = __build_host_path(external_url, external_repository_name, external_tag)
+
     # if the external is already present we need to check if we need to redownload anything
     should_download = False
-    externals_dir = os.path.join(external_store, external_name)
+    externals_dir = os.path.join(external_store, external_directory_name)
     if os.path.exists(externals_dir):
-        print("External found: " + external_name + " validating version ...")
-        os.chdir(externals_dir)
+        print("External found: " + externals_dir + " validating version ...")
         version_file = os.path.join(externals_dir, "version.json")
         if os.path.exists(version_file):
             version_data = __load_json(version_file)           
             if version_data == None:
-                print("Invalid version data found, redownloading external: " + external_name)
+                print("Invalid version data found, redownloading external: " + url)
                 should_download = True              
             if not version_data["tag"] == external_tag:
                 should_download = True
             else:
-                print("External: " + external_name + " is up to date (" + external_name + " " + external_tag + ")")
+                print("External: " + external_repository_name + " is up to date (" + external_repository_name + " " + external_tag + ")")
         else:
+            print("We did not find: " + version_file)
             should_download = True
-        os.chdir(cwd)
 
         # any data that was already available will be deleted 
         # the data will be out of date anyway when a download is triggered
@@ -169,15 +171,13 @@ def __install_external(external):
         should_download = True
 
     if should_download:    
-        url = __build_host_path(external_url, external_name, external_tag)
-        
         added_directories = __download_external(url)       
         if len(added_directories) == 1:
             # move to output directory
             shutil.move(os.path.join(__get_script_path(), added_directories[0]), os.path.join(external_store, added_directories[0]))
             # change directory name
             os.chdir(external_store)
-            os.rename(added_directories[0], external_name)
+            os.rename(added_directories[0], external_directory_name)
             os.chdir(cwd)
         elif len(added_directories) > 1:
             # create output directory
