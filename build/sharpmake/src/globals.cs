@@ -18,15 +18,16 @@ public class BuildSettings
   public string coverage_folder { get; set; }
   public string asan_folder { get; set; }
   public string ubsan_folder { get; set; }
-  public string ninja_launcher { get; set; }
 }
 
 public class Globals
 {
   static readonly private string folder_in_root = "source";
   static private string root;
+  static private string source_root;
   static private string thirdparty_root;
   static private string sharpmake_root;
+  static private string ninja_launcher;
   static private BuildSettings settings = null;
 
   static public string Root
@@ -61,7 +62,7 @@ public class Globals
   {
     get
     {
-      return Path.Combine(root, settings.intermediate_folder, settings.tools_root);
+      return Path.Combine(root, settings.intermediate_folder, settings.tools_folder);
     }
   }
   static public string LibsRoot
@@ -75,7 +76,7 @@ public class Globals
   {
     get
     {
-      return Path.Combine(root, settings.ninja_launcher);
+      return Path.Combine(root, ninja_launcher);
     }
   }
 
@@ -85,22 +86,15 @@ public class Globals
 
     string settings_json_path = Path.Combine(root, "build", "config", "settings.json");
     string json_blob = File.ReadAllText(settings_json_path);
-    settings = JsonSerializer.Deserialize<Settings>(json_blob);
+    settings = JsonSerializer.Deserialize<BuildSettings>(json_blob);
 
+    source_root = Path.Combine(root, settings.source_folder);
     thirdparty_root = Path.Combine(source_root, "0_thirdparty");
     sharpmake_root = Path.Combine(root, "build", "sharpmake");
 
     // ninja launcher is found in the installation directory of rexpy
-    ninja_launcher = Path.Combine(root, settings.ninja_launcher);
-
-    tools_root = Path.Combine(root, settings.intermediate_folder, settings.tools_folder);
-    libs_root = Path.Combine(root, settings.intermediate_folder, settings.libs_folder);
+    ninja_launcher = @"c:\users\nickd\appdata\local\programs\python\python310\lib\site-packages\rexpy\ninja_launcher.py"; //Path.Combine(root, settings.ninja_launcher);
 
     System.Console.WriteLine($"Root path:{root}");
-  }
-
-  static private string FindRexPyInstallDir()
-  {
-    
   }
 }
