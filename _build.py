@@ -13,6 +13,7 @@ import argparse
 import rexpy.build
 import rexpy.util
 import rexpy.diagnostics
+import rexpy.task_raii_printing
 
 from pathlib import Path
 
@@ -46,13 +47,11 @@ if __name__ == "__main__":
 
   args, unknown = parser.parse_known_args()
 
-  start_time = time.time()
+  task = rexpy.task_raii_printing.TaskRaiiPrint("Building")
   result = rexpy.build.new_build(args.project, args.config, args.compiler, args.clean)
-  end_time = time.time()
 
   if result != 0:
     rexpy.diagnostics.log_err("Build failed")
   else:
     rexpy.diagnostics.log_info("Build successful")
-    rexpy.diagnostics.log_info(f"Took {end_time - start_time} seconds")
   
