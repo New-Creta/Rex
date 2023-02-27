@@ -64,4 +64,4 @@ if __name__ == "__main__":
   parser.add_argument("-rexpy", help="rexpy installation directory")
   args, unknown = parser.parse_known_args()
 
-  run(args.rexpy, args.clean)
+  run(args.clean)
