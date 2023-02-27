@@ -14,7 +14,7 @@ import subprocess
 import sys
 import time
   
-rexpy_version = "0.0.10"
+rexpy_version = "0.0.14"
 
 def __install_rexpy():
   os.system(f"pip uninstall --yes rexpy")
@@ -32,10 +32,7 @@ def __main():
     print("Error: You're not running setup.py from the root directory. Please run this from the root directory and try again")
     return
 
-  install_dir = __install_rexpy()
-
-  if install_dir == '':
-    raise Exception(f"Failed to install rexpy")
+  __install_rexpy()
 
   # now that rexpy is installed, we can safely call the rest of the code
   arguments_to_pass_on = ""
