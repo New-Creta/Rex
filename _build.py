@@ -17,26 +17,6 @@ import rexpy.task_raii_printing
 
 from pathlib import Path
 
-def __all_ninja_files(dir):
-  ninja_files = rexpy.util.find_files_with_extension(dir, ".ninja")
-
-  return ninja_files
-
-def __is_special_test_file(file):
-  if "_coverage" in file:
-    return True
-
-  if "_asan" in file:
-    return True
-
-  if "_ubsan" in file:
-    return True
-
-  if "_fuzzy" in file:
-    return True
-
-  return False
-
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   
