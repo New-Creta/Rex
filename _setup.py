@@ -13,24 +13,12 @@ import argparse
 import subprocess
 import sys
 import time
-
-def __find_rexpy_install_location():
-  proc = subprocess.Popen("pip show rexpy", stdout=subprocess.PIPE)
-  while proc.poll() is None:
-    output = proc.stdout.read().decode("utf-8")
-    lines = output.split('\n')
-    for line in lines:
-      if "Location" in line:
-        location = line.removeprefix("Location: ")
-        return os.path.join(location, "rexpy")
-      
-  return ''
   
+rexpy_version = "0.0.10"
+
 def __install_rexpy():
-  # os.system("pip uninstall --yes rexpy")
-  # os.system("pip install -i https://test.pypi.org/simple/ rexpy")
-  # return __find_rexpy_install_location()
-  return f'c:/Users/nickd/AppData/Local/Programs/Python/Python310/Lib/site-packages/rexpy'
+  os.system(f"pip uninstall --yes rexpy")
+  os.system(f"pip install -i https://test.pypi.org/simple/ \"rexpy=={rexpy_version}\"")
 
 def __main():
   parser = argparse.ArgumentParser()
@@ -54,9 +42,7 @@ def __main():
   for arg in unknown:
     arguments_to_pass_on += f" {arg}"
 
-  os.system(f"py build/scripts/setup.py -rexpy={install_dir}{arguments_to_pass_on}")
+  os.system(f"py build/scripts/setup.py{arguments_to_pass_on}")
 
 if __name__ == "__main__":
-  start_time = time.time()
   __main()
-  print("Info: --- %s seconds (total) ---" % (time.time() - start_time))

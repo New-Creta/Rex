@@ -6,6 +6,7 @@ import rexpy.required_tools
 import rexpy.required_libs
 import rexpy.install_externals
 import rexpy.diagnostics
+import rexpy.task_raii_printing
 import shutil
 
 root_path = rexpy.util.find_root()
@@ -32,9 +33,12 @@ def __clean_intermediate():
         if misc_extension in file:
           os.remove(file)
 
-def run(rexpyInstallDir, shouldClean):
+def run(shouldClean):
   if shouldClean:
+    task = rexpy.task_raii_printing("cleaning.")
     __clean_intermediate()
+
+  task = rexpy.task_raii_printing.TaskRaiiPrint("running setup")
 
   # Time to install everything needed to build rex engine.
   # This is split into multiple steps
@@ -45,7 +49,7 @@ def run(rexpyInstallDir, shouldClean):
 
   # Next, install all required libraries for the compilers and platforms (eg. C++ standard library, Windows SDK)
   # Rex itself doesn't use C++ standard library, but thirdparty libraries might, so we still have to provide it.
-  rexpy.required_libs.run(rexpyInstallDir)
+  rexpy.required_libs.run()
 
   # Lastly we need to install all the externals used by rex itself
   # the difference between these libraries and the libraries of the previous step is that
