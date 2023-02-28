@@ -27,7 +27,6 @@ public class Globals
   static private string source_root;
   static private string thirdparty_root;
   static private string sharpmake_root;
-  static private string ninja_launcher;
   static private BuildSettings settings = null;
 
   static public string Root
@@ -72,13 +71,6 @@ public class Globals
       return Path.Combine(root, settings.intermediate_folder, settings.libs_folder);
     }
   }
-  static public string NinjaLauncher
-  {
-    get
-    {
-      return Path.Combine(root, ninja_launcher);
-    }
-  }
 
   static public void Init()
   {
@@ -91,9 +83,6 @@ public class Globals
     source_root = Path.Combine(root, settings.source_folder);
     thirdparty_root = Path.Combine(source_root, "0_thirdparty");
     sharpmake_root = Path.Combine(root, "build", "sharpmake");
-
-    // ninja launcher is found in the installation directory of rexpy
-    ninja_launcher = @"c:\users\nickd\appdata\local\programs\python\python310\lib\site-packages\rexpy\ninja_launcher.py"; //Path.Combine(root, settings.ninja_launcher);
 
     System.Console.WriteLine($"Root path:{root}");
   }
