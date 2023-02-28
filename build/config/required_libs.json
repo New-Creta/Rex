@@ -2,25 +2,29 @@
   "windows_sdk_includes" : {
     "archive_name": "WindowsSDK",
     "num_zip_files": 3,
-    "paths": ["Windows SDK/10.0.19041.0/include/um", "Windows SDK/10.0.19041.0/include/shared", "Windows SDK/10.0.19041.0/include/winrt", "Windows SDK/10.0.19041.0/include/cppwinrt", "Windows SDK/10.0.19041.0/include/ucrt"],
-    "config_name": "windows_sdk_includes"  
+    "paths": ["WindowsSDK/10.0.19041.0/include/um", "WindowsSDK/10.0.19041.0/include/shared", "WindowsSDK/10.0.19041.0/include/winrt", "WindowsSDK/10.0.19041.0/include/cppwinrt", "WindowsSDK/10.0.19041.0/include/ucrt"],
+    "config_name": "windows_sdk_includes",
+    "version" : "windows-sdk-10.0.19041.0"
   },
   "windows_sdk_libs" : {
     "archive_name": "WindowsSDK",
     "num_zip_files": 3,
-    "paths": ["Windows SDK/10.0.19041.0/lib/ucrt/x64", "Windows SDK/10.0.19041.0/lib/um/x64"],
-    "config_name": "windows_sdk_lib"  
+    "paths": ["WindowsSDK/10.0.19041.0/lib/ucrt/x64", "WindowsSDK/10.0.19041.0/lib/um/x64"],
+    "config_name": "windows_sdk_lib",
+    "version" : "windows-sdk-10.0.19041.0"
   },
   "msvc_includes" : {
     "archive_name": "MSVC",
     "num_zip_files": 4,
     "paths": ["MSVC/14.29.30133/include", "MSVC/14.29.30133/atlmfc/include"],
-    "config_name": "msvc_includes"  
+    "config_name": "msvc_includes",
+    "version" : "msvc-14.29.30133" 
   },
   "msvc_libs" : {
     "archive_name": "MSVC",
     "num_zip_files": 4,
     "paths": ["MSVC/14.29.30133/lib/x64", "MSVC/14.29.30133/atlmfc/lib/x64"],
-    "config_name": "msvc_libs"  
+    "config_name": "msvc_libs",
+    "version" : "msvc-14.29.30133"
   }
 }

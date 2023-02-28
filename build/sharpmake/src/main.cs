@@ -524,7 +524,7 @@ public static class Main
 
     KitsRootPaths.SetCompilerPaths(Compiler.MSVC, paths["msvc_compiler_path"], paths["msvc_linker_path"], paths["msvc_archiver_path"], "");
     KitsRootPaths.SetCompilerPaths(Compiler.Clang, paths["clang_compiler_path"], paths["clang_linker_path"], paths["clang_archiver_path"], paths["clang_ranlib_path"]);
-    KitsRootPaths.SetNinjaPath(paths["ninja_path"], Globals.NinjaLauncher);
+    KitsRootPaths.SetNinjaPath(paths["ninja_path"]);
   }
 
   private static void InitializeSettings()

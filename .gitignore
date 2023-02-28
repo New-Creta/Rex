@@ -18,3 +18,4 @@ build/sharpmake/bin/
 build/sharpmake/obj/
 
 source/0_thirdparty
+*.nsln

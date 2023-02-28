@@ -6,6 +6,7 @@ import rexpy.required_tools
 import rexpy.required_libs
 import rexpy.install_externals
 import rexpy.diagnostics
+import rexpy.task_raii_printing
 import shutil
 
 root_path = rexpy.util.find_root()
@@ -34,7 +35,10 @@ def __clean_intermediate():
 
 def run(shouldClean):
   if shouldClean:
+    task = rexpy.task_raii_printing("cleaning.")
     __clean_intermediate()
+
+  task = rexpy.task_raii_printing.TaskRaiiPrint("running setup")
 
   # Time to install everything needed to build rex engine.
   # This is split into multiple steps
