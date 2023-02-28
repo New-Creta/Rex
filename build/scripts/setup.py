@@ -61,7 +61,6 @@ def run(shouldClean):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
-  parser.add_argument("-rexpy", help="rexpy installation directory")
   args, unknown = parser.parse_known_args()
 
   run(args.clean)
