@@ -281,34 +281,14 @@ public class TestProject : BaseProject
   {
     base.Configure(conf, target);
 
-    if (GenerateSettings.CoverageEnabled)
+    if (GenerateSettings.AddressSanitizerEnabled)
     {
-      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "coverage", "build", target.DevEnv.ToString(), Name);
-    }
-    else if (GenerateSettings.AddressSanitizerEnabled)
-    {
-      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "asan", "build", target.DevEnv.ToString(), Name);
       conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
     }
     else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
     {
-      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "ubsan", "build", target.DevEnv.ToString(), Name);
       conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
     }
-    else if (GenerateSettings.FuzzyTestingEnabled)
-    {
-      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "fuzzy", "build", target.DevEnv.ToString(), Name);
-    }
-    else
-    {
-      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "build", target.DevEnv.ToString(), Name);
-    }
-    
-    //conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
-    //conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
-    //conf.UseRelativePdbPath = false;
-    //conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
-    //conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
   }
 }
 
