@@ -120,8 +120,9 @@ namespace rex
   }
   //-----------------------------------------------------------------------
   Shader::Shader(Shader&& other)
-    : m_resource_id(rsl::exchange(other.m_resource_id, 0))
-  {}
+      : m_resource_id(rsl::exchange(other.m_resource_id, 0))
+  {
+  }
 
   //-----------------------------------------------------------------------
   Shader::~Shader()

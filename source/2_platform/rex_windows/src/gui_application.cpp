@@ -5,8 +5,8 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/context.h"
+#include "rex_renderer_core/renderer.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
@@ -40,12 +40,12 @@ namespace rex
         }
         subscribe_window_events();
 
-        if(context::create(window->primary_display_handle()) == false)
+        if(context::create(window->primary_display_handle()) == false) //NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
 
-        if(renderer::initialize(nullptr, gui_params.max_render_commands) == false)
+        if(renderer::initialize(nullptr, gui_params.max_render_commands) == false) //NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }

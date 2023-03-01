@@ -1,6 +1,5 @@
-#include "rex_renderer_core/context.h"
-
 #include "rex_engine/diagnostics/logging.h"
+#include "rex_renderer_core/context.h"
 
 #include <glad/gl.h>
 
@@ -13,9 +12,9 @@ namespace rex
     namespace backend
     {
       //-------------------------------------------------------------------------
-      bool create(void* )
+      bool create(void* /*unused*/)
       {
-        if (gladLoaderLoadGL() == NULL)
+        if(gladLoaderLoadGL() == NULL)
         {
           REX_ERROR("Glad Loader failed!");
           return false;
@@ -23,8 +22,8 @@ namespace rex
 
         return true;
       }
-    }
-  }
-}
+    } // namespace backend
+  }   // namespace context
+} // namespace rex
 
 // NOLINTEND(modernize-use-nullptr,-warnings-as-errors)

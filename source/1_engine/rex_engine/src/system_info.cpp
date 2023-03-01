@@ -1,4 +1,5 @@
 #include "rex_engine/system_info.h"
+
 #include "rex_engine/types.h"
 
 // NOLINTBEGIN(cppcoreguidelines-prefer-member-initializer,readability-convert-member-functions-to-static)
@@ -11,54 +12,54 @@ namespace rex
 #if defined REX_PLATFORM_WINDOWS
     m_platform = PlatformType::Windows;
   #if defined REX_API_OPENGL
-      m_graphics_api = GraphicsAPIType::OpenGL;
+    m_graphics_api = GraphicsAPIType::OpenGL;
   #elif defined REX_API_OPENGLES
-      m_graphics_api = GraphicsAPIType::OpenGLES;
+    m_graphics_api = GraphicsAPIType::OpenGLES;
   #elif defined REX_API_DIRECTX12
-      m_graphics_api = GraphicsAPIType::DirectX12;
+    m_graphics_api = GraphicsAPIType::DirectX12;
   #else
-      m_graphics_api = GraphicsAPIType::Unspecified;
+    m_graphics_api = GraphicsAPIType::Unspecified;
   #endif
 
   #if defined REX_PLATFORM_X64
-      m_architecture = ArchitectureType::Bit64;
+    m_architecture = ArchitectureType::Bit64;
   #elif defined REX_PLATFORM_X86
-      m_architecture = ArchitectureType::Bit32;
+    m_architecture = ArchitectureType::Bit32;
   #else
-      m_architecture = ArchitectureType::Unspecified;
+    m_architecture = ArchitectureType::Unspecified;
   #endif
 #elif defined REX_PLATFORM_LINUX
-    m_platform = PlatformType::Linux;
+    m_platform     = PlatformType::Linux;
   #if defined REX_API_OPENGL
-      m_graphics_api = GraphicsAPIType::OpenGL;
+    m_graphics_api = GraphicsAPIType::OpenGL;
   #else
-      m_graphics_api = GraphicsAPIType::Unspecified;
+    m_graphics_api = GraphicsAPIType::Unspecified;
   #endif
 
   #if defined REX_PLATFORM_X64
-      m_architecture = ArchitectureType::Bit64;
+    m_architecture = ArchitectureType::Bit64;
   #elif defined REX_PLATFORM_X86
-      m_architecture = ArchitectureType::Bit32;
+    m_architecture = ArchitectureType::Bit32;
   #else
-      m_architecture = ArchitectureType::Unspecified;
+    m_architecture = ArchitectureType::Unspecified;
   #endif
 #elif defined REX_PLATFORM_EMSCRIPTEN
-    m_platform = PlatformType::Emscripten;
+    m_platform     = PlatformType::Emscripten;
   #if defined REX_API_OPENGLES
-      m_graphics_api = GraphicsAPIType::OpenGLES;
+    m_graphics_api = GraphicsAPIType::OpenGLES;
   #else
-      m_graphics_api = GraphicsAPIType::Unspecified;
+    m_graphics_api = GraphicsAPIType::Unspecified;
   #endif
 
   #if defined REX_PLATFORM_X64
-      m_architecture = ArchitectureType::Bit64;
+    m_architecture = ArchitectureType::Bit64;
   #elif defined REX_PLATFORM_X86
-      m_architecture = ArchitectureType::Bit32;
+    m_architecture = ArchitectureType::Bit32;
   #else
-      m_architecture = ArchitectureType::Unspecified;
+    m_architecture = ArchitectureType::Unspecified;
   #endif
 #else
-    m_platform = PlatformType::Unspecified;
+    m_platform     = PlatformType::Unspecified;
     m_graphics_api = GraphicsAPIType::Unspecified;
     m_architecture = ArchitectureType::Unspecified;
 #endif
