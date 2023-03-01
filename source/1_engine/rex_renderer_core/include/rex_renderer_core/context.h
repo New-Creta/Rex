@@ -2,23 +2,23 @@
 
 namespace rex
 {
-    namespace context
+  namespace context
+  {
+    bool create(void* userData);
+
+    namespace os
     {
-        bool create(void* userData);
+      // OS specific implementation
+      bool pre_setup(void* userData);
+      bool post_setup(void* userData);
 
-        namespace os
-        {
-            // OS specific implementation
-            bool pre_setup(void* userData);
-            bool post_setup(void* userData);
+      void rollback(void* userData);
+    } // namespace os
 
-            void rollback(void* userData);
-        }
-
-        namespace backend
-        {
-            // Graphics API specific implementation
-            bool create(void* userData);
-        }
-    }
-}
+    namespace backend
+    {
+      // Graphics API specific implementation
+      bool create(void* userData);
+    } // namespace backend
+  }   // namespace context
+} // namespace rex

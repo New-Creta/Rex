@@ -69,9 +69,9 @@ namespace rex
       {
         UNUSED_PARAM(info);
       }
-      virtual void app_shutdown() 
+      virtual void app_shutdown()
       {
-          // Nothing to implement
+        // Nothing to implement
       }
 
     private:
