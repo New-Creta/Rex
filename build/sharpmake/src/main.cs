@@ -201,14 +201,37 @@ public class BasicCPPProject : BaseProject
 
     if (target.Compiler == Compiler.Clang && conf.is_config_for_testing() == false)
     {
+      // setup post build command
       conf.NinjaGenerateCompilerDB = true;
-      string compilerDBPath = GenerateCompilerDBPath(conf);
+      string compilerDBPath = GetClangToolsPath(conf);
       string postbuildCommandScript = Path.Combine(Globals.SourceRoot, $"post_build.py -p={Name} -comp={target.Compiler} -conf={conf.Name} -compdb={compilerDBPath} -srcroot={SourceRootPath}");
       conf.EventPostBuild.Add($"py {postbuildCommandScript}");
+
+      // copy the clang config files
+      string clangTidyFirstPassFilename = ".clang-tidy_first_pass";
+      string clangTidySecondPassFilename = ".clang-tidy_second_pass";
+      string clangFormatFilename = ".clang-format";
+
+      string clangTidyFirstPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidyFirstPassFilename), clangTidyFirstPassFilename);
+      string clangTidySecondPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidySecondPassFilename), clangTidySecondPassFilename);
+      string clangFormatSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangFormatFilename), clangFormatFilename);
+
+      string clangTidyFirstPassDstPath = Path.Combine(compilerDBPath, clangTidyFirstPassFilename);
+      string clangTidySecondPassDstPath = Path.Combine(compilerDBPath, clangTidySecondPassFilename);
+      string clangFormatDstPath = Path.Combine(compilerDBPath, clangFormatFilename);
+
+      if (Directory.Exists(compilerDBPath) == false)
+      {
+        Directory.CreateDirectory(compilerDBPath);
+      }
+
+      File.Copy(clangTidyFirstPassSrcPath, clangTidyFirstPassDstPath, true);
+      File.Copy(clangTidySecondPassSrcPath, clangTidySecondPassDstPath, true);
+      File.Copy(clangFormatSrcPath, clangFormatDstPath, true);
     }
   }
 
-  protected string GenerateCompilerDBPath(RexConfiguration conf)
+  protected string GetClangToolsPath(RexConfiguration conf)
   {
     return Path.Combine(conf.ProjectPath, "clang_tools", conf.Target.GetFragment<Compiler>().ToString(), conf.Name);
   }
@@ -231,7 +254,7 @@ public class BasicCPPProject : BaseProject
 
   private void GenerateClangToolProjectFile(RexConfiguration conf, RexTarget target)
   {
-    string clangToolsProjectPath = GenerateCompilerDBPath(conf);
+    string clangToolsProjectPath = GetClangToolsPath(conf);
 
     ClangToolsProject project = new ClangToolsProject(Name, clangToolsProjectPath);
     project.HeaderFilters = conf.ClangToolHeaderFilterList.ToList();
@@ -260,32 +283,32 @@ public class TestProject : BaseProject
 
     if (GenerateSettings.CoverageEnabled)
     {
-      conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "coverage", "build", target.DevEnv.ToString(), Name);
+      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "coverage", "build", target.DevEnv.ToString(), Name);
     }
     else if (GenerateSettings.AddressSanitizerEnabled)
     {
-      conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "asan", "build", target.DevEnv.ToString(), Name);
+      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "asan", "build", target.DevEnv.ToString(), Name);
       conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
     }
     else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
     {
-      conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "ubsan", "build", target.DevEnv.ToString(), Name);
+      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "ubsan", "build", target.DevEnv.ToString(), Name);
       conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
     }
     else if (GenerateSettings.FuzzyTestingEnabled)
     {
-      conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "fuzzy", "build", target.DevEnv.ToString(), Name);
+      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "fuzzy", "build", target.DevEnv.ToString(), Name);
     }
     else
     {
-      conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "build", target.DevEnv.ToString(), Name);
+      //conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "tests", "build", target.DevEnv.ToString(), Name);
     }
     
-    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
-    conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
-    conf.UseRelativePdbPath = false;
-    conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
-    conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
+    //conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
+    //conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
+    //conf.UseRelativePdbPath = false;
+    //conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
+    //conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
   }
 }
 
