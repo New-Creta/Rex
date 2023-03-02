@@ -7,6 +7,7 @@ import rexpy.required_libs
 import rexpy.install_externals
 import rexpy.diagnostics
 import rexpy.task_raii_printing
+import rexpy.git_hooks
 import shutil
 
 root_path = rexpy.util.find_root()
@@ -45,19 +46,22 @@ def run(shouldClean):
 
   # First we need to install the required build tools.
   # This includes make tools, build tools, compilers, linkers, ..
-  rexpy.required_tools.run(False)
+  rexpy.required_tools.run()
 
   # Next, install all required libraries for the compilers and platforms (eg. C++ standard library, Windows SDK)
   # Rex itself doesn't use C++ standard library, but thirdparty libraries might, so we still have to provide it.
   rexpy.required_libs.run()
 
-  # Lastly we need to install all the externals used by rex itself
+  # Next we need to install all the externals used by rex itself
   # the difference between these libraries and the libraries of the previous step is that
   # we (Rex developers) decided that we need these libraries and we can decide to remove them at any point.
   # libraries like Windows SDK, C++ standard library is always required for development, where as libraries like ImGui
   # are not required and can always be replaced if a better library comes along.
   rexpy.install_externals.run()
       
+  # Lastly, install the git hooks
+  rexpy.git_hooks.run(os.path.join(root_path, "build", "scripts", "git", "hooks"))
+  
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
