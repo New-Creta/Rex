@@ -4,21 +4,24 @@
     "path": "MSVC/14.29.30133/bin/Hostx64/x64",
     "config_name": "msvc_compiler_path",
     "archive_name": "MSVC",
-    "num_zip_files": 4
+    "num_zip_files": 4,
+    "version" : "msvc-14.29.30133"
   },
   "msvc_linker" : {
     "stem": "link",
     "path": "MSVC/14.29.30133/bin/Hostx64/x64",
     "config_name": "msvc_linker_path",
     "archive_name": "MSVC",
-    "num_zip_files": 4  
+    "num_zip_files": 4,
+    "version" : "msvc-14.29.30133"  
   },
   "msvc_archiver" : {
     "stem": "lib",
     "path": "MSVC/14.29.30133/bin/Hostx64/x64",
     "config_name": "msvc_archiver_path",
     "archive_name": "MSVC",
-    "num_zip_files": 4  
+    "num_zip_files": 4,
+    "version" : "msvc-14.29.30133"  
   },
   "undname" :
   {
@@ -26,70 +29,80 @@
     "path": "MSVC/14.29.30133/bin/Hostx64/x64",
     "config_name": "undname_path",
     "archive_name": "MSVC",
-    "num_zip_files": 4  
+    "num_zip_files": 4,
+    "version" : "msvc-14.29.30133"  
   },
   "clang_compiler" : {
     "stem": "clang++",
     "path": "LLVM/bin",
     "config_name": "clang_compiler_path",
     "archive_name": "LLVM",
-    "num_zip_files": 8    
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"    
   },
   "clang_linker" : {
     "stem": "clang++",
     "path": "LLVM/bin",
     "config_name": "clang_linker_path",
     "archive_name": "LLVM",
-    "num_zip_files": 8  
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"  
   },
   "clang_archiver" : {
     "stem": "llvm-ar",
     "path": "LLVM/bin",
     "config_name": "clang_archiver_path",
     "archive_name": "LLVM",
-    "num_zip_files": 8  
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"  
   },
   "clang_ranlib" : {
     "stem": "llvm-ranlib",
     "path": "LLVM/bin",
     "config_name": "clang_ranlib_path",
     "archive_name": "LLVM",
-    "num_zip_files": 8  
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"  
   },
   "clang_tidy" : {
     "stem": "clang-tidy",
     "path": "LLVM/bin",
     "config_name": "clang_tidy_path",
     "archive_name": "LLVM",
-    "num_zip_files": 8
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"
   },
   "clang_format" : {
     "stem": "clang-format",
     "path": "LLVM/bin",
     "config_name": "clang_format_path",
     "archive_name": "LLVM",
-    "num_zip_files": 8
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"
   },
   "clang_apply_replacements" : {
     "stem": "clang-apply-replacements",
     "path": "LLVM/bin",
     "config_name": "clang_apply_replacements_path",
     "archive_name": "LLVM",
-    "num_zip_files": 8
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"
   },
   "ninja" : {
     "stem": "ninja",
     "path": "Ninja",
     "config_name": "ninja_path",
     "archive_name": "Ninja",
-    "num_zip_files": 1  
+    "num_zip_files": 1,
+    "version" : "ninja-1.12.0"  
   },
   "sharpmake" : {
     "stem": "sharpmake.application",
     "path": "Sharpmake",
     "config_name": "sharpmake_path",
     "archive_name": "Sharpmake",
-    "num_zip_files": 1  
+    "num_zip_files": 1,
+    "version" : "sharpmake-0.21.1-r0.2"  
   },
   "llvm_profdata" : 
   {
@@ -97,7 +110,8 @@
     "path": "LLVM/bin",
     "config_name": "llvm_profdata_path",
     "archive_name": "LLVM",
-    "num_zip_files": 5
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"
   },
   "llvm_cov" : 
   {
@@ -105,7 +119,8 @@
     "path": "LLVM/bin",
     "config_name": "llvm_cov_path",
     "archive_name": "LLVM",
-    "num_zip_files": 5
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"
   },
   "include_what_you_use" :
   {
@@ -113,7 +128,8 @@
     "path": "IncludeWhatYouUse",
     "config_name": "include_what_you_use_path",
     "archive_name": "IncludeWhatYouUse",
-    "num_zip_files": 2
+    "num_zip_files": 2,
+    "version" : "iwyu-15.0.0"
   },
   "lcov" :
   {
@@ -122,6 +138,7 @@
     "config_name": "lcov_path",
     "extension": "",
     "archive_name": "lcov",
-    "num_zip_files": 1
+    "num_zip_files": 1,
+    "version" : "lcov-1.0.0"
   }
 }

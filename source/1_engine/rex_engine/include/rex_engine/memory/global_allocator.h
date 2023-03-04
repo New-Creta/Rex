@@ -8,4 +8,4 @@ namespace rex
   using GlobalAllocator = TrackedAllocator;
 
   GlobalAllocator& global_allocator();
-}
+} // namespace rex

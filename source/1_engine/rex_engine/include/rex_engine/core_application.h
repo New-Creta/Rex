@@ -1,13 +1,13 @@
 #pragma once
 
-#include "rex_engine/types.h"
 #include "rex_engine/cmd_line_args.h"
+#include "rex_engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
 {
-  struct RexEngineParams
+  struct EngineParams
   {
     // how much memory is the entire app allowed to use.
     // by default, there's no limit on this.
@@ -17,7 +17,7 @@ namespace rex
   class CoreApplication
   {
   public:
-    CoreApplication(const RexEngineParams& engineParams, const CommandLineArguments& cmdArgs);
+    CoreApplication(const EngineParams& engineParams, const CommandLineArguments& cmdArgs);
     CoreApplication(const CoreApplication&) = delete;
     CoreApplication(CoreApplication&&)      = delete;
     virtual ~CoreApplication();

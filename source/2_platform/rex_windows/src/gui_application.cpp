@@ -5,6 +5,8 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_renderer_core/context.h"
+#include "rex_renderer_core/renderer.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
@@ -12,16 +14,20 @@
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
 
+#include <Windows.h>
+
+// NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
+
 namespace rex
 {
   namespace win32
   {
     struct GuiApplication::Internal
     {
-      Internal(const PlatformCreationParams& platformCreationParams, const GuiParams& guiParams, const CommandLineArguments& genericCreationParams)
+      Internal(const PlatformCreationParams& platformCreationParams, const GuiParams& guiParams, CommandLineArguments genericCreationParams)
           : platform_creation_params(platformCreationParams)
           , gui_params(guiParams)
-          , cmd_line_args(genericCreationParams)
+          , cmd_line_args(rsl::move(genericCreationParams))
       {
       }
 
@@ -33,6 +39,22 @@ namespace rex
           return false;
         }
         subscribe_window_events();
+
+        if(context::create(window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
+        {
+          return false;
+        }
+
+        if(renderer::initialize(nullptr, gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
+        {
+          return false;
+        }
+
+        RendererInfo info = renderer::info();
+        REX_INFO("Renderer Info - API Version: {}", info.api_version);
+        REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
+        REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
+        REX_INFO("Renderer Info - Vendor: {}", info.vendor);
 
         return on_initialize();
       }
@@ -47,18 +69,24 @@ namespace rex
           is_running = !is_marked_for_destroy;
         }
       }
-      void shutdown()
+      void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {
         on_shutdown();
+        renderer::shutdown();
       }
 
       void loop()
       {
         const FrameInfo info = {m_delta_time, m_fps};
+
         on_update(info);
+
+        renderer::backend::clear();
+        renderer::backend::present();
 
         m_delta_time.update();
         m_fps.update();
+
         window->update();
 
         is_running = !is_marked_for_destroy;
@@ -132,7 +160,7 @@ namespace rex
     };
 
     //-------------------------------------------------------------------------
-    GuiApplication::GuiApplication(const ApplicationCreationParams appParams)
+    GuiApplication::GuiApplication(const ApplicationCreationParams& appParams)
         : CoreApplication(appParams.engine_params, appParams.cmd_args)
         , m_internal_ptr(rsl::make_unique<Internal>(appParams.platform_params, appParams.gui_params, appParams.cmd_args))
     {
@@ -181,3 +209,5 @@ namespace rex
     }
   } // namespace win32
 } // namespace rex
+
+// NOLINTEND(modernize-use-nullptr,-warnings-as-errors)

@@ -40,11 +40,11 @@ namespace rex
     virtual void hide()   = 0;
     virtual void close()  = 0;
 
-    virtual void* get_primary_display_handle() = 0;
+    virtual void* primary_display_handle() = 0;
 
     virtual s32 width() const  = 0;
     virtual s32 height() const = 0;
 
-    virtual f32 get_aspect() const = 0;
+    virtual f32 aspect() const = 0;
   };
 } // namespace rex

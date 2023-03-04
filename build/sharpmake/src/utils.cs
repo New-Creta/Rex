@@ -15,7 +15,7 @@ public class Utils
   {
     string current_directory = startPath;
 
-    while (Directory.GetDirectories(current_directory).ToList().FindIndex(x => Path.GetFileName(x) == toFind) == -1)
+    while (Directory.GetDirectories(current_directory).ToList().FindIndex(x => Path.GetFileName(x) == toFind) == -1 && Directory.GetFiles(current_directory).ToList().FindIndex(x => Path.GetFileName(x) == toFind) == -1)
     {
       if (Directory.GetDirectoryRoot(current_directory) == current_directory)
       {

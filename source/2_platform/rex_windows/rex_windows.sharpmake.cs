@@ -22,8 +22,7 @@ public class RexWindows : PlatformProject
         conf.Output = Configuration.OutputType.Lib;
 
         conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-        conf.AddPublicDependency<RexRenderer>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-
-        conf.add_public_define("REX_PLATFORM_WINDOWS");
+        conf.AddPublicDependency<RexOpenGL>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+        conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     }
 }

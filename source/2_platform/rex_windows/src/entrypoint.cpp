@@ -2,7 +2,7 @@
 
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_std/bonus/utility/has_flag.h"
-#include "rex_std/string_view.h"
+#include "rex_std/internal/string_view/basic_string_view.h"
 #include "rex_std/vector.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
@@ -24,7 +24,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
   creation_params.cmd_line      = lpCmdLine;
   creation_params.show_cmd      = nShowCmd;
 
-  rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
+  const rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
 
   rex::win32::GuiApplication application(app_params);
   s32 result = application.run();

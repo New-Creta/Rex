@@ -24,7 +24,7 @@ namespace rex
       bool create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title)
       {
         name      = title;
-        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandleA(nullptr)) : hInstance;
+        hinstance = (hInstance == nullptr) ? static_cast<HInstance>(GetModuleHandle(nullptr)) : hInstance;
 
         rsl::zero_memory(&window_class, sizeof(window_class));
 
@@ -87,10 +87,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    WindowClass::~WindowClass()
-    {
-      REX_ASSERT_X(m_internal_ptr->registered == false, "Explicitly destroy the window class by calling WindowClass::destroy");
-    }
+    WindowClass::~WindowClass() = default;
 
     //-------------------------------------------------------------------------
     bool WindowClass::create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title)
