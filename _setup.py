@@ -14,7 +14,7 @@ import subprocess
 import sys
 import time
   
-rexpy_version = "0.0.25"
+rexpy_version = "0.0.27"
 
 def __install_rexpy():
   os.system(f"pip uninstall --yes rexpy")
