@@ -18,6 +18,7 @@ namespace rex
   //-------------------------------------------------------------------------
   enum class ClearBits
   {
+    None               = 0,
     ClearColorBuffer   = GL_COLOR_BUFFER_BIT,
     ClearDepthBuffer   = GL_DEPTH_BUFFER_BIT,
     ClearStencilBuffer = GL_STENCIL_BUFFER_BIT,
@@ -145,7 +146,7 @@ namespace rex
       {
         const ClearState& cs = g_clear_state;
 
-        REX_ASSERT_X(cs.flags, "No clear flags given but renderer::backend::clear was called.");
+        REX_ASSERT_X(cs.flags != ClearBits::None, "No clear flags given but renderer::backend::clear was called.");
 
         GL_CALL(glClearDepth(cs.depth));
         GL_CALL(glClearStencil(cs.stencil));

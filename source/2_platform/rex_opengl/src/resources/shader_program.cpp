@@ -116,7 +116,7 @@ namespace rex
   //-------------------------------------------------------------------------
   rex::ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept
   {
-    REX_ASSERT(this != &other);
+    REX_ASSERT_X(this != &other, "can't move to yourself");
 
     m_resource_id       = rsl::exchange(other.m_resource_id, 0);
     m_uniform_locations = rsl::exchange(other.m_uniform_locations, rsl::unordered_map<rsl::small_stack_string, ShaderUniformLocation>());

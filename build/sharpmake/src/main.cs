@@ -214,6 +214,22 @@ public class BasicCPPProject : BaseProject
         break;
     }
 
+    switch (target.Config)
+    {
+      case Config.assert:
+      case Config.debug:
+      case Config.debug_opt:
+        conf.add_public_define("REX_ENABLE_ASSERTS");
+        break;
+      case Config.release:
+      case Config.tests:
+      case Config.coverage:
+      case Config.address_sanitizer:
+      case Config.undefined_behavior_sanitizer:
+      case Config.fuzzy:
+        break;
+    }
+
     if (target.Compiler == Compiler.Clang && conf.is_config_for_testing() == false)
     {
       // setup post build command

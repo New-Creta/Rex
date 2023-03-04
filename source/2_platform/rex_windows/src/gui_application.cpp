@@ -40,12 +40,12 @@ namespace rex
         }
         subscribe_window_events();
 
-        if(context::create(window->primary_display_handle()) == false) //NOLINT(readability-simplify-boolean-expr)
+        if(context::create(window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
 
-        if(renderer::initialize(nullptr, gui_params.max_render_commands) == false) //NOLINT(readability-simplify-boolean-expr)
+        if(renderer::initialize(nullptr, gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }

@@ -136,7 +136,7 @@ namespace rex
   //-----------------------------------------------------------------------
   DataType& DataType::operator=(DataType&& other) noexcept
   {
-    REX_ASSERT(this != &other);
+    REX_ASSERT_X(this != &other, "can't move to yourself");
 
     m_value = rsl::exchange(other.m_value, DataType::Value::None);
 

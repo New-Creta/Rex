@@ -2,7 +2,7 @@
 
 #include "rex_engine/diagnostics/logging.h"
 #include "rex_std/bonus/utility/has_flag.h"
-#include "rex_std/string_view.h"
+#include "rex_std/internal/string_view/basic_string_view.h"
 #include "rex_std/vector.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
