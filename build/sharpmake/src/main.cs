@@ -199,6 +199,21 @@ public class BasicCPPProject : BaseProject
   {
     base.Configure(conf, target);
 
+    switch (target.Compiler)
+    {
+      case Compiler.MSVC:
+        conf.add_public_define("REX_COMPILER_MSVC");
+        break;
+      case Compiler.Clang:
+        conf.add_public_define("REX_COMPILER_CLANG");
+        break;
+      case Compiler.GCC:
+        conf.add_public_define("REX_COMPILER_GCC");
+        break;
+      default:
+        break;
+    }
+
     if (target.Compiler == Compiler.Clang && conf.is_config_for_testing() == false)
     {
       // setup post build command
