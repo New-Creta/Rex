@@ -108,10 +108,11 @@ namespace rex
   public:
     BufferLayoutBuilder();
 
-    BufferLayout& add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize = ShouldNormalize::no);
-    BufferLayout& build();
+    void add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize = ShouldNormalize::no);
+    void clear();
+    BufferLayout build();
 
   private:
-    BufferLayout m_layout;
+    BufferElements m_elements;
   };
 } // namespace rex
