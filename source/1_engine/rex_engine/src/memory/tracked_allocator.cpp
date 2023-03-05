@@ -1,7 +1,5 @@
-#include "rex_engine/memory/tracker_allocator.h"
-
 #include "rex_engine/memory/memory_tracking.h"
-
+#include "rex_engine/memory/tracker_allocator.h"
 #include "rex_std/assert.h"
 #include "rex_std/memory.h"
 
@@ -17,7 +15,7 @@ namespace rex
     // We allocate "size" + sizeof(MemoryHeader)
     // The memory header holds the tracking info of the ptr
     // we need to make sure the memory is aligned properly as well
-    
+
     // first make sure we allocate enough memory
     card64 num_mem_needed = size;
     num_mem_needed += sizeof(MemoryHeader);
@@ -25,8 +23,8 @@ namespace rex
     void* ptr = malloc(num_mem_needed);
 
     // initialize the memory header
-    MemoryTag tag = mem_tracker().current_tag();
-    rex::MemoryHeader* header = new (ptr) MemoryHeader(tag, rsl::memory_size(num_mem_needed));
+    MemoryTag tag             = mem_tracker().current_tag();
+    rex::MemoryHeader* header = new(ptr) MemoryHeader(tag, rsl::memory_size(num_mem_needed));
 
     // get the right address to return from the function
     rsl::byte* mem_block = static_cast<rsl::byte*>(ptr);
@@ -44,7 +42,7 @@ namespace rex
   }
   void TrackedAllocator::deallocate(void* ptr, card64 /*size*/)
   {
-    if (ptr == nullptr)
+    if(ptr == nullptr)
     {
       return;
     }
@@ -57,4 +55,4 @@ namespace rex
     mem_tracker().track_dealloc(ptr, header);
     free(header); // NOLINT(cppcoreguidelines-no-malloc)
   }
-}
+} // namespace rex

@@ -1,17 +1,20 @@
 #include "rex_engine/memory/memory_tracking.h"
 
-#include "rex_std/limits.h"
 #include "rex_std/iostream.h"
+#include "rex_std/limits.h"
 
 //  // we need to have an internal error reporting here
 //  // so that we don't allocate heap memory when overflowing
 //  // as this would cause a stack overflow
 #ifdef REX_ENABLE_MEM_TRACKING
-#define REX_HEAP_TRACK_ERR(cond, msg) if (!(cond)) {rsl::cout << "Err: " << msg << "\n";}
+  #define REX_HEAP_TRACK_ERR(cond, msg)                                                                                                                                                                                                                  \
+    if(!(cond))                                                                                                                                                                                                                                          \
+    {                                                                                                                                                                                                                                                    \
+      rsl::cout << "Err: " << msg << "\n";                                                                                                                                                                                                               \
+    }
 #else
-#define REX_HEAP_TRACK_ERR(cond, msg)
+  #define REX_HEAP_TRACK_ERR(cond, msg)
 #endif
-
 
 namespace rex
 {
@@ -28,8 +31,8 @@ namespace rex
   }
 
   MemoryTracker::MemoryTracker()
-    : m_mem_usage(0)
-    , m_max_mem_usage(rsl::numeric_limits<s64>::max())
+      : m_mem_usage(0)
+      , m_max_mem_usage(rsl::numeric_limits<s64>::max())
   {
   }
 
@@ -73,5 +76,4 @@ namespace rex
     static MemoryTracker tracker;
     return tracker;
   }
-}
-
+} // namespace rex

@@ -1,7 +1,6 @@
 #include "rex_engine/core_application.h"
 
 #include "rex_engine/memory/memory_tracking.h"
-
 #include "rex_std/assert.h"
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
@@ -14,7 +13,7 @@ namespace rex
   struct CoreApplication::Internal
   {
   public:
-    CoreApplication::Internal::Internal(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
+    Internal(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
     {
       // load memory config file from disk
       // this file only has high level memory settings
@@ -27,7 +26,7 @@ namespace rex
 
     static CoreApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
   };
-  
+
   //-------------------------------------------------------------------------
   CoreApplication* CoreApplication::Internal::s_instance = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 

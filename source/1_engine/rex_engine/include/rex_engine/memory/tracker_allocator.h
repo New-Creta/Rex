@@ -14,4 +14,4 @@ namespace rex
     void deallocate(void* ptr, rsl::memory_size size);
     void deallocate(void* ptr, card64 size);
   };
-}
+} // namespace rex

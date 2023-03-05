@@ -19,4 +19,4 @@ namespace rex
   {
     free(ptr); // NOLINT(cppcoreguidelines-no-malloc)
   }
-}
+} // namespace rex
