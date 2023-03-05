@@ -14,11 +14,14 @@ import subprocess
 import sys
 import time
   
-rexpy_version = "0.0.32"
+rexpy_version = "0.0.37"
 
 def __install_rexpy():
   os.system(f"py -m pip uninstall --yes rexpy")
   os.system(f"py -m pip install -i https://test.pypi.org/simple/ \"rexpy=={rexpy_version}\"")
+  
+  # this resolve issue https://github.com/gitpython-developers/gitdb/issues/61
+  os.system(f"py -m pip install gitpython")
 
 def __main():
   parser = argparse.ArgumentParser()
