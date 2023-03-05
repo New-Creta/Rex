@@ -18,7 +18,7 @@ namespace rex
   //-------------------------------------------------------------------------
   enum class ClearBits
   {
-    None               = 0,
+    None               = -1,
     ClearColorBuffer   = GL_COLOR_BUFFER_BIT,
     ClearDepthBuffer   = GL_DEPTH_BUFFER_BIT,
     ClearStencilBuffer = GL_STENCIL_BUFFER_BIT,
