@@ -54,9 +54,11 @@ if __name__ == "__main__":
   regis.diagnostics.log_info("Summary Report")
   regis.diagnostics.log_no_color("--------------------------------------")
 
+  end_result = 0
   pass_results = regis.test.get_pass_results()
   for key in pass_results:
     result = pass_results[key]
+    end_result |= result
 
     if result == 0:
       regis.diagnostics.log_info(f"{key} - success")
@@ -69,3 +71,4 @@ if __name__ == "__main__":
   regis.diagnostics.log_info(f"Finished at: {datetime.now().strftime('%d %B %Y - %H:%M:%S %p')}")
   regis.diagnostics.log_info(f"Tests took {end - start:0.4f} seconds")
   
+  exit(end_result)
