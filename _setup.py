@@ -17,8 +17,8 @@ import time
 rexpy_version = "0.0.24"
 
 def __install_rexpy():
-  os.system(f"pip uninstall --yes rexpy")
-  os.system(f"pip install -i https://test.pypi.org/simple/ \"rexpy=={rexpy_version}\"")
+  os.system(f"py -m pip uninstall --yes rexpy")
+  os.system(f"py -m pip install -i https://test.pypi.org/simple/ \"rexpy=={rexpy_version}\"")
 
 def __main():
   parser = argparse.ArgumentParser()
