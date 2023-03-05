@@ -10,7 +10,7 @@ namespace rex
   {
     ApplicationCreationParams app_params(rsl::move(platformParams), rsl::move(cmdArgs));
 
-    app_params.gui_params.window_width  = 1280
+    app_params.gui_params.window_width  = 1280;
     app_params.gui_params.window_height = 720;
     app_params.gui_params.window_title  = "Regina";
 
