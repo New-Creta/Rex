@@ -14,7 +14,7 @@ namespace rex
   //-----------------------------------------------------------------------
   BufferLayout VertexPos::layout()
   {
-    BufferLayoutBuilder builder;
+    BufferLayoutCreator builder;
     builder.add_buffer_element(DataType::Value::Vec3);
     return builder.build();
   }
@@ -59,7 +59,7 @@ namespace rex
   //-----------------------------------------------------------------------
   BufferLayout VertexPosCol::layout()
   {
-    BufferLayoutBuilder builder;
+    BufferLayoutCreator builder;
     builder.add_buffer_element(DataType::Value::Vec3);
     builder.add_buffer_element(DataType::Value::Vec3);
     return builder.build();
@@ -112,7 +112,7 @@ namespace rex
   //-----------------------------------------------------------------------
   BufferLayout VertexPosTex::layout()
   {
-    BufferLayoutBuilder builder;
+    BufferLayoutCreator builder;
     builder.add_buffer_element(DataType::Value::Vec3);
     builder.add_buffer_element(DataType::Value::Vec2);
     return builder.build();
@@ -166,7 +166,7 @@ namespace rex
   //-----------------------------------------------------------------------
   BufferLayout VertexPosColTex::layout()
   {
-    BufferLayoutBuilder builder;
+    BufferLayoutCreator builder;
     builder.add_buffer_element(DataType::Value::Vec3);
     builder.add_buffer_element(DataType::Value::Vec3);
     builder.add_buffer_element(DataType::Value::Vec2);

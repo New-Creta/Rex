@@ -73,22 +73,22 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  BufferLayoutBuilder::BufferLayoutBuilder()
+  BufferLayoutCreator::BufferLayoutCreator()
       : m_elements({})
   {
   }
   //-----------------------------------------------------------------------
-  void BufferLayoutBuilder::add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize /*= ShouldNormalize::no*/)
+  void BufferLayoutCreator::add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize /*= ShouldNormalize::no*/)
   {
     m_elements.emplace_back(inType, buffer_layout::data_type_component_count(inType), inShouldNormalize);
   }
   //-----------------------------------------------------------------------
-  void BufferLayoutBuilder::clear()
+  void BufferLayoutCreator::clear()
   {
     m_elements.clear();
   }
   //-----------------------------------------------------------------------
-  BufferLayout BufferLayoutBuilder::build()
+  BufferLayout BufferLayoutCreator::build()
   {
     return BufferLayout(m_elements);
   }

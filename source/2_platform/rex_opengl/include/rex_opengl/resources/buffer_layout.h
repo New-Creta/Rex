@@ -103,10 +103,10 @@ namespace rex
   bool operator==(const BufferLayout& layout1, const BufferLayout& layout2);
   bool operator!=(const BufferLayout& layout1, const BufferLayout& layout2);
 
-  class BufferLayoutBuilder
+  class BufferLayoutCreator
   {
   public:
-    BufferLayoutBuilder();
+    BufferLayoutCreator();
 
     void add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize = ShouldNormalize::no);
     void clear();
