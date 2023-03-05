@@ -11,8 +11,8 @@
 import os
 import argparse
 import time
-import rexpy.test
-import rexpy.diagnostics
+import regis.test
+import regis.diagnostics
 from datetime import datetime
 
 if __name__ == "__main__":
@@ -33,39 +33,39 @@ if __name__ == "__main__":
   start = time.perf_counter()
 
   if args.clean:
-    rexpy.test.clean()
+    regis.test.clean()
 
   if args.all or args.iwyu:
-    rexpy.test.test_include_what_you_use()
+    regis.test.test_include_what_you_use()
   if args.all or args.clang_tidy:
-    rexpy.test.test_clang_tidy()
+    regis.test.test_clang_tidy()
   if args.all or args.unit_tests:
-    rexpy.test.test_unit_tests()
+    regis.test.test_unit_tests()
   if args.all or args.coverage:
-    rexpy.test.test_code_coverage()
+    regis.test.test_code_coverage()
   if args.all or args.asan:
-    rexpy.test.test_asan()
+    regis.test.test_asan()
   if args.all or args.ubsan:
-    rexpy.test.test_ubsan()
+    regis.test.test_ubsan()
   if args.all or args.fuzzy:
-    rexpy.test.test_fuzzy_testing()
+    regis.test.test_fuzzy_testing()
 
-  rexpy.diagnostics.log_no_color("")
-  rexpy.diagnostics.log_info("Summary Report")
-  rexpy.diagnostics.log_no_color("--------------------------------------")
+  regis.diagnostics.log_no_color("")
+  regis.diagnostics.log_info("Summary Report")
+  regis.diagnostics.log_no_color("--------------------------------------")
 
-  pass_results = rexpy.test.get_pass_results()
+  pass_results = regis.test.get_pass_results()
   for key in pass_results:
     result = pass_results[key]
 
     if result == 0:
-      rexpy.diagnostics.log_info(f"{key} - success")
+      regis.diagnostics.log_info(f"{key} - success")
     else:
-      rexpy.diagnostics.log_err(f"{key} - failed")
+      regis.diagnostics.log_err(f"{key} - failed")
 
   end = time.perf_counter()
-  rexpy.diagnostics.log_no_color("")
-  rexpy.diagnostics.log_no_color("--------------------------------------")
-  rexpy.diagnostics.log_info(f"Finished at: {datetime.now().strftime('%d %B %Y - %H:%M:%S %p')}")
-  rexpy.diagnostics.log_info(f"Tests took {end - start:0.4f} seconds")
+  regis.diagnostics.log_no_color("")
+  regis.diagnostics.log_no_color("--------------------------------------")
+  regis.diagnostics.log_info(f"Finished at: {datetime.now().strftime('%d %B %Y - %H:%M:%S %p')}")
+  regis.diagnostics.log_info(f"Tests took {end - start:0.4f} seconds")
   

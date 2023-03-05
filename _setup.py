@@ -34,7 +34,7 @@ def __main():
 
   __intsall_regis()
 
-  # now that rexpy is installed, we can safely call the rest of the code
+  # now that regis is installed, we can safely call the rest of the code
   arguments_to_pass_on = ""
   for arg in unknown:
     arguments_to_pass_on += f" {arg}"

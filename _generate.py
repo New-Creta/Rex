@@ -10,9 +10,9 @@
 
 import os
 import argparse
-import rexpy.generation
-import rexpy.rex_json
-import rexpy.util
+import regis.generation
+import regis.rex_json
+import regis.util
 import glob
 from pathlib import Path
 
@@ -26,25 +26,25 @@ if __name__ == "__main__":
 
   args, unknown = parser.parse_known_args()
 
-  root = rexpy.util.find_root()
+  root = regis.util.find_root()
   settings_path = os.path.join(root, "build", "config", "settings.json")
 
   run_any_tests = args.unittests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
   if run_any_tests == False:
-    rexpy.generation.new_generation(settings_path, "")
+    regis.generation.new_generation(settings_path, "")
 
   if args.unittests:
-    rexpy.generation.new_generation(settings_path, "/generateUnitTests")
+    regis.generation.new_generation(settings_path, "/generateUnitTests")
   
   if args.coverage:
-    rexpy.generation.new_generation(settings_path, "/generateUnitTests /enableCoverage")
+    regis.generation.new_generation(settings_path, "/generateUnitTests /enableCoverage")
 
   if args.asan:
-    rexpy.generation.new_generation(settings_path, "/generateUnitTests /enableAddressSanitizer")
+    regis.generation.new_generation(settings_path, "/generateUnitTests /enableAddressSanitizer")
 
   if args.ubsan:
-    rexpy.generation.new_generation(settings_path, "/generateUnitTests /enableUBSanitizer")
+    regis.generation.new_generation(settings_path, "/generateUnitTests /enableUBSanitizer")
 
   if args.fuzzy:
-    rexpy.generation.new_generation(settings_path, "/enableFuzzyTesting")
+    regis.generation.new_generation(settings_path, "/enableFuzzyTesting")

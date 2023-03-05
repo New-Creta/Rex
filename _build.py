@@ -10,10 +10,10 @@
 
 import time
 import argparse
-import rexpy.build
-import rexpy.util
-import rexpy.diagnostics
-import rexpy.task_raii_printing
+import regis.build
+import regis.util
+import regis.diagnostics
+import regis.task_raii_printing
 
 from pathlib import Path
 
@@ -28,16 +28,16 @@ if __name__ == "__main__":
   args, unknown = parser.parse_known_args()
 
   if args.compiler == "unknown":
-    if rexpy.util.is_windows():
+    if regis.util.is_windows():
       args.compiler = "msvc"
     else:
       args.compiler = "clang"
 
-  task = rexpy.task_raii_printing.TaskRaiiPrint("Building")
-  result = rexpy.build.new_build(args.project, args.config, args.compiler, args.clean)
+  task = regis.task_raii_printing.TaskRaiiPrint("Building")
+  result = regis.build.new_build(args.project, args.config, args.compiler, args.clean)
 
   if result != 0:
-    rexpy.diagnostics.log_err("Build failed")
+    regis.diagnostics.log_err("Build failed")
   else:
-    rexpy.diagnostics.log_info("Build successful")
+    regis.diagnostics.log_info("Build successful")
   
