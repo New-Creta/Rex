@@ -14,15 +14,12 @@ import subprocess
 import sys
 import time
   
-rexpy_version = "0.0.37"
+rexpy_version = "0.1.1"
 
-def __install_rexpy():
-  os.system(f"py -m pip uninstall --yes rexpy")
-  os.system(f"py -m pip install -i https://test.pypi.org/simple/ \"rexpy=={rexpy_version}\"")
+def __intsall_regis():
+  os.system(f"py -m pip uninstall --yes regis")
+  os.system(f"py -m pip install \"regis=={rexpy_version}\"")
   
-  # this resolve issue https://github.com/gitpython-developers/gitdb/issues/61
-  os.system(f"py -m pip install gitpython")
-
 def __main():
   parser = argparse.ArgumentParser()
   args, unknown = parser.parse_known_args()
@@ -35,7 +32,7 @@ def __main():
     print("Error: You're not running setup.py from the root directory. Please run this from the root directory and try again")
     return
 
-  __install_rexpy()
+  __intsall_regis()
 
   # now that rexpy is installed, we can safely call the rest of the code
   arguments_to_pass_on = ""
