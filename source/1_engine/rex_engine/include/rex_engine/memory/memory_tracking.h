@@ -3,8 +3,8 @@
 #include "rex_engine/types.h"
 
 #include "rex_std_extra/memory/memory_size.h"
-#include "rex_std_extra/utilities/high_water_mark.h"
-#include "rex_std_extra/utilities/enum_reflection.h"
+#include "rex_std_extra/utility/high_water_mark.h"
+#include "rex_std_extra/utility/enum_reflection.h"
 
 #include "rex_std/mutex.h"
 #include "rex_std/array.h"
@@ -16,11 +16,8 @@ namespace rex
     Global,
 
     Engine,
-    Editor,
-    // app specific tags can be added here
+    Editor
   };
-
-#define MEM_TAG_SCOPE(tag) MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
 
   struct MemoryHeader
   {
@@ -64,7 +61,7 @@ namespace rex
     s64 m_max_mem_usage; // maximum allowed memory usage
     rsl::mutex m_mem_tracking_mutex;
     rsl::mutex m_mem_tag_tracking_mutex;
-    rsl::array<rsl::high_water_mark<s64>, 2/*rsl::enum_refl::enum_count<MemoryTag>()*/> m_usage_per_tag;
+    rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()> m_usage_per_tag;
   };
 
   MemoryTracker& mem_tracker();
@@ -81,4 +78,6 @@ namespace rex
       mem_tracker().pop_tag();
     }
   };
+
+#define MEM_TAG_SCOPE(tag) MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
 }
