@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
   if result != 0:
     regis.diagnostics.log_err("Build failed")
-    # sys.exit(result)
+    sys.exit(result)
   else:
     regis.diagnostics.log_info("Build successful")
   
