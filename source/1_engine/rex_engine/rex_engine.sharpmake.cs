@@ -38,6 +38,8 @@ public class RexEngine : EngineProject
     {
       case Config.debug:
       case Config.debug_opt:
+        conf.add_public_define("REX_ENABLE_MEM_TRACKING");
+        goto case Config.address_sanitizer;
       case Config.address_sanitizer:
       case Config.undefined_behavior_sanitizer:
       case Config.fuzzy:
