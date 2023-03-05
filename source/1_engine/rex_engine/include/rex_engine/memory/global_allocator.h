@@ -5,7 +5,11 @@
 
 namespace rex
 {
+#ifdef REX_ENABLE_MEM_TRACKING
   using GlobalAllocator = TrackedAllocator;
+#else
+  using GlobalAllocator = UntrackedAllocator;
+#endif
 
   GlobalAllocator& global_allocator();
 } // namespace rex
