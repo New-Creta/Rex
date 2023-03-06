@@ -88,7 +88,7 @@ namespace rex
                               0};
 
         const char* extensions = wglGetExtensionsStringARB(g_glctx.dc);
-        if(strstr(extensions, "WGL_ARB_create_context") == NULL)
+        if(rsl::strstr(extensions, "WGL_ARB_create_context") == NULL)
         {
           g_glctx.glrc = wglCreateContextAttribsARB(g_glctx.dc, NULL, attribs.data());
           if(g_glctx.glrc == NULL)

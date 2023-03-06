@@ -157,7 +157,7 @@ namespace rex
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture2d::texture_min_filter(m_description.filter));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture2d::texture_filter(m_description.filter));
 
-    REX_ASSERT(data != nullptr);
+    REX_ASSERT_X(data != nullptr, "data for texture is nullptr");
 
     glTexImage2D(GL_TEXTURE_2D, m_description.mipmap_level, texture2d::texture_internal_format(m_description.storage_format), m_description.width, m_description.height, 0, texture2d::texture_pixel_format(m_description.pixel_format),
                  texture2d::texture_pixel_type(m_description.pixel_data_type), data);
@@ -181,7 +181,7 @@ namespace rex
   //-------------------------------------------------------------------------
   Texture2D& Texture2D::operator=(Texture2D&& other) noexcept
   {
-    REX_ASSERT(this != &other);
+    REX_ASSERT_X(this != &other, "can't move to yourself");
 
     m_resource_id = rsl::exchange(other.m_resource_id, 0);
     m_description = rsl::exchange(other.m_description, {});

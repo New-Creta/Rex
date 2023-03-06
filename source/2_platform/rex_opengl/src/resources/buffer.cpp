@@ -32,7 +32,7 @@ namespace rex
   //-----------------------------------------------------------------------
   Buffer& Buffer::operator=(Buffer&& other) noexcept
   {
-    REX_ASSERT(this != &other);
+    REX_ASSERT_X(this != &other, "can't move to yourself");
 
     this->m_resource_id     = rsl::exchange(other.m_resource_id, 0);
     this->m_resource_target = rsl::exchange(other.m_resource_target, 0);

@@ -87,10 +87,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    WindowClass::~WindowClass()
-    {
-      REX_ASSERT_X(m_internal_ptr->registered == false, "Explicitly destroy the window class by calling WindowClass::destroy");
-    }
+    WindowClass::~WindowClass() = default;
 
     //-------------------------------------------------------------------------
     bool WindowClass::create(HInstance hInstance, WindowProcedureFunc wndProc, const char8* title)
