@@ -230,7 +230,7 @@ public class BasicCPPProject : BaseProject
         break;
     }
 
-    if (target.Compiler == Compiler.Clang && conf.is_config_for_testing() == false)
+    if (target.Compiler == Compiler.Clang && (GenerateSettings.UnitTestsEnabled == false && conf.is_config_for_testing() == false))
     {
       // setup post build command
       conf.NinjaGenerateCompilerDB = true;
