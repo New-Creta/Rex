@@ -1,19 +1,15 @@
 #pragma once
 
-#include "rex_engine/types.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_engine/memory/tracker_allocator.h"
+#include "rex_engine/memory/untracker_allocator.h"
 
 namespace rex
 {
-  class GlobalAllocator
-  {
-  public:
-    REX_NO_DISCARD void* allocate(rsl::memory_size size);
-    REX_NO_DISCARD void* allocate(card64 size);
-
-    void deallocate(void* ptr, rsl::memory_size size);
-    void deallocate(void* ptr, card64 size);
-  };
+#ifdef REX_ENABLE_MEM_TRACKING
+  using GlobalAllocator = TrackedAllocator;
+#else
+  using GlobalAllocator = UntrackedAllocator;
+#endif
 
   GlobalAllocator& global_allocator();
 } // namespace rex

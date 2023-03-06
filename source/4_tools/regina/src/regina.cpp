@@ -1,5 +1,6 @@
 #include "rex_engine/defines.h"
 #include "rex_engine/entrypoint.h"
+#include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/iostream.h"
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/gui_application.h"

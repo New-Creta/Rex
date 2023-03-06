@@ -1,6 +1,6 @@
 #include "rex_engine/core_application.h"
 
-#include "rex_engine/memory/memory_manager.h"
+#include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/assert.h"
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
@@ -21,7 +21,7 @@ namespace rex
       // it can't split this up in domains as the engine
       // doesn't know which domains you will have
       // this is app specific and is managed by the client
-      mem_manager().initialize(engineParams.max_memory);
+      mem_tracker().initialize(engineParams.max_memory);
     }
 
     static CoreApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
