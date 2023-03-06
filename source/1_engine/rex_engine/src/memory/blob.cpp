@@ -20,8 +20,8 @@ namespace rex
         return;
       }
 
-      REX_ASSERT(dst.m_size != 0);
-      REX_ASSERT(dst.m_size >= src.m_size);
+      REX_ASSERT_X(dst.m_size != 0, "dst blob size is 0");
+      REX_ASSERT_X(dst.m_size >= src.m_size, "dst size is smaller than src size");
 
       rsl::memcpy(dst.m_data.get(), src.m_data.get(), src.m_size);
     }
@@ -35,18 +35,18 @@ namespace rex
         return;
       }
 
-      REX_ASSERT(dst != nullptr);
+      REX_ASSERT_X(dst != nullptr, "dst is nullptr");
 
       rsl::memcpy(dst, src.m_data.get(), src.m_size);
     }
     //-------------------------------------------------------------------------
     void Blob::copy(void* src, const rsl::memory_size& size, Blob& dst)
     {
-      REX_ASSERT(src != nullptr);
-      REX_ASSERT(size != 0);
+      REX_ASSERT_X(src != nullptr, "src is nullptr");
+      REX_ASSERT_X(size != 0, "size is 0");
 
-      REX_ASSERT(dst.m_size != 0);
-      REX_ASSERT(dst.m_size >= size);
+      REX_ASSERT_X(dst.m_size != 0, "dst size is 0");
+      REX_ASSERT_X(dst.m_size >= size, "dst size is not big enough to receive copy");
 
       rsl::memcpy(dst.m_data.get(), src, size);
     }
@@ -78,7 +78,7 @@ namespace rex
     Blob& Blob::operator=(Blob&& other) noexcept
     {
       // Guard self assignment
-      REX_ASSERT(this == &other);
+      REX_ASSERT_X(this == &other, "can't move to yourself");
 
       m_data = rsl::exchange(other.m_data, nullptr);
       m_size = rsl::exchange(other.m_size, 0_bytes);
@@ -136,7 +136,7 @@ namespace rex
     //-------------------------------------------------------------------------
     rsl::byte* Blob::read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset)
     {
-      REX_ASSERT(inOffset + inSize <= m_size);
+      REX_ASSERT_X(inOffset + inSize <= m_size, "amount to read out of bounds");
 
       rsl::memcpy(dst, static_cast<rsl::byte*>(m_data.get()) + inOffset, inSize);
       return dst;
@@ -145,7 +145,7 @@ namespace rex
     //-------------------------------------------------------------------------
     const rsl::byte* Blob::read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const
     {
-      REX_ASSERT(inOffset + inSize <= m_size);
+      REX_ASSERT_X(inOffset + inSize <= m_size, "amount of read out of bounds");
 
       rsl::memcpy(dst, static_cast<const rsl::byte*>(m_data.get()) + inOffset, inSize);
       return dst;
@@ -154,7 +154,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void Blob::write(const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset)
     {
-      REX_ASSERT(inOffset + inSize <= m_size);
+      REX_ASSERT_X(inOffset + inSize <= m_size, "amount for write out of bounds");
 
       rsl::memcpy(static_cast<rsl::byte*>(m_data.get()) + inOffset, inData, inSize);
     }

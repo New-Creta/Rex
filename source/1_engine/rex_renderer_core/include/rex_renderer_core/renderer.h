@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/types.h"
-#include "rex_std/bonus/string/stack_string.h"
+#include "rex_std/bonus/string.h"
 
 namespace rex
 {

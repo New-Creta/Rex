@@ -2,7 +2,7 @@
 
 #include "rex_engine/types.h"
 #include "rex_opengl/resources/resource.h"
-#include "rex_std/bonus/string/stack_string.h"
+#include "rex_std/bonus/string.h"
 #include "rex_std/unordered_map.h"
 
 #ifdef REX_COMPILER_MSVC
