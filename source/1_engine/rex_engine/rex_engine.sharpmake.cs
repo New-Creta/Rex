@@ -77,9 +77,9 @@ public class RexEngine : EngineProject
     conf.add_public_define("REX_API_OPENGL");
   }
 
-  protected override void PostInvokeConfiguration()
+  public override void AfterConfigure()
   {
-    base.PostInvokeConfiguration();
+    base.AfterConfigure();
 
     WriteMemoryTagsHeaderFile();
   }
