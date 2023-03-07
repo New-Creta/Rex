@@ -101,6 +101,28 @@ public class RexEngine : EngineProject
     }
   }
 
+  private void WaitForMemTagHandleToClose()
+  {
+    FileStream tmp = null;
+    int tries = 0;
+    while (tries < 10)
+    {
+      try
+      {
+        System.Console.WriteLine("Trying to open mem tag file");
+        tmp = File.Open(MemoryTagsHeaderFile, FileMode.Truncate);
+        tmp.Close();
+        return;
+      }
+      catch (IOException ex)
+      {
+        System.Console.WriteLine("Failed to open mem tag file");
+        System.Console.WriteLine(ex.ToString());
+      }
+      ++tries;
+    }
+  }
+
   private void WriteMemoryTagsHeaderFile()
   {
     StringBuilder sb = new StringBuilder();
@@ -125,6 +147,8 @@ public class RexEngine : EngineProject
 
     sb.AppendLine("  };");
     sb.AppendLine("}");
+
+    WaitForMemTagHandleToClose();
 
     System.Console.WriteLine("Opening memory tag file for writing");
     FileStream stream = File.Open(MemoryTagsHeaderFile, FileMode.Truncate);
