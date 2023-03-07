@@ -88,12 +88,16 @@ public class RexEngine : EngineProject
   {
     if (File.Exists(MemoryTagsHeaderFile))
     {
+      System.Console.WriteLine("Truncing memory tag file");
       FileStream tmp = File.Open(MemoryTagsHeaderFile, FileMode.Truncate);
       tmp.Close();
+      System.Console.WriteLine("Closing file");
     }
     else
     {
+      System.Console.WriteLine("Creating memory tag file");
       File.Create(MemoryTagsHeaderFile);
+      System.Console.WriteLine("Created file");
     }
   }
 
@@ -122,11 +126,13 @@ public class RexEngine : EngineProject
     sb.AppendLine("  };");
     sb.AppendLine("}");
 
+    System.Console.WriteLine("Opening memory tag file for writing");
     FileStream stream = File.Open(MemoryTagsHeaderFile, FileMode.Truncate);
 
     byte[] bytes = Encoding.ASCII.GetBytes(sb.ToString());
     stream.Write(bytes, 0, sb.Length);
-    stream.Close();   
+    stream.Close();
+    System.Console.WriteLine("Finished writing memory tag file");
   }
 
 }
