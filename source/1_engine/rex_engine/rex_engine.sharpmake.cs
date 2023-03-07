@@ -96,7 +96,8 @@ public class RexEngine : EngineProject
     else
     {
       System.Console.WriteLine("Creating memory tag file");
-      File.Create(MemoryTagsHeaderFile);
+      FileStream tmp = File.Create(MemoryTagsHeaderFile);
+      tmp.Close();
       System.Console.WriteLine("Created file");
     }
   }
