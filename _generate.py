@@ -31,20 +31,24 @@ if __name__ == "__main__":
 
   run_any_tests = args.unittests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
+  result = 0
+
   if run_any_tests == False:
-    regis.generation.new_generation(settings_path, "")
+    result |= regis.generation.new_generation(settings_path, "")
 
   if args.unittests:
-    regis.generation.new_generation(settings_path, "/generateUnitTests")
+    result |= regis.generation.new_generation(settings_path, "/generateUnitTests")
   
   if args.coverage:
-    regis.generation.new_generation(settings_path, "/generateUnitTests /enableCoverage")
+    result |= regis.generation.new_generation(settings_path, "/generateUnitTests /enableCoverage")
 
   if args.asan:
-    regis.generation.new_generation(settings_path, "/generateUnitTests /enableAddressSanitizer")
+    result |= regis.generation.new_generation(settings_path, "/generateUnitTests /enableAddressSanitizer")
 
   if args.ubsan:
-    regis.generation.new_generation(settings_path, "/generateUnitTests /enableUBSanitizer")
+    result |= regis.generation.new_generation(settings_path, "/generateUnitTests /enableUBSanitizer")
 
   if args.fuzzy:
-    regis.generation.new_generation(settings_path, "/enableFuzzyTesting")
+    result |= regis.generation.new_generation(settings_path, "/enableFuzzyTesting")
+
+  exit(result)
