@@ -34,21 +34,32 @@ if __name__ == "__main__":
   result = 0
 
   if run_any_tests == False:
-    result |= regis.generation.new_generation(settings_path, "")
+    proc = regis.generation.new_generation(settings_path, "")
+    proc.wait()
+    result = proc.returncode
 
-  if args.unittests:
-    result |= regis.generation.new_generation(settings_path, "/generateUnitTests")
-  
-  if args.coverage:
-    result |= regis.generation.new_generation(settings_path, "/generateUnitTests /enableCoverage")
+  elif args.unittests:
+    proc = regis.generation.new_generation(settings_path, "/generateUnitTests")
+    proc.wait()
+    result = proc.returncode
 
-  if args.asan:
-    result |= regis.generation.new_generation(settings_path, "/generateUnitTests /enableAddressSanitizer")
+  elif args.coverage:
+    proc = regis.generation.new_generation(settings_path, "/generateUnitTests /enableCoverage")
+    proc.wait()
+    result = proc.returncode
 
-  if args.ubsan:
-    result |= regis.generation.new_generation(settings_path, "/generateUnitTests /enableUBSanitizer")
+  elif args.asan:
+    proc = regis.generation.new_generation(settings_path, "/generateUnitTests /enableAddressSanitizer")
+    proc.wait()
+    result = proc.returncode
 
-  if args.fuzzy:
-    result |= regis.generation.new_generation(settings_path, "/enableFuzzyTesting")
+  elif args.ubsan:
+    proc = regis.generation.new_generation(settings_path, "/generateUnitTests /enableUBSanitizer")
+    proc.wait()
+    result = proc.returncode
+
+  elif args.fuzzy:
+    proc = regis.generation.new_generation(settings_path, "/enableFuzzyTesting")
+    result = proc.returncode
 
   exit(result)
