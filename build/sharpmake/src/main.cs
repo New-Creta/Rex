@@ -194,6 +194,7 @@ public class BaseProject : Project
 public class BasicCPPProject : BaseProject
 {
   protected string CompilerDBPath { get; set; }
+  protected string GenerationConfigPath { get; set; }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
   {
@@ -260,6 +261,8 @@ public class BasicCPPProject : BaseProject
       File.Copy(clangTidySecondPassSrcPath, clangTidySecondPassDstPath, true);
       File.Copy(clangFormatSrcPath, clangFormatDstPath, true);
     }
+
+    ReadGenerationConfigFile();
   }
 
   protected string GetClangToolsPath(RexConfiguration conf)
@@ -303,6 +306,29 @@ public class BasicCPPProject : BaseProject
     }
 
     File.WriteAllText(project.ProjectPath, jsonBlob);
+  }
+
+  private void ReadGenerationConfigFile()
+  {
+    if (string.IsNullOrEmpty(GenerationConfigPath))
+    {
+      return;
+    }
+
+    if (!File.Exists(GenerationConfigPath))
+    {
+      System.Diagnostics.Debug.WriteLine($"Warning: GenerationConfigPath does not exist '{GenerationConfigPath}'");
+      return;
+    }
+
+    string mem_tag_config_path = GenerationConfigPath;
+    string json_blob = File.ReadAllText(mem_tag_config_path);
+    Dictionary<string, string[]> config = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json_blob);
+
+    if (!GenerateSettings.MemoryTags.ContainsKey(Name))
+    {
+      GenerateSettings.MemoryTags.Add(Name, config["MemoryTags"].ToList());
+    }
   }
 }
 

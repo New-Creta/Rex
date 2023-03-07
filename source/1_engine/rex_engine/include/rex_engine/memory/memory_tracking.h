@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/types.h"
 #include "rex_std/array.h"
 #include "rex_std/mutex.h"
@@ -9,14 +10,6 @@
 
 namespace rex
 {
-  enum class MemoryTag
-  {
-    Global,
-
-    Engine,
-    Editor
-  };
-
   struct MemoryHeader
   {
   public:
