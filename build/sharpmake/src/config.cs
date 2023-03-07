@@ -24,8 +24,11 @@ public enum Optimization
 
 public class RexConfiguration : Sharpmake.Project.Configuration
 {
+  public bool GenerateCompilerDB { get; set; }
+
   public RexConfiguration()
   {
+    GenerateCompilerDB = true;
   }
 
   public void enable_exceptions()

@@ -234,7 +234,9 @@ public class BasicCPPProject : BaseProject
     if (target.Compiler == Compiler.Clang && (GenerateSettings.UnitTestsEnabled == false && conf.is_config_for_testing() == false))
     {
       // setup post build command
-      conf.NinjaGenerateCompilerDB = true;
+      GenerateCompilerDatabase(conf);
+      conf.NinjaGenerateCompilerDB = false;
+
       string compilerDBPath = GetClangToolsPath(conf);
       string postbuildCommandScript = Path.Combine(Globals.SourceRoot, $"post_build.py -p={Name} -comp={target.Compiler} -conf={conf.Name} -compdb={compilerDBPath} -srcroot={SourceRootPath}");
       conf.EventPostBuild.Add($"py {postbuildCommandScript}");
@@ -330,6 +332,48 @@ public class BasicCPPProject : BaseProject
       GenerateSettings.MemoryTags.Add(Name, config["MemoryTags"].ToList());
     }
   }
+
+  private string GetCompilerDBOutputPath(RexConfiguration config)
+  {
+    return $"{Path.Combine(config.ProjectPath, "clang_tools", $"{PerConfigFolderFormat(config)}", "compile_commands.json")}";
+  }
+
+  private static string PerConfigFolderFormat(RexConfiguration config)
+  {
+    return System.IO.Path.Combine(config.Target.GetFragment<Compiler>().ToString(), config.Name);
+  }
+
+  private void GenerateCompilerDatabase(RexConfiguration config)
+  {
+    string ninja_file_path = GetNinjaFilePath(config);
+    string tools_json_path = Path.Combine(Globals.ToolsRoot, "tool_paths.json");
+    string json_blob = File.ReadAllText(tools_json_path);
+    string outputPath = GetCompilerDBOutputPath(config);
+    Dictionary<string, string> paths = JsonSerializer.Deserialize<Dictionary<string, string>>(json_blob);
+
+    string ninja_exe_filepath = paths["ninja_path"];
+
+    System.Diagnostics.ProcessStartInfo start_info = new System.Diagnostics.ProcessStartInfo();
+    start_info.FileName = "cmd.exe";
+    start_info.Arguments = $"/C {ninja_exe_filepath} -f {ninja_file_path} compdb_{Name.ToLower()}_{config.Name}_clang --quiet > {outputPath}";
+    start_info.RedirectStandardOutput = true;
+    start_info.RedirectStandardError = true;
+    start_info.UseShellExecute = false;
+
+    Console.WriteLine(start_info.Arguments);
+    System.Diagnostics.Process process = new System.Diagnostics.Process();
+    process.StartInfo = start_info;
+    process.Start();
+  }
+
+  private string GetNinjaFilePath(RexConfiguration config)
+  {
+    return Path.Combine(config.ProjectPath, "ninja", GetPerConfigFileName(config, config.Target.GetFragment<Compiler>()));
+  }
+  private string GetPerConfigFileName(Project.Configuration config, Compiler compiler)
+  {
+    return $"{config.Project.Name}.{config.Name}.{compiler}.ninja";
+  }
 }
 
 public class TestProject : BaseProject
@@ -415,7 +459,7 @@ public class ToolsProject : BasicCPPProject
   {
     base.Configure(conf, target);
 
-    conf.SolutionFolder = "5_tools";
+    conf.SolutionFolder = "4_tools";
   }
 }
 
