@@ -360,10 +360,11 @@ public class BasicCPPProject : BaseProject
     start_info.RedirectStandardError = true;
     start_info.UseShellExecute = false;
 
-    Console.WriteLine(start_info.Arguments);
+    Console.WriteLine($"Generating compiler database for {Name} - {config.Name}");
     System.Diagnostics.Process process = new System.Diagnostics.Process();
     process.StartInfo = start_info;
     process.Start();
+    process.WaitForExit();
   }
 
   private string GetNinjaFilePath(RexConfiguration config)
