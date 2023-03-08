@@ -234,7 +234,7 @@ public class BasicCPPProject : BaseProject
     if (target.Compiler == Compiler.Clang && (GenerateSettings.UnitTestsEnabled == false && conf.is_config_for_testing() == false))
     {
       // setup post build command
-      GenerateCompilerDatabase(conf);
+      QueueCompilerDatabaseGeneration(conf);
       conf.NinjaGenerateCompilerDB = false;
 
       string compilerDBPath = GetClangToolsPath(conf);
@@ -335,7 +335,12 @@ public class BasicCPPProject : BaseProject
 
   private string GetCompilerDBOutputPath(RexConfiguration config)
   {
-    return $"{Path.Combine(config.ProjectPath, "clang_tools", $"{PerConfigFolderFormat(config)}", "compile_commands.json")}";
+    return $"{Path.Combine(GetCompilerDBOutputFolder(config), "compile_commands.json")}";
+  }
+
+  private string GetCompilerDBOutputFolder(RexConfiguration config)
+  {
+    return $"{Path.Combine(config.ProjectPath, "clang_tools", $"{PerConfigFolderFormat(config)}")}";
   }
 
   private static string PerConfigFolderFormat(RexConfiguration config)
@@ -343,28 +348,32 @@ public class BasicCPPProject : BaseProject
     return System.IO.Path.Combine(config.Target.GetFragment<Compiler>().ToString(), config.Name);
   }
 
-  private void GenerateCompilerDatabase(RexConfiguration config)
+  private void QueueCompilerDatabaseGeneration(RexConfiguration config)
   {
     string ninja_file_path = GetNinjaFilePath(config);
+    string outputPath = GetCompilerDBOutputPath(config);
+
     string tools_json_path = Path.Combine(Globals.ToolsRoot, "tool_paths.json");
     string json_blob = File.ReadAllText(tools_json_path);
-    string outputPath = GetCompilerDBOutputPath(config);
     Dictionary<string, string> paths = JsonSerializer.Deserialize<Dictionary<string, string>>(json_blob);
 
     string ninja_exe_filepath = paths["ninja_path"];
 
+    // make sure the folder exists
+    Directory.CreateDirectory(GetCompilerDBOutputFolder(config));
+
     System.Diagnostics.ProcessStartInfo start_info = new System.Diagnostics.ProcessStartInfo();
     start_info.FileName = "cmd.exe";
-    start_info.Arguments = $"/C {ninja_exe_filepath} -f {ninja_file_path} compdb_{Name.ToLower()}_{config.Name}_clang --quiet >> {outputPath}";
+    start_info.Arguments = $"/C {ninja_exe_filepath} -f {ninja_file_path} compdb_{Name.ToLower()}_{config.Name}_clang --quiet > {outputPath}";
     start_info.RedirectStandardOutput = true;
     start_info.RedirectStandardError = true;
     start_info.UseShellExecute = false;
 
+
     Console.WriteLine($"Generating compiler database for {Name} - {config.Name}");
     System.Diagnostics.Process process = new System.Diagnostics.Process();
     process.StartInfo = start_info;
-    process.Start();
-    process.WaitForExit();
+    GenerateSettings.GenerateCompilerDBProcesses.Add(process);
   }
 
   private string GetNinjaFilePath(RexConfiguration config)
@@ -611,6 +620,23 @@ public static class Main
     InitializeSettings();
 
     arguments.Generate<MainSolution>();
+
+    Builder.Instance.EventPostGeneration += PostGenerationEvent;
+  }
+
+  private static void PostGenerationEvent(List<Project> projects, List<Solution> solutions)
+  {
+    GenerateCompilerDatabases();
+  }
+
+  private static void GenerateCompilerDatabases()
+  {
+    Console.WriteLine("Generating compiler databases");
+    foreach (System.Diagnostics.Process proc in GenerateSettings.GenerateCompilerDBProcesses)
+    {
+      proc.Start();
+      proc.WaitForExit();
+    }
   }
 
   private static void InitializeSharpmake()

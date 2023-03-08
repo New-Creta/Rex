@@ -14,4 +14,6 @@ public class GenerateSettings
   static public bool VisualStudioOnly { get; set; }
 
   static public Dictionary<string, List<string>> MemoryTags = new Dictionary<string, List<string>>();
+
+  static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
 }
