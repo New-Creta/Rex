@@ -626,7 +626,10 @@ public static class Main
 
   private static void PostGenerationEvent(List<Project> projects, List<Solution> solutions)
   {
-    GenerateCompilerDatabases();
+    if (GenerateSettings.NoCompilerDB == false)
+    {
+      GenerateCompilerDatabases();
+    }
   }
 
   private static void GenerateCompilerDatabases()
@@ -666,5 +669,6 @@ public static class Main
     GenerateSettings.UndefinedBehaviorSanitizerEnabled = CommandLine.GetParameters().ToList().FindIndex(x => x.ToString() == "/enableUBSanitizer") != -1;
     GenerateSettings.FuzzyTestingEnabled = CommandLine.GetParameters().ToList().FindIndex(x => x.ToString() == "/enableFuzzyTesting") != -1;
     GenerateSettings.VisualStudioOnly = CommandLine.GetParameters().ToList().FindIndex(x => x.ToString() == "/vsOnly") != -1;
+    GenerateSettings.NoCompilerDB = CommandLine.GetParameters().ToList().FindIndex(x => x.ToString() == "/noCompilerDB") != -1;
   }
 }

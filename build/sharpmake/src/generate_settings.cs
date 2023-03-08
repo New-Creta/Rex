@@ -12,6 +12,7 @@ public class GenerateSettings
   static public bool UndefinedBehaviorSanitizerEnabled { get; set; }
   static public bool FuzzyTestingEnabled { get; set; }
   static public bool VisualStudioOnly { get; set; }
+  static public bool NoCompilerDB { get; set; }
 
   static public Dictionary<string, List<string>> MemoryTags = new Dictionary<string, List<string>>();
 

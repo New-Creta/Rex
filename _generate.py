@@ -18,6 +18,7 @@ from pathlib import Path
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+  parser.add_argument("-nocompdb", help="don't generate a compiler db", action="store_true")
   parser.add_argument("-unittests", help="generate unit tests", action="store_true")
   parser.add_argument("-coverage", help="generate coverage", action="store_true")
   parser.add_argument("-asan", help="generate address sanitizer", action="store_true")
@@ -31,35 +32,29 @@ if __name__ == "__main__":
 
   run_any_tests = args.unittests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
-  result = 0
+  sharpmake_args = ""
+  if args.nocompdb:
+    sharpmake_args += " /noCompilerDB"
 
-  if run_any_tests == False:
-    proc = regis.generation.new_generation(settings_path, "")
-    proc.wait()
-    result = proc.returncode
-
-  elif args.unittests:
-    proc = regis.generation.new_generation(settings_path, "/generateUnitTests")
-    proc.wait()
-    result = proc.returncode
+  if args.unittests:
+    sharpmake_args += " /generateUnitTests"
 
   elif args.coverage:
-    proc = regis.generation.new_generation(settings_path, "/generateUnitTests /enableCoverage")
-    proc.wait()
-    result = proc.returncode
+    sharpmake_args += " /generateUnitTests /enableCoverage"
 
   elif args.asan:
-    proc = regis.generation.new_generation(settings_path, "/generateUnitTests /enableAddressSanitizer")
-    proc.wait()
-    result = proc.returncode
+    sharpmake_args += " /generateUnitTests /enableAddressSanitizer"
 
   elif args.ubsan:
-    proc = regis.generation.new_generation(settings_path, "/generateUnitTests /enableUBSanitizer")
-    proc.wait()
-    result = proc.returncode
+    sharpmake_args += " /generateUnitTests /enableUBSanitizer"
 
   elif args.fuzzy:
-    proc = regis.generation.new_generation(settings_path, "/enableFuzzyTesting")
-    result = proc.returncode
+    sharpmake_args += " /enableFuzzyTesting"
+
+  result = 0
+
+  proc = regis.generation.new_generation(settings_path, sharpmake_args)
+  proc.wait()
+  result = proc.returncode
 
   exit(result)
