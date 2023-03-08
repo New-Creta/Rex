@@ -14,11 +14,11 @@ import subprocess
 import sys
 import time
   
-rexpy_version = "0.1.5"
+rexpy_version = "0.1.7"
 
 def __intsall_regis():
   os.system(f"py -m pip uninstall --yes regis")
-  os.system(f"py -m pip install \"regis=={rexpy_version}\"")
+  os.system(f"py -m pip install --user \"regis=={rexpy_version}\"")
   
 def __main():
   parser = argparse.ArgumentParser()
