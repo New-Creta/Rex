@@ -66,14 +66,14 @@ namespace rex
       mem_tracker().push_tag(tag);
     }
     MemoryTagScope(const MemoryTagScope&) = delete;
-    MemoryTagScope(MemoryTagScope&&) = delete;
+    MemoryTagScope(MemoryTagScope&&)      = delete;
     ~MemoryTagScope()
     {
       mem_tracker().pop_tag();
     }
 
     MemoryTagScope& operator=(const MemoryTagScope&) = delete;
-    MemoryTagScope& operator=(MemoryTagScope&&) = delete;
+    MemoryTagScope& operator=(MemoryTagScope&&)      = delete;
   };
 
 #define MEM_TAG_SCOPE(tag) MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)

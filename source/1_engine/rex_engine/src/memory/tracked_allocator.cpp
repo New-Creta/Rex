@@ -23,7 +23,7 @@ namespace rex
     void* ptr = malloc(num_mem_needed); // NOLINT(cppcoreguidelines-no-malloc)
 
     // initialize the memory header
-    const MemoryTag tag             = mem_tracker().current_tag();
+    const MemoryTag tag       = mem_tracker().current_tag();
     rex::MemoryHeader* header = new(ptr) MemoryHeader(tag, rsl::memory_size(num_mem_needed));
 
     // get the right address to return from the function
@@ -36,7 +36,7 @@ namespace rex
     return mem_block;
   }
 
-  void TrackedAllocator::deallocate(void* ptr, rsl::memory_size size) 
+  void TrackedAllocator::deallocate(void* ptr, rsl::memory_size size)
   {
     deallocate(ptr, size.size_in_bytes());
   }
