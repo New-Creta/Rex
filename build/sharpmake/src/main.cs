@@ -355,7 +355,7 @@ public class BasicCPPProject : BaseProject
 
     System.Diagnostics.ProcessStartInfo start_info = new System.Diagnostics.ProcessStartInfo();
     start_info.FileName = "cmd.exe";
-    start_info.Arguments = $"/C {ninja_exe_filepath} -f {ninja_file_path} compdb_{Name.ToLower()}_{config.Name}_clang --quiet > {outputPath}";
+    start_info.Arguments = $"/C {ninja_exe_filepath} -f {ninja_file_path} compdb_{Name.ToLower()}_{config.Name}_clang --quiet >> {outputPath}";
     start_info.RedirectStandardOutput = true;
     start_info.RedirectStandardError = true;
     start_info.UseShellExecute = false;
