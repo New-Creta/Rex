@@ -43,30 +43,30 @@ namespace rex
 
   void MemoryTracker::track_alloc(void* /*mem*/, MemoryHeader* header)
   {
-    rsl::unique_lock lock(m_mem_tracking_mutex);
+    const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
     REX_HEAP_TRACK_ERR(m_mem_usage.value() <= m_max_mem_usage, "Using more memory than allowed! usage: " << m_mem_usage.value() << " max: " << m_max_mem_usage);
   }
   void MemoryTracker::track_dealloc(void* /*mem*/, MemoryHeader* header)
   {
-    rsl::unique_lock lock(m_mem_tracking_mutex);
+    const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage -= header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }
 
   void MemoryTracker::push_tag(MemoryTag tag)
   {
-    rsl::unique_lock lock(m_mem_tag_tracking_mutex);
+    const rsl::unique_lock lock(m_mem_tag_tracking_mutex);
     thread_local_memory_tag_stack()[++thread_local_mem_tag_index()] = tag;
   }
   void MemoryTracker::pop_tag()
   {
-    rsl::unique_lock lock(m_mem_tag_tracking_mutex);
+    const rsl::unique_lock lock(m_mem_tag_tracking_mutex);
     --thread_local_mem_tag_index();
   }
 
-  MemoryTag MemoryTracker::current_tag() const
+  MemoryTag MemoryTracker::current_tag() const // NOLINT(readability-convert-member-functions-to-static)
   {
     return thread_local_memory_tag_stack()[thread_local_mem_tag_index()];
   }
