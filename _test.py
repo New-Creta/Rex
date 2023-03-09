@@ -26,7 +26,8 @@ if __name__ == "__main__":
   parser.add_argument("-asan", help="run address sanitizer", action="store_true")
   parser.add_argument("-ubsan", help="run undefined behavior sanitizer", action="store_true")
   parser.add_argument("-fuzzy", help="run fuzzy testing", action="store_true")
-  
+  parser.add_argument("-auto_test", help="run auto tests", action="store_true")
+  parser.add_argument("-auto_test_timeout", help="timeout for auto tests in seconds", default=10)
   args,unknown = parser.parse_known_args()
 
   start = time.perf_counter()
@@ -48,6 +49,11 @@ if __name__ == "__main__":
     regis.test.test_ubsan()
   if args.all or args.fuzzy:
     regis.test.test_fuzzy_testing()
+  if args.all or args.auto_test:
+    if args.auto_test_timeout:
+      auto_test_timeout_secs = args.auto_test_timeout
+
+    regis.test.run_auto_tests(int(auto_test_timeout_secs))
 
   regis.diagnostics.log_no_color("")
   regis.diagnostics.log_info("Summary Report")
