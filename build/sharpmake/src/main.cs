@@ -546,9 +546,32 @@ public class SharpmakeProject : CSharpProject
     conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
 
     string quote = "\'"; // Use single quote that is cross platform safe
-    string sharpmake_main = Path.Combine(Globals.SharpmakeRoot, "src", "main.sharpmake.cs");
-    sharpmake_main = sharpmake_main.Replace('\\', '/');
-    conf.CsprojUserFile.StartArguments = $@"/sources(@{quote}{sharpmake_main}{quote}) /diagnostics";
+    List<string> sharpmake_sources = new List<string>();
+    foreach (string sourceFile in SourceFiles)
+    {
+      Console.WriteLine($"resolved source file: {sourceFile}");
+      string file = sourceFile.Replace('\\', '/');
+      sharpmake_sources.Add($"{quote}{file}{quote}");
+    }
+
+    foreach (string file in Directory.EnumerateFiles(SourceRootPath, "*.*", SearchOption.AllDirectories))
+    {
+      if (file.EndsWith(".sharpmake.cs"))
+      {
+        sharpmake_sources.Add($"{quote}{file}{quote}");
+      }
+    }
+
+    string sourcesArg = @"/sources(";
+    foreach (string file in sharpmake_sources)
+    {
+      sourcesArg += file;
+      sourcesArg += ", ";
+    }
+    sourcesArg = sourcesArg.Substring(0, sourcesArg.Length - 2); // remove ", ";
+    sourcesArg += ")";
+
+    conf.CsprojUserFile.StartArguments = $@"{sourcesArg} /diagnostics";
     conf.CsprojUserFile.StartProgram = sharpmakeAppPath;
     conf.CsprojUserFile.WorkingDirectory = Directory.GetCurrentDirectory();
   }
