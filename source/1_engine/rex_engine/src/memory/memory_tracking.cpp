@@ -71,6 +71,13 @@ namespace rex
     return thread_local_memory_tag_stack()[thread_local_mem_tag_index()];
   }
 
+  MemoryTracker::UsagePerTag MemoryTracker::current_stats()
+  {
+    const rsl::unique_lock lock(m_mem_tracking_mutex);
+    MemoryTracker::UsagePerTag usage_per_tag_copy = m_usage_per_tag;
+    return usage_per_tag_copy;
+  }
+
   MemoryTracker& mem_tracker()
   {
     static MemoryTracker tracker;

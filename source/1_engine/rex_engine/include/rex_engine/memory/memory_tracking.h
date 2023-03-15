@@ -21,8 +21,8 @@ namespace rex
   {
   public:
     MemoryHeader(MemoryTag tag, rsl::memory_size size)
-        : m_tag(tag)
-        , m_size(size)
+        : m_size(size)
+        , m_tag(tag)
     {
     }
 
@@ -36,13 +36,15 @@ namespace rex
     }
 
   private:
-    MemoryTag m_tag;
     rsl::memory_size m_size;
+    MemoryTag m_tag;
   };
 
   class MemoryTracker
   {
   public:
+    using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;
+
     MemoryTracker();
 
     void initialize(rsl::memory_size maxMemUsage);
@@ -55,12 +57,14 @@ namespace rex
 
     MemoryTag current_tag() const;
 
+    UsagePerTag current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+
   private:
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_usage;                   // maximum allowed memory usage
     rsl::mutex m_mem_tracking_mutex;
     rsl::mutex m_mem_tag_tracking_mutex;
-    rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()> m_usage_per_tag;
+    UsagePerTag m_usage_per_tag;
   };
 
   MemoryTracker& mem_tracker();
