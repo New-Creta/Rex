@@ -39,9 +39,5 @@ namespace rex
 
     virtual s32 run()   = 0;
     virtual void quit() = 0;
-
-  private:
-    struct Internal;
-    rsl::unique_ptr<Internal> m_internal_ptr;
   };
 } // namespace rex

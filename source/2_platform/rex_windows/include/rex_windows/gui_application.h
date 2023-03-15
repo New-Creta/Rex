@@ -45,7 +45,7 @@ namespace rex
     class GuiApplication : public CoreApplication
     {
     public:
-      explicit GuiApplication(const ApplicationCreationParams& appParams);
+      explicit GuiApplication(ApplicationCreationParams&& appParams);
       GuiApplication(const GuiApplication&) = delete;
       GuiApplication(GuiApplication&&)      = delete;
       ~GuiApplication() override;
@@ -62,7 +62,7 @@ namespace rex
       void mark_for_destroy();
 
     private:
-      struct Internal;
+      class Internal;
       rsl::unique_ptr<Internal> m_internal_ptr;
     };
   } // namespace win32

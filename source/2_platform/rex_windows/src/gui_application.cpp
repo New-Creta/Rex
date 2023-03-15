@@ -22,87 +22,112 @@ namespace rex
 {
   namespace win32
   {
-    struct GuiApplication::Internal
+    class GuiApplication::Internal
     {
-      Internal(const PlatformCreationParams& platformCreationParams, const GuiParams& guiParams, CommandLineArguments genericCreationParams)
-          : platform_creation_params(platformCreationParams)
-          , gui_params(guiParams)
-          , cmd_line_args(rsl::move(genericCreationParams))
+    public:
+      Internal(ApplicationCreationParams&& appCreationParams)
+        : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
+        , m_gui_params(rsl::move(appCreationParams.gui_params))
+        , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
+        , m_engine_params(rsl::move(appCreationParams.engine_params))
       {
+        // we're always assigning something to the pointers here to avoid branch checking every update
+        // I've profiled this and always having a function wins here.
+        m_on_initialize = m_engine_params.app_init_func
+          ? m_engine_params.app_init_func
+          : [&]() { return true; };
+
+        m_on_update = m_engine_params.app_update_func
+          ? m_engine_params.app_update_func
+          : [&](const FrameInfo& /*info*/) {};
+
+        m_on_shutdown = m_engine_params.app_shutdown_func
+          ? m_engine_params.app_shutdown_func
+          : [&]() {};
       }
 
       bool initialize()
       {
-        window = create_window();
-        if(window == nullptr)
+        // window initialization
+        m_window = create_window();
+        if (m_window == nullptr)
         {
           return false;
         }
         subscribe_window_events();
 
-        if(context::create(window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
+        // graphics context initialization
+        if (context::create(m_window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
 
-        if(renderer::initialize(nullptr, gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
+        // renderer initialization
+        if (renderer::initialize(nullptr, m_gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
 
-        RendererInfo info = renderer::info();
-        REX_INFO("Renderer Info - API Version: {}", info.api_version);
-        REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
-        REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
-        REX_INFO("Renderer Info - Vendor: {}", info.vendor);
+        display_renderer_info();
 
-        return on_initialize();
+        // call client code so it can get initialized
+        return m_on_initialize();
       }
-      void update()
+      void loop()
       {
-        is_running = true;
+        m_is_running = true;
 
-        while(is_running)
+        while (is_running())
         {
-          loop();
+          update();
 
-          is_running = !is_marked_for_destroy;
+          m_is_running = !m_is_marked_for_destroy;
         }
       }
       void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {
-        on_shutdown();
+        m_on_shutdown();
         renderer::shutdown();
       }
 
-      void loop()
+      bool is_running() const
       {
-        const FrameInfo info = {m_delta_time, m_fps};
+        return m_is_running;
+      }
+      bool marked_for_destroy() const
+      {
+        return m_is_marked_for_destroy;
+      }
 
-          on_update(info);
+      void mark_for_destroy()
+      {
+        m_is_marked_for_destroy = true;
+      }
 
-        renderer::backend::clear();
-        renderer::backend::present();
+    private:
+      void update()
+      {
+        const FrameInfo info = { m_delta_time, m_fps };
 
-        m_delta_time.update();
-        m_fps.update();
+        // update the window (this pulls input as well)
+        m_window->update();
 
-        window->update();
+        m_is_running = !m_is_marked_for_destroy;
 
-        is_running = !is_marked_for_destroy;
-
-        //
-        // Cap framerate to "max_fps".
-        // Safe resources of the machine we are running on.
-        //
-        const rsl::chrono::milliseconds actual_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_fps.get()))));
-        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(gui_params.max_fps))));
-
-        const rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
-        using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
-        if(elapsed_time > 0ms)
+        if (is_running())
         {
-          rsl::this_thread::sleep_for(elapsed_time);
+          // call the client code, let it update
+          m_on_update(info);
+
+          // update the graphics code
+          renderer::backend::clear();
+          renderer::backend::present();
+
+          // update the timing stats
+          m_delta_time.update();
+          m_fps.update();
+
+          cap_frame_rate();
         }
       }
 
@@ -111,10 +136,10 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title    = gui_params.window_title;
-        wnd_description.viewport = {0, 0, gui_params.window_width, gui_params.window_height};
+        wnd_description.title = m_gui_params.window_title;
+        wnd_description.viewport = { 0, 0, m_gui_params.window_width, m_gui_params.window_height };
 
-        if(wnd->create(platform_creation_params.instance, platform_creation_params.show_cmd, wnd_description))
+        if (wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
         {
           return wnd;
         }
@@ -128,55 +153,56 @@ namespace rex
         event_system::subscribe(event_system::EventType::WindowClose, [this]() { mark_for_destroy(); });
       }
 
-      bool running() const
+      void display_renderer_info()
       {
-        return is_running;
-      }
-      bool marked_for_destroy() const
-      {
-        return is_marked_for_destroy;
-      }
-
-      void mark_for_destroy()
-      {
-        is_marked_for_destroy = true;
+        RendererInfo info = renderer::info();
+        REX_INFO("Renderer Info - API Version: {}", info.api_version);
+        REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
+        REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
+        REX_INFO("Renderer Info - Vendor: {}", info.vendor);
       }
 
-      bool is_running            = false;
-      bool is_marked_for_destroy = false;
+      void cap_frame_rate()
+      {
+        //
+        // Cap framerate to "max_fps".
+        // Safe resources of the machine we are running on.
+        //
+        const rsl::chrono::milliseconds actual_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_fps.get()))));
+        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_gui_params.max_fps))));
+
+        const rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
+        using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
+        if (elapsed_time > 0ms)
+        {
+          rsl::this_thread::sleep_for(elapsed_time);
+        }
+      }
+
+    private:
+      bool m_is_running = false;
+      bool m_is_marked_for_destroy = false;
 
       DeltaTime m_delta_time;
       FPS m_fps;
 
-      rsl::unique_ptr<Window> window;
+      rsl::unique_ptr<Window> m_window;
 
-      rsl::function<bool()> on_initialize;
-      rsl::function<void(const FrameInfo& info)> on_update;
-      rsl::function<void()> on_shutdown;
+      rsl::function<bool()> m_on_initialize;
+      rsl::function<void(const FrameInfo& info)> m_on_update;
+      rsl::function<void()> m_on_shutdown;
 
-      PlatformCreationParams platform_creation_params;
-      GuiParams gui_params;
-      CommandLineArguments cmd_line_args;
+      PlatformCreationParams m_platform_creation_params;
+      GuiParams m_gui_params;
+      CommandLineArguments m_cmd_line_args;
+      EngineParams m_engine_params;
     };
 
     //-------------------------------------------------------------------------
-    GuiApplication::GuiApplication(const ApplicationCreationParams& appParams)
-        : CoreApplication(appParams.engine_params, appParams.cmd_args)
-        , m_internal_ptr(rsl::make_unique<Internal>(appParams.platform_params, appParams.gui_params, appParams.cmd_args))
+    GuiApplication::GuiApplication(ApplicationCreationParams&& appParams)
+      : CoreApplication(appParams.engine_params, appParams.cmd_args)
+      , m_internal_ptr(rsl::make_unique<Internal>(rsl::move(appParams)))
     {
-      // we're always assigning something to the pointers here to avoid branch checking every update
-      // I've profiled this and always having a function wins here.
-      m_internal_ptr->on_initialize = appParams.engine_params.app_init_func
-        ? appParams.engine_params.app_init_func
-        : [&]() { return true; };
-
-      m_internal_ptr->on_update = appParams.engine_params.app_update_func
-        ? appParams.engine_params.app_update_func
-        : [&](const FrameInfo& /*info*/) { };
-
-      m_internal_ptr->on_shutdown = appParams.engine_params.app_shutdown_func
-        ? appParams.engine_params.app_shutdown_func
-        : [&]() { };
     }
 
     //-------------------------------------------------------------------------
@@ -185,7 +211,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool GuiApplication::is_running() const
     {
-      return m_internal_ptr->running() && !m_internal_ptr->marked_for_destroy();
+      return m_internal_ptr->is_running() && !m_internal_ptr->marked_for_destroy();
     }
 
     //-------------------------------------------------------------------------
@@ -193,15 +219,22 @@ namespace rex
     {
       // Always make sure we close down the application properly
       Internal* instance = m_internal_ptr.get();
+
+      // calls the client shutdown count first, then shuts down the gui application systems
       const rsl::scopeguard shutdown_scopeguard([instance]() { instance->shutdown(); });
 
-      if(m_internal_ptr->initialize() == false) // NOLINT(readability-simplify-boolean-expr)
+      // this calls our internal init code, to initialize the gui application
+      // afterwards it calls into client code and initializes the code there
+      // calling the initialize function provided earlier in the EngineParams
+      if (m_internal_ptr->initialize() == false) // NOLINT(readability-simplify-boolean-expr)
       {
         REX_ERROR("Application initialization failed");
         return EXIT_FAILURE;
       }
 
-      m_internal_ptr->update();
+      // calls into gui application update code
+      // then calls into the client update code provided by the EngineParams before
+      m_internal_ptr->loop();
 
       return EXIT_SUCCESS;
     }

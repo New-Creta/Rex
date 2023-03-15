@@ -24,11 +24,15 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
   creation_params.cmd_line      = lpCmdLine;
   creation_params.show_cmd      = nShowCmd;
 
-  const rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
+  rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
 
-  rex::win32::GuiApplication application(app_params);
+  // this doesn't initialize anything but simply prepares the application for initialization
+  rex::win32::GuiApplication application(rsl::move(app_params));
+
+  // this initializes, runs the loop and performs the shutdown
   s32 result = application.run();
 
+  // by this point the application has finished and shutdown
   REX_INFO("Application completed with result: {0}", result);
 
   return result;
