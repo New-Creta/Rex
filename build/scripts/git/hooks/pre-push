@@ -1,0 +1,62 @@
+#!/usr/bin/env python                                                                    
+
+import os
+import regis.util
+import regis.generation
+import regis.build
+import regis.test
+
+root = regis.util.find_root()
+
+def __generate():
+  settings_path = os.path.join(root, "build", "config", "settings.json")
+  proc = regis.generation.new_generation(settings_path, "")
+  proc.wait()
+  return proc.returncode
+
+def __build():
+  result = 0
+  should_clean = False
+
+  result |= regis.build.new_build("regina", "debug", "msvc", should_clean)
+  result |= regis.build.new_build("regina", "debug_opt", "msvc", should_clean)
+  result |= regis.build.new_build("regina", "release", "msvc", should_clean)
+  result |= regis.build.new_build("regina", "debug", "clang", should_clean)
+  result |= regis.build.new_build("regina", "debug_opt", "clang", should_clean)
+  result |= regis.build.new_build("regina", "release", "clang", should_clean)
+  return result
+
+def __test():
+  result = 0
+
+  # not running test here at the moment as they take too long.
+  # hopefully we can reduce the time it takes to run our tests
+  # then we can enable this again
+
+  return result
+
+def main():
+  # we purposely don't run setup here, it's assumed the user has done this before pushing
+  # this is to decrease push times
+
+  result = 0
+
+  result = __generate()
+  if result != 0:
+     print("Generation failed")
+     exit(result)
+
+  result = __build()
+  if result != 0:
+     print("Build failed")
+     exit(result)
+
+  result = __test()
+  if result != 0:
+     print("Tests failed")
+     exit(result)
+
+  exit(0)
+
+if __name__ == "__main__":
+	main()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/types.h"
 #include "rex_std/array.h"
 #include "rex_std/mutex.h"
@@ -9,20 +10,12 @@
 
 namespace rex
 {
-  enum class MemoryTag
-  {
-    Global,
-
-    Engine,
-    Editor
-  };
-
   struct MemoryHeader
   {
   public:
     MemoryHeader(MemoryTag tag, rsl::memory_size size)
-        : m_size(size)
-        , m_tag(tag)
+        : m_tag(tag)
+        , m_size(size)
     {
     }
 
@@ -36,15 +29,13 @@ namespace rex
     }
 
   private:
-    rsl::memory_size m_size;
     MemoryTag m_tag;
+    rsl::memory_size m_size;
   };
 
   class MemoryTracker
   {
   public:
-    using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;
-
     MemoryTracker();
 
     void initialize(rsl::memory_size maxMemUsage);
@@ -57,14 +48,12 @@ namespace rex
 
     MemoryTag current_tag() const;
 
-    UsagePerTag current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
-
   private:
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_usage;                   // maximum allowed memory usage
     rsl::mutex m_mem_tracking_mutex;
     rsl::mutex m_mem_tag_tracking_mutex;
-    UsagePerTag m_usage_per_tag;
+    rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()> m_usage_per_tag;
   };
 
   MemoryTracker& mem_tracker();
@@ -72,14 +61,19 @@ namespace rex
   class MemoryTagScope
   {
   public:
-    MemoryTagScope(MemoryTag tag)
+    explicit MemoryTagScope(MemoryTag tag)
     {
       mem_tracker().push_tag(tag);
     }
+    MemoryTagScope(const MemoryTagScope&) = delete;
+    MemoryTagScope(MemoryTagScope&&)      = delete;
     ~MemoryTagScope()
     {
       mem_tracker().pop_tag();
     }
+
+    MemoryTagScope& operator=(const MemoryTagScope&) = delete;
+    MemoryTagScope& operator=(MemoryTagScope&&)      = delete;
   };
 
 #define MEM_TAG_SCOPE(tag) MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)

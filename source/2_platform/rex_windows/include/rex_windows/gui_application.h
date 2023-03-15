@@ -61,19 +61,6 @@ namespace rex
     protected:
       void mark_for_destroy();
 
-      virtual bool app_initialize()
-      {
-        return true;
-      }
-      virtual void app_update(const FrameInfo& info)
-      {
-        UNUSED_PARAM(info);
-      }
-      virtual void app_shutdown()
-      {
-        // Nothing to implement
-      }
-
     private:
       struct Internal;
       rsl::unique_ptr<Internal> m_internal_ptr;

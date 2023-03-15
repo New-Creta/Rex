@@ -73,27 +73,24 @@ namespace rex
   }
 
   //-----------------------------------------------------------------------
-  BufferLayoutBuilder::BufferLayoutBuilder()
-      : m_layout({})
+  BufferLayoutCreator::BufferLayoutCreator()
+      : m_elements({})
   {
   }
   //-----------------------------------------------------------------------
-  BufferLayout& BufferLayoutBuilder::add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize /*= ShouldNormalize::no*/)
+  void BufferLayoutCreator::add_buffer_element(DataType::Value inType, ShouldNormalize inShouldNormalize /*= ShouldNormalize::no*/)
   {
-    BufferElements new_buffer_elements;
-
-    new_buffer_elements.reserve(m_layout.size() + 1);
-    new_buffer_elements.insert(rsl::end(new_buffer_elements), rsl::begin(m_layout.buffer_elements()), rsl::end(m_layout.buffer_elements()));
-    new_buffer_elements.emplace_back(inType, buffer_layout::data_type_component_count(inType), inShouldNormalize);
-
-    m_layout = BufferLayout(rsl::move(new_buffer_elements));
-
-    return m_layout;
+    m_elements.emplace_back(inType, buffer_layout::data_type_component_count(inType), inShouldNormalize);
   }
   //-----------------------------------------------------------------------
-  BufferLayout& BufferLayoutBuilder::build()
+  void BufferLayoutCreator::clear()
   {
-    return m_layout;
+    m_elements.clear();
+  }
+  //-----------------------------------------------------------------------
+  BufferLayout BufferLayoutCreator::build()
+  {
+    return BufferLayout(m_elements);
   }
 
   //-----------------------------------------------------------------------

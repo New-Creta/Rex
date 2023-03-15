@@ -79,7 +79,7 @@ namespace rex
       {
         const FrameInfo info = {m_delta_time, m_fps};
 
-        on_update(info);
+          on_update(info);
 
         renderer::backend::clear();
         renderer::backend::present();
@@ -164,9 +164,19 @@ namespace rex
         : CoreApplication(appParams.engine_params, appParams.cmd_args)
         , m_internal_ptr(rsl::make_unique<Internal>(appParams.platform_params, appParams.gui_params, appParams.cmd_args))
     {
-      m_internal_ptr->on_initialize = [&]() { return app_initialize(); };
-      m_internal_ptr->on_update     = [&](const FrameInfo& info) { app_update(info); };
-      m_internal_ptr->on_shutdown   = [&]() { app_shutdown(); };
+      // we're always assigning something to the pointers here to avoid branch checking every update
+      // I've profiled this and always having a function wins here.
+      m_internal_ptr->on_initialize = appParams.engine_params.app_init_func
+        ? appParams.engine_params.app_init_func
+        : [&]() { return true; };
+
+      m_internal_ptr->on_update = appParams.engine_params.app_update_func
+        ? appParams.engine_params.app_update_func
+        : [&](const FrameInfo& /*info*/) { };
+
+      m_internal_ptr->on_shutdown = appParams.engine_params.app_shutdown_func
+        ? appParams.engine_params.app_shutdown_func
+        : [&]() { };
     }
 
     //-------------------------------------------------------------------------
@@ -207,6 +217,7 @@ namespace rex
     {
       m_internal_ptr->mark_for_destroy();
     }
+
   } // namespace win32
 } // namespace rex
 

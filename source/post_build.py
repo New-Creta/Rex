@@ -1,9 +1,11 @@
-import rexpy.run_clang_tools
-import rexpy.diagnostics
+import regis.run_clang_tools
+import regis.diagnostics
 import argparse
 
-def run(projectName, compdb, srcroot):
-  rexpy.run_clang_tools.run(projectName, compdb, srcroot)
+def run(projectName, compdb, srcroot, useClangTools):
+  if (useClangTools):
+    regis.run_clang_tools.run(projectName, compdb, srcroot)
+
   return
 
 if __name__ == "__main__":
@@ -14,6 +16,7 @@ if __name__ == "__main__":
   parser.add_argument("-conf", "--config", help="configuration")
   parser.add_argument("-compdb", help="compiler db folder")
   parser.add_argument("-srcroot", help="src root folder")
+  parser.add_argument("-use_clang_tools", help="use clang tools", action="store_true")
 
   parser.add_argument("-l", "--level", default="info", help="logging level")
   args, unknown = parser.parse_known_args()
@@ -23,17 +26,18 @@ if __name__ == "__main__":
   config = args.config
   compdb = args.compdb
   srcroot = args.srcroot
+  use_clang_tools = args.use_clang_tools
 
  # initialize the logger
   log_level_str = args.level
-  log_level = rexpy.diagnostics.logging_level_from_string(log_level_str)
-  logger = rexpy.diagnostics.StreamLogger("setup", log_level)
+  log_level = regis.diagnostics.logging_level_from_string(log_level_str)
+  logger = regis.diagnostics.StreamLogger("setup", log_level)
 
  # useful for debugging
   logger.info(f"Executing {__file__}")
 
  # execute the script
-  run(project_name, compdb, srcroot)
+  run(project_name, compdb, srcroot, use_clang_tools)
 
  # print. We're done.
   logger.info("Done.")
