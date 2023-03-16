@@ -13,9 +13,10 @@ namespace rex
   struct MemoryHeader
   {
   public:
-    MemoryHeader(MemoryTag tag, rsl::memory_size size)
-        : m_size(size)
-        , m_tag(tag)
+    MemoryHeader(MemoryTag tag, rsl::memory_size size, card32 frameIdx)
+      : m_size(size)
+      , m_tag(tag)
+      , m_frame_idx(frameIdx)
     {
     }
 
@@ -27,10 +28,15 @@ namespace rex
     {
       return m_size;
     }
+    card32 frame_index() const
+    {
+      return m_frame_idx;
+    }
 
   private:
-    rsl::memory_size m_size;
-    MemoryTag m_tag;
+    rsl::memory_size m_size; // size of the memory allocated
+    MemoryTag m_tag;  // memory tag that allocated this memory
+    card32 m_frame_idx; // frame index when this memory was allocated
   };
 
   class MemoryTracker
@@ -70,14 +76,14 @@ namespace rex
       mem_tracker().push_tag(tag);
     }
     MemoryTagScope(const MemoryTagScope&) = delete;
-    MemoryTagScope(MemoryTagScope&&)      = delete;
+    MemoryTagScope(MemoryTagScope&&) = delete;
     ~MemoryTagScope()
     {
       mem_tracker().pop_tag();
     }
 
     MemoryTagScope& operator=(const MemoryTagScope&) = delete;
-    MemoryTagScope& operator=(MemoryTagScope&&)      = delete;
+    MemoryTagScope& operator=(MemoryTagScope&&) = delete;
   };
 
 #define MEM_TAG_SCOPE(tag) MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)

@@ -5,17 +5,23 @@
 
 namespace rex
 {
-  struct FrameInfo
+  class FrameInfo
   {
   public:
-    //--------------------------------------------------------------------------------------------
-    FrameInfo(const DeltaTime& dTime, const FPS& framesPerSecond)
-        : delta_time(dTime)
-        , fps(framesPerSecond)
-    {
-    }
+    FrameInfo();
 
-    DeltaTime delta_time;
-    FPS fps;
+    void update();
+
+    const DeltaTime& delta_time() const;
+    const FPS& fps() const;
+    card32 index() const;
+
+  private:
+    DeltaTime m_delta_time;
+    FPS m_fps;
+    card32 m_index;
   };
+
+  const FrameInfo& frame_info();
+  void update_frame_info();
 } // namespace rex

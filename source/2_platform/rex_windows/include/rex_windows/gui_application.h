@@ -10,8 +10,6 @@
 
 namespace rex
 {
-  struct FrameInfo;
-
   struct GuiParams
   {
     s32 window_width          = 1280;

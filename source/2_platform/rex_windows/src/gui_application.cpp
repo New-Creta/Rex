@@ -39,7 +39,7 @@ namespace rex
 
         m_on_update = m_engine_params.app_update_func
           ? m_engine_params.app_update_func
-          : [&](const FrameInfo& /*info*/) {};
+          : [&]() {};
 
         m_on_shutdown = m_engine_params.app_shutdown_func
           ? m_engine_params.app_shutdown_func
@@ -48,6 +48,10 @@ namespace rex
 
       bool initialize()
       {
+        // update the frame info, initialization happens on the first frame
+        // this also makes the frame idx be different from the one used in global scope
+        update_frame_info();
+
         // window initialization
         m_window = create_window();
         if (m_window == nullptr)
@@ -107,7 +111,7 @@ namespace rex
     private:
       void update()
       {
-        const FrameInfo info = { m_delta_time, m_fps };
+        update_frame_info();
 
         // update the window (this pulls input as well)
         m_window->update();
@@ -117,7 +121,7 @@ namespace rex
         if (is_running())
         {
           // call the client code, let it update
-          m_on_update(info);
+          m_on_update();
 
           // update the graphics code
           renderer::backend::clear();
@@ -126,6 +130,8 @@ namespace rex
           // update the timing stats
           m_delta_time.update();
           m_fps.update();
+
+          ++m_frame_idx;
 
           cap_frame_rate();
         }
@@ -180,22 +186,24 @@ namespace rex
       }
 
     private:
-      bool m_is_running = false;
-      bool m_is_marked_for_destroy = false;
-
       DeltaTime m_delta_time;
       FPS m_fps;
 
       rsl::unique_ptr<Window> m_window;
 
       rsl::function<bool()> m_on_initialize;
-      rsl::function<void(const FrameInfo& info)> m_on_update;
+      rsl::function<void()> m_on_update;
       rsl::function<void()> m_on_shutdown;
 
       PlatformCreationParams m_platform_creation_params;
       GuiParams m_gui_params;
       CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
+
+      card32 m_frame_idx = 0;
+
+      bool m_is_running = false;
+      bool m_is_marked_for_destroy = false;
     };
 
     //-------------------------------------------------------------------------

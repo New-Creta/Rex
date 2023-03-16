@@ -13,7 +13,7 @@ namespace rex
     REX_INFO("Initializing Regina");
     return true;
   }
-  void update(const FrameInfo&)
+  void update()
   {
     REX_INFO("updating Regina");
   }

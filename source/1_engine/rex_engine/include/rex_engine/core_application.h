@@ -8,12 +8,10 @@
 
 namespace rex
 {
-  struct FrameInfo;
-
   struct EngineParams
   {
     using init_func = rsl::function<bool()>;
-    using update_func = rsl::function<void(const FrameInfo& info)>;
+    using update_func = rsl::function<void()>;
     using shutdown_func = rsl::function<void()>;
 
     // how much memory is the entire app allowed to use.

@@ -1,5 +1,5 @@
 #include "rex_engine/memory/memory_tracking.h"
-
+#include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_std/iostream.h"
 #include "rex_std/limits.h"
 
@@ -12,8 +12,14 @@
     {                                                                                                                                                                                                                                                    \
       rsl::cout << "Err: " << msg << "\n";                                                                                                                                                                                                               \
     }
+  #define REX_HEAP_TRACK_WARN(cond, msg)                                                                                                                                                                                                                  \
+    if(!(cond))                                                                                                                                                                                                                                          \
+    {                                                                                                                                                                                                                                                    \
+      rsl::cout << "Warn: " << msg << "\n";                                                                                                                                                                                                               \
+    }
 #else
-  #define REX_HEAP_TRACK_ERR(cond, msg)
+#define REX_HEAP_TRACK_ERR(cond, msg)
+#define REX_HEAP_TRACK_WARN(cond, msg)
 #endif
 
 namespace rex
@@ -51,6 +57,7 @@ namespace rex
   void MemoryTracker::track_dealloc(void* /*mem*/, MemoryHeader* header)
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
+    REX_HEAP_TRACK_WARN(header->frame_index() != frame_info().index(), "Memory freed in the same frame it's allocated");
     m_mem_usage -= header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }

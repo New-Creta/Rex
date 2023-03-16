@@ -1,5 +1,6 @@
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/memory/tracker_allocator.h"
+#include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_std/assert.h"
 #include "rex_std/memory.h"
 
@@ -24,7 +25,7 @@ namespace rex
 
     // initialize the memory header
     const MemoryTag tag       = mem_tracker().current_tag();
-    rex::MemoryHeader* header = new(ptr) MemoryHeader(tag, rsl::memory_size(num_mem_needed));
+    rex::MemoryHeader* header = new(ptr) MemoryHeader(tag, rsl::memory_size(num_mem_needed), frame_info().index());
 
     // get the right address to return from the function
     rsl::byte* mem_block = static_cast<rsl::byte*>(ptr);
