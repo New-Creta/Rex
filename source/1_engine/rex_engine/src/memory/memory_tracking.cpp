@@ -26,7 +26,7 @@ namespace rex
 {
   rsl::array<MemoryTag, 100>& thread_local_memory_tag_stack()
   {
-    thread_local static rsl::array<MemoryTag, 100> stack;
+    thread_local static rsl::array<MemoryTag, 100> stack = { MemoryTag::Global };
     return stack;
   }
 
