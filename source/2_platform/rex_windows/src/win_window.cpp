@@ -6,6 +6,7 @@
 
 #define NOMINMAX
 #include <Windows.h>
+#include <WtsApi32.h>
 
 namespace rex
 {
@@ -89,6 +90,8 @@ namespace rex
         REX_ERROR("Window creation failed");
         return false;
       }
+
+      WTSRegisterSessionNotification(static_cast<HWND>(m_hwnd), NOTIFY_FOR_ALL_SESSIONS);
 
       ShowWindow(static_cast<HWND>(m_hwnd), cmdShow);
       SetForegroundWindow(static_cast<HWND>(m_hwnd));

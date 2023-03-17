@@ -15,7 +15,7 @@ namespace rex
   }
   void update()
   {
-    REX_INFO("updating Regina");
+    //REX_INFO("updating Regina");
   }
   void shutdown()
   {
