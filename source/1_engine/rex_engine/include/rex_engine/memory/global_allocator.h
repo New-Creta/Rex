@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/memory/tracker_allocator.h"
+#include "rex_engine/memory/tracked_allocator.h"
 #include "rex_engine/memory/untracker_allocator.h"
 #include "rex_engine/memory/debug_allocator.h"
 

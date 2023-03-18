@@ -31,11 +31,18 @@
 // so it can be queried easily by tools.
 // Because the memory header sits in debug memory, we are sure this memory overhead won't exist in retail builds
 // and will therefore result in crashes should it be accessed.
-//
-
+// 
+// There's not much of a point to use this allocator as a stand alone as it only provides extra info regarding pointers
+// but doesn't do anything with this info. A client is responsible for doing something with this extra info.
+// 
+// Eg. let's say you want to track memory leaks throughout your program, you'll have to track which memory stays allocated over time
+// Therefore you can use the tracked allocator as a internal allocator, retrieve the MemoryHeader of the memory you just allocated
+// and save this data to a file/send it to a tool, which can track which memory stays allocated and can therefore spot memory leaks.
 
 namespace rex
 {
+  MemoryHeader* header_for_block(void* ptr);
+
   template <typename Allocator>
   class TrackedAllocator
   {
@@ -88,14 +95,14 @@ namespace rex
         return;
       }
 
+      MemoryHeader* header = header_for_block(ptr);
+      mem_tracker().track_dealloc(ptr, header);
+
       rsl::byte* mem_block = static_cast<rsl::byte*>(ptr);
       mem_block -= sizeof(MemoryHeader*);
 
-      MemoryHeader* header = *reinterpret_cast<MemoryHeader**>(mem_block); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-
-      mem_tracker().track_dealloc(ptr, header);
-      m_allocator.deallocate(mem_block, size);
       global_debug_allocator().deallocate(header, size);
+      m_allocator.deallocate(mem_block, size);
     }
 
   private:
