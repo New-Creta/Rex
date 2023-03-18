@@ -1,3 +1,4 @@
 {
-    "MemoryTags" : ["Global", "Engine", "FileIO"]
+    "MemoryTags" : ["Global", "Engine", "FileIO"],
+    "MountRoots" : ["Logs"]
 }

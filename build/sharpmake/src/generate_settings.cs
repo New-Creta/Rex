@@ -14,7 +14,10 @@ public class GenerateSettings
   static public bool VisualStudioOnly { get; set; }
   static public bool NoClangTools { get; set; }
 
+  // this is used to generate the memory tags header file
   static public Dictionary<string, List<string>> MemoryTags = new Dictionary<string, List<string>>();
+  // this is used to generate the mount roots header file
+  static public Dictionary<string, List<string>> MountRoots = new Dictionary<string, List<string>>();
 
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
 }

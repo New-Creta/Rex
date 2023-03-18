@@ -261,6 +261,9 @@ public class BasicCPPProject : BaseProject
       conf.EventPostBuild.Add($"py {postbuildCommandScriptPath}{postbuildCommandArguments}");
     }
 
+    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Globals.Root + @"\data\";
+
     ReadGenerationConfigFile();
   }
 
@@ -322,13 +325,24 @@ public class BasicCPPProject : BaseProject
       return;
     }
 
-    string mem_tag_config_path = GenerationConfigPath;
-    string json_blob = File.ReadAllText(mem_tag_config_path);
+    string config_path = GenerationConfigPath;
+    string json_blob = File.ReadAllText(config_path);
     Dictionary<string, string[]> config = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json_blob);
 
     if (!GenerateSettings.MemoryTags.ContainsKey(Name))
     {
-      GenerateSettings.MemoryTags.Add(Name, config["MemoryTags"].ToList());
+      if (config.ContainsKey("MemoryTags"))
+      {
+        GenerateSettings.MemoryTags.Add(Name, config["MemoryTags"].ToList());
+      }
+    }
+
+    if (!GenerateSettings.MountRoots.ContainsKey(Name))
+    {
+      if (config.ContainsKey("MountRoots"))
+      {
+        GenerateSettings.MountRoots.Add(Name, config["MountRoots"].ToList());
+      }
     }
   }
 
