@@ -2,6 +2,8 @@
 
 #include "rex_std/bonus/types.h"
 
+#include <cstdlib>
+
 namespace rex
 {
   DebugAllocator::pointer DebugAllocator::allocate(size_type size)
