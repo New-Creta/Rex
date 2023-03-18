@@ -4,6 +4,8 @@
 #include "rex_engine/types.h"
 #include "rex_std/array.h"
 #include "rex_std/mutex.h"
+#include "rex_std/thread.h"
+#include "rex_std/stacktrace.h"
 #include "rex_std_extra/memory/memory_size.h"
 #include "rex_std_extra/utility/enum_reflection.h"
 #include "rex_std_extra/utility/high_water_mark.h"
@@ -13,20 +15,35 @@ namespace rex
   struct MemoryHeader
   {
   public:
-    MemoryHeader(MemoryTag tag, rsl::memory_size size, card32 frameIdx)
-      : m_size(size)
+    MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const rsl::stacktrace& callstack)
+      : m_callstack(callstack)
+      , m_size(size)
+      , m_ptr(ptr)
+      , m_thread_id(threadId)
       , m_tag(tag)
       , m_frame_idx(frameIdx)
     {
     }
 
-    MemoryTag tag() const
+    const rsl::stacktrace& callstack() const
     {
-      return m_tag;
+      return m_callstack;
     }
     rsl::memory_size size() const
     {
       return m_size;
+    }
+    void* ptr() const
+    {
+      return m_ptr;
+    }
+    rsl::thread::id thread_id() const
+    {
+      return m_thread_id;
+    }
+    MemoryTag tag() const
+    {
+      return m_tag;
     }
     card32 frame_index() const
     {
@@ -34,7 +51,10 @@ namespace rex
     }
 
   private:
+    rsl::stacktrace m_callstack;
     rsl::memory_size m_size; // size of the memory allocated
+    void* m_ptr; // the pointer that's allocated
+    rsl::thread::id m_thread_id; // the thread id this was allocated on
     MemoryTag m_tag;  // memory tag that allocated this memory
     card32 m_frame_idx; // frame index when this memory was allocated
   };

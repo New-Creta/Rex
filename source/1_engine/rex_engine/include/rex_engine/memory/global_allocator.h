@@ -2,6 +2,7 @@
 
 #include "rex_engine/memory/tracker_allocator.h"
 #include "rex_engine/memory/untracker_allocator.h"
+#include "rex_engine/memory/debug_allocator.h"
 
 namespace rex
 {
@@ -11,5 +12,8 @@ namespace rex
   using GlobalAllocator = UntrackedAllocator;
 #endif
 
+  using GlobalDebugAllocator = DebugAllocator;
+
   GlobalAllocator& global_allocator();
+  GlobalDebugAllocator& global_debug_allocator();
 } // namespace rex
