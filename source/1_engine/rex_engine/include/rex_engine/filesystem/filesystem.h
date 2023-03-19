@@ -15,6 +15,6 @@ namespace rex
   {
     void init(rsl::string_view root = "");
 
-    void save_to_file(rsl::string_view filepath, const void* data, card64 size);
+    void save_to_file(rsl::string_view filepath, const void* data, card64 size, bool append);
   }
 }
