@@ -7,6 +7,8 @@
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_types.h"
+#include "rex_engine/memory/memory_tracking.h"
+#include "rex_engine/filesystem/filesystem.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -40,6 +42,9 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 int main()
 {
+  rex::vfs::init();
+  rex::mem_tracker().pre_init();
+
   STARTUPINFOW si;
   GetStartupInfoW(&si);
 

@@ -12,10 +12,8 @@
 namespace rex
 {
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
+  CoreApplication::CoreApplication(const EngineParams& /*engineParams*/, const CommandLineArguments& /*cmdArgs*/)
   {
-    vfs::init();
-    mem_tracker().initialize(engineParams.max_memory);
   }
   //-------------------------------------------------------------------------
   CoreApplication::~CoreApplication() = default;
