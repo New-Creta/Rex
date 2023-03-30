@@ -233,7 +233,6 @@ public class BasicCPPProject : BaseProject
     if (target.Compiler == Compiler.Clang && (GenerateSettings.UnitTestsEnabled == false && conf.is_config_for_testing() == false))
     {
       // setup post build command
-      conf.NinjaGenerateCompilerDB = true;
       string compilerDBPath = GetClangToolsPath(conf);
       string postbuildCommandScript = Path.Combine(Globals.SourceRoot, $"post_build.py -p={Name} -comp={target.Compiler} -conf={conf.Name} -compdb={compilerDBPath} -srcroot={SourceRootPath}");
       conf.EventPostBuild.Add($"py {postbuildCommandScript}");
