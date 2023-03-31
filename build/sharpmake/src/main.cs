@@ -251,11 +251,11 @@ public class BasicCPPProject : BaseProject
       postbuildCommandArguments += $" -comp={target.Compiler}";
       postbuildCommandArguments += $" -conf={conf.Name}";
       postbuildCommandArguments += $" -compdb={compilerDBPath}";
-      postbuildCommandArguments += $"-srcroot={SourceRootPath}";
-      
+      postbuildCommandArguments += $" -srcroot={SourceRootPath}";
+
       if (GenerateSettings.NoClangTools == false)
       {
-        postbuildCommandArguments += $"-use_clang_tools";
+        postbuildCommandArguments += $" -use_clang_tools";
       }
 
       conf.EventPostBuild.Add($"py {postbuildCommandScriptPath}{postbuildCommandArguments}");
