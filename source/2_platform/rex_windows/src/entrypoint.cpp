@@ -1,6 +1,6 @@
 #include "rex_engine/entrypoint.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_std/bonus/utility/has_flag.h"
 #include "rex_std/string_view.h"
 #include "rex_std/vector.h"

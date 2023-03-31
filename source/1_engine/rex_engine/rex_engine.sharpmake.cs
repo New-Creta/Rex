@@ -75,6 +75,7 @@ public class RexEngine : EngineProject
     }
 
     conf.add_public_define("REX_API_OPENGL");
+    conf.add_public_define("REXLOG_COMPILED_LIB");
   }
 
   public override void AfterConfigure()

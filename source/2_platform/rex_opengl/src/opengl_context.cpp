@@ -1,4 +1,4 @@
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_renderer_core/context.h"
 
 #include <glad/gl.h>
