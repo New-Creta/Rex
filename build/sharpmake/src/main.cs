@@ -24,6 +24,8 @@ using System.Text.Json;
 // the sample C++ code.
 public class BaseProject : Project
 {
+  protected bool GenerateCompilerDB = true;
+  
   public BaseProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
     
@@ -194,6 +196,7 @@ public class BaseProject : Project
 public class BasicCPPProject : BaseProject
 {
   protected string CompilerDBPath { get; set; }
+  protected string GenerationConfigPath { get; set; }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
   {
@@ -234,31 +237,31 @@ public class BasicCPPProject : BaseProject
     {
       // setup post build command
       string compilerDBPath = GetClangToolsPath(conf);
-      string postbuildCommandScript = Path.Combine(Globals.SourceRoot, $"post_build.py -p={Name} -comp={target.Compiler} -conf={conf.Name} -compdb={compilerDBPath} -srcroot={SourceRootPath}");
-      conf.EventPostBuild.Add($"py {postbuildCommandScript}");
-
-      // copy the clang config files
-      string clangTidyFirstPassFilename = ".clang-tidy_first_pass";
-      string clangTidySecondPassFilename = ".clang-tidy_second_pass";
-      string clangFormatFilename = ".clang-format";
-
-      string clangTidyFirstPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidyFirstPassFilename), clangTidyFirstPassFilename);
-      string clangTidySecondPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidySecondPassFilename), clangTidySecondPassFilename);
-      string clangFormatSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangFormatFilename), clangFormatFilename);
-
-      string clangTidyFirstPassDstPath = Path.Combine(compilerDBPath, clangTidyFirstPassFilename);
-      string clangTidySecondPassDstPath = Path.Combine(compilerDBPath, clangTidySecondPassFilename);
-      string clangFormatDstPath = Path.Combine(compilerDBPath, clangFormatFilename);
-
-      if (Directory.Exists(compilerDBPath) == false)
+      if (GenerateCompilerDB)
       {
-        Directory.CreateDirectory(compilerDBPath);
+        QueueCompilerDatabaseGeneration(conf);
+        CopyClangToolConfigFiles(compilerDBPath);
       }
 
-      File.Copy(clangTidyFirstPassSrcPath, clangTidyFirstPassDstPath, true);
-      File.Copy(clangTidySecondPassSrcPath, clangTidySecondPassDstPath, true);
-      File.Copy(clangFormatSrcPath, clangFormatDstPath, true);
+      conf.NinjaGenerateCompilerDB = false;
+
+      string postbuildCommandScriptPath = Path.Combine(Globals.SourceRoot, $"post_build.py");
+      string postbuildCommandArguments = "";
+      postbuildCommandArguments += $" -p={Name}";
+      postbuildCommandArguments += $" -comp={target.Compiler}";
+      postbuildCommandArguments += $" -conf={conf.Name}";
+      postbuildCommandArguments += $" -compdb={compilerDBPath}";
+      postbuildCommandArguments += $"-srcroot={SourceRootPath}";
+      
+      if (GenerateSettings.NoClangTools == false)
+      {
+        postbuildCommandArguments += $"-use_clang_tools";
+      }
+
+      conf.EventPostBuild.Add($"py {postbuildCommandScriptPath}{postbuildCommandArguments}");
     }
+
+    ReadGenerationConfigFile();
   }
 
   protected string GetClangToolsPath(RexConfiguration conf)
@@ -270,14 +273,16 @@ public class BasicCPPProject : BaseProject
   {
     base.PostLink();
 
-    // dependencies are resolved now, we can generate the clang-tool project files
-    foreach (Configuration config in Configurations)
+    if (GenerateCompilerDB)
     {
-      RexConfiguration rexConfig = config as RexConfiguration;
-      RexTarget rexTarget = config.Target as RexTarget;
-      if (rexTarget.Compiler == Compiler.Clang && rexConfig.is_config_for_testing() == false)
+      foreach (Configuration config in Configurations)
       {
-        GenerateClangToolProjectFile(rexConfig, rexTarget);
+        RexConfiguration rexConfig = config as RexConfiguration;
+        RexTarget rexTarget = config.Target as RexTarget;
+        if (rexTarget.Compiler == Compiler.Clang && rexConfig.is_config_for_testing() == false)
+        {
+          GenerateClangToolProjectFile(rexConfig, rexTarget);
+        }
       }
     }
   }
@@ -303,6 +308,105 @@ public class BasicCPPProject : BaseProject
 
     File.WriteAllText(project.ProjectPath, jsonBlob);
   }
+
+  private void ReadGenerationConfigFile()
+  {
+    if (string.IsNullOrEmpty(GenerationConfigPath))
+    {
+      return;
+    }
+
+    if (!File.Exists(GenerationConfigPath))
+    {
+      System.Diagnostics.Debug.WriteLine($"Warning: GenerationConfigPath does not exist '{GenerationConfigPath}'");
+      return;
+    }
+
+    string mem_tag_config_path = GenerationConfigPath;
+    string json_blob = File.ReadAllText(mem_tag_config_path);
+    Dictionary<string, string[]> config = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json_blob);
+
+    if (!GenerateSettings.MemoryTags.ContainsKey(Name))
+    {
+      GenerateSettings.MemoryTags.Add(Name, config["MemoryTags"].ToList());
+    }
+  }
+
+  private string GetCompilerDBOutputPath(RexConfiguration config)
+  {
+    return $"{Path.Combine(GetCompilerDBOutputFolder(config), "compile_commands.json")}";
+  }
+
+  private string GetCompilerDBOutputFolder(RexConfiguration config)
+  {
+    return $"{Path.Combine(config.ProjectPath, "clang_tools", $"{PerConfigFolderFormat(config)}")}";
+  }
+
+  private static string PerConfigFolderFormat(RexConfiguration config)
+  {
+    return System.IO.Path.Combine(config.Target.GetFragment<Compiler>().ToString(), config.Name);
+  }
+
+  private void QueueCompilerDatabaseGeneration(RexConfiguration config)
+  {
+    string ninja_file_path = GetNinjaFilePath(config);
+    string outputPath = GetCompilerDBOutputPath(config);
+
+    string tools_json_path = Path.Combine(Globals.ToolsRoot, "tool_paths.json");
+    string json_blob = File.ReadAllText(tools_json_path);
+    Dictionary<string, string> paths = JsonSerializer.Deserialize<Dictionary<string, string>>(json_blob);
+
+    string ninja_exe_filepath = paths["ninja_path"];
+
+    // make sure the folder exists
+    Directory.CreateDirectory(GetCompilerDBOutputFolder(config));
+
+    System.Diagnostics.ProcessStartInfo start_info = new System.Diagnostics.ProcessStartInfo();
+    start_info.FileName = "cmd.exe";
+    start_info.Arguments = $"/C {ninja_exe_filepath} -f {ninja_file_path} compdb_{Name.ToLower()}_{config.Name}_clang --quiet > {outputPath}";
+    start_info.RedirectStandardOutput = true;
+    start_info.RedirectStandardError = true;
+    start_info.UseShellExecute = false;
+
+
+    Console.WriteLine($"Generating compiler database for {Name} - {config.Name}");
+    System.Diagnostics.Process process = new System.Diagnostics.Process();
+    process.StartInfo = start_info;
+    GenerateSettings.GenerateCompilerDBProcesses.Add(process);
+  }
+
+  private void CopyClangToolConfigFiles(string compilerDBPath)
+  {
+      string clangTidyFirstPassFilename = ".clang-tidy_first_pass";
+      string clangTidySecondPassFilename = ".clang-tidy_second_pass";
+      string clangFormatFilename = ".clang-format";
+
+      string clangTidyFirstPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidyFirstPassFilename), clangTidyFirstPassFilename);
+      string clangTidySecondPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidySecondPassFilename), clangTidySecondPassFilename);
+      string clangFormatSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangFormatFilename), clangFormatFilename);
+
+      string clangTidyFirstPassDstPath = Path.Combine(compilerDBPath, clangTidyFirstPassFilename);
+      string clangTidySecondPassDstPath = Path.Combine(compilerDBPath, clangTidySecondPassFilename);
+      string clangFormatDstPath = Path.Combine(compilerDBPath, clangFormatFilename);
+
+      if (Directory.Exists(compilerDBPath) == false)
+      {
+        Directory.CreateDirectory(compilerDBPath);
+      }
+
+      File.Copy(clangTidyFirstPassSrcPath, clangTidyFirstPassDstPath, true);
+      File.Copy(clangTidySecondPassSrcPath, clangTidySecondPassDstPath, true);
+      File.Copy(clangFormatSrcPath, clangFormatDstPath, true);
+  }
+
+  private string GetNinjaFilePath(RexConfiguration config)
+  {
+    return Path.Combine(config.ProjectPath, "ninja", GetPerConfigFileName(config, config.Target.GetFragment<Compiler>()));
+  }
+  private string GetPerConfigFileName(Project.Configuration config, Compiler compiler)
+  {
+    return $"{config.Project.Name}.{config.Name}.{compiler}.ninja";
+  }
 }
 
 public class TestProject : BaseProject
@@ -326,7 +430,9 @@ public class TestProject : BaseProject
 public class ThirdPartyProject : BasicCPPProject
 {
   public ThirdPartyProject() : base()
-  { }
+  { 
+    GenerateCompilerDB = false;
+  }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
   {
@@ -388,7 +494,7 @@ public class ToolsProject : BasicCPPProject
   {
     base.Configure(conf, target);
 
-    conf.SolutionFolder = "5_tools";
+    conf.SolutionFolder = "4_tools";
   }
 }
 
@@ -440,9 +546,32 @@ public class SharpmakeProject : CSharpProject
     conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
 
     string quote = "\'"; // Use single quote that is cross platform safe
-    string sharpmake_main = Path.Combine(Globals.SharpmakeRoot, "src", "main.sharpmake.cs");
-    sharpmake_main = sharpmake_main.Replace('\\', '/');
-    conf.CsprojUserFile.StartArguments = $@"/sources(@{quote}{sharpmake_main}{quote}) /diagnostics";
+    List<string> sharpmake_sources = new List<string>();
+    foreach (string sourceFile in SourceFiles)
+    {
+      Console.WriteLine($"resolved source file: {sourceFile}");
+      string file = sourceFile.Replace('\\', '/');
+      sharpmake_sources.Add($"{quote}{file}{quote}");
+    }
+
+    foreach (string file in Directory.EnumerateFiles(SourceRootPath, "*.*", SearchOption.AllDirectories))
+    {
+      if (file.EndsWith(".sharpmake.cs"))
+      {
+        sharpmake_sources.Add($"{quote}{file}{quote}");
+      }
+    }
+
+    string sourcesArg = @"/sources(";
+    foreach (string file in sharpmake_sources)
+    {
+      sourcesArg += file;
+      sourcesArg += ", ";
+    }
+    sourcesArg = sourcesArg.Substring(0, sourcesArg.Length - 2); // remove ", ";
+    sourcesArg += ")";
+
+    conf.CsprojUserFile.StartArguments = $@"{sourcesArg} /diagnostics";
     conf.CsprojUserFile.StartProgram = sharpmakeAppPath;
     conf.CsprojUserFile.WorkingDirectory = Directory.GetCurrentDirectory();
   }
@@ -539,6 +668,23 @@ public static class Main
     InitializeSettings();
 
     arguments.Generate<MainSolution>();
+
+    Builder.Instance.EventPostGeneration += PostGenerationEvent;
+  }
+
+  private static void PostGenerationEvent(List<Project> projects, List<Solution> solutions)
+  {
+    GenerateCompilerDatabases();
+  }
+
+  private static void GenerateCompilerDatabases()
+  {
+    Console.WriteLine("Generating compiler databases");
+    foreach (System.Diagnostics.Process proc in GenerateSettings.GenerateCompilerDBProcesses)
+    {
+      proc.Start();
+      proc.WaitForExit();
+    }
   }
 
   private static void InitializeSharpmake()
@@ -568,5 +714,6 @@ public static class Main
     GenerateSettings.UndefinedBehaviorSanitizerEnabled = CommandLine.GetParameters().ToList().FindIndex(x => x.ToString() == "/enableUBSanitizer") != -1;
     GenerateSettings.FuzzyTestingEnabled = CommandLine.GetParameters().ToList().FindIndex(x => x.ToString() == "/enableFuzzyTesting") != -1;
     GenerateSettings.VisualStudioOnly = CommandLine.GetParameters().ToList().FindIndex(x => x.ToString() == "/vsOnly") != -1;
+    GenerateSettings.NoClangTools = CommandLine.GetParameters().ToList().FindIndex(x => x.ToString() == "/noClangTools") != -1;
   }
 }

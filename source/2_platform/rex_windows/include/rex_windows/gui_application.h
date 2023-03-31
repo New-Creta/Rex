@@ -10,8 +10,6 @@
 
 namespace rex
 {
-  struct FrameInfo;
-
   struct GuiParams
   {
     s32 window_width          = 1280;
@@ -45,7 +43,7 @@ namespace rex
     class GuiApplication : public CoreApplication
     {
     public:
-      explicit GuiApplication(const ApplicationCreationParams& appParams);
+      explicit GuiApplication(ApplicationCreationParams&& appParams);
       GuiApplication(const GuiApplication&) = delete;
       GuiApplication(GuiApplication&&)      = delete;
       ~GuiApplication() override;
@@ -53,29 +51,13 @@ namespace rex
       GuiApplication& operator=(const GuiApplication&) = delete;
       GuiApplication& operator=(GuiApplication&&)      = delete;
 
-      bool is_running() const override;
-
-      s32 run() override;
-      void quit() override;
-
-    protected:
-      void mark_for_destroy();
-
-      virtual bool app_initialize()
-      {
-        return true;
-      }
-      virtual void app_update(const FrameInfo& info)
-      {
-        UNUSED_PARAM(info);
-      }
-      virtual void app_shutdown()
-      {
-        // Nothing to implement
-      }
+    private:
+      bool platform_init() override;
+      void platform_update() override;
+      void platform_shutdown() override;
 
     private:
-      struct Internal;
+      class Internal;
       rsl::unique_ptr<Internal> m_internal_ptr;
     };
   } // namespace win32

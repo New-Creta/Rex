@@ -18,6 +18,7 @@ from pathlib import Path
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+  parser.add_argument("-no_clang_tools", help="don't generate a compiler db", action="store_true")
   parser.add_argument("-unittests", help="generate unit tests", action="store_true")
   parser.add_argument("-coverage", help="generate coverage", action="store_true")
   parser.add_argument("-asan", help="generate address sanitizer", action="store_true")
@@ -31,20 +32,29 @@ if __name__ == "__main__":
 
   run_any_tests = args.unittests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
-  if run_any_tests == False:
-    regis.generation.new_generation(settings_path, "")
+  sharpmake_args = ""
+  if args.no_clang_tools:
+    sharpmake_args += " /noClangTools"
 
   if args.unittests:
-    regis.generation.new_generation(settings_path, "/generateUnitTests")
-  
-  if args.coverage:
-    regis.generation.new_generation(settings_path, "/generateUnitTests /enableCoverage")
+    sharpmake_args += " /generateUnitTests"
 
-  if args.asan:
-    regis.generation.new_generation(settings_path, "/generateUnitTests /enableAddressSanitizer")
+  elif args.coverage:
+    sharpmake_args += " /generateUnitTests /enableCoverage"
 
-  if args.ubsan:
-    regis.generation.new_generation(settings_path, "/generateUnitTests /enableUBSanitizer")
+  elif args.asan:
+    sharpmake_args += " /generateUnitTests /enableAddressSanitizer"
 
-  if args.fuzzy:
-    regis.generation.new_generation(settings_path, "/enableFuzzyTesting")
+  elif args.ubsan:
+    sharpmake_args += " /generateUnitTests /enableUBSanitizer"
+
+  elif args.fuzzy:
+    sharpmake_args += " /enableFuzzyTesting"
+
+  result = 0
+
+  proc = regis.generation.new_generation(settings_path, sharpmake_args)
+  proc.wait()
+  result = proc.returncode
+
+  exit(result)

@@ -1,45 +1,110 @@
 #include "rex_engine/core_application.h"
 
-#include "rex_engine/memory/memory_manager.h"
+#include "rex_engine/memory/memory_tracking.h"
+#include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_std/assert.h"
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_engine/diagnostics/logging.h"
 
 namespace rex
 {
-  struct CoreApplication::Internal
+  namespace globals
   {
-  public:
-    Internal(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
+    FrameInfo g_frame_info;
+
+    //-------------------------------------------------------------------------
+    const FrameInfo& frame_info()
     {
-      // load memory config file from disk
-      // this file only has high level memory settings
-      // eg. how much memory we're max allowed to use
-      // it can't split this up in domains as the engine
-      // doesn't know which domains you will have
-      // this is app specific and is managed by the client
-      mem_manager().initialize(engineParams.max_memory);
+      return g_frame_info;
+    }
+  }
+
+  //-------------------------------------------------------------------------
+  CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
+    : m_is_running(false)
+    , m_is_marked_for_destroy(false)
+  {
+    mem_tracker().initialize(engineParams.max_memory);
+  }
+  //-------------------------------------------------------------------------
+  CoreApplication::~CoreApplication() = default;
+
+  //--------------------------------------------------------------------------------------------
+  s32 CoreApplication::run()
+  {
+    // calls the client shutdown count first, then shuts down the gui application systems
+    const rsl::scopeguard shutdown_scopeguard([&]() { shutdown(); });
+
+    // this calls our internal init code, to initialize the gui application
+    // afterwards it calls into client code and initializes the code there
+    // calling the initialize function provided earlier in the EngineParams
+    if (initialize() == false) // NOLINT(readability-simplify-boolean-expr)
+    {
+      REX_ERROR("Application initialization failed");
+      return EXIT_FAILURE;
     }
 
-    static CoreApplication* s_instance; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-  };
+    // calls into gui application update code
+    // then calls into the client update code provided by the EngineParams before
+    loop();
 
-  //-------------------------------------------------------------------------
-  CoreApplication* CoreApplication::Internal::s_instance = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+    // shutdown is automatically called from the scopeguard
 
-  //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& cmdArgs)
-      : m_internal_ptr(rsl::make_unique<Internal>(engineParams, cmdArgs))
-  {
-    REX_ASSERT_X(CoreApplication::Internal::s_instance == nullptr, "There can only be one application at the time");
-    CoreApplication::Internal::s_instance = this;
+    return EXIT_SUCCESS;
   }
-  //-------------------------------------------------------------------------
-  CoreApplication::~CoreApplication()
+
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::quit()
   {
-    CoreApplication::Internal::s_instance = nullptr;
+    mark_for_destroy();
   }
+
+  //--------------------------------------------------------------------------------------------
+  bool CoreApplication::is_running() const
+  {
+    return m_is_running && !m_is_marked_for_destroy;
+  }
+
+  //--------------------------------------------------------------------------------------------
+  bool CoreApplication::initialize()
+  {
+    globals::g_frame_info.update();
+    return platform_init();
+  }
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::update()
+  {
+    globals::g_frame_info.update();
+    platform_update();
+  }
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::shutdown()
+  {
+    platform_shutdown();
+
+    // nothing to implement
+  }
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::mark_for_destroy()
+  {
+    m_is_marked_for_destroy = true;
+  }
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::loop()
+  {
+    m_is_running = true;
+
+    while (is_running())
+    {
+      update();
+
+      m_is_running = !m_is_marked_for_destroy;
+    }
+  }
+
 } // namespace rex

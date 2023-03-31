@@ -1,34 +1,28 @@
 #include "rex_engine/memory/global_allocator.h"
 
-#include "rex_engine/memory/memory_manager.h"
+#include "rex_engine/memory/memory_tracking.h"
 
 #include <cstdlib>
 
 namespace rex
 {
-  void* GlobalAllocator::allocate(rsl::memory_size size)
-  {
-    return allocate(size.size_in_bytes());
-  }
-  void* GlobalAllocator::allocate(card64 size) // NOLINT(readability-convert-member-functions-to-static)
-  {
-    mem_manager().track_alloc(size);
-    return malloc(size); // NOLINT(cppcoreguidelines-no-malloc)
-  }
-
-  void GlobalAllocator::deallocate(void* ptr, rsl::memory_size size)
-  {
-    deallocate(ptr, size.size_in_bytes());
-  }
-  void GlobalAllocator::deallocate(void* ptr, card64 size) // NOLINT(readability-convert-member-functions-to-static)
-  {
-    mem_manager().track_dealloc(size);
-    free(ptr); // NOLINT(cppcoreguidelines-no-malloc)
-  }
-
   GlobalAllocator& global_allocator()
   {
+#ifdef REX_ENABLE_MEM_TRACKING
+    static GlobalAllocator alloc(UntrackedAllocator{});
+#else
     static GlobalAllocator alloc;
+#endif
+    return alloc;
+  }
+
+  GlobalDebugAllocator& global_debug_allocator()
+  {
+#ifdef REX_ENABLE_MEM_TRACKING
+    static GlobalDebugAllocator alloc(DebugAllocator{global_allocator()});
+#else
+    static GlobalDebugAllocator alloc;
+#endif
     return alloc;
   }
 } // namespace rex
