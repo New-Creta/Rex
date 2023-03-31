@@ -445,7 +445,7 @@ REXLOG_INLINE bool create_dir(const filename_t &path)
     size_t search_offset = 0;
     do
     {
-        auto token_pos = path.find_first_of(folder_seps_filename, search_offset);
+        auto token_pos = path.find_first_of(folder_seps_filename, static_cast<count_t>(search_offset));
         // treat the entire path as a folder if no folder separator not found
         if (token_pos == filename_t::npos())
         {

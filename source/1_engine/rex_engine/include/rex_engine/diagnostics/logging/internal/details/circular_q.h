@@ -25,7 +25,7 @@ public:
 
     explicit circular_q(size_t max_items)
         : max_items_(max_items + 1) // one item is reserved as marker for full q
-        , v_(rsl::Size(max_items_))
+        , v_(rsl::Size(static_cast<card32>(max_items_)))
     {}
 
     circular_q(const circular_q &) = default;
