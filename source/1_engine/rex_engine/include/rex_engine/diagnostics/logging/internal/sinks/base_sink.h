@@ -12,36 +12,38 @@
 #include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
 #include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
 
-namespace rexlog {
-namespace sinks {
-template<typename Mutex>
-class REXLOG_API base_sink : public sink
+namespace rexlog
 {
-public:
-    base_sink();
-    explicit base_sink(rsl::unique_ptr<rexlog::formatter> formatter);
-    ~base_sink() override = default;
+  namespace sinks
+  {
+    template <typename Mutex>
+    class REXLOG_API base_sink : public sink
+    {
+    public:
+      base_sink();
+      explicit base_sink(rsl::unique_ptr<rexlog::formatter> formatter);
+      ~base_sink() override = default;
 
-    base_sink(const base_sink &) = delete;
-    base_sink(base_sink &&) = delete;
+      base_sink(const base_sink&) = delete;
+      base_sink(base_sink&&)      = delete;
 
-    base_sink &operator=(const base_sink &) = delete;
-    base_sink &operator=(base_sink &&) = delete;
+      base_sink& operator=(const base_sink&) = delete;
+      base_sink& operator=(base_sink&&)      = delete;
 
-    void log(const details::log_msg &msg) final;
-    void flush() final;
-    void set_pattern(const rsl::string &pattern) final;
-    void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) final;
+      void log(const details::log_msg& msg) final;
+      void flush() final;
+      void set_pattern(const rsl::string& pattern) final;
+      void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) final;
 
-protected:
-    // sink formatter
-    rsl::unique_ptr<rexlog::formatter> formatter_;
-    Mutex mutex_;
+    protected:
+      // sink formatter
+      rsl::unique_ptr<rexlog::formatter> formatter_;
+      Mutex mutex_;
 
-    virtual void sink_it_(const details::log_msg &msg) = 0;
-    virtual void flush_() = 0;
-    virtual void set_pattern_(const rsl::string &pattern);
-    virtual void set_formatter_(rsl::unique_ptr<rexlog::formatter> sink_formatter);
-};
-} // namespace sinks
+      virtual void sink_it_(const details::log_msg& msg) = 0;
+      virtual void flush_()                              = 0;
+      virtual void set_pattern_(const rsl::string& pattern);
+      virtual void set_formatter_(rsl::unique_ptr<rexlog::formatter> sink_formatter);
+    };
+  } // namespace sinks
 } // namespace rexlog

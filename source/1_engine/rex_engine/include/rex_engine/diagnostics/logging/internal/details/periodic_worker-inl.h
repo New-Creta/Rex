@@ -2,26 +2,28 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/details/periodic_worker.h>
-
 #include "rex_std/mutex.h"
 
-namespace rexlog {
-namespace details {
+#include <rex_engine/diagnostics/logging/internal/details/periodic_worker.h>
 
-// stop the worker thread and join it
-REXLOG_INLINE periodic_worker::~periodic_worker()
+namespace rexlog
 {
-    if (worker_thread_.joinable())
+  namespace details
+  {
+
+    // stop the worker thread and join it
+    REXLOG_INLINE periodic_worker::~periodic_worker()
     {
+      if(worker_thread_.joinable())
+      {
         {
-            rsl::unique_lock<rsl::mutex> lock(mutex_);
-            active_ = false;
+          rsl::unique_lock<rsl::mutex> lock(mutex_);
+          active_ = false;
         }
         cv_.notify_one();
         worker_thread_.join();
+      }
     }
-}
 
-} // namespace details
+  } // namespace details
 } // namespace rexlog

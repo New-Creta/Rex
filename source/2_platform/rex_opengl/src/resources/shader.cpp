@@ -1,7 +1,6 @@
 #include "rex_opengl/resources/shader.h"
 
 #include "rex_engine/diagnostics/legacy/logging.h"
-
 #include "rex_std/sstream.h"
 #include "rex_std_extra/utility/casting.h"
 
