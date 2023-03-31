@@ -8,10 +8,13 @@ namespace rex
   class UntrackedAllocator
   {
   public:
-    REX_NO_DISCARD void* allocate(rsl::memory_size size);
-    REX_NO_DISCARD void* allocate(card64 size);
+    using size_type = card64;
+    using pointer = void*;
 
-    void deallocate(void* ptr, rsl::memory_size size);
-    void deallocate(void* ptr, card64 size);
+    REX_NO_DISCARD pointer allocate(rsl::memory_size size);
+    REX_NO_DISCARD pointer allocate(size_type size);
+
+    void deallocate(pointer ptr, rsl::memory_size size);
+    void deallocate(pointer ptr, size_type size);
   };
 } // namespace rex

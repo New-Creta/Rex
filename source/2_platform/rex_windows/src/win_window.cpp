@@ -6,7 +6,6 @@
 
 #define NOMINMAX
 #include <Windows.h>
-#include <WtsApi32.h>
 
 namespace rex
 {

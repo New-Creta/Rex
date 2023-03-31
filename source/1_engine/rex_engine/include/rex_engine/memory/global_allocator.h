@@ -12,7 +12,7 @@ namespace rex
   using GlobalAllocator = UntrackedAllocator;
 #endif
 
-  using GlobalDebugAllocator = DebugAllocator;
+  using GlobalDebugAllocator = DebugAllocator<GlobalAllocator>;
 
   GlobalAllocator& global_allocator();
   GlobalDebugAllocator& global_debug_allocator();

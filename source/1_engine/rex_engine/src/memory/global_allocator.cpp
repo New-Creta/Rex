@@ -19,7 +19,7 @@ namespace rex
   GlobalDebugAllocator& global_debug_allocator()
   {
 #ifdef REX_ENABLE_MEM_TRACKING
-    static GlobalDebugAllocator alloc(DebugAllocator{});
+    static GlobalDebugAllocator alloc(DebugAllocator{global_allocator()});
 #else
     static GlobalDebugAllocator alloc;
 #endif

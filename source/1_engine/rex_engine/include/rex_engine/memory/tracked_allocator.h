@@ -40,48 +40,53 @@ namespace rex
   class TrackedAllocator
   {
   public:
+    using size_type = typename Allocator::size_type;
+    using pointer = typename Allocator::pointer;
+
     TrackedAllocator(Allocator alloc)
       : m_allocator(alloc)
     {}
 
-    REX_NO_DISCARD void* allocate(rsl::memory_size size)
+    REX_NO_DISCARD pointer allocate(rsl::memory_size size)
     {
       return allocate(size.size_in_bytes());
     }
-    REX_NO_DISCARD void* allocate(card64 size)
+    REX_NO_DISCARD pointer allocate(size_type size)
     {
       // calculate the number of bytes are needed for the allocation
-      card64 num_mem_needed = size;
+      size_type num_mem_needed = size;
       num_mem_needed += sizeof(MemoryHeader*);
 
       // allocate the memory with enough extra memory to fit the memory header pointer
-      void* ptr = m_allocator.allocate(num_mem_needed);
+      pointer ptr = m_allocator.allocate(num_mem_needed);
 
       // initialize the memory header
       const MemoryTag tag = mem_tracker().current_tag();
       const rsl::thread::id thread_id = rsl::this_thread::get_id();
+
       rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
-      rex::MemoryHeader* header_addr = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
-      rex::MemoryHeader* header_ptr = new(header_addr) MemoryHeader(tag, ptr, rsl::memory_size(num_mem_needed), thread_id, frame_info().index(), rsl::stacktrace::current());
+
+      rex::MemoryHeader* dbg_header_addr = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
+      rex::MemoryHeader* dbg_header_ptr = new(dbg_header_addr) MemoryHeader(tag, ptr, rsl::memory_size(num_mem_needed), thread_id, frame_info().index(), rsl::stacktrace::current());
 
       // put the memory header pointer in front of the data blob we're going to return
-      rsl::memcpy(ptr, &header_ptr, sizeof(header_ptr));
+      rsl::memcpy(ptr, &dbg_header_ptr, sizeof(dbg_header_ptr));
       
       // get the right address to return from the function
       rsl::byte* mem_block = static_cast<rsl::byte*>(ptr);
       mem_block += sizeof(MemoryHeader*);
 
       // track the allocation
-      mem_tracker().track_alloc(mem_block, header_ptr);
+      mem_tracker().track_alloc(mem_block, dbg_header_ptr);
 
       return mem_block;
     }
 
-    void deallocate(void* ptr, rsl::memory_size size)
+    void deallocate(pointer ptr, rsl::memory_size size)
     {
       deallocate(ptr, size.size_in_bytes());
     }
-    void deallocate(void* ptr, card64 size)
+    void deallocate(pointer ptr, size_type size)
     {
       if (ptr == nullptr)
       {

@@ -21,7 +21,4 @@ namespace rex
     FPS m_fps;
     card32 m_index;
   };
-
-  const FrameInfo& frame_info();
-  void update_frame_info();
 } // namespace rex

@@ -1,32 +1,21 @@
 #include "rex_engine/memory/memory_tracking.h"
+#include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/core_application.h"
 #include "rex_std/iostream.h"
 #include "rex_std/limits.h"
 
-//  // we need to have an internal error reporting here
-//  // so that we don't allocate heap memory when overflowing
-//  // as this would cause a stack overflow
-#ifdef REX_ENABLE_MEM_TRACKING
-  #define REX_HEAP_TRACK_ERR(cond, msg)                                                                                                                                                                                                                  \
-    if(!(cond))                                                                                                                                                                                                                                          \
-    {                                                                                                                                                                                                                                                    \
-      rsl::cout << "Err: " << msg << "\n";                                                                                                                                                                                                               \
-    }
-  #define REX_HEAP_TRACK_WARN(cond, msg)                                                                                                                                                                                                                  \
-    if(!(cond))                                                                                                                                                                                                                                          \
-    {                                                                                                                                                                                                                                                    \
-      rsl::cout << "Warn: " << msg << "\n";                                                                                                                                                                                                               \
-    }
-#else
-#define REX_HEAP_TRACK_ERR(cond, msg)
-#define REX_HEAP_TRACK_WARN(cond, msg)
-#endif
-
 namespace rex
 {
-  rsl::array<MemoryTag, 100>& thread_local_memory_tag_stack()
+#ifdef REX_MAX_ALLOWED_MEM_TAGS
+  inline constexpr card32 g_max_allowed_mem_tags = REX_MAX_ALLOWED_MEM_TAGS;
+#else
+  inline constexpr card32 g_max_allowed_mem_tags = 100;
+#endif
+
+  rsl::array<MemoryTag, g_max_allowed_mem_tags>& thread_local_memory_tag_stack()
   {
-    thread_local static rsl::array<MemoryTag, 100> stack = { MemoryTag::Global };
+    thread_local static rsl::array<MemoryTag, g_max_allowed_mem_tags> stack = { MemoryTag::Global };
     return stack;
   }
 
@@ -52,12 +41,12 @@ namespace rex
     const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
-    REX_HEAP_TRACK_ERR(m_mem_usage.value() <= m_max_mem_usage, "Using more memory than allowed! usage: " << m_mem_usage.value() << " max: " << m_max_mem_usage);
+    REX_ERROR_X(m_mem_usage.value() <= m_max_mem_usage, "Using more memory than allowed! usage: {} max: {}", m_mem_usage.value(), m_max_mem_usage);
   }
   void MemoryTracker::track_dealloc(void* /*mem*/, MemoryHeader* header)
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
-    REX_HEAP_TRACK_WARN(header->frame_index() != frame_info().index(), "Memory freed in the same frame it's allocated");
+    REX_WARN_X(header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
     m_mem_usage -= header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }
@@ -65,7 +54,8 @@ namespace rex
   void MemoryTracker::push_tag(MemoryTag tag)
   {
     const rsl::unique_lock lock(m_mem_tag_tracking_mutex);
-    thread_local_memory_tag_stack()[++thread_local_mem_tag_index()] = tag;
+    thread_local_memory_tag_stack()[thread_local_mem_tag_index()] = tag;
+    ++thread_local_mem_tag_index();
   }
   void MemoryTracker::pop_tag()
   {

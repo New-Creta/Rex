@@ -22,6 +22,15 @@ namespace rex
     shutdown_func app_shutdown_func = nullptr;
   };
 
+  class FrameInfo;
+
+  // to make it accessible throughout the code
+  // client API can call this function to access the frame info
+  namespace globals
+  {
+    const FrameInfo& frame_info();
+  }
+
   class CoreApplication
   {
   public:
@@ -33,9 +42,24 @@ namespace rex
     CoreApplication& operator=(const CoreApplication&) = delete;
     CoreApplication& operator=(CoreApplication&&)      = delete;
 
-    virtual bool is_running() const = 0;
+    s32 run();
+    void quit();
+    bool is_running() const;
 
-    virtual s32 run()   = 0;
-    virtual void quit() = 0;
+  protected:
+    virtual bool platform_init() = 0;
+    virtual void platform_update() = 0;
+    virtual void platform_shutdown() = 0;
+
+  private:
+    bool initialize();
+    void update();
+    void shutdown();
+    void mark_for_destroy();
+    void loop();
+
+  private:
+    bool m_is_running;
+    bool m_is_marked_for_destroy;
   };
 } // namespace rex

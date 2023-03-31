@@ -51,13 +51,10 @@ namespace rex
       GuiApplication& operator=(const GuiApplication&) = delete;
       GuiApplication& operator=(GuiApplication&&)      = delete;
 
-      bool is_running() const override;
-
-      s32 run() override;
-      void quit() override;
-
-    protected:
-      void mark_for_destroy();
+    private:
+      bool platform_init() override;
+      void platform_update() override;
+      void platform_shutdown() override;
 
     private:
       class Internal;
