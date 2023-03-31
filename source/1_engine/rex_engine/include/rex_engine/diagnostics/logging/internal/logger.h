@@ -20,27 +20,9 @@
 #include "rex_std/vector.h"
 #include "rex_std/format.h"
 
-#ifndef REXLOG_NO_EXCEPTIONS
-#    define REXLOG_LOGGER_CATCH(location)                                                                                                  \
-        catch (const rsl::exception &ex)                                                                                                   \
-        {                                                                                                                                  \
-            if (location.filename)                                                                                                         \
-            {                                                                                                                              \
-                err_handler_(fmt_lib::format(REXLOG_FMT_STRING("{} [{}({})]"), ex.what(), location.filename, location.line));              \
-            }                                                                                                                              \
-            else                                                                                                                           \
-            {                                                                                                                              \
-                err_handler_(ex.what());                                                                                                   \
-            }                                                                                                                              \
-        }                                                                                                                                  \
-        catch (...)                                                                                                                        \
-        {                                                                                                                                  \
-            err_handler_("Rethrowing unknown exception in logger");                                                                        \
-            throw;                                                                                                                         \
-        }
-#else
-#    define REXLOG_LOGGER_CATCH(location)
-#endif
+
+#define REXLOG_LOGGER_CATCH(location)
+
 
 namespace rexlog {
 
@@ -208,7 +190,7 @@ public:
     // return true logging is enabled for the given level.
     bool should_log(level::level_enum msg_level) const
     {
-        return msg_level >= level_.load(rsl::memory_order::relaxed);
+        return msg_level >= level_.load(rsl::memory_order_relaxed);
     }
 
     // return true if backtrace logging is enabled.
