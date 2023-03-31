@@ -5,16 +5,20 @@
 
 namespace rex
 {
-  rsl::unordered_map<event_system::EventType, rsl::vector<event_system::EventFunction>> g_delegates; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
+  rsl::unordered_map<event_system::EventType, rsl::vector<event_system::EventFunction>>& delegates_map()
+  {
+    static rsl::unordered_map<event_system::EventType, rsl::vector<event_system::EventFunction>> delegates_map;
+    return delegates_map;
+  }
 
   void event_system::subscribe(EventType type, const EventFunction& function)
   {
-    g_delegates[type].push_back(function);
+    delegates_map()[type].push_back(function);
   }
 
   void event_system::fire_event(EventType type)
   {
-    const rsl::vector<EventFunction>& delegates = g_delegates[type];
+    const rsl::vector<EventFunction>& delegates = delegates_map()[type];
 
     for(const EventFunction& delegate: delegates)
     {
