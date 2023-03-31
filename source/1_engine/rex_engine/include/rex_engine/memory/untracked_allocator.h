@@ -9,7 +9,7 @@ namespace rex
   {
   public:
     using size_type = card64;
-    using pointer = void*;
+    using pointer   = void*;
 
     REX_NO_DISCARD pointer allocate(rsl::memory_size size);
     REX_NO_DISCARD pointer allocate(size_type size);

@@ -13,11 +13,12 @@ namespace rex
     {
     public:
       using size_type = typename Allocator::size_type;
-      using pointer = typename Allocator::pointer;
+      using pointer   = typename Allocator::pointer;
 
       DebugAllocator(Allocator& allocator)
-        : m_allocator(rsl::addressof(allocator))
-      {}
+          : m_allocator(rsl::addressof(allocator))
+      {
+      }
 
       REX_NO_DISCARD pointer allocate(size_type size)
       {
@@ -44,5 +45,5 @@ namespace rex
     private:
       Allocator* m_allocator;
     };
-  }
-}
+  } // namespace v1
+} // namespace rex

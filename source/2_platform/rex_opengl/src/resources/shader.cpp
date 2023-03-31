@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/shader.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_std/sstream.h"
 
 #define REX_ENABLE_STD_ALIAS

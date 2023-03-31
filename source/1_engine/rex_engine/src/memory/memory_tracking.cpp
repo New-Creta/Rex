@@ -1,7 +1,8 @@
 #include "rex_engine/memory/memory_tracking.h"
-#include "rex_engine/diagnostics/logging.h"
-#include "rex_engine/frameinfo/frameinfo.h"
+
 #include "rex_engine/core_application.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_std/iostream.h"
 #include "rex_std/limits.h"
 
@@ -15,7 +16,7 @@ namespace rex
 
   rsl::array<MemoryTag, g_max_allowed_mem_tags>& thread_local_memory_tag_stack()
   {
-    thread_local static rsl::array<MemoryTag, g_max_allowed_mem_tags> stack = { MemoryTag::Global };
+    thread_local static rsl::array<MemoryTag, g_max_allowed_mem_tags> stack = {MemoryTag::Global};
     return stack;
   }
 

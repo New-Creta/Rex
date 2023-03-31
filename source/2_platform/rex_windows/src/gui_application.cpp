@@ -25,45 +25,39 @@ namespace rex
     {
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
-        : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
-        , m_gui_params(rsl::move(appCreationParams.gui_params))
-        , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
-        , m_engine_params(rsl::move(appCreationParams.engine_params))
-        , m_app_instance(appInstance)
+          : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
+          , m_gui_params(rsl::move(appCreationParams.gui_params))
+          , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
+          , m_engine_params(rsl::move(appCreationParams.engine_params))
+          , m_app_instance(appInstance)
       {
         // we're always assigning something to the pointers here to avoid branch checking every update
         // I've profiled this and always having a function wins here.
-        m_on_initialize = m_engine_params.app_init_func
-          ? m_engine_params.app_init_func
-          : [&]() { return true; };
+        m_on_initialize = m_engine_params.app_init_func ? m_engine_params.app_init_func : [&]() { return true; };
 
-        m_on_update = m_engine_params.app_update_func
-          ? m_engine_params.app_update_func
-          : [&]() {};
+        m_on_update = m_engine_params.app_update_func ? m_engine_params.app_update_func : [&]() {};
 
-        m_on_shutdown = m_engine_params.app_shutdown_func
-          ? m_engine_params.app_shutdown_func
-          : [&]() {};
+        m_on_shutdown = m_engine_params.app_shutdown_func ? m_engine_params.app_shutdown_func : [&]() {};
       }
 
       bool initialize()
       {
         // window initialization
         m_window = create_window();
-        if (m_window == nullptr)
+        if(m_window == nullptr)
         {
           return false;
         }
         subscribe_window_events();
 
         // graphics context initialization
-        if (context::create(m_window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
+        if(context::create(m_window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
 
         // renderer initialization
-        if (renderer::initialize(nullptr, m_gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
+        if(renderer::initialize(nullptr, m_gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
@@ -105,10 +99,10 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title = m_gui_params.window_title;
-        wnd_description.viewport = { 0, 0, m_gui_params.window_width, m_gui_params.window_height };
+        wnd_description.title    = m_gui_params.window_title;
+        wnd_description.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
 
-        if (wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
+        if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
         {
           return wnd;
         }
@@ -142,7 +136,7 @@ namespace rex
 
         const rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
-        if (elapsed_time > 0ms)
+        if(elapsed_time > 0ms)
         {
           rsl::this_thread::sleep_for(elapsed_time);
         }
@@ -169,8 +163,8 @@ namespace rex
 
     //-------------------------------------------------------------------------
     GuiApplication::GuiApplication(ApplicationCreationParams&& appParams)
-      : CoreApplication(appParams.engine_params, appParams.cmd_args)
-      , m_internal_ptr(rsl::make_unique<Internal>(rsl::move(appParams)))
+        : CoreApplication(appParams.engine_params, appParams.cmd_args)
+        , m_internal_ptr(rsl::make_unique<Internal>(this, rsl::move(appParams)))
     {
     }
 
@@ -180,7 +174,7 @@ namespace rex
     //--------------------------------------------------------------------------------------------
     bool GuiApplication::platform_init()
     {
-      m_internal_ptr->initialize();
+      return m_internal_ptr->initialize();
     }
     void GuiApplication::platform_update()
     {

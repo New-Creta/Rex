@@ -1,15 +1,15 @@
 #include "rex_engine/core_application.h"
 
-#include "rex_engine/memory/memory_tracking.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/assert.h"
+#include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std_extra/memory/memory_size.h"
-#include "rex_std/bonus/utility/scopeguard.h"
-#include "rex_engine/diagnostics/logging.h"
 
 namespace rex
 {
@@ -22,12 +22,12 @@ namespace rex
     {
       return g_frame_info;
     }
-  }
+  } // namespace globals
 
   //-------------------------------------------------------------------------
   CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
-    : m_is_running(false)
-    , m_is_marked_for_destroy(false)
+      : m_is_running(false)
+      , m_is_marked_for_destroy(false)
   {
     mem_tracker().initialize(engineParams.max_memory);
   }
@@ -43,7 +43,7 @@ namespace rex
     // this calls our internal init code, to initialize the gui application
     // afterwards it calls into client code and initializes the code there
     // calling the initialize function provided earlier in the EngineParams
-    if (initialize() == false) // NOLINT(readability-simplify-boolean-expr)
+    if(initialize() == false) // NOLINT(readability-simplify-boolean-expr)
     {
       REX_ERROR("Application initialization failed");
       return EXIT_FAILURE;
@@ -99,7 +99,7 @@ namespace rex
   {
     m_is_running = true;
 
-    while (is_running())
+    while(is_running())
     {
       update();
 

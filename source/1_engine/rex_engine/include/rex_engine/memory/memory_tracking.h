@@ -4,8 +4,8 @@
 #include "rex_engine/types.h"
 #include "rex_std/array.h"
 #include "rex_std/mutex.h"
-#include "rex_std/thread.h"
 #include "rex_std/stacktrace.h"
+#include "rex_std/thread.h"
 #include "rex_std_extra/memory/memory_size.h"
 #include "rex_std_extra/utility/enum_reflection.h"
 #include "rex_std_extra/utility/high_water_mark.h"
@@ -16,12 +16,12 @@ namespace rex
   {
   public:
     MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const rsl::stacktrace& callstack)
-      : m_callstack(callstack)
-      , m_size(size)
-      , m_ptr(ptr)
-      , m_thread_id(threadId)
-      , m_tag(tag)
-      , m_frame_idx(frameIdx)
+        : m_callstack(callstack)
+        , m_size(size)
+        , m_ptr(ptr)
+        , m_thread_id(threadId)
+        , m_tag(tag)
+        , m_frame_idx(frameIdx)
     {
     }
 
@@ -52,11 +52,11 @@ namespace rex
 
   private:
     rsl::stacktrace m_callstack;
-    rsl::memory_size m_size; // size of the memory allocated
-    void* m_ptr; // the pointer that's allocated
+    rsl::memory_size m_size;     // size of the memory allocated
+    void* m_ptr;                 // the pointer that's allocated
     rsl::thread::id m_thread_id; // the thread id this was allocated on
-    MemoryTag m_tag;  // memory tag that allocated this memory
-    card32 m_frame_idx; // frame index when this memory was allocated
+    MemoryTag m_tag;             // memory tag that allocated this memory
+    card32 m_frame_idx;          // frame index when this memory was allocated
   };
 
   class MemoryTracker
@@ -96,14 +96,14 @@ namespace rex
       mem_tracker().push_tag(tag);
     }
     MemoryTagScope(const MemoryTagScope&) = delete;
-    MemoryTagScope(MemoryTagScope&&) = delete;
+    MemoryTagScope(MemoryTagScope&&)      = delete;
     ~MemoryTagScope()
     {
       mem_tracker().pop_tag();
     }
 
     MemoryTagScope& operator=(const MemoryTagScope&) = delete;
-    MemoryTagScope& operator=(MemoryTagScope&&) = delete;
+    MemoryTagScope& operator=(MemoryTagScope&&)      = delete;
   };
 
 #define MEM_TAG_SCOPE(tag) MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
