@@ -7,8 +7,8 @@
 #endif
 
 // tcp client helper
-#include <rexlog/common.h>
-#include <rexlog/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>

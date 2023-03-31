@@ -4,8 +4,8 @@
 
 #define WIN32_LEAN_AND_MEAN
 // tcp client helper
-#include <rexlog/common.h>
-#include <rexlog/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
 
 #include <winsock2.h>
 #include <windows.h>

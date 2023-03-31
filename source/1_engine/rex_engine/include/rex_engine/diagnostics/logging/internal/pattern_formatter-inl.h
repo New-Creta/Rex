@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <rexlog/pattern_formatter.h>
+#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 
-#include <rexlog/details/fmt_helper.h>
-#include <rexlog/details/log_msg.h>
-#include <rexlog/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/details/fmt_helper.h>
+#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
 #include <format>
-#include <rexlog/formatter.h>
+#include <rex_engine/diagnostics/logging/internal/formatter.h>
 
 #include <algorithm>
 #include <array>

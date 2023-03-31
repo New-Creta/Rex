@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <rexlog/details/log_msg_buffer.h>
+#include <rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h>
 
 namespace rexlog {
 namespace details {

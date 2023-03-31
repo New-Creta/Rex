@@ -1,7 +1,5 @@
-#include "logging/log_scoped_verbosity_override.h"
-#include "logging/log_category.h"
-
-#include <assert.h>
+#include "rex_engine/diagnostics/logging/log_scoped_verbosity_override.h"
+#include "rex_engine/diagnostics/logging/log_category.h"
 
 namespace rex
 {
@@ -10,7 +8,7 @@ namespace rex
     LogScopedVerbosityOverride::LogScopedVerbosityOverride(LogCategoryBase* category, LogVerbosity verbosity)
         : saved_category_(category)
     {
-        assert(saved_category_ != nullptr);
+        // assert(saved_category_ != nullptr);
 
         saved_verbosity_ = saved_category_->getVerbosity();
         saved_category_->setVerbosity(verbosity);

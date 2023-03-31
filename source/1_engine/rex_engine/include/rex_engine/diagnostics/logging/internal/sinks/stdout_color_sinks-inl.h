@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <rexlog/sinks/stdout_color_sinks.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h>
 
-#include <rexlog/logger.h>
-#include <rexlog/common.h>
+#include <rex_engine/diagnostics/logging/internal/logger.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
 
 namespace rexlog {
 

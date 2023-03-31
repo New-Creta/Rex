@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include <rexlog/cfg/helpers.h>
+#include <rex_engine/diagnostics/logging/internal/cfg/helpers.h>
 
-#include <rexlog/rexlog.h>
-#include <rexlog/details/os.h>
-#include <rexlog/details/registry.h>
+#include <rex_engine/diagnostics/logging/internal/rexlog.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/details/registry.h>
 
 #include "rex_std/algorithm.h"
 #include "rex_std/string.h"

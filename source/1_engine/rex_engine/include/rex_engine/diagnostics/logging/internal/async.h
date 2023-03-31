@@ -13,9 +13,9 @@
 // This is because each message in the queue holds a shared_ptr to the
 // originating logger.
 
-#include <rexlog/async_logger.h>
-#include <rexlog/details/registry.h>
-#include <rexlog/details/thread_pool.h>
+#include <rex_engine/diagnostics/logging/internal/async_logger.h>
+#include <rex_engine/diagnostics/logging/internal/details/registry.h>
+#include <rex_engine/diagnostics/logging/internal/details/thread_pool.h>
 
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"

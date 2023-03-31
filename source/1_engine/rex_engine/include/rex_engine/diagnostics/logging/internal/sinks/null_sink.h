@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <rexlog/details/null_mutex.h>
-#include <rexlog/sinks/base_sink.h>
-#include <rexlog/details/synchronous_factory.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
 
 #include <mutex>
 

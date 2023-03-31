@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <rexlog/details/log_msg.h>
+#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
 
-#include <rexlog/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
 
 namespace rexlog {
 namespace details {

@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include <rexlog/common.h>
-#include <rexlog/details/file_helper.h>
-#include <rexlog/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
 #include <format>
-#include <rexlog/sinks/base_sink.h>
-#include <rexlog/details/os.h>
-#include <rexlog/details/circular_q.h>
-#include <rexlog/details/synchronous_factory.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/details/circular_q.h>
+#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
 
 #include <chrono>
 #include <cstdio>

@@ -2,19 +2,19 @@
 
 #pragma once
 
-#include <rexlog/details/registry.h>
+#include <rex_engine/diagnostics/logging/internal/details/registry.h>
 
-#include <rexlog/common.h>
-#include <rexlog/details/periodic_worker.h>
-#include <rexlog/logger.h>
-#include <rexlog/pattern_formatter.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/periodic_worker.h>
+#include <rex_engine/diagnostics/logging/internal/logger.h>
+#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 
 #ifndef REXLOG_DISABLE_DEFAULT_LOGGER
 // support for the default stdout color logger
 #    ifdef _WIN32
-#        include <rexlog/sinks/wincolor_sink.h>
+#        include <rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h>
 #    else
-#        include <rexlog/sinks/ansicolor_sink.h>
+#        include <rex_engine/diagnostics/logging/internal/sinks/ansicolor_sink.h>
 #    endif
 #endif // REXLOG_DISABLE_DEFAULT_LOGGER
 

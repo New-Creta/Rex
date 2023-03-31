@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <rexlog/details/backtracer.h>
+#include <rex_engine/diagnostics/logging/internal/details/backtracer.h>
 
 #include "rex_std/mutex.h"
 

@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <rexlog/rexlog.h>
+#include <rex_engine/diagnostics/logging/internal/rexlog.h>
 
-#include <rexlog/common.h>
-#include <rexlog/pattern_formatter.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 
 namespace rexlog {
 

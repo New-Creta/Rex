@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <rexlog/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
 
-#include <rexlog/common.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
 
 #include <algorithm>
 #include <chrono>
@@ -22,7 +22,7 @@
 
 #    include <io.h>      // for _get_osfhandle, _isatty, _fileno
 #    include <process.h> // for _get_pid
-#    include <rexlog/details/windows_include.h>
+#    include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
 #    include <fileapi.h> // for FlushFileBuffers
 
 #    ifdef __MINGW32__
@@ -350,7 +350,7 @@ REXLOG_INLINE size_t thread_id() REXLOG_NOEXCEPT
 }
 
 // This is avoid msvc issue in sleep_for that happens if the clock changes.
-// See https://github.com/gabime/rexlog/issues/609
+// See https://github.com/gabime/spdlog/issues/609
 REXLOG_INLINE void sleep_for_millis(unsigned int milliseconds) REXLOG_NOEXCEPT
 {
 #if defined(_WIN32)

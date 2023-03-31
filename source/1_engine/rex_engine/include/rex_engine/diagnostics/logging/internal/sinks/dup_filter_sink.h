@@ -3,8 +3,8 @@
 #pragma once
 
 #include "dist_sink.h"
-#include <rexlog/details/null_mutex.h>
-#include <rexlog/details/log_msg.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
 
 #include <cstdio>
 #include <mutex>
@@ -16,7 +16,7 @@
 //
 // Example:
 //
-//     #include <rexlog/sinks/dup_filter_sink.h>
+//     #include <rex_engine/diagnostics/logging/internal/sinks/dup_filter_sink.h>
 //
 //     int main() {
 //         auto dup_filter = rsl::make_shared<dup_filter_sink_st>(rsl::chrono::seconds(5), level::info);

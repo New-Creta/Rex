@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <rexlog/sinks/wincolor_sink.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h>
 
-#include <rexlog/details/windows_include.h>
+#include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
 #include <wincon.h>
 
-#include <rexlog/common.h>
-#include <rexlog/pattern_formatter.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 
 namespace rexlog {
 namespace sinks {

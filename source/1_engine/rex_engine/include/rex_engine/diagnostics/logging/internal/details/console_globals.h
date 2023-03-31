@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <rexlog/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
 #include <mutex>
 
 namespace rexlog {

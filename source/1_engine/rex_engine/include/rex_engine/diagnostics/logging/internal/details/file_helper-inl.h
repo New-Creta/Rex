@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <rexlog/details/file_helper.h>
+#include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
 
-#include <rexlog/details/os.h>
-#include <rexlog/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
 
 #include <cerrno>
 #include <chrono>

@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <rexlog/details/log_msg_buffer.h>
-#include <rexlog/details/mpmc_blocking_q.h>
-#include <rexlog/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h>
+#include <rex_engine/diagnostics/logging/internal/details/mpmc_blocking_q.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
 
 #include <chrono>
 #include "rex_std/memory.h"

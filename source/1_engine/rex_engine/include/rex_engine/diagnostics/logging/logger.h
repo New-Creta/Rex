@@ -1,9 +1,9 @@
 #pragma once
 
-#include <rexlog/logger.h>
+#include <rex_engine/diagnostics/logging/internal/logger.h>
 
-#include "logging/log_category.h"
-#include "logging/log_verbosity.h"
+#include "rex_engine/diagnostics/logging/log_category.h"
+#include "rex_engine/diagnostics/logging/log_verbosity.h"
 
 namespace rex
 {

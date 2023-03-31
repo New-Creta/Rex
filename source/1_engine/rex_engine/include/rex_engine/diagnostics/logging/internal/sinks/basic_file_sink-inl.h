@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <rexlog/sinks/basic_file_sink.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h>
 
-#include <rexlog/common.h>
-#include <rexlog/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
 
 namespace rexlog {
 namespace sinks {

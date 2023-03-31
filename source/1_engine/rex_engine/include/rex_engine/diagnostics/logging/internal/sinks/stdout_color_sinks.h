@@ -3,12 +3,12 @@
 #pragma once
 
 #ifdef _WIN32
-#    include <rexlog/sinks/wincolor_sink.h>
+#    include <rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h>
 #else
-#    include <rexlog/sinks/ansicolor_sink.h>
+#    include <rex_engine/diagnostics/logging/internal/sinks/ansicolor_sink.h>
 #endif
 
-#include <rexlog/details/synchronous_factory.h>
+#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
 
 namespace rexlog {
 namespace sinks {

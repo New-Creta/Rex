@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "rexlog/sinks/base_sink.h"
-#include "rexlog/details/circular_q.h"
-#include "rexlog/details/log_msg_buffer.h"
-#include "rexlog/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+#include "rex_engine/diagnostics/logging/internal/details/circular_q.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 
 #include <mutex>
 #include <string>

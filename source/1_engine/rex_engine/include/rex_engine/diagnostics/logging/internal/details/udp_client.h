@@ -9,8 +9,8 @@
 #    error "include udp_client-windows.h instead"
 #endif
 
-#include <rexlog/common.h>
-#include <rexlog/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>

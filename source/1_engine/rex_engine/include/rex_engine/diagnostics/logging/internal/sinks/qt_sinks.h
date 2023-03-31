@@ -6,10 +6,10 @@
 // etc) Building and using requires Qt library.
 //
 
-#include "rexlog/common.h"
-#include "rexlog/details/log_msg.h"
-#include "rexlog/details/synchronous_factory.h"
-#include "rexlog/sinks/base_sink.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 #include <QTextEdit>
 #include <QPlainTextEdit>
@@ -51,7 +51,7 @@ private:
     rsl::string meta_method_;
 };
 
-#include "rexlog/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include <mutex>
 using qt_sink_mt = qt_sink<rsl::mutex>;
 using qt_sink_st = qt_sink<rexlog::details::null_mutex>;

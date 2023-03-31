@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include <rexlog/logger.h>
+#include <rex_engine/diagnostics/logging/internal/logger.h>
 
-#include <rexlog/sinks/sink.h>
-#include <rexlog/details/backtracer.h>
-#include <rexlog/pattern_formatter.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
+#include <rex_engine/diagnostics/logging/internal/details/backtracer.h>
+#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 
 #include "rex_std/iterator.h"
 

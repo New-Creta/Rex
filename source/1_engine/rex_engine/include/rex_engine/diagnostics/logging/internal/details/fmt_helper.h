@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <iterator>
 #include <format>
-#include <rexlog/common.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
 
 #include <charconv>
 #include <limits>

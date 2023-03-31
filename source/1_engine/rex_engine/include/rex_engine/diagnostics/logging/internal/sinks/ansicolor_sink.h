@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <rexlog/details/console_globals.h>
-#include <rexlog/details/null_mutex.h>
-#include <rexlog/sinks/sink.h>
+#include <rex_engine/diagnostics/logging/internal/details/console_globals.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
 #include "rex_std/memory.h"
 #include <mutex>
 #include <string>

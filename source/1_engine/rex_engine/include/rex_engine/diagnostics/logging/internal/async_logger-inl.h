@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <rexlog/async_logger.h>
+#include <rex_engine/diagnostics/logging/internal/async_logger.h>
 
-#include <rexlog/sinks/sink.h>
-#include <rexlog/details/thread_pool.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
+#include <rex_engine/diagnostics/logging/internal/details/thread_pool.h>
 
 #include "rex_std/memory.h"
 #include <string>

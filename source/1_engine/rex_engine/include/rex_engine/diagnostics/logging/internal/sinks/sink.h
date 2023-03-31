@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <rexlog/details/log_msg.h>
-#include <rexlog/formatter.h>
+#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
+#include <rex_engine/diagnostics/logging/internal/formatter.h>
 
 namespace rexlog {
 

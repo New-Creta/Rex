@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <rexlog/details/console_globals.h>
-#include <rexlog/details/synchronous_factory.h>
-#include <rexlog/sinks/sink.h>
+#include <rex_engine/diagnostics/logging/internal/details/console_globals.h>
+#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
 #include <cstdio>
 
 #ifdef _WIN32
-#    include <rexlog/details/windows_include.h>
+#    include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
 #endif
 
 namespace rexlog {

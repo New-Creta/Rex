@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <rexlog/details/thread_pool.h>
+#include <rex_engine/diagnostics/logging/internal/details/thread_pool.h>
 
-#include <rexlog/common.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
 #include <cassert>
 
 namespace rexlog {

@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include <rexlog/common.h>
-#include <rexlog/details/registry.h>
-#include <rexlog/logger.h>
-#include <rexlog/version.h>
-#include <rexlog/details/synchronous_factory.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/registry.h>
+#include <rex_engine/diagnostics/logging/internal/logger.h>
+#include <rex_engine/diagnostics/logging/internal/version.h>
+#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
 
 #include <chrono>
 #include <functional>

@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <rexlog/common.h>
-#include <rexlog/sinks/base_sink.h>
-#include <rexlog/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
 #ifdef _WIN32
-#    include <rexlog/details/tcp_client-windows.h>
+#    include <rex_engine/diagnostics/logging/internal/details/tcp_client-windows.h>
 #else
-#    include <rexlog/details/tcp_client.h>
+#    include <rex_engine/diagnostics/logging/internal/details/tcp_client.h>
 #endif
 
 #include <mutex>

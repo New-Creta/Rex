@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <rexlog/tweakme.h>
-#include <rexlog/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/tweakme.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
 
 #include "rex_std/atomic.h"
 #include "rex_std/chrono.h"

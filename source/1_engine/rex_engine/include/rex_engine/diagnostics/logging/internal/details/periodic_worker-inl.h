@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <rexlog/details/periodic_worker.h>
+#include <rex_engine/diagnostics/logging/internal/details/periodic_worker.h>
 
 #include "rex_std/mutex.h"
 

@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <rexlog/sinks/sink.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
 
-#include <rexlog/common.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
 
 REXLOG_INLINE bool rexlog::sinks::sink::should_log(rexlog::level::level_enum msg_level) const
 {

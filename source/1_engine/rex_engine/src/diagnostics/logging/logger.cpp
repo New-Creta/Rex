@@ -1,7 +1,7 @@
-#include "logging/logger.h"
+#include "rex_engine/diagnostics/logging/logger.h"
 
-#include <rexlog/sinks/stdout_color_sinks.h>
-#include <rexlog/sinks/basic_file_sink.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h>
 
 #include <rex_std/filesystem.h>
 #include <rex_std/unordered_map.h>

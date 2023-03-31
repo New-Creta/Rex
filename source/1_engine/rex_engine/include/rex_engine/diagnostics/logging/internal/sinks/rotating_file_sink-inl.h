@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include <rexlog/sinks/rotating_file_sink.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/rotating_file_sink.h>
 
-#include <rexlog/common.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
 
-#include <rexlog/details/file_helper.h>
-#include <rexlog/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
 #include <format>
 
 #include <cerrno>

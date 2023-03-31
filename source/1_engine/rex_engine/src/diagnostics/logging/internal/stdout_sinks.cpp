@@ -6,9 +6,9 @@
 
 #include <mutex>
 
-#include <rexlog/details/null_mutex.h>
-#include <rexlog/async.h>
-#include <rexlog/sinks/stdout_sinks-inl.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/async.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/stdout_sinks-inl.h>
 
 template class REXLOG_API rexlog::sinks::stdout_sink_base<rexlog::details::console_mutex>;
 template class REXLOG_API rexlog::sinks::stdout_sink_base<rexlog::details::console_nullmutex>;

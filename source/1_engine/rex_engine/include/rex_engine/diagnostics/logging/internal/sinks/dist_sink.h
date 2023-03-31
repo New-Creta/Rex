@@ -3,9 +3,9 @@
 #pragma once
 
 #include "base_sink.h"
-#include <rexlog/details/log_msg.h>
-#include <rexlog/details/null_mutex.h>
-#include <rexlog/pattern_formatter.h>
+#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
+#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
+#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 
 #include <algorithm>
 #include "rex_std/memory.h"

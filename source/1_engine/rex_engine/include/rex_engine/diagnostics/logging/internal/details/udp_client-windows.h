@@ -5,9 +5,9 @@
 // Helper RAII over winsock udp client socket.
 // Will throw on construction if socket creation failed.
 
-#include <rexlog/common.h>
-#include <rexlog/details/os.h>
-#include <rexlog/details/windows_include.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/details/os.h>
+#include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <stdlib.h>

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <rexlog/details/log_msg_buffer.h>
-#include <rexlog/details/circular_q.h>
+#include <rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h>
+#include <rex_engine/diagnostics/logging/internal/details/circular_q.h>
 
 #include "rex_std/mutex.h"
 #include "rex_std/atomic.h"

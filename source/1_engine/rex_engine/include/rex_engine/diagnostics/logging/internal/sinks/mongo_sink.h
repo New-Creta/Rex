@@ -9,10 +9,10 @@
 // http://mongocxx.org/mongocxx-v3/installation/
 //
 
-#include "rexlog/common.h"
-#include "rexlog/details/log_msg.h"
-#include "rexlog/sinks/base_sink.h"
-#include <rexlog/details/synchronous_factory.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
 
 #include <bsoncxx/builder/stream/document.hpp>
 #include <bsoncxx/types.hpp>
@@ -82,7 +82,7 @@ private:
     rsl::unique_ptr<mongocxx::client> client_ = nullptr;
 };
 
-#include "rexlog/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include <mutex>
 using mongo_sink_mt = mongo_sink<rsl::mutex>;
 using mongo_sink_st = mongo_sink<rexlog::details::null_mutex>;

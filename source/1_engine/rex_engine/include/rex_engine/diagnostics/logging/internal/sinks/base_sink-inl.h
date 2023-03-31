@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <rexlog/sinks/base_sink.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
 
-#include <rexlog/common.h>
-#include <rexlog/pattern_formatter.h>
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"

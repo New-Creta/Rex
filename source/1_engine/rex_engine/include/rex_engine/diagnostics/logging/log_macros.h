@@ -21,9 +21,9 @@
 
 #else
 
-	#include "logging/log_category.h"
-	#include "logging/log_verbosity.h"
-	#include "logging/logger.h"
+	#include "rex_engine/diagnostics/logging/log_category.h"
+	#include "rex_engine/diagnostics/logging/log_verbosity.h"
+	#include "rex_engine/diagnostics/logging/logger.h"
 
 	namespace rex
 	{

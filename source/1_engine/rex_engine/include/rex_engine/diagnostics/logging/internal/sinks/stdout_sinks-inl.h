@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include <rexlog/sinks/stdout_sinks.h>
+#include <rex_engine/diagnostics/logging/internal/sinks/stdout_sinks.h>
 
-#include <rexlog/details/console_globals.h>
-#include <rexlog/pattern_formatter.h>
+#include <rex_engine/diagnostics/logging/internal/details/console_globals.h>
+#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 #include "rex_std/memory.h"
 
 #ifdef _WIN32
 // under windows using fwrite to non-binary stream results in \r\r\n (see issue #1675)
 // so instead we use ::FileWrite
-#    include <rexlog/details/windows_include.h>
+#    include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
 
 #    ifndef _USING_V110_SDK71_ // fileapi.h doesn't exist in winxp
 #        include <fileapi.h>   // WriteFile (..)

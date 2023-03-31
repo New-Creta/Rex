@@ -9,12 +9,12 @@
 // https://github.com/confluentinc/librdkafka
 //
 
-#include <rexlog/common.h>
-#include "rexlog/details/log_msg.h"
-#include "rexlog/sinks/base_sink.h"
-#include "rexlog/details/synchronous_factory.h"
-#include "rexlog/details/null_mutex.h"
-#include "rexlog/async.h"
+#include <rex_engine/diagnostics/logging/internal/common.h>
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/async.h"
 #include <mutex>
 
 // kafka header

@@ -9,7 +9,7 @@
 // dequeue_for(..) - will block until the queue is not empty or timeout have
 // passed.
 
-#include <rexlog/details/circular_q.h>
+#include <rex_engine/diagnostics/logging/internal/details/circular_q.h>
 
 #include "rex_std/condition_variable.h"
 #include "rex_std/mutex.h"

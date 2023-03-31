@@ -1,8 +1,8 @@
 
 
 #pragma once
-#include <rexlog/cfg/helpers.h>
-#include <rexlog/details/registry.h>
+#include <rex_engine/diagnostics/logging/internal/cfg/helpers.h>
+#include <rex_engine/diagnostics/logging/internal/details/registry.h>
 
 //
 // Init log levels using each argv entry that starts with "REXLOG_LEVEL="

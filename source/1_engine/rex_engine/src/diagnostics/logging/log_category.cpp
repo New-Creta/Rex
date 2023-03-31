@@ -1,4 +1,4 @@
-#include "logging/log_category.h"
+#include "rex_engine/diagnostics/logging/log_category.h"
 
 namespace rex
 {
@@ -7,7 +7,7 @@ namespace rex
         : default_verbosity_(inDefaultVerbosity)
         , category_name_(inCategoryName)
     {
-        //LOG_CATEGORY(CategoryName, InDefaultVerbosity);
+        //LOG CATEGORY? (CategoryName, InDefaultVerbosity);
         resetFromDefault();
     }
 
