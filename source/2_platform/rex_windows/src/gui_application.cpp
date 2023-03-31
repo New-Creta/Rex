@@ -1,6 +1,6 @@
 #include "rex_windows/gui_application.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_engine/event_system.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"

@@ -1,6 +1,6 @@
 #include "rex_windows/win_window_class.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_std/bonus/memory/zero_memory.h"
 

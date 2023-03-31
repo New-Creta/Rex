@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/buffer_layout.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 
 namespace rex
 {

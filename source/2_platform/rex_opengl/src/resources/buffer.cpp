@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/buffer.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 
 #if REX_PLATFORM_X64
   #include <glad/gl.h>

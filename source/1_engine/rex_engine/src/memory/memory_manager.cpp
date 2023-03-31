@@ -1,6 +1,6 @@
 #include "rex_engine/memory/memory_manager.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_std/limits.h"
 
 namespace rex

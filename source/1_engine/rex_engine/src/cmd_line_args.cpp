@@ -1,6 +1,6 @@
 #include "rex_engine/cmd_line_args.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 
 namespace rex
 {

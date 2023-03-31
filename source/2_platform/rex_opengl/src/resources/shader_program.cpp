@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/shader_program.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_opengl/opengl_error.h"
 #include "rex_opengl/resources/shader.h"
 #include "rex_std/sstream.h"

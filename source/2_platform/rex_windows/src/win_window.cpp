@@ -1,6 +1,6 @@
 #include "rex_windows/win_window.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 
