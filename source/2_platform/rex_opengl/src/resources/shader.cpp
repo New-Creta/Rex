@@ -1,6 +1,7 @@
 #include "rex_opengl/resources/shader.h"
 
 #include "rex_engine/diagnostics/logging.h"
+#include "rex_std/sstream.h"
 
 #define REX_ENABLE_STD_ALIAS
 #include "rex_std/sstream.h"
@@ -13,14 +14,6 @@
 #endif
 
 REX_STATIC_TODO("sstream define REX_ENABLE_STD_ALIAS(stringstream) is not working properly, adding workaround here");
-
-namespace rsl
-{
-  inline namespace v1
-  {
-    using stringstream = std::stringstream;
-  } // namespace v1
-} // namespace rsl
 
 namespace rex
 {
