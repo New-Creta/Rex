@@ -26,7 +26,7 @@ namespace rexlog
   } // namespace sinks
 
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> null_logger_mt(const rsl::string& logger_name)
+  inline rsl::shared_ptr<logger> null_logger_mt(const rex::DebugString& logger_name)
   {
     auto null_logger = Factory::template create<sinks::null_sink_mt>(logger_name);
     null_logger->set_level(level::off);
@@ -34,7 +34,7 @@ namespace rexlog
   }
 
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> null_logger_st(const rsl::string& logger_name)
+  inline rsl::shared_ptr<logger> null_logger_st(const rex::DebugString& logger_name)
   {
     auto null_logger = Factory::template create<sinks::null_sink_st>(logger_name);
     null_logger->set_level(level::off);

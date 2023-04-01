@@ -14,7 +14,7 @@ namespace rexlog
     details::registry::instance().initialize_logger(rsl::move(logger));
   }
 
-  REXLOG_INLINE rsl::shared_ptr<logger> get(const rsl::string& name)
+  REXLOG_INLINE rsl::shared_ptr<logger> get(const rex::DebugString& name)
   {
     return details::registry::instance().get(name);
   }
@@ -24,7 +24,7 @@ namespace rexlog
     details::registry::instance().set_formatter(rsl::move(formatter));
   }
 
-  REXLOG_INLINE void set_pattern(rsl::string pattern, pattern_time_type time_type)
+  REXLOG_INLINE void set_pattern(rex::DebugString pattern, pattern_time_type time_type)
   {
     set_formatter(rsl::unique_ptr<rexlog::formatter>(new pattern_formatter(rsl::move(pattern), time_type)));
   }
@@ -64,7 +64,7 @@ namespace rexlog
     details::registry::instance().flush_on(log_level);
   }
 
-  REXLOG_INLINE void set_error_handler(void (*handler)(const rsl::string& msg))
+  REXLOG_INLINE void set_error_handler(void (*handler)(const rex::DebugString& msg))
   {
     details::registry::instance().set_error_handler(handler);
   }
@@ -79,7 +79,7 @@ namespace rexlog
     details::registry::instance().apply_all(fun);
   }
 
-  REXLOG_INLINE void drop(const rsl::string& name)
+  REXLOG_INLINE void drop(const rex::DebugString& name)
   {
     details::registry::instance().drop(name);
   }

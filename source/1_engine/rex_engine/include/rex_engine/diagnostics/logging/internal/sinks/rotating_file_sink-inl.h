@@ -2,17 +2,10 @@
 
 #pragma once
 
-#include <cerrno>
-#include <chrono>
-#include <ctime>
-#include <format>
-#include <mutex>
 #include <rex_engine/diagnostics/logging/internal/common.h>
 #include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
 #include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
 #include <rex_engine/diagnostics/logging/internal/sinks/rotating_file_sink.h>
-#include <string>
-#include <tuple>
 
 namespace rexlog
 {
@@ -28,12 +21,12 @@ namespace rexlog
     {
       if(max_size == 0)
       {
-        throw_rexlog_ex(rsl::string("rotating sink constructor: max_size arg cannot be zero"));
+        throw_rexlog_ex(rex::DebugString("rotating sink constructor: max_size arg cannot be zero"));
       }
 
       if(max_files > 200000)
       {
-        throw_rexlog_ex(rsl::string("rotating sink constructor: max_files arg cannot exceed 200000"));
+        throw_rexlog_ex(rex::DebugString("rotating sink constructor: max_files arg cannot exceed 200000"));
       }
       file_helper_.open(calc_filename(base_filename_, 0));
       current_size_ = file_helper_.size(); // expensive. called only once

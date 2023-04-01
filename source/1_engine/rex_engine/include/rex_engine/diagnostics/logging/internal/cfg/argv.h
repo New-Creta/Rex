@@ -24,10 +24,10 @@ namespace rexlog
     // search for REXLOG_LEVEL= in the args and use it to init the levels
     inline void load_argv_levels(int argc, const char** argv)
     {
-      const rsl::string rexlog_level_prefix = "REXLOG_LEVEL=";
+      const rex::DebugString rexlog_level_prefix = "REXLOG_LEVEL=";
       for(int i = 1; i < argc; i++)
       {
-        rsl::string arg = argv[i];
+        rex::DebugString arg = argv[i];
         if(arg.find(rexlog_level_prefix) == 0)
         {
           auto levels_string = arg.substr(rexlog_level_prefix.size());

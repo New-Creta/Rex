@@ -71,9 +71,9 @@ namespace rexlog
         struct win32_error : public rexlog_ex
         {
           /** Formats an error report line: "user-message: error-code (system message)" */
-          static rsl::string format(const rsl::string& user_message, DWORD error_code = GetLastError())
+          static rex::DebugString format(const rex::DebugString& user_message, DWORD error_code = GetLastError())
           {
-            rsl::string system_message;
+            rex::DebugString system_message;
 
             local_alloc_t format_message_result {};
             auto format_message_succeeded =
@@ -87,7 +87,7 @@ namespace rexlog
             return fmt_lib::format("{}: {}{}", user_message, error_code, system_message);
           }
 
-          explicit win32_error(const rsl::string& func_name, DWORD error = GetLastError())
+          explicit win32_error(const rex::DebugString& func_name, DWORD error = GetLastError())
               : rexlog_ex(format(func_name, error))
           {
           }
@@ -206,7 +206,7 @@ namespace rexlog
       private:
         HANDLE hEventLog_ {NULL};
         internal::sid_t current_user_sid_;
-        rsl::string source_;
+        rex::DebugString source_;
         DWORD event_id_;
 
         HANDLE event_log_handle()
@@ -245,7 +245,7 @@ namespace rexlog
         void flush_() override {}
 
       public:
-        win_eventlog_sink(const rsl::string& source, DWORD event_id = 1000 /* according to mscoree.dll */)
+        win_eventlog_sink(const rex::DebugString& source, DWORD event_id = 1000 /* according to mscoree.dll */)
             : source_(source)
             , event_id_(event_id)
         {

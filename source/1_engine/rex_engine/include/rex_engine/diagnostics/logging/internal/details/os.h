@@ -78,7 +78,7 @@ namespace rexlog
       // See https://github.com/gabime/rexlog/issues/609
       REXLOG_API void sleep_for_millis(unsigned int milliseconds) REXLOG_NOEXCEPT;
 
-      REXLOG_API rsl::string filename_to_str(const filename_t& filename);
+      REXLOG_API rex::DebugString filename_to_str(const filename_t& filename);
 
       REXLOG_API int pid() REXLOG_NOEXCEPT;
 
@@ -103,7 +103,7 @@ namespace rexlog
 
       // non thread safe, cross platform getenv/getenv_s
       // return empty string if field not found
-      REXLOG_API rsl::string getenv(const char* field);
+      REXLOG_API rex::DebugString getenv(const char* field);
 
       // Do fsync by FILE objectpointer.
       // Return true on success.

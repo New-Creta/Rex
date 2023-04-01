@@ -2,11 +2,6 @@
 
 #pragma once
 
-#include <chrono>
-#include <cstdio>
-#include <ctime>
-#include <format>
-#include <mutex>
 #include <rex_engine/diagnostics/logging/internal/common.h>
 #include <rex_engine/diagnostics/logging/internal/details/circular_q.h>
 #include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
@@ -14,7 +9,6 @@
 #include <rex_engine/diagnostics/logging/internal/details/os.h>
 #include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
 #include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
-#include <string>
 
 namespace rexlog
 {
@@ -186,13 +180,13 @@ namespace rexlog
   // factory functions
   //
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> hourly_logger_mt(const rsl::string& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<logger> hourly_logger_mt(const rex::DebugString& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::hourly_file_sink_mt>(logger_name, filename, truncate, max_files, event_handlers);
   }
 
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> hourly_logger_st(const rsl::string& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<logger> hourly_logger_st(const rex::DebugString& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::hourly_file_sink_st>(logger_name, filename, truncate, max_files, event_handlers);
   }

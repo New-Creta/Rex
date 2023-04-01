@@ -104,6 +104,15 @@ namespace rex
       global_debug_allocator().deallocate(header, size);
     }
 
+    bool operator==(const TrackedAllocator& rhs) const
+    {
+      return *m_allocator == *rhs.m_allocator;
+    }
+    bool operator!=(const TrackedAllocator& rhs) const
+    {
+      return !(*this == rhs);
+    }
+
   private:
     Allocator* m_allocator;
   };

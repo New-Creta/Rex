@@ -36,7 +36,7 @@ namespace rexlog
   struct async_factory_impl
   {
     template <typename Sink, typename... SinkArgs>
-    static rsl::shared_ptr<async_logger> create(rsl::string logger_name, SinkArgs&&... args)
+    static rsl::shared_ptr<async_logger> create(rex::DebugString logger_name, SinkArgs&&... args)
     {
       auto& registry_inst = details::registry::instance();
 
@@ -62,13 +62,13 @@ namespace rexlog
   using async_factory_nonblock = async_factory_impl<async_overflow_policy::overrun_oldest>;
 
   template <typename Sink, typename... SinkArgs>
-  inline rsl::shared_ptr<rexlog::logger> create_async(rsl::string logger_name, SinkArgs&&... sink_args)
+  inline rsl::shared_ptr<rexlog::logger> create_async(rex::DebugString logger_name, SinkArgs&&... sink_args)
   {
     return async_factory::create<Sink>(rsl::move(logger_name), rsl::forward<SinkArgs>(sink_args)...);
   }
 
   template <typename Sink, typename... SinkArgs>
-  inline rsl::shared_ptr<rexlog::logger> create_async_nb(rsl::string logger_name, SinkArgs&&... sink_args)
+  inline rsl::shared_ptr<rexlog::logger> create_async_nb(rex::DebugString logger_name, SinkArgs&&... sink_args)
   {
     return async_factory_nonblock::create<Sink>(rsl::move(logger_name), rsl::forward<SinkArgs>(sink_args)...);
   }

@@ -20,7 +20,7 @@ namespace rexlog
     class syslog_sink : public base_sink<Mutex>
     {
     public:
-      syslog_sink(rsl::string ident, int syslog_option, int syslog_facility, bool enable_formatting)
+      syslog_sink(rex::DebugString ident, int syslog_option, int syslog_facility, bool enable_formatting)
           : enable_formatting_ {enable_formatting}
           , syslog_levels_ {{/* rexlog::level::trace      */ LOG_DEBUG,
                              /* rexlog::level::debug      */ LOG_DEBUG,
@@ -76,7 +76,7 @@ namespace rexlog
       levels_array syslog_levels_;
       // must store the ident because the man says openlog might use the pointer as
       // is and not a string copy
-      const rsl::string ident_;
+      const rex::DebugString ident_;
 
       //
       // Simply maps rexlog's log level to syslog priority level.
@@ -93,13 +93,13 @@ namespace rexlog
 
   // Create and register a syslog logger
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> syslog_logger_mt(const rsl::string& logger_name, const rsl::string& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
+  inline rsl::shared_ptr<logger> syslog_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
   {
     return Factory::template create<sinks::syslog_sink_mt>(logger_name, syslog_ident, syslog_option, syslog_facility, enable_formatting);
   }
 
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> syslog_logger_st(const rsl::string& logger_name, const rsl::string& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
+  inline rsl::shared_ptr<logger> syslog_logger_st(const rex::DebugString& logger_name, const rex::DebugString& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
   {
     return Factory::template create<sinks::syslog_sink_st>(logger_name, syslog_ident, syslog_option, syslog_facility, enable_formatting);
   }

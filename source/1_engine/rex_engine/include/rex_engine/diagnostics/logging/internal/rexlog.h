@@ -31,7 +31,7 @@ namespace rexlog
   // Example:
   //   rexlog::create<daily_file_sink_st>("logger_name", "dailylog_filename", 11, 59);
   template <typename Sink, typename... SinkArgs>
-  inline rsl::shared_ptr<rexlog::logger> create(rsl::string logger_name, SinkArgs&&... sink_args)
+  inline rsl::shared_ptr<rexlog::logger> create(rex::DebugString logger_name, SinkArgs&&... sink_args)
   {
     return default_factory::create<Sink>(rsl::move(logger_name), rsl::forward<SinkArgs>(sink_args)...);
   }
@@ -49,14 +49,14 @@ namespace rexlog
   // Return an existing logger or nullptr if a logger with such name doesn't
   // exist.
   // example: rexlog::get("my_logger")->info("hello {}", "world");
-  REXLOG_API rsl::shared_ptr<logger> get(const rsl::string& name);
+  REXLOG_API rsl::shared_ptr<logger> get(const rex::DebugString& name);
 
   // Set global formatter. Each sink in each logger will get a clone of this object
   REXLOG_API void set_formatter(rsl::unique_ptr<rexlog::formatter> formatter);
 
   // Set global format string.
   // example: rexlog::set_pattern("%Y-%m-%d %H:%M:%S.%e %l : %v");
-  REXLOG_API void set_pattern(rsl::string pattern, pattern_time_type time_type = pattern_time_type::local);
+  REXLOG_API void set_pattern(rex::DebugString pattern, pattern_time_type time_type = pattern_time_type::local);
 
   // enable global backtrace support
   REXLOG_API void enable_backtrace(size_t n_messages);
@@ -88,7 +88,7 @@ namespace rexlog
   }
 
   // Set global error handler
-  REXLOG_API void set_error_handler(void (*handler)(const rsl::string& msg));
+  REXLOG_API void set_error_handler(void (*handler)(const rex::DebugString& msg));
 
   // Register the given logger with the given name
   REXLOG_API void register_logger(rsl::shared_ptr<logger> logger);
@@ -99,7 +99,7 @@ namespace rexlog
   REXLOG_API void apply_all(const rsl::function<void(rsl::shared_ptr<logger>)>& fun);
 
   // Drop the reference to the given logger
-  REXLOG_API void drop(const rsl::string& name);
+  REXLOG_API void drop(const rex::DebugString& name);
 
   // Drop all references from the registry
   REXLOG_API void drop_all();

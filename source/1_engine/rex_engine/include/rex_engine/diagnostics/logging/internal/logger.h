@@ -16,9 +16,10 @@
 #include "rex_std/format.h"
 #include "rex_std/vector.h"
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/backtracer.h>
-#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
+#include "rex_engine/types.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 
 #define REXLOG_LOGGER_CATCH(location)
 
@@ -29,7 +30,7 @@ namespace rexlog
   {
   public:
     // Empty logger
-    explicit logger(rsl::string name)
+    explicit logger(rex::DebugString name)
         : name_(rsl::move(name))
         , sinks_()
     {
@@ -37,20 +38,20 @@ namespace rexlog
 
     // Logger with range on sinks
     template <typename It>
-    logger(rsl::string name, It begin, It end)
+    logger(rex::DebugString name, It begin, It end)
         : name_(rsl::move(name))
         , sinks_(begin, end)
     {
     }
 
     // Logger with single sink
-    logger(rsl::string name, sink_ptr single_sink)
+    logger(rex::DebugString name, sink_ptr single_sink)
         : logger(rsl::move(name), {rsl::move(single_sink)})
     {
     }
 
     // Logger with sinks init list
-    logger(rsl::string name, sinks_init_list sinks)
+    logger(rex::DebugString name, sinks_init_list sinks)
         : logger(rsl::move(name), sinks.begin(), sinks.end())
     {
     }
@@ -206,7 +207,7 @@ namespace rexlog
 
     level::level_enum level() const;
 
-    const rsl::string& name() const;
+    const rex::DebugString& name() const;
 
     // set formatting for the sinks in this logger.
     // each sink will get a separate instance of the formatter object.
@@ -216,7 +217,7 @@ namespace rexlog
     // equivalent to
     //     set_formatter(make_unique<pattern_formatter>(pattern, time_type))
     // Note: each sink will get a new instance of a formatter object, replacing the old one.
-    void set_pattern(rsl::string pattern, pattern_time_type time_type = pattern_time_type::local);
+    void set_pattern(rex::DebugString pattern, pattern_time_type time_type = pattern_time_type::local);
 
     // backtrace support.
     // efficiently store all debug/trace messages in a circular buffer until needed for debugging.
@@ -238,10 +239,10 @@ namespace rexlog
     void set_error_handler(err_handler);
 
     // create new logger with same sinks and configuration.
-    virtual rsl::shared_ptr<logger> clone(rsl::string logger_name);
+    virtual rsl::shared_ptr<logger> clone(rex::DebugString logger_name);
 
   protected:
-    rsl::string name_;
+    rex::DebugString name_;
     rsl::vector<sink_ptr> sinks_;
     rexlog::level_t level_ {level::info};
     rexlog::level_t flush_level_ {level::off};
@@ -279,7 +280,7 @@ namespace rexlog
 
     // handle errors during logging.
     // default handler prints the error to stderr at max rate of 1 message/sec.
-    void err_handler_(const rsl::string& msg);
+    void err_handler_(const rex::DebugString& msg);
   };
 
   void swap(logger& a, logger& b);

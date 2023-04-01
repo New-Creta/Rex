@@ -14,6 +14,7 @@
 #include "rex_std/type_traits.h"
 
 #include <cstdio>
+#include "rex_engine/types.h"
 #include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
 #include <rex_engine/diagnostics/logging/internal/tweakme.h>
 #include <version>
@@ -67,17 +68,17 @@ namespace rexlog
     class sink;
   } // namespace sinks
 
-  using filename_t = rsl::string;
+  using filename_t = rex::DebugString;
 #define REXLOG_FILENAME_T(s) s
 
   using log_clock       = rsl::chrono::system_clock;
   using sink_ptr        = rsl::shared_ptr<sinks::sink>;
   using sinks_init_list = rsl::initializer_list<sink_ptr>;
-  using err_handler     = rsl::function<void(const rsl::string& err_msg)>;
+  using err_handler     = rsl::function<void(const rex::DebugString& err_msg)>;
   namespace fmt_lib     = rsl;
 
   using string_view_t = rsl::string_view;
-  using memory_buf_t  = rsl::string;
+  using memory_buf_t  = rex::DebugString;
 
   template <typename... Args>
 #if __cpp_lib_format >= 202207L
@@ -156,7 +157,7 @@ namespace rexlog
 
     REXLOG_API const string_view_t& to_string_view(rexlog::level::level_enum l) REXLOG_NOEXCEPT;
     REXLOG_API const char* to_short_c_str(rexlog::level::level_enum l) REXLOG_NOEXCEPT;
-    REXLOG_API rexlog::level::level_enum from_str(const rsl::string& name) REXLOG_NOEXCEPT;
+    REXLOG_API rexlog::level::level_enum from_str(rex::DebugString& name) REXLOG_NOEXCEPT;
 
   } // namespace level
 
@@ -186,16 +187,16 @@ namespace rexlog
   class REXLOG_API rexlog_ex
   {
   public:
-    explicit rexlog_ex(rsl::string msg);
-    rexlog_ex(const rsl::string& msg, int last_errno);
+    explicit rexlog_ex(rex::DebugString msg);
+    rexlog_ex(const rex::DebugString& msg, int last_errno);
     const char* what() const REXLOG_NOEXCEPT;
 
   private:
-    rsl::string msg_;
+    rex::DebugString msg_;
   };
 
-  REXLOG_API void throw_rexlog_ex(const rsl::string& msg, int last_errno);
-  REXLOG_API void throw_rexlog_ex(rsl::string msg);
+  REXLOG_API void throw_rexlog_ex(const rex::DebugString& msg, int last_errno);
+  REXLOG_API void throw_rexlog_ex(rex::DebugString msg);
 
   struct source_loc
   {

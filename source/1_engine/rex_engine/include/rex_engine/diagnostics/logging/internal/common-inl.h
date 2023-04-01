@@ -28,7 +28,7 @@ namespace rexlog
       return short_level_names[l];
     }
 
-    REXLOG_INLINE rexlog::level::level_enum from_str(const rsl::string& name) REXLOG_NOEXCEPT
+    REXLOG_INLINE rexlog::level::level_enum from_str(const rex::DebugString& name) REXLOG_NOEXCEPT
     {
       auto it = rsl::find(rsl::begin(level_string_views), rsl::end(level_string_views), name);
       if(it != rsl::end(level_string_views))
@@ -47,14 +47,14 @@ namespace rexlog
     }
   } // namespace level
 
-  REXLOG_INLINE rexlog_ex::rexlog_ex(rsl::string msg)
+  REXLOG_INLINE rexlog_ex::rexlog_ex(rex::DebugString msg)
       : msg_(rsl::move(msg))
   {
   }
 
-  REXLOG_INLINE rexlog_ex::rexlog_ex(const rsl::string& msg, int last_errno)
+  REXLOG_INLINE rexlog_ex::rexlog_ex(const rex::DebugString& msg, int last_errno)
   {
-    msg_ = rsl::string(rsl::format("{} : {}", msg, last_errno));
+    msg_ = rex::DebugString(rsl::format("{} : {}", msg, last_errno));
   }
 
   REXLOG_INLINE const char* rexlog_ex::what() const REXLOG_NOEXCEPT
@@ -62,24 +62,24 @@ namespace rexlog
     return msg_.c_str();
   }
 
-  REXLOG_INLINE void throw_rexlog_ex(const rsl::string& msg, int last_errno)
+  REXLOG_INLINE void throw_rexlog_ex(const rex::DebugString& msg, int last_errno)
   {
     REXLOG_THROW(rexlog_ex(msg, last_errno));
   }
 
   REXLOG_INLINE void throw_rexlog_ex(const char* msg, int last_errno)
   {
-    throw_rexlog_ex(rsl::string(msg), last_errno);
+    throw_rexlog_ex(rex::DebugString(msg), last_errno);
   }
 
-  REXLOG_INLINE void throw_rexlog_ex(rsl::string msg)
+  REXLOG_INLINE void throw_rexlog_ex(rex::DebugString msg)
   {
     REXLOG_THROW(rexlog_ex(rsl::move(msg)));
   }
 
   REXLOG_INLINE void throw_rexlog_ex(const char* msg)
   {
-    throw_rexlog_ex(rsl::string(msg));
+    throw_rexlog_ex(rex::DebugString(msg));
   }
 
 } // namespace rexlog

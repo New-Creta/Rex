@@ -15,6 +15,10 @@ namespace rex
       using size_type = typename Allocator::size_type;
       using pointer   = typename Allocator::pointer;
 
+      DebugAllocator()
+        : m_allocator(nullptr)
+      {}
+
       DebugAllocator(Allocator& allocator)
           : m_allocator(rsl::addressof(allocator))
       {

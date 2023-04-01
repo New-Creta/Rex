@@ -16,12 +16,12 @@ template class REXLOG_API rexlog::sinks::stdout_sink<rexlog::details::console_nu
 template class REXLOG_API rexlog::sinks::stderr_sink<rexlog::details::console_mutex>;
 template class REXLOG_API rexlog::sinks::stderr_sink<rexlog::details::console_nullmutex>;
 
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_logger_mt<rexlog::synchronous_factory>(const rsl::string& logger_name);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_logger_st<rexlog::synchronous_factory>(const rsl::string& logger_name);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_logger_mt<rexlog::synchronous_factory>(const rsl::string& logger_name);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_logger_st<rexlog::synchronous_factory>(const rsl::string& logger_name);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_logger_mt<rexlog::synchronous_factory>(const rex::DebugString& logger_name);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_logger_st<rexlog::synchronous_factory>(const rex::DebugString& logger_name);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_logger_mt<rexlog::synchronous_factory>(const rex::DebugString& logger_name);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_logger_st<rexlog::synchronous_factory>(const rex::DebugString& logger_name);
 
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_logger_mt<rexlog::async_factory>(const rsl::string& logger_name);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_logger_st<rexlog::async_factory>(const rsl::string& logger_name);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_logger_mt<rexlog::async_factory>(const rsl::string& logger_name);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_logger_st<rexlog::async_factory>(const rsl::string& logger_name);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_logger_mt<rexlog::async_factory>(const rex::DebugString& logger_name);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_logger_st<rexlog::async_factory>(const rex::DebugString& logger_name);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_logger_mt<rexlog::async_factory>(const rex::DebugString& logger_name);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_logger_st<rexlog::async_factory>(const rex::DebugString& logger_name);

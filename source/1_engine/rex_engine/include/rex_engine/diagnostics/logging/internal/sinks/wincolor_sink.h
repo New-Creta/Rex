@@ -35,7 +35,7 @@ namespace rexlog
       void set_color(level::level_enum level, rsl::uint16 color);
       void log(const details::log_msg& msg) final override;
       void flush() final override;
-      void set_pattern(const rsl::string& pattern) override final;
+      void set_pattern(const rex::DebugString& pattern) override final;
       void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) override final;
       void set_color_mode(color_mode mode);
 

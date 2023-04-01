@@ -40,7 +40,7 @@ namespace rexlog
         }
       }
 
-      static void throw_winsock_error_(const rsl::string& msg, int last_error)
+      static void throw_winsock_error_(const rex::DebugString& msg, int last_error)
       {
         char buf[512];
         ::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, last_error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, (sizeof(buf) / sizeof(char)), NULL);
@@ -59,7 +59,7 @@ namespace rexlog
       }
 
     public:
-      udp_client(const rsl::string& host, uint16_t port)
+      udp_client(const rex::DebugString& host, uint16_t port)
       {
         init_winsock_();
 

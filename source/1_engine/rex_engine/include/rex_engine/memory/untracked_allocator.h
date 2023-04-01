@@ -16,5 +16,14 @@ namespace rex
 
     void deallocate(pointer ptr, rsl::memory_size size);
     void deallocate(pointer ptr, size_type size);
+
+    bool operator==(const UntrackedAllocator&) const
+    {
+      return true;
+    }
+    bool operator!=(const UntrackedAllocator& rhs) const
+    {
+      return !(*this == rhs);
+    }
   };
 } // namespace rex

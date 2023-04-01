@@ -28,13 +28,13 @@ namespace rexlog
     class REXLOG_API registry
     {
     public:
-      using log_levels                     = rsl::unordered_map<rsl::string, level::level_enum>;
+      using log_levels                     = rex::DebugHashTable<rex::DebugString, level::level_enum>;
       registry(const registry&)            = delete;
       registry& operator=(const registry&) = delete;
 
       void register_logger(rsl::shared_ptr<logger> new_logger);
       void initialize_logger(rsl::shared_ptr<logger> new_logger);
-      rsl::shared_ptr<logger> get(const rsl::string& logger_name);
+      rsl::shared_ptr<logger> get(const rex::DebugString& logger_name);
       rsl::shared_ptr<logger> default_logger();
 
       // Return raw ptr to the default logger.
@@ -76,7 +76,7 @@ namespace rexlog
 
       void flush_all();
 
-      void drop(const rsl::string& logger_name);
+      void drop(const rex::DebugString& logger_name);
 
       void drop_all();
 
@@ -98,12 +98,12 @@ namespace rexlog
       registry();
       ~registry();
 
-      void throw_if_exists_(const rsl::string& logger_name);
+      void throw_if_exists_(const rex::DebugString& logger_name);
       void register_logger_(rsl::shared_ptr<logger> new_logger);
       bool set_level_from_cfg_(logger* logger);
       rsl::mutex logger_map_mutex_, flusher_mutex_;
       rsl::recursive_mutex tp_mutex_;
-      rsl::unordered_map<rsl::string, rsl::shared_ptr<logger>> loggers_;
+      rsl::unordered_map<rex::DebugString, rsl::shared_ptr<logger>> loggers_;
       log_levels log_levels_;
       rsl::unique_ptr<formatter> formatter_;
       rexlog::level::level_enum global_log_level_ = level::info;

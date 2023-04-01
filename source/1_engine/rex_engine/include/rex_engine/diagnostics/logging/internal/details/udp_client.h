@@ -40,7 +40,7 @@ namespace rexlog
       }
 
     public:
-      udp_client(const rsl::string& host, uint16_t port)
+      udp_client(const rex::DebugString& host, uint16_t port)
       {
         socket_ = ::socket(PF_INET, SOCK_DGRAM, 0);
         if(socket_ < 0)

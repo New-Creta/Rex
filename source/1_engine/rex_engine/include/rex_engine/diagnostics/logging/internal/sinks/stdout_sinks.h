@@ -33,7 +33,7 @@ namespace rexlog
 
       void log(const details::log_msg& msg) override;
       void flush() override;
-      void set_pattern(const rsl::string& pattern) override;
+      void set_pattern(const rex::DebugString& pattern) override;
 
       void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) override;
 
@@ -70,15 +70,15 @@ namespace rexlog
 
   // factory methods
   template <typename Factory = rexlog::synchronous_factory>
-  rsl::shared_ptr<logger> stdout_logger_mt(const rsl::string& logger_name);
+  rsl::shared_ptr<logger> stdout_logger_mt(const rex::DebugString& logger_name);
 
   template <typename Factory = rexlog::synchronous_factory>
-  rsl::shared_ptr<logger> stdout_logger_st(const rsl::string& logger_name);
+  rsl::shared_ptr<logger> stdout_logger_st(const rex::DebugString& logger_name);
 
   template <typename Factory = rexlog::synchronous_factory>
-  rsl::shared_ptr<logger> stderr_logger_mt(const rsl::string& logger_name);
+  rsl::shared_ptr<logger> stderr_logger_mt(const rex::DebugString& logger_name);
 
   template <typename Factory = rexlog::synchronous_factory>
-  rsl::shared_ptr<logger> stderr_logger_st(const rsl::string& logger_name);
+  rsl::shared_ptr<logger> stderr_logger_st(const rex::DebugString& logger_name);
 
 } // namespace rexlog

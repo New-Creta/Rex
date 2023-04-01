@@ -19,6 +19,6 @@
 #include <rex_engine/diagnostics/logging/internal/sinks/sink-inl.h>
 
 // template instantiate logger constructor with sinks init list
-template REXLOG_API rexlog::logger::logger(rsl::string name, sinks_init_list::iterator begin, sinks_init_list::iterator end);
+template REXLOG_API rexlog::logger::logger(rex::DebugString name, sinks_init_list::iterator begin, sinks_init_list::iterator end);
 template class REXLOG_API rexlog::sinks::base_sink<rsl::mutex>;
 template class REXLOG_API rexlog::sinks::base_sink<rexlog::details::null_mutex>;

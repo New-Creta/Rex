@@ -1,6 +1,6 @@
 #pragma once
 
-#include <rex_std/string.h>
+#include "rex_engine/types.h"
 
 /**
  * Enum that defines the verbosity levels of the logging system.
@@ -74,6 +74,6 @@ namespace rex
      * @param verbosity verbosity in string form (e.g., "Log", "Warning", or "Fatal")
      * @returns Parsed verbosity from the string (or Log if the string was invalid)
      */
-    LogVerbosity parseLogVerbosityFromString(const rsl::string& verbosity);
+    LogVerbosity parseLogVerbosityFromString(const rex::DebugString& verbosity);
   } // namespace Conversions
 } // namespace rex

@@ -45,7 +45,7 @@ namespace rex
       return "Unknown Verbosity";
     }
 
-    LogVerbosity parseLogVerbosityFromString(const rsl::string& verbosity)
+    LogVerbosity parseLogVerbosityFromString(const rex::DebugString& verbosity)
     {
       if(verbosity == "NoLogging")
       {

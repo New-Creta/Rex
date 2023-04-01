@@ -80,7 +80,7 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void REXLOG_INLINE wincolor_sink<ConsoleMutex>::set_pattern(const rsl::string& pattern)
+    void REXLOG_INLINE wincolor_sink<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
     {
       rsl::unique_lock<mutex_t> lock(mutex_);
       formatter_ = rsl::make_unique<pattern_formatter>(pattern);

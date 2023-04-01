@@ -36,7 +36,7 @@ void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::flush()
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_pattern(const rsl::string& pattern)
+void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_pattern(const rex::DebugString& pattern)
 {
   rsl::unique_lock<Mutex> lock(mutex_);
   set_pattern_(pattern);
@@ -50,7 +50,7 @@ void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_formatter(rsl::unique_pt
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_pattern_(const rsl::string& pattern)
+void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_pattern_(const rex::DebugString& pattern)
 {
   set_formatter_(details::make_unique<rexlog::pattern_formatter>(pattern));
 }

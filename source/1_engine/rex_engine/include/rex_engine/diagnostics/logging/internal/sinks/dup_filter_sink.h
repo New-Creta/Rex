@@ -51,7 +51,7 @@ namespace rexlog
     protected:
       rsl::chrono::microseconds max_skip_duration_;
       log_clock::time_point last_msg_time_;
-      rsl::string last_msg_payload_;
+      rex::DebugString last_msg_payload_;
       size_t skip_counter_ = 0;
       level::level_enum log_level_;
 

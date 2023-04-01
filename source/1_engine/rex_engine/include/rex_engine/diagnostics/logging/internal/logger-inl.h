@@ -74,7 +74,7 @@ namespace rexlog
     return static_cast<level::level_enum>(level_.load(rsl::memory_order_relaxed));
   }
 
-  REXLOG_INLINE const rsl::string& logger::name() const
+  REXLOG_INLINE const rex::DebugString& logger::name() const
   {
     return name_;
   }
@@ -98,7 +98,7 @@ namespace rexlog
     }
   }
 
-  REXLOG_INLINE void logger::set_pattern(rsl::string pattern, pattern_time_type time_type)
+  REXLOG_INLINE void logger::set_pattern(rex::DebugString pattern, pattern_time_type time_type)
   {
     auto new_formatter = details::make_unique<pattern_formatter>(rsl::move(pattern), time_type);
     set_formatter(rsl::move(new_formatter));
@@ -155,7 +155,7 @@ namespace rexlog
   }
 
   // create new logger with same sinks and configuration.
-  REXLOG_INLINE rsl::shared_ptr<logger> logger::clone(rsl::string logger_name)
+  REXLOG_INLINE rsl::shared_ptr<logger> logger::clone(rex::DebugString logger_name)
   {
     auto cloned   = rsl::make_shared<logger>(*this);
     cloned->name_ = rsl::move(logger_name);
@@ -224,7 +224,7 @@ namespace rexlog
     return (msg.level >= flush_level) && (msg.level != level::off);
   }
 
-  REXLOG_INLINE void logger::err_handler_(const rsl::string& msg)
+  REXLOG_INLINE void logger::err_handler_(const rex::DebugString& msg)
   {
     if(custom_err_handler_)
     {

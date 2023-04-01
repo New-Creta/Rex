@@ -33,7 +33,7 @@ namespace rexlog
     class android_sink final : public base_sink<Mutex>
     {
     public:
-      explicit android_sink(rsl::string tag = "rexlog", bool use_raw_msg = false)
+      explicit android_sink(rex::DebugString tag = "rexlog", bool use_raw_msg = false)
           : tag_(rsl::move(tag))
           , use_raw_msg_(use_raw_msg)
       {
@@ -103,7 +103,7 @@ namespace rexlog
         }
       }
 
-      rsl::string tag_;
+      rex::DebugString tag_;
       bool use_raw_msg_;
     };
 
@@ -120,13 +120,13 @@ namespace rexlog
   // Create and register android syslog logger
 
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> android_logger_mt(const rsl::string& logger_name, const rsl::string& tag = "rexlog")
+  inline rsl::shared_ptr<logger> android_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& tag = "rexlog")
   {
     return Factory::template create<sinks::android_sink_mt>(logger_name, tag);
   }
 
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> android_logger_st(const rsl::string& logger_name, const rsl::string& tag = "rexlog")
+  inline rsl::shared_ptr<logger> android_logger_st(const rex::DebugString& logger_name, const rex::DebugString& tag = "rexlog")
   {
     return Factory::template create<sinks::android_sink_st>(logger_name, tag);
   }

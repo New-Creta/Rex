@@ -357,9 +357,9 @@ namespace rexlog
 #endif
       }
 
-      REXLOG_INLINE rsl::string filename_to_str(const filename_t& filename)
+      REXLOG_INLINE rex::DebugString filename_to_str(const filename_t& filename)
       {
-        return rsl::string(filename);
+        return rex::DebugString(filename);
       }
 
       REXLOG_INLINE int pid() REXLOG_NOEXCEPT
@@ -470,20 +470,20 @@ namespace rexlog
         return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t {};
       }
 
-      rsl::string REXLOG_INLINE getenv(const char* field)
+      rex::DebugString REXLOG_INLINE getenv(const char* field)
       {
 #if defined(_MSC_VER)
   #if defined(__cplusplus_winrt)
-        return rsl::string {}; // not supported under uwp
+        return rex::DebugString {}; // not supported under uwp
   #else
         size_t len = 0;
         char buf[128];
         bool ok = ::getenv_s(&len, buf, sizeof(buf), field) == 0;
-        return ok ? rsl::string(buf) : rsl::string {};
+        return ok ? rex::DebugString(buf) : rex::DebugString {};
   #endif
 #else // revert to getenv
         char* buf = ::getenv(field);
-        return buf ? buf : rsl::string {};
+        return buf ? buf : rex::DebugString {};
 #endif
       }
 

@@ -71,7 +71,7 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE void ansicolor_sink<ConsoleMutex>::set_pattern(const rsl::string& pattern)
+    REXLOG_INLINE void ansicolor_sink<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
     {
       rsl::lock_guard<mutex_t> lock(mutex_);
       formatter_ = rsl::unique_ptr<rexlog::formatter>(new pattern_formatter(pattern));
@@ -115,9 +115,9 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE rsl::string ansicolor_sink<ConsoleMutex>::to_string_(const string_view_t& sv)
+    REXLOG_INLINE rex::DebugString ansicolor_sink<ConsoleMutex>::to_string_(const string_view_t& sv)
     {
-      return rsl::string(sv.data(), sv.size());
+      return rex::DebugString(sv.data(), sv.size());
     }
 
     // ansicolor_stdout_sink

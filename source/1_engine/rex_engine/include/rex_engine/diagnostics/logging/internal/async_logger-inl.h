@@ -9,12 +9,12 @@
 #include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
 #include <string>
 
-REXLOG_INLINE rexlog::async_logger::async_logger(rsl::string logger_name, sinks_init_list sinks_list, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
+REXLOG_INLINE rexlog::async_logger::async_logger(rex::DebugString logger_name, sinks_init_list sinks_list, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
     : async_logger(rsl::move(logger_name), sinks_list.begin(), sinks_list.end(), rsl::move(tp), overflow_policy)
 {
 }
 
-REXLOG_INLINE rexlog::async_logger::async_logger(rsl::string logger_name, sink_ptr single_sink, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
+REXLOG_INLINE rexlog::async_logger::async_logger(rex::DebugString logger_name, sink_ptr single_sink, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
     : async_logger(rsl::move(logger_name), {rsl::move(single_sink)}, rsl::move(tp), overflow_policy)
 {
 }
@@ -28,7 +28,7 @@ REXLOG_INLINE void rexlog::async_logger::sink_it_(const details::log_msg& msg)
   }
   else
   {
-    throw_rexlog_ex(rsl::string("async log: thread pool doesn't exist anymore"));
+    throw_rexlog_ex(rex::DebugString("async log: thread pool doesn't exist anymore"));
   }
 }
 
@@ -41,7 +41,7 @@ REXLOG_INLINE void rexlog::async_logger::flush_()
   }
   else
   {
-    throw_rexlog_ex(rsl::string("async flush: thread pool doesn't exist anymore"));
+    throw_rexlog_ex(rex::DebugString("async flush: thread pool doesn't exist anymore"));
   }
 }
 
@@ -80,7 +80,7 @@ REXLOG_INLINE void rexlog::async_logger::backend_flush_()
   }
 }
 
-REXLOG_INLINE rsl::shared_ptr<rexlog::logger> rexlog::async_logger::clone(rsl::string new_name)
+REXLOG_INLINE rsl::shared_ptr<rexlog::logger> rexlog::async_logger::clone(rex::DebugString new_name)
 {
   auto cloned   = rsl::make_shared<rexlog::async_logger>(*this);
   cloned->name_ = rsl::move(new_name);

@@ -1,21 +1,29 @@
 #include "rex_engine/diagnostics/logging/logger.h"
 
-#include <rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h>
-#include <rex_std/filesystem.h>
-#include <rex_std/unordered_map.h>
-#include <rex_std/utility.h>
-#include <rex_std/vector.h>
+#include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
+#include "rex_engine/memory/debug_allocator.h"
+#include "rex_engine/memory/untracked_allocator.h"
+#include "rex_engine/memory/global_allocator.h"
+#include "rex_std/filesystem.h"
+#include "rex_std/unordered_map.h"
+#include "rex_std/utility.h"
+#include "rex_std/vector.h"
 
 namespace rex
 {
   using LogPattern  = const char*;
-  using LogLevelMap = rsl::unordered_map<LogVerbosity, rexlog::level::level_enum>;
+  using LogLevelMap = DebugHashTable<LogVerbosity, rexlog::level::level_enum>;
 
   using LoggerObjectPtr    = rsl::shared_ptr<rexlog::logger>;
-  using LoggerObjectPtrMap = rsl::unordered_map<LogCategoryName, LoggerObjectPtr>;
+  using LoggerObjectPtrMap = DebugHashTable<LogCategoryName, LoggerObjectPtr>;
 
-  LoggerObjectPtrMap g_loggers;
+  LoggerObjectPtrMap& loggers()
+  {
+    static LoggerObjectPtrMap loggers(rex::global_debug_allocator());
+    return loggers;
+  }
+
 
   //-------------------------------------------------------------------------
   LogLevelMap get_log_levels()
@@ -27,9 +35,9 @@ namespace rex
   //-------------------------------------------------------------------------
   rexlog::logger* find_logger(const LogCategoryName& name)
   {
-    auto it = g_loggers.find(name);
+    auto it = loggers().find(name);
 
-    return it != rsl::cend(g_loggers) ? (*it).value.get() : nullptr;
+    return it != rsl::cend(loggers()) ? (*it).value.get() : nullptr;
   }
 
   //-------------------------------------------------------------------------
@@ -53,16 +61,16 @@ namespace rex
 
 #if REX_DEBUG
     // Only push rexout color sink when we are in debug mode
-    sinks.push_back(rsl::make_shared<rexlog::sinks::stdout_color_sink_mt>());
+    sinks.push_back(rsl::allocate_shared<rexlog::sinks::stdout_color_sink_mt>(rex::global_debug_allocator()));
 #endif
     // sinks.push_back(rsl::make_shared<rexlog::sinks::basic_file_sink_mt>(full_path.string(), true));
 
     rsl::shared_ptr<rexlog::logger> new_logger = rsl::make_shared<rexlog::logger>(category.getCategoryName(), rsl::begin(sinks), rsl::end(sinks));
 
-    new_logger->set_pattern(rsl::string(DEFAULT_PATTERN));
+    new_logger->set_pattern(rsl::basic_string<char8, rsl::char_traits<char8>, DebugAllocator<UntrackedAllocator>>(DEFAULT_PATTERN, global_debug_allocator()));
     new_logger->set_level(LOG_LEVELS.at(category.getVerbosity()));
 
-    g_loggers.insert({category.getCategoryName(), new_logger});
+    loggers().insert({category.getCategoryName(), new_logger});
 
     return *find_logger(category.getCategoryName());
   }

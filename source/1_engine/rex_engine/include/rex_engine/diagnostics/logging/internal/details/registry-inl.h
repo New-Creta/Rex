@@ -40,8 +40,8 @@ namespace rexlog
   #endif
 
       const char* default_logger_name            = "";
-      default_logger_                            = rsl::make_shared<rexlog::logger>(rsl::string(default_logger_name), rsl::move(color_sink));
-      loggers_[rsl::string(default_logger_name)] = default_logger_;
+      default_logger_                            = rsl::make_shared<rexlog::logger>(rex::DebugString(default_logger_name), rsl::move(color_sink));
+      loggers_[rex::DebugString(default_logger_name)] = default_logger_;
 
 #endif // REXLOG_DISABLE_DEFAULT_LOGGER
     }
@@ -82,7 +82,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE rsl::shared_ptr<logger> registry::get(const rsl::string& logger_name)
+    REXLOG_INLINE rsl::shared_ptr<logger> registry::get(const rex::DebugString& logger_name)
     {
       rsl::unique_lock<rsl::mutex> lock(logger_map_mutex_);
       auto found = loggers_.find(logger_name);
@@ -213,7 +213,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE void registry::drop(const rsl::string& logger_name)
+    REXLOG_INLINE void registry::drop(const rex::DebugString& logger_name)
     {
       rsl::unique_lock<rsl::mutex> lock(logger_map_mutex_);
       loggers_.erase(logger_name);
@@ -292,7 +292,7 @@ namespace rexlog
       new_logger->set_level(new_level);
     }
 
-    REXLOG_INLINE void registry::throw_if_exists_(const rsl::string& logger_name)
+    REXLOG_INLINE void registry::throw_if_exists_(const rex::DebugString& logger_name)
     {
       if(loggers_.find(logger_name) != loggers_.end())
       {
@@ -302,7 +302,7 @@ namespace rexlog
 
     REXLOG_INLINE void registry::register_logger_(rsl::shared_ptr<logger> new_logger)
     {
-      auto logger_name = rsl::string(new_logger->name());
+      auto logger_name = rex::DebugString(new_logger->name());
       throw_if_exists_(logger_name);
       loggers_[logger_name] = rsl::move(new_logger);
     }

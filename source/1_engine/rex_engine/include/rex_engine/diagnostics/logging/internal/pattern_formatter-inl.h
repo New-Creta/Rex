@@ -5,23 +5,11 @@
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 
-#include <algorithm>
-#include <array>
-#include <cctype>
-#include <chrono>
-#include <cstring>
-#include <ctime>
-#include <format>
-#include <iterator>
-#include <mutex>
 #include <rex_engine/diagnostics/logging/internal/details/fmt_helper.h>
 #include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
 #include <rex_engine/diagnostics/logging/internal/details/os.h>
 #include <rex_engine/diagnostics/logging/internal/formatter.h>
 #include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
-#include <string>
-#include <thread>
-#include <utility>
 
 namespace rexlog
 {
@@ -750,7 +738,7 @@ namespace rexlog
       }
 
     private:
-      rsl::string str_;
+      rex::DebugString str_;
     };
 
     // mark the color range. expect it to be in the form of "%^colored text%$"
@@ -1055,7 +1043,7 @@ namespace rexlog
 
   } // namespace details
 
-  REXLOG_INLINE pattern_formatter::pattern_formatter(rsl::string pattern, pattern_time_type time_type, rsl::string eol, custom_flags custom_user_flags)
+  REXLOG_INLINE pattern_formatter::pattern_formatter(rex::DebugString pattern, pattern_time_type time_type, rex::DebugString eol, custom_flags custom_user_flags)
       : pattern_(rsl::move(pattern))
       , eol_(rsl::move(eol))
       , pattern_time_type_(time_type)
@@ -1068,7 +1056,7 @@ namespace rexlog
   }
 
   // use by default full formatter for if pattern is not given
-  REXLOG_INLINE pattern_formatter::pattern_formatter(pattern_time_type time_type, rsl::string eol)
+  REXLOG_INLINE pattern_formatter::pattern_formatter(pattern_time_type time_type, rex::DebugString eol)
       : pattern_("%+")
       , eol_(rsl::move(eol))
       , pattern_time_type_(time_type)
@@ -1115,7 +1103,7 @@ namespace rexlog
     details::fmt_helper::append_string_view(eol_, dest);
   }
 
-  REXLOG_INLINE void pattern_formatter::set_pattern(rsl::string pattern)
+  REXLOG_INLINE void pattern_formatter::set_pattern(rex::DebugString pattern)
   {
     pattern_        = rsl::move(pattern);
     need_localtime_ = false;
@@ -1370,7 +1358,7 @@ namespace rexlog
   // Extract given pad spec (e.g. %8X, %=8X, %-8!X, %8!X, %=8!X, %-8!X, %+8!X)
   // Advance the given it pass the end of the padding spec found (if any)
   // Return padding.
-  REXLOG_INLINE details::padding_info pattern_formatter::handle_padspec_(rsl::string::const_iterator& it, rsl::string::const_iterator end)
+  REXLOG_INLINE details::padding_info pattern_formatter::handle_padspec_(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end)
   {
     using details::padding_info;
     using details::scoped_padder;
@@ -1420,7 +1408,7 @@ namespace rexlog
     return details::padding_info {rsl::min<size_t>(width, max_width), side, truncate};
   }
 
-  REXLOG_INLINE void pattern_formatter::compile_pattern_(const rsl::string& pattern)
+  REXLOG_INLINE void pattern_formatter::compile_pattern_(const rex::DebugString& pattern)
   {
     auto end = pattern.end();
     rsl::unique_ptr<details::aggregate_formatter> user_chars;

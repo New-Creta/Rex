@@ -76,7 +76,7 @@ namespace rexlog
         }
       }
 
-      void set_pattern_(const rsl::string& pattern) override
+      void set_pattern_(const rex::DebugString& pattern) override
       {
         set_formatter_(details::make_unique<rexlog::pattern_formatter>(pattern));
       }

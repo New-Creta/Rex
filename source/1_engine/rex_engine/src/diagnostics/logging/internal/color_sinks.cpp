@@ -30,12 +30,12 @@ template class REXLOG_API rexlog::sinks::ansicolor_stderr_sink<rexlog::details::
 
 // factory methods for color loggers
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks-inl.h"
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_color_mt<rexlog::synchronous_factory>(const rsl::string& logger_name, color_mode mode);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_color_st<rexlog::synchronous_factory>(const rsl::string& logger_name, color_mode mode);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_color_mt<rexlog::synchronous_factory>(const rsl::string& logger_name, color_mode mode);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_color_st<rexlog::synchronous_factory>(const rsl::string& logger_name, color_mode mode);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_color_mt<rexlog::synchronous_factory>(const rex::DebugString& logger_name, color_mode mode);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_color_st<rexlog::synchronous_factory>(const rex::DebugString& logger_name, color_mode mode);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_color_mt<rexlog::synchronous_factory>(const rex::DebugString& logger_name, color_mode mode);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_color_st<rexlog::synchronous_factory>(const rex::DebugString& logger_name, color_mode mode);
 
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_color_mt<rexlog::async_factory>(const rsl::string& logger_name, color_mode mode);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_color_st<rexlog::async_factory>(const rsl::string& logger_name, color_mode mode);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_color_mt<rexlog::async_factory>(const rsl::string& logger_name, color_mode mode);
-template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_color_st<rexlog::async_factory>(const rsl::string& logger_name, color_mode mode);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_color_mt<rexlog::async_factory>(const rex::DebugString& logger_name, color_mode mode);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stdout_color_st<rexlog::async_factory>(const rex::DebugString& logger_name, color_mode mode);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_color_mt<rexlog::async_factory>(const rex::DebugString& logger_name, color_mode mode);
+template REXLOG_API rsl::shared_ptr<rexlog::logger> rexlog::stderr_color_st<rexlog::async_factory>(const rex::DebugString& logger_name, color_mode mode);

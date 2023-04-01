@@ -59,13 +59,13 @@ namespace rexlog
   //
 
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> rotating_logger_mt(const rsl::string& logger_name, const filename_t& filename, size_t max_file_size, size_t max_files, bool rotate_on_open = false, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<logger> rotating_logger_mt(const rex::DebugString& logger_name, const filename_t& filename, size_t max_file_size, size_t max_files, bool rotate_on_open = false, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::rotating_file_sink_mt>(logger_name, filename, max_file_size, max_files, rotate_on_open, event_handlers);
   }
 
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> rotating_logger_st(const rsl::string& logger_name, const filename_t& filename, size_t max_file_size, size_t max_files, bool rotate_on_open = false, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<logger> rotating_logger_st(const rex::DebugString& logger_name, const filename_t& filename, size_t max_file_size, size_t max_files, bool rotate_on_open = false, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::rotating_file_sink_st>(logger_name, filename, max_file_size, max_files, rotate_on_open, event_handlers);
   }

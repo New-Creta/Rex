@@ -30,11 +30,11 @@ namespace rexlog
 
     struct tcp_sink_config
     {
-      rsl::string server_host;
+      rex::DebugString server_host;
       int server_port;
       bool lazy_connect = false; // if true connect on first log call instead of on construction
 
-      tcp_sink_config(rsl::string host, int port)
+      tcp_sink_config(rex::DebugString host, int port)
           : server_host {rsl::move(host)}
           , server_port {port}
       {

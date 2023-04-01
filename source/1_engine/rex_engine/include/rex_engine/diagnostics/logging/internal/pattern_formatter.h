@@ -6,13 +6,11 @@
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
 
-#include <chrono>
-#include <ctime>
 #include <rex_engine/diagnostics/logging/internal/common.h>
 #include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
 #include <rex_engine/diagnostics/logging/internal/details/os.h>
 #include <rex_engine/diagnostics/logging/internal/formatter.h>
-#include <string>
+#include "rex_engine/types.h"
 
 namespace rexlog
 {
@@ -81,10 +79,10 @@ namespace rexlog
   public:
     using custom_flags = rsl::unordered_map<char, rsl::unique_ptr<custom_flag_formatter>>;
 
-    explicit pattern_formatter(rsl::string pattern, pattern_time_type time_type = pattern_time_type::local, rsl::string eol = rsl::string(rexlog::details::os::default_eol), custom_flags custom_user_flags = custom_flags());
+    explicit pattern_formatter(rex::DebugString pattern, pattern_time_type time_type = pattern_time_type::local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol), custom_flags custom_user_flags = custom_flags());
 
     // use default pattern is not given
-    explicit pattern_formatter(pattern_time_type time_type = pattern_time_type::local, rsl::string eol = rsl::string(rexlog::details::os::default_eol));
+    explicit pattern_formatter(pattern_time_type time_type = pattern_time_type::local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol));
 
     pattern_formatter(const pattern_formatter& other)            = delete;
     pattern_formatter& operator=(const pattern_formatter& other) = delete;
@@ -98,12 +96,12 @@ namespace rexlog
       custom_handlers_[flag] = details::make_unique<T>(rsl::forward<Args>(args)...);
       return *this;
     }
-    void set_pattern(rsl::string pattern);
+    void set_pattern(rex::DebugString pattern);
     void need_localtime(bool need = true);
 
   private:
-    rsl::string pattern_;
-    rsl::string eol_;
+    rex::DebugString pattern_;
+    rex::DebugString eol_;
     pattern_time_type pattern_time_type_;
     bool need_localtime_;
     tm cached_tm_;
@@ -118,8 +116,8 @@ namespace rexlog
     // Extract given pad spec (e.g. %8X)
     // Advance the given it pass the end of the padding spec found (if any)
     // Return padding.
-    static details::padding_info handle_padspec_(rsl::string::const_iterator& it, rsl::string::const_iterator end);
+    static details::padding_info handle_padspec_(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end);
 
-    void compile_pattern_(const rsl::string& pattern);
+    void compile_pattern_(const rex::DebugString& pattern);
   };
 } // namespace rexlog

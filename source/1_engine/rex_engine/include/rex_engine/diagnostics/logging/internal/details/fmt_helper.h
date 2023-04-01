@@ -1,13 +1,7 @@
 
 #pragma once
 
-#include <charconv>
-#include <chrono>
-#include <format>
-#include <iterator>
-#include <limits>
 #include <rex_engine/diagnostics/logging/internal/common.h>
-#include <type_traits>
 
 // Some fmt helpers to efficiently format and pad ints and strings
 namespace rexlog

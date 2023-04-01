@@ -43,7 +43,7 @@ namespace rexlog
 
       void log(const details::log_msg& msg) override;
       void flush() override;
-      void set_pattern(const rsl::string& pattern) final;
+      void set_pattern(const rex::DebugString& pattern) final;
       void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) override;
 
       // Formatting codes
@@ -86,10 +86,10 @@ namespace rexlog
       mutex_t& mutex_;
       bool should_do_colors_;
       rsl::unique_ptr<rexlog::formatter> formatter_;
-      rsl::array<rsl::string, level::n_levels> colors_;
+      rsl::array<rex::DebugString, level::n_levels> colors_;
       void print_ccode_(const string_view_t& color_code);
       void print_range_(const memory_buf_t& formatted, size_t start, size_t end);
-      static rsl::string to_string_(const string_view_t& sv);
+      static rex::DebugString to_string_(const string_view_t& sv);
     };
 
     template <typename ConsoleMutex>

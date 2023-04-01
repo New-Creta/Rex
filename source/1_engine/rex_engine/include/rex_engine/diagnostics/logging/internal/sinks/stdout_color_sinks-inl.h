@@ -10,26 +10,26 @@ namespace rexlog
 {
 
   template <typename Factory>
-  REXLOG_INLINE rsl::shared_ptr<logger> stdout_color_mt(const rsl::string& logger_name, color_mode mode)
+  REXLOG_INLINE rsl::shared_ptr<logger> stdout_color_mt(const rex::DebugString& logger_name, color_mode mode)
   {
-    return Factory::template create<sinks::stdout_color_sink_mt>(rsl::string(logger_name), mode);
+    return Factory::template create<sinks::stdout_color_sink_mt>(rex::DebugString(logger_name), mode);
   }
 
   template <typename Factory>
-  REXLOG_INLINE rsl::shared_ptr<logger> stdout_color_st(const rsl::string& logger_name, color_mode mode)
+  REXLOG_INLINE rsl::shared_ptr<logger> stdout_color_st(const rex::DebugString& logger_name, color_mode mode)
   {
-    return Factory::template create<sinks::stdout_color_sink_st>(rsl::string(logger_name), mode);
+    return Factory::template create<sinks::stdout_color_sink_st>(rex::DebugString(logger_name), mode);
   }
 
   template <typename Factory>
-  REXLOG_INLINE rsl::shared_ptr<logger> stderr_color_mt(const rsl::string& logger_name, color_mode mode)
+  REXLOG_INLINE rsl::shared_ptr<logger> stderr_color_mt(const rex::DebugString& logger_name, color_mode mode)
   {
-    return Factory::template create<sinks::stderr_color_sink_mt>(rsl::string(logger_name), mode);
+    return Factory::template create<sinks::stderr_color_sink_mt>(rex::DebugString(logger_name), mode);
   }
 
   template <typename Factory>
-  REXLOG_INLINE rsl::shared_ptr<logger> stderr_color_st(const rsl::string& logger_name, color_mode mode)
+  REXLOG_INLINE rsl::shared_ptr<logger> stderr_color_st(const rex::DebugString& logger_name, color_mode mode)
   {
-    return Factory::template create<sinks::stderr_color_sink_st>(rsl::string(logger_name), mode);
+    return Factory::template create<sinks::stderr_color_sink_st>(rex::DebugString(logger_name), mode);
   }
 } // namespace rexlog

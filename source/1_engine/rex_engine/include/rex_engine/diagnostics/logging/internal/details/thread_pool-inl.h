@@ -5,6 +5,8 @@
 #include <cassert>
 #include <rex_engine/diagnostics/logging/internal/common.h>
 #include <rex_engine/diagnostics/logging/internal/details/thread_pool.h>
+#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/types.h"
 
 namespace rexlog
 {
@@ -16,7 +18,7 @@ namespace rexlog
     {
       if(threads_n == 0 || threads_n > 1000)
       {
-        throw_rexlog_ex(rsl::string("rexlog::thread_pool(): invalid threads_n param (valid range is 1-1000)"));
+        throw_rexlog_ex(rex::DebugString("rexlog::thread_pool(): invalid threads_n param (valid range is 1-1000)", rex::global_debug_allocator()));
       }
       for(size_t i = 0; i < threads_n; i++)
       {

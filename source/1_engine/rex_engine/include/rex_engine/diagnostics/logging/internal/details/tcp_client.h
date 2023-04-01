@@ -51,7 +51,7 @@ namespace rexlog
       }
 
       // try to connect or throw on failure
-      void connect(const rsl::string& host, int port)
+      void connect(const rex::DebugString& host, int port)
       {
         close();
         struct addrinfo hints

@@ -39,18 +39,18 @@ namespace rexlog
 
   public:
     template <typename It>
-    async_logger(rsl::string logger_name, It begin, It end, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy = async_overflow_policy::block)
+    async_logger(rex::DebugString logger_name, It begin, It end, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy = async_overflow_policy::block)
         : logger(rsl::move(logger_name), begin, end)
         , thread_pool_(rsl::move(tp))
         , overflow_policy_(overflow_policy)
     {
     }
 
-    async_logger(rsl::string logger_name, sinks_init_list sinks_list, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy = async_overflow_policy::block);
+    async_logger(rex::DebugString logger_name, sinks_init_list sinks_list, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy = async_overflow_policy::block);
 
-    async_logger(rsl::string logger_name, sink_ptr single_sink, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy = async_overflow_policy::block);
+    async_logger(rex::DebugString logger_name, sink_ptr single_sink, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy = async_overflow_policy::block);
 
-    rsl::shared_ptr<logger> clone(rsl::string new_name) override;
+    rsl::shared_ptr<logger> clone(rex::DebugString new_name) override;
 
   protected:
     void sink_it_(const details::log_msg& msg) override;

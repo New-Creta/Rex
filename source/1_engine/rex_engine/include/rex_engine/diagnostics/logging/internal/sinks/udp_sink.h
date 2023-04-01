@@ -26,10 +26,10 @@ namespace rexlog
 
     struct udp_sink_config
     {
-      rsl::string server_host;
+      rex::DebugString server_host;
       uint16_t server_port;
 
-      udp_sink_config(rsl::string host, uint16_t port)
+      udp_sink_config(rex::DebugString host, uint16_t port)
           : server_host {rsl::move(host)}
           , server_port {port}
       {
@@ -69,7 +69,7 @@ namespace rexlog
   // factory functions
   //
   template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> udp_logger_mt(const rsl::string& logger_name, sinks::udp_sink_config skin_config)
+  inline rsl::shared_ptr<logger> udp_logger_mt(const rex::DebugString& logger_name, sinks::udp_sink_config skin_config)
   {
     return Factory::template create<sinks::udp_sink_mt>(logger_name, skin_config);
   }
