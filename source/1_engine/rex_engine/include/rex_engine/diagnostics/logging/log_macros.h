@@ -2,10 +2,6 @@
 
 #if REX_NO_LOGGING
 
-  #define REX_LOG_ACTIVE(...)        (0)
-  #define REX_GET_LOG_VERBOSITY(...) (LogVerbosity::NoLogging)
-  #define REX_SET_LOG_VERBOSITY(...)
-
   #define DECLARE_LOG_CATEGORY_EXTERN(CategoryName, DefaultVerbosity, CompileTimeVerbosity) extern FNoLoggingCategory CategoryName;
   #define DEFINE_LOG_CATEGORY(CategoryName, ...)                                            FNoLoggingCategory CategoryName;
 
