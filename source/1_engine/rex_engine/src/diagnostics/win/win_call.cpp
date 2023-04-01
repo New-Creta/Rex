@@ -1,4 +1,5 @@
 #include "rex_engine/diagnostics/win/win_call.h"
+
 #include "rex_engine/log.h"
 
 #define NOMINMAX

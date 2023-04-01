@@ -12,19 +12,19 @@
 //-------------------------------------------------------------------------
 // Logging features
 
-  #define REX_FATAL(...)          (0)
-  #define REX_ERROR(...)          (0)
-  #define REX_WARN(...)           (0)
-  #define REX_LOG(...)            (0)
-  #define REX_VERBOSE(...)        (0)
-  #define REX_VERYVERBOSE(...)    (0)
+  #define REX_FATAL(...)       (0)
+  #define REX_ERROR(...)       (0)
+  #define REX_WARN(...)        (0)
+  #define REX_LOG(...)         (0)
+  #define REX_VERBOSE(...)     (0)
+  #define REX_VERYVERBOSE(...) (0)
 
-  #define REX_FATAL_X(...)        (0)
-  #define REX_ERROR_X(...)        (0)
-  #define REX_WARN_X(...)         (0)
-  #define REX_LOG_X(...)          (0)
-  #define REX_VERBOSE_X(...)      (0)
-  #define REX_VERYVERBOSE_X(...)  (0)
+  #define REX_FATAL_X(...)       (0)
+  #define REX_ERROR_X(...)       (0)
+  #define REX_WARN_X(...)        (0)
+  #define REX_LOG_X(...)         (0)
+  #define REX_VERBOSE_X(...)     (0)
+  #define REX_VERYVERBOSE_X(...) (0)
 
 #else
 
@@ -91,66 +91,66 @@ namespace rex
   #define REX_VERBOSE(CategoryName, ...)     rex::trace_log(CategoryName, rex::LogVerbosity::Verbose, __VA_ARGS__)
   #define REX_VERYVERBOSE(CategoryName, ...) rex::trace_log(CategoryName, rex::LogVerbosity::VeryVerbose, __VA_ARGS__)
 
-  #define REX_FATAL_X(CategoryName, cond, ...)                                                                                      \
-    [&]()                                                                                                                           \
-    {                                                                                                                               \
-        if (!(cond))                                                                                                                \
-        {                                                                                                                           \
-            REX_FATAL(CategoryName, __VA_ARGS__);                                                                                            \
-            return true;                                                                                                            \
-        }                                                                                                                           \
-        return false;                                                                                                               \
+  #define REX_FATAL_X(CategoryName, cond, ...)                                                                                                                                                                                                           \
+    [&]()                                                                                                                                                                                                                                                \
+    {                                                                                                                                                                                                                                                    \
+      if(!(cond))                                                                                                                                                                                                                                        \
+      {                                                                                                                                                                                                                                                  \
+        REX_FATAL(CategoryName, __VA_ARGS__);                                                                                                                                                                                                            \
+        return true;                                                                                                                                                                                                                                     \
+      }                                                                                                                                                                                                                                                  \
+      return false;                                                                                                                                                                                                                                      \
     }
 
-  #define REX_ERROR_X(CategoryName, cond, ...)                                                                                      \
-    [&]()                                                                                                                           \
-    {                                                                                                                               \
-        if (!(cond))                                                                                                                \
-        {                                                                                                                           \
-            REX_ERROR(CategoryName, __VA_ARGS__);                                                                                            \
-            return true;                                                                                                            \
-        }                                                                                                                           \
-        return false;                                                                                                               \
+  #define REX_ERROR_X(CategoryName, cond, ...)                                                                                                                                                                                                           \
+    [&]()                                                                                                                                                                                                                                                \
+    {                                                                                                                                                                                                                                                    \
+      if(!(cond))                                                                                                                                                                                                                                        \
+      {                                                                                                                                                                                                                                                  \
+        REX_ERROR(CategoryName, __VA_ARGS__);                                                                                                                                                                                                            \
+        return true;                                                                                                                                                                                                                                     \
+      }                                                                                                                                                                                                                                                  \
+      return false;                                                                                                                                                                                                                                      \
     }
-  #define REX_WARN_X(CategoryName, cond, ...)                                                                                       \
-    [&]()                                                                                                                           \
-    {                                                                                                                               \
-        if (!(cond))                                                                                                                \
-        {                                                                                                                           \
-            REX_WARN(CategoryName, __VA_ARGS__);                                                                                             \
-            return true;                                                                                                            \
-        }                                                                                                                           \
-        return false;                                                                                                               \
+  #define REX_WARN_X(CategoryName, cond, ...)                                                                                                                                                                                                            \
+    [&]()                                                                                                                                                                                                                                                \
+    {                                                                                                                                                                                                                                                    \
+      if(!(cond))                                                                                                                                                                                                                                        \
+      {                                                                                                                                                                                                                                                  \
+        REX_WARN(CategoryName, __VA_ARGS__);                                                                                                                                                                                                             \
+        return true;                                                                                                                                                                                                                                     \
+      }                                                                                                                                                                                                                                                  \
+      return false;                                                                                                                                                                                                                                      \
     }
-  #define REX_LOG_X(CategoryName, cond, ...)                                                                                        \
-    [&]()                                                                                                                           \
-    {                                                                                                                               \
-        if (!(cond))                                                                                                                \
-        {                                                                                                                           \
-            REX_LOG(CategoryName, __VA_ARGS__);                                                                                              \
-            return true;                                                                                                            \
-        }                                                                                                                           \
-        return false;                                                                                                               \
+  #define REX_LOG_X(CategoryName, cond, ...)                                                                                                                                                                                                             \
+    [&]()                                                                                                                                                                                                                                                \
+    {                                                                                                                                                                                                                                                    \
+      if(!(cond))                                                                                                                                                                                                                                        \
+      {                                                                                                                                                                                                                                                  \
+        REX_LOG(CategoryName, __VA_ARGS__);                                                                                                                                                                                                              \
+        return true;                                                                                                                                                                                                                                     \
+      }                                                                                                                                                                                                                                                  \
+      return false;                                                                                                                                                                                                                                      \
     }
-  #define REX_VERBOSE_X(CategoryName, cond, ...)                                                                                    \
-    [&]()                                                                                                                           \
-    {                                                                                                                               \
-        if (!(cond))                                                                                                                \
-        {                                                                                                                           \
-            REX_VERBOSE(CategoryName, __VA_ARGS__);                                                                                          \
-            return true;                                                                                                            \
-        }                                                                                                                           \
-        return false;                                                                                                               \
+  #define REX_VERBOSE_X(CategoryName, cond, ...)                                                                                                                                                                                                         \
+    [&]()                                                                                                                                                                                                                                                \
+    {                                                                                                                                                                                                                                                    \
+      if(!(cond))                                                                                                                                                                                                                                        \
+      {                                                                                                                                                                                                                                                  \
+        REX_VERBOSE(CategoryName, __VA_ARGS__);                                                                                                                                                                                                          \
+        return true;                                                                                                                                                                                                                                     \
+      }                                                                                                                                                                                                                                                  \
+      return false;                                                                                                                                                                                                                                      \
     }
-  #define REX_VERYVERBOSE_X(CategoryName, cond, ...)                                                                                \
-    [&]()                                                                                                                           \
-    {                                                                                                                               \
-        if (!(cond))                                                                                                                \
-        {                                                                                                                           \
-            REX_VERYVERBOSE(CategoryName, __VA_ARGS__);                                                                                      \
-            return true;                                                                                                            \
-        }                                                                                                                           \
-        return false;                                                                                                               \
+  #define REX_VERYVERBOSE_X(CategoryName, cond, ...)                                                                                                                                                                                                     \
+    [&]()                                                                                                                                                                                                                                                \
+    {                                                                                                                                                                                                                                                    \
+      if(!(cond))                                                                                                                                                                                                                                        \
+      {                                                                                                                                                                                                                                                  \
+        REX_VERYVERBOSE(CategoryName, __VA_ARGS__);                                                                                                                                                                                                      \
+        return true;                                                                                                                                                                                                                                     \
+      }                                                                                                                                                                                                                                                  \
+      return false;                                                                                                                                                                                                                                      \
     }
 
 #endif

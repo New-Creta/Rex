@@ -1,4 +1,5 @@
 #include "rex_opengl/resources/texture2d.h"
+
 #include "rex_opengl/log.h"
 
 #if REX_PLATFORM_X64

@@ -1,8 +1,8 @@
 #include "rex_engine/core_application.h"
 
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/log.h"
+#include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/assert.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/chrono.h"

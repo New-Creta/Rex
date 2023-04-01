@@ -1,6 +1,6 @@
-#include "rex_windows/log.h"
 #include "rex_engine/types.h"
 #include "rex_renderer_core/context.h"
+#include "rex_windows/log.h"
 
 #include <Windows.h>
 #include <glad/gl.h>

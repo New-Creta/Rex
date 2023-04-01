@@ -9,7 +9,6 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogRegina, LogVerbosity::Log);
 DEFINE_LOG_CATEGORY(LogRegina);
 
-
 namespace rex
 {
   bool initialize()

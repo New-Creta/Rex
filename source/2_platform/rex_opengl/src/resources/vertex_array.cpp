@@ -1,4 +1,5 @@
 #include "rex_opengl/resources/vertex_array.h"
+
 #include "rex_opengl/log.h"
 
 #if REX_PLATFORM_X64

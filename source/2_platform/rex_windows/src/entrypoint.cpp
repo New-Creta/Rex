@@ -4,9 +4,9 @@
 #include "rex_std/string_view.h"
 #include "rex_std/vector.h"
 #include "rex_windows/gui_application.h"
+#include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_types.h"
-#include "rex_windows/log.h"
 
 #define NOMINMAX
 #include <Windows.h>

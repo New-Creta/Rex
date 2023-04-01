@@ -1,4 +1,5 @@
 #include "rex_opengl/resources/buffer.h"
+
 #include "rex_opengl/log.h"
 
 #if REX_PLATFORM_X64

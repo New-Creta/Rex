@@ -1,5 +1,5 @@
-#include "rex_renderer_core/context.h"
 #include "rex_opengl/log.h"
+#include "rex_renderer_core/context.h"
 
 #include <glad/gl.h>
 

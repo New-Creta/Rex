@@ -1,7 +1,7 @@
 #include "rex_engine/data_type.h"
 
-#include "rex_engine/types.h"
 #include "rex_engine/log.h"
+#include "rex_engine/types.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std_extra/utility/type_id.h"
 

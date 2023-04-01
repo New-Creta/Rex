@@ -1,9 +1,9 @@
 #include "rex_windows/win_event_handler.h"
 
-#include "rex_windows/log.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_engine/event_system.h"
 #include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_windows/log.h"
 
 #define NOMINMAX
 #include <Windows.h>

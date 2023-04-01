@@ -1,8 +1,8 @@
 #pragma once
 
+#include "rex_opengl/log.h"
 #include "rex_opengl/resources/buffer_layout.h"
 #include "rex_opengl/resources/vertex.h"
-#include "rex_opengl/log.h"
 
 namespace rex
 {
