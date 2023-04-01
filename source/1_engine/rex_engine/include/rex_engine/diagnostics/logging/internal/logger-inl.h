@@ -85,10 +85,11 @@ namespace rexlog
   {
     for(auto it = sinks_.begin(); it != sinks_.end(); ++it)
     {
+      auto sink = *it;
       if(++it == sinks_.end())
       {
         // last element - we can be move it.
-        (*it)->set_formatter(rsl::move(f));
+        sink->set_formatter(rsl::move(f));
         break; // to prevent clang-tidy warning
       }
       else
