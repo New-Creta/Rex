@@ -21,7 +21,8 @@ namespace rex
   {
     // global debug allocations don't need to get tracked
     static UntrackedAllocator untracked_alloc {};
-    static GlobalDebugAllocator alloc(untracked_alloc);
+    static TrackedAllocator tracked_alloc(untracked_alloc);
+    static GlobalDebugAllocator alloc(tracked_alloc);
 
     return alloc;
   }
