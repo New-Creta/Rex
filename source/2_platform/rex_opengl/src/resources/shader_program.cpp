@@ -1,6 +1,5 @@
 #include "rex_opengl/resources/shader_program.h"
-
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_opengl/log.h"
 #include "rex_opengl/opengl_error.h"
 #include "rex_opengl/resources/shader.h"
 #include "rex_std/sstream.h"
@@ -45,14 +44,14 @@ namespace rex
     {
       if(uniformLocations.find(inName) == rsl::end(uniformLocations))
       {
-        REX_TRACE("Caching uniform: {0}, for shader program with ID: {1}", inName, programID);
+        REX_VERBOSE(LogOpenGL, "Caching uniform: {0}, for shader program with ID: {1}", inName, programID);
 
         const s32 location       = glGetUniformLocation(programID, inName.c_str());
         uniformLocations[inName] = ShaderUniformLocation(location);
 
         if(location == -1)
         {
-          REX_WARN("Uniform with name: \"{0}\" was not found", inName);
+          REX_WARN(LogOpenGL, "Uniform with name: \"{0}\" was not found", inName);
           return false;
         }
       }
@@ -90,8 +89,8 @@ namespace rex
       rsl::array<char, 512> info_log;
       GL_CALL(glGetProgramInfoLog(m_resource_id, 512, nullptr, info_log.data()));
 
-      REX_ERROR(rsl::string(info_log.data()));
-      REX_ERROR("Could not link shader program");
+      REX_ERROR(LogOpenGL, rsl::string(info_log.data()));
+      REX_ERROR(LogOpenGL, "Could not link shader program");
 
       m_resource_id = 0;
 
@@ -162,7 +161,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -177,7 +176,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -192,7 +191,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -207,7 +206,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -222,7 +221,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -237,7 +236,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -252,7 +251,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -267,7 +266,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -282,7 +281,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -297,7 +296,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -312,7 +311,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 
@@ -327,7 +326,7 @@ namespace rex
   {
     if(!shader_program::find_and_cache_uniform(m_resource_id, name, m_uniform_locations))
     {
-      REX_WARN("Uniform ({0}) not found on shader.", name);
+      REX_WARN(LogOpenGL, "Uniform ({0}) not found on shader.", name);
       return false;
     }
 

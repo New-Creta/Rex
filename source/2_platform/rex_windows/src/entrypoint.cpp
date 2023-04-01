@@ -1,12 +1,12 @@
 #include "rex_engine/entrypoint.h"
 
-#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_std/bonus/utility/has_flag.h"
 #include "rex_std/string_view.h"
 #include "rex_std/vector.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_types.h"
+#include "rex_windows/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -33,7 +33,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
   s32 result = application.run();
 
   // by this point the application has finished and shutdown
-  REX_INFO("Application completed with result: {0}", result);
+  REX_LOG(LogWindows, "Application completed with result: {0}", result);
 
   return result;
 }

@@ -1,4 +1,4 @@
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_windows/log.h"
 #include "rex_engine/types.h"
 #include "rex_renderer_core/context.h"
 
@@ -63,7 +63,7 @@ namespace rex
         if(pf == NULL || SetPixelFormat(g_glctx.dc, pf, &pfd) == FALSE)
         {
           release_device_context(hwnd, g_glctx.dc);
-          REX_ERROR("Failed to set a compatible pixel format");
+          REX_ERROR(LogWindows, "Failed to set a compatible pixel format");
           return false;
         }
 
@@ -71,7 +71,7 @@ namespace rex
         if(temp == NULL)
         {
           release_device_context(hwnd, g_glctx.dc);
-          REX_ERROR("Failed to create the initial rendering context");
+          REX_ERROR(LogWindows, "Failed to create the initial rendering context");
           return false;
         }
 
@@ -95,7 +95,7 @@ namespace rex
           {
             wglDeleteContext(temp);
             release_device_context(hwnd, g_glctx.dc);
-            REX_ERROR("Failed to create Windows OpenGL Context");
+            REX_ERROR(LogWindows, "Failed to create Windows OpenGL Context");
 
             return false;
           }

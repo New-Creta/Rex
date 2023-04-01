@@ -2,7 +2,7 @@
 
 #ifdef REX_DEBUG
 
-  #include "rex_engine/diagnostics/legacy/logging.h"
+  #include "rex_opengl/log.h"
 
   #if REX_PLATFORM_X64
     #include <glad/gl.h>
@@ -49,7 +49,7 @@ namespace rex
 
       while(error != GL_NO_ERROR)
       {
-        REX_ERROR("[OpenGL Error] ({0}, {1}): {2} {3}: {4}", error, get_error_message(error), function, file, line);
+        REX_ERROR(LogOpenGL, "({0}, {1}): {2} {3}: {4}", error, get_error_message(error), function, file, line);
 
         error = get_current_error();
       }

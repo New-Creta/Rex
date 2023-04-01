@@ -1,7 +1,7 @@
 #include "rex_engine/memory/memory_tracking.h"
 
 #include "rex_engine/core_application.h"
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_engine/log.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_std/iostream.h"
 #include "rex_std/limits.h"
@@ -42,12 +42,12 @@ namespace rex
     const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
-    REX_ERROR_X(m_mem_usage.value() <= m_max_mem_usage, "Using more memory than allowed! usage: {} max: {}", m_mem_usage.value(), m_max_mem_usage);
+    REX_ERROR_X(LogEngine, m_mem_usage.value() <= m_max_mem_usage, "Using more memory than allowed! usage: {} max: {}", m_mem_usage.value(), m_max_mem_usage);
   }
   void MemoryTracker::track_dealloc(void* /*mem*/, MemoryHeader* header)
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
-    REX_WARN_X(header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
+    REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
     m_mem_usage -= header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }

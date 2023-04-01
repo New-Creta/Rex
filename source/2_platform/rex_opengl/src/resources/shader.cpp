@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/shader.h"
+#include "rex_opengl/log.h"
 
-#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_std/sstream.h"
 
 #define REX_ENABLE_STD_ALIAS
@@ -31,7 +31,7 @@ namespace rex
           break;
       }
 
-      REX_ERROR("Could not convert \"shaderType\" of type: {0}", shaderType);
+      REX_ERROR(LogOpenGL, "Could not convert \"shaderType\" of type: {0}", shaderType);
       return "Unsupported Shader Type";
     }
   } // namespace conversions
@@ -45,8 +45,7 @@ namespace rex
       stream << "Could not compile ";
       stream << conversions::to_string(shaderType).data();
 
-      REX_TODO("Make sure we use an rsl::string here, this can only happen if rsl::stringstream is implemented properly.");
-      return rsl::string(stream.str().c_str()); // NOLINT (readability-redundant-string-cstr,-warnings-as-errors)
+      return stream.str(); // NOLINT (readability-redundant-string-cstr,-warnings-as-errors)
     }
 
     //-----------------------------------------------------------------------
@@ -65,8 +64,8 @@ namespace rex
         rsl::array<char, 512> info_log;
         glGetShaderInfoLog(shader, 512, nullptr, info_log.data());
 
-        REX_ERROR(rsl::string(info_log.data()));
-        REX_ERROR(create_shader_compilation_error_message(shaderType));
+        REX_ERROR(LogOpenGL, rsl::string(info_log.data()));
+        REX_ERROR(LogOpenGL, create_shader_compilation_error_message(shaderType));
 
         return 0;
       }

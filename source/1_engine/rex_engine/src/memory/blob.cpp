@@ -1,7 +1,6 @@
 #include "rex_engine/memory/blob.h"
-
-#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_engine/memory/blob_writer.h"
+#include "rex_engine/log.h"
 #include "rex_std/assert.h"
 #include "rex_std/memory.h"
 #include "rex_std/utility.h"
@@ -15,7 +14,7 @@ namespace rex
     {
       if(src.m_size == 0)
       {
-        REX_WARN("size of src == 0, nothing to copy ...");
+        REX_WARN(LogEngine, "size of src == 0, nothing to copy ...");
 
         return;
       }
@@ -30,7 +29,7 @@ namespace rex
     {
       if(src.m_size == 0)
       {
-        REX_WARN("size of src == 0, nothing to copy ...");
+        REX_WARN(LogEngine, "size of src == 0, nothing to copy ...");
 
         return;
       }
@@ -110,7 +109,7 @@ namespace rex
 
       if(inSize == 0)
       {
-        REX_WARN("allocation of size equal to 0");
+        REX_WARN(LogEngine, "allocation of size equal to 0");
 
         return;
       }

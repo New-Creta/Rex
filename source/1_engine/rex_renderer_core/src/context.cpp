@@ -1,6 +1,5 @@
 #include "rex_renderer_core/context.h"
-
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_renderer_core/log.h"
 
 namespace rex
 {
@@ -15,7 +14,7 @@ namespace rex
       {
         os::rollback(userData);
 
-        REX_ERROR("Context OS setup failed!");
+        REX_ERROR(LogRendererCore, "Context OS setup failed!");
         return false;
       }
 
@@ -24,7 +23,7 @@ namespace rex
       {
         os::rollback(userData);
 
-        REX_ERROR("Context backend initialization failed!");
+        REX_ERROR(LogRendererCore, "Context backend initialization failed!");
         return false;
       }
 
@@ -33,7 +32,7 @@ namespace rex
       {
         os::rollback(userData);
 
-        REX_ERROR("Context OS setup failed!");
+        REX_ERROR(LogRendererCore, "Context OS setup failed!");
         return false;
       }
 
