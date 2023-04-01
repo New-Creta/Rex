@@ -44,23 +44,6 @@ namespace rex
   } // namespace internal
 
   /**
-   * A predicate that returns true if the given logging category is active (logging) at a given verbosity level
-   * @param CategoryName name of the logging category
-   * @param Verbosity, verbosity level to test against
-   */
-  #define REX_LOG_ACTIVE(CategoryName, Verbosity)        (rex::internal::isLogActive<(int32)rex::##Verbosity>(CategoryName))
-
-  /**
-   * Retrieve the verbosity level of a specific category
-   */
-  #define REX_GET_LOG_VERBOSITY(CategoryName)            CategoryName.GetVerbosity()
-
-  /**
-   * Set the verbosity level of a specific category
-   */
-  #define REX_SET_LOG_VERBOSITY(CategoryName, Verbosity) CategoryName.SetVerbosity(rex::##Verbosity);
-
-  /**
    * A macro to declare a logging category as a C++ "extern", usually declared in the header and paired with DEFINE_LOG_CATEGORY in the source. Accessible by all files that include the header.
    * @param CategoryName, category to declare
    * @param DefaultVerbosity, default run time verbosity
