@@ -57,6 +57,8 @@ namespace rex
 #endif
     // sinks.push_back(rsl::make_shared<rexlog::sinks::basic_file_sink_mt>(full_path.string(), true));
 
+    REX_ASSERT_X(sinks.size() > 0, "No sinks are created");
+
     rsl::shared_ptr<rexlog::logger> new_logger = rsl::make_shared<rexlog::logger>(category.getCategoryName(), rsl::begin(sinks), rsl::end(sinks));
 
     new_logger->set_pattern(rsl::string(DEFAULT_PATTERN));
