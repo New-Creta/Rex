@@ -32,7 +32,7 @@ namespace rex
       stats.page_size = rsl::memory_size(sys_info.dwPageSize);
       stats.used_physical_mem = rsl::memory_size(process_mem_counters.WorkingSetSize);
       stats.used_virtual_mem = rsl::memory_size(process_mem_counters.PagefileUsage);
-
+      stats.num_page_faults = process_mem_counters.PageFaultCount;
       return stats;
     }
   }
