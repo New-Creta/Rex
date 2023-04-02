@@ -35,7 +35,7 @@ namespace rex
   private:
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_usage;                   // maximum allowed memory usage
-    MemoryStats m_mem_stats;                // stats queried from the OS at init time
+    MemoryStats m_mem_stats_on_startup;     // stats queried from the OS at init time
     rsl::mutex m_mem_tracking_mutex;
     rsl::mutex m_mem_tag_tracking_mutex;
     UsagePerTag m_usage_per_tag;

@@ -42,7 +42,7 @@ namespace rex
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
     m_max_mem_usage = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
-    m_mem_stats = query_memory_stats();
+    m_mem_stats_on_startup = query_memory_stats();
     m_is_initialized = true;
   }
 
