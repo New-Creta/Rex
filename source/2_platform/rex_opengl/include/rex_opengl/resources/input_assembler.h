@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_opengl/log.h"
 #include "rex_opengl/resources/buffer_layout.h"
 #include "rex_opengl/resources/vertex.h"
 
@@ -25,7 +25,7 @@ namespace rex
     auto it             = layouts.find(typeid(TVertexType).hash_code());
     if(it == rsl::cend(layouts))
     {
-      REX_ERROR("\"Vertex Layout\" for vertex type: {0} was not found!", typeid(TVertexType).name());
+      REX_ERROR(LogOpenGL, "\"Vertex Layout\" for vertex type: {0} was not found!", typeid(TVertexType).name());
       return;
     }
 

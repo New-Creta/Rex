@@ -1,6 +1,5 @@
 #include "rex_windows/gui_application.h"
 
-#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_engine/event_system.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
@@ -10,6 +9,7 @@
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std/thread.h"
+#include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
 
@@ -107,7 +107,7 @@ namespace rex
           return wnd;
         }
 
-        REX_ERROR("Window was not created returning nullptr");
+        REX_ERROR(LogWindows, "Window was not created returning nullptr");
         return nullptr;
       }
 
@@ -119,10 +119,10 @@ namespace rex
       void display_renderer_info()
       {
         RendererInfo info = renderer::info();
-        REX_INFO("Renderer Info - API Version: {}", info.api_version);
-        REX_INFO("Renderer Info - Adaptor: {}", info.adaptor);
-        REX_INFO("Renderer Info - Shader Version: {}", info.shader_version);
-        REX_INFO("Renderer Info - Vendor: {}", info.vendor);
+        REX_LOG(LogWindows, "Renderer Info - API Version: {}", info.api_version);
+        REX_LOG(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
+        REX_LOG(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);
+        REX_LOG(LogWindows, "Renderer Info - Vendor: {}", info.vendor);
       }
 
       void cap_frame_rate()

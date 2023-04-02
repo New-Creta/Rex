@@ -45,7 +45,7 @@ namespace rex
         case DataType::Value::None: break;
       }
 
-      REX_ERROR("Unsupported Data Type to retrieve the OpenGL data type: {0}", (s32)type.get());
+      REX_ERROR(LogOpenGL, "Unsupported Data Type to retrieve the OpenGL data type: {0}", (s32)type.get());
       return 0;
     }
   } // namespace input_assembler

@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/texture2d.h"
 
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_opengl/log.h"
 
 #if REX_PLATFORM_X64
   #include <glad/gl.h>
@@ -25,7 +25,7 @@ namespace rex
         case TextureWrap::Unknown: break;
       }
 
-      REX_ERROR("Unknown \"Texture Wrap\", returning \"GL_REPEAT\"");
+      REX_ERROR(LogOpenGL, "Unknown \"Texture Wrap\", returning \"GL_REPEAT\"");
       return GL_REPEAT;
     }
 
@@ -40,7 +40,7 @@ namespace rex
         case TextureFilter::Unknown: break;
       }
 
-      REX_ERROR("Unknown \"Texture Filter\", returning \"GL_LINEAR\"");
+      REX_ERROR(LogOpenGL, "Unknown \"Texture Filter\", returning \"GL_LINEAR\"");
       return GL_LINEAR;
     }
 
@@ -55,7 +55,7 @@ namespace rex
         case TextureFilter::Unknown: break;
       }
 
-      REX_ERROR("Unknown \"Texture Filter\", returning \"GL_LINEAR_MIPMAP_LINEAR\"");
+      REX_ERROR(LogOpenGL, "Unknown \"Texture Filter\", returning \"GL_LINEAR_MIPMAP_LINEAR\"");
       return GL_LINEAR_MIPMAP_LINEAR;
     }
 
@@ -74,7 +74,7 @@ namespace rex
         case TextureStorageFormat::Unknown: break;
       }
 
-      REX_ERROR("Unknown \"TextureStorageFormat\", returning \"GL_RGB\"");
+      REX_ERROR(LogOpenGL, "Unknown \"TextureStorageFormat\", returning \"GL_RGB\"");
       return GL_RGB;
     }
 
@@ -98,7 +98,7 @@ namespace rex
         case TexturePixelFormat::Unknown: break;
       }
 
-      REX_ERROR("Unknown \"Texture Pixel Format\", returning \"GL_RGB\"");
+      REX_ERROR(LogOpenGL, "Unknown \"Texture Pixel Format\", returning \"GL_RGB\"");
       return GL_RGB;
     }
 
@@ -139,7 +139,7 @@ namespace rex
           break;
       }
 
-      REX_ERROR("Unknown \"Data Type\", returning \"GL_UNSIGNED_BYTE\"");
+      REX_ERROR(LogOpenGL, "Unknown \"Data Type\", returning \"GL_UNSIGNED_BYTE\"");
       return GL_UNSIGNED_BYTE;
     }
   } // namespace texture2d
