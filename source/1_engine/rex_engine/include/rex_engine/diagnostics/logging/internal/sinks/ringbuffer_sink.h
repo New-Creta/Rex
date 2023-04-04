@@ -27,12 +27,12 @@ namespace rexlog
       {
       }
 
-      rsl::vector<details::log_msg_buffer> last_raw(size_t lim = 0)
+      rex::DebugVector<details::log_msg_buffer> last_raw(size_t lim = 0)
       {
         rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
         auto items_available = q_.size();
         auto n_items         = lim > 0 ? (rsl::min)(lim, items_available) : items_available;
-        rsl::vector<details::log_msg_buffer> ret;
+        rex::DebugVector<details::log_msg_buffer> ret;
         ret.reserve(n_items);
         for(size_t i = (items_available - n_items); i < items_available; i++)
         {
@@ -41,12 +41,12 @@ namespace rexlog
         return ret;
       }
 
-      rsl::vector<rex::DebugString> last_formatted(size_t lim = 0)
+      rex::DebugVector<rex::DebugString> last_formatted(size_t lim = 0)
       {
         rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
         auto items_available = q_.size();
         auto n_items         = lim > 0 ? (rsl::min)(lim, items_available) : items_available;
-        rsl::vector<rex::DebugString> ret;
+        rex::DebugVector<rex::DebugString> ret;
         ret.reserve(n_items);
         for(size_t i = (items_available - n_items); i < items_available; i++)
         {

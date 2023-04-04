@@ -57,7 +57,7 @@ namespace rex
     // rsl::filesystem::path filename(category.getCategoryName().data());
     // rsl::filesystem::path full_path = working_dir / log_dir / filename;
 
-    rsl::vector<rexlog::sink_ptr> sinks;
+    rex::DebugVector<rexlog::sink_ptr> sinks;
 
 #if REX_DEBUG
     // Only push rexout color sink when we are in debug mode
@@ -65,7 +65,7 @@ namespace rex
 #endif
     // sinks.push_back(rsl::make_shared<rexlog::sinks::basic_file_sink_mt>(full_path.string(), true));
 
-    rsl::shared_ptr<rexlog::logger> new_logger = rsl::make_shared<rexlog::logger>(category.getCategoryName(), rsl::begin(sinks), rsl::end(sinks));
+    rsl::shared_ptr<rexlog::logger> new_logger = rsl::allocate_shared<rexlog::logger>(rex::global_debug_allocator(), category.getCategoryName(), rsl::begin(sinks), rsl::end(sinks));
 
     new_logger->set_pattern(rsl::basic_string<char8, rsl::char_traits<char8>, DebugAllocator<UntrackedAllocator>>(DEFAULT_PATTERN, global_debug_allocator()));
     new_logger->set_level(LOG_LEVELS.at(category.getVerbosity()));

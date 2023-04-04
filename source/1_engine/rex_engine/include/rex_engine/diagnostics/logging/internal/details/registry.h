@@ -103,7 +103,7 @@ namespace rexlog
       bool set_level_from_cfg_(logger* logger);
       rsl::mutex logger_map_mutex_, flusher_mutex_;
       rsl::recursive_mutex tp_mutex_;
-      rsl::unordered_map<rex::DebugString, rsl::shared_ptr<logger>> loggers_;
+      rex::DebugHashTable<rex::DebugString, rsl::shared_ptr<logger>> loggers_;
       log_levels log_levels_;
       rsl::unique_ptr<formatter> formatter_;
       rexlog::level::level_enum global_log_level_ = level::info;

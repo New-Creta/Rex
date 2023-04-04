@@ -77,7 +77,7 @@ namespace rexlog
   class REXLOG_API pattern_formatter final : public formatter
   {
   public:
-    using custom_flags = rsl::unordered_map<char, rsl::unique_ptr<custom_flag_formatter>>;
+    using custom_flags = rex::DebugHashTable<char, rsl::unique_ptr<custom_flag_formatter>>;
 
     explicit pattern_formatter(rex::DebugString pattern, pattern_time_type time_type = pattern_time_type::local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol), custom_flags custom_user_flags = custom_flags());
 
@@ -106,7 +106,7 @@ namespace rexlog
     bool need_localtime_;
     tm cached_tm_;
     rsl::chrono::seconds last_log_secs_;
-    rsl::vector<rsl::unique_ptr<details::flag_formatter>> formatters_;
+    rex::DebugVector<rsl::unique_ptr<details::flag_formatter>> formatters_;
     custom_flags custom_handlers_;
 
     tm get_time_(const details::log_msg& msg);

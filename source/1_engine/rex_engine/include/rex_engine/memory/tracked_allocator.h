@@ -104,6 +104,17 @@ namespace rex
       global_debug_allocator().deallocate(header, size);
     }
 
+    template <typename U, typename... Args>
+    void construct(U* p, Args&&... args)
+    {
+      m_allocator->construct(p, rsl::forward<Args>(args)...);
+    }
+    template <typename T>
+    void destroy(T* ptr)
+    {
+      m_allocator->destroy(ptr);
+    }
+
     bool operator==(const TrackedAllocator& rhs) const
     {
       return *m_allocator == *rhs.m_allocator;

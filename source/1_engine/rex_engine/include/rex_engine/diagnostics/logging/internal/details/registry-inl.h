@@ -7,6 +7,7 @@
 #include <rex_engine/diagnostics/logging/internal/details/registry.h>
 #include <rex_engine/diagnostics/logging/internal/logger.h>
 #include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
+#include "rex_engine/types.h"
 
 #ifndef REXLOG_DISABLE_DEFAULT_LOGGER
   // support for the default stdout color logger
@@ -34,13 +35,13 @@ namespace rexlog
 #ifndef REXLOG_DISABLE_DEFAULT_LOGGER
       // create default logger (ansicolor_stdout_sink_mt or wincolor_stdout_sink_mt in windows).
   #ifdef _WIN32
-      auto color_sink = rsl::make_shared<sinks::wincolor_stdout_sink_mt>();
+      auto color_sink = rsl::allocate_shared<sinks::wincolor_stdout_sink_mt>(rex::global_debug_allocator());
   #else
-      auto color_sink = rsl::make_shared<sinks::ansicolor_stdout_sink_mt>();
+      auto color_sink = rsl::allocate_shared<sinks::ansicolor_stdout_sink_mt>(rex::global_debug_allocator());
   #endif
 
       const char* default_logger_name            = "";
-      default_logger_                            = rsl::make_shared<rexlog::logger>(rex::DebugString(default_logger_name), rsl::move(color_sink));
+      default_logger_                            = rsl::allocate_shared<rexlog::logger>(rex::global_debug_allocator(), rex::DebugString(default_logger_name), rsl::move(color_sink));
       loggers_[rex::DebugString(default_logger_name)] = default_logger_;
 
 #endif // REXLOG_DISABLE_DEFAULT_LOGGER

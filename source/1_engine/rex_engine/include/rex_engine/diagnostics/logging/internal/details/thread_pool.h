@@ -4,13 +4,13 @@
 
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
+#include "rex_std/chrono.h"
+#include "rex_std/thread.h"
 
-#include <chrono>
-#include <functional>
 #include <rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h>
 #include <rex_engine/diagnostics/logging/internal/details/mpmc_blocking_q.h>
 #include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <thread>
+#include "rex_engine/types.h"
 
 namespace rexlog
 {
@@ -108,7 +108,7 @@ namespace rexlog
     private:
       q_type q_;
 
-      rsl::vector<rsl::thread> threads_;
+      rex::DebugVector<rsl::thread> threads_;
 
       void post_async_msg_(async_msg&& new_msg, async_overflow_policy overflow_policy);
       void worker_loop_();

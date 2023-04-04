@@ -62,11 +62,11 @@ namespace rexlog
 
       // return vector of key/value pairs from sequence of "K1=V1,K2=V2,.."
       // "a=AAA,b=BBB,c=CCC,.." => {("a","AAA"),("b","BBB"),("c", "CCC"),...}
-      inline rsl::unordered_map<rex::DebugString, rex::DebugString> extract_key_vals_(const rex::DebugString& str)
+      inline rex::DebugHashTable<rex::DebugString, rex::DebugString> extract_key_vals_(const rex::DebugString& str)
       {
         rex::DebugString token;
         rex::DebugStringStream token_stream(str);
-        rsl::unordered_map<rex::DebugString, rex::DebugString> rv {};
+        rex::DebugHashTable<rex::DebugString, rex::DebugString> rv {};
         while(rsl::getline(token_stream, token, ','))
         {
           if(token.empty())

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <mutex>
+#include "rex_engine/types.h"
 #include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
 #include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
 #include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
@@ -25,7 +26,7 @@ namespace rexlog
     {
     public:
       dist_sink() = default;
-      explicit dist_sink(rsl::vector<rsl::shared_ptr<sink>> sinks)
+      explicit dist_sink(rex::DebugVector<rsl::shared_ptr<sink>> sinks)
           : sinks_(sinks)
       {
       }
@@ -45,13 +46,13 @@ namespace rexlog
         sinks_.erase(rsl::remove(sinks_.begin(), sinks_.end(), sub_sink), sinks_.end());
       }
 
-      void set_sinks(rsl::vector<rsl::shared_ptr<sink>> sinks)
+      void set_sinks(rex::DebugVector<rsl::shared_ptr<sink>> sinks)
       {
         rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
         sinks_ = rsl::move(sinks);
       }
 
-      rsl::vector<rsl::shared_ptr<sink>>& sinks()
+      rex::DebugVector<rsl::shared_ptr<sink>>& sinks()
       {
         return sinks_;
       }
@@ -89,7 +90,7 @@ namespace rexlog
           sub_sink->set_formatter(base_sink<Mutex>::formatter_->clone());
         }
       }
-      rsl::vector<rsl::shared_ptr<sink>> sinks_;
+      rex::DebugVector<rsl::shared_ptr<sink>> sinks_;
     };
 
     using dist_sink_mt = dist_sink<rsl::mutex>;

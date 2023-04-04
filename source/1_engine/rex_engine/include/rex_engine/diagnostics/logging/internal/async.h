@@ -20,6 +20,7 @@
 #include <rex_engine/diagnostics/logging/internal/async_logger.h>
 #include <rex_engine/diagnostics/logging/internal/details/registry.h>
 #include <rex_engine/diagnostics/logging/internal/details/thread_pool.h>
+#include "rex_engine/memory/global_allocator.h"
 
 namespace rexlog
 {
@@ -47,12 +48,12 @@ namespace rexlog
       auto tp = registry_inst.get_tp();
       if(tp == nullptr)
       {
-        tp = rsl::make_shared<details::thread_pool>(details::default_async_q_size, 1U);
+        tp = rsl::allocate_shared<details::thread_pool>(rex::global_debug_allocator(), details::default_async_q_size, 1U);
         registry_inst.set_tp(tp);
       }
 
-      auto sink       = rsl::make_shared<Sink>(rsl::forward<SinkArgs>(args)...);
-      auto new_logger = rsl::make_shared<async_logger>(rsl::move(logger_name), rsl::move(sink), rsl::move(tp), OverflowPolicy);
+      auto sink       = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
+      auto new_logger = rsl::allocate_shared<async_logger>(rex::global_debug_allocator(), rsl::move(logger_name), rsl::move(sink), rsl::move(tp), OverflowPolicy);
       registry_inst.initialize_logger(new_logger);
       return new_logger;
     }
@@ -76,7 +77,7 @@ namespace rexlog
   // set global thread pool.
   inline void init_thread_pool(size_t q_size, size_t thread_count, rsl::function<void()> on_thread_start, rsl::function<void()> on_thread_stop)
   {
-    auto tp = rsl::make_shared<details::thread_pool>(q_size, thread_count, on_thread_start, on_thread_stop);
+    auto tp = rsl::allocate_shared<details::thread_pool>(rex::global_debug_allocator(), q_size, thread_count, on_thread_start, on_thread_stop);
     details::registry::instance().set_tp(rsl::move(tp));
   }
 

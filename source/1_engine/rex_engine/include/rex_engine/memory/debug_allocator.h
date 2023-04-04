@@ -37,6 +37,17 @@ namespace rex
         m_allocator->deallocate(ptr, size);
       }
 
+      template <typename U, typename... Args>
+      void construct(U* p, Args&&... args)
+      {
+        m_allocator->construct(p, rsl::forward<Args>(args)...);
+      }
+      template <typename T>
+      void destroy(T* ptr)
+      {
+        m_allocator->destroy(ptr);
+      }
+
       bool operator==(const DebugAllocator& rhs) const
       {
         return *m_allocator == *rhs.m_allocator;

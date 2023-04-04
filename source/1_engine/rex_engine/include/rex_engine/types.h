@@ -60,7 +60,7 @@ namespace rex
   using DebugString = rsl::basic_string<char8, rsl::char_traits<char8>, rex::DebugAllocator<rex::UntrackedAllocator>>;
   using DebugStringStream = rsl::basic_istringstream<char8, rsl::char_traits<char8>, rex::DebugAllocator<rex::UntrackedAllocator>>;
 
-  template <typename T, typename Allocator>
+  template <typename T, typename Allocator = rex::UntrackedAllocator>
   using DebugVector = rsl::vector<T, rex::DebugAllocator<Allocator>>;
   template <typename Key, typename Value, typename Hash = rsl::hash<Key>, typename EqualTo = rsl::equal_to<Key>, typename Allocator = rex::UntrackedAllocator>
   using DebugHashTable = rsl::unordered_map<Key, Value, Hash, EqualTo, rex::DebugAllocator<Allocator>>;

@@ -14,7 +14,6 @@
 // formatted data, and support for different format per sink.
 
 #include "rex_std/format.h"
-#include "rex_std/vector.h"
 
 #include "rex_engine/types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
@@ -231,9 +230,9 @@ namespace rexlog
     level::level_enum flush_level() const;
 
     // sinks
-    const rsl::vector<sink_ptr>& sinks() const;
+    const rex::DebugVector<sink_ptr>& sinks() const;
 
-    rsl::vector<sink_ptr>& sinks();
+    rex::DebugVector<sink_ptr>& sinks();
 
     // error handler
     void set_error_handler(err_handler);
@@ -243,7 +242,7 @@ namespace rexlog
 
   protected:
     rex::DebugString name_;
-    rsl::vector<sink_ptr> sinks_;
+    rex::DebugVector<sink_ptr> sinks_;
     rexlog::level_t level_ {level::info};
     rexlog::level_t flush_level_ {level::off};
     err_handler custom_err_handler_ {nullptr};

@@ -82,7 +82,7 @@ REXLOG_INLINE void rexlog::async_logger::backend_flush_()
 
 REXLOG_INLINE rsl::shared_ptr<rexlog::logger> rexlog::async_logger::clone(rex::DebugString new_name)
 {
-  auto cloned   = rsl::make_shared<rexlog::async_logger>(*this);
+  auto cloned   = rsl::allocate_shared<rexlog::async_logger>(rex::global_debug_allocator(), *this);
   cloned->name_ = rsl::move(new_name);
   return cloned;
 }

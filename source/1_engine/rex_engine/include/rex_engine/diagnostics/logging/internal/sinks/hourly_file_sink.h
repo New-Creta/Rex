@@ -102,7 +102,7 @@ namespace rexlog
         using details::os::path_exists;
 
         filenames_q_ = details::circular_q<filename_t>(static_cast<size_t>(max_files_));
-        rsl::vector<filename_t> filenames;
+        rex::DebugVector<filename_t> filenames;
         auto now = log_clock::now();
         while(filenames.size() < max_files_)
         {

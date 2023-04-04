@@ -96,7 +96,7 @@ namespace rexlog
         /** Wrapper for security identifiers (SID) on Windows */
         struct sid_t
         {
-          rsl::vector<char> buffer_;
+          rex::DebugVector<char> buffer_;
 
         public:
           sid_t() {}
@@ -157,7 +157,7 @@ namespace rexlog
             }
 
             // get user token
-            rsl::vector<unsigned char> buffer(static_cast<size_t>(tusize));
+            rex::DebugVector<unsigned char> buffer(static_cast<size_t>(tusize));
             if(!::GetTokenInformation(current_process_token.token_handle_, TokenUser, (LPVOID)buffer.data(), tusize, &tusize))
             {
               REXLOG_THROW(win32_error("GetTokenInformation"));

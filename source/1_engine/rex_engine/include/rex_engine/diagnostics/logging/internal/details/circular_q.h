@@ -3,7 +3,7 @@
 // circular q view of rsl::vector.
 #pragma once
 
-#include "rex_std/vector.h"
+#include "rex_engine/types.h"
 
 #include <cassert>
 
@@ -15,10 +15,10 @@ namespace rexlog
     class circular_q
     {
       size_t max_items_                        = 0;
-      typename rsl::vector<T>::size_type head_ = 0;
-      typename rsl::vector<T>::size_type tail_ = 0;
+      typename rex::DebugVector<T>::size_type head_ = 0;
+      typename rex::DebugVector<T>::size_type tail_ = 0;
       size_t overrun_counter_                  = 0;
-      rsl::vector<T> v_;
+      rex::DebugVector<T> v_;
 
     public:
       using value_type = T;

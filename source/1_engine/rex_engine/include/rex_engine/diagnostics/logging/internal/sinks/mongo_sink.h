@@ -30,7 +30,7 @@ namespace rexlog
     {
     public:
       mongo_sink(const rex::DebugString& db_name, const rex::DebugString& collection_name, const rex::DebugString& uri = "mongodb://localhost:27017")
-      try : mongo_sink(rsl::make_shared<mongocxx::instance>(), db_name, collection_name, uri)
+      try : mongo_sink(rsl::allocate_shared<mongocxx::instance>(rex::global_debug_allocator()), db_name, collection_name, uri)
       {
       }
       catch(const rsl::exception& e)

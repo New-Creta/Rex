@@ -9,6 +9,8 @@
 #include <rex_engine/diagnostics/logging/internal/logger.h>
 #include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
 #include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
+#include "rex_engine/types.h"
+#include "rex_engine/memory/global_allocator.h"
 
 namespace rexlog
 {
@@ -138,12 +140,12 @@ namespace rexlog
   }
 
   // sinks
-  REXLOG_INLINE const rsl::vector<sink_ptr>& logger::sinks() const
+  REXLOG_INLINE const rex::DebugVector<sink_ptr>& logger::sinks() const
   {
     return sinks_;
   }
 
-  REXLOG_INLINE rsl::vector<sink_ptr>& logger::sinks()
+  REXLOG_INLINE rex::DebugVector<sink_ptr>& logger::sinks()
   {
     return sinks_;
   }
@@ -157,7 +159,7 @@ namespace rexlog
   // create new logger with same sinks and configuration.
   REXLOG_INLINE rsl::shared_ptr<logger> logger::clone(rex::DebugString logger_name)
   {
-    auto cloned   = rsl::make_shared<logger>(*this);
+    auto cloned   = rsl::allocate_shared<logger>(rex::global_debug_allocator(), *this);
     cloned->name_ = rsl::move(logger_name);
     return cloned;
   }
