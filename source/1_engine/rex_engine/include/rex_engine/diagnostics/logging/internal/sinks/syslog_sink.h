@@ -4,10 +4,10 @@
 
 #include <array>
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include <string>
-#include <syslog.h"
+#include <syslog.h>
 
 namespace rexlog
 {
@@ -44,7 +44,7 @@ namespace rexlog
       syslog_sink& operator=(const syslog_sink&) = delete;
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         string_view_t payload;
         memory_buf_t formatted;
@@ -68,7 +68,7 @@ namespace rexlog
         ::syslog(syslog_prio_from_level(msg), "%.*s", static_cast<int>(length), payload.data());
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
       bool enable_formatting_ = false;
 
     private:

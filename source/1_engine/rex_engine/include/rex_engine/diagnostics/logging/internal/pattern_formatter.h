@@ -109,15 +109,15 @@ namespace rexlog
     rex::DebugVector<rsl::unique_ptr<details::flag_formatter>> formatters_;
     custom_flags custom_handlers_;
 
-    tm get_time_(const details::LogMsg& msg);
+    tm get_time_impl(const details::LogMsg& msg);
     template <typename Padder>
-    void handle_flag_(char flag, details::padding_info padding);
+    void handle_flag_impl(char flag, details::padding_info padding);
 
     // Extract given pad spec (e.g. %8X)
     // Advance the given it pass the end of the padding spec found (if any)
     // Return padding.
-    static details::padding_info handle_padspec_(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end);
+    static details::padding_info handle_padspec_impl(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end);
 
-    void compile_pattern_(const rex::DebugString& pattern);
+    void compile_pattern_impl(const rex::DebugString& pattern);
   };
 } // namespace rexlog

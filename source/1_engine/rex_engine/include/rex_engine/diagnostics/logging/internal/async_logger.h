@@ -53,10 +53,10 @@ namespace rexlog
     rsl::shared_ptr<logger> clone(rex::DebugString new_name) override;
 
   protected:
-    void sink_it_(const details::LogMsg& msg) override;
-    void flush_() override;
-    void backend_sink_it_(const details::LogMsg& incoming_log_msg);
-    void backend_flush_();
+    void sink_it_impl(const details::LogMsg& msg) override;
+    void flush_impl() override;
+    void backend_sink_it_impl(const details::LogMsg& incoming_log_msg);
+    void backend_flush_impl();
 
   private:
     rsl::weak_ptr<details::thread_pool> thread_pool_;

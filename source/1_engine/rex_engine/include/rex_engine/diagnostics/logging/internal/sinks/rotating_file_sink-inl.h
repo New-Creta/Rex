@@ -32,7 +32,7 @@ namespace rexlog
       current_size_ = m_file_helper.size(); // expensive. called only once
       if(rotate_on_open && current_size_ > 0)
       {
-        rotate_();
+        rotate_impl();
         current_size_ = 0;
       }
     }
@@ -59,7 +59,7 @@ namespace rexlog
     }
 
     template <typename Mutex>
-    REXLOG_INLINE void rotating_file_sink<Mutex>::sink_it_(const details::LogMsg& msg)
+    REXLOG_INLINE void rotating_file_sink<Mutex>::sink_it_impl(const details::LogMsg& msg)
     {
       memory_buf_t formatted;
       BaseSink<Mutex>::m_formatter->format(msg, formatted);
@@ -73,7 +73,7 @@ namespace rexlog
         m_file_helper.flush();
         if(m_file_helper.size() > 0)
         {
-          rotate_();
+          rotate_impl();
           new_size = formatted.size();
         }
       }
@@ -82,7 +82,7 @@ namespace rexlog
     }
 
     template <typename Mutex>
-    REXLOG_INLINE void rotating_file_sink<Mutex>::flush_()
+    REXLOG_INLINE void rotating_file_sink<Mutex>::flush_impl()
     {
       m_file_helper.flush();
     }
@@ -93,7 +93,7 @@ namespace rexlog
     // log.2.txt -> log.3.txt
     // log.3.txt -> delete
     template <typename Mutex>
-    REXLOG_INLINE void rotating_file_sink<Mutex>::rotate_()
+    REXLOG_INLINE void rotating_file_sink<Mutex>::rotate_impl()
     {
       using details::os::filename_to_str;
       using details::os::path_exists;
@@ -108,13 +108,13 @@ namespace rexlog
         }
         filename_t target = calc_filename(base_filename_, i);
 
-        if(!rename_file_(src, target))
+        if(!rename_file_impl(src, target))
         {
           // if failed try again after a small delay.
           // this is a workaround to a windows issue, where very high rotation
           // rates can cause the rename to fail with permission denied (because of antivirus?).
           details::os::sleep_for_millis(100);
-          if(!rename_file_(src, target))
+          if(!rename_file_impl(src, target))
           {
             m_file_helper.reopen(true); // truncate the log file anyway to prevent it to grow beyond its limit!
             current_size_ = 0;
@@ -128,7 +128,7 @@ namespace rexlog
     // delete the target if exists, and rename the src file  to target
     // return true on success, false otherwise.
     template <typename Mutex>
-    REXLOG_INLINE bool rotating_file_sink<Mutex>::rename_file_(const filename_t& src_filename, const filename_t& target_filename)
+    REXLOG_INLINE bool rotating_file_sink<Mutex>::rename_file_impl(const filename_t& src_filename, const filename_t& target_filename)
     {
       // try to delete the target file in case it already exists.
       (void)details::os::remove(target_filename);

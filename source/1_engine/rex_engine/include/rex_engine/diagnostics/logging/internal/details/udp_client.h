@@ -9,15 +9,15 @@
   #error "include udp_client-windows.h instead"
 #endif
 
-#include <arpa/inet.h"
-#include <netdb.h"
-#include <netinet/in.h"
-#include <netinet/udp.h"
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/udp.h>
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include <string>
-#include <sys/socket.h"
-#include <unistd.h"
+#include <sys/socket.h>
+#include <unistd.h>
 
 namespace rexlog
 {
@@ -30,7 +30,7 @@ namespace rexlog
       int socket_                         = -1;
       struct sockaddr_in sockAddr_;
 
-      void cleanup_()
+      void cleanup_impl()
       {
         if(socket_ != -1)
         {
@@ -51,7 +51,7 @@ namespace rexlog
         int option_value = TX_BUFFER_SIZE;
         if(::setsockopt(socket_, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char*>(&option_value), sizeof(option_value)) < 0)
         {
-          cleanup_();
+          cleanup_impl();
           throw_rexlog_ex("error: setsockopt(SO_SNDBUF) Failed!");
         }
 
@@ -60,7 +60,7 @@ namespace rexlog
 
         if(::inet_aton(host.c_str(), &sockAddr_.sin_addr) == 0)
         {
-          cleanup_();
+          cleanup_impl();
           throw_rexlog_ex("error: Invalid address!");
         }
 
@@ -69,7 +69,7 @@ namespace rexlog
 
       ~udp_client()
       {
-        cleanup_();
+        cleanup_impl();
       }
 
       int fd() const

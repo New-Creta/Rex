@@ -36,7 +36,7 @@ Windows Registry Editor Version 5.00
 #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include <string>
-#include <winbase.h"
+#include <winbase.h>
 
 namespace rexlog
 {
@@ -53,7 +53,7 @@ namespace rexlog
         {
           HLOCAL hlocal_;
 
-          REXLOG_CONSTEXPR local_alloc_t() REXLOG_NOEXCEPT : hlocal_(nullptr) {}
+          REXLOG_CONSTEXPR local_alloc_t() REXLOG_NOEXCEPT : hlocal_impl(nullptr) {}
 
           local_alloc_t(const local_alloc_t&)            = delete;
           local_alloc_t& operator=(const local_alloc_t&) = delete;
@@ -224,7 +224,7 @@ namespace rexlog
         }
 
       protected:
-        void sink_it_(const details::LogMsg& msg) override
+        void sink_it_impl(const details::LogMsg& msg) override
         {
           using namespace internal;
 
@@ -242,12 +242,12 @@ namespace rexlog
           }
         }
 
-        void flush_() override {}
+        void flush_impl() override {}
 
       public:
         win_eventlog_sink(const rex::DebugString& source, DWORD event_id = 1000 /* according to mscoree.dll */)
-            : source_(source)
-            , event_id_(event_id)
+            : source_impl(source)
+            , event_id_impl(event_id)
         {
           try
           {

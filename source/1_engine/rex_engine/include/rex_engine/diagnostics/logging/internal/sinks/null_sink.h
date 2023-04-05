@@ -4,7 +4,7 @@
 
 #include <mutex>
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 namespace rexlog
@@ -16,8 +16,8 @@ namespace rexlog
     class null_sink : public BaseSink<Mutex>
     {
     protected:
-      void sink_it_(const details::LogMsg&) override {}
-      void flush_() override {}
+      void sink_it_impl(const details::LogMsg&) override {}
+      void flush_impl() override {}
     };
 
     using null_sink_mt = null_sink<details::NullMutex>;

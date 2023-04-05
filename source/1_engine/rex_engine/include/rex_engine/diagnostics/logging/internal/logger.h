@@ -64,7 +64,7 @@ namespace rexlog
     template <typename... Args>
     void log(source_loc loc, level::level_enum lvl, format_string_t<Args...> fmt, Args&&... args)
     {
-      log_(loc, lvl, details::to_string_view(fmt), rsl::forward<Args>(args)...);
+      log_impl(loc, lvl, details::to_string_view(fmt), rsl::forward<Args>(args)...);
     }
 
     template <typename... Args>
@@ -96,7 +96,7 @@ namespace rexlog
       }
 
       details::LogMsg LogMsg(log_time, loc, name_, lvl, msg);
-      log_it_(LogMsg, log_enabled, traceback_enabled);
+      log_it_impl(LogMsg, log_enabled, traceback_enabled);
     }
 
     void log(source_loc loc, level::level_enum lvl, string_view_t msg)
@@ -109,7 +109,7 @@ namespace rexlog
       }
 
       details::LogMsg LogMsg(loc, name_, lvl, msg);
-      log_it_(LogMsg, log_enabled, traceback_enabled);
+      log_it_impl(LogMsg, log_enabled, traceback_enabled);
     }
 
     void log(level::level_enum lvl, string_view_t msg)
@@ -249,7 +249,7 @@ namespace rexlog
 
     // common implementation for after templated public api has been resolved
     template <typename... Args>
-    void log_(source_loc loc, level::level_enum lvl, string_view_t fmt, Args&&... args)
+    void log_impl(source_loc loc, level::level_enum lvl, string_view_t fmt, Args&&... args)
     {
       bool log_enabled       = should_log(lvl);
       bool traceback_enabled = tracer_.enabled();
@@ -263,22 +263,22 @@ namespace rexlog
         fmt_lib::vformat_to(rsl::back_inserter(buf), fmt, fmt_lib::make_format_args(rsl::forward<Args>(args)...));
 
         details::LogMsg LogMsg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
-        log_it_(LogMsg, log_enabled, traceback_enabled);
+        log_it_impl(LogMsg, log_enabled, traceback_enabled);
       }
       REXLOG_LOGGER_CATCH(loc)
     }
 
     // log the given message (if the given log level is high enough),
     // and save backtrace (if backtrace is enabled).
-    void log_it_(const details::LogMsg& LogMsg, bool log_enabled, bool traceback_enabled);
-    virtual void sink_it_(const details::LogMsg& msg);
-    virtual void flush_();
-    void dump_backtrace_();
-    bool should_flush_(const details::LogMsg& msg);
+    void log_it_impl(const details::LogMsg& LogMsg, bool log_enabled, bool traceback_enabled);
+    virtual void sink_it_impl(const details::LogMsg& msg);
+    virtual void flush_impl();
+    void dump_backtrace_impl();
+    bool should_flush_impl(const details::LogMsg& msg);
 
     // handle errors during logging.
     // default handler prints the error to stderr at max rate of 1 message/sec.
-    void err_handler_(const rex::DebugString& msg);
+    void err_handler_impl(const rex::DebugString& msg);
   };
 
   void swap(logger& a, logger& b);

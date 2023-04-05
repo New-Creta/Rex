@@ -54,7 +54,7 @@ namespace rexlog
     REXLOG_INLINE void Registry::register_logger(rsl::shared_ptr<logger> new_logger)
     {
       rsl::unique_lock<rsl::mutex> lock(logger_map_mutex_);
-      register_logger_(rsl::move(new_logger));
+      register_logger_impl(rsl::move(new_logger));
     }
 
     REXLOG_INLINE void Registry::initialize_logger(rsl::shared_ptr<logger> new_logger)
@@ -81,7 +81,7 @@ namespace rexlog
 
       if(automatic_registration_)
       {
-        register_logger_(rsl::move(new_logger));
+        register_logger_impl(rsl::move(new_logger));
       }
     }
 
@@ -295,7 +295,7 @@ namespace rexlog
       new_logger->set_level(new_level);
     }
 
-    REXLOG_INLINE void Registry::throw_if_exists_(const rex::DebugString& logger_name)
+    REXLOG_INLINE void Registry::throw_if_exists_impl(const rex::DebugString& logger_name)
     {
       if(loggers_.find(logger_name) != loggers_.end())
       {
@@ -303,10 +303,10 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE void Registry::register_logger_(rsl::shared_ptr<logger> new_logger)
+    REXLOG_INLINE void Registry::register_logger_impl(rsl::shared_ptr<logger> new_logger)
     {
       auto logger_name = rex::DebugString(new_logger->name());
-      throw_if_exists_(logger_name);
+      throw_if_exists_impl(logger_name);
       loggers_[logger_name] = rsl::move(new_logger);
     }
 

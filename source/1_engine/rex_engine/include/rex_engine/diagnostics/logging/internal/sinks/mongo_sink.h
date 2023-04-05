@@ -19,7 +19,7 @@
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 
 namespace rexlog
 {
@@ -39,9 +39,9 @@ namespace rexlog
       }
 
       mongo_sink(rsl::shared_ptr<mongocxx::instance> instance, const rex::DebugString& db_name, const rex::DebugString& collection_name, const rex::DebugString& uri = "mongodb://localhost:27017")
-          : instance_(rsl::move(instance))
-          , db_name_(db_name)
-          , coll_name_(collection_name)
+          : instance_impl(rsl::move(instance))
+          , db_name_impl(db_name)
+          , coll_name_impl(collection_name)
       {
         try
         {
@@ -55,11 +55,11 @@ namespace rexlog
 
       ~mongo_sink()
       {
-        flush_();
+        flush_impl();
       }
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         using bsoncxx::builder::stream::document;
         using bsoncxx::builder::stream::finalize;
@@ -72,7 +72,7 @@ namespace rexlog
         }
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
 
     private:
       rsl::shared_ptr<mongocxx::instance> instance_;

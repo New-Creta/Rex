@@ -3,8 +3,8 @@
 #include "rex_engine/diagnostics/legacy/logging.h"
 
 #define NOMINMAX
-#include <comdef.h"
-#include <windows.h"
+#include <comdef.h>
+#include <windows.h>
 
 namespace rex::win
 {

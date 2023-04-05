@@ -48,13 +48,13 @@ namespace rexlog
       rsl::array<rsl::uint16, level::n_levels> m_colors;
 
       // set foreground color and return the orig console attributes (for resetting later)
-      rsl::uint16 set_foreground_color_(rsl::uint16 attribs);
+      rsl::uint16 set_foreground_color_impl(rsl::uint16 attribs);
 
       // print a range of formatted message to console
-      void print_range_(const memory_buf_t& formatted, size_t start, size_t end);
+      void print_range_impl(const memory_buf_t& formatted, size_t start, size_t end);
 
       // in case we are redirected to file (not in console mode)
-      void write_to_file_(const memory_buf_t& formatted);
+      void write_to_file_impl(const memory_buf_t& formatted);
 
       void set_color_mode_impl(color_mode mode);
     };

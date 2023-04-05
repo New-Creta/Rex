@@ -4,12 +4,12 @@
 #include <array>
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #ifndef SD_JOURNAL_SUPPRESS_LOCATION
   #define SD_JOURNAL_SUPPRESS_LOCATION
 #endif
-#include <systemd/sd-journal.h"
+#include <systemd/sd-journal.h>
 
 namespace rexlog
 {
@@ -47,7 +47,7 @@ namespace rexlog
       using levels_array      = rsl::array<int, 7>;
       levels_array syslog_levels_;
 
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         int err;
         string_view_t payload;
@@ -101,7 +101,7 @@ namespace rexlog
         return syslog_levels_.at(static_cast<levels_array::size_type>(l));
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
     };
 
     using systemd_sink_mt = systemd_sink<rsl::mutex>;

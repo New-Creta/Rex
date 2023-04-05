@@ -414,7 +414,7 @@ namespace rexlog
       }
 
       // return true on success
-      static REXLOG_INLINE bool mkdir_(const filename_t& path)
+      static REXLOG_INLINE bool mkdir_impl(const filename_t& path)
       {
 #ifdef _WIN32
         return ::_mkdir(path.c_str()) == 0;
@@ -449,7 +449,7 @@ namespace rexlog
 
           auto subdir = path.substr(0, token_pos);
 
-          if(!subdir.empty() && !path_exists(filename_t(subdir)) && !mkdir_(filename_t(subdir)))
+          if(!subdir.empty() && !path_exists(filename_t(subdir)) && !mkdir_impl(filename_t(subdir)))
           {
             return false; // return error if failed creating dir
           }

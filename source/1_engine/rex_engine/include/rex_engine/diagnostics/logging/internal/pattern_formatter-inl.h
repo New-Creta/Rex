@@ -1052,7 +1052,7 @@ namespace rexlog
       , custom_handlers_(rsl::move(custom_user_flags))
   {
     rsl::memset(&cached_tm_, 0, sizeof(cached_tm_));
-    compile_pattern_(pattern_);
+    compile_pattern_impl(pattern_);
   }
 
   // use by default full formatter for if pattern is not given
@@ -1090,7 +1090,7 @@ namespace rexlog
       const auto secs = rsl::chrono::duration_cast<rsl::chrono::seconds>(msg.time.time_since_epoch());
       if(secs != last_log_secs_)
       {
-        cached_tm_     = get_time_(msg);
+        cached_tm_     = get_time_impl(msg);
         last_log_secs_ = secs;
       }
     }
@@ -1107,7 +1107,7 @@ namespace rexlog
   {
     pattern_        = rsl::move(pattern);
     need_localtime_ = false;
-    compile_pattern_(pattern_);
+    compile_pattern_impl(pattern_);
   }
 
   REXLOG_INLINE void pattern_formatter::need_localtime(bool need)
@@ -1115,7 +1115,7 @@ namespace rexlog
     need_localtime_ = need;
   }
 
-  REXLOG_INLINE tm pattern_formatter::get_time_(const details::LogMsg& msg)
+  REXLOG_INLINE tm pattern_formatter::get_time_impl(const details::LogMsg& msg)
   {
     if(pattern_time_type_ == pattern_time_type::local)
     {
@@ -1125,7 +1125,7 @@ namespace rexlog
   }
 
   template <typename Padder>
-  REXLOG_INLINE void pattern_formatter::handle_flag_(char flag, details::padding_info padding)
+  REXLOG_INLINE void pattern_formatter::handle_flag_impl(char flag, details::padding_info padding)
   {
     // process custom flags
     auto it = custom_handlers_.find(flag);
@@ -1358,7 +1358,7 @@ namespace rexlog
   // Extract given pad spec (e.g. %8X, %=8X, %-8!X, %8!X, %=8!X, %-8!X, %+8!X)
   // Advance the given it pass the end of the padding spec found (if any)
   // Return padding.
-  REXLOG_INLINE details::padding_info pattern_formatter::handle_padspec_(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end)
+  REXLOG_INLINE details::padding_info pattern_formatter::handle_padspec_impl(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end)
   {
     using details::padding_info;
     using details::scoped_padder;
@@ -1408,7 +1408,7 @@ namespace rexlog
     return details::padding_info {rsl::min<size_t>(width, max_width), side, truncate};
   }
 
-  REXLOG_INLINE void pattern_formatter::compile_pattern_(const rex::DebugString& pattern)
+  REXLOG_INLINE void pattern_formatter::compile_pattern_impl(const rex::DebugString& pattern)
   {
     auto end = pattern.end();
     rsl::unique_ptr<details::aggregate_formatter> user_chars;
@@ -1423,17 +1423,17 @@ namespace rexlog
         }
 
         ++it;
-        auto padding = handle_padspec_(it, end);
+        auto padding = handle_padspec_impl(it, end);
 
         if(it != end)
         {
           if(padding.enabled())
           {
-            handle_flag_<details::scoped_padder>(*it, padding);
+            handle_flag_impl<details::scoped_padder>(*it, padding);
           }
           else
           {
-            handle_flag_<details::null_scoped_padder>(*it, padding);
+            handle_flag_impl<details::null_scoped_padder>(*it, padding);
           }
         }
         else

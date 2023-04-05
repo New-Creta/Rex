@@ -6,12 +6,12 @@
 // tcp client helper
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
-#include <stdio.h"
-#include <stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
-#include <windows.h"
-#include <winsock2.h"
-#include <ws2tcpip.h"
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Mswsock.lib")
@@ -25,17 +25,17 @@ namespace rexlog
     {
       SOCKET socket_ = INVALID_SOCKET;
 
-      static void init_winsock_()
+      static void init_winsock_impl()
       {
         WSADATA wsaData;
         auto rv = WSAStartup(MAKEWORD(2, 2), &wsaData);
         if(rv != 0)
         {
-          throw_winsock_error_("WSAStartup failed", ::WSAGetLastError());
+          throw_winsock_error_impl("WSAStartup failed", ::WSAGetLastError());
         }
       }
 
-      static void throw_winsock_error_(const rex::DebugString& msg, int last_error)
+      static void throw_winsock_error_impl(const rex::DebugString& msg, int last_error)
       {
         char buf[512];
         ::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, last_error, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, (sizeof(buf) / sizeof(char)), NULL);
@@ -46,7 +46,7 @@ namespace rexlog
     public:
       tcp_client()
       {
-        init_winsock_();
+        init_winsock_impl();
       }
 
       ~tcp_client()
@@ -96,7 +96,7 @@ namespace rexlog
         {
           last_error = ::WSAGetLastError();
           WSACleanup();
-          throw_winsock_error_("getaddrinfo failed", last_error);
+          throw_winsock_error_impl("getaddrinfo failed", last_error);
         }
 
         // Try each address until we successfully connect(2).
@@ -124,7 +124,7 @@ namespace rexlog
         if(socket_ == INVALID_SOCKET)
         {
           WSACleanup();
-          throw_winsock_error_("connect failed", last_error);
+          throw_winsock_error_impl("connect failed", last_error);
         }
 
         // set TCP_NODELAY
@@ -145,7 +145,7 @@ namespace rexlog
           {
             int last_error = ::WSAGetLastError();
             close();
-            throw_winsock_error_("send failed", last_error);
+            throw_winsock_error_impl("send failed", last_error);
           }
 
           if(write_result == 0) // (probably should not happen but in any case..)

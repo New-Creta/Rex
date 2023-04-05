@@ -5,7 +5,7 @@
 #include <mutex>
 #include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include <string>
 
@@ -24,8 +24,8 @@ namespace rexlog
       const filename_t& filename() const;
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override;
-      void flush_() override;
+      void sink_it_impl(const details::LogMsg& msg) override;
+      void flush_impl() override;
 
     private:
       details::FileHelper m_file_helper;

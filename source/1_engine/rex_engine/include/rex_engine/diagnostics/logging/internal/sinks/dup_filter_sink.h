@@ -55,9 +55,9 @@ namespace rexlog
       size_t skip_counter_ = 0;
       level::level_enum log_level_;
 
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
-        bool filtered = filter_(msg);
+        bool filtered = filter_impl(msg);
         if(!filtered)
         {
           skip_counter_ += 1;
@@ -72,19 +72,19 @@ namespace rexlog
           if(msg_size > 0 && static_cast<size_t>(msg_size) < sizeof(buf))
           {
             details::LogMsg skipped_msg {msg.source, msg.logger_name, log_level_, string_view_t {buf, static_cast<size_t>(msg_size)}};
-            dist_sink<Mutex>::sink_it_(skipped_msg);
+            dist_sink<Mutex>::sink_it_impl(skipped_msg);
           }
         }
 
         // log current message
-        dist_sink<Mutex>::sink_it_(msg);
+        dist_sink<Mutex>::sink_it_impl(msg);
         last_msg_time_ = msg.time;
         skip_counter_  = 0;
         last_msg_payload_.assign(msg.payload.data(), msg.payload.data() + msg.payload.size());
       }
 
       // return whether the log msg should be displayed (true) or skipped (false)
-      bool filter_(const details::LogMsg& msg)
+      bool filter_impl(const details::LogMsg& msg)
       {
         auto filter_duration = msg.time - last_msg_time_;
         return (filter_duration > max_skip_duration_) || (msg.payload != last_msg_payload_);

@@ -8,7 +8,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 #include <QPlainTextEdit>
@@ -33,11 +33,11 @@ namespace rexlog
 
       ~qt_sink()
       {
-        flush_();
+        flush_impl();
       }
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         memory_buf_t formatted;
         BaseSink<Mutex>::m_formatter->format(msg, formatted);
@@ -45,7 +45,7 @@ namespace rexlog
         QMetaObject::invokeMethod(qt_object_, meta_method_.c_str(), Qt::AutoConnection, Q_ARG(QString, QString::fromUtf8(str.data(), static_cast<int>(str.size())).trimmed()));
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
 
     private:
       QObject* qt_object_ = nullptr;

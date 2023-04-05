@@ -31,7 +31,7 @@
 #define REXLOG_CONSTEXPR_FUNC constexpr
 
 #if defined(__GNUC__) || defined(__clang__)
-  #define REXLOG_DEPRECATED __attribute__((deprecated))
+  #define REXLOG_DEPRECATED __attribute__impl((deprecated))
 #elif defined(_MSC_VER)
   #define REXLOG_DEPRECATED __declspec(deprecated)
 #else

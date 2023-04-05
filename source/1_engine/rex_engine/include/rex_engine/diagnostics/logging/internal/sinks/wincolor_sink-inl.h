@@ -6,7 +6,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h"
-#include <wincon.h"
+#include <wincon.h>
 
 namespace rexlog
 {
@@ -59,17 +59,17 @@ namespace rexlog
       if(should_do_colors_ && msg.color_range_end > msg.color_range_start)
       {
         // before color range
-        print_range_(formatted, 0, msg.color_range_start);
+        print_range_impl(formatted, 0, msg.color_range_start);
         // in color range
-        auto orig_attribs = static_cast<WORD>(set_foreground_color_(m_colors[static_cast<size_t>(msg.level)]));
-        print_range_(formatted, msg.color_range_start, msg.color_range_end);
+        auto orig_attribs = static_cast<WORD>(set_foreground_color_impl(m_colors[static_cast<size_t>(msg.level)]));
+        print_range_impl(formatted, msg.color_range_start, msg.color_range_end);
         // reset to orig colors
         ::SetConsoleTextAttribute(static_cast<HANDLE>(out_handle_), orig_attribs);
-        print_range_(formatted, msg.color_range_end, formatted.size());
+        print_range_impl(formatted, msg.color_range_end, formatted.size());
       }
       else // print without colors if color range is invalid (or color is disabled)
       {
-        write_to_file_(formatted);
+        write_to_file_impl(formatted);
       }
     }
 
@@ -118,7 +118,7 @@ namespace rexlog
 
     // set foreground color and return the orig console attributes (for resetting later)
     template <typename ConsoleMutex>
-    rsl::uint16 REXLOG_INLINE wincolor_sink<ConsoleMutex>::set_foreground_color_(rsl::uint16 attribs)
+    rsl::uint16 REXLOG_INLINE wincolor_sink<ConsoleMutex>::set_foreground_color_impl(rsl::uint16 attribs)
     {
       CONSOLE_SCREEN_BUFFER_INFO orig_buffer_info;
       if(!::GetConsoleScreenBufferInfo(static_cast<HANDLE>(out_handle_), &orig_buffer_info))
@@ -136,7 +136,7 @@ namespace rexlog
 
     // print a range of formatted message to console
     template <typename ConsoleMutex>
-    void REXLOG_INLINE wincolor_sink<ConsoleMutex>::print_range_(const memory_buf_t& formatted, size_t start, size_t end)
+    void REXLOG_INLINE wincolor_sink<ConsoleMutex>::print_range_impl(const memory_buf_t& formatted, size_t start, size_t end)
     {
       if(end > start)
       {
@@ -147,7 +147,7 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void REXLOG_INLINE wincolor_sink<ConsoleMutex>::write_to_file_(const memory_buf_t& formatted)
+    void REXLOG_INLINE wincolor_sink<ConsoleMutex>::write_to_file_impl(const memory_buf_t& formatted)
     {
       auto size           = static_cast<DWORD>(formatted.size());
       DWORD bytes_written = 0;

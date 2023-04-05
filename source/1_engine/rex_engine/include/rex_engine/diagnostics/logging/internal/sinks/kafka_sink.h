@@ -12,14 +12,14 @@
 #include "rex_engine/diagnostics/logging/internal/async.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 #include <mutex>
 #include "rex_engine/diagnostics/logging/internal/common.h"
 
 // kafka header
-#include <librdkafka/rdkafkacpp.h"
+#include <librdkafka/rdkafkacpp.h>
 
 namespace rexlog
 {
@@ -86,12 +86,12 @@ namespace rexlog
       }
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         producer_->produce(topic_.get(), 0, RdKafka::Producer::RK_MSG_COPY, (void*)msg.payload.data(), msg.payload.size(), NULL, NULL);
       }
 
-      void flush_() override
+      void flush_impl() override
       {
         producer_->flush(config_.flush_timeout_ms);
       }

@@ -4,13 +4,13 @@
 
 #ifdef __ANDROID__
 
-  #include <android/log.h"
+  #include <android/log.h>
   #include <chrono>
   #include <mutex>
   #include "rex_engine/diagnostics/logging/internal/details/fmt_helper.h"
   #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
   #include "rex_engine/diagnostics/logging/internal/details/os.h"
-  #include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+  #include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
   #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
   #include <string>
   #include <thread>
@@ -34,15 +34,15 @@ namespace rexlog
     {
     public:
       explicit AndroidSink(rex::DebugString tag = "rexlog", bool use_raw_msg = false)
-          : tag_(rsl::move(tag))
-          , use_raw_msg_(use_raw_msg)
+          : tag_impl(rsl::move(tag))
+          , use_raw_msg_impl(use_raw_msg)
       {
       }
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
-        const android_LogPriority priority = convert_to_android_(msg.level);
+        const android_LogPriority priority = convert_to_android_impl(msg.level);
         memory_buf_t formatted;
         if(use_raw_msg_)
         {
@@ -71,7 +71,7 @@ namespace rexlog
         }
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
 
     private:
       // There might be liblog versions used, that do not support __android_log_buf_write. So we only compile and link against
@@ -89,7 +89,7 @@ namespace rexlog
         return __android_log_buf_write(ID, prio, tag, text);
       }
 
-      static android_LogPriority convert_to_android_(rexlog::level::level_enum level)
+      static android_LogPriority convert_to_android_impl(rexlog::level::level_enum level)
       {
         switch(level)
         {

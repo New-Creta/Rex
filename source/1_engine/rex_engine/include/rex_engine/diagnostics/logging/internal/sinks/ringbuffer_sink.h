@@ -58,11 +58,11 @@ namespace rexlog
       }
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         m_q.push_back(details::LogMsgBuffer {msg});
       }
-      void flush_() override {}
+      void flush_impl() override {}
 
     private:
       details::CircularQ<details::LogMsgBuffer> m_q;

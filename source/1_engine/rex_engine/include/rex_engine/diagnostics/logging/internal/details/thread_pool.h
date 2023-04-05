@@ -110,13 +110,13 @@ namespace rexlog
 
       rex::DebugVector<rsl::thread> threads_;
 
-      void post_async_msg_(async_msg&& new_msg, async_overflow_policy overflow_policy);
-      void worker_loop_();
+      void post_async_msg_impl(async_msg&& new_msg, async_overflow_policy overflow_policy);
+      void worker_loop_impl();
 
       // process next message in the queue
       // return true if this thread should still be active (while no terminate msg
       // was received)
-      bool process_next_msg_();
+      bool process_next_msg_impl();
     };
 
   } // namespace details

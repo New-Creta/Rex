@@ -7,7 +7,7 @@
 #include "rex_std/string.h"
 
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 namespace rexlog
@@ -31,11 +31,11 @@ namespace rexlog
       }
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
-        callback_(msg);
+        callback_impl(msg);
       }
-      void flush_() override {};
+      void flush_impl() override {};
 
     private:
       custom_log_callback callback_;

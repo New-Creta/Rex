@@ -4,7 +4,7 @@
 
 #include <cstdio>
 #include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 
 #ifdef _WIN32

@@ -16,15 +16,15 @@ namespace rexlog
     {
     public:
       explicit ostream_sink(rsl::ostream& os, bool force_flush = false)
-          : ostream_(os)
-          , force_flush_(force_flush)
+          : ostream_impl(os)
+          , force_flush_impl(force_flush)
       {
       }
       ostream_sink(const ostream_sink&)            = delete;
       ostream_sink& operator=(const ostream_sink&) = delete;
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         memory_buf_t formatted;
         BaseSink<Mutex>::m_formatter->format(msg, formatted);
@@ -35,7 +35,7 @@ namespace rexlog
         }
       }
 
-      void flush_() override
+      void flush_impl() override
       {
         ostream_.flush();
       }

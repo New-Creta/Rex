@@ -27,7 +27,7 @@ namespace rexlog
     public:
       dist_sink() = default;
       explicit dist_sink(rex::DebugVector<rsl::shared_ptr<sink>> sinks)
-          : sinks_(sinks)
+          : sinks_impl(sinks)
       {
       }
 
@@ -58,7 +58,7 @@ namespace rexlog
       }
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         for(auto& sub_sink: sinks_)
         {
@@ -69,7 +69,7 @@ namespace rexlog
         }
       }
 
-      void flush_() override
+      void flush_impl() override
       {
         for(auto& sub_sink: sinks_)
         {
@@ -77,12 +77,12 @@ namespace rexlog
         }
       }
 
-      void set_pattern_(const rex::DebugString& pattern) override
+      void set_pattern_impl(const rex::DebugString& pattern) override
       {
-        set_formatter_(details::make_unique<rexlog::pattern_formatter>(pattern));
+        set_formatter_impl(details::make_unique<rexlog::pattern_formatter>(pattern));
       }
 
-      void set_formatter_(rsl::unique_ptr<rexlog::formatter> sink_formatter) override
+      void set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sink_formatter) override
       {
         BaseSink<Mutex>::m_formatter = rsl::move(sink_formatter);
         for(auto& sub_sink: sinks_)

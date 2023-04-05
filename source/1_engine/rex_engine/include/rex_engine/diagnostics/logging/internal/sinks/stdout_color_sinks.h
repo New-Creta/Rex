@@ -8,7 +8,7 @@
   #include "rex_engine/diagnostics/logging/internal/sinks/ansicolor_sink.h"
 #endif
 
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 
 namespace rexlog
 {

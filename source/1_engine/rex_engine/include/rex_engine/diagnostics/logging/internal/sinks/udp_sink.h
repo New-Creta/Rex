@@ -49,14 +49,14 @@ namespace rexlog
       ~udp_sink() override = default;
 
     protected:
-      void sink_it_(const rexlog::details::LogMsg& msg) override
+      void sink_it_impl(const rexlog::details::LogMsg& msg) override
       {
         rexlog::memory_buf_t formatted;
         rexlog::sinks::BaseSink<Mutex>::m_formatter->format(msg, formatted);
         client_.send(formatted.data(), formatted.size());
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
       details::udp_client client_;
     };
 

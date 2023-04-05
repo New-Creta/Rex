@@ -28,7 +28,7 @@ namespace rexlog
           : check_debugger_present_ {check_debugger_present} {};
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         if(check_debugger_present_ && !IsDebuggerPresent())
         {
@@ -40,7 +40,7 @@ namespace rexlog
         OutputDebugStringA(formatted.data());
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
 
       bool check_debugger_present_ = true;
     };

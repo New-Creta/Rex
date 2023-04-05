@@ -98,9 +98,9 @@ namespace rexlog
       Registry();
       ~Registry();
 
-      void throw_if_exists_(const rex::DebugString& logger_name);
-      void register_logger_(rsl::shared_ptr<logger> new_logger);
-      bool set_level_from_cfg_(logger* logger);
+      void throw_if_exists_impl(const rex::DebugString& logger_name);
+      void register_logger_impl(rsl::shared_ptr<logger> new_logger);
+      bool set_level_from_cfg_impl(logger* logger);
       rsl::mutex logger_map_mutex_, flusher_mutex_;
       rsl::recursive_mutex tp_mutex_;
       rex::DebugHashTable<rex::DebugString, rsl::shared_ptr<logger>> loggers_;

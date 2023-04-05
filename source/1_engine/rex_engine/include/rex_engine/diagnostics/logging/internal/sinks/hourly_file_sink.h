@@ -7,7 +7,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 namespace rexlog
@@ -39,21 +39,21 @@ namespace rexlog
     public:
       // create hourly file sink which rotates on given time
       hourly_file_sink(filename_t base_filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
-          : base_filename_(rsl::move(base_filename))
+          : base_filename_impl(rsl::move(base_filename))
           , m_file_helper {event_handlers}
-          , truncate_(truncate)
-          , max_files_(max_files)
-          , filenames_q_()
+          , truncate_impl(truncate)
+          , max_files_impl(max_files)
+          , filenames_q_impl()
       {
         auto now      = log_clock::now();
         auto filename = FileNameCalc::calc_filename(base_filename_, now_tm(now));
         m_file_helper.open(filename, truncate_);
         remove_init_file_ = m_file_helper.size() == 0;
-        rotation_tp_      = next_rotation_tp_();
+        rotation_tp_      = next_rotation_tp_impl();
 
         if(max_files_ > 0)
         {
-          init_filenames_q_();
+          init_filenames_q_impl();
         }
       }
 
@@ -64,7 +64,7 @@ namespace rexlog
       }
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         auto time          = msg.time;
         bool should_rotate = time >= rotation_tp_;
@@ -77,7 +77,7 @@ namespace rexlog
           }
           auto filename = FileNameCalc::calc_filename(base_filename_, now_tm(time));
           m_file_helper.open(filename, truncate_);
-          rotation_tp_ = next_rotation_tp_();
+          rotation_tp_ = next_rotation_tp_impl();
         }
         remove_init_file_ = false;
         memory_buf_t formatted;
@@ -87,17 +87,17 @@ namespace rexlog
         // Do the cleaning only at the end because it might throw on failure.
         if(should_rotate && max_files_ > 0)
         {
-          delete_old_();
+          delete_old_impl();
         }
       }
 
-      void flush_() override
+      void flush_impl() override
       {
         m_file_helper.flush();
       }
 
     private:
-      void init_filenames_q_()
+      void init_filenames_q_impl()
       {
         using details::os::path_exists;
 
@@ -126,7 +126,7 @@ namespace rexlog
         return rexlog::details::os::localtime(tnow);
       }
 
-      log_clock::time_point next_rotation_tp_()
+      log_clock::time_point next_rotation_tp_impl()
       {
         auto now           = log_clock::now();
         tm date            = now_tm(now);
@@ -142,7 +142,7 @@ namespace rexlog
 
       // Delete the file N rotations ago.
       // Throw rexlog_ex on failure to delete the old file.
-      void delete_old_()
+      void delete_old_impl()
       {
         using details::os::filename_to_str;
         using details::os::remove_if_exists;

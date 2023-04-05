@@ -27,7 +27,7 @@ namespace rexlog
             [this, on_thread_start, on_thread_stop]
             {
               on_thread_start();
-              this->thread_pool::worker_loop_();
+              this->thread_pool::worker_loop_impl();
               on_thread_stop();
             });
       }
@@ -51,7 +51,7 @@ namespace rexlog
       {
         for(size_t i = 0; i < threads_.size(); i++)
         {
-          post_async_msg_(async_msg(async_msg_type::terminate), async_overflow_policy::block);
+          post_async_msg_impl(async_msg(async_msg_type::terminate), async_overflow_policy::block);
         }
 
         for(auto& t: threads_)
@@ -65,12 +65,12 @@ namespace rexlog
     void REXLOG_INLINE thread_pool::post_log(async_logger_ptr&& worker_ptr, const details::LogMsg& msg, async_overflow_policy overflow_policy)
     {
       async_msg async_m(rsl::move(worker_ptr), async_msg_type::log, msg);
-      post_async_msg_(rsl::move(async_m), overflow_policy);
+      post_async_msg_impl(rsl::move(async_m), overflow_policy);
     }
 
     void REXLOG_INLINE thread_pool::post_flush(async_logger_ptr&& worker_ptr, async_overflow_policy overflow_policy)
     {
-      post_async_msg_(async_msg(rsl::move(worker_ptr), async_msg_type::flush), overflow_policy);
+      post_async_msg_impl(async_msg(rsl::move(worker_ptr), async_msg_type::flush), overflow_policy);
     }
 
     size_t REXLOG_INLINE thread_pool::overrun_counter()
@@ -88,7 +88,7 @@ namespace rexlog
       return m_q.size();
     }
 
-    void REXLOG_INLINE thread_pool::post_async_msg_(async_msg&& new_msg, async_overflow_policy overflow_policy)
+    void REXLOG_INLINE thread_pool::post_async_msg_impl(async_msg&& new_msg, async_overflow_policy overflow_policy)
     {
       if(overflow_policy == async_overflow_policy::block)
       {
@@ -100,9 +100,9 @@ namespace rexlog
       }
     }
 
-    void REXLOG_INLINE thread_pool::worker_loop_()
+    void REXLOG_INLINE thread_pool::worker_loop_impl()
     {
-      while(process_next_msg_())
+      while(process_next_msg_impl())
       {
       }
     }
@@ -110,7 +110,7 @@ namespace rexlog
     // process next message in the queue
     // return true if this thread should still be active (while no terminate msg
     // was received)
-    bool REXLOG_INLINE thread_pool::process_next_msg_()
+    bool REXLOG_INLINE thread_pool::process_next_msg_impl()
     {
       async_msg incoming_async_msg;
       m_q.dequeue(incoming_async_msg);
@@ -119,12 +119,12 @@ namespace rexlog
       {
         case async_msg_type::log:
         {
-          incoming_async_msg.worker_ptr->backend_sink_it_(incoming_async_msg);
+          incoming_async_msg.worker_ptr->backend_sink_it_impl(incoming_async_msg);
           return true;
         }
         case async_msg_type::flush:
         {
-          incoming_async_msg.worker_ptr->backend_flush_();
+          incoming_async_msg.worker_ptr->backend_flush_impl();
           return true;
         }
 

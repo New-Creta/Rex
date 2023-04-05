@@ -120,13 +120,13 @@ namespace rexlog
 
   REXLOG_INLINE void logger::dump_backtrace()
   {
-    dump_backtrace_();
+    dump_backtrace_impl();
   }
 
   // flush functions
   REXLOG_INLINE void logger::flush()
   {
-    flush_();
+    flush_impl();
   }
 
   REXLOG_INLINE void logger::flush_on(level::level_enum log_level)
@@ -165,11 +165,11 @@ namespace rexlog
   }
 
   // protected methods
-  REXLOG_INLINE void logger::log_it_(const rexlog::details::LogMsg& LogMsg, bool log_enabled, bool traceback_enabled)
+  REXLOG_INLINE void logger::log_it_impl(const rexlog::details::LogMsg& LogMsg, bool log_enabled, bool traceback_enabled)
   {
     if(log_enabled)
     {
-      sink_it_(LogMsg);
+      sink_it_impl(LogMsg);
     }
     if(traceback_enabled)
     {
@@ -177,7 +177,7 @@ namespace rexlog
     }
   }
 
-  REXLOG_INLINE void logger::sink_it_(const details::LogMsg& msg)
+  REXLOG_INLINE void logger::sink_it_impl(const details::LogMsg& msg)
   {
     for(auto& sink: sinks_)
     {
@@ -191,13 +191,13 @@ namespace rexlog
       }
     }
 
-    if(should_flush_(msg))
+    if(should_flush_impl(msg))
     {
-      flush_();
+      flush_impl();
     }
   }
 
-  REXLOG_INLINE void logger::flush_()
+  REXLOG_INLINE void logger::flush_impl()
   {
     for(auto& sink: sinks_)
     {
@@ -209,24 +209,24 @@ namespace rexlog
     }
   }
 
-  REXLOG_INLINE void logger::dump_backtrace_()
+  REXLOG_INLINE void logger::dump_backtrace_impl()
   {
     using details::LogMsg;
     if(tracer_.enabled() && !tracer_.empty())
     {
-      sink_it_(LogMsg {name(), level::info, "****************** Backtrace Start ******************"});
-      tracer_.foreach_pop([this](const LogMsg& msg) { this->sink_it_(msg); });
-      sink_it_(LogMsg {name(), level::info, "****************** Backtrace End ********************"});
+      sink_it_impl(LogMsg {name(), level::info, "****************** Backtrace Start ******************"});
+      tracer_.foreach_pop([this](const LogMsg& msg) { this->sink_it_impl(msg); });
+      sink_it_impl(LogMsg {name(), level::info, "****************** Backtrace End ********************"});
     }
   }
 
-  REXLOG_INLINE bool logger::should_flush_(const details::LogMsg& msg)
+  REXLOG_INLINE bool logger::should_flush_impl(const details::LogMsg& msg)
   {
     auto flush_level = flush_level_.load(rsl::memory_order_relaxed);
     return (msg.level >= flush_level) && (msg.level != level::off);
   }
 
-  REXLOG_INLINE void logger::err_handler_(const rex::DebugString& msg)
+  REXLOG_INLINE void logger::err_handler_impl(const rex::DebugString& msg)
   {
     if(custom_err_handler_)
     {

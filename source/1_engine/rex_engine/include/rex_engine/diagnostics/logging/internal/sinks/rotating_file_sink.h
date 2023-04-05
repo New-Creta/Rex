@@ -6,7 +6,7 @@
 #include <mutex>
 #include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include <string>
 
@@ -27,8 +27,8 @@ namespace rexlog
       filename_t filename();
 
     protected:
-      void sink_it_(const details::LogMsg& msg) override;
-      void flush_() override;
+      void sink_it_impl(const details::LogMsg& msg) override;
+      void flush_impl() override;
 
     private:
       // Rotate files:
@@ -36,11 +36,11 @@ namespace rexlog
       // log.1.txt -> log.2.txt
       // log.2.txt -> log.3.txt
       // log.3.txt -> delete
-      void rotate_();
+      void rotate_impl();
 
       // delete the target if exists, and rename the src file  to target
       // return true on success, false otherwise.
-      bool rename_file_(const filename_t& src_filename, const filename_t& target_filename);
+      bool rename_file_impl(const filename_t& src_filename, const filename_t& target_filename);
 
       filename_t base_filename_;
       rsl::size_t max_size_;

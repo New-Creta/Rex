@@ -15,11 +15,11 @@
   #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 
   #ifndef _USING_V110_SDK71_ // fileapi.h doesn't exist in winxp
-    #include <fileapi.h"     // WriteFile (..)
+    #include <fileapi.h>     // WriteFile (..)
   #endif
 
-  #include <io.h"    // _get_osfhandle(..)
-  #include <stdio.h" // _fileno(..)
+  #include <io.h>    // _get_osfhandle(..)
+  #include <stdio.h> // _fileno(..)
 #endif               // WIN32
 
 namespace rexlog

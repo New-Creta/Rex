@@ -87,9 +87,9 @@ namespace rexlog
       bool should_do_colors_;
       rsl::unique_ptr<rexlog::formatter> m_formatter;
       rsl::array<rex::DebugString, level::n_levels> m_colors;
-      void print_ccode_(const string_view_t& color_code);
-      void print_range_(const memory_buf_t& formatted, size_t start, size_t end);
-      static rex::DebugString to_string_(const string_view_t& sv);
+      void print_ccode_impl(const string_view_t& color_code);
+      void print_range_impl(const memory_buf_t& formatted, size_t start, size_t end);
+      static rex::DebugString to_string_impl(const string_view_t& sv);
     };
 
     template <typename ConsoleMutex>

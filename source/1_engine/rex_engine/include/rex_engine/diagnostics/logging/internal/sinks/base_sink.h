@@ -3,7 +3,7 @@
 #pragma once
 //
 // base sink templated over a mutex (either dummy or real)
-// concrete implementation should override the sink_it_() and flush_()  methods.
+// concrete implementation should override the sink_it_impl() and flush_impl()  methods.
 // locking is taken care of in this class - no locking needed by the
 // implementers..
 //
@@ -40,10 +40,10 @@ namespace rexlog
       rsl::unique_ptr<rexlog::formatter> m_formatter;
       Mutex m_mutex;
 
-      virtual void sink_it_(const details::LogMsg& msg) = 0;
-      virtual void flush_()                              = 0;
-      virtual void set_pattern_(const rex::DebugString& pattern);
-      virtual void set_formatter_(rsl::unique_ptr<rexlog::formatter> sink_formatter);
+      virtual void sink_it_impl(const details::LogMsg& msg) = 0;
+      virtual void flush_impl()                              = 0;
+      virtual void set_pattern_impl(const rex::DebugString& pattern);
+      virtual void set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sink_formatter);
     };
   } // namespace sinks
 } // namespace rexlog

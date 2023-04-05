@@ -20,7 +20,7 @@ REXLOG_INLINE rexlog::async_logger::async_logger(rex::DebugString logger_name, s
 }
 
 // send the log message to the thread pool
-REXLOG_INLINE void rexlog::async_logger::sink_it_(const details::LogMsg& msg)
+REXLOG_INLINE void rexlog::async_logger::sink_it_impl(const details::LogMsg& msg)
 {
   if(auto pool_ptr = thread_pool_.lock())
   {
@@ -33,7 +33,7 @@ REXLOG_INLINE void rexlog::async_logger::sink_it_(const details::LogMsg& msg)
 }
 
 // send flush request to the thread pool
-REXLOG_INLINE void rexlog::async_logger::flush_()
+REXLOG_INLINE void rexlog::async_logger::flush_impl()
 {
   if(auto pool_ptr = thread_pool_.lock())
   {
@@ -48,7 +48,7 @@ REXLOG_INLINE void rexlog::async_logger::flush_()
 //
 // backend functions - called from the thread pool to do the actual job
 //
-REXLOG_INLINE void rexlog::async_logger::backend_sink_it_(const details::LogMsg& msg)
+REXLOG_INLINE void rexlog::async_logger::backend_sink_it_impl(const details::LogMsg& msg)
 {
   for(auto& sink: sinks_)
   {
@@ -62,13 +62,13 @@ REXLOG_INLINE void rexlog::async_logger::backend_sink_it_(const details::LogMsg&
     }
   }
 
-  if(should_flush_(msg))
+  if(should_flush_impl(msg))
   {
-    backend_flush_();
+    backend_flush_impl();
   }
 }
 
-REXLOG_INLINE void rexlog::async_logger::backend_flush_()
+REXLOG_INLINE void rexlog::async_logger::backend_flush_impl()
 {
   for(auto& sink: sinks_)
   {
