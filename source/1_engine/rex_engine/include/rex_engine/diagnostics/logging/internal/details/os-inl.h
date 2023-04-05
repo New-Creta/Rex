@@ -12,43 +12,43 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include <string>
-#include <sys/stat.h"
-#include <sys/types.h"
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <thread>
 
 #ifdef _WIN32
 
-  #include <Windows.h"
-  #include <fileapi.h" // for FlushFileBuffers
-  #include <io.h"      // for _get_osfhandle, _isatty, _fileno
-  #include <process.h" // for _get_pid
+  #include <Windows.h>
+  #include <fileapi.h> // for FlushFileBuffers
+  #include <io.h>      // for _get_osfhandle, _isatty, _fileno
+  #include <process.h> // for _get_pid
   #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 
   #ifdef __MINGW32__
-    #include <share.h"
+    #include <share.h>
   #endif
 
-  #include <direct.h" // for _mkdir/_wmkdir
+  #include <direct.h> // for _mkdir/_wmkdir
 
 #else // unix
 
-  #include <fcntl.h"
-  #include <unistd.h"
+  #include <fcntl.h>
+  #include <unistd.h>
 
   #ifdef __linux__
-    #include <sys/syscall.h" //Use gettid() syscall under linux to get thread id
+    #include <sys/syscall.h> //Use gettid() syscall under linux to get thread id
 
   #elif defined(_AIX)
-    #include <pthread.h" // for pthread_getthrds_np
+    #include <pthread.h> // for pthread_getthrds_np
 
   #elif defined(__DragonFly__) || defined(__FreeBSD__)
-    #include <pthread_np.h" // for pthread_getthreadid_np
+    #include <pthread_np.h> // for pthread_getthreadid_np
 
   #elif defined(__NetBSD__)
-    #include <lwp.h" // for _lwp_self
+    #include <lwp.h> // for _lwp_self
 
   #elif defined(__sun)
-    #include <thread.h" // for thr_self
+    #include <thread.h> // for thr_self
   #endif
 
 #endif // unix
