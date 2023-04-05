@@ -2,17 +2,17 @@
 
 #pragma once
 
+#include "rex_engine/memory/global_allocator.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/internal/utility/pair.h"
 #include "rex_std/sstream.h"
 #include "rex_std/string.h"
 #include "rex_std/utility.h"
 
-#include <rex_engine/diagnostics/logging/internal/cfg/helpers.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <rex_engine/diagnostics/logging/internal/details/registry.h>
-#include <rex_engine/diagnostics/logging/internal/rexlog.h>
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/diagnostics/logging/internal/cfg/helpers.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
+#include "rex_engine/diagnostics/logging/internal/rexlog.h"
 
 namespace rexlog
 {
@@ -112,7 +112,7 @@ namespace rexlog
           }
         }
 
-        details::registry::instance().set_levels(rsl::move(levels), global_level_found ? &global_level : nullptr);
+        details::Registry::instance().set_levels(rsl::move(levels), global_level_found ? &global_level : nullptr);
       }
 
     } // namespace helpers

@@ -13,12 +13,11 @@
 // The use of private formatter per sink provides the opportunity to cache some
 // formatted data, and support for different format per sink.
 
-#include "rex_std/format.h"
-
-#include "rex_engine/types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/types.h"
+#include "rex_std/format.h"
 
 #define REXLOG_LOGGER_CATCH(location)
 
@@ -96,8 +95,8 @@ namespace rexlog
         return;
       }
 
-      details::log_msg log_msg(log_time, loc, name_, lvl, msg);
-      log_it_(log_msg, log_enabled, traceback_enabled);
+      details::LogMsg LogMsg(log_time, loc, name_, lvl, msg);
+      log_it_(LogMsg, log_enabled, traceback_enabled);
     }
 
     void log(source_loc loc, level::level_enum lvl, string_view_t msg)
@@ -109,8 +108,8 @@ namespace rexlog
         return;
       }
 
-      details::log_msg log_msg(loc, name_, lvl, msg);
-      log_it_(log_msg, log_enabled, traceback_enabled);
+      details::LogMsg LogMsg(loc, name_, lvl, msg);
+      log_it_(LogMsg, log_enabled, traceback_enabled);
     }
 
     void log(level::level_enum lvl, string_view_t msg)
@@ -246,7 +245,7 @@ namespace rexlog
     rexlog::level_t level_ {level::info};
     rexlog::level_t flush_level_ {level::off};
     err_handler custom_err_handler_ {nullptr};
-    details::backtracer tracer_;
+    details::Backtracer tracer_;
 
     // common implementation for after templated public api has been resolved
     template <typename... Args>
@@ -263,19 +262,19 @@ namespace rexlog
         memory_buf_t buf;
         fmt_lib::vformat_to(rsl::back_inserter(buf), fmt, fmt_lib::make_format_args(rsl::forward<Args>(args)...));
 
-        details::log_msg log_msg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
-        log_it_(log_msg, log_enabled, traceback_enabled);
+        details::LogMsg LogMsg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
+        log_it_(LogMsg, log_enabled, traceback_enabled);
       }
       REXLOG_LOGGER_CATCH(loc)
     }
 
     // log the given message (if the given log level is high enough),
     // and save backtrace (if backtrace is enabled).
-    void log_it_(const details::log_msg& log_msg, bool log_enabled, bool traceback_enabled);
-    virtual void sink_it_(const details::log_msg& msg);
+    void log_it_(const details::LogMsg& LogMsg, bool log_enabled, bool traceback_enabled);
+    virtual void sink_it_(const details::LogMsg& msg);
     virtual void flush_();
     void dump_backtrace_();
-    bool should_flush_(const details::log_msg& msg);
+    bool should_flush_(const details::LogMsg& msg);
 
     // handle errors during logging.
     // default handler prints the error to stderr at max rate of 1 message/sec.

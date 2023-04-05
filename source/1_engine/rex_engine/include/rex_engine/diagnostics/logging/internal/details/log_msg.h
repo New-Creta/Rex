@@ -2,21 +2,21 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include <string>
 
 namespace rexlog
 {
   namespace details
   {
-    struct REXLOG_API log_msg
+    struct REXLOG_API LogMsg
     {
-      log_msg() = default;
-      log_msg(log_clock::time_point log_time, source_loc loc, string_view_t logger_name, level::level_enum lvl, string_view_t msg);
-      log_msg(source_loc loc, string_view_t logger_name, level::level_enum lvl, string_view_t msg);
-      log_msg(string_view_t logger_name, level::level_enum lvl, string_view_t msg);
-      log_msg(const log_msg& other)            = default;
-      log_msg& operator=(const log_msg& other) = default;
+      LogMsg() = default;
+      LogMsg(log_clock::time_point log_time, source_loc loc, string_view_t logger_name, level::level_enum lvl, string_view_t msg);
+      LogMsg(source_loc loc, string_view_t logger_name, level::level_enum lvl, string_view_t msg);
+      LogMsg(string_view_t logger_name, level::level_enum lvl, string_view_t msg);
+      LogMsg(const LogMsg& other)            = default;
+      LogMsg& operator=(const LogMsg& other) = default;
 
       string_view_t logger_name;
       level::level_enum level {level::off};

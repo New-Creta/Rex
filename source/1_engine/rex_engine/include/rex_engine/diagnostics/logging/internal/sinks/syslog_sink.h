@@ -3,11 +3,11 @@
 #pragma once
 
 #include <array>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include <string>
-#include <syslog.h>
+#include <syslog.h"
 
 namespace rexlog
 {
@@ -17,7 +17,7 @@ namespace rexlog
      * Sink that write to syslog using the `syscall()` library call.
      */
     template <typename Mutex>
-    class syslog_sink : public base_sink<Mutex>
+    class syslog_sink : public BaseSink<Mutex>
     {
     public:
       syslog_sink(rex::DebugString ident, int syslog_option, int syslog_facility, bool enable_formatting)
@@ -44,13 +44,13 @@ namespace rexlog
       syslog_sink& operator=(const syslog_sink&) = delete;
 
     protected:
-      void sink_it_(const details::log_msg& msg) override
+      void sink_it_(const details::LogMsg& msg) override
       {
         string_view_t payload;
         memory_buf_t formatted;
         if(enable_formatting_)
         {
-          base_sink<Mutex>::formatter_->format(msg, formatted);
+          BaseSink<Mutex>::m_formatter->format(msg, formatted);
           payload = string_view_t(formatted.data(), formatted.size());
         }
         else
@@ -81,24 +81,24 @@ namespace rexlog
       //
       // Simply maps rexlog's log level to syslog priority level.
       //
-      int syslog_prio_from_level(const details::log_msg& msg) const
+      int syslog_prio_from_level(const details::LogMsg& msg) const
       {
         return syslog_levels_.at(static_cast<levels_array::size_type>(msg.level));
       }
     };
 
     using syslog_sink_mt = syslog_sink<rsl::mutex>;
-    using syslog_sink_st = syslog_sink<details::null_mutex>;
+    using syslog_sink_st = syslog_sink<details::NullMutex>;
   } // namespace sinks
 
   // Create and register a syslog logger
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   inline rsl::shared_ptr<logger> syslog_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
   {
     return Factory::template create<sinks::syslog_sink_mt>(logger_name, syslog_ident, syslog_option, syslog_facility, enable_formatting);
   }
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   inline rsl::shared_ptr<logger> syslog_logger_st(const rex::DebugString& logger_name, const rex::DebugString& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
   {
     return Factory::template create<sinks::syslog_sink_st>(logger_name, syslog_ident, syslog_option, syslog_facility, enable_formatting);

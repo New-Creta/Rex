@@ -2,39 +2,40 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
 #include "rex_engine/memory/global_allocator.h"
+
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
 
 namespace rexlog
 {
   namespace details
   {
 
-    REXLOG_INLINE file_helper::file_helper(const file_event_handlers& event_handlers)
-        : event_handlers_(event_handlers)
+    REXLOG_INLINE FileHelper::FileHelper(const file_event_handlers& event_handlers)
+        : m_event_handlers(event_handlers)
     {
     }
 
-    REXLOG_INLINE file_helper::~file_helper()
+    REXLOG_INLINE FileHelper::~FileHelper()
     {
       close();
     }
 
-    REXLOG_INLINE void file_helper::open(const filename_t& fname, bool truncate)
+    REXLOG_INLINE void FileHelper::open(const filename_t& fname, bool truncate)
     {
       close();
-      filename_ = fname;
+      m_filename = fname;
 
       auto* mode       = REXLOG_FILENAME_T("ab");
       auto* trunc_mode = REXLOG_FILENAME_T("wb");
 
-      if(event_handlers_.before_open)
+      if(m_event_handlers.before_open)
       {
-        event_handlers_.before_open(filename_);
+        m_event_handlers.before_open(m_filename);
       }
-      for(int tries = 0; tries < open_tries_; ++tries)
+      for(int tries = 0; tries < m_open_tries; ++tries)
       {
         // create containing folder if not exists already.
         os::create_dir(os::dir_name(fname));
@@ -51,103 +52,103 @@ namespace rexlog
           }
           fclose(tmp);
         }
-        if(!os::fopen_s(&fd_, fname, filename_t(mode)))
+        if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
         {
-          if(event_handlers_.after_open)
+          if(m_event_handlers.after_open)
           {
-            event_handlers_.after_open(filename_, fd_);
+            m_event_handlers.after_open(m_filename, m_fd);
           }
           return;
         }
 
-        details::os::sleep_for_millis(open_interval_);
+        details::os::sleep_for_millis(m_open_interval);
       }
 
       rex::DebugString err(rex::global_debug_allocator());
       err += "Failed opening file ";
-      err += os::filename_to_str(filename_);
+      err += os::filename_to_str(m_filename);
       err += " for writing";
       throw_rexlog_ex(err, errno);
     }
 
-    REXLOG_INLINE void file_helper::reopen(bool truncate)
+    REXLOG_INLINE void FileHelper::reopen(bool truncate)
     {
-      if(filename_.empty())
+      if(m_filename.empty())
       {
         throw_rexlog_ex(rex::DebugString("Failed re opening file - was not opened before", rex::global_debug_allocator()));
       }
-      this->open(filename_, truncate);
+      this->open(m_filename, truncate);
     }
 
-    REXLOG_INLINE void file_helper::flush()
+    REXLOG_INLINE void FileHelper::flush()
     {
-      if(fflush(fd_) != 0)
+      if(fflush(m_fd) != 0)
       {
         rex::DebugString err(rex::global_debug_allocator());
         err += "Failed flush to file ";
-        err += os::filename_to_str(filename_);
+        err += os::filename_to_str(m_filename);
         throw_rexlog_ex(err, errno);
       }
     }
 
-    REXLOG_INLINE void file_helper::sync()
+    REXLOG_INLINE void FileHelper::sync()
     {
-      if(!os::fsync(fd_))
+      if(!os::fsync(m_fd))
       {
         rex::DebugString err(rex::global_debug_allocator());
         err += "Failed to fsync file ";
-        err += os::filename_to_str(filename_);
+        err += os::filename_to_str(m_filename);
         throw_rexlog_ex(err, errno);
       }
     }
 
-    REXLOG_INLINE void file_helper::close()
+    REXLOG_INLINE void FileHelper::close()
     {
-      if(fd_ != nullptr)
+      if(m_fd != nullptr)
       {
-        if(event_handlers_.before_close)
+        if(m_event_handlers.before_close)
         {
-          event_handlers_.before_close(filename_, fd_);
+          m_event_handlers.before_close(m_filename, m_fd);
         }
 
-        fclose(fd_);
-        fd_ = nullptr;
+        fclose(m_fd);
+        m_fd = nullptr;
 
-        if(event_handlers_.after_close)
+        if(m_event_handlers.after_close)
         {
-          event_handlers_.after_close(filename_);
+          m_event_handlers.after_close(m_filename);
         }
       }
     }
 
-    REXLOG_INLINE void file_helper::write(const memory_buf_t& buf)
+    REXLOG_INLINE void FileHelper::write(const memory_buf_t& buf)
     {
       size_t msg_size = buf.size();
       auto data       = buf.data();
-      if(fwrite(data, 1, msg_size, fd_) != msg_size)
+      if(fwrite(data, 1, msg_size, m_fd) != msg_size)
       {
         rex::DebugString err(rex::global_debug_allocator());
         err += "Failed writing to file ";
-        err += os::filename_to_str(filename_);
+        err += os::filename_to_str(m_filename);
         throw_rexlog_ex(err, errno);
       }
     }
 
-    REXLOG_INLINE size_t file_helper::size() const
+    REXLOG_INLINE size_t FileHelper::size() const
     {
-      if(fd_ == nullptr)
+      if(m_fd == nullptr)
       {
         rex::DebugString err(rex::global_debug_allocator());
         err += "Cannot use size() on closed file ";
-        err += os::filename_to_str(filename_);
+        err += os::filename_to_str(m_filename);
         throw_rexlog_ex(err);
       }
-      return os::filesize(fd_);
+      return os::filesize(m_fd);
     }
 
-    REXLOG_INLINE const filename_t& file_helper::filename() const
+    REXLOG_INLINE const filename_t& FileHelper::filename() const
     {
-      return filename_;
+      return m_filename;
     }
 
     //
@@ -164,7 +165,7 @@ namespace rexlog
     // "my_folder/.mylog" => ("my_folder/.mylog", "")
     // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
 
-    REXLOG_INLINE filename_with_extension file_helper::split_by_extension(const filename_t& fname)
+    REXLOG_INLINE filename_with_extension FileHelper::split_by_extension(const filename_t& fname)
     {
       auto ext_index = fname.rfind('.');
 

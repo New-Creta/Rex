@@ -4,20 +4,20 @@ namespace rex
 {
   //-------------------------------------------------------------------------
   LogCategoryBase::LogCategoryBase(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity)
-      : default_verbosity_(inDefaultVerbosity)
-      , category_name_(inCategoryName)
+      : m_default_verbosity(inDefaultVerbosity)
+      , m_category_name(inCategoryName)
   {
     // LOG CATEGORY? (CategoryName, InDefaultVerbosity);
-    resetFromDefault();
+    reset_from_default();
   }
 
   //-------------------------------------------------------------------------
   LogCategoryBase::~LogCategoryBase() = default;
 
   //-------------------------------------------------------------------------
-  bool LogCategoryBase::isSuppressed(LogVerbosity level) const
+  bool LogCategoryBase::is_suppressed(LogVerbosity level) const
   {
-    if((level & LogVerbosity::VerbosityMask) <= verbosity_)
+    if((level & LogVerbosity::VerbosityMask) <= m_verbosity)
     {
       return false;
     }
@@ -26,28 +26,28 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  const LogCategoryName& LogCategoryBase::getCategoryName() const
+  const LogCategoryName& LogCategoryBase::get_category_name() const
   {
-    return category_name_;
+    return m_category_name;
   }
 
   //-------------------------------------------------------------------------
-  const LogVerbosity& LogCategoryBase::getVerbosity() const
+  const LogVerbosity& LogCategoryBase::get_verbosity() const
   {
-    return verbosity_;
+    return m_verbosity;
   }
 
   //-------------------------------------------------------------------------
-  void LogCategoryBase::setVerbosity(LogVerbosity newVerbosity)
+  void LogCategoryBase::set_verbosity(LogVerbosity newVerbosity)
   {
-    const LogVerbosity old_verbosity = verbosity_;
+    const LogVerbosity old_verbosity = m_verbosity;
 
-    verbosity_ = newVerbosity & LogVerbosity::VerbosityMask;
+    m_verbosity = newVerbosity & LogVerbosity::VerbosityMask;
   }
 
   //-------------------------------------------------------------------------
-  void LogCategoryBase::resetFromDefault()
+  void LogCategoryBase::reset_from_default()
   {
-    setVerbosity(default_verbosity_);
+    set_verbosity(m_default_verbosity);
   }
 } // namespace rex

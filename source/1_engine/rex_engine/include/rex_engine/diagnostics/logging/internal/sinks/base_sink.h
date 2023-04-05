@@ -8,39 +8,39 @@
 // implementers..
 //
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 
 namespace rexlog
 {
   namespace sinks
   {
     template <typename Mutex>
-    class REXLOG_API base_sink : public sink
+    class REXLOG_API BaseSink : public sink
     {
     public:
-      base_sink();
-      explicit base_sink(rsl::unique_ptr<rexlog::formatter> formatter);
-      ~base_sink() override = default;
+      BaseSink();
+      explicit BaseSink(rsl::unique_ptr<rexlog::formatter> formatter);
+      ~BaseSink() override = default;
 
-      base_sink(const base_sink&) = delete;
-      base_sink(base_sink&&)      = delete;
+      BaseSink(const BaseSink&) = delete;
+      BaseSink(BaseSink&&)      = delete;
 
-      base_sink& operator=(const base_sink&) = delete;
-      base_sink& operator=(base_sink&&)      = delete;
+      BaseSink& operator=(const BaseSink&) = delete;
+      BaseSink& operator=(BaseSink&&)      = delete;
 
-      void log(const details::log_msg& msg) final;
+      void log(const details::LogMsg& msg) final;
       void flush() final;
       void set_pattern(const rex::DebugString& pattern) final;
       void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) final;
 
     protected:
       // sink formatter
-      rsl::unique_ptr<rexlog::formatter> formatter_;
-      Mutex mutex_;
+      rsl::unique_ptr<rexlog::formatter> m_formatter;
+      Mutex m_mutex;
 
-      virtual void sink_it_(const details::log_msg& msg) = 0;
+      virtual void sink_it_(const details::LogMsg& msg) = 0;
       virtual void flush_()                              = 0;
       virtual void set_pattern_(const rex::DebugString& pattern);
       virtual void set_formatter_(rsl::unique_ptr<rexlog::formatter> sink_formatter);

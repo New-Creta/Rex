@@ -2,15 +2,15 @@
 
 #pragma once
 
+#include "rex_engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <rex_engine/diagnostics/logging/internal/formatter.h>
-#include "rex_engine/types.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/formatter.h"
 
 namespace rexlog
 {
@@ -32,18 +32,18 @@ namespace rexlog
           : width_(width)
           , side_(side)
           , truncate_(truncate)
-          , enabled_(true)
+          , m_enabled(true)
       {
       }
 
       bool enabled() const
       {
-        return enabled_;
+        return m_enabled;
       }
       size_t width_  = 0;
       pad_side side_ = pad_side::left;
       bool truncate_ = false;
-      bool enabled_  = false;
+      bool m_enabled  = false;
     };
 
     class REXLOG_API flag_formatter
@@ -55,7 +55,7 @@ namespace rexlog
       }
       flag_formatter()                                                                        = default;
       virtual ~flag_formatter()                                                               = default;
-      virtual void format(const details::log_msg& msg, const tm& tm_time, memory_buf_t& dest) = 0;
+      virtual void format(const details::LogMsg& msg, const tm& tm_time, memory_buf_t& dest) = 0;
 
     protected:
       padding_info padinfo_;
@@ -88,7 +88,7 @@ namespace rexlog
     pattern_formatter& operator=(const pattern_formatter& other) = delete;
 
     rsl::unique_ptr<formatter> clone() const override;
-    void format(const details::log_msg& msg, memory_buf_t& dest) override;
+    void format(const details::LogMsg& msg, memory_buf_t& dest) override;
 
     template <typename T, typename... Args>
     pattern_formatter& add_flag(char flag, Args&&... args)
@@ -109,7 +109,7 @@ namespace rexlog
     rex::DebugVector<rsl::unique_ptr<details::flag_formatter>> formatters_;
     custom_flags custom_handlers_;
 
-    tm get_time_(const details::log_msg& msg);
+    tm get_time_(const details::LogMsg& msg);
     template <typename Padder>
     void handle_flag_(char flag, details::padding_info padding);
 

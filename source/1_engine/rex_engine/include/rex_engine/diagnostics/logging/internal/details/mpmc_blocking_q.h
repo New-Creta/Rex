@@ -12,7 +12,7 @@
 #include "rex_std/condition_variable.h"
 #include "rex_std/mutex.h"
 
-#include <rex_engine/diagnostics/logging/internal/details/circular_q.h>
+#include "rex_engine/diagnostics/logging/internal/details/circular_q.h"
 
 namespace rexlog
 {
@@ -20,12 +20,12 @@ namespace rexlog
   {
 
     template <typename T>
-    class mpmc_blocking_queue
+    class MpmcBlockingQueue
     {
     public:
       using item_type = T;
-      explicit mpmc_blocking_queue(size_t max_items)
-          : q_(max_items)
+      explicit MpmcBlockingQueue(size_t max_items)
+          : m_q(max_items)
       {
       }
 
@@ -34,21 +34,21 @@ namespace rexlog
       void enqueue(T&& item)
       {
         {
-          rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-          pop_cv_.wait(lock, [this] { return !this->q_.full(); });
-          q_.push_back(rsl::move(item));
+          rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          m_pop_cv.wait(lock, [this] { return !this->m_q.full(); });
+          m_q.push_back(rsl::move(item));
         }
-        push_cv_.notify_one();
+        m_push_cv.notify_one();
       }
 
       // enqueue immediately. overrun oldest message in the queue if no room left.
       void enqueue_nowait(T&& item)
       {
         {
-          rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-          q_.push_back(rsl::move(item));
+          rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          m_q.push_back(rsl::move(item));
         }
-        push_cv_.notify_one();
+        m_push_cv.notify_one();
       }
 
       // dequeue with a timeout.
@@ -56,15 +56,15 @@ namespace rexlog
       bool dequeue_for(T& popped_item, rsl::chrono::milliseconds wait_duration)
       {
         {
-          rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-          if(!push_cv_.wait_for(lock, wait_duration, [this] { return !this->q_.empty(); }))
+          rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          if(!m_push_cv.wait_for(lock, wait_duration, [this] { return !this->m_q.empty(); }))
           {
             return false;
           }
-          popped_item = rsl::move(q_.front());
-          q_.pop_front();
+          popped_item = rsl::move(m_q.front());
+          m_q.pop_front();
         }
-        pop_cv_.notify_one();
+        m_pop_cv.notify_one();
         return true;
       }
 
@@ -72,12 +72,12 @@ namespace rexlog
       void dequeue(T& popped_item)
       {
         {
-          rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-          push_cv_.wait(lock, [this] { return !this->q_.empty(); });
-          popped_item = rsl::move(q_.front());
-          q_.pop_front();
+          rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          m_push_cv.wait(lock, [this] { return !this->m_q.empty(); });
+          popped_item = rsl::move(m_q.front());
+          m_q.pop_front();
         }
-        pop_cv_.notify_one();
+        m_pop_cv.notify_one();
       }
 
 #else
@@ -87,70 +87,70 @@ namespace rexlog
       // try to enqueue and block if no room left
       void enqueue(T&& item)
       {
-        rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-        pop_cv_.wait(lock, [this] { return !this->q_.full(); });
-        q_.push_back(rsl::move(item));
-        push_cv_.notify_one();
+        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        m_pop_cv.wait(lock, [this] { return !this->m_q.full(); });
+        m_q.push_back(rsl::move(item));
+        m_push_cv.notify_one();
       }
 
       // enqueue immediately. overrun oldest message in the queue if no room left.
       void enqueue_nowait(T&& item)
       {
-        rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-        q_.push_back(rsl::move(item));
-        push_cv_.notify_one();
+        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        m_q.push_back(rsl::move(item));
+        m_push_cv.notify_one();
       }
 
       // dequeue with a timeout.
       // Return true, if succeeded dequeue item, false otherwise
       bool dequeue_for(T& popped_item, rsl::chrono::milliseconds wait_duration)
       {
-        rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-        if(!push_cv_.wait_for(lock, wait_duration, [this] { return !this->q_.empty(); }))
+        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        if(!m_push_cv.wait_for(lock, wait_duration, [this] { return !this->m_q.empty(); }))
         {
           return false;
         }
-        popped_item = rsl::move(q_.front());
-        q_.pop_front();
-        pop_cv_.notify_one();
+        popped_item = rsl::move(m_q.front());
+        m_q.pop_front();
+        m_pop_cv.notify_one();
         return true;
       }
 
       // blocking dequeue without a timeout.
       void dequeue(T& popped_item)
       {
-        rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-        push_cv_.wait(lock, [this] { return !this->q_.empty(); });
-        popped_item = rsl::move(q_.front());
-        q_.pop_front();
-        pop_cv_.notify_one();
+        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        m_push_cv.wait(lock, [this] { return !this->m_q.empty(); });
+        popped_item = rsl::move(m_q.front());
+        m_q.pop_front();
+        m_pop_cv.notify_one();
       }
 
 #endif
 
       size_t overrun_counter()
       {
-        rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-        return q_.overrun_counter();
+        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        return m_q.overrun_counter();
       }
 
       size_t size()
       {
-        rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-        return q_.size();
+        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        return m_q.size();
       }
 
       void reset_overrun_counter()
       {
-        rsl::unique_lock<rsl::mutex> lock(queue_mutex_);
-        q_.reset_overrun_counter();
+        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        m_q.reset_overrun_counter();
       }
 
     private:
-      rsl::mutex queue_mutex_;
-      rsl::condition_variable push_cv_;
-      rsl::condition_variable pop_cv_;
-      rexlog::details::circular_q<T> q_;
+      rsl::mutex m_queue_mutex;
+      rsl::condition_variable m_push_cv;
+      rsl::condition_variable m_pop_cv;
+      rexlog::details::CircularQ<T> m_q;
     };
   } // namespace details
 } // namespace rexlog

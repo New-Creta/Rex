@@ -4,14 +4,14 @@
 
 #ifdef __ANDROID__
 
-  #include <android/log.h>
+  #include <android/log.h"
   #include <chrono>
   #include <mutex>
-  #include <rex_engine/diagnostics/logging/internal/details/fmt_helper.h>
-  #include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-  #include <rex_engine/diagnostics/logging/internal/details/os.h>
-  #include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
-  #include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+  #include "rex_engine/diagnostics/logging/internal/details/fmt_helper.h"
+  #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+  #include "rex_engine/diagnostics/logging/internal/details/os.h"
+  #include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+  #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
   #include <string>
   #include <thread>
   #include <type_traits>
@@ -30,17 +30,17 @@ namespace rexlog
      * (logging using __android_log_write or __android_log_buf_write depending on the specified BufferID)
      */
     template <typename Mutex, int BufferID = log_id::LOG_ID_MAIN>
-    class android_sink final : public base_sink<Mutex>
+    class AndroidSink final : public BaseSink<Mutex>
     {
     public:
-      explicit android_sink(rex::DebugString tag = "rexlog", bool use_raw_msg = false)
+      explicit AndroidSink(rex::DebugString tag = "rexlog", bool use_raw_msg = false)
           : tag_(rsl::move(tag))
           , use_raw_msg_(use_raw_msg)
       {
       }
 
     protected:
-      void sink_it_(const details::log_msg& msg) override
+      void sink_it_(const details::LogMsg& msg) override
       {
         const android_LogPriority priority = convert_to_android_(msg.level);
         memory_buf_t formatted;
@@ -50,7 +50,7 @@ namespace rexlog
         }
         else
         {
-          base_sink<Mutex>::formatter_->format(msg, formatted);
+          BaseSink<Mutex>::m_formatter->format(msg, formatted);
         }
         formatted.push_back('\0');
         const char* msg_output = formatted.data();
@@ -107,25 +107,25 @@ namespace rexlog
       bool use_raw_msg_;
     };
 
-    using android_sink_mt = android_sink<rsl::mutex>;
-    using android_sink_st = android_sink<details::null_mutex>;
+    using android_sink_mt = AndroidSink<rsl::mutex>;
+    using android_sink_st = AndroidSink<details::NullMutex>;
 
     template <int BufferId = log_id::LOG_ID_MAIN>
-    using android_sink_buf_mt = android_sink<rsl::mutex, BufferId>;
+    using android_sink_buf_mt = AndroidSink<rsl::mutex, BufferId>;
     template <int BufferId = log_id::LOG_ID_MAIN>
-    using android_sink_buf_st = android_sink<details::null_mutex, BufferId>;
+    using android_sink_buf_st = AndroidSink<details::NullMutex, BufferId>;
 
   } // namespace sinks
 
   // Create and register android syslog logger
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   inline rsl::shared_ptr<logger> android_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& tag = "rexlog")
   {
     return Factory::template create<sinks::android_sink_mt>(logger_name, tag);
   }
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   inline rsl::shared_ptr<logger> android_logger_st(const rex::DebugString& logger_name, const rex::DebugString& tag = "rexlog")
   {
     return Factory::template create<sinks::android_sink_st>(logger_name, tag);

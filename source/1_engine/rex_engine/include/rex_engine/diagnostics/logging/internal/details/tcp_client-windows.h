@@ -4,14 +4,14 @@
 
 #define WIN32_LEAN_AND_MEAN
 // tcp client helper
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include <stdio.h"
+#include <stdlib.h"
 #include <string>
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include <windows.h"
+#include <winsock2.h"
+#include <ws2tcpip.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Mswsock.lib")

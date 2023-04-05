@@ -5,14 +5,14 @@
 // Helper RAII over winsock udp client socket.
 // Will throw on construction if socket creation failed.
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
+#include <stdio.h"
+#include <stdlib.h"
 #include <string>
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include <winsock2.h"
+#include <ws2tcpip.h"
 
 #if defined(_MSC_VER)
   #pragma comment(lib, "Ws2_32.lib")

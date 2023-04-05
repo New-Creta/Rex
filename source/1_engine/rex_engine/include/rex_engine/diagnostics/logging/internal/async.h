@@ -13,14 +13,14 @@
 // This is because each message in the queue holds a shared_ptr to the
 // originating logger.
 
+#include "rex_engine/memory/global_allocator.h"
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 
-#include <rex_engine/diagnostics/logging/internal/async_logger.h>
-#include <rex_engine/diagnostics/logging/internal/details/registry.h>
-#include <rex_engine/diagnostics/logging/internal/details/thread_pool.h>
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/diagnostics/logging/internal/async_logger.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
+#include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 
 namespace rexlog
 {
@@ -39,7 +39,7 @@ namespace rexlog
     template <typename Sink, typename... SinkArgs>
     static rsl::shared_ptr<async_logger> create(rex::DebugString logger_name, SinkArgs&&... args)
     {
-      auto& registry_inst = details::registry::instance();
+      auto& registry_inst = details::Registry::instance();
 
       // create global thread pool if not already exists..
 
@@ -78,7 +78,7 @@ namespace rexlog
   inline void init_thread_pool(size_t q_size, size_t thread_count, rsl::function<void()> on_thread_start, rsl::function<void()> on_thread_stop)
   {
     auto tp = rsl::allocate_shared<details::thread_pool>(rex::global_debug_allocator(), q_size, thread_count, on_thread_start, on_thread_stop);
-    details::registry::instance().set_tp(rsl::move(tp));
+    details::Registry::instance().set_tp(rsl::move(tp));
   }
 
   inline void init_thread_pool(size_t q_size, size_t thread_count, rsl::function<void()> on_thread_start)
@@ -95,6 +95,6 @@ namespace rexlog
   // get the global thread pool.
   inline rsl::shared_ptr<rexlog::details::thread_pool> thread_pool()
   {
-    return details::registry::instance().get_tp();
+    return details::Registry::instance().get_tp();
   }
 } // namespace rexlog

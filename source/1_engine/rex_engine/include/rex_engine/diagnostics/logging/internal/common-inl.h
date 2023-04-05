@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <iterator>
-#include <rex_engine/diagnostics/logging/internal/common.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
 
 namespace rexlog
 {

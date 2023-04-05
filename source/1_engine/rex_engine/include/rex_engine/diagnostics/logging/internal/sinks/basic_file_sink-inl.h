@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 
 namespace rexlog
 {
@@ -12,30 +12,30 @@ namespace rexlog
   {
 
     template <typename Mutex>
-    REXLOG_INLINE basic_file_sink<Mutex>::basic_file_sink(const filename_t& filename, bool truncate, const file_event_handlers& event_handlers)
-        : file_helper_ {event_handlers}
+    REXLOG_INLINE BasicFileSink<Mutex>::BasicFileSink(const filename_t& filename, bool truncate, const file_event_handlers& event_handlers)
+        : m_file_helper {event_handlers}
     {
-      file_helper_.open(filename, truncate);
+      m_file_helper.open(filename, truncate);
     }
 
     template <typename Mutex>
-    REXLOG_INLINE const filename_t& basic_file_sink<Mutex>::filename() const
+    REXLOG_INLINE const filename_t& BasicFileSink<Mutex>::filename() const
     {
-      return file_helper_.filename();
+      return m_file_helper.filename();
     }
 
     template <typename Mutex>
-    REXLOG_INLINE void basic_file_sink<Mutex>::sink_it_(const details::log_msg& msg)
+    REXLOG_INLINE void BasicFileSink<Mutex>::sink_it_(const details::LogMsg& msg)
     {
       memory_buf_t formatted;
-      base_sink<Mutex>::formatter_->format(msg, formatted);
-      file_helper_.write(formatted);
+      BaseSink<Mutex>::m_formatter->format(msg, formatted);
+      m_file_helper.write(formatted);
     }
 
     template <typename Mutex>
-    REXLOG_INLINE void basic_file_sink<Mutex>::flush_()
+    REXLOG_INLINE void BasicFileSink<Mutex>::flush_()
     {
-      file_helper_.flush();
+      m_file_helper.flush();
     }
 
   } // namespace sinks

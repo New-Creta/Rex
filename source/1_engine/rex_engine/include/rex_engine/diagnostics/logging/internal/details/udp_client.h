@@ -9,15 +9,15 @@
   #error "include udp_client-windows.h instead"
 #endif
 
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/udp.h>
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
+#include <arpa/inet.h"
+#include <netdb.h"
+#include <netinet/in.h"
+#include <netinet/udp.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include <string>
-#include <sys/socket.h>
-#include <unistd.h>
+#include <sys/socket.h"
+#include <unistd.h"
 
 namespace rexlog
 {

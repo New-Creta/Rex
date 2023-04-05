@@ -13,7 +13,7 @@ namespace rexlog
 {
   namespace details
   {
-    struct null_mutex
+    struct NullMutex
     {
       void lock() const {}
       void unlock() const {}

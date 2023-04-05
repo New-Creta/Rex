@@ -4,9 +4,9 @@
 
 #include "rex_std/memory.h"
 
-#include <rex_engine/diagnostics/logging/internal/async_logger.h>
-#include <rex_engine/diagnostics/logging/internal/details/thread_pool.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
+#include "rex_engine/diagnostics/logging/internal/async_logger.h"
+#include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include <string>
 
 REXLOG_INLINE rexlog::async_logger::async_logger(rex::DebugString logger_name, sinks_init_list sinks_list, rsl::weak_ptr<details::thread_pool> tp, async_overflow_policy overflow_policy)
@@ -20,7 +20,7 @@ REXLOG_INLINE rexlog::async_logger::async_logger(rex::DebugString logger_name, s
 }
 
 // send the log message to the thread pool
-REXLOG_INLINE void rexlog::async_logger::sink_it_(const details::log_msg& msg)
+REXLOG_INLINE void rexlog::async_logger::sink_it_(const details::LogMsg& msg)
 {
   if(auto pool_ptr = thread_pool_.lock())
   {
@@ -48,7 +48,7 @@ REXLOG_INLINE void rexlog::async_logger::flush_()
 //
 // backend functions - called from the thread pool to do the actual job
 //
-REXLOG_INLINE void rexlog::async_logger::backend_sink_it_(const details::log_msg& msg)
+REXLOG_INLINE void rexlog::async_logger::backend_sink_it_(const details::LogMsg& msg)
 {
   for(auto& sink: sinks_)
   {

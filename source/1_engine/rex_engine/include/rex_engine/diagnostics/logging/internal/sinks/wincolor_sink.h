@@ -7,10 +7,10 @@
 #include <array>
 #include <cstdint>
 #include <mutex>
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/console_globals.h>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include <string>
 
 namespace rexlog
@@ -33,7 +33,7 @@ namespace rexlog
 
       // change the color for the given level
       void set_color(level::level_enum level, rsl::uint16 color);
-      void log(const details::log_msg& msg) final override;
+      void log(const details::LogMsg& msg) final override;
       void flush() final override;
       void set_pattern(const rex::DebugString& pattern) override final;
       void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) override final;
@@ -42,10 +42,10 @@ namespace rexlog
     protected:
       using mutex_t = typename ConsoleMutex::mutex_t;
       void* out_handle_;
-      mutex_t& mutex_;
+      mutex_t& m_mutex;
       bool should_do_colors_;
-      rsl::unique_ptr<rexlog::formatter> formatter_;
-      rsl::array<rsl::uint16, level::n_levels> colors_;
+      rsl::unique_ptr<rexlog::formatter> m_formatter;
+      rsl::array<rsl::uint16, level::n_levels> m_colors;
 
       // set foreground color and return the orig console attributes (for resetting later)
       rsl::uint16 set_foreground_color_(rsl::uint16 attribs);
@@ -73,10 +73,10 @@ namespace rexlog
       explicit wincolor_stderr_sink(color_mode mode = color_mode::automatic);
     };
 
-    using wincolor_stdout_sink_mt = wincolor_stdout_sink<details::console_mutex>;
-    using wincolor_stdout_sink_st = wincolor_stdout_sink<details::console_nullmutex>;
+    using wincolor_stdout_sink_mt = wincolor_stdout_sink<details::ConsoleMutex>;
+    using wincolor_stdout_sink_st = wincolor_stdout_sink<details::ConsoleNullMutex>;
 
-    using wincolor_stderr_sink_mt = wincolor_stderr_sink<details::console_mutex>;
-    using wincolor_stderr_sink_st = wincolor_stderr_sink<details::console_nullmutex>;
+    using wincolor_stderr_sink_mt = wincolor_stderr_sink<details::ConsoleMutex>;
+    using wincolor_stderr_sink_st = wincolor_stderr_sink<details::ConsoleNullMutex>;
   } // namespace sinks
 } // namespace rexlog

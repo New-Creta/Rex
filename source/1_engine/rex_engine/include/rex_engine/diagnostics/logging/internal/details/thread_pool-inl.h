@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include <cassert>
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/thread_pool.h>
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/types.h"
+
+#include <cassert>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 
 namespace rexlog
 {
@@ -14,7 +15,7 @@ namespace rexlog
   {
 
     REXLOG_INLINE thread_pool::thread_pool(size_t q_max_items, size_t threads_n, rsl::function<void()> on_thread_start, rsl::function<void()> on_thread_stop)
-        : q_(q_max_items)
+        : m_q(q_max_items)
     {
       if(threads_n == 0 || threads_n > 1000)
       {
@@ -61,7 +62,7 @@ namespace rexlog
       REXLOG_CATCH_STD
     }
 
-    void REXLOG_INLINE thread_pool::post_log(async_logger_ptr&& worker_ptr, const details::log_msg& msg, async_overflow_policy overflow_policy)
+    void REXLOG_INLINE thread_pool::post_log(async_logger_ptr&& worker_ptr, const details::LogMsg& msg, async_overflow_policy overflow_policy)
     {
       async_msg async_m(rsl::move(worker_ptr), async_msg_type::log, msg);
       post_async_msg_(rsl::move(async_m), overflow_policy);
@@ -74,28 +75,28 @@ namespace rexlog
 
     size_t REXLOG_INLINE thread_pool::overrun_counter()
     {
-      return q_.overrun_counter();
+      return m_q.overrun_counter();
     }
 
     void REXLOG_INLINE thread_pool::reset_overrun_counter()
     {
-      q_.reset_overrun_counter();
+      m_q.reset_overrun_counter();
     }
 
     size_t REXLOG_INLINE thread_pool::queue_size()
     {
-      return q_.size();
+      return m_q.size();
     }
 
     void REXLOG_INLINE thread_pool::post_async_msg_(async_msg&& new_msg, async_overflow_policy overflow_policy)
     {
       if(overflow_policy == async_overflow_policy::block)
       {
-        q_.enqueue(rsl::move(new_msg));
+        m_q.enqueue(rsl::move(new_msg));
       }
       else
       {
-        q_.enqueue_nowait(rsl::move(new_msg));
+        m_q.enqueue_nowait(rsl::move(new_msg));
       }
     }
 
@@ -112,7 +113,7 @@ namespace rexlog
     bool REXLOG_INLINE thread_pool::process_next_msg_()
     {
       async_msg incoming_async_msg;
-      q_.dequeue(incoming_async_msg);
+      m_q.dequeue(incoming_async_msg);
 
       switch(incoming_async_msg.msg_type)
       {

@@ -4,73 +4,73 @@
 
 #include "rex_std/mutex.h"
 
-#include <rex_engine/diagnostics/logging/internal/details/backtracer.h>
+#include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
 
 namespace rexlog
 {
   namespace details
   {
-    REXLOG_INLINE backtracer::backtracer(const backtracer& other)
+    REXLOG_INLINE Backtracer::Backtracer(const Backtracer& other)
     {
-      rsl::unique_lock<rsl::mutex> lock(other.mutex_);
-      enabled_  = other.enabled();
-      messages_ = other.messages_;
+      rsl::unique_lock<rsl::mutex> lock(other.m_mutex);
+      m_enabled  = other.enabled();
+      m_messages = other.m_messages;
     }
 
-    REXLOG_INLINE backtracer::backtracer(backtracer&& other) REXLOG_NOEXCEPT
+    REXLOG_INLINE Backtracer::Backtracer(Backtracer&& other) REXLOG_NOEXCEPT
     {
-      rsl::unique_lock<rsl::mutex> lock(other.mutex_);
-      enabled_  = other.enabled();
-      messages_ = rsl::move(other.messages_);
+      rsl::unique_lock<rsl::mutex> lock(other.m_mutex);
+      m_enabled  = other.enabled();
+      m_messages = rsl::move(other.m_messages);
     }
 
-    REXLOG_INLINE backtracer& backtracer::operator=(backtracer other)
+    REXLOG_INLINE Backtracer& Backtracer::operator=(Backtracer other)
     {
-      rsl::unique_lock<rsl::mutex> lock(mutex_);
-      enabled_  = other.enabled();
-      messages_ = rsl::move(other.messages_);
+      rsl::unique_lock<rsl::mutex> lock(m_mutex);
+      m_enabled  = other.enabled();
+      m_messages = rsl::move(other.m_messages);
       return *this;
     }
 
-    REXLOG_INLINE void backtracer::enable(size_t size)
+    REXLOG_INLINE void Backtracer::enable(size_t size)
     {
-      rsl::unique_lock<rsl::mutex> lock {mutex_};
-      enabled_.store(true, rsl::memory_order_relaxed);
-      messages_ = circular_q<log_msg_buffer> {size};
+      rsl::unique_lock<rsl::mutex> lock {m_mutex};
+      m_enabled.store(true, rsl::memory_order_relaxed);
+      m_messages = CircularQ<LogMsgBuffer> {size};
     }
 
-    REXLOG_INLINE void backtracer::disable()
+    REXLOG_INLINE void Backtracer::disable()
     {
-      rsl::unique_lock<rsl::mutex> lock {mutex_};
-      enabled_.store(false, rsl::memory_order_relaxed);
+      rsl::unique_lock<rsl::mutex> lock {m_mutex};
+      m_enabled.store(false, rsl::memory_order_relaxed);
     }
 
-    REXLOG_INLINE bool backtracer::enabled() const
+    REXLOG_INLINE bool Backtracer::enabled() const
     {
-      return enabled_.load(rsl::memory_order_relaxed);
+      return m_enabled.load(rsl::memory_order_relaxed);
     }
 
-    REXLOG_INLINE void backtracer::push_back(const log_msg& msg)
+    REXLOG_INLINE void Backtracer::push_back(const LogMsg& msg)
     {
-      rsl::unique_lock<rsl::mutex> lock {mutex_};
-      messages_.push_back(log_msg_buffer {msg});
+      rsl::unique_lock<rsl::mutex> lock {m_mutex};
+      m_messages.push_back(LogMsgBuffer {msg});
     }
 
-    REXLOG_INLINE bool backtracer::empty() const
+    REXLOG_INLINE bool Backtracer::empty() const
     {
-      rsl::unique_lock<rsl::mutex> lock {mutex_};
-      return messages_.empty();
+      rsl::unique_lock<rsl::mutex> lock {m_mutex};
+      return m_messages.empty();
     }
 
     // pop all items in the q and apply the given fun on each of them.
-    REXLOG_INLINE void backtracer::foreach_pop(rsl::function<void(const details::log_msg&)> fun)
+    REXLOG_INLINE void Backtracer::foreach_pop(rsl::function<void(const details::LogMsg&)> fun)
     {
-      rsl::unique_lock<rsl::mutex> lock {mutex_};
-      while(!messages_.empty())
+      rsl::unique_lock<rsl::mutex> lock {m_mutex};
+      while(!m_messages.empty())
       {
-        auto& front_msg = messages_.front();
+        auto& front_msg = m_messages.front();
         fun(front_msg);
-        messages_.pop_front();
+        m_messages.pop_front();
       }
     }
   } // namespace details

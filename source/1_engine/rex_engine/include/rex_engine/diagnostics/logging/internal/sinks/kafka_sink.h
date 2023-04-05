@@ -12,14 +12,14 @@
 #include "rex_engine/diagnostics/logging/internal/async.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
+#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 #include <mutex>
-#include <rex_engine/diagnostics/logging/internal/common.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
 
 // kafka header
-#include <librdkafka/rdkafkacpp.h>
+#include <librdkafka/rdkafkacpp.h"
 
 namespace rexlog
 {
@@ -41,7 +41,7 @@ namespace rexlog
     };
 
     template <typename Mutex>
-    class kafka_sink : public base_sink<Mutex>
+    class kafka_sink : public BaseSink<Mutex>
     {
     public:
       kafka_sink(kafka_sink_config config)
@@ -86,7 +86,7 @@ namespace rexlog
       }
 
     protected:
-      void sink_it_(const details::log_msg& msg) override
+      void sink_it_(const details::LogMsg& msg) override
       {
         producer_->produce(topic_.get(), 0, RdKafka::Producer::RK_MSG_COPY, (void*)msg.payload.data(), msg.payload.size(), NULL, NULL);
       }
@@ -105,17 +105,17 @@ namespace rexlog
     };
 
     using kafka_sink_mt = kafka_sink<rsl::mutex>;
-    using kafka_sink_st = kafka_sink<rexlog::details::null_mutex>;
+    using kafka_sink_st = kafka_sink<rexlog::details::NullMutex>;
 
   } // namespace sinks
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   inline rsl::shared_ptr<logger> kafka_logger_mt(const rex::DebugString& logger_name, rexlog::sinks::kafka_sink_config config)
   {
     return Factory::template create<sinks::kafka_sink_mt>(logger_name, config);
   }
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   inline rsl::shared_ptr<logger> kafka_logger_st(const rex::DebugString& logger_name, rexlog::sinks::kafka_sink_config config)
   {
     return Factory::template create<sinks::kafka_sink_st>(logger_name, config);

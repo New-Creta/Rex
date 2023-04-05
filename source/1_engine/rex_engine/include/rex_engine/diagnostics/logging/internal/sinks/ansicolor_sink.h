@@ -6,9 +6,9 @@
 
 #include <array>
 #include <mutex>
-#include <rex_engine/diagnostics/logging/internal/details/console_globals.h>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
+#include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include <string>
 
 namespace rexlog
@@ -41,7 +41,7 @@ namespace rexlog
       void set_color_mode(color_mode mode);
       bool should_color();
 
-      void log(const details::log_msg& msg) override;
+      void log(const details::LogMsg& msg) override;
       void flush() override;
       void set_pattern(const rex::DebugString& pattern) final;
       void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) override;
@@ -82,11 +82,11 @@ namespace rexlog
       const string_view_t bold_on_red = "\033[1m\033[41m";
 
     private:
-      FILE* target_file_;
-      mutex_t& mutex_;
+      FILE* m_target_file;
+      mutex_t& m_mutex;
       bool should_do_colors_;
-      rsl::unique_ptr<rexlog::formatter> formatter_;
-      rsl::array<rex::DebugString, level::n_levels> colors_;
+      rsl::unique_ptr<rexlog::formatter> m_formatter;
+      rsl::array<rex::DebugString, level::n_levels> m_colors;
       void print_ccode_(const string_view_t& color_code);
       void print_range_(const memory_buf_t& formatted, size_t start, size_t end);
       static rex::DebugString to_string_(const string_view_t& sv);
@@ -106,11 +106,11 @@ namespace rexlog
       explicit ansicolor_stderr_sink(color_mode mode = color_mode::automatic);
     };
 
-    using ansicolor_stdout_sink_mt = ansicolor_stdout_sink<details::console_mutex>;
-    using ansicolor_stdout_sink_st = ansicolor_stdout_sink<details::console_nullmutex>;
+    using ansicolor_stdout_sink_mt = ansicolor_stdout_sink<details::ConsoleMutex>;
+    using ansicolor_stdout_sink_st = ansicolor_stdout_sink<details::ConsoleNullMutex>;
 
-    using ansicolor_stderr_sink_mt = ansicolor_stderr_sink<details::console_mutex>;
-    using ansicolor_stderr_sink_st = ansicolor_stderr_sink<details::console_nullmutex>;
+    using ansicolor_stderr_sink_mt = ansicolor_stderr_sink<details::ConsoleMutex>;
+    using ansicolor_stderr_sink_st = ansicolor_stderr_sink<details::ConsoleNullMutex>;
 
   } // namespace sinks
 } // namespace rexlog

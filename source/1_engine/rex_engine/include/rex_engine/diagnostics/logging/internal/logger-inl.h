@@ -2,15 +2,15 @@
 
 #pragma once
 
+#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/types.h"
 #include "rex_std/iterator.h"
 
 #include <cstdio>
-#include <rex_engine/diagnostics/logging/internal/details/backtracer.h>
-#include <rex_engine/diagnostics/logging/internal/logger.h>
-#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/sink.h>
-#include "rex_engine/types.h"
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
+#include "rex_engine/diagnostics/logging/internal/logger.h"
+#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 
 namespace rexlog
 {
@@ -165,19 +165,19 @@ namespace rexlog
   }
 
   // protected methods
-  REXLOG_INLINE void logger::log_it_(const rexlog::details::log_msg& log_msg, bool log_enabled, bool traceback_enabled)
+  REXLOG_INLINE void logger::log_it_(const rexlog::details::LogMsg& LogMsg, bool log_enabled, bool traceback_enabled)
   {
     if(log_enabled)
     {
-      sink_it_(log_msg);
+      sink_it_(LogMsg);
     }
     if(traceback_enabled)
     {
-      tracer_.push_back(log_msg);
+      tracer_.push_back(LogMsg);
     }
   }
 
-  REXLOG_INLINE void logger::sink_it_(const details::log_msg& msg)
+  REXLOG_INLINE void logger::sink_it_(const details::LogMsg& msg)
   {
     for(auto& sink: sinks_)
     {
@@ -211,16 +211,16 @@ namespace rexlog
 
   REXLOG_INLINE void logger::dump_backtrace_()
   {
-    using details::log_msg;
+    using details::LogMsg;
     if(tracer_.enabled() && !tracer_.empty())
     {
-      sink_it_(log_msg {name(), level::info, "****************** Backtrace Start ******************"});
-      tracer_.foreach_pop([this](const log_msg& msg) { this->sink_it_(msg); });
-      sink_it_(log_msg {name(), level::info, "****************** Backtrace End ********************"});
+      sink_it_(LogMsg {name(), level::info, "****************** Backtrace Start ******************"});
+      tracer_.foreach_pop([this](const LogMsg& msg) { this->sink_it_(msg); });
+      sink_it_(LogMsg {name(), level::info, "****************** Backtrace End ********************"});
     }
   }
 
-  REXLOG_INLINE bool logger::should_flush_(const details::log_msg& msg)
+  REXLOG_INLINE bool logger::should_flush_(const details::LogMsg& msg)
   {
     auto flush_level = flush_level_.load(rsl::memory_order_relaxed);
     return (msg.level >= flush_level) && (msg.level != level::off);

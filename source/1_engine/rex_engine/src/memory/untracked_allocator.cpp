@@ -1,5 +1,7 @@
 #include "rex_engine/memory/untracked_allocator.h"
 
+#include <cstdlib>
+
 namespace rex
 {
   UntrackedAllocator::pointer UntrackedAllocator::allocate(rsl::memory_size size) // NOLINT(readability-convert-member-functions-to-static)

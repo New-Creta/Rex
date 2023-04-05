@@ -2,7 +2,7 @@
 
 #pragma once
 
-// Loggers registry of unique name->logger pointer
+// Loggers Registry of unique name->logger pointer
 // An attempt to create a logger with an already existing name will result with rexlog_ex exception.
 // If user requests a non existing logger, nullptr will be returned
 // This class is thread safe
@@ -14,8 +14,8 @@
 #include "rex_std/string.h"
 #include "rex_std/unordered_map.h"
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/periodic_worker.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
 
 namespace rexlog
 {
@@ -25,12 +25,12 @@ namespace rexlog
   {
     class thread_pool;
 
-    class REXLOG_API registry
+    class REXLOG_API Registry
     {
     public:
       using log_levels                     = rex::DebugHashTable<rex::DebugString, level::level_enum>;
-      registry(const registry&)            = delete;
-      registry& operator=(const registry&) = delete;
+      Registry(const Registry&)            = delete;
+      Registry& operator=(const Registry&) = delete;
 
       void register_logger(rsl::shared_ptr<logger> new_logger);
       void initialize_logger(rsl::shared_ptr<logger> new_logger);
@@ -80,7 +80,7 @@ namespace rexlog
 
       void drop_all();
 
-      // clean all resources and threads started by the registry
+      // clean all resources and threads started by the Registry
       void shutdown();
 
       rsl::recursive_mutex& tp_mutex();
@@ -90,13 +90,13 @@ namespace rexlog
       // set levels for all existing/future loggers. global_level can be null if should not set.
       void set_levels(log_levels levels, level::level_enum* global_level);
 
-      static registry& instance();
+      static Registry& instance();
 
       void apply_logger_env_levels(rsl::shared_ptr<logger> new_logger);
 
     private:
-      registry();
-      ~registry();
+      Registry();
+      ~Registry();
 
       void throw_if_exists_(const rex::DebugString& logger_name);
       void register_logger_(rsl::shared_ptr<logger> new_logger);
@@ -105,7 +105,7 @@ namespace rexlog
       rsl::recursive_mutex tp_mutex_;
       rex::DebugHashTable<rex::DebugString, rsl::shared_ptr<logger>> loggers_;
       log_levels log_levels_;
-      rsl::unique_ptr<formatter> formatter_;
+      rsl::unique_ptr<formatter> m_formatter;
       rexlog::level::level_enum global_log_level_ = level::info;
       level::level_enum flush_level_              = level::off;
       err_handler err_handler_;

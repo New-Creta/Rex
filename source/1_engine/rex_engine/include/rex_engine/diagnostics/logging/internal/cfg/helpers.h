@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include <unordered_map>
 
 namespace rexlog

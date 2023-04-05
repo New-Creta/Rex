@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
-#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h>
-#include <wincon.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
+#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h"
+#include <wincon.h"
 
 namespace rexlog
 {
@@ -15,18 +15,18 @@ namespace rexlog
     template <typename ConsoleMutex>
     REXLOG_INLINE wincolor_sink<ConsoleMutex>::wincolor_sink(void* out_handle, color_mode mode)
         : out_handle_(out_handle)
-        , mutex_(ConsoleMutex::mutex())
-        , formatter_(details::make_unique<rexlog::pattern_formatter>())
+        , m_mutex(ConsoleMutex::mutex())
+        , m_formatter(details::make_unique<rexlog::pattern_formatter>())
     {
       set_color_mode_impl(mode);
       // set level colors
-      colors_[level::trace]    = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;                                         // white
-      colors_[level::debug]    = FOREGROUND_GREEN | FOREGROUND_BLUE;                                                          // cyan
-      colors_[level::info]     = FOREGROUND_GREEN;                                                                            // green
-      colors_[level::warn]     = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;                                    // intense yellow
-      colors_[level::err]      = FOREGROUND_RED | FOREGROUND_INTENSITY;                                                       // intense red
-      colors_[level::critical] = BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY; // intense white on red background
-      colors_[level::off]      = 0;
+      m_colors[level::trace]    = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;                                         // white
+      m_colors[level::debug]    = FOREGROUND_GREEN | FOREGROUND_BLUE;                                                          // cyan
+      m_colors[level::info]     = FOREGROUND_GREEN;                                                                            // green
+      m_colors[level::warn]     = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;                                    // intense yellow
+      m_colors[level::err]      = FOREGROUND_RED | FOREGROUND_INTENSITY;                                                       // intense red
+      m_colors[level::critical] = BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY; // intense white on red background
+      m_colors[level::off]      = 0;
     }
 
     template <typename ConsoleMutex>
@@ -39,29 +39,29 @@ namespace rexlog
     template <typename ConsoleMutex>
     void REXLOG_INLINE wincolor_sink<ConsoleMutex>::set_color(level::level_enum level, rsl::uint16 color)
     {
-      rsl::unique_lock<mutex_t> lock(mutex_);
-      colors_[static_cast<size_t>(level)] = color;
+      rsl::unique_lock<mutex_t> lock(m_mutex);
+      m_colors[static_cast<size_t>(level)] = color;
     }
 
     template <typename ConsoleMutex>
-    void REXLOG_INLINE wincolor_sink<ConsoleMutex>::log(const details::log_msg& msg)
+    void REXLOG_INLINE wincolor_sink<ConsoleMutex>::log(const details::LogMsg& msg)
     {
       if(out_handle_ == nullptr || out_handle_ == INVALID_HANDLE_VALUE)
       {
         return;
       }
 
-      rsl::unique_lock<mutex_t> lock(mutex_);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
       msg.color_range_start = 0;
       msg.color_range_end   = 0;
       memory_buf_t formatted;
-      formatter_->format(msg, formatted);
+      m_formatter->format(msg, formatted);
       if(should_do_colors_ && msg.color_range_end > msg.color_range_start)
       {
         // before color range
         print_range_(formatted, 0, msg.color_range_start);
         // in color range
-        auto orig_attribs = static_cast<WORD>(set_foreground_color_(colors_[static_cast<size_t>(msg.level)]));
+        auto orig_attribs = static_cast<WORD>(set_foreground_color_(m_colors[static_cast<size_t>(msg.level)]));
         print_range_(formatted, msg.color_range_start, msg.color_range_end);
         // reset to orig colors
         ::SetConsoleTextAttribute(static_cast<HANDLE>(out_handle_), orig_attribs);
@@ -82,21 +82,21 @@ namespace rexlog
     template <typename ConsoleMutex>
     void REXLOG_INLINE wincolor_sink<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
     {
-      rsl::unique_lock<mutex_t> lock(mutex_);
-      formatter_ = rsl::make_unique<pattern_formatter>(pattern);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
+      m_formatter = rsl::make_unique<pattern_formatter>(pattern);
     }
 
     template <typename ConsoleMutex>
     void REXLOG_INLINE wincolor_sink<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter)
     {
-      rsl::unique_lock<mutex_t> lock(mutex_);
-      formatter_ = rsl::move(sink_formatter);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
+      m_formatter = rsl::move(sink_formatter);
     }
 
     template <typename ConsoleMutex>
     void REXLOG_INLINE wincolor_sink<ConsoleMutex>::set_color_mode(color_mode mode)
     {
-      rsl::unique_lock<mutex_t> lock(mutex_);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
       set_color_mode_impl(mode);
     }
 

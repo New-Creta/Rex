@@ -1,6 +1,6 @@
 
 
-// Writing to Windows Event Log requires the registry entries below to be present, with the following modifications:
+// Writing to Windows Event Log requires the Registry entries below to be present, with the following modifications:
 // 1. <log_name>    should be replaced with your log name (e.g. your application name)
 // 2. <source_name> should be replaced with the specific source name and the key should be duplicated for
 //                  each source used in the application
@@ -32,11 +32,11 @@ Windows Registry Editor Version 5.00
 #include "rex_std/vector.h"
 
 #include <mutex>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include <string>
-#include <winbase.h>
+#include <winbase.h"
 
 namespace rexlog
 {
@@ -170,7 +170,7 @@ namespace rexlog
 
         struct eventlog
         {
-          static WORD get_event_type(const details::log_msg& msg)
+          static WORD get_event_type(const details::LogMsg& msg)
           {
             switch(msg.level)
             {
@@ -189,7 +189,7 @@ namespace rexlog
             }
           }
 
-          static WORD get_event_category(const details::log_msg& msg)
+          static WORD get_event_category(const details::LogMsg& msg)
           {
             return (WORD)msg.level;
           }
@@ -201,7 +201,7 @@ namespace rexlog
        * Windows Event Log sink
        */
       template <typename Mutex>
-      class win_eventlog_sink : public base_sink<Mutex>
+      class win_eventlog_sink : public BaseSink<Mutex>
       {
       private:
         HANDLE hEventLog_ {NULL};
@@ -224,13 +224,13 @@ namespace rexlog
         }
 
       protected:
-        void sink_it_(const details::log_msg& msg) override
+        void sink_it_(const details::LogMsg& msg) override
         {
           using namespace internal;
 
           bool succeeded;
           memory_buf_t formatted;
-          base_sink<Mutex>::formatter_->format(msg, formatted);
+          BaseSink<Mutex>::m_formatter->format(msg, formatted);
           formatted.push_back('\0');
 
           LPCSTR lp_str = formatted.data();
@@ -270,7 +270,7 @@ namespace rexlog
     } // namespace win_eventlog
 
     using win_eventlog_sink_mt = win_eventlog::win_eventlog_sink<rsl::mutex>;
-    using win_eventlog_sink_st = win_eventlog::win_eventlog_sink<details::null_mutex>;
+    using win_eventlog_sink_st = win_eventlog::win_eventlog_sink<details::NullMutex>;
 
   } // namespace sinks
 } // namespace rexlog

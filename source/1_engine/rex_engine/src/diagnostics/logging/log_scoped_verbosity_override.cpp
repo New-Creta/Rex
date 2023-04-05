@@ -11,14 +11,14 @@ namespace rex
   {
     // assert(saved_category_ != nullptr);
 
-    saved_verbosity_ = saved_category_->getVerbosity();
-    saved_category_->setVerbosity(verbosity);
+    saved_verbosity_ = saved_category_->get_verbosity();
+    saved_category_->set_verbosity(verbosity);
   }
 
   //-------------------------------------------------------------------------
   /** Restore the verbosity overrides for the category to the previous value.*/
   LogScopedVerbosityOverride::~LogScopedVerbosityOverride()
   {
-    saved_category_->setVerbosity(saved_verbosity_);
+    saved_category_->set_verbosity(saved_verbosity_);
   }
 } // namespace rex

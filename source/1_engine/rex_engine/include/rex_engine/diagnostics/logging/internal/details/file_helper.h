@@ -4,7 +4,7 @@
 
 #include "rex_std/tuple.h"
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include <tuple>
 
 namespace rexlog
@@ -22,15 +22,15 @@ namespace rexlog
       filename_t ext;
     };
 
-    class REXLOG_API file_helper
+    class REXLOG_API FileHelper
     {
     public:
-      file_helper() = default;
-      explicit file_helper(const file_event_handlers& event_handlers);
+      FileHelper() = default;
+      explicit FileHelper(const file_event_handlers& event_handlers);
 
-      file_helper(const file_helper&)            = delete;
-      file_helper& operator=(const file_helper&) = delete;
-      ~file_helper();
+      FileHelper(const FileHelper&)            = delete;
+      FileHelper& operator=(const FileHelper&) = delete;
+      ~FileHelper();
 
       void open(const filename_t& fname, bool truncate = false);
       void reopen(bool truncate);
@@ -57,11 +57,11 @@ namespace rexlog
       static filename_with_extension split_by_extension(const filename_t& fname);
 
     private:
-      const int open_tries_             = 5;
-      const unsigned int open_interval_ = 10;
-      FILE* fd_ {nullptr};
-      filename_t filename_;
-      file_event_handlers event_handlers_;
+      const int m_open_tries             = 5;
+      const unsigned int m_open_interval = 10;
+      FILE* m_fd {nullptr};
+      filename_t m_filename;
+      file_event_handlers m_event_handlers;
     };
   } // namespace details
 } // namespace rexlog

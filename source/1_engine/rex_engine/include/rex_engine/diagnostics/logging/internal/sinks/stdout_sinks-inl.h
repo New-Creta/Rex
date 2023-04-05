@@ -2,25 +2,24 @@
 
 #pragma once
 
+#include "rex_engine/memory/global_allocator.h"
 #include "rex_std/memory.h"
 
-#include <rex_engine/diagnostics/logging/internal/details/console_globals.h>
-#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/stdout_sinks.h>
-
-#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
+#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/stdout_sinks.h"
 
 #ifdef _WIN32
   // under windows using fwrite to non-binary stream results in \r\r\n (see issue #1675)
   // so instead we use ::FileWrite
-  #include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
+  #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 
   #ifndef _USING_V110_SDK71_ // fileapi.h doesn't exist in winxp
-    #include <fileapi.h>     // WriteFile (..)
+    #include <fileapi.h"     // WriteFile (..)
   #endif
 
-  #include <io.h>    // _get_osfhandle(..)
-  #include <stdio.h> // _fileno(..)
+  #include <io.h"    // _get_osfhandle(..)
+  #include <stdio.h" // _fileno(..)
 #endif               // WIN32
 
 namespace rexlog
@@ -31,9 +30,9 @@ namespace rexlog
 
     template <typename ConsoleMutex>
     REXLOG_INLINE stdout_sink_base<ConsoleMutex>::stdout_sink_base(FILE* file)
-        : mutex_(ConsoleMutex::mutex())
+        : m_mutex(ConsoleMutex::mutex())
         , file_(file)
-        , formatter_(details::make_unique<rexlog::pattern_formatter>())
+        , m_formatter(details::make_unique<rexlog::pattern_formatter>())
     {
 #ifdef _WIN32
       // get windows handle from the FILE* object
@@ -51,16 +50,16 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::log(const details::log_msg& msg)
+    REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::log(const details::LogMsg& msg)
     {
 #ifdef _WIN32
       if(handle_ == INVALID_HANDLE_VALUE)
       {
         return;
       }
-      rsl::unique_lock<mutex_t> lock(mutex_);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
       memory_buf_t formatted;
-      formatter_->format(msg, formatted);
+      m_formatter->format(msg, formatted);
       ::fflush(file_); // flush in case there is something in this file_ already
       auto size           = static_cast<DWORD>(formatted.size());
       DWORD bytes_written = 0;
@@ -73,9 +72,9 @@ namespace rexlog
         throw_rexlog_ex(err);
       }
 #else
-      rsl::unique_lock<mutex_t> lock(mutex_);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
       memory_buf_t formatted;
-      formatter_->format(msg, formatted);
+      m_formatter->format(msg, formatted);
       ::fwrite(formatted.data(), sizeof(char), formatted.size(), file_);
       ::fflush(file_); // flush every line to terminal
 #endif // WIN32
@@ -84,22 +83,22 @@ namespace rexlog
     template <typename ConsoleMutex>
     REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::flush()
     {
-      rsl::unique_lock<mutex_t> lock(mutex_);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
       fflush(file_);
     }
 
     template <typename ConsoleMutex>
     REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
     {
-      rsl::unique_lock<mutex_t> lock(mutex_);
-      formatter_ = rsl::make_unique<rexlog::pattern_formatter>(pattern);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
+      m_formatter = rsl::make_unique<rexlog::pattern_formatter>(pattern);
     }
 
     template <typename ConsoleMutex>
     REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter)
     {
-      rsl::unique_lock<mutex_t> lock(mutex_);
-      formatter_ = rsl::move(sink_formatter);
+      rsl::unique_lock<mutex_t> lock(m_mutex);
+      m_formatter = rsl::move(sink_formatter);
     }
 
     // stdout sink

@@ -3,12 +3,12 @@
 #pragma once
 
 #ifdef _WIN32
-  #include <rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h>
+  #include "rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h"
 #else
-  #include <rex_engine/diagnostics/logging/internal/sinks/ansicolor_sink.h>
+  #include "rex_engine/diagnostics/logging/internal/sinks/ansicolor_sink.h"
 #endif
 
-#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
+#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
 
 namespace rexlog
 {
@@ -27,16 +27,16 @@ namespace rexlog
 #endif
   } // namespace sinks
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   rsl::shared_ptr<logger> stdout_color_mt(const rex::DebugString& logger_name, color_mode mode = color_mode::automatic);
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   rsl::shared_ptr<logger> stdout_color_st(const rex::DebugString& logger_name, color_mode mode = color_mode::automatic);
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   rsl::shared_ptr<logger> stderr_color_mt(const rex::DebugString& logger_name, color_mode mode = color_mode::automatic);
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   rsl::shared_ptr<logger> stderr_color_st(const rex::DebugString& logger_name, color_mode mode = color_mode::automatic);
 
 } // namespace rexlog

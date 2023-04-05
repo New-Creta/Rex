@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/rotating_file_sink.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/rotating_file_sink.h"
 
 namespace rexlog
 {
@@ -17,7 +17,7 @@ namespace rexlog
         : base_filename_(rsl::move(base_filename))
         , max_size_(max_size)
         , max_files_(max_files)
-        , file_helper_ {event_handlers}
+        , m_file_helper {event_handlers}
     {
       if(max_size == 0)
       {
@@ -28,8 +28,8 @@ namespace rexlog
       {
         throw_rexlog_ex(rex::DebugString("rotating sink constructor: max_files arg cannot exceed 200000"));
       }
-      file_helper_.open(calc_filename(base_filename_, 0));
-      current_size_ = file_helper_.size(); // expensive. called only once
+      m_file_helper.open(calc_filename(base_filename_, 0));
+      current_size_ = m_file_helper.size(); // expensive. called only once
       if(rotate_on_open && current_size_ > 0)
       {
         rotate_();
@@ -47,22 +47,22 @@ namespace rexlog
         return filename_t(filename);
       }
 
-      details::filename_with_extension basename_ext_tuple = details::file_helper::split_by_extension(filename);
+      details::filename_with_extension basename_ext_tuple = details::FileHelper::split_by_extension(filename);
       return filename_t(fmt_lib::format(REXLOG_FILENAME_T("{}.{}{}"), basename_ext_tuple.filename, index, basename_ext_tuple.ext));
     }
 
     template <typename Mutex>
     REXLOG_INLINE filename_t rotating_file_sink<Mutex>::filename()
     {
-      rsl::unique_lock<Mutex> lock(base_sink<Mutex>::mutex_);
-      return filename_t(file_helper_.filename());
+      rsl::unique_lock<Mutex> lock(BaseSink<Mutex>::m_mutex);
+      return filename_t(m_file_helper.filename());
     }
 
     template <typename Mutex>
-    REXLOG_INLINE void rotating_file_sink<Mutex>::sink_it_(const details::log_msg& msg)
+    REXLOG_INLINE void rotating_file_sink<Mutex>::sink_it_(const details::LogMsg& msg)
     {
       memory_buf_t formatted;
-      base_sink<Mutex>::formatter_->format(msg, formatted);
+      BaseSink<Mutex>::m_formatter->format(msg, formatted);
       auto new_size = current_size_ + formatted.size();
 
       // rotate if the new estimated file size exceeds max size.
@@ -70,21 +70,21 @@ namespace rexlog
       // we only check the real size when new_size > max_size_ because it is relatively expensive.
       if(new_size > max_size_)
       {
-        file_helper_.flush();
-        if(file_helper_.size() > 0)
+        m_file_helper.flush();
+        if(m_file_helper.size() > 0)
         {
           rotate_();
           new_size = formatted.size();
         }
       }
-      file_helper_.write(formatted);
+      m_file_helper.write(formatted);
       current_size_ = new_size;
     }
 
     template <typename Mutex>
     REXLOG_INLINE void rotating_file_sink<Mutex>::flush_()
     {
-      file_helper_.flush();
+      m_file_helper.flush();
     }
 
     // Rotate files:
@@ -98,7 +98,7 @@ namespace rexlog
       using details::os::filename_to_str;
       using details::os::path_exists;
 
-      file_helper_.close();
+      m_file_helper.close();
       for(auto i = max_files_; i > 0; --i)
       {
         filename_t src = calc_filename(base_filename_, i - 1);
@@ -116,13 +116,13 @@ namespace rexlog
           details::os::sleep_for_millis(100);
           if(!rename_file_(src, target))
           {
-            file_helper_.reopen(true); // truncate the log file anyway to prevent it to grow beyond its limit!
+            m_file_helper.reopen(true); // truncate the log file anyway to prevent it to grow beyond its limit!
             current_size_ = 0;
             throw_rexlog_ex("rotating_file_sink: failed renaming " + filename_to_str(src) + " to " + filename_to_str(target), errno);
           }
         }
       }
-      file_helper_.reopen(true);
+      m_file_helper.reopen(true);
     }
 
     // delete the target if exists, and rename the src file  to target

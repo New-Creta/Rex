@@ -3,15 +3,15 @@
 #pragma once
 
 #include "base_sink.h"
+#include "rex_engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 
 #include <algorithm>
 #include <mutex>
-#include "rex_engine/types.h"
-#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 
 // Distribution sink (mux). Stores a vector of sinks which get called when log
 // is called
@@ -22,7 +22,7 @@ namespace rexlog
   {
 
     template <typename Mutex>
-    class dist_sink : public base_sink<Mutex>
+    class dist_sink : public BaseSink<Mutex>
     {
     public:
       dist_sink() = default;
@@ -36,19 +36,19 @@ namespace rexlog
 
       void add_sink(rsl::shared_ptr<sink> sub_sink)
       {
-        rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
+        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
         sinks_.push_back(sub_sink);
       }
 
       void remove_sink(rsl::shared_ptr<sink> sub_sink)
       {
-        rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
+        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
         sinks_.erase(rsl::remove(sinks_.begin(), sinks_.end(), sub_sink), sinks_.end());
       }
 
       void set_sinks(rex::DebugVector<rsl::shared_ptr<sink>> sinks)
       {
-        rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
+        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
         sinks_ = rsl::move(sinks);
       }
 
@@ -58,7 +58,7 @@ namespace rexlog
       }
 
     protected:
-      void sink_it_(const details::log_msg& msg) override
+      void sink_it_(const details::LogMsg& msg) override
       {
         for(auto& sub_sink: sinks_)
         {
@@ -84,17 +84,17 @@ namespace rexlog
 
       void set_formatter_(rsl::unique_ptr<rexlog::formatter> sink_formatter) override
       {
-        base_sink<Mutex>::formatter_ = rsl::move(sink_formatter);
+        BaseSink<Mutex>::m_formatter = rsl::move(sink_formatter);
         for(auto& sub_sink: sinks_)
         {
-          sub_sink->set_formatter(base_sink<Mutex>::formatter_->clone());
+          sub_sink->set_formatter(BaseSink<Mutex>::m_formatter->clone());
         }
       }
       rex::DebugVector<rsl::shared_ptr<sink>> sinks_;
     };
 
     using dist_sink_mt = dist_sink<rsl::mutex>;
-    using dist_sink_st = dist_sink<details::null_mutex>;
+    using dist_sink_st = dist_sink<details::NullMutex>;
 
   } // namespace sinks
 } // namespace rexlog

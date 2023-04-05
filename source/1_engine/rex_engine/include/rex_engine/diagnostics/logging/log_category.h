@@ -3,7 +3,7 @@
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/types.h"
 
-#include <rex_std/string.h>
+#include <rex_std/string.h"
 
 namespace rex
 {
@@ -17,41 +17,41 @@ namespace rex
      * @param CategoryName, name of the category
      * @param InDefaultVerbosity, default verbosity for the category, may ignored and overridden by many other mechanisms
      **/
-    LogCategoryBase(const LogCategoryName& InCategoryName, LogVerbosity InDefaultVerbosity);
+    LogCategoryBase(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity);
 
     /** Destructor, unregisters from the log suppression system **/
     ~LogCategoryBase();
 
     /** Gets the category name **/
-    const LogCategoryName& getCategoryName() const;
+    const LogCategoryName& get_category_name() const;
 
     /** Gets the working verbosity **/
-    const LogVerbosity& getVerbosity() const;
+    const LogVerbosity& get_verbosity() const;
 
     /** Should not generally be used directly. Tests the runtime verbosity and maybe triggers a debug break, etc. **/
-    bool isSuppressed(LogVerbosity VerbosityLevel) const;
+    bool is_suppressed(LogVerbosity verbosityLevel) const;
 
     /** Sets up the working verbosity and clamps to the compile time verbosity. **/
-    void setVerbosity(LogVerbosity Verbosity);
+    void set_verbosity(LogVerbosity verbosity);
 
   private:
     /** Internal call to set up the working verbosity from the boot time default. **/
-    void resetFromDefault();
+    void reset_from_default();
 
     /** Holds the current suppression state **/
-    LogVerbosity verbosity_;
+    LogVerbosity m_verbosity;
     /** Holds default suppression **/
-    LogVerbosity default_verbosity_;
+    LogVerbosity m_default_verbosity;
 
     /** Name for this category **/
-    const LogCategoryName category_name_;
+    LogCategoryName m_category_name;
   };
 
   /** Template for log categories that transfers the compile-time constant default and compile time verbosity to the LogCategoryBase constructor. **/
   template <int TDefaultVerbosity>
   struct LogCategory : public LogCategoryBase
   {
-    LogCategory(const LogCategoryName& InCategoryName)
+    LogCategory(const LogCategoryBase& InCategoryName)
         : LogCategoryBase(InCategoryName, LogVerbosity(TDefaultVerbosity))
     {
       // assert((TDefaultVerbosity & LogVerbosity::VerbosityMask) < LogVerbosity::NumVerbosity && "Invalid default verbosity.");

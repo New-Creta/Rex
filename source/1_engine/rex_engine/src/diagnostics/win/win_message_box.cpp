@@ -3,7 +3,7 @@
 #include "rex_std/bonus/string.h"
 
 #define NOMINMAX
-#include <windows.h>
+#include <windows.h"
 
 int32 rex::win::message_box(rsl::string_view msg)
 {

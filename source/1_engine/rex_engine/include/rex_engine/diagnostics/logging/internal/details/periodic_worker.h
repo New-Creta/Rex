@@ -25,21 +25,21 @@ namespace rexlog
       template <typename Rep, typename Period>
       periodic_worker(const rsl::function<void()>& callback_fun, rsl::chrono::duration<Rep, Period> interval)
       {
-        active_ = (interval > rsl::chrono::duration<Rep, Period>::zero());
-        if(!active_)
+        m_active = (interval > rsl::chrono::duration<Rep, Period>::zero());
+        if(!m_active)
         {
           return;
         }
 
-        worker_thread_ = rsl::thread(
+        m_worker_thread = rsl::thread(
             [this, callback_fun, interval]()
             {
               for(;;)
               {
-                rsl::unique_lock<rsl::mutex> lock(this->mutex_);
-                if(this->cv_.wait_for(lock, interval, [this] { return !this->active_; }))
+                rsl::unique_lock<rsl::mutex> lock(this->m_mutex);
+                if(this->m_cv.wait_for(lock, interval, [this] { return !this->m_active; }))
                 {
-                  return; // active_ == false, so exit this thread
+                  return; // m_active == false, so exit this thread
                 }
                 callback_fun();
               }
@@ -51,10 +51,10 @@ namespace rexlog
       ~periodic_worker();
 
     private:
-      bool active_;
-      rsl::thread worker_thread_;
-      rsl::mutex mutex_;
-      rsl::condition_variable cv_;
+      bool m_active;
+      rsl::thread m_worker_thread;
+      rsl::mutex m_mutex;
+      rsl::condition_variable m_cv;
     };
   } // namespace details
 } // namespace rexlog

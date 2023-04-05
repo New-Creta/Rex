@@ -4,7 +4,7 @@
 
 #include "rex_std/mutex.h"
 
-#include <rex_engine/diagnostics/logging/internal/details/periodic_worker.h>
+#include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
 
 namespace rexlog
 {
@@ -14,14 +14,14 @@ namespace rexlog
     // stop the worker thread and join it
     REXLOG_INLINE periodic_worker::~periodic_worker()
     {
-      if(worker_thread_.joinable())
+      if(m_worker_thread.joinable())
       {
         {
-          rsl::unique_lock<rsl::mutex> lock(mutex_);
-          active_ = false;
+          rsl::unique_lock<rsl::mutex> lock(m_mutex);
+          m_active = false;
         }
-        cv_.notify_one();
-        worker_thread_.join();
+        m_cv.notify_one();
+        m_worker_thread.join();
       }
     }
 

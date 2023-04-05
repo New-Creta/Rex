@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_engine/types.h"
 #include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
@@ -28,7 +27,7 @@ namespace rex
       ptr->~T();
     }
 
-    bool operator==(const UntrackedAllocator&) const
+    bool operator==(const UntrackedAllocator& /*other*/) const
     {
       return true;
     }

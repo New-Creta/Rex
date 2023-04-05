@@ -3,14 +3,14 @@
 #pragma once
 
 #include <mutex>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 
 namespace rexlog
 {
   namespace details
   {
 
-    struct console_mutex
+    struct ConsoleMutex
     {
       using mutex_t = rsl::mutex;
       static mutex_t& mutex()
@@ -20,9 +20,9 @@ namespace rexlog
       }
     };
 
-    struct console_nullmutex
+    struct ConsoleNullMutex
     {
-      using mutex_t = null_mutex;
+      using mutex_t = NullMutex;
       static mutex_t& mutex()
       {
         static mutex_t s_mutex;

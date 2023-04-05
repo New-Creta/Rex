@@ -15,7 +15,7 @@
 
 #include "rex_std/memory.h"
 
-#include <rex_engine/diagnostics/logging/internal/logger.h>
+#include "rex_engine/diagnostics/logging/internal/logger.h"
 
 namespace rexlog
 {
@@ -53,9 +53,9 @@ namespace rexlog
     rsl::shared_ptr<logger> clone(rex::DebugString new_name) override;
 
   protected:
-    void sink_it_(const details::log_msg& msg) override;
+    void sink_it_(const details::LogMsg& msg) override;
     void flush_() override;
-    void backend_sink_it_(const details::log_msg& incoming_log_msg);
+    void backend_sink_it_(const details::LogMsg& incoming_log_msg);
     void backend_flush_();
 
   private:

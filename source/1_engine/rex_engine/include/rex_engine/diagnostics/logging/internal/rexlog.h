@@ -12,17 +12,17 @@
 
 #include <chrono>
 #include <functional>
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/registry.h>
-#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
-#include <rex_engine/diagnostics/logging/internal/logger.h>
-#include <rex_engine/diagnostics/logging/internal/version.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
+#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/logger.h"
+#include "rex_engine/diagnostics/logging/internal/version.h"
 #include <string>
 
 namespace rexlog
 {
 
-  using default_factory = synchronous_factory;
+  using default_factory = SynchronousFactory;
 
   // Create and register a logger with a templated sink type
   // The logger's level, formatter and flush level will be set according the
@@ -84,7 +84,7 @@ namespace rexlog
   template <typename Rep, typename Period>
   inline void flush_every(rsl::chrono::duration<Rep, Period> interval)
   {
-    details::registry::instance().flush_every(interval);
+    details::Registry::instance().flush_every(interval);
   }
 
   // Set global error handler
@@ -101,10 +101,10 @@ namespace rexlog
   // Drop the reference to the given logger
   REXLOG_API void drop(const rex::DebugString& name);
 
-  // Drop all references from the registry
+  // Drop all references from the Registry
   REXLOG_API void drop_all();
 
-  // stop any running threads started by rexlog and clean registry loggers
+  // stop any running threads started by rexlog and clean Registry loggers
   REXLOG_API void shutdown();
 
   // Automatic registration of loggers when using rexlog::create() or rexlog::create_async

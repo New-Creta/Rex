@@ -16,10 +16,11 @@ namespace rex
       using pointer   = typename Allocator::pointer;
 
       DebugAllocator()
-        : m_allocator(nullptr)
-      {}
+          : m_allocator(nullptr)
+      {
+      }
 
-      DebugAllocator(Allocator& allocator)
+      explicit DebugAllocator(Allocator& allocator)
           : m_allocator(rsl::addressof(allocator))
       {
       }

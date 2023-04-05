@@ -3,8 +3,8 @@
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
 #include "rex_engine/memory/debug_allocator.h"
-#include "rex_engine/memory/untracked_allocator.h"
 #include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/memory/untracked_allocator.h"
 #include "rex_std/filesystem.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/utility.h"
@@ -23,7 +23,6 @@ namespace rex
     static LoggerObjectPtrMap loggers(rex::global_debug_allocator());
     return loggers;
   }
-
 
   //-------------------------------------------------------------------------
   LogLevelMap get_log_levels()
@@ -46,15 +45,15 @@ namespace rex
     const LogPattern DEFAULT_PATTERN = "%^[%T][%=8l] %n: %v%$";
     const LogLevelMap LOG_LEVELS     = get_log_levels();
 
-    // assert(LOG_LEVELS.find(category.getVerbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
+    // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
 
-    rexlog::logger* logger = find_logger(category.getCategoryName());
+    rexlog::logger* logger = find_logger(category.get_category_name());
     if(logger != nullptr)
       return *logger;
 
     // rsl::filesystem::path working_dir(rsl::filesystem::current_path());
     // rsl::filesystem::path log_dir("log");
-    // rsl::filesystem::path filename(category.getCategoryName().data());
+    // rsl::filesystem::path filename(category.get_category_name().data());
     // rsl::filesystem::path full_path = working_dir / log_dir / filename;
 
     rex::DebugVector<rexlog::sink_ptr> sinks;
@@ -65,13 +64,13 @@ namespace rex
 #endif
     // sinks.push_back(rsl::make_shared<rexlog::sinks::basic_file_sink_mt>(full_path.string(), true));
 
-    rsl::shared_ptr<rexlog::logger> new_logger = rsl::allocate_shared<rexlog::logger>(rex::global_debug_allocator(), category.getCategoryName(), rsl::begin(sinks), rsl::end(sinks));
+    rsl::shared_ptr<rexlog::logger> new_logger = rsl::allocate_shared<rexlog::logger>(rex::global_debug_allocator(), category.get_category_name(), rsl::begin(sinks), rsl::end(sinks));
 
     new_logger->set_pattern(rsl::basic_string<char8, rsl::char_traits<char8>, DebugAllocator<UntrackedAllocator>>(DEFAULT_PATTERN, global_debug_allocator()));
-    new_logger->set_level(LOG_LEVELS.at(category.getVerbosity()));
+    new_logger->set_level(LOG_LEVELS.at(category.get_verbosity()));
 
-    loggers().insert({category.getCategoryName(), new_logger});
+    loggers().insert({category.get_category_name(), new_logger});
 
-    return *find_logger(category.getCategoryName());
+    return *find_logger(category.get_category_name());
   }
 } // namespace rex

@@ -4,8 +4,8 @@
 #if defined(_WIN32)
 
   #include <mutex>
-  #include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-  #include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+  #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+  #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
   #include <string>
 
 // Avoid including windows.h (https://stackoverflow.com/a/30741042)
@@ -20,7 +20,7 @@ namespace rexlog
      * MSVC sink (logging using OutputDebugStringA)
      */
     template <typename Mutex>
-    class msvc_sink : public base_sink<Mutex>
+    class msvc_sink : public BaseSink<Mutex>
     {
     public:
       msvc_sink() = default;
@@ -28,14 +28,14 @@ namespace rexlog
           : check_debugger_present_ {check_debugger_present} {};
 
     protected:
-      void sink_it_(const details::log_msg& msg) override
+      void sink_it_(const details::LogMsg& msg) override
       {
         if(check_debugger_present_ && !IsDebuggerPresent())
         {
           return;
         }
         memory_buf_t formatted;
-        base_sink<Mutex>::formatter_->format(msg, formatted);
+        BaseSink<Mutex>::m_formatter->format(msg, formatted);
         formatted.push_back('\0'); // add a null terminator for OutputDebugString
         OutputDebugStringA(formatted.data());
       }
@@ -46,7 +46,7 @@ namespace rexlog
     };
 
     using msvc_sink_mt = msvc_sink<rsl::mutex>;
-    using msvc_sink_st = msvc_sink<details::null_mutex>;
+    using msvc_sink_st = msvc_sink<details::NullMutex>;
 
     using windebug_sink_mt = msvc_sink_mt;
     using windebug_sink_st = msvc_sink_st;

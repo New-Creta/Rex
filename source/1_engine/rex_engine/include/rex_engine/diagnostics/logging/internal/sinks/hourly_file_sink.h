@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/circular_q.h>
-#include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/circular_q.h"
+#include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/details/SynchronousFactory.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 namespace rexlog
 {
@@ -23,7 +23,7 @@ namespace rexlog
       // Create filename for the form basename.YYYY-MM-DD-H
       static filename_t calc_filename(const filename_t& filename, const tm& now_tm)
       {
-        details::filename_with_extension filename_with_extension = details::file_helper::split_by_extension(filename);
+        details::filename_with_extension filename_with_extension = details::FileHelper::split_by_extension(filename);
         return filename_t(fmt_lib::format(REXLOG_FILENAME_T("{}_{:04d}-{:02d}-{:02d}_{:02d}{}"), filename_with_extension.filename, now_tm.tm_year + 1900, now_tm.tm_mon + 1, now_tm.tm_mday, now_tm.tm_hour, filename_with_extension.ext));
       }
     };
@@ -34,21 +34,21 @@ namespace rexlog
      * If max_files > 0, retain only the last max_files and delete previous.
      */
     template <typename Mutex, typename FileNameCalc = hourly_filename_calculator>
-    class hourly_file_sink final : public base_sink<Mutex>
+    class hourly_file_sink final : public BaseSink<Mutex>
     {
     public:
       // create hourly file sink which rotates on given time
       hourly_file_sink(filename_t base_filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
           : base_filename_(rsl::move(base_filename))
-          , file_helper_ {event_handlers}
+          , m_file_helper {event_handlers}
           , truncate_(truncate)
           , max_files_(max_files)
           , filenames_q_()
       {
         auto now      = log_clock::now();
         auto filename = FileNameCalc::calc_filename(base_filename_, now_tm(now));
-        file_helper_.open(filename, truncate_);
-        remove_init_file_ = file_helper_.size() == 0;
+        m_file_helper.open(filename, truncate_);
+        remove_init_file_ = m_file_helper.size() == 0;
         rotation_tp_      = next_rotation_tp_();
 
         if(max_files_ > 0)
@@ -59,12 +59,12 @@ namespace rexlog
 
       filename_t filename()
       {
-        rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
-        return file_helper_.filename();
+        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
+        return m_file_helper.filename();
       }
 
     protected:
-      void sink_it_(const details::log_msg& msg) override
+      void sink_it_(const details::LogMsg& msg) override
       {
         auto time          = msg.time;
         bool should_rotate = time >= rotation_tp_;
@@ -72,17 +72,17 @@ namespace rexlog
         {
           if(remove_init_file_)
           {
-            file_helper_.close();
-            details::os::remove(file_helper_.filename());
+            m_file_helper.close();
+            details::os::remove(m_file_helper.filename());
           }
           auto filename = FileNameCalc::calc_filename(base_filename_, now_tm(time));
-          file_helper_.open(filename, truncate_);
+          m_file_helper.open(filename, truncate_);
           rotation_tp_ = next_rotation_tp_();
         }
         remove_init_file_ = false;
         memory_buf_t formatted;
-        base_sink<Mutex>::formatter_->format(msg, formatted);
-        file_helper_.write(formatted);
+        BaseSink<Mutex>::m_formatter->format(msg, formatted);
+        m_file_helper.write(formatted);
 
         // Do the cleaning only at the end because it might throw on failure.
         if(should_rotate && max_files_ > 0)
@@ -93,7 +93,7 @@ namespace rexlog
 
       void flush_() override
       {
-        file_helper_.flush();
+        m_file_helper.flush();
       }
 
     private:
@@ -101,7 +101,7 @@ namespace rexlog
       {
         using details::os::path_exists;
 
-        filenames_q_ = details::circular_q<filename_t>(static_cast<size_t>(max_files_));
+        filenames_q_ = details::CircularQ<filename_t>(static_cast<size_t>(max_files_));
         rex::DebugVector<filename_t> filenames;
         auto now = log_clock::now();
         while(filenames.size() < max_files_)
@@ -147,7 +147,7 @@ namespace rexlog
         using details::os::filename_to_str;
         using details::os::remove_if_exists;
 
-        filename_t current_file = file_helper_.filename();
+        filename_t current_file = m_file_helper.filename();
         if(filenames_q_.full())
         {
           auto old_filename = rsl::move(filenames_q_.front());
@@ -164,28 +164,28 @@ namespace rexlog
 
       filename_t base_filename_;
       log_clock::time_point rotation_tp_;
-      details::file_helper file_helper_;
+      details::FileHelper m_file_helper;
       bool truncate_;
       uint16_t max_files_;
-      details::circular_q<filename_t> filenames_q_;
+      details::CircularQ<filename_t> filenames_q_;
       bool remove_init_file_;
     };
 
     using hourly_file_sink_mt = hourly_file_sink<rsl::mutex>;
-    using hourly_file_sink_st = hourly_file_sink<details::null_mutex>;
+    using hourly_file_sink_st = hourly_file_sink<details::NullMutex>;
 
   } // namespace sinks
 
   //
   // factory functions
   //
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   inline rsl::shared_ptr<logger> hourly_logger_mt(const rex::DebugString& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::hourly_file_sink_mt>(logger_name, filename, truncate, max_files, event_handlers);
   }
 
-  template <typename Factory = rexlog::synchronous_factory>
+  template <typename Factory = rexlog::SynchronousFactory>
   inline rsl::shared_ptr<logger> hourly_logger_st(const rex::DebugString& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::hourly_file_sink_st>(logger_name, filename, truncate, max_files, event_handlers);

@@ -12,37 +12,37 @@ namespace rexlog
   namespace details
   {
     template <typename T>
-    class circular_q
+    class CircularQ
     {
-      size_t max_items_                        = 0;
-      typename rex::DebugVector<T>::size_type head_ = 0;
-      typename rex::DebugVector<T>::size_type tail_ = 0;
-      size_t overrun_counter_                  = 0;
-      rex::DebugVector<T> v_;
+      size_t m_max_items                             = 0;
+      typename rex::DebugVector<T>::size_type m_head = 0;
+      typename rex::DebugVector<T>::size_type m_tail = 0;
+      size_t m_overrun_counter                       = 0;
+      rex::DebugVector<T> m_v;
 
     public:
       using value_type = T;
 
       // empty ctor - create a disabled queue with no elements allocated at all
-      circular_q() = default;
+      CircularQ() = default;
 
-      explicit circular_q(size_t max_items)
-          : max_items_(max_items + 1) // one item is reserved as marker for full q
-          , v_(rsl::Size(static_cast<card32>(max_items_)))
+      explicit CircularQ(size_t max_items)
+          : m_max_items(max_items + 1) // one item is reserved as marker for full q
+          , m_v(rsl::Size(static_cast<card32>(m_max_items)))
       {
       }
 
-      circular_q(const circular_q&)            = default;
-      circular_q& operator=(const circular_q&) = default;
+      CircularQ(const CircularQ&)            = default;
+      CircularQ& operator=(const CircularQ&) = default;
 
       // move cannot be default,
-      // since we need to reset head_, tail_, etc to zero in the moved object
-      circular_q(circular_q&& other) REXLOG_NOEXCEPT
+      // since we need to reset m_head, m_tail, etc to zero in the moved object
+      CircularQ(CircularQ&& other) REXLOG_NOEXCEPT
       {
         copy_moveable(rsl::move(other));
       }
 
-      circular_q& operator=(circular_q&& other) REXLOG_NOEXCEPT
+      CircularQ& operator=(CircularQ&& other) REXLOG_NOEXCEPT
       {
         copy_moveable(rsl::move(other));
         return *this;
@@ -51,15 +51,15 @@ namespace rexlog
       // push back, overrun (oldest) item if no room left
       void push_back(T&& item)
       {
-        if(max_items_ > 0)
+        if(m_max_items > 0)
         {
-          v_[tail_] = rsl::move(item);
-          tail_     = (tail_ + 1) % max_items_;
+          m_v[m_tail] = rsl::move(item);
+          m_tail     = (m_tail + 1) % m_max_items;
 
-          if(tail_ == head_) // overrun last item if full
+          if(m_tail == m_head) // overrun last item if full
           {
-            head_ = (head_ + 1) % max_items_;
-            ++overrun_counter_;
+            m_head = (m_head + 1) % m_max_items;
+            ++m_overrun_counter;
           }
         }
       }
@@ -68,24 +68,24 @@ namespace rexlog
       // If there are no elements in the container, the behavior is undefined.
       const T& front() const
       {
-        return v_[head_];
+        return m_v[m_head];
       }
 
       T& front()
       {
-        return v_[head_];
+        return m_v[m_head];
       }
 
       // Return number of elements actually stored
       size_t size() const
       {
-        if(tail_ >= head_)
+        if(m_tail >= m_head)
         {
-          return tail_ - head_;
+          return m_tail - m_head;
         }
         else
         {
-          return max_items_ - (head_ - tail_);
+          return m_max_items - (m_head - m_tail);
         }
       }
 
@@ -94,55 +94,55 @@ namespace rexlog
       const T& at(size_t i) const
       {
         assert(i < size());
-        return v_[(head_ + i) % max_items_];
+        return m_v[(m_head + i) % m_max_items];
       }
 
       // Pop item from front.
       // If there are no elements in the container, the behavior is undefined.
       void pop_front()
       {
-        head_ = (head_ + 1) % max_items_;
+        m_head = (m_head + 1) % m_max_items;
       }
 
       bool empty() const
       {
-        return tail_ == head_;
+        return m_tail == m_head;
       }
 
       bool full() const
       {
         // head is ahead of the tail by 1
-        if(max_items_ > 0)
+        if(m_max_items > 0)
         {
-          return ((tail_ + 1) % max_items_) == head_;
+          return ((m_tail + 1) % m_max_items) == m_head;
         }
         return false;
       }
 
       size_t overrun_counter() const
       {
-        return overrun_counter_;
+        return m_overrun_counter;
       }
 
       void reset_overrun_counter()
       {
-        overrun_counter_ = 0;
+        m_overrun_counter = 0;
       }
 
     private:
       // copy from other&& and reset it to disabled state
-      void copy_moveable(circular_q&& other) REXLOG_NOEXCEPT
+      void copy_moveable(CircularQ&& other) REXLOG_NOEXCEPT
       {
-        max_items_       = other.max_items_;
-        head_            = other.head_;
-        tail_            = other.tail_;
-        overrun_counter_ = other.overrun_counter_;
-        v_               = rsl::move(other.v_);
+        m_max_items       = other.m_max_items;
+        m_head            = other.m_head;
+        m_tail            = other.m_tail;
+        m_overrun_counter = other.m_overrun_counter;
+        m_v               = rsl::move(other.m_v);
 
         // put &&other in disabled, but valid state
-        other.max_items_ = 0;
-        other.head_ = other.tail_ = 0;
-        other.overrun_counter_    = 0;
+        other.m_max_items = 0;
+        other.m_head = other.m_tail = 0;
+        other.m_overrun_counter    = 0;
       }
     };
   } // namespace details
