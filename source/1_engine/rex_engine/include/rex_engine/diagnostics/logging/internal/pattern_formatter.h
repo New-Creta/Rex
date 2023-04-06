@@ -18,20 +18,20 @@ namespace rexlog
   {
 
     // padding information.
-    struct padding_info
+    struct PaddingInfo
     {
-      enum class pad_side
+      enum class PadSide
       {
-        left,
-        right,
-        center
+        Left,
+        Right,
+        Center
       };
 
-      padding_info() = default;
-      padding_info(size_t width, padding_info::pad_side side, bool truncate)
-          : width_(width)
-          , side_(side)
-          , truncate_(truncate)
+      PaddingInfo() = default;
+      PaddingInfo(size_t width, PaddingInfo::PadSide side, bool truncate)
+          : width(width)
+          , side(side)
+          , truncate(truncate)
           , m_enabled(true)
       {
       }
@@ -40,58 +40,58 @@ namespace rexlog
       {
         return m_enabled;
       }
-      size_t width_  = 0;
-      pad_side side_ = pad_side::left;
-      bool truncate_ = false;
+      size_t width  = 0;
+      PadSide side = PadSide::Left;
+      bool truncate = false;
       bool m_enabled  = false;
     };
 
-    class REXLOG_API flag_formatter
+    class REXLOG_API FlagFormatter
     {
     public:
-      explicit flag_formatter(padding_info padinfo)
-          : padinfo_(padinfo)
+      explicit FlagFormatter(PaddingInfo padinfo)
+          : m_padinfo(padinfo)
       {
       }
-      flag_formatter()                                                                        = default;
-      virtual ~flag_formatter()                                                               = default;
-      virtual void format(const details::LogMsg& msg, const tm& tm_time, memory_buf_t& dest) = 0;
+      FlagFormatter()                                                                        = default;
+      virtual ~FlagFormatter()                                                               = default;
+      virtual void format(const details::LogMsg& msg, const tm& tmTime, memory_buf_t& dest) = 0;
 
     protected:
-      padding_info padinfo_;
+      PaddingInfo m_padinfo;
     };
 
   } // namespace details
 
-  class REXLOG_API custom_flag_formatter : public details::flag_formatter
+  class REXLOG_API CustomFlagFormatter : public details::FlagFormatter
   {
   public:
-    virtual rsl::unique_ptr<custom_flag_formatter> clone() const = 0;
+    virtual rsl::unique_ptr<CustomFlagFormatter> clone() const = 0;
 
-    void set_padding_info(const details::padding_info& padding)
+    void set_padding_info(const details::PaddingInfo& padding)
     {
-      flag_formatter::padinfo_ = padding;
+      FlagFormatter::m_padinfo = padding;
     }
   };
 
-  class REXLOG_API pattern_formatter final : public formatter
+  class REXLOG_API PatternFormatter final : public formatter
   {
   public:
-    using custom_flags = rex::DebugHashTable<char, rsl::unique_ptr<custom_flag_formatter>>;
+    using custom_flags = rex::DebugHashTable<char, rsl::unique_ptr<CustomFlagFormatter>>;
 
-    explicit pattern_formatter(rex::DebugString pattern, pattern_time_type time_type = pattern_time_type::local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol), custom_flags custom_user_flags = custom_flags());
+    explicit PatternFormatter(rex::DebugString pattern, PatternTimeType timeType = PatternTimeType::Local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol), custom_flags customUserFlags = custom_flags());
 
     // use default pattern is not given
-    explicit pattern_formatter(pattern_time_type time_type = pattern_time_type::local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol));
+    explicit PatternFormatter(PatternTimeType timeType = PatternTimeType::Local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol));
 
-    pattern_formatter(const pattern_formatter& other)            = delete;
-    pattern_formatter& operator=(const pattern_formatter& other) = delete;
+    PatternFormatter(const PatternFormatter& other)            = delete;
+    PatternFormatter& operator=(const PatternFormatter& other) = delete;
 
     rsl::unique_ptr<formatter> clone() const override;
     void format(const details::LogMsg& msg, memory_buf_t& dest) override;
 
     template <typename T, typename... Args>
-    pattern_formatter& add_flag(char flag, Args&&... args)
+    PatternFormatter& add_flag(char flag, Args&&... args)
     {
       custom_handlers_[flag] = details::make_unique<T>(rsl::forward<Args>(args)...);
       return *this;
@@ -100,23 +100,23 @@ namespace rexlog
     void need_localtime(bool need = true);
 
   private:
-    rex::DebugString pattern_;
-    rex::DebugString eol_;
-    pattern_time_type pattern_time_type_;
-    bool need_localtime_;
-    tm cached_tm_;
-    rsl::chrono::seconds last_log_secs_;
-    rex::DebugVector<rsl::unique_ptr<details::flag_formatter>> formatters_;
-    custom_flags custom_handlers_;
+    rex::DebugString m_pattern;
+    rex::DebugString m_eol;
+    PatternTimeType m_pattern_time_type;
+    bool m_need_localtime;
+    tm m_cached_tm{};
+    rsl::chrono::seconds m_last_log_secs;
+    rex::DebugVector<rsl::unique_ptr<details::FlagFormatter>> m_formatters;
+    custom_flags m_custom_handlers;
 
     tm get_time_impl(const details::LogMsg& msg);
     template <typename Padder>
-    void handle_flag_impl(char flag, details::padding_info padding);
+    void handle_flag_impl(char flag, details::PaddingInfo padding);
 
     // Extract given pad spec (e.g. %8X)
     // Advance the given it pass the end of the padding spec found (if any)
     // Return padding.
-    static details::padding_info handle_padspec_impl(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end);
+    static details::PaddingInfo handle_padspec_impl(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end);
 
     void compile_pattern_impl(const rex::DebugString& pattern);
   };

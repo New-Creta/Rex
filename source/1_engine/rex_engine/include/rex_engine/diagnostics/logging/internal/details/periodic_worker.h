@@ -19,11 +19,11 @@ namespace rexlog
   namespace details
   {
 
-    class REXLOG_API periodic_worker
+    class REXLOG_API PeriodicWorker
     {
     public:
       template <typename Rep, typename Period>
-      periodic_worker(const rsl::function<void()>& callback_fun, rsl::chrono::duration<Rep, Period> interval)
+      PeriodicWorker(const rsl::function<void()>& callbackFun, rsl::chrono::duration<Rep, Period> interval)
       {
         m_active = (interval > rsl::chrono::duration<Rep, Period>::zero());
         if(!m_active)
@@ -45,10 +45,10 @@ namespace rexlog
               }
             });
       }
-      periodic_worker(const periodic_worker&)            = delete;
-      periodic_worker& operator=(const periodic_worker&) = delete;
+      PeriodicWorker(const PeriodicWorker&)            = delete;
+      PeriodicWorker& operator=(const PeriodicWorker&) = delete;
       // stop the worker thread and join it
-      ~periodic_worker();
+      ~PeriodicWorker();
 
     private:
       bool m_active;

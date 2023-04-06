@@ -30,7 +30,7 @@ namespace rex
   namespace internal
   {
     template <int VerbosityToCheck, typename CategoryType>
-    inline bool isLogActive(const CategoryType& Category)
+    inline bool is_log_active(const CategoryType& category)
     {
       return !Category.IsSuppressed((LogVerbosity)VerbosityToCheck);
     }

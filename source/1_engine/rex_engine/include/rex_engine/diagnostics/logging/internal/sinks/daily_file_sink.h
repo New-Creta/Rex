@@ -32,7 +32,7 @@ namespace rexlog
      * Generator of daily log file names with strftime format.
      * Usages:
      *    auto sink =  rsl::make_shared<rexlog::sinks::daily_file_format_sink_mt>("myapp-%Y-%m-%d:%H:%M:%S.log", hour, minute);"
-     *    auto logger = rexlog::daily_logger_format_mt("loggername, "myapp-%Y-%m-%d:%X.log", hour,  minute)"
+     *    auto Logger = rexlog::daily_logger_format_mt("loggername, "myapp-%Y-%m-%d:%X.log", hour,  minute)"
      *
      */
     struct daily_filename_format_calculator
@@ -243,25 +243,25 @@ namespace rexlog
   // factory functions
   //
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> daily_logger_mt(const rex::DebugString& logger_name, const filename_t& filename, int hour = 0, int minute = 0, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<Logger> daily_logger_mt(const rex::DebugString& logger_name, const filename_t& filename, int hour = 0, int minute = 0, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::daily_file_sink_mt>(logger_name, filename, hour, minute, truncate, max_files, event_handlers);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> daily_logger_format_mt(const rex::DebugString& logger_name, const filename_t& filename, int hour = 0, int minute = 0, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<Logger> daily_logger_format_mt(const rex::DebugString& logger_name, const filename_t& filename, int hour = 0, int minute = 0, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::daily_file_format_sink_mt>(logger_name, filename, hour, minute, truncate, max_files, event_handlers);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> daily_logger_st(const rex::DebugString& logger_name, const filename_t& filename, int hour = 0, int minute = 0, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<Logger> daily_logger_st(const rex::DebugString& logger_name, const filename_t& filename, int hour = 0, int minute = 0, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::daily_file_sink_st>(logger_name, filename, hour, minute, truncate, max_files, event_handlers);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> daily_logger_format_st(const rex::DebugString& logger_name, const filename_t& filename, int hour = 0, int minute = 0, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<Logger> daily_logger_format_st(const rex::DebugString& logger_name, const filename_t& filename, int hour = 0, int minute = 0, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::daily_file_format_sink_st>(logger_name, filename, hour, minute, truncate, max_files, event_handlers);
   }

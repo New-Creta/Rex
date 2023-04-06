@@ -9,7 +9,7 @@ namespace rex
 {
   struct LogCategoryBase;
 
-  rexlog::logger& get_logger(const LogCategoryBase& category);
+  rexlog::Logger& get_logger(const LogCategoryBase& category);
 
   template <typename T>
   void trace_fatal_log(const LogCategoryBase& category, const T& msg)

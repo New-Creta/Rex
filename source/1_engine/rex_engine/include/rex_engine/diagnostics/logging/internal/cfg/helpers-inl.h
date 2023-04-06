@@ -47,7 +47,8 @@ namespace rexlog
       inline rsl::pair<rex::DebugString, rex::DebugString> extract_kv_impl(char sep, const rex::DebugString& str)
       {
         auto n = str.find(sep);
-        rex::DebugString k, v;
+        rex::DebugString k;
+        rex::DebugString v;
         if(n == rex::DebugString::npos())
         {
           v = str;
@@ -79,7 +80,7 @@ namespace rexlog
         return rv;
       }
 
-      REXLOG_INLINE void load_levels(const rex::DebugString& input)
+      REXLOG_INLINE inline void load_levels(const rex::DebugString& input)
       {
         if(input.empty() || input.size() > 512)
         {
@@ -87,21 +88,21 @@ namespace rexlog
         }
 
         auto key_vals = extract_key_vals_impl(input);
-        rex::DebugHashTable<rex::DebugString, level::level_enum> levels;
-        level::level_enum global_level = level::info;
+        rex::DebugHashTable<rex::DebugString, level::LevelEnum> levels;
+        level::LevelEnum global_level = level::Info;
         bool global_level_found        = false;
 
         for(auto& name_level: key_vals)
         {
-          auto& logger_name = name_level.key;
+          const auto& logger_name = name_level.key;
           auto level_name   = rex::DebugString(to_lower_impl(name_level.value));
           auto level        = level::from_str(level_name);
           // ignore unrecognized level names
-          if(level == level::off && level_name != "off")
+          if(level == level::Off && level_name != "off")
           {
             continue;
           }
-          if(logger_name.empty()) // no logger name indicate global level
+          if(logger_name.empty()) // no Logger name indicate global level
           {
             global_level_found = true;
             global_level       = level;

@@ -180,13 +180,13 @@ namespace rexlog
   // factory functions
   //
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> hourly_logger_mt(const rex::DebugString& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<Logger> hourly_logger_mt(const rex::DebugString& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::hourly_file_sink_mt>(logger_name, filename, truncate, max_files, event_handlers);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> hourly_logger_st(const rex::DebugString& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
+  inline rsl::shared_ptr<Logger> hourly_logger_st(const rex::DebugString& logger_name, const filename_t& filename, bool truncate = false, uint16_t max_files = 0, const file_event_handlers& event_handlers = {})
   {
     return Factory::template create<sinks::hourly_file_sink_st>(logger_name, filename, truncate, max_files, event_handlers);
   }

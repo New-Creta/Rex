@@ -14,12 +14,12 @@ namespace rexlog
 
     class REXLOG_API LogMsgBuffer : public LogMsg
     {
-      memory_buf_t buffer;
+      memory_buf_t m_buffer;
       void update_string_views();
 
     public:
       LogMsgBuffer() = default;
-      explicit LogMsgBuffer(const LogMsg& orig_msg);
+      explicit LogMsgBuffer(const LogMsg& origMsg);
       LogMsgBuffer(const LogMsgBuffer& other);
       LogMsgBuffer(LogMsgBuffer&& other) REXLOG_NOEXCEPT;
       LogMsgBuffer& operator=(const LogMsgBuffer& other);

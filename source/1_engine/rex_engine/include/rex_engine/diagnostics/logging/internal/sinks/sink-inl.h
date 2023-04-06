@@ -5,17 +5,17 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 
-REXLOG_INLINE bool rexlog::sinks::sink::should_log(rexlog::level::level_enum msg_level) const
+REXLOG_INLINE inline bool rexlog::sinks::sink::should_log(rexlog::level::LevelEnum msgLevel) const
 {
-  return msg_level >= level_.load(rsl::memory_order_relaxed);
+  return msgLevel >= m_level.load(rsl::memory_order_relaxed);
 }
 
-REXLOG_INLINE void rexlog::sinks::sink::set_level(level::level_enum log_level)
+REXLOG_INLINE inline void rexlog::sinks::sink::set_level(level::LevelEnum logLevel)
 {
-  level_.store(log_level, rsl::memory_order_relaxed);
+  m_level.store(logLevel, rsl::memory_order_relaxed);
 }
 
-REXLOG_INLINE rexlog::level::level_enum rexlog::sinks::sink::level() const
+REXLOG_INLINE inline rexlog::level::LevelEnum rexlog::sinks::sink::level() const
 {
-  return static_cast<rexlog::level::level_enum>(level_.load(rsl::memory_order_relaxed));
+  return static_cast<rexlog::level::LevelEnum>(m_level.load(rsl::memory_order_relaxed));
 }

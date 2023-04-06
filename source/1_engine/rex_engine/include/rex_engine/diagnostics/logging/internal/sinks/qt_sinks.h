@@ -63,37 +63,37 @@ namespace rexlog
   // Factory functions
   //
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> qt_logger_mt(const rex::DebugString& logger_name, QTextEdit* qt_object, const rex::DebugString& meta_method = "append")
+  inline rsl::shared_ptr<Logger> qt_logger_mt(const rex::DebugString& logger_name, QTextEdit* qt_object, const rex::DebugString& meta_method = "append")
   {
     return Factory::template create<sinks::qt_sink_mt>(logger_name, qt_object, meta_method);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> qt_logger_st(const rex::DebugString& logger_name, QTextEdit* qt_object, const rex::DebugString& meta_method = "append")
+  inline rsl::shared_ptr<Logger> qt_logger_st(const rex::DebugString& logger_name, QTextEdit* qt_object, const rex::DebugString& meta_method = "append")
   {
     return Factory::template create<sinks::qt_sink_st>(logger_name, qt_object, meta_method);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> qt_logger_mt(const rex::DebugString& logger_name, QPlainTextEdit* qt_object, const rex::DebugString& meta_method = "appendPlainText")
+  inline rsl::shared_ptr<Logger> qt_logger_mt(const rex::DebugString& logger_name, QPlainTextEdit* qt_object, const rex::DebugString& meta_method = "appendPlainText")
   {
     return Factory::template create<sinks::qt_sink_mt>(logger_name, qt_object, meta_method);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> qt_logger_st(const rex::DebugString& logger_name, QPlainTextEdit* qt_object, const rex::DebugString& meta_method = "appendPlainText")
+  inline rsl::shared_ptr<Logger> qt_logger_st(const rex::DebugString& logger_name, QPlainTextEdit* qt_object, const rex::DebugString& meta_method = "appendPlainText")
   {
     return Factory::template create<sinks::qt_sink_st>(logger_name, qt_object, meta_method);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> qt_logger_mt(const rex::DebugString& logger_name, QObject* qt_object, const rex::DebugString& meta_method)
+  inline rsl::shared_ptr<Logger> qt_logger_mt(const rex::DebugString& logger_name, QObject* qt_object, const rex::DebugString& meta_method)
   {
     return Factory::template create<sinks::qt_sink_mt>(logger_name, qt_object, meta_method);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> qt_logger_st(const rex::DebugString& logger_name, QObject* qt_object, const rex::DebugString& meta_method)
+  inline rsl::shared_ptr<Logger> qt_logger_st(const rex::DebugString& logger_name, QObject* qt_object, const rex::DebugString& meta_method)
   {
     return Factory::template create<sinks::qt_sink_st>(logger_name, qt_object, meta_method);
   }

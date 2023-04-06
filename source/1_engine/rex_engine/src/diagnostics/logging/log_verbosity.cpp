@@ -5,30 +5,30 @@ namespace rex
   //-------------------------------------------------------------------------
   LogVerbosity operator&(int bits1, LogVerbosity bits2)
   {
-    return (LogVerbosity)(bits1 & static_cast<int>(bits2));
+    return static_cast<LogVerbosity>(bits1 & static_cast<int>(bits2));
   }
 
   //-------------------------------------------------------------------------
   LogVerbosity operator|(int bits1, LogVerbosity bits2)
   {
-    return (LogVerbosity)(bits1 | static_cast<int>(bits2));
+    return static_cast<LogVerbosity>(bits1 | static_cast<int>(bits2));
   }
 
   //-------------------------------------------------------------------------
   LogVerbosity operator&(LogVerbosity bits1, LogVerbosity bits2)
   {
-    return (LogVerbosity)(static_cast<int>(bits1) & static_cast<int>(bits2));
+    return static_cast<LogVerbosity>(static_cast<int>(bits1) & static_cast<int>(bits2));
   }
 
   //-------------------------------------------------------------------------
   LogVerbosity operator|(LogVerbosity bits1, LogVerbosity bits2)
   {
-    return (LogVerbosity)(static_cast<int>(bits1) | static_cast<int>(bits2));
+    return static_cast<LogVerbosity>(static_cast<int>(bits1) | static_cast<int>(bits2));
   }
 
-  namespace Conversions
+  namespace conversions
   {
-    const char* toString(LogVerbosity verbosity)
+    const char* to_string(LogVerbosity verbosity)
     {
       switch(verbosity & LogVerbosity::VerbosityMask)
       {
@@ -45,7 +45,7 @@ namespace rex
       return "Unknown Verbosity";
     }
 
-    LogVerbosity parseLogVerbosityFromString(const rex::DebugString& verbosity)
+    LogVerbosity parse_log_verbosity_from_string(const rex::DebugString& verbosity)
     {
       if(verbosity == "NoLogging")
       {
@@ -79,5 +79,5 @@ namespace rex
       // An unknown value is treated as log
       return LogVerbosity::Log;
     }
-  } // namespace Conversions
+  } // namespace conversions
 } // namespace rex

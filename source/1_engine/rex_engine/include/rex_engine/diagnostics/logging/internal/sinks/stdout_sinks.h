@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <cstdio>
 #include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
 #include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
+#include <cstdio>
 
 #ifdef _WIN32
   #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
@@ -18,18 +18,18 @@ namespace rexlog
   {
 
     template <typename ConsoleMutex>
-    class stdout_sink_base : public sink
+    class StdoutSinkBase : public sink
     {
     public:
       using mutex_t = typename ConsoleMutex::mutex_t;
-      explicit stdout_sink_base(FILE* file);
-      ~stdout_sink_base() override = default;
+      explicit StdoutSinkBase(FILE* file);
+      ~StdoutSinkBase() override = default;
 
-      stdout_sink_base(const stdout_sink_base& other) = delete;
-      stdout_sink_base(stdout_sink_base&& other)      = delete;
+      StdoutSinkBase(const StdoutSinkBase& other) = delete;
+      StdoutSinkBase(StdoutSinkBase&& other)      = delete;
 
-      stdout_sink_base& operator=(const stdout_sink_base& other) = delete;
-      stdout_sink_base& operator=(stdout_sink_base&& other)      = delete;
+      StdoutSinkBase& operator=(const StdoutSinkBase& other) = delete;
+      StdoutSinkBase& operator=(StdoutSinkBase&& other)      = delete;
 
       void log(const details::LogMsg& msg) override;
       void flush() override;
@@ -39,46 +39,46 @@ namespace rexlog
 
     protected:
       mutex_t& m_mutex;
-      FILE* file_;
+      FILE* m_file;
       rsl::unique_ptr<rexlog::formatter> m_formatter;
 #ifdef _WIN32
-      HANDLE handle_;
+      HANDLE m_handle;
 #endif // WIN32
     };
 
     template <typename ConsoleMutex>
-    class stdout_sink : public stdout_sink_base<ConsoleMutex>
+    class StdoutSink : public StdoutSinkBase<ConsoleMutex>
     {
     public:
-      stdout_sink();
+      StdoutSink();
     };
 
     template <typename ConsoleMutex>
-    class stderr_sink : public stdout_sink_base<ConsoleMutex>
+    class StderrSink : public StdoutSinkBase<ConsoleMutex>
     {
     public:
-      stderr_sink();
+      StderrSink();
     };
 
-    using stdout_sink_mt = stdout_sink<details::ConsoleMutex>;
-    using stdout_sink_st = stdout_sink<details::ConsoleNullMutex>;
+    using stdout_sink_mt = StdoutSink<details::ConsoleMutex>;
+    using stdout_sink_st = StdoutSink<details::ConsoleNullMutex>;
 
-    using stderr_sink_mt = stderr_sink<details::ConsoleMutex>;
-    using stderr_sink_st = stderr_sink<details::ConsoleNullMutex>;
+    using stderr_sink_mt = StderrSink<details::ConsoleMutex>;
+    using stderr_sink_st = StderrSink<details::ConsoleNullMutex>;
 
   } // namespace sinks
 
   // factory methods
   template <typename Factory = rexlog::SynchronousFactory>
-  rsl::shared_ptr<logger> stdout_logger_mt(const rex::DebugString& logger_name);
+  rsl::shared_ptr<Logger> stdout_logger_mt(const rex::DebugString& loggerName);
 
   template <typename Factory = rexlog::SynchronousFactory>
-  rsl::shared_ptr<logger> stdout_logger_st(const rex::DebugString& logger_name);
+  rsl::shared_ptr<Logger> stdout_logger_st(const rex::DebugString& loggerName);
 
   template <typename Factory = rexlog::SynchronousFactory>
-  rsl::shared_ptr<logger> stderr_logger_mt(const rex::DebugString& logger_name);
+  rsl::shared_ptr<Logger> stderr_logger_mt(const rex::DebugString& loggerName);
 
   template <typename Factory = rexlog::SynchronousFactory>
-  rsl::shared_ptr<logger> stderr_logger_st(const rex::DebugString& logger_name);
+  rsl::shared_ptr<Logger> stderr_logger_st(const rex::DebugString& loggerName);
 
 } // namespace rexlog

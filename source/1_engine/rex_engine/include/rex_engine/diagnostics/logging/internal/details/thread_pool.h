@@ -14,32 +14,32 @@
 
 namespace rexlog
 {
-  class async_logger;
+  class AsyncLogger;
 
   namespace details
   {
 
-    using async_logger_ptr = rsl::shared_ptr<rexlog::async_logger>;
+    using async_logger_ptr = rsl::shared_ptr<rexlog::AsyncLogger>;
 
-    enum class async_msg_type
+    enum class AsyncMsgType
     {
-      log,
-      flush,
-      terminate
+      Log,
+      Flush,
+      Terminate
     };
 
     // Async msg to move to/from the queue
     // Movable only. should never be copied
-    struct async_msg : LogMsgBuffer
+    struct AsyncMsg : LogMsgBuffer
     {
-      async_msg_type msg_type {async_msg_type::log};
+      AsyncMsgType msg_type {AsyncMsgType::Log};
       async_logger_ptr worker_ptr;
 
-      async_msg()  = default;
-      ~async_msg() = default;
+      AsyncMsg()  = default;
+      ~AsyncMsg() = default;
 
       // should only be moved in or out of the queue..
-      async_msg(const async_msg&) = delete;
+      AsyncMsg(const AsyncMsg&) = delete;
 
 // support for vs2013 move
 #if defined(_MSC_VER) && _MSC_VER <= 1800
@@ -58,27 +58,27 @@ namespace rexlog
         return *this;
       }
 #else // (_MSC_VER) && _MSC_VER <= 1800
-      async_msg(async_msg&&)            = default;
-      async_msg& operator=(async_msg&&) = default;
+      AsyncMsg(AsyncMsg&&)            = default;
+      AsyncMsg& operator=(AsyncMsg&&) = default;
 #endif
 
       // construct from LogMsg with given type
-      async_msg(async_logger_ptr&& worker, async_msg_type the_type, const details::LogMsg& m)
+      AsyncMsg(async_logger_ptr&& worker, AsyncMsgType theType, const details::LogMsg& m)
           : LogMsgBuffer {m}
-          , msg_type {the_type}
+          , msg_type {theType}
           , worker_ptr {rsl::move(worker)}
       {
       }
 
-      async_msg(async_logger_ptr&& worker, async_msg_type the_type)
+      AsyncMsg(async_logger_ptr&& worker, AsyncMsgType theType)
           : LogMsgBuffer {}
-          , msg_type {the_type}
+          , msg_type {theType}
           , worker_ptr {rsl::move(worker)}
       {
       }
 
-      explicit async_msg(async_msg_type the_type)
-          : async_msg {nullptr, the_type}
+      explicit AsyncMsg(AsyncMsgType theType)
+          : AsyncMsg {nullptr, theType}
       {
       }
     };
@@ -86,12 +86,12 @@ namespace rexlog
     class REXLOG_API thread_pool
     {
     public:
-      using item_type = async_msg;
+      using item_type = AsyncMsg;
       using q_type    = details::MpmcBlockingQueue<item_type>;
 
-      thread_pool(size_t q_max_items, size_t threads_n, rsl::function<void()> on_thread_start, rsl::function<void()> on_thread_stop);
-      thread_pool(size_t q_max_items, size_t threads_n, rsl::function<void()> on_thread_start);
-      thread_pool(size_t q_max_items, size_t threads_n);
+      thread_pool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
+      thread_pool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart);
+      thread_pool(size_t qMaxItems, size_t threadsN);
 
       // message all threads to terminate gracefully and join them
       ~thread_pool();
@@ -99,8 +99,8 @@ namespace rexlog
       thread_pool(const thread_pool&)       = delete;
       thread_pool& operator=(thread_pool&&) = delete;
 
-      void post_log(async_logger_ptr&& worker_ptr, const details::LogMsg& msg, async_overflow_policy overflow_policy);
-      void post_flush(async_logger_ptr&& worker_ptr, async_overflow_policy overflow_policy);
+      void post_log(async_logger_ptr&& workerPtr, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
+      void post_flush(async_logger_ptr&& workerPtr, AsyncOverflowPolicy overflowPolicy);
       size_t overrun_counter();
       void reset_overrun_counter();
       size_t queue_size();
@@ -108,9 +108,9 @@ namespace rexlog
     private:
       q_type m_q;
 
-      rex::DebugVector<rsl::thread> threads_;
+      rex::DebugVector<rsl::thread> m_threads;
 
-      void post_async_msg_impl(async_msg&& new_msg, async_overflow_policy overflow_policy);
+      void post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy);
       void worker_loop_impl();
 
       // process next message in the queue

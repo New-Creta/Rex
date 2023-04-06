@@ -12,12 +12,12 @@ namespace rexlog
   {
 
     // stop the worker thread and join it
-    REXLOG_INLINE periodic_worker::~periodic_worker()
+    REXLOG_INLINE inline PeriodicWorker::~PeriodicWorker()
     {
       if(m_worker_thread.joinable())
       {
         {
-          rsl::unique_lock<rsl::mutex> lock(m_mutex);
+          rsl::unique_lock<rsl::mutex> const lock(m_mutex);
           m_active = false;
         }
         m_cv.notify_one();

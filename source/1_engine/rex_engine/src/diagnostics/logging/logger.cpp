@@ -13,9 +13,9 @@
 namespace rex
 {
   using LogPattern  = const char*;
-  using LogLevelMap = DebugHashTable<LogVerbosity, rexlog::level::level_enum>;
+  using LogLevelMap = DebugHashTable<LogVerbosity, rexlog::level::LevelEnum>;
 
-  using LoggerObjectPtr    = rsl::shared_ptr<rexlog::logger>;
+  using LoggerObjectPtr    = rsl::shared_ptr<rexlog::Logger>;
   using LoggerObjectPtrMap = DebugHashTable<LogCategoryName, LoggerObjectPtr>;
 
   LoggerObjectPtrMap& loggers()
@@ -27,12 +27,12 @@ namespace rex
   //-------------------------------------------------------------------------
   LogLevelMap get_log_levels()
   {
-    return {{LogVerbosity::NoLogging, rexlog::level::off}, {LogVerbosity::Fatal, rexlog::level::critical}, {LogVerbosity::Error, rexlog::level::err},        {LogVerbosity::Warning, rexlog::level::warn},
-            {LogVerbosity::Log, rexlog::level::info},      {LogVerbosity::Verbose, rexlog::level::debug},  {LogVerbosity::VeryVerbose, rexlog::level::trace}};
+    return {{LogVerbosity::NoLogging, rexlog::level::Off}, {LogVerbosity::Fatal, rexlog::level::Critical}, {LogVerbosity::Error, rexlog::level::Err},        {LogVerbosity::Warning, rexlog::level::Warn},
+            {LogVerbosity::Log, rexlog::level::Info},      {LogVerbosity::Verbose, rexlog::level::Debug},  {LogVerbosity::VeryVerbose, rexlog::level::Trace}};
   }
 
   //-------------------------------------------------------------------------
-  rexlog::logger* find_logger(const LogCategoryName& name)
+  rexlog::Logger* find_logger(const LogCategoryName& name)
   {
     auto it = loggers().find(name);
 
@@ -40,16 +40,16 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  rexlog::logger& get_logger(const LogCategoryBase& category)
+  rexlog::Logger& get_logger(const LogCategoryBase& category)
   {
-    const LogPattern DEFAULT_PATTERN = "%^[%T][%=8l] %n: %v%$";
-    const LogLevelMap LOG_LEVELS     = get_log_levels();
+    const LogPattern default_pattern = "%^[%T][%=8l] %n: %v%$";
+    const LogLevelMap log_levels     = get_log_levels();
 
     // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
 
-    rexlog::logger* logger = find_logger(category.get_category_name());
-    if(logger != nullptr)
-      return *logger;
+    rexlog::Logger* Logger = find_logger(category.get_category_name());
+    if(Logger != nullptr)
+      return *Logger;
 
     // rsl::filesystem::path working_dir(rsl::filesystem::current_path());
     // rsl::filesystem::path log_dir("log");
@@ -64,10 +64,10 @@ namespace rex
 #endif
     // sinks.push_back(rsl::make_shared<rexlog::sinks::basic_file_sink_mt>(full_path.string(), true));
 
-    rsl::shared_ptr<rexlog::logger> new_logger = rsl::allocate_shared<rexlog::logger>(rex::global_debug_allocator(), category.get_category_name(), rsl::begin(sinks), rsl::end(sinks));
+    rsl::shared_ptr<rexlog::Logger> new_logger = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), category.get_category_name(), rsl::begin(sinks), rsl::end(sinks));
 
-    new_logger->set_pattern(rsl::basic_string<char8, rsl::char_traits<char8>, DebugAllocator<UntrackedAllocator>>(DEFAULT_PATTERN, global_debug_allocator()));
-    new_logger->set_level(LOG_LEVELS.at(category.get_verbosity()));
+    new_logger->set_pattern(rsl::basic_string<char8, rsl::char_traits<char8>, DebugAllocator<UntrackedAllocator>>(default_pattern, global_debug_allocator()));
+    new_logger->set_level(log_levels.at(category.get_verbosity()));
 
     loggers().insert({category.get_category_name(), new_logger});
 

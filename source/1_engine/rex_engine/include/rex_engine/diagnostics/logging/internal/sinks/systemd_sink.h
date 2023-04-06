@@ -108,15 +108,15 @@ namespace rexlog
     using systemd_sink_st = systemd_sink<details::NullMutex>;
   } // namespace sinks
 
-  // Create and register a syslog logger
+  // Create and register a syslog Logger
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> systemd_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& ident = "", bool enable_formatting = false)
+  inline rsl::shared_ptr<Logger> systemd_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& ident = "", bool enable_formatting = false)
   {
     return Factory::template create<sinks::systemd_sink_mt>(logger_name, ident, enable_formatting);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> systemd_logger_st(const rex::DebugString& logger_name, const rex::DebugString& ident = "", bool enable_formatting = false)
+  inline rsl::shared_ptr<Logger> systemd_logger_st(const rex::DebugString& logger_name, const rex::DebugString& ident = "", bool enable_formatting = false)
   {
     return Factory::template create<sinks::systemd_sink_st>(logger_name, ident, enable_formatting);
   }

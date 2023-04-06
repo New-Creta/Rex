@@ -21,7 +21,7 @@
 //     int main() {
 //         auto dup_filter = rsl::make_shared<dup_filter_sink_st>(rsl::chrono::seconds(5), level::info);
 //         dup_filter->add_sink(rsl::make_shared<stdout_color_sink_mt>());
-//         rexlog::logger l("logger", dup_filter);
+//         rexlog::Logger l("Logger", dup_filter);
 //         l.info("Hello");
 //         l.info("Hello");
 //         l.info("Hello");
@@ -29,9 +29,9 @@
 //     }
 //
 // Will produce:
-//       [2019-06-25 17:50:56.511] [logger] [info] Hello
-//       [2019-06-25 17:50:56.512] [logger] [info] Skipped 3 duplicate messages..
-//       [2019-06-25 17:50:56.512] [logger] [info] Different Hello
+//       [2019-06-25 17:50:56.511] [Logger] [info] Hello
+//       [2019-06-25 17:50:56.512] [Logger] [info] Skipped 3 duplicate messages..
+//       [2019-06-25 17:50:56.512] [Logger] [info] Different Hello
 
 namespace rexlog
 {

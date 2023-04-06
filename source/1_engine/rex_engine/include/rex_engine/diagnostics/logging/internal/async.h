@@ -6,12 +6,14 @@
 // Async logging using global thread pool
 // All loggers created here share same global thread pool.
 // Each log message is pushed to a queue along with a shared pointer to the
-// logger.
-// If a logger deleted while having pending messages in the queue, it's actual
+// Logger.
+// If a Logger deleted while having pending messages in the queue, it's actual
 // destruction will defer
 // until all its messages are processed by the thread pool.
 // This is because each message in the queue holds a shared_ptr to the
-// originating logger.
+// originating Logger.
+
+#include <utility>
 
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/functional.h"
@@ -27,69 +29,69 @@ namespace rexlog
 
   namespace details
   {
-    static const size_t default_async_q_size = 8192;
+    static const size_t g_default_async_q_size = 8192;
   } // namespace details
 
-  // async logger factory - creates async loggers backed with thread pool.
+  // async Logger factory - creates async loggers backed with thread pool.
   // if a global thread pool doesn't already exist, create it with default queue
   // size of 8192 items and single thread.
-  template <async_overflow_policy OverflowPolicy = async_overflow_policy::block>
-  struct async_factory_impl
+  template <AsyncOverflowPolicy OverflowPolicy = AsyncOverflowPolicy::Block>
+  struct AsyncFactoryImpl
   {
     template <typename Sink, typename... SinkArgs>
-    static rsl::shared_ptr<async_logger> create(rex::DebugString logger_name, SinkArgs&&... args)
+    static rsl::shared_ptr<AsyncLogger> create(rex::DebugString loggerName, SinkArgs&&... args)
     {
       auto& registry_inst = details::Registry::instance();
 
       // create global thread pool if not already exists..
 
       auto& mutex = registry_inst.tp_mutex();
-      rsl::unique_lock<rsl::recursive_mutex> tp_lock(mutex);
+      rsl::unique_lock<rsl::recursive_mutex> const tp_lock(mutex);
       auto tp = registry_inst.get_tp();
       if(tp == nullptr)
       {
-        tp = rsl::allocate_shared<details::thread_pool>(rex::global_debug_allocator(), details::default_async_q_size, 1U);
+        tp = rsl::allocate_shared<details::thread_pool>(rex::global_debug_allocator(), details::g_default_async_q_size, 1U);
         registry_inst.set_tp(tp);
       }
 
       auto sink       = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
-      auto new_logger = rsl::allocate_shared<async_logger>(rex::global_debug_allocator(), rsl::move(logger_name), rsl::move(sink), rsl::move(tp), OverflowPolicy);
+      auto new_logger = rsl::allocate_shared<AsyncLogger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink), rsl::move(tp), OverflowPolicy);
       registry_inst.initialize_logger(new_logger);
       return new_logger;
     }
   };
 
-  using async_factory          = async_factory_impl<async_overflow_policy::block>;
-  using async_factory_nonblock = async_factory_impl<async_overflow_policy::overrun_oldest>;
+  using async_factory          = AsyncFactoryImpl<AsyncOverflowPolicy::Block>;
+  using async_factory_nonblock = AsyncFactoryImpl<AsyncOverflowPolicy::OverrunOldest>;
 
   template <typename Sink, typename... SinkArgs>
-  inline rsl::shared_ptr<rexlog::logger> create_async(rex::DebugString logger_name, SinkArgs&&... sink_args)
+  inline rsl::shared_ptr<rexlog::Logger> create_async(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
   {
     return async_factory::create<Sink>(rsl::move(logger_name), rsl::forward<SinkArgs>(sink_args)...);
   }
 
   template <typename Sink, typename... SinkArgs>
-  inline rsl::shared_ptr<rexlog::logger> create_async_nb(rex::DebugString logger_name, SinkArgs&&... sink_args)
+  inline rsl::shared_ptr<rexlog::Logger> create_async_nb(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
   {
     return async_factory_nonblock::create<Sink>(rsl::move(logger_name), rsl::forward<SinkArgs>(sink_args)...);
   }
 
   // set global thread pool.
-  inline void init_thread_pool(size_t q_size, size_t thread_count, rsl::function<void()> on_thread_start, rsl::function<void()> on_thread_stop)
+  inline void init_thread_pool(size_t qSize, size_t threadCount, rsl::function<void()> onThreadStart, rsl::function<void()> onThreadStop)
   {
-    auto tp = rsl::allocate_shared<details::thread_pool>(rex::global_debug_allocator(), q_size, thread_count, on_thread_start, on_thread_stop);
+    auto tp = rsl::allocate_shared<details::thread_pool>(rex::global_debug_allocator(), qSize, threadCount, onThreadStart, onThreadStop);
     details::Registry::instance().set_tp(rsl::move(tp));
   }
 
-  inline void init_thread_pool(size_t q_size, size_t thread_count, rsl::function<void()> on_thread_start)
+  inline void init_thread_pool(size_t qSize, size_t threadCount, rsl::function<void()> onThreadStart)
   {
-    init_thread_pool(q_size, thread_count, on_thread_start, [] {});
+    init_thread_pool(qSize, threadCount, std::move(onThreadStart), [] {});
   }
 
-  inline void init_thread_pool(size_t q_size, size_t thread_count)
+  inline void init_thread_pool(size_t qSize, size_t threadCount)
   {
     init_thread_pool(
-        q_size, thread_count, [] {}, [] {});
+        qSize, threadCount, [] {}, [] {});
   }
 
   // get the global thread pool.

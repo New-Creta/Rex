@@ -91,15 +91,15 @@ namespace rexlog
     using syslog_sink_st = syslog_sink<details::NullMutex>;
   } // namespace sinks
 
-  // Create and register a syslog logger
+  // Create and register a syslog Logger
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> syslog_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
+  inline rsl::shared_ptr<Logger> syslog_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
   {
     return Factory::template create<sinks::syslog_sink_mt>(logger_name, syslog_ident, syslog_option, syslog_facility, enable_formatting);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> syslog_logger_st(const rex::DebugString& logger_name, const rex::DebugString& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
+  inline rsl::shared_ptr<Logger> syslog_logger_st(const rex::DebugString& logger_name, const rex::DebugString& syslog_ident = "", int syslog_option = 0, int syslog_facility = LOG_USER, bool enable_formatting = false)
   {
     return Factory::template create<sinks::syslog_sink_st>(logger_name, syslog_ident, syslog_option, syslog_facility, enable_formatting);
   }

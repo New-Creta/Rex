@@ -28,15 +28,15 @@ namespace rexlog
   } // namespace sinks
 
   template <typename Factory = rexlog::SynchronousFactory>
-  rsl::shared_ptr<logger> stdout_color_mt(const rex::DebugString& logger_name, color_mode mode = color_mode::automatic);
+  rsl::shared_ptr<Logger> stdout_color_mt(const rex::DebugString& loggerName, ColorMode mode = ColorMode::Automatic);
 
   template <typename Factory = rexlog::SynchronousFactory>
-  rsl::shared_ptr<logger> stdout_color_st(const rex::DebugString& logger_name, color_mode mode = color_mode::automatic);
+  rsl::shared_ptr<Logger> stdout_color_st(const rex::DebugString& loggerName, ColorMode mode = ColorMode::Automatic);
 
   template <typename Factory = rexlog::SynchronousFactory>
-  rsl::shared_ptr<logger> stderr_color_mt(const rex::DebugString& logger_name, color_mode mode = color_mode::automatic);
+  rsl::shared_ptr<Logger> stderr_color_mt(const rex::DebugString& loggerName, ColorMode mode = ColorMode::Automatic);
 
   template <typename Factory = rexlog::SynchronousFactory>
-  rsl::shared_ptr<logger> stderr_color_st(const rex::DebugString& logger_name, color_mode mode = color_mode::automatic);
+  rsl::shared_ptr<Logger> stderr_color_st(const rex::DebugString& loggerName, ColorMode mode = ColorMode::Automatic);
 
 } // namespace rexlog

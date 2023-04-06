@@ -12,7 +12,7 @@ namespace rexlog
   {
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE ansicolor_sink<ConsoleMutex>::ansicolor_sink(FILE* target_file, color_mode mode)
+    REXLOG_INLINE ansicolor_sink<ConsoleMutex>::ansicolor_sink(FILE* target_file, ColorMode mode)
         : m_target_file(target_file)
         , m_mutex(ConsoleMutex::mutex())
         , m_formatter(details::make_unique<rexlog::pattern_formatter>())
@@ -91,13 +91,13 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE void ansicolor_sink<ConsoleMutex>::set_color_mode(color_mode mode)
+    REXLOG_INLINE void ansicolor_sink<ConsoleMutex>::set_color_mode(ColorMode mode)
     {
       switch(mode)
       {
-        case color_mode::always: should_do_colors_ = true; return;
-        case color_mode::automatic: should_do_colors_ = details::os::in_terminal(m_target_file) && details::os::is_color_terminal(); return;
-        case color_mode::never: should_do_colors_ = false; return;
+        case ColorMode::Always: should_do_colors_ = true; return;
+        case ColorMode::automatic: should_do_colors_ = details::os::in_terminal(m_target_file) && details::os::is_color_terminal(); return;
+        case ColorMode::never: should_do_colors_ = false; return;
         default: should_do_colors_ = false;
       }
     }
@@ -122,14 +122,14 @@ namespace rexlog
 
     // ansicolor_stdout_sink
     template <typename ConsoleMutex>
-    REXLOG_INLINE ansicolor_stdout_sink<ConsoleMutex>::ansicolor_stdout_sink(color_mode mode)
+    REXLOG_INLINE ansicolor_stdout_sink<ConsoleMutex>::ansicolor_stdout_sink(ColorMode mode)
         : ansicolor_sink<ConsoleMutex>(stdout, mode)
     {
     }
 
     // ansicolor_stderr_sink
     template <typename ConsoleMutex>
-    REXLOG_INLINE ansicolor_stderr_sink<ConsoleMutex>::ansicolor_stderr_sink(color_mode mode)
+    REXLOG_INLINE ansicolor_stderr_sink<ConsoleMutex>::ansicolor_stderr_sink(ColorMode mode)
         : ansicolor_sink<ConsoleMutex>(stderr, mode)
     {
     }

@@ -51,7 +51,7 @@ namespace rex
   template <int TDefaultVerbosity>
   struct LogCategory : public LogCategoryBase
   {
-    LogCategory(const LogCategoryBase& InCategoryName)
+    explicit LogCategory(const LogCategoryBase& inCategoryName)
         : LogCategoryBase(InCategoryName, LogVerbosity(TDefaultVerbosity))
     {
       // assert((TDefaultVerbosity & LogVerbosity::VerbosityMask) < LogVerbosity::NumVerbosity && "Invalid default verbosity.");

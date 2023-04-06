@@ -13,23 +13,23 @@ namespace rexlog
   namespace details
   {
 
-    REXLOG_INLINE FileHelper::FileHelper(const file_event_handlers& event_handlers)
-        : m_event_handlers(event_handlers)
+    REXLOG_INLINE inline FileHelper::FileHelper(const FileEventHandlers& eventHandlers)
+        : m_event_handlers(eventHandlers)
     {
     }
 
-    REXLOG_INLINE FileHelper::~FileHelper()
+    REXLOG_INLINE inline FileHelper::~FileHelper()
     {
       close();
     }
 
-    REXLOG_INLINE void FileHelper::open(const filename_t& fname, bool truncate)
+    REXLOG_INLINE inline void FileHelper::open(const filename_t& fname, bool truncate)
     {
       close();
       m_filename = fname;
 
-      auto* mode       = REXLOG_FILENAME_T("ab");
-      auto* trunc_mode = REXLOG_FILENAME_T("wb");
+      const auto* mode       = REXLOG_FILENAME_T("ab");
+      const auto* trunc_mode = REXLOG_FILENAME_T("wb");
 
       if(m_event_handlers.before_open)
       {
@@ -45,7 +45,7 @@ namespace rexlog
           // opening the actual log-we-write-to in "ab" mode, since that
           // interacts more politely with eternal processes that might
           // rotate/truncate the file underneath us.
-          FILE* tmp;
+          FILE* tmp = nullptr;
           if(os::fopen_s(&tmp, fname, filename_t(trunc_mode)))
           {
             continue;
@@ -71,7 +71,7 @@ namespace rexlog
       throw_rexlog_ex(err, errno);
     }
 
-    REXLOG_INLINE void FileHelper::reopen(bool truncate)
+    REXLOG_INLINE inline void FileHelper::reopen(bool truncate)
     {
       if(m_filename.empty())
       {
@@ -80,7 +80,7 @@ namespace rexlog
       this->open(m_filename, truncate);
     }
 
-    REXLOG_INLINE void FileHelper::flush()
+    REXLOG_INLINE inline void FileHelper::flush()
     {
       if(fflush(m_fd) != 0)
       {
@@ -91,7 +91,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE void FileHelper::sync()
+    REXLOG_INLINE inline void FileHelper::sync()
     {
       if(!os::fsync(m_fd))
       {
@@ -102,7 +102,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE void FileHelper::close()
+    REXLOG_INLINE inline void FileHelper::close()
     {
       if(m_fd != nullptr)
       {
@@ -121,10 +121,10 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE void FileHelper::write(const memory_buf_t& buf)
+    REXLOG_INLINE inline void FileHelper::write(const memory_buf_t& buf)
     {
-      size_t msg_size = buf.size();
-      auto data       = buf.data();
+      size_t const msg_size = buf.size();
+      const auto *data       = buf.data();
       if(fwrite(data, 1, msg_size, m_fd) != msg_size)
       {
         rex::DebugString err(rex::global_debug_allocator());
@@ -134,7 +134,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE size_t FileHelper::size() const
+    REXLOG_INLINE inline size_t FileHelper::size() const
     {
       if(m_fd == nullptr)
       {
@@ -146,7 +146,7 @@ namespace rexlog
       return os::filesize(m_fd);
     }
 
-    REXLOG_INLINE const filename_t& FileHelper::filename() const
+    REXLOG_INLINE inline const filename_t& FileHelper::filename() const
     {
       return m_filename;
     }
@@ -165,7 +165,7 @@ namespace rexlog
     // "my_folder/.mylog" => ("my_folder/.mylog", "")
     // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
 
-    REXLOG_INLINE filename_with_extension FileHelper::split_by_extension(const filename_t& fname)
+    REXLOG_INLINE inline FilenameWithExtension FileHelper::split_by_extension(const filename_t& fname)
     {
       auto ext_index = fname.rfind('.');
 
@@ -173,18 +173,18 @@ namespace rexlog
       // extension
       if(ext_index == filename_t::npos() || ext_index == 0 || ext_index == fname.size() - 1)
       {
-        return filename_with_extension {fname, filename_t()};
+        return FilenameWithExtension {fname, filename_t()};
       }
 
       // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
       auto folder_index = fname.find_last_of(details::os::folder_seps_filename);
       if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
       {
-        return filename_with_extension {fname, filename_t()};
+        return FilenameWithExtension {fname, filename_t()};
       }
 
       // finally - return a valid base and extension tuple
-      return filename_with_extension {filename_t(fname.substr(0, ext_index), rex::global_debug_allocator()), filename_t(fname.substr(ext_index), rex::global_debug_allocator())};
+      return FilenameWithExtension {filename_t(fname.substr(0, ext_index), rex::global_debug_allocator()), filename_t(fname.substr(ext_index), rex::global_debug_allocator())};
     }
 
   } // namespace details

@@ -13,7 +13,7 @@ namespace rexlog
 
       inline void append_string_view(rexlog::string_view_t view, memory_buf_t& dest)
       {
-        auto* buf_ptr = view.data();
+        const auto* buf_ptr = view.data();
         dest.append(buf_ptr, buf_ptr + view.size());
       }
 

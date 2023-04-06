@@ -14,9 +14,9 @@
 #include "rex_std/string_view.h"
 #include "rex_std/type_traits.h"
 
-#include <cstdio>
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/tweakme.h"
+#include <cstdio>
 #include <version>
 
 #undef REXLOG_HEADER_ONLY
@@ -74,7 +74,7 @@ namespace rexlog
   using log_clock       = rsl::chrono::system_clock;
   using sink_ptr        = rsl::shared_ptr<sinks::sink>;
   using sinks_init_list = rsl::initializer_list<sink_ptr>;
-  using err_handler     = rsl::function<void(const rex::DebugString& err_msg)>;
+  using err_handler     = rsl::function<void(const rex::DebugString& errMsg)>;
   namespace fmt_lib     = rsl;
 
   using string_view_t = rsl::string_view;
@@ -88,14 +88,14 @@ namespace rexlog
 #endif
 
   template <class T, class Char = char>
-  struct is_convertible_to_basic_format_string : rsl::integral_constant<bool, rsl::is_convertible<T, rsl::basic_string_view<Char>>::value>
+  struct IsConvertibleToBasicFormatString : rsl::integral_constant<bool, rsl::is_convertible<T, rsl::basic_string_view<Char>>::value>
   {
   };
 
 #define REXLOG_BUF_TO_STRING(x) x
 
   template <class T>
-  struct is_convertible_to_any_format_string : rsl::integral_constant<bool, is_convertible_to_basic_format_string<T, char>::value || is_convertible_to_basic_format_string<T, wchar_t>::value>
+  struct IsConvertibleToAnyFormatString : rsl::integral_constant<bool, IsConvertibleToBasicFormatString<T, char>::value || IsConvertibleToBasicFormatString<T, wchar_t>::value>
   {
   };
 
@@ -120,16 +120,16 @@ namespace rexlog
   // Log level enum
   namespace level
   {
-    enum level_enum : int
+    enum LevelEnum : int
     {
-      trace    = REXLOG_LEVEL_TRACE,
-      debug    = REXLOG_LEVEL_DEBUG,
-      info     = REXLOG_LEVEL_INFO,
-      warn     = REXLOG_LEVEL_WARN,
-      err      = REXLOG_LEVEL_ERROR,
-      critical = REXLOG_LEVEL_CRITICAL,
-      off      = REXLOG_LEVEL_OFF,
-      n_levels
+      Trace    = REXLOG_LEVEL_TRACE,
+      Debug    = REXLOG_LEVEL_DEBUG,
+      Info     = REXLOG_LEVEL_INFO,
+      Warn     = REXLOG_LEVEL_WARN,
+      Err      = REXLOG_LEVEL_ERROR,
+      Critical = REXLOG_LEVEL_CRITICAL,
+      Off      = REXLOG_LEVEL_OFF,
+      NLevels
     };
 
 #define REXLOG_LEVEL_NAME_TRACE    rexlog::string_view_t("trace", 5)
@@ -155,56 +155,56 @@ namespace rexlog
     }
 #endif
 
-    REXLOG_API const string_view_t& to_string_view(rexlog::level::level_enum l) REXLOG_NOEXCEPT;
-    REXLOG_API const char* to_short_c_str(rexlog::level::level_enum l) REXLOG_NOEXCEPT;
-    REXLOG_API rexlog::level::level_enum from_str(rex::DebugString& name) REXLOG_NOEXCEPT;
+    REXLOG_API const string_view_t& to_string_view(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT;
+    REXLOG_API const char* to_short_c_str(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT;
+    REXLOG_API rexlog::level::LevelEnum from_str(rex::DebugString& name) REXLOG_NOEXCEPT;
 
   } // namespace level
 
   //
   // Color mode used by sinks with color support.
   //
-  enum class color_mode
+  enum class ColorMode
   {
-    always,
-    automatic,
-    never
+    Always,
+    Automatic,
+    Never
   };
 
   //
   // Pattern time - specific time getting to use for pattern_formatter.
   // local time by default
   //
-  enum class pattern_time_type
+  enum class PatternTimeType
   {
-    local, // log localtime
-    utc    // log utc
+    Local, // log localtime
+    Utc    // log utc
   };
 
   //
   // Log exception
   //
-  class REXLOG_API rexlog_ex
+  class REXLOG_API RexlogEx
   {
   public:
-    explicit rexlog_ex(rex::DebugString msg);
-    rexlog_ex(const rex::DebugString& msg, int last_errno);
+    explicit RexlogEx(rex::DebugString msg);
+    RexlogEx(const rex::DebugString& msg, int lastErrno);
     const char* what() const REXLOG_NOEXCEPT;
 
   private:
-    rex::DebugString msg_;
+    rex::DebugString m_msg;
   };
 
-  REXLOG_API void throw_rexlog_ex(const rex::DebugString& msg, int last_errno);
+  REXLOG_API void throw_rexlog_ex(const rex::DebugString& msg, int lastErrno);
   REXLOG_API void throw_rexlog_ex(rex::DebugString msg);
 
-  struct source_loc
+  struct SourceLoc
   {
-    REXLOG_CONSTEXPR source_loc() = default;
-    REXLOG_CONSTEXPR source_loc(const char* filename_in, int line_in, const char* funcname_in)
-        : filename {filename_in}
-        , line {line_in}
-        , funcname {funcname_in}
+    REXLOG_CONSTEXPR SourceLoc() = default;
+    REXLOG_CONSTEXPR SourceLoc(const char* filenameIn, int lineIn, const char* funcnameIn)
+        : filename {filenameIn}
+        , line {lineIn}
+        , funcname {funcnameIn}
     {
     }
 
@@ -217,9 +217,9 @@ namespace rexlog
     const char* funcname {nullptr};
   };
 
-  struct file_event_handlers
+  struct FileEventHandlers
   {
-    file_event_handlers()
+    FileEventHandlers()
         : before_open(nullptr)
         , after_open(nullptr)
         , before_close(nullptr)
@@ -228,8 +228,8 @@ namespace rexlog
     }
 
     rsl::function<void(const filename_t& filename)> before_open;
-    rsl::function<void(const filename_t& filename, FILE* file_stream)> after_open;
-    rsl::function<void(const filename_t& filename, FILE* file_stream)> before_close;
+    rsl::function<void(const filename_t& filename, FILE* fileStream)> after_open;
+    rsl::function<void(const filename_t& filename, FILE* fileStream)> before_close;
     rsl::function<void(const filename_t& filename)> after_close;
   };
 

@@ -28,7 +28,7 @@ namespace rexlog
     {
     public:
       using mutex_t = typename ConsoleMutex::mutex_t;
-      ansicolor_sink(FILE* target_file, color_mode mode);
+      ansicolor_sink(FILE* target_file, ColorMode mode);
       ~ansicolor_sink() override = default;
 
       ansicolor_sink(const ansicolor_sink& other) = delete;
@@ -38,7 +38,7 @@ namespace rexlog
       ansicolor_sink& operator=(ansicolor_sink&& other)      = delete;
 
       void set_color(level::level_enum color_level, string_view_t color);
-      void set_color_mode(color_mode mode);
+      void set_color_mode(ColorMode mode);
       bool should_color();
 
       void log(const details::LogMsg& msg) override;
@@ -96,14 +96,14 @@ namespace rexlog
     class ansicolor_stdout_sink : public ansicolor_sink<ConsoleMutex>
     {
     public:
-      explicit ansicolor_stdout_sink(color_mode mode = color_mode::automatic);
+      explicit ansicolor_stdout_sink(ColorMode mode = ColorMode::automatic);
     };
 
     template <typename ConsoleMutex>
     class ansicolor_stderr_sink : public ansicolor_sink<ConsoleMutex>
     {
     public:
-      explicit ansicolor_stderr_sink(color_mode mode = color_mode::automatic);
+      explicit ansicolor_stderr_sink(ColorMode mode = ColorMode::automatic);
     };
 
     using ansicolor_stdout_sink_mt = ansicolor_stdout_sink<details::ConsoleMutex>;

@@ -36,7 +36,7 @@ namespace rexlog
       bool empty() const;
 
       // pop all items in the q and apply the given fun on each of them.
-      void foreach_pop(rsl::function<void(const details::LogMsg&)> fun);
+      void foreach_pop(const rsl::function<void(const details::LogMsg&)>& fun);
     };
 
   } // namespace details

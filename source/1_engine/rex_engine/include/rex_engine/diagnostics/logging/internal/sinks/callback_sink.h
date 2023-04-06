@@ -50,13 +50,13 @@ namespace rexlog
   // factory functions
   //
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> callback_logger_mt(const rex::DebugString& logger_name, const custom_log_callback& callback)
+  inline rsl::shared_ptr<Logger> callback_logger_mt(const rex::DebugString& logger_name, const custom_log_callback& callback)
   {
     return Factory::template create<sinks::callback_sink_mt>(logger_name, callback);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> callback_logger_st(const rex::DebugString& logger_name, const custom_log_callback& callback)
+  inline rsl::shared_ptr<Logger> callback_logger_st(const rex::DebugString& logger_name, const custom_log_callback& callback)
   {
     return Factory::template create<sinks::callback_sink_st>(logger_name, callback);
   }

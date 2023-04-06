@@ -6,88 +6,88 @@
 #include "rex_engine/types.h"
 #include "rex_std/iterator.h"
 
-#include <cstdio>
 #include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
 #include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
+#include <cstdio>
 
 namespace rexlog
 {
 
   // public methods
-  REXLOG_INLINE logger::logger(const logger& other)
-      : name_(other.name_)
-      , sinks_(other.sinks_)
-      , level_(other.level_.load(rsl::memory_order_relaxed))
-      , flush_level_(other.flush_level_.load(rsl::memory_order_relaxed))
-      , custom_err_handler_(other.custom_err_handler_)
-      , tracer_(other.tracer_)
+  REXLOG_INLINE inline Logger::Logger(const Logger& other)
+      : m_name(other.m_name)
+      , m_sinks(other.m_sinks)
+      , m_level(other.m_level.load(rsl::memory_order_relaxed))
+      , m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed))
+      , m_custom_err_handler(other.m_custom_err_handler)
+      , m_tracer(other.m_tracer)
   {
   }
 
-  REXLOG_INLINE logger::logger(logger&& other) REXLOG_NOEXCEPT : name_(rsl::move(other.name_)),
-                                                                 sinks_(rsl::move(other.sinks_)),
-                                                                 level_(other.level_.load(rsl::memory_order_relaxed)),
-                                                                 flush_level_(other.flush_level_.load(rsl::memory_order_relaxed)),
-                                                                 custom_err_handler_(rsl::move(other.custom_err_handler_)),
-                                                                 tracer_(rsl::move(other.tracer_))
+  REXLOG_INLINE inline Logger::Logger(Logger&& other) REXLOG_NOEXCEPT : m_name(rsl::move(other.m_name)),
+                                                                 m_sinks(rsl::move(other.m_sinks)),
+                                                                 m_level(other.m_level.load(rsl::memory_order_relaxed)),
+                                                                 m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed)),
+                                                                 m_custom_err_handler(rsl::move(other.m_custom_err_handler)),
+                                                                 m_tracer(rsl::move(other.m_tracer))
 
   {
   }
 
-  REXLOG_INLINE logger& logger::operator=(logger other) REXLOG_NOEXCEPT
+  REXLOG_INLINE inline Logger& Logger::operator=(Logger other) REXLOG_NOEXCEPT
   {
     this->swap(other);
     return *this;
   }
 
-  REXLOG_INLINE void logger::swap(rexlog::logger& other) REXLOG_NOEXCEPT
+  REXLOG_INLINE inline void Logger::swap(rexlog::Logger& other) REXLOG_NOEXCEPT
   {
-    name_.swap(other.name_);
-    sinks_.swap(other.sinks_);
+    m_name.swap(other.m_name);
+    m_sinks.swap(other.m_sinks);
 
     // swap level_
-    auto other_level = other.level_.load();
-    auto my_level    = level_.exchange(other_level);
-    other.level_.store(my_level);
+    auto other_level = other.m_level.load();
+    auto my_level    = m_level.exchange(other_level);
+    other.m_level.store(my_level);
 
     // swap flush level_
-    other_level = other.flush_level_.load();
-    my_level    = flush_level_.exchange(other_level);
-    other.flush_level_.store(my_level);
+    other_level = other.m_flush_level.load();
+    my_level    = m_flush_level.exchange(other_level);
+    other.m_flush_level.store(my_level);
 
-    custom_err_handler_.swap(other.custom_err_handler_);
-    rsl::swap(tracer_, other.tracer_);
+    m_custom_err_handler.swap(other.m_custom_err_handler);
+    rsl::swap(m_tracer, other.m_tracer);
   }
 
-  REXLOG_INLINE void swap(logger& a, logger& b)
+  REXLOG_INLINE inline void swap(Logger& a, Logger& b)
   {
     a.swap(b);
   }
 
-  REXLOG_INLINE void logger::set_level(level::level_enum log_level)
+  REXLOG_INLINE inline void Logger::set_level(level::LevelEnum logLevel)
   {
-    level_.store(log_level);
+    m_level.store(logLevel);
   }
 
-  REXLOG_INLINE level::level_enum logger::level() const
+  REXLOG_INLINE inline level::LevelEnum Logger::level() const
   {
-    return static_cast<level::level_enum>(level_.load(rsl::memory_order_relaxed));
+    return static_cast<level::LevelEnum>(m_level.load(rsl::memory_order_relaxed));
   }
 
-  REXLOG_INLINE const rex::DebugString& logger::name() const
+  REXLOG_INLINE inline const rex::DebugString& Logger::name() const
   {
-    return name_;
+    return m_name;
   }
 
-  // set formatting for the sinks in this logger.
+  // set formatting for the sinks in this Logger.
   // each sink will get a separate instance of the formatter object.
-  REXLOG_INLINE void logger::set_formatter(rsl::unique_ptr<formatter> f)
+  REXLOG_INLINE inline void Logger::set_formatter(rsl::unique_ptr<formatter> f)
   {
-    for(auto it = sinks_.begin(); it != sinks_.end(); ++it)
+    for(auto it = m_sinks.begin(); it != m_sinks.end(); ++it)
     {
-      if(++it == sinks_.end())
+      if(++it == m_sinks.end())
       {
         // last element - we can be move it.
         (*it)->set_formatter(rsl::move(f));
@@ -100,86 +100,86 @@ namespace rexlog
     }
   }
 
-  REXLOG_INLINE void logger::set_pattern(rex::DebugString pattern, pattern_time_type time_type)
+  REXLOG_INLINE inline void Logger::set_pattern(rex::DebugString pattern, PatternTimeType timeType)
   {
-    auto new_formatter = details::make_unique<pattern_formatter>(rsl::move(pattern), time_type);
+    auto new_formatter = details::make_unique<PatternFormatter>(rsl::move(pattern), timeType);
     set_formatter(rsl::move(new_formatter));
   }
 
   // create new backtrace sink and move to it all our child sinks
-  REXLOG_INLINE void logger::enable_backtrace(size_t n_messages)
+  REXLOG_INLINE inline void Logger::enable_backtrace(size_t nMessages)
   {
-    tracer_.enable(n_messages);
+    m_tracer.enable(nMessages);
   }
 
   // restore orig sinks and level and delete the backtrace sink
-  REXLOG_INLINE void logger::disable_backtrace()
+  REXLOG_INLINE inline void Logger::disable_backtrace()
   {
-    tracer_.disable();
+    m_tracer.disable();
   }
 
-  REXLOG_INLINE void logger::dump_backtrace()
+  REXLOG_INLINE inline void Logger::dump_backtrace()
   {
     dump_backtrace_impl();
   }
 
   // flush functions
-  REXLOG_INLINE void logger::flush()
+  REXLOG_INLINE inline void Logger::flush()
   {
     flush_impl();
   }
 
-  REXLOG_INLINE void logger::flush_on(level::level_enum log_level)
+  REXLOG_INLINE inline void Logger::flush_on(level::LevelEnum logLevel)
   {
-    flush_level_.store(log_level);
+    m_flush_level.store(logLevel);
   }
 
-  REXLOG_INLINE level::level_enum logger::flush_level() const
+  REXLOG_INLINE inline level::LevelEnum Logger::flush_level() const
   {
-    return static_cast<level::level_enum>(flush_level_.load(rsl::memory_order_relaxed));
+    return static_cast<level::LevelEnum>(m_flush_level.load(rsl::memory_order_relaxed));
   }
 
   // sinks
-  REXLOG_INLINE const rex::DebugVector<sink_ptr>& logger::sinks() const
+  REXLOG_INLINE inline const rex::DebugVector<sink_ptr>& Logger::sinks() const
   {
-    return sinks_;
+    return m_sinks;
   }
 
-  REXLOG_INLINE rex::DebugVector<sink_ptr>& logger::sinks()
+  REXLOG_INLINE inline rex::DebugVector<sink_ptr>& Logger::sinks()
   {
-    return sinks_;
+    return m_sinks;
   }
 
   // error handler
-  REXLOG_INLINE void logger::set_error_handler(err_handler handler)
+  REXLOG_INLINE inline void Logger::set_error_handler(err_handler handler)
   {
-    custom_err_handler_ = rsl::move(handler);
+    m_custom_err_handler = rsl::move(handler);
   }
 
-  // create new logger with same sinks and configuration.
-  REXLOG_INLINE rsl::shared_ptr<logger> logger::clone(rex::DebugString logger_name)
+  // create new Logger with same sinks and configuration.
+  REXLOG_INLINE inline rsl::shared_ptr<Logger> Logger::clone(rex::DebugString loggerName)
   {
-    auto cloned   = rsl::allocate_shared<logger>(rex::global_debug_allocator(), *this);
-    cloned->name_ = rsl::move(logger_name);
+    auto cloned   = rsl::allocate_shared<Logger>(rex::global_debug_allocator(), *this);
+    cloned->m_name = rsl::move(loggerName);
     return cloned;
   }
 
   // protected methods
-  REXLOG_INLINE void logger::log_it_impl(const rexlog::details::LogMsg& LogMsg, bool log_enabled, bool traceback_enabled)
+  REXLOG_INLINE inline void Logger::log_it_impl(const rexlog::details::LogMsg& logMsg, bool logEnabled, bool tracebackEnabled)
   {
-    if(log_enabled)
+    if(logEnabled)
     {
-      sink_it_impl(LogMsg);
+      sink_it_impl(logMsg);
     }
-    if(traceback_enabled)
+    if(tracebackEnabled)
     {
-      tracer_.push_back(LogMsg);
+      m_tracer.push_back(logMsg);
     }
   }
 
-  REXLOG_INLINE void logger::sink_it_impl(const details::LogMsg& msg)
+  REXLOG_INLINE inline void Logger::sink_it_impl(const details::LogMsg& msg)
   {
-    for(auto& sink: sinks_)
+    for(auto& sink: m_sinks)
     {
       if(sink->should_log(msg.level))
       {
@@ -197,9 +197,9 @@ namespace rexlog
     }
   }
 
-  REXLOG_INLINE void logger::flush_impl()
+  REXLOG_INLINE inline void Logger::flush_impl()
   {
-    for(auto& sink: sinks_)
+    for(auto& sink: m_sinks)
     {
       REXLOG_TRY
       {
@@ -209,28 +209,28 @@ namespace rexlog
     }
   }
 
-  REXLOG_INLINE void logger::dump_backtrace_impl()
+  REXLOG_INLINE inline void Logger::dump_backtrace_impl()
   {
     using details::LogMsg;
-    if(tracer_.enabled() && !tracer_.empty())
+    if(m_tracer.enabled() && !m_tracer.empty())
     {
-      sink_it_impl(LogMsg {name(), level::info, "****************** Backtrace Start ******************"});
-      tracer_.foreach_pop([this](const LogMsg& msg) { this->sink_it_impl(msg); });
-      sink_it_impl(LogMsg {name(), level::info, "****************** Backtrace End ********************"});
+      sink_it_impl(LogMsg {name(), level::Info, "****************** Backtrace Start ******************"});
+      m_tracer.foreach_pop([this](const LogMsg& msg) { this->sink_it_impl(msg); });
+      sink_it_impl(LogMsg {name(), level::Info, "****************** Backtrace End ********************"});
     }
   }
 
-  REXLOG_INLINE bool logger::should_flush_impl(const details::LogMsg& msg)
+  REXLOG_INLINE inline bool Logger::should_flush_impl(const details::LogMsg& msg)
   {
-    auto flush_level = flush_level_.load(rsl::memory_order_relaxed);
-    return (msg.level >= flush_level) && (msg.level != level::off);
+    auto flush_level = m_flush_level.load(rsl::memory_order_relaxed);
+    return (msg.level >= flush_level) && (msg.level != level::Off);
   }
 
-  REXLOG_INLINE void logger::err_handler_impl(const rex::DebugString& msg)
+  REXLOG_INLINE inline void Logger::err_handler_impl(const rex::DebugString& msg)
   {
-    if(custom_err_handler_)
+    if(m_custom_err_handler)
     {
-      custom_err_handler_(msg);
+      m_custom_err_handler(msg);
     }
     else
     {
@@ -238,7 +238,7 @@ namespace rexlog
       static rsl::mutex mutex;
       static rsl::chrono::system_clock::time_point last_report_time;
       static size_t err_counter = 0;
-      rsl::unique_lock<rsl::mutex> lk {mutex};
+      rsl::unique_lock<rsl::mutex> const lk {mutex};
       auto now = system_clock::now();
       err_counter++;
       if(now - last_report_time < rsl::chrono::seconds(1))

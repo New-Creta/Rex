@@ -4,13 +4,13 @@
 
 #include "rex_std/memory.h"
 
-#include <array>
-#include <cstdint>
-#include <mutex>
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
+#include <array>
+#include <cstdint>
+#include <mutex>
 #include <string>
 
 namespace rexlog
@@ -22,30 +22,30 @@ namespace rexlog
      * colors
      */
     template <typename ConsoleMutex>
-    class wincolor_sink : public sink
+    class WincolorSink : public sink
     {
     public:
-      wincolor_sink(void* out_handle, color_mode mode);
-      ~wincolor_sink() override;
+      WincolorSink(void* outHandle, ColorMode mode);
+      ~WincolorSink() override;
 
-      wincolor_sink(const wincolor_sink& other)            = delete;
-      wincolor_sink& operator=(const wincolor_sink& other) = delete;
+      WincolorSink(const WincolorSink& other)            = delete;
+      WincolorSink& operator=(const WincolorSink& other) = delete;
 
       // change the color for the given level
-      void set_color(level::level_enum level, rsl::uint16 color);
-      void log(const details::LogMsg& msg) final override;
-      void flush() final override;
-      void set_pattern(const rex::DebugString& pattern) override final;
-      void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) override final;
-      void set_color_mode(color_mode mode);
+      void set_color(level::LevelEnum level, rsl::uint16 color);
+      void log(const details::LogMsg& msg) final ;
+      void flush() final ;
+      void set_pattern(const rex::DebugString& pattern) final;
+      void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) final;
+      void set_color_mode(ColorMode mode);
 
     protected:
       using mutex_t = typename ConsoleMutex::mutex_t;
-      void* out_handle_;
+      void* m_out_handle;
       mutex_t& m_mutex;
-      bool should_do_colors_;
+      bool m_should_do_colors{};
       rsl::unique_ptr<rexlog::formatter> m_formatter;
-      rsl::array<rsl::uint16, level::n_levels> m_colors;
+      rsl::array<rsl::uint16, level::NLevels> m_colors;
 
       // set foreground color and return the orig console attributes (for resetting later)
       rsl::uint16 set_foreground_color_impl(rsl::uint16 attribs);
@@ -56,27 +56,27 @@ namespace rexlog
       // in case we are redirected to file (not in console mode)
       void write_to_file_impl(const memory_buf_t& formatted);
 
-      void set_color_mode_impl(color_mode mode);
+      void set_color_mode_impl(ColorMode mode);
     };
 
     template <typename ConsoleMutex>
-    class wincolor_stdout_sink : public wincolor_sink<ConsoleMutex>
+    class WincolorStdoutSink : public WincolorSink<ConsoleMutex>
     {
     public:
-      explicit wincolor_stdout_sink(color_mode mode = color_mode::automatic);
+      explicit WincolorStdoutSink(ColorMode mode = ColorMode::Automatic);
     };
 
     template <typename ConsoleMutex>
-    class wincolor_stderr_sink : public wincolor_sink<ConsoleMutex>
+    class WincolorStderrSink : public WincolorSink<ConsoleMutex>
     {
     public:
-      explicit wincolor_stderr_sink(color_mode mode = color_mode::automatic);
+      explicit WincolorStderrSink(ColorMode mode = ColorMode::Automatic);
     };
 
-    using wincolor_stdout_sink_mt = wincolor_stdout_sink<details::ConsoleMutex>;
-    using wincolor_stdout_sink_st = wincolor_stdout_sink<details::ConsoleNullMutex>;
+    using wincolor_stdout_sink_mt = WincolorStdoutSink<details::ConsoleMutex>;
+    using wincolor_stdout_sink_st = WincolorStdoutSink<details::ConsoleNullMutex>;
 
-    using wincolor_stderr_sink_mt = wincolor_stderr_sink<details::ConsoleMutex>;
-    using wincolor_stderr_sink_st = wincolor_stderr_sink<details::ConsoleNullMutex>;
+    using wincolor_stderr_sink_mt = WincolorStderrSink<details::ConsoleMutex>;
+    using wincolor_stderr_sink_st = WincolorStderrSink<details::ConsoleNullMutex>;
   } // namespace sinks
 } // namespace rexlog

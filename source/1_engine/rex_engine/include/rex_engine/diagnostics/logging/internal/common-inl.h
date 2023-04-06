@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include <algorithm>
 #include <iterator>
-#include "rex_engine/diagnostics/logging/internal/common.h"
 
 namespace rexlog
 {
@@ -16,68 +16,68 @@ namespace rexlog
 #endif
         static string_view_t level_string_views[] REXLOG_LEVEL_NAMES;
 
-    static const char* short_level_names[] REXLOG_SHORT_LEVEL_NAMES;
+    static const char* g_short_level_names[] REXLOG_SHORT_LEVEL_NAMES;
 
-    REXLOG_INLINE const string_view_t& to_string_view(rexlog::level::level_enum l) REXLOG_NOEXCEPT
+    REXLOG_INLINE inline const string_view_t& to_string_view(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT
     {
       return level_string_views[l];
     }
 
-    REXLOG_INLINE const char* to_short_c_str(rexlog::level::level_enum l) REXLOG_NOEXCEPT
+    REXLOG_INLINE inline const char* to_short_c_str(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT
     {
-      return short_level_names[l];
+      return g_short_level_names[l];
     }
 
-    REXLOG_INLINE rexlog::level::level_enum from_str(const rex::DebugString& name) REXLOG_NOEXCEPT
+    REXLOG_INLINE inline rexlog::level::LevelEnum from_str(const rex::DebugString& name) REXLOG_NOEXCEPT
     {
-      auto it = rsl::find(rsl::begin(level_string_views), rsl::end(level_string_views), name);
+      const auto *it = rsl::find(rsl::begin(level_string_views), rsl::end(level_string_views), name);
       if(it != rsl::end(level_string_views))
-        return static_cast<level::level_enum>(rsl::distance(rsl::begin(level_string_views), it));
+        return static_cast<level::LevelEnum>(rsl::distance(rsl::begin(level_string_views), it));
 
       // check also for "warn" and "err" before giving up..
       if(name == "warn")
       {
-        return level::warn;
+        return level::Warn;
       }
       if(name == "err")
       {
-        return level::err;
+        return level::Err;
       }
-      return level::off;
+      return level::Off;
     }
   } // namespace level
 
-  REXLOG_INLINE rexlog_ex::rexlog_ex(rex::DebugString msg)
-      : msg_(rsl::move(msg))
+  REXLOG_INLINE inline RexlogEx::RexlogEx(rex::DebugString msg)
+      : m_msg(rsl::move(msg))
   {
   }
 
-  REXLOG_INLINE rexlog_ex::rexlog_ex(const rex::DebugString& msg, int last_errno)
+  REXLOG_INLINE inline RexlogEx::RexlogEx(const rex::DebugString& msg, int lastErrno)
   {
-    msg_ = rex::DebugString(rsl::format("{} : {}", msg, last_errno));
+    m_msg = rex::DebugString(rsl::format("{} : {}", msg, lastErrno));
   }
 
-  REXLOG_INLINE const char* rexlog_ex::what() const REXLOG_NOEXCEPT
+  REXLOG_INLINE inline const char* RexlogEx::what() const REXLOG_NOEXCEPT
   {
-    return msg_.c_str();
+    return m_msg.c_str();
   }
 
-  REXLOG_INLINE void throw_rexlog_ex(const rex::DebugString& msg, int last_errno)
+  REXLOG_INLINE inline void throw_rexlog_ex(const rex::DebugString& msg, int lastErrno)
   {
-    REXLOG_THROW(rexlog_ex(msg, last_errno));
+    REXLOG_THROW(RexlogEx(msg, lastErrno));
   }
 
-  REXLOG_INLINE void throw_rexlog_ex(const char* msg, int last_errno)
+  REXLOG_INLINE inline void throw_rexlog_ex(const char* msg, int lastErrno)
   {
-    throw_rexlog_ex(rex::DebugString(msg), last_errno);
+    throw_rexlog_ex(rex::DebugString(msg), lastErrno);
   }
 
-  REXLOG_INLINE void throw_rexlog_ex(rex::DebugString msg)
+  REXLOG_INLINE inline void throw_rexlog_ex(rex::DebugString msg)
   {
-    REXLOG_THROW(rexlog_ex(rsl::move(msg)));
+    REXLOG_THROW(RexlogEx(rsl::move(msg)));
   }
 
-  REXLOG_INLINE void throw_rexlog_ex(const char* msg)
+  REXLOG_INLINE inline void throw_rexlog_ex(const char* msg)
   {
     throw_rexlog_ex(rex::DebugString(msg));
   }

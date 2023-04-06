@@ -90,13 +90,13 @@ namespace rexlog
   } // namespace sinks
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> mongo_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& db_name, const rex::DebugString& collection_name, const rex::DebugString& uri = "mongodb://localhost:27017")
+  inline rsl::shared_ptr<Logger> mongo_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& db_name, const rex::DebugString& collection_name, const rex::DebugString& uri = "mongodb://localhost:27017")
   {
     return Factory::template create<sinks::mongo_sink_mt>(logger_name, db_name, collection_name, uri);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> mongo_logger_st(const rex::DebugString& logger_name, const rex::DebugString& db_name, const rex::DebugString& collection_name, const rex::DebugString& uri = "mongodb://localhost:27017")
+  inline rsl::shared_ptr<Logger> mongo_logger_st(const rex::DebugString& logger_name, const rex::DebugString& db_name, const rex::DebugString& collection_name, const rex::DebugString& uri = "mongodb://localhost:27017")
   {
     return Factory::template create<sinks::mongo_sink_st>(logger_name, db_name, collection_name, uri);
   }

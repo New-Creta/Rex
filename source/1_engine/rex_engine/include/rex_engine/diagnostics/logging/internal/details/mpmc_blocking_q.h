@@ -24,8 +24,8 @@ namespace rexlog
     {
     public:
       using item_type = T;
-      explicit MpmcBlockingQueue(size_t max_items)
-          : m_q(max_items)
+      explicit MpmcBlockingQueue(size_t maxItems)
+          : m_q(maxItems)
       {
       }
 
@@ -45,7 +45,7 @@ namespace rexlog
       void enqueue_nowait(T&& item)
       {
         {
-          rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          rsl::unique_lock<rsl::mutex> const lock(m_queue_mutex);
           m_q.push_back(rsl::move(item));
         }
         m_push_cv.notify_one();
@@ -53,7 +53,7 @@ namespace rexlog
 
       // dequeue with a timeout.
       // Return true, if succeeded dequeue item, false otherwise
-      bool dequeue_for(T& popped_item, rsl::chrono::milliseconds wait_duration)
+      bool dequeue_for(T& poppedItem, rsl::chrono::milliseconds waitDuration)
       {
         {
           rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
@@ -69,12 +69,12 @@ namespace rexlog
       }
 
       // blocking dequeue without a timeout.
-      void dequeue(T& popped_item)
+      void dequeue(T& poppedItem)
       {
         {
           rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
           m_push_cv.wait(lock, [this] { return !this->m_q.empty(); });
-          popped_item = rsl::move(m_q.front());
+          poppedItem = rsl::move(m_q.front());
           m_q.pop_front();
         }
         m_pop_cv.notify_one();
@@ -130,19 +130,19 @@ namespace rexlog
 
       size_t overrun_counter()
       {
-        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        rsl::unique_lock<rsl::mutex> const lock(m_queue_mutex);
         return m_q.overrun_counter();
       }
 
       size_t size()
       {
-        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        rsl::unique_lock<rsl::mutex> const lock(m_queue_mutex);
         return m_q.size();
       }
 
       void reset_overrun_counter()
       {
-        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        rsl::unique_lock<rsl::mutex> const lock(m_queue_mutex);
         m_q.reset_overrun_counter();
       }
 

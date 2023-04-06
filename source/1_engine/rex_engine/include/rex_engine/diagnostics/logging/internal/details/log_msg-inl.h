@@ -10,10 +10,10 @@ namespace rexlog
   namespace details
   {
 
-    REXLOG_INLINE LogMsg::LogMsg(rexlog::log_clock::time_point log_time, rexlog::source_loc loc, string_view_t a_logger_name, rexlog::level::level_enum lvl, rexlog::string_view_t msg)
-        : logger_name(a_logger_name)
+    REXLOG_INLINE inline LogMsg::LogMsg(rexlog::log_clock::time_point logTime, rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        : logger_name(aLoggerName)
         , level(lvl)
-        , time(log_time)
+        , time(logTime)
 #ifndef REXLOG_NO_THREAD_ID
         , thread_id(os::thread_id())
 #endif
@@ -22,13 +22,13 @@ namespace rexlog
     {
     }
 
-    REXLOG_INLINE LogMsg::LogMsg(rexlog::source_loc loc, string_view_t a_logger_name, rexlog::level::level_enum lvl, rexlog::string_view_t msg)
-        : LogMsg(os::now(), loc, a_logger_name, lvl, msg)
+    REXLOG_INLINE inline LogMsg::LogMsg(rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        : LogMsg(os::now(), loc, aLoggerName, lvl, msg)
     {
     }
 
-    REXLOG_INLINE LogMsg::LogMsg(string_view_t a_logger_name, rexlog::level::level_enum lvl, rexlog::string_view_t msg)
-        : LogMsg(os::now(), source_loc {}, a_logger_name, lvl, msg)
+    REXLOG_INLINE inline LogMsg::LogMsg(string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        : LogMsg(os::now(), SourceLoc {}, aLoggerName, lvl, msg)
     {
     }
 

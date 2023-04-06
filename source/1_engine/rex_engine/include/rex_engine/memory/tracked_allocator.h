@@ -43,7 +43,7 @@ namespace rex
     using size_type = typename Allocator::size_type;
     using pointer   = typename Allocator::pointer;
 
-    TrackedAllocator(Allocator& alloc)
+    explicit TrackedAllocator(Allocator& alloc)
         : m_allocator(rsl::addressof(alloc))
     {
     }

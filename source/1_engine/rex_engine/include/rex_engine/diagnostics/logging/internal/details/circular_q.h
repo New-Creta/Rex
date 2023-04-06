@@ -26,8 +26,8 @@ namespace rexlog
       // empty ctor - create a disabled queue with no elements allocated at all
       CircularQ() = default;
 
-      explicit CircularQ(size_t max_items)
-          : m_max_items(max_items + 1) // one item is reserved as marker for full q
+      explicit CircularQ(size_t maxItems)
+          : m_max_items(maxItems + 1) // one item is reserved as marker for full q
           , m_v(rsl::Size(static_cast<card32>(m_max_items)))
       {
       }

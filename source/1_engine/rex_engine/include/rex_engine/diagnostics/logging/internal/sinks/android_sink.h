@@ -117,16 +117,16 @@ namespace rexlog
 
   } // namespace sinks
 
-  // Create and register android syslog logger
+  // Create and register android syslog Logger
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> android_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& tag = "rexlog")
+  inline rsl::shared_ptr<Logger> android_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& tag = "rexlog")
   {
     return Factory::template create<sinks::android_sink_mt>(logger_name, tag);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> android_logger_st(const rex::DebugString& logger_name, const rex::DebugString& tag = "rexlog")
+  inline rsl::shared_ptr<Logger> android_logger_st(const rex::DebugString& logger_name, const rex::DebugString& tag = "rexlog")
   {
     return Factory::template create<sinks::android_sink_st>(logger_name, tag);
   }

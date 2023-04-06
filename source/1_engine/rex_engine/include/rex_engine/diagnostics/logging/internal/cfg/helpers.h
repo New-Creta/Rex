@@ -20,7 +20,7 @@ namespace rexlog
       // turn off all logging except for logger1: "off,logger1=debug"
       // turn off all logging except for logger1 and logger2: "off,logger1=debug,logger2=info"
       //
-      REXLOG_API void load_levels(const rex::DebugString& txt);
+      REXLOG_API void load_levels(const rex::DebugString& input);
     } // namespace helpers
 
   } // namespace cfg

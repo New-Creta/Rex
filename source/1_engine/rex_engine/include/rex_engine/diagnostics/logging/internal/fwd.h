@@ -4,7 +4,7 @@
 
 namespace rexlog
 {
-  class logger;
+  class Logger;
   class formatter;
 
   namespace sinks

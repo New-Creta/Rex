@@ -17,12 +17,7 @@ namespace rex
   //-------------------------------------------------------------------------
   bool LogCategoryBase::is_suppressed(LogVerbosity level) const
   {
-    if((level & LogVerbosity::VerbosityMask) <= m_verbosity)
-    {
-      return false;
-    }
-
-    return true;
+    return (level & LogVerbosity::VerbosityMask) > m_verbosity;
   }
 
   //-------------------------------------------------------------------------

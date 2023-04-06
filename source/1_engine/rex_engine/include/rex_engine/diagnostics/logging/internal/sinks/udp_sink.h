@@ -69,7 +69,7 @@ namespace rexlog
   // factory functions
   //
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> udp_logger_mt(const rex::DebugString& logger_name, sinks::udp_sink_config skin_config)
+  inline rsl::shared_ptr<Logger> udp_logger_mt(const rex::DebugString& logger_name, sinks::udp_sink_config skin_config)
   {
     return Factory::template create<sinks::udp_sink_mt>(logger_name, skin_config);
   }

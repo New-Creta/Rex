@@ -9,114 +9,114 @@
 namespace rexlog
 {
 
-  REXLOG_INLINE void initialize_logger(rsl::shared_ptr<logger> logger)
+  REXLOG_INLINE inline void initialize_logger(rsl::shared_ptr<Logger> Logger)
   {
-    details::Registry::instance().initialize_logger(rsl::move(logger));
+    details::Registry::instance().initialize_logger(rsl::move(Logger));
   }
 
-  REXLOG_INLINE rsl::shared_ptr<logger> get(const rex::DebugString& name)
+  REXLOG_INLINE inline rsl::shared_ptr<Logger> get(const rex::DebugString& name)
   {
     return details::Registry::instance().get(name);
   }
 
-  REXLOG_INLINE void set_formatter(rsl::unique_ptr<rexlog::formatter> formatter)
+  REXLOG_INLINE inline void set_formatter(rsl::unique_ptr<rexlog::formatter> formatter)
   {
     details::Registry::instance().set_formatter(rsl::move(formatter));
   }
 
-  REXLOG_INLINE void set_pattern(rex::DebugString pattern, pattern_time_type time_type)
+  REXLOG_INLINE inline void set_pattern(const rex::DebugString& pattern, PatternTimeType timeType)
   {
-    set_formatter(rsl::unique_ptr<rexlog::formatter>(new pattern_formatter(rsl::move(pattern), time_type)));
+    set_formatter(rsl::unique_ptr<rexlog::formatter>(new PatternFormatter(rsl::move(pattern), timeType)));
   }
 
-  REXLOG_INLINE void enable_backtrace(size_t n_messages)
+  REXLOG_INLINE inline void enable_backtrace(size_t nMessages)
   {
-    details::Registry::instance().enable_backtrace(n_messages);
+    details::Registry::instance().enable_backtrace(nMessages);
   }
 
-  REXLOG_INLINE void disable_backtrace()
+  REXLOG_INLINE inline void disable_backtrace()
   {
     details::Registry::instance().disable_backtrace();
   }
 
-  REXLOG_INLINE void dump_backtrace()
+  REXLOG_INLINE inline void dump_backtrace()
   {
     default_logger_raw()->dump_backtrace();
   }
 
-  REXLOG_INLINE level::level_enum get_level()
+  REXLOG_INLINE inline level::LevelEnum get_level()
   {
     return default_logger_raw()->level();
   }
 
-  REXLOG_INLINE bool should_log(level::level_enum log_level)
+  REXLOG_INLINE inline bool should_log(level::LevelEnum logLevel)
   {
-    return default_logger_raw()->should_log(log_level);
+    return default_logger_raw()->should_log(logLevel);
   }
 
-  REXLOG_INLINE void set_level(level::level_enum log_level)
+  REXLOG_INLINE inline void set_level(level::LevelEnum logLevel)
   {
-    details::Registry::instance().set_level(log_level);
+    details::Registry::instance().set_level(logLevel);
   }
 
-  REXLOG_INLINE void flush_on(level::level_enum log_level)
+  REXLOG_INLINE inline void flush_on(level::LevelEnum logLevel)
   {
-    details::Registry::instance().flush_on(log_level);
+    details::Registry::instance().flush_on(logLevel);
   }
 
-  REXLOG_INLINE void set_error_handler(void (*handler)(const rex::DebugString& msg))
+  REXLOG_INLINE inline void set_error_handler(void (*handler)(const rex::DebugString& msg))
   {
     details::Registry::instance().set_error_handler(handler);
   }
 
-  REXLOG_INLINE void register_logger(rsl::shared_ptr<logger> logger)
+  REXLOG_INLINE inline void register_logger(rsl::shared_ptr<Logger> Logger)
   {
-    details::Registry::instance().register_logger(rsl::move(logger));
+    details::Registry::instance().register_logger(rsl::move(Logger));
   }
 
-  REXLOG_INLINE void apply_all(const rsl::function<void(rsl::shared_ptr<logger>)>& fun)
+  REXLOG_INLINE inline void apply_all(const rsl::function<void(rsl::shared_ptr<Logger>)>& fun)
   {
     details::Registry::instance().apply_all(fun);
   }
 
-  REXLOG_INLINE void drop(const rex::DebugString& name)
+  REXLOG_INLINE inline void drop(const rex::DebugString& name)
   {
     details::Registry::instance().drop(name);
   }
 
-  REXLOG_INLINE void drop_all()
+  REXLOG_INLINE inline void drop_all()
   {
     details::Registry::instance().drop_all();
   }
 
-  REXLOG_INLINE void shutdown()
+  REXLOG_INLINE inline void shutdown()
   {
     details::Registry::instance().shutdown();
   }
 
-  REXLOG_INLINE void set_automatic_registration(bool automatic_registration)
+  REXLOG_INLINE inline void set_automatic_registration(bool automaticRegistration)
   {
-    details::Registry::instance().set_automatic_registration(automatic_registration);
+    details::Registry::instance().set_automatic_registration(automaticRegistration);
   }
 
-  REXLOG_INLINE rsl::shared_ptr<rexlog::logger> default_logger()
+  REXLOG_INLINE inline rsl::shared_ptr<rexlog::Logger> default_logger()
   {
     return details::Registry::instance().default_logger();
   }
 
-  REXLOG_INLINE rexlog::logger* default_logger_raw()
+  REXLOG_INLINE inline rexlog::Logger* default_logger_raw()
   {
     return details::Registry::instance().get_default_raw();
   }
 
-  REXLOG_INLINE void set_default_logger(rsl::shared_ptr<rexlog::logger> default_logger)
+  REXLOG_INLINE inline void set_default_logger(rsl::shared_ptr<rexlog::Logger> defaultLogger)
   {
-    details::Registry::instance().set_default_logger(rsl::move(default_logger));
+    details::Registry::instance().set_default_logger(rsl::move(defaultLogger));
   }
 
-  REXLOG_INLINE void apply_logger_env_levels(rsl::shared_ptr<logger> logger)
+  REXLOG_INLINE inline void apply_logger_env_levels(rsl::shared_ptr<Logger> Logger)
   {
-    details::Registry::instance().apply_logger_env_levels(rsl::move(logger));
+    details::Registry::instance().apply_logger_env_levels(rsl::move(Logger));
   }
 
 } // namespace rexlog

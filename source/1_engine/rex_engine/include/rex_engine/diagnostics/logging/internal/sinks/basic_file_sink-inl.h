@@ -12,8 +12,8 @@ namespace rexlog
   {
 
     template <typename Mutex>
-    REXLOG_INLINE BasicFileSink<Mutex>::BasicFileSink(const filename_t& filename, bool truncate, const file_event_handlers& event_handlers)
-        : m_file_helper {event_handlers}
+    REXLOG_INLINE BasicFileSink<Mutex>::BasicFileSink(const filename_t& filename, bool truncate, const FileEventHandlers& eventHandlers)
+        : m_file_helper {eventHandlers}
     {
       m_file_helper.open(filename, truncate);
     }

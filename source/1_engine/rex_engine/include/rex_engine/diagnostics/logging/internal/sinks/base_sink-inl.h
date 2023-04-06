@@ -11,7 +11,7 @@
 
 template <typename Mutex>
 REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::BaseSink()
-    : m_formatter {details::make_unique<rexlog::pattern_formatter>()}
+    : m_formatter {details::make_unique<rexlog::PatternFormatter>()}
 {
 }
 
@@ -24,39 +24,39 @@ REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::BaseSink(rsl::unique_ptr<rexlog::f
 template <typename Mutex>
 void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::log(const details::LogMsg& msg)
 {
-  rsl::unique_lock<Mutex> lock(m_mutex);
+  rsl::unique_lock<Mutex> const lock(m_mutex);
   sink_it_impl(msg);
 }
 
 template <typename Mutex>
 void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::flush()
 {
-  rsl::unique_lock<Mutex> lock(m_mutex);
+  rsl::unique_lock<Mutex> const lock(m_mutex);
   flush_impl();
 }
 
 template <typename Mutex>
 void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_pattern(const rex::DebugString& pattern)
 {
-  rsl::unique_lock<Mutex> lock(m_mutex);
+  rsl::unique_lock<Mutex> const lock(m_mutex);
   set_pattern_impl(pattern);
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter)
+void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
 {
-  rsl::unique_lock<Mutex> lock(m_mutex);
-  set_formatter_impl(rsl::move(sink_formatter));
+  rsl::unique_lock<Mutex> const lock(m_mutex);
+  set_formatter_impl(rsl::move(sinkFormatter));
 }
 
 template <typename Mutex>
 void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_pattern_impl(const rex::DebugString& pattern)
 {
-  set_formatter_impl(details::make_unique<rexlog::pattern_formatter>(pattern));
+  set_formatter_impl(details::make_unique<rexlog::PatternFormatter>(pattern));
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sink_formatter)
+void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
 {
-  m_formatter = rsl::move(sink_formatter);
+  m_formatter = rsl::move(sinkFormatter);
 }

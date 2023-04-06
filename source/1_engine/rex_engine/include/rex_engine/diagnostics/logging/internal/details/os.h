@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <ctime> // time_t
 #include "rex_engine/diagnostics/logging/internal/common.h"
+#include <ctime> // time_t
 
 namespace rexlog
 {
@@ -14,11 +14,11 @@ namespace rexlog
 
       REXLOG_API rexlog::log_clock::time_point now() REXLOG_NOEXCEPT;
 
-      REXLOG_API tm localtime(const time_t& time_tt) REXLOG_NOEXCEPT;
+      REXLOG_API tm localtime(const time_t& timeTt) REXLOG_NOEXCEPT;
 
       REXLOG_API tm localtime() REXLOG_NOEXCEPT;
 
-      REXLOG_API tm gmtime(const time_t& time_tt) REXLOG_NOEXCEPT;
+      REXLOG_API tm gmtime(const time_t& timeTt) REXLOG_NOEXCEPT;
 
       REXLOG_API tm gmtime() REXLOG_NOEXCEPT;
 
@@ -69,10 +69,10 @@ namespace rexlog
       // Return current thread id as size_t
       // It exists because the rsl::this_thread::get_id() is much slower(especially
       // under VS 2013)
-      REXLOG_API size_t _thread_id() REXLOG_NOEXCEPT;
+      REXLOG_API size_t thread_id() REXLOG_NOEXCEPT;
 
       // Return current thread id as size_t (from thread local storage)
-      REXLOG_API size_t thread_id() REXLOG_NOEXCEPT;
+      REXLOG_API 
 
       // This is avoid msvc issue in sleep_for that happens if the clock changes.
       // See https://github.com/gabime/rexlog/issues/609

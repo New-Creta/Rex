@@ -29,20 +29,20 @@ namespace rexlog
   {
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE stdout_sink_base<ConsoleMutex>::stdout_sink_base(FILE* file)
+    REXLOG_INLINE StdoutSinkBase<ConsoleMutex>::StdoutSinkBase(FILE* file)
         : m_mutex(ConsoleMutex::mutex())
-        , file_(file)
-        , m_formatter(details::make_unique<rexlog::pattern_formatter>())
+        , m_file(file)
+        , m_formatter(details::make_unique<rexlog::PatternFormatter>()), m_handle(reinterpret_cast<HANDLE>(::_get_osfhandle(::_fileno(m_file))))
     {
 #ifdef _WIN32
       // get windows handle from the FILE* object
 
-      handle_ = reinterpret_cast<HANDLE>(::_get_osfhandle(::_fileno(file_)));
+      
 
       // don't throw to support cases where no console is attached,
       // and let the log method to do nothing if (handle_ == INVALID_HANDLE_VALUE).
       // throw only if non stdout/stderr target is requested (probably regular file and not console).
-      if(handle_ == INVALID_HANDLE_VALUE && file != stdout && file != stderr)
+      if(m_handle == INVALID_HANDLE_VALUE && file != stdout && file != stderr)
       {
         throw_rexlog_ex(rex::DebugString("rexlog::stdout_sink_base: _get_osfhandle() failed"), errno);
       }
@@ -50,20 +50,20 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::log(const details::LogMsg& msg)
+    REXLOG_INLINE void StdoutSinkBase<ConsoleMutex>::log(const details::LogMsg& msg)
     {
 #ifdef _WIN32
-      if(handle_ == INVALID_HANDLE_VALUE)
+      if(m_handle == INVALID_HANDLE_VALUE)
       {
         return;
       }
-      rsl::unique_lock<mutex_t> lock(m_mutex);
+      rsl::unique_lock<mutex_t> const lock(m_mutex);
       memory_buf_t formatted;
       m_formatter->format(msg, formatted);
-      ::fflush(file_); // flush in case there is something in this file_ already
+      ::fflush(m_file); // flush in case there is something in this file_ already
       auto size           = static_cast<DWORD>(formatted.size());
       DWORD bytes_written = 0;
-      bool ok             = ::WriteFile(handle_, formatted.data(), size, &bytes_written, nullptr) != 0;
+      bool const ok             = ::WriteFile(m_handle, formatted.data(), size, &bytes_written, nullptr) != 0;
       if(!ok)
       {
         rex::DebugString err(rex::global_debug_allocator());
@@ -81,37 +81,37 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::flush()
+    REXLOG_INLINE void StdoutSinkBase<ConsoleMutex>::flush()
     {
-      rsl::unique_lock<mutex_t> lock(m_mutex);
-      fflush(file_);
+      rsl::unique_lock<mutex_t> const lock(m_mutex);
+      fflush(m_file);
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
+    REXLOG_INLINE void StdoutSinkBase<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
     {
-      rsl::unique_lock<mutex_t> lock(m_mutex);
-      m_formatter = rsl::make_unique<rexlog::pattern_formatter>(pattern);
+      rsl::unique_lock<mutex_t> const lock(m_mutex);
+      m_formatter = rsl::make_unique<rexlog::PatternFormatter>(pattern);
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE void stdout_sink_base<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter)
+    REXLOG_INLINE void StdoutSinkBase<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter)
     {
-      rsl::unique_lock<mutex_t> lock(m_mutex);
+      rsl::unique_lock<mutex_t> const lock(m_mutex);
       m_formatter = rsl::move(sink_formatter);
     }
 
     // stdout sink
     template <typename ConsoleMutex>
-    REXLOG_INLINE stdout_sink<ConsoleMutex>::stdout_sink()
-        : stdout_sink_base<ConsoleMutex>(stdout)
+    REXLOG_INLINE StdoutSink<ConsoleMutex>::StdoutSink()
+        : StdoutSinkBase<ConsoleMutex>(stdout)
     {
     }
 
     // stderr sink
     template <typename ConsoleMutex>
-    REXLOG_INLINE stderr_sink<ConsoleMutex>::stderr_sink()
-        : stdout_sink_base<ConsoleMutex>(stderr)
+    REXLOG_INLINE StderrSink<ConsoleMutex>::StderrSink()
+        : StdoutSinkBase<ConsoleMutex>(stderr)
     {
     }
 
@@ -119,26 +119,26 @@ namespace rexlog
 
   // factory methods
   template <typename Factory>
-  REXLOG_INLINE rsl::shared_ptr<logger> stdout_logger_mt(const rex::DebugString& logger_name)
+  REXLOG_INLINE rsl::shared_ptr<Logger> stdout_logger_mt(const rex::DebugString& loggerName)
   {
-    return Factory::template create<sinks::stdout_sink_mt>(rex::DebugString(logger_name));
+    return Factory::template create<sinks::stdout_sink_mt>(rex::DebugString(loggerName));
   }
 
   template <typename Factory>
-  REXLOG_INLINE rsl::shared_ptr<logger> stdout_logger_st(const rex::DebugString& logger_name)
+  REXLOG_INLINE rsl::shared_ptr<Logger> stdout_logger_st(const rex::DebugString& loggerName)
   {
-    return Factory::template create<sinks::stdout_sink_st>(rex::DebugString(logger_name));
+    return Factory::template create<sinks::stdout_sink_st>(rex::DebugString(loggerName));
   }
 
   template <typename Factory>
-  REXLOG_INLINE rsl::shared_ptr<logger> stderr_logger_mt(const rex::DebugString& logger_name)
+  REXLOG_INLINE rsl::shared_ptr<Logger> stderr_logger_mt(const rex::DebugString& loggerName)
   {
-    return Factory::template create<sinks::stderr_sink_mt>(rex::DebugString(logger_name));
+    return Factory::template create<sinks::stderr_sink_mt>(rex::DebugString(loggerName));
   }
 
   template <typename Factory>
-  REXLOG_INLINE rsl::shared_ptr<logger> stderr_logger_st(const rex::DebugString& logger_name)
+  REXLOG_INLINE rsl::shared_ptr<Logger> stderr_logger_st(const rex::DebugString& loggerName)
   {
-    return Factory::template create<sinks::stderr_sink_st>(rex::DebugString(logger_name));
+    return Factory::template create<sinks::stderr_sink_st>(rex::DebugString(loggerName));
   }
 } // namespace rexlog

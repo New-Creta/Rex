@@ -110,25 +110,25 @@ namespace rexlog
   } // namespace sinks
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> kafka_logger_mt(const rex::DebugString& logger_name, rexlog::sinks::kafka_sink_config config)
+  inline rsl::shared_ptr<Logger> kafka_logger_mt(const rex::DebugString& logger_name, rexlog::sinks::kafka_sink_config config)
   {
     return Factory::template create<sinks::kafka_sink_mt>(logger_name, config);
   }
 
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<logger> kafka_logger_st(const rex::DebugString& logger_name, rexlog::sinks::kafka_sink_config config)
+  inline rsl::shared_ptr<Logger> kafka_logger_st(const rex::DebugString& logger_name, rexlog::sinks::kafka_sink_config config)
   {
     return Factory::template create<sinks::kafka_sink_st>(logger_name, config);
   }
 
   template <typename Factory = rexlog::async_factory>
-  inline rsl::shared_ptr<rexlog::logger> kafka_logger_async_mt(rex::DebugString logger_name, rexlog::sinks::kafka_sink_config config)
+  inline rsl::shared_ptr<rexlog::Logger> kafka_logger_async_mt(rex::DebugString logger_name, rexlog::sinks::kafka_sink_config config)
   {
     return Factory::template create<sinks::kafka_sink_mt>(logger_name, config);
   }
 
   template <typename Factory = rexlog::async_factory>
-  inline rsl::shared_ptr<rexlog::logger> kafka_logger_async_st(rex::DebugString logger_name, rexlog::sinks::kafka_sink_config config)
+  inline rsl::shared_ptr<rexlog::Logger> kafka_logger_async_st(rex::DebugString logger_name, rexlog::sinks::kafka_sink_config config)
   {
     return Factory::template create<sinks::kafka_sink_st>(logger_name, config);
   }

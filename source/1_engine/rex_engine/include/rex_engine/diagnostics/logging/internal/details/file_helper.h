@@ -16,7 +16,7 @@ namespace rexlog
     // When failing to open a file, retry several times(5) with a delay interval(10 ms).
     // Throw rexlog_ex exception on errors.
 
-    struct filename_with_extension
+    struct FilenameWithExtension
     {
       filename_t filename;
       filename_t ext;
@@ -26,7 +26,7 @@ namespace rexlog
     {
     public:
       FileHelper() = default;
-      explicit FileHelper(const file_event_handlers& event_handlers);
+      explicit FileHelper(const FileEventHandlers& eventHandlers);
 
       FileHelper(const FileHelper&)            = delete;
       FileHelper& operator=(const FileHelper&) = delete;
@@ -54,14 +54,14 @@ namespace rexlog
       // ".mylog" => (".mylog". "")
       // "my_folder/.mylog" => ("my_folder/.mylog", "")
       // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
-      static filename_with_extension split_by_extension(const filename_t& fname);
+      static FilenameWithExtension split_by_extension(const filename_t& fname);
 
     private:
       const int m_open_tries             = 5;
       const unsigned int m_open_interval = 10;
       FILE* m_fd {nullptr};
       filename_t m_filename;
-      file_event_handlers m_event_handlers;
+      FileEventHandlers m_event_handlers;
     };
   } // namespace details
 } // namespace rexlog
