@@ -6,13 +6,10 @@ namespace rex
   LogCategoryBase::LogCategoryBase(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity)
       : m_default_verbosity(inDefaultVerbosity)
       , m_category_name(inCategoryName)
+      , m_verbosity(inDefaultVerbosity & LogVerbosity::VerbosityMask)
   {
     // LOG CATEGORY? (CategoryName, InDefaultVerbosity);
-    reset_from_default();
   }
-
-  //-------------------------------------------------------------------------
-  LogCategoryBase::~LogCategoryBase() = default;
 
   //-------------------------------------------------------------------------
   bool LogCategoryBase::is_suppressed(LogVerbosity level) const
@@ -38,11 +35,5 @@ namespace rex
     const LogVerbosity old_verbosity = m_verbosity;
 
     m_verbosity = newVerbosity & LogVerbosity::VerbosityMask;
-  }
-
-  //-------------------------------------------------------------------------
-  void LogCategoryBase::reset_from_default()
-  {
-    set_verbosity(m_default_verbosity);
   }
 } // namespace rex

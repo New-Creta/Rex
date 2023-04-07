@@ -71,7 +71,7 @@ namespace rex
       rex::MemoryHeader* dbg_header_ptr  = new(dbg_header_addr) MemoryHeader(tag, ptr, rsl::memory_size(num_mem_needed), thread_id, globals::frame_info().index(), rsl::stacktrace::current());
 
       // put the memory header pointer in front of the data blob we're going to return
-      rsl::memcpy(ptr, &dbg_header_ptr, sizeof(dbg_header_ptr));
+      rsl::memcpy(ptr, &dbg_header_ptr, sizeof(dbg_header_ptr)); // NOLINT(bugprone-sizeof-expression)
 
       // get the right address to return from the function
       rsl::byte* mem_block = static_cast<rsl::byte*>(ptr);

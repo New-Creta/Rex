@@ -10,21 +10,31 @@ namespace rexlog
 {
   namespace details
   {
-    REXLOG_INLINE inline Backtracer::Backtracer(const Backtracer& other) : m_enabled(other.enabled()), m_messages(other.m_messages)
+    REXLOG_INLINE inline Backtracer::Backtracer(const Backtracer& other) 
     {
-      rsl::unique_lock<rsl::mutex> const lock(other.m_mutex);
-      
-      
+      rsl::unique_lock<rsl::mutex> lock(other.m_mutex);
+      m_enabled = other.enabled();
+      m_messages = other.m_messages;
     }
 
-    REXLOG_INLINE inline Backtracer::Backtracer(Backtracer&& other) REXLOG_NOEXCEPT : m_enabled(other.enabled()), m_messages(rsl::move(other.m_messages))
+    REXLOG_INLINE inline Backtracer::Backtracer(Backtracer&& other) REXLOG_NOEXCEPT 
     {
-      rsl::unique_lock<rsl::mutex> const lock(other.m_mutex);
-      
-      
+      rsl::unique_lock<rsl::mutex> lock(other.m_mutex);
+      m_enabled = other.enabled();
+      m_messages = rsl::move(other.m_messages);
     }
 
-    REXLOG_INLINE inline Backtracer& Backtracer::operator=(Backtracer other)
+    Backtracer::~Backtracer() = default;
+
+    REXLOG_INLINE inline Backtracer& Backtracer::operator=(const Backtracer& other)
+    {
+      rsl::unique_lock<rsl::mutex> const lock(m_mutex);
+      m_enabled = other.enabled();
+      m_messages = other.m_messages;
+      return *this;
+    }
+
+    REXLOG_INLINE inline Backtracer& Backtracer::operator=(Backtracer&& other)
     {
       rsl::unique_lock<rsl::mutex> const lock(m_mutex);
       m_enabled  = other.enabled();

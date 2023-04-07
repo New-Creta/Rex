@@ -35,7 +35,7 @@ namespace rexlog
       {
         m_event_handlers.before_open(m_filename);
       }
-      for(int tries = 0; tries < m_open_tries; ++tries)
+      for(int tries = 0; tries < s_open_tries; ++tries)
       {
         // create containing folder if not exists already.
         os::create_dir(os::dir_name(fname));
@@ -50,7 +50,7 @@ namespace rexlog
           {
             continue;
           }
-          fclose(tmp);
+          REX_ASSERT_X(fclose(tmp), "failed to close tmp file");
         }
         if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
         {
@@ -61,7 +61,7 @@ namespace rexlog
           return;
         }
 
-        details::os::sleep_for_millis(m_open_interval);
+        details::os::sleep_for_millis(s_open_interval);
       }
 
       rex::DebugString err(rex::global_debug_allocator());
@@ -111,7 +111,7 @@ namespace rexlog
           m_event_handlers.before_close(m_filename, m_fd);
         }
 
-        fclose(m_fd);
+        REX_ASSERT_X(fclose(m_fd), "failed to close fd file");
         m_fd = nullptr;
 
         if(m_event_handlers.after_close)
@@ -177,7 +177,7 @@ namespace rexlog
       }
 
       // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
-      auto folder_index = fname.find_last_of(details::os::folder_seps_filename);
+      auto folder_index = fname.find_last_of(rsl::string_view(details::os::folder_seps_filename));
       if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
       {
         return FilenameWithExtension {fname, filename_t()};

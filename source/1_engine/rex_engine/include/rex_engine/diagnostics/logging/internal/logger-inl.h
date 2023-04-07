@@ -26,17 +26,24 @@ namespace rexlog
   {
   }
 
-  REXLOG_INLINE inline Logger::Logger(Logger&& other) REXLOG_NOEXCEPT : m_name(rsl::move(other.m_name)),
-                                                                 m_sinks(rsl::move(other.m_sinks)),
-                                                                 m_level(other.m_level.load(rsl::memory_order_relaxed)),
-                                                                 m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed)),
-                                                                 m_custom_err_handler(rsl::move(other.m_custom_err_handler)),
-                                                                 m_tracer(rsl::move(other.m_tracer))
-
+  REXLOG_INLINE inline Logger::Logger(Logger&& other) REXLOG_NOEXCEPT 
+    : m_name(rsl::move(other.m_name)),
+    m_sinks(rsl::move(other.m_sinks)),
+    m_level(other.m_level.load(rsl::memory_order_relaxed)),
+    m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed)),
+    m_custom_err_handler(rsl::move(other.m_custom_err_handler)),
+    m_tracer(rsl::move(other.m_tracer))
   {
   }
 
-  REXLOG_INLINE inline Logger& Logger::operator=(Logger other) REXLOG_NOEXCEPT
+  REXLOG_INLINE inline Logger& Logger::operator=(const Logger& other) REXLOG_NOEXCEPT
+  {
+    Logger tmp(other);
+    this->swap(tmp);
+    return *this;
+  }
+
+  REXLOG_INLINE inline Logger& Logger::operator=(Logger&& other) REXLOG_NOEXCEPT
   {
     this->swap(other);
     return *this;
@@ -255,5 +262,10 @@ namespace rexlog
       fprintf(stderr, "[*** LOG ERROR #%04zu ***] [%s] [%s] {%s}\n", err_counter, date_buf, name().c_str(), msg.c_str());
 #endif
     }
+  }
+
+  REXLOG_INLINE inline void Logger::set_name(rex::DebugString&& name)
+  {
+    m_name = rsl::move(name);
   }
 } // namespace rexlog

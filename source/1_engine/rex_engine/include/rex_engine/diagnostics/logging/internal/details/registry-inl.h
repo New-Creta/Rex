@@ -81,7 +81,7 @@ namespace rexlog
 
       if(m_automatic_registration)
       {
-        register_logger_impl(rsl::move(newLogger));
+        register_logger_impl(newLogger);
       }
     }
 
@@ -124,13 +124,13 @@ namespace rexlog
       m_default_logger = rsl::move(newDefaultLogger);
     }
 
-    REXLOG_INLINE inline void Registry::set_tp(rsl::shared_ptr<thread_pool> tp)
+    REXLOG_INLINE inline void Registry::set_tp(rsl::shared_ptr<ThreadPool> tp)
     {
       rsl::unique_lock<rsl::recursive_mutex> const lock(m_tp_mutex);
       m_tp = rsl::move(tp);
     }
 
-    REXLOG_INLINE inline rsl::shared_ptr<thread_pool> Registry::get_tp()
+    REXLOG_INLINE inline rsl::shared_ptr<ThreadPool> Registry::get_tp()
     {
       rsl::unique_lock<rsl::recursive_mutex> const lock(m_tp_mutex);
       return m_tp;

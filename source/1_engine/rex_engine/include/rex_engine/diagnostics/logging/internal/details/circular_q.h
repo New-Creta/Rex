@@ -28,12 +28,11 @@ namespace rexlog
 
       explicit CircularQ(size_t maxItems)
           : m_max_items(maxItems + 1) // one item is reserved as marker for full q
-          , m_v(rsl::Size(static_cast<card32>(m_max_items)))
+          , m_v(rsl::Size(static_cast<card32>(m_max_items))) // NOLINT(google-readability-casting)
       {
       }
 
       CircularQ(const CircularQ&)            = default;
-      CircularQ& operator=(const CircularQ&) = default;
 
       // move cannot be default,
       // since we need to reset m_head, m_tail, etc to zero in the moved object
@@ -42,6 +41,9 @@ namespace rexlog
         copy_moveable(rsl::move(other));
       }
 
+      ~CircularQ() = default;
+
+      CircularQ& operator=(const CircularQ&) = default;
       CircularQ& operator=(CircularQ&& other) REXLOG_NOEXCEPT
       {
         copy_moveable(rsl::move(other));

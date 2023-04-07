@@ -58,7 +58,8 @@ namespace rexlog
 
     Logger(const Logger& other);
     Logger(Logger&& other) REXLOG_NOEXCEPT;
-    Logger& operator=(Logger other) REXLOG_NOEXCEPT;
+    Logger& operator=(const Logger& other) REXLOG_NOEXCEPT;
+    Logger& operator=(Logger&& other) REXLOG_NOEXCEPT;
     void swap(rexlog::Logger& other) REXLOG_NOEXCEPT;
 
     template <typename... Args>
@@ -240,13 +241,6 @@ namespace rexlog
     virtual rsl::shared_ptr<Logger> clone(rex::DebugString loggerName);
 
   protected:
-    rex::DebugString m_name;
-    rex::DebugVector<sink_ptr> m_sinks;
-    rexlog::level_t m_level {level::Info};
-    rexlog::level_t m_flush_level {level::Off};
-    err_handler m_custom_err_handler {nullptr};
-    details::Backtracer m_tracer;
-
     // common implementation for after templated public api has been resolved
     template <typename... Args>
     void log_impl(SourceLoc loc, level::LevelEnum lvl, string_view_t fmt, Args&&... args)
@@ -279,6 +273,17 @@ namespace rexlog
     // handle errors during logging.
     // default handler prints the error to stderr at max rate of 1 message/sec.
     void err_handler_impl(const rex::DebugString& msg);
+
+    void set_name(rex::DebugString&& name);
+
+    private:
+      rex::DebugString m_name;
+      rex::DebugVector<sink_ptr> m_sinks;
+      rexlog::level_t m_level{ level::Info };
+      rexlog::level_t m_flush_level{ level::Off };
+      err_handler m_custom_err_handler{ nullptr };
+      details::Backtracer m_tracer;
+
   };
 
   void swap(Logger& a, Logger& b);

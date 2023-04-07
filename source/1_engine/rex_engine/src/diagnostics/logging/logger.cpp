@@ -73,4 +73,5 @@ namespace rex
 
     return *find_logger(category.get_category_name());
   }
+
 } // namespace rex

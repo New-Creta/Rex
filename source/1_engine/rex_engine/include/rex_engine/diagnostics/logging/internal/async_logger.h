@@ -30,25 +30,25 @@ namespace rexlog
 
   namespace details
   {
-    class thread_pool;
+    class ThreadPool;
   } // namespace details
 
-  class REXLOG_API AsyncLogger final : public rsl::enable_shared_from_this<AsyncLogger>, public Logger
+  class REXLOG_API AsyncLogger final : public rsl::enable_shared_from_this<AsyncLogger>, public Logger // NOLINT(fuchsia-multiple-inheritance)
   {
-    friend class details::thread_pool;
+    friend class details::ThreadPool;
 
   public:
     template <typename It>
-    AsyncLogger(rex::DebugString loggerName, It begin, It end, rsl::weak_ptr<details::thread_pool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block)
+    AsyncLogger(rex::DebugString loggerName, It begin, It end, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block)
         : Logger(rsl::move(loggerName), begin, end)
         , m_thread_pool(rsl::move(tp))
         , m_overflow_policy(overflowPolicy)
     {
     }
 
-    AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::thread_pool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
+    AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
 
-    AsyncLogger(rex::DebugString loggerName, sink_ptr singleSink, rsl::weak_ptr<details::thread_pool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
+    AsyncLogger(rex::DebugString loggerName, sink_ptr singleSink, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
 
     rsl::shared_ptr<Logger> clone(rex::DebugString newName) override;
 
@@ -59,7 +59,7 @@ namespace rexlog
     void backend_flush_impl();
 
   private:
-    rsl::weak_ptr<details::thread_pool> m_thread_pool;
+    rsl::weak_ptr<details::ThreadPool> m_thread_pool;
     AsyncOverflowPolicy m_overflow_policy;
   };
 } // namespace rexlog

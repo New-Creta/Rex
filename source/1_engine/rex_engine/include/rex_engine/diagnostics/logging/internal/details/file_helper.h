@@ -57,8 +57,8 @@ namespace rexlog
       static FilenameWithExtension split_by_extension(const filename_t& fname);
 
     private:
-      const int m_open_tries             = 5;
-      const unsigned int m_open_interval = 10;
+      static constexpr int s_open_tries             = 5;
+      static constexpr unsigned int s_open_interval = 10;
       FILE* m_fd {nullptr};
       filename_t m_filename;
       FileEventHandlers m_event_handlers;

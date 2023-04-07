@@ -9,12 +9,12 @@
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include <string>
 
-REXLOG_INLINE inline rexlog::AsyncLogger::AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::thread_pool> tp, AsyncOverflowPolicy overflowPolicy)
+REXLOG_INLINE inline rexlog::AsyncLogger::AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy)
     : AsyncLogger(rsl::move(loggerName), sinksList.begin(), sinksList.end(), rsl::move(tp), overflowPolicy)
 {
 }
 
-REXLOG_INLINE inline rexlog::AsyncLogger::AsyncLogger(rex::DebugString loggerName, sink_ptr singleSink, rsl::weak_ptr<details::thread_pool> tp, AsyncOverflowPolicy overflowPolicy)
+REXLOG_INLINE inline rexlog::AsyncLogger::AsyncLogger(rex::DebugString loggerName, sink_ptr singleSink, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy)
     : AsyncLogger(rsl::move(loggerName), {rsl::move(singleSink)}, rsl::move(tp), overflowPolicy)
 {
 }
@@ -50,7 +50,7 @@ REXLOG_INLINE inline void rexlog::AsyncLogger::flush_impl()
 //
 REXLOG_INLINE inline void rexlog::AsyncLogger::backend_sink_it_impl(const details::LogMsg& msg)
 {
-  for(auto& sink: m_sinks)
+  for(auto& sink: sinks())
   {
     if(sink->should_log(msg.level))
     {
@@ -70,7 +70,7 @@ REXLOG_INLINE inline void rexlog::AsyncLogger::backend_sink_it_impl(const detail
 
 REXLOG_INLINE inline void rexlog::AsyncLogger::backend_flush_impl()
 {
-  for(auto& sink: m_sinks)
+  for(auto& sink: sinks())
   {
     REXLOG_TRY
     {
@@ -83,6 +83,6 @@ REXLOG_INLINE inline void rexlog::AsyncLogger::backend_flush_impl()
 REXLOG_INLINE inline rsl::shared_ptr<rexlog::Logger> rexlog::AsyncLogger::clone(rex::DebugString newName)
 {
   auto cloned   = rsl::allocate_shared<rexlog::AsyncLogger>(rex::global_debug_allocator(), *this);
-  cloned->m_name = rsl::move(newName);
+  cloned->set_name(rsl::move(newName));
   return cloned;
 }

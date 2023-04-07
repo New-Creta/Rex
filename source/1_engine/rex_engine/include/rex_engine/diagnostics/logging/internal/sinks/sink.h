@@ -25,7 +25,7 @@ namespace rexlog
       level::LevelEnum level() const;
       bool should_log(level::LevelEnum msgLevel) const;
 
-    protected:
+    private:
       // sink log level - default is all
       level_t m_level {level::Trace};
     };

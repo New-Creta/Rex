@@ -23,7 +23,7 @@ namespace rexlog
 
   namespace details
   {
-    class thread_pool;
+    class ThreadPool;
 
     class REXLOG_API Registry
     {
@@ -47,9 +47,9 @@ namespace rexlog
       // default Logger is stored in default_logger_ (for faster retrieval) and in the loggers_ map.
       void set_default_logger(rsl::shared_ptr<Logger> newDefaultLogger);
 
-      void set_tp(rsl::shared_ptr<thread_pool> tp);
+      void set_tp(rsl::shared_ptr<ThreadPool> tp);
 
-      rsl::shared_ptr<thread_pool> get_tp();
+      rsl::shared_ptr<ThreadPool> get_tp();
 
       // Set global formatter. Each sink in each Logger will get a clone of this object
       void set_formatter(rsl::unique_ptr<formatter> formatter);
@@ -100,7 +100,7 @@ namespace rexlog
 
       void throw_if_exists_impl(const rex::DebugString& loggerName);
       void register_logger_impl(rsl::shared_ptr<Logger> newLogger);
-      bool set_level_from_cfg_impl(Logger* Logger);
+      bool set_level_from_cfg_impl(Logger* logger);
       rsl::mutex m_logger_map_mutex, m_flusher_mutex;
       rsl::recursive_mutex m_tp_mutex;
       rex::DebugHashTable<rex::DebugString, rsl::shared_ptr<Logger>> m_loggers;
@@ -109,7 +109,7 @@ namespace rexlog
       rexlog::level::LevelEnum m_global_log_level = level::Info;
       level::LevelEnum m_flush_level              = level::Off;
       err_handler m_err_handler;
-      rsl::shared_ptr<thread_pool> m_tp;
+      rsl::shared_ptr<ThreadPool> m_tp;
       rsl::unique_ptr<PeriodicWorker> m_periodic_flusher;
       rsl::shared_ptr<Logger> m_default_logger;
       bool m_automatic_registration = true;

@@ -59,6 +59,7 @@ namespace rexlog
       }
 #else // (_MSC_VER) && _MSC_VER <= 1800
       AsyncMsg(AsyncMsg&&)            = default;
+      AsyncMsg& operator=(const AsyncMsg&) = delete;
       AsyncMsg& operator=(AsyncMsg&&) = default;
 #endif
 
@@ -83,21 +84,24 @@ namespace rexlog
       }
     };
 
-    class REXLOG_API thread_pool
+    class REXLOG_API ThreadPool
     {
     public:
       using item_type = AsyncMsg;
       using q_type    = details::MpmcBlockingQueue<item_type>;
 
-      thread_pool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
-      thread_pool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart);
-      thread_pool(size_t qMaxItems, size_t threadsN);
+      ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
+      ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart);
+      ThreadPool(size_t qMaxItems, size_t threadsN);
 
       // message all threads to terminate gracefully and join them
-      ~thread_pool();
+      ~ThreadPool();
 
-      thread_pool(const thread_pool&)       = delete;
-      thread_pool& operator=(thread_pool&&) = delete;
+      ThreadPool(const ThreadPool&)       = delete;
+      ThreadPool& operator=(ThreadPool&&) = delete;
+
+      ThreadPool& operator=(const ThreadPool&) = delete;
+      ThreadPool& operator=(ThreadPool&&) = delete;
 
       void post_log(async_logger_ptr&& workerPtr, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
       void post_flush(async_logger_ptr&& workerPtr, AsyncOverflowPolicy overflowPolicy);

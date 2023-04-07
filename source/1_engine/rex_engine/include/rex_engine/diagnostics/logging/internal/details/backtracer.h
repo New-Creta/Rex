@@ -25,9 +25,10 @@ namespace rexlog
     public:
       Backtracer() = default;
       Backtracer(const Backtracer& other);
-
       Backtracer(Backtracer&& other) REXLOG_NOEXCEPT;
-      Backtracer& operator=(Backtracer other);
+      ~Backtracer();
+      Backtracer& operator=(const Backtracer& other);
+      Backtracer& operator=(Backtracer&& other);
 
       void enable(size_t size);
       void disable();

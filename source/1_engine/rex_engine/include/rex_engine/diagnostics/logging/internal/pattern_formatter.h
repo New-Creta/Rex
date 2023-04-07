@@ -58,6 +58,17 @@ namespace rexlog
       virtual void format(const details::LogMsg& msg, const tm& tmTime, memory_buf_t& dest) = 0;
 
     protected:
+      void set_padding_info(const details::PaddingInfo& padding)
+      {
+        m_padinfo = padding;
+      }
+
+      PaddingInfo& paddinginfo()
+      {
+        return m_padinfo;
+      }
+
+    private:
       PaddingInfo m_padinfo;
     };
 
@@ -70,7 +81,7 @@ namespace rexlog
 
     void set_padding_info(const details::PaddingInfo& padding)
     {
-      FlagFormatter::m_padinfo = padding;
+      FlagFormatter::set_padding_info(padding);
     }
   };
 

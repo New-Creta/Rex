@@ -19,9 +19,6 @@ namespace rex
      **/
     LogCategoryBase(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity);
 
-    /** Destructor, unregisters from the log suppression system **/
-    ~LogCategoryBase();
-
     /** Gets the category name **/
     const LogCategoryName& get_category_name() const;
 
@@ -35,9 +32,6 @@ namespace rex
     void set_verbosity(LogVerbosity verbosity);
 
   private:
-    /** Internal call to set up the working verbosity from the boot time default. **/
-    void reset_from_default();
-
     /** Holds the current suppression state **/
     LogVerbosity m_verbosity;
     /** Holds default suppression **/

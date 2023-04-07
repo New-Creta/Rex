@@ -858,7 +858,7 @@ namespace rexlog
           const rsl::reverse_iterator<const char*> begin(filename + rsl::strlen(filename));
           const rsl::reverse_iterator<const char*> end(filename);
 
-          const auto it = begin + rsl::find_first_of(begin, rsl::strlen(filename), rsl::begin(os::folder_seps), rsl::size(os::folder_seps) - 1);
+          const auto it = begin + rsl::find_first_of(begin, rsl::strlen(filename), os::folder_seps.data(), os::folder_seps.size());
           return it != end ? it.base() : filename;
         }
       }
@@ -870,12 +870,12 @@ namespace rexlog
       {
         if(msg.source.empty())
         {
-          ScopedPadder p(0, m_padinfo, dest);
+          ScopedPadder p(0, paddinginfo(), dest);
           return;
         }
         auto filename    = basename(msg.source.filename);
-        size_t text_size = m_padinfo.enabled() ? rsl::char_traits<char>::length(filename) : 0;
-        ScopedPadder p(text_size, m_padinfo, dest);
+        size_t text_size = paddinginfo().enabled() ? rsl::char_traits<char>::length(filename) : 0;
+        ScopedPadder p(text_size, paddinginfo(), dest);
         fmt_helper::append_string_view(rsl::string_view(filename), dest);
       }
     };
@@ -946,7 +946,7 @@ namespace rexlog
         last_message_time_ = msg.time;
         auto delta_count   = static_cast<size_t>(delta_units.count());
         auto n_digits      = static_cast<size_t>(ScopedPadder::count_digits(delta_count));
-        ScopedPadder p(n_digits, m_padinfo, dest);
+        ScopedPadder p(n_digits, paddinginfo(), dest);
         fmt_helper::append_int(delta_count, dest);
       }
 

@@ -15,8 +15,6 @@ namespace rexlog
       LogMsg(log_clock::time_point logTime, SourceLoc loc, string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
       LogMsg(SourceLoc loc, string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
       LogMsg(string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
-      LogMsg(const LogMsg& other)            = default;
-      LogMsg& operator=(const LogMsg& other) = default;
 
       string_view_t logger_name;
       level::LevelEnum level {level::Off};
