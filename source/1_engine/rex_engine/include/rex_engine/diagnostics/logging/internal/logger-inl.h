@@ -93,6 +93,7 @@ namespace rexlog
   {
     for(auto it = m_sinks.begin(); it != m_sinks.end(); ++it)
     {
+      auto& sink = *it;
       if(++it == m_sinks.end())
       {
         // last element - we can be move it.

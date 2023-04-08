@@ -71,13 +71,13 @@ namespace rexlog
     template <typename... Args>
     void log(level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
     {
-      log(source_loc {}, lvl, fmt, rsl::forward<Args>(args)...);
+      log(SourceLoc{}, lvl, fmt, rsl::forward<Args>(args)...);
     }
 
     template <typename T>
     void log(level::LevelEnum lvl, const T& msg)
     {
-      log(source_loc {}, lvl, msg);
+      log(SourceLoc{}, lvl, msg);
     }
 
     // T cannot be statically converted to format string (including string_view/wstring_view)
@@ -121,73 +121,73 @@ namespace rexlog
     template <typename... Args>
     void trace(format_string_t<Args...> fmt, Args&&... args)
     {
-      log(level::trace, fmt, rsl::forward<Args>(args)...);
+      log(level::Trace, fmt, rsl::forward<Args>(args)...);
     }
 
     template <typename... Args>
     void debug(format_string_t<Args...> fmt, Args&&... args)
     {
-      log(level::debug, fmt, rsl::forward<Args>(args)...);
+      log(level::Debug, fmt, rsl::forward<Args>(args)...);
     }
 
     template <typename... Args>
     void info(format_string_t<Args...> fmt, Args&&... args)
     {
-      log(level::info, fmt, rsl::forward<Args>(args)...);
+      log(level::Info, fmt, rsl::forward<Args>(args)...);
     }
 
     template <typename... Args>
     void warn(format_string_t<Args...> fmt, Args&&... args)
     {
-      log(level::warn, fmt, rsl::forward<Args>(args)...);
+      log(level::Warn, fmt, rsl::forward<Args>(args)...);
     }
 
     template <typename... Args>
     void error(format_string_t<Args...> fmt, Args&&... args)
     {
-      log(level::err, fmt, rsl::forward<Args>(args)...);
+      log(level::Err, fmt, rsl::forward<Args>(args)...);
     }
 
     template <typename... Args>
     void critical(format_string_t<Args...> fmt, Args&&... args)
     {
-      log(level::critical, fmt, rsl::forward<Args>(args)...);
+      log(level::Critical, fmt, rsl::forward<Args>(args)...);
     }
 
     template <typename T>
     void trace(const T& msg)
     {
-      log(level::trace, msg);
+      log(level::Trace, msg);
     }
 
     template <typename T>
     void debug(const T& msg)
     {
-      log(level::debug, msg);
+      log(level::Debug, msg);
     }
 
     template <typename T>
     void info(const T& msg)
     {
-      log(level::info, msg);
+      log(level::Info, msg);
     }
 
     template <typename T>
     void warn(const T& msg)
     {
-      log(level::warn, msg);
+      log(level::Warn, msg);
     }
 
     template <typename T>
     void error(const T& msg)
     {
-      log(level::err, msg);
+      log(level::Err, msg);
     }
 
     template <typename T>
     void critical(const T& msg)
     {
-      log(level::critical, msg);
+      log(level::Critical, msg);
     }
 
     // return true logging is enabled for the given level.
@@ -246,7 +246,7 @@ namespace rexlog
     void log_impl(SourceLoc loc, level::LevelEnum lvl, string_view_t fmt, Args&&... args)
     {
       bool log_enabled       = should_log(lvl);
-      bool traceback_enabled = tracer_.enabled();
+      bool traceback_enabled = m_tracer.enabled();
       if(!log_enabled && !traceback_enabled)
       {
         return;
@@ -256,7 +256,7 @@ namespace rexlog
         memory_buf_t buf;
         fmt_lib::vformat_to(rsl::back_inserter(buf), fmt, fmt_lib::make_format_args(rsl::forward<Args>(args)...));
 
-        details::LogMsg LogMsg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
+        details::LogMsg LogMsg(loc, m_name, lvl, string_view_t(buf.data(), buf.size()));
         log_it_impl(LogMsg, log_enabled, traceback_enabled);
       }
       REXLOG_LOGGER_CATCH(loc)
