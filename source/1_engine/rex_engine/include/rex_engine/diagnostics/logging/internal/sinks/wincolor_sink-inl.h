@@ -175,4 +175,3 @@ namespace rexlog
 } // namespace rexlog
 
 // NOLINTEND(misc-definitions-in-headers)
-

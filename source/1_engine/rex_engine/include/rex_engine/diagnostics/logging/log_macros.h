@@ -51,7 +51,7 @@ namespace rex
           : LogCategory<(int)rex::DefaultVerbosity>(rex::DebugString(#CategoryName))                                                                                                                                                                     \
       {                                                                                                                                                                                                                                                  \
       }                                                                                                                                                                                                                                                  \
-    } CategoryName; /*NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)*/
+    } CategoryName;                                                                 /*NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)*/
 
   /**
    * A macro to define a logging category, usually paired with DECLARE_LOG_CATEGORY_EXTERN from the header.
