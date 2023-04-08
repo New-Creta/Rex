@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/buffer_layout.h"
 
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_opengl/log.h"
 
 namespace rex
 {
@@ -55,7 +55,7 @@ namespace rex
           break;
       }
 
-      REX_ERROR("Unsupported Data Type to retrieve the component count: {0}", (s32)type);
+      REX_ERROR(LogOpenGL, "Unsupported Data Type to retrieve the component count: {0}", (s32)type);
       return 0;
     }
   } // namespace buffer_layout

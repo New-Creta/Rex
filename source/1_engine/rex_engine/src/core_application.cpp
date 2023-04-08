@@ -1,7 +1,7 @@
 #include "rex_engine/core_application.h"
 
-#include "rex_engine/diagnostics/legacy/logging.h"
 #include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/log.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/assert.h"
 #include "rex_std/bonus/utility/scopeguard.h"
@@ -45,7 +45,7 @@ namespace rex
     // calling the initialize function provided earlier in the EngineParams
     if(initialize() == false) // NOLINT(readability-simplify-boolean-expr)
     {
-      REX_ERROR("Application initialization failed");
+      REX_ERROR(LogEngine, "Application initialization failed");
       return EXIT_FAILURE;
     }
 

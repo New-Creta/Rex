@@ -1,4 +1,4 @@
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_opengl/log.h"
 #include "rex_renderer_core/context.h"
 
 #include <glad/gl.h>
@@ -16,7 +16,7 @@ namespace rex
       {
         if(gladLoaderLoadGL() == NULL)
         {
-          REX_ERROR("Glad Loader failed!");
+          REX_ERROR(LogOpenGL, "Glad Loader failed!");
           return false;
         }
 

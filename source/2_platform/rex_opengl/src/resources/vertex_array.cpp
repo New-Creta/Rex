@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/vertex_array.h"
 
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_opengl/log.h"
 
 #if REX_PLATFORM_X64
   #include <glad/gl.h>

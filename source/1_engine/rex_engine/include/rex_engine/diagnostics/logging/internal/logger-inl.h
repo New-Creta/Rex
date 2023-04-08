@@ -96,7 +96,7 @@ namespace rexlog
       if(++it == m_sinks.end())
       {
         // last element - we can be move it.
-        (*it)->set_formatter(rsl::move(f));
+        sink->set_formatter(rsl::move(f));
         break; // to prevent clang-tidy warning
       }
       else
