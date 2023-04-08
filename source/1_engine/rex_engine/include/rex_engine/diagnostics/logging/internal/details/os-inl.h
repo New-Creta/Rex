@@ -472,7 +472,7 @@ namespace rexlog
         return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t {};
       }
 
-      inline rex::DebugString REXLOG_INLINE getenv(const char* field)
+      REXLOG_INLINE rex::DebugString getenv(const char* field)
       {
 #if defined(_MSC_VER)
   #if defined(__cplusplus_winrt)
