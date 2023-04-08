@@ -6,6 +6,8 @@
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace sinks
@@ -40,3 +42,6 @@ namespace rexlog
 
   } // namespace sinks
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)
+

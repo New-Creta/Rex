@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <iterator>
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace level
@@ -86,3 +88,5 @@ namespace rexlog
   }
 
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

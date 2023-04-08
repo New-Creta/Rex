@@ -13,6 +13,8 @@
 #include "rex_std/string.h"
 #include "rex_std/utility.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace cfg
@@ -118,3 +120,5 @@ namespace rexlog
     } // namespace helpers
   }   // namespace cfg
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

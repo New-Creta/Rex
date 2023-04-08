@@ -10,6 +10,8 @@
 #include <cassert>
 #include <utility>
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace details
@@ -79,17 +81,17 @@ namespace rexlog
       return m_q.overrun_counter();
     }
 
-    REXLOG_INLINE void  ThreadPool::reset_overrun_counter()
+    REXLOG_INLINE void ThreadPool::reset_overrun_counter()
     {
       m_q.reset_overrun_counter();
     }
 
-    REXLOG_INLINE size_t  ThreadPool::queue_size()
+    REXLOG_INLINE size_t ThreadPool::queue_size()
     {
       return m_q.size();
     }
 
-    REXLOG_INLINE void  ThreadPool::post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy)
+    REXLOG_INLINE void ThreadPool::post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy)
     {
       if(overflowPolicy == AsyncOverflowPolicy::Block)
       {
@@ -101,7 +103,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE void  ThreadPool::worker_loop_impl()
+    REXLOG_INLINE void ThreadPool::worker_loop_impl()
     {
       while(process_next_msg_impl())
       {
@@ -111,7 +113,7 @@ namespace rexlog
     // process next message in the queue
     // return true if this thread should still be active (while no terminate msg
     // was received)
-    REXLOG_INLINE bool  ThreadPool::process_next_msg_impl()
+    REXLOG_INLINE bool ThreadPool::process_next_msg_impl()
     {
       AsyncMsg incoming_async_msg;
       m_q.dequeue(incoming_async_msg);
@@ -145,3 +147,5 @@ namespace rexlog
 
   } // namespace details
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

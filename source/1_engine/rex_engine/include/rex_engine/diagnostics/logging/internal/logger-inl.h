@@ -12,6 +12,8 @@
 
 #include <cstdio>
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
 
@@ -269,3 +271,6 @@ namespace rexlog
     m_name = rsl::move(name);
   }
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)
+

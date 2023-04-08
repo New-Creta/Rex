@@ -45,7 +45,7 @@ namespace rex
   struct LogCategory : public LogCategoryBase
   {
     explicit LogCategory(const LogCategoryName& inCategoryName)
-        : LogCategoryBase(inCategoryName, LogVerbosity(TDefaultVerbosity))
+        : LogCategoryBase(inCategoryName, LogVerbosity(TDefaultVerbosity)) // NOLINT(google-readability-casting)
     {
       // assert((TDefaultVerbosity & LogVerbosity::VerbosityMask) < LogVerbosity::NumVerbosity && "Invalid default verbosity.");
     }

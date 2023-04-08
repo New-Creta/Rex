@@ -4,6 +4,8 @@
 
 #include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace details
@@ -55,3 +57,5 @@ namespace rexlog
 
   } // namespace details
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

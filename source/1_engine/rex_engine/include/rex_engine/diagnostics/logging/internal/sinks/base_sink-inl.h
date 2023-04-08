@@ -8,6 +8,8 @@
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 template <typename Mutex>
 REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::BaseSink()
     : m_formatter {details::make_unique<rexlog::PatternFormatter>()}
@@ -71,3 +73,5 @@ Mutex& rexlog::sinks::BaseSink<Mutex>::mutex()
 {
   return m_mutex;
 }
+
+// NOLINTEND(misc-definitions-in-headers)

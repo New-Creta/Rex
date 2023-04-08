@@ -59,6 +59,8 @@
   #define __has_feature(x) 0 // Compatibility with non-clang compilers.
 #endif
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace details
@@ -503,3 +505,5 @@ namespace rexlog
     } // namespace os
   }   // namespace details
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

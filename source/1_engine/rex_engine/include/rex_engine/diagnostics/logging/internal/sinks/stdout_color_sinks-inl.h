@@ -6,6 +6,8 @@
 #include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
 
@@ -33,3 +35,6 @@ namespace rexlog
     return Factory::template create<sinks::stderr_color_sink_st>(rex::DebugString(loggerName), mode);
   }
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)
+

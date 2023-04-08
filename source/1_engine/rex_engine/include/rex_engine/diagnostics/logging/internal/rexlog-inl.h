@@ -6,6 +6,8 @@
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/rexlog.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
 
@@ -120,3 +122,5 @@ namespace rexlog
   }
 
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

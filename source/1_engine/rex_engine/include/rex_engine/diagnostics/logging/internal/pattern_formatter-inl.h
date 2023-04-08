@@ -11,6 +11,7 @@
 #include "rex_std/vector.h"
 
 // NOLINTBEGIN(readability-identifier-naming)
+// NOLINTBEGIN(misc-definitions-in-headers)
 
 namespace rexlog
 {
@@ -1464,4 +1465,5 @@ namespace rexlog
   }
 } // namespace rexlog
 
+// NOLINTEND(misc-definitions-in-headers)
 // NOLINTEND(readability-identifier-naming)

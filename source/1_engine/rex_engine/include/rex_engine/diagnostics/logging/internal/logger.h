@@ -71,13 +71,13 @@ namespace rexlog
     template <typename... Args>
     void log(level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
     {
-      log(SourceLoc{}, lvl, fmt, rsl::forward<Args>(args)...);
+      log(SourceLoc {}, lvl, fmt, rsl::forward<Args>(args)...);
     }
 
     template <typename T>
     void log(level::LevelEnum lvl, const T& msg)
     {
-      log(SourceLoc{}, lvl, msg);
+      log(SourceLoc {}, lvl, msg);
     }
 
     // T cannot be statically converted to format string (including string_view/wstring_view)
@@ -245,8 +245,8 @@ namespace rexlog
     template <typename... Args>
     void log_impl(SourceLoc loc, level::LevelEnum lvl, string_view_t fmt, Args&&... args)
     {
-      bool log_enabled       = should_log(lvl);
-      bool traceback_enabled = m_tracer.enabled();
+      const bool log_enabled       = should_log(lvl);
+      const bool traceback_enabled = m_tracer.enabled();
       if(!log_enabled && !traceback_enabled)
       {
         return;
@@ -256,8 +256,8 @@ namespace rexlog
         memory_buf_t buf;
         fmt_lib::vformat_to(rsl::back_inserter(buf), fmt, fmt_lib::make_format_args(rsl::forward<Args>(args)...));
 
-        details::LogMsg LogMsg(loc, m_name, lvl, string_view_t(buf.data(), buf.size()));
-        log_it_impl(LogMsg, log_enabled, traceback_enabled);
+        const details::LogMsg log_msg(loc, m_name, lvl, string_view_t(buf.data(), buf.size()));
+        log_it_impl(log_msg, log_enabled, traceback_enabled);
       }
       REXLOG_LOGGER_CATCH(loc)
     }

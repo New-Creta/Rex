@@ -25,6 +25,8 @@
 #include "rex_std/string.h"
 #include "rex_std/unordered_map.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace details
@@ -311,3 +313,5 @@ namespace rexlog
 
   } // namespace details
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

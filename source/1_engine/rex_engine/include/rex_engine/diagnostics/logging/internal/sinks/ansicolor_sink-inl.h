@@ -6,6 +6,8 @@
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/ansicolor_sink.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace sinks
@@ -136,3 +138,5 @@ namespace rexlog
 
   } // namespace sinks
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

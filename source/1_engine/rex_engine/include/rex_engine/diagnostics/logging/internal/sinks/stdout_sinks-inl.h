@@ -21,6 +21,8 @@
   #include <stdio.h> // _fileno(..)
 #endif               // WIN32
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
 
@@ -140,3 +142,5 @@ namespace rexlog
     return Factory::template create<sinks::stderr_sink_st>(rex::DebugString(loggerName));
   }
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

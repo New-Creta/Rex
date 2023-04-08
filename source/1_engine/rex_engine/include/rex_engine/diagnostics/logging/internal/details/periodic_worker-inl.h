@@ -5,6 +5,8 @@
 #include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
 #include "rex_std/mutex.h"
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace details
@@ -26,3 +28,5 @@ namespace rexlog
 
   } // namespace details
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

@@ -9,6 +9,8 @@
 
 #include <wincon.h>
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace sinks
@@ -171,3 +173,6 @@ namespace rexlog
     }
   } // namespace sinks
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)
+

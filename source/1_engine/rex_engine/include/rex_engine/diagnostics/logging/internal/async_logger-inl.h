@@ -9,6 +9,8 @@
 
 #include <string>
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 REXLOG_INLINE rexlog::AsyncLogger::AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy)
     : AsyncLogger(rsl::move(loggerName), sinksList.begin(), sinksList.end(), rsl::move(tp), overflowPolicy)
 {
@@ -86,3 +88,5 @@ REXLOG_INLINE rsl::shared_ptr<rexlog::Logger> rexlog::AsyncLogger::clone(rex::De
   cloned->set_name(rsl::move(newName));
   return cloned;
 }
+
+// NOLINTEND(misc-definitions-in-headers)

@@ -48,16 +48,16 @@ namespace rex
     extern struct LogCategory##CategoryName : public rex::LogCategory<(int)rex::DefaultVerbosity>                                                                                                                                                        \
     {                                                                                                                                                                                                                                                    \
       inline LogCategory##CategoryName()                                                                                                                                                                                                                 \
-          : LogCategory<(int)rex::DefaultVerbosity>(rex::DebugString(#CategoryName))                                                                                                                                                                          \
+          : LogCategory<(int)rex::DefaultVerbosity>(rex::DebugString(#CategoryName))                                                                                                                                                                     \
       {                                                                                                                                                                                                                                                  \
       }                                                                                                                                                                                                                                                  \
-    } CategoryName;
+    } CategoryName; /*NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)*/
 
   /**
    * A macro to define a logging category, usually paired with DECLARE_LOG_CATEGORY_EXTERN from the header.
    * @param CategoryName, category to define
    */
-  #define DEFINE_LOG_CATEGORY(CategoryName) LogCategory##CategoryName CategoryName;
+  #define DEFINE_LOG_CATEGORY(CategoryName) LogCategory##CategoryName CategoryName; /*NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables) */
 } // namespace rex
 
 //-------------------------------------------------------------------------
