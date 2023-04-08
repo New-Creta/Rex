@@ -41,11 +41,6 @@ namespace rexlog
 
     protected:
       using mutex_t = typename ConsoleMutex::mutex_t;
-      void* m_out_handle;
-      mutex_t& m_mutex;
-      bool m_should_do_colors{};
-      rsl::unique_ptr<rexlog::formatter> m_formatter;
-      rsl::array<rsl::uint16, level::NLevels> m_colors;
 
       // set foreground color and return the orig console attributes (for resetting later)
       rsl::uint16 set_foreground_color_impl(rsl::uint16 attribs);
@@ -57,6 +52,13 @@ namespace rexlog
       void write_to_file_impl(const memory_buf_t& formatted);
 
       void set_color_mode_impl(ColorMode mode);
+
+    private:
+      void* m_out_handle;
+      mutex_t* m_mutex;
+      bool m_should_do_colors{};
+      rsl::unique_ptr<rexlog::formatter> m_formatter;
+      rsl::array<rsl::uint16, level::NLevels> m_colors;
     };
 
     template <typename ConsoleMutex>

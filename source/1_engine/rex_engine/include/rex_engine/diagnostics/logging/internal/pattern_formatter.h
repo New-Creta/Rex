@@ -95,8 +95,12 @@ namespace rexlog
     // use default pattern is not given
     explicit PatternFormatter(PatternTimeType timeType = PatternTimeType::Local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol));
 
-    PatternFormatter(const PatternFormatter& other)            = delete;
+    PatternFormatter(const PatternFormatter& other) = delete;
+    PatternFormatter(PatternFormatter&& other)      = delete;
+    ~PatternFormatter() override = default;
+
     PatternFormatter& operator=(const PatternFormatter& other) = delete;
+    PatternFormatter& operator=(PatternFormatter&& other) = delete;
 
     rsl::unique_ptr<formatter> clone() const override;
     void format(const details::LogMsg& msg, memory_buf_t& dest) override;

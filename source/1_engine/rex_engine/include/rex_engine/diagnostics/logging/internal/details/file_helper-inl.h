@@ -13,17 +13,17 @@ namespace rexlog
   namespace details
   {
 
-    REXLOG_INLINE inline FileHelper::FileHelper(const FileEventHandlers& eventHandlers)
+    REXLOG_INLINE FileHelper::FileHelper(const FileEventHandlers& eventHandlers)
         : m_event_handlers(eventHandlers)
     {
     }
 
-    REXLOG_INLINE inline FileHelper::~FileHelper()
+    REXLOG_INLINE FileHelper::~FileHelper()
     {
       close();
     }
 
-    REXLOG_INLINE inline void FileHelper::open(const filename_t& fname, bool truncate)
+    REXLOG_INLINE void FileHelper::open(const filename_t& fname, bool truncate)
     {
       close();
       m_filename = fname;
@@ -71,7 +71,7 @@ namespace rexlog
       throw_rexlog_ex(err, errno);
     }
 
-    REXLOG_INLINE inline void FileHelper::reopen(bool truncate)
+    REXLOG_INLINE void FileHelper::reopen(bool truncate)
     {
       if(m_filename.empty())
       {
@@ -80,7 +80,7 @@ namespace rexlog
       this->open(m_filename, truncate);
     }
 
-    REXLOG_INLINE inline void FileHelper::flush()
+    REXLOG_INLINE void FileHelper::flush()
     {
       if(fflush(m_fd) != 0)
       {
@@ -91,7 +91,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE inline void FileHelper::sync()
+    REXLOG_INLINE void FileHelper::sync()
     {
       if(!os::fsync(m_fd))
       {
@@ -102,7 +102,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE inline void FileHelper::close()
+    REXLOG_INLINE void FileHelper::close()
     {
       if(m_fd != nullptr)
       {
@@ -121,7 +121,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE inline void FileHelper::write(const memory_buf_t& buf)
+    REXLOG_INLINE void FileHelper::write(const memory_buf_t& buf)
     {
       size_t const msg_size = buf.size();
       const auto *data       = buf.data();
@@ -134,7 +134,7 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE inline size_t FileHelper::size() const
+    REXLOG_INLINE size_t FileHelper::size() const
     {
       if(m_fd == nullptr)
       {
@@ -146,7 +146,7 @@ namespace rexlog
       return os::filesize(m_fd);
     }
 
-    REXLOG_INLINE inline const filename_t& FileHelper::filename() const
+    REXLOG_INLINE const filename_t& FileHelper::filename() const
     {
       return m_filename;
     }
@@ -165,7 +165,7 @@ namespace rexlog
     // "my_folder/.mylog" => ("my_folder/.mylog", "")
     // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
 
-    REXLOG_INLINE inline FilenameWithExtension FileHelper::split_by_extension(const filename_t& fname)
+    REXLOG_INLINE FilenameWithExtension FileHelper::split_by_extension(const filename_t& fname)
     {
       auto ext_index = fname.rfind('.');
 

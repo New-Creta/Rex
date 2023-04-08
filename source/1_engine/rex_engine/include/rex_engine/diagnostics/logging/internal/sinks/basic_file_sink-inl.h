@@ -28,7 +28,7 @@ namespace rexlog
     REXLOG_INLINE void BasicFileSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
     {
       memory_buf_t formatted;
-      BaseSink<Mutex>::m_formatter->format(msg, formatted);
+      BaseSink<Mutex>::formatter()->format(msg, formatted);
       m_file_helper.write(formatted);
     }
 

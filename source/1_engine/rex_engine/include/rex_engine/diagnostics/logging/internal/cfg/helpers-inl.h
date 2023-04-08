@@ -80,7 +80,7 @@ namespace rexlog
         return rv;
       }
 
-      REXLOG_INLINE inline void load_levels(const rex::DebugString& input)
+      REXLOG_INLINE void load_levels(const rex::DebugString& input)
       {
         if(input.empty() || input.size() > 512)
         {

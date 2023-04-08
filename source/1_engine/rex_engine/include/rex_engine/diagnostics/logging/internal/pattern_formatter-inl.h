@@ -22,32 +22,50 @@ namespace rexlog
     // name & level pattern appender
     ///////////////////////////////////////////////////////////////////////
 
-    class scoped_padder
+    class ScopedPadder
     {
     public:
-      scoped_padder(size_t wrapped_size, const PaddingInfo& padinfo, memory_buf_t& dest)
-          : m_padinfo(padinfo)
-          , m_dest(dest)
+      ScopedPadder(size_t wrapped_size, const PaddingInfo& padinfo, memory_buf_t& dest)
+          : m_padinfo(&padinfo)
+          , m_dest(&dest)
+        , m_remaining_pag(static_cast<long>(padinfo.width) - static_cast<long>(wrapped_size))
       {
-        m_remaining_pag = static_cast<long>(padinfo.width) - static_cast<long>(wrapped_size);
         if(m_remaining_pag <= 0)
         {
           return;
         }
 
-        if(m_padinfo.side == PaddingInfo::PadSide::Left)
+        if(m_padinfo->side == PaddingInfo::PadSide::Left)
         {
           pad_it(m_remaining_pag);
           m_remaining_pag = 0;
         }
-        else if(m_padinfo.side == PaddingInfo::PadSide::Center)
+        else if(m_padinfo->side == PaddingInfo::PadSide::Center)
         {
           auto half_pad = m_remaining_pag / 2;
-          auto reminder = m_remaining_pag & 1;
-          pad_it(half_pad);
-          m_remaining_pag = half_pad + reminder; // for the Right side
+          auto reminder = m_remaining_pag & 1u;
+          pad_it(static_cast<long>(half_pad));
+          m_remaining_pag = static_cast<unsigned long>(half_pad + reminder); // for the Right side
         }
       }
+
+      ScopedPadder(const ScopedPadder&) = delete;
+      ScopedPadder(ScopedPadder&&) = delete;
+      ~ScopedPadder()
+      {
+        if(m_remaining_pag >= 0)
+        {
+          pad_it(m_remaining_pag);
+        }
+        else if(m_padinfo->truncate)
+        {
+          const unsigned long new_size = m_dest->size() + m_remaining_pag;
+          m_dest->resize(static_cast<count_t>(new_size));
+        }
+      }
+
+      ScopedPadder& operator=(const ScopedPadder&) = delete;
+      ScopedPadder& operator=(ScopedPadder&&) = delete;
 
       template <typename T>
       static unsigned int count_digits(T n)
@@ -55,28 +73,16 @@ namespace rexlog
         return fmt_helper::count_digits(n);
       }
 
-      ~scoped_padder()
-      {
-        if(m_remaining_pag >= 0)
-        {
-          pad_it(m_remaining_pag);
-        }
-        else if(m_padinfo.truncate)
-        {
-          long new_size = static_cast<long>(m_dest.size()) + m_remaining_pag;
-          m_dest.resize(static_cast<size_t>(new_size));
-        }
-      }
 
     private:
-      void pad_it(long count)
+      void pad_it(unsigned long count)
       {
-        fmt_helper::append_string_view(string_view_t(m_spaces.data(), static_cast<size_t>(count)), m_dest);
+        fmt_helper::append_string_view(string_view_t(m_spaces.data(), static_cast<count_t>(count)), *m_dest);
       }
 
-      const PaddingInfo& m_padinfo;
-      memory_buf_t& m_dest;
-      long m_remaining_pag;
+      const PaddingInfo* m_padinfo;
+      memory_buf_t* m_dest;
+      unsigned long m_remaining_pag;
       string_view_t m_spaces {"                                                                ", 64};
     };
 
@@ -100,9 +106,9 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
-        ScopedPadder p(msg.logger_name.size(), m_padinfo, dest);
+        ScopedPadder p(msg.logger_name.size(), paddinginfo(), dest);
         fmt_helper::append_string_view(msg.logger_name, dest);
       }
     };
@@ -117,10 +123,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         const string_view_t& level_name = level::to_string_view(msg.level);
-        ScopedPadder p(level_name.size(), m_padinfo, dest);
+        ScopedPadder p(level_name.size(), paddinginfo(), dest);
         fmt_helper::append_string_view(level_name, dest);
       }
     };
@@ -135,10 +141,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
-        string_view_t level_name {level::to_short_c_str(msg.level)};
-        ScopedPadder p(level_name.size(), m_padinfo, dest);
+        const string_view_t level_name {level::to_short_c_str(msg.level)};
+        ScopedPadder p(level_name.size(), paddinginfo(), dest);
         fmt_helper::append_string_view(level_name, dest);
       }
     };
@@ -158,7 +164,7 @@ namespace rexlog
     }
 
     // Abbreviated weekday name
-    static rsl::array<const char*, 7> days {{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}};
+    static rsl::array<const char*, 7> days {{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}}; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
     template <typename ScopedPadder>
     class a_formatter final : public FlagFormatter
@@ -169,16 +175,16 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
-        string_view_t field_value {days[static_cast<size_t>(tm_time.tm_wday)]};
-        ScopedPadder p(field_value.size(), m_padinfo, dest);
+        const string_view_t field_value {days[static_cast<count_t>(tm_time.tm_wday)]};
+        ScopedPadder p(field_value.size(), paddinginfo(), dest);
         fmt_helper::append_string_view(field_value, dest);
       }
     };
 
     // Full weekday name
-    static rsl::array<const char*, 7> full_days {{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}};
+    static rsl::array<const char*, 7> full_days {{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}}; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
     template <typename ScopedPadder>
     class A_formatter : public FlagFormatter
@@ -189,16 +195,16 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
-        string_view_t field_value {full_days[static_cast<size_t>(tm_time.tm_wday)]};
-        ScopedPadder p(field_value.size(), m_padinfo, dest);
+        const string_view_t field_value {full_days[static_cast<count_t>(tm_time.tm_wday)]};
+        ScopedPadder p(field_value.size(), paddinginfo(), dest);
         fmt_helper::append_string_view(field_value, dest);
       }
     };
 
     // Abbreviated month
-    static const rsl::array<const char*, 12> months {{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"}};
+    static const rsl::array<const char*, 12> months {{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"}}; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
     template <typename ScopedPadder>
     class b_formatter final : public FlagFormatter
@@ -209,16 +215,16 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
-        string_view_t field_value {months[static_cast<size_t>(tm_time.tm_mon)]};
-        ScopedPadder p(field_value.size(), m_padinfo, dest);
+        const string_view_t field_value {months[static_cast<count_t>(tm_time.tm_mon)]};
+        ScopedPadder p(field_value.size(), paddinginfo(), dest);
         fmt_helper::append_string_view(field_value, dest);
       }
     };
 
     // Full month name
-    static const rsl::array<const char*, 12> full_months {{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}};
+    static const rsl::array<const char*, 12> full_months {{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}}; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
     template <typename ScopedPadder>
     class B_formatter final : public FlagFormatter
@@ -229,10 +235,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
-        string_view_t field_value {full_months[static_cast<size_t>(tm_time.tm_mon)]};
-        ScopedPadder p(field_value.size(), m_padinfo, dest);
+        const string_view_t field_value {full_months[static_cast<count_t>(tm_time.tm_mon)]};
+        ScopedPadder p(field_value.size(), paddinginfo(), dest);
         fmt_helper::append_string_view(field_value, dest);
       }
     };
@@ -247,14 +253,14 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 24;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
 
-        fmt_helper::append_string_view(string_view_t(days[static_cast<size_t>(tm_time.tm_wday)]), dest);
+        fmt_helper::append_string_view(string_view_t(days[static_cast<count_t>(tm_time.tm_wday)]), dest);
         dest.push_back(' ');
-        fmt_helper::append_string_view(string_view_t(months[static_cast<size_t>(tm_time.tm_mon)]), dest);
+        fmt_helper::append_string_view(string_view_t(months[static_cast<count_t>(tm_time.tm_mon)]), dest);
         dest.push_back(' ');
         fmt_helper::append_int(tm_time.tm_mday, dest);
         dest.push_back(' ');
@@ -280,10 +286,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 2;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad2(tm_time.tm_year % 100, dest);
       }
     };
@@ -298,10 +304,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 10;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
 
         fmt_helper::pad2(tm_time.tm_mon + 1, dest);
         dest.push_back('/');
@@ -321,10 +327,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 4;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::append_int(tm_time.tm_year + 1900, dest);
       }
     };
@@ -339,10 +345,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 2;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad2(tm_time.tm_mon + 1, dest);
       }
     };
@@ -357,10 +363,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 2;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad2(tm_time.tm_mday, dest);
       }
     };
@@ -375,10 +381,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 2;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad2(tm_time.tm_hour, dest);
       }
     };
@@ -393,10 +399,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 2;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad2(to12h(tm_time), dest);
       }
     };
@@ -411,10 +417,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 2;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad2(tm_time.tm_min, dest);
       }
     };
@@ -429,10 +435,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 2;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad2(tm_time.tm_sec, dest);
       }
     };
@@ -447,11 +453,11 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         auto millis             = fmt_helper::time_fraction<rsl::chrono::milliseconds>(msg.time);
         const size_t field_size = 3;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad3(static_cast<uint32_t>(millis.count()), dest);
       }
     };
@@ -466,12 +472,12 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         auto micros = fmt_helper::time_fraction<rsl::chrono::microseconds>(msg.time);
 
         const size_t field_size = 6;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad6(static_cast<size_t>(micros.count()), dest);
       }
     };
@@ -486,11 +492,11 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         auto ns                 = fmt_helper::time_fraction<rsl::chrono::nanoseconds>(msg.time);
         const size_t field_size = 9;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::pad9(static_cast<size_t>(ns.count()), dest);
       }
     };
@@ -505,10 +511,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         const size_t field_size = 10;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         auto duration = msg.time.time_since_epoch();
         auto seconds  = rsl::chrono::duration_cast<rsl::chrono::seconds>(duration).count();
         fmt_helper::append_int(seconds, dest);
@@ -525,10 +531,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 2;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::append_string_view(string_view_t(ampm(tm_time)), dest);
       }
     };
@@ -543,10 +549,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 11;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
 
         fmt_helper::pad2(to12h(tm_time), dest);
         dest.push_back(':');
@@ -568,10 +574,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 5;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
 
         fmt_helper::pad2(tm_time.tm_hour, dest);
         dest.push_back(':');
@@ -589,10 +595,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm& tm_time, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 8;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
 
         fmt_helper::pad2(tm_time.tm_hour, dest);
         dest.push_back(':');
@@ -614,15 +620,16 @@ namespace rexlog
 
       z_formatter()                              = default;
       z_formatter(const z_formatter&)            = delete;
+      ~z_formatter() override = default;
       z_formatter& operator=(const z_formatter&) = delete;
 
       void format(const details::LogMsg& msg, const tm& tm_time, memory_buf_t& dest) override
       {
         const size_t field_size = 6;
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
 
         auto total_minutes = get_cached_offset(msg, tm_time);
-        bool is_negative   = total_minutes < 0;
+        const bool is_negative   = total_minutes < 0;
         if(is_negative)
         {
           total_minutes = -total_minutes;
@@ -664,10 +671,10 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         const auto field_size = ScopedPadder::count_digits(msg.thread_id);
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::append_int(msg.thread_id, dest);
       }
     };
@@ -682,11 +689,11 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest) override
       {
         const auto pid  = static_cast<uint32_t>(details::os::pid());
         auto field_size = ScopedPadder::count_digits(pid);
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::append_int(pid, dest);
       }
     };
@@ -700,9 +707,9 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
-        ScopedPadder p(msg.payload.size(), m_padinfo, dest);
+        ScopedPadder p(msg.payload.size(), paddinginfo(), dest);
         fmt_helper::append_string_view(msg.payload, dest);
       }
     };
@@ -715,7 +722,7 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg&, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest) override
       {
         dest.push_back(ch_);
       }
@@ -734,9 +741,9 @@ namespace rexlog
       {
         str_ += ch;
       }
-      void format(const details::LogMsg&, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest) override
       {
-        fmt_helper::append_string_view(string_view_t(str_), dest);
+        fmt_helper::append_string_view(str_, dest);
       }
 
     private:
@@ -752,7 +759,7 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         msg.color_range_start = dest.size();
       }
@@ -766,7 +773,7 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         msg.color_range_end = dest.size();
       }
@@ -782,16 +789,16 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         if(msg.source.empty())
         {
-          ScopedPadder p(0, m_padinfo, dest);
+          ScopedPadder p(0, paddinginfo(), dest);
           return;
         }
 
-        size_t text_size;
-        if(m_padinfo.enabled())
+        count_t text_size = 0;
+        if(paddinginfo().enabled())
         {
           // calc text size for padding based on "filename:line"
           text_size = rsl::char_traits<char>::length(msg.source.filename) + ScopedPadder::count_digits(msg.source.line) + 1;
@@ -801,7 +808,7 @@ namespace rexlog
           text_size = 0;
         }
 
-        ScopedPadder p(text_size, m_padinfo, dest);
+        ScopedPadder p(text_size, paddinginfo(), dest);
         fmt_helper::append_string_view(string_view_t(msg.source.filename), dest);
         dest.push_back(':');
         fmt_helper::append_int(msg.source.line, dest);
@@ -818,15 +825,15 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         if(msg.source.empty())
         {
-          ScopedPadder p(0, m_padinfo, dest);
+          ScopedPadder p(0, paddinginfo(), dest);
           return;
         }
-        size_t text_size = m_padinfo.enabled() ? rsl::char_traits<char>::length(msg.source.filename) : 0;
-        ScopedPadder p(text_size, m_padinfo, dest);
+        const count_t text_size = paddinginfo().enabled() ? rsl::char_traits<char>::length(msg.source.filename) : 0;
+        ScopedPadder p(text_size, paddinginfo(), dest);
         fmt_helper::append_string_view(string_view_t(msg.source.filename), dest);
       }
     };
@@ -866,15 +873,15 @@ namespace rexlog
   #pragma warning(pop)
 #endif // _MSC_VER
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         if(msg.source.empty())
         {
           ScopedPadder p(0, paddinginfo(), dest);
           return;
         }
-        auto filename    = basename(msg.source.filename);
-        size_t text_size = paddinginfo().enabled() ? rsl::char_traits<char>::length(filename) : 0;
+        const auto filename    = basename(msg.source.filename); // NOLINT(readability-qualified-auto)
+        const count_t text_size = paddinginfo().enabled() ? rsl::char_traits<char>::length(filename) : 0;
         ScopedPadder p(text_size, paddinginfo(), dest);
         fmt_helper::append_string_view(rsl::string_view(filename), dest);
       }
@@ -889,16 +896,16 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         if(msg.source.empty())
         {
-          ScopedPadder p(0, m_padinfo, dest);
+          ScopedPadder p(0, paddinginfo(), dest);
           return;
         }
 
         auto field_size = ScopedPadder::count_digits(msg.source.line);
-        ScopedPadder p(field_size, m_padinfo, dest);
+        ScopedPadder p(field_size, paddinginfo(), dest);
         fmt_helper::append_int(msg.source.line, dest);
       }
     };
@@ -913,15 +920,15 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         if(msg.source.empty())
         {
-          ScopedPadder p(0, m_padinfo, dest);
+          ScopedPadder p(0, paddinginfo(), dest);
           return;
         }
-        size_t text_size = m_padinfo.enabled() ? rsl::char_traits<char>::length(msg.source.funcname) : 0;
-        ScopedPadder p(text_size, m_padinfo, dest);
+        const count_t text_size = paddinginfo().enabled() ? rsl::char_traits<char>::length(msg.source.funcname) : 0;
+        ScopedPadder p(text_size, paddinginfo(), dest);
         fmt_helper::append_string_view(string_view_t(msg.source.funcname), dest);
       }
     };
@@ -939,7 +946,7 @@ namespace rexlog
       {
       }
 
-      void format(const details::LogMsg& msg, const tm&, memory_buf_t& dest) override
+      void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
       {
         auto delta         = (rsl::max)(msg.time - last_message_time_, log_clock::duration::zero());
         auto delta_units   = rsl::chrono::duration_cast<DurationUnits>(delta);
@@ -974,7 +981,7 @@ namespace rexlog
         auto duration = msg.time.time_since_epoch();
         auto secs     = duration_cast<seconds>(duration);
 
-        if(cache_timestamp_ != secs || cached_datetime_.size() == 0)
+        if(cache_timestamp_ != secs || cached_datetime_.empty())
         {
           cached_datetime_.clear();
           cached_datetime_.push_back('[');
@@ -1006,7 +1013,7 @@ namespace rexlog
         dest.push_back(' ');
 
         // append logger name if exists
-        if(msg.logger_name.size() > 0)
+        if(!msg.logger_name.empty())
         {
           dest.push_back('[');
           fmt_helper::append_string_view(string_view_t(msg.logger_name), dest);
@@ -1045,23 +1052,23 @@ namespace rexlog
 
   } // namespace details
 
-  REXLOG_INLINE PatternFormatter::PatternFormatter(rex::DebugString pattern, PatternTimeType time_type, rex::DebugString eol, custom_flags custom_user_flags)
+  REXLOG_INLINE PatternFormatter::PatternFormatter(rex::DebugString pattern, PatternTimeType timeType, rex::DebugString eol, custom_flags customUserFlags)
       : m_pattern(rsl::move(pattern))
       , m_eol(rsl::move(eol))
-      , m_pattern_time_type(time_type)
+      , m_pattern_time_type(timeType)
       , m_need_localtime(false)
       , m_last_log_secs(0)
-      , m_custom_handlers(rsl::move(custom_user_flags))
+      , m_custom_handlers(rsl::move(customUserFlags))
   {
     rsl::memset(&m_cached_tm, 0, sizeof(m_cached_tm));
     compile_pattern_impl(m_pattern);
   }
 
   // use by default full formatter for if pattern is not given
-  REXLOG_INLINE PatternFormatter::PatternFormatter(PatternTimeType time_type, rex::DebugString eol)
+  REXLOG_INLINE PatternFormatter::PatternFormatter(PatternTimeType timeType, rex::DebugString eol)
       : m_pattern("%+")
       , m_eol(rsl::move(eol))
-      , m_pattern_time_type(time_type)
+      , m_pattern_time_type(timeType)
       , m_need_localtime(true)
       , m_last_log_secs(0)
   {
@@ -1072,7 +1079,7 @@ namespace rexlog
   REXLOG_INLINE rsl::unique_ptr<formatter> PatternFormatter::clone() const
   {
     custom_flags cloned_custom_formatters;
-    for(auto& it: m_custom_handlers)
+    for(const auto& it: m_custom_handlers)
     {
       cloned_custom_formatters[it.key] = it.value->clone();
     }
@@ -1363,14 +1370,14 @@ namespace rexlog
   REXLOG_INLINE details::PaddingInfo PatternFormatter::handle_padspec_impl(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end)
   {
     using details::PaddingInfo;
-    using details::scoped_padder;
+    using details::ScopedPadder;
     const size_t max_width = 64;
     if(it == end)
     {
       return PaddingInfo {};
     }
 
-    PaddingInfo::PadSide side;
+    PaddingInfo::PadSide side = PaddingInfo::PadSide::Center;
     switch(*it)
     {
       case '-':
@@ -1397,7 +1404,7 @@ namespace rexlog
     }
 
     // search for the optional truncate marker '!'
-    bool truncate;
+    bool truncate = false;
     if(it != end && *it == '!')
     {
       truncate = true;
@@ -1431,7 +1438,7 @@ namespace rexlog
         {
           if(padding.enabled())
           {
-            handle_flag_impl<details::scoped_padder>(*it, padding);
+            handle_flag_impl<details::ScopedPadder>(*it, padding);
           }
           else
           {

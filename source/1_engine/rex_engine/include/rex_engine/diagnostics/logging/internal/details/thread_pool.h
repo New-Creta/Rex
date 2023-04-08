@@ -98,10 +98,10 @@ namespace rexlog
       ~ThreadPool();
 
       ThreadPool(const ThreadPool&)       = delete;
-      ThreadPool& operator=(ThreadPool&&) = delete;
-
+      ThreadPool(ThreadPool&&)       = delete;
       ThreadPool& operator=(const ThreadPool&) = delete;
       ThreadPool& operator=(ThreadPool&&) = delete;
+
 
       void post_log(async_logger_ptr&& workerPtr, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
       void post_flush(async_logger_ptr&& workerPtr, AsyncOverflowPolicy overflowPolicy);

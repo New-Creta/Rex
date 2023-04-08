@@ -44,7 +44,7 @@ namespace rexlog
   // Example:
   //   auto mylogger = rsl::make_shared<rexlog::Logger>("mylogger", ...);
   //   rexlog::initialize_logger(mylogger);
-  REXLOG_API void initialize_logger(rsl::shared_ptr<Logger> Logger);
+  REXLOG_API void initialize_logger(rsl::shared_ptr<Logger> logger);
 
   // Return an existing Logger or nullptr if a Logger with such name doesn't
   // exist.
@@ -91,7 +91,7 @@ namespace rexlog
   REXLOG_API void set_error_handler(void (*handler)(const rex::DebugString& msg));
 
   // Register the given Logger with the given name
-  REXLOG_API void register_logger(rsl::shared_ptr<Logger> Logger);
+  REXLOG_API void register_logger(rsl::shared_ptr<Logger> logger);
 
   // Apply a user defined function on all registered loggers
   // Example:
@@ -138,7 +138,7 @@ namespace rexlog
   // Example:
   //   auto mylogger = rsl::make_shared<rexlog::Logger>("mylogger", ...);
   //   rexlog::apply_logger_env_levels(mylogger);
-  REXLOG_API void apply_logger_env_levels(rsl::shared_ptr<Logger> Logger);
+  REXLOG_API void apply_logger_env_levels(rsl::shared_ptr<Logger> logger);
 
   template <typename... Args>
   inline void log(SourceLoc source, level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)

@@ -60,3 +60,15 @@ void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_formatter_impl(rsl::uniqu
 {
   m_formatter = rsl::move(sinkFormatter);
 }
+
+template <typename Mutex>
+rexlog::formatter* rexlog::sinks::BaseSink<Mutex>::formatter()
+{
+  return m_formatter.get();
+}
+
+template <typename Mutex>
+Mutex& rexlog::sinks::BaseSink<Mutex>::mutex()
+{
+  return m_mutex;
+}

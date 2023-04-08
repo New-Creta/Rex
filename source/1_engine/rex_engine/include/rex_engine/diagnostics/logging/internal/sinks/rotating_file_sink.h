@@ -22,7 +22,7 @@ namespace rexlog
     class RotatingFileSink final : public BaseSink<Mutex>
     {
     public:
-      RotatingFileSink(filename_t base_filename, rsl::size_t max_size, rsl::size_t max_files, bool rotate_on_open = false, const FileEventHandlers& event_handlers = {});
+      RotatingFileSink(filename_t baseFilename, rsl::size_t maxSize, rsl::size_t maxFiles, bool rotateOnOpen = false, const FileEventHandlers& eventHandlers = {});
       static filename_t calc_filename(const filename_t& filename, rsl::size_t index);
       filename_t filename();
 
@@ -40,7 +40,7 @@ namespace rexlog
 
       // delete the target if exists, and rename the src file  to target
       // return true on success, false otherwise.
-      bool rename_file_impl(const filename_t& src_filename, const filename_t& target_filename);
+      bool rename_file_impl(const filename_t& srcFilename, const filename_t& targetFilename);
 
       filename_t m_base_filename;
       rsl::size_t m_max_size;

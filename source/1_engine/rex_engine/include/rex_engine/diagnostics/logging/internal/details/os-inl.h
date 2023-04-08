@@ -64,7 +64,7 @@ namespace rexlog
     namespace os
     {
 
-      REXLOG_INLINE inline rexlog::log_clock::time_point now() REXLOG_NOEXCEPT
+      REXLOG_INLINE rexlog::log_clock::time_point now() REXLOG_NOEXCEPT
       {
 #if defined __linux__ && defined REXLOG_CLOCK_COARSE
         timespec ts;
@@ -75,29 +75,29 @@ namespace rexlog
         return log_clock::now();
 #endif
       }
-      REXLOG_INLINE inline tm localtime(const time_t& timeTt) REXLOG_NOEXCEPT
+      REXLOG_INLINE tm localtime(const time_t& time) REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
         tm tm{};
-        ::localtime_s(&tm, &timeTt);
+        REX_ASSERT_X(::localtime_s(&tm, &time) == 0, "failed to convert to local time");
 #else
         tm tm;
-        ::localtime_r(&time_tt, &tm);
+        ::localtime_r(&time, &tm);
 #endif
         return tm;
       }
 
-      REXLOG_INLINE inline tm localtime() REXLOG_NOEXCEPT
+      REXLOG_INLINE tm localtime() REXLOG_NOEXCEPT
       {
         time_t const now_t = ::time(nullptr);
         return localtime(now_t);
       }
 
-      REXLOG_INLINE inline tm gmtime(const time_t& timeTt) REXLOG_NOEXCEPT
+      REXLOG_INLINE tm gmtime(const time_t& timeTt) REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
         tm tm{};
-        ::gmtime_s(&tm, &timeTt);
+        REX_ASSERT_X(::gmtime_s(&tm, &timeTt), "failed to convert to gm");
 #else
         tm tm;
         ::gmtime_r(&time_tt, &tm);
@@ -105,14 +105,14 @@ namespace rexlog
         return tm;
       }
 
-      REXLOG_INLINE inline tm gmtime() REXLOG_NOEXCEPT
+      REXLOG_INLINE tm gmtime() REXLOG_NOEXCEPT
       {
         time_t const now_t = ::time(nullptr);
         return gmtime(now_t);
       }
 
       // fopen_s on non windows for writing
-      REXLOG_INLINE inline bool fopen_s(FILE** fp, const filename_t& filename, const filename_t& mode)
+      REXLOG_INLINE bool fopen_s(FILE** fp, const filename_t& filename, const filename_t& mode)
       {
 #ifdef _WIN32
         *fp = ::_fsopen((filename.c_str()), mode.c_str(), _SH_DENYNO);
@@ -148,23 +148,23 @@ namespace rexlog
         return *fp == nullptr;
       }
 
-      REXLOG_INLINE inline int remove(const filename_t& filename) REXLOG_NOEXCEPT
+      REXLOG_INLINE int remove(const filename_t& filename) REXLOG_NOEXCEPT
       {
         return ::remove(filename.c_str());
       }
 
-      REXLOG_INLINE inline int remove_if_exists(const filename_t& filename) REXLOG_NOEXCEPT
+      REXLOG_INLINE int remove_if_exists(const filename_t& filename) REXLOG_NOEXCEPT
       {
         return path_exists(filename) ? remove(filename) : 0;
       }
 
-      REXLOG_INLINE inline int rename(const filename_t& filename1, const filename_t& filename2) REXLOG_NOEXCEPT
+      REXLOG_INLINE int rename(const filename_t& filename1, const filename_t& filename2) REXLOG_NOEXCEPT
       {
         return ::rename(filename1.c_str(), filename2.c_str());
       }
 
       // Return true if path exists (file or directory)
-      REXLOG_INLINE inline bool path_exists(const filename_t& filename) REXLOG_NOEXCEPT
+      REXLOG_INLINE bool path_exists(const filename_t& filename) REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
         auto attribs = ::GetFileAttributesA(filename.c_str());
@@ -182,7 +182,7 @@ namespace rexlog
 #endif
 
       // Return file size according to open FILE* object
-      REXLOG_INLINE inline size_t filesize(FILE* f)
+      REXLOG_INLINE size_t filesize(FILE* f)
       {
         if(f == nullptr)
         {
@@ -236,7 +236,7 @@ namespace rexlog
 #endif
 
       // Return utc offset in minutes or throw rexlog_ex on failure
-      REXLOG_INLINE inline int utc_minutes_offset(const tm& tm)
+      REXLOG_INLINE int utc_minutes_offset(const tm& tm)
       {
 #ifdef _WIN32
   #if _WIN32_WINNT < _WIN32_WINNT_WS08
@@ -302,7 +302,7 @@ namespace rexlog
       // Return current thread id as size_t
       // It exists because the rsl::this_thread::get_id() is much slower(especially
       // under VS 2013)
-      REXLOG_INLINE inline size_t thread_id_impl() REXLOG_NOEXCEPT
+      REXLOG_INLINE size_t thread_id_impl() REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
         return static_cast<size_t>(::GetCurrentThreadId());
@@ -336,7 +336,7 @@ namespace rexlog
       }
 
       // Return current thread id as size_t (from thread local storage)
-      REXLOG_INLINE inline size_t thread_id() REXLOG_NOEXCEPT
+      REXLOG_INLINE size_t thread_id() REXLOG_NOEXCEPT
       {
 #if defined(REXLOG_NO_TLS)
         return _thread_id();
@@ -348,7 +348,7 @@ namespace rexlog
 
       // This is avoid msvc issue in sleep_for that happens if the clock changes.
       // See https://github.com/gabime/spdlog/issues/609
-      REXLOG_INLINE inline void sleep_for_millis(unsigned int milliseconds) REXLOG_NOEXCEPT
+      REXLOG_INLINE void sleep_for_millis(unsigned int milliseconds) REXLOG_NOEXCEPT
       {
 #if defined(_WIN32)
         ::Sleep(milliseconds);
@@ -357,12 +357,12 @@ namespace rexlog
 #endif
       }
 
-      REXLOG_INLINE inline rex::DebugString filename_to_str(const filename_t& filename)
+      REXLOG_INLINE rex::DebugString filename_to_str(const filename_t& filename)
       {
         return rex::DebugString(filename);
       }
 
-      REXLOG_INLINE inline int pid() REXLOG_NOEXCEPT
+      REXLOG_INLINE int pid() REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
         return conditional_static_cast<int>(::GetCurrentProcessId());
@@ -373,7 +373,7 @@ namespace rexlog
 
       // Determine if the terminal supports colors
       // Based on: https://github.com/agauniyal/rang/
-      REXLOG_INLINE inline bool is_color_terminal() REXLOG_NOEXCEPT
+      REXLOG_INLINE bool is_color_terminal() REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
         return true;
@@ -404,7 +404,7 @@ namespace rexlog
 
       // Determine if the terminal attached
       // Source: https://github.com/agauniyal/rang/
-      REXLOG_INLINE inline bool in_terminal(FILE* file) REXLOG_NOEXCEPT
+      REXLOG_INLINE bool in_terminal(FILE* file) REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
         return ::_isatty(_fileno(file)) != 0;
@@ -425,7 +425,7 @@ namespace rexlog
 
       // create the given directory - and all directories leading to it
       // return true on success or if the directory already exists
-      REXLOG_INLINE inline bool create_dir(const filename_t& path)
+      REXLOG_INLINE bool create_dir(const filename_t& path)
       {
         if(path_exists(path))
         {
@@ -464,7 +464,7 @@ namespace rexlog
       // "abc/" => "abc"
       // "abc" => ""
       // "abc///" => "abc//"
-      REXLOG_INLINE inline filename_t dir_name(const filename_t& path)
+      REXLOG_INLINE filename_t dir_name(const filename_t& path)
       {
         auto pos = path.find_last_of(rsl::string_view(folder_seps_filename));
         return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t {};
@@ -477,9 +477,9 @@ namespace rexlog
         return rex::DebugString {}; // not supported under uwp
   #else
         size_t len = 0;
-        char buf[128];
-        bool const ok = ::getenv_s(&len, buf, sizeof(buf), field) == 0;
-        return ok ? rex::DebugString(buf) : rex::DebugString {};
+        rsl::array<char, 128> buf;
+        bool const ok = ::getenv_s(&len, buf.data(), buf.size(), field) == 0;
+        return ok ? rex::DebugString(buf.data()) : rex::DebugString {};
   #endif
 #else // revert to getenv
         char* buf = ::getenv(field);
@@ -489,10 +489,10 @@ namespace rexlog
 
       // Do fsync by FILE handlerpointer
       // Return true on success
-      REXLOG_INLINE inline bool fsync(FILE* fp)
+      REXLOG_INLINE bool fsync(FILE* fp)
       {
 #ifdef _WIN32
-        return FlushFileBuffers(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(fp)))) != 0;
+        return FlushFileBuffers(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(fp)))) != 0; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
 #else
         return ::fsync(fileno(fp)) == 0;
 #endif

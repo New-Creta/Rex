@@ -55,7 +55,7 @@ namespace rexlog
       }
 
       auto sink       = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
-      rsl::shared_ptr<Logger> new_logger = rsl::allocate_shared<AsyncLogger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink), rsl::move(tp), OverflowPolicy);
+      auto new_logger = rsl::allocate_shared<AsyncLogger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink), rsl::move(tp), OverflowPolicy);
       registry_inst.initialize_logger(new_logger);
       return rsl::shared_ptr<AsyncLogger>(rsl::move(new_logger));
     }

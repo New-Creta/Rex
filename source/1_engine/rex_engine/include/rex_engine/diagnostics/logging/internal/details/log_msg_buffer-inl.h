@@ -9,7 +9,7 @@ namespace rexlog
   namespace details
   {
 
-    REXLOG_INLINE inline LogMsgBuffer::LogMsgBuffer(const LogMsg& origMsg)
+    REXLOG_INLINE LogMsgBuffer::LogMsgBuffer(const LogMsg& origMsg)
         : LogMsg {origMsg}
     {
       m_buffer.append(logger_name.begin(), logger_name.end());
@@ -17,7 +17,7 @@ namespace rexlog
       update_string_views();
     }
 
-    REXLOG_INLINE inline LogMsgBuffer::LogMsgBuffer(const LogMsgBuffer& other)
+    REXLOG_INLINE LogMsgBuffer::LogMsgBuffer(const LogMsgBuffer& other)
         : LogMsg {other}
     {
       m_buffer.append(logger_name.begin(), logger_name.end());
@@ -25,14 +25,14 @@ namespace rexlog
       update_string_views();
     }
 
-    REXLOG_INLINE inline LogMsgBuffer::LogMsgBuffer(LogMsgBuffer&& other) REXLOG_NOEXCEPT 
+    REXLOG_INLINE LogMsgBuffer::LogMsgBuffer(LogMsgBuffer&& other) REXLOG_NOEXCEPT 
       : LogMsg {other}
       , m_buffer {rsl::move(other.m_buffer)}
     {
       update_string_views();
     }
 
-    REXLOG_INLINE inline LogMsgBuffer& LogMsgBuffer::operator=(const LogMsgBuffer& other)
+    REXLOG_INLINE LogMsgBuffer& LogMsgBuffer::operator=(const LogMsgBuffer& other)
     {
       LogMsg::operator=(other);
       m_buffer.clear();
@@ -41,7 +41,7 @@ namespace rexlog
       return *this;
     }
 
-    REXLOG_INLINE inline LogMsgBuffer& LogMsgBuffer::operator=(LogMsgBuffer&& other) REXLOG_NOEXCEPT
+    REXLOG_INLINE LogMsgBuffer& LogMsgBuffer::operator=(LogMsgBuffer&& other) REXLOG_NOEXCEPT
     {
       LogMsg::operator=(other);
       m_buffer = rsl::move(other.m_buffer);
@@ -49,7 +49,7 @@ namespace rexlog
       return *this;
     }
 
-    REXLOG_INLINE inline void LogMsgBuffer::update_string_views()
+    REXLOG_INLINE void LogMsgBuffer::update_string_views()
     {
       logger_name = string_view_t {m_buffer.data(), logger_name.size()};
       payload     = string_view_t {m_buffer.data() + logger_name.size(), payload.size()};

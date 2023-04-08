@@ -12,7 +12,7 @@ namespace rexlog
   {
 
     // stop the worker thread and join it
-    REXLOG_INLINE inline PeriodicWorker::~PeriodicWorker()
+    REXLOG_INLINE PeriodicWorker::~PeriodicWorker()
     {
       if(m_worker_thread.joinable())
       {

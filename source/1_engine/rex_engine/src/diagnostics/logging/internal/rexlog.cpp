@@ -11,7 +11,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/details/os-inl.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry-inl.h"
-#include "rex_engine/diagnostics/logging/internal/Logger-inl.h"
+#include "rex_engine/diagnostics/logging/internal/logger-inl.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter-inl.h"
 #include "rex_engine/diagnostics/logging/internal/rexlog-inl.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink-inl.h"

@@ -35,10 +35,10 @@ namespace rexlog
       void flush() override;
       void set_pattern(const rex::DebugString& pattern) override;
 
-      void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) override;
+      void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) override;
 
-    protected:
-      mutex_t& m_mutex;
+    private:
+      mutex_t* m_mutex;
       FILE* m_file;
       rsl::unique_ptr<rexlog::formatter> m_formatter;
 #ifdef _WIN32

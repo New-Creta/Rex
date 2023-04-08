@@ -30,9 +30,9 @@ namespace rexlog
 
     template <typename ConsoleMutex>
     REXLOG_INLINE StdoutSinkBase<ConsoleMutex>::StdoutSinkBase(FILE* file)
-        : m_mutex(ConsoleMutex::mutex())
+        : m_mutex(&ConsoleMutex::mutex())
         , m_file(file)
-        , m_formatter(details::make_unique<rexlog::PatternFormatter>()), m_handle(reinterpret_cast<HANDLE>(::_get_osfhandle(::_fileno(m_file))))
+        , m_formatter(details::make_unique<rexlog::PatternFormatter>()), m_handle(reinterpret_cast<HANDLE>(::_get_osfhandle(::_fileno(m_file)))) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
     {
 #ifdef _WIN32
       // get windows handle from the FILE* object
@@ -57,10 +57,10 @@ namespace rexlog
       {
         return;
       }
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
       memory_buf_t formatted;
       m_formatter->format(msg, formatted);
-      ::fflush(m_file); // flush in case there is something in this file_ already
+      REX_ASSERT_X(::fflush(m_file), "Failed to flush buffer"); // flush in case there is something in this file_ already
       auto size           = static_cast<DWORD>(formatted.size());
       DWORD bytes_written = 0;
       bool const ok             = ::WriteFile(m_handle, formatted.data(), size, &bytes_written, nullptr) != 0;
@@ -72,7 +72,7 @@ namespace rexlog
         throw_rexlog_ex(err);
       }
 #else
-      rsl::unique_lock<mutex_t> lock(m_mutex);
+      rsl::unique_lock<mutex_t> lock(*m_mutex);
       memory_buf_t formatted;
       m_formatter->format(msg, formatted);
       ::fwrite(formatted.data(), sizeof(char), formatted.size(), file_);
@@ -83,22 +83,22 @@ namespace rexlog
     template <typename ConsoleMutex>
     REXLOG_INLINE void StdoutSinkBase<ConsoleMutex>::flush()
     {
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
-      fflush(m_file);
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
+      REX_ASSERT_X(::fflush(m_file), "Failed to flush buffer");
     }
 
     template <typename ConsoleMutex>
     REXLOG_INLINE void StdoutSinkBase<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
     {
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
       m_formatter = rsl::make_unique<rexlog::PatternFormatter>(pattern);
     }
 
     template <typename ConsoleMutex>
-    REXLOG_INLINE void StdoutSinkBase<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter)
+    REXLOG_INLINE void StdoutSinkBase<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
     {
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
-      m_formatter = rsl::move(sink_formatter);
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
+      m_formatter = rsl::move(sinkFormatter);
     }
 
     // stdout sink

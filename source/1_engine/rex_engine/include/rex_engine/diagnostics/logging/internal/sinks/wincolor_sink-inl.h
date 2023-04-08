@@ -15,7 +15,7 @@ namespace rexlog
     template <typename ConsoleMutex>
     REXLOG_INLINE WincolorSink<ConsoleMutex>::WincolorSink(void* outHandle, ColorMode mode)
         : m_out_handle(outHandle)
-        , m_mutex(ConsoleMutex::mutex())
+        , m_mutex(&ConsoleMutex::mutex())
         , m_formatter(details::make_unique<rexlog::PatternFormatter>())
     {
       set_color_mode_impl(mode);
@@ -39,8 +39,8 @@ namespace rexlog
     template <typename ConsoleMutex>
     void REXLOG_INLINE WincolorSink<ConsoleMutex>::set_color(level::LevelEnum level, rsl::uint16 color)
     {
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
-      m_colors[static_cast<size_t>(level)] = color;
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
+      m_colors[static_cast<count_t>(level)] = color;
     }
 
     template <typename ConsoleMutex>
@@ -51,7 +51,7 @@ namespace rexlog
         return;
       }
 
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
       msg.color_range_start = 0;
       msg.color_range_end   = 0;
       memory_buf_t formatted;
@@ -61,7 +61,7 @@ namespace rexlog
         // before color range
         print_range_impl(formatted, 0, msg.color_range_start);
         // in color range
-        auto orig_attribs = static_cast<WORD>(set_foreground_color_impl(m_colors[static_cast<size_t>(msg.level)]));
+        auto orig_attribs = static_cast<WORD>(set_foreground_color_impl(m_colors[static_cast<count_t>(msg.level)]));
         print_range_impl(formatted, msg.color_range_start, msg.color_range_end);
         // reset to orig colors
         ::SetConsoleTextAttribute(static_cast<HANDLE>(m_out_handle), orig_attribs);
@@ -82,21 +82,21 @@ namespace rexlog
     template <typename ConsoleMutex>
     void REXLOG_INLINE WincolorSink<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
     {
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
       m_formatter = rsl::make_unique<PatternFormatter>(pattern);
     }
 
     template <typename ConsoleMutex>
     void REXLOG_INLINE WincolorSink<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
     {
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
       m_formatter = rsl::move(sinkFormatter);
     }
 
     template <typename ConsoleMutex>
     void REXLOG_INLINE WincolorSink<ConsoleMutex>::set_color_mode(ColorMode mode)
     {
-      rsl::unique_lock<mutex_t> const lock(m_mutex);
+      rsl::unique_lock<mutex_t> const lock(*m_mutex);
       set_color_mode_impl(mode);
     }
 
@@ -128,7 +128,7 @@ namespace rexlog
       }
 
       // change only the foreground bits (lowest 4 bits)
-      auto new_attribs = static_cast<WORD>(attribs) | (orig_buffer_info.wAttributes & 0xfff0);
+      auto new_attribs = static_cast<WORD>(attribs) | (orig_buffer_info.wAttributes & 0xfff0); // NOLINT(hicpp-signed-bitwise)
       auto ignored     = ::SetConsoleTextAttribute(static_cast<HANDLE>(m_out_handle), static_cast<WORD>(new_attribs));
       (void)(ignored);
       return static_cast<rsl::uint16>(orig_buffer_info.wAttributes); // return orig attribs

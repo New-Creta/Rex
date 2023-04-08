@@ -47,9 +47,9 @@ namespace rex
 
     // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
 
-    rexlog::Logger* Logger = find_logger(category.get_category_name());
-    if(Logger != nullptr)
-      return *Logger;
+    rexlog::Logger* logger = find_logger(category.get_category_name());
+    if(logger != nullptr)
+      return *logger;
 
     // rsl::filesystem::path working_dir(rsl::filesystem::current_path());
     // rsl::filesystem::path log_dir("log");

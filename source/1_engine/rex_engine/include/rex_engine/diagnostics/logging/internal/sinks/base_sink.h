@@ -36,14 +36,18 @@ namespace rexlog
       void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) final;
 
     protected:
-      // sink formatter
-      rsl::unique_ptr<rexlog::formatter> m_formatter;
-      Mutex m_mutex;
-
       virtual void sink_it_impl(const details::LogMsg& msg) = 0;
       virtual void flush_impl()                              = 0;
       virtual void set_pattern_impl(const rex::DebugString& pattern);
       virtual void set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sinkFormatter);
+
+      rexlog::formatter* formatter();
+      Mutex& mutex();
+
+    private:
+      // sink formatter
+      rsl::unique_ptr<rexlog::formatter> m_formatter;
+      Mutex m_mutex;
     };
   } // namespace sinks
 } // namespace rexlog

@@ -15,7 +15,7 @@ namespace rexlog
   namespace details
   {
 
-    REXLOG_INLINE inline ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop)
+    REXLOG_INLINE ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop)
         : m_q(qMaxItems)
     {
       if(threadsN == 0 || threadsN > 1000)
@@ -34,19 +34,19 @@ namespace rexlog
       }
     }
 
-    REXLOG_INLINE inline ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart)
+    REXLOG_INLINE ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart)
         : ThreadPool(qMaxItems, threadsN, onThreadStart, [] {})
     {
     }
 
-    REXLOG_INLINE inline ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN)
+    REXLOG_INLINE ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN)
         : ThreadPool(
               qMaxItems, threadsN, [] {}, [] {})
     {
     }
 
     // message all threads to terminate gracefully join them
-    REXLOG_INLINE inline ThreadPool::~ThreadPool()
+    REXLOG_INLINE ThreadPool::~ThreadPool()
     {
       REXLOG_TRY
       {
