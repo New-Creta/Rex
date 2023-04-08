@@ -8,6 +8,7 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>

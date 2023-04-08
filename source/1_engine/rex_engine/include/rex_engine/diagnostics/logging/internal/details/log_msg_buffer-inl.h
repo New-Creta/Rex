@@ -25,9 +25,7 @@ namespace rexlog
       update_string_views();
     }
 
-    REXLOG_INLINE LogMsgBuffer::LogMsgBuffer(LogMsgBuffer&& other) REXLOG_NOEXCEPT 
-      : LogMsg {other}
-      , m_buffer {rsl::move(other.m_buffer)}
+    REXLOG_INLINE LogMsgBuffer::LogMsgBuffer(LogMsgBuffer&& other) REXLOG_NOEXCEPT : LogMsg {other}, m_buffer {rsl::move(other.m_buffer)}
     {
       update_string_views();
     }

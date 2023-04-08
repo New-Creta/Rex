@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_std/tuple.h"
 
-#include "rex_engine/diagnostics/logging/internal/common.h"
 #include <tuple>
 
 namespace rexlog

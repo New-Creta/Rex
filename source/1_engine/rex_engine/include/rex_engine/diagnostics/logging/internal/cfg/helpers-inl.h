@@ -2,17 +2,16 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/cfg/helpers.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
+#include "rex_engine/diagnostics/logging/internal/rexlog.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/internal/utility/pair.h"
 #include "rex_std/sstream.h"
 #include "rex_std/string.h"
 #include "rex_std/utility.h"
-
-#include "rex_engine/diagnostics/logging/internal/cfg/helpers.h"
-#include "rex_engine/diagnostics/logging/internal/details/os.h"
-#include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/diagnostics/logging/internal/rexlog.h"
 
 namespace rexlog
 {
@@ -90,13 +89,13 @@ namespace rexlog
         auto key_vals = extract_key_vals_impl(input);
         rex::DebugHashTable<rex::DebugString, level::LevelEnum> levels;
         level::LevelEnum global_level = level::Info;
-        bool global_level_found        = false;
+        bool global_level_found       = false;
 
         for(auto& name_level: key_vals)
         {
           const auto& logger_name = name_level.key;
-          auto level_name   = rex::DebugString(to_lower_impl(name_level.value));
-          auto level        = level::from_str(level_name);
+          auto level_name         = rex::DebugString(to_lower_impl(name_level.value));
+          auto level              = level::from_str(level_name);
           // ignore unrecognized level names
           if(level == level::Off && level_name != "off")
           {

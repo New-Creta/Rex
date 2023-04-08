@@ -4,14 +4,15 @@
 
 #ifdef __ANDROID__
 
-  #include <android/log.h>
-  #include <chrono>
-  #include <mutex>
   #include "rex_engine/diagnostics/logging/internal/details/fmt_helper.h"
   #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
   #include "rex_engine/diagnostics/logging/internal/details/os.h"
   #include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
   #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+
+  #include <android/log.h>
+  #include <chrono>
+  #include <mutex>
   #include <string>
   #include <thread>
   #include <type_traits>

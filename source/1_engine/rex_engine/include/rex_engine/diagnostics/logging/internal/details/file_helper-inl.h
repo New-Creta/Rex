@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "rex_engine/memory/global_allocator.h"
-
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/memory/global_allocator.h"
 
 namespace rexlog
 {
@@ -123,8 +122,8 @@ namespace rexlog
 
     REXLOG_INLINE void FileHelper::write(const memory_buf_t& buf)
     {
-      size_t const msg_size = buf.size();
-      const auto *data       = buf.data();
+      const size_t msg_size = buf.size();
+      const auto* data      = buf.data();
       if(fwrite(data, 1, msg_size, m_fd) != msg_size)
       {
         rex::DebugString err(rex::global_debug_allocator());

@@ -9,10 +9,9 @@
 // dequeue_for(..) - will block until the queue is not empty or timeout have
 // passed.
 
+#include "rex_engine/diagnostics/logging/internal/details/circular_q.h"
 #include "rex_std/condition_variable.h"
 #include "rex_std/mutex.h"
-
-#include "rex_engine/diagnostics/logging/internal/details/circular_q.h"
 
 namespace rexlog
 {
@@ -45,7 +44,7 @@ namespace rexlog
       void enqueue_nowait(T&& item)
       {
         {
-          rsl::unique_lock<rsl::mutex> const lock(m_queue_mutex);
+          const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
           m_q.push_back(rsl::move(item));
         }
         m_push_cv.notify_one();
@@ -130,19 +129,19 @@ namespace rexlog
 
       size_t overrun_counter()
       {
-        rsl::unique_lock<rsl::mutex> const lock(m_queue_mutex);
+        const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
         return m_q.overrun_counter();
       }
 
       size_t size()
       {
-        rsl::unique_lock<rsl::mutex> const lock(m_queue_mutex);
+        const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
         return m_q.size();
       }
 
       void reset_overrun_counter()
       {
-        rsl::unique_lock<rsl::mutex> const lock(m_queue_mutex);
+        const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
         m_q.reset_overrun_counter();
       }
 

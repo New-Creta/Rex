@@ -54,7 +54,7 @@ namespace rexlog
     template <typename Mutex>
     REXLOG_INLINE filename_t RotatingFileSink<Mutex>::filename()
     {
-      rsl::unique_lock<Mutex> const lock(BaseSink<Mutex>::mutex());
+      const rsl::unique_lock<Mutex> lock(BaseSink<Mutex>::mutex());
       return m_file_helper.filename();
     }
 
@@ -101,12 +101,12 @@ namespace rexlog
       m_file_helper.close();
       for(auto i = m_max_files; i > 0; --i)
       {
-        filename_t const src = calc_filename(m_base_filename, i - 1);
+        const filename_t src = calc_filename(m_base_filename, i - 1);
         if(!path_exists(src))
         {
           continue;
         }
-        filename_t const target = calc_filename(m_base_filename, i);
+        const filename_t target = calc_filename(m_base_filename, i);
 
         if(!rename_file_impl(src, target))
         {

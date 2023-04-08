@@ -27,12 +27,12 @@ namespace rexlog
       CircularQ() = default;
 
       explicit CircularQ(size_t maxItems)
-          : m_max_items(maxItems + 1) // one item is reserved as marker for full q
+          : m_max_items(maxItems + 1)                        // one item is reserved as marker for full q
           , m_v(rsl::Size(static_cast<card32>(m_max_items))) // NOLINT(google-readability-casting)
       {
       }
 
-      CircularQ(const CircularQ&)            = default;
+      CircularQ(const CircularQ&) = default;
 
       // move cannot be default,
       // since we need to reset m_head, m_tail, etc to zero in the moved object
@@ -56,7 +56,7 @@ namespace rexlog
         if(m_max_items > 0)
         {
           m_v[m_tail] = rsl::move(item);
-          m_tail     = (m_tail + 1) % m_max_items;
+          m_tail      = (m_tail + 1) % m_max_items;
 
           if(m_tail == m_head) // overrun last item if full
           {
@@ -144,7 +144,7 @@ namespace rexlog
         // put &&other in disabled, but valid state
         other.m_max_items = 0;
         other.m_head = other.m_tail = 0;
-        other.m_overrun_counter    = 0;
+        other.m_overrun_counter     = 0;
       }
     };
   } // namespace details

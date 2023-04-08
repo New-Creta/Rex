@@ -29,12 +29,12 @@ Windows Registry Editor Version 5.00
 
 #pragma once
 
-#include "rex_std/vector.h"
-
-#include <mutex>
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+#include "rex_std/vector.h"
+
+#include <mutex>
 #include <string>
 #include <winbase.h>
 

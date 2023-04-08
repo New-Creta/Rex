@@ -4,6 +4,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
+
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -19,6 +20,7 @@
 #ifdef _WIN32
 
   #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
+
   #include <Windows.h>
   #include <fileapi.h> // for FlushFileBuffers
   #include <io.h>      // for _get_osfhandle, _isatty, _fileno
@@ -78,7 +80,7 @@ namespace rexlog
       REXLOG_INLINE tm localtime(const time_t& time) REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
-        tm tm{};
+        tm tm {};
         REX_ASSERT_X(::localtime_s(&tm, &time) == 0, "failed to convert to local time");
 #else
         tm tm;
@@ -89,14 +91,14 @@ namespace rexlog
 
       REXLOG_INLINE tm localtime() REXLOG_NOEXCEPT
       {
-        time_t const now_t = ::time(nullptr);
+        const time_t now_t = ::time(nullptr);
         return localtime(now_t);
       }
 
       REXLOG_INLINE tm gmtime(const time_t& timeTt) REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
-        tm tm{};
+        tm tm {};
         REX_ASSERT_X(::gmtime_s(&tm, &timeTt), "failed to convert to gm");
 #else
         tm tm;
@@ -107,7 +109,7 @@ namespace rexlog
 
       REXLOG_INLINE tm gmtime() REXLOG_NOEXCEPT
       {
-        time_t const now_t = ::time(nullptr);
+        const time_t now_t = ::time(nullptr);
         return gmtime(now_t);
       }
 
@@ -189,9 +191,9 @@ namespace rexlog
           throw_rexlog_ex("Failed getting file size. fd is null");
         }
 #if defined(_WIN32) && !defined(__CYGWIN__)
-        int const fd = ::_fileno(f);
+        const int fd = ::_fileno(f);
   #if defined(_WIN64) // 64 bits
-        __int64 const ret = ::_filelengthi64(fd);
+        const __int64 ret = ::_filelengthi64(fd);
         if(ret >= 0)
         {
           return static_cast<size_t>(ret);
@@ -478,7 +480,7 @@ namespace rexlog
   #else
         size_t len = 0;
         rsl::array<char, 128> buf;
-        bool const ok = ::getenv_s(&len, buf.data(), buf.size(), field) == 0;
+        const bool ok = ::getenv_s(&len, buf.data(), buf.size(), field) == 0;
         return ok ? rex::DebugString(buf.data()) : rex::DebugString {};
   #endif
 #else // revert to getenv

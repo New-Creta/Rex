@@ -8,6 +8,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink-inl.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink-inl.h"
+
 #include <mutex>
 
 template class REXLOG_API rexlog::sinks::BasicFileSink<rsl::mutex>;

@@ -2,7 +2,6 @@
 
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/types.h"
-
 #include "rex_std/string.h"
 
 namespace rex

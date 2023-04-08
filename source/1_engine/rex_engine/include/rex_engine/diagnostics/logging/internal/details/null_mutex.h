@@ -29,17 +29,17 @@ namespace rexlog
       {
       }
 
-      int load(rsl::memory_order  /*unused*/= rsl::memory_order::relaxed) const
+      int load(rsl::memory_order /*unused*/ = rsl::memory_order::relaxed) const
       {
         return value;
       }
 
-      void store(int newValue, rsl::memory_order  /*unused*/= rsl::memory_order::relaxed)
+      void store(int newValue, rsl::memory_order /*unused*/ = rsl::memory_order::relaxed)
       {
         value = newValue;
       }
 
-      int exchange(int newValue, rsl::memory_order  /*unused*/= rsl::memory_order::relaxed)
+      int exchange(int newValue, rsl::memory_order /*unused*/ = rsl::memory_order::relaxed)
       {
         rsl::swap(newValue, value);
         return newValue; // return value before the call

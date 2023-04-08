@@ -89,8 +89,8 @@ namespace rexlog
 
     void log(log_clock::time_point logTime, SourceLoc loc, level::LevelEnum lvl, string_view_t msg)
     {
-      bool const log_enabled       = should_log(lvl);
-      bool const traceback_enabled = m_tracer.enabled();
+      const bool log_enabled       = should_log(lvl);
+      const bool traceback_enabled = m_tracer.enabled();
       if(!log_enabled && !traceback_enabled)
       {
         return;
@@ -102,8 +102,8 @@ namespace rexlog
 
     void log(SourceLoc loc, level::LevelEnum lvl, string_view_t msg)
     {
-      bool const log_enabled       = should_log(lvl);
-      bool const traceback_enabled = m_tracer.enabled();
+      const bool log_enabled       = should_log(lvl);
+      const bool traceback_enabled = m_tracer.enabled();
       if(!log_enabled && !traceback_enabled)
       {
         return;
@@ -276,14 +276,13 @@ namespace rexlog
 
     void set_name(rex::DebugString&& name);
 
-    private:
-      rex::DebugString m_name;
-      rex::DebugVector<sink_ptr> m_sinks;
-      rexlog::level_t m_level{ level::Info };
-      rexlog::level_t m_flush_level{ level::Off };
-      err_handler m_custom_err_handler{ nullptr };
-      details::Backtracer m_tracer;
-
+  private:
+    rex::DebugString m_name;
+    rex::DebugVector<sink_ptr> m_sinks;
+    rexlog::level_t m_level {level::Info};
+    rexlog::level_t m_flush_level {level::Off};
+    err_handler m_custom_err_handler {nullptr};
+    details::Backtracer m_tracer;
   };
 
   void swap(Logger& a, Logger& b);

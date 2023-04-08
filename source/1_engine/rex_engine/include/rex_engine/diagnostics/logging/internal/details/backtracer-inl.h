@@ -2,29 +2,26 @@
 
 #pragma once
 
-#include "rex_std/mutex.h"
-
 #include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
+#include "rex_std/mutex.h"
 
 namespace rexlog
 {
   namespace details
   {
-    REXLOG_INLINE Backtracer::Backtracer(const Backtracer& other) 
-      : m_enabled(false)
-      , m_messages()
+    REXLOG_INLINE Backtracer::Backtracer(const Backtracer& other)
+        : m_enabled(false)
+        , m_messages()
     {
       const rsl::unique_lock<rsl::mutex> lock(other.m_mutex);
-      m_enabled = other.enabled(); // NOLINT(cppcoreguidelines-prefer-member-initializer)
+      m_enabled  = other.enabled();  // NOLINT(cppcoreguidelines-prefer-member-initializer)
       m_messages = other.m_messages; // NOLINT(cppcoreguidelines-prefer-member-initializer)
     }
 
-    REXLOG_INLINE Backtracer::Backtracer(Backtracer&& other) REXLOG_NOEXCEPT 
-      : m_enabled(false)
-      , m_messages()
+    REXLOG_INLINE Backtracer::Backtracer(Backtracer&& other) REXLOG_NOEXCEPT : m_enabled(false), m_messages()
     {
       const rsl::unique_lock<rsl::mutex> lock(other.m_mutex);
-      m_enabled = other.enabled(); // NOLINT(cppcoreguidelines-prefer-member-initializer)
+      m_enabled  = other.enabled();             // NOLINT(cppcoreguidelines-prefer-member-initializer)
       m_messages = rsl::move(other.m_messages); // NOLINT(cppcoreguidelines-prefer-member-initializer)
     }
 
@@ -33,7 +30,7 @@ namespace rexlog
     REXLOG_INLINE Backtracer& Backtracer::operator=(const Backtracer& other)
     {
       const rsl::unique_lock<rsl::mutex> lock(m_mutex);
-      m_enabled = other.enabled();
+      m_enabled  = other.enabled();
       m_messages = other.m_messages;
       return *this;
     }

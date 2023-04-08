@@ -16,6 +16,7 @@
 #include "rex_engine/diagnostics/logging/internal/rexlog-inl.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink-inl.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink-inl.h"
+
 #include <mutex>
 
 // template instantiate Logger constructor with sinks init list

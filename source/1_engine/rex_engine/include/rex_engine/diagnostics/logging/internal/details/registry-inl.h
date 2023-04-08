@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "rex_engine/memory/global_allocator.h"
-#include "rex_engine/types.h"
-
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
+#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/types.h"
 
 #ifndef REXLOG_DISABLE_DEFAULT_LOGGER
   // support for the default stdout color Logger
@@ -42,7 +41,7 @@ namespace rexlog
       auto color_sink = rsl::allocate_shared<sinks::ansicolor_stdout_sink_mt>(rex::global_debug_allocator());
   #endif
 
-      const char* default_logger_name                 = "";
+      const char* default_logger_name                  = "";
       m_default_logger                                 = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), rex::DebugString(default_logger_name), rsl::move(color_sink));
       m_loggers[rex::DebugString(default_logger_name)] = m_default_logger;
 
@@ -53,13 +52,13 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::register_logger(rsl::shared_ptr<Logger> newLogger)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       register_logger_impl(rsl::move(newLogger));
     }
 
     REXLOG_INLINE void Registry::initialize_logger(rsl::shared_ptr<Logger> newLogger)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       newLogger->set_formatter(m_formatter->clone());
 
       if(m_err_handler)
@@ -87,14 +86,14 @@ namespace rexlog
 
     REXLOG_INLINE rsl::shared_ptr<Logger> Registry::get(const rex::DebugString& loggerName)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       auto found = m_loggers.find(loggerName);
       return found == m_loggers.end() ? nullptr : found->value;
     }
 
     REXLOG_INLINE rsl::shared_ptr<Logger> Registry::default_logger()
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       return m_default_logger;
     }
 
@@ -111,7 +110,7 @@ namespace rexlog
     // default Logger is stored in default_logger_ (for faster retrieval) and in the loggers_ map.
     REXLOG_INLINE void Registry::set_default_logger(rsl::shared_ptr<Logger> newDefaultLogger)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       // remove previous default Logger from the map
       if(m_default_logger != nullptr)
       {
@@ -126,20 +125,20 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::set_tp(rsl::shared_ptr<ThreadPool> tp)
     {
-      rsl::unique_lock<rsl::recursive_mutex> const lock(m_tp_mutex);
+      const rsl::unique_lock<rsl::recursive_mutex> lock(m_tp_mutex);
       m_tp = rsl::move(tp);
     }
 
     REXLOG_INLINE rsl::shared_ptr<ThreadPool> Registry::get_tp()
     {
-      rsl::unique_lock<rsl::recursive_mutex> const lock(m_tp_mutex);
+      const rsl::unique_lock<rsl::recursive_mutex> lock(m_tp_mutex);
       return m_tp;
     }
 
     // Set global formatter. Each sink in each Logger will get a clone of this object
     REXLOG_INLINE void Registry::set_formatter(rsl::unique_ptr<formatter> formatter)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       m_formatter = rsl::move(formatter);
       for(auto& l: m_loggers)
       {
@@ -149,7 +148,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::enable_backtrace(size_t nMessages)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       m_backtrace_n_messages = nMessages;
 
       for(auto& l: m_loggers)
@@ -160,7 +159,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::disable_backtrace()
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       m_backtrace_n_messages = 0;
       for(auto& l: m_loggers)
       {
@@ -170,7 +169,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::set_level(level::LevelEnum logLevel)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       for(auto& l: m_loggers)
       {
         l.value->set_level(logLevel);
@@ -180,7 +179,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::flush_on(level::LevelEnum logLevel)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       for(auto& l: m_loggers)
       {
         l.value->flush_on(logLevel);
@@ -190,7 +189,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::set_error_handler(err_handler handler)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       for(auto& l: m_loggers)
       {
         l.value->set_error_handler(handler);
@@ -200,7 +199,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::apply_all(const rsl::function<void(const rsl::shared_ptr<Logger>)>& fun)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       for(auto& l: m_loggers)
       {
         fun(l.value);
@@ -209,7 +208,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::flush_all()
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       for(auto& l: m_loggers)
       {
         l.value->flush();
@@ -218,7 +217,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::drop(const rex::DebugString& loggerName)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       m_loggers.erase(loggerName);
       if(m_default_logger && m_default_logger->name() == loggerName)
       {
@@ -228,7 +227,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::drop_all()
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       m_loggers.clear();
       m_default_logger.reset();
     }
@@ -237,14 +236,14 @@ namespace rexlog
     REXLOG_INLINE void Registry::shutdown()
     {
       {
-        rsl::unique_lock<rsl::mutex> const lock(m_flusher_mutex);
+        const rsl::unique_lock<rsl::mutex> lock(m_flusher_mutex);
         m_periodic_flusher.reset();
       }
 
       drop_all();
 
       {
-        rsl::unique_lock<rsl::recursive_mutex> const lock(m_tp_mutex);
+        const rsl::unique_lock<rsl::recursive_mutex> lock(m_tp_mutex);
         m_tp.reset();
       }
     }
@@ -256,16 +255,16 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::set_automatic_registration(bool automaticRegistration)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       m_automatic_registration = automaticRegistration;
     }
 
     REXLOG_INLINE void Registry::set_levels(log_levels levels, const level::LevelEnum* globalLevel)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
-      m_log_levels                 = rsl::move(levels);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
+      m_log_levels                = rsl::move(levels);
       auto global_level_requested = globalLevel != nullptr;
-      m_global_log_level           = global_level_requested ? *globalLevel : m_global_log_level;
+      m_global_log_level          = global_level_requested ? *globalLevel : m_global_log_level;
 
       for(auto& logger: m_loggers)
       {
@@ -289,7 +288,7 @@ namespace rexlog
 
     REXLOG_INLINE void Registry::apply_logger_env_levels(rsl::shared_ptr<Logger> newLogger)
     {
-      rsl::unique_lock<rsl::mutex> const lock(m_logger_map_mutex);
+      const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
       auto it        = m_log_levels.find(newLogger->name());
       auto new_level = it != m_log_levels.end() ? it->value : m_global_log_level;
       newLogger->set_level(new_level);

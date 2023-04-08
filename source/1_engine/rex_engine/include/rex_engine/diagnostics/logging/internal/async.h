@@ -13,16 +13,15 @@
 // This is because each message in the queue holds a shared_ptr to the
 // originating Logger.
 
-#include <utility>
-
+#include "rex_engine/diagnostics/logging/internal/async_logger.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
+#include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 
-#include "rex_engine/diagnostics/logging/internal/async_logger.h"
-#include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
+#include <utility>
 
 namespace rexlog
 {
@@ -46,7 +45,7 @@ namespace rexlog
       // create global thread pool if not already exists..
 
       auto& mutex = registry_inst.tp_mutex();
-      rsl::unique_lock<rsl::recursive_mutex> const tp_lock(mutex);
+      const rsl::unique_lock<rsl::recursive_mutex> tp_lock(mutex);
       auto tp = registry_inst.get_tp();
       if(tp == nullptr)
       {

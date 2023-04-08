@@ -3,9 +3,10 @@
 
 #if defined(_WIN32)
 
-  #include <mutex>
   #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
   #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+
+  #include <mutex>
   #include <string>
 
 // Avoid including windows.h (https://stackoverflow.com/a/30741042)

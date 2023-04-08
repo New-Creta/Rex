@@ -3,6 +3,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
+
 #include <algorithm>
 #include <iterator>
 
@@ -30,9 +31,11 @@ namespace rexlog
 
     REXLOG_INLINE rexlog::level::LevelEnum from_str(const rex::DebugString& name) REXLOG_NOEXCEPT
     {
-      const auto *it = rsl::find(rsl::begin(level_string_views), rsl::end(level_string_views), name);
+      const auto* it = rsl::find(rsl::begin(level_string_views), rsl::end(level_string_views), name);
       if(it != rsl::end(level_string_views))
-        return static_cast<level::LevelEnum>(rsl::distance(rsl::begin(level_string_views), it));
+      {
+        return static_cast<level::LevelEnum>(rsl::distance(rsl::cbegin(level_string_views), it));
+      }
 
       // check also for "warn" and "err" before giving up..
       if(name == "warn")

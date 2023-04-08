@@ -6,6 +6,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h"
+
 #include <wincon.h>
 
 namespace rexlog
@@ -39,7 +40,7 @@ namespace rexlog
     template <typename ConsoleMutex>
     void REXLOG_INLINE WincolorSink<ConsoleMutex>::set_color(level::LevelEnum level, rsl::uint16 color)
     {
-      rsl::unique_lock<mutex_t> const lock(*m_mutex);
+      const rsl::unique_lock<mutex_t> lock(*m_mutex);
       m_colors[static_cast<count_t>(level)] = color;
     }
 
@@ -51,7 +52,7 @@ namespace rexlog
         return;
       }
 
-      rsl::unique_lock<mutex_t> const lock(*m_mutex);
+      const rsl::unique_lock<mutex_t> lock(*m_mutex);
       msg.color_range_start = 0;
       msg.color_range_end   = 0;
       memory_buf_t formatted;
@@ -82,21 +83,21 @@ namespace rexlog
     template <typename ConsoleMutex>
     void REXLOG_INLINE WincolorSink<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
     {
-      rsl::unique_lock<mutex_t> const lock(*m_mutex);
+      const rsl::unique_lock<mutex_t> lock(*m_mutex);
       m_formatter = rsl::make_unique<PatternFormatter>(pattern);
     }
 
     template <typename ConsoleMutex>
     void REXLOG_INLINE WincolorSink<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
     {
-      rsl::unique_lock<mutex_t> const lock(*m_mutex);
+      const rsl::unique_lock<mutex_t> lock(*m_mutex);
       m_formatter = rsl::move(sinkFormatter);
     }
 
     template <typename ConsoleMutex>
     void REXLOG_INLINE WincolorSink<ConsoleMutex>::set_color_mode(ColorMode mode)
     {
-      rsl::unique_lock<mutex_t> const lock(*m_mutex);
+      const rsl::unique_lock<mutex_t> lock(*m_mutex);
       set_color_mode_impl(mode);
     }
 
@@ -106,9 +107,9 @@ namespace rexlog
       if(mode == ColorMode::Automatic)
       {
         // should do colors only if out_handle_  points to actual console.
-        DWORD console_mode = 0;
-        bool const in_console   = ::GetConsoleMode(static_cast<HANDLE>(m_out_handle), &console_mode) != 0;
-        m_should_do_colors = in_console;
+        DWORD console_mode    = 0;
+        const bool in_console = ::GetConsoleMode(static_cast<HANDLE>(m_out_handle), &console_mode) != 0;
+        m_should_do_colors    = in_console;
       }
       else
       {

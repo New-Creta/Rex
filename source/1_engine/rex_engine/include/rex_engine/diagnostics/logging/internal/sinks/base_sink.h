@@ -37,7 +37,7 @@ namespace rexlog
 
     protected:
       virtual void sink_it_impl(const details::LogMsg& msg) = 0;
-      virtual void flush_impl()                              = 0;
+      virtual void flush_impl()                             = 0;
       virtual void set_pattern_impl(const rex::DebugString& pattern);
       virtual void set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sinkFormatter);
 

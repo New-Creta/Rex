@@ -2,14 +2,13 @@
 
 #pragma once
 
-#include "rex_std/memory.h"
-#include "rex_std/vector.h"
-
 #include "rex_engine/diagnostics/logging/internal/details/fmt_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/formatter.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
+#include "rex_std/memory.h"
+#include "rex_std/vector.h"
 
 // NOLINTBEGIN(readability-identifier-naming)
 
@@ -28,7 +27,7 @@ namespace rexlog
       ScopedPadder(size_t wrapped_size, const PaddingInfo& padinfo, memory_buf_t& dest)
           : m_padinfo(&padinfo)
           , m_dest(&dest)
-        , m_remaining_pag(static_cast<long>(padinfo.width) - static_cast<long>(wrapped_size))
+          , m_remaining_pag(static_cast<long>(padinfo.width) - static_cast<long>(wrapped_size))
       {
         if(m_remaining_pag <= 0)
         {
@@ -50,7 +49,7 @@ namespace rexlog
       }
 
       ScopedPadder(const ScopedPadder&) = delete;
-      ScopedPadder(ScopedPadder&&) = delete;
+      ScopedPadder(ScopedPadder&&)      = delete;
       ~ScopedPadder()
       {
         if(m_remaining_pag >= 0)
@@ -65,14 +64,13 @@ namespace rexlog
       }
 
       ScopedPadder& operator=(const ScopedPadder&) = delete;
-      ScopedPadder& operator=(ScopedPadder&&) = delete;
+      ScopedPadder& operator=(ScopedPadder&&)      = delete;
 
       template <typename T>
       static unsigned int count_digits(T n)
       {
         return fmt_helper::count_digits(n);
       }
-
 
     private:
       void pad_it(unsigned long count)
@@ -620,7 +618,7 @@ namespace rexlog
 
       z_formatter()                              = default;
       z_formatter(const z_formatter&)            = delete;
-      ~z_formatter() override = default;
+      ~z_formatter() override                    = default;
       z_formatter& operator=(const z_formatter&) = delete;
 
       void format(const details::LogMsg& msg, const tm& tm_time, memory_buf_t& dest) override
@@ -628,8 +626,8 @@ namespace rexlog
         const size_t field_size = 6;
         ScopedPadder p(field_size, paddinginfo(), dest);
 
-        auto total_minutes = get_cached_offset(msg, tm_time);
-        const bool is_negative   = total_minutes < 0;
+        auto total_minutes     = get_cached_offset(msg, tm_time);
+        const bool is_negative = total_minutes < 0;
         if(is_negative)
         {
           total_minutes = -total_minutes;
@@ -880,7 +878,7 @@ namespace rexlog
           ScopedPadder p(0, paddinginfo(), dest);
           return;
         }
-        const auto filename    = basename(msg.source.filename); // NOLINT(readability-qualified-auto)
+        const auto filename     = basename(msg.source.filename); // NOLINT(readability-qualified-auto)
         const count_t text_size = paddinginfo().enabled() ? rsl::char_traits<char>::length(filename) : 0;
         ScopedPadder p(text_size, paddinginfo(), dest);
         fmt_helper::append_string_view(rsl::string_view(filename), dest);

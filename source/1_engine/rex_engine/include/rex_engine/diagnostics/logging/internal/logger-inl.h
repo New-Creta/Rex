@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "rex_engine/memory/global_allocator.h"
-#include "rex_engine/types.h"
-#include "rex_std/iterator.h"
-
 #include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
 #include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
+#include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/types.h"
+#include "rex_std/iterator.h"
+
 #include <cstdio>
 
 namespace rexlog
@@ -26,13 +26,12 @@ namespace rexlog
   {
   }
 
-  REXLOG_INLINE Logger::Logger(Logger&& other) REXLOG_NOEXCEPT 
-    : m_name(rsl::move(other.m_name)),
-    m_sinks(rsl::move(other.m_sinks)),
-    m_level(other.m_level.load(rsl::memory_order_relaxed)),
-    m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed)),
-    m_custom_err_handler(rsl::move(other.m_custom_err_handler)),
-    m_tracer(rsl::move(other.m_tracer))
+  REXLOG_INLINE Logger::Logger(Logger&& other) REXLOG_NOEXCEPT : m_name(rsl::move(other.m_name)),
+                                                                 m_sinks(rsl::move(other.m_sinks)),
+                                                                 m_level(other.m_level.load(rsl::memory_order_relaxed)),
+                                                                 m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed)),
+                                                                 m_custom_err_handler(rsl::move(other.m_custom_err_handler)),
+                                                                 m_tracer(rsl::move(other.m_tracer))
   {
   }
 
@@ -166,7 +165,7 @@ namespace rexlog
   // create new Logger with same sinks and configuration.
   REXLOG_INLINE rsl::shared_ptr<Logger> Logger::clone(rex::DebugString loggerName)
   {
-    auto cloned   = rsl::allocate_shared<Logger>(rex::global_debug_allocator(), *this);
+    auto cloned    = rsl::allocate_shared<Logger>(rex::global_debug_allocator(), *this);
     cloned->m_name = rsl::move(loggerName);
     return cloned;
   }
@@ -245,7 +244,7 @@ namespace rexlog
       static rsl::mutex mutex;
       static rsl::chrono::system_clock::time_point last_report_time;
       static size_t err_counter = 0;
-      rsl::unique_lock<rsl::mutex> const lk {mutex};
+      const rsl::unique_lock<rsl::mutex> lk {mutex};
       auto now = system_clock::now();
       err_counter++;
       if(now - last_report_time < rsl::chrono::seconds(1))

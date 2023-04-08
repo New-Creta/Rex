@@ -2,13 +2,13 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include "rex_std/memory.h"
 
 #include <array>
 #include <mutex>
-#include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
-#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include <string>
 
 namespace rexlog

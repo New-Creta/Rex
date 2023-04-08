@@ -7,6 +7,7 @@
 #include "rex_engine/diagnostics/logging/internal/async.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_sinks-inl.h"
+
 #include <mutex>
 
 template class REXLOG_API rexlog::sinks::StdoutSinkBase<rexlog::details::ConsoleMutex>;

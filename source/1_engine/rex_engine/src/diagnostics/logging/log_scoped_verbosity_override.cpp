@@ -7,11 +7,11 @@ namespace rex
   //-------------------------------------------------------------------------
   /** Back up the existing verbosity for the category then sets new verbosity.*/
   LogScopedVerbosityOverride::LogScopedVerbosityOverride(LogCategoryBase* category, LogVerbosity verbosity)
-      : m_saved_category(category), m_saved_verbosity(m_saved_category->get_verbosity())
+      : m_saved_category(category)
+      , m_saved_verbosity(m_saved_category->get_verbosity())
   {
     // assert(saved_category_ != nullptr);
 
-    
     m_saved_category->set_verbosity(verbosity);
   }
 

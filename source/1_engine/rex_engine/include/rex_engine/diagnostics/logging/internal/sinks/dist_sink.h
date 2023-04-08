@@ -3,15 +3,15 @@
 #pragma once
 
 #include "base_sink.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 
 #include <algorithm>
 #include <mutex>
-#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
-#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 
 // Distribution sink (mux). Stores a vector of sinks which get called when log
 // is called

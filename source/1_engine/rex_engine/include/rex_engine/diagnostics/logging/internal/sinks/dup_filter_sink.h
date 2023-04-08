@@ -3,12 +3,12 @@
 #pragma once
 
 #include "dist_sink.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 
 #include <chrono>
 #include <cstdio>
 #include <mutex>
-#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
-#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include <string>
 
 // Duplicate message removal sink.

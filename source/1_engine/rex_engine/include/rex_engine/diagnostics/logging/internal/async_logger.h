@@ -13,9 +13,8 @@
 // Upon destruction, logs all remaining messages in the queue before
 // destructing..
 
-#include "rex_std/memory.h"
-
 #include "rex_engine/diagnostics/logging/internal/logger.h"
+#include "rex_std/memory.h"
 
 namespace rexlog
 {
@@ -23,9 +22,9 @@ namespace rexlog
   // Async overflow policy - block by default.
   enum class AsyncOverflowPolicy
   {
-    Block,         // Block until message can be enqueued
+    Block,        // Block until message can be enqueued
     OverrunOldest // Discard oldest message in the queue if full when trying to
-                   // add new item.
+                  // add new item.
   };
 
   namespace details

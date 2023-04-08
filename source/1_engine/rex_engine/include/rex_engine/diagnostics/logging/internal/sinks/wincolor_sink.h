@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "rex_std/memory.h"
-
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
+#include "rex_std/memory.h"
+
 #include <array>
 #include <cstdint>
 #include <mutex>
@@ -33,8 +33,8 @@ namespace rexlog
 
       // change the color for the given level
       void set_color(level::LevelEnum level, rsl::uint16 color);
-      void log(const details::LogMsg& msg) final ;
-      void flush() final ;
+      void log(const details::LogMsg& msg) final;
+      void flush() final;
       void set_pattern(const rex::DebugString& pattern) final;
       void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) final;
       void set_color_mode(ColorMode mode);
@@ -56,7 +56,7 @@ namespace rexlog
     private:
       void* m_out_handle;
       mutex_t* m_mutex;
-      bool m_should_do_colors{};
+      bool m_should_do_colors {};
       rsl::unique_ptr<rexlog::formatter> m_formatter;
       rsl::array<rsl::uint16, level::NLevels> m_colors;
     };

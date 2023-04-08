@@ -2,15 +2,14 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
+#include "rex_engine/diagnostics/logging/internal/details/mpmc_blocking_q.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/types.h"
 #include "rex_std/chrono.h"
 #include "rex_std/memory.h"
 #include "rex_std/thread.h"
 #include "rex_std/vector.h"
-
-#include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
-#include "rex_engine/diagnostics/logging/internal/details/mpmc_blocking_q.h"
-#include "rex_engine/diagnostics/logging/internal/details/os.h"
 
 namespace rexlog
 {
@@ -53,14 +52,14 @@ namespace rexlog
       async_msg& operator=(async_msg&& other)
       {
         *static_cast<LogMsgBuffer*>(this) = rsl::move(other);
-        msg_type                            = other.msg_type;
-        worker_ptr                          = rsl::move(other.worker_ptr);
+        msg_type                          = other.msg_type;
+        worker_ptr                        = rsl::move(other.worker_ptr);
         return *this;
       }
 #else // (_MSC_VER) && _MSC_VER <= 1800
-      AsyncMsg(AsyncMsg&&)            = default;
+      AsyncMsg(AsyncMsg&&)                 = default;
       AsyncMsg& operator=(const AsyncMsg&) = delete;
-      AsyncMsg& operator=(AsyncMsg&&) = default;
+      AsyncMsg& operator=(AsyncMsg&&)      = default;
 #endif
 
       // construct from LogMsg with given type
@@ -97,11 +96,10 @@ namespace rexlog
       // message all threads to terminate gracefully and join them
       ~ThreadPool();
 
-      ThreadPool(const ThreadPool&)       = delete;
-      ThreadPool(ThreadPool&&)       = delete;
+      ThreadPool(const ThreadPool&)            = delete;
+      ThreadPool(ThreadPool&&)                 = delete;
       ThreadPool& operator=(const ThreadPool&) = delete;
-      ThreadPool& operator=(ThreadPool&&) = delete;
-
+      ThreadPool& operator=(ThreadPool&&)      = delete;
 
       void post_log(async_logger_ptr&& workerPtr, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
       void post_flush(async_logger_ptr&& workerPtr, AsyncOverflowPolicy overflowPolicy);

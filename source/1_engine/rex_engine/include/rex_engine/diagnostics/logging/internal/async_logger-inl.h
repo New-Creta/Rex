@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "rex_std/memory.h"
-
 #include "rex_engine/diagnostics/logging/internal/async_logger.h"
 #include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
+#include "rex_std/memory.h"
+
 #include <string>
 
 REXLOG_INLINE rexlog::AsyncLogger::AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy)
@@ -82,7 +82,7 @@ REXLOG_INLINE void rexlog::AsyncLogger::backend_flush_impl()
 
 REXLOG_INLINE rsl::shared_ptr<rexlog::Logger> rexlog::AsyncLogger::clone(rex::DebugString newName)
 {
-  auto cloned   = rsl::allocate_shared<rexlog::AsyncLogger>(rex::global_debug_allocator(), *this);
+  auto cloned = rsl::allocate_shared<rexlog::AsyncLogger>(rex::global_debug_allocator(), *this);
   cloned->set_name(rsl::move(newName));
   return cloned;
 }

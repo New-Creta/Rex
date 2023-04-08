@@ -6,6 +6,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/async.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+
 #include <mutex>
 //
 // color sinks

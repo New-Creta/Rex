@@ -3,6 +3,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
+
 #include <ctime> // time_t
 
 namespace rexlog
@@ -42,7 +43,7 @@ namespace rexlog
   #endif
 #endif
 
-      REXLOG_CONSTEXPR static const rsl::string_view folder_seps                            = REXLOG_FOLDER_SEPS;
+      REXLOG_CONSTEXPR static const rsl::string_view folder_seps          = REXLOG_FOLDER_SEPS;
       REXLOG_CONSTEXPR static const rsl::string_view folder_seps_filename = REXLOG_FILENAME_T(REXLOG_FOLDER_SEPS);
 
       // fopen_s on non windows for writing
@@ -72,7 +73,7 @@ namespace rexlog
       REXLOG_API size_t thread_id() REXLOG_NOEXCEPT;
 
       // Return current thread id as size_t (from thread local storage)
-      REXLOG_API 
+      REXLOG_API
 
       // This is avoid msvc issue in sleep_for that happens if the clock changes.
       // See https://github.com/gabime/rexlog/issues/609

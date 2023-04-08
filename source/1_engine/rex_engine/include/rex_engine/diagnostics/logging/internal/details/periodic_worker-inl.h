@@ -2,9 +2,8 @@
 
 #pragma once
 
-#include "rex_std/mutex.h"
-
 #include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
+#include "rex_std/mutex.h"
 
 namespace rexlog
 {
@@ -17,7 +16,7 @@ namespace rexlog
       if(m_worker_thread.joinable())
       {
         {
-          rsl::unique_lock<rsl::mutex> const lock(m_mutex);
+          const rsl::unique_lock<rsl::mutex> lock(m_mutex);
           m_active = false;
         }
         m_cv.notify_one();

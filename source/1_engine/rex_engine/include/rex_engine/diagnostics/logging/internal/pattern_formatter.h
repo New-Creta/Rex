@@ -2,15 +2,14 @@
 
 #pragma once
 
-#include "rex_engine/types.h"
-#include "rex_std/memory.h"
-#include "rex_std/unordered_map.h"
-#include "rex_std/vector.h"
-
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/formatter.h"
+#include "rex_engine/types.h"
+#include "rex_std/memory.h"
+#include "rex_std/unordered_map.h"
+#include "rex_std/vector.h"
 
 namespace rexlog
 {
@@ -40,10 +39,10 @@ namespace rexlog
       {
         return m_enabled;
       }
-      size_t width  = 0;
-      PadSide side = PadSide::Left;
-      bool truncate = false;
-      bool m_enabled  = false;
+      size_t width   = 0;
+      PadSide side   = PadSide::Left;
+      bool truncate  = false;
+      bool m_enabled = false;
     };
 
     class REXLOG_API FlagFormatter
@@ -53,8 +52,8 @@ namespace rexlog
           : m_padinfo(padinfo)
       {
       }
-      FlagFormatter()                                                                        = default;
-      virtual ~FlagFormatter()                                                               = default;
+      FlagFormatter()                                                                       = default;
+      virtual ~FlagFormatter()                                                              = default;
       virtual void format(const details::LogMsg& msg, const tm& tmTime, memory_buf_t& dest) = 0;
 
     protected:
@@ -97,10 +96,10 @@ namespace rexlog
 
     PatternFormatter(const PatternFormatter& other) = delete;
     PatternFormatter(PatternFormatter&& other)      = delete;
-    ~PatternFormatter() override = default;
+    ~PatternFormatter() override                    = default;
 
     PatternFormatter& operator=(const PatternFormatter& other) = delete;
-    PatternFormatter& operator=(PatternFormatter&& other) = delete;
+    PatternFormatter& operator=(PatternFormatter&& other)      = delete;
 
     rsl::unique_ptr<formatter> clone() const override;
     void format(const details::LogMsg& msg, memory_buf_t& dest) override;
@@ -119,7 +118,7 @@ namespace rexlog
     rex::DebugString m_eol;
     PatternTimeType m_pattern_time_type;
     bool m_need_localtime;
-    tm m_cached_tm{};
+    tm m_cached_tm {};
     rsl::chrono::seconds m_last_log_secs;
     rex::DebugVector<rsl::unique_ptr<details::FlagFormatter>> m_formatters;
     custom_flags m_custom_handlers;

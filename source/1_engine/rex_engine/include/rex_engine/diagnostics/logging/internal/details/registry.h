@@ -7,15 +7,14 @@
 // If user requests a non existing Logger, nullptr will be returned
 // This class is thread safe
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 #include "rex_std/string.h"
 #include "rex_std/unordered_map.h"
-
-#include "rex_engine/diagnostics/logging/internal/common.h"
-#include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
 
 namespace rexlog
 {

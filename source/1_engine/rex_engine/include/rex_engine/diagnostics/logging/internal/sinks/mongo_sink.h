@@ -11,6 +11,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
 #include <bsoncxx/builder/stream/document.hpp>
@@ -19,7 +20,6 @@
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
-#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 
 namespace rexlog
 {
