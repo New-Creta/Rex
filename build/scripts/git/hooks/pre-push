@@ -5,25 +5,41 @@ import regis.util
 import regis.generation
 import regis.build
 import regis.test
+import threading
 
 root = regis.util.find_root()
+result = 0
+
+def __launch_build(project, config, compiler, shouldClean):
+  global result
+  result |= regis.build.new_build(project, config, compiler, shouldClean)
+
+def __launch_build_thread(project, config, compiler, shouldClean):
+   t = threading.Thread(target=__launch_build, args=(project, config, compiler, shouldClean))
+   t.start()
+   return t
 
 def __generate():
   settings_path = os.path.join(root, "build", "config", "settings.json")
-  proc = regis.generation.new_generation(settings_path, "")
+  proc = regis.generation.new_generation(settings_path, "/noClangTools")
   proc.wait()
   return proc.returncode
 
 def __build():
   result = 0
-  should_clean = False
+  should_clean = True
 
-  result |= regis.build.new_build("regina", "debug", "msvc", should_clean)
-  result |= regis.build.new_build("regina", "debug_opt", "msvc", should_clean)
-  result |= regis.build.new_build("regina", "release", "msvc", should_clean)
-  result |= regis.build.new_build("regina", "debug", "clang", should_clean)
-  result |= regis.build.new_build("regina", "debug_opt", "clang", should_clean)
-  result |= regis.build.new_build("regina", "release", "clang", should_clean)
+  threads : list[threading.Thread] = []
+  threads.append(__launch_build_thread("regina", "debug", "msvc", should_clean))
+  threads.append(__launch_build_thread("regina", "debug_opt", "msvc", should_clean))
+  threads.append(__launch_build_thread("regina", "release", "msvc", should_clean))
+  threads.append(__launch_build_thread("regina", "debug", "clang", should_clean))
+  threads.append(__launch_build_thread("regina", "debug_opt", "clang", should_clean))
+  threads.append(__launch_build_thread("regina", "release", "clang", should_clean))
+
+  for thread in threads:
+     thread.join()
+  
   return result
 
 def __test():
