@@ -19,6 +19,7 @@ from pathlib import Path
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument("-no_clang_tools", help="don't generate a compiler db", action="store_true")
+  
   parser.add_argument("-unittests", help="generate unit tests", action="store_true")
   parser.add_argument("-coverage", help="generate coverage", action="store_true")
   parser.add_argument("-asan", help="generate address sanitizer", action="store_true")

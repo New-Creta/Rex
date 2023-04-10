@@ -49,6 +49,7 @@ if __name__ == "__main__":
     regis.test.test_ubsan()
   if args.all or args.fuzzy:
     regis.test.test_fuzzy_testing()
+
     
   if args.all or args.auto_test:
     
