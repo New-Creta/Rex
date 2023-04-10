@@ -51,6 +51,7 @@ if __name__ == "__main__":
     regis.test.test_fuzzy_testing()
   if args.all or args.auto_test:
     
+    
     if args.auto_test_timeout:
       auto_test_timeout_secs = args.auto_test_timeout
 
