@@ -2,7 +2,7 @@
 
 #include "rex_engine/types.h"
 
-namespace rex 
+namespace rex
 {
   class Resource
   {
@@ -17,4 +17,4 @@ namespace rex
 
     virtual void release() = 0;
   };
-} // namespace rex 
+} // namespace rex

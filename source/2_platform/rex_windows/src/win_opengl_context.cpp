@@ -8,7 +8,7 @@
 
 // NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
 
-namespace rex 
+namespace rex
 {
   struct WglContext
   {
@@ -138,6 +138,6 @@ namespace rex
       }
     } // namespace os
   }   // namespace context
-} // namespace rex 
+} // namespace rex
 
 // NOLINTEND(modernize-use-nullptr,-warnings-as-errors)

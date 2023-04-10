@@ -5,7 +5,7 @@
 #include "rex_windows/win_types.h"
 #include "rex_windows/win_window_class.h"
 
-namespace rex 
+namespace rex
 {
   namespace win32
   {
@@ -39,4 +39,4 @@ namespace rex
       bool m_destroyed;
     };
   } // namespace win32
-} // namespace rex 
+} // namespace rex

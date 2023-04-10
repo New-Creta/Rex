@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef REX_PLATFORM_WINDOWS
-namespace rex 
+namespace rex
 {
   namespace win32
   {
@@ -9,7 +9,7 @@ namespace rex
   }
 
   using namespace win32;
-} // namespace rex 
+} // namespace rex
 #else
   #error Unsupported Platform
 #endif

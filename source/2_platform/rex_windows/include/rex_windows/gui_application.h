@@ -8,7 +8,7 @@
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_types.h"
 
-namespace rex 
+namespace rex
 {
   struct GuiParams
   {
@@ -61,4 +61,4 @@ namespace rex
       rsl::unique_ptr<Internal> m_internal_ptr;
     };
   } // namespace win32
-} // namespace rex 
+} // namespace rex

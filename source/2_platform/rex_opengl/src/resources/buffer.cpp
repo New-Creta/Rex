@@ -8,7 +8,7 @@
   #error "Unsupported platform"
 #endif
 
-namespace rex 
+namespace rex
 {
   //-----------------------------------------------------------------------
   Buffer::Buffer(u32 target)
@@ -94,4 +94,4 @@ namespace rex
     return GL_STATIC_DRAW;
   }
 
-} // namespace rex 
+} // namespace rex

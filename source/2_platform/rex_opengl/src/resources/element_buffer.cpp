@@ -8,7 +8,7 @@
   #error "Unsupported platform"
 #endif
 
-namespace rex 
+namespace rex
 {
   //-----------------------------------------------------------------------
   ElementBuffer::ElementBuffer()
@@ -22,4 +22,4 @@ namespace rex
     GL_CALL(glBufferData(resource_target(), size, data, gl_usage(usage)));
   }
 
-} // namespace rex 
+} // namespace rex

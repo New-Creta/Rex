@@ -15,7 +15,7 @@
 
 REX_STATIC_TODO("sstream define REX_ENABLE_STD_ALIAS(stringstream) is not working properly, adding workaround here");
 
-namespace rex 
+namespace rex
 {
   namespace conversions
   {
@@ -142,5 +142,5 @@ namespace rex
     shader::destroy_shader(m_resource_id);
   }
 
-} // namespace rex 
+} // namespace rex
 #undef REX_ENABLE_STD_ALIAS

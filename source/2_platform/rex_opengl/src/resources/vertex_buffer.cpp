@@ -8,7 +8,7 @@
   #error "Unsupported platform"
 #endif
 
-namespace rex 
+namespace rex
 {
   //-----------------------------------------------------------------------
   VertexBuffer::VertexBuffer()
@@ -22,4 +22,4 @@ namespace rex
     glBufferData(resource_target(), rsl::safe_numeric_cast<GLsizeiptr>(size), data, gl_usage(usage));
   }
 
-} // namespace rex 
+} // namespace rex

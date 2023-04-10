@@ -3,7 +3,7 @@
 #include "rex_engine/types.h"
 #include "rex_opengl/resources/resource.h"
 
-namespace rex 
+namespace rex
 {
   class VertexArray : public Resource
   {
@@ -26,4 +26,4 @@ namespace rex
   private:
     u32 m_resource_id;
   };
-} // namespace rex 
+} // namespace rex

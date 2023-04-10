@@ -8,7 +8,7 @@
   #error "Unsupported platform"
 #endif
 
-namespace rex 
+namespace rex
 {
   namespace texture2d
   {
@@ -216,4 +216,4 @@ namespace rex
     m_description = {};
   }
 
-} // namespace rex 
+} // namespace rex

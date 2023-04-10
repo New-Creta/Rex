@@ -14,7 +14,7 @@
   #pragma warning(pop)
 #endif
 
-namespace rex 
+namespace rex
 {
   //-----------------------------------------------------------------------
   // VERTEX POS
@@ -123,4 +123,4 @@ namespace rex
   //-----------------------------------------------------------------------
   // All available vertex layouts
   const rsl::unordered_map<u64, BufferLayout>& buffer_layouts();
-} // namespace rex 
+} // namespace rex
