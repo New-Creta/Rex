@@ -27,8 +27,8 @@ namespace rex
 
   ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
   {
-    int* p    = nullptr;
-    float* fp = reinterpret_cast<float*>(p);
+    [[maybe_unused]] int* p    = nullptr;
+    [[maybe_unused]] float* fp = reinterpret_cast<float*>(p);
 
     ApplicationCreationParams app_params(rsl::move(platformParams), rsl::move(cmdArgs));
 

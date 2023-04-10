@@ -1,16 +1,49 @@
 #!/usr/bin/env python                                                                    
 
 import os
+import sys
 import regis.util
 import regis.generation
 import regis.build
 import regis.test
+import regis.git
+import regis.rex_json
 
 root = regis.util.find_root()
 
+def __build_regex(files):
+  tmp = '"'
+  for file in files:
+    tmp += '('
+    tmp += file
+    tmp += ')'
+    tmp += '|'
+
+  res = tmp[0:len(tmp) - 1]
+  res += '"'
+    
+  return res
+
+def __gen_cached_changes_regex():
+  changes_cache_filepath = os.path.join(regis.util.find_root(), ".git", "file_changed")
+
+  if os.path.exists(changes_cache_filepath):
+    cached_changes = regis.rex_json.load_file(changes_cache_filepath)
+    local_branch = regis.git.get_local_branchname()
+    
+    if local_branch in cached_changes:
+      files = cached_changes[local_branch]
+
+      return __build_regex(files)   
+
+  return ''
+
 def __generate():
   settings_path = os.path.join(root, "build", "config", "settings.json")
-  proc = regis.generation.new_generation(settings_path, "")
+
+  regex = __gen_cached_changes_regex()
+
+  proc = regis.generation.new_generation(settings_path, f"/performAllChecks(true) /clangTidyRegex({regex})")
   proc.wait()
   return proc.returncode
 
@@ -36,7 +69,7 @@ def __test():
   return result
 
 def main():
-  # we purposely don't run setup here, it's assumed the user has done this before pushing
+	# we purposely don't run setup here, it's assumed the user has done this before pushing
   # this is to decrease push times
 
   result = 0
@@ -56,7 +89,7 @@ def main():
      print("Tests failed")
      exit(result)
 
-  exit(0)
+  exit(1)
 
 if __name__ == "__main__":
 	main()
