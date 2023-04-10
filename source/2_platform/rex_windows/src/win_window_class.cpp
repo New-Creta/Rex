@@ -7,7 +7,7 @@
 #define NOMINMAX
 #include <Windows.h>
 
-namespace rex
+namespace rex 
 {
   namespace win32
   {
@@ -113,4 +113,4 @@ namespace rex
       return m_internal_ptr->hinstance;
     }
   } // namespace win32
-} // namespace rex
+} // namespace rex 

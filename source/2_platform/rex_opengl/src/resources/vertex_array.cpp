@@ -8,7 +8,7 @@
   #error "Unsupported platform"
 #endif
 
-namespace rex
+namespace rex 
 {
   //-----------------------------------------------------------------------
   VertexArray::VertexArray()
@@ -63,4 +63,4 @@ namespace rex
 
     m_resource_id = 0;
   }
-} // namespace rex
+} // namespace rex 

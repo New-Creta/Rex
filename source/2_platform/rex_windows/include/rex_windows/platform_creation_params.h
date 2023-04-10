@@ -2,7 +2,7 @@
 
 #include "rex_windows/win_types.h"
 
-namespace rex
+namespace rex 
 {
   // can't be in a namespace as they're forward declared in rex namespace
   // the linker needs to think this is in rex namespace.
@@ -14,4 +14,4 @@ namespace rex
     rex::win32::LPtStr cmd_line;
     s32 show_cmd;
   };
-} // namespace rex
+} // namespace rex 

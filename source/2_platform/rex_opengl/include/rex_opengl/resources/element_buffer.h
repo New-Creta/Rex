@@ -2,7 +2,7 @@
 
 #include "rex_opengl/resources/buffer.h"
 
-namespace rex
+namespace rex 
 {
   class ElementBuffer : public Buffer
   {
@@ -11,4 +11,4 @@ namespace rex
 
     void set_data(u64 size, const void* data, BufferUsage usage = BufferUsage::StaticDraw);
   };
-} // namespace rex
+} // namespace rex 

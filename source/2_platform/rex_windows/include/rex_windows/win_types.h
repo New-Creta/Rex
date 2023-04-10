@@ -2,7 +2,7 @@
 
 #include "rex_engine/types.h"
 
-namespace rex
+namespace rex 
 {
   namespace win32
   {
@@ -23,4 +23,4 @@ namespace rex
     using DWord               = unsigned long;
     using WindowProcedureFunc = LResult(__stdcall*)(Hwnd, s32, WParam, LParam);
   } // namespace win32
-} // namespace rex
+} // namespace rex 

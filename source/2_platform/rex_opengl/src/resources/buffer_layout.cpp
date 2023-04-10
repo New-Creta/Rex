@@ -2,7 +2,7 @@
 
 #include "rex_opengl/log.h"
 
-namespace rex
+namespace rex 
 {
   namespace buffer_layout
   {
@@ -131,4 +131,4 @@ namespace rex
   {
     return !(layout1 == layout2);
   }
-} // namespace rex
+} // namespace rex 

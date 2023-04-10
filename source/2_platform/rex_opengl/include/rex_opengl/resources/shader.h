@@ -3,7 +3,7 @@
 #include "rex_engine/types.h"
 #include "rex_std/bonus/attributes.h"
 
-namespace rex
+namespace rex 
 {
   enum class ShaderType;
 
@@ -29,4 +29,4 @@ namespace rex
 
   Shader create_vertex_shader(const char** shaderElements, s32* shaderElementLength = nullptr);
   Shader create_fragment_shader(const char** shaderElements, s32* shaderElementLength = nullptr);
-} // namespace rex
+} // namespace rex 

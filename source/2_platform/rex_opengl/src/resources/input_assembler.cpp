@@ -6,7 +6,7 @@
   #error "Unsupported platform"
 #endif
 
-namespace rex
+namespace rex 
 {
   namespace input_assembler
   {
@@ -67,4 +67,4 @@ namespace rex
     }
   }
 
-} // namespace rex
+} // namespace rex 

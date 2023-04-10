@@ -4,7 +4,7 @@
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
 
-namespace rex
+namespace rex 
 {
   //-----------------------------------------------------------------------
   // VERTEX POS
@@ -230,6 +230,6 @@ namespace rex
 
     return s_buffer_layouts;
   }
-} // namespace rex
+} // namespace rex 
 
 // NOLINTEND(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
