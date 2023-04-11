@@ -252,11 +252,11 @@ public class BasicCPPProject : BaseProject
       postbuildCommandArguments += $" -conf={conf.Name}";
       postbuildCommandArguments += $" -compdb={compilerDBPath}";
       postbuildCommandArguments += $" -srcroot={SourceRootPath}";
-      postbuildCommandArguments += $" -clangTidyRegex=\"{GenerateSettings.ClangTidyRegex}\"";
+      postbuildCommandArguments += $" -clang_tidy_regex=\"{GenerateSettings.ClangTidyRegex}\"";
 
       if (GenerateSettings.PerformAllChecks)
       {
-        postbuildCommandArguments += $" -performAllChecks";
+        postbuildCommandArguments += $" -perform_all_checks";
       }
 
       if (GenerateSettings.NoClangTools == false)

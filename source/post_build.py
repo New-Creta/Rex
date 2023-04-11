@@ -2,9 +2,9 @@ import regis.run_clang_tools
 import regis.diagnostics
 import argparse
 
-def run(projectName, compdb, srcroot, useClangTools, allChecks, regex):
+def run(projectName, compdb, srcroot, useClangTools, allChecks, clangTidyRegex):
   if (useClangTools):
-    regis.run_clang_tools.run(projectName, compdb, srcroot, allChecks, regex)
+    regis.run_clang_tools.run(projectName, compdb, srcroot, allChecks, clangTidyRegex)
 
   return
 
@@ -17,9 +17,8 @@ if __name__ == "__main__":
   parser.add_argument("-compdb", help="compiler db folder")
   parser.add_argument("-srcroot", help="src root folder")
   parser.add_argument("-use_clang_tools", help="use clang tools", action="store_true")
-  parser.add_argument("-performAllChecks", help="use clang tools", action="store_true")
-  parser.add_argument("-clangTidyRegex", help="use clang tools", default=".*")
-
+  parser.add_argument("-perform_all_checks", help="perform all checks, not just the auto fixes", action="store_true")
+  parser.add_argument("-clang_tidy_regex", help="regex to match files used by clang tidy", default=".*")
   parser.add_argument("-l", "--level", default="info", help="logging level")
   args, unknown = parser.parse_known_args()
 
@@ -29,8 +28,8 @@ if __name__ == "__main__":
   compdb = args.compdb
   srcroot = args.srcroot
   use_clang_tools = args.use_clang_tools
-  perform_all_checks = args.performAllChecks
-  clang_tidy_regex = args.clangTidyRegex
+  perform_all_checks = args.perform_all_checks
+  clang_tidy_regex = args.clang_tidy_regex
 
  # initialize the logger
   log_level_str = args.level

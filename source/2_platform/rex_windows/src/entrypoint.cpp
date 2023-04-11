@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <shellapi.h>
-
+#pragma optimize("", off)
 //-------------------------------------------------------------------------
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
