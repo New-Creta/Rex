@@ -53,12 +53,12 @@ namespace rex
     VerbosityMask = 0xf,
   };
 
-  LogVerbosity operator&(unsigned int bits1, LogVerbosity bits2);
-  LogVerbosity operator|(unsigned int bits1, LogVerbosity bits2);
+  LogVerbosity operator&(u32 bits1, LogVerbosity bits2);
+  LogVerbosity operator|(u32 bits1, LogVerbosity bits2);
   LogVerbosity operator&(LogVerbosity bits1, LogVerbosity bits2);
   LogVerbosity operator|(LogVerbosity bits1, LogVerbosity bits2);
 
-  static_assert(static_cast<unsigned int>(LogVerbosity::NumVerbosity) - 1 < static_cast<unsigned int>(LogVerbosity::VerbosityMask), "Bad verbosity mask.");
+  static_assert(static_cast<u32>(LogVerbosity::NumVerbosity) - 1 < static_cast<u32>(LogVerbosity::VerbosityMask), "Bad verbosity mask.");
 
   namespace conversions
   {
