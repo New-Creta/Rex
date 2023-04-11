@@ -27,9 +27,6 @@ namespace rex
 
   ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
   {
-    [[maybe_unused]] int* p    = nullptr;
-    [[maybe_unused]] float* fp = reinterpret_cast<float*>(p);
-
     ApplicationCreationParams app_params(rsl::move(platformParams), rsl::move(cmdArgs));
 
     app_params.gui_params.window_width  = 1280;
