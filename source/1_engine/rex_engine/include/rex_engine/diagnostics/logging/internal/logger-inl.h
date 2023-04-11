@@ -190,18 +190,15 @@ namespace rexlog
   {
     for(auto& sink: m_sinks)
     {
-      rsl::cout << "sinking \n";
       if(sink->should_log(msg.level))
       {
         REXLOG_TRY
         {
-          rsl::cout << "logging to sink\n";
           sink->log(msg);
         }
         REXLOG_LOGGER_CATCH(msg.source)
       }
     }
-    rsl::cout << "end sink\n";
 
     if(should_flush_impl(msg))
     {

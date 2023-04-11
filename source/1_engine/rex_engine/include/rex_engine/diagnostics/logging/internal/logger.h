@@ -18,7 +18,6 @@
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/types.h"
 #include "rex_std/format.h"
-#include "rex_std/iostream.h"
 
 #define REXLOG_LOGGER_CATCH(location)
 
@@ -192,10 +191,9 @@ namespace rexlog
     }
 
     // return true logging is enabled for the given level.
-    bool should_log(level::LevelEnum /*msgLevel*/) const
+    bool should_log(level::LevelEnum msgLevel) const
     {
-      rsl::cout << "logging\n";
-      return true; // msgLevel >= m_level.load(rsl::memory_order_relaxed);
+      return msgLevel >= m_level.load(rsl::memory_order_relaxed);
     }
 
     // return true if backtrace logging is enabled.
@@ -251,7 +249,6 @@ namespace rexlog
       const bool traceback_enabled = m_tracer.enabled();
       if(!log_enabled && !traceback_enabled)
       {
-        rsl::cout << "early out\n";
         return;
       }
       REXLOG_TRY
