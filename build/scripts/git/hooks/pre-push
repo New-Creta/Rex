@@ -23,6 +23,9 @@ def __launch_build_thread(project, config, compiler, shouldClean):
    return t
 
 def __build_regex(files):
+  if len(files) > 0:
+     return ''
+
   tmp = '"'
   for file in files:
     tmp += '('
@@ -36,18 +39,8 @@ def __build_regex(files):
   return res
 
 def __gen_cached_changes_regex():
-  changes_cache_filepath = os.path.join(regis.util.find_root(), ".git", "file_changed")
-
-  if os.path.exists(changes_cache_filepath):
-    cached_changes = regis.rex_json.load_file(changes_cache_filepath)
-    local_branch = regis.git.get_local_branchname()
-    
-    if local_branch in cached_changes:
-      files = cached_changes[local_branch]
-
-      return __build_regex(files)   
-
-  return ''
+  files = regis.git.get_cached_changes(regis.git.get_local_branchname())
+  return __build_regex(files)
 
 def __generate():
   settings_path = os.path.join(root, "build", "config", "settings.json")

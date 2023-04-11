@@ -9,67 +9,11 @@ import regis.test
 import regis.diagnostics
 import regis.rex_json
 
-def __build_regex(files):
-  tmp = '"'
-  for file in files:
-    tmp += '('
-    tmp += file
-    tmp += ')'
-    tmp += '|'
-
-  res = tmp[0:len(tmp) - 1]
-  res += '"'
-    
-  return res
-
-def __write_to_changes_cache(branch : str, files : list[str]):
-  changes_cache_filepath = os.path.join(regis.util.find_root(), ".git", "file_changed")
-
-  cached_changes = {}
-  if os.path.exists(changes_cache_filepath):
-    cached_changes = regis.rex_json.load_file(changes_cache_filepath)
-  
-  if not branch in cached_changes:
-    cached_changes[branch] = []
-
-  changes_in_branch = cached_changes[branch]
-
-  for file in files:
-    if file not in changes_in_branch:
-      changes_in_branch.append(file)
-      print(f"adding file")
-
-  regis.rex_json.save_file(changes_cache_filepath, cached_changes)
-    
-
 def main():
   files = regis.git.get_staged_files()
 
-  __write_to_changes_cache(regis.git.get_local_branchname(), files)
+  regis.git.cache_commit_changes(regis.git.get_local_branchname(), files)
   exit(0)
-
-  regex = __build_regex(files)
-
-  for file in files:
-    print(f"file : {file}")
-
-  print(f"regex: {regex}")
-  print(f"branch: {regis.git.get_local_branchname()}")
-
-  regis.test.test_clang_tidy(regex)
-
-  end_result = 0
-  pass_results = regis.test.get_pass_results()
-  for key in pass_results:
-    result = pass_results[key]
-    end_result |= result
-
-    if result == 0:
-      regis.diagnostics.log_info(f"{key} - success")
-    else:
-      regis.diagnostics.log_err(f"{key} - failed")
-    
-  exit(end_result)
 
 if __name__ == "__main__":
   main()
