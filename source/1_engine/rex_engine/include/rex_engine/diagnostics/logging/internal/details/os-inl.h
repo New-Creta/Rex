@@ -458,7 +458,7 @@ namespace rexlog
             return false; // return error if failed creating dir
           }
           search_offset = token_pos + 1;
-        } while(search_offset < path.size());
+        } while(static_cast<count_t>(search_offset) < path.size());
 
         return true;
       }

@@ -33,8 +33,6 @@ namespace rex
   private:
     /** Holds the current suppression state **/
     LogVerbosity m_verbosity;
-    /** Holds default suppression **/
-    LogVerbosity m_default_verbosity;
 
     /** Name for this category **/
     LogCategoryName m_category_name;
