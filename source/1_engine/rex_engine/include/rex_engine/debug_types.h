@@ -1,19 +1,19 @@
 #pragma once
 
-#include "rex_engine/types.h"
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/untracked_allocator.h"
-#include "rex_std/string.h"
+#include "rex_engine/types.h"
 #include "rex_std/sstream.h"
-#include "rex_std/vector.h"
+#include "rex_std/string.h"
 #include "rex_std/unordered_map.h"
+#include "rex_std/vector.h"
 
 namespace rex
 {
   // if the string needs to be optimized further, make the Allocator type for the DebugAllocator a template,
   // and pass it as a template argument.
   // Strings usually won't need special allocators, at least not at the moment, but that might change in the future
-  using DebugString = rsl::basic_string<char8, rsl::char_traits<char8>, rex::DebugAllocator<rex::UntrackedAllocator>>;
+  using DebugString       = rsl::basic_string<char8, rsl::char_traits<char8>, rex::DebugAllocator<rex::UntrackedAllocator>>;
   using DebugStringStream = rsl::basic_istringstream<char8, rsl::char_traits<char8>, rex::DebugAllocator<rex::UntrackedAllocator>>;
 
   template <typename T, typename Allocator = rex::UntrackedAllocator>

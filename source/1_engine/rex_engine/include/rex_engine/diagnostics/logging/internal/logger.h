@@ -13,10 +13,11 @@
 // The use of private formatter per sink provides the opportunity to cache some
 // formatted data, and support for different format per sink.
 
+#include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
-#include "rex_engine/types.h"
+#include "rex_std/atomic.h"
 #include "rex_std/format.h"
 
 #define REXLOG_LOGGER_CATCH(location)
