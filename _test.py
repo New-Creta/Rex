@@ -10,6 +10,7 @@
 
 import argparse
 import time
+import threading
 import regis.test
 import regis.diagnostics
 from datetime import datetime
@@ -30,30 +31,46 @@ if __name__ == "__main__":
   parser.add_argument("-auto_test_timeout", help="timeout for auto tests in seconds", default=10)
   args,unknown = parser.parse_known_args()
 
+  threads : list[threading.Thread] = []
+
   start = time.perf_counter()
 
   if args.clean:
     regis.test.clean()
 
   if args.all or args.iwyu:
-    regis.test.test_include_what_you_use()
+    threads.append(threading.Thread(target=lambda: regis.test.test_include_what_you_use()))
+    # regis.test.test_include_what_you_use()
   if args.all or args.clang_tidy:
-    regis.test.test_clang_tidy()
+    threads.append(threading.Thread(target=lambda: regis.test.test_clang_tidy()))
+    # regis.test.test_clang_tidy()
   if args.all or args.unit_tests:
-    regis.test.test_unit_tests()
+    threads.append(threading.Thread(target=lambda: regis.test.test_unit_tests()))
+    # regis.test.test_unit_tests()
   if args.all or args.coverage:
-    regis.test.test_code_coverage()
+    threads.append(threading.Thread(target=lambda: regis.test.test_code_coverage()))
+    # regis.test.test_code_coverage()
   if args.all or args.asan:
-    regis.test.test_asan()
+    threads.append(threading.Thread(target=lambda: regis.test.test_asan()))
+    # regis.test.test_asan()
   if args.all or args.ubsan:
-    regis.test.test_ubsan()
+    threads.append(threading.Thread(target=lambda: regis.test.test_ubsan()))
+    # regis.test.test_ubsan()
   if args.all or args.fuzzy:
-    regis.test.test_fuzzy_testing()
+    threads.append(threading.Thread(target=lambda: regis.test.test_fuzzy_testing()))
+    # regis.test.test_fuzzy_testing()
   if args.all or args.auto_test:
     if args.auto_test_timeout:
       auto_test_timeout_secs = args.auto_test_timeout
 
-    regis.test.run_auto_tests(int(auto_test_timeout_secs))
+    threads.append(threading.Thread(target=lambda: regis.test.run_auto_tests(int(auto_test_timeout_secs))))
+    # regis.test.run_auto_tests(int(auto_test_timeout_secs))
+
+  for thread in threads:
+    thread.start()
+
+  for thread in threads:
+    thread.join()
 
   regis.diagnostics.log_no_color("")
   regis.diagnostics.log_info("Summary Report")
