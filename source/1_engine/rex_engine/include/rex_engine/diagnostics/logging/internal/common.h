@@ -4,7 +4,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/tweakme.h"
-#include "rex_engine/types.h"
+#include "rex_engine/debug_types.h"
 #include "rex_std/atomic.h"
 #include "rex_std/chrono.h"
 #include "rex_std/format.h"

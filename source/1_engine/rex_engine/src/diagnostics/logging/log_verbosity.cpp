@@ -3,27 +3,27 @@
 namespace rex
 {
   //-------------------------------------------------------------------------
-  LogVerbosity operator&(unsigned int bits1, LogVerbosity bits2)
+  LogVerbosity operator&(u32 bits1, LogVerbosity bits2)
   {
-    return static_cast<LogVerbosity>(bits1 & static_cast<unsigned int>(bits2));
+    return static_cast<LogVerbosity>(bits1 & static_cast<u32>(bits2));
   }
 
   //-------------------------------------------------------------------------
-  LogVerbosity operator|(unsigned int bits1, LogVerbosity bits2)
+  LogVerbosity operator|(u32 bits1, LogVerbosity bits2)
   {
-    return static_cast<LogVerbosity>(bits1 | static_cast<unsigned int>(bits2));
+    return static_cast<LogVerbosity>(bits1 | static_cast<u32>(bits2));
   }
 
   //-------------------------------------------------------------------------
   LogVerbosity operator&(LogVerbosity bits1, LogVerbosity bits2)
   {
-    return static_cast<LogVerbosity>(static_cast<unsigned int>(bits1) & static_cast<unsigned int>(bits2));
+    return static_cast<LogVerbosity>(static_cast<u32>(bits1) & static_cast<u32>(bits2));
   }
 
   //-------------------------------------------------------------------------
   LogVerbosity operator|(LogVerbosity bits1, LogVerbosity bits2)
   {
-    return static_cast<LogVerbosity>(static_cast<unsigned int>(bits1) | static_cast<unsigned int>(bits2));
+    return static_cast<LogVerbosity>(static_cast<u32>(bits1) | static_cast<u32>(bits2));
   }
 
   namespace conversions

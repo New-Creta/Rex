@@ -1,5 +1,6 @@
 #include "rex_engine/diagnostics/logging/logger.h"
 
+#include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
 #include "rex_engine/memory/debug_allocator.h"
@@ -27,8 +28,16 @@ namespace rex
   //-------------------------------------------------------------------------
   LogLevelMap get_log_levels()
   {
-    return {{LogVerbosity::NoLogging, rexlog::level::Off}, {LogVerbosity::Fatal, rexlog::level::Critical}, {LogVerbosity::Error, rexlog::level::Err},        {LogVerbosity::Warning, rexlog::level::Warn},
-            {LogVerbosity::Log, rexlog::level::Info},      {LogVerbosity::Verbose, rexlog::level::Debug},  {LogVerbosity::VeryVerbose, rexlog::level::Trace}};
+    // clang-format off
+    return {
+      {LogVerbosity::NoLogging,       rexlog::level::Off}, 
+      {LogVerbosity::Fatal,           rexlog::level::Critical}, 
+      {LogVerbosity::Error,           rexlog::level::Err},        
+      {LogVerbosity::Warning,         rexlog::level::Warn},
+      {LogVerbosity::Log,             rexlog::level::Info},      
+      {LogVerbosity::Verbose,         rexlog::level::Debug},  
+      {LogVerbosity::VeryVerbose,     rexlog::level::Trace}};
+    // clang-format on
   }
 
   //-------------------------------------------------------------------------
