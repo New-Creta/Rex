@@ -20,6 +20,14 @@ namespace rex
     return stack;
   }
 
+  auto& allocation_headers()
+  {
+    static UntrackedAllocator allocator{};
+    static DebugAllocator dbg_alloc(allocator);
+    static rsl::vector<MemoryHeader*, decltype(dbg_alloc)> alloc_headers(dbg_alloc);
+    return alloc_headers;
+  }
+
   card32& thread_local_mem_tag_index()
   {
     thread_local static card32 tag = 0;
@@ -42,6 +50,7 @@ namespace rex
     const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
+    allocation_headers().push_back(header);
     REX_ERROR_X(LogEngine, m_mem_usage.value() <= m_max_mem_usage, "Using more memory than allowed! usage: {} max: {}", m_mem_usage.value(), m_max_mem_usage);
   }
   void MemoryTracker::track_dealloc(void* /*mem*/, MemoryHeader* header)
@@ -49,6 +58,9 @@ namespace rex
     const rsl::unique_lock lock(m_mem_tracking_mutex);
     REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
     m_mem_usage -= header->size().size_in_bytes();
+    auto it = rsl::find(allocation_headers().cbegin(), allocation_headers().cend(), header);
+    REX_ASSERT_X(it != allocation_headers().cend(), "Trying to remove a memory header that wasn't tracked");
+    allocation_headers().erase(it);
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }
 
@@ -69,11 +81,13 @@ namespace rex
     return thread_local_memory_tag_stack()[thread_local_mem_tag_index()];
   }
 
-  MemoryTracker::UsagePerTag MemoryTracker::current_stats()
+  MemoryStats MemoryTracker::current_stats()
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
-    MemoryTracker::UsagePerTag usage_per_tag_copy = m_usage_per_tag;
-    return usage_per_tag_copy;
+    MemoryStats stats{};
+    stats.usage_per_tag = m_usage_per_tag;
+    stats.allocation_headers = allocation_headers();
+    return stats;
   }
 
   MemoryTracker& mem_tracker()
