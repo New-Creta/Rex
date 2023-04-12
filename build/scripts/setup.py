@@ -36,7 +36,7 @@ def __clean_intermediate():
 
 def run(shouldClean):
   if shouldClean:
-    task = regis.task_raii_printing("cleaning.")
+    task = regis.task_raii_printing.TaskRaiiPrint("cleaning.")
     __clean_intermediate()
 
   task = regis.task_raii_printing.TaskRaiiPrint("running setup")
