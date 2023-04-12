@@ -1,6 +1,6 @@
 #pragma once
 
-#include <rex_std/string.h>
+#include "rex_engine/debug_types.h"
 
 /**
  * Enum that defines the verbosity levels of the logging system.
@@ -53,27 +53,27 @@ namespace rex
     VerbosityMask = 0xf,
   };
 
-  LogVerbosity operator&(int bits1, LogVerbosity bits2);
-  LogVerbosity operator|(int bits1, LogVerbosity bits2);
+  LogVerbosity operator&(u32 bits1, LogVerbosity bits2);
+  LogVerbosity operator|(u32 bits1, LogVerbosity bits2);
   LogVerbosity operator&(LogVerbosity bits1, LogVerbosity bits2);
   LogVerbosity operator|(LogVerbosity bits1, LogVerbosity bits2);
 
-  static_assert((int)LogVerbosity::NumVerbosity - 1 < (int)LogVerbosity::VerbosityMask, "Bad verbosity mask.");
+  static_assert(static_cast<u32>(LogVerbosity::NumVerbosity) - 1 < static_cast<u32>(LogVerbosity::VerbosityMask), "Bad verbosity mask.");
 
-  namespace Conversions
+  namespace conversions
   {
     /**
      * Converts verbosity to a string
      * @param verbosity verbosity enum
      * @returns const char* representation of the verbosity enum
      */
-    const char* toString(LogVerbosity verbosity);
+    const char* to_string(LogVerbosity verbosity);
 
     /**
      * Converts a string to verbosity
      * @param verbosity verbosity in string form (e.g., "Log", "Warning", or "Fatal")
      * @returns Parsed verbosity from the string (or Log if the string was invalid)
      */
-    LogVerbosity parseLogVerbosityFromString(const rsl::string& verbosity);
-  } // namespace Conversions
+    LogVerbosity parse_log_verbosity_from_string(const rex::DebugString& verbosity);
+  } // namespace conversions
 } // namespace rex

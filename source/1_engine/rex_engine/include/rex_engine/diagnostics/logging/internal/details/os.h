@@ -2,8 +2,9 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
+
 #include <ctime> // time_t
-#include <rex_engine/diagnostics/logging/internal/common.h>
 
 namespace rexlog
 {
@@ -14,11 +15,11 @@ namespace rexlog
 
       REXLOG_API rexlog::log_clock::time_point now() REXLOG_NOEXCEPT;
 
-      REXLOG_API tm localtime(const time_t& time_tt) REXLOG_NOEXCEPT;
+      REXLOG_API tm localtime(const time_t& timeTt) REXLOG_NOEXCEPT;
 
       REXLOG_API tm localtime() REXLOG_NOEXCEPT;
 
-      REXLOG_API tm gmtime(const time_t& time_tt) REXLOG_NOEXCEPT;
+      REXLOG_API tm gmtime(const time_t& timeTt) REXLOG_NOEXCEPT;
 
       REXLOG_API tm gmtime() REXLOG_NOEXCEPT;
 
@@ -42,8 +43,8 @@ namespace rexlog
   #endif
 #endif
 
-      REXLOG_CONSTEXPR static const char folder_seps[]                            = REXLOG_FOLDER_SEPS;
-      REXLOG_CONSTEXPR static const filename_t::value_type folder_seps_filename[] = REXLOG_FILENAME_T(REXLOG_FOLDER_SEPS);
+      REXLOG_CONSTEXPR static const rsl::string_view folder_seps          = REXLOG_FOLDER_SEPS;
+      REXLOG_CONSTEXPR static const rsl::string_view folder_seps_filename = REXLOG_FILENAME_T(REXLOG_FOLDER_SEPS);
 
       // fopen_s on non windows for writing
       REXLOG_API bool fopen_s(FILE** fp, const filename_t& filename, const filename_t& mode);
@@ -69,16 +70,16 @@ namespace rexlog
       // Return current thread id as size_t
       // It exists because the rsl::this_thread::get_id() is much slower(especially
       // under VS 2013)
-      REXLOG_API size_t _thread_id() REXLOG_NOEXCEPT;
+      REXLOG_API size_t thread_id() REXLOG_NOEXCEPT;
 
       // Return current thread id as size_t (from thread local storage)
-      REXLOG_API size_t thread_id() REXLOG_NOEXCEPT;
+      REXLOG_API
 
       // This is avoid msvc issue in sleep_for that happens if the clock changes.
       // See https://github.com/gabime/rexlog/issues/609
       REXLOG_API void sleep_for_millis(unsigned int milliseconds) REXLOG_NOEXCEPT;
 
-      REXLOG_API rsl::string filename_to_str(const filename_t& filename);
+      REXLOG_API rex::DebugString filename_to_str(const filename_t& filename);
 
       REXLOG_API int pid() REXLOG_NOEXCEPT;
 
@@ -103,7 +104,7 @@ namespace rexlog
 
       // non thread safe, cross platform getenv/getenv_s
       // return empty string if field not found
-      REXLOG_API rsl::string getenv(const char* field);
+      REXLOG_API rex::DebugString getenv(const char* field);
 
       // Do fsync by FILE objectpointer.
       // Return true on success.

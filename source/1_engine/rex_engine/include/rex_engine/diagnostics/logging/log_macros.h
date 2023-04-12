@@ -27,13 +27,14 @@
   #include "rex_engine/diagnostics/logging/log_category.h"
   #include "rex_engine/diagnostics/logging/log_verbosity.h"
   #include "rex_engine/diagnostics/logging/logger.h"
+  #include "rex_engine/debug_types.h"
 
 namespace rex
 {
   namespace internal
   {
     template <int VerbosityToCheck, typename CategoryType>
-    inline bool isLogActive(const CategoryType& Category)
+    inline bool is_log_active(const CategoryType& category)
     {
       return !Category.IsSuppressed((LogVerbosity)VerbosityToCheck);
     }
@@ -48,16 +49,16 @@ namespace rex
     extern struct LogCategory##CategoryName : public rex::LogCategory<(int)rex::DefaultVerbosity>                                                                                                                                                        \
     {                                                                                                                                                                                                                                                    \
       inline LogCategory##CategoryName()                                                                                                                                                                                                                 \
-          : LogCategory<(int)rex::DefaultVerbosity>(rsl::string(#CategoryName))                                                                                                                                                                          \
+          : LogCategory<(int)rex::DefaultVerbosity>(rex::DebugString(#CategoryName))                                                                                                                                                                     \
       {                                                                                                                                                                                                                                                  \
       }                                                                                                                                                                                                                                                  \
-    } CategoryName;
+    } CategoryName;                                                                 /*NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)*/
 
   /**
    * A macro to define a logging category, usually paired with DECLARE_LOG_CATEGORY_EXTERN from the header.
    * @param CategoryName, category to define
    */
-  #define DEFINE_LOG_CATEGORY(CategoryName) LogCategory##CategoryName CategoryName;
+  #define DEFINE_LOG_CATEGORY(CategoryName) LogCategory##CategoryName CategoryName; /*NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables) */
 } // namespace rex
 
 //-------------------------------------------------------------------------

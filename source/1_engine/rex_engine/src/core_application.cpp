@@ -15,7 +15,7 @@ namespace rex
 {
   namespace globals
   {
-    FrameInfo g_frame_info;
+    FrameInfo g_frame_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
     //-------------------------------------------------------------------------
     const FrameInfo& frame_info()

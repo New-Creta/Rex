@@ -13,36 +13,36 @@ namespace rexlog
 {
   namespace details
   {
-    struct null_mutex
+    struct NullMutex
     {
       void lock() const {}
       void unlock() const {}
     };
 
-    struct null_atomic_int
+    struct NullAtomicInt
     {
       int value;
-      null_atomic_int() = default;
+      NullAtomicInt() = default;
 
-      explicit null_atomic_int(int new_value)
-          : value(new_value)
+      explicit NullAtomicInt(int newValue)
+          : value(newValue)
       {
       }
 
-      int load(rsl::memory_order = rsl::memory_order::relaxed) const
+      int load(rsl::memory_order /*unused*/ = rsl::memory_order::relaxed) const
       {
         return value;
       }
 
-      void store(int new_value, rsl::memory_order = rsl::memory_order::relaxed)
+      void store(int newValue, rsl::memory_order /*unused*/ = rsl::memory_order::relaxed)
       {
-        value = new_value;
+        value = newValue;
       }
 
-      int exchange(int new_value, rsl::memory_order = rsl::memory_order::relaxed)
+      int exchange(int newValue, rsl::memory_order /*unused*/ = rsl::memory_order::relaxed)
       {
-        rsl::swap(new_value, value);
-        return new_value; // return value before the call
+        rsl::swap(newValue, value);
+        return newValue; // return value before the call
       }
     };
 

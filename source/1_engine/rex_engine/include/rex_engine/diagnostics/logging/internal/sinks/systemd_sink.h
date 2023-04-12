@@ -1,11 +1,12 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+
 #include <array>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <rex_engine/diagnostics/logging/internal/details/synchronous_factory.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
 #ifndef SD_JOURNAL_SUPPRESS_LOCATION
   #define SD_JOURNAL_SUPPRESS_LOCATION
 #endif
@@ -20,10 +21,10 @@ namespace rexlog
      * Sink that write to systemd journal using the `sd_journal_send()` library call.
      */
     template <typename Mutex>
-    class systemd_sink : public base_sink<Mutex>
+    class systemd_sink : public BaseSink<Mutex>
     {
     public:
-      systemd_sink(rsl::string ident = "", bool enable_formatting = false)
+      systemd_sink(rex::DebugString ident = "", bool enable_formatting = false)
           : ident_ {rsl::move(ident)}
           , enable_formatting_ {enable_formatting}
           , syslog_levels_ {{/* rexlog::level::trace      */ LOG_DEBUG,
@@ -42,19 +43,19 @@ namespace rexlog
       systemd_sink& operator=(const systemd_sink&) = delete;
 
     protected:
-      const rsl::string ident_;
+      const rex::DebugString ident_;
       bool enable_formatting_ = false;
       using levels_array      = rsl::array<int, 7>;
       levels_array syslog_levels_;
 
-      void sink_it_(const details::log_msg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
         int err;
         string_view_t payload;
         memory_buf_t formatted;
         if(enable_formatting_)
         {
-          base_sink<Mutex>::formatter_->format(msg, formatted);
+          BaseSink<Mutex>::m_formatter->format(msg, formatted);
           payload = string_view_t(formatted.data(), formatted.size());
         }
         else
@@ -101,22 +102,22 @@ namespace rexlog
         return syslog_levels_.at(static_cast<levels_array::size_type>(l));
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
     };
 
     using systemd_sink_mt = systemd_sink<rsl::mutex>;
-    using systemd_sink_st = systemd_sink<details::null_mutex>;
+    using systemd_sink_st = systemd_sink<details::NullMutex>;
   } // namespace sinks
 
-  // Create and register a syslog logger
-  template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> systemd_logger_mt(const rsl::string& logger_name, const rsl::string& ident = "", bool enable_formatting = false)
+  // Create and register a syslog Logger
+  template <typename Factory = rexlog::SynchronousFactory>
+  inline rsl::shared_ptr<Logger> systemd_logger_mt(const rex::DebugString& logger_name, const rex::DebugString& ident = "", bool enable_formatting = false)
   {
     return Factory::template create<sinks::systemd_sink_mt>(logger_name, ident, enable_formatting);
   }
 
-  template <typename Factory = rexlog::synchronous_factory>
-  inline rsl::shared_ptr<logger> systemd_logger_st(const rsl::string& logger_name, const rsl::string& ident = "", bool enable_formatting = false)
+  template <typename Factory = rexlog::SynchronousFactory>
+  inline rsl::shared_ptr<Logger> systemd_logger_st(const rex::DebugString& logger_name, const rex::DebugString& ident = "", bool enable_formatting = false)
   {
     return Factory::template create<sinks::systemd_sink_st>(logger_name, ident, enable_formatting);
   }

@@ -15,7 +15,12 @@ namespace rex
       using size_type = typename Allocator::size_type;
       using pointer   = typename Allocator::pointer;
 
-      DebugAllocator(Allocator& allocator)
+      DebugAllocator()
+          : m_allocator(nullptr)
+      {
+      }
+
+      explicit DebugAllocator(Allocator& allocator)
           : m_allocator(rsl::addressof(allocator))
       {
       }
@@ -31,6 +36,17 @@ namespace rex
       void deallocate(pointer ptr, size_type size)
       {
         m_allocator->deallocate(ptr, size);
+      }
+
+      template <typename U, typename... Args>
+      void construct(U* p, Args&&... args)
+      {
+        m_allocator->construct(p, rsl::forward<Args>(args)...);
+      }
+      template <typename T>
+      void destroy(T* ptr)
+      {
+        m_allocator->destroy(ptr);
       }
 
       bool operator==(const DebugAllocator& rhs) const

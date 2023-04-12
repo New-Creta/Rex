@@ -18,7 +18,7 @@ namespace rex
   {
   public:
     /** Back up the existing verbosity for the category then sets new verbosity.*/
-    LogScopedVerbosityOverride(LogCategoryBase* Category, LogVerbosity Verbosity);
+    LogScopedVerbosityOverride(LogCategoryBase* category, LogVerbosity verbosity);
 
     /** Restore the verbosity overrides for the category to the previous value.*/
     ~LogScopedVerbosityOverride();
@@ -29,8 +29,8 @@ namespace rex
 
   private:
     /** Backup of the category, verbosity pairs that was present when we were constructed **/
-    LogCategoryBase* saved_category_;
-    LogVerbosity saved_verbosity_;
+    LogCategoryBase* m_saved_category;
+    LogVerbosity m_saved_verbosity;
   };
 
   /**

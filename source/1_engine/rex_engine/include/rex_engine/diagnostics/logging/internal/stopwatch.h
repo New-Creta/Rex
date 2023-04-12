@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include <chrono>
-#include <format>
+#include "rex_std/chrono.h"
 
 // Stopwatch support for rexlog  (using rsl::chrono::steady_clock).
 // Displays elapsed seconds since construction as double.

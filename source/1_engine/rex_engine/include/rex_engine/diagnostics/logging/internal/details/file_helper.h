@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_std/tuple.h"
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
 #include <tuple>
 
 namespace rexlog
@@ -16,21 +16,21 @@ namespace rexlog
     // When failing to open a file, retry several times(5) with a delay interval(10 ms).
     // Throw rexlog_ex exception on errors.
 
-    struct filename_with_extension
+    struct FilenameWithExtension
     {
       filename_t filename;
       filename_t ext;
     };
 
-    class REXLOG_API file_helper
+    class REXLOG_API FileHelper
     {
     public:
-      file_helper() = default;
-      explicit file_helper(const file_event_handlers& event_handlers);
+      FileHelper() = default;
+      explicit FileHelper(const FileEventHandlers& eventHandlers);
 
-      file_helper(const file_helper&)            = delete;
-      file_helper& operator=(const file_helper&) = delete;
-      ~file_helper();
+      FileHelper(const FileHelper&)            = delete;
+      FileHelper& operator=(const FileHelper&) = delete;
+      ~FileHelper();
 
       void open(const filename_t& fname, bool truncate = false);
       void reopen(bool truncate);
@@ -54,14 +54,14 @@ namespace rexlog
       // ".mylog" => (".mylog". "")
       // "my_folder/.mylog" => ("my_folder/.mylog", "")
       // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
-      static filename_with_extension split_by_extension(const filename_t& fname);
+      static FilenameWithExtension split_by_extension(const filename_t& fname);
 
     private:
-      const int open_tries_             = 5;
-      const unsigned int open_interval_ = 10;
-      FILE* fd_ {nullptr};
-      filename_t filename_;
-      file_event_handlers event_handlers_;
+      static constexpr int s_open_tries             = 5;
+      static constexpr unsigned int s_open_interval = 10;
+      FILE* m_fd {nullptr};
+      filename_t m_filename;
+      FileEventHandlers m_event_handlers;
     };
   } // namespace details
 } // namespace rexlog

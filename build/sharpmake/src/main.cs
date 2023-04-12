@@ -369,7 +369,6 @@ public class BasicCPPProject : BaseProject
     start_info.UseShellExecute = false;
 
 
-    Console.WriteLine($"Generating compiler database for {Name} - {config.Name}");
     System.Diagnostics.Process process = new System.Diagnostics.Process();
     process.StartInfo = start_info;
     GenerateSettings.GenerateCompilerDBProcesses.Add(process);
@@ -549,7 +548,6 @@ public class SharpmakeProject : CSharpProject
     List<string> sharpmake_sources = new List<string>();
     foreach (string sourceFile in SourceFiles)
     {
-      Console.WriteLine($"resolved source file: {sourceFile}");
       string file = sourceFile.Replace('\\', '/');
       sharpmake_sources.Add($"{quote}{file}{quote}");
     }
