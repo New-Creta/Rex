@@ -47,7 +47,12 @@ def __generate():
 
   regex = __gen_cached_changes_regex()
 
-  proc = regis.generation.new_generation(settings_path, f"/performAllChecks(true) /clangTidyRegex({regex})")
+  proc = None
+  if regex != '':
+    proc = regis.generation.new_generation(settings_path, f"/performAllChecks(true) /clangTidyRegex({regex})")
+  else:
+    proc = regis.generation.new_generation(settings_path, f"/noClangTools")
+
   proc.wait()
   return proc.returncode
 
