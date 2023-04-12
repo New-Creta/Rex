@@ -116,7 +116,7 @@ namespace rex
         event_system::subscribe(event_system::EventType::WindowClose, [this]() { m_app_instance->quit(); });
       }
 
-      static void display_renderer_info()
+      void display_renderer_info()
       {
         RendererInfo info = renderer::info();
         REX_LOG(LogWindows, "Renderer Info - API Version: {}", info.api_version);
