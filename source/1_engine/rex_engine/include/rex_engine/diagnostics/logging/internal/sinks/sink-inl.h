@@ -4,7 +4,6 @@
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
-
 // NOLINTBEGIN(misc-definitions-in-headers)
 
 REXLOG_INLINE bool rexlog::sinks::sink::should_log(rexlog::level::LevelEnum msgLevel) const

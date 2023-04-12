@@ -25,10 +25,10 @@ using System.Text.Json;
 public class BaseProject : Project
 {
   protected bool GenerateCompilerDB = true;
-  
+
   public BaseProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
-    
+
   }
 
   [Configure]
@@ -252,6 +252,12 @@ public class BasicCPPProject : BaseProject
       postbuildCommandArguments += $" -conf={conf.Name}";
       postbuildCommandArguments += $" -compdb={compilerDBPath}";
       postbuildCommandArguments += $" -srcroot={SourceRootPath}";
+      postbuildCommandArguments += $" -clang_tidy_regex=\"{GenerateSettings.ClangTidyRegex}\"";
+
+      if (GenerateSettings.PerformAllChecks)
+      {
+        postbuildCommandArguments += $" -perform_all_checks";
+      }
 
       if (GenerateSettings.NoClangTools == false)
       {
@@ -376,26 +382,26 @@ public class BasicCPPProject : BaseProject
 
   private void CopyClangToolConfigFiles(string compilerDBPath)
   {
-      string clangTidyFirstPassFilename = ".clang-tidy_first_pass";
-      string clangTidySecondPassFilename = ".clang-tidy_second_pass";
-      string clangFormatFilename = ".clang-format";
+    string clangTidyFirstPassFilename = ".clang-tidy_first_pass";
+    string clangTidySecondPassFilename = ".clang-tidy_second_pass";
+    string clangFormatFilename = ".clang-format";
 
-      string clangTidyFirstPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidyFirstPassFilename), clangTidyFirstPassFilename);
-      string clangTidySecondPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidySecondPassFilename), clangTidySecondPassFilename);
-      string clangFormatSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangFormatFilename), clangFormatFilename);
+    string clangTidyFirstPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidyFirstPassFilename), clangTidyFirstPassFilename);
+    string clangTidySecondPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidySecondPassFilename), clangTidySecondPassFilename);
+    string clangFormatSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangFormatFilename), clangFormatFilename);
 
-      string clangTidyFirstPassDstPath = Path.Combine(compilerDBPath, clangTidyFirstPassFilename);
-      string clangTidySecondPassDstPath = Path.Combine(compilerDBPath, clangTidySecondPassFilename);
-      string clangFormatDstPath = Path.Combine(compilerDBPath, clangFormatFilename);
+    string clangTidyFirstPassDstPath = Path.Combine(compilerDBPath, clangTidyFirstPassFilename);
+    string clangTidySecondPassDstPath = Path.Combine(compilerDBPath, clangTidySecondPassFilename);
+    string clangFormatDstPath = Path.Combine(compilerDBPath, clangFormatFilename);
 
-      if (Directory.Exists(compilerDBPath) == false)
-      {
-        Directory.CreateDirectory(compilerDBPath);
-      }
+    if (Directory.Exists(compilerDBPath) == false)
+    {
+      Directory.CreateDirectory(compilerDBPath);
+    }
 
-      File.Copy(clangTidyFirstPassSrcPath, clangTidyFirstPassDstPath, true);
-      File.Copy(clangTidySecondPassSrcPath, clangTidySecondPassDstPath, true);
-      File.Copy(clangFormatSrcPath, clangFormatDstPath, true);
+    File.Copy(clangTidyFirstPassSrcPath, clangTidyFirstPassDstPath, true);
+    File.Copy(clangTidySecondPassSrcPath, clangTidySecondPassDstPath, true);
+    File.Copy(clangFormatSrcPath, clangFormatDstPath, true);
   }
 
   private string GetNinjaFilePath(RexConfiguration config)
@@ -429,7 +435,7 @@ public class TestProject : BaseProject
 public class ThirdPartyProject : BasicCPPProject
 {
   public ThirdPartyProject() : base()
-  { 
+  {
     GenerateCompilerDB = false;
   }
 
@@ -655,11 +661,32 @@ public class MainSolution : Solution
   }
 }
 
+namespace rex
+{
+  public class CmdLineArguments
+  {
+    [Sharpmake.CommandLine.Option("clangTidyRegex", "Add this regex to clang-tidy to filter which files it should process")]
+    public void CommandLineClangTiyRegex(string clangTidyRegex)
+    {
+      GenerateSettings.ClangTidyRegex = clangTidyRegex;
+    }
+
+    [Sharpmake.CommandLine.Option("performAllChecks")]
+    public void CommandLinePerformAllChecks(bool performAllChecks)
+    {
+      GenerateSettings.PerformAllChecks = performAllChecks;
+    }
+  }
+}
+
 public static class Main
 {
   [Sharpmake.Main]
   public static void SharpmakeMain(Arguments arguments)
   {
+    rex.CmdLineArguments Arguments = new rex.CmdLineArguments();
+    CommandLine.ExecuteOnObject(Arguments);
+
     Globals.Init();
 
     InitializeSharpmake();

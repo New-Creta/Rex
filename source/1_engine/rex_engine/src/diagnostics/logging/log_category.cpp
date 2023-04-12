@@ -4,9 +4,8 @@ namespace rex
 {
   //-------------------------------------------------------------------------
   LogCategoryBase::LogCategoryBase(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity)
-      : m_default_verbosity(inDefaultVerbosity)
+      : m_verbosity(inDefaultVerbosity & LogVerbosity::VerbosityMask)
       , m_category_name(inCategoryName)
-      , m_verbosity(inDefaultVerbosity & LogVerbosity::VerbosityMask)
   {
     // LOG CATEGORY? (CategoryName, InDefaultVerbosity);
   }
@@ -32,8 +31,6 @@ namespace rex
   //-------------------------------------------------------------------------
   void LogCategoryBase::set_verbosity(LogVerbosity newVerbosity)
   {
-    const LogVerbosity old_verbosity = m_verbosity;
-
     m_verbosity = newVerbosity & LogVerbosity::VerbosityMask;
   }
 } // namespace rex

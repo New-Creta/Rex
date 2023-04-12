@@ -24,10 +24,10 @@
 
 #else
 
+  #include "rex_engine/debug_types.h"
   #include "rex_engine/diagnostics/logging/log_category.h"
   #include "rex_engine/diagnostics/logging/log_verbosity.h"
   #include "rex_engine/diagnostics/logging/logger.h"
-  #include "rex_engine/debug_types.h"
 
 namespace rex
 {

@@ -52,7 +52,7 @@ namespace rexlog
     {
       REXLOG_TRY
       {
-        for(size_t i = 0; i < m_threads.size(); i++)
+        for(count_t i = 0; i < m_threads.size(); i++)
         {
           post_async_msg_impl(AsyncMsg(AsyncMsgType::Terminate), AsyncOverflowPolicy::Block);
         }

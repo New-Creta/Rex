@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/tweakme.h"
-#include "rex_engine/debug_types.h"
 #include "rex_std/atomic.h"
 #include "rex_std/chrono.h"
 #include "rex_std/format.h"
@@ -20,6 +20,7 @@
 #include <version>
 
 #undef REXLOG_HEADER_ONLY
+
 #define REXLOG_API
 #define REXLOG_INLINE
 
