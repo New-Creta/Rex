@@ -94,10 +94,10 @@ namespace rex
     return thread_local_memory_tag_stack()[thread_local_mem_tag_index()];
   }
 
-  MemoryStats MemoryTracker::current_stats()
+  MemoryUsageStats MemoryTracker::current_stats()
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
-    MemoryStats stats{};
+    MemoryUsageStats stats{};
     stats.usage_per_tag = m_usage_per_tag;
     stats.allocation_headers = allocation_headers();
     return stats;

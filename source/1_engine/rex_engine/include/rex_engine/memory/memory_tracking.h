@@ -16,7 +16,7 @@
 
 namespace rex
 {
-  struct MemoryStats
+  struct MemoryUsageStats
   {
     using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;
 
@@ -41,7 +41,7 @@ namespace rex
 
     MemoryTag current_tag() const;
 
-    MemoryStats current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    MemoryUsageStats current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
 
   private:
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage

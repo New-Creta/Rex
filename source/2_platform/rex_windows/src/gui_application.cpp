@@ -113,7 +113,7 @@ namespace rex
 
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose, [this]() { m_app_instance->quit(); });
+        event_system::subscribe(event_system::EventType::WindowClose, [this](void*) { m_app_instance->quit(); });
       }
 
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)

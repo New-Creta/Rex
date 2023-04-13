@@ -2,6 +2,7 @@
 
 #include "rex_engine/platform.h"
 #include "rex_std/array.h"
+#include "rex_std/format.h"
 
 namespace rex
 {
@@ -12,3 +13,4 @@ namespace rex
     CallStack current_callstack();
   }
 }
+
