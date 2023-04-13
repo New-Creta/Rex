@@ -11,8 +11,19 @@
 #include "rex_std_extra/utility/enum_reflection.h"
 #include "rex_std_extra/utility/high_water_mark.h"
 
+#include "rex_engine/memory/debug_allocator.h"
+#include "rex_engine/memory/untracked_allocator.h"
+
 namespace rex
 {
+  struct MemoryStats
+  {
+    using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;
+
+    UsagePerTag usage_per_tag;
+    rsl::vector<MemoryHeader*, DebugAllocator<UntrackedAllocator>> allocation_headers;
+  };
+
   class MemoryTracker
   {
   public:
@@ -30,7 +41,7 @@ namespace rex
 
     MemoryTag current_tag() const;
 
-    UsagePerTag current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    MemoryStats current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
 
   private:
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
@@ -62,5 +73,5 @@ namespace rex
     MemoryTagScope& operator=(MemoryTagScope&&)      = delete;
   };
 
-#define MEM_TAG_SCOPE(tag) MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
+#define REX_MEM_TAG_SCOPE(tag) MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
 } // namespace rex

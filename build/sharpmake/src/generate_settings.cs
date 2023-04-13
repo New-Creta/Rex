@@ -13,6 +13,8 @@ public class GenerateSettings
   static public bool FuzzyTestingEnabled { get; set; }
   static public bool VisualStudioOnly { get; set; }
   static public bool NoClangTools { get; set; }
+  static public bool PerformAllChecks = false;
+  static public string ClangTidyRegex { get; set; }
 
   static public Dictionary<string, List<string>> MemoryTags = new Dictionary<string, List<string>>();
 

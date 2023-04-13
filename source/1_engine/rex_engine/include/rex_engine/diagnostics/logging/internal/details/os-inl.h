@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -9,8 +12,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
 #include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -18,11 +19,12 @@
 
 #ifdef _WIN32
 
+  #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
+
   #include <Windows.h>
   #include <fileapi.h> // for FlushFileBuffers
   #include <io.h>      // for _get_osfhandle, _isatty, _fileno
   #include <process.h> // for _get_pid
-  #include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
 
   #ifdef __MINGW32__
     #include <share.h>
@@ -57,6 +59,8 @@
   #define __has_feature(x) 0 // Compatibility with non-clang compilers.
 #endif
 
+// NOLINTBEGIN(misc-definitions-in-headers)
+
 namespace rexlog
 {
   namespace details
@@ -75,29 +79,29 @@ namespace rexlog
         return log_clock::now();
 #endif
       }
-      REXLOG_INLINE tm localtime(const time_t& time_tt) REXLOG_NOEXCEPT
+      REXLOG_INLINE tm localtime(const time_t& time) REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
-        tm tm;
-        ::localtime_s(&tm, &time_tt);
+        tm tm {};
+        REX_ASSERT_X(::localtime_s(&tm, &time) == 0, "failed to convert to local time");
 #else
         tm tm;
-        ::localtime_r(&time_tt, &tm);
+        ::localtime_r(&time, &tm);
 #endif
         return tm;
       }
 
       REXLOG_INLINE tm localtime() REXLOG_NOEXCEPT
       {
-        time_t now_t = ::time(nullptr);
+        const time_t now_t = ::time(nullptr);
         return localtime(now_t);
       }
 
-      REXLOG_INLINE tm gmtime(const time_t& time_tt) REXLOG_NOEXCEPT
+      REXLOG_INLINE tm gmtime(const time_t& timeTt) REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
-        tm tm;
-        ::gmtime_s(&tm, &time_tt);
+        tm tm {};
+        REX_ASSERT_X(::gmtime_s(&tm, &timeTt), "failed to convert to gm");
 #else
         tm tm;
         ::gmtime_r(&time_tt, &tm);
@@ -107,7 +111,7 @@ namespace rexlog
 
       REXLOG_INLINE tm gmtime() REXLOG_NOEXCEPT
       {
-        time_t now_t = ::time(nullptr);
+        const time_t now_t = ::time(nullptr);
         return gmtime(now_t);
       }
 
@@ -189,9 +193,9 @@ namespace rexlog
           throw_rexlog_ex("Failed getting file size. fd is null");
         }
 #if defined(_WIN32) && !defined(__CYGWIN__)
-        int fd = ::_fileno(f);
+        const int fd = ::_fileno(f);
   #if defined(_WIN64) // 64 bits
-        __int64 ret = ::_filelengthi64(fd);
+        const __int64 ret = ::_filelengthi64(fd);
         if(ret >= 0)
         {
           return static_cast<size_t>(ret);
@@ -250,7 +254,7 @@ namespace rexlog
           throw_rexlog_ex("Failed getting timezone info. ", errno);
 
         int offset = -tzinfo.Bias;
-        if(tm.tm_isdst)
+        if(tm.tm_isdst != 0)
         {
           offset -= tzinfo.DaylightBias;
         }
@@ -302,7 +306,7 @@ namespace rexlog
       // Return current thread id as size_t
       // It exists because the rsl::this_thread::get_id() is much slower(especially
       // under VS 2013)
-      REXLOG_INLINE size_t _thread_id() REXLOG_NOEXCEPT
+      REXLOG_INLINE size_t thread_id_impl() REXLOG_NOEXCEPT
       {
 #ifdef _WIN32
         return static_cast<size_t>(::GetCurrentThreadId());
@@ -341,8 +345,8 @@ namespace rexlog
 #if defined(REXLOG_NO_TLS)
         return _thread_id();
 #else // cache thread id in tls
-        static thread_local const size_t tid = _thread_id();
-        return tid;
+        static thread_local const size_t s_tid = thread_id_impl();
+        return s_tid;
 #endif
       }
 
@@ -357,9 +361,9 @@ namespace rexlog
 #endif
       }
 
-      REXLOG_INLINE rsl::string filename_to_str(const filename_t& filename)
+      REXLOG_INLINE rex::DebugString filename_to_str(const filename_t& filename)
       {
-        return rsl::string(filename);
+        return rex::DebugString(filename);
       }
 
       REXLOG_INLINE int pid() REXLOG_NOEXCEPT
@@ -414,7 +418,7 @@ namespace rexlog
       }
 
       // return true on success
-      static REXLOG_INLINE bool mkdir_(const filename_t& path)
+      static REXLOG_INLINE bool mkdir_impl(const filename_t& path)
       {
 #ifdef _WIN32
         return ::_mkdir(path.c_str()) == 0;
@@ -440,7 +444,7 @@ namespace rexlog
         size_t search_offset = 0;
         do
         {
-          auto token_pos = path.find_first_of(folder_seps_filename, static_cast<count_t>(search_offset));
+          auto token_pos = path.find_first_of(rsl::string_view(folder_seps_filename), static_cast<count_t>(search_offset));
           // treat the entire path as a folder if no folder separator not found
           if(token_pos == filename_t::npos())
           {
@@ -449,12 +453,12 @@ namespace rexlog
 
           auto subdir = path.substr(0, token_pos);
 
-          if(!subdir.empty() && !path_exists(filename_t(subdir)) && !mkdir_(filename_t(subdir)))
+          if(!subdir.empty() && !path_exists(filename_t(subdir)) && !mkdir_impl(filename_t(subdir)))
           {
             return false; // return error if failed creating dir
           }
           search_offset = token_pos + 1;
-        } while(search_offset < path.size());
+        } while(static_cast<count_t>(search_offset) < path.size());
 
         return true;
       }
@@ -466,24 +470,24 @@ namespace rexlog
       // "abc///" => "abc//"
       REXLOG_INLINE filename_t dir_name(const filename_t& path)
       {
-        auto pos = path.find_last_of(folder_seps_filename);
+        auto pos = path.find_last_of(rsl::string_view(folder_seps_filename));
         return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t {};
       }
 
-      rsl::string REXLOG_INLINE getenv(const char* field)
+      REXLOG_INLINE rex::DebugString getenv(const char* field)
       {
 #if defined(_MSC_VER)
   #if defined(__cplusplus_winrt)
-        return rsl::string {}; // not supported under uwp
+        return rex::DebugString {}; // not supported under uwp
   #else
         size_t len = 0;
-        char buf[128];
-        bool ok = ::getenv_s(&len, buf, sizeof(buf), field) == 0;
-        return ok ? rsl::string(buf) : rsl::string {};
+        rsl::array<char, 128> buf;
+        const bool ok = ::getenv_s(&len, buf.data(), buf.size(), field) == 0;
+        return ok ? rex::DebugString(buf.data()) : rex::DebugString {};
   #endif
 #else // revert to getenv
         char* buf = ::getenv(field);
-        return buf ? buf : rsl::string {};
+        return buf ? buf : rex::DebugString {};
 #endif
       }
 
@@ -492,7 +496,7 @@ namespace rexlog
       REXLOG_INLINE bool fsync(FILE* fp)
       {
 #ifdef _WIN32
-        return FlushFileBuffers(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(fp)))) != 0;
+        return FlushFileBuffers(reinterpret_cast<HANDLE>(_get_osfhandle(_fileno(fp)))) != 0; // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
 #else
         return ::fsync(fileno(fp)) == 0;
 #endif
@@ -501,3 +505,5 @@ namespace rexlog
     } // namespace os
   }   // namespace details
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

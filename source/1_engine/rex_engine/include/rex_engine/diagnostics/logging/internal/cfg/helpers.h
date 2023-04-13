@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+
 #include <unordered_map>
 
 namespace rexlog
@@ -20,7 +21,7 @@ namespace rexlog
       // turn off all logging except for logger1: "off,logger1=debug"
       // turn off all logging except for logger1 and logger2: "off,logger1=debug,logger2=info"
       //
-      REXLOG_API void load_levels(const rsl::string& txt);
+      REXLOG_API void load_levels(const rex::DebugString& input);
     } // namespace helpers
 
   } // namespace cfg

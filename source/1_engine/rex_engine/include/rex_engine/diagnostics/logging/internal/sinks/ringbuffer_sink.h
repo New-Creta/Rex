@@ -19,57 +19,57 @@ namespace rexlog
      * Ring buffer sink
      */
     template <typename Mutex>
-    class ringbuffer_sink final : public base_sink<Mutex>
+    class ringbuffer_sink final : public BaseSink<Mutex>
     {
     public:
       explicit ringbuffer_sink(size_t n_items)
-          : q_ {n_items}
+          : m_q {n_items}
       {
       }
 
-      rsl::vector<details::log_msg_buffer> last_raw(size_t lim = 0)
+      rex::DebugVector<details::LogMsgBuffer> last_raw(size_t lim = 0)
       {
-        rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
-        auto items_available = q_.size();
+        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
+        auto items_available = m_q.size();
         auto n_items         = lim > 0 ? (rsl::min)(lim, items_available) : items_available;
-        rsl::vector<details::log_msg_buffer> ret;
+        rex::DebugVector<details::LogMsgBuffer> ret;
         ret.reserve(n_items);
         for(size_t i = (items_available - n_items); i < items_available; i++)
         {
-          ret.push_back(q_.at(i));
+          ret.push_back(m_q.at(i));
         }
         return ret;
       }
 
-      rsl::vector<rsl::string> last_formatted(size_t lim = 0)
+      rex::DebugVector<rex::DebugString> last_formatted(size_t lim = 0)
       {
-        rsl::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
-        auto items_available = q_.size();
+        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
+        auto items_available = m_q.size();
         auto n_items         = lim > 0 ? (rsl::min)(lim, items_available) : items_available;
-        rsl::vector<rsl::string> ret;
+        rex::DebugVector<rex::DebugString> ret;
         ret.reserve(n_items);
         for(size_t i = (items_available - n_items); i < items_available; i++)
         {
           memory_buf_t formatted;
-          base_sink<Mutex>::formatter_->format(q_.at(i), formatted);
+          BaseSink<Mutex>::m_formatter->format(m_q.at(i), formatted);
           ret.push_back(rsl::move(REXLOG_BUF_TO_STRING(formatted)));
         }
         return ret;
       }
 
     protected:
-      void sink_it_(const details::log_msg& msg) override
+      void sink_it_impl(const details::LogMsg& msg) override
       {
-        q_.push_back(details::log_msg_buffer {msg});
+        m_q.push_back(details::LogMsgBuffer {msg});
       }
-      void flush_() override {}
+      void flush_impl() override {}
 
     private:
-      details::circular_q<details::log_msg_buffer> q_;
+      details::CircularQ<details::LogMsgBuffer> m_q;
     };
 
     using ringbuffer_sink_mt = ringbuffer_sink<rsl::mutex>;
-    using ringbuffer_sink_st = ringbuffer_sink<details::null_mutex>;
+    using ringbuffer_sink_st = ringbuffer_sink<details::NullMutex>;
 
   } // namespace sinks
 

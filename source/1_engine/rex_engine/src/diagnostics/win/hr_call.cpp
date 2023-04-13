@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/win/hr_call.h"
 
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_engine/log.h"
 
 #define NOMINMAX
 #include <comdef.h>
@@ -13,11 +13,11 @@ rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED rsl::string_view file, REX
   {
     const _com_error err(hr);
     m_error_message = err.ErrorMessage();
-    REX_ERROR("WINDOWS ERROR");
-    REX_ERROR("File: ", file);
-    REX_ERROR("Function: ", function);
-    REX_ERROR("On line: ", lineNr);
-    REX_ERROR("DirectX error: ", m_error_message);
+    REX_ERROR(LogEngine, "WINDOWS ERROR");
+    REX_ERROR(LogEngine, "File: ", file);
+    REX_ERROR(LogEngine, "Function: ", function);
+    REX_ERROR(LogEngine, "On line: ", lineNr);
+    REX_ERROR(LogEngine, "DirectX error: ", m_error_message);
   }
 }
 

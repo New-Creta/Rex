@@ -1,16 +1,19 @@
 #include "rex_engine/defines.h"
-#include "rex_engine/diagnostics/legacy/logging.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/entrypoint.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/iostream.h"
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/gui_application.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogRegina, LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogRegina);
+
 namespace rex
 {
   bool initialize()
   {
-    REX_INFO("Initializing Regina");
+    REX_LOG(LogRegina, "Initializing Regina");
     return true;
   }
   void update()
@@ -19,7 +22,7 @@ namespace rex
   }
   void shutdown()
   {
-    REX_INFO("shutting down Regina");
+    REX_LOG(LogRegina, "shutting down Regina");
   }
 
   ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)

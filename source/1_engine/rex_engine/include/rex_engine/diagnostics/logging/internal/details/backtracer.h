@@ -2,12 +2,11 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/details/circular_q.h"
+#include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
 #include "rex_std/atomic.h"
 #include "rex_std/functional.h"
 #include "rex_std/mutex.h"
-
-#include <rex_engine/diagnostics/logging/internal/details/circular_q.h>
-#include <rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h>
 
 // Store log messages in circular buffer.
 // Useful for storing debug data in case of error/warning happens.
@@ -16,27 +15,28 @@ namespace rexlog
 {
   namespace details
   {
-    class REXLOG_API backtracer
+    class REXLOG_API Backtracer
     {
-      mutable rsl::mutex mutex_;
-      rsl::atomic<bool> enabled_ {false};
-      circular_q<log_msg_buffer> messages_;
+      mutable rsl::mutex m_mutex;
+      rsl::atomic<bool> m_enabled {false};
+      CircularQ<LogMsgBuffer> m_messages;
 
     public:
-      backtracer() = default;
-      backtracer(const backtracer& other);
-
-      backtracer(backtracer&& other) REXLOG_NOEXCEPT;
-      backtracer& operator=(backtracer other);
+      Backtracer() = default;
+      Backtracer(const Backtracer& other);
+      Backtracer(Backtracer&& other) REXLOG_NOEXCEPT;
+      ~Backtracer();
+      Backtracer& operator=(const Backtracer& other);
+      Backtracer& operator=(Backtracer&& other);
 
       void enable(size_t size);
       void disable();
       bool enabled() const;
-      void push_back(const log_msg& msg);
+      void push_back(const LogMsg& msg);
       bool empty() const;
 
       // pop all items in the q and apply the given fun on each of them.
-      void foreach_pop(rsl::function<void(const details::log_msg&)> fun);
+      void foreach_pop(const rsl::function<void(const details::LogMsg&)>& fun);
     };
 
   } // namespace details

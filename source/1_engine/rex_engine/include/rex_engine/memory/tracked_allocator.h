@@ -44,7 +44,7 @@ namespace rex
     using size_type = typename Allocator::size_type;
     using pointer   = typename Allocator::pointer;
 
-    TrackedAllocator(Allocator& alloc)
+    explicit TrackedAllocator(Allocator& alloc)
         : m_allocator(rsl::addressof(alloc))
     {
     }
@@ -72,7 +72,7 @@ namespace rex
       rex::MemoryHeader* dbg_header_ptr  = new(dbg_header_addr) MemoryHeader(tag, ptr, rsl::memory_size(num_mem_needed), thread_id, globals::frame_info().index(), current_callstack());
 
       // put the memory header pointer in front of the data blob we're going to return
-      rsl::memcpy(ptr, &dbg_header_ptr, sizeof(dbg_header_ptr));
+      rsl::memcpy(ptr, &dbg_header_ptr, sizeof(dbg_header_ptr)); // NOLINT(bugprone-sizeof-expression)
 
       // get the right address to return from the function
       rsl::byte* mem_block = static_cast<rsl::byte*>(ptr);
@@ -103,6 +103,26 @@ namespace rex
       mem_tracker().track_dealloc(ptr, header);
       m_allocator->deallocate(mem_block, size);
       global_debug_allocator().deallocate(header, size);
+    }
+
+    template <typename U, typename... Args>
+    void construct(U* p, Args&&... args)
+    {
+      m_allocator->construct(p, rsl::forward<Args>(args)...);
+    }
+    template <typename T>
+    void destroy(T* ptr)
+    {
+      m_allocator->destroy(ptr);
+    }
+
+    bool operator==(const TrackedAllocator& rhs) const
+    {
+      return *m_allocator == *rhs.m_allocator;
+    }
+    bool operator!=(const TrackedAllocator& rhs) const
+    {
+      return !(*this == rhs);
     }
 
   private:

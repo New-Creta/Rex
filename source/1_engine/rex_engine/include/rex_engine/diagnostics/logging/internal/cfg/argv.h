@@ -1,8 +1,8 @@
 
 
 #pragma once
-#include <rex_engine/diagnostics/logging/internal/cfg/helpers.h>
-#include <rex_engine/diagnostics/logging/internal/details/registry.h>
+#include "rex_engine/diagnostics/logging/internal/cfg/helpers.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
 
 //
 // Init log levels using each argv entry that starts with "REXLOG_LEVEL="
@@ -24,14 +24,14 @@ namespace rexlog
     // search for REXLOG_LEVEL= in the args and use it to init the levels
     inline void load_argv_levels(int argc, const char** argv)
     {
-      const rsl::string rexlog_level_prefix = "REXLOG_LEVEL=";
+      const rex::DebugString rexlog_level_prefix("REXLOG_LEVEL=");
       for(int i = 1; i < argc; i++)
       {
-        rsl::string arg = argv[i];
+        rex::DebugString arg(argv[i]);
         if(arg.find(rexlog_level_prefix) == 0)
         {
           auto levels_string = arg.substr(rexlog_level_prefix.size());
-          helpers::load_levels(levels_string);
+          helpers::load_levels(rex::DebugString(levels_string));
         }
       }
     }

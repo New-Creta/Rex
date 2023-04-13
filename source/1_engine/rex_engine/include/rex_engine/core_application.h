@@ -3,6 +3,7 @@
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/types.h"
 #include "rex_std/functional.h"
+#include "rex_std/limits.h"
 #include "rex_std/memory.h"
 #include "rex_std_extra/memory/memory_size.h"
 
@@ -16,7 +17,7 @@ namespace rex
 
     // how much memory is the entire app allowed to use.
     // by default, there's no limit on this.
-    rsl::memory_size max_memory     = rsl::memory_size(rsl::numeric_limits<s64>::max());
+    rsl::memory_size max_memory     = rsl::memory_size((rsl::numeric_limits<s64>::max)());
     init_func app_init_func         = nullptr;
     update_func app_update_func     = nullptr;
     shutdown_func app_shutdown_func = nullptr;

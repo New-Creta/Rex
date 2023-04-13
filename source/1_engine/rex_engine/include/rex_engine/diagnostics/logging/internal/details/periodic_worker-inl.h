@@ -2,9 +2,10 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
 #include "rex_std/mutex.h"
 
-#include <rex_engine/diagnostics/logging/internal/details/periodic_worker.h>
+// NOLINTBEGIN(misc-definitions-in-headers)
 
 namespace rexlog
 {
@@ -12,18 +13,20 @@ namespace rexlog
   {
 
     // stop the worker thread and join it
-    REXLOG_INLINE periodic_worker::~periodic_worker()
+    REXLOG_INLINE PeriodicWorker::~PeriodicWorker()
     {
-      if(worker_thread_.joinable())
+      if(m_worker_thread.joinable())
       {
         {
-          rsl::unique_lock<rsl::mutex> lock(mutex_);
-          active_ = false;
+          const rsl::unique_lock<rsl::mutex> lock(m_mutex);
+          m_active = false;
         }
-        cv_.notify_one();
-        worker_thread_.join();
+        m_cv.notify_one();
+        m_worker_thread.join();
       }
     }
 
   } // namespace details
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)
