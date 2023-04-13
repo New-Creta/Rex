@@ -3,11 +3,12 @@
 namespace rex
 {
 #ifdef REX_PLATFORM_WINDOWS
-  namespace win 
+
+  namespace win
   {
-    // We require the namespace "win32" here in order to use the "using namespace"
-  }
+
+  } // namespace win
 
   using namespace win;
 #endif
-}
+} // namespace rex

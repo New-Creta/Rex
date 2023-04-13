@@ -11,6 +11,5 @@ namespace rex
     using CallStack = rsl::array<void*, 10>;
 
     CallStack current_callstack();
-  }
-}
-
+  } // namespace win
+} // namespace rex

@@ -2,17 +2,17 @@
 
 namespace rex
 {
-  MemoryHeader::MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const CallStack& callstack)
-    : m_callstack(callstack)
-    , m_size(size)
-    , m_ptr(ptr)
-    , m_thread_id(threadId)
-    , m_tag(tag)
-    , m_frame_idx(frameIdx)
+  MemoryHeader::MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const win::CallStack& callstack)
+      : m_callstack(callstack)
+      , m_size(size)
+      , m_ptr(ptr)
+      , m_thread_id(threadId)
+      , m_tag(tag)
+      , m_frame_idx(frameIdx)
   {
   }
 
-  const CallStack& MemoryHeader::callstack() const
+  const win::CallStack& MemoryHeader::callstack() const
   {
     return m_callstack;
   }
@@ -37,4 +37,4 @@ namespace rex
     return m_frame_idx;
   }
 
-}
+} // namespace rex

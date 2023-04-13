@@ -2,14 +2,12 @@
 
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_engine/event_system.h"
-#include "rex_std/bonus/utility/scopeguard.h"
-#include "rex_windows/log.h"
-
-#include "rex_std/fstream.h"
-#include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/memory/memory_header.h"
-
+#include "rex_engine/memory/memory_tracking.h"
+#include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_std/fstream.h"
 #include "rex_std/type_traits.h"
+#include "rex_windows/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -25,18 +23,17 @@ rex::win32::LResult rex::win32::EventHandler::on_event(Hwnd hwnd, card32 msg, WP
 
   const rsl::scopeguard reset_win_error_scopeguard([=]() { SetLastError(last_windows_error); });
 
-  switch (msg)
+  switch(msg)
   {
-  case WM_CHAR:
-    event_system::fire_event(event_system::EventType::CharDown, &wparam); break;
-  case WM_CLOSE: REX_WARN(LogWindows, "Verify if the user really wants to close"); break;
-  case WM_DESTROY:
-    PostQuitMessage(0);
-    event_system::fire_event(event_system::EventType::WindowClose, nullptr);
-    return 0;
-  default:
-    // Nothing to implement
-    break;
+    case WM_CHAR: event_system::fire_event(event_system::EventType::CharDown, &wparam); break;
+    case WM_CLOSE: REX_WARN(LogWindows, "Verify if the user really wants to close"); break;
+    case WM_DESTROY:
+      PostQuitMessage(0);
+      event_system::fire_event(event_system::EventType::WindowClose, nullptr);
+      return 0;
+    default:
+      // Nothing to implement
+      break;
   }
   return DefWindowProc(static_cast<HWND>(hwnd), msg, wparam, lparam);
 }

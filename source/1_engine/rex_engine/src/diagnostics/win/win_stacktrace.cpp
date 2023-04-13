@@ -1,7 +1,11 @@
 #include "rex_engine/diagnostics/win/win_stacktrace.h"
 
+// NOLINTBEGIN(llvm-include-order)
+// clang-format off
 #include <Windows.h> // this needs to be included before DbgHelp.h
 #include <DbgHelp.h>
+// clang-format on
+// NOLINTEND(llvm-include-order)
 
 namespace rex
 {
@@ -17,10 +21,10 @@ namespace rex
     bool load_symbols()
     {
       static bool initialised = false;
-      if (!initialised)
+      if(!initialised)
       {
         SymSetOptions(SYMOPT_DEFERRED_LOADS | SYMOPT_EXACT_SYMBOLS | SYMOPT_LOAD_LINES | SYMOPT_DEBUG | SYMOPT_UNDNAME);
-        if (SymInitialize(GetCurrentProcess(), NULL, TRUE) == 0)
+        if(SymInitialize(GetCurrentProcess(), NULL, TRUE) == 0)
         {
           SymCleanup(GetCurrentProcess());
         }
@@ -46,5 +50,5 @@ namespace rex
     {
       return load_stack_pointers(0);
     }
-  }
-}
+  } // namespace win
+} // namespace rex

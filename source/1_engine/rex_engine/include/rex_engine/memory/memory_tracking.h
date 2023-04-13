@@ -1,8 +1,10 @@
 #pragma once
 
-#include "rex_engine/memory/memory_tags.h"
+#include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/memory_header.h"
 #include "rex_engine/memory/memory_stats.h"
+#include "rex_engine/memory/memory_tags.h"
+#include "rex_engine/memory/untracked_allocator.h"
 #include "rex_engine/types.h"
 #include "rex_std/mutex.h"
 #include "rex_std/stacktrace.h"
@@ -10,9 +12,6 @@
 #include "rex_std_extra/memory/memory_size.h"
 #include "rex_std_extra/utility/enum_reflection.h"
 #include "rex_std_extra/utility/high_water_mark.h"
-
-#include "rex_engine/memory/debug_allocator.h"
-#include "rex_engine/memory/untracked_allocator.h"
 
 namespace rex
 {
@@ -46,7 +45,7 @@ namespace rex
   private:
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_usage;                   // maximum allowed memory usage
-    MemoryStats m_mem_stats_on_startup;     // stats queried from the OS at init time
+    MemoryStats m_mem_stats_on_startup;    // stats queried from the OS at init time
     rsl::mutex m_mem_tracking_mutex;
     rsl::mutex m_mem_tag_tracking_mutex;
     UsagePerTag m_usage_per_tag;
