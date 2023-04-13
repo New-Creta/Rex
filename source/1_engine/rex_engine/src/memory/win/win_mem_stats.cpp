@@ -18,8 +18,6 @@ namespace rex
       PROCESS_MEMORY_COUNTERS_EX process_mem_counters{};
       GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&process_mem_counters, sizeof(process_mem_counters));
 
-      process_mem_counters.PrivateUsage;
-
       // retrieve the system info
       SYSTEM_INFO sys_info{};
       GetSystemInfo(&sys_info);
