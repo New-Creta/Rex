@@ -39,32 +39,32 @@ if __name__ == "__main__":
     regis.test.clean()
 
   if args.all or args.iwyu:
-    threads.append(threading.Thread(target=lambda: regis.test.test_include_what_you_use()))
-    # regis.test.test_include_what_you_use()
+    # threads.append(threading.Thread(target=lambda: regis.test.test_include_what_you_use()))
+    regis.test.test_include_what_you_use()
   if args.all or args.clang_tidy:
-    threads.append(threading.Thread(target=lambda: regis.test.test_clang_tidy()))
-    # regis.test.test_clang_tidy()
+    # threads.append(threading.Thread(target=lambda: regis.test.test_clang_tidy()))
+    regis.test.test_clang_tidy()
   if args.all or args.unit_tests:
-    threads.append(threading.Thread(target=lambda: regis.test.test_unit_tests()))
-    # regis.test.test_unit_tests()
+    # threads.append(threading.Thread(target=lambda: regis.test.test_unit_tests()))
+    regis.test.test_unit_tests()
   if args.all or args.coverage:
-    threads.append(threading.Thread(target=lambda: regis.test.test_code_coverage()))
-    # regis.test.test_code_coverage()
+    # threads.append(threading.Thread(target=lambda: regis.test.test_code_coverage()))
+    regis.test.test_code_coverage()
   if args.all or args.asan:
-    threads.append(threading.Thread(target=lambda: regis.test.test_asan()))
-    # regis.test.test_asan()
+    # threads.append(threading.Thread(target=lambda: regis.test.test_asan()))
+    regis.test.test_asan()
   if args.all or args.ubsan:
-    threads.append(threading.Thread(target=lambda: regis.test.test_ubsan()))
-    # regis.test.test_ubsan()
+    # threads.append(threading.Thread(target=lambda: regis.test.test_ubsan()))
+    regis.test.test_ubsan()
   if args.all or args.fuzzy:
-    threads.append(threading.Thread(target=lambda: regis.test.test_fuzzy_testing()))
-    # regis.test.test_fuzzy_testing()
+    # threads.append(threading.Thread(target=lambda: regis.test.test_fuzzy_testing()))
+    regis.test.test_fuzzy_testing()
   if args.all or args.auto_test:
     if args.auto_test_timeout:
       auto_test_timeout_secs = args.auto_test_timeout
 
-    threads.append(threading.Thread(target=lambda: regis.test.run_auto_tests(int(auto_test_timeout_secs))))
-    # regis.test.run_auto_tests(int(auto_test_timeout_secs))
+    # threads.append(threading.Thread(target=lambda: regis.test.run_auto_tests(int(auto_test_timeout_secs))))
+    regis.test.run_auto_tests(int(auto_test_timeout_secs))
 
   for thread in threads:
     thread.start()
