@@ -34,17 +34,22 @@ public class RexTarget : ITarget
     get { return ConfigManager.get_optimization_for_config(Config); }
   }
 
-  public static RexTarget[] GetDefaultTargets()
+  public static RexTarget[] GetAllDefaultTargets()
   {
     return new RexTarget[]
-    { 
-      GetVsOnlyTarget(),
-      new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang)
+    {
+      GetVSOnlyTarget(),
+      GetNinjaOnlyTarget()
     };
   }
-  public static RexTarget GetVsOnlyTarget()
+  public static RexTarget GetVSOnlyTarget()
   {
     return new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
+  }
+
+  public static RexTarget GetNinjaOnlyTarget()
+  {
+    return new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
   }
 
   public static RexTarget GetCoverageTarget()
