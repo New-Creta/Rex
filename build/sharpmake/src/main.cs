@@ -130,23 +130,6 @@ public class MainSolution : Solution
 
   protected string GenerateName(string baseName)
   {
-    if (GenerateSettings.CoverageEnabled)
-    {
-      baseName += "_coverage";
-    }
-    else if (GenerateSettings.AddressSanitizerEnabled)
-    {
-      baseName += "_asan";
-    }
-    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
-    {
-      baseName += "_ubsan";
-    }
-    else if (GenerateSettings.GenerateFuzzyTests)
-    {
-      baseName += "_fuzzy";
-    }
-
     return baseName;
   }
 

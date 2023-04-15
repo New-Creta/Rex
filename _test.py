@@ -43,20 +43,20 @@ if __name__ == "__main__":
   if args.all or args.clang_tidy:
     regis.test.test_clang_tidy()
   if args.all or args.unit_tests:
-    regis.test.test_unit_tests()
+    regis.test.test_unit_tests(["rexstdtest"])
   if args.all or args.coverage:
-    regis.test.test_code_coverage()
+    regis.test.test_code_coverage(["rexstdtest"])
   if args.all or args.asan:
-    regis.test.test_asan()
+    regis.test.test_asan(["rexstdtest"])
   if args.all or args.ubsan:
-    regis.test.test_ubsan()
+    regis.test.test_ubsan(["rexstdtest"])
   if args.all or args.fuzzy:
-    regis.test.test_fuzzy_testing()
+    regis.test.test_fuzzy_testing(["rexstdfuzzy"])
   if args.all or args.auto_test:
     if args.auto_test_timeout:
       auto_test_timeout_secs = args.auto_test_timeout
 
-    regis.test.run_auto_tests(int(auto_test_timeout_secs))
+    regis.test.run_auto_tests(["debug, debug_opt, release"], ["msvc, clang"], ["regina"], int(auto_test_timeout_secs))
 
   for thread in threads:
     thread.start()
