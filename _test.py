@@ -10,7 +10,6 @@
 
 import argparse
 import time
-import threading
 import regis.test
 import regis.diagnostics
 from datetime import datetime
@@ -30,8 +29,6 @@ if __name__ == "__main__":
   parser.add_argument("-auto_test", help="run auto tests", action="store_true")
   parser.add_argument("-auto_test_timeout", help="timeout for auto tests in seconds", default=10)
   args,unknown = parser.parse_known_args()
-
-  threads : list[threading.Thread] = []
 
   start = time.perf_counter()
 
@@ -54,12 +51,6 @@ if __name__ == "__main__":
       auto_test_timeout_secs = args.auto_test_timeout
 
     regis.test.run_auto_tests(["debug", "debug_opt", "release"], ["msvc","clang"], ["regina"], int(auto_test_timeout_secs), args.clean)
-
-  for thread in threads:
-    thread.start()
-
-  for thread in threads:
-    thread.join()
 
   regis.diagnostics.log_no_color("")
   regis.diagnostics.log_info("Summary Report")
