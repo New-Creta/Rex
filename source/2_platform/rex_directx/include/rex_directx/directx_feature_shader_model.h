@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/types.h"
 #include "rex_directx/directx_util.h"
+#include "rex_engine/types.h"
 
 #include "rex_std/string.h"
 
@@ -27,10 +27,9 @@ namespace rex
             case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_1: return rsl::string("D3D_SHADER_MODEL_6_1");
             case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_0: return rsl::string("D3D_SHADER_MODEL_6_0");
             case D3D_SHADER_MODEL::D3D_SHADER_MODEL_5_1: return rsl::string("D3D_SHADER_MODEL_5_1");
+            default:
+                return rsl::string("Unknown shader model");
         }
-
-        //assert(false, "Unknown shader model");
-        return {};
     }
 
     //-------------------------------------------------------------------------
@@ -90,4 +89,4 @@ namespace rex
 
         return { (s32)shaderModel.HighestShaderModel, shader_model_name(shaderModel.HighestShaderModel)};
     }
-}
+} // namespace rex

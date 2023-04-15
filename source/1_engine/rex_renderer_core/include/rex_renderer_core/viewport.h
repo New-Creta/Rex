@@ -2,40 +2,40 @@
 
 namespace rex
 {
-	struct ViewportCreationInfo
-	{
-		float top_left_x;
-		float top_left_y;
-		
-		float width;
-		float height;
+  struct ViewportCreationInfo
+  {
+    float top_left_x;
+    float top_left_y;
 
-		float min_depth;
-		float max_depth;
-	};
+    float width;
+    float height;
 
-	class Viewport
-	{
-	public:
-		Viewport();
-		Viewport(const ViewportCreationInfo& info);
-		virtual ~Viewport();
+    float min_depth;
+    float max_depth;
+  };
 
-		float top_left_x() const;
-		float top_left_y() const;
-		float width() const;
-		float height() const;
-		float min_depth() const;
-		float max_depth() const;
-			   
-	private:
-		float m_top_left_x;
-		float m_top_left_y;
+  class Viewport
+  {
+  public:
+    Viewport();
+    Viewport(const ViewportCreationInfo& info);
+    virtual ~Viewport();
 
-		float m_width;
-		float m_height;
+    float top_left_x() const;
+    float top_left_y() const;
+    float width() const;
+    float height() const;
+    float min_depth() const;
+    float max_depth() const;
 
-		float m_min_depth;
-		float m_max_depth;
-	};
-}
+  private:
+    float m_top_left_x;
+    float m_top_left_y;
+
+    float m_width;
+    float m_height;
+
+    float m_min_depth;
+    float m_max_depth;
+  };
+} // namespace rex

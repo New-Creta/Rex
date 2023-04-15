@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_directx/wrl/wrl_types.h"
 #include "rex_directx/wrl/comobject.h"
+#include "rex_directx/wrl/wrl_types.h"
 
 namespace rex
 {
@@ -39,5 +39,5 @@ namespace rex
         {
             return m_version;
         }
-    }
-}
+    } // namespace dxgi
+} // namespace rex

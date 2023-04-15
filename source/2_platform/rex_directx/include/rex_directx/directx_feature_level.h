@@ -17,4 +17,4 @@ namespace rex
     bool is_correct_feature_level(s32 level);
 
     FeatureLevelInfo query_feature_level(IDXGIAdapter* adapter);
-}
+} // namespace rex

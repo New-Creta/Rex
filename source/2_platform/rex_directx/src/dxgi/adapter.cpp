@@ -108,7 +108,7 @@ namespace
 
         return desc;
     }
-}
+} // namespace
 
 namespace rex
 {
@@ -122,6 +122,6 @@ namespace rex
 
         //-------------------------------------------------------------------------
         Adapter::~Adapter() = default;
-    }
-}
+    } // namespace dxgi
+} // namespace rex
 

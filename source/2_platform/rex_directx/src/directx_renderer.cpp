@@ -1,11 +1,11 @@
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/highest_vram_gpu_scorer.h"
 
-#include "rex_directx/dxgi/adapter_manager.h"
-#include "rex_directx/dxgi/adapter.h"
-#include "rex_directx/dxgi/factory.h"
 #include "rex_directx/directx_feature_level.h"
 #include "rex_directx/directx_feature_shader_model.h"
+#include "rex_directx/dxgi/adapter.h"
+#include "rex_directx/dxgi/adapter_manager.h"
+#include "rex_directx/dxgi/factory.h"
 #include "rex_directx/log.h"
 
 #include "rex_std/memory.h"
@@ -124,6 +124,6 @@ namespace rex
             {
 
             }
-        }
-    }
-}
+        } // namespace backend
+    } // namespace renderer
+} // namespace rex

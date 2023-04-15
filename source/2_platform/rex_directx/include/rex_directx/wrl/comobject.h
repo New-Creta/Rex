@@ -14,7 +14,7 @@ namespace rex
         wrl::com_ptr<To> convertTo(const wrl::com_ptr<From>& ptr)
         {
             wrl::com_ptr<To> pointer;
-            ptr.As<To>(&pointer);
+            ptr.template As<To>(&pointer);
             return pointer;
         }
 
@@ -52,7 +52,7 @@ namespace rex
             * Retrieve this com object as a different type
             */
             template <typename To>
-            wrl::com_ptr<To>          as() const;
+            wrl::com_ptr<To>            as() const;
 
         private:
             wrl::com_ptr<T> m_pointer;
@@ -111,5 +111,5 @@ namespace rex
             // so we need to case away the const
             return convertTo<To, T>(c_ptr());
         }
-    }
-}
+    } // namespace wrl
+} // namespace rex
