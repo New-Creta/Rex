@@ -13,14 +13,20 @@ public enum GraphicsAPI
 
 public class GenerateSettings
 {
-  static public bool CoverageEnabled { get; set; }
-  static public bool UnitTestsEnabled { get; set; }
-  static public bool AddressSanitizerEnabled { get; set; }
-  static public bool UndefinedBehaviorSanitizerEnabled { get; set; }
-  static public bool FuzzyTestingEnabled { get; set; }
-  static public bool VisualStudioOnly { get; set; }
-  static public bool NoClangTools { get; set; }
+  static public bool EnableVisualStudio = false;
+  static public bool NoClangTools = false;
   static public bool PerformAllChecks = false;
+  static public string IntermediateDir = "";
+
+  // Test flags
+  static public bool EnableDefaultGeneration = true;
+  static public bool GenerateUnitTests = false;
+  static public bool CoverageEnabled = false;
+  static public bool AddressSanitizerEnabled = false;
+  static public bool UndefinedBehaviorSanitizerEnabled = false;
+  static public bool GenerateFuzzyTests = false;
+
+
   static public string ClangTidyRegex { get; set; }
   static public GraphicsAPI GraphicsAPI { get; set; }
 

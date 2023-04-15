@@ -39,7 +39,7 @@ public class RexEngine : EngineProject
     conf.AddPublicDependency<RexStdExtra>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
 
-    if (GenerateSettings.UnitTestsEnabled)
+    if (GenerateSettings.GenerateUnitTests)
     {
       conf.AddPublicDependency<RexStdTest>(target, DependencySetting.Default);
     }
