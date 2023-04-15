@@ -35,28 +35,25 @@ if __name__ == "__main__":
 
   start = time.perf_counter()
 
-  if args.clean:
-    regis.test.clean()
-
   if args.all or args.iwyu:
-    regis.test.test_include_what_you_use()
+    regis.test.test_include_what_you_use(args.clean)
   if args.all or args.clang_tidy:
-    regis.test.test_clang_tidy()
+    regis.test.test_clang_tidy(args.clean)
   if args.all or args.unit_tests:
-    regis.test.test_unit_tests(["rexstdtest"])
+    regis.test.test_unit_tests(["rexstdtest"], args.clean)
   if args.all or args.coverage:
-    regis.test.test_code_coverage(["rexstdtest"])
+    regis.test.test_code_coverage(["rexstdtest"], args.clean)
   if args.all or args.asan:
-    regis.test.test_asan(["rexstdtest"])
+    regis.test.test_asan(["rexstdtest"], args.clean)
   if args.all or args.ubsan:
-    regis.test.test_ubsan(["rexstdtest"])
+    regis.test.test_ubsan(["rexstdtest"], args.clean)
   if args.all or args.fuzzy:
-    regis.test.test_fuzzy_testing(["rexstdfuzzy"])
+    regis.test.test_fuzzy_testing(["rexstdfuzzy"], args.clean)
   if args.all or args.auto_test:
     if args.auto_test_timeout:
       auto_test_timeout_secs = args.auto_test_timeout
 
-    regis.test.run_auto_tests(["debug, debug_opt, release"], ["msvc, clang"], ["regina"], int(auto_test_timeout_secs))
+    regis.test.run_auto_tests(["debug", "debug_opt", "release"], ["msvc","clang"], ["regina"], int(auto_test_timeout_secs), args.clean)
 
   for thread in threads:
     thread.start()
