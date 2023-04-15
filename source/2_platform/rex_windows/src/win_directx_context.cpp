@@ -1,4 +1,3 @@
-#ifdef REX_API_DIRECTX12
 #include "rex_engine/types.h"
 #include "rex_renderer_core/context.h"
 #include "rex_windows/log.h"
@@ -28,4 +27,3 @@ namespace rex
         } // namespace os
     }   // namespace context
 } // namespace rex
-#endif
