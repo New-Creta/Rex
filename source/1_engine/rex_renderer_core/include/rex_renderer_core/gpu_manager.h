@@ -15,8 +15,9 @@ namespace rex
         GpuManager() = default;
         virtual ~GpuManager() = default;
 
-        virtual Gpu* selected() const = 0;
-        virtual Gpu* first() const = 0;
+        virtual const Gpu* selected() const = 0;
+        virtual const Gpu* first() const = 0;
+        virtual const Gpu* software() const = 0;
         virtual const GpuVec& all() const = 0;
     };
 }
