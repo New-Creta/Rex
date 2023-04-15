@@ -1,29 +1,28 @@
-#include "rex_engine/types.h"
-#include "rex_renderer_core/context.h"
-#include "rex_windows/log.h"
+#ifdef REX_API_DIRECTX12
+  #include "rex_engine/types.h"
+  #include "rex_renderer_core/context.h"
+  #include "rex_windows/log.h"
 
-#include <Windows.h>
+  #include <Windows.h>
 
 namespace rex
 {
-    namespace context
+  namespace context
+  {
+    namespace os
     {
-        namespace os
-        {
-            // OS specific implementation
-            bool pre_setup(void* /*userData*/)
-            {
-                return true;
-            }
-            bool post_setup(void* /*userData*/)
-            {
-                return true;
-            }
+      // OS specific implementation
+      bool pre_setup(void* /*userData*/)
+      {
+        return true;
+      }
+      bool post_setup(void* /*userData*/)
+      {
+        return true;
+      }
 
-            void rollback(void* /*userData*/)
-            {
-                
-            }
-        } // namespace os
-    }   // namespace context
+      void rollback(void* /*userData*/) {}
+    } // namespace os
+  }   // namespace context
 } // namespace rex
+#endif
