@@ -20,9 +20,12 @@ namespace rex
             case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0: return rsl::string("D3D_FEATURE_LEVEL_12_0");
             case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1: return rsl::string("D3D_FEATURE_LEVEL_12_1");
             case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_1_0_CORE: return rsl::string("D3D_FEATURE_LEVEL_1_0_CORE");
+            default:
+                return rsl::string("Unknown feature level");
+            break;
         }
 
-        //assert(false, "Unknown feature level");
+        REX_ASSERT("Unknown feature level");
         return {};
     }
 
@@ -45,10 +48,10 @@ namespace rex
             }
         }
 
-        //assert( "At least D3D_FEATURE_LEVEL_12_0 has to be supported for DirectX 12!");
+        REX_ASSERT("At least D3D_FEATURE_LEVEL_12_0 has to be supported for DirectX 12!");
 
         // If the compiler doesn't recognise D3D_FEATURE_LEVEL_1_0_CORE
         // Make sure you're using windows SDK 10.0.18362.0 or later
         return { static_cast<s32>(D3D_FEATURE_LEVEL_1_0_CORE), feature_level_name(D3D_FEATURE_LEVEL_1_0_CORE) };
     }
-}
+} // namespace rex

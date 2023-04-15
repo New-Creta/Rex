@@ -15,7 +15,7 @@ namespace
     {
         rex::wrl::com_ptr<IDXGIFactory6> factory_6 = factory->as<IDXGIFactory6>();
 
-        //assert(factory_6, "DXGIFactory 6 does not exist!");
+        REX_ASSERT_X(factory_6, "DXGIFactory 6 does not exist!");
 
         return [factory = factory_6.Get()](UINT index, IDXGIAdapter4** adapter)
         {
@@ -27,7 +27,7 @@ namespace
     {
         rex::wrl::com_ptr<IDXGIFactory4> factory_4 = factory->as<IDXGIFactory4>();
 
-        //assert(factory_4, "DXGIFactory 4 does not exist!");
+        REX_ASSERT_X(factory_4, "DXGIFactory 4 does not exist!");
 
         return [factory = factory_4.Get()](UINT index, IDXGIAdapter1** adapter)
         {
@@ -37,7 +37,7 @@ namespace
     //-------------------------------------------------------------------------
     rsl::function<HRESULT(UINT, IDXGIAdapter**)> get_enumaration_function(const rex::dxgi::Factory* factory)
     {
-        //assert(factory, "DXGIFactory does not exist");
+        REX_ASSERT_X(factory, "DXGIFactory does not exist");
 
         return [factory = factory->c_ptr()](UINT index, IDXGIAdapter** adapter)
         {
@@ -67,7 +67,7 @@ namespace
     //-------------------------------------------------------------------------
     rsl::unique_ptr<rex::Gpu> get_software_adapter(const rex::dxgi::Factory* factory)
     {
-        //assert(factory, "DXGIFactory does not exist");
+        REX_ASSERT_X(factory, "DXGIFactory does not exist");
 
         if (factory->version() < 4)
         {
@@ -84,7 +84,7 @@ namespace
 
         return nullptr;
     }
-}
+} // namespace
 
 namespace rex
 {
@@ -139,21 +139,21 @@ namespace rex
         //-------------------------------------------------------------------------
         const Gpu* AdapterManager::selected() const
         {
-            //assert(m_selected_adapter, "No adapter selected. Call \" select(uint32 adapterID) \" first");
+            REX_ASSERT_X(m_selected_adapter, "No adapter selected. Call \" select(uint32 adapterID) \" first");
 
             return m_selected_adapter;
         }
         //-------------------------------------------------------------------------
         const Gpu* AdapterManager::first() const
         {
-            //assert(m_adapters.size() > 0, "No adapters found");
+            REX_ASSERT_X(m_adapters.size() > 0, "No adapters found");
 
             return m_adapters[0].get();
         }
         //-------------------------------------------------------------------------
         const Gpu* AdapterManager::software() const
         {
-            //assert(m_software_adapter != nullptr);
+            REX_ASSERT_X(m_software_adapter != nullptr, "No valid software adapter");
 
             return m_software_adapter.get();
         }
@@ -161,9 +161,9 @@ namespace rex
         //-------------------------------------------------------------------------
         const rsl::vector<rsl::unique_ptr<Gpu>>& AdapterManager::all() const
         {
-            //assert(m_adapters.size() > 0, "No adapters found");
+            REX_ASSERT_X(m_adapters.size() > 0, "No adapters found");
 
             return m_adapters;
         }
-    }
-}
+    } // namespace dxgi
+} // namespace rex
