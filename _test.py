@@ -38,7 +38,7 @@ if __name__ == "__main__":
   if args.all or args.iwyu:
     regis.test.test_include_what_you_use(args.clean)
   if args.all or args.clang_tidy:
-    regis.test.test_clang_tidy(args.clean)
+    regis.test.test_clang_tidy(".*", args.clean)
   if args.all or args.unit_tests:
     regis.test.test_unit_tests(["rexstdtest"], args.clean)
   if args.all or args.coverage:
