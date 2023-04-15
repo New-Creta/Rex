@@ -1,16 +1,18 @@
 #include "rex_renderer_core/highest_vram_gpu_scorer.h"
 #include "rex_renderer_core/gpu.h"
 
+#include "rex_std/algorithm.h"
+
 namespace rex
 {
     //-------------------------------------------------------------------------
-    Gpu* HighestVramGpuScorer::get_highest_scoring_gpu(const rsl::vector<rsl::unique_ptr<Gpu>>& gpus) const
+    const Gpu* HighestVramGpuScorer::highest_scoring_gpu(const rsl::vector<rsl::unique_ptr<Gpu>>& gpus) const
     {
-        auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
-            [](const auto& lhs, const auto& rhs)
+        auto it = std::max_element(gpus.cbegin(), gpus.cend(),
+            [](const rsl::unique_ptr<Gpu>& lhs, const rsl::unique_ptr<Gpu>& rhs)
             {
-                size_t lhs_vram = lhs->get_description().dedicated_video_memory.bytes();
-                size_t rhs_vram = rhs->get_description().dedicated_video_memory.bytes();
+                size_t lhs_vram = lhs->description().dedicated_video_memory.size_in_bytes();
+                size_t rhs_vram = rhs->description().dedicated_video_memory.size_in_bytes();
 
                 return rhs_vram > lhs_vram;
             });

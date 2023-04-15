@@ -11,9 +11,9 @@ namespace rex
         os << "Description: " << desc.name << "\n";
         os << "Vendor ID: " << desc.vendor_id << "\n";
         os << "Device ID: " << desc.device_id << "\n";
-        os << "Dedicated Video Memory: " << desc.dedicated_video_memory.megabytes() << "MB" << "\n";
-        os << "Dedicated System Memory: " << desc.dedicated_system_memory.megabytes() << "MB" << "\n";
-        os << "Shared System Memory: " << desc.shared_system_memory.megabytes() << "MB" << "\n";
+        os << "Dedicated Video Memory: " << desc.dedicated_video_memory.size_in_mb() << "MB" << "\n";
+        os << "Dedicated System Memory: " << desc.dedicated_system_memory.size_in_mb() << "MB" << "\n";
+        os << "Shared System Memory: " << desc.shared_system_memory.size_in_mb() << "MB" << "\n";
 
         return os;
     }

@@ -168,7 +168,7 @@ namespace rex
       }
 
       // swap / present / vsync
-      extern void present()
+      void present()
       {
         rex_gl_swap_buffers();
       }

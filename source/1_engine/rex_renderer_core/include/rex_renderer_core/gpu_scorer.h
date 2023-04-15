@@ -12,6 +12,6 @@ namespace rex
 	public:
 		virtual ~GpuScorer() = default;
 
-		virtual Gpu* highest_scoring_gpu(const rsl::vector<rsl::unique_ptr<Gpu>>& gpus) const = 0;
+		virtual const Gpu* highest_scoring_gpu(const rsl::vector<rsl::unique_ptr<Gpu>>& gpus) const = 0;
 	};
 }

@@ -3,7 +3,7 @@
 #include "rex_std/vector.h"
 #include "rex_std/memory.h"
 
-namespace pic
+namespace rex
 {
     class Gpu;
 
