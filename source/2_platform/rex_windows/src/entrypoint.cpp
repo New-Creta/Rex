@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <shellapi.h>
-
 //-------------------------------------------------------------------------
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {

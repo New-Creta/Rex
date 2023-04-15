@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/details/log_msg.h>
-#include <rex_engine/diagnostics/logging/internal/formatter.h>
+#include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/formatter.h"
+#include "rex_engine/types.h"
 
 namespace rexlog
 {
@@ -13,19 +14,19 @@ namespace rexlog
     class REXLOG_API sink
     {
     public:
-      virtual ~sink()                                                               = default;
-      virtual void log(const details::log_msg& msg)                                 = 0;
-      virtual void flush()                                                          = 0;
-      virtual void set_pattern(const rsl::string& pattern)                          = 0;
-      virtual void set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter) = 0;
+      virtual ~sink()                                                              = default;
+      virtual void log(const details::LogMsg& msg)                                 = 0;
+      virtual void flush()                                                         = 0;
+      virtual void set_pattern(const rex::DebugString& pattern)                    = 0;
+      virtual void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) = 0;
 
-      void set_level(level::level_enum log_level);
-      level::level_enum level() const;
-      bool should_log(level::level_enum msg_level) const;
+      void set_level(level::LevelEnum logLevel);
+      level::LevelEnum level() const;
+      bool should_log(level::LevelEnum msgLevel) const;
 
-    protected:
+    private:
       // sink log level - default is all
-      level_t level_ {level::trace};
+      level_t m_level {level::Trace};
     };
 
   } // namespace sinks

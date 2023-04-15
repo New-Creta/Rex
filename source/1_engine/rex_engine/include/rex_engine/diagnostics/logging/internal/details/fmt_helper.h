@@ -1,13 +1,7 @@
 
 #pragma once
 
-#include <charconv>
-#include <chrono>
-#include <format>
-#include <iterator>
-#include <limits>
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <type_traits>
+#include "rex_engine/diagnostics/logging/internal/common.h"
 
 // Some fmt helpers to efficiently format and pad ints and strings
 namespace rexlog
@@ -19,7 +13,7 @@ namespace rexlog
 
       inline void append_string_view(rexlog::string_view_t view, memory_buf_t& dest)
       {
-        auto* buf_ptr = view.data();
+        const auto* buf_ptr = view.data();
         dest.append(buf_ptr, buf_ptr + view.size());
       }
 

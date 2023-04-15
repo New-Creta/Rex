@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #ifdef _WIN32
-  #include <rex_engine/diagnostics/logging/internal/details/tcp_client-windows.h>
+  #include "rex_engine/diagnostics/logging/internal/details/tcp_client-windows.h"
 #else
-  #include <rex_engine/diagnostics/logging/internal/details/tcp_client.h>
+  #include "rex_engine/diagnostics/logging/internal/details/tcp_client.h"
 #endif
 
 #include <chrono>
@@ -30,11 +30,11 @@ namespace rexlog
 
     struct tcp_sink_config
     {
-      rsl::string server_host;
+      rex::DebugString server_host;
       int server_port;
       bool lazy_connect = false; // if true connect on first log call instead of on construction
 
-      tcp_sink_config(rsl::string host, int port)
+      tcp_sink_config(rex::DebugString host, int port)
           : server_host {rsl::move(host)}
           , server_port {port}
       {
@@ -42,7 +42,7 @@ namespace rexlog
     };
 
     template <typename Mutex>
-    class tcp_sink : public rexlog::sinks::base_sink<Mutex>
+    class tcp_sink : public rexlog::sinks::BaseSink<Mutex>
     {
     public:
       // connect to tcp host/port or throw if failed
@@ -60,10 +60,10 @@ namespace rexlog
       ~tcp_sink() override = default;
 
     protected:
-      void sink_it_(const rexlog::details::log_msg& msg) override
+      void sink_it_impl(const rexlog::details::LogMsg& msg) override
       {
         rexlog::memory_buf_t formatted;
-        rexlog::sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
+        rexlog::sinks::BaseSink<Mutex>::m_formatter->format(msg, formatted);
         if(!client_.is_connected())
         {
           client_.connect(config_.server_host, config_.server_port);
@@ -71,13 +71,13 @@ namespace rexlog
         client_.send(formatted.data(), formatted.size());
       }
 
-      void flush_() override {}
+      void flush_impl() override {}
       tcp_sink_config config_;
       details::tcp_client client_;
     };
 
     using tcp_sink_mt = tcp_sink<rsl::mutex>;
-    using tcp_sink_st = tcp_sink<rexlog::details::null_mutex>;
+    using tcp_sink_st = tcp_sink<rexlog::details::NullMutex>;
 
   } // namespace sinks
 } // namespace rexlog

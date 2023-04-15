@@ -2,17 +2,12 @@
 
 #pragma once
 
-#include <cerrno>
-#include <chrono>
-#include <ctime>
-#include <format>
-#include <mutex>
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/details/file_helper.h>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/rotating_file_sink.h>
-#include <string>
-#include <tuple>
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/rotating_file_sink.h"
+
+// NOLINTBEGIN(misc-definitions-in-headers)
 
 namespace rexlog
 {
@@ -20,78 +15,78 @@ namespace rexlog
   {
 
     template <typename Mutex>
-    REXLOG_INLINE rotating_file_sink<Mutex>::rotating_file_sink(filename_t base_filename, rsl::size_t max_size, rsl::size_t max_files, bool rotate_on_open, const file_event_handlers& event_handlers)
-        : base_filename_(rsl::move(base_filename))
-        , max_size_(max_size)
-        , max_files_(max_files)
-        , file_helper_ {event_handlers}
+    REXLOG_INLINE RotatingFileSink<Mutex>::RotatingFileSink(filename_t baseFileName, rsl::size_t maxSize, rsl::size_t maxFiles, bool rotateOnOpen, const FileEventHandlers& eventHandlers)
+        : m_base_filename(rsl::move(baseFileName))
+        , m_max_size(maxSize)
+        , m_max_files(maxFiles)
+        , m_file_helper {eventHandlers}
     {
-      if(max_size == 0)
+      if(maxSize == 0)
       {
-        throw_rexlog_ex(rsl::string("rotating sink constructor: max_size arg cannot be zero"));
+        throw_rexlog_ex(rex::DebugString("rotating sink constructor: max_size arg cannot be zero"));
       }
 
-      if(max_files > 200000)
+      if(maxFiles > 200000)
       {
-        throw_rexlog_ex(rsl::string("rotating sink constructor: max_files arg cannot exceed 200000"));
+        throw_rexlog_ex(rex::DebugString("rotating sink constructor: max_files arg cannot exceed 200000"));
       }
-      file_helper_.open(calc_filename(base_filename_, 0));
-      current_size_ = file_helper_.size(); // expensive. called only once
-      if(rotate_on_open && current_size_ > 0)
+      m_file_helper.open(calc_filename(m_base_filename, 0));
+      m_current_size = m_file_helper.size(); // expensive. called only once
+      if(rotateOnOpen && m_current_size > 0)
       {
-        rotate_();
-        current_size_ = 0;
+        rotate_impl();
+        m_current_size = 0;
       }
     }
 
     // calc filename according to index and file extension if exists.
     // e.g. calc_filename("logs/mylog.txt, 3) => "logs/mylog.3.txt".
     template <typename Mutex>
-    REXLOG_INLINE filename_t rotating_file_sink<Mutex>::calc_filename(const filename_t& filename, rsl::size_t index)
+    REXLOG_INLINE filename_t RotatingFileSink<Mutex>::calc_filename(const filename_t& filename, rsl::size_t index)
     {
       if(index == 0u)
       {
         return filename_t(filename);
       }
 
-      details::filename_with_extension basename_ext_tuple = details::file_helper::split_by_extension(filename);
+      details::FilenameWithExtension basename_ext_tuple = details::FileHelper::split_by_extension(filename);
       return filename_t(fmt_lib::format(REXLOG_FILENAME_T("{}.{}{}"), basename_ext_tuple.filename, index, basename_ext_tuple.ext));
     }
 
     template <typename Mutex>
-    REXLOG_INLINE filename_t rotating_file_sink<Mutex>::filename()
+    REXLOG_INLINE filename_t RotatingFileSink<Mutex>::filename()
     {
-      rsl::unique_lock<Mutex> lock(base_sink<Mutex>::mutex_);
-      return filename_t(file_helper_.filename());
+      const rsl::unique_lock<Mutex> lock(BaseSink<Mutex>::mutex());
+      return m_file_helper.filename();
     }
 
     template <typename Mutex>
-    REXLOG_INLINE void rotating_file_sink<Mutex>::sink_it_(const details::log_msg& msg)
+    REXLOG_INLINE void RotatingFileSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
     {
       memory_buf_t formatted;
-      base_sink<Mutex>::formatter_->format(msg, formatted);
-      auto new_size = current_size_ + formatted.size();
+      BaseSink<Mutex>::formatter()->format(msg, formatted);
+      auto new_size = m_current_size + formatted.size();
 
       // rotate if the new estimated file size exceeds max size.
       // rotate only if the real size > 0 to better deal with full disk (see issue #2261).
       // we only check the real size when new_size > max_size_ because it is relatively expensive.
-      if(new_size > max_size_)
+      if(new_size > m_max_size)
       {
-        file_helper_.flush();
-        if(file_helper_.size() > 0)
+        m_file_helper.flush();
+        if(m_file_helper.size() > 0)
         {
-          rotate_();
+          rotate_impl();
           new_size = formatted.size();
         }
       }
-      file_helper_.write(formatted);
-      current_size_ = new_size;
+      m_file_helper.write(formatted);
+      m_current_size = new_size;
     }
 
     template <typename Mutex>
-    REXLOG_INLINE void rotating_file_sink<Mutex>::flush_()
+    REXLOG_INLINE void RotatingFileSink<Mutex>::flush_impl()
     {
-      file_helper_.flush();
+      m_file_helper.flush();
     }
 
     // Rotate files:
@@ -100,47 +95,49 @@ namespace rexlog
     // log.2.txt -> log.3.txt
     // log.3.txt -> delete
     template <typename Mutex>
-    REXLOG_INLINE void rotating_file_sink<Mutex>::rotate_()
+    REXLOG_INLINE void RotatingFileSink<Mutex>::rotate_impl()
     {
       using details::os::filename_to_str;
       using details::os::path_exists;
 
-      file_helper_.close();
-      for(auto i = max_files_; i > 0; --i)
+      m_file_helper.close();
+      for(auto i = m_max_files; i > 0; --i)
       {
-        filename_t src = calc_filename(base_filename_, i - 1);
+        const filename_t src = calc_filename(m_base_filename, i - 1);
         if(!path_exists(src))
         {
           continue;
         }
-        filename_t target = calc_filename(base_filename_, i);
+        const filename_t target = calc_filename(m_base_filename, i);
 
-        if(!rename_file_(src, target))
+        if(!rename_file_impl(src, target))
         {
           // if failed try again after a small delay.
           // this is a workaround to a windows issue, where very high rotation
           // rates can cause the rename to fail with permission denied (because of antivirus?).
           details::os::sleep_for_millis(100);
-          if(!rename_file_(src, target))
+          if(!rename_file_impl(src, target))
           {
-            file_helper_.reopen(true); // truncate the log file anyway to prevent it to grow beyond its limit!
-            current_size_ = 0;
+            m_file_helper.reopen(true); // truncate the log file anyway to prevent it to grow beyond its limit!
+            m_current_size = 0;
             throw_rexlog_ex("rotating_file_sink: failed renaming " + filename_to_str(src) + " to " + filename_to_str(target), errno);
           }
         }
       }
-      file_helper_.reopen(true);
+      m_file_helper.reopen(true);
     }
 
     // delete the target if exists, and rename the src file  to target
     // return true on success, false otherwise.
     template <typename Mutex>
-    REXLOG_INLINE bool rotating_file_sink<Mutex>::rename_file_(const filename_t& src_filename, const filename_t& target_filename)
+    REXLOG_INLINE bool RotatingFileSink<Mutex>::rename_file_impl(const filename_t& srcFilename, const filename_t& targetFilename)
     {
       // try to delete the target file in case it already exists.
-      (void)details::os::remove(target_filename);
-      return details::os::rename(src_filename, target_filename) == 0;
+      (void)details::os::remove(targetFilename);
+      return details::os::rename(srcFilename, targetFilename) == 0;
     }
 
   } // namespace sinks
 } // namespace rexlog
+
+// NOLINTEND(misc-definitions-in-headers)

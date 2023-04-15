@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_engine/types.h"
 #include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
@@ -16,5 +15,25 @@ namespace rex
 
     void deallocate(pointer ptr, rsl::memory_size size);
     void deallocate(pointer ptr, size_type size);
+
+    template <typename U, typename... Args>
+    void construct(U* p, Args&&... args)
+    {
+      new(static_cast<void*>(p)) U(rsl::forward<Args>(args)...);
+    }
+    template <typename T>
+    void destroy(T* ptr)
+    {
+      ptr->~T();
+    }
+
+    bool operator==(const UntrackedAllocator& /*other*/) const
+    {
+      return true;
+    }
+    bool operator!=(const UntrackedAllocator& rhs) const
+    {
+      return !(*this == rhs);
+    }
   };
 } // namespace rex

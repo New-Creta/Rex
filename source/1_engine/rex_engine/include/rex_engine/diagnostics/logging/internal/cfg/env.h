@@ -1,9 +1,9 @@
 
 
 #pragma once
-#include <rex_engine/diagnostics/logging/internal/cfg/helpers.h>
-#include <rex_engine/diagnostics/logging/internal/details/os.h>
-#include <rex_engine/diagnostics/logging/internal/details/registry.h>
+#include "rex_engine/diagnostics/logging/internal/cfg/helpers.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
 
 //
 // Init levels and patterns from env variables REXLOG_LEVEL

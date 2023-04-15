@@ -2,61 +2,76 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 
-#include <rex_engine/diagnostics/logging/internal/common.h>
-#include <rex_engine/diagnostics/logging/internal/pattern_formatter.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
+// NOLINTBEGIN(misc-definitions-in-headers)
 
 template <typename Mutex>
-REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::base_sink()
-    : formatter_ {details::make_unique<rexlog::pattern_formatter>()}
+REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::BaseSink()
+    : m_formatter {details::make_unique<rexlog::PatternFormatter>()}
 {
 }
 
 template <typename Mutex>
-REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::base_sink(rsl::unique_ptr<rexlog::formatter> formatter)
-    : formatter_ {rsl::move(formatter)}
+REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::BaseSink(rsl::unique_ptr<rexlog::formatter> formatter)
+    : m_formatter {rsl::move(formatter)}
 {
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::log(const details::log_msg& msg)
+void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::log(const details::LogMsg& msg)
 {
-  rsl::unique_lock<Mutex> lock(mutex_);
-  sink_it_(msg);
+  const rsl::unique_lock<Mutex> lock(m_mutex);
+  sink_it_impl(msg);
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::flush()
+void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::flush()
 {
-  rsl::unique_lock<Mutex> lock(mutex_);
-  flush_();
+  const rsl::unique_lock<Mutex> lock(m_mutex);
+  flush_impl();
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_pattern(const rsl::string& pattern)
+void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_pattern(const rex::DebugString& pattern)
 {
-  rsl::unique_lock<Mutex> lock(mutex_);
-  set_pattern_(pattern);
+  const rsl::unique_lock<Mutex> lock(m_mutex);
+  set_pattern_impl(pattern);
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sink_formatter)
+void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
 {
-  rsl::unique_lock<Mutex> lock(mutex_);
-  set_formatter_(rsl::move(sink_formatter));
+  const rsl::unique_lock<Mutex> lock(m_mutex);
+  set_formatter_impl(rsl::move(sinkFormatter));
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_pattern_(const rsl::string& pattern)
+void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_pattern_impl(const rex::DebugString& pattern)
 {
-  set_formatter_(details::make_unique<rexlog::pattern_formatter>(pattern));
+  set_formatter_impl(details::make_unique<rexlog::PatternFormatter>(pattern));
 }
 
 template <typename Mutex>
-void REXLOG_INLINE rexlog::sinks::base_sink<Mutex>::set_formatter_(rsl::unique_ptr<rexlog::formatter> sink_formatter)
+void REXLOG_INLINE rexlog::sinks::BaseSink<Mutex>::set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
 {
-  formatter_ = rsl::move(sink_formatter);
+  m_formatter = rsl::move(sinkFormatter);
 }
+
+template <typename Mutex>
+rexlog::formatter* rexlog::sinks::BaseSink<Mutex>::formatter()
+{
+  return m_formatter.get();
+}
+
+template <typename Mutex>
+Mutex& rexlog::sinks::BaseSink<Mutex>::mutex()
+{
+  return m_mutex;
+}
+
+// NOLINTEND(misc-definitions-in-headers)

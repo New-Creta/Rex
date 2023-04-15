@@ -1,6 +1,6 @@
 
 
-// Writing to Windows Event Log requires the registry entries below to be present, with the following modifications:
+// Writing to Windows Event Log requires the Registry entries below to be present, with the following modifications:
 // 1. <log_name>    should be replaced with your log name (e.g. your application name)
 // 2. <source_name> should be replaced with the specific source name and the key should be duplicated for
 //                  each source used in the application
@@ -29,12 +29,12 @@ Windows Registry Editor Version 5.00
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include "rex_std/vector.h"
 
 #include <mutex>
-#include <rex_engine/diagnostics/logging/internal/details/null_mutex.h>
-#include <rex_engine/diagnostics/logging/internal/details/windows_include.h>
-#include <rex_engine/diagnostics/logging/internal/sinks/base_sink.h>
 #include <string>
 #include <winbase.h>
 
@@ -53,7 +53,7 @@ namespace rexlog
         {
           HLOCAL hlocal_;
 
-          REXLOG_CONSTEXPR local_alloc_t() REXLOG_NOEXCEPT : hlocal_(nullptr) {}
+          REXLOG_CONSTEXPR local_alloc_t() REXLOG_NOEXCEPT : hlocal_impl(nullptr) {}
 
           local_alloc_t(const local_alloc_t&)            = delete;
           local_alloc_t& operator=(const local_alloc_t&) = delete;
@@ -71,9 +71,9 @@ namespace rexlog
         struct win32_error : public rexlog_ex
         {
           /** Formats an error report line: "user-message: error-code (system message)" */
-          static rsl::string format(const rsl::string& user_message, DWORD error_code = GetLastError())
+          static rex::DebugString format(const rex::DebugString& user_message, DWORD error_code = GetLastError())
           {
-            rsl::string system_message;
+            rex::DebugString system_message;
 
             local_alloc_t format_message_result {};
             auto format_message_succeeded =
@@ -87,7 +87,7 @@ namespace rexlog
             return fmt_lib::format("{}: {}{}", user_message, error_code, system_message);
           }
 
-          explicit win32_error(const rsl::string& func_name, DWORD error = GetLastError())
+          explicit win32_error(const rex::DebugString& func_name, DWORD error = GetLastError())
               : rexlog_ex(format(func_name, error))
           {
           }
@@ -96,7 +96,7 @@ namespace rexlog
         /** Wrapper for security identifiers (SID) on Windows */
         struct sid_t
         {
-          rsl::vector<char> buffer_;
+          rex::DebugVector<char> buffer_;
 
         public:
           sid_t() {}
@@ -157,7 +157,7 @@ namespace rexlog
             }
 
             // get user token
-            rsl::vector<unsigned char> buffer(static_cast<size_t>(tusize));
+            rex::DebugVector<unsigned char> buffer(static_cast<size_t>(tusize));
             if(!::GetTokenInformation(current_process_token.token_handle_, TokenUser, (LPVOID)buffer.data(), tusize, &tusize))
             {
               REXLOG_THROW(win32_error("GetTokenInformation"));
@@ -170,7 +170,7 @@ namespace rexlog
 
         struct eventlog
         {
-          static WORD get_event_type(const details::log_msg& msg)
+          static WORD get_event_type(const details::LogMsg& msg)
           {
             switch(msg.level)
             {
@@ -189,7 +189,7 @@ namespace rexlog
             }
           }
 
-          static WORD get_event_category(const details::log_msg& msg)
+          static WORD get_event_category(const details::LogMsg& msg)
           {
             return (WORD)msg.level;
           }
@@ -201,12 +201,12 @@ namespace rexlog
        * Windows Event Log sink
        */
       template <typename Mutex>
-      class win_eventlog_sink : public base_sink<Mutex>
+      class win_eventlog_sink : public BaseSink<Mutex>
       {
       private:
         HANDLE hEventLog_ {NULL};
         internal::sid_t current_user_sid_;
-        rsl::string source_;
+        rex::DebugString source_;
         DWORD event_id_;
 
         HANDLE event_log_handle()
@@ -224,13 +224,13 @@ namespace rexlog
         }
 
       protected:
-        void sink_it_(const details::log_msg& msg) override
+        void sink_it_impl(const details::LogMsg& msg) override
         {
           using namespace internal;
 
           bool succeeded;
           memory_buf_t formatted;
-          base_sink<Mutex>::formatter_->format(msg, formatted);
+          BaseSink<Mutex>::m_formatter->format(msg, formatted);
           formatted.push_back('\0');
 
           LPCSTR lp_str = formatted.data();
@@ -242,12 +242,12 @@ namespace rexlog
           }
         }
 
-        void flush_() override {}
+        void flush_impl() override {}
 
       public:
-        win_eventlog_sink(const rsl::string& source, DWORD event_id = 1000 /* according to mscoree.dll */)
-            : source_(source)
-            , event_id_(event_id)
+        win_eventlog_sink(const rex::DebugString& source, DWORD event_id = 1000 /* according to mscoree.dll */)
+            : source_impl(source)
+            , event_id_impl(event_id)
         {
           try
           {
@@ -270,7 +270,7 @@ namespace rexlog
     } // namespace win_eventlog
 
     using win_eventlog_sink_mt = win_eventlog::win_eventlog_sink<rsl::mutex>;
-    using win_eventlog_sink_st = win_eventlog::win_eventlog_sink<details::null_mutex>;
+    using win_eventlog_sink_st = win_eventlog::win_eventlog_sink<details::NullMutex>;
 
   } // namespace sinks
 } // namespace rexlog

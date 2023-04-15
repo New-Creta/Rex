@@ -46,7 +46,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Uncomment to avoid rexlog's usage of atomic log levels
-// Use only if your code never modifies a logger's log levels concurrently by
+// Use only if your code never modifies a Logger's log levels concurrently by
 // different threads.
 //
 // #define REXLOG_NO_ATOMIC_LEVELS
@@ -92,8 +92,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// Uncomment to disable default logger creation.
-// This might save some (very) small initialization time if no default logger is needed.
+// Uncomment to disable default Logger creation.
+// This might save some (very) small initialization time if no default Logger is needed.
 //
 // #define REXLOG_DISABLE_DEFAULT_LOGGER
 ///////////////////////////////////////////////////////////////////////////////
