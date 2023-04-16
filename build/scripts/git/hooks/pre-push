@@ -87,22 +87,26 @@ def main():
 
   result = 0
 
-  result = __generate()
-  if result != 0:
-     print("Generation failed")
-     exit(result)
+  current_branch = regis.git.get_local_branchname()
 
-  result = __build()
-  if result != 0:
-     print("Build failed")
-     exit(result)
+  if current_branch == "main":
 
-  result = __test()
-  if result != 0:
-     print("Tests failed")
-     exit(result)
+    result = __generate()
+    if result != 0:
+      print("Generation failed")
+      exit(result)
 
-  exit(0)
+    result = __build()
+    if result != 0:
+      print("Build failed")
+      exit(result)
+
+    result = __test()
+    if result != 0:
+      print("Tests failed")
+      exit(result)
+
+  exit(result)
 
 if __name__ == "__main__":
 	main()
