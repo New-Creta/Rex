@@ -33,8 +33,10 @@ if __name__ == "__main__":
     else:
       args.compiler = "clang"
 
+  intermediate_dir = ""
+
   task = regis.task_raii_printing.TaskRaiiPrint("Building")
-  result = regis.build.new_build(args.project, args.config, args.compiler, args.clean)
+  result = regis.build.new_build(args.project, args.config, args.compiler, intermediate_dir, args.clean)
 
   if result != 0:
     regis.diagnostics.log_err("Build failed")
