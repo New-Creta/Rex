@@ -84,7 +84,7 @@ namespace rexlog
 
   inline void init_thread_pool(size_t qSize, size_t threadCount, rsl::function<void()> onThreadStart)
   {
-    init_thread_pool(qSize, threadCount, std::move(onThreadStart), [] {});
+    init_thread_pool(qSize, threadCount, rsl::move(onThreadStart), [] {});
   }
 
   inline void init_thread_pool(size_t qSize, size_t threadCount)
