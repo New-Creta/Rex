@@ -23,7 +23,7 @@ namespace rex
   auto& allocation_headers()
   {
     static UntrackedAllocator allocator {};
-    static DebugAllocator dbg_alloc(allocator);
+    static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
     static rsl::vector<MemoryHeader*, decltype(dbg_alloc)> alloc_headers(dbg_alloc);
     return alloc_headers;
   }

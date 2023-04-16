@@ -24,7 +24,7 @@ namespace rex
       if(!initialised)
       {
         SymSetOptions(SYMOPT_DEFERRED_LOADS | SYMOPT_EXACT_SYMBOLS | SYMOPT_LOAD_LINES | SYMOPT_DEBUG | SYMOPT_UNDNAME);
-        if(SymInitialize(GetCurrentProcess(), NULL, TRUE) == 0)
+        if(SymInitialize(GetCurrentProcess(), nullptr, TRUE) == 0)
         {
           SymCleanup(GetCurrentProcess());
         }
@@ -41,7 +41,7 @@ namespace rex
       CallStack stacks_pointers;
       const card32 frames_to_skip = framesToSkip + 3;
 
-      CaptureStackBackTrace(frames_to_skip, static_cast<DWORD>(stacks_pointers.size()), stacks_pointers.data(), NULL);
+      CaptureStackBackTrace(frames_to_skip, static_cast<DWORD>(stacks_pointers.size()), stacks_pointers.data(), nullptr);
 
       return stacks_pointers;
     }
