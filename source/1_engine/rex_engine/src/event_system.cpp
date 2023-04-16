@@ -16,13 +16,13 @@ namespace rex
     delegates_map()[type].push_back(function);
   }
 
-  void event_system::fire_event(EventType type, void* userData)
+  void event_system::fire_event(EventType type)
   {
     const rsl::vector<EventFunction>& delegates = delegates_map()[type];
 
     for(const EventFunction& delegate: delegates)
     {
-      delegate(userData);
+      delegate();
     }
   }
 } // namespace rex

@@ -8,14 +8,13 @@ namespace rex
   {
     enum class EventType
     {
-      CharDown,
       WindowClose
     };
 
-    using EventFunction = rsl::function<void(void*)>;
+    using EventFunction = rsl::function<void()>;
 
     void subscribe(EventType type, const EventFunction& function);
 
-    void fire_event(EventType type, void* userData);
+    void fire_event(EventType type);
   } // namespace event_system
 } // namespace rex
