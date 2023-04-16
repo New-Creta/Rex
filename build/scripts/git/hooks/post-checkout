@@ -14,7 +14,10 @@ import regis.util
 
 def main():
   root = regis.util.find_root()
-  os.system(f"py {os.path.join(root, '_setup.py')}")
-
+  if os.system(f"py {os.path.join(root, '_setup.py')}") == 0:
+    os.system(f"py {os.path.join(root, '_generate.py')}")
+  else:
+    regis.diagnostics.log_err("setup failed.")
+     
 if __name__ == "__main__":
   main()
