@@ -1,21 +1,19 @@
-#include "string/stringids.h"
+#include "rex_engine/string/stringids.h"
 
-namespace sbt
+namespace rex
 {
     namespace conversions
     {
-        #define SID_NAME(name) EName::SID_##name: return #name
         //-------------------------------------------------------------------------
-        std::string toDisplayString(const EName& name)
+        rsl::string to_display_string(const SID& name)
         {
             switch(name)
             {
-                case SID_NAME(None);
+            case SID::None: return rsl::string("None");
                 default:
-                    assert(false && "Invalid name given!");
-                    return "None";
+                    REX_ASSERT("Invalid SID given!");
+                    return rsl::string("None");
             }
         }
-        #undef SID_NAME
     }
 }

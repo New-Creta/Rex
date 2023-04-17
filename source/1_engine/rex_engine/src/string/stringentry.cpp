@@ -1,21 +1,21 @@
-#include "string/stringentry.h"
+#include "rex_engine/string/stringentry.h"
 
-namespace sbt
+namespace rex
 {
     //-------------------------------------------------------------------------
-    StringEntry::StringEntry(const char* chars, size_t charCount) noexcept
+    StringEntry::StringEntry(const char* chars, s32 charCount) noexcept
         :m_characters()
-        , m_size(charCount)
+        ,m_size(charCount)
     {
         m_characters.reset((char*)malloc(charCount + 1));
 
-        std::memset(m_characters.get(), 0, charCount + 1);
-        std::memcpy(m_characters.get(), chars, charCount);
+        rsl::memset(m_characters.get(), 0, charCount + 1);
+        rsl::memcpy(m_characters.get(), chars, charCount);
     }
     //-------------------------------------------------------------------------
     StringEntry::StringEntry(StringEntry&& other) noexcept
-        :m_characters(std::move(other.m_characters))
-        , m_size(std::move(other.m_size))
+        :m_characters(rsl::move(other.m_characters))
+        , m_size(rsl::move(other.m_size))
     {
 
     }
@@ -24,25 +24,20 @@ namespace sbt
     StringEntry::~StringEntry() = default;
 
     //-------------------------------------------------------------------------
-    void StringEntry::getCharacters(char** characters, size_t & characterCount) const
+    void StringEntry::get_characters(const char** characters, s32& characterCount) const
     {
         *characters = m_characters.get();
         characterCount = m_size;
     }
 
     //-------------------------------------------------------------------------
-    char* StringEntry::getCharacters()
-    {
-        return m_characters.get();
-    }
-    //-------------------------------------------------------------------------
-    const char* StringEntry::getCharacters() const
+    const char* StringEntry::get_characters() const
     {
         return m_characters.get();
     }
 
     //-------------------------------------------------------------------------
-    size_t StringEntry::getSize() const
+    s32 StringEntry::get_size() const
     {
         return m_size;
     }
@@ -52,7 +47,7 @@ namespace sbt
         :value(0)
     {}
     //-------------------------------------------------------------------------
-    StringEntryID::StringEntryID(uint32 value)
+    StringEntryID::StringEntryID(rsl::hash_result value)
         : value(value)
     {}
 
@@ -73,7 +68,7 @@ namespace sbt
         return value == rhs.value;
     }
     //-------------------------------------------------------------------------
-    bool StringEntryID::operator==(const uint32& rhs) const
+    bool StringEntryID::operator==(const rsl::hash_result& rhs) const
     {
         return value == rhs;
     }
@@ -83,7 +78,7 @@ namespace sbt
         return value != rhs.value;
     }
     //-------------------------------------------------------------------------
-    bool StringEntryID::operator!=(const uint32& rhs) const
+    bool StringEntryID::operator!=(const rsl::hash_result& rhs) const
     {
         return value != rhs;
     }

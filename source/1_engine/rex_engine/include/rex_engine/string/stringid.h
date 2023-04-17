@@ -1,122 +1,77 @@
 #pragma once
 
-#include "string/stringids.h"
-#include "string/stringentry.h"
+#include "rex_engine/string/stringids.h"
+#include "rex_engine/string/stringentry.h"
+#include "rex_engine/types.h"
 
-#include "types.h"
+#include "rex_std/string.h"
+#include "rex_std/ostream.h"
 
-#include <string>
-#include <vector>
-#include <memory>
-#include <ostream>
-
-namespace sbt
+namespace rex
 {   
 	class StringID
 	{
 	public:
         StringID();
-        StringID(const EName& name);
+        StringID(const SID& name);
         StringID(const char* characters);
-        StringID(const char* characters, size_t size);
+        StringID(const char* characters, u32 size);
 
-        std::string     toString() const;
-        void            toString(std::string& out) const;
-        void            toString(char** out, size_t& outSize) const;
+        rsl::string     to_string() const;
+        void            to_string(rsl::string& out) const;
+        void            to_string(char** out, u32& outSize) const;
 
-        uint32          getValue() const;
+        u32             get_value() const;
 
-        operator        uint32() const;
+        operator        u32() const;
 
         bool            operator==(const StringID& other) const;
         bool            operator!=(const StringID& other) const;
         
-        bool            operator==(const EName& name) const;
-        bool            operator!=(const EName& name) const;
+        bool            operator==(const SID& name) const;
+        bool            operator!=(const SID& name) const;
         bool            operator==(const StringEntryID& entryID) const;
         bool            operator!=(const StringEntryID& entryID) const;
 
-        bool            isNone() const;
+        bool            is_none() const;
 
     private:
-        StringEntryID   make(const EName& name);
-        StringEntryID   make(const char* characters, size_t size);
+        StringEntryID   make(const SID& name);
+        StringEntryID   make(const char* characters, u32 size);
 
         /** Index into the StringID array (used to find String portion of the string/number pair used for comparison) */
         StringEntryID   m_comparison_index;
 	};
 
-	//-------------------------------------------------------------------------
-	inline StringID create_sid(const EName& name)
-	{
-		return StringID(name);
-	}
-	//-------------------------------------------------------------------------
-	inline StringID create_sid(const char* characters)
-	{
-		return StringID(characters, std::strlen(characters));
-	}
-	//-------------------------------------------------------------------------
-	inline StringID create_sid(const char* characters, size_t size)
-	{
-		return StringID(characters, size);
-	}
-	//-------------------------------------------------------------------------
-	inline StringID create_sid(const std::string& string)
-	{
-		return StringID(string.data(), string.size());
-	}
-    //-------------------------------------------------------------------------
-    inline StringID create_sid(const std::string_view& stringView)
-    {
-        return StringID(stringView.data(), stringView.size());
-    }
+	StringID create_sid(const SID& name);
+	StringID create_sid(const char* characters);
+	StringID create_sid(const char* characters, u32 size);
+	StringID create_sid(const rsl::string& string);
+    StringID create_sid(const rsl::string_view& stringView);
 
-	//-------------------------------------------------------------------------
-	inline bool operator==(const std::string& s, const StringID& sid)
-	{
-		return create_sid(s) == sid;
-	}
-    //-------------------------------------------------------------------------
-    inline bool operator!=(const std::string& s, const StringID& sid)
-    {
-        return create_sid(s) != sid;
-    }
-   //-------------------------------------------------------------------------
-    inline bool operator==(const StringID& sid, const std::string& s)
-    {
-        return s == sid;
-    }
-    //-------------------------------------------------------------------------
-    inline bool operator!=(const StringID& sid, const std::string& s)
-    {
-        return s != sid;
-    }
+	bool operator==(const rsl::string& s, const StringID& sid);
+    bool operator!=(const rsl::string& s, const StringID& sid);
+    bool operator==(const StringID& sid, const rsl::string& s);
+    bool operator!=(const StringID& sid, const rsl::string& s);
 }
 
-//-------------------------------------------------------------------------
-inline sbt::StringID operator ""_sid(const char* string, size_t size)
-{
-    return sbt::StringID(string, size);
-}
+rex::StringID operator ""_sid(const char* string, size_t size);
 
-//-------------------------------------------------------------------------
-inline std::ostream& operator<<(std::ostream& os, const sbt::StringID& stringID)
-{
-    os << stringID.toString();
+rsl::ostream& operator<<(rsl::ostream& os, const rex::StringID& stringID);
 
-    return os;
-}
-
-// custom specialization of std::hash can be injected in namespace std
-namespace std
+// custom specialization of rsl::hash can be injected in namespace rsl
+namespace rsl
 {
-	//-------------------------------------------------------------------------
-    template<> struct hash<sbt::StringID>
+    inline namespace v1
     {
-        std::size_t operator()(const sbt::StringID& s) const noexcept
+        //-------------------------------------------------------------------------
+        template<>
+        struct hash<rex::StringID>
         {
-			return s.getValue();
-        }
-    };
+            u32 operator()(const rex::StringID& s) const noexcept
+            {
+                return s.get_value();
+            }
+        };
+    }
 }

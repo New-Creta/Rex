@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_std/bonus/types.h"
+#include "rex_std/atomic.h"
 
 using s8      = int8;
 using u8      = uint8;
@@ -36,10 +37,10 @@ using a_s32  = s32;
   #define rex_atomic_load(a) a // NOLINT(readability-identifier-naming)
 #else
   #include <atomic>
-using a_u8   = std::atomic<u8>;
-using a_u32  = std::atomic<u32>;
-using a_u64  = std::atomic<u64>;
-using a_bool = std::atomic<bool>;
-using a_s32  = std::atomic<s32>;
+using a_u8   = rsl::atomic<u8>;
+using a_u32  = rsl::atomic<u32>;
+using a_u64  = rsl::atomic<u64>;
+using a_bool = rsl::atomic<bool>;
+using a_s32  = rsl::atomic<s32>;
   #define rex_atomic_load(a) a.load() // NOLINT(readability-identifier-naming)
 #endif

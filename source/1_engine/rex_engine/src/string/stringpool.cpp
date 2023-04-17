@@ -1,109 +1,167 @@
-#include "string/stringpool.h"
-#include "string/stringentry.h"
-#include "string/stringcrchash.h"
+#include "rex_engine/string/stringpool.h"
+#include "rex_engine/string/stringentry.h"
 
-namespace sbt
+#include "rex_std/unordered_map.h"
+#include "rex_std/functional.h"
+
+#include "rex_std/internal/utility/pair.h"
+
+namespace rsl
+{
+    inline namespace v1
+    {
+        // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
+        u32 hash_bytes(const void * data, rsl::count_t size) noexcept
+        {
+            const u32 fnv_offset_basis = 2166136261u;
+            const u32 fnv_prime = 16777619u;
+
+            const u8* bytes = static_cast<const u8*>(data);
+
+            u32 hash = fnv_offset_basis;
+            for (rsl::count_t i = 0; i < size; ++i)
+            {
+                hash ^= bytes[i];
+                hash *= fnv_prime;
+            }
+
+            return hash;
+        }
+
+        template <typename T>
+        struct myhash
+        {
+            std::u32 operator()(const T& obj) const noexcept
+            {
+                // Fallback implementation.
+                auto hashfn = std::hash<T>{};
+                return hashfn(obj);
+            }
+        };
+
+        // Template specialization for hash a rsl::string
+        template <>
+        struct myhash<rsl::string>
+        {
+            u32 operator()(const rsl::string& s) const noexcept
+            {
+                return hash_bytes(s.data(), s.size());
+            }
+        };
+
+        // Template specialization for hash a const char*
+        template <>
+        struct myhash<const char*>
+        {
+            u32 operator()(const char* s) const noexcept
+            {
+                return hash_bytes(s, rsl::strlen(s));
+            }
+        };
+    }
+}
+
+namespace rex
 {
     namespace string_pool
     {
-        using EntryMap = std::unordered_map<StringEntryID, StringEntry>;
+        using EntryMap = rsl::unordered_map<StringEntryID, StringEntry>;
 
         //-------------------------------------------------------------------------
         EntryMap load_entry_map()
         {
             EntryMap map;
 
-            for (uint32 i = 0; i < static_cast<uint32>(EName::SID_MaxHardcodedNameIndex); ++i)
+            for (u32 i = 0; i < static_cast<u32>(SID::MaxHardcodedNameIndex); ++i)
             {
-                std::string sid_name = conversions::toDisplayString(static_cast<EName>(i));
+                rsl::string sid_name = conversions::to_display_string(static_cast<SID>(i));
 
-                StringEntryID entry_id(static_cast<uint32>(i));
+                StringEntryID entry_id(static_cast<u32>(i));
                 StringEntry entry(sid_name.data(), sid_name.size());
 
-                map.insert(std::make_pair(std::move(entry_id), std::move(entry)));
+                map.emplace(rsl::move(entry_id), rsl::move(entry));
             }
 
             return map;
         }
 
         //-------------------------------------------------------------------------
-        EntryMap& getEntries()
+        EntryMap& get_entries()
         {
             static EntryMap entries = load_entry_map();
             return entries;
         }
 
         //-------------------------------------------------------------------------
-        const StringEntryID* store(uint32 hash, const char* characters, size_t size)
+        const StringEntryID* store(uint32 hash, const char* characters, u32 size)
         {
-            auto it = getEntries().find(hash);
-            if (it != std::cend(getEntries()))
+            auto it = get_entries().find(hash);
+            if (it != rsl::cend(get_entries()))
             {
-                assert(std::strcmp(characters, it->second.getCharacters()) == 0 && "Hash collision");
+                REX_ASSERT_X(rsl::strcmp(characters, it->value.get_characters()) == 0, "Hash collision");
 
-                return &it->first;
+                return &it->key;
             }
 
             StringEntryID entry_id(hash);
             StringEntry entry(characters, size);
 
-            auto result = getEntries().insert(std::make_pair(std::move(entry_id), std::move(entry)));
-            if (result.second)
+            auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
+            if (result.emplace_successful)
             {
-                it = result.first;
-
-                return &it->first;
+                auto inserted_key = result.inserted_element->key;
+                return &inserted_key;
             }
 
             return nullptr;
         }
 
         //-------------------------------------------------------------------------
-        void resolve(const StringEntryID& entryID, char** out, size_t& outSize)
+        void resolve(const StringEntryID& entryID, const char** out, u32& outSize)
         {
             const StringEntry* entry = find(entryID);
 
-            assert(entry != nullptr && "Entry not found");
+            REX_ASSERT_X(entry != nullptr, "Entry not found");
 
-            entry->getCharacters(out, outSize);
+            entry->get_characters(out, outSize);
         }
         //-------------------------------------------------------------------------
-        void resolve(const StringEntryID& entryID, std::string& out)
+        void resolve(const StringEntryID& entryID, rsl::string& out)
         {
             const StringEntry* entry = find(entryID);
 
-            assert(entry != nullptr && "Entry not found");
+            REX_ASSERT_X(entry != nullptr, "Entry not found");
 
-            out = std::string(entry->getCharacters(), entry->getSize());
+            out = rsl::string(entry->get_characters(), entry->get_size());
         }
 
         //-------------------------------------------------------------------------
         const StringEntry* find(const StringEntryID& entryID)
         {
-            auto it = getEntries().find(entryID);
-            if (it == std::cend(getEntries()))
+            auto it = get_entries().find(entryID);
+            if (it == rsl::cend(get_entries()))
             {
-                uint32 sid_name = static_cast<uint32>(EName::SID_None);
+                uint32 sid_name = static_cast<uint32>(SID::None);
 
-                it = getEntries().find(sid_name);
+                it = get_entries().find(sid_name);
 
-                assert(it != std::cend(getEntries()) && "SID_None not present");
+                REX_ASSERT_X(it != rsl::cend(get_entries()), "SID::None not present");
             }
 
-            return &(it->second);
+            return &(it->value);
         }
 
         //-------------------------------------------------------------------------
-        const StringEntryID* store(const EName& name)
+        const StringEntryID* store(const SID& name)
         {
-            std::string sid_name = conversions::toDisplayString(name);
+            rsl::string sid_name = conversions::to_display_string(name);
 
             return store(static_cast<uint32>(name), sid_name.data(), sid_name.size());
         }
         //-------------------------------------------------------------------------
-        const StringEntryID* store(const char* characters, size_t size)
+        const StringEntryID* store(const char* characters, u32 size)
         {
-            return store(crc32_hash_string(characters, size, getLookupTable()), characters, size);
+            return store(rsl::hash<const char*>{}(characters), characters, size);
         }
     }
 }

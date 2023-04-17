@@ -1,24 +1,24 @@
-#include "string/stringid.h"
-#include "string/stringpool.h"
+#include "rex_engine/string/stringid.h"
+#include "rex_engine/string/stringpool.h"
 
-namespace sbt
+#include "rex_std/vector.h"
+#include "rex_std/memory.h"
+
+namespace rex
 {
-    std::vector<std::unique_ptr<char>> g_allocated_strings;
-
-#if TB_STRINGPOOL
     /**
     * Create an empty StringID.
     */
     //-------------------------------------------------------------------------
     StringID::StringID()
-        :StringID(EName::SID_None)
+        :StringID(SID::None)
     {}
 
     /**
     * Create an StringID with a hard coded string index.
     */
     //-------------------------------------------------------------------------
-    StringID::StringID(const EName& name)
+    StringID::StringID(const SID& name)
         :m_comparison_index(make(name))
     {}
 
@@ -27,14 +27,14 @@ namespace sbt
     */
     //-------------------------------------------------------------------------
     StringID::StringID(const char* characters)
-        :m_comparison_index(make(characters, std::strlen(characters)))
+        :m_comparison_index(make(characters, rsl::strlen(characters)))
     {}
 
     /**
     * Create an StringID with characters and a predefined size.
     */
     //-------------------------------------------------------------------------
-    StringID::StringID(const char* characters, size_t size)
+    StringID::StringID(const char* characters, u32 size)
         :m_comparison_index(make(characters, size))
     {}
 
@@ -42,11 +42,11 @@ namespace sbt
     * Converts an StringID to a readable format
     */
     //-------------------------------------------------------------------------
-    std::string StringID::toString() const
+    rsl::string StringID::to_string() const
     {
-        std::string out;
+        rsl::string out;
 
-        toString(out);
+        to_string(out);
         return out;
     }
 
@@ -54,7 +54,7 @@ namespace sbt
     * Converts an FName to a readable format, in place
     */
     //-------------------------------------------------------------------------
-    void StringID::toString(std::string& out) const
+    void StringID::to_string(rsl::string& out) const
     {
         string_pool::resolve(m_comparison_index, out);
     }
@@ -65,7 +65,7 @@ namespace sbt
     * Note that a default constructed StringID returns "None" instead of ""
     */
     //-------------------------------------------------------------------------
-    void StringID::toString(char** out, size_t& outSize) const
+    void StringID::to_string(char** out, u32& outSize) const
     {
         string_pool::resolve(m_comparison_index, out, outSize);
     }
@@ -74,7 +74,7 @@ namespace sbt
     * Retrieve the hashed value
     */
     //-------------------------------------------------------------------------
-    uint32 StringID::getValue() const
+    uint32 StringID::get_value() const
     {
         return m_comparison_index;
     }
@@ -83,7 +83,7 @@ namespace sbt
     * Retrieve the hashed value
     */
     //-------------------------------------------------------------------------
-    StringID::operator uint32() const
+    StringID::operator u32() const
     {
         return m_comparison_index;
     }
@@ -102,12 +102,12 @@ namespace sbt
         return !(*this == other);
     }
     //-------------------------------------------------------------------------
-    bool StringID::operator==(const EName& name) const
+    bool StringID::operator==(const SID& name) const
     {
         return m_comparison_index == static_cast<uint32>(name);
     }
     //-------------------------------------------------------------------------
-    bool StringID::operator!=(const EName& name) const
+    bool StringID::operator!=(const SID& name) const
     {
         return m_comparison_index != static_cast<uint32>(name);
     }
@@ -122,158 +122,89 @@ namespace sbt
         return m_comparison_index != static_cast<uint32>(entryID);
     }
 
-    /** True for StringID(), StringID(NAME_None) and StringID("None") */
     //-------------------------------------------------------------------------
-    bool StringID::isNone() const
+    /** True for StringID(), StringID(NAME_None) and StringID("None") */
+    bool StringID::is_none() const
     {
-        return *this == EName::SID_None;
+        return *this == SID::None;
     }
 
     //-------------------------------------------------------------------------
-    StringEntryID StringID::make(const EName& name)
+    StringEntryID StringID::make(const SID& name)
     {
-        return name == EName::SID_None
+        return name == SID::None
             ? StringEntryID()
             : *string_pool::store(name);
     }
     //-------------------------------------------------------------------------
-    StringEntryID StringID::make(const char* characters, size_t size)
+    StringEntryID StringID::make(const char* characters, u32 size)
     {
         if (characters == nullptr || size == 0)
         {
-            return StringEntryID();   // EName::SID_None
+            return StringEntryID();   // SID::None
         }
 
         return *string_pool::store(characters, size);
     }
-#else
-    /**
-    * Create an empty StringID.
-    */
-    //-------------------------------------------------------------------------
-    StringID::StringID()
-        :StringID(EName::SID_None)
-    {}
 
-    /**
-    * Create an StringID with a hard coded string index.
-    */
     //-------------------------------------------------------------------------
-    StringID::StringID(const EName& name)
-        :m_comparison_index(conversions::toDisplayString(name))
-    {}
-
-    /**
-    * Create an StringID with characters.
-    */
+	StringID create_sid(const SID& name)
+	{
+		return StringID(name);
+	}
+	//-------------------------------------------------------------------------
+	StringID create_sid(const char* characters)
+	{
+		return StringID(characters, rsl::strlen(characters));
+	}
+	//-------------------------------------------------------------------------
+	StringID create_sid(const char* characters, u32 size)
+	{
+		return StringID(characters, size);
+	}
+	//-------------------------------------------------------------------------
+	StringID create_sid(const rsl::string& string)
+	{
+		return StringID(string.data(), string.size());
+	}
     //-------------------------------------------------------------------------
-    StringID::StringID(const char* characters)
-        :m_comparison_index(characters)
-    {}
-
-    /**
-    * Create an StringID with characters and a predefined size.
-    */
-    //-------------------------------------------------------------------------
-    StringID::StringID(const char* characters, size_t size)
-        :m_comparison_index(characters, size)
-    {}
-
-    /**
-    * Converts an StringID to a readable format
-    */
-    //-------------------------------------------------------------------------
-    std::string StringID::toString() const
+    StringID create_sid(const rsl::string_view& stringView)
     {
-        std::string out;
-
-        toString(out);
-        return out;
+        return StringID(stringView.data(), stringView.size());
     }
 
-    /**
-    * Converts an FName to a readable format, in place
-    */
+	//-------------------------------------------------------------------------
+	bool operator==(const rsl::string& s, const StringID& sid)
+	{
+		return create_sid(s) == sid;
+	}
     //-------------------------------------------------------------------------
-    void StringID::toString(std::string& out) const
+    bool operator!=(const rsl::string& s, const StringID& sid)
     {
-        out = m_comparison_index;
+        return create_sid(s) != sid;
     }
+    //-------------------------------------------------------------------------
+    bool operator==(const StringID& sid, const rsl::string& s)
+    {
+        return s == sid;
+    }
+    //-------------------------------------------------------------------------
+    bool operator!=(const StringID& sid, const rsl::string& s)
+    {
+        return s != sid;
+    }
+}
 
-    /**
-    * Convert to string buffer to avoid dynamic allocations and returns string length
-    *
-    * Note that a default constructed StringID returns "None" instead of ""
-    */
-    //-------------------------------------------------------------------------
-    void StringID::toString(char** out, size_t& outSize) const
-    {
-        g_allocated_strings.push_back(std::unique_ptr<char>(new char[m_comparison_index.size()]));
+//-------------------------------------------------------------------------
+rex::StringID operator ""_sid(const char* string, size_t size)
+{
+    return rex::StringID(string, static_cast<u32>(size));
+}
 
-        *out = g_allocated_strings.back().get();
+//-------------------------------------------------------------------------
+rsl::ostream& operator<<(rsl::ostream& os, const rex::StringID& stringID)
+{
+    os << stringID.to_string();
 
-        std::memcpy(*out, m_comparison_index.data(), m_comparison_index.size());
-
-        outSize = m_comparison_index.size();
-    }
-
-    /**
-    * Retrieve the hashed value
-    */
-    //-------------------------------------------------------------------------
-    const uint32 StringID::getValue() const
-    {
-        return string_pool::hash(m_comparison_index);
-    }
-
-    /**
-    * Retrieve the hashed value
-    */
-    //-------------------------------------------------------------------------
-    StringID::operator const uint32() const
-    {
-        return string_pool::hash(m_comparison_index);
-    }
-
-    /**
-    * Check to see if this StringID matches the other StringID.
-    */
-    //-------------------------------------------------------------------------
-    bool StringID::operator==(const StringID& other) const
-    {
-        return m_comparison_index == other.m_comparison_index;
-    }
-    //-------------------------------------------------------------------------
-    bool StringID::operator!=(const StringID& other) const
-    {
-        return !(*this == other);
-    }
-    //-------------------------------------------------------------------------
-    bool StringID::operator==(const EName& name) const
-    {
-        return m_comparison_index == conversions::toDisplayString(name);
-    }
-    //-------------------------------------------------------------------------
-    bool StringID::operator!=(const EName& name) const
-    {
-        return m_comparison_index != conversions::toDisplayString(name);
-    }
-    //-------------------------------------------------------------------------
-    bool StringID::operator==(const std::string& entryID) const
-    {
-        return m_comparison_index == entryID;
-    }
-    //-------------------------------------------------------------------------
-    bool StringID::operator!=(const std::string& entryID) const
-    {
-        return m_comparison_index != entryID;
-    }
-
-    /** True for StringID(), StringID(NAME_None) and StringID("None") */
-    //-------------------------------------------------------------------------
-    bool StringID::isNone() const
-    {
-        return m_comparison_index.empty();
-    }
-#endif
+    return os;
 }

@@ -1,24 +1,20 @@
 #pragma once
 
-#include <assert.h>
-#include <string>
+#include "rex_std/string.h"
 
-namespace sbt
+namespace rex
 {
-    // Define a message as an enumeration.
-#define REGISTER_NAME(num,name) SID_##name = num,
-    enum class EName 
+    enum class SID
     {
         // Special zero value, meaning no name.
-        REGISTER_NAME(0,None)
+        None,
 
         // Special constant for the last hard-coded name index
-        SID_MaxHardcodedNameIndex,
+        MaxHardcodedNameIndex,
     };
-    #undef REGISTER_NAME
 
     namespace conversions
     {
-        std::string toDisplayString(const EName& name);
+        rsl::string to_display_string(const SID& name);
     }
 }

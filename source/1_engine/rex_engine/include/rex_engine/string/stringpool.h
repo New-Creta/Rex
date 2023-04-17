@@ -1,25 +1,23 @@
 #pragma once
 
-#include "string/stringids.h"
+#include "rex_engine/types.h"
+#include "rex_engine/string/stringids.h"
 
-#include <string>
-#include <unordered_map>
+#include "rex_std/string.h"
 
-#define TB_STRINGPOOL 1
-
-namespace sbt
+namespace rex
 {   
     class StringEntry;
     class StringEntryID;
 
     namespace string_pool
     {
-        void                    resolve(const StringEntryID& entryID, char** out, size_t& outSize);
-        void                    resolve(const StringEntryID& entryID, std::string& out);
+        void                    resolve(const StringEntryID& entryID, const char** out, u32& outSize);
+        void                    resolve(const StringEntryID& entryID, rsl::string& out);
 
         const StringEntry*      find(const StringEntryID& entryID);
 
-        const StringEntryID*    store(const EName& name);
-        const StringEntryID*    store(const char* characters, size_t size);
+        const StringEntryID*    store(const SID& name);
+        const StringEntryID*    store(const char* characters, u32 size);
     };
 }

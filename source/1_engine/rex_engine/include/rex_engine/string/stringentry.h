@@ -1,62 +1,62 @@
 #pragma once
 
-#include "types.h"
+#include "rex_engine/types.h"
 
-#include <cstring>
-#include <memory>
-#include <functional>
+#include "rex_std/memory.h"
+#include "rex_std/functional.h"
 
-namespace sbt
+namespace rex
 {
     class StringEntry
     {
     public:
-        StringEntry(const char* chars, size_t charCount) noexcept;
+        StringEntry(const char* chars, s32 charCount) noexcept;
         StringEntry(StringEntry&& other) noexcept;
         ~StringEntry();
 
-        void getCharacters(char** characters, size_t& characterCount) const;
+        void        get_characters(const char** characters, s32& characterCount) const;
+        const char* get_characters() const;
 
-        char* getCharacters();
-        const char* getCharacters() const;
-
-        size_t getSize() const;
+        s32         get_size() const;
 
     private:
-        std::unique_ptr<char> m_characters;
-        size_t m_size;
+        rsl::unique_ptr<char> m_characters;
+        s32 m_size;
     };
 
     class StringEntryID
     {
     public:
         StringEntryID();
-        StringEntryID(uint32 value);
+        StringEntryID(rsl::hash_result value);
 
         bool operator<(const StringEntryID& rhs) const;
         bool operator>(const StringEntryID& rhs) const;
 
         bool operator==(const StringEntryID& rhs) const;
-        bool operator==(const uint32& rhs) const;
+        bool operator==(const rsl::hash_result& rhs) const;
         bool operator!=(const StringEntryID& rhs) const;
-        bool operator!=(const uint32& rhs) const;
+        bool operator!=(const rsl::hash_result& rhs) const;
 
         constexpr operator bool() const { return value != 0; }
-        constexpr operator uint32() const { return value; }
+        constexpr operator rsl::hash_result() const { return value; }
 
     private:
-        uint32 value;
+        rsl::hash_result value;
     };
 }
 
-namespace std
+namespace rsl
 {
-    template <>
-    struct hash<sbt::StringEntryID>
+    inline namespace v1
     {
-        std::size_t operator()(const sbt::StringEntryID& k) const
+        template <>
+        struct hash<rex::StringEntryID>
         {
-            return static_cast<uint32>(k);
-        }
-    };
+            u32 operator()(const rex::StringEntryID& k) const
+            {
+                return static_cast<u32>(k);
+            }
+        };
+    }
 }
