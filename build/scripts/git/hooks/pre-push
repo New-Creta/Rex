@@ -59,6 +59,10 @@ def __generate():
 def __build():
   should_clean = False
 
+  # to make sure we're compiling the code that'll actually be pushed
+  # we stash the changes that aren't committed
+  # then unstash them afterwards
+
   stash_name = "pre-push"
   regis.git.stash_uncommitted_changes(stash_name)    
 
