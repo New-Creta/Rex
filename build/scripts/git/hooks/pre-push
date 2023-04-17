@@ -78,6 +78,7 @@ def __build():
      thread.join()
 
   regis.git.unstash(stash_name)
+  regis.git.remove_stash(stash_name)
 
   return build_result
 
@@ -93,6 +94,7 @@ def __test():
 def main():
 	# we purposely don't run setup here, it's assumed the user has done this before pushing
   # this is to decrease push times
+  regis.diagnostics.log_info(f"running pre-push hook")
 
   result = 0
 

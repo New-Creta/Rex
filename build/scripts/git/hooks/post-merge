@@ -4,6 +4,8 @@ import regis.util
 import regis.diagnostics
 
 def main():
+  regis.diagnostics.log_info(f"running post-merge hook")
+
   root = regis.util.find_root()
   if os.system(f"py {os.path.join(root, '_setup.py')}") == 0:
     os.system(f"py {os.path.join(root, '_generate.py')}")
