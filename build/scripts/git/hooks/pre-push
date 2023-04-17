@@ -12,10 +12,11 @@ import regis.rex_json
 
 root = regis.util.find_root()
 build_result = 0
+intermediate_dir = "pre_push"
 
 def __launch_build(project, config, compiler, shouldClean):
   global build_result
-  build_result |= regis.build.new_build(project, config, compiler, shouldClean)
+  build_result |= regis.build.new_build(project, config, compiler, intermediate_dir, shouldClean)
 
 def __launch_build_thread(project, config, compiler, shouldClean):
    t = threading.Thread(target=__launch_build, args=(project, config, compiler, shouldClean))
@@ -49,9 +50,9 @@ def __generate():
 
   proc = None
   if regex != '':
-    proc = regis.generation.new_generation(settings_path, f"/performAllChecks(true) /clangTidyRegex({regex})")
+    proc = regis.generation.new_generation(settings_path, f"/performAllChecks(true) /clangTidyRegex({regex}) /intermediateDir(\"{intermediate_dir}\")")
   else:
-    proc = regis.generation.new_generation(settings_path, f"/noClangTools")
+    proc = regis.generation.new_generation(settings_path, f"/noClangTools /intermediateDir(\"{intermediate_dir}\")")
 
   proc.wait()
   return proc.returncode
