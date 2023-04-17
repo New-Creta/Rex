@@ -59,6 +59,9 @@ def __generate():
 def __build():
   should_clean = False
 
+  stash_name = "pre-push"
+  regis.git.stash_uncommitted_changes(stash_name)    
+
   threads : list[threading.Thread] = []
   threads.append(__launch_build_thread("regina", "debug", "msvc", should_clean))
   threads.append(__launch_build_thread("regina", "debug_opt", "msvc", should_clean))
@@ -69,6 +72,8 @@ def __build():
 
   for thread in threads:
      thread.join()
+
+  regis.git.unstash(stash_name)
 
   return build_result
 
