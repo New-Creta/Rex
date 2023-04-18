@@ -43,7 +43,12 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::create(HInstance hInstance, s32 cmdShow, const WindowDescription& description)
     {
-      if(!m_wnd_class.create(hInstance, default_win_procedure, description.title))
+      const char* title;
+      s32 title_size;
+      
+      description.title.to_string(&title, title_size);
+
+      if(!m_wnd_class.create(hInstance, default_win_procedure, title))
       {
         REX_ERROR(LogWindows, "Failed to create window class");
         return false;
@@ -68,8 +73,8 @@ namespace rex
 
       // clang-format off
       m_hwnd = WIN_CALL(
-          static_cast<HWND>(CreateWindowA(description.title, 
-                                          description.title, 
+          static_cast<HWND>(CreateWindowA(title, 
+                                          title, 
                                           WS_OVERLAPPEDWINDOW, 
                                           x == 0
                                             ? screen_mid_x - half_x 
