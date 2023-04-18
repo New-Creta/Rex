@@ -332,7 +332,7 @@ public class BasicCPPProject : BaseProject
     string json_blob = File.ReadAllText(mem_tag_config_path);
     Dictionary<string, string[]> config = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json_blob);
 
-    if (!GenerateSettings.MemoryTags.ContainsKey(Name))
+    if (!GenerateSettings.MemoryTags.ContainsKey(Name) && config.ContainsKey("MemoryTags"))
     {
       GenerateSettings.MemoryTags.Add(Name, config["MemoryTags"].ToList());
     }
