@@ -37,7 +37,6 @@ namespace rex
   MemoryTracker::MemoryTracker()
       : m_mem_usage(0)
       , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
-      , m_is_initialized(false)
   {
   }
 
@@ -51,15 +50,10 @@ namespace rex
     // that got allocated at runtime
     m_max_mem_usage        = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
     m_mem_stats_on_startup = win::query_memory_stats();
-    m_is_initialized       = true;
   }
 
   void MemoryTracker::track_alloc(void* /*mem*/, MemoryHeader* header)
   {
-    // It's possible static or global variables perform heap allocation
-    // this is not allowed however, so we need to check here if that happened
-    REX_ASSERT_X(m_is_initialized, "Memory allocation before the memory tracker is initialized, this is forbidden");
-
     const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
