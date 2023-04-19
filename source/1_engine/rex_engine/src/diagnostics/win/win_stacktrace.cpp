@@ -57,9 +57,9 @@ namespace rex
     {
       const rsl::big_stack_string undecorated_name = get_undecorated_name(symbolName);
 
-      IMAGEHLP_LINE64 line{};
+      IMAGEHLP_LINE64 line {};
       line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-      if (SymGetLineFromAddr64(process, addr, reinterpret_cast<DWORD*>(displacement), &line) == TRUE) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
+      if(SymGetLineFromAddr64(process, addr, reinterpret_cast<DWORD*>(displacement), &line) == TRUE) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
       {
         return rsl::stacktrace_entry(reinterpret_cast<void*>(addr), rsl::big_stack_string(line.FileName), undecorated_name, static_cast<card32>(line.LineNumber)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
       }
@@ -72,38 +72,37 @@ namespace rex
     }
 
     ResolvedCallstack::ResolvedCallstack(const CallStack& callstack)
-      : m_resolved_stacktrace()
-      , m_size(0)
+        : m_resolved_stacktrace()
+        , m_size(0)
     {
       [[maybe_unused]] static const bool s_initialised = load_symbols();
 
-      HANDLE process = GetCurrentProcess();
-      DWORD64 displacement = 0;
+      HANDLE process             = GetCurrentProcess();
+      DWORD64 displacement       = 0;
       constexpr card32 buff_size = (sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) + sizeof(ULONG64) - 1) / sizeof(ULONG64);
       rsl::array<ULONG64, buff_size> buffer;
       PSYMBOL_INFO symbol_info = reinterpret_cast<PSYMBOL_INFO>(buffer.data()); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
       symbol_info->SizeOfStruct = sizeof(SYMBOL_INFO);
-      symbol_info->MaxNameLen = MAX_SYM_NAME;
+      symbol_info->MaxNameLen   = MAX_SYM_NAME;
 
       const card32 max_count = (rsl::min)(m_resolved_stacktrace.size(), callstack.size());
-      for (card32 i = 0; i < max_count && callstack[i] != nullptr; ++i)
+      for(card32 i = 0; i < max_count && callstack[i] != nullptr; ++i)
       {
-        void* stack_ptr = callstack[i];
+        void* stack_ptr   = callstack[i];
         const uint64 addr = *reinterpret_cast<uint64*>(&stack_ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         rsl::stacktrace_entry stack_entry;
 
-        if (SymFromAddr(process, addr, &displacement, symbol_info) != 0)
+        if(SymFromAddr(process, addr, &displacement, symbol_info) != 0)
         {
           stack_entry = get_stack_pointer_line_info(process, addr, &displacement, symbol_info->Name);
 
-          if (addr != 0xcccccccc)
+          if(addr != 0xcccccccc)
           {
             m_resolved_stacktrace[i] = stack_entry;
             ++m_size;
           }
         }
-
       }
     }
 
