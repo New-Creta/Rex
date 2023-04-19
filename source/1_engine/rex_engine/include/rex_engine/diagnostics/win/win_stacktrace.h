@@ -3,7 +3,6 @@
 #include "rex_engine/platform.h"
 #include "rex_std/array.h"
 #include "rex_std/format.h"
-
 #include "rex_std/stacktrace.h"
 
 namespace rex
@@ -11,12 +10,12 @@ namespace rex
   namespace win
   {
     inline constexpr card32 g_max_stack_entries = 20;
-    using CallStack = rsl::array<void*, g_max_stack_entries>;
+    using CallStack                             = rsl::array<void*, g_max_stack_entries>;
 
     class ResolvedCallstack
     {
     public:
-      ResolvedCallstack(const CallStack& callstack);
+      explicit ResolvedCallstack(const CallStack& callstack);
 
       const rsl::array<rsl::stacktrace_entry, g_max_stack_entries>& pointers() const;
       count_t size() const;

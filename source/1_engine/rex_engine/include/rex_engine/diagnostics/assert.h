@@ -26,12 +26,27 @@ namespace rex
   class AssertContextScope
   {
   public:
-    AssertContextScope(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc = rsl::source_location::current());
+    explicit AssertContextScope(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc = rsl::source_location::current());
     ~AssertContextScope();
-  };
-}
 
-#define REX_ASSERT(...)         rex::rex_assert(rsl::format(__VA_ARGS__)); while (true) { DEBUG_BREAK(); }
-#define REX_ASSERT_X(cond, ...) if (!(cond)) { REX_ASSERT(__VA_ARGS__); }
+    AssertContextScope(const AssertContextScope&) = delete;
+    AssertContextScope(AssertContextScope&&) = delete;
+
+    AssertContextScope& operator=(const AssertContextScope&) = delete;
+    AssertContextScope& operator=(AssertContextScope&&) = delete;
+  };
+} // namespace rex
+
+#define REX_ASSERT(...)                                                                                                                                                                                                                                  \
+  rex::rex_assert(rsl::format(__VA_ARGS__));                                                                                                                                                                                                             \
+  while(true)                                                                                                                                                                                                                                            \
+  {                                                                                                                                                                                                                                                      \
+    DEBUG_BREAK();                                                                                                                                                                                                                                       \
+  }
+#define REX_ASSERT_X(cond, ...)                                                                                                                                                                                                                          \
+  if(!(cond))                                                                                                                                                                                                                                            \
+  {                                                                                                                                                                                                                                                      \
+    REX_ASSERT(__VA_ARGS__);                                                                                                                                                                                                                             \
+  }
 
 #define REX_ASSERT_CONTEXT_SCOPE(...) rex::AssertContextScope ANONYMOUS_VARIABLE(assert_scope)(rsl::format(__VA_ARGS__));

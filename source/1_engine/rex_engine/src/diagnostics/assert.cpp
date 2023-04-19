@@ -1,8 +1,8 @@
 #include "rex_engine/diagnostics/assert.h"
 
-#include "rex_engine/diagnostics/stacktrace.h"
-#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/debug_types.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/stacktrace.h"
 
 namespace rex
 {
@@ -18,7 +18,7 @@ namespace rex
   void rex_assert(const rsl::fmt_stack_string& msg)
   {
     thread_local static bool is_processing_assert = false;
-    if (!is_processing_assert)
+    if(!is_processing_assert)
     {
       is_processing_assert = true;
       REX_ERROR(LogAssert, "Assert Raised: {}", msg);
@@ -26,7 +26,7 @@ namespace rex
       REX_ERROR(LogAssert, "Assert contexts:");
       REX_ERROR(LogAssert, "----------------");
 
-      for (const AssertContext& context : contexts())
+      for(const AssertContext& context: contexts())
       {
         REX_ERROR(LogAssert, "{}", context.msg());
         REX_ERROR(LogAssert, "[traceback] {}", rsl::to_string(context.source_location()));
@@ -34,20 +34,19 @@ namespace rex
 
       REX_ERROR(LogAssert, "----------------");
 
-      ResolvedCallstack callstack(current_callstack());
+      const ResolvedCallstack callstack(current_callstack());
 
-      for (count_t i = 0; i < callstack.size(); ++i)
+      for(count_t i = 0; i < callstack.size(); ++i)
       {
         REX_ERROR(LogAssert, "{}", callstack[i]);
       }
-
     }
     else
     {
       // if this is hit, an assert occurred while processing another one.
       // to avoid circular dependency, we break here if there's a debugger attached
       DEBUG_BREAK();
-    }   
+    }
   }
 
   void push_assert_context(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc)
@@ -60,10 +59,9 @@ namespace rex
   }
 
   AssertContext::AssertContext(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc)
-    : m_msg(msg)
-    , m_source_location(sourceLoc)
+      : m_msg(msg)
+      , m_source_location(sourceLoc)
   {
-
   }
 
   const rsl::fmt_stack_string& AssertContext::msg() const
@@ -84,4 +82,4 @@ namespace rex
   {
     pop_assert_context();
   }
-}
+} // namespace rex
