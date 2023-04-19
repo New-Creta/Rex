@@ -18,6 +18,7 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("-clean", help="clean run, as if run for the first time", action="store_true")
   parser.add_argument("-single_threaded", help="run tests in single threaded mode", action="store_true")
+  parser.add_argument("-filter_lines", help="filter lines to only display warnings and errors", action="store_true")
 
   parser.add_argument("-all", help="run all tests", action="store_true")
   parser.add_argument("-iwyu", help="run include-what-you-use", action="store_true")
@@ -36,7 +37,7 @@ if __name__ == "__main__":
   if args.all or args.iwyu:
     regis.test.test_include_what_you_use(args.clean, args.single_threaded)
   if args.all or args.clang_tidy:
-    regis.test.test_clang_tidy(".*", args.clean, args.single_threaded)
+    regis.test.test_clang_tidy(".*", args.clean, args.single_threaded, args.filter_lines)
   if args.all or args.unit_tests:
     regis.test.test_unit_tests(["rexstdtest"], args.clean, args.single_threaded)
   if args.all or args.coverage:
