@@ -44,7 +44,7 @@ namespace rex
   {
     // Remember that the OS has an overhead of memory allocation for the process itself
     // eg. Windows has a few MBs overhead for the process on startup, including page file usage and page faults
-    // therefore a very low max memory usage could could fall below this
+    // therefore a very low max memory usage could fall below this
     // That's why we track the initial memory usage before the initialization
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
