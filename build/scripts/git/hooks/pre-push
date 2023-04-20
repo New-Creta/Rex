@@ -60,6 +60,13 @@ def __generate():
 def __build():
   should_clean = False
 
+  # to make sure we're compiling the code that'll actually be pushed
+  # we stash the changes that aren't committed
+  # then unstash them afterwards
+
+  stash_name = "pre-push"
+  regis.git.stash_uncommitted_changes(stash_name)    
+
   threads : list[threading.Thread] = []
   threads.append(__launch_build_thread("regina", "debug", "msvc", should_clean))
   threads.append(__launch_build_thread("regina", "debug_opt", "msvc", should_clean))
@@ -70,6 +77,9 @@ def __build():
 
   for thread in threads:
      thread.join()
+
+  regis.git.unstash(stash_name)
+  regis.git.remove_stash(stash_name)
 
   return build_result
 
@@ -85,25 +95,30 @@ def __test():
 def main():
 	# we purposely don't run setup here, it's assumed the user has done this before pushing
   # this is to decrease push times
+  regis.diagnostics.log_info(f"running pre-push hook")
 
   result = 0
 
-  result = __generate()
-  if result != 0:
-     print("Generation failed")
-     exit(result)
+  current_branch = regis.git.get_local_branchname()
 
-  result = __build()
-  if result != 0:
-     print("Build failed")
-     exit(result)
+  if current_branch == "main":
 
-  result = __test()
-  if result != 0:
-     print("Tests failed")
-     exit(result)
+    result = __generate()
+    if result != 0:
+      print("Generation failed")
+      exit(result)
 
-  exit(0)
+    result = __build()
+    if result != 0:
+      print("Build failed")
+      exit(result)
+
+    result = __test()
+    if result != 0:
+      print("Tests failed")
+      exit(result)
+
+  exit(result)
 
 if __name__ == "__main__":
 	main()

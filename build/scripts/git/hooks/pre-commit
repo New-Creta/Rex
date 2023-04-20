@@ -10,6 +10,8 @@ import regis.diagnostics
 import regis.rex_json
 
 def main():
+  regis.diagnostics.log_info(f"running pre-commit hook")
+
   files = regis.git.get_staged_files()
 
   regis.git.cache_commit_changes(regis.git.get_local_branchname(), files)
