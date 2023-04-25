@@ -14,4 +14,34 @@ namespace rex
     rex::win32::LPtStr cmd_line;
     s32 show_cmd;
   };
+
+  struct GuiParams
+  {
+    s32 window_width = 1280;
+    s32 window_height = 720;
+    const char8* window_title = "Application";
+
+    s32 max_render_commands = 1 << 16;
+    s32 max_fps = 60;
+  };
+
+  struct ApplicationCreationParams
+  {
+  public:
+    ApplicationCreationParams(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
+      : engine_params()
+      , platform_params(rsl::move(platformParams))
+      , gui_params()
+      , cmd_args(rsl::move(cmdArgs))
+      , create_window(false)
+    {
+    }
+
+  public:
+    EngineParams engine_params;
+    PlatformCreationParams platform_params;
+    CommandLineArguments cmd_args;
+    GuiParams gui_params;
+    bool create_window;
+  };
 } // namespace rex

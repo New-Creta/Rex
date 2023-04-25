@@ -4,10 +4,12 @@
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/iostream.h"
 #include "rex_std_extra/utility/type_id.h"
-#include "rex_windows/gui_application.h"
+#include "rex_windows/console_application.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogRegina, LogVerbosity::Log);
-DEFINE_LOG_CATEGORY(LogRegina);
+DECLARE_LOG_CATEGORY_EXTERN(LogConsoleApp, LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogConsoleApp);
+
+#include <Windows.h>
 
 namespace rex
 {
@@ -17,6 +19,10 @@ namespace rex
   }
   void update()
   {
+    if (GetKeyState('A') & 0x8000)
+    {
+      REX_LOG(LogConsoleApp, "Updating ConsoleApp");
+    }
   }
   void shutdown()
   {

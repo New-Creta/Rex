@@ -32,6 +32,7 @@ public class Regina : ToolsProject
 
         if (target.Config == Config.release)
         {
+          conf.add_public_define("REX_WINDOWS_GUI_APP");
           conf.Options.Add(Options.Vc.Linker.SubSystem.Windows);
         }
         else
