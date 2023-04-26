@@ -7,9 +7,5 @@
 
 #pragma comment(lib, "d3d12.lib")
 
-#include <DirectXMath.h>
-#include <DirectXCollision.h>
-#include <DirectXColors.h>
-#include <DirectXPackedVector.h>
 // clang-format on
 // NOLINTEND(llvm-include-order)
