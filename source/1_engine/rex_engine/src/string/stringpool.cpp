@@ -11,14 +11,14 @@ namespace rsl
     inline namespace v1
     {
         // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-        u32 hash_bytes(const void * data, rsl::count_t size) noexcept
+        rsl::hash_result hash_bytes(const void * data, rsl::count_t size) noexcept
         {
-            const u32 fnv_offset_basis = 2166136261u;
-            const u32 fnv_prime = 16777619u;
+            const rsl::hash_result fnv_offset_basis = 2166136261u;
+            const rsl::hash_result fnv_prime = 16777619u;
 
             const u8* bytes = static_cast<const u8*>(data);
 
-            u32 hash = fnv_offset_basis;
+            rsl::hash_result hash = fnv_offset_basis;
             for (rsl::count_t i = 0; i < size; ++i)
             {
                 hash ^= bytes[i];
@@ -28,22 +28,11 @@ namespace rsl
             return hash;
         }
 
-        template <typename T>
-        struct myhash
-        {
-            std::u32 operator()(const T& obj) const noexcept
-            {
-                // Fallback implementation.
-                auto hashfn = std::hash<T>{};
-                return hashfn(obj);
-            }
-        };
-
         // Template specialization for hash a rsl::string
         template <>
-        struct myhash<rsl::string>
+        struct hash<rsl::string>
         {
-            u32 operator()(const rsl::string& s) const noexcept
+            rsl::hash_result operator()(const rsl::string& s) const noexcept
             {
                 return hash_bytes(s.data(), s.size());
             }
@@ -51,9 +40,9 @@ namespace rsl
 
         // Template specialization for hash a const char*
         template <>
-        struct myhash<const char*>
+        struct hash<const char*>
         {
-            u32 operator()(const char* s) const noexcept
+            rsl::hash_result operator()(const char* s) const noexcept
             {
                 return hash_bytes(s, rsl::strlen(s));
             }
@@ -76,7 +65,7 @@ namespace rex
             {
                 rsl::string sid_name = conversions::to_display_string(static_cast<SID>(i));
 
-                StringEntryID entry_id(static_cast<u32>(i));
+                StringEntryID entry_id(static_cast<rsl::hash_result>(i));
                 StringEntry entry(sid_name.data(), sid_name.size());
 
                 map.emplace(rsl::move(entry_id), rsl::move(entry));
@@ -93,7 +82,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        const StringEntryID* store(uint32 hash, const char* characters, u32 size)
+        const StringEntryID* store(rsl::hash_result hash, const char* characters, s32 size)
         {
             auto it = get_entries().find(hash);
             if (it != rsl::cend(get_entries()))
@@ -109,15 +98,14 @@ namespace rex
             auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
             if (result.emplace_successful)
             {
-                auto inserted_key = result.inserted_element->key;
-                return &inserted_key;
+                return &result.inserted_element->key;
             }
 
             return nullptr;
         }
 
         //-------------------------------------------------------------------------
-        void resolve(const StringEntryID& entryID, const char** out, u32& outSize)
+        void resolve(const StringEntryID& entryID, const char** out, s32& outSize)
         {
             const StringEntry* entry = find(entryID);
 
@@ -141,7 +129,7 @@ namespace rex
             auto it = get_entries().find(entryID);
             if (it == rsl::cend(get_entries()))
             {
-                uint32 sid_name = static_cast<uint32>(SID::None);
+                rsl::hash_result sid_name = static_cast<rsl::hash_result>(SID::None);
 
                 it = get_entries().find(sid_name);
 
@@ -156,10 +144,10 @@ namespace rex
         {
             rsl::string sid_name = conversions::to_display_string(name);
 
-            return store(static_cast<uint32>(name), sid_name.data(), sid_name.size());
+            return store(static_cast<rsl::hash_result>(name), sid_name.data(), sid_name.size());
         }
         //-------------------------------------------------------------------------
-        const StringEntryID* store(const char* characters, u32 size)
+        const StringEntryID* store(const char* characters, s32 size)
         {
             return store(rsl::hash<const char*>{}(characters), characters, size);
         }

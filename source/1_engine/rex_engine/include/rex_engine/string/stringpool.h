@@ -12,12 +12,12 @@ namespace rex
 
     namespace string_pool
     {
-        void                    resolve(const StringEntryID& entryID, const char** out, u32& outSize);
+        void                    resolve(const StringEntryID& entryID, const char** out, s32& outSize);
         void                    resolve(const StringEntryID& entryID, rsl::string& out);
 
         const StringEntry*      find(const StringEntryID& entryID);
 
         const StringEntryID*    store(const SID& name);
-        const StringEntryID*    store(const char* characters, u32 size);
+        const StringEntryID*    store(const char* characters, s32 size);
     };
 }

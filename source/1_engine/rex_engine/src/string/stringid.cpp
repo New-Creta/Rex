@@ -6,42 +6,42 @@
 
 namespace rex
 {
+    //-------------------------------------------------------------------------
     /**
     * Create an empty StringID.
     */
-    //-------------------------------------------------------------------------
     StringID::StringID()
         :StringID(SID::None)
     {}
 
+    //-------------------------------------------------------------------------
     /**
     * Create an StringID with a hard coded string index.
     */
-    //-------------------------------------------------------------------------
     StringID::StringID(const SID& name)
         :m_comparison_index(make(name))
     {}
 
+    //-------------------------------------------------------------------------
     /**
     * Create an StringID with characters.
     */
-    //-------------------------------------------------------------------------
     StringID::StringID(const char* characters)
         :m_comparison_index(make(characters, rsl::strlen(characters)))
     {}
 
+    //-------------------------------------------------------------------------
     /**
     * Create an StringID with characters and a predefined size.
     */
-    //-------------------------------------------------------------------------
-    StringID::StringID(const char* characters, u32 size)
+    StringID::StringID(const char* characters, s32 size)
         :m_comparison_index(make(characters, size))
     {}
 
+    //-------------------------------------------------------------------------
     /**
     * Converts an StringID to a readable format
     */
-    //-------------------------------------------------------------------------
     rsl::string StringID::to_string() const
     {
         rsl::string out;
@@ -50,47 +50,44 @@ namespace rex
         return out;
     }
 
+    //-------------------------------------------------------------------------
     /**
     * Converts an FName to a readable format, in place
     */
-    //-------------------------------------------------------------------------
     void StringID::to_string(rsl::string& out) const
     {
         string_pool::resolve(m_comparison_index, out);
     }
 
+    //-------------------------------------------------------------------------
     /**
     * Convert to string buffer to avoid dynamic allocations and returns string length
     *
     * Note that a default constructed StringID returns "None" instead of ""
     */
-    //-------------------------------------------------------------------------
-    void StringID::to_string(char** out, u32& outSize) const
+    void StringID::to_string(const char** out, s32& outSize) const
     {
         string_pool::resolve(m_comparison_index, out, outSize);
     }
 
+    //-------------------------------------------------------------------------
     /**
     * Retrieve the hashed value
     */
-    //-------------------------------------------------------------------------
     uint32 StringID::get_value() const
     {
         return m_comparison_index;
     }
 
+    //-------------------------------------------------------------------------
     /**
     * Retrieve the hashed value
     */
-    //-------------------------------------------------------------------------
     StringID::operator u32() const
     {
         return m_comparison_index;
     }
 
-    /**
-    * Check to see if this StringID matches the other StringID.
-    */
     //-------------------------------------------------------------------------
     bool StringID::operator==(const StringID& other) const
     {
@@ -137,7 +134,7 @@ namespace rex
             : *string_pool::store(name);
     }
     //-------------------------------------------------------------------------
-    StringEntryID StringID::make(const char* characters, u32 size)
+    StringEntryID StringID::make(const char* characters, s32 size)
     {
         if (characters == nullptr || size == 0)
         {
@@ -158,7 +155,7 @@ namespace rex
 		return StringID(characters, rsl::strlen(characters));
 	}
 	//-------------------------------------------------------------------------
-	StringID create_sid(const char* characters, u32 size)
+	StringID create_sid(const char* characters, s32 size)
 	{
 		return StringID(characters, size);
 	}

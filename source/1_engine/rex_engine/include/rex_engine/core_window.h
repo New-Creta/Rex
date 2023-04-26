@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/types.h"
+#include "rex_engine/string/stringid.h"
 
 namespace rex
 {
@@ -20,7 +21,7 @@ namespace rex
     {
     }
 
-    const char8* title;
+    StringID title;
     WindowViewport viewport;
   };
 

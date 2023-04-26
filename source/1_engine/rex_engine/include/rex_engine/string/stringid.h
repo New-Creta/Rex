@@ -15,11 +15,11 @@ namespace rex
         StringID();
         StringID(const SID& name);
         StringID(const char* characters);
-        StringID(const char* characters, u32 size);
+        StringID(const char* characters, s32 size);
 
         rsl::string     to_string() const;
         void            to_string(rsl::string& out) const;
-        void            to_string(char** out, u32& outSize) const;
+        void            to_string(const char** out, s32& outSize) const;
 
         u32             get_value() const;
 
@@ -37,7 +37,7 @@ namespace rex
 
     private:
         StringEntryID   make(const SID& name);
-        StringEntryID   make(const char* characters, u32 size);
+        StringEntryID   make(const char* characters, s32 size);
 
         /** Index into the StringID array (used to find String portion of the string/number pair used for comparison) */
         StringEntryID   m_comparison_index;
@@ -45,7 +45,7 @@ namespace rex
 
 	StringID create_sid(const SID& name);
 	StringID create_sid(const char* characters);
-	StringID create_sid(const char* characters, u32 size);
+	StringID create_sid(const char* characters, s32 size);
 	StringID create_sid(const rsl::string& string);
     StringID create_sid(const rsl::string_view& stringView);
 
@@ -68,7 +68,7 @@ namespace rsl
         template<>
         struct hash<rex::StringID>
         {
-            u32 operator()(const rex::StringID& s) const noexcept
+            rsl::hash_result operator()(const rex::StringID& s) const noexcept
             {
                 return s.get_value();
             }
