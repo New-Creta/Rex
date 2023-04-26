@@ -190,7 +190,7 @@ namespace rexlog
       {
         if(f == nullptr)
         {
-          throw_rexlog_ex("Failed getting file size. fd is null");
+          throw_rexlog_ex(rex::DebugString("Failed getting file size. fd is null"));
         }
 #if defined(_WIN32) && !defined(__CYGWIN__)
         const int fd = ::_fileno(f);
@@ -231,7 +231,7 @@ namespace rexlog
         }
   #endif
 #endif
-        throw_rexlog_ex("Failed getting file size from fd", errno);
+        throw_rexlog_ex(rex::DebugString("Failed getting file size from fd"), errno);
         return 0; // will not be reached.
       }
 
@@ -251,7 +251,7 @@ namespace rexlog
         auto rv    = ::GetDynamicTimeZoneInformation(&tzinfo);
   #endif
         if(rv == TIME_ZONE_ID_INVALID)
-          throw_rexlog_ex("Failed getting timezone info. ", errno);
+          throw_rexlog_ex(rex::DebugString("Failed getting timezone info. "), errno);
 
         int offset = -tzinfo.Bias;
         if(tm.tm_isdst != 0)
