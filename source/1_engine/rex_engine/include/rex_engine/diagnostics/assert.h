@@ -30,10 +30,10 @@ namespace rex
     ~AssertContextScope();
 
     AssertContextScope(const AssertContextScope&) = delete;
-    AssertContextScope(AssertContextScope&&) = delete;
+    AssertContextScope(AssertContextScope&&)      = delete;
 
     AssertContextScope& operator=(const AssertContextScope&) = delete;
-    AssertContextScope& operator=(AssertContextScope&&) = delete;
+    AssertContextScope& operator=(AssertContextScope&&)      = delete;
   };
 } // namespace rex
 

@@ -3,7 +3,6 @@
 #include "rex_directx/dxgi/comobject.h"
 #include "rex_directx/wrl/wrl_types.h"
 #include "rex_engine/types.h"
-
 #include "rex_renderer_core/gpu.h"
 
 #include <memory>
@@ -13,13 +12,13 @@ struct IDXGIAdapter;
 
 namespace rex
 {
-    namespace dxgi
+  namespace dxgi
+  {
+    class Adapter : public Gpu, public dxgi::ComObject<IDXGIAdapter>
     {
-        class Adapter : public Gpu, public dxgi::ComObject<IDXGIAdapter>
-        {
-        public:
-            Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, uint32 version);
-            ~Adapter() override;
-        };
-    } // namespace dxgi
+    public:
+      Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, uint32 version);
+      ~Adapter() override;
+    };
+  } // namespace dxgi
 } // namespace rex
