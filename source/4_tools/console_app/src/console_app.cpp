@@ -5,6 +5,7 @@
 #include "rex_std/iostream.h"
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/console_application.h"
+#include "rex_engine/event_system.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogConsoleApp, LogVerbosity::Log);
 DEFINE_LOG_CATEGORY(LogConsoleApp);
@@ -22,6 +23,11 @@ namespace rex
     if (GetKeyState('A') & 0x8000)
     {
       REX_LOG(LogConsoleApp, "Updating ConsoleApp");
+    }
+    else if (GetKeyState('Z') & 0x8000)
+    {
+      REX_LOG(LogConsoleApp, "Closing");
+      event_system::fire_event(event_system::EventType::QuitApp);
     }
   }
   void shutdown()

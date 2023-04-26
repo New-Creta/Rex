@@ -1,4 +1,5 @@
 #include "rex_windows/console_application.h"
+#include "rex_engine/event_system.h"
 
 namespace rex
 {
@@ -24,6 +25,8 @@ namespace rex
 
       bool initialize()
       {
+        event_system::subscribe(event_system::EventType::QuitApp, [this]() { m_app_instance->quit(); });
+
         return m_on_initialize();
       }
 

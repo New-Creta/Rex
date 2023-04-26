@@ -8,7 +8,8 @@ namespace rex
   {
     enum class EventType
     {
-      WindowClose
+      WindowClose,
+      QuitApp
     };
 
     using EventFunction = rsl::function<void()>;
