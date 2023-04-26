@@ -4,6 +4,7 @@
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/memory_tracking.h"
+#include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std_extra/memory/memory_size.h"
@@ -74,8 +75,7 @@ namespace rex
       rsl::memcpy(ptr, &dbg_header_ptr, sizeof(dbg_header_ptr)); // NOLINT(bugprone-sizeof-expression)
 
       // get the right address to return from the function
-      rsl::byte* mem_block = static_cast<rsl::byte*>(ptr);
-      mem_block += sizeof(MemoryHeader*);
+      rsl::byte* mem_block = static_cast<rsl::byte*>(jump_forward(ptr, sizeof(MemoryHeader*)));
 
       // track the allocation
       mem_tracker().track_alloc(mem_block, dbg_header_ptr);
@@ -94,9 +94,7 @@ namespace rex
         return;
       }
 
-      rsl::byte* mem_block = static_cast<rsl::byte*>(ptr);
-      mem_block -= sizeof(MemoryHeader*);
-
+      rsl::byte* mem_block = static_cast<rsl::byte*>(jump_backward(ptr, sizeof(MemoryHeader*)));
       MemoryHeader* header = *reinterpret_cast<MemoryHeader**>(mem_block); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
       mem_tracker().track_dealloc(ptr, header);
