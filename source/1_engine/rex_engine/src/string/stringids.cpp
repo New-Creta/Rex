@@ -2,18 +2,16 @@
 
 namespace rex
 {
-    namespace conversions
+  namespace conversions
+  {
+    //-------------------------------------------------------------------------
+    rsl::string to_display_string(const SID& name)
     {
-        //-------------------------------------------------------------------------
-        rsl::string to_display_string(const SID& name)
-        {
-            switch(name)
-            {
-            case SID::None: return rsl::string("None");
-                default:
-                    REX_ASSERT("Invalid SID given!");
-                    return rsl::string("None");
-            }
-        }
+      switch(name)
+      {
+        case SID::None: return rsl::string("None");
+        default: REX_ASSERT("Invalid SID given!"); return rsl::string("None");
+      }
     }
-}
+  } // namespace conversions
+} // namespace rex

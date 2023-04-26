@@ -4,17 +4,17 @@
 
 namespace rex
 {
-    enum class SID
-    {
-        // Special zero value, meaning no name.
-        None,
+  enum class SID
+  {
+    // Special zero value, meaning no name.
+    None,
 
-        // Special constant for the last hard-coded name index
-        MaxHardcodedNameIndex,
-    };
+    // Special constant for the last hard-coded name index
+    MaxHardcodedNameIndex,
+  };
 
-    namespace conversions
-    {
-        rsl::string to_display_string(const SID& name);
-    }
-}
+  namespace conversions
+  {
+    rsl::string to_display_string(const SID& name);
+  } // namespace conversions
+} // namespace rex

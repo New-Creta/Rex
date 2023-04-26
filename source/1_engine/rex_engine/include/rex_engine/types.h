@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_std/bonus/types.h"
 #include "rex_std/atomic.h"
+#include "rex_std/bonus/types.h"
 
 using s8      = int8;
 using u8      = uint8;

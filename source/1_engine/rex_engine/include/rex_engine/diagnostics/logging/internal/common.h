@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "rex_engine/debug_types.h"

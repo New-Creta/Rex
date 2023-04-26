@@ -45,7 +45,7 @@ namespace rex
     {
       const char* title;
       s32 title_size;
-      
+
       description.title.to_string(&title, title_size);
 
       if(!m_wnd_class.create(hInstance, default_win_procedure, title))
