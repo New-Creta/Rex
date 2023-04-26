@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
 #include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"

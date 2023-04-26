@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/core_application.h"
+#include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/memory_tracking.h"
@@ -68,7 +69,7 @@ namespace rex
       rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
 
       rex::MemoryHeader* dbg_header_addr = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
-      rex::MemoryHeader* dbg_header_ptr  = new(dbg_header_addr) MemoryHeader(tag, ptr, rsl::memory_size(num_mem_needed), thread_id, globals::frame_info().index(), rsl::stacktrace::current());
+      rex::MemoryHeader* dbg_header_ptr  = new(dbg_header_addr) MemoryHeader(tag, ptr, rsl::memory_size(num_mem_needed), thread_id, globals::frame_info().index(), current_callstack());
 
       // put the memory header pointer in front of the data blob we're going to return
       rsl::memcpy(ptr, &dbg_header_ptr, sizeof(dbg_header_ptr)); // NOLINT(bugprone-sizeof-expression)

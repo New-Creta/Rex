@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_sinks.h"
