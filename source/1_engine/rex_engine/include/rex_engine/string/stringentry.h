@@ -10,7 +10,12 @@ namespace rex
   {
   public:
     StringEntry(const char* chars, s32 charCount) noexcept;
+    StringEntry(const StringEntry& other) = delete;
     StringEntry(StringEntry&& other) noexcept;
+    ~StringEntry();
+
+    StringEntry& operator=(const StringEntry& other) = delete;
+    StringEntry& operator=(StringEntry&& other) noexcept;
 
     void get_characters(const char** characters, s32& characterCount) const;
     const char* get_characters() const;

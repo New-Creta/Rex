@@ -1,5 +1,7 @@
 #include "rex_engine/string/stringentry.h"
 
+#include <rex_std/memory.h>
+
 namespace rex
 {
   //-------------------------------------------------------------------------
@@ -7,16 +9,28 @@ namespace rex
       : m_characters()
       , m_size(charCount)
   {
-    m_characters.reset(static_cast<char*>(malloc(charCount + 1))); // NOLINE(cppcoreguidelines-no-malloc)
+    m_characters.reset(static_cast<char*>(malloc(charCount + 1))); // NOLINT(cppcoreguidelines-no-malloc)
 
     rsl::memset(m_characters.get(), 0, charCount + 1);
     rsl::memcpy(m_characters.get(), chars, charCount);
   }
   //-------------------------------------------------------------------------
   StringEntry::StringEntry(StringEntry&& other) noexcept
-      : m_characters(rsl::move(other.m_characters))
-      , m_size(rsl::move(other.m_size))
+      : m_characters(rsl::exchange(other.m_characters, {}))
+      , m_size(rsl::exchange(other.m_size, 0))
   {
+  }
+
+  //-------------------------------------------------------------------------
+  StringEntry::~StringEntry() = default;
+
+  //-------------------------------------------------------------------------
+  rex::StringEntry& StringEntry::operator=(StringEntry&& other) noexcept
+  {
+    m_characters = rsl::exchange(other.m_characters, {});
+    m_size       = rsl::exchange(other.m_size, 0);
+
+    return *this;
   }
 
   //-------------------------------------------------------------------------
