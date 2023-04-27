@@ -11,7 +11,7 @@ namespace rex
   {
     //-------------------------------------------------------------------------
     template <typename To, typename From>
-    wrl::com_ptr<To> convertTo(const wrl::com_ptr<From>& ptr)
+    wrl::com_ptr<To> convert_to(const wrl::com_ptr<From>& ptr)
     {
       wrl::com_ptr<To> pointer;
       ptr.template As<To>(&pointer);
@@ -23,9 +23,7 @@ namespace rex
     {
     public:
       ComObject();
-      ComObject(wrl::com_ptr<T>&& object);
-
-      virtual ~ComObject();
+      explicit ComObject(wrl::com_ptr<T>&& object);
 
       /**
        * Retrieve the underlying com ptr
@@ -73,12 +71,6 @@ namespace rex
 
     //-------------------------------------------------------------------------
     template <typename T>
-    ComObject<T>::~ComObject()
-    {
-    }
-
-    //-------------------------------------------------------------------------
-    template <typename T>
     T* ComObject<T>::com_ptr()
     {
       return m_pointer.Get();
@@ -112,7 +104,7 @@ namespace rex
     {
       // T needs to be non-const
       // so we need to case away the const
-      return convertTo<To, T>(c_ptr());
+      return convert_to<To, T>(c_ptr());
     }
   } // namespace wrl
 } // namespace rex

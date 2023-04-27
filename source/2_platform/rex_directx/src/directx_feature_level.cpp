@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  const rsl::array EXPECTED_FEATURE_LEVELS = {D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1};
+  const rsl::array g_expected_feature_levels = {D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1};
 
   //-------------------------------------------------------------------------
   rsl::string feature_level_name(const D3D_FEATURE_LEVEL& level)
@@ -24,16 +24,16 @@ namespace rex
   //-------------------------------------------------------------------------
   bool is_correct_feature_level(s32 level)
   {
-    return rsl::cend(EXPECTED_FEATURE_LEVELS) != rsl::find(rsl::cbegin(EXPECTED_FEATURE_LEVELS), rsl::cend(EXPECTED_FEATURE_LEVELS), level);
+    return rsl::cend(g_expected_feature_levels) != rsl::find(rsl::cbegin(g_expected_feature_levels), rsl::cend(g_expected_feature_levels), level);
   }
 
   //-------------------------------------------------------------------------
   FeatureLevelInfo query_feature_level(IDXGIAdapter* adapter)
   {
     // backwards looping as it's checking for a minimum feature level
-    for(auto it = EXPECTED_FEATURE_LEVELS.crbegin(); it != EXPECTED_FEATURE_LEVELS.crend(); ++it)
+    for(auto it = g_expected_feature_levels.crbegin(); it != g_expected_feature_levels.crend(); ++it)
     {
-      D3D_FEATURE_LEVEL feature_level = *it;
+      const D3D_FEATURE_LEVEL feature_level = *it;
       if(SUCCEEDED(D3D12CreateDevice(adapter, feature_level, __uuidof(ID3D12Device), nullptr)))
       {
         return {static_cast<s32>(feature_level), feature_level_name(feature_level)};

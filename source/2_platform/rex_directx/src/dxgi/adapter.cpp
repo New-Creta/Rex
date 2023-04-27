@@ -1,11 +1,12 @@
 #include "rex_directx/dxgi/adapter.h"
 
 #include "rex_directx/dxgi/util.h"
+#include "rex_directx/log.h"
 #include "rex_std/stdlib.h"
 
 namespace
 {
-  const uint32 ADAPTER_DESCRIPTION_SIZE = 128;
+  const uint32 g_adapter_description_size = 128;
 
   //-------------------------------------------------------------------------
   /**
@@ -56,8 +57,14 @@ namespace
     // Convert wide character string to multi byte character string.
     // size_t converted_chars => The amount of converted characters.
     // 0 terminate the string afterwards.
-    size_t converted_chars;
-    wcstombs_s(&converted_chars, buffer.data(), size, wideCharacterBuffer, size);
+    size_t converted_chars = 0;
+    auto result = wcstombs_s(&converted_chars, buffer.data(), size, wideCharacterBuffer, size);
+    if(result != 0)
+    {
+      REX_ERROR(LogDirectX, "Failed to convert wide character string to multi byte character string.");
+      return rsl::string("Invalid String");
+    }
+
     buffer.resize(converted_chars);
 
     return rsl::string(buffer.data());
@@ -69,7 +76,7 @@ namespace
   {
     rex::Gpu::Description desc;
 
-    desc.name        = to_multibyte(dxgiDesc.Description, ADAPTER_DESCRIPTION_SIZE);
+    desc.name        = to_multibyte(dxgiDesc.Description, g_adapter_description_size);
     desc.vendor_name = vendor_to_string(dxgiDesc.VendorId);
 
     desc.vendor_id = dxgiDesc.VendorId;
@@ -119,8 +126,5 @@ namespace rex
         , ComObject(rsl::move(adapter), version)
     {
     }
-
-    //-------------------------------------------------------------------------
-    Adapter::~Adapter() = default;
   } // namespace dxgi
 } // namespace rex

@@ -18,7 +18,6 @@ namespace rex
     {
     public:
       Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, uint32 version);
-      ~Adapter() override;
     };
   } // namespace dxgi
 } // namespace rex

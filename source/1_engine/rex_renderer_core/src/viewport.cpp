@@ -26,8 +26,6 @@ namespace rex
       , m_max_depth(info.max_depth)
   {
   }
-  //-------------------------------------------------------------------------
-  Viewport::~Viewport() = default;
 
   //-------------------------------------------------------------------------
   float Viewport::top_left_x() const

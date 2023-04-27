@@ -11,8 +11,8 @@ namespace rex
     auto it = std::max_element(gpus.cbegin(), gpus.cend(),
                                [](const rsl::unique_ptr<Gpu>& lhs, const rsl::unique_ptr<Gpu>& rhs)
                                {
-                                 size_t lhs_vram = lhs->description().dedicated_video_memory.size_in_bytes();
-                                 size_t rhs_vram = rhs->description().dedicated_video_memory.size_in_bytes();
+                                 const size_t lhs_vram = lhs->description().dedicated_video_memory.size_in_bytes();
+                                 const size_t rhs_vram = rhs->description().dedicated_video_memory.size_in_bytes();
 
                                  return rhs_vram > lhs_vram;
                                });

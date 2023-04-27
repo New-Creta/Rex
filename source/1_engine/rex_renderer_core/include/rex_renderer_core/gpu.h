@@ -25,7 +25,7 @@ namespace rex
       rsl::memory_size shared_system_memory;
     };
 
-    Gpu(const Description& desc);
+    explicit Gpu(const Description& desc);
     virtual ~Gpu() = default;
 
     const Description& description() const;

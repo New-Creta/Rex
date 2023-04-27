@@ -11,7 +11,7 @@ namespace
   {
     rex::wrl::com_ptr<DXGIFactoryInterface> dxgi_factory = nullptr;
 
-    HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
+    const HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
     if(hr != S_OK)
       return nullptr;
 
@@ -24,7 +24,7 @@ namespace
   {
     rex::wrl::com_ptr<IDXGIFactory> dxgi_factory = nullptr;
 
-    HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
+    const HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
     if(hr != S_OK)
       return nullptr;
 
@@ -65,7 +65,5 @@ namespace rex
         : ComObject(rsl::move(object), version)
     {
     }
-    //-------------------------------------------------------------------------
-    Factory::~Factory() = default;
   } // namespace dxgi
 } // namespace rex

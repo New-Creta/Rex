@@ -18,8 +18,7 @@ namespace rex
   {
   public:
     Viewport();
-    Viewport(const ViewportCreationInfo& info);
-    virtual ~Viewport();
+    explicit Viewport(const ViewportCreationInfo& info);
 
     float top_left_x() const;
     float top_left_y() const;
