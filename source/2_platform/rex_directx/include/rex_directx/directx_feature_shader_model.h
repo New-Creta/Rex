@@ -14,8 +14,8 @@ namespace rex
   };
 
   rsl::string shader_model_name(s32 shaderModel);
-  
+
   bool check_for_shader_model_support(ID3D12Device* device, s32 version);
-  
+
   ShaderModelInfo query_shader_model_version(ID3D12Device* device);
 } // namespace rex

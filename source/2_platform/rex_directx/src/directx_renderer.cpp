@@ -1,5 +1,6 @@
 #include "rex_directx/directx_feature_level.h"
 #include "rex_directx/directx_feature_shader_model.h"
+#include "rex_directx/directx_util.h"
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
@@ -14,7 +15,7 @@ namespace rex
   {
     namespace directx
     {
-      RendererInfo g_renderer_info; // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
+      RendererInfo g_renderer_info; // NOLINT (fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
     }                               // namespace directx
 
     //-------------------------------------------------------------------------
@@ -43,12 +44,12 @@ namespace rex
 
     namespace backend
     {
-      struct directx_context
+      struct DirectXContext
       {
         wrl::com_ptr<ID3D12Device> device = nullptr;
       };
 
-      directx_context g_ctx;
+      DirectXContext g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
       //-------------------------------------------------------------------------
       bool initialize()
@@ -56,11 +57,11 @@ namespace rex
         rsl::unique_ptr<dxgi::Factory> factory = dxgi::Factory::create();
 
         dxgi::AdapterManager adapter_manager(factory.get(), HighestVramGpuScorer());
-        const dxgi::Adapter* adapter = static_cast<const dxgi::Adapter*>(adapter_manager.selected());
+        const dxgi::Adapter* adapter = static_cast<const dxgi::Adapter*>(adapter_manager.selected()); // NNOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-        FeatureLevelInfo feature_level_info = query_feature_level(adapter->c_ptr());
+        const FeatureLevelInfo feature_level_info = query_feature_level(adapter->c_ptr());
 
-        if(FAILED(D3D12CreateDevice(adapter->c_ptr(), (D3D_FEATURE_LEVEL)feature_level_info.level, IID_PPV_ARGS(&g_ctx.device))))
+        if(FAILED(D3D12CreateDevice(adapter->c_ptr(), static_cast<D3D_FEATURE_LEVEL>(feature_level_info.level), IID_PPV_ARGS(&g_ctx.device))))
         {
           if(adapter_manager.load_software_adapter(factory.get()))
           {
@@ -70,8 +71,8 @@ namespace rex
           }
           else
           {
-            const dxgi::Adapter* software_adapter = static_cast<const dxgi::Adapter*>(adapter_manager.software());
-            if(FAILED(D3D12CreateDevice(software_adapter->c_ptr(), (D3D_FEATURE_LEVEL)feature_level_info.level, IID_PPV_ARGS(&g_ctx.device))))
+            const dxgi::Adapter* software_adapter = static_cast<const dxgi::Adapter*>(adapter_manager.software()); // NNOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+            if(FAILED(D3D12CreateDevice(software_adapter->c_ptr(), static_cast<D3D_FEATURE_LEVEL>(feature_level_info.level), IID_PPV_ARGS(&g_ctx.device))))
             {
               REX_ERROR(LogDirectX, "Failed to create DX12 Device");
               return false;
@@ -83,7 +84,7 @@ namespace rex
           REX_LOG(LogDirectX, "D3D12 Device Created!");
         }
 
-        ShaderModelInfo shader_model_info = query_shader_model_version(g_ctx.device.Get());
+        const ShaderModelInfo shader_model_info = query_shader_model_version(g_ctx.device.Get());
 
         directx::g_renderer_info.shader_version = shader_model_info.name;
         directx::g_renderer_info.api_version    = feature_level_info.name;

@@ -58,7 +58,7 @@ namespace
     // size_t converted_chars => The amount of converted characters.
     // 0 terminate the string afterwards.
     size_t converted_chars = 0;
-    auto result = wcstombs_s(&converted_chars, buffer.data(), size, wideCharacterBuffer, size);
+    auto result            = wcstombs_s(&converted_chars, buffer.data(), size, wideCharacterBuffer, size);
     if(result != 0)
     {
       REX_ERROR(LogDirectX, "Failed to convert wide character string to multi byte character string.");
@@ -67,7 +67,7 @@ namespace
 
     buffer.resize(converted_chars);
 
-    return rsl::string(buffer.data());
+    return rsl::string(buffer.data()); // NOLINT(readability-redundant-string-cstr)
   }
 
   //-------------------------------------------------------------------------

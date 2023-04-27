@@ -13,7 +13,7 @@ namespace
   //-------------------------------------------------------------------------
   rsl::function<HRESULT(UINT, IDXGIAdapter4**)> get_enumaration_function6(const rex::dxgi::Factory* factory)
   {
-    rex::wrl::com_ptr<IDXGIFactory6> factory_6 = factory->as<IDXGIFactory6>();
+    const rex::wrl::com_ptr<IDXGIFactory6> factory_6 = factory->as<IDXGIFactory6>();
 
     REX_ASSERT_X(factory_6, "DXGIFactory 6 does not exist!");
 
@@ -22,7 +22,7 @@ namespace
   //-------------------------------------------------------------------------
   rsl::function<HRESULT(UINT, IDXGIAdapter1**)> get_enumaration_function1(const rex::dxgi::Factory* factory)
   {
-    rex::wrl::com_ptr<IDXGIFactory4> factory_4 = factory->as<IDXGIFactory4>();
+    const rex::wrl::com_ptr<IDXGIFactory4> factory_4 = factory->as<IDXGIFactory4>();
 
     REX_ASSERT_X(factory_4, "DXGIFactory 4 does not exist!");
 
@@ -106,7 +106,7 @@ namespace rex
         case 0: m_adapters = rsl::move(get_adapters<IDXGIAdapter>(get_enumaration_function(factory), 0)); break;
       }
 
-      return m_adapters.empty() == false;
+      return m_adapters.empty() == false; // NOLINT(readability-simplify-boolean-expr)
     }
     //-------------------------------------------------------------------------
     bool AdapterManager::load_software_adapter(const Factory* factory)
@@ -131,7 +131,7 @@ namespace rex
     //-------------------------------------------------------------------------
     const Gpu* AdapterManager::first() const
     {
-      REX_ASSERT_X(m_adapters.size() > 0, "No adapters found");
+      REX_ASSERT_X(!m_adapters.empty(), "No adapters found");
 
       return m_adapters[0].get();
     }
@@ -146,7 +146,7 @@ namespace rex
     //-------------------------------------------------------------------------
     const rsl::vector<rsl::unique_ptr<Gpu>>& AdapterManager::all() const
     {
-      REX_ASSERT_X(m_adapters.size() > 0, "No adapters found");
+      REX_ASSERT_X(!m_adapters.empty(), "No adapters found");
 
       return m_adapters;
     }

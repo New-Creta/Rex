@@ -14,7 +14,7 @@ namespace rex
 {
   namespace dxgi
   {
-    class Adapter : public Gpu, public dxgi::ComObject<IDXGIAdapter>
+    class Adapter : public Gpu, public dxgi::ComObject<IDXGIAdapter> // NOLINT(fuchsia-multiple-inheritance)
     {
     public:
       Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, uint32 version);

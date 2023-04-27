@@ -19,8 +19,13 @@ namespace rex
     class AdapterManager : public GpuManager
     {
     public:
+      AdapterManager(const AdapterManager&) = delete;
+      AdapterManager(AdapterManager&&)      = delete;
       AdapterManager(const Factory* factory, const GpuScorer& scorer);
       ~AdapterManager() override;
+
+      AdapterManager& operator=(const AdapterManager&) = delete;
+      AdapterManager& operator=(AdapterManager&&)      = delete;
 
       bool load_adapters(const Factory* factory);
       bool load_software_adapter(const Factory* factory);

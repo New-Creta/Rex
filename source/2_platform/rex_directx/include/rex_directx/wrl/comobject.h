@@ -87,7 +87,7 @@ namespace rex
     T* ComObject<T>::c_ptr() const
     {
       static_assert(rsl::is_base_of_v<IUnknown, T>, "T is not a com object!");
-      return const_cast<T*>(m_pointer.Get());
+      return const_cast<T*>(m_pointer.Get()); // NOLINT(cppcoreguidelines-pro-type-const-cast)
     }
 
     //-------------------------------------------------------------------------
