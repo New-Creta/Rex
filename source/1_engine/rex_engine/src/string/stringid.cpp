@@ -23,7 +23,7 @@ namespace rex
 
       return *string_pool::store(characters, size);
     }
-  }
+  } // namespace internal
   //-------------------------------------------------------------------------
   /**
    * Create an empty StringID.
@@ -199,7 +199,7 @@ namespace rex
 //-------------------------------------------------------------------------
 rex::StringID operator""_sid(const char* string, size_t size)
 {
-  return rex::StringID(string, static_cast<u32>(size)); //NOLINT(cppcoreguidelines-narrowing-conversions)
+  return rex::StringID(string, static_cast<u32>(size)); // NOLINT(cppcoreguidelines-narrowing-conversions)
 }
 
 //-------------------------------------------------------------------------

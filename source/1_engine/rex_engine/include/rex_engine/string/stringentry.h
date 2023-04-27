@@ -26,7 +26,7 @@ namespace rex
   {
   public:
     StringEntryID();
-    StringEntryID(rsl::hash_result value); //NOLINT(google-explicit-constructor)
+    StringEntryID(rsl::hash_result value); // NOLINT(google-explicit-constructor)
 
     bool operator<(const StringEntryID& rhs) const;
     bool operator>(const StringEntryID& rhs) const;
