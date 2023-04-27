@@ -1,10 +1,11 @@
-#include "rex_engine/types.h"
-#include "rex_renderer_core/context.h"
-#include "rex_windows/log.h"
+#ifdef REX_API_OPENGL
+  #include "rex_engine/types.h"
+  #include "rex_renderer_core/context.h"
+  #include "rex_windows/log.h"
 
-#include <Windows.h>
-#include <glad/gl.h>
-#include <glad/wgl.h>
+  #include <Windows.h>
+  #include <glad/gl.h>
+  #include <glad/wgl.h>
 
 // NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
 
@@ -141,3 +142,4 @@ namespace rex
 } // namespace rex
 
 // NOLINTEND(modernize-use-nullptr,-warnings-as-errors)
+#endif
