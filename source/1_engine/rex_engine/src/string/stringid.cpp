@@ -6,6 +6,24 @@
 
 namespace rex
 {
+  namespace internal
+  {
+    //-------------------------------------------------------------------------
+    StringEntryID make(const SID& name)
+    {
+      return name == SID::None ? StringEntryID() : *string_pool::store(name);
+    }
+    //-------------------------------------------------------------------------
+    StringEntryID make(const char* characters, s32 size)
+    {
+      if(characters == nullptr || size == 0)
+      {
+        return StringEntryID(); // SID::None
+      }
+
+      return *string_pool::store(characters, size);
+    }
+  }
   //-------------------------------------------------------------------------
   /**
    * Create an empty StringID.
@@ -20,7 +38,7 @@ namespace rex
    * Create an StringID with a hard coded string index.
    */
   StringID::StringID(const SID& name)
-      : m_comparison_index(make(name))
+      : m_comparison_index(internal::make(name))
   {
   }
 
@@ -29,7 +47,7 @@ namespace rex
    * Create an StringID with characters.
    */
   StringID::StringID(const char* characters)
-      : m_comparison_index(make(characters, rsl::strlen(characters)))
+      : m_comparison_index(internal::make(characters, rsl::strlen(characters)))
   {
   }
 
@@ -38,7 +56,7 @@ namespace rex
    * Create an StringID with characters and a predefined size.
    */
   StringID::StringID(const char* characters, s32 size)
-      : m_comparison_index(make(characters, size))
+      : m_comparison_index(internal::make(characters, size))
   {
   }
 
@@ -78,9 +96,9 @@ namespace rex
   /**
    * Retrieve the hashed value
    */
-  uint32 StringID::get_value() const
+  u32 StringID::get_value() const
   {
-    return m_comparison_index;
+    return static_cast<u32>(m_comparison_index);
   }
 
   //-------------------------------------------------------------------------
@@ -89,7 +107,7 @@ namespace rex
    */
   StringID::operator u32() const
   {
-    return m_comparison_index;
+    return static_cast<u32>(m_comparison_index);
   }
 
   //-------------------------------------------------------------------------
@@ -128,22 +146,6 @@ namespace rex
   bool StringID::is_none() const
   {
     return *this == SID::None;
-  }
-
-  //-------------------------------------------------------------------------
-  StringEntryID StringID::make(const SID& name)
-  {
-    return name == SID::None ? StringEntryID() : *string_pool::store(name);
-  }
-  //-------------------------------------------------------------------------
-  StringEntryID StringID::make(const char* characters, s32 size)
-  {
-    if(characters == nullptr || size == 0)
-    {
-      return StringEntryID(); // SID::None
-    }
-
-    return *string_pool::store(characters, size);
   }
 
   //-------------------------------------------------------------------------
@@ -197,7 +199,7 @@ namespace rex
 //-------------------------------------------------------------------------
 rex::StringID operator""_sid(const char* string, size_t size)
 {
-  return rex::StringID(string, static_cast<u32>(size));
+  return rex::StringID(string, static_cast<u32>(size)); //NOLINT(cppcoreguidelines-narrowing-conversions)
 }
 
 //-------------------------------------------------------------------------

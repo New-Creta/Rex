@@ -7,7 +7,7 @@ namespace rex
       : m_characters()
       , m_size(charCount)
   {
-    m_characters.reset((char*)malloc(charCount + 1));
+    m_characters.reset(static_cast<char*>(malloc(charCount + 1))); // NOLINE(cppcoreguidelines-no-malloc)
 
     rsl::memset(m_characters.get(), 0, charCount + 1);
     rsl::memcpy(m_characters.get(), chars, charCount);
@@ -18,9 +18,6 @@ namespace rex
       , m_size(rsl::move(other.m_size))
   {
   }
-
-  //-------------------------------------------------------------------------
-  StringEntry::~StringEntry() = default;
 
   //-------------------------------------------------------------------------
   void StringEntry::get_characters(const char** characters, s32& characterCount) const
@@ -43,44 +40,54 @@ namespace rex
 
   //-------------------------------------------------------------------------
   StringEntryID::StringEntryID()
-      : value(0)
+      : m_value(0)
   {
   }
   //-------------------------------------------------------------------------
   StringEntryID::StringEntryID(rsl::hash_result value)
-      : value(value)
+      : m_value(value)
   {
   }
 
   //-------------------------------------------------------------------------
   bool StringEntryID::operator<(const StringEntryID& rhs) const
   {
-    return value < rhs.value;
+    return m_value < rhs.m_value;
   }
   //-------------------------------------------------------------------------
   bool StringEntryID::operator>(const StringEntryID& rhs) const
   {
-    return rhs.value < value;
+    return rhs.m_value < m_value;
   }
 
   //-------------------------------------------------------------------------
   bool StringEntryID::operator==(const StringEntryID& rhs) const
   {
-    return value == rhs.value;
+    return m_value == rhs.m_value;
   }
   //-------------------------------------------------------------------------
   bool StringEntryID::operator==(const rsl::hash_result& rhs) const
   {
-    return value == rhs;
+    return m_value == rhs;
   }
   //-------------------------------------------------------------------------
   bool StringEntryID::operator!=(const StringEntryID& rhs) const
   {
-    return value != rhs.value;
+    return m_value != rhs.m_value;
   }
   //-------------------------------------------------------------------------
   bool StringEntryID::operator!=(const rsl::hash_result& rhs) const
   {
-    return value != rhs;
+    return m_value != rhs;
+  }
+  //-------------------------------------------------------------------------
+  StringEntryID::operator bool() const
+  {
+    return m_value != 0;
+  }
+  //-------------------------------------------------------------------------
+  StringEntryID::operator rsl::hash_result() const
+  {
+    return m_value;
   }
 } // namespace rex

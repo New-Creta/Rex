@@ -128,7 +128,7 @@ namespace rex
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
       {
-        rsl::hash_result sid_name = static_cast<rsl::hash_result>(SID::None);
+        const rsl::hash_result sid_name = static_cast<rsl::hash_result>(SID::None);
 
         it = get_entries().find(sid_name);
 

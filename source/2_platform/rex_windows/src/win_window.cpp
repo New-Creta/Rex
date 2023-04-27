@@ -43,8 +43,8 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::create(HInstance hInstance, s32 cmdShow, const WindowDescription& description)
     {
-      const char* title;
-      s32 title_size;
+      const char* title = nullptr;
+      s32 title_size = 0;
 
       description.title.to_string(&title, title_size);
 

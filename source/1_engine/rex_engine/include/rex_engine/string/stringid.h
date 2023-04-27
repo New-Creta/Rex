@@ -12,8 +12,8 @@ namespace rex
   {
   public:
     StringID();
-    StringID(const SID& name);
-    StringID(const char* characters);
+    explicit StringID(const SID& name);
+    explicit StringID(const char* characters);
     StringID(const char* characters, s32 size);
 
     rsl::string to_string() const;
@@ -22,7 +22,7 @@ namespace rex
 
     u32 get_value() const;
 
-    operator u32() const;
+    explicit operator u32() const;
 
     bool operator==(const StringID& other) const;
     bool operator!=(const StringID& other) const;
@@ -35,9 +35,6 @@ namespace rex
     bool is_none() const;
 
   private:
-    StringEntryID make(const SID& name);
-    StringEntryID make(const char* characters, s32 size);
-
     /** Index into the StringID array (used to find String portion of the string/number pair used for comparison) */
     StringEntryID m_comparison_index;
   };

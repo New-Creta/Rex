@@ -11,7 +11,6 @@ namespace rex
   public:
     StringEntry(const char* chars, s32 charCount) noexcept;
     StringEntry(StringEntry&& other) noexcept;
-    ~StringEntry();
 
     void get_characters(const char** characters, s32& characterCount) const;
     const char* get_characters() const;
@@ -27,7 +26,7 @@ namespace rex
   {
   public:
     StringEntryID();
-    StringEntryID(rsl::hash_result value);
+    StringEntryID(rsl::hash_result value); //NOLINT(google-explicit-constructor)
 
     bool operator<(const StringEntryID& rhs) const;
     bool operator>(const StringEntryID& rhs) const;
@@ -37,17 +36,11 @@ namespace rex
     bool operator!=(const StringEntryID& rhs) const;
     bool operator!=(const rsl::hash_result& rhs) const;
 
-    constexpr operator bool() const
-    {
-      return value != 0;
-    }
-    constexpr operator rsl::hash_result() const
-    {
-      return value;
-    }
+    explicit operator bool() const;
+    explicit operator rsl::hash_result() const;
 
   private:
-    rsl::hash_result value;
+    rsl::hash_result m_value;
   };
 } // namespace rex
 
@@ -58,9 +51,9 @@ namespace rsl
     template <>
     struct hash<rex::StringEntryID>
     {
-      u32 operator()(const rex::StringEntryID& k) const
+      rsl::hash_result operator()(const rex::StringEntryID& k) const
       {
-        return static_cast<u32>(k);
+        return static_cast<rsl::hash_result>(k);
       }
     };
   } // namespace v1
