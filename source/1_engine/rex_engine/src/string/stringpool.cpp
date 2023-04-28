@@ -1,4 +1,5 @@
 #include "rex_engine/string/stringpool.h"
+
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/string/stringentry.h"
 #include "rex_std/functional.h"
