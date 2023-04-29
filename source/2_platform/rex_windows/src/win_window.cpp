@@ -35,8 +35,11 @@ namespace rex
     //-------------------------------------------------------------------------
     Window::Window()
         : m_wnd_class()
+        , m_event_handler(this)
         , m_hwnd(nullptr)
         , m_destroyed(false)
+        , m_min_width(200)
+        , m_min_height(200)
     {
     }
 
@@ -49,10 +52,27 @@ namespace rex
         return false;
       }
 
-      const s32 x      = description.viewport.x;
-      const s32 y      = description.viewport.y;
-      const s32 width  = description.viewport.width;
-      const s32 height = description.viewport.height;
+      m_min_width = description.min_width;
+      m_min_height = description.min_height;
+
+      WindowViewport viewport = description.viewport;
+
+      const s32 x      = viewport.x;
+      const s32 y      = viewport.y;
+      const s32 width  = viewport.width;
+      const s32 height = viewport.height;
+
+      REX_ASSERT_X(width > 1 << 16, "Window width exceeded the maximum resolution");
+      REX_ASSERT_X(height > 1 << 16, "Window height exceeded the maximum resolution");
+
+      if (width < m_min_width)
+      {
+          viewport.width = m_min_width;
+      }
+      if (height < m_min_height)
+      {
+          viewport.height = m_min_height;
+      }
 
       RECT rc = {0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
       AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
@@ -136,6 +156,13 @@ namespace rex
 
       return r.right - r.left;
     }
+
+    //-------------------------------------------------------------------------
+    s32 Window::min_width() const
+    {
+        return m_min_width;
+    }
+
     //-------------------------------------------------------------------------
     s32 Window::height() const
     {
@@ -143,6 +170,12 @@ namespace rex
       GetWindowRect(static_cast<HWND>(m_hwnd), &r);
 
       return r.bottom - r.top;
+    }
+
+    //-------------------------------------------------------------------------
+    s32 Window::min_height() const
+    {
+        return m_min_height;
     }
 
     //-------------------------------------------------------------------------

@@ -25,7 +25,9 @@ namespace rex
       void* primary_display_handle() override;
 
       s32 width() const override;
+      s32 min_width() const override;
       s32 height() const override;
+      s32 min_height() const override;
 
       f32 aspect() const override;
 
@@ -37,6 +39,8 @@ namespace rex
       EventHandler m_event_handler;
       Hwnd m_hwnd;
       bool m_destroyed;
+      s32 m_min_width;
+      s32 m_min_height;
     };
   } // namespace win32
 } // namespace rex

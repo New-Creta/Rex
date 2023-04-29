@@ -17,11 +17,17 @@ namespace rex
     WindowDescription()
         : title("rex")
         , viewport({0, 0, 1280, 720})
+        , min_width(200)
+        , min_height(200)
     {
     }
 
-    const char8* title;
-    WindowViewport viewport;
+    const char8*    title;
+
+    WindowViewport  viewport;
+
+    s32             min_width;
+    s32             min_height;
   };
 
   class IWindow
@@ -43,7 +49,9 @@ namespace rex
     virtual void* primary_display_handle() = 0;
 
     virtual s32 width() const  = 0;
+    virtual s32 min_width() const = 0;
     virtual s32 height() const = 0;
+    virtual s32 min_height() const = 0;
 
     virtual f32 aspect() const = 0;
   };
