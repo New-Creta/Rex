@@ -52,7 +52,7 @@ namespace rex
         return false;
       }
 
-      m_min_width = description.min_width;
+      m_min_width  = description.min_width;
       m_min_height = description.min_height;
 
       WindowViewport viewport = description.viewport;
@@ -65,13 +65,13 @@ namespace rex
       REX_ASSERT_X(width > 1 << 16, "Window width exceeded the maximum resolution");
       REX_ASSERT_X(height > 1 << 16, "Window height exceeded the maximum resolution");
 
-      if (width < m_min_width)
+      if(width < m_min_width)
       {
-          viewport.width = m_min_width;
+        viewport.width = m_min_width;
       }
-      if (height < m_min_height)
+      if(height < m_min_height)
       {
-          viewport.height = m_min_height;
+        viewport.height = m_min_height;
       }
 
       RECT rc = {0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
@@ -160,7 +160,7 @@ namespace rex
     //-------------------------------------------------------------------------
     s32 Window::min_width() const
     {
-        return m_min_width;
+      return m_min_width;
     }
 
     //-------------------------------------------------------------------------
@@ -175,7 +175,7 @@ namespace rex
     //-------------------------------------------------------------------------
     s32 Window::min_height() const
     {
-        return m_min_height;
+      return m_min_height;
     }
 
     //-------------------------------------------------------------------------

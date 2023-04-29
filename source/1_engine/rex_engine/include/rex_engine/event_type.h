@@ -2,18 +2,18 @@
 
 namespace rex
 {
-    namespace event_system
+  namespace event_system
+  {
+    enum class EventType
     {
-        enum class EventType
-        {
-            WindowClose,
-            WindowActivate,
-            WindowDeactivate,
-            WindowStartWindowResize,
-            WindowStopWindowResize,
-            WindowMinimized,
-            WindowMaximized,
-            WindowRestored
-        };
-    }
-}
+      WindowClose,
+      WindowActivate,
+      WindowDeactivate,
+      WindowStartWindowResize,
+      WindowStopWindowResize,
+      WindowMinimized,
+      WindowMaximized,
+      WindowRestored
+    };
+  } // namespace event_system
+} // namespace rex

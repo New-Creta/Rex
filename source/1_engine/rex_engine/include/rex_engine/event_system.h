@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_std/functional.h"
 #include "rex_engine/event.h"
+#include "rex_std/functional.h"
 
 namespace rex
 {

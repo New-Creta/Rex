@@ -16,4 +16,4 @@ namespace rex
     mem_as_bytes -= count;
     return mem_as_bytes;
   }
-}
+} // namespace rex

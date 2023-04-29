@@ -22,12 +22,12 @@ namespace rex
     {
     }
 
-    const char8*    title;
+    const char8* title;
 
-    WindowViewport  viewport;
+    WindowViewport viewport;
 
-    s32             min_width;
-    s32             min_height;
+    s32 min_width;
+    s32 min_height;
   };
 
   class IWindow
@@ -48,9 +48,9 @@ namespace rex
 
     virtual void* primary_display_handle() = 0;
 
-    virtual s32 width() const  = 0;
-    virtual s32 min_width() const = 0;
-    virtual s32 height() const = 0;
+    virtual s32 width() const      = 0;
+    virtual s32 min_width() const  = 0;
+    virtual s32 height() const     = 0;
     virtual s32 min_height() const = 0;
 
     virtual f32 aspect() const = 0;
