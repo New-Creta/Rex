@@ -26,7 +26,8 @@ namespace rex
 
   //-------------------------------------------------------------------------
   CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
-      : m_is_running(false)
+      : m_is_paused(false)
+      , m_is_running(false)
       , m_is_marked_for_destroy(false)
   {
     mem_tracker().initialize(engineParams.max_memory);
@@ -58,10 +59,28 @@ namespace rex
     return EXIT_SUCCESS;
   }
 
+  //-------------------------------------------------------------------------
+  void CoreApplication::pause()
+  {
+      m_is_paused = true;
+  }
+
+  //-------------------------------------------------------------------------
+  void CoreApplication::resume()
+  {
+      m_is_paused = false;
+  }
+
   //--------------------------------------------------------------------------------------------
   void CoreApplication::quit()
   {
     mark_for_destroy();
+  }
+
+  //-------------------------------------------------------------------------
+  bool CoreApplication::is_paused() const
+  {
+      return m_is_paused;
   }
 
   //--------------------------------------------------------------------------------------------

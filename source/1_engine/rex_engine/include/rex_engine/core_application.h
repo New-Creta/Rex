@@ -44,7 +44,10 @@ namespace rex
     CoreApplication& operator=(CoreApplication&&)      = delete;
 
     s32 run();
+    void pause();
+    void resume();
     void quit();
+    bool is_paused() const;
     bool is_running() const;
 
   protected:
@@ -60,6 +63,7 @@ namespace rex
     void loop();
 
   private:
+    bool m_is_paused;
     bool m_is_running;
     bool m_is_marked_for_destroy;
   };
