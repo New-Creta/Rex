@@ -21,6 +21,38 @@ namespace rex
 {
   namespace win32
   {
+      class GuiApplicationState
+      {
+      public:
+          enum class Type
+          {
+              Resizing  = BIT(0),
+              Minimized = BIT(1),
+              Maximized = BIT(2)
+          };
+
+          GuiApplicationState()
+              :m_state(0)
+          {}
+
+          void add_state(GuiApplicationState::Type state)
+          {
+              m_state = m_state & static_cast<s32>(state);
+          }
+          void remove_state(GuiApplicationState::Type state)
+          {
+              m_state = m_state & ~static_cast<s32>(state);
+          }
+
+          bool has_state(GuiApplicationState::Type state)
+          {
+              return (m_state & static_cast<s32>(state)) != 0;
+          }
+
+      private:
+          s32 m_state;
+      };
+
     class GuiApplication::Internal
     {
     public:
@@ -29,6 +61,7 @@ namespace rex
           , m_gui_params(rsl::move(appCreationParams.gui_params))
           , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
+          , m_app_state()
           , m_app_instance(appInstance)
       {
         // we're always assigning something to the pointers here to avoid branch checking every update
@@ -72,18 +105,21 @@ namespace rex
         // update the window (this pulls input as well)
         m_window->update();
 
-        // call the client code, let it update
-        m_on_update();
+        if (!m_app_instance->is_paused())
+        {
+            // call the client code, let it update
+            m_on_update();
 
-        // update the graphics code
-        renderer::backend::clear();
-        renderer::backend::present();
+            // update the graphics code
+            renderer::backend::clear();
+            renderer::backend::present();
 
-        // update the timing stats
-        m_delta_time.update();
-        m_fps.update();
+            // update the timing stats
+            m_delta_time.update();
+            m_fps.update();
 
-        ++m_frame_idx;
+            ++m_frame_idx;
+        }
 
         cap_frame_rate();
       }
@@ -113,7 +149,14 @@ namespace rex
 
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose, [this]() { m_app_instance->quit(); });
+        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
+        event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
+        event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
+        event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { start_resize(); });
+        event_system::subscribe(event_system::EventType::WindowStopWindowResize, [this](const event_system::Event& evt) { stop_resize(evt); });
+        event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { minimize(); });
+        event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { maximize(evt); });
+        event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { restore(evt); });
       }
 
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
@@ -142,6 +185,101 @@ namespace rex
         }
       }
 
+      void start_resize()
+      {
+          m_app_instance->pause();
+          m_app_state.add_state(GuiApplicationState::Type::Resizing);
+      }
+
+      void stop_resize(const event_system::Event& evt)
+      {
+          m_app_instance->resume();
+          m_app_state.remove_state(GuiApplicationState::Type::Resizing);
+
+          REX_ASSERT_X(evt.type == event_system::EventType::WindowStopWindowResize, "Event has to be of type \"WindowStopWindowResize\"");
+
+          resize(evt);
+      }
+
+      void minimize()
+      {
+          m_app_instance->pause();
+          m_app_state.add_state(GuiApplicationState::Type::Minimized);
+          m_app_state.remove_state(GuiApplicationState::Type::Maximized);
+      }
+
+      void maximize(const event_system::Event& evt)
+      {
+          m_app_instance->resume();
+          m_app_state.add_state(GuiApplicationState::Type::Maximized);
+          m_app_state.remove_state(GuiApplicationState::Type::Minimized);
+
+          REX_ASSERT_X(evt.type == event_system::EventType::WindowMaximized, "Event has to be of type \"WindowMaximized\"");
+
+          resize(evt);
+      }
+
+      void restore(const event_system::Event& evt)
+      {
+          REX_ASSERT_X(evt.type == event_system::EventType::WindowRestored, "Event has to be of type \"WindowRestored\"");
+
+          if (m_app_state.has_state(GuiApplicationState::Type::Minimized))
+          {
+              m_app_instance->resume();
+              m_app_state.remove_state(GuiApplicationState::Type::Minimized);
+
+              resize(evt);
+          }
+          else if (m_app_state.has_state(GuiApplicationState::Type::Maximized))
+          {
+              m_app_instance->resume();
+              m_app_state.remove_state(GuiApplicationState::Type::Maximized);
+
+              resize(evt);
+          }
+          else if (m_app_state.has_state(GuiApplicationState::Type::Resizing))
+          {
+              // If user is dragging the resize bars, we do not resize 
+              // the buffers here because as the user continuously 
+              // drags the resize bars, a stream of "Resizing" messages are
+              // sent to the window, and it would be pointless (and slow)
+              // to resize for each "Resizing" message received from dragging
+              // the resize bars.  
+              // 
+              // So instead, we reset after the user is done resizing the 
+              // window and releases the resize bars, which sends a 
+              // "WindowStopWindowResize" message.
+          }
+          else // API call such as SetWindowPos or mSwapChain->SetFullscreenState.
+          {
+              REX_WARN(LogWindows, "API call such as SetWindowPos or mSwapChain->SetFullscreenState will also invoke a resize event.");
+          }
+      }
+
+      void resize(const event_system::Event& /*evt*/)
+      {
+          // Resize window ( although we might want to capture this within the window itself ... )
+          // 
+          // Flush Command Queue
+          // 
+          // Release front and back buffer
+          // Release depth stencil buffer
+          // 
+          // Reset current back buffer back to first entry ( aka 0 )
+          //
+          // Recreate swap chain buffers
+          // Recreate depth stencil buffer
+          // 
+          // Transition depth stencil from it's initial state to be used as a depth buffer (DX only)
+          //
+          // Execute all resize commands
+          // 
+          // Wait until completed
+          // 
+          // Update screen viewport
+          // Update scissor rect
+      }
+
     private:
       DeltaTime m_delta_time;
       FPS m_fps;
@@ -156,6 +294,7 @@ namespace rex
       GuiParams m_gui_params;
       CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
+      GuiApplicationState m_app_state;
       CoreApplication* m_app_instance;
 
       card32 m_frame_idx = 0;
