@@ -4,12 +4,18 @@
 
 namespace rex
 {
-  namespace win32
-  {
-    class EventHandler
+    class IWindow;
+    namespace win32
     {
-    public:
-      LResult on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam);
-    };
-  } // namespace win32
+        class EventHandler
+        {
+        public:
+            explicit EventHandler(IWindow* wnd);
+
+            LResult on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam);
+
+        private:
+            IWindow* m_wnd;
+        };
+    } // namespace win32
 } // namespace rex
