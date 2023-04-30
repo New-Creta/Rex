@@ -9,14 +9,14 @@ namespace rex
   using LogCategoryName = rsl::string_view;
 
   /** Base class for all log categories. **/
-  struct LogCategoryBase
+  struct LogCategory
   {
     /**
      * Constructor, registers with the log suppression system and sets up the default values.
      * @param CategoryName, name of the category
      * @param InDefaultVerbosity, default verbosity for the category, may ignored and overridden by many other mechanisms
      **/
-    LogCategoryBase(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity);
+    LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity);
 
     /** Gets the category name **/
     const LogCategoryName& get_category_name() const;

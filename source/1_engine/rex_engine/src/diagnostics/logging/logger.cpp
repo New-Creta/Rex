@@ -49,7 +49,7 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  rexlog::Logger& get_logger(const LogCategoryBase& category)
+  rexlog::Logger& get_logger(const LogCategory& category)
   {
     const LogPattern default_pattern = "%^[%T][%=8l] %n: %v%$";
     const LogLevelMap log_levels     = get_log_levels();

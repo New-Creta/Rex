@@ -40,7 +40,7 @@ namespace rex
     }
   } // namespace internal
 
-#define DEFINE_LOG_CATEGORY(Name, Verbosity) inline rex::LogCategoryBase Name(#Name, Verbosity)
+#define DEFINE_LOG_CATEGORY(Name, Verbosity) inline rex::LogCategory Name(#Name, Verbosity)
 } // namespace rex
 
 //-------------------------------------------------------------------------

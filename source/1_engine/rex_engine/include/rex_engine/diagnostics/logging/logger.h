@@ -6,74 +6,74 @@
 
 namespace rex
 {
-  struct LogCategoryBase;
+  struct LogCategory;
 
-  rexlog::Logger& get_logger(const LogCategoryBase& category);
+  rexlog::Logger& get_logger(const LogCategory& category);
 
   template <typename T>
-  void trace_fatal_log(const LogCategoryBase& category, const T& msg)
+  void trace_fatal_log(const LogCategory& category, const T& msg)
   {
     get_logger(category).critical(msg);
   }
   template <typename T>
-  void trace_error_log(const LogCategoryBase& category, const T& msg)
+  void trace_error_log(const LogCategory& category, const T& msg)
   {
     get_logger(category).error(msg);
   }
   template <typename T>
-  void trace_warning_log(const LogCategoryBase& category, const T& msg)
+  void trace_warning_log(const LogCategory& category, const T& msg)
   {
     get_logger(category).warn(msg);
   }
   template <typename T>
-  void trace_log_log(const LogCategoryBase& category, const T& msg)
+  void trace_log_log(const LogCategory& category, const T& msg)
   {
     get_logger(category).info(msg);
   }
   template <typename T>
-  void trace_verbose_log(const LogCategoryBase& category, const T& msg)
+  void trace_verbose_log(const LogCategory& category, const T& msg)
   {
     get_logger(category).debug(msg);
   }
   template <typename T>
-  void trace_very_verbose_log(const LogCategoryBase& category, const T& msg)
+  void trace_very_verbose_log(const LogCategory& category, const T& msg)
   {
     get_logger(category).trace(msg);
   }
 
   template <typename FormatString, typename... Args>
-  void trace_fatal_log(const LogCategoryBase& category, const FormatString& fmt, Args&&... args)
+  void trace_fatal_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
     get_logger(category).critical(fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
-  void trace_error_log(const LogCategoryBase& category, const FormatString& fmt, Args&&... args)
+  void trace_error_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
     get_logger(category).error(fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
-  void trace_warning_log(const LogCategoryBase& category, const FormatString& fmt, Args&&... args)
+  void trace_warning_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
     get_logger(category).warn(fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
-  void trace_log_log(const LogCategoryBase& category, const FormatString& fmt, Args&&... args)
+  void trace_log_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
     get_logger(category).info(fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
-  void trace_verbose_log(const LogCategoryBase& category, const FormatString& fmt, Args&&... args)
+  void trace_verbose_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
     get_logger(category).debug(fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
-  void trace_very_verbose_log(const LogCategoryBase& category, const FormatString& fmt, Args&&... args)
+  void trace_very_verbose_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
     get_logger(category).trace(fmt, rsl::forward<Args>(args)...);
   }
 
   template <typename T>
-  void trace_log(const LogCategoryBase& category, LogVerbosity verbosity, const T& msg)
+  void trace_log(const LogCategory& category, LogVerbosity verbosity, const T& msg)
   {
     if(category.get_verbosity() < verbosity)
     {
@@ -94,7 +94,7 @@ namespace rex
   }
 
   template <typename FormatString, typename... Args>
-  void trace_log(const LogCategoryBase& category, LogVerbosity verbosity, const FormatString& fmt, Args&&... args)
+  void trace_log(const LogCategory& category, LogVerbosity verbosity, const FormatString& fmt, Args&&... args)
   {
     if(category.get_verbosity() < verbosity)
     {
