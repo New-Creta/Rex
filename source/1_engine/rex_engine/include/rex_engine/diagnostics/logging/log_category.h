@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  using LogCategoryName = rex::DebugString;
+  using LogCategoryName = rsl::string_view;
 
   /** Base class for all log categories. **/
   struct LogCategoryBase
@@ -36,16 +36,5 @@ namespace rex
 
     /** Name for this category **/
     LogCategoryName m_category_name;
-  };
-
-  /** Template for log categories that transfers the compile-time constant default and compile time verbosity to the LogCategoryBase constructor. **/
-  template <int TDefaultVerbosity>
-  struct LogCategory : public LogCategoryBase
-  {
-    explicit LogCategory(const LogCategoryName& inCategoryName)
-        : LogCategoryBase(inCategoryName, LogVerbosity(TDefaultVerbosity)) // NOLINT(google-readability-casting)
-    {
-      // assert((TDefaultVerbosity & LogVerbosity::VerbosityMask) < LogVerbosity::NumVerbosity && "Invalid default verbosity.");
-    }
   };
 } // namespace rex
