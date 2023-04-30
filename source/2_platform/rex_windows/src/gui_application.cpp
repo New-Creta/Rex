@@ -22,39 +22,6 @@ namespace rex
 {
   namespace win32
   {
-    class GuiApplicationState
-    {
-    public:
-      enum class Type
-      {
-        Resizing  = BIT(0),
-        Minimized = BIT(1),
-        Maximized = BIT(2)
-      };
-
-      GuiApplicationState()
-          : m_state(0u)
-      {
-      }
-
-      void add_state(GuiApplicationState::Type state)
-      {
-        m_state = m_state & static_cast<u32>(state);
-      }
-      void remove_state(GuiApplicationState::Type state)
-      {
-        m_state = m_state & ~static_cast<u32>(state);
-      }
-
-      bool has_state(GuiApplicationState::Type state) const
-      {
-        return (m_state & static_cast<u32>(state)) != 0u;
-      }
-
-    private:
-      u32 m_state;
-    };
-
     class GuiApplication::Internal
     {
     public:
@@ -63,7 +30,6 @@ namespace rex
           , m_gui_params(rsl::move(appCreationParams.gui_params))
           , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
-          , m_app_state()
           , m_app_instance(appInstance)
       {
         // we're always assigning something to the pointers here to avoid branch checking every update
@@ -154,11 +120,11 @@ namespace rex
         event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
         event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
         event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
-        event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { start_resize(); });
-        event_system::subscribe(event_system::EventType::WindowStopWindowResize, [this](const event_system::Event& evt) { stop_resize(evt); });
-        event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { minimize(); });
-        event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { maximize(evt); });
-        event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { restore(evt); });
+        event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });
+        event_system::subscribe(event_system::EventType::WindowStopWindowResize, [this](const event_system::Event& evt) { on_stop_resize(evt); });
+        event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { on_minimize(); });
+        event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { on_maximize(evt); });
+        event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { on_restore(evt); });
       }
 
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
@@ -187,59 +153,57 @@ namespace rex
         }
       }
 
-      void start_resize()
+      void on_start_resize()
       {
         m_app_instance->pause();
-        m_app_state.add_state(GuiApplicationState::Type::Resizing);
+        m_window->start_resize();
       }
 
-      void stop_resize(const event_system::Event& evt)
+      void on_stop_resize(const event_system::Event& evt)
       {
         m_app_instance->resume();
-        m_app_state.remove_state(GuiApplicationState::Type::Resizing);
+        m_window->stop_resize();
 
         REX_ASSERT_X(evt.type == event_system::EventType::WindowStopWindowResize, "Event has to be of type \"WindowStopWindowResize\"");
 
         resize(evt);
       }
 
-      void minimize()
+      void on_minimize()
       {
         m_app_instance->pause();
-        m_app_state.add_state(GuiApplicationState::Type::Minimized);
-        m_app_state.remove_state(GuiApplicationState::Type::Maximized);
+        m_window->minimize();
       }
 
-      void maximize(const event_system::Event& evt)
+      void on_maximize(const event_system::Event& evt)
       {
         m_app_instance->resume();
-        m_app_state.add_state(GuiApplicationState::Type::Maximized);
-        m_app_state.remove_state(GuiApplicationState::Type::Minimized);
+        m_window->maximize();
 
         REX_ASSERT_X(evt.type == event_system::EventType::WindowMaximized, "Event has to be of type \"WindowMaximized\"");
 
         resize(evt);
       }
 
-      void restore(const event_system::Event& evt)
+      void on_restore(const event_system::Event& evt)
       {
         REX_ASSERT_X(evt.type == event_system::EventType::WindowRestored, "Event has to be of type \"WindowRestored\"");
 
-        if(m_app_state.has_state(GuiApplicationState::Type::Minimized))
+        if(m_window->is_minimized())
         {
           m_app_instance->resume();
-          m_app_state.remove_state(GuiApplicationState::Type::Minimized);
+          m_window->restore();
 
           resize(evt);
         }
-        else if(m_app_state.has_state(GuiApplicationState::Type::Maximized))
+        else if(m_window->is_maximized())
         {
           m_app_instance->resume();
-          m_app_state.remove_state(GuiApplicationState::Type::Maximized);
+          m_window->restore();
 
           resize(evt);
         }
-        else if(m_app_state.has_state(GuiApplicationState::Type::Resizing))
+        else if(m_window->is_resizing())
         {
           // If user is dragging the resize bars, we do not resize
           // the buffers here because as the user continuously
@@ -256,6 +220,11 @@ namespace rex
         {
           REX_WARN(LogWindows, "API call such as SetWindowPos or mSwapChain->SetFullscreenState will also invoke a resize event.");
         }
+      }
+
+      void on_resize(const event_system::Event& evt)
+      {
+          resize(evt);
       }
 
       void resize(const event_system::Event& /*evt*/)
@@ -296,7 +265,6 @@ namespace rex
       GuiParams m_gui_params;
       CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
-      GuiApplicationState m_app_state;
       CoreApplication* m_app_instance;
 
       card32 m_frame_idx = 0;

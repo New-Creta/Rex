@@ -2,6 +2,8 @@
 
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/types.h"
+#include "rex_engine/core_application_state.h"
+#include "rex_engine/state_controller.h"
 #include "rex_std/functional.h"
 #include "rex_std/limits.h"
 #include "rex_std/memory.h"
@@ -44,9 +46,11 @@ namespace rex
     CoreApplication& operator=(CoreApplication&&)      = delete;
 
     s32 run();
+    
     void pause();
     void resume();
     void quit();
+
     bool is_paused() const;
     bool is_running() const;
 
@@ -63,8 +67,6 @@ namespace rex
     void loop();
 
   private:
-    bool m_is_paused;
-    bool m_is_running;
-    bool m_is_marked_for_destroy;
+    StateController<ApplicationState> m_app_state;
   };
 } // namespace rex

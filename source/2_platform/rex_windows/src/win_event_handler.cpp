@@ -43,30 +43,30 @@ namespace rex
         case WM_DESTROY:
           PostQuitMessage(0);
 
-          evt.type = event_system::EventType::WindowClose;
+          evt.window_common.type = event_system::EventType::WindowClose;
           event_system::fire_event(evt);
           return 0;
 
         case WM_ACTIVATE:
           if(LOWORD(wparam) == WA_INACTIVE)
           {
-            evt.type = event_system::EventType::WindowDeactivate;
+            evt.window_common.type = event_system::EventType::WindowDeactivate;
             event_system::fire_event(evt);
           }
           else
           {
-            evt.type = event_system::EventType::WindowActivate;
+            evt.window_common.type = event_system::EventType::WindowActivate;
             event_system::fire_event(evt);
           }
           return 0;
 
         case WM_ENTERSIZEMOVE:
-          evt.type = event_system::EventType::WindowStartWindowResize;
+          evt.window_common.type = event_system::EventType::WindowStartWindowResize;
           event_system::fire_event(evt);
           return 0;
 
         case WM_EXITSIZEMOVE:
-          evt.type = event_system::EventType::WindowStopWindowResize;
+          evt.window_common.type = event_system::EventType::WindowStopWindowResize;
           event_system::fire_event(evt);
           return 0;
 
@@ -89,17 +89,17 @@ namespace rex
 
           if(wparam == SIZE_MINIMIZED)
           {
-            evt.type = event_system::EventType::WindowMinimized;
+            evt.window_resize.type = event_system::EventType::WindowMinimized;
             event_system::fire_event(evt);
           }
           else if(wparam == SIZE_MAXIMIZED)
           {
-            evt.type = event_system::EventType::WindowMaximized;
+            evt.window_resize.type = event_system::EventType::WindowMaximized;
             event_system::fire_event(evt);
           }
           else if(wparam == SIZE_RESTORED)
           {
-            evt.type = event_system::EventType::WindowRestored;
+            evt.window_resize.type = event_system::EventType::WindowRestored;
             event_system::fire_event(evt);
           }
           return 0;

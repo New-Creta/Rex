@@ -26,9 +26,7 @@ namespace rex
 
   //-------------------------------------------------------------------------
   CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
-      : m_is_paused(false)
-      , m_is_running(false)
-      , m_is_marked_for_destroy(false)
+    :m_app_state(ApplicationState::Invalid)
   {
     mem_tracker().initialize(engineParams.max_memory);
   }
@@ -62,13 +60,13 @@ namespace rex
   //-------------------------------------------------------------------------
   void CoreApplication::pause()
   {
-    m_is_paused = true;
+    m_app_state.add_state(ApplicationState::Paused);
   }
 
   //-------------------------------------------------------------------------
   void CoreApplication::resume()
   {
-    m_is_paused = false;
+    m_app_state.remove_state(ApplicationState::Paused);
   }
 
   //--------------------------------------------------------------------------------------------
@@ -80,18 +78,21 @@ namespace rex
   //-------------------------------------------------------------------------
   bool CoreApplication::is_paused() const
   {
-    return m_is_paused;
+    return m_app_state.has_state(ApplicationState::Paused);
   }
 
   //--------------------------------------------------------------------------------------------
   bool CoreApplication::is_running() const
   {
-    return m_is_running && !m_is_marked_for_destroy;
+    return m_app_state.has_state(ApplicationState::Running) && !m_app_state.has_state(ApplicationState::MarkedForDestroy);
   }
 
   //--------------------------------------------------------------------------------------------
   bool CoreApplication::initialize()
   {
+    m_app_state.remove_state(ApplicationState::Invalid);
+    m_app_state.add_state(ApplicationState::Initializing);
+
     globals::g_frame_info.update();
     return platform_init();
   }
@@ -111,18 +112,23 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   void CoreApplication::mark_for_destroy()
   {
-    m_is_marked_for_destroy = true;
+    m_app_state.add_state(ApplicationState::MarkedForDestroy);
   }
   //--------------------------------------------------------------------------------------------
   void CoreApplication::loop()
   {
-    m_is_running = true;
+    m_app_state.remove_state(ApplicationState::Initializing);
+    m_app_state.add_state(ApplicationState::Running);
 
     while(is_running())
     {
       update();
 
-      m_is_running = !m_is_marked_for_destroy;
+      if(m_app_state.has_state(ApplicationState::MarkedForDestroy))
+      {
+        m_app_state.remove_state(ApplicationState::Running);
+        m_app_state.add_state(ApplicationState::ShuttingDown);
+      }
     }
   }
 
