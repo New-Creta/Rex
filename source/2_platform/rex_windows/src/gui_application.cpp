@@ -222,11 +222,6 @@ namespace rex
         }
       }
 
-      void on_resize(const event_system::Event& evt)
-      {
-          resize(evt);
-      }
-
       void resize(const event_system::Event& /*evt*/)
       {
         // Resize window ( although we might want to capture this within the window itself ... )
