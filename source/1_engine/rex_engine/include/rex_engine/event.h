@@ -9,7 +9,7 @@ namespace rex
   {
     struct WindowCommonEvent
     {
-        EventType type;
+      EventType type;
     };
 
     struct WindowReizeEvent

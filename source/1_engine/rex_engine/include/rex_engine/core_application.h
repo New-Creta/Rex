@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rex_engine/cmd_line_args.h"
-#include "rex_engine/types.h"
 #include "rex_engine/core_application_state.h"
 #include "rex_engine/state_controller.h"
+#include "rex_engine/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/limits.h"
 #include "rex_std/memory.h"
@@ -46,7 +46,7 @@ namespace rex
     CoreApplication& operator=(CoreApplication&&)      = delete;
 
     s32 run();
-    
+
     void pause();
     void resume();
     void quit();

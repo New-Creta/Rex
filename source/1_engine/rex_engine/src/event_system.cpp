@@ -2,7 +2,6 @@
 
 #include "rex_engine/event_type.h"
 #include "rex_engine/log.h"
-
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
 #include "rex_std_extra/utility/enum_reflection.h"
@@ -26,20 +25,16 @@ namespace rex
 
     void fire_event(const Event& evt)
     {
-      switch (evt.type)
+      switch(evt.type)
       {
-      case EventType::WindowClose:
-      case EventType::WindowActivate:
-      case EventType::WindowDeactivate:
-      case EventType::WindowStartWindowResize:
-      case EventType::WindowStopWindowResize:
-        REX_LOG(LogEngine, "Firing event: Event Type: {0}", rsl::enum_refl::enum_name(evt.type));
-          break;
-      case EventType::WindowMinimized:
-      case EventType::WindowMaximized:
-      case EventType::WindowRestored:
-        REX_LOG(LogEngine, "Firing event: Event Type: {0} - Window Size: [{1}, {2}]", rsl::enum_refl::enum_name(evt.type), evt.window_resize.window_width, evt.window_resize.window_height);
-          break;
+        case EventType::WindowClose:
+        case EventType::WindowActivate:
+        case EventType::WindowDeactivate:
+        case EventType::WindowStartWindowResize:
+        case EventType::WindowStopWindowResize: REX_LOG(LogEngine, "Firing event: Event Type: {0}", rsl::enum_refl::enum_name(evt.type)); break;
+        case EventType::WindowMinimized:
+        case EventType::WindowMaximized:
+        case EventType::WindowRestored: REX_LOG(LogEngine, "Firing event: Event Type: {0} - Window Size: [{1}, {2}]", rsl::enum_refl::enum_name(evt.type), evt.window_resize.window_width, evt.window_resize.window_height); break;
       }
 
       const rsl::vector<EventFunction>& delegates = delegates_map()[evt.type];
