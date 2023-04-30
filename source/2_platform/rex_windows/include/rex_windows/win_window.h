@@ -38,9 +38,9 @@ namespace rex
       void maximize() override;
       void restore() override;
 
-      bool is_resizing() const;
-      bool is_minimized() const;
-      bool is_maximized() const;
+      bool is_resizing() const override;
+      bool is_minimized() const override;
+      bool is_maximized() const override;
 
     private:
       bool destroy();
@@ -49,7 +49,6 @@ namespace rex
       WindowClass m_wnd_class;
       EventHandler m_event_handler;
       Hwnd m_hwnd;
-      bool m_destroyed;
       s32 m_min_width;
       s32 m_min_height;
       StateController<WindowState> m_window_state;

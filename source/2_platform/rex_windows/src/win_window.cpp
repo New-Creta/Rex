@@ -37,7 +37,6 @@ namespace rex
         : m_wnd_class()
         , m_event_handler(this)
         , m_hwnd(nullptr)
-        , m_destroyed(false)
         , m_min_width(200)
         , m_min_height(200)
         , m_window_state(WindowState::Idle)
@@ -248,7 +247,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::destroy()
     {
-      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
+      if(m_window_state.has_state(WindowState::Destroyed)) // NOLINT(readability-simplify-boolean-expr)
       {
         DestroyWindow(static_cast<HWND>(m_hwnd));
 
@@ -260,7 +259,7 @@ namespace rex
         return false;
       }
 
-      m_destroyed = true;
+      m_window_state.add_state(WindowState::Destroyed);
       return true;
     }
   } // namespace win32
