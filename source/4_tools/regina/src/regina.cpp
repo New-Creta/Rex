@@ -6,7 +6,7 @@
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/gui_application.h"
 
-DEFINE_LOG_CATEGORY(LogRegina, LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
 namespace rex
 {

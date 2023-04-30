@@ -40,18 +40,7 @@ namespace rex
     }
   } // namespace internal
 
-  /**
-   * A macro to declare a logging category as a C++ "extern", declared in the header and paired with DEFINE_LOG_CATEGORY in the source. Accessible by all files that include the header.
-   * @param CategoryName, category to declare
-   * @param DefaultVerbosity, default run time verbosity
-   */
-#define DECLARE_LOG_CATEGORY(Name) extern rex::LogCategoryBase Name
-
-   /**
-   * A macro to define a logging category, usually paired with DECLARE_LOG_CATEGORY_EXTERN from the header.
-   * @param CategoryName, category to define
-   */
-#define DEFINE_LOG_CATEGORY(Name, Verbosity) rex::LogCategoryBase Name(#Name, rex::##Verbosity)
+#define DEFINE_LOG_CATEGORY(Name, Verbosity) inline rex::LogCategoryBase Name(#Name, Verbosity)
 } // namespace rex
 
 //-------------------------------------------------------------------------
