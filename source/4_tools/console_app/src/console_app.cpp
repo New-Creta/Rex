@@ -6,7 +6,7 @@
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/console_application.h"
 #include "rex_engine/event_system.h"
-#include "console_app/input/input.h"
+#include "rex_windows/input/input.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogConsoleApp, LogVerbosity::Log);
 DEFINE_LOG_CATEGORY(LogConsoleApp);
@@ -21,12 +21,17 @@ namespace rex
   }
   void update()
   {
-    while (char8 key = input::poll())
+    if (input::is_key_down('A'))
     {
-      if (key == '\0')
-        break;
-
-      REX_LOG(LogConsoleApp, "{}", key);
+      REX_LOG(LogConsoleApp, "A is down");
+    }
+    if (input::is_key_pressed('B'))
+    {
+      REX_LOG(LogConsoleApp, "B is down");
+    }
+    if (input::is_key_released('C'))
+    {
+      REX_LOG(LogConsoleApp, "C is released");
     }
   }
   void shutdown()

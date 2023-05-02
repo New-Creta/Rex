@@ -1,5 +1,6 @@
 #include "rex_windows/console_application.h"
 #include "rex_engine/event_system.h"
+#include "rex_windows/input/input.h"
 
 namespace rex
 {
@@ -32,6 +33,8 @@ namespace rex
 
       void update()
       {
+        input::update();
+
         m_on_update();
       }
 
@@ -39,7 +42,6 @@ namespace rex
       {
         m_on_shutdown();
       }
-
 
     private:
       PlatformCreationParams m_platform_creation_params;
