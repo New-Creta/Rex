@@ -8,8 +8,7 @@
 #include "rex_engine/event_system.h"
 #include "rex_windows/input/input.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogConsoleApp, LogVerbosity::Log);
-DEFINE_LOG_CATEGORY(LogConsoleApp);
+DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Log);
 
 #include <Windows.h>
 
@@ -17,22 +16,38 @@ namespace rex
 {
   bool initialize()
   {
+    // the following pointer should get tracked and automatically be processed by the tracking system
+    // depending on which one is enabled
+
+    // the code will follow the following step:
+    // operator new -> Global Allocator (Tracked) -> Global Allocator (Untracked) -> System Call
+    //                                                                                    |
+    //                                                                                    | 
+    // operator new <- Global Allocator (Tracked) <- Global Allocator (Untracked)  <------+ 
+    //                         |
+    //                         |
+    //                         v
+    //                   Save to file
+    // 
+    // Functionality should be implemented in memory_tracking.cpp
+    // However, we'll need a file system first to save things to disk
+    // We can then write a tool that scans this file for a memory analysis
+    // 
+    // Requirements of this tool:
+    // - Open a memory report file saved by the engine (See above)
+    // - Track all live allocations with their callstacks
+    // - Diff between different points in time
+    // - Track all single frame allocations
+
+
+    rsl::unique_ptr<int> p = rsl::make_unique<int>(1);
+
+
     return true;
   }
   void update()
   {
-    if (input::is_key_down('A'))
-    {
-      REX_LOG(LogConsoleApp, "A is down");
-    }
-    if (input::is_key_pressed('B'))
-    {
-      REX_LOG(LogConsoleApp, "B is down");
-    }
-    if (input::is_key_released('C'))
-    {
-      REX_LOG(LogConsoleApp, "C is released");
-    }
+   
   }
   void shutdown()
   {

@@ -60,7 +60,6 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 int main()
 {
   rex::vfs::init();
-  rex::mem_tracker().pre_init();
 
   STARTUPINFOW si;
   GetStartupInfoW(&si);

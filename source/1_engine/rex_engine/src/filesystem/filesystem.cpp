@@ -1,10 +1,11 @@
 #include "rex_engine/filesystem/filesystem.h"
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/win/win_call.h"
+#include "rex_engine/memory/untracked_allocator.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/platform/windows/handle.h"
 #include "rex_std/memory.h"
 #include "rex_std_extra/memory.h"
-#include "rex_engine/memory/untracker_allocator.h"
 
 #include <Windows.h>
 

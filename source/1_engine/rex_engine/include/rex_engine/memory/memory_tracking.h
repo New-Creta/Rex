@@ -36,7 +36,6 @@ namespace rex
 
     MemoryTracker();
 
-    void pre_init();
     void initialize(rsl::memory_size maxMemUsage);
 
     void track_alloc(void* mem, MemoryHeader* header);
