@@ -72,12 +72,12 @@ namespace rex
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }
 
-  void MemoryTracker::push_tag(MemoryTag tag)
+  void MemoryTracker::push_tag(MemoryTag tag) // NOLINT(readability-convert-member-functions-to-static)
   {
     thread_local_memory_tag_stack()[thread_local_mem_tag_index()] = tag;
     ++thread_local_mem_tag_index();
   }
-  void MemoryTracker::pop_tag()
+  void MemoryTracker::pop_tag() // NOLINT(readability-convert-member-functions-to-static)
   {
     --thread_local_mem_tag_index();
   }
