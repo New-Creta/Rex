@@ -37,6 +37,7 @@ namespace rex
   };
 } // namespace rex
 
+#ifdef REX_ENABLE_ASSERTS
 #define REX_ASSERT(...)                                                                                                                                                                                                                                  \
   rex::rex_assert(rsl::format(__VA_ARGS__));                                                                                                                                                                                                             \
   while(true)                                                                                                                                                                                                                                            \
@@ -49,4 +50,10 @@ namespace rex
     REX_ASSERT(__VA_ARGS__);                                                                                                                                                                                                                             \
   }
 
-#define REX_ASSERT_CONTEXT_SCOPE(...) rex::AssertContextScope ANONYMOUS_VARIABLE(assert_scope)(rsl::format(__VA_ARGS__));
+#define REX_ASSERT_CONTEXT_SCOPE(...) const rex::AssertContextScope ANONYMOUS_VARIABLE(assert_scope)(rsl::format(__VA_ARGS__));
+
+#else
+#define REX_ASSERT(...) 
+#define REX_ASSERT_X(cond, ...)
+#define REX_ASSERT_CONTEXT_SCOPE(...)
+#endif
