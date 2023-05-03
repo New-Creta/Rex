@@ -1,5 +1,6 @@
 #include "rex_windows/gui_application.h"
 
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/event_system.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
@@ -12,7 +13,6 @@
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
-#include "rex_engine/diagnostics/assert.h"
 
 #include <Windows.h>
 
