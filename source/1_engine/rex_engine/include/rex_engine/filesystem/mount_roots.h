@@ -7,7 +7,7 @@ namespace rex
 {
   enum class MountRoot
   {
-    // mount roots for RexEngine
+    // MountRoot values for RexEngine
     Logs,
   };
 } // namespace rex

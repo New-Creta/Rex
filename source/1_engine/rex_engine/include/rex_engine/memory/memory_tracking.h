@@ -59,6 +59,12 @@ namespace rex
     card32 m_frame_idx;          // frame index when this memory was allocated
   };
 
+  enum class AllocOp
+  {
+    Allocation, 
+    Deallocation
+  };
+
   class MemoryTracker
   {
   public:
@@ -66,6 +72,7 @@ namespace rex
 
     MemoryTracker();
 
+    void pre_init();
     void initialize(rsl::memory_size maxMemUsage);
 
     void track_alloc(void* mem, MemoryHeader* header);
@@ -79,11 +86,29 @@ namespace rex
     UsagePerTag current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
 
   private:
+    void increment_mem_usage(card64 size);
+    void increment_mem_tag_usage(MemoryTag tag, card64 size);
+    
+    void decrement_mem_usage(card64 size);
+    void decrement_mem_tag_usage(MemoryTag tag, card64 size);
+
+    void save_to_file(MemoryHeader* header, AllocOp op);
+
+  private:
+    enum class Status
+    {
+      Uninit,
+      PreInit,
+      Init,
+      Running
+    };
+
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_usage;                   // maximum allowed memory usage
     rsl::mutex m_mem_tracking_mutex;
     rsl::mutex m_mem_tag_tracking_mutex;
     UsagePerTag m_usage_per_tag;
+    Status m_status;
   };
 
   MemoryTracker& mem_tracker();
