@@ -50,7 +50,7 @@ namespace rex
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
     m_max_mem_usage        = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
-    m_mem_stats_on_startup = win::query_memory_stats();
+    m_mem_stats_on_startup = query_memory_stats();
   }
 
   void MemoryTracker::track_alloc(void* /*mem*/, MemoryHeader* header)
@@ -68,19 +68,18 @@ namespace rex
     m_mem_usage -= header->size().size_in_bytes();
     auto it = rsl::find(allocation_headers().cbegin(), allocation_headers().cend(), header);
     REX_ASSERT_X(it != allocation_headers().cend(), "Trying to remove a memory header that wasn't tracked");
+    REX_ASSERT_X(m_mem_usage >= 0, "Mem usage below 0");
     allocation_headers().erase(it);
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }
 
-  void MemoryTracker::push_tag(MemoryTag tag)
+  void MemoryTracker::push_tag(MemoryTag tag) // NOLINT(readability-convert-member-functions-to-static)
   {
-    const rsl::unique_lock lock(m_mem_tag_tracking_mutex);
     thread_local_memory_tag_stack()[thread_local_mem_tag_index()] = tag;
     ++thread_local_mem_tag_index();
   }
-  void MemoryTracker::pop_tag()
+  void MemoryTracker::pop_tag() // NOLINT(readability-convert-member-functions-to-static)
   {
-    const rsl::unique_lock lock(m_mem_tag_tracking_mutex);
     --thread_local_mem_tag_index();
   }
 

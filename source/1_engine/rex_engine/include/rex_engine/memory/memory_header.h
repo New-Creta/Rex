@@ -11,7 +11,7 @@ namespace rex
   class MemoryHeader
   {
   public:
-    MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const win::CallStack& callstack);
+    MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const CallStack& callstack);
 
     const CallStack& callstack() const;
     rsl::memory_size size() const;
