@@ -6,6 +6,7 @@
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/console_application.h"
 #include "rex_engine/event_system.h"
+#include "rex_engine/filesystem/filesystem.h"
 #include "rex_windows/input/input.h"
 
 DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Log);
@@ -14,7 +15,7 @@ DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Log);
 
 namespace rex
 {
-  bool initialize()
+  void pointer_tracking_test()
   {
     // the following pointer should get tracked and automatically be processed by the tracking system
     // depending on which one is enabled
@@ -39,15 +40,24 @@ namespace rex
     // - Diff between different points in time
     // - Track all single frame allocations
 
-
     rsl::unique_ptr<int> p = rsl::make_unique<int>(1);
+    (void)p.release();
+  }
 
+  bool initialize()
+  {
+    rsl::unique_array<char8> data = vfs::open_file("rex.sln");
+
+    REX_LOG(LogConsoleApp, data.get());
 
     return true;
   }
   void update()
   {
-   
+    if (input::is_key_pressed('P'))
+    {
+      pointer_tracking_test();
+    }
   }
   void shutdown()
   {
