@@ -19,7 +19,7 @@ namespace rex
 
     char8 poll()
     {
-      constexpr card32 max_input_keys = (rsl::numeric_limits<char8>::max)();
+      constexpr card32 max_input_keys = (rsl::numeric_limits<uint8>::max)();
       for (card32 i = g_current_input_idx; i < max_input_keys; ++i, ++g_current_input_idx)
       {
         char8 key = static_cast<char8>(i);
