@@ -13,6 +13,7 @@ namespace rex
   bool initialize()
   {
     REX_LOG(LogRegina, "Initializing Regina");
+
     return true;
   }
   void update()

@@ -1,5 +1,6 @@
 #include "rex_opengl/resources/shader_program.h"
 
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_opengl/log.h"
 #include "rex_opengl/opengl_error.h"
 #include "rex_opengl/resources/shader.h"
