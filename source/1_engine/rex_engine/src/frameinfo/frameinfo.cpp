@@ -3,9 +3,9 @@
 namespace rex
 {
   FrameInfo::FrameInfo()
-    : m_delta_time()
-    , m_fps()
-    , m_index(-1)
+      : m_delta_time()
+      , m_fps()
+      , m_index(-1)
   {
   }
 
@@ -28,20 +28,4 @@ namespace rex
   {
     return m_index;
   }
-
-  FrameInfo& mutable_frame_info()
-  {
-    static FrameInfo frame_info;
-    return frame_info;
-  }
-
-  const FrameInfo& frame_info()
-  {
-    return mutable_frame_info();
-  }
-
-  void update_frame_info()
-  {
-    mutable_frame_info().update();
-  }
-}
+} // namespace rex

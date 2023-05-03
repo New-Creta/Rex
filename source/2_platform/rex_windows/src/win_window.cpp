@@ -1,12 +1,11 @@
 #include "rex_windows/win_window.h"
 
-#include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_windows/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
-#include <WtsApi32.h>
 
 namespace rex
 {
@@ -46,7 +45,7 @@ namespace rex
     {
       if(!m_wnd_class.create(hInstance, default_win_procedure, description.title))
       {
-        REX_ERROR("Failed to create window class");
+        REX_ERROR(LogWindows, "Failed to create window class");
         return false;
       }
 
@@ -87,7 +86,7 @@ namespace rex
 
       if(m_hwnd == nullptr)
       {
-        REX_ERROR("Window creation failed");
+        REX_ERROR(LogWindows, "Window creation failed");
         return false;
       }
 
@@ -166,7 +165,7 @@ namespace rex
       }
       else
       {
-        REX_WARN("Window already destroyed");
+        REX_WARN(LogWindows, "Window already destroyed");
         return false;
       }
 

@@ -24,6 +24,8 @@ def __change_commit_msg(msg):
 	f.close()
 
 def main():
+	regis.diagnostics.log_info(f"running prepare-commit-msg hook")
+
 	commit_msg = __get_commit_msg()
 	repo = Repo(regis.util.find_root())
 

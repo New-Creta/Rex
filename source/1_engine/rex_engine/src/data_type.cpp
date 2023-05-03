@@ -1,6 +1,6 @@
 #include "rex_engine/data_type.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/log.h"
 #include "rex_engine/types.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std_extra/utility/type_id.h"
@@ -66,7 +66,7 @@ namespace rex
           break;
       }
 
-      REX_ERROR("Unknown DataType::Value");
+      REX_ERROR(LogEngine, "Unknown DataType::Value");
       return 0;
     }
 
@@ -116,7 +116,7 @@ namespace rex
           break;
       }
 
-      REX_ERROR("Unknown DataType::Value");
+      REX_ERROR(LogEngine, "Unknown DataType::Value");
       return 0;
     }
   } // namespace data_type
@@ -168,7 +168,7 @@ namespace rex
 
     if(datatype_id == 0)
     {
-      REX_ERROR("Unsupported DataType to convert to typeid: {0}", (int32)m_value);
+      REX_ERROR(LogEngine, "Unsupported DataType to convert to typeid: {0}", (int32)m_value);
     }
 
     return datatype_id;
@@ -180,7 +180,7 @@ namespace rex
 
     if(datatype_size == 0)
     {
-      REX_ERROR("Unsupported DataType to convert to byte size: {0}", (int32)m_value);
+      REX_ERROR(LogEngine, "Unsupported DataType to convert to byte size: {0}", (int32)m_value);
     }
 
     return datatype_size;

@@ -1,6 +1,6 @@
 #include "rex_opengl/resources/buffer.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_opengl/log.h"
 
 #if REX_PLATFORM_X64
   #include <glad/gl.h>
@@ -90,7 +90,7 @@ namespace rex
       case BufferUsage::DynamicDraw: return GL_DYNAMIC_DRAW;
     }
 
-    REX_ERROR("Unknown buffer usage: {0}, returing \"Static Draw\"", (s32)usage);
+    REX_ERROR(LogOpenGL, "Unknown buffer usage: {0}, returing \"Static Draw\"", (s32)usage);
     return GL_STATIC_DRAW;
   }
 

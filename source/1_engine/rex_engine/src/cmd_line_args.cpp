@@ -1,6 +1,6 @@
 #include "rex_engine/cmd_line_args.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/log.h"
 
 namespace rex
 {
@@ -8,7 +8,7 @@ namespace rex
   {
     if(cmdLine == nullptr)
     {
-      REX_INFO("No command line arguments to parse");
+      REX_LOG(LogEngine, "No command line arguments to parse");
       return;
     }
 

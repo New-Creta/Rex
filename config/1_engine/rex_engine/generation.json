@@ -1,4 +1,12 @@
 {
-    "MemoryTags" : ["Global", "Engine", "FileIO"],
-    "MountRoots" : ["Logs"]
+  "MemoryTags": {
+    "ClassName": "MemoryTag",
+    "Values": [ "Global", "Engine", "FileIO" ],
+    "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+  },
+  "MountRoots": {
+    "ClassName": "MountRoot",
+    "Values": [ "Logs" ],
+    "Filepath": "1_engine/rex_engine/include/rex_engine/filesystem/mount_roots.h"
+  }
 }

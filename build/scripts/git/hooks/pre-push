@@ -1,30 +1,87 @@
 #!/usr/bin/env python                                                                    
 
 import os
+import sys
+import threading
 import regis.util
 import regis.generation
 import regis.build
 import regis.test
+import regis.git
+import regis.rex_json
 
 root = regis.util.find_root()
+build_result = 0
+intermediate_dir = "pre_push"
+
+def __launch_build(project, config, compiler, shouldClean):
+  global build_result
+  build_result |= regis.build.new_build(project, config, compiler, intermediate_dir, shouldClean)
+
+def __launch_build_thread(project, config, compiler, shouldClean):
+   t = threading.Thread(target=__launch_build, args=(project, config, compiler, shouldClean))
+   t.start()
+   return t
+
+def __build_regex(files):
+  if len(files) > 0:
+     return ''
+
+  tmp = '"'
+  for file in files:
+    tmp += '('
+    tmp += file
+    tmp += ')'
+    tmp += '|'
+
+  res = tmp[0:len(tmp) - 1]
+  res += '"'
+    
+  return res
+
+def __gen_cached_changes_regex():
+  files = regis.git.get_cached_changes(regis.git.get_local_branchname())
+  return __build_regex(files)
 
 def __generate():
   settings_path = os.path.join(root, "build", "config", "settings.json")
-  proc = regis.generation.new_generation(settings_path, "")
+
+  regex = __gen_cached_changes_regex()
+
+  proc = None
+  if regex != '':
+    proc = regis.generation.new_generation(settings_path, f"/performAllChecks(true) /clangTidyRegex({regex}) /intermediateDir(\"{intermediate_dir}\")")
+  else:
+    proc = regis.generation.new_generation(settings_path, f"/noClangTools /intermediateDir(\"{intermediate_dir}\")")
+
   proc.wait()
   return proc.returncode
 
 def __build():
-  result = 0
   should_clean = False
 
-  result |= regis.build.new_build("regina", "debug", "msvc", should_clean)
-  result |= regis.build.new_build("regina", "debug_opt", "msvc", should_clean)
-  result |= regis.build.new_build("regina", "release", "msvc", should_clean)
-  result |= regis.build.new_build("regina", "debug", "clang", should_clean)
-  result |= regis.build.new_build("regina", "debug_opt", "clang", should_clean)
-  result |= regis.build.new_build("regina", "release", "clang", should_clean)
-  return result
+  # to make sure we're compiling the code that'll actually be pushed
+  # we stash the changes that aren't committed
+  # then unstash them afterwards
+
+  stash_name = "pre-push"
+  regis.git.stash_uncommitted_changes(stash_name)    
+
+  threads : list[threading.Thread] = []
+  threads.append(__launch_build_thread("regina", "debug", "msvc", should_clean))
+  threads.append(__launch_build_thread("regina", "debug_opt", "msvc", should_clean))
+  threads.append(__launch_build_thread("regina", "release", "msvc", should_clean))
+  threads.append(__launch_build_thread("regina", "debug", "clang", should_clean))
+  threads.append(__launch_build_thread("regina", "debug_opt", "clang", should_clean))
+  threads.append(__launch_build_thread("regina", "release", "clang", should_clean))
+
+  for thread in threads:
+     thread.join()
+
+  regis.git.unstash(stash_name)
+  regis.git.remove_stash(stash_name)
+
+  return build_result
 
 def __test():
   result = 0
@@ -36,27 +93,32 @@ def __test():
   return result
 
 def main():
-  # we purposely don't run setup here, it's assumed the user has done this before pushing
+	# we purposely don't run setup here, it's assumed the user has done this before pushing
   # this is to decrease push times
+  regis.diagnostics.log_info(f"running pre-push hook")
 
   result = 0
 
-  result = __generate()
-  if result != 0:
-     print("Generation failed")
-     exit(result)
+  current_branch = regis.git.get_local_branchname()
 
-  result = __build()
-  if result != 0:
-     print("Build failed")
-     exit(result)
+  if current_branch == "main":
 
-  result = __test()
-  if result != 0:
-     print("Tests failed")
-     exit(result)
+    result = __generate()
+    if result != 0:
+      print("Generation failed")
+      exit(result)
 
-  exit(0)
+    result = __build()
+    if result != 0:
+      print("Build failed")
+      exit(result)
+
+    result = __test()
+    if result != 0:
+      print("Tests failed")
+      exit(result)
+
+  exit(result)
 
 if __name__ == "__main__":
 	main()

@@ -4,20 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// these are the values that come the json file
+public class EnumGenerationConfig
+{
+  public string ClassName { get; set; }
+  public List<string> Values { get; set; }
+  public string Filepath { get; set; }
+}
+
+// this is the object we use
+public class EnumGenerationSettings
+{
+  public string ClassName = "";
+  public string Filepath = "";
+  public Dictionary<string, List<string>> ProjectToEnumValues = new Dictionary<string, List<string>>();
+}
+
 public class GenerateSettings
 {
-  static public bool CoverageEnabled { get; set; }
-  static public bool UnitTestsEnabled { get; set; }
-  static public bool AddressSanitizerEnabled { get; set; }
-  static public bool UndefinedBehaviorSanitizerEnabled { get; set; }
-  static public bool FuzzyTestingEnabled { get; set; }
-  static public bool VisualStudioOnly { get; set; }
-  static public bool NoClangTools { get; set; }
+  static public bool EnableVisualStudio = false;
+  static public bool NoClangTools = false;
+  static public bool PerformAllChecks = false;
+  static public string IntermediateDir = "";
 
-  // this is used to generate the memory tags header file
-  static public Dictionary<string, List<string>> MemoryTags = new Dictionary<string, List<string>>();
-  // this is used to generate the mount roots header file
-  static public Dictionary<string, List<string>> MountRoots = new Dictionary<string, List<string>>();
+  // Test flags
+  static public bool EnableDefaultGeneration = true;
+  static public bool GenerateUnitTests = false;
+  static public bool CoverageEnabled = false;
+  static public bool AddressSanitizerEnabled = false;
+  static public bool UndefinedBehaviorSanitizerEnabled = false;
+  static public bool GenerateFuzzyTests = false;
+
+
+  static public string ClangTidyRegex { get; set; }
+
+  static public Dictionary<string, EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, EnumGenerationSettings>();
 
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
 }

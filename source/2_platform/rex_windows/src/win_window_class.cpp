@@ -1,8 +1,8 @@
 #include "rex_windows/win_window_class.h"
 
-#include "rex_engine/diagnostics/logging.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_std/bonus/memory/zero_memory.h"
+#include "rex_windows/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -28,9 +28,9 @@ namespace rex
 
         rsl::zero_memory(&window_class, sizeof(window_class));
 
-        REX_TODO("Make window style data driven");
-        REX_TODO("Make window icon data driven");
-        REX_TODO("Make window cursor data driven");
+        REX_WARN(LogWindows, "Make window style data driven");
+        REX_WARN(LogWindows, "Make window icon data driven");
+        REX_WARN(LogWindows, "Make window cursor data driven");
 
         window_class.style         = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
         window_class.lpfnWndProc   = reinterpret_cast<WNDPROC>(wndProc); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -48,7 +48,7 @@ namespace rex
         // please check if the issue is not coming from somewhere else.
         if(WIN_FAILED(RegisterClass(&window_class)))
         {
-          REX_ERROR("Failed to create window class!");
+          REX_ERROR(LogWindows, "Failed to create window class!");
           return false;
         }
         else
@@ -63,7 +63,7 @@ namespace rex
       {
         if(WIN_FAILED(UnregisterClass(name, static_cast<HINSTANCE>(hinstance))))
         {
-          REX_ERROR("Failed to destroy window class!");
+          REX_ERROR(LogWindows, "Failed to destroy window class!");
           return false;
         }
         else

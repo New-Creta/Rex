@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/win/win_call.h"
 
-#include "rex_engine/diagnostics/logging.h"
+#include "rex_engine/log.h"
 
 #define NOMINMAX
 #include <comdef.h>
@@ -12,11 +12,11 @@ namespace rex::win
   {
     const _com_error err(hr);
     rsl::medium_stack_string error_message(err.ErrorMessage());
-    REX_ERROR("Windows Error");
-    REX_ERROR("File: {}", file);
-    REX_ERROR("Function: {}", function);
-    REX_ERROR("On line: {}", lineNr);
-    REX_ERROR("Windows error: {}", error_message);
+    REX_ERROR(LogEngine, "Windows Error");
+    REX_ERROR(LogEngine, "File: {}", file);
+    REX_ERROR(LogEngine, "Function: {}", function);
+    REX_ERROR(LogEngine, "On line: {}", lineNr);
+    REX_ERROR(LogEngine, "Windows error: {}", error_message);
 
     return error_message;
   }
@@ -65,7 +65,7 @@ void rex::win::check_for_win_errors(rsl::string_view file, rsl::string_view func
 
   if(err != ERROR_SUCCESS)
   {
-    REX_WARN("Still Windows errors in pool!");
+    REX_WARN(LogEngine, "Still Windows errors in pool!");
 
     const HRESULT hr = HRESULT_FROM_WIN32(err);
     report_hr_error(hr, file, function, lineNr);
