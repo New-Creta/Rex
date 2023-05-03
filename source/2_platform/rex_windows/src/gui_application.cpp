@@ -12,6 +12,7 @@
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
+#include "rex_engine/diagnostics/assert.h"
 
 #include <Windows.h>
 
@@ -42,6 +43,8 @@ namespace rex
 
       bool initialize()
       {
+        REX_ASSERT_CONTEXT_SCOPE("Application initialization");
+
         // window initialization
         m_window = create_window();
         if(m_window == nullptr)
@@ -69,6 +72,8 @@ namespace rex
       }
       void update()
       {
+        REX_ASSERT_CONTEXT_SCOPE("Application update");
+
         // update the window (this pulls input as well)
         m_window->update();
 
@@ -89,6 +94,8 @@ namespace rex
       }
       void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {
+        REX_ASSERT_CONTEXT_SCOPE("Application shutdown");
+
         m_on_shutdown();
         renderer::shutdown();
       }
