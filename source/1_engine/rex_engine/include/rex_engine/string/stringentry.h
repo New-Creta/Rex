@@ -9,7 +9,7 @@ namespace rex
   class StringEntry
   {
   public:
-    StringEntry(const char* chars, s32 charCount) noexcept;
+    StringEntry(rsl::string_view characters) noexcept; // NOLINT(google-explicit-constructor)
     StringEntry(const StringEntry& other) = delete;
     StringEntry(StringEntry&& other) noexcept;
     ~StringEntry();
@@ -17,14 +17,12 @@ namespace rex
     StringEntry& operator=(const StringEntry& other) = delete;
     StringEntry& operator=(StringEntry&& other) noexcept;
 
-    void get_characters(const char** characters, s32& characterCount) const;
-    const char* get_characters() const;
+    rsl::string_view characters() const;
 
-    s32 get_size() const;
+    s32 size() const;
 
   private:
-    rsl::unique_ptr<char> m_characters;
-    s32 m_size;
+    rsl::unique_array<char> m_characters;
   };
 
   class StringEntryID

@@ -2,6 +2,7 @@
 
 #include "rex_engine/string/stringid.h"
 #include "rex_engine/types.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {
@@ -21,7 +22,7 @@ namespace rex
     {
     }
 
-    StringID title;
+    rsl::string_view title;
     WindowViewport viewport;
   };
 

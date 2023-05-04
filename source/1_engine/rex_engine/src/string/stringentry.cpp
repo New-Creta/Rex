@@ -5,19 +5,17 @@
 namespace rex
 {
   //-------------------------------------------------------------------------
-  StringEntry::StringEntry(const char* chars, s32 charCount) noexcept
+  StringEntry::StringEntry(rsl::string_view characters) noexcept
       : m_characters()
-      , m_size(charCount)
   {
-    m_characters.reset(static_cast<char*>(malloc(charCount + 1))); // NOLINT(cppcoreguidelines-no-malloc)
+    m_characters.reset(static_cast<char*>(malloc(characters.size() + 1))); // NOLINT(cppcoreguidelines-no-malloc)
 
-    rsl::memset(m_characters.get(), 0, charCount + 1);
-    rsl::memcpy(m_characters.get(), chars, charCount);
+    rsl::memset(m_characters.get(), 0, characters.size() + 1);
+    rsl::memcpy(m_characters.get(), characters.data(), characters.size());
   }
   //-------------------------------------------------------------------------
   StringEntry::StringEntry(StringEntry&& other) noexcept
       : m_characters(rsl::exchange(other.m_characters, {}))
-      , m_size(rsl::exchange(other.m_size, 0))
   {
   }
 
@@ -28,28 +26,20 @@ namespace rex
   rex::StringEntry& StringEntry::operator=(StringEntry&& other) noexcept
   {
     m_characters = rsl::exchange(other.m_characters, {});
-    m_size       = rsl::exchange(other.m_size, 0);
 
     return *this;
   }
 
   //-------------------------------------------------------------------------
-  void StringEntry::get_characters(const char** characters, s32& characterCount) const
+  rsl::string_view StringEntry::characters() const
   {
-    *characters    = m_characters.get();
-    characterCount = m_size;
+    return rsl::string_view(m_characters.get());
   }
 
   //-------------------------------------------------------------------------
-  const char* StringEntry::get_characters() const
+  s32 StringEntry::size() const
   {
-    return m_characters.get();
-  }
-
-  //-------------------------------------------------------------------------
-  s32 StringEntry::get_size() const
-  {
-    return m_size;
+    return m_characters.count();
   }
 
   //-------------------------------------------------------------------------
