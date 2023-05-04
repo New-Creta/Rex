@@ -17,7 +17,6 @@ namespace rex
 
     virtual const Gpu* selected() const = 0;
     virtual const Gpu* first() const    = 0;
-    virtual const Gpu* software() const = 0;
     virtual const GpuVec& all() const   = 0;
   };
 } // namespace rex
