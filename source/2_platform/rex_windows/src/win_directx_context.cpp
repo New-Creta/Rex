@@ -1,9 +1,8 @@
-#ifdef REX_API_DIRECTX12
-  #include "rex_engine/types.h"
-  #include "rex_renderer_core/context.h"
-  #include "rex_windows/log.h"
+#include "rex_engine/types.h"
+#include "rex_renderer_core/context.h"
+#include "rex_windows/log.h"
 
-  #include <Windows.h>
+#include <Windows.h>
 
 namespace rex
 {
@@ -21,8 +20,10 @@ namespace rex
         return true;
       }
 
-      void rollback(void* /*userData*/) {}
+      void rollback(void* /*userData*/)
+      {
+        // Nothing to implement
+      }
     } // namespace os
   }   // namespace context
 } // namespace rex
-#endif
