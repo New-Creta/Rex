@@ -5,31 +5,30 @@
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/log.h"
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_renderer_core/highest_vram_gpu_scorer.h"
 #include "rex_std/functional.h"
 
 namespace
 {
   //-------------------------------------------------------------------------
-  rsl::function<HRESULT(UINT, IDXGIAdapter4**)> get_enumaration_function6(const rex::dxgi::Factory* factory)
+  rsl::function<HRESULT(UINT, IDXGIAdapter4**)> get_enumaration_function6(rex::dxgi::Factory* factory)
   {
-    const rex::wrl::com_ptr<IDXGIFactory6> factory_6 = factory->as<IDXGIFactory6>();
+    rex::wrl::com_ptr<IDXGIFactory6> factory_6 = factory->as<IDXGIFactory6>();  //NOLINT(misc-const-correctness)
 
     REX_ASSERT_X(factory_6, "DXGIFactory 6 does not exist!");
 
     return [factory = factory_6.Get()](UINT index, IDXGIAdapter4** adapter) { return factory->EnumAdapterByGpuPreference(index, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(adapter)); };
   }
   //-------------------------------------------------------------------------
-  rsl::function<HRESULT(UINT, IDXGIAdapter1**)> get_enumaration_function1(const rex::dxgi::Factory* factory)
+  rsl::function<HRESULT(UINT, IDXGIAdapter1**)> get_enumaration_function1(rex::dxgi::Factory* factory)
   {
-    const rex::wrl::com_ptr<IDXGIFactory4> factory_4 = factory->as<IDXGIFactory4>();
+    rex::wrl::com_ptr<IDXGIFactory4> factory_4 = factory->as<IDXGIFactory4>();  //NOLINT(misc-const-correctness)
 
     REX_ASSERT_X(factory_4, "DXGIFactory 4 does not exist!");
 
     return [factory = factory_4.Get()](UINT index, IDXGIAdapter1** adapter) { return factory->EnumAdapters1(index, adapter); };
   }
   //-------------------------------------------------------------------------
-  rsl::function<HRESULT(UINT, IDXGIAdapter**)> get_enumaration_function(const rex::dxgi::Factory* factory)
+  rsl::function<HRESULT(UINT, IDXGIAdapter**)> get_enumaration_function(rex::dxgi::Factory* factory)
   {
     REX_ASSERT_X(factory, "DXGIFactory does not exist");
 
@@ -54,27 +53,6 @@ namespace
 
     return adapters;
   }
-
-  //-------------------------------------------------------------------------
-  rsl::unique_ptr<rex::Gpu> get_software_adapter(const rex::dxgi::Factory* factory)
-  {
-    REX_ASSERT_X(factory, "DXGIFactory does not exist");
-
-    if(factory->version() < 4)
-    {
-      REX_ERROR(LogDirectX, "Cannot create software rasterizer, incompatible driver");
-      return nullptr;
-    }
-
-    IDXGIAdapter* adapter = nullptr;
-
-    if(SUCCEEDED(factory->as<IDXGIFactory4>()->EnumWarpAdapter(IID_PPV_ARGS(&adapter))))
-    {
-      return rsl::make_unique<rex::dxgi::Adapter>(adapter, -1);
-    }
-
-    return nullptr;
-  }
 } // namespace
 
 namespace rex
@@ -82,17 +60,20 @@ namespace rex
   namespace dxgi
   {
     //-------------------------------------------------------------------------
-    AdapterManager::AdapterManager(const Factory* factory, const GpuScorer& scorer)
+    AdapterManager::AdapterManager(Factory* factory, const GpuScorerFn& scorerFn)
         : m_selected_adapter(nullptr)
     {
       load_adapters(factory);
-      m_selected_adapter = scorer.highest_scoring_gpu(m_adapters);
+
+      REX_ASSERT_X(!m_adapters.empty(), "No adapters found");
+
+      m_selected_adapter = scorerFn(m_adapters);
     }
     //-------------------------------------------------------------------------
     AdapterManager::~AdapterManager() = default;
 
     //-------------------------------------------------------------------------
-    bool AdapterManager::load_adapters(const Factory* factory)
+    bool AdapterManager::load_adapters(Factory* factory)
     {
       switch(factory->version())
       {
@@ -107,18 +88,6 @@ namespace rex
       }
 
       return m_adapters.empty() == false; // NOLINT(readability-simplify-boolean-expr)
-    }
-    //-------------------------------------------------------------------------
-    bool AdapterManager::load_software_adapter(const Factory* factory)
-    {
-      if(m_software_adapter == nullptr)
-      {
-        m_software_adapter = get_software_adapter(factory);
-        return m_software_adapter != nullptr;
-      }
-
-      REX_WARN(LogDirectX, "Directx software adapter already loaded");
-      return true;
     }
 
     //-------------------------------------------------------------------------
@@ -135,14 +104,6 @@ namespace rex
 
       return m_adapters[0].get();
     }
-    //-------------------------------------------------------------------------
-    const Gpu* AdapterManager::software() const
-    {
-      REX_ASSERT_X(m_software_adapter != nullptr, "No valid software adapter");
-
-      return m_software_adapter.get();
-    }
-
     //-------------------------------------------------------------------------
     const rsl::vector<rsl::unique_ptr<Gpu>>& AdapterManager::all() const
     {
