@@ -1,17 +1,19 @@
 #pragma once
 
+#include "rex_engine/types.h"
+
 namespace rex
 {
   struct ViewportCreationInfo
   {
-    float top_left_x;
-    float top_left_y;
+    f32 top_left_x;
+    f32 top_left_y;
 
-    float width;
-    float height;
+    f32 width;
+    f32 height;
 
-    float min_depth;
-    float max_depth;
+    f32 min_depth;
+    f32 max_depth;
   };
 
   class Viewport
@@ -20,21 +22,21 @@ namespace rex
     Viewport();
     explicit Viewport(const ViewportCreationInfo& info);
 
-    float top_left_x() const;
-    float top_left_y() const;
-    float width() const;
-    float height() const;
-    float min_depth() const;
-    float max_depth() const;
+    f32 top_left_x() const;
+    f32 top_left_y() const;
+    f32 width() const;
+    f32 height() const;
+    f32 min_depth() const;
+    f32 max_depth() const;
 
   private:
-    float m_top_left_x;
-    float m_top_left_y;
+    f32 m_top_left_x;
+    f32 m_top_left_y;
 
-    float m_width;
-    float m_height;
+    f32 m_width;
+    f32 m_height;
 
-    float m_min_depth;
-    float m_max_depth;
+    f32 m_min_depth;
+    f32 m_max_depth;
   };
 } // namespace rex
