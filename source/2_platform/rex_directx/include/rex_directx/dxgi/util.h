@@ -7,6 +7,5 @@
 #include <dxgicommon.h>
 #include <dxgidebug.h>
 
-#pragma comment(lib, "dxgi.lib")
 // clang-format on
 // NOLINTEND(llvm-include-order)
