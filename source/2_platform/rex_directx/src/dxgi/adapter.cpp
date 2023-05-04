@@ -26,6 +26,8 @@ namespace
   //-------------------------------------------------------------------------
   rsl::string vendor_to_string(s32 vendor)
   {
+    // Enum reflection is not possible here as the integer values are
+    // outside the valid range of values [0, 127] for this enumeration type
     switch(static_cast<Vendors>(vendor))
     {
       case Vendors::AMD: return rsl::string("AMD");
@@ -34,20 +36,6 @@ namespace
       default: return rsl::string("Unknown Vendor");
     }
   }
-
-  ////-------------------------------------------------------------------------
-  // rsl::string to_multibyte(const tchar* wideCharacterBuffer, count_t size)
-  //{
-  //     rsl::string buffer;
-  //
-  //     // Convert wide character string to multi byte character string.
-  //     // size_t converted_chars => The amount of converted characters.
-  //     // 0 terminate the string afterwards.
-  //     count_t converted_chars = rsl::wcstombs(buffer.data(), wideCharacterBuffer, size);
-  //     buffer.resize(converted_chars);
-  //
-  //     return buffer;
-  // }
 
   //-------------------------------------------------------------------------
   rsl::string to_multibyte(const tchar* wideCharacterBuffer, count_t size)
