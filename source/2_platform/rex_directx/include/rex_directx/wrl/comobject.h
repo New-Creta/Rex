@@ -50,7 +50,18 @@ namespace rex
        * Retrieve this com object as a different type
        */
       template <typename To>
-      wrl::com_ptr<To> as() const;
+      wrl::com_ptr<To> as();
+
+      /**
+       * Retrieve this com object as a different type
+       */
+      template <typename To>
+      const wrl::com_ptr<const To> as() const;
+
+      /**
+       * Check if this com object is valid
+       */
+      explicit operator bool() const;
 
     private:
       wrl::com_ptr<T> m_pointer;
@@ -100,11 +111,28 @@ namespace rex
     //-------------------------------------------------------------------------
     template <typename T>
     template <typename To>
-    wrl::com_ptr<To> ComObject<T>::as() const
+    wrl::com_ptr<To> ComObject<T>::as()
     {
       // T needs to be non-const
       // so we need to case away the const
       return convert_to<To, T>(c_ptr());
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename T>
+    template <typename To>
+    const wrl::com_ptr<const To> ComObject<T>::as() const //NOLINT(readability-const-return-type)
+    {
+      // T needs to be non-const
+      // so we need to case away the const
+      return convert_to<const To, T>(c_ptr());
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename T>
+    ComObject<T>::operator bool() const
+    {
+      return m_pointer != nullptr;
     }
   } // namespace wrl
 } // namespace rex
