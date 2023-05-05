@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
   run_any_tests = args.unittests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
-  sharpmake_args = "/EnableVisualStudio"
+  sharpmake_args = "/enableVisualStudio /disableClangTidyForThirdParty"
   if args.no_clang_tools:
     sharpmake_args += " /noClangTools"
 
