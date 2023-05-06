@@ -24,6 +24,9 @@ public class Regina : ToolsProject
 
     conf.Output = Configuration.OutputType.Exe;
 
+    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Globals.Root;
+
     switch (target.Platform)
     {
       case Platform.win32:

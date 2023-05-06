@@ -25,6 +25,9 @@ public class ConsoleApp : ToolsProject
     conf.Output = Configuration.OutputType.Exe;
     conf.Options.Add(Options.Vc.Linker.SubSystem.Console);
 
+    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Globals.Root;
+
     switch (target.Platform)
     {
       case Platform.win32:
