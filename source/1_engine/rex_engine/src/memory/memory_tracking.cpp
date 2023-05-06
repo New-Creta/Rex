@@ -25,8 +25,16 @@ namespace rex
   {
     static UntrackedAllocator allocator {};
     static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
-    static rsl::vector<MemoryHeader*, decltype(dbg_alloc)> alloc_headers(dbg_alloc);
+    static DebugVector<MemoryHeader*> alloc_headers(dbg_alloc);
     return alloc_headers;
+  }
+
+  auto& deleter_callstacks()
+  {
+    static UntrackedAllocator allocator{};
+    static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
+    static DebugHashTable<CallStack, DebugVector<CallStack>> callstack_to_deleters(dbg_alloc);
+    return callstack_to_deleters;
   }
 
   card32& thread_local_mem_tag_index()
@@ -56,20 +64,36 @@ namespace rex
   void MemoryTracker::track_alloc(void* /*mem*/, MemoryHeader* header)
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
+
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
+    
     allocation_headers().push_back(header);
+    
     REX_ERROR_X(LogEngine, m_mem_usage.value() <= m_max_mem_usage, "Using more memory than allowed! usage: {} max: {}", m_mem_usage.value(), m_max_mem_usage);
   }
   void MemoryTracker::track_dealloc(void* /*mem*/, MemoryHeader* header)
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
+    
     REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
+    
     m_mem_usage -= header->size().size_in_bytes();
     auto it = rsl::find(allocation_headers().cbegin(), allocation_headers().cend(), header);
+    
     REX_ASSERT_X(it != allocation_headers().cend(), "Trying to remove a memory header that wasn't tracked");
     REX_ASSERT_X(m_mem_usage >= 0, "Mem usage below 0");
+    
     allocation_headers().erase(it);
+    
+    // add unique deleter callstacks
+    DebugVector<CallStack>& del_callstacks = deleter_callstacks()[header->callstack()];
+    CallStack current_callstack = rex::current_callstack();
+    if (rsl::find(del_callstacks.cbegin(), del_callstacks.cend(), current_callstack) == del_callstacks.cend())
+    {
+      deleter_callstacks()[header->callstack()].push_back(rex::current_callstack());
+    }
+
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }
 
