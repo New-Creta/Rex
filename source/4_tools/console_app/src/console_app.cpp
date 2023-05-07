@@ -46,9 +46,17 @@ namespace rex
 
   bool initialize()
   {
-    rsl::unique_array<char8> data = vfs::open_file("rex.sln");
+    vfs::ReadRequest read_request = vfs::open_read_async("rex.sln");
 
-    REX_LOG(LogConsoleApp, data.get());
+    REX_LOG(LogConsoleApp, "Waiting for file to be read");
+
+    read_request.wait();
+
+    REX_LOG(LogConsoleApp, "File read");
+
+    REX_LOG(LogConsoleApp, "{}", read_request.data());
+    REX_LOG(LogConsoleApp, "{} bytes read", read_request.count());
+
 
     return true;
   }

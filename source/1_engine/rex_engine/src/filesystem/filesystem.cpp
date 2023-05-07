@@ -6,6 +6,10 @@
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/platform/windows/handle.h"
 #include "rex_std/memory.h"
+#include "rex_std/mutex.h"
+#include "rex_std/thread.h"
+#include "rex_std/chrono.h"
+#include "rex_std/atomic.h"
 #include "rex_std_extra/memory.h"
 
 #include <Windows.h>
@@ -14,8 +18,192 @@ DEFINE_LOG_CATEGORY(RexFileSystem, rex::LogVerbosity::Log);
 
 namespace rex::vfs
 {
+  class QueuedRequest
+  {
+  public:
+    QueuedRequest(rsl::string_view filepath)
+      : m_filepath(filepath)
+      , m_requests()
+      , m_requests_access_mtx()
+      , m_is_done(false)
+    {}
+
+    ~QueuedRequest()
+    {
+    }
+
+    void add_request_to_signal(ReadRequest* request)
+    {
+      rsl::unique_lock lock(m_requests_access_mtx);
+      m_requests.push_back(request);
+    }
+    void remove_request_to_signal(ReadRequest* request)
+    {
+      rsl::unique_lock lock(m_requests_access_mtx);
+      auto it = rsl::find(m_requests.cbegin(), m_requests.cend(), request);
+
+      if (it != m_requests.cend())
+      {
+        m_requests.erase(it);
+      }
+    }
+    void swap_request_to_signal(ReadRequest* original, ReadRequest* newRequest)
+    {
+      rsl::unique_lock lock(m_requests_access_mtx);
+      auto it = rsl::find(m_requests.begin(), m_requests.end(), original);
+
+      REX_ASSERT_X(it != m_requests.end(), "Request at {} not found as a request to signal", reinterpret_cast<void*>(original));
+
+      *it = newRequest;
+    }
+
+    void signal_requests(const char8* buffer, count_t count)
+    {
+      rsl::unique_lock lock(m_requests_access_mtx);
+
+      for (ReadRequest* read_request : m_requests)
+      {
+        read_request->signal(buffer, count);
+      }
+    }
+    void wait_async_until_requests_are_finished(rsl::unique_array<char8>&& buffer)
+    {
+      // this thread becomes the owner of the buffer
+      // when the thread finished, the buffer will be destroyed
+      rsl::thread t([this, buffer = rsl::move(buffer)]()
+      {
+        // don't think this needs to be behind a lock
+        // it's value will always decemtn
+        while (!m_requests.empty())
+        {
+          using namespace rsl::chrono_literals;
+          rsl::this_thread::sleep_for(1ms);
+        }
+        m_is_done = true;
+      });
+      t.detach();
+    }
+
+    bool all_requests_finished() const
+    {
+      return m_is_done.load();
+    }
+
+    rsl::string_view filepath() const
+    {
+      return m_filepath;
+    }
+
+  private:
+    rsl::string_view m_filepath;
+    rsl::vector<ReadRequest*> m_requests;
+    rsl::mutex m_requests_access_mtx;
+    rsl::atomic<bool> m_is_done;
+  };
+
+  ReadRequest::ReadRequest(rsl::string_view filepath, QueuedRequest* queuedRequest)
+    : m_filepath(filepath)
+    , m_queued_request(queuedRequest)
+    , m_is_done(false)
+    , m_buffer(nullptr)
+    , m_count(0)
+  {}
+
+  ReadRequest::ReadRequest(const ReadRequest& other)
+    : m_filepath(other.m_filepath)
+    , m_queued_request(other.m_queued_request)
+    , m_is_done(other.m_is_done)
+    , m_buffer(other.m_buffer)
+    , m_count(other.m_count)
+  {
+    m_queued_request->add_request_to_signal(this);
+  }
+
+  ReadRequest::ReadRequest(ReadRequest&& other)
+    : m_filepath(rsl::exchange(other.m_filepath, ""))
+    , m_queued_request(rsl::exchange(other.m_queued_request, nullptr))
+    , m_is_done(rsl::exchange(other.m_is_done, false))
+    , m_buffer(rsl::exchange(other.m_buffer, nullptr))
+    , m_count(rsl::exchange(other.m_count, 0))
+  {
+    m_queued_request->swap_request_to_signal(&other, this);
+  }
+
+  ReadRequest::~ReadRequest()
+  {
+    if (m_queued_request)
+    {
+      m_queued_request->remove_request_to_signal(this);
+    }
+  }
+
+  ReadRequest& ReadRequest::operator=(const ReadRequest& other)
+  {
+    m_queued_request->remove_request_to_signal(this);
+
+    m_filepath = other.m_filepath;
+    m_queued_request = other.m_queued_request;
+    m_is_done = other.m_is_done;
+    m_buffer = other.m_buffer;
+    m_count = other.m_count;
+
+    m_queued_request->add_request_to_signal(this);
+
+    return *this;
+  }
+  ReadRequest& ReadRequest::operator=(ReadRequest&& other)
+  {
+    m_filepath = rsl::exchange(other.m_filepath, "");
+    m_queued_request = rsl::exchange(other.m_queued_request, nullptr);
+    m_is_done = rsl::exchange(other.m_is_done, false);
+    m_buffer = rsl::exchange(other.m_buffer, nullptr);
+    m_count = rsl::exchange(other.m_count, 0);
+
+    m_queued_request->swap_request_to_signal(&other, this);
+
+    return *this;
+  }
+
+  void ReadRequest::signal(const char8* buffer, count_t count)
+  {
+    m_is_done = true;
+    m_buffer = buffer;
+    m_count = count;
+  }
+
+  void ReadRequest::wait()
+  {
+    // this should ideally be solved with fibers..
+    while (!m_is_done)
+    {
+      using namespace rsl::chrono_literals;
+      rsl::this_thread::sleep_for(1ms);
+    }
+  }
+
+  const char8* ReadRequest::data() const
+  {
+    return m_buffer;
+  }
+  count_t ReadRequest::count() const
+  {
+    return m_count;
+  }
+
+  rsl::string_view ReadRequest::filepath() const
+  {
+    return m_filepath;
+  }
+
   rsl::medium_stack_string g_root;
   bool g_is_initialized = false;
+  rsl::mutex g_read_request_mutex;
+  rsl::mutex g_closed_request_mutex;
+  rsl::vector<rsl::unique_ptr<QueuedRequest>> g_read_requests;
+  rsl::vector<rsl::unique_ptr<QueuedRequest>> g_closed_requests;
+  rsl::thread g_reading_thread;
+  rsl::thread g_closing_thread;
+  rsl::atomic<bool> g_keep_processing = false;
 
   void init(rsl::string_view root)
   {
@@ -44,9 +232,75 @@ namespace rex::vfs
     REX_LOG(RexFileSystem, "FileSystem initialised with root '{}'", g_root);
 
     g_is_initialized = true;
+    g_keep_processing = true;
+    g_reading_thread = rsl::thread([]()
+      {
+        while (g_keep_processing)
+        {
+          rsl::unique_lock lock(g_read_request_mutex);
+          if (!g_read_requests.empty())
+          {
+            // get the queued request and remvoe it from the queue
+            rsl::unique_ptr<QueuedRequest> request = rsl::move(g_read_requests.front());
+            g_read_requests.erase(g_read_requests.cbegin());
+
+            // we don't need access to the queue anymore, we can unlock its access mutex
+            lock.unlock();
+
+            // read the actual file we requested
+            rsl::unique_array<char8> buffer = open_read(request->filepath());
+
+            // signal all read requests that this file has now been read
+            // it's possible multiple read requests want to access the same file
+            // if such requests come in while there's already a request for this file
+            // they get added to the original queued request and they now all get notified
+            request->signal_requests(buffer.get(), buffer.count());
+
+            // wait for all read requests to finish processing the data read
+            // pass ownership of the data to the queued task, it'll be deallocated when the task is destroyed
+            request->wait_async_until_requests_are_finished(rsl::move(buffer));
+
+            // add the closed task to the queue, making sure it stays alive until all requests have finished processing the data
+            rsl::unique_lock closed_req_lock(g_closed_request_mutex);
+            g_closed_requests.push_back(rsl::move(request));
+          }
+
+          using namespace rsl::chrono_literals;
+          rsl::this_thread::sleep_for(1ms);
+        }
+      });
+
+    g_closing_thread = rsl::thread([]()
+      {
+        while (g_keep_processing)
+        {
+          rsl::unique_lock lock(g_closed_request_mutex);
+          if (!g_closed_requests.empty())
+          {
+            for (rsl::unique_ptr<QueuedRequest>& request : g_closed_requests)
+            {
+              if (request->all_requests_finished())
+              {
+                request.reset();
+              }
+            }
+
+            auto it = rsl::remove(g_closed_requests.begin(), g_closed_requests.end(), nullptr);
+            g_closed_requests.erase(it, g_closed_requests.end());
+          }
+
+          using namespace rsl::chrono_literals;
+          rsl::this_thread::sleep_for(1ms);
+        }
+      });
   }
 
-  rsl::unique_array<char8> open_file(rsl::string_view filepath)
+  void shutdown()
+  {
+    g_keep_processing = false;
+  }
+
+  rsl::unique_array<char8> open_read(rsl::string_view filepath)
   {
     REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
 
@@ -55,32 +309,48 @@ namespace rex::vfs
     path += filepath;
 
     rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(
-      path.data(),				      // Path to file
-      GENERIC_READ | GENERIC_WRITE,	// General read and write access
+      path.data(),				          // Path to file
+      GENERIC_READ,	                // General read and write access
       FILE_SHARE_READ,				      // Other processes can also read the file
       NULL,							            // No SECURITY_ATTRIBUTES 
-      OPEN_ALWAYS,						      // Always open the file, create it if it doesn't exist
+      OPEN_EXISTING,						    // Open the file, only if it exists
       FILE_FLAG_SEQUENTIAL_SCAN,		// Files will be read from beginning to end
       NULL							            // No template file
     ), ERROR_ALREADY_EXISTS));
 
+    // prepare a buffer to receive the file content
     DWORD file_size = GetFileSize(handle.get(), nullptr);
-
     rsl::unique_array<char8> buffer = rsl::make_unique<char8[]>(file_size);
 
+    // actually read the file
     DWORD bytes_read = 0;
     WIN_CALL(ReadFile(handle.get(), buffer.get(), static_cast<DWORD>(buffer.count()), &bytes_read, NULL));
 
+    // return the buffer
     return buffer;
   }
 
-  void save_to_file(rsl::string_view filePath, const void* data, card64 size, bool append)
+  ReadRequest open_read_async(rsl::string_view filepath)
+  {
+    rsl::unique_lock lock(g_read_request_mutex);
+
+    // create the queued request, at this point it doesn't hold any signals it should fire on finish
+    rsl::unique_ptr<QueuedRequest> queued_request = rsl::make_unique<QueuedRequest>(filepath);
+    ReadRequest request(filepath, queued_request.get());
+    queued_request->add_request_to_signal(&request);
+
+    g_read_requests.emplace_back(rsl::move(queued_request));
+
+    return request;
+  }
+
+  void save_to_file(rsl::string_view filepath, void* data, card64 size, AppendToFile shouldAppend)
   {
     REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
 
     rsl::win::handle handle(WIN_CALL(CreateFile(
-      filePath.data(),				      // Path to file
-      GENERIC_READ | GENERIC_WRITE,	// General read and write access
+      filepath.data(),				      // Path to file
+      GENERIC_WRITE,	              // General read and write access
       FILE_SHARE_READ,				      // Other processes can also read the file
       NULL,							            // No SECURITY_ATTRIBUTES 
       OPEN_ALWAYS,						      // Create a new file, error when it already exists
@@ -88,7 +358,7 @@ namespace rex::vfs
       NULL							            // No template file
     )));
 
-    if (append)
+    if (shouldAppend)
     {
       WIN_CALL(SetFilePointer(handle.get(), 0, NULL, FILE_END));
       WIN_CALL(SetEndOfFile(handle.get()));

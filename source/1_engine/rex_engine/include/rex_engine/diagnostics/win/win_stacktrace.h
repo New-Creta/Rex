@@ -46,7 +46,7 @@ namespace rsl
         for (count_t i = 0; i < size; ++i)
         {
           void* stack_pointer = callstack[i];
-          card64 address = *reinterpret_cast<card64*>(stack_pointer);
+          card64 address = *reinterpret_cast<card64*>(&stack_pointer);
           seed = internal::hash_combine(seed, address);
         }
 
