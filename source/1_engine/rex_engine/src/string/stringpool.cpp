@@ -52,6 +52,7 @@ namespace rex
         return &result.inserted_element->key;
       }
 
+      REX_ASSERT("This path should never be reached, insertion into the string pool failed somehow.");
       return nullptr;
     }
 

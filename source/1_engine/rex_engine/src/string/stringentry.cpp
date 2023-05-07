@@ -8,8 +8,10 @@ namespace rex
   StringEntry::StringEntry(rsl::string_view characters) noexcept
       : m_characters()
   {
-    m_characters.reset(static_cast<char*>(malloc(characters.size() + 1))); // NOLINT(cppcoreguidelines-no-malloc)
+    m_characters = rsl::make_unique<char[]>(characters.size() + 1); 
 
+    // Memset everything to 0 to already fill in the 0 terminator
+    // and then copy the characters over
     rsl::memset(m_characters.get(), 0, characters.size() + 1);
     rsl::memcpy(m_characters.get(), characters.data(), characters.size());
   }
@@ -33,7 +35,7 @@ namespace rex
   //-------------------------------------------------------------------------
   rsl::string_view StringEntry::characters() const
   {
-    return rsl::string_view(m_characters.get());
+    return rsl::string_view(m_characters.get(), m_characters.count());
   }
 
   //-------------------------------------------------------------------------

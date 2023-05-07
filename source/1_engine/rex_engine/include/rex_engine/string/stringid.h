@@ -26,6 +26,8 @@ namespace rex
     u32 value() const;
 
   private:
+    constexpr static u32 s_none_state_hash = 0;
+
     /** Index into the StringID array (used to find String portion of the string/number pair used for comparison) */
     StringEntryID m_comparison_index;
   };

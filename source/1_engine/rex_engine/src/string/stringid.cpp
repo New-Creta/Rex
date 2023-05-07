@@ -1,6 +1,7 @@
 #include "rex_engine/string/stringid.h"
 
 #include "rex_engine/string/stringpool.h"
+#include "rex_engine/log.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 
@@ -13,6 +14,7 @@ namespace rex
     {
       if(characters.empty())
       {
+        REX_WARN(LogEngine, "Trying to create a StringID with an empty string, this is not allowed.");
         return StringEntryID(); // StringID::is_none() == true
       }
 
@@ -25,7 +27,7 @@ namespace rex
    * Create an empty StringID.
    */
   StringID::StringID()
-      : m_comparison_index(0)
+      : m_comparison_index(s_none_state_hash)
   {
   }
 
@@ -79,10 +81,10 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  /** True for StringID(), StringID(NAME_None) and StringID("None") */
+  /** True for StringID() and StringID("Invalid StringID") */
   bool StringID::is_none() const
   {
-    return m_comparison_index == 0;
+    return m_comparison_index == s_none_state_hash;
   }
 
   //-------------------------------------------------------------------------
