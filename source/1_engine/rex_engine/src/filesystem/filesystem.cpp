@@ -10,6 +10,7 @@
 #include "rex_std/thread.h"
 #include "rex_std/chrono.h"
 #include "rex_std/atomic.h"
+#include "rex_std/semaphore.h"
 #include "rex_std_extra/memory.h"
 
 #include <Windows.h>
@@ -27,10 +28,6 @@ namespace rex::vfs
       , m_requests_access_mtx()
       , m_is_done(false)
     {}
-
-    ~QueuedRequest()
-    {
-    }
 
     void add_request_to_signal(ReadRequest* request)
     {
@@ -73,7 +70,7 @@ namespace rex::vfs
       rsl::thread t([this, buffer = rsl::move(buffer)]()
       {
         // don't think this needs to be behind a lock
-        // it's value will always decemtn
+        // it's value will always decrement
         while (!m_requests.empty())
         {
           using namespace rsl::chrono_literals;
@@ -95,7 +92,7 @@ namespace rex::vfs
     }
 
   private:
-    rsl::string_view m_filepath;
+    rsl::medium_stack_string m_filepath;
     rsl::vector<ReadRequest*> m_requests;
     rsl::mutex m_requests_access_mtx;
     rsl::atomic<bool> m_is_done;
@@ -304,9 +301,7 @@ namespace rex::vfs
   {
     REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
 
-    rsl::medium_stack_string path = g_root;
-    path += "/";
-    path += filepath;
+    rsl::medium_stack_string path = create_full_path(filepath);
 
     rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(
       path.data(),				          // Path to file
@@ -335,7 +330,7 @@ namespace rex::vfs
     rsl::unique_lock lock(g_read_request_mutex);
 
     // create the queued request, at this point it doesn't hold any signals it should fire on finish
-    rsl::unique_ptr<QueuedRequest> queued_request = rsl::make_unique<QueuedRequest>(filepath);
+    rsl::unique_ptr<QueuedRequest> queued_request = rsl::make_unique<QueuedRequest>(create_full_path(filepath));
     ReadRequest request(filepath, queued_request.get());
     queued_request->add_request_to_signal(&request);
 
@@ -418,5 +413,14 @@ namespace rex::vfs
   bool is_rel(rsl::string_view path)
   {
     return !is_abs(path);
+  }
+
+  rsl::medium_stack_string create_full_path(rsl::string_view path)
+  {
+    rsl::medium_stack_string full_path(g_root);
+    full_path += "/";
+    full_path += path;
+
+    return full_path;
   }
 }
