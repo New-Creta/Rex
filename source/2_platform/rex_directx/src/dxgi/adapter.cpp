@@ -55,7 +55,7 @@ namespace
 
     buffer.resize(converted_chars);
 
-    return rsl::string(buffer.data()); // NOLINT(readability-redundant-string-cstr)
+    return rsl::string(buffer.data(), buffer.size()); // NOLINT(readability-redundant-string-cstr)
   }
 
   //-------------------------------------------------------------------------
