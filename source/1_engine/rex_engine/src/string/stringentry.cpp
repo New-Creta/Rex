@@ -8,7 +8,7 @@ namespace rex
   StringEntry::StringEntry(rsl::string_view characters) noexcept
       : m_characters()
   {
-    m_characters = rsl::make_unique<char[]>(characters.size() + 1); //NOLINT(modernize-avoid-c-arrays)
+    m_characters = rsl::make_unique<char[]>(characters.size() + 1); // NOLINT(modernize-avoid-c-arrays)
 
     // Memset everything to 0 to already fill in the 0 terminator
     // and then copy the characters over
