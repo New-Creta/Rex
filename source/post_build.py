@@ -4,7 +4,7 @@ import argparse
 
 def run(projectName, compdb, srcroot, useClangTools, allChecks, clangTidyRegex):
   if (useClangTools):
-    regis.run_clang_tools.run(projectName, compdb, srcroot, allChecks, clangTidyRegex)
+    regis.run_clang_tools.run(projectName, compdb, srcroot, allChecks, clangTidyRegex, False)
 
   return
 

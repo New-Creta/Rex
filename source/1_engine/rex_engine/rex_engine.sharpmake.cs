@@ -57,6 +57,7 @@ public class RexEngine : EngineProject
         break;
     }
 
+
     switch (conf.Platform)
     {
       case Platform.win32:
@@ -69,6 +70,7 @@ public class RexEngine : EngineProject
         break;
       case Platform.linux:
         conf.add_public_define("REX_PLATFORM_LINUX");
+        conf.SourceFilesBuildExcludeRegex.Add("win/*"); // exclude windows files
         break;
       default:
         break;
