@@ -40,25 +40,7 @@ namespace rex
     }
   } // namespace internal
 
-  /**
-   * A macro to declare a logging category as a C++ "extern", usually declared in the header and paired with DEFINE_LOG_CATEGORY in the source. Accessible by all files that include the header.
-   * @param CategoryName, category to declare
-   * @param DefaultVerbosity, default run time verbosity
-   */
-  #define DECLARE_LOG_CATEGORY_EXTERN(CategoryName, DefaultVerbosity)                                                                                                                                                                                    \
-    extern struct LogCategory##CategoryName : public rex::LogCategory<(int)rex::DefaultVerbosity>                                                                                                                                                        \
-    {                                                                                                                                                                                                                                                    \
-      inline LogCategory##CategoryName()                                                                                                                                                                                                                 \
-          : LogCategory<(int)rex::DefaultVerbosity>(rex::DebugString(#CategoryName))                                                                                                                                                                     \
-      {                                                                                                                                                                                                                                                  \
-      }                                                                                                                                                                                                                                                  \
-    } CategoryName;                                                                 /*NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)*/
-
-  /**
-   * A macro to define a logging category, usually paired with DECLARE_LOG_CATEGORY_EXTERN from the header.
-   * @param CategoryName, category to define
-   */
-  #define DEFINE_LOG_CATEGORY(CategoryName) LogCategory##CategoryName CategoryName; /*NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables) */
+  #define DEFINE_LOG_CATEGORY(Name, Verbosity) inline const rex::LogCategory Name(#Name, Verbosity) // NOLINT(fuchsia-statically-constructed-objects)
 } // namespace rex
 
 //-------------------------------------------------------------------------

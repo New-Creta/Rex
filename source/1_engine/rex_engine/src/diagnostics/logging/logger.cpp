@@ -49,7 +49,7 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  rexlog::Logger& get_logger(const LogCategoryBase& category)
+  rexlog::Logger& get_logger(const LogCategory& category)
   {
     const LogPattern default_pattern = "%^[%T][%=8l] %n: %v%$";
     const LogLevelMap log_levels     = get_log_levels();
@@ -73,7 +73,7 @@ namespace rex
 #endif
     // sinks.push_back(rsl::make_shared<rexlog::sinks::basic_file_sink_mt>(full_path.string(), true));
 
-    rsl::shared_ptr<rexlog::Logger> new_logger = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), category.get_category_name(), rsl::begin(sinks), rsl::end(sinks));
+    rsl::shared_ptr<rexlog::Logger> new_logger = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), rex::DebugString(category.get_category_name()), rsl::begin(sinks), rsl::end(sinks));
 
     new_logger->set_pattern(rsl::basic_string<char8, rsl::char_traits<char8>, DebugAllocator<UntrackedAllocator>>(default_pattern, global_debug_allocator()));
     new_logger->set_level(log_levels.at(category.get_verbosity()));

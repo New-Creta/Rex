@@ -2,4 +2,4 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogOpenGL, LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogOpenGL, rex::LogVerbosity::Log);
