@@ -12,7 +12,7 @@ namespace
   //-------------------------------------------------------------------------
   rsl::function<HRESULT(UINT, IDXGIAdapter4**)> get_enumaration_function6(rex::dxgi::Factory* factory)
   {
-    rex::wrl::com_ptr<IDXGIFactory6> factory_6 = factory->as<IDXGIFactory6>();  //NOLINT(misc-const-correctness)
+    rex::wrl::com_ptr<IDXGIFactory6> factory_6 = factory->as<IDXGIFactory6>(); // NOLINT(misc-const-correctness)
 
     REX_ASSERT_X(factory_6, "DXGIFactory 6 does not exist!");
 
@@ -21,7 +21,7 @@ namespace
   //-------------------------------------------------------------------------
   rsl::function<HRESULT(UINT, IDXGIAdapter1**)> get_enumaration_function1(rex::dxgi::Factory* factory)
   {
-    rex::wrl::com_ptr<IDXGIFactory4> factory_4 = factory->as<IDXGIFactory4>();  //NOLINT(misc-const-correctness)
+    rex::wrl::com_ptr<IDXGIFactory4> factory_4 = factory->as<IDXGIFactory4>(); // NOLINT(misc-const-correctness)
 
     REX_ASSERT_X(factory_4, "DXGIFactory 4 does not exist!");
 

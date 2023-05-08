@@ -121,7 +121,7 @@ namespace rex
     //-------------------------------------------------------------------------
     template <typename T>
     template <typename To>
-    const wrl::com_ptr<const To> ComObject<T>::as() const //NOLINT(readability-const-return-type)
+    const wrl::com_ptr<const To> ComObject<T>::as() const // NOLINT(readability-const-return-type)
     {
       // T needs to be non-const
       // so we need to case away the const

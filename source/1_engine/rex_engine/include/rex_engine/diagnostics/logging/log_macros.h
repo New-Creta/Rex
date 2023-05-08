@@ -2,8 +2,7 @@
 
 #if REX_NO_LOGGING
 
-  #define DECLARE_LOG_CATEGORY_EXTERN(CategoryName, DefaultVerbosity, CompileTimeVerbosity) extern FNoLoggingCategory CategoryName;
-  #define DEFINE_LOG_CATEGORY(CategoryName, ...)                                            FNoLoggingCategory CategoryName;
+  #define DEFINE_LOG_CATEGORY(CategoryName, ...) FNoLoggingCategory CategoryName;
 
 //-------------------------------------------------------------------------
 // Logging features
