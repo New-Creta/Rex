@@ -7,10 +7,11 @@ namespace rex
   enum class ApplicationState
   {
     Invalid          = BIT(0),
-    Initializing     = BIT(1),
-    Running          = BIT(2),
-    Paused           = BIT(3),
-    MarkedForDestroy = BIT(4),
-    ShuttingDown     = BIT(5)
+    Created          = BIT(1),
+    Initializing     = BIT(2),
+    Running          = BIT(3),
+    Paused           = BIT(4),
+    MarkedForDestroy = BIT(5),
+    ShuttingDown     = BIT(6)
   };
 } // namespace rex

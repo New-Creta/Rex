@@ -26,7 +26,7 @@ namespace rex
 
   //-------------------------------------------------------------------------
   CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
-      : m_app_state(ApplicationState::Invalid)
+      : m_app_state(ApplicationState::Created)
   {
     mem_tracker().initialize(engineParams.max_memory);
   }
@@ -90,8 +90,7 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   bool CoreApplication::initialize()
   {
-    m_app_state.remove_state(ApplicationState::Invalid);
-    m_app_state.add_state(ApplicationState::Initializing);
+    m_app_state.change_state(ApplicationState::Initializing);
 
     globals::g_frame_info.update();
     return platform_init();
@@ -117,8 +116,7 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   void CoreApplication::loop()
   {
-    m_app_state.remove_state(ApplicationState::Initializing);
-    m_app_state.add_state(ApplicationState::Running);
+    m_app_state.change_state(ApplicationState::Running);
 
     while(is_running())
     {
@@ -126,8 +124,7 @@ namespace rex
 
       if(m_app_state.has_state(ApplicationState::MarkedForDestroy))
       {
-        m_app_state.remove_state(ApplicationState::Running);
-        m_app_state.add_state(ApplicationState::ShuttingDown);
+        m_app_state.change_state(ApplicationState::ShuttingDown);
       }
     }
   }
