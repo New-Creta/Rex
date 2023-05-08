@@ -7,23 +7,20 @@ namespace rex
 {
   namespace event_system
   {
-    struct WindowCommonEvent
+    struct WindowResizeEvent
     {
-      EventType type;
-    };
-
-    struct WindowReizeEvent
-    {
-      EventType type;
       s32 window_width;
       s32 window_height;
     };
 
-    union Event
+    struct Event
     {
       EventType type;
-      WindowCommonEvent window_common;
-      WindowReizeEvent window_resize;
+
+      union EventData
+      {
+        WindowResizeEvent window_resize;
+      } data;
     };
   } // namespace event_system
 } // namespace rex

@@ -38,8 +38,8 @@ namespace rex
         : m_wnd_class()
         , m_event_handler(this)
         , m_hwnd(nullptr)
-        , m_min_width(200)    // 200 px is a good minimum width for most windows
-        , m_min_height(200)   // 200 ox is a good minimum height for most windows
+        , m_min_width(200)  // 200 px is a good minimum width for most windows
+        , m_min_height(200) // 200 ox is a good minimum height for most windows
         , m_window_state(WindowState::Idle)
     {
     }

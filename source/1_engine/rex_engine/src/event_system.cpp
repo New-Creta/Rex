@@ -34,7 +34,7 @@ namespace rex
         case EventType::WindowStopWindowResize: REX_LOG(LogEngine, "Firing event: Event Type: {0}", rsl::enum_refl::enum_name(evt.type)); break;
         case EventType::WindowMinimized:
         case EventType::WindowMaximized:
-        case EventType::WindowRestored: REX_LOG(LogEngine, "Firing event: Event Type: {0} - Window Size: [{1}, {2}]", rsl::enum_refl::enum_name(evt.type), evt.window_resize.window_width, evt.window_resize.window_height); break;
+        case EventType::WindowRestored: REX_LOG(LogEngine, "Firing event: Event Type: {0} - Window Size: [{1}, {2}]", rsl::enum_refl::enum_name(evt.type), evt.data.window_resize.window_width, evt.data.window_resize.window_height); break;
       }
 
       const rsl::vector<EventFunction>& delegates = delegates_map()[evt.type];

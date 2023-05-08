@@ -44,30 +44,30 @@ namespace rex
         case WM_DESTROY:
           PostQuitMessage(0);
 
-          evt.window_common.type = event_system::EventType::WindowClose;
+          evt.type = event_system::EventType::WindowClose;
           event_system::fire_event(evt);
           return 0;
 
         case WM_ACTIVATE:
           if(LOWORD(wparam) == WA_INACTIVE)
           {
-            evt.window_common.type = event_system::EventType::WindowDeactivate;
+            evt.type = event_system::EventType::WindowDeactivate;
             event_system::fire_event(evt);
           }
           else
           {
-            evt.window_common.type = event_system::EventType::WindowActivate;
+            evt.type = event_system::EventType::WindowActivate;
             event_system::fire_event(evt);
           }
           return 0;
 
         case WM_ENTERSIZEMOVE:
-          evt.window_common.type = event_system::EventType::WindowStartWindowResize;
+          evt.type = event_system::EventType::WindowStartWindowResize;
           event_system::fire_event(evt);
           return 0;
 
         case WM_EXITSIZEMOVE:
-          evt.window_common.type = event_system::EventType::WindowStopWindowResize;
+          evt.type = event_system::EventType::WindowStopWindowResize;
           event_system::fire_event(evt);
           return 0;
 
@@ -85,22 +85,22 @@ namespace rex
           return 0;
 
         case WM_SIZE:
-          evt.window_resize.window_width  = LOWORD(lparam);
-          evt.window_resize.window_height = HIWORD(lparam);
+          evt.data.window_resize.window_width  = LOWORD(lparam);
+          evt.data.window_resize.window_height = HIWORD(lparam);
 
           if(wparam == SIZE_MINIMIZED)
           {
-            evt.window_resize.type = event_system::EventType::WindowMinimized;
+            evt.type = event_system::EventType::WindowMinimized;
             event_system::fire_event(evt);
           }
           else if(wparam == SIZE_MAXIMIZED)
           {
-            evt.window_resize.type = event_system::EventType::WindowMaximized;
+            evt.type = event_system::EventType::WindowMaximized;
             event_system::fire_event(evt);
           }
           else if(wparam == SIZE_RESTORED)
           {
-            evt.window_resize.type = event_system::EventType::WindowRestored;
+            evt.type = event_system::EventType::WindowRestored;
             event_system::fire_event(evt);
           }
           return 0;
