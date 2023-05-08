@@ -205,7 +205,6 @@ namespace rex
         }
         else if(m_window->is_maximized())
         {
-          m_app_instance->resume();
           m_window->restore();
 
           resize(evt);
