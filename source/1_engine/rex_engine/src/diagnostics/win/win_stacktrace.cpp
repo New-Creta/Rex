@@ -11,6 +11,7 @@ namespace rex
 {
   namespace win
   {
+    // this is a callback used when resolving symbols, useful for debugging
     BOOL CALLBACK symbol_callback(HANDLE /*hProcess*/, ULONG /*ActionCode*/, ULONG64 /*CallbackData*/, ULONG64 /*UserContext*/)
     {
       // Nothing to implement yet
@@ -18,6 +19,7 @@ namespace rex
       return 0;
     }
 
+    // this initializes the symbols library
     bool load_symbols()
     {
       static bool initialised = false;
@@ -36,10 +38,11 @@ namespace rex
       return initialised;
     }
 
+    // can't inline this, as we're doing a stacktrace, we want to be consistent.
     __declspec(noinline) CallStack load_stack_pointers(card32 framesToSkip)
     {
       CallStack stacks_pointers;
-      const card32 frames_to_skip = framesToSkip + 3;
+      const card32 frames_to_skip = framesToSkip;
 
       CaptureStackBackTrace(frames_to_skip, static_cast<DWORD>(stacks_pointers.size()), stacks_pointers.data(), nullptr);
 
@@ -71,12 +74,17 @@ namespace rex
       }
     }
 
+    // we split up a resolved callstack from a regular callstack to save memory
+    // we only resolve a callstack when we need to as it's a performant heavy process
+    // and requires more memory to do so.
     ResolvedCallstack::ResolvedCallstack(const CallStack& callstack)
         : m_resolved_stacktrace()
         , m_size(0)
     {
+      // make sure the symbols library is initialized, but do this only once
       [[maybe_unused]] static const bool s_initialised = load_symbols();
 
+      // some boilerplate, preparing variables for stack tracing
       HANDLE process             = GetCurrentProcess();
       DWORD64 displacement       = 0;
       constexpr card32 buff_size = (sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR) + sizeof(ULONG64) - 1) / sizeof(ULONG64);
@@ -89,14 +97,18 @@ namespace rex
       const card32 max_count = (rsl::min)(m_resolved_stacktrace.size(), callstack.size());
       for(card32 i = 0; i < max_count && callstack[i] != nullptr; ++i)
       {
+        // the callstack passed in to the ctor only holds the pointers
+        // we want the human readable information about these addresses
         void* stack_ptr   = callstack[i];
         const uint64 addr = *reinterpret_cast<uint64*>(&stack_ptr); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         rsl::stacktrace_entry stack_entry;
 
+        // API call to convert an address into something human readable
         if(SymFromAddr(process, addr, &displacement, symbol_info) != 0)
         {
           stack_entry = get_stack_pointer_line_info(process, addr, &displacement, symbol_info->Name);
 
+          // hack to check for an address we couldn't resolve
           if(addr != 0xcccccccc)
           {
             m_resolved_stacktrace[i] = stack_entry;

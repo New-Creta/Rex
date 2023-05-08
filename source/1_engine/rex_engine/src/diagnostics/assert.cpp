@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  DECLARE_LOG_CATEGORY_EXTERN(LogAssert, LogVerbosity::Log);
+  DECLARE_LOG_CATEGORY_EXTERN(LogAssert, LogVerbosity::Error);
   DEFINE_LOG_CATEGORY(LogAssert);
 
   DebugVector<AssertContext>& contexts()

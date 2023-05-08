@@ -38,7 +38,6 @@ namespace rex
   MemoryTracker::MemoryTracker()
       : m_mem_usage(0)
       , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
-      , m_is_initialized(false)
   {
   }
 
@@ -46,21 +45,16 @@ namespace rex
   {
     // Remember that the OS has an overhead of memory allocation for the process itself
     // eg. Windows has a few MBs overhead for the process on startup, including page file usage and page faults
-    // therefore a very low max memory usage could could fall below this
+    // therefore a very low max memory usage could fall below this
     // That's why we track the initial memory usage before the initialization
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
     m_max_mem_usage        = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
-    m_mem_stats_on_startup = win::query_memory_stats();
-    m_is_initialized       = true;
+    m_mem_stats_on_startup = query_memory_stats();
   }
 
   void MemoryTracker::track_alloc(void* /*mem*/, MemoryHeader* header)
   {
-    // It's possible static or global variables perform heap allocation
-    // this is not allowed however, so we need to check here if that happened
-    REX_ASSERT_X(m_is_initialized, "Memory allocation before the memory tracker is initialized, this is forbidden");
-
     const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
@@ -74,19 +68,18 @@ namespace rex
     m_mem_usage -= header->size().size_in_bytes();
     auto it = rsl::find(allocation_headers().cbegin(), allocation_headers().cend(), header);
     REX_ASSERT_X(it != allocation_headers().cend(), "Trying to remove a memory header that wasn't tracked");
+    REX_ASSERT_X(m_mem_usage >= 0, "Mem usage below 0");
     allocation_headers().erase(it);
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
   }
 
-  void MemoryTracker::push_tag(MemoryTag tag)
+  void MemoryTracker::push_tag(MemoryTag tag) // NOLINT(readability-convert-member-functions-to-static)
   {
-    const rsl::unique_lock lock(m_mem_tag_tracking_mutex);
     thread_local_memory_tag_stack()[thread_local_mem_tag_index()] = tag;
     ++thread_local_mem_tag_index();
   }
-  void MemoryTracker::pop_tag()
+  void MemoryTracker::pop_tag() // NOLINT(readability-convert-member-functions-to-static)
   {
-    const rsl::unique_lock lock(m_mem_tag_tracking_mutex);
     --thread_local_mem_tag_index();
   }
 

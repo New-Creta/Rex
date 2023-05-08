@@ -84,7 +84,8 @@ namespace rexlog
       {
 #ifdef _WIN32
         tm tm {};
-        REX_ASSERT_X(::localtime_s(&tm, &time) == 0, "failed to convert to local time");
+        REX_MAYBE_UNUSED const errno_t res = ::localtime_s(&tm, &time);
+        REX_ASSERT_X(res == 0, "failed to convert to local time");
 #else
         tm tm;
         ::localtime_r(&time, &tm);
@@ -102,7 +103,8 @@ namespace rexlog
       {
 #ifdef _WIN32
         tm tm {};
-        REX_ASSERT_X(::gmtime_s(&tm, &timeTt), "failed to convert to gm");
+        REX_MAYBE_UNUSED const errno_t res = ::gmtime_s(&tm, &timeTt);
+        REX_ASSERT_X(res == 0, "failed to convert to gm");
 #else
         tm tm;
         ::gmtime_r(&time_tt, &tm);

@@ -11,9 +11,9 @@ namespace rex
   class MemoryHeader
   {
   public:
-    MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const win::CallStack& callstack);
+    MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const CallStack& callstack);
 
-    const win::CallStack& callstack() const;
+    const CallStack& callstack() const;
     rsl::memory_size size() const;
     void* ptr() const;
     rsl::thread::id thread_id() const;
@@ -21,7 +21,7 @@ namespace rex
     card32 frame_index() const;
 
   private:
-    win::CallStack m_callstack;
+    CallStack m_callstack;
     rsl::memory_size m_size;     // size of the memory allocated
     void* m_ptr;                 // the pointer that's allocated
     rsl::thread::id m_thread_id; // the thread id this was allocated on
