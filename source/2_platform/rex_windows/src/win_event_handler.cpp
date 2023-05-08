@@ -1,6 +1,7 @@
 #include "rex_windows/win_event_handler.h"
 
 #include "rex_engine/core_window.h"
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_engine/event_system.h"
 #include "rex_engine/event_type.h"

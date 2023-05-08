@@ -26,7 +26,7 @@ namespace rex
 
   //-------------------------------------------------------------------------
   CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
-    :m_app_state(ApplicationState::Invalid)
+      : m_app_state(ApplicationState::Invalid)
   {
     mem_tracker().initialize(engineParams.max_memory);
   }

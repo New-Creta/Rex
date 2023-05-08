@@ -1,5 +1,6 @@
 #include "rex_windows/win_window.h"
 
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_windows/log.h"
@@ -190,58 +191,58 @@ namespace rex
     //-------------------------------------------------------------------------
     void Window::start_resize()
     {
-        m_window_state.add_state(WindowState::Resizing);
+      m_window_state.add_state(WindowState::Resizing);
     }
 
     //-------------------------------------------------------------------------
     void Window::stop_resize()
     {
-        m_window_state.remove_state(WindowState::Resizing);
+      m_window_state.remove_state(WindowState::Resizing);
     }
 
     //-------------------------------------------------------------------------
     void Window::minimize()
     {
-        m_window_state.add_state(WindowState::Minimized);
-        m_window_state.remove_state(WindowState::Maximized);
+      m_window_state.add_state(WindowState::Minimized);
+      m_window_state.remove_state(WindowState::Maximized);
     }
 
     //-------------------------------------------------------------------------
     void Window::maximize()
     {
-        m_window_state.add_state(WindowState::Maximized);
-        m_window_state.remove_state(WindowState::Minimized);
+      m_window_state.add_state(WindowState::Maximized);
+      m_window_state.remove_state(WindowState::Minimized);
     }
 
     //-------------------------------------------------------------------------
     void Window::restore()
     {
-        if (m_window_state.has_state(WindowState::Minimized))
-        {
-            m_window_state.remove_state(WindowState::Minimized);
-        }
-        else if (m_window_state.has_state(WindowState::Maximized))
-        {
-            m_window_state.remove_state(WindowState::Maximized);
-        }
+      if(m_window_state.has_state(WindowState::Minimized))
+      {
+        m_window_state.remove_state(WindowState::Minimized);
+      }
+      else if(m_window_state.has_state(WindowState::Maximized))
+      {
+        m_window_state.remove_state(WindowState::Maximized);
+      }
     }
 
     //-------------------------------------------------------------------------
     bool Window::is_resizing() const
     {
-        return m_window_state.has_state(WindowState::Resizing);
+      return m_window_state.has_state(WindowState::Resizing);
     }
 
     //-------------------------------------------------------------------------
     bool Window::is_minimized() const
     {
-        return m_window_state.has_state(WindowState::Minimized);
+      return m_window_state.has_state(WindowState::Minimized);
     }
 
     //-------------------------------------------------------------------------
     bool Window::is_maximized() const
     {
-        return m_window_state.has_state(WindowState::Maximized);
+      return m_window_state.has_state(WindowState::Maximized);
     }
 
     //-------------------------------------------------------------------------
