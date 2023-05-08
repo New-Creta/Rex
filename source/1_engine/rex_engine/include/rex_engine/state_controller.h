@@ -27,6 +27,11 @@ namespace rex
     {
       m_state = m_state & ~static_cast<u32>(state);
     }
+    void change_state(TState state)
+    {
+      m_state = 0;
+      add_state(state);
+    }
 
     bool has_state(TState state) const
     {
