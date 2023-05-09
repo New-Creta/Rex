@@ -73,7 +73,7 @@ namespace rex
       bool initialize()
       {
         dxgi::Factory factory = dxgi::Factory::create();
-        if(factory)
+        if(!factory)
         {
           REX_ERROR(LogDirectX, "Failed to create DXGI Factory");
           return false;
