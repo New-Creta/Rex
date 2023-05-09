@@ -1,5 +1,6 @@
 #include "rex_windows/win_window.h"
 
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_windows/log.h"
@@ -35,24 +36,44 @@ namespace rex
     //-------------------------------------------------------------------------
     Window::Window()
         : m_wnd_class()
+        , m_event_handler(this)
         , m_hwnd(nullptr)
-        , m_destroyed(false)
+        , m_min_width(200)  // 200 px is a good minimum width for most windows
+        , m_min_height(200) // 200 ox is a good minimum height for most windows
+        , m_window_state(WindowState::Idle)
     {
     }
 
     //-------------------------------------------------------------------------
     bool Window::create(HInstance hInstance, s32 cmdShow, const WindowDescription& description)
     {
-      if(!m_wnd_class.create(hInstance, default_win_procedure, description.title))
+      if(!m_wnd_class.create(hInstance, default_win_procedure, description.title.data()))
       {
         REX_ERROR(LogWindows, "Failed to create window class");
         return false;
       }
 
-      const s32 x      = description.viewport.x;
-      const s32 y      = description.viewport.y;
-      const s32 width  = description.viewport.width;
-      const s32 height = description.viewport.height;
+      m_min_width  = description.min_width;
+      m_min_height = description.min_height;
+
+      WindowViewport viewport = description.viewport;
+
+      const s32 x      = viewport.x;
+      const s32 y      = viewport.y;
+      const s32 width  = viewport.width;
+      const s32 height = viewport.height;
+
+      REX_ASSERT_X(width < (1 << 16), "Window width exceeded the maximum resolution");
+      REX_ASSERT_X(height < (1 << 16), "Window height exceeded the maximum resolution");
+
+      if(width < m_min_width)
+      {
+        viewport.width = m_min_width;
+      }
+      if(height < m_min_height)
+      {
+        viewport.height = m_min_height;
+      }
 
       RECT rc = {0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
       AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
@@ -68,8 +89,8 @@ namespace rex
 
       // clang-format off
       m_hwnd = WIN_CALL(
-          static_cast<HWND>(CreateWindowA(description.title, 
-                                          description.title, 
+          static_cast<HWND>(CreateWindowA(description.title.data(), 
+                                          description.title.data(), 
                                           WS_OVERLAPPEDWINDOW, 
                                           x == 0
                                             ? screen_mid_x - half_x 
@@ -136,6 +157,13 @@ namespace rex
 
       return r.right - r.left;
     }
+
+    //-------------------------------------------------------------------------
+    s32 Window::min_width() const
+    {
+      return m_min_width;
+    }
+
     //-------------------------------------------------------------------------
     s32 Window::height() const
     {
@@ -143,6 +171,12 @@ namespace rex
       GetWindowRect(static_cast<HWND>(m_hwnd), &r);
 
       return r.bottom - r.top;
+    }
+
+    //-------------------------------------------------------------------------
+    s32 Window::min_height() const
+    {
+      return m_min_height;
     }
 
     //-------------------------------------------------------------------------
@@ -155,9 +189,60 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
+    void Window::start_resize()
+    {
+      m_window_state.add_state(WindowState::Resizing);
+    }
+
+    //-------------------------------------------------------------------------
+    void Window::stop_resize()
+    {
+      m_window_state.remove_state(WindowState::Resizing);
+    }
+
+    //-------------------------------------------------------------------------
+    void Window::minimize()
+    {
+      m_window_state.add_state(WindowState::Minimized);
+      m_window_state.remove_state(WindowState::Maximized);
+    }
+
+    //-------------------------------------------------------------------------
+    void Window::maximize()
+    {
+      m_window_state.add_state(WindowState::Maximized);
+      m_window_state.remove_state(WindowState::Minimized);
+    }
+
+    //-------------------------------------------------------------------------
+    void Window::restore()
+    {
+      m_window_state.remove_state(WindowState::Minimized);
+      m_window_state.remove_state(WindowState::Maximized);
+    }
+
+    //-------------------------------------------------------------------------
+    bool Window::is_resizing() const
+    {
+      return m_window_state.has_state(WindowState::Resizing);
+    }
+
+    //-------------------------------------------------------------------------
+    bool Window::is_minimized() const
+    {
+      return m_window_state.has_state(WindowState::Minimized);
+    }
+
+    //-------------------------------------------------------------------------
+    bool Window::is_maximized() const
+    {
+      return m_window_state.has_state(WindowState::Maximized);
+    }
+
+    //-------------------------------------------------------------------------
     bool Window::destroy()
     {
-      if(m_destroyed == false) // NOLINT(readability-simplify-boolean-expr)
+      if(m_window_state.has_state(WindowState::Destroyed)) // NOLINT(readability-simplify-boolean-expr)
       {
         DestroyWindow(static_cast<HWND>(m_hwnd));
 
@@ -169,7 +254,7 @@ namespace rex
         return false;
       }
 
-      m_destroyed = true;
+      m_window_state.add_state(WindowState::Destroyed);
       return true;
     }
   } // namespace win32

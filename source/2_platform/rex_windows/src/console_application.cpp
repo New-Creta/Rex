@@ -26,7 +26,7 @@ namespace rex
 
       bool initialize()
       {
-        event_system::subscribe(event_system::EventType::QuitApp, [this]() { m_app_instance->quit(); });
+        event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
 
         return m_on_initialize();
       }

@@ -3,6 +3,7 @@
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/core_application.h"
 #include "rex_engine/defines.h"
+#include "rex_engine/string/stringid.h"
 #include "rex_std/memory.h"
 #include "rex_std/utility.h"
 #include "rex_windows/platform_creation_params.h"

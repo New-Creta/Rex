@@ -16,16 +16,38 @@ public class RexWindows : PlatformProject
 
     string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
     GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
-  }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+        switch (GenerateSettings.GraphicsAPI)
+        {
+            case GraphicsAPI.OpenGL:
+                SourceFilesBuildExcludeRegex.Add("win_directx_context.cpp");
+                break;
+            case GraphicsAPI.DirectX12:
+                SourceFilesBuildExcludeRegex.Add("win_opengl_context.cpp");
+                break;
+            default:
+                break;
+        }
+    }
+
+    public override void Configure(RexConfiguration conf, RexTarget target)
     {
         base.Configure(conf, target);
 
         conf.Output = Configuration.OutputType.Lib;
 
         conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-        conf.AddPublicDependency<RexOpenGL>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+        switch (GenerateSettings.GraphicsAPI)
+        {
+            case GraphicsAPI.OpenGL:
+                conf.AddPublicDependency<RexOpenGL>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+                break;
+            case GraphicsAPI.DirectX12:
+                conf.AddPublicDependency<RexDirectX>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+                break;
+            default:
+                break;
+        }
         conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     }
 }

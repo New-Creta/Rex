@@ -170,6 +170,11 @@ public class BasicCPPProject : BaseProject
   {
     base.PreConfigure();
 
+    if (GenerateSettings.DisableClangTidyForThirdParty && SourceRootPath.Contains(Globals.ThirdpartyRoot))
+    {
+      GenerateCompilerDB = false;
+    }
+
     ReadGenerationConfigFile();
   }
 
@@ -211,14 +216,20 @@ public class BasicCPPProject : BaseProject
     if (target.Compiler == Compiler.Clang && (GenerateSettings.GenerateUnitTests == false && conf.is_config_for_testing() == false))
     {
       // setup post build command
-      string compilerDBPath = GetClangToolsPath(conf);
+      string compilerDBPath = GetCompilerDBOutputFolder(conf);
       if (GenerateCompilerDB)
       {
         QueueCompilerDatabaseGeneration(conf);
         CopyClangToolConfigFiles(compilerDBPath);
       }
-
-      conf.NinjaGenerateCompilerDB = false;
+      else
+      {
+        string clangToolsPath = GetClangToolsOutputFolder(conf);
+        if (Directory.Exists(clangToolsPath))
+        {
+          Directory.Delete(clangToolsPath, recursive: true);
+        }
+      }
 
       string postbuildCommandScriptPath = Path.Combine(Globals.SourceRoot, $"post_build.py");
       string postbuildCommandArguments = "";
@@ -234,7 +245,7 @@ public class BasicCPPProject : BaseProject
         postbuildCommandArguments += $" -perform_all_checks";
       }
 
-      if (GenerateSettings.NoClangTools == false)
+      if (GenerateSettings.NoClangTools == false && GenerateCompilerDB == true)
       {
         postbuildCommandArguments += $" -use_clang_tools";
       }
@@ -268,7 +279,7 @@ public class BasicCPPProject : BaseProject
 
   private void GenerateClangToolProjectFile(RexConfiguration conf, RexTarget target)
   {
-    string clangToolsProjectPath = GetClangToolsPath(conf);
+    string clangToolsProjectPath = GetCompilerDBOutputFolder(conf);
 
     ClangToolsProject project = new ClangToolsProject(Name, clangToolsProjectPath);
     project.HeaderFilters = conf.ClangToolHeaderFilterList.ToList();
@@ -345,12 +356,17 @@ public class BasicCPPProject : BaseProject
 
   private string GetCompilerDBOutputFolder(RexConfiguration config)
   {
-    return $"{Path.Combine(config.ProjectPath, "clang_tools", $"{PerConfigFolderFormat(config)}")}";
+    return $"{Path.Combine(GetClangToolsOutputFolder(config), $"{PerConfigFolderFormat(config)}")}";
   }
 
-  private static string PerConfigFolderFormat(RexConfiguration config)
+  private string GetClangToolsOutputFolder(RexConfiguration config)
   {
-    return System.IO.Path.Combine(config.Target.GetFragment<Compiler>().ToString(), config.Name);
+    return $"{Path.Combine(config.ProjectPath, "clang_tools")}";
+  }
+
+  private static string PerConfigFolderFormat(RexConfiguration conf)
+  {
+    return Path.Combine(conf.Target.GetFragment<Compiler>().ToString(), conf.Name);
   }
 
   private void QueueCompilerDatabaseGeneration(RexConfiguration config)
@@ -373,7 +389,6 @@ public class BasicCPPProject : BaseProject
     start_info.RedirectStandardOutput = true;
     start_info.RedirectStandardError = true;
     start_info.UseShellExecute = false;
-
 
     System.Diagnostics.Process process = new System.Diagnostics.Process();
     process.StartInfo = start_info;

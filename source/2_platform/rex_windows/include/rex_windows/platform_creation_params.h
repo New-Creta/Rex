@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_windows/win_types.h"
+#include "rex_engine/string/stringid.h"
 
 namespace rex
 {
@@ -19,7 +20,7 @@ namespace rex
   {
     s32 window_width = 1280;
     s32 window_height = 720;
-    const char8* window_title = "Application";
+    StringID window_title = "Application"_sid;
 
     s32 max_render_commands = 1 << 16;
     s32 max_fps = 60;
