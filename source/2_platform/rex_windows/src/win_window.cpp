@@ -217,14 +217,8 @@ namespace rex
     //-------------------------------------------------------------------------
     void Window::restore()
     {
-      if(m_window_state.has_state(WindowState::Minimized))
-      {
-        m_window_state.remove_state(WindowState::Minimized);
-      }
-      else if(m_window_state.has_state(WindowState::Maximized))
-      {
-        m_window_state.remove_state(WindowState::Maximized);
-      }
+      m_window_state.remove_state(WindowState::Minimized);
+      m_window_state.remove_state(WindowState::Maximized);
     }
 
     //-------------------------------------------------------------------------
