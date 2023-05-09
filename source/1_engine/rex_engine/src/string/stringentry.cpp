@@ -10,10 +10,8 @@ namespace rex
   {
     m_characters = rsl::make_unique<char[]>(characters.size() + 1); // NOLINT(modernize-avoid-c-arrays)
 
-    // Memset everything to 0 to already fill in the 0 terminator
-    // and then copy the characters over
-    rsl::memset(m_characters.get(), 0, characters.size() + 1);
     rsl::memcpy(m_characters.get(), characters.data(), characters.size());
+    m_characters[m_characters.count()] = 0;
   }
   //-------------------------------------------------------------------------
   StringEntry::StringEntry(StringEntry&& other) noexcept
