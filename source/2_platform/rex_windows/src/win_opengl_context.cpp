@@ -1,12 +1,13 @@
-#include "rex_engine/types.h"
-#include "rex_renderer_core/context.h"
-#include "rex_windows/log.h"
+#ifdef REX_API_OPENGL
+  #include "rex_engine/types.h"
+  #include "rex_renderer_core/context.h"
+  #include "rex_windows/log.h"
 
-#include <Windows.h>
-#include <glad/gl.h>
-#include <glad/wgl.h>
+  #include <Windows.h>
+  #include <glad/gl.h>
+  #include <glad/wgl.h>
 
-// NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
+// NOLINTBEGIN(modernize-use-nullptr)
 
 namespace rex
 {
@@ -16,7 +17,7 @@ namespace rex
     HGLRC glrc;
   };
 
-  WglContext g_glctx; // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
+  WglContext g_glctx; // NOLINT (fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables,)
 
   bool rex_make_gl_context_current()
   {
@@ -141,3 +142,4 @@ namespace rex
 } // namespace rex
 
 // NOLINTEND(modernize-use-nullptr,-warnings-as-errors)
+#endif

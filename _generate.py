@@ -24,6 +24,7 @@ if __name__ == "__main__":
   parser.add_argument("-asan", help="generate address sanitizer", action="store_true")
   parser.add_argument("-ubsan", help="generate undefined behavior sanitizer", action="store_true")
   parser.add_argument("-fuzzy", help="generate fuzzy testing", action="store_true")
+  parser.add_argument("-sharpmake_args", help="arguments passed to sharpmake")
 
   args, unknown = parser.parse_known_args()
 
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
   run_any_tests = args.unittests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
-  sharpmake_args = "/EnableVisualStudio"
+  sharpmake_args = "/enableVisualStudio /disableClangTidyForThirdParty"
   if args.no_clang_tools:
     sharpmake_args += " /noClangTools"
 
@@ -51,7 +52,14 @@ if __name__ == "__main__":
   elif args.fuzzy:
     sharpmake_args += " /enableFuzzyTesting"
 
+  if args.sharpmake_args:
+    sharpmake_args += f" {args.sharpmake_args}"
+
   result = 0
+
+  # Apparantly we cannot pass doulbe quotes as an argument to python
+  # At least by my knowledge ... 
+  sharpmake_args = sharpmake_args.replace("\'", "\"")
 
   proc = regis.generation.new_generation(settings_path, sharpmake_args)
   proc.wait()

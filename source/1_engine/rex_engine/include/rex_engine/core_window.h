@@ -2,6 +2,7 @@
 
 #include "rex_engine/defines.h"
 #include "rex_engine/types.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {
@@ -32,8 +33,7 @@ namespace rex
     {
     }
 
-    const char8* title;
-
+    rsl::string_view title;
     WindowViewport viewport;
 
     s32 min_width;
