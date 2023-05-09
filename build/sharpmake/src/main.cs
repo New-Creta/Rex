@@ -184,49 +184,49 @@ namespace rex
       GenerateSettings.IntermediateDir = intermediateDir;
     }
 
-    [Sharpmake.CommandLine.Option("GenerateUnitTests")]
+    [Sharpmake.CommandLine.Option("generateUnitTests")]
     public void CommandLineGenerateUnitTests()
     {
       GenerateSettings.GenerateUnitTests = true;
     }
 
-    [Sharpmake.CommandLine.Option("EnableCodeCoverage")]
+    [Sharpmake.CommandLine.Option("enableCodeCoverage")]
     public void CommandLinePerformAllChecks()
     {
       GenerateSettings.CoverageEnabled = true;
     }
 
-    [Sharpmake.CommandLine.Option("EnableAsan")]
+    [Sharpmake.CommandLine.Option("enableAsan")]
     public void CommandLineEnableAsan()
     {
       GenerateSettings.AddressSanitizerEnabled = true;
     }
 
-    [Sharpmake.CommandLine.Option("EnableUBsan")]
+    [Sharpmake.CommandLine.Option("enableUBsan")]
     public void CommandLineEnableUBsan()
     {
       GenerateSettings.UndefinedBehaviorSanitizerEnabled = true;
     }
 
-    [Sharpmake.CommandLine.Option("EnableFuzzyTests")]
+    [Sharpmake.CommandLine.Option("enableFuzzyTests")]
     public void CommandLineEnableFuzzyTests()
     {
       GenerateSettings.GenerateFuzzyTests = true;
     }
 
-    [Sharpmake.CommandLine.Option("EnableVisualStudio")]
+    [Sharpmake.CommandLine.Option("enableVisualStudio")]
     public void CommandLineEnableVisualStudio()
     {
       GenerateSettings.EnableVisualStudio = true;
     }
 
-    [Sharpmake.CommandLine.Option("NoClangTools")]
+    [Sharpmake.CommandLine.Option("noClangTools")]
     public void CommandLineDisableClangTools()
     {
       GenerateSettings.NoClangTools = true;
     }
 
-    [Sharpmake.CommandLine.Option("DisableDefaultGeneration")]
+    [Sharpmake.CommandLine.Option("disableDefaultGeneration")]
     public void CommandLineDisableDefaultGeneration()
     {
       GenerateSettings.EnableDefaultGeneration = false;
@@ -251,6 +251,13 @@ namespace rex
     }
 
     }
+
+    [Sharpmake.CommandLine.Option("disableClangTidyForThirdParty")]
+    public void CommandLineDisableClangTidyForThirdParty()
+    {
+      GenerateSettings.DisableClangTidyForThirdParty = true;
+    }
+  }
 }
 
 public static class Main
