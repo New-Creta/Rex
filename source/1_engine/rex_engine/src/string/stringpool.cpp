@@ -17,7 +17,7 @@ namespace rex
     {
       EntryMap map;
 
-      StringEntryID entry_id(0);
+      StringEntryID entry_id(StringEntryID::s_none_state_hash);
       StringEntry entry("Invalid StringID");
 
       map.emplace(rsl::move(entry_id), rsl::move(entry));

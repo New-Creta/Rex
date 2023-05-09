@@ -44,7 +44,7 @@ namespace rex
 
   //-------------------------------------------------------------------------
   StringEntryID::StringEntryID()
-      : m_value(0)
+      : m_value(s_none_state_hash)
   {
   }
   //-------------------------------------------------------------------------
@@ -87,7 +87,7 @@ namespace rex
   //-------------------------------------------------------------------------
   StringEntryID::operator bool() const
   {
-    return m_value != 0;
+    return m_value != s_none_state_hash;
   }
   //-------------------------------------------------------------------------
   StringEntryID::operator rsl::hash_result() const

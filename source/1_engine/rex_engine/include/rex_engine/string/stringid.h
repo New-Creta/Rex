@@ -26,10 +26,8 @@ namespace rex
     u32 value() const;
 
   private:
-    constexpr static u32 s_none_state_hash = 0;
-
-    /** Index into the StringID array (used to find String portion of the string/number pair used for comparison) */
-    StringEntryID m_comparison_index;
+    /** Hash into the StringID hash table */
+    StringEntryID m_comparison_hash;
   };
 
   StringID create_sid(rsl::string_view stringView);

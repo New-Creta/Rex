@@ -27,7 +27,7 @@ namespace rex
    * Create an empty StringID.
    */
   StringID::StringID()
-      : m_comparison_index(s_none_state_hash)
+      : m_comparison_hash(StringEntryID::s_none_state_hash)
   {
   }
 
@@ -36,7 +36,7 @@ namespace rex
    * Create an StringID with characters.
    */
   StringID::StringID(rsl::string_view characters)
-      : m_comparison_index(internal::make(characters))
+      : m_comparison_hash(internal::make(characters))
   {
   }
 
@@ -46,13 +46,13 @@ namespace rex
    */
   StringID::operator u32() const
   {
-    return static_cast<u32>(m_comparison_index);
+    return static_cast<u32>(m_comparison_hash);
   }
 
   //-------------------------------------------------------------------------
   bool StringID::operator==(const StringID& other) const
   {
-    return m_comparison_index == other.m_comparison_index;
+    return m_comparison_hash == other.m_comparison_hash;
   }
   //-------------------------------------------------------------------------
   bool StringID::operator!=(const StringID& other) const
@@ -63,12 +63,12 @@ namespace rex
   //-------------------------------------------------------------------------
   bool StringID::operator==(const StringEntryID& entryID) const
   {
-    return m_comparison_index == static_cast<uint32>(entryID);
+    return m_comparison_hash == static_cast<uint32>(entryID);
   }
   //-------------------------------------------------------------------------
   bool StringID::operator!=(const StringEntryID& entryID) const
   {
-    return m_comparison_index != static_cast<uint32>(entryID);
+    return m_comparison_hash != static_cast<uint32>(entryID);
   }
 
   //-------------------------------------------------------------------------
@@ -77,14 +77,14 @@ namespace rex
    */
   rsl::string_view StringID::to_string_view() const
   {
-    return string_pool::resolve(m_comparison_index);
+    return string_pool::resolve(m_comparison_hash);
   }
 
   //-------------------------------------------------------------------------
   /** True for StringID() and StringID("Invalid StringID") */
   bool StringID::is_none() const
   {
-    return m_comparison_index == s_none_state_hash;
+    return m_comparison_hash == StringEntryID::s_none_state_hash;
   }
 
   //-------------------------------------------------------------------------
@@ -93,7 +93,7 @@ namespace rex
    */
   u32 StringID::value() const
   {
-    return static_cast<u32>(m_comparison_index);
+    return static_cast<u32>(m_comparison_hash);
   }
 
   //-------------------------------------------------------------------------
