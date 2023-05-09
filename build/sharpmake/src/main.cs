@@ -250,8 +250,6 @@ namespace rex
             }
     }
 
-    }
-
     [Sharpmake.CommandLine.Option("disableClangTidyForThirdParty")]
     public void CommandLineDisableClangTidyForThirdParty()
     {
