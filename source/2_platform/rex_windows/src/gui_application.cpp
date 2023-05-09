@@ -106,7 +106,7 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title    = m_gui_params.window_title;
+        wnd_description.title    = m_gui_params.window_title.to_string_view();
         wnd_description.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
 
         if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
