@@ -7,7 +7,7 @@
   #include <glad/gl.h>
   #include <glad/wgl.h>
 
-// NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
+// NOLINTBEGIN(modernize-use-nullptr)
 
 namespace rex
 {
@@ -17,7 +17,7 @@ namespace rex
     HGLRC glrc;
   };
 
-  WglContext g_glctx; // NOLINT (fuchsia-statically-constructed-objects,-warnings-as-errors, cppcoreguidelines-avoid-non-const-global-variables,-warnings-as-errors)
+  WglContext g_glctx; // NOLINT (fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables,)
 
   bool rex_make_gl_context_current()
   {

@@ -1,8 +1,16 @@
-﻿using System;
+﻿using Sharpmake;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+public enum GraphicsAPI
+{
+    Unknown,
+    OpenGL,
+    DirectX12
+}
 
 public class GenerateSettings
 {
@@ -22,6 +30,7 @@ public class GenerateSettings
 
 
   static public string ClangTidyRegex { get; set; }
+  static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;
 
   static public Dictionary<string, List<string>> MemoryTags = new Dictionary<string, List<string>>();
 
