@@ -4,7 +4,6 @@
   #error Please define REXLOG_COMPILED_LIB to compile this file.
 #endif
 
-#include "rex_engine/diagnostics/logging/internal/common-inl.h"
 #include "rex_engine/diagnostics/logging/internal/details/backtracer-inl.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg-inl.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer-inl.h"
