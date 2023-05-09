@@ -15,7 +15,7 @@ namespace
    * The VendorId is a 16-bit unsigned integer that is typically included in
    * the PCI Configuration space of the device.
    */
-  enum class Vendors
+  enum class Vendor
   {
     UNKNOWN = 0,
     AMD     = 0x1002,
@@ -28,11 +28,11 @@ namespace
   {
     // Enum reflection is not possible here as the integer values are
     // outside the valid range of values [0, 127] for this enumeration type
-    switch(static_cast<Vendors>(vendor))
+    switch(static_cast<Vendor>(vendor))
     {
-      case Vendors::AMD: return rsl::string("AMD");
-      case Vendors::NVIDIA: return rsl::string("NVIDIA");
-      case Vendors::INTEL: return rsl::string("INTEL");
+      case Vendor::AMD: return rsl::string("AMD");
+      case Vendor::NVIDIA: return rsl::string("NVIDIA");
+      case Vendor::INTEL: return rsl::string("INTEL");
       default: return rsl::string("Unknown Vendor");
     }
   }
