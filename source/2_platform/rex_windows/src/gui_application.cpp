@@ -16,7 +16,8 @@
 
 #include <Windows.h>
 
-// NOLINTBEGIN(modernize-use-nullptr,-warnings-as-errors)
+// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+// NOLINTBEGIN(modernize-use-nullptr)
 
 namespace rex
 {
@@ -77,18 +78,21 @@ namespace rex
         // update the window (this pulls input as well)
         m_window->update();
 
-        // call the client code, let it update
-        m_on_update();
+        if(!m_app_instance->is_paused())
+        {
+          // call the client code, let it update
+          m_on_update();
 
-        // update the graphics code
-        renderer::backend::clear();
-        renderer::backend::present();
+          // update the graphics code
+          renderer::backend::clear();
+          renderer::backend::present();
 
-        // update the timing stats
-        m_delta_time.update();
-        m_fps.update();
+          // update the timing stats
+          m_delta_time.update();
+          m_fps.update();
 
-        ++m_frame_idx;
+          ++m_frame_idx;
+        }
 
         cap_frame_rate();
       }
@@ -120,7 +124,14 @@ namespace rex
 
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose, [this]() { m_app_instance->quit(); });
+        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
+        event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
+        event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
+        event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });
+        event_system::subscribe(event_system::EventType::WindowStopWindowResize, [this](const event_system::Event& evt) { on_stop_resize(evt); });
+        event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { on_minimize(); });
+        event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { on_maximize(evt); });
+        event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { on_restore(evt); });
       }
 
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
@@ -147,6 +158,98 @@ namespace rex
         {
           rsl::this_thread::sleep_for(elapsed_time);
         }
+      }
+
+      void on_start_resize()
+      {
+        m_app_instance->pause();
+        m_window->start_resize();
+      }
+
+      void on_stop_resize(const event_system::Event& evt)
+      {
+        m_app_instance->resume();
+        m_window->stop_resize();
+
+        REX_ASSERT_X(evt.type == event_system::EventType::WindowStopWindowResize, "Event has to be of type \"WindowStopWindowResize\"");
+
+        resize(evt);
+      }
+
+      void on_minimize()
+      {
+        m_app_instance->pause();
+        m_window->minimize();
+      }
+
+      void on_maximize(const event_system::Event& evt)
+      {
+        m_app_instance->resume();
+        m_window->maximize();
+
+        REX_ASSERT_X(evt.type == event_system::EventType::WindowMaximized, "Event has to be of type \"WindowMaximized\"");
+
+        resize(evt);
+      }
+
+      void on_restore(const event_system::Event& evt)
+      {
+        REX_ASSERT_X(evt.type == event_system::EventType::WindowRestored, "Event has to be of type \"WindowRestored\"");
+
+        if(m_window->is_minimized())
+        {
+          m_app_instance->resume();
+          m_window->restore();
+
+          resize(evt);
+        }
+        else if(m_window->is_maximized())
+        {
+          m_window->restore();
+
+          resize(evt);
+        }
+        else if(m_window->is_resizing())
+        {
+          // If user is dragging the resize bars, we do not resize
+          // the buffers here because as the user continuously
+          // drags the resize bars, a stream of "Resizing" messages are
+          // sent to the window, and it would be pointless (and slow)
+          // to resize for each "Resizing" message received from dragging
+          // the resize bars.
+          //
+          // So instead, we reset after the user is done resizing the
+          // window and releases the resize bars, which sends a
+          // "WindowStopWindowResize" message.
+        }
+        else // API call such as SetWindowPos or mSwapChain->SetFullscreenState.
+        {
+          REX_WARN(LogWindows, "API call such as SetWindowPos or mSwapChain->SetFullscreenState will also invoke a resize event.");
+        }
+      }
+
+      void resize(const event_system::Event& /*evt*/)
+      {
+        // Resize window ( although we might want to capture this within the window itself ... )
+        //
+        // Flush Command Queue
+        //
+        // Release front and back buffer
+        // Release depth stencil buffer
+        //
+        // Reset current back buffer back to first entry ( aka 0 )
+        //
+        // Recreate swap chain buffers
+        // Recreate depth stencil buffer
+        //
+        // Transition depth stencil from it's initial state to be used as a depth buffer (DX only)
+        //
+        // Execute all resize commands
+        //
+        // Wait until completed
+        //
+        // Update screen viewport
+        // Update scissor rect
       }
 
     private:
@@ -195,4 +298,5 @@ namespace rex
   } // namespace win32
 } // namespace rex
 
-// NOLINTEND(modernize-use-nullptr,-warnings-as-errors)
+// NOLINTEND(modernize-use-nullptr)
+// NOLINTEND(cppcoreguidelines-pro-type-union-access)
