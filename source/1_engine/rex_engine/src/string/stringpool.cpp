@@ -72,7 +72,7 @@ namespace rex
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
       {
-        it = get_entries().find(0);
+        it = get_entries().find(StringEntryID::s_none_state_hash);
 
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
