@@ -1051,8 +1051,8 @@ namespace rexlog
 
   } // namespace details
 
-  REXLOG_INLINE PatternFormatter::PatternFormatter(rex::DebugString pattern, PatternTimeType timeType, rex::DebugString eol, custom_flags customUserFlags)
-      : m_pattern(rsl::move(pattern))
+  REXLOG_INLINE PatternFormatter::PatternFormatter(rsl::string_view pattern, PatternTimeType timeType, rex::DebugString eol, custom_flags customUserFlags)
+      : m_pattern(pattern)
       , m_eol(rsl::move(eol))
       , m_pattern_time_type(timeType)
       , m_need_localtime(false)
@@ -1111,9 +1111,9 @@ namespace rexlog
     details::fmt_helper::append_string_view(m_eol, dest);
   }
 
-  REXLOG_INLINE void PatternFormatter::set_pattern(rex::DebugString pattern)
+  REXLOG_INLINE void PatternFormatter::set_pattern(rsl::string_view pattern)
   {
-    m_pattern        = rsl::move(pattern);
+    m_pattern        = rex::DebugString(pattern);
     m_need_localtime = false;
     compile_pattern_impl(m_pattern);
   }
@@ -1416,7 +1416,7 @@ namespace rexlog
     return details::PaddingInfo {rsl::min<size_t>(width, max_width), side, truncate};
   }
 
-  REXLOG_INLINE void PatternFormatter::compile_pattern_impl(const rex::DebugString& pattern)
+  REXLOG_INLINE void PatternFormatter::compile_pattern_impl(rsl::string_view pattern)
   {
     auto end = pattern.end();
     rsl::unique_ptr<details::aggregate_formatter> user_chars;

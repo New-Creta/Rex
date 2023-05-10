@@ -13,7 +13,7 @@
 
 namespace rex
 {
-  using LogPattern  = const char*;
+  using LogPattern  = rsl::string_view;
   using LogLevelMap = DebugHashTable<LogVerbosity, rexlog::level::LevelEnum>;
 
   using LoggerObjectPtr    = rsl::shared_ptr<rexlog::Logger>;
@@ -75,7 +75,7 @@ namespace rex
 
     rsl::shared_ptr<rexlog::Logger> new_logger = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), rex::DebugString(category.get_category_name()), rsl::begin(sinks), rsl::end(sinks));
 
-    new_logger->set_pattern(rsl::basic_string<char8, rsl::char_traits<char8>, DebugAllocator<UntrackedAllocator>>(default_pattern, global_debug_allocator()));
+    new_logger->set_pattern(default_pattern);
     new_logger->set_level(log_levels.at(category.get_verbosity()));
 
     loggers().insert({category.get_category_name(), new_logger});

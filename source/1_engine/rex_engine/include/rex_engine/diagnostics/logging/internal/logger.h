@@ -217,7 +217,7 @@ namespace rexlog
     // equivalent to
     //     set_formatter(make_unique<pattern_formatter>(pattern, time_type))
     // Note: each sink will get a new instance of a formatter object, replacing the old one.
-    void set_pattern(rex::DebugString pattern, PatternTimeType timeType = PatternTimeType::Local);
+    void set_pattern(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local);
 
     // backtrace support.
     // efficiently store all debug/trace messages in a circular buffer until needed for debugging.

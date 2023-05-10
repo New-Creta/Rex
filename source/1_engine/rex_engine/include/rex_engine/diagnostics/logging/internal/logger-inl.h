@@ -110,9 +110,9 @@ namespace rexlog
     }
   }
 
-  REXLOG_INLINE void Logger::set_pattern(rex::DebugString pattern, PatternTimeType timeType)
+  REXLOG_INLINE void Logger::set_pattern(rsl::string_view pattern, PatternTimeType timeType)
   {
-    auto new_formatter = details::make_unique<PatternFormatter>(rsl::move(pattern), timeType);
+    auto new_formatter = details::make_unique<PatternFormatter>(pattern, timeType);
     set_formatter(rsl::move(new_formatter));
   }
 

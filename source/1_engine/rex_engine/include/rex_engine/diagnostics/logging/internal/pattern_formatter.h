@@ -89,7 +89,7 @@ namespace rexlog
   public:
     using custom_flags = rex::DebugHashTable<char, rsl::unique_ptr<CustomFlagFormatter>>;
 
-    explicit PatternFormatter(rex::DebugString pattern, PatternTimeType timeType = PatternTimeType::Local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol), custom_flags customUserFlags = custom_flags());
+    explicit PatternFormatter(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol), custom_flags customUserFlags = custom_flags());
 
     // use default pattern is not given
     explicit PatternFormatter(PatternTimeType timeType = PatternTimeType::Local, rex::DebugString eol = rex::DebugString(rexlog::details::os::default_eol));
@@ -110,7 +110,7 @@ namespace rexlog
       custom_handlers_[flag] = details::make_unique<T>(rsl::forward<Args>(args)...);
       return *this;
     }
-    void set_pattern(rex::DebugString pattern);
+    void set_pattern(rsl::string_view pattern);
     void need_localtime(bool need = true);
 
   private:
@@ -132,6 +132,6 @@ namespace rexlog
     // Return padding.
     static details::PaddingInfo handle_padspec_impl(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end);
 
-    void compile_pattern_impl(const rex::DebugString& pattern);
+    void compile_pattern_impl(rsl::string_view pattern);
   };
 } // namespace rexlog
