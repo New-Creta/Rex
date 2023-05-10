@@ -4,6 +4,8 @@
 #include "rex_std/assert.h"
 #include "rex_std/algorithm.h"
 
+#include "rex_engine/diagnostics/win/win_call.h"
+
 #define NOMINMAX
 #include <Windows.h>
 
@@ -17,14 +19,14 @@ namespace rex
     rsl::array<bool, 256>* g_prev_keys = &g_keys_even_frames;
     rsl::array<bool, 256>* g_current_keys = &g_keys_odd_frames;
 
-    char8 poll()
+    uint8 poll()
     {
       constexpr card32 max_input_keys = (rsl::numeric_limits<uint8>::max)();
       for (card32 i = g_current_input_idx; i < max_input_keys; ++i, ++g_current_input_idx)
       {
-        char8 key = static_cast<char8>(i);
+        uint8 key = static_cast<uint8>(i);
 
-        if (GetAsyncKeyState(key) & 0x8000)
+        if (WIN_CALL(GetAsyncKeyState(key)) & 0x8000)
         {
           ++g_current_input_idx;
           return key;

@@ -6,6 +6,7 @@
 #include "rex_std/stacktrace.h"
 #include "rex_std/functional.h"
 #include "rex_std/bonus/functional.h"
+#include "rex_std/iostream.h"
 
 namespace rex
 {
@@ -27,6 +28,8 @@ namespace rex
       rsl::array<rsl::stacktrace_entry, g_max_stack_entries> m_resolved_stacktrace;
       count_t m_size;
     };
+
+    rsl::ostream& operator<<(rsl::ostream& os, const ResolvedCallstack& callstack);
 
     CallStack current_callstack();
   } // namespace win
