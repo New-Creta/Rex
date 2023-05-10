@@ -29,6 +29,11 @@ public class ConsoleApp : ToolsProject
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
     conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);
 
+    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
+    {
+      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
+    }
+
     switch (target.Platform)
     {
       case Platform.win32:
