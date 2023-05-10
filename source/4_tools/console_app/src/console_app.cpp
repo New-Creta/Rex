@@ -6,12 +6,12 @@
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/console_application.h"
 #include "rex_engine/event_system.h"
-#include "rex_engine/filesystem/filesystem.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_windows/input/input.h"
 
-DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Log);
-
 #include <Windows.h>
+
+DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Log);
 
 namespace rex
 {
@@ -44,19 +44,41 @@ namespace rex
     (void)p.release();
   }
 
+  void display_mem_usage_stats(const MemoryUsageStats& stats)
+  {
+    for (count_t i = 0; i < stats.usage_per_tag.size(); ++i)
+    {
+      MemoryTag tag = static_cast<MemoryTag>(i);
+      REX_LOG(LogConsoleApp, "{}: {} bytes", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
+    }
+
+    REX_LOG(LogConsoleApp, "----------------------------");
+
+    for (MemoryHeader* header : stats.allocation_headers)
+    {
+      ResolvedCallstack callstack(header->callstack());
+
+      REX_LOG(LogConsoleApp, "Frame: {}", header->frame_index());
+      REX_LOG(LogConsoleApp, "Thread ID: {}", header->thread_id());
+      REX_LOG(LogConsoleApp, "Memory Tag: {}", rsl::enum_refl::enum_name(header->tag()));
+      REX_LOG(LogConsoleApp, "Size: {}", header->size());
+
+      for (count_t i = 0; i < callstack.size(); ++i)
+      {
+        REX_LOG(LogConsoleApp, "{}", callstack[i]);
+      }
+    }
+
+    REX_LOG(LogConsoleApp, "Total of {} allocations", stats.allocation_headers.size());
+  }
+
   bool initialize()
   {
-    vfs::ReadRequest read_request = vfs::open_read_async("rex.sln");
+    //vfs::ReadRequest request = vfs::open_read_async("this_is_a_test_file.txt");
 
-    REX_LOG(LogConsoleApp, "Waiting for file to be read");
+    //request.wait();
 
-    read_request.wait();
-
-    REX_LOG(LogConsoleApp, "File read");
-
-    REX_LOG(LogConsoleApp, "{}", read_request.data());
-    REX_LOG(LogConsoleApp, "{} bytes read", read_request.count());
-
+    //REX_LOG(LogConsoleApp, "{}", request.data());
 
     return true;
   }
@@ -64,7 +86,7 @@ namespace rex
   {
     if (input::is_key_pressed('P'))
     {
-      pointer_tracking_test();
+      mem_tracker().dump_stats_to_file("mem_stats.txt");
     }
   }
   void shutdown()
