@@ -1,4 +1,4 @@
-#include "rex_engine/filesystem/filesystem.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_engine/memory/untracked_allocator.h"
@@ -315,7 +315,8 @@ namespace rex::vfs
 
     // prepare a buffer to receive the file content
     DWORD file_size = GetFileSize(handle.get(), nullptr);
-    rsl::unique_array<char8> buffer = rsl::make_unique<char8[]>(file_size);
+    rsl::unique_array<char8> buffer = rsl::make_unique<char8[]>(file_size + 1);
+    buffer[file_size] = 0; // make sure we end with a null char
 
     // actually read the file
     DWORD bytes_read = 0;
@@ -330,7 +331,7 @@ namespace rex::vfs
     rsl::unique_lock lock(g_read_request_mutex);
 
     // create the queued request, at this point it doesn't hold any signals it should fire on finish
-    rsl::unique_ptr<QueuedRequest> queued_request = rsl::make_unique<QueuedRequest>(create_full_path(filepath));
+    rsl::unique_ptr<QueuedRequest> queued_request = rsl::make_unique<QueuedRequest>(filepath);
     ReadRequest request(filepath, queued_request.get());
     queued_request->add_request_to_signal(&request);
 
@@ -339,19 +340,21 @@ namespace rex::vfs
     return request;
   }
 
-  void save_to_file(rsl::string_view filepath, void* data, card64 size, AppendToFile shouldAppend)
+  void save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
   {
     REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
 
-    rsl::win::handle handle(WIN_CALL(CreateFile(
-      filepath.data(),				      // Path to file
+    rsl::medium_stack_string fullpath = create_full_path(filepath);
+
+    rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(
+      fullpath.data(),				      // Path to file
       GENERIC_WRITE,	              // General read and write access
       FILE_SHARE_READ,				      // Other processes can also read the file
       NULL,							            // No SECURITY_ATTRIBUTES 
       OPEN_ALWAYS,						      // Create a new file, error when it already exists
       FILE_FLAG_SEQUENTIAL_SCAN,		// Files will be read from beginning to end
       NULL							            // No template file
-    )));
+    ), ERROR_ALREADY_EXISTS));
 
     if (shouldAppend)
     {
@@ -417,6 +420,11 @@ namespace rex::vfs
 
   rsl::medium_stack_string create_full_path(rsl::string_view path)
   {
+    if (is_abs(path))
+    {
+      return path;
+    }
+
     rsl::medium_stack_string full_path(g_root);
     full_path += "/";
     full_path += path;

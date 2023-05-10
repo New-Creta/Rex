@@ -1,6 +1,6 @@
 #include "rex_engine/entrypoint.h"
 
-#include "rex_engine/filesystem/filesystem.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_std/string.h"
 
 namespace rex
