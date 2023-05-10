@@ -25,8 +25,9 @@ public class ConsoleApp : ToolsProject
     conf.Output = Configuration.OutputType.Exe;
     conf.Options.Add(Options.Vc.Linker.SubSystem.Console);
 
+    string ThisFileFolder = Path.GetFileName(Path.GetDirectoryName(Utils.CurrentFile()));
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Globals.Root;
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);
 
     switch (target.Platform)
     {

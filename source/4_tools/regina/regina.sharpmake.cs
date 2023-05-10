@@ -24,8 +24,9 @@ public class Regina : ToolsProject
 
     conf.Output = Configuration.OutputType.Exe;
 
+    string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Globals.Root;
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);
 
     switch (target.Platform)
     {
