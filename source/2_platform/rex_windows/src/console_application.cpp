@@ -1,11 +1,16 @@
 #include "rex_windows/console_application.h"
 #include "rex_engine/event_system.h"
 #include "rex_windows/input/input.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+
+#include <Windows.h>
 
 namespace rex
 {
   namespace win32
   {
+    DEFINE_LOG_CATEGORY(LogWinConsoleApp, rex::LogVerbosity::Log);
+
     class ConsoleApplication::Internal
     {
     public:
@@ -33,7 +38,11 @@ namespace rex
 
       void update()
       {
-        input::update();
+
+        if (is_focussed())
+        {
+          input::update();
+        }
 
         m_on_update();
       }
@@ -41,6 +50,11 @@ namespace rex
       void shutdown()
       {
         m_on_shutdown();
+      }
+
+      bool is_focussed() const
+      {
+        return GetConsoleWindow() == GetForegroundWindow();
       }
 
     private:
@@ -82,6 +96,5 @@ namespace rex
     {
       m_internal->shutdown();
     }
-
   }
 }
