@@ -3,9 +3,12 @@
 #include "rex_engine/core_application.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/log.h"
 #include "rex_std/iostream.h"
 #include "rex_std/limits.h"
+#include "rex_std_extra/time/timepoint.h"
+#include "rex_std/algorithm.h"
 
 namespace rex
 {
@@ -112,12 +115,91 @@ namespace rex
     return thread_local_memory_tag_stack()[thread_local_mem_tag_index()];
   }
 
+  void MemoryTracker::dump_stats_to_file(rsl::string_view filepath)
+  {
+    MemoryUsageStats stats = current_stats();
+
+    rsl::stringstream ss;
+
+    for (count_t i = 0; i < stats.usage_per_tag.size(); ++i)
+    {
+      MemoryTag tag = static_cast<MemoryTag>(i);
+      ss << rsl::format("{}: {} bytes\n", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
+    }
+
+    ss << "----------------------------\n";
+    for (MemoryHeader* header : stats.allocation_headers)
+    {
+      ResolvedCallstack callstack(header->callstack());
+
+      ss << rsl::format("Frame: {}\n", header->frame_index());
+      ss << rsl::format("Thread ID: {}\n", header->thread_id());
+      ss << rsl::format("Memory Tag: {}\n", rsl::enum_refl::enum_name(header->tag()));
+      ss << rsl::format("Size: {}\n", header->size());
+
+      for (count_t i = 0; i < callstack.size(); ++i)
+      {
+        ss << rsl::format("{}\n", callstack[i]);
+      }
+    }
+
+    ss << rsl::format("Total of {} allocations\n", stats.allocation_headers.size());
+    rsl::string_view content = ss.view();
+
+    rsl::time_point time_point = rsl::current_timepoint();
+    rsl::string dated_filepath;
+    dated_filepath += time_point.date().to_string_without_weekday();
+    dated_filepath += "_";
+    dated_filepath += time_point.time().to_string();
+    dated_filepath += "_";
+    dated_filepath += filepath;
+    rsl::replace(dated_filepath.begin(), dated_filepath.end(), ':', '_');
+    rsl::replace(dated_filepath.begin(), dated_filepath.end(), '/', '_');
+    
+    vfs::save_to_file(dated_filepath, content.data(), content.length(), vfs::AppendToFile::no);
+  }
+
   MemoryUsageStats MemoryTracker::current_stats()
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
     MemoryUsageStats stats {};
     stats.usage_per_tag      = m_usage_per_tag;
     stats.allocation_headers = allocation_headers();
+    return stats;
+  }
+
+  MemoryUsageStats MemoryTracker::get_pre_init_stats()
+  {
+    return get_stats_for_frame(-1); // allocations that happen before initialization have -1 as frame index
+  }
+
+  MemoryUsageStats MemoryTracker::get_init_stats()
+  {
+    return get_stats_for_frame(0); // allocations that happen at initialization have 0 as frame index
+  }
+
+  MemoryUsageStats MemoryTracker::get_stats_for_frame(card32 idx)
+  {
+    rsl::unique_lock lock(m_mem_tracking_mutex);
+    DebugVector<MemoryHeader*> alloc_headers = allocation_headers();
+    lock.unlock();
+
+    MemoryUsageStats stats{};
+    stats.allocation_headers.reserve(alloc_headers.size());
+
+    for (MemoryHeader* header : alloc_headers)
+    {
+      if (header->frame_index() == idx)
+      {
+        stats.allocation_headers.push_back(header);
+        stats.usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size();
+      }
+      else if (header->frame_index() > idx)
+      {
+        break;
+      }
+    }
+
     return stats;
   }
 

@@ -46,16 +46,14 @@ namespace rex
 
     MemoryTag current_tag() const;
 
-    MemoryUsageStats current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    void dump_stats_to_file(rsl::string_view filepath);
+
+    REX_NO_DISCARD MemoryUsageStats current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    REX_NO_DISCARD MemoryUsageStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    REX_NO_DISCARD MemoryUsageStats get_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
 
   private:
-    void increment_mem_usage(card64 size);
-    void increment_mem_tag_usage(MemoryTag tag, card64 size);
-    
-    void decrement_mem_usage(card64 size);
-    void decrement_mem_tag_usage(MemoryTag tag, card64 size);
-
-    void save_to_file(MemoryHeader* header, AllocOp op);
+    REX_NO_DISCARD MemoryUsageStats get_stats_for_frame(card32 idx);
 
   private:
     enum class Status
