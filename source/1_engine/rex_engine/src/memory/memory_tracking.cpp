@@ -128,6 +128,9 @@ namespace rex
     }
 
     ss << "----------------------------\n";
+
+    ss << rsl::format("Number of callstacks: {}\n", stats.allocation_headers.size());
+
     for (MemoryHeader* header : stats.allocation_headers)
     {
       ResolvedCallstack callstack(header->callstack());
@@ -143,7 +146,6 @@ namespace rex
       }
     }
 
-    ss << rsl::format("Total of {} allocations\n", stats.allocation_headers.size());
     rsl::string_view content = ss.view();
 
     rsl::time_point time_point = rsl::current_timepoint();
