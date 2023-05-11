@@ -38,7 +38,8 @@ namespace rex
 
     void initialize(rsl::memory_size maxMemUsage);
 
-    void track_alloc(void* mem, MemoryHeader* header);
+    rsl::shared_ptr<CallStack> track_callstack();
+    MemoryHeader* track_alloc(void* mem, card64 size);
     void track_dealloc(void* mem, MemoryHeader* header);
 
     void push_tag(MemoryTag tag);

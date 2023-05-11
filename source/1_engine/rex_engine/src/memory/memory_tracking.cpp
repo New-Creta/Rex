@@ -4,6 +4,8 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/memory/debug_allocator.h"
+#include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/log.h"
 #include "rex_std/iostream.h"
 #include "rex_std/limits.h"
@@ -24,6 +26,18 @@ namespace rex
     return stack;
   }
 
+  class AllocationCallstack
+  {
+  public:
+    AllocationCallstack(Callstack callstack)
+      : m_callstack(callstack)
+    {}
+
+  private:
+    m_callstack;
+  };
+
+  // stores the headers for all allocations
   auto& allocation_headers()
   {
     static UntrackedAllocator allocator {};
@@ -32,11 +46,21 @@ namespace rex
     return alloc_headers;
   }
 
+  // stores the unique callstacks for all allocations
+  auto& allocation_callstacks()
+  {
+    static UntrackedAllocator allocator{};
+    static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
+    static DebugVector<rsl::shared_ptr<CallStack>> callstack_to_allocations(dbg_alloc);
+    return callstack_to_allocations;
+  }
+
+  // stores deleters for all deleted allocations
   auto& deleter_callstacks()
   {
     static UntrackedAllocator allocator{};
     static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
-    static DebugHashTable<CallStack, DebugVector<CallStack>> callstack_to_deleters(dbg_alloc);
+    static DebugHashTable<const CallStack*, DebugVector<CallStack>> callstack_to_deleters(dbg_alloc);
     return callstack_to_deleters;
   }
 
@@ -64,17 +88,58 @@ namespace rex
     m_mem_stats_on_startup = query_memory_stats();
   }
 
-  void MemoryTracker::track_alloc(void* /*mem*/, MemoryHeader* header)
+  rsl::shared_ptr<CallStack> MemoryTracker::track_callstack()
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
 
+    static UntrackedAllocator allocator{};
+    static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
+
+    CallStack this_callstack = current_callstack();
+    auto& alloc_callstacks = allocation_callstacks();
+    auto it = rsl::find_if(alloc_callstacks.begin(), alloc_callstacks.end(),
+      [&](const rsl::shared_ptr<CallStack>& callstack)
+      {
+        return this_callstack == *callstack;
+      });
+    if (it == allocation_callstacks().end())
+    {
+      allocation_callstacks().push_back(rsl::allocate_shared<CallStack>(dbg_alloc, this_callstack));
+      return allocation_callstacks().back();
+    }
+
+    return *it;
+  }
+
+  MemoryHeader* MemoryTracker::track_alloc(void* mem, card64 size)
+  {
+    const MemoryTag tag = current_tag();
+    const rsl::thread::id thread_id = rsl::this_thread::get_id();
+
+    rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
+    rex::MemoryHeader* dbg_header_addr = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
+    const card32 frame_idx = globals::frame_info().index();
+    CallStack callstack = current_callstack();
+
+    auto& alloc_callstacks = allocation_callstacks();
+    auto it = alloc_callstacks.find(callstack);
+    if (it == alloc_callstacks.end())
+    {
+      alloc_callstacks[callstack] = AllocationCallstack(callstack, size);
+    }
+    it->value->add_size(size);
+
+    mem_tracker().track_callstack();
+    rex::MemoryHeader* header = new(dbg_header_addr) MemoryHeader(tag, mem, size, thread_id, frame_idx, mem_tracker().track_callstack());
+
+    const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
-    
     allocation_headers().push_back(header);
-    
-    REX_ERROR_X(LogEngine, m_mem_usage.value() <= m_max_mem_usage, "Using more memory than allowed! usage: {} max: {}", m_mem_usage.value(), m_max_mem_usage);
+
+    return header;
   }
+
   void MemoryTracker::track_dealloc(void* /*mem*/, MemoryHeader* header)
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
@@ -129,20 +194,32 @@ namespace rex
 
     ss << "----------------------------\n";
 
-    ss << rsl::format("Number of callstacks: {}\n", stats.allocation_headers.size());
+    ss << rsl::format("Number of unique callstacks: {}\n", allocation_callstacks().size());
+
+    static UntrackedAllocator allocator{};
+    static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
+    static DebugHashTable<const CallStack*, ResolvedCallstack> callstack_to_resolved(dbg_alloc);
 
     for (MemoryHeader* header : stats.allocation_headers)
     {
-      ResolvedCallstack callstack(header->callstack());
+      const CallStack* callstack = header->callstack();
+      auto it = callstack_to_resolved.find(callstack);
+      ResolvedCallstack* resolved_callstack = nullptr;
+      if (it == callstack_to_resolved.end())
+      {
+        callstack_to_resolved.emplace(callstack, ResolvedCallstack(*callstack));
+      }
+      resolved_callstack = &callstack_to_resolved.find(callstack)->value;
 
+      ss << rsl::format("Count: {}\n", header->callstack_count());
       ss << rsl::format("Frame: {}\n", header->frame_index());
       ss << rsl::format("Thread ID: {}\n", header->thread_id());
       ss << rsl::format("Memory Tag: {}\n", rsl::enum_refl::enum_name(header->tag()));
       ss << rsl::format("Size: {}\n", header->size());
 
-      for (count_t i = 0; i < callstack.size(); ++i)
+      for (count_t i = 0; i < resolved_callstack->size(); ++i)
       {
-        ss << rsl::format("{}\n", callstack[i]);
+        ss << rsl::format("{}\n", (*resolved_callstack)[i]);
       }
     }
 
@@ -211,3 +288,18 @@ namespace rex
     return tracker;
   }
 } // namespace rex
+
+namespace rsl
+{
+  inline namespace v1
+  {
+    template<>
+    struct hash<rex::AllocationCallstack>
+    {
+      hash_result operator()(const rex::AllocationCallstack& callstack) const
+      {
+
+      }
+    };
+  }
+}

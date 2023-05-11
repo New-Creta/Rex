@@ -63,23 +63,13 @@ namespace rex
       // allocate the memory with enough extra memory to fit the memory header pointer
       pointer ptr = m_allocator->allocate(num_mem_needed);
 
-      // initialize the memory header
-      const MemoryTag tag             = mem_tracker().current_tag();
-      const rsl::thread::id thread_id = rsl::this_thread::get_id();
-
-      rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
-
-      rex::MemoryHeader* dbg_header_addr = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
-      rex::MemoryHeader* dbg_header_ptr  = new(dbg_header_addr) MemoryHeader(tag, ptr, rsl::memory_size(num_mem_needed), thread_id, globals::frame_info().index(), current_callstack());
+      rex::MemoryHeader* dbg_header_ptr = mem_tracker().track_alloc(ptr, num_mem_needed);
 
       // put the memory header pointer in front of the data blob we're going to return
       rsl::memcpy(ptr, &dbg_header_ptr, sizeof(dbg_header_ptr)); // NOLINT(bugprone-sizeof-expression)
 
       // get the right address to return from the function
       rsl::byte* mem_block = static_cast<rsl::byte*>(jump_forward(ptr, sizeof(MemoryHeader*)));
-
-      // track the allocation
-      mem_tracker().track_alloc(mem_block, dbg_header_ptr);
 
       return mem_block;
     }
