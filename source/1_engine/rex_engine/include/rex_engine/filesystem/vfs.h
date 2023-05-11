@@ -45,10 +45,12 @@ namespace rex::vfs
   };
 
   void init(rsl::string_view root = "");
+  void shutdown();
 
   REX_NO_DISCARD rsl::unique_array<char8> open_read(rsl::string_view filepath);
   REX_NO_DISCARD ReadRequest open_read_async(rsl::string_view filepath);
   void save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
+  void create_dir(rsl::string_view path);
 
   bool exists(rsl::string_view path);
   bool is_dir(rsl::string_view path);

@@ -230,6 +230,7 @@ namespace rex::vfs
 
     g_is_initialized = true;
     g_keep_processing = true;
+
     g_reading_thread = rsl::thread([]()
       {
         while (g_keep_processing)
@@ -266,7 +267,6 @@ namespace rex::vfs
           rsl::this_thread::sleep_for(1ms);
         }
       });
-
     g_closing_thread = rsl::thread([]()
       {
         while (g_keep_processing)
@@ -299,8 +299,6 @@ namespace rex::vfs
 
   rsl::unique_array<char8> open_read(rsl::string_view filepath)
   {
-    REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
-
     rsl::medium_stack_string path = create_full_path(filepath);
 
     rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(
@@ -342,8 +340,6 @@ namespace rex::vfs
 
   void save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
   {
-    REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
-
     rsl::medium_stack_string fullpath = create_full_path(filepath);
 
     rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(
@@ -366,9 +362,17 @@ namespace rex::vfs
     WIN_CALL(WriteFile(handle.get(), data, static_cast<DWORD>(size), &bytes_written, NULL));
   }
 
+  void create_dir(rsl::string_view path)
+  {
+    rsl::medium_stack_string fullpath = create_full_path(path);
+    WIN_CALL(CreateDirectory(fullpath.data(), NULL));
+  }
+
   bool exists(rsl::string_view path)
   {
-    DWORD ftyp = GetFileAttributesA(path.data());
+    rsl::medium_stack_string fullpath = create_full_path(path);
+
+    DWORD ftyp = GetFileAttributesA(fullpath.data());
     if (ftyp == INVALID_FILE_ATTRIBUTES)
       return false;
 
@@ -377,6 +381,8 @@ namespace rex::vfs
 
   bool is_dir(rsl::string_view path)
   {
+    rsl::medium_stack_string fullpath = create_full_path(path);
+
     DWORD ftyp = GetFileAttributesA(path.data());
     if (ftyp == INVALID_FILE_ATTRIBUTES)
       return false;
@@ -388,7 +394,9 @@ namespace rex::vfs
   }
   bool is_file(rsl::string_view path)
   {
-    DWORD ftyp = GetFileAttributesA(path.data());
+    rsl::medium_stack_string fullpath = create_full_path(path);
+
+    DWORD ftyp = GetFileAttributesA(fullpath.data());
     if (ftyp == INVALID_FILE_ATTRIBUTES)
       return false;
 
@@ -420,6 +428,8 @@ namespace rex::vfs
 
   rsl::medium_stack_string create_full_path(rsl::string_view path)
   {
+    REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
+
     if (is_abs(path))
     {
       return path;
