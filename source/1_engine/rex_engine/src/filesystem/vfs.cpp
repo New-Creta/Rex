@@ -224,12 +224,11 @@ namespace rex::vfs
       g_root += root;
     }
 
-    REX_ASSERT_X(is_dir(g_root), "root of vfs is not a directory");
-
-    REX_LOG(RexFileSystem, "FileSystem initialised with root '{}'", g_root);
-
     g_is_initialized = true;
     g_keep_processing = true;
+
+    REX_ASSERT_X(is_dir(g_root), "root of vfs is not a directory");
+    REX_LOG(RexFileSystem, "FileSystem initialised with root '{}'", g_root);
 
     g_reading_thread = rsl::thread([]()
       {
