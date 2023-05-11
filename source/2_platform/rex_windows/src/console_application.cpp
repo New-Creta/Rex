@@ -11,6 +11,24 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogWinConsoleApp, rex::LogVerbosity::Log);
 
+    CoreApplication* g_this_app = nullptr;
+
+    BOOL WINAPI handler_routine(DWORD eventCode)
+    {
+      switch (eventCode)
+      {
+        // you only have 5 seconds to process this
+        // Windows forcefully kills the app after 5 seconds
+        // see https://learn.microsoft.com/en-us/windows/console/handlerroutine#timeouts
+      case CTRL_CLOSE_EVENT:
+        g_this_app->quit();
+        return false;
+        break;
+      }
+
+      return true;
+    }
+
     class ConsoleApplication::Internal
     {
     public:
@@ -20,6 +38,8 @@ namespace rex
         , m_engine_params(rsl::move(appCreationParams.engine_params))
         , m_app_instance(appInstance)
       {
+        g_this_app = m_app_instance;
+
         // we're always assigning something to the pointers here to avoid branch checking every update
         // I've profiled this and always having a function wins here.
         m_on_initialize = m_engine_params.app_init_func ? m_engine_params.app_init_func : [&]() { return true; };
@@ -31,6 +51,8 @@ namespace rex
 
       bool initialize()
       {
+        SetConsoleCtrlHandler(handler_routine, true);
+
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
 
         return m_on_initialize();
@@ -38,7 +60,6 @@ namespace rex
 
       void update()
       {
-
         if (is_focussed())
         {
           input::update();
