@@ -11,4 +11,5 @@ namespace rex
 
   void pre_app_entry(const char8* cmdLine);
   extern ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs);
+  void post_app_shutdown();
 } // namespace rex
