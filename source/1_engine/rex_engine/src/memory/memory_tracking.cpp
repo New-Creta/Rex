@@ -159,18 +159,18 @@ namespace rex
     auto alloc_info_it = alloc_info.find(header->callstack());
     REX_ASSERT_X(alloc_info_it != alloc_info.end(), "tracking a deallocation which allocation didn't get tracked");
     alloc_info_it->value.allocation_callstack.sub_size(header->size());
-
-    if (alloc_info_it->value.allocation_callstack.size() == 0)
-    {
-      alloc_info.erase(header->callstack());
-    }
-    
+  
     // add unique deleter callstacks
-    DebugVector<CallStack>& del_callstacks = allocation_info_table().at(header->callstack()).deleter_callstacks;
+    DebugVector<CallStack>& del_callstacks = alloc_info.at(header->callstack()).deleter_callstacks;
     CallStack current_callstack = rex::current_callstack();
     if (rsl::find(del_callstacks.cbegin(), del_callstacks.cend(), current_callstack) == del_callstacks.cend())
     {
       del_callstacks.push_back(rex::current_callstack());
+    }
+
+    if (alloc_info_it->value.allocation_callstack.size() == 0)
+    {
+      alloc_info.erase(header->callstack());
     }
 
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
