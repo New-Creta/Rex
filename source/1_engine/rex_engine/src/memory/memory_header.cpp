@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  MemoryHeader::MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const rsl::shared_ptr<CallStack>& callstack)
+  MemoryHeader::MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const CallStack& callstack)
       : m_callstack(callstack)
       , m_size(size)
       , m_ptr(ptr)
@@ -12,13 +12,9 @@ namespace rex
   {
   }
 
-  const CallStack* MemoryHeader::callstack() const
+  const CallStack& MemoryHeader::callstack() const
   {
-    return m_callstack.get();
-  }
-  count_t MemoryHeader::callstack_count() const
-  {
-    return m_callstack.use_count();
+    return m_callstack;
   }
   rsl::memory_size MemoryHeader::size() const
   {

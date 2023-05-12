@@ -56,7 +56,7 @@ namespace rex
 
     for (MemoryHeader* header : stats.allocation_headers)
     {
-      ResolvedCallstack callstack(*header->callstack());
+      ResolvedCallstack callstack(header->callstack());
 
       REX_LOG(LogConsoleApp, "Frame: {}", header->frame_index());
       REX_LOG(LogConsoleApp, "Thread ID: {}", header->thread_id());
