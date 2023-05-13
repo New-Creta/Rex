@@ -110,7 +110,7 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title    = m_gui_params.window_title.to_string_view();
+        wnd_description.title    = m_gui_params.window_title;
         wnd_description.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
 
         if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
@@ -124,7 +124,7 @@ namespace rex
 
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
+        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { event_system::fire_event(event_system::Event{ event_system::EventType::QuitApp }); });
         event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
         event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
         event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });

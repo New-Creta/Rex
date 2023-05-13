@@ -32,12 +32,13 @@ namespace rex
 
     app_params.gui_params.window_width  = 1280;
     app_params.gui_params.window_height = 720;
-    app_params.gui_params.window_title  = "Regina"_sid;
+    app_params.gui_params.window_title  = "Regina";
 
     app_params.engine_params.max_memory        = 256_kb;
     app_params.engine_params.app_init_func     = initialize;
     app_params.engine_params.app_update_func   = update;
     app_params.engine_params.app_shutdown_func = shutdown;
+    app_params.create_window = true;
 
     return app_params;
   }

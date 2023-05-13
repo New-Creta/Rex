@@ -14,8 +14,8 @@ namespace rex
     {
       Description();
 
-      rsl::string name;
-      rsl::string vendor_name;
+      rsl::small_stack_string name;
+      rsl::small_stack_string vendor_name;
 
       u32 vendor_id;
       u32 device_id;
