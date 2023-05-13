@@ -4,6 +4,9 @@
 #include "rex_std/array.h"
 #include "rex_std/format.h"
 #include "rex_std/stacktrace.h"
+#include "rex_std/functional.h"
+#include "rex_std/bonus/functional.h"
+#include "rex_std/iostream.h"
 
 namespace rex
 {
@@ -26,6 +29,32 @@ namespace rex
       count_t m_size;
     };
 
+    rsl::ostream& operator<<(rsl::ostream& os, const ResolvedCallstack& callstack);
+
     CallStack current_callstack();
   } // namespace win
 } // namespace rex
+
+namespace rsl
+{
+  inline namespace v1
+  {
+    template <>
+    struct hash<rex::win::CallStack>
+    {
+      rsl::hash_result operator()(const rex::win::CallStack& callstack) const
+      {
+        count_t size = callstack.size();
+        card64 seed = 0;
+        for (count_t i = 0; i < size; ++i)
+        {
+          void* stack_pointer = callstack[i];
+          card64 address = *reinterpret_cast<card64*>(&stack_pointer);
+          seed = internal::hash_combine(seed, address);
+        }
+
+        return static_cast<rsl::hash_result>(seed);
+      }
+    };
+  }
+}
