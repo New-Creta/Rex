@@ -18,7 +18,7 @@ namespace rex
       //-------------------------------------------------------------------------
       const Gpu* highest_scoring_gpu(const rsl::vector<rsl::unique_ptr<Gpu>>& gpus)
       {
-        auto it = std::max_element(gpus.cbegin(), gpus.cend(),
+        auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
                                    [](const rsl::unique_ptr<Gpu>& lhs, const rsl::unique_ptr<Gpu>& rhs)
                                    {
                                      const size_t lhs_vram = lhs->description().dedicated_video_memory.size_in_bytes();
