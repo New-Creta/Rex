@@ -74,6 +74,8 @@ namespace rex
 
   bool initialize()
   {
+    vfs::mount(MountRoot::Logs, "logs");
+
     //vfs::ReadRequest request = vfs::open_read_async("this_is_a_test_file.txt");
 
     //request.wait();
