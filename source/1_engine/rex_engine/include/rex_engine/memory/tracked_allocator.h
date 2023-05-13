@@ -88,9 +88,8 @@ namespace rex
       rsl::byte* mem_block = static_cast<rsl::byte*>(jump_backward(ptr, sizeof(MemoryHeader*)));
       MemoryHeader* header = *reinterpret_cast<MemoryHeader**>(mem_block); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
-      mem_tracker().track_dealloc(ptr, header);
+      mem_tracker().track_dealloc(header);
       m_allocator->deallocate(mem_block, size);
-      global_debug_allocator().deallocate(header, size);
     }
 
     template <typename U, typename... Args>

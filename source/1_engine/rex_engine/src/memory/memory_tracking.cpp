@@ -143,7 +143,7 @@ namespace rex
     return header;
   }
 
-  void MemoryTracker::track_dealloc(void* /*mem*/, MemoryHeader* header)
+  void MemoryTracker::track_dealloc(MemoryHeader* header)
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
     
@@ -174,6 +174,9 @@ namespace rex
     }
 
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] -= header->size().size_in_bytes();
+
+    rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
+    dbg_alloc.deallocate(header, sizeof(MemoryHeader));
   }
 
   void MemoryTracker::push_tag(MemoryTag tag) // NOLINT(readability-convert-member-functions-to-static)
@@ -240,7 +243,7 @@ namespace rex
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), ':', '_');
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), '/', '_');
     
-    vfs::save_to_file(dated_filepath, content.data(), content.length(), vfs::AppendToFile::no);
+    vfs::save_to_file(MountRoot::Logs, dated_filepath, content.data(), content.length(), vfs::AppendToFile::no);
   }
 
   MemoryUsageStats MemoryTracker::current_stats()
