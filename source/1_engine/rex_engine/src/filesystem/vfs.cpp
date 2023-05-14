@@ -345,9 +345,9 @@ namespace rex::vfs
                                             ERROR_ALREADY_EXISTS));
 
     // prepare a buffer to receive the file content
-    const card32 file_size = static_cast<card32>(GetFileSize(handle.get(), nullptr));
+    const card32 file_size          = static_cast<card32>(GetFileSize(handle.get(), nullptr));
     rsl::unique_array<char8> buffer = rsl::make_unique<char8[]>(file_size + 1); // NOLINT(modernize-avoid-c-arrays)
-    buffer[file_size]               = 0; // make sure we end with a null char
+    buffer[file_size]               = 0;                                        // make sure we end with a null char
 
     // actually read the file
     DWORD bytes_read = 0;

@@ -1,4 +1,5 @@
 #include "rex_engine/diagnostics/win/win_stacktrace.h"
+
 #include "rex_engine/diagnostics/win/win_call.h"
 
 // NOLINTBEGIN(llvm-include-order)
@@ -138,7 +139,7 @@ namespace rex
 
     rsl::ostream& operator<<(rsl::ostream& os, const ResolvedCallstack& callstack)
     {
-      for (count_t i = 0; i < callstack.size(); ++i)
+      for(count_t i = 0; i < callstack.size(); ++i)
       {
         os << callstack[i] << "\n";
       }

@@ -3,15 +3,15 @@
 #include "rex_engine/core_application.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/stacktrace.h"
-#include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/log.h"
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/global_allocator.h"
-#include "rex_engine/log.h"
+#include "rex_std/algorithm.h"
 #include "rex_std/iostream.h"
 #include "rex_std/limits.h"
 #include "rex_std_extra/time/timepoint.h"
-#include "rex_std/algorithm.h"
 
 namespace rex
 {
@@ -23,7 +23,7 @@ namespace rex
 
   rsl::array<MemoryTag, g_max_allowed_mem_tags>& thread_local_memory_tag_stack()
   {
-    thread_local static rsl::array<MemoryTag, g_max_allowed_mem_tags> stack = {MemoryTag::Global};
+    thread_local static rsl::array<MemoryTag, g_max_allowed_mem_tags> stack = { MemoryTag::Global };
     return stack;
   }
 
@@ -34,7 +34,8 @@ namespace rex
       : m_callstack(callstack)
       , m_size(size)
       , m_ref_count(1)
-    {}
+    {
+    }
 
     void add_size(card64 size)
     {
@@ -72,7 +73,7 @@ namespace rex
   // stores the headers for all allocations
   auto& allocation_headers()
   {
-    static UntrackedAllocator allocator {};
+    static UntrackedAllocator allocator{};
     static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
     static DebugVector<MemoryHeader*> alloc_headers(dbg_alloc);
     return alloc_headers;
@@ -93,8 +94,8 @@ namespace rex
   }
 
   MemoryTracker::MemoryTracker()
-      : m_mem_usage(0)
-      , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
+    : m_mem_usage(0)
+    , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
   {
   }
 
@@ -106,7 +107,7 @@ namespace rex
     // That's why we track the initial memory usage before the initialization
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
-    m_max_mem_usage        = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
+    m_max_mem_usage = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
     m_mem_stats_on_startup = query_memory_stats();
   }
 
@@ -118,7 +119,7 @@ namespace rex
     rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
     rex::MemoryHeader* dbg_header_addr = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
     const card32 frame_idx = globals::frame_info().index();
-    CallStack callstack = current_callstack();
+    const CallStack callstack = current_callstack();
 
     // track the callstack, if we this callstack allocated memory before
     // add to the callstack the size of the memory we just allocated
@@ -126,7 +127,7 @@ namespace rex
     auto it = alloc_info.find(callstack);
     if (it == alloc_info.end())
     {
-      alloc_info.insert({ callstack, AllocationInfo{ AllocationCallStack(callstack, size)} });
+      alloc_info.insert({ callstack, AllocationInfo {AllocationCallStack(callstack, size)} });
     }
     else
     {
@@ -146,23 +147,23 @@ namespace rex
   void MemoryTracker::track_dealloc(MemoryHeader* header)
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
-    
+
     REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
-    
+
     m_mem_usage -= header->size().size_in_bytes();
     auto it = rsl::find(allocation_headers().cbegin(), allocation_headers().cend(), header);
-    
+
     REX_ASSERT_X(it != allocation_headers().cend(), "Trying to remove a memory header that wasn't tracked");
     REX_ASSERT_X(m_mem_usage >= 0, "Mem usage below 0");
-    
+
     auto& alloc_info = allocation_info_table();
     auto alloc_info_it = alloc_info.find(header->callstack());
     REX_ASSERT_X(alloc_info_it != alloc_info.end(), "tracking a deallocation which allocation didn't get tracked");
     alloc_info_it->value.allocation_callstack.sub_size(header->size());
-  
+
     // add unique deleter callstacks
     DebugVector<CallStack>& del_callstacks = alloc_info.at(header->callstack()).deleter_callstacks;
-    CallStack current_callstack = rex::current_callstack();
+    const CallStack current_callstack = rex::current_callstack();
     if (rsl::find(del_callstacks.cbegin(), del_callstacks.cend(), current_callstack) == del_callstacks.cend())
     {
       del_callstacks.push_back(rex::current_callstack());
@@ -205,7 +206,7 @@ namespace rex
 
     for (count_t i = 0; i < stats.usage_per_tag.size(); ++i)
     {
-      MemoryTag tag = static_cast<MemoryTag>(i);
+      const MemoryTag tag = static_cast<MemoryTag>(i);
       ss << rsl::format("{}: {} bytes\n", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
     }
 
@@ -223,7 +224,7 @@ namespace rex
       ss << rsl::format("Size: {}\n", alloc_info.allocation_callstack.size());
       ss << rsl::format("Known Deleters: {}\n", alloc_info.deleter_callstacks.size());
 
-      ResolvedCallstack resolved_callstack(callstack);
+      const ResolvedCallstack resolved_callstack(callstack);
 
       for (count_t i = 0; i < resolved_callstack.size(); ++i)
       {
@@ -231,9 +232,9 @@ namespace rex
       }
     }
 
-    rsl::string_view content = ss.view();
+    const rsl::string_view content = ss.view();
 
-    rsl::time_point time_point = rsl::current_timepoint();
+    const rsl::time_point time_point = rsl::current_timepoint();
     rex::DebugString dated_filepath;
     dated_filepath += time_point.date().to_string_without_weekday();
     dated_filepath += "_";
@@ -242,15 +243,15 @@ namespace rex
     dated_filepath += filepath;
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), ':', '_');
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), '/', '_');
-    
+
     vfs::save_to_file(MountRoot::Logs, dated_filepath, content.data(), content.length(), vfs::AppendToFile::no);
   }
 
   MemoryUsageStats MemoryTracker::current_stats()
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
-    MemoryUsageStats stats {};
-    stats.usage_per_tag      = m_usage_per_tag;
+    MemoryUsageStats stats{};
+    stats.usage_per_tag = m_usage_per_tag;
     stats.allocation_headers = allocation_headers();
     return stats;
   }
@@ -268,7 +269,7 @@ namespace rex
   MemoryUsageStats MemoryTracker::get_stats_for_frame(card32 idx)
   {
     rsl::unique_lock lock(m_mem_tracking_mutex);
-    DebugVector<MemoryHeader*> alloc_headers = allocation_headers();
+    const DebugVector<MemoryHeader*> alloc_headers = allocation_headers(); // copy here on purpose as we don't want any race conditions when looping over it
     lock.unlock();
 
     MemoryUsageStats stats{};
