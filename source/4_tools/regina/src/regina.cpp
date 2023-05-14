@@ -38,7 +38,6 @@ namespace rex
     app_params.engine_params.app_init_func     = initialize;
     app_params.engine_params.app_update_func   = update;
     app_params.engine_params.app_shutdown_func = shutdown;
-    app_params.create_window = true;
 
     return app_params;
   }

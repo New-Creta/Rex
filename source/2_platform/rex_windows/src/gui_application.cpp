@@ -124,7 +124,7 @@ namespace rex
 
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { event_system::fire_event(event_system::Event{ event_system::EventType::QuitApp }); });
+        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
         event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
         event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
         event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });
