@@ -1,15 +1,14 @@
 #pragma once
 
+#include "rex_engine/filesystem/mount_roots.h"
 #include "rex_engine/types.h"
-
-#include "rex_std/type_traits.h"
+#include "rex_std/bonus/functional.h"
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
 #include "rex_std/string_view.h"
-#include "rex_std/bonus/functional.h"
+#include "rex_std/type_traits.h"
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_std_extra/utility/yes_no.h"
-#include "rex_engine/filesystem/mount_roots.h"
 
 namespace rex::vfs
 {
@@ -30,7 +29,7 @@ namespace rex::vfs
     ReadRequest& operator=(ReadRequest&& other);
 
     void signal(const char8* buffer, count_t count);
-    void wait();
+    void wait() const;
 
     const char8* data() const;
     count_t count() const;
@@ -68,4 +67,4 @@ namespace rex::vfs
   bool is_rel(rsl::string_view path);
   rsl::medium_stack_string create_full_path(rsl::string_view path);
   rsl::medium_stack_string create_full_path(MountRoot root, rsl::string_view path);
-}
+} // namespace rex::vfs
