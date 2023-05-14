@@ -12,11 +12,13 @@ namespace rex
 {
   namespace input
   {
+    // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
     card32 g_current_input_idx               = 1;
     rsl::array<bool, 256> g_keys_even_frames = {};
     rsl::array<bool, 256> g_keys_odd_frames  = {};
     rsl::array<bool, 256>* g_prev_keys       = &g_keys_even_frames;
     rsl::array<bool, 256>* g_current_keys    = &g_keys_odd_frames;
+    // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
     uint8 poll()
     {
@@ -25,7 +27,7 @@ namespace rex
       {
         uint8 key = static_cast<uint8>(i);
 
-        if(WIN_CALL(GetAsyncKeyState(key)) & 0x8000)
+        if(WIN_CALL(GetAsyncKeyState(key)) & 0x8000u) // NOLINT(hicpp-signed-bitwise)
         {
           ++g_current_input_idx;
           return key;
@@ -41,7 +43,7 @@ namespace rex
       rsl::swap(g_prev_keys, g_current_keys);
       g_current_keys->fill(false);
 
-      while(char8 key = input::poll())
+      while(const uint8 key = input::poll())
       {
         if(key == '\0')
           break;
@@ -52,19 +54,19 @@ namespace rex
 
     bool is_key_pressed(char8 key)
     {
-      return g_prev_keys->at(key) == false && g_current_keys->at(key) == true;
+      return g_prev_keys->at(key) == false && g_current_keys->at(key) == true; // NOLINT(readability-simplify-boolean-expr)
     }
     bool is_key_down(char8 key)
     {
-      return g_prev_keys->at(key) == true && g_current_keys->at(key) == true;
+      return g_prev_keys->at(key) == true && g_current_keys->at(key) == true; // NOLINT(readability-simplify-boolean-expr)
     }
     bool is_key_released(char8 key)
     {
-      return g_prev_keys->at(key) == true && g_current_keys->at(key) == false;
+      return g_prev_keys->at(key) == true && g_current_keys->at(key) == false; // NOLINT(readability-simplify-boolean-expr)
     }
     bool is_key_up(char8 key)
     {
-      return g_current_keys->at(key) == false;
+      return g_prev_keys->at(key) == false && g_current_keys->at(key) == false; // NOLINT(readability-simplify-boolean-expr)
     }
   } // namespace input
 } // namespace rex
