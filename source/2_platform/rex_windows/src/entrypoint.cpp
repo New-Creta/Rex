@@ -1,14 +1,14 @@
 #include "rex_engine/entrypoint.h"
 
+#include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/bonus/utility/has_flag.h"
 #include "rex_std/string_view.h"
 #include "rex_std/vector.h"
-#include "rex_windows/gui_application.h"
 #include "rex_windows/console_application.h"
+#include "rex_windows/gui_application.h"
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_types.h"
-#include "rex_engine/memory/memory_tracking.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -29,7 +29,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
   rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
 
   s32 result = 0;
-  if (app_params.create_window)
+  if(app_params.create_window)
   {
     // this doesn't initialize anything but simply prepares the application for initialization
     rex::win32::GuiApplication application(rsl::move(app_params));

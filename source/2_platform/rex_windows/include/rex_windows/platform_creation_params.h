@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_windows/win_types.h"
 #include "rex_engine/string/stringid.h"
+#include "rex_windows/win_types.h"
 
 namespace rex
 {
@@ -18,23 +18,23 @@ namespace rex
 
   struct GuiParams
   {
-    s32 window_width = 1280;
-    s32 window_height = 720;
-    rsl::string_view window_title = "Application";
+    s32 window_width      = 1280;
+    s32 window_height     = 720;
+    StringID window_title = "Application"_sid;
 
     s32 max_render_commands = 1 << 16;
-    s32 max_fps = 60;
+    s32 max_fps             = 60;
   };
 
   struct ApplicationCreationParams
   {
   public:
     ApplicationCreationParams(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
-      : engine_params()
-      , platform_params(rsl::move(platformParams))
-      , gui_params()
-      , cmd_args(rsl::move(cmdArgs))
-      , create_window(false)
+        : engine_params()
+        , platform_params(rsl::move(platformParams))
+        , gui_params()
+        , cmd_args(rsl::move(cmdArgs))
+        , create_window(false)
     {
     }
 
