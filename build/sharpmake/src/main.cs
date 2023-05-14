@@ -126,7 +126,6 @@ public class MainSolution : Solution
     if (GenerateSettings.EnableDefaultGeneration)
     {
       conf.AddProject<Regina>(target);
-      conf.AddProject<ConsoleApp>(target);
     }
   }
 
