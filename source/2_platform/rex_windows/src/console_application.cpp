@@ -1,6 +1,5 @@
 #include "rex_windows/console_application.h"
 #include "rex_engine/event_system.h"
-#include "rex_windows/input/input.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 
 #include <Windows.h>
@@ -60,11 +59,6 @@ namespace rex
 
       void update()
       {
-        if (is_focussed())
-        {
-          input::update();
-        }
-
         m_on_update();
       }
 
