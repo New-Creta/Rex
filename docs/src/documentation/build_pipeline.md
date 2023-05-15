@@ -1,27 +1,27 @@
 # Build Pipeline
 
 ## Introduction
-Rex;s entire building pipeline, going from setting up the initial setup to the actual build process, generation and testing is written in python. This is done to allow quick iteration which would be more of hassle in C# or C++.
+Rex's entire building pipeline, going from setting up the initial setup to the actual build process, generation and testing is written in python. This is done to allow quick iteration which would be more of hassle in C# or C++.
 
 The build pipeline scripts is only supposed to launch multiple intermediate steps and not do much work on its own.
 
-All build scripts have a `-clean` command which pretends the script is run for the very first time. This usually just deletes the output folders
+All build scripts have a `-clean` command which pretends the script is run for the very first time. This just deletes the output folders
 
 ## Setup
 
 ### Root script
-To setup Rex Engine after an initial clone from [github](https://github.com/Dyronix/Rex) run `_setup.py`
+To setup Rex Engine after an initial clone from [github](https://github.com/New-Creta/Rex) run `_setup.py`
 
-This setup script will install `rexpy` on your machine, after which it'll call the actually setup script located in `build/scripts/setup.py` which will continue setting up your machine for rex engine development.
+This setup script will install `rexpy` on your machine, after which it'll call the actual setup script located in `build/scripts/setup.py` which will continue setting up your machine for rex engine development.
 
 ### Setup script
 
 This is the actual setup script that goes through the full setup pipeline
-_setup.py will read some configuration files, looking for dependencies needed for by Rex Engine based on your platform
+`_setup.py` will read some configuration files, looking for dependencies needed for by Rex Engine based on your platform (only Windows is support at time of writing)
 
 it knows which dependencies and how to install them based on the json files located in `build/config`
 
-All installations will add a version file to the dependency that's installed to cache which on you downloaded. This is to avoid redownloading already installed dependencies and massively speeds up setup times.
+All installations will add a version file to the dependency that's installed to cache which one you downloaded. This is to avoid redownloading already installed dependencies and massively speeds up setup times.
 
 there are 4 json files located in this folder
 ### **settings.json**
@@ -50,8 +50,9 @@ More on these tools later.
 For those familiar with Git, this file acts as a description file for the submodules of Rex. 
 
 The reason why they're not stored in a submodule file using Git functionality to clone these dependencies is because it's much faster to store these dependencies in a repository somewhere and manually track which version is needed by your branch.
+The added bonus is that we don't have to deal with modules depending on each other, making them harder to track in version control.
 
-Some Examples:
+Some Examples (Windows):
 ```sh
 # Will do an initial setup.
 # Updating non-cached paths and cached paths that no longer exist
@@ -65,9 +66,9 @@ py _setup.py -clean
 Rex Engine uses a custom [Sharpmake](https://github.com/RisingLiberty/Sharpmake) for its generation. 
 
 ### Sharpmake
-Sharpmake is a build tool, written in C# and who's build scripts are also written in C#. We chose sharpmake as the build tool for Rex due to its extended debug possibilities. Because the build scripts themselves are written in C# this allows you to debug them in an IDE with breakpoints, printing, callstack tracing, ...
+[Sharpmake](https://github.com/ubisoft/Sharpmake/wiki) is a build tool, written in C# and who's build scripts are also written in C#. We chose sharpmake as the build tool for Rex due to its extended debug possibilities. Because the build scripts themselves are written in C# this allows you to debug them in an IDE with breakpoints, printing, callstack tracing, ...
 
-Another benefit of using C# is it allows you to run actual C# code while you're generating, giving almost limitless possibilities of what you do during generation, this is much harder to do in other build tools (eg. CMAKE, Sharpmake, NMake, ..)
+Another benefit of using C# is it allows you to run actual C# code while you're generating, giving almost limitless possibilities of what you do during generation, this is much harder to do in other build tools (eg. CMAKE, Premake, NMake, ..)
 
 #### **Rex Additions**
 The vanilla version of Sharpmake is very powerful, it is however mainly used for `Visual Studio` which is very focussed on `Windows`. It does support `XCode` projects among other things, but we didn't want to have different project files on different platforms. This would also make CI much harder. 
@@ -110,15 +111,17 @@ all these files are then passed on to sharpmake and executed.
 
 The generation script also has some config flags to enable or disable some behavior done in the generation step.
 
-- no_clang_tools (disables clang tools in any post build command)
-- -unit_tests (also generates unit test projects)
-- -coverage (adds code coverage flags to compilation steps)
-- -asan (adds code address sanitizer to compilation steps)
-- -ubsan (adds code undefined behavior sanitizer to compilation steps)
-- -fuzzy (adds code fuzzy testing to compilation steps)
-- -sharpmake_args (pass in additional arguments to sharpmake)
+| argument                  |  description 
+|--                         |--:            
+|  -no_clang_tools          | disables clang tools in any post build command  
+| -unit_tests               |  also generates unit test projects 
+| -coverage                 |  adds code coverage flags to compilation steps 
+| -asan                     | adds code address sanitizer to compilation steps  
+| -ubsan                    | adds code undefined behavior sanitizer to compilation steps  
+| -fuzzy                    |  adds code fuzzy testing to compilation steps 
+| -sharpmake_args           | pass in additional arguments to sharpmake  
 
-Some Examples:
+Some Examples (Windows):
 ```sh
 # Default generation. generate files for engine and editor
 py _generate.py
@@ -142,7 +145,7 @@ the script takes the project, compiler and configuration you want to compile for
 After which it looks for this the ninja project reflecting the project you specified (which is auto generated by sharpmake) and compiles the configuration specified with the compiler you specified.
 
 ### Post Build
-the sharpmake scripts specify for all rex related projects to launch the `post_build.py` script found at the source root.
+the sharpmake scripts for all rex related projects launch the `post_build.py` script found at the source root.
 
 This script launches clang-tidy and clang-format if clang tools are enabled. Because clang-tidy is run using clang, the post build is only enabled when compiling with clang
 
