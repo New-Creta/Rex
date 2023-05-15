@@ -19,20 +19,24 @@ misc_extensions = settings["misc_extensions"]
 def __clean_intermediate():
   regis.diagnostics.log_info(f"cleaning intermediates")
   
-  # this clean the entire intermediate directory and all sub folders
-  if os.path.exists(intermediate_dir):
-    shutil.rmtree(intermediate_dir)
+  try:
+    # this clean the entire intermediate directory and all sub folders
+    if os.path.exists(intermediate_dir):
+      shutil.rmtree(intermediate_dir)
 
-  for misc_folder in misc_folders:
-    if os.path.exists(misc_folder):
-      shutil.rmtree(misc_folder)
+    for misc_folder in misc_folders:
+      if os.path.exists(misc_folder):
+        shutil.rmtree(misc_folder)
 
-  files = os.listdir()
-  for file in files:
-    if os.path.isfile(file):
-      for misc_extension in misc_extensions:
-        if misc_extension in file:
-          os.remove(file)
+    files = os.listdir()
+    for file in files:
+      if os.path.isfile(file):
+        for misc_extension in misc_extensions:
+          if misc_extension in file:
+            os.remove(file)
+  except Exception as ex:
+    regis.diagnostics.log_err(f'Failed to clean intermediates: {ex}')
+    exit(0)
 
 def run(shouldClean):
   if shouldClean:
