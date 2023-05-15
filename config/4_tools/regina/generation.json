@@ -1,3 +1,9 @@
 {
-    "MemoryTags" : ["Editor"]
+    "MemoryTags": {
+        "ClassName": "MemoryTag",
+        "Values": [
+            "ConsoleApp"
+        ],
+        "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+    }
 }
