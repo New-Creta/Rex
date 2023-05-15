@@ -51,7 +51,8 @@ namespace rex
 
       bool initialize()
       {
-        SetConsoleCtrlHandler(handler_routine, true);
+        constexpr bool is_adding_event = true;
+        SetConsoleCtrlHandler(handler_routine, is_adding_event);
 
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
 
