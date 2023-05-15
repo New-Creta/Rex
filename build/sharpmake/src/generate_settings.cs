@@ -5,6 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// these are the values that come the json file
+public class EnumGenerationConfig
+{
+  public string ClassName { get; set; }
+  public List<string> Values { get; set; }
+  public string Filepath { get; set; }
+}
+
+// this is the object we use
+public class EnumGenerationSettings
+{
+  public string ClassName = "";
+  public string Filepath = "";
+  public Dictionary<string, List<string>> ProjectToEnumValues = new Dictionary<string, List<string>>();
+}
+
 public enum GraphicsAPI
 {
     Unknown,
@@ -33,6 +49,7 @@ public class GenerateSettings
   static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;
 
   static public Dictionary<string, List<string>> MemoryTags = new Dictionary<string, List<string>>();
+  static public Dictionary<string, EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, EnumGenerationSettings>();
 
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
 }
