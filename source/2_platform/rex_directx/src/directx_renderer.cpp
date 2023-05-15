@@ -80,11 +80,12 @@ namespace rex
         }
 
         const dxgi::AdapterManager adapter_manager(&factory, &internal::highest_scoring_gpu);
-        const dxgi::Adapter* adapter = static_cast<const dxgi::Adapter*>(adapter_manager.selected()); // NNOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        const Gpu* selected_gpu = adapter_manager.selected();
+        IDXGIAdapter* adapter = static_cast<IDXGIAdapter*>(selected_gpu->native_handle());
 
-        const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter->c_ptr());
+        const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
 
-        if(FAILED(D3D12CreateDevice(adapter->c_ptr(), static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx.device))))
+        if(FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx.device))))
         {
           REX_ERROR(LogDirectX, "Software adapter not supported");
           REX_ERROR(LogDirectX, "Failed to create DX12 Device");
@@ -97,8 +98,8 @@ namespace rex
 
         directx::g_renderer_info.shader_version = rsl::string(shader_model_name(shader_model));
         directx::g_renderer_info.api_version    = rsl::string(feature_level_name(feature_level));
-        directx::g_renderer_info.adaptor        = adapter->description().name;
-        directx::g_renderer_info.vendor         = adapter->description().vendor_name;
+        directx::g_renderer_info.adaptor        = selected_gpu->description().name;
+        directx::g_renderer_info.vendor         = selected_gpu->description().vendor_name;
 
         return true;
       }

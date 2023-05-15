@@ -110,7 +110,7 @@ namespace rex
   {
     //-------------------------------------------------------------------------
     Adapter::Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, uint32 version)
-        : Gpu(::get_description(adapter))
+        : Gpu(::get_description(adapter), adapter.Get())
         , ComObject(rsl::move(adapter), version)
     {
     }

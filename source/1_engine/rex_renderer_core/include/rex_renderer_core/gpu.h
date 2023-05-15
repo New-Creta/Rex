@@ -25,13 +25,19 @@ namespace rex
       rsl::memory_size shared_system_memory;
     };
 
-    explicit Gpu(const Description& desc);
+    explicit Gpu(const Description& desc, void* nativeHandle);
     virtual ~Gpu() = default;
 
     const Description& description() const;
 
+    // this casts away the const by design
+    // as the native handle is often a C object
+    // that doesn't understand const.
+    void* native_handle() const;
+
   private:
     Description m_description;
+    void* m_native_handle;
   };
 
   rsl::ostream& operator<<(rsl::ostream& os, const Gpu& obj);

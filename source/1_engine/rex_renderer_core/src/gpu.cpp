@@ -13,30 +13,31 @@ namespace rex
     os << "Vendor ID: " << desc.vendor_id << "\n";
     os << "Device ID: " << desc.device_id << "\n";
     os << "Dedicated Video Memory: " << desc.dedicated_video_memory.size_in_mb() << "MB"
-       << "\n";
+      << "\n";
     os << "Dedicated System Memory: " << desc.dedicated_system_memory.size_in_mb() << "MB"
-       << "\n";
+      << "\n";
     os << "Shared System Memory: " << desc.shared_system_memory.size_in_mb() << "MB"
-       << "\n";
+      << "\n";
 
     return os;
   }
 
   //-------------------------------------------------------------------------
   Gpu::Gpu::Description::Description()
-      : name("")
-      , vendor_name("")
-      , vendor_id(0)
-      , device_id(0)
-      , dedicated_video_memory(0)
-      , dedicated_system_memory(0)
-      , shared_system_memory(0)
+    : name("")
+    , vendor_name("")
+    , vendor_id(0)
+    , device_id(0)
+    , dedicated_video_memory(0)
+    , dedicated_system_memory(0)
+    , shared_system_memory(0)
   {
   }
 
   //-------------------------------------------------------------------------
-  Gpu::Gpu(const Gpu::Description& desc)
-      : m_description(desc)
+  Gpu::Gpu(const Gpu::Description& desc, void* nativeHandle)
+    : m_description(desc)
+    , m_native_handle(nativeHandle)
   {
   }
 
@@ -44,5 +45,11 @@ namespace rex
   const Gpu::Description& Gpu::description() const
   {
     return m_description;
+  }
+
+  //--------------------------------------------------------------------------------------------
+  void* Gpu::native_handle() const
+  {
+    return m_native_handle;
   }
 } // namespace rex
