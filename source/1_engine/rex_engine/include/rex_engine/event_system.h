@@ -1,14 +1,14 @@
 #pragma once
 
 #include "rex_engine/event.h"
-#include "rex_std/functional.h"  // for function
+#include "rex_std/functional.h" // for function
 
 namespace rex
 {
   namespace event_system
   {
     enum class EventType;
-struct Event;
+    struct Event;
 
     using EventFunction = rsl::function<void(const Event&)>;
 

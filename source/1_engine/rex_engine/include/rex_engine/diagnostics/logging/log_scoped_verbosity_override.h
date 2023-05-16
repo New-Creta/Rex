@@ -5,7 +5,7 @@
 namespace rex
 {
   struct LogCategory;
-enum class LogVerbosity;
+  enum class LogVerbosity;
 
   /*-----------------------------------------------------------------------------
           LogScopedVerbosityOverride

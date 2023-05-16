@@ -1,10 +1,10 @@
 #pragma once
 
-#include "rex_renderer_core/gpu_manager.h"  // for GpuManager
-#include "rex_renderer_core/gpu_scorer.h"   // for GpuScorerFn
-#include "rex_std/memory.h"                 // for unique_ptr
-#include "rex_std/vector.h"                 // for vector
-#include "rex_renderer_core/gpu.h"          // for Gpu
+#include "rex_renderer_core/gpu.h"         // for Gpu
+#include "rex_renderer_core/gpu_manager.h" // for GpuManager
+#include "rex_renderer_core/gpu_scorer.h"  // for GpuScorerFn
+#include "rex_std/memory.h"                // for unique_ptr
+#include "rex_std/vector.h"                // for vector
 
 namespace rex
 {

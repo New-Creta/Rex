@@ -1,16 +1,16 @@
 #include "rex_engine/memory/win/win_mem_stats.h"
 
-#include "rex_engine/memory/memory_stats.h"    // for MemoryStats
-#include "rex_std/bonus/types.h"               // for card64, card32
-#include "rex_std_extra/memory/memory_size.h"  // for memory_size
+#include "rex_engine/memory/memory_stats.h"   // for MemoryStats
+#include "rex_std/bonus/types.h"              // for card64, card32
+#include "rex_std_extra/memory/memory_size.h" // for memory_size
 
-// clang-format on
+// clang-format off
 // NOLINTBEGIN(llvm-include-order)
 
 #include <Windows.h>
 #include <Psapi.h>
 
-// clang-format off
+// clang-format on
 // NOLINTEND(llvm-include-order)
 
 namespace rex

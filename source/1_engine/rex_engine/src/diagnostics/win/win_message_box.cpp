@@ -1,8 +1,8 @@
 #include "rex_engine/diagnostics/win/win_message_box.h"
 
-#include <Windows.h>
+#include "rex_std/bonus/string.h" // for medium_stack_string
 
-#include "rex_std/bonus/string.h"  // for medium_stack_string
+#include <Windows.h>
 
 #define NOMINMAX
 

@@ -1,25 +1,25 @@
-#include <combaseapi.h>                                 // for IID_PPV_ARGS
-#include <d3d12.h>                                      // for ID3D12Device
-#include <dxgi.h>                                       // for IDXGIAdapter
-#include <intsafe.h>                                    // for FAILED
-#include <d3dcommon.h>                                  // for D3D_FEATURE_L...
-#include <algorithm>                                    // for max_element
+#include "rex_directx/directx_feature_level.h"         // for feature_level...
+#include "rex_directx/directx_feature_shader_model.h"  // for query_shader_...
+#include "rex_directx/dxgi/adapter.h"                  // for Adapter
+#include "rex_directx/dxgi/adapter_manager.h"          // for AdapterManager
+#include "rex_directx/dxgi/factory.h"                  // for Factory
+#include "rex_directx/log.h"                           // for LogDirectX
+#include "rex_directx/wrl/wrl_types.h"                 // for com_ptr
+#include "rex_engine/diagnostics/logging/log_macros.h" // for REX_ERROR
+#include "rex_renderer_core/gpu.h"                     // for Gpu
+#include "rex_renderer_core/renderer.h"                // for RendererInfo
+#include "rex_std/bonus/string.h"                      // for small_stack_s...
+#include "rex_std/bonus/types.h"                       // for size_t
+#include "rex_std/memory.h"                            // for unique_ptr
+#include "rex_std/vector.h"                            // for string, vector
+#include "rex_std_extra/memory/memory_size.h"          // for memory_size
 
-#include "rex_directx/directx_feature_level.h"          // for feature_level...
-#include "rex_directx/directx_feature_shader_model.h"   // for query_shader_...
-#include "rex_directx/dxgi/adapter.h"                   // for Adapter
-#include "rex_directx/dxgi/adapter_manager.h"           // for AdapterManager
-#include "rex_directx/dxgi/factory.h"                   // for Factory
-#include "rex_directx/log.h"                            // for LogDirectX
-#include "rex_renderer_core/renderer.h"                 // for RendererInfo
-#include "rex_std/memory.h"                             // for unique_ptr
-#include "rex_directx/wrl/wrl_types.h"                  // for com_ptr
-#include "rex_engine/diagnostics/logging/log_macros.h"  // for REX_ERROR
-#include "rex_renderer_core/gpu.h"                      // for Gpu
-#include "rex_std/bonus/string.h"                       // for small_stack_s...
-#include "rex_std/vector.h"                             // for string, vector
-#include "rex_std_extra/memory/memory_size.h"           // for memory_size
-#include "rex_std/bonus/types.h"                        // for size_t
+#include <algorithm>    // for max_element
+#include <combaseapi.h> // for IID_PPV_ARGS
+#include <d3d12.h>      // for ID3D12Device
+#include <d3dcommon.h>  // for D3D_FEATURE_L...
+#include <dxgi.h>       // for IDXGIAdapter
+#include <intsafe.h>    // for FAILED
 
 namespace rex
 {

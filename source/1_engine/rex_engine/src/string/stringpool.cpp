@@ -1,13 +1,13 @@
 #include "rex_engine/string/stringpool.h"
 
-#include "rex_engine/diagnostics/assert.h"  // for REX_ASSERT_X, REX_ASSERT
-#include "rex_engine/string/stringentry.h"  // for StringEntryID, StringEntry
+#include "rex_engine/diagnostics/assert.h" // for REX_ASSERT_X, REX_ASSERT
+#include "rex_engine/string/stringentry.h" // for StringEntryID, StringEntry
+#include "rex_std/bonus/functional.h"      // for hash_result
+#include "rex_std/bonus/hashtable.h"       // for hashtable_iterator, opera...
+#include "rex_std/bonus/types.h"           // for char8
+#include "rex_std/bonus/utility.h"         // for key_value, emplace_result
 #include "rex_std/internal/utility/pair.h"
-#include "rex_std/unordered_map.h"          // for unordered_map
-#include "rex_std/bonus/functional.h"       // for hash_result
-#include "rex_std/bonus/hashtable.h"        // for hashtable_iterator, opera...
-#include "rex_std/bonus/types.h"            // for char8
-#include "rex_std/bonus/utility.h"          // for key_value, emplace_result
+#include "rex_std/unordered_map.h" // for unordered_map
 
 namespace rex
 {

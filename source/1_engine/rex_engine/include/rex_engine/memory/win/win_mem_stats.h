@@ -5,7 +5,7 @@
 
 namespace rex
 {
-struct MemoryStats;
+  struct MemoryStats;
 
   namespace win
   {

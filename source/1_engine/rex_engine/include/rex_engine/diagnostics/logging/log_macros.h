@@ -28,9 +28,10 @@
   #include "rex_engine/diagnostics/logging/log_verbosity.h"
   #include "rex_engine/diagnostics/logging/logger.h"
 
-namespace rex {
-enum class LogVerbosity;
-}  // namespace rex
+namespace rex
+{
+  enum class LogVerbosity;
+} // namespace rex
 
 namespace rex
 {

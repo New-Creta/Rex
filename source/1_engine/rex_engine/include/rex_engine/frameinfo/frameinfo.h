@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_engine/frameinfo/deltatime.h"  // for DeltaTime
-#include "rex_engine/frameinfo/fps.h"        // for FPS
-#include "rex_std/bonus/types.h"             // for card32
+#include "rex_engine/frameinfo/deltatime.h" // for DeltaTime
+#include "rex_engine/frameinfo/fps.h"       // for FPS
+#include "rex_std/bonus/types.h"            // for card32
 
 namespace rex
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <wrl.h>
-#include <wrl/client.h>  // for ComPtr
+#include <wrl/client.h> // for ComPtr
 
 namespace rex
 {

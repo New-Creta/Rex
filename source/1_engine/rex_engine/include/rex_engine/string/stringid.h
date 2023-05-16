@@ -1,13 +1,13 @@
 #pragma once
 
-#include <vcruntime.h>                      // for size_t
+#include "rex_engine/string/stringentry.h" // for StringEntryID
+#include "rex_engine/types.h"              // for u32
+#include "rex_std/bonus/functional.h"      // for hash_result
+#include "rex_std/memory.h"                // for hash
+#include "rex_std/ostream.h"               // for ostream
+#include "rex_std/string.h"                // for string_view
 
-#include "rex_engine/string/stringentry.h"  // for StringEntryID
-#include "rex_engine/types.h"               // for u32
-#include "rex_std/ostream.h"                // for ostream
-#include "rex_std/string.h"                 // for string_view
-#include "rex_std/bonus/functional.h"       // for hash_result
-#include "rex_std/memory.h"                 // for hash
+#include <vcruntime.h> // for size_t
 
 namespace rex
 {

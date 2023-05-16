@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 
-#include "rex_std/string.h"  // for operator==, char_traits
+#include "rex_std/string.h" // for operator==, char_traits
 
 namespace rex
 {

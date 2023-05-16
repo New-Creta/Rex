@@ -1,25 +1,25 @@
 #pragma once
 
-#include "rex_engine/memory/debug_allocator.h"      // for DebugAllocator
+#include "rex_engine/memory/debug_allocator.h" // for DebugAllocator
 #include "rex_engine/memory/memory_header.h"
-#include "rex_engine/memory/memory_stats.h"         // for MemoryStats
+#include "rex_engine/memory/memory_stats.h" // for MemoryStats
 #include "rex_engine/memory/memory_tags.h"
-#include "rex_engine/memory/untracked_allocator.h"  // for UntrackedAllocator
-#include "rex_engine/types.h"                       // for s64
-#include "rex_std/mutex.h"                          // for mutex
+#include "rex_engine/memory/untracked_allocator.h" // for UntrackedAllocator
+#include "rex_engine/types.h"                      // for s64
+#include "rex_std/array.h"                         // for array
+#include "rex_std/bonus/defines.h"                 // for ANONYMOUS_VARIABLE
+#include "rex_std/mutex.h"                         // for mutex
 #include "rex_std/stacktrace.h"
 #include "rex_std/thread.h"
-#include "rex_std_extra/memory/memory_size.h"       // for memory_size
-#include "rex_std_extra/utility/enum_reflection.h"  // for enum_count
-#include "rex_std_extra/utility/high_water_mark.h"  // for high_water_mark
-#include "rex_std/array.h"                          // for array
-#include "rex_std/bonus/defines.h"                  // for ANONYMOUS_VARIABLE
-#include "rex_std/vector.h"                         // for vector
+#include "rex_std/vector.h"                        // for vector
+#include "rex_std_extra/memory/memory_size.h"      // for memory_size
+#include "rex_std_extra/utility/enum_reflection.h" // for enum_count
+#include "rex_std_extra/utility/high_water_mark.h" // for high_water_mark
 
 namespace rex
 {
-class MemoryHeader;
-enum class MemoryTag;
+  class MemoryHeader;
+  enum class MemoryTag;
 
   struct MemoryUsageStats
   {
