@@ -1,21 +1,27 @@
 #pragma once
 
-#include "rex_engine/debug_types.h"
+#include <corecrt_wstdio.h>            // for FILE
+#include <stdio.h>                     // for printf
+#include <cstdio>
+#include <version>
+// IWYU pragma: no_include <built-in>
+
+#include "rex_engine/debug_types.h"    // for DebugString
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/tweakme.h"
 #include "rex_std/atomic.h"
-#include "rex_std/chrono.h"
+#include "rex_std/chrono.h"            // for system_clock
 #include "rex_std/format.h"
-#include "rex_std/functional.h"
-#include "rex_std/initializer_list.h"
+#include "rex_std/functional.h"        // for function, is_convertible
+#include "rex_std/initializer_list.h"  // for initializer_list
 #include "rex_std/internal/exception/abort.h"
-#include "rex_std/memory.h"
-#include "rex_std/string.h"
+#include "rex_std/memory.h"            // for enable_if_t, integral_constant
+#include "rex_std/string.h"            // for string_view, basic_string_view
 #include "rex_std/string_view.h"
 #include "rex_std/type_traits.h"
-
-#include <cstdio>
-#include <version>
+#include "rex_std/bonus/atomic/atomic.h"      // for atomic
+#include "rex_std/bonus/compiler.h"    // for rsl
+#include "rex_std/bonus/memory.h"      // for make_unique
 
 #undef REXLOG_HEADER_ONLY
 

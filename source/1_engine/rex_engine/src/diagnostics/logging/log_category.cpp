@@ -1,5 +1,7 @@
 #include "rex_engine/diagnostics/logging/log_category.h"
 
+#include "rex_engine/diagnostics/logging/log_verbosity.h"  // for operator&
+
 namespace rex
 {
   //-------------------------------------------------------------------------

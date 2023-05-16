@@ -1,9 +1,11 @@
 #include "rex_engine/diagnostics/logging/log_scoped_verbosity_override.h"
 
-#include "rex_engine/diagnostics/logging/log_category.h"
+#include "rex_engine/diagnostics/logging/log_category.h"  // for LogCategory
 
 namespace rex
 {
+enum class LogVerbosity;
+
   //-------------------------------------------------------------------------
   /** Back up the existing verbosity for the category then sets new verbosity.*/
   LogScopedVerbosityOverride::LogScopedVerbosityOverride(LogCategory* category, LogVerbosity verbosity)

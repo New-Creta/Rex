@@ -2,15 +2,18 @@
 
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/core_application_state.h"
-#include "rex_engine/state_controller.h"
-#include "rex_engine/types.h"
-#include "rex_std/functional.h"
-#include "rex_std/limits.h"
+#include "rex_engine/state_controller.h"       // for StateController
+#include "rex_engine/types.h"                  // for s32, s64
+#include "rex_std/functional.h"                // for function
+#include "rex_std/limits.h"                    // for numeric_limits
 #include "rex_std/memory.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std_extra/memory/memory_size.h"  // for memory_size
 
 namespace rex
 {
+class CommandLineArguments;
+enum class ApplicationState;
+
   struct EngineParams
   {
     using init_func     = rsl::function<bool()>;

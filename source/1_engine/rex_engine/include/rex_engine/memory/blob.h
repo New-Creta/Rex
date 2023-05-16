@@ -1,7 +1,8 @@
 #pragma once
 
-#include "rex_std/memory.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/memory.h"                    // for byte, unique_ptr
+#include "rex_std_extra/memory/memory_size.h"  // for memory_size, operator"...
+#include "rex_std/bonus/types.h"               // for int32
 
 namespace rex
 {

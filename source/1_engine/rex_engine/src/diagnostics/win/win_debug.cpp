@@ -1,9 +1,10 @@
 #include "rex_engine/diagnostics/win/win_debug.h"
 
-#include "rex_engine/diagnostics/win/win_message_box.h"
+#include <Windows.h>
+
+#include "rex_engine/diagnostics/win/win_message_box.h"  // for yes_no_messa...
 
 #define NOMINMAX
-#include <Windows.h>
 
 bool rex::win::is_debugger_attached()
 {

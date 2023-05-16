@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rex_std/string_view.h"
+#include "rex_std/assert.h"       // for string_view
+#include "rex_std/bonus/types.h"  // for int32
 
 namespace rex::win
 {

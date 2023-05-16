@@ -1,11 +1,10 @@
 #include "rex_engine/memory/blob.h"
 
-#include "rex_engine/diagnostics/assert.h"
-#include "rex_engine/log.h"
-#include "rex_engine/memory/blob_writer.h"
-#include "rex_std/assert.h"
-#include "rex_std/memory.h"
-#include "rex_std/utility.h"
+#include "rex_engine/diagnostics/assert.h"              // for REX_ASSERT_X
+#include "rex_engine/log.h"                             // for LogEngine
+#include "rex_engine/memory/blob_writer.h"              // for write
+#include "rex_std/memory.h"                             // for unique_ptr
+#include "rex_engine/diagnostics/logging/log_macros.h"  // for REX_WARN
 
 namespace rex
 {

@@ -1,0 +1,377 @@
+[
+  {
+    "include": [
+      "@\"rex_std/bonus/algorithm/.*\"",
+      "private",
+      "\"rex_std/bonus/algorithm.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/atomic/.*\"",
+      "private",
+      "\"rex_std/bonus/atomic/atomic.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/binary_tree/.*\"",
+      "private",
+      "\"rex_std/bonus/binary_tree.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/cinttypes/.*\"",
+      "private",
+      "\"rex_std/bonus/cinttypes.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/functional/.*\"",
+      "private",
+      "\"rex_std/bonus/functional.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/hashtable/.*\"",
+      "private",
+      "\"rex_std/bonus/hashtable.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/iostream/.*\"",
+      "private",
+      "\"rex_std/bonus/iostream.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/iterator/.*\"",
+      "private",
+      "\"rex_std/bonus/iterator.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/math/.*\"",
+      "private",
+      "\"rex_std/bonus/math.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/memory/.*\"",
+      "private",
+      "\"rex_std/bonus/memory.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/mutex/.*\"",
+      "private",
+      "\"rex_std/bonus/mutex.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/platform/.*\"",
+      "private",
+      "\"rex_std/bonus/platform.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/string/.*\"",
+      "private",
+      "\"rex_std/bonus/string.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/time/.*\"",
+      "private",
+      "\"rex_std/bonus/time.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/type_traits/.*\"",
+      "private",
+      "\"rex_std/bonus/type_traits.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/bonus/utility/.*\"",
+      "private",
+      "\"rex_std/bonus/utility.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/algorithm/.*\"",
+      "private",
+      "\"rex_std/algorithm.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/array/.*\"",
+      "private",
+      "\"rex_std/array.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/assert/.*\"",
+      "private",
+      "\"rex_std/assert.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/atomic/.*\"",
+      "private",
+      "\"rex_std/atomic.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/bit/.*\"",
+      "private",
+      "\"rex_std/bit.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/chrono/.*\"",
+      "private",
+      "\"rex_std/chrono.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/condition_variable/.*\"",
+      "private",
+      "\"rex_std/condition_variable.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/exception/.*\"",
+      "private",
+      "\"rex_std/exception.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/format/.*\"",
+      "private",
+      "\"rex_std/format.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/fstream/.*\"",
+      "private",
+      "\"rex_std/fstream.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/functional/.*\"",
+      "private",
+      "\"rex_std/functional.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/ios/.*\"",
+      "private",
+      "\"rex_std/ios.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/istream/.*\"",
+      "private",
+      "\"rex_std/istream.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/iterator/.*\"",
+      "private",
+      "\"rex_std/iterator.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/limits/.*\"",
+      "private",
+      "\"rex_std/limits.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/math/.*\"",
+      "private",
+      "\"rex_std/math.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/memory/.*\"",
+      "private",
+      "\"rex_std/memory.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/mutex/.*\"",
+      "private",
+      "\"rex_std/mutex.h\"",
+      "public"
+    ]
+  },{
+    "include": [
+      "@\"rex_std/internal/numeric/.*\"",
+      "private",
+      "\"rex_std/numeric.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/optional/.*\"",
+      "private",
+      "\"rex_std/optional.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/ostream/.*\"",
+      "private",
+      "\"rex_std/ostream.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/sstream/.*\"",
+      "private",
+      "\"rex_std/sstream.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/stddef/.*\"",
+      "private",
+      "\"rex_std/stddef.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/streambuf/.*\"",
+      "private",
+      "\"rex_std/streambuf.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/string/.*\"",
+      "private",
+      "\"rex_std/string.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/string_view/.*\"",
+      "private",
+      "\"rex_std/string_view.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/thread/.*\"",
+      "private",
+      "\"rex_std/thread.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/type_traits/.*\"",
+      "private",
+      "\"rex_std/type_traits.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/utility/.*\"",
+      "private",
+      "\"rex_std/utility.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/vector/.*\"",
+      "private",
+      "\"rex_std/vector.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "@\"rex_std/internal/wchar/.*\"",
+      "private",
+      "\"rex_std/wchar.h\"",
+      "public"
+    ]
+  }
+]

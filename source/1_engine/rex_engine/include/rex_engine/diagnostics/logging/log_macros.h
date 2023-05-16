@@ -28,6 +28,10 @@
   #include "rex_engine/diagnostics/logging/log_verbosity.h"
   #include "rex_engine/diagnostics/logging/logger.h"
 
+namespace rex {
+enum class LogVerbosity;
+}  // namespace rex
+
 namespace rex
 {
   namespace internal
@@ -35,7 +39,7 @@ namespace rex
     template <int VerbosityToCheck, typename CategoryType>
     inline bool is_log_active(const CategoryType& category)
     {
-      return !Category.IsSuppressed((LogVerbosity)VerbosityToCheck);
+      return !category.IsSuppressed((LogVerbosity)VerbosityToCheck);
     }
   } // namespace internal
 

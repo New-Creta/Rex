@@ -1,11 +1,18 @@
 #include "rex_directx/dxgi/adapter_manager.h"
 
+#include <combaseapi.h>                     // for IID_PPV_ARGS_Helper, IID_...
+#include <dxgi.h>                           // for IDXGIAdapter, IDXGIAdapter1
+#include <dxgi1_4.h>                        // for IDXGIFactory4
+#include <dxgi1_6.h>                        // for IDXGIFactory6, IDXGIAdapter4
+#include <intsafe.h>                        // for HRESULT, UINT
+#include <winerror.h>                       // for DXGI_ERROR_NOT_FOUND
+
+#include "rex_directx/dxgi/factory.h"       // for Factory
+#include "rex_engine/diagnostics/assert.h"  // for REX_ASSERT_X
+#include "rex_std/functional.h"             // for function
+#include "rex_directx/wrl/wrl_types.h"      // for com_ptr
+#include "rex_std/bonus/types.h"            // for uint32
 #include "rex_directx/dxgi/adapter.h"
-#include "rex_directx/dxgi/factory.h"
-#include "rex_directx/dxgi/util.h"
-#include "rex_directx/log.h"
-#include "rex_engine/diagnostics/assert.h"
-#include "rex_std/functional.h"
 
 namespace
 {

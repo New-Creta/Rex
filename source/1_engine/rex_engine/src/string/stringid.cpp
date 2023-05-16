@@ -1,9 +1,9 @@
 #include "rex_engine/string/stringid.h"
 
-#include "rex_engine/log.h"
-#include "rex_engine/string/stringpool.h"
-#include "rex_std/memory.h"
-#include "rex_std/vector.h"
+#include "rex_engine/log.h"                             // for LogEngine
+#include "rex_engine/string/stringpool.h"               // for resolve, store
+#include "rex_engine/diagnostics/logging/log_macros.h"  // for REX_WARN
+#include "rex_std/bonus/types.h"                        // for uint32, char8
 
 namespace rex
 {

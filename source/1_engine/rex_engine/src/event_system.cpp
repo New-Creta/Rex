@@ -1,10 +1,12 @@
 #include "rex_engine/event_system.h"
 
-#include "rex_engine/event_type.h"
-#include "rex_engine/log.h"
-#include "rex_std/unordered_map.h"
-#include "rex_std/vector.h"
-#include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_engine/event_type.h"                      // for EventType
+#include "rex_engine/log.h"                             // for LogEngine
+#include "rex_std/unordered_map.h"                      // for unordered_map
+#include "rex_std/vector.h"                             // for vector, const...
+#include "rex_std_extra/utility/enum_reflection.h"      // for enum_name
+#include "rex_engine/diagnostics/logging/log_macros.h"  // for REX_LOG
+#include "rex_engine/event.h"                           // for Event, Window...
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 

@@ -1,9 +1,10 @@
 #pragma once
 
 #include "rex_engine/platform.h"
-#include "rex_std/array.h"
+#include "rex_std/array.h"        // for array
 #include "rex_std/format.h"
-#include "rex_std/stacktrace.h"
+#include "rex_std/stacktrace.h"   // for stacktrace_entry
+#include "rex_std/bonus/types.h"  // for count_t, card32
 
 namespace rex
 {

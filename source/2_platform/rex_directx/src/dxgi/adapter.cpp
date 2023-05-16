@@ -1,8 +1,16 @@
 #include "rex_directx/dxgi/adapter.h"
 
-#include "rex_directx/dxgi/util.h"
-#include "rex_directx/log.h"
-#include "rex_std/stdlib.h"
+#include <dxgi.h>                                       // for IDXGIAdapter1
+#include <stdlib.h>                                     // for wcstombs_s
+#include <wrl/client.h>                                 // for ComPtr
+#include <xstring>                                      // for string
+
+#include "rex_directx/log.h"                            // for LogDirectX
+#include "rex_std/stdlib.h"                             // for move, NULL
+#include "rex_engine/diagnostics/logging/log_macros.h"  // for REX_ERROR
+#include "rex_engine/types.h"                           // for s32, tchar
+#include "rex_std/string.h"                             // for string
+#include "rex_std_extra/memory/memory_size.h"           // for memory_size
 
 namespace
 {

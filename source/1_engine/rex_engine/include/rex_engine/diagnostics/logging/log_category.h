@@ -2,10 +2,12 @@
 
 #include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_std/string.h"
+#include "rex_std/string.h"  // for string_view
 
 namespace rex
 {
+enum class LogVerbosity;
+
   using LogCategoryName = rsl::string_view;
 
   /** Base class for all log categories. **/
