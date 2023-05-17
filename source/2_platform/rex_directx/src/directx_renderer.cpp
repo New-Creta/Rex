@@ -1,3 +1,11 @@
+#include <combaseapi.h> // for IID_PPV_ARGS
+#include <d3d12.h>      // for ID3D12Device
+#include <dxgi.h>       // for IDXGIAdapter
+#include <intsafe.h>    // for FAILED
+#include <stddef.h>
+#include <d3dcommon.h>
+#include <algorithm>    // for max_element
+
 #include "rex_directx/directx_feature_level.h"         // for feature_level...
 #include "rex_directx/directx_feature_shader_model.h"  // for query_shader_...
 #include "rex_directx/dxgi/adapter.h"                  // for Adapter
@@ -9,17 +17,11 @@
 #include "rex_renderer_core/gpu.h"                     // for Gpu
 #include "rex_renderer_core/renderer.h"                // for RendererInfo
 #include "rex_std/bonus/string.h"                      // for small_stack_s...
-#include "rex_std/bonus/types.h"                       // for size_t
 #include "rex_std/memory.h"                            // for unique_ptr
 #include "rex_std/vector.h"                            // for string, vector
 #include "rex_std_extra/memory/memory_size.h"          // for memory_size
-
-#include <algorithm>    // for max_element
-#include <combaseapi.h> // for IID_PPV_ARGS
-#include <d3d12.h>      // for ID3D12Device
-#include <d3dcommon.h>  // for D3D_FEATURE_L...
-#include <dxgi.h>       // for IDXGIAdapter
-#include <intsafe.h>    // for FAILED
+#include "rex_engine/diagnostics/logging/log_verbosity.h"
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {

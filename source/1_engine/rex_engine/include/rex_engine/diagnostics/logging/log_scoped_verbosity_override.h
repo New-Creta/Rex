@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rex_engine/diagnostics/logging/log_verbosity.h"
-
 namespace rex
 {
   struct LogCategory;

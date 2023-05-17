@@ -23,15 +23,10 @@
 
 #else
 
-  #include "rex_engine/debug_types.h"
-  #include "rex_engine/diagnostics/logging/log_category.h"
-  #include "rex_engine/diagnostics/logging/log_verbosity.h"
-  #include "rex_engine/diagnostics/logging/logger.h"
-
-namespace rex
-{
-  enum class LogVerbosity;
-} // namespace rex
+  #include "rex_engine/debug_types.h" // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/log_category.h" // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/log_verbosity.h" // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/logger.h" // IWYU pragma: keep
 
 namespace rex
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_std/memory.h"
-#include "rex_std/string_view.h"
 #include "rex_windows/win_types.h"
+#include "rex_engine/types.h"
 
 namespace rex
 {
@@ -28,6 +28,7 @@ namespace rex
 
     private:
       struct Internal;
+
       rsl::unique_ptr<Internal> m_internal_ptr;
     };
   } // namespace win32

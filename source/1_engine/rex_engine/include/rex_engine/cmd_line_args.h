@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_std/bonus/types.h" // for char8
-#include "rex_std/string_view.h"
 #include "rex_std/vector.h" // for string_view, vector
 
 namespace rex

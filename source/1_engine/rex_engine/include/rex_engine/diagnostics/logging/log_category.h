@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rex_engine/debug_types.h"
-#include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_std/string.h" // for string_view
 
 namespace rex

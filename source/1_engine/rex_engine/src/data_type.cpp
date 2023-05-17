@@ -1,5 +1,7 @@
 #include "rex_engine/data_type.h"
 
+#include <stddef.h>
+
 #include "glm/detail/qualifier.hpp"                    // for qualifier
 #include "glm/ext/matrix_float3x3.hpp"                 // for mat3
 #include "glm/ext/matrix_float4x4.hpp"                 // for mat4

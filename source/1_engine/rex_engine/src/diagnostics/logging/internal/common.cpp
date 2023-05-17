@@ -2,7 +2,6 @@
 
 #include "rex_std/bonus/string.h" // for distance
 #include "rex_std/format.h"       // for format, fmt_stack_string
-#include "rex_std/type_traits.h"  // for move
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

@@ -1,11 +1,16 @@
 #include "rex_windows/win_window_class.h"
 
 #include "rex_engine/diagnostics/win/win_call.h"
-#include "rex_std/bonus/memory/zero_memory.h"
 #include "rex_windows/log.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_std/bonus/memory.h"
+#include "rex_std/bonus/types.h"
 
 #define NOMINMAX
 #include <Windows.h>
+#include <libloaderapi.h>
+#include <windef.h>
+#include <winuser.h>
 
 namespace rex
 {

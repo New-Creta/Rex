@@ -1,13 +1,13 @@
 #include "rex_engine/core_application.h"
 
+#include <stdlib.h> // for EXIT_FAILURE
+
 #include "rex_engine/core_application_state.h"         // for ApplicationState
 #include "rex_engine/diagnostics/logging/log_macros.h" // for REX_ERROR
 #include "rex_engine/frameinfo/frameinfo.h"            // for FrameInfo
 #include "rex_engine/log.h"                            // for LogEngine
 #include "rex_engine/memory/memory_tracking.h"         // for mem_tracker
 #include "rex_std/bonus/utility.h"                     // for scopeguard
-
-#include <stdlib.h> // for EXIT_FAILURE
 
 namespace rex
 {

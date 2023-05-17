@@ -1,8 +1,9 @@
 #include "rex_engine/diagnostics/win/win_debug.h"
 
-#include "rex_engine/diagnostics/win/win_message_box.h" // for yes_no_messa...
-
 #include <Windows.h>
+#include <debugapi.h>
+
+#include "rex_engine/diagnostics/win/win_message_box.h" // for yes_no_messa...
 
 #define NOMINMAX
 

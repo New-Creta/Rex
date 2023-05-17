@@ -5,8 +5,8 @@
 
 #define NOMINMAX
 #include <comdef.h>         // for _com_error
-#include <errhandlingapi.h> // for GetLastError
 #include <winerror.h>       // for HRESULT_FROM_...
+#include <Windows.h>
 
 namespace rex::win
 {

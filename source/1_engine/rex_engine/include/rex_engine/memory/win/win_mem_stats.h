@@ -1,8 +1,5 @@
 #pragma once
 
-#include "rex_engine/memory/memory_stats.h"
-#include "rex_engine/platform.h"
-
 namespace rex
 {
   struct MemoryStats;

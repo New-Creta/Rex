@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rex_std/array.h"
-
 namespace rex
 {
   enum class PlatformType

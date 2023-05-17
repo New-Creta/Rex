@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rex_engine/types.h"
-
 namespace rex
 {
   struct PlatformCreationParams;

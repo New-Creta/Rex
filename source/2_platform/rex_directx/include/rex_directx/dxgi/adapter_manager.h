@@ -8,11 +8,9 @@
 
 namespace rex
 {
-  class Gpu;
 
   namespace dxgi
   {
-    class GraphicalInfrastructure;
     class Factory;
 
     using AdapterVec = rsl::vector<rsl::unique_ptr<Gpu>>;

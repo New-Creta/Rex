@@ -5,12 +5,10 @@
 #include <Windows.h>               // for CaptureStackBackTrace
 #include <DbgHelp.h>               // for IMAGEHLP_LINE64, MAX_SYM_NAME, Sym...
 #include <basetsd.h>               // for ULONG64, DWORD64
-#include <minwindef.h>             // for HANDLE, DWORD, TRUE, BOOL, CALLBACK
-#include <processthreadsapi.h>     // for GetCurrentProcess
 #include <winscard.h>              // for ULONG
+#include <stddef.h>
 
 #include "rex_std/bonus/string.h"  // for big_stack_string, operator""_big
-#include "rex_std/stddef.h"        // for NULL
 // clang-format on
 // NOLINTEND(llvm-include-order)
 

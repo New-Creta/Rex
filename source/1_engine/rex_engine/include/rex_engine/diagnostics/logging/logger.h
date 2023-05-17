@@ -1,13 +1,13 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/logger.h" // for Logger (...
+
 #include "rex_engine/diagnostics/logging/log_category.h"    // for LogCategory
 #include "rex_engine/diagnostics/logging/log_verbosity.h"   // for LogVerbo...
 #include "rex_std/memory.h"                                 // for forward
 
 namespace rex
 {
-  struct LogCategory;
 
   rexlog::Logger& get_logger(const LogCategory& category);
 

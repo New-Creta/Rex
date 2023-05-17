@@ -1,11 +1,8 @@
 #pragma once
 
-#include "rex_directx/directx_util.h"
-#include "rex_engine/types.h"
-#include "rex_std/string.h" // for string_view
-#include "rex_std/string_view.h"
-
 #include <d3d12.h> // for D3D_SHADER_MODEL, ID3D12Device
+
+#include "rex_std/string.h" // for string_view
 
 namespace rex
 {

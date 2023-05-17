@@ -10,7 +10,7 @@
 #include "rex_engine/memory/win/win_mem_stats.h"       // for query_memory_...
 #include "rex_std/bonus/types.h"                       // for card32
 #include "rex_std/limits.h"                            // for numeric_limits
-#include "rex_std/stacktrace.h"                        // for const_random_...
+#include "rex_engine/diagnostics/logging/log_verbosity.h"
 
 namespace rex
 {

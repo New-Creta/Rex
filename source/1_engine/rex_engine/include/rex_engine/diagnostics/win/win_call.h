@@ -15,7 +15,6 @@
 #include "rex_std/assert.h"       // for string_view
 #include "rex_std/bonus/string.h" // for medium_stack_string
 #include "rex_std/bonus/types.h"  // for card32
-#include "rex_std/string_view.h"
 
 namespace rex
 {

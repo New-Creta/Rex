@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_std/assert.h"
 #include "rex_std/bonus/defines.h"   // for ANONYMOUS_VARIABLE, DEBUG_BREAK
 #include "rex_std/format.h"          // for fmt_stack_string
 #include "rex_std/source_location.h" // for source_location
