@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/memory/debug_allocator.h" // for DebugAllocator
-#include "rex_engine/memory/memory_stats.h" // for MemoryStats
+#include "rex_engine/memory/debug_allocator.h"     // for DebugAllocator
+#include "rex_engine/memory/memory_stats.h"        // for MemoryStats
 #include "rex_engine/memory/untracked_allocator.h" // for UntrackedAllocator
 #include "rex_engine/types.h"                      // for s64
 #include "rex_std/array.h"                         // for array

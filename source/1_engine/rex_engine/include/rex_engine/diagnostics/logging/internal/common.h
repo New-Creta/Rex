@@ -10,8 +10,8 @@
 #include "rex_std/bonus/compiler.h"      // for rsl
 #include "rex_std/bonus/memory.h"        // for make_unique
 #include "rex_std/chrono.h"              // for system_clock
-#include "rex_std/functional.h"       // for function, is_convertible
-#include "rex_std/initializer_list.h" // for initializer_list
+#include "rex_std/functional.h"          // for function, is_convertible
+#include "rex_std/initializer_list.h"    // for initializer_list
 #include "rex_std/internal/exception/abort.h"
 #include "rex_std/memory.h" // for enable_if_t, integral_constant
 #include "rex_std/string.h" // for string_view, basic_string_view

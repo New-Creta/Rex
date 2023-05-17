@@ -1,8 +1,8 @@
 #pragma once
 
-#include <d3d12.h> // for D3D_SHADER_MODEL, ID3D12Device
-
 #include "rex_std/string.h" // for string_view
+
+#include <d3d12.h> // for D3D_SHADER_MODEL, ID3D12Device
 
 namespace rex
 {

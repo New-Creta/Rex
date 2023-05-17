@@ -4,8 +4,8 @@
 #include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/memory/debug_allocator.h"
-#include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/memory/memory_header.h" // IWYU pragma: keep
+#include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/types.h"
 #include "rex_std/memory.h"

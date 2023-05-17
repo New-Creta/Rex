@@ -4,9 +4,9 @@
 #include "rex_engine/log.h"                            // for LogEngine
 
 #define NOMINMAX
-#include <comdef.h>         // for _com_error
-#include <winerror.h>       // for HRESULT_FROM_...
 #include <Windows.h>
+#include <comdef.h>   // for _com_error
+#include <winerror.h> // for HRESULT_FROM_...
 
 namespace rex::win
 {

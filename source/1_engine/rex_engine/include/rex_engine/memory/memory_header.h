@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rex_engine/diagnostics/win/win_stacktrace.h" // for CallStack
-#include "rex_std/bonus/types.h"              // for card32
-#include "rex_std/thread.h"                   // for thread
-#include "rex_std_extra/memory/memory_size.h" // for memory_size
+#include "rex_std/bonus/types.h"                       // for card32
+#include "rex_std/thread.h"                            // for thread
+#include "rex_std_extra/memory/memory_size.h"          // for memory_size
 
 namespace rex
 {
