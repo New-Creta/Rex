@@ -240,7 +240,7 @@ public class BasicCPPProject : BaseProject
       postbuildCommandArguments += $" -srcroot={SourceRootPath}";
       postbuildCommandArguments += $" -clang_tidy_regex=\"{GenerateSettings.ClangTidyRegex}\"";
 
-      if (GenerateSettings.PerformAllChecks)
+      if (GenerateSettings.EnableSecondPass)
       {
         postbuildCommandArguments += $" -perform_all_checks";
       }
