@@ -2,10 +2,9 @@
 
 #include "rex_directx/log.h"                           // for LogDirectX
 #include "rex_engine/diagnostics/logging/log_macros.h" // for REX_ERROR
-#include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_engine/types.h"                 // for s32, tchar
-#include "rex_std/string.h"                   // for string
-#include "rex_std_extra/memory/memory_size.h" // for memory_size
+#include "rex_engine/types.h"                          // for s32, tchar
+#include "rex_std/string.h"                            // for string
+#include "rex_std_extra/memory/memory_size.h"          // for memory_size
 
 #include <dxgi.h>       // for IDXGIAdapter1
 #include <stdlib.h>     // for wcstombs_s

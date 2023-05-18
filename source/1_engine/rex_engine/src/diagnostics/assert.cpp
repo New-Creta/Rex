@@ -3,9 +3,10 @@
 #include "rex_engine/debug_types.h"                       // for DebugVector
 #include "rex_engine/diagnostics/logging/log_macros.h"    // for REX_ERROR
 #include "rex_engine/diagnostics/logging/log_verbosity.h" // for LogVerbosity
-#include "rex_engine/diagnostics/stacktrace.h"            // for ResolvedCa...
-#include "rex_std/bonus/string.h"                         // for random_acc...
-#include "rex_std/bonus/types.h"                          // for count_t
+#include "rex_engine/diagnostics/win/win_stacktrace.h"
+#include "rex_std/bonus/defines.h"
+#include "rex_std/bonus/string.h" // for random_acc...
+#include "rex_std/bonus/types.h"  // for count_t
 
 namespace rex
 {

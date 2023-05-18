@@ -2,12 +2,10 @@
 
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/core_application.h"
-#include "rex_engine/defines.h"
 #include "rex_engine/string/stringid.h"
+#include "rex_engine/types.h"
 #include "rex_std/memory.h"
-#include "rex_std/utility.h"
 #include "rex_windows/platform_creation_params.h"
-#include "rex_windows/win_types.h"
 
 namespace rex
 {
@@ -59,6 +57,7 @@ namespace rex
 
     private:
       class Internal;
+
       rsl::unique_ptr<Internal> m_internal_ptr;
     };
   } // namespace win32

@@ -8,7 +8,6 @@ namespace rex
   namespace event_system
   {
     enum class EventType;
-    struct Event;
 
     using EventFunction = rsl::function<void(const Event&)>;
 
