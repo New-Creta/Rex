@@ -129,7 +129,7 @@
     "config_name": "include_what_you_use_path",
     "archive_name": "IncludeWhatYouUse",
     "num_zip_files": 2,
-    "version" : "iwyu-15.0.0"
+    "version" : "iwyu-15.0.0-r0.1"
   },
   "lcov" :
   {
