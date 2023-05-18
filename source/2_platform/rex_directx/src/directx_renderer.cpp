@@ -16,18 +16,18 @@ namespace rex
     namespace internal
     {
       //-------------------------------------------------------------------------
-      const Gpu* highest_scoring_gpu(const rsl::vector<rsl::unique_ptr<Gpu>>& gpus)
+      count_t highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
       {
         auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
-                                   [](const rsl::unique_ptr<Gpu>& lhs, const rsl::unique_ptr<Gpu>& rhs)
+                                   [](const GpuDescription& lhs, const GpuDescription& rhs)
                                    {
-                                     const size_t lhs_vram = lhs->description().dedicated_video_memory.size_in_bytes();
-                                     const size_t rhs_vram = rhs->description().dedicated_video_memory.size_in_bytes();
+                                     const size_t lhs_vram = lhs.dedicated_video_memory.size_in_bytes();
+                                     const size_t rhs_vram = rhs.dedicated_video_memory.size_in_bytes();
 
                                      return rhs_vram > lhs_vram;
                                    });
 
-        return it != gpus.cend() ? it->get() : nullptr;
+        return it != gpus.cend() ? rsl::distance(gpus.cbegin(), it) : -1;
       }
     } // namespace internal
 
@@ -80,8 +80,8 @@ namespace rex
         }
 
         const dxgi::AdapterManager adapter_manager(&factory, &internal::highest_scoring_gpu);
-        const Gpu* selected_gpu = adapter_manager.selected();
-        IDXGIAdapter* adapter = static_cast<IDXGIAdapter*>(selected_gpu->native_handle());
+        const dxgi::Adapter* selected_gpu = adapter_manager.selected();
+        IDXGIAdapter* adapter             = selected_gpu->c_ptr();
 
         const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
 
