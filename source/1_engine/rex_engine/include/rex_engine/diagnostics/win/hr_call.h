@@ -12,8 +12,9 @@
 
 #pragma once
 
+#include "rex_std/assert.h"
 #include "rex_std/bonus/string.h"
-#include "rex_std/string_view.h"
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {

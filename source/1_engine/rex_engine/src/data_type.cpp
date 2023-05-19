@@ -1,17 +1,30 @@
 #include "rex_engine/data_type.h"
 
+#include "glm/ext/matrix_float3x3.hpp"
+#include "glm/ext/matrix_float4x4.hpp"
+#include "glm/ext/vector_float2.hpp"
+#include "glm/ext/vector_float3.hpp"
+#include "glm/ext/vector_float4.hpp"
+#include "glm/ext/vector_int2.hpp"
+#include "glm/ext/vector_int3.hpp"
+#include "glm/ext/vector_int4.hpp"
+#include "glm/ext/vector_uint2.hpp"
+#include "glm/ext/vector_uint3.hpp"
+#include "glm/ext/vector_uint4.hpp"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/log.h"
 #include "rex_engine/types.h"
-#include "rex_std/unordered_map.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/format.h"
 #include "rex_std_extra/utility/type_id.h"
+
+#include <stddef.h>
 
 #ifdef REX_COMPILER_MSVC
   #pragma warning(push)
   #pragma warning(disable : 4201) // nonstandard extension used: nameless struct/union
 #endif
-
-#include <glm/glm.hpp>
 
 #ifdef REX_COMPILER_MSVC
   #pragma warning(pop)

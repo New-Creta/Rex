@@ -1,5 +1,7 @@
 #include "rex_renderer_core/gpu.h"
 
+#include "rex_std/string.h"
+
 namespace rex
 {
   //-------------------------------------------------------------------------

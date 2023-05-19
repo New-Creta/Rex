@@ -1,7 +1,8 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 
-#include <algorithm>
-#include <iterator>
+#include "rex_std/bonus/string.h"
+#include "rex_std/format.h"
+#include "rex_std/type_traits.h"
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

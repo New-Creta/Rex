@@ -2,10 +2,10 @@
 
 #include "rex_directx/dxgi/comobject.h"
 #include "rex_directx/wrl/wrl_types.h"
-#include "rex_engine/types.h"
-#include "rex_std/memory.h"
 
 struct IDXGIFactory;
+
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {

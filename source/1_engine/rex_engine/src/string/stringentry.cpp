@@ -1,6 +1,7 @@
 #include "rex_engine/string/stringentry.h"
 
 #include <rex_std/memory.h>
+#include <vcruntime_new.h>
 
 namespace rex
 {
