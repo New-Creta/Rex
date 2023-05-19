@@ -10,7 +10,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #include <basetsd.h>
-#include <stddef.h>
+#include <cstddef>
 #include <windef.h>
 #include <winuser.h>
 

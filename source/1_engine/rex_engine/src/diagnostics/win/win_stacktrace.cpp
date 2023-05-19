@@ -4,9 +4,9 @@
 // clang-format off
 #include <Windows.h>               // for CaptureStackBackTrace
 #include <DbgHelp.h>               // for IMAGEHLP_LINE64, MAX_SYM_NAME, Sym...
-#include <basetsd.h>               // for ULONG64, DWORD64
-#include <winscard.h>              // for ULONG
-#include <stddef.h>
+#include <basetsd.h>
+#include <cstddef>
+#include <winscard.h>
 
 #include "rex_std/bonus/string.h"  // for big_stack_string, operator""_big
 // clang-format on

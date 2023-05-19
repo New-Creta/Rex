@@ -1,6 +1,5 @@
 #include "rex_engine/data_type.h"
 
-#include "glm/detail/qualifier.hpp"                    // for qualifier
 #include "glm/ext/matrix_float3x3.hpp"                 // for mat3
 #include "glm/ext/matrix_float4x4.hpp"                 // for mat4
 #include "glm/ext/vector_float2.hpp"                   // for vec2
@@ -20,7 +19,7 @@
 #include "rex_std/format.h"                            // for exchange, string
 #include "rex_std_extra/utility/type_id.h"             // for type_id, type...
 
-#include <stddef.h>
+#include <cstddef>
 
 #ifdef REX_COMPILER_MSVC
   #pragma warning(push)

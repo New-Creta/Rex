@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rex_engine/memory/blob.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
 {
@@ -27,7 +29,7 @@ namespace rex
     template <typename T>
     void rex::memory::BlobWriter::write(const T& data)
     {
-      m_blob.write(&data, sizeof(T), m_write_offset);
+      m_blob->write(&data, sizeof(T), m_write_offset);
       m_write_offset += sizeof(T);
     }
 
@@ -39,7 +41,7 @@ namespace rex
       {
         BlobWriter writer(b);
 
-        writer.template write<T>(data);
+        writer.write<T>(data);
       }
 
       void write(memory::Blob& b, const void* inData, const rsl::memory_size& inSize);

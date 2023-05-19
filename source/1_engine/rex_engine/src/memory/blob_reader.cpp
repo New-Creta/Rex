@@ -1,5 +1,7 @@
 #include "rex_engine/memory/blob_reader.h"
 
+#include "rex_engine/memory/blob.h"
+
 namespace rex
 {
   namespace memory

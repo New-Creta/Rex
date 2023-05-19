@@ -13,12 +13,11 @@
 #include "rex_std/vector.h"                            // for string, vector
 #include "rex_std_extra/memory/memory_size.h"          // for memory_size
 
-#include <algorithm>    // for max_element
-#include <combaseapi.h> // for IID_PPV_ARGS
-#include <d3d12.h>      // for ID3D12Device
-#include <dxgi.h>       // for IDXGIAdapter
-#include <intsafe.h>    // for FAILED
-#include <stddef.h>
+#include <Windows.h>
+#include <algorithm> // for max_element
+#include <cstddef>
+#include <d3d12.h> // for ID3D12Device
+#include <dxgi.h>  // for IDXGIAdapter
 
 namespace rex
 {

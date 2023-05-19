@@ -4,7 +4,6 @@
 #include "rex_engine/string/stringentry.h" // for StringEntryID, StringEntry
 #include "rex_std/bonus/functional.h"      // for hash_result
 #include "rex_std/bonus/hashtable.h"       // for hashtable_iterator, opera...
-#include "rex_std/bonus/types.h"           // for char8
 #include "rex_std/bonus/utility.h"         // for key_value, emplace_result
 #include "rex_std/cstring.h"
 #include "rex_std/internal/utility/pair.h"

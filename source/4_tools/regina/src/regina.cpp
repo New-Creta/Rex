@@ -4,7 +4,6 @@
 #include "rex_engine/diagnostics/logging/log_verbosity.h" // for LogVerbosity
 #include "rex_engine/entrypoint.h"                        // for app_entry
 #include "rex_engine/string/stringid.h"                   // for operator""...
-#include "rex_std/bonus/types.h"                          // for char8
 #include "rex_std/type_traits.h"                          // for move
 #include "rex_std_extra/memory/memory_size.h"             // for operator""_kb
 #include "rex_windows/gui_application.h"                  // for Applicatio...

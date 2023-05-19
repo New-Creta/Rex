@@ -7,12 +7,12 @@
 #include "rex_std/bonus/types.h"           // for uint32
 #include "rex_std/functional.h"            // for function
 
-#include <combaseapi.h> // for IID_PPV_ARGS_Helper, IID_...
-#include <dxgi.h>       // for IDXGIAdapter, IDXGIAdapter1
-#include <dxgi1_4.h>    // for IDXGIFactory4
-#include <dxgi1_6.h>    // for IDXGIFactory6, IDXGIAdapter4
-#include <intsafe.h>    // for HRESULT, UINT
-#include <winerror.h>   // for DXGI_ERROR_NOT_FOUND
+#include <Windows.h>
+#include <d3d12.h>
+#include <dxgi.h>     // for IDXGIAdapter, IDXGIAdapter1
+#include <dxgi1_4.h>  // for IDXGIFactory4
+#include <dxgi1_6.h>  // for IDXGIFactory6, IDXGIAdapter4
+#include <winerror.h> // for DXGI_ERROR_NOT_FOUND
 
 namespace
 {

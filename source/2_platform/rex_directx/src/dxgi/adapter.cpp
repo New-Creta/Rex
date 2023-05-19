@@ -6,10 +6,9 @@
 #include "rex_std/string.h"                            // for string
 #include "rex_std_extra/memory/memory_size.h"          // for memory_size
 
+#include <cstdlib>      // for wcstombs_s
 #include <dxgi.h>       // for IDXGIAdapter1
-#include <stdlib.h>     // for wcstombs_s
 #include <wrl/client.h> // for ComPtr
-#include <xstring>      // for string
 
 namespace
 {
@@ -47,7 +46,7 @@ namespace
   //-------------------------------------------------------------------------
   rsl::string to_multibyte(const tchar* wideCharacterBuffer, count_t size)
   {
-    std::string buffer(size, NULL);
+    rsl::string buffer(size, '\0');
 
     // Convert wide character string to multi byte character string.
     // size_t converted_chars => The amount of converted characters.
@@ -60,7 +59,7 @@ namespace
       return rsl::string("Invalid String");
     }
 
-    buffer.resize(converted_chars);
+    buffer.resize(static_cast<count_t>(converted_chars));
 
     return rsl::string(buffer.data(), size); // NOLINT(readability-redundant-string-cstr)
   }

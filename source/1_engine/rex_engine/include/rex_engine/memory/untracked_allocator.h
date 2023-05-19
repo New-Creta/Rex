@@ -1,6 +1,11 @@
 #pragma once
 
+#include "rex_std/bonus/attributes.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/utility.h" // IWYU pragma: keep
 #include "rex_std_extra/memory/memory_size.h"
+
+#include <new>
 
 namespace rex
 {

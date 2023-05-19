@@ -7,7 +7,7 @@
 #include "rex_engine/memory/memory_tracking.h"         // for mem_tracker
 #include "rex_std/bonus/utility.h"                     // for scopeguard
 
-#include <stdlib.h> // for EXIT_FAILURE
+#include <cstdlib> // for EXIT_FAILURE
 
 namespace rex
 {

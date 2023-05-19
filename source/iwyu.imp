@@ -437,5 +437,21 @@
       "<Windows.h>",
       "public"
     ]
+  },
+  {
+    "include": [
+      "<intsafe.h>",
+      "private",
+      "<Windows.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<combaseapi.h>",
+      "private",
+      "<d3d12.h>",
+      "public"
+    ]
   }
 ]
