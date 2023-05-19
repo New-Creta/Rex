@@ -1,15 +1,11 @@
 #include "rex_engine/memory/memory_tracking.h"
 
-#include "rex_engine/core_application.h"               // for frame_info
-#include "rex_engine/diagnostics/assert.h"             // for REX_ASSERT_X
-#include "rex_engine/diagnostics/logging/log_macros.h" // for REX_ERROR_X
-#include "rex_engine/frameinfo/frameinfo.h"            // for FrameInfo
-#include "rex_engine/log.h"                            // for LogEngine
-#include "rex_engine/memory/memory_header.h"           // for MemoryHeader
-#include "rex_engine/memory/memory_tags.h"             // for MemoryTag
-#include "rex_engine/memory/win/win_mem_stats.h"       // for query_memory_...
-#include "rex_std/bonus/types.h"                       // for card32
-#include "rex_std/limits.h"                            // for numeric_limits
+#include "rex_engine/core_application.h"
+#include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/log.h"
+#include "rex_std/iostream.h"
+#include "rex_std/limits.h"
 
 namespace rex
 {

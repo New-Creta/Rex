@@ -1,6 +1,6 @@
 #pragma once
 
-#include <wrl/client.h> // for ComPtr
+#include <wrl.h>
 
 namespace rex
 {

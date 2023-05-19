@@ -1,12 +1,9 @@
 #include "rex_engine/diagnostics/win/win_message_box.h"
 
-#include "rex_std/bonus/string.h" // for medium_stack_string
-
-#include <Windows.h>
-#include <libloaderapi.h>
-#include <winuser.h>
+#include "rex_std/bonus/string.h"
 
 #define NOMINMAX
+#include <windows.h>
 
 int32 rex::win::message_box(rsl::string_view msg)
 {

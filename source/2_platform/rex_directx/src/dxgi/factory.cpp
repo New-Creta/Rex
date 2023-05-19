@@ -1,16 +1,7 @@
 #include "rex_directx/dxgi/factory.h"
 
-#include "rex_engine/diagnostics/assert.h" // for REX_ASSERT_X
-#include "rex_std/memory.h"                // for move
-
-#include <Windows.h>
-#include <d3d12.h>
-#include <dxgi.h>    // for IDXGIFactory, IDXGIFactory1
-#include <dxgi1_2.h> // for IDXGIFactory2
-#include <dxgi1_3.h> // for IDXGIFactory3
-#include <dxgi1_4.h> // for IDXGIFactory4
-#include <dxgi1_5.h> // for IDXGIFactory5
-#include <dxgi1_6.h> // for IDXGIFactory6, IDXGIFactory7
+#include "rex_directx/dxgi/util.h"
+#include "rex_engine/diagnostics/assert.h"
 
 namespace
 {

@@ -1,9 +1,8 @@
 #include "rex_engine/memory/new_delete.h"
 
-#include "rex_engine/memory/global_allocator.h" // for global_allocator
-#include "rex_std/bonus/types.h"                // for card64
+#include "rex_engine/memory/global_allocator.h"
 
-#include <vcruntime_new.h> // for operator delete
+#include <cstdlib>
 
 void* operator new(u64 size) // NOLINT(readability-inconsistent-declaration-parameter-name)
 {

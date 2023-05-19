@@ -2,13 +2,8 @@
 
 // NOLINTBEGIN(llvm-include-order)
 // clang-format off
-#include <Windows.h>               // for CaptureStackBackTrace
-#include <DbgHelp.h>               // for IMAGEHLP_LINE64, MAX_SYM_NAME, Sym...
-#include <basetsd.h>
-#include <cstddef>
-#include <winscard.h>
-
-#include "rex_std/bonus/string.h"  // for big_stack_string, operator""_big
+#include <Windows.h> // this needs to be included before DbgHelp.h
+#include <DbgHelp.h>
 // clang-format on
 // NOLINTEND(llvm-include-order)
 

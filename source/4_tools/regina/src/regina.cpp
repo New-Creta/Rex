@@ -1,13 +1,11 @@
-#include "rex_engine/cmd_line_args.h"                     // for CommandLin...
-#include "rex_engine/core_application.h"                  // for EngineParams
-#include "rex_engine/diagnostics/logging/log_macros.h"    // for REX_LOG
-#include "rex_engine/diagnostics/logging/log_verbosity.h" // for LogVerbosity
-#include "rex_engine/entrypoint.h"                        // for app_entry
-#include "rex_engine/string/stringid.h"                   // for operator""...
-#include "rex_std/type_traits.h"                          // for move
-#include "rex_std_extra/memory/memory_size.h"             // for operator""_kb
-#include "rex_windows/gui_application.h"                  // for Applicatio...
-#include "rex_windows/platform_creation_params.h"         // for PlatformCr...
+#include "rex_engine/defines.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/entrypoint.h"
+#include "rex_engine/memory/memory_tracking.h"
+#include "rex_engine/string/stringid.h"
+#include "rex_std/iostream.h"
+#include "rex_std_extra/utility/type_id.h"
+#include "rex_windows/gui_application.h"
 
 DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
@@ -34,7 +32,7 @@ namespace rex
 
     app_params.gui_params.window_width  = 1280;
     app_params.gui_params.window_height = 720;
-    app_params.gui_params.window_title  = "Regina"_sid;
+    app_params.gui_params.window_title  = "Regina";
 
     app_params.engine_params.max_memory        = 256_kb;
     app_params.engine_params.app_init_func     = initialize;

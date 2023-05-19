@@ -1,9 +1,9 @@
 #include "rex_directx/directx_feature_level.h"
 
-#include "rex_engine/diagnostics/assert.h" // for REX_ASSERT
-#include "rex_std/array.h"                 // for const_random_access_iterator
-
-#include <winerror.h>
+#include "rex_directx/directx_util.h"
+#include "rex_directx/dxgi/util.h"
+#include "rex_engine/diagnostics/assert.h"
+#include "rex_std/array.h"
 
 namespace rex
 {

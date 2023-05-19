@@ -1,30 +1,17 @@
 #include "rex_engine/data_type.h"
 
-#include "glm/ext/matrix_float3x3.hpp"                 // for mat3
-#include "glm/ext/matrix_float4x4.hpp"                 // for mat4
-#include "glm/ext/vector_float2.hpp"                   // for vec2
-#include "glm/ext/vector_float3.hpp"                   // for vec3
-#include "glm/ext/vector_float4.hpp"                   // for vec4
-#include "glm/ext/vector_int2.hpp"                     // for ivec2
-#include "glm/ext/vector_int3.hpp"                     // for ivec3
-#include "glm/ext/vector_int4.hpp"                     // for ivec4
-#include "glm/ext/vector_uint2.hpp"                    // for uvec2
-#include "glm/ext/vector_uint3.hpp"                    // for uvec3
-#include "glm/ext/vector_uint4.hpp"                    // for uvec4
-#include "rex_engine/diagnostics/assert.h"             // for REX_ASSERT_X
-#include "rex_engine/diagnostics/logging/log_macros.h" // for REX_ERROR
-#include "rex_engine/log.h"                            // for LogEngine
-#include "rex_engine/types.h"                          // for s32, s16, s64
-#include "rex_std/bonus/types.h"                       // for size_t, int32
-#include "rex_std/format.h"                            // for exchange, string
-#include "rex_std_extra/utility/type_id.h"             // for type_id, type...
-
-#include <cstddef>
+#include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/log.h"
+#include "rex_engine/types.h"
+#include "rex_std/unordered_map.h"
+#include "rex_std_extra/utility/type_id.h"
 
 #ifdef REX_COMPILER_MSVC
   #pragma warning(push)
   #pragma warning(disable : 4201) // nonstandard extension used: nameless struct/union
 #endif
+
+#include <glm/glm.hpp>
 
 #ifdef REX_COMPILER_MSVC
   #pragma warning(pop)

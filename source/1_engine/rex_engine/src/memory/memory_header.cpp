@@ -2,8 +2,6 @@
 
 namespace rex
 {
-  enum class MemoryTag;
-
   MemoryHeader::MemoryHeader(MemoryTag tag, void* ptr, rsl::memory_size size, rsl::thread::id threadId, card32 frameIdx, const CallStack& callstack)
       : m_callstack(callstack)
       , m_size(size)

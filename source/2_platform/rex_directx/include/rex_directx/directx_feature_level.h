@@ -1,9 +1,8 @@
 #pragma once
 
-#include "rex_std/string.h" // for string_view
-
-#include <d3d12.h> // for D3D_FEATURE_LEVEL
-#include <dxgi.h>  // for IDXGIAdapter
+#include "rex_directx/directx_util.h"
+#include "rex_engine/types.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {

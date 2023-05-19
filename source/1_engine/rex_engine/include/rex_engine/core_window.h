@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_engine/defines.h" // for BIT
-#include "rex_engine/types.h"   // for s32, f32
-#include "rex_std/string.h"     // for string_view
+#include "rex_engine/defines.h"
+#include "rex_engine/types.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {

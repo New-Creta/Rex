@@ -1,13 +1,9 @@
 #pragma once
 
-#include "rex_engine/string/stringentry.h" // for StringEntryID
-#include "rex_engine/types.h"              // for u32
-#include "rex_std/bonus/functional.h"      // for hash_result
-#include "rex_std/memory.h"                // for hash
-#include "rex_std/ostream.h"               // for ostream
-#include "rex_std/string.h"                // for string_view
-
-#include <stddef.h>
+#include "rex_engine/string/stringentry.h"
+#include "rex_engine/types.h"
+#include "rex_std/ostream.h"
+#include "rex_std/string.h"
 
 namespace rex
 {

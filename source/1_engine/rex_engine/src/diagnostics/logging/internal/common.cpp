@@ -1,7 +1,7 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 
-#include "rex_std/bonus/string.h" // for distance
-#include "rex_std/format.h"       // for format, fmt_stack_string
+#include <algorithm>
+#include <iterator>
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

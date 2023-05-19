@@ -1,5 +1,7 @@
 #include "rex_engine/system_info.h"
 
+#include "rex_engine/types.h"
+
 // NOLINTBEGIN(cppcoreguidelines-prefer-member-initializer,readability-convert-member-functions-to-static)
 
 namespace rex

@@ -1,18 +1,18 @@
 #include "rex_engine/core_application.h"
 
-#include "rex_engine/core_application_state.h"         // for ApplicationState
-#include "rex_engine/diagnostics/logging/log_macros.h" // for REX_ERROR
-#include "rex_engine/frameinfo/frameinfo.h"            // for FrameInfo
-#include "rex_engine/log.h"                            // for LogEngine
-#include "rex_engine/memory/memory_tracking.h"         // for mem_tracker
-#include "rex_std/bonus/utility.h"                     // for scopeguard
-
-#include <cstdlib> // for EXIT_FAILURE
+#include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/log.h"
+#include "rex_engine/memory/memory_tracking.h"
+#include "rex_std/assert.h"
+#include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_std/chrono.h"
+#include "rex_std/functional.h"
+#include "rex_std/math.h"
+#include "rex_std/memory.h"
+#include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
 {
-  class CommandLineArguments;
-
   namespace globals
   {
     FrameInfo g_frame_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)

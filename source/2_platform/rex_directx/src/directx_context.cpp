@@ -1,4 +1,5 @@
-#include "rex_renderer_core/context.h" // for create
+#include "rex_directx/log.h"
+#include "rex_renderer_core/context.h"
 
 namespace rex
 {

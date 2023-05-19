@@ -1,7 +1,6 @@
 #pragma once
 
-#include "rex_engine/debug_types.h" // for DebugString
-#include "rex_engine/types.h"       // for u32
+#include "rex_engine/debug_types.h"
 
 /**
  * Enum that defines the verbosity levels of the logging system.
