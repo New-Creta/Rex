@@ -504,6 +504,14 @@
   },
   {
     "include": [
+      "<d3dcommon.h>",
+      "private",
+      "<d3d12.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
       "<dxgi.h>",
       "private",
       "\"rex_directx/dxgi/util.h\"",

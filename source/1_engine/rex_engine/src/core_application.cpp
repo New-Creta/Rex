@@ -6,7 +6,7 @@
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/bonus/utility.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace rex
 {

@@ -8,7 +8,7 @@
 #include "rex_std/string.h"
 #include "rex_std_extra/memory/memory_size.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <wrl/client.h>
 
 namespace

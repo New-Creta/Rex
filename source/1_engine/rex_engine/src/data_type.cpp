@@ -19,7 +19,7 @@
 #include "rex_std/format.h"
 #include "rex_std_extra/utility/type_id.h"
 
-#include <stddef.h>
+#include <cstddef>
 
 #ifdef REX_COMPILER_MSVC
   #pragma warning(push)
