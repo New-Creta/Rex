@@ -26,11 +26,9 @@ public class RexEngine : EngineProject
     string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
     GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
     MemoryTagsHeaderFile = Path.Combine(SourceRootPath, "include", "rex_engine", "memory", "memory_tags.h");
-    FileSystemMountHeaderFile = Path.Combine(SourceRootPath, "include", "rex_engine", "filesystem", "mount_roots.h");
 
     // create it here so it's added to the project in case it didn't exist yet
     TouchGenerationFile(MemoryTagsHeaderFile);
-    TouchGenerationFile(FileSystemMountHeaderFile);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)

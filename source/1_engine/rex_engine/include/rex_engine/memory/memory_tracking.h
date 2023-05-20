@@ -23,12 +23,6 @@ namespace rex
     rsl::vector<MemoryHeader*, DebugAllocator<UntrackedAllocator>> allocation_headers;
   };
 
-  enum class AllocOp
-  {
-    Allocation,
-    Deallocation
-  };
-
   class MemoryTracker
   {
   public:

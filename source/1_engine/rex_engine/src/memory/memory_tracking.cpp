@@ -31,7 +31,7 @@ namespace rex
   {
   public:
     AllocationCallStack(CallStack callstack, card64 size)
-      : m_callstack(callstack)
+      : m_callstack(rsl::move(callstack))
       , m_size(size)
       , m_ref_count(1)
     {
