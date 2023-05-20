@@ -6,7 +6,10 @@ namespace rex
 {
   namespace input
   {
-    void update();
+    namespace internal
+    {
+      void update();
+    }
 
     bool is_key_pressed(char8 key);
     bool is_key_down(char8 key);

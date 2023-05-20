@@ -55,7 +55,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 // main is always the entry point.
 // on a graphical application however, we call into WinMain
 // as this is supposed to be the entry point for a graphical application
-// This is also the entry point that will be used without a console.
+// This is also the entry point that will be used without a console for simplicity
 int main()
 {
   rex::pre_app_entry(GetCommandLine());
