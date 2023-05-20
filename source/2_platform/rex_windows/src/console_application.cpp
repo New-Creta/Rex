@@ -51,7 +51,8 @@ namespace rex
 
       bool initialize()
       {
-        SetConsoleCtrlHandler(handler_routine, true); // NOLINT(readability-implicit-bool-conversion)
+        constexpr bool is_adding = true;
+        SetConsoleCtrlHandler(handler_routine, is_adding); // NOLINT(readability-implicit-bool-conversion)
 
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
 
@@ -86,13 +87,8 @@ namespace rex
 
     ConsoleApplication::ConsoleApplication(ApplicationCreationParams&& appParams)
         : CoreApplication(appParams.engine_params, appParams.cmd_args)
-        , m_internal_obj()
-        , m_internal(m_internal_obj.get<ConsoleApplication::Internal>())
+        , m_internal(rsl::make_unique<Internal>())
     {
-      static_assert(s_internal_size == sizeof(ConsoleApplication::Internal), "size of internal structure should match size of internal implementation");
-      static_assert(s_internal_alignment == alignof(ConsoleApplication::Internal), "alignment of internal structure should match alignment of internal implementation");
-
-      new(m_internal)(ConsoleApplication::Internal)(this, rsl::move(appParams));
     }
 
     ConsoleApplication::~ConsoleApplication() = default;

@@ -26,10 +26,7 @@ namespace rex
 
     private:
       class Internal;
-      static constexpr card32 s_internal_size      = 264;
-      static constexpr card32 s_internal_alignment = 8;
-      rsl::aligned_storage<s_internal_size, s_internal_alignment> m_internal_obj;
-      Internal* m_internal;
+      rsl::unique_ptr<Internal> m_internal;
     };
   } // namespace win32
 } // namespace rex

@@ -58,7 +58,7 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 // This is also the entry point that will be used without a console.
 int main()
 {
-  rex::pre_app_entry(GetCommandLine());
+  rex::internal::pre_app_entry(GetCommandLine());
 
   STARTUPINFOW si;
   GetStartupInfoW(&si);
@@ -70,5 +70,9 @@ int main()
     show_window = SW_SHOWNORMAL;
   }
 
-  return WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), show_window);
+  int result = WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), show_window);
+
+  rex::internal::post_app_shutdown();
+
+  return result;
 }
