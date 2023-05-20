@@ -8,9 +8,6 @@ using System.Text;
 [Generate]
 public class RexEngine : EngineProject
 {
-  private string MemoryTagsHeaderFile;
-  private string FileSystemMountHeaderFile;
-
   public RexEngine() : base()
   {
     // The name of the project in Visual Studio. The default is the name of
@@ -25,12 +22,6 @@ public class RexEngine : EngineProject
 
     string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
     GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
-    MemoryTagsHeaderFile = Path.Combine(SourceRootPath, "include", "rex_engine", "memory", "memory_tags.h");
-    FileSystemMountHeaderFile = Path.Combine(SourceRootPath, "include", "rex_engine", "filesystem", "mount_roots.h");
-
-    // create it here so it's added to the project in case it didn't exist yet
-    TouchGenerationFile(MemoryTagsHeaderFile);
-    TouchGenerationFile(FileSystemMountHeaderFile);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -97,19 +88,5 @@ public class RexEngine : EngineProject
   public override void AfterConfigure()
   {
     base.AfterConfigure();
-  }
-
-  private void TouchGenerationFile(string filePath)
-  {
-    if (File.Exists(filePath))
-    {
-      FileStream tmp = File.Open(filePath, FileMode.Truncate);
-      tmp.Close();
-    }
-    else
-    {
-      FileStream tmp = File.Create(filePath);
-      tmp.Close();
-    }
   }
 }

@@ -5,9 +5,9 @@
 
 namespace rex
 {
-  enum class MountRoot
+  enum class MountingPoint
   {
-    // MountRoot values for RexEngine
+    // MountingPoint values for RexEngine
     Logs,
   };
 } // namespace rex
