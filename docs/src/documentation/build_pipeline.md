@@ -78,15 +78,8 @@ That's why we added support for `Ninja` to Sharpmake.
 ### **[Ninja](https://ninja-build.org)**
 *Ninja is a small build system with a focus on speed*
 
-Ninja files are just text files specifying either rules or build statements.
-
-A rule can be thought of as a function. it takes arguments and then does something using those arguments.
-
-A build statement can be thought of as a struct. on generation many build statements are generated, each with its different values for their members.
-
-build statements can have dependencies, for example the build statement specifying how to link the program has a dependency on all the compilation build statements. 
-
-This means that when you build the engine (aka you want to link the executable) all compilation steps are performed first and only afterwards everything is linked together.
+We use ninja files for building the engine as those files are cross platform.
+Vanilla sharpmake doesn't support ninja however, so this was added.
 
 ### **Unity Builds**
 Also known as combi builds and jumbo builds.
