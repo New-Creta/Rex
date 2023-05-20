@@ -17,7 +17,7 @@ namespace rex
       Blob();
       Blob(const Blob& other) = delete;
       Blob(Blob&& other) noexcept;
-      Blob(rsl::unique_array<rsl::byte> data);
+      explicit Blob(rsl::unique_array<rsl::byte> data);
       ~Blob();
 
       Blob& operator=(const Blob& other) = delete;
@@ -35,7 +35,7 @@ namespace rex
       rsl::byte* data();
       const rsl::byte* data() const;
 
-      const rsl::memory_size& size() const;
+      rsl::memory_size size() const;
 
       template <typename T>
       T* data_as();

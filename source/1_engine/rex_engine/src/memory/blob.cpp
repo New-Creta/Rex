@@ -112,7 +112,7 @@ namespace rex
         return;
       }
 
-      m_data = rsl::make_unique<rsl::byte[]>(inSize);
+      m_data = rsl::make_unique<rsl::byte[]>(static_cast<card32>(inSize)); // NOLINT(modernize-avoid-c-arrays)
     }
     //-------------------------------------------------------------------------
     void Blob::release()
@@ -166,7 +166,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const rsl::memory_size& Blob::size() const
+    rsl::memory_size Blob::size() const
     {
       return rsl::memory_size(m_data.count());
     }

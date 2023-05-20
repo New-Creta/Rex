@@ -214,7 +214,7 @@ namespace rex
     rsl::mutex g_closed_request_mutex;
     rsl::vector<rsl::unique_ptr<QueuedRequest>> g_read_requests;
     rsl::vector<rsl::unique_ptr<QueuedRequest>> g_closed_requests;
-    rsl::unordered_map<MountRoot, rsl::string> g_roots;
+    rsl::unordered_map<MountingPoint, rsl::string> g_roots;
     rsl::thread g_reading_thread;
     rsl::thread g_closing_thread;
     rsl::atomic<bool> g_keep_processing = false;
@@ -311,7 +311,7 @@ namespace rex
         });
     }
 
-    void mount(MountRoot root, rsl::string_view path)
+    void mount(MountingPoint root, rsl::string_view path)
     {
       REX_ASSERT_X(!g_roots.contains(root), "root {} is already mapped. currently mapped to '{}'", rsl::enum_refl::enum_name(root), g_roots.at(root));
       g_roots[root] = rsl::string(path);
@@ -325,7 +325,7 @@ namespace rex
       g_keep_processing = false;
     }
 
-    memory::Blob open_read(MountRoot root, rsl::string_view filepath)
+    memory::Blob open_read(MountingPoint root, rsl::string_view filepath)
     {
       rsl::medium_stack_string path(g_roots.at(root));
       path += "/";
@@ -350,7 +350,7 @@ namespace rex
       // prepare a buffer to receive the file content
       const card32 file_size = static_cast<card32>(GetFileSize(handle.get(), nullptr));
       rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_size + 1); // NOLINT(modernize-avoid-c-arrays)
-      buffer[file_size] = rsl::byte(0); // make sure we end with a null char
+      buffer[file_size] = static_cast<rsl::byte>(0); // make sure we end with a null char
 
       // actually read the file
       DWORD bytes_read = 0;
@@ -360,7 +360,7 @@ namespace rex
       return memory::Blob(rsl::move(buffer));
     }
 
-    ReadRequest open_read_async(MountRoot root, rsl::string_view filepath)
+    ReadRequest open_read_async(MountingPoint root, rsl::string_view filepath)
     {
       rsl::medium_stack_string path(g_roots.at(root));
       path += "/";
@@ -382,7 +382,7 @@ namespace rex
       return request;
     }
 
-    void save_to_file(MountRoot root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    void save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
       rsl::medium_stack_string path(g_roots.at(root));
       path += "/";
@@ -414,7 +414,7 @@ namespace rex
       WIN_CALL(WriteFile(handle.get(), data, static_cast<DWORD>(size), &bytes_written, NULL));
     }
 
-    void save_to_file(MountRoot root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    void save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
       rsl::medium_stack_string path(g_roots.at(root));
       path += "/";
@@ -427,7 +427,7 @@ namespace rex
       save_to_file(filepath, blob.data(), blob.size(), shouldAppend);
     }
 
-    void create_dir(MountRoot root, rsl::string_view path)
+    void create_dir(MountingPoint root, rsl::string_view path)
     {
       rsl::medium_stack_string filepath(g_roots.at(root));
       filepath += "/";
@@ -440,7 +440,7 @@ namespace rex
       WIN_CALL_IGNORE(CreateDirectory(fullpath.data(), NULL), ERROR_ALREADY_EXISTS);
     }
 
-    bool exists(MountRoot root, rsl::string_view path)
+    bool exists(MountingPoint root, rsl::string_view path)
     {
       rsl::medium_stack_string filepath(g_roots.at(root));
       filepath += "/";
@@ -459,7 +459,7 @@ namespace rex
       return true;
     }
 
-    bool is_dir(MountRoot root, rsl::string_view path)
+    bool is_dir(MountingPoint root, rsl::string_view path)
     {
       rsl::medium_stack_string filepath(g_roots.at(root));
       filepath += "/";
@@ -479,7 +479,7 @@ namespace rex
 
       return false;
     }
-    bool is_file(MountRoot root, rsl::string_view path)
+    bool is_file(MountingPoint root, rsl::string_view path)
     {
       rsl::medium_stack_string filepath(g_roots.at(root));
       filepath += "/";
@@ -520,7 +520,7 @@ namespace rex
       return !is_abs(path);
     }
 
-    rsl::medium_stack_string create_full_path(MountRoot root, rsl::string_view path)
+    rsl::medium_stack_string create_full_path(MountingPoint root, rsl::string_view path)
     {
       REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
       REX_ASSERT_X(!is_abs(path), "Passed an absolute path into a function that doesn't allow absolute paths");

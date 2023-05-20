@@ -48,29 +48,29 @@ namespace rex
     };
 
     void init(rsl::string_view root = "");
-    void mount(MountRoot root, rsl::string_view path);
+    void mount(MountingPoint root, rsl::string_view path);
     void shutdown();
 
     REX_NO_DISCARD memory::Blob open_read(rsl::string_view filepath);
-    REX_NO_DISCARD memory::Blob open_read(MountRoot root, rsl::string_view filepath);
+    REX_NO_DISCARD memory::Blob open_read(MountingPoint root, rsl::string_view filepath);
     REX_NO_DISCARD ReadRequest open_read_async(rsl::string_view filepath);
-    REX_NO_DISCARD ReadRequest open_read_async(MountRoot root, rsl::string_view filepath);
+    REX_NO_DISCARD ReadRequest open_read_async(MountingPoint root, rsl::string_view filepath);
     void save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
-    void save_to_file(MountRoot root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
+    void save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
     void save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
-    void save_to_file(MountRoot root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
+    void save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
     void create_dir(rsl::string_view path);
-    void create_dir(MountRoot root, rsl::string_view path);
+    void create_dir(MountingPoint root, rsl::string_view path);
 
     bool exists(rsl::string_view path);
-    bool exists(MountRoot root, rsl::string_view path);
+    bool exists(MountingPoint root, rsl::string_view path);
     bool is_dir(rsl::string_view path);
-    bool is_dir(MountRoot root, rsl::string_view path);
+    bool is_dir(MountingPoint root, rsl::string_view path);
     bool is_file(rsl::string_view path);
-    bool is_file(MountRoot root, rsl::string_view path);
+    bool is_file(MountingPoint root, rsl::string_view path);
     bool is_abs(rsl::string_view path);
     bool is_rel(rsl::string_view path);
     rsl::medium_stack_string create_full_path(rsl::string_view path);
-    rsl::medium_stack_string create_full_path(MountRoot root, rsl::string_view path);
+    rsl::medium_stack_string create_full_path(MountingPoint root, rsl::string_view path);
   } // namespace vfs
 } // namespace rex
