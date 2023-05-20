@@ -1,11 +1,11 @@
 #include "rex_engine/diagnostics/win/win_call.h"
 
-#include "rex_engine/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/log.h"
 
 #define NOMINMAX
-#include <comdef.h>
 #include <Windows.h>
+#include <comdef.h>
 
 namespace rex::win
 {

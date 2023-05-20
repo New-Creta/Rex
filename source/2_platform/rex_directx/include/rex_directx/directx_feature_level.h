@@ -1,9 +1,9 @@
 #pragma once
 
+#include "rex_directx/dxgi/util.h"
 #include "rex_std/string.h"
 
 #include <d3d12.h>
-#include "rex_directx/dxgi/util.h"
 
 namespace rex
 {

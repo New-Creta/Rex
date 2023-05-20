@@ -8,6 +8,7 @@
 // NOLINTEND(llvm-include-order)
 
 #include "rex_std/bonus/string.h"
+
 #include <cstddef>
 
 namespace rex

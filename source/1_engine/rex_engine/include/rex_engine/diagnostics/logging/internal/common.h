@@ -3,15 +3,15 @@
 #include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/tweakme.h"
+#include "rex_std/bonus/atomic/atomic.h"
+#include "rex_std/bonus/compiler.h"
+#include "rex_std/bonus/memory.h"
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
 #include "rex_std/initializer_list.h"
 #include "rex_std/internal/exception/abort.h"
 #include "rex_std/memory.h"
 #include "rex_std/string.h"
-#include "rex_std/bonus/atomic/atomic.h"
-#include "rex_std/bonus/compiler.h"
-#include "rex_std/bonus/memory.h"
 
 #include <cstdio>
 

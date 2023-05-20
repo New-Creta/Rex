@@ -2,10 +2,10 @@
 
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/core_application.h"
-#include "rex_std/memory.h"
-#include "rex_windows/platform_creation_params.h"
 #include "rex_engine/types.h"
+#include "rex_std/memory.h"
 #include "rex_std/vector.h"
+#include "rex_windows/platform_creation_params.h"
 
 namespace rex
 {

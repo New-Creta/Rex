@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_windows/win_types.h"
 #include "rex_std/bonus/types.h"
+#include "rex_windows/win_types.h"
 
 namespace rex
 {

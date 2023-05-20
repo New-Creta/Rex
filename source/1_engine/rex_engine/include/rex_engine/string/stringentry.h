@@ -2,8 +2,8 @@
 
 #include "rex_engine/types.h"
 #include "rex_std/bonus/functional.h"
-#include "rex_std/memory.h"
 #include "rex_std/bonus/memory.h"
+#include "rex_std/memory.h"
 #include "rex_std/string.h"
 
 namespace rex

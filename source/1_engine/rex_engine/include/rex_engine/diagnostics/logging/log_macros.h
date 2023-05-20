@@ -23,9 +23,9 @@
 
 #else
 
-  #include "rex_engine/diagnostics/logging/log_category.h" // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/log_category.h"  // IWYU pragma: keep
   #include "rex_engine/diagnostics/logging/log_verbosity.h" // IWYU pragma: keep
-  #include "rex_engine/diagnostics/logging/logger.h" // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/logger.h"        // IWYU pragma: keep
 
 namespace rex
 {
