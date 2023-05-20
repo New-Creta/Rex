@@ -106,7 +106,7 @@ The generation script also has some config flags to enable or disable some behav
 
 | argument                  |  description 
 |--                         |--:            
-|  -no_clang_tools          | disables clang tools in any post build command  
+| -no_clang_tools           | disables clang tools in any post build command  
 | -unit_tests               |  also generates unit test projects 
 | -coverage                 |  adds code coverage flags to compilation steps 
 | -asan                     | adds code address sanitizer to compilation steps  
