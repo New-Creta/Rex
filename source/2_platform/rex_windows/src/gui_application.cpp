@@ -3,7 +3,7 @@
 #include "rex_engine/core_window.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/event.h"
+#include "rex_engine/event.h" // IWYU pragma: keep
 #include "rex_engine/event_system.h"
 #include "rex_engine/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
@@ -25,11 +25,6 @@
 
 namespace rex
 {
-  namespace event_system
-  {
-    struct Event;
-  } // namespace event_system
-
   namespace win32
   {
     class GuiApplication::Internal

@@ -5,7 +5,6 @@
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/diagnostics/win/win_stacktrace.h"
 #include "rex_std/bonus/defines.h"
-#include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
 
 namespace rex
