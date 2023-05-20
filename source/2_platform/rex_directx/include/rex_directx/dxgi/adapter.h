@@ -4,9 +4,9 @@
 #include "rex_directx/wrl/wrl_types.h"
 #include "rex_renderer_core/gpu.h"
 
-struct IDXGIAdapter;
-
 #include "rex_std/bonus/types.h"
+
+struct IDXGIAdapter;
 
 namespace rex
 {

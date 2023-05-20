@@ -7,7 +7,7 @@
 #include "rex_std/string.h"
 #include "rex_std_extra/memory/memory_size.h"
 
-#include <dxgi.h>
+#include "rex_directx/dxgi/util.h"
 #include <stdlib.h>
 #include <wrl/client.h>
 

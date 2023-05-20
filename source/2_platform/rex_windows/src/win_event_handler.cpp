@@ -7,16 +7,12 @@
 #include "rex_engine/event_type.h"
 #include "rex_windows/log.h"
 
-#define NOMINMAX
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/event.h"
 #include "rex_std/bonus/utility.h"
 
-#include <Windows.h>
-
 #define NOMINMAX
-#include <windef.h>
-#include <winuser.h>
+#include <Windows.h>
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 

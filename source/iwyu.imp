@@ -448,9 +448,113 @@
   },
   {
     "include": [
+      "<winerror.h>",
+      "private",
+      "<Windows.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<libloaderapi.h>",
+      "private",
+      "<Windows.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<winuser.h>",
+      "private",
+      "<Windows.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<basetsd.h>",
+      "private",
+      "<Windows.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<winscard.h>",
+      "private",
+      "<Windows.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<windef.h>",
+      "private",
+      "<Windows.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
       "<combaseapi.h>",
       "private",
       "<d3d12.h>",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<dxgi.h>",
+      "private",
+      "\"rex_directx/dxgi/util.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<dxgi1_1.h>",
+      "private",
+      "\"rex_directx/dxgi/util.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<dxgi1_2.h>",
+      "private",
+      "\"rex_directx/dxgi/util.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<dxgi1_3.h>",
+      "private",
+      "\"rex_directx/dxgi/util.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<dxgi1_4.h>",
+      "private",
+      "\"rex_directx/dxgi/util.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<dxgi1_5.h>",
+      "private",
+      "\"rex_directx/dxgi/util.h\"",
+      "public"
+    ]
+  },
+  {
+    "include": [
+      "<dxgi1_6.h>",
+      "private",
+      "\"rex_directx/dxgi/util.h\"",
       "public"
     ]
   }

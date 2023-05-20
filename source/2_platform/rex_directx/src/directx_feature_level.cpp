@@ -2,9 +2,8 @@
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_std/array.h"
-#include "rex_std/string_view.h"
 
-#include <winerror.h>
+#include <Windows.h>
 
 namespace rex
 {

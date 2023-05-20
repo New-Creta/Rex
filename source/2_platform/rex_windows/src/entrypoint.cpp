@@ -4,18 +4,14 @@
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 
-#define NOMINMAX
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/utility.h"
 
-#include <Windows.h>
-
 #define NOMINMAX
-#include <libloaderapi.h>
+#include <Windows.h>
 #include <processenv.h>
-#include <winuser.h>
 
 //-------------------------------------------------------------------------
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)

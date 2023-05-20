@@ -1,13 +1,24 @@
 #include "rex_directx/directx_feature_level.h"
 #include "rex_directx/directx_feature_shader_model.h"
-#include "rex_directx/directx_util.h"
+#include "rex_directx/directx_util.h" // IWYU pragma: keep
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/log.h"
 #include "rex_renderer_core/renderer.h"
 #include "rex_std/memory.h"
-#include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_renderer_core/gpu.h"
+#include "rex_std/algorithm.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/vector.h"
+#include "rex_std_extra/memory/memory_size.h"
+#include "rex_directx/wrl/wrl_types.h"
+
+#include <Windows.h>
+#include <d3d12.h>
+#include "rex_directx/dxgi/util.h"
+#include <cstddef>
 
 namespace rex
 {

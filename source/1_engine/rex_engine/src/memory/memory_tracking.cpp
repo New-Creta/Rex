@@ -9,7 +9,6 @@
 #include "rex_engine/memory/win/win_mem_stats.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/limits.h"
-#include "rex_std/stacktrace.h"
 
 namespace rex
 {

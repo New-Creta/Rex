@@ -3,7 +3,7 @@
 #include "rex_std/string.h"
 
 #include <d3d12.h>
-#include <dxgi.h>
+#include "rex_directx/dxgi/util.h"
 
 namespace rex
 {

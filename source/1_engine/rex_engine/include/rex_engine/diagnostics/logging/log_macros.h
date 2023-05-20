@@ -23,10 +23,9 @@
 
 #else
 
-  #include "rex_engine/debug_types.h"
-  #include "rex_engine/diagnostics/logging/log_category.h"
-  #include "rex_engine/diagnostics/logging/log_verbosity.h"
-  #include "rex_engine/diagnostics/logging/logger.h"
+  #include "rex_engine/diagnostics/logging/log_category.h" // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/log_verbosity.h" // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/logger.h" // IWYU pragma: keep
 
 namespace rex
 {
@@ -35,7 +34,7 @@ namespace rex
     template <int VerbosityToCheck, typename CategoryType>
     inline bool is_log_active(const CategoryType& category)
     {
-      return !Category.IsSuppressed((LogVerbosity)VerbosityToCheck);
+      return !category.IsSuppressed((LogVerbosity)VerbosityToCheck);
     }
   } // namespace internal
 

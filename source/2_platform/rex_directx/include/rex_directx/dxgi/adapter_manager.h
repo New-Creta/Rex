@@ -2,16 +2,14 @@
 
 #include "rex_renderer_core/gpu_manager.h"
 #include "rex_renderer_core/gpu_scorer.h"
+#include "rex_renderer_core/gpu.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 
 namespace rex
 {
-  class Gpu;
-
   namespace dxgi
   {
-    class GraphicalInfrastructure;
     class Factory;
 
     using AdapterVec = rsl::vector<rsl::unique_ptr<Gpu>>;

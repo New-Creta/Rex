@@ -8,7 +8,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_sinks-inl.h"
 
-// IWYU pragma: no_include<built-in>
+// IWYU pragma: no_include <built-in>
 
 template class REXLOG_API rexlog::sinks::StdoutSinkBase<rexlog::details::ConsoleMutex>;
 template class REXLOG_API rexlog::sinks::StdoutSinkBase<rexlog::details::ConsoleNullMutex>;
