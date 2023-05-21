@@ -6,6 +6,7 @@
 #include "rex_std/iostream.h"
 #include "rex_std_extra/utility/type_id.h"
 #include "rex_windows/gui_application.h"
+#include "rex_engine/event_system.h"
 
 DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
@@ -19,6 +20,9 @@ namespace rex
   }
   void update()
   {
+    event_system::Event ev{};
+    ev.type = event_system::EventType::WindowClose;
+    event_system::fire_event(ev);
     // REX_INFO("updating Regina");
   }
   void shutdown()
