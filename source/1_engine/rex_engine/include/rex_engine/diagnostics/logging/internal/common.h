@@ -19,9 +19,6 @@
 
 #undef REXLOG_HEADER_ONLY
 
-#define REXLOG_API
-#define REXLOG_INLINE
-
 #define REXLOG_FMT_RUNTIME(format_string) format_string
 #define REXLOG_FMT_STRING(format_string)  format_string
 
@@ -146,9 +143,9 @@ namespace rexlog
       "T", "D", "I", "W", "E", "C", "O"                                                                                                                                                                                                                \
     }
 
-    REXLOG_API const string_view_t& to_string_view(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT;
-    REXLOG_API const char* to_short_c_str(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT;
-    REXLOG_API rexlog::level::LevelEnum from_str(const rex::DebugString& name) REXLOG_NOEXCEPT;
+     const string_view_t& to_string_view(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT;
+     const char* to_short_c_str(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT;
+     rexlog::level::LevelEnum from_str(const rex::DebugString& name) REXLOG_NOEXCEPT;
 
   } // namespace level
 
@@ -175,7 +172,7 @@ namespace rexlog
   //
   // Log exception
   //
-  class REXLOG_API RexlogEx
+   class RexlogEx
   {
   public:
     explicit RexlogEx(rex::DebugString msg);
@@ -186,8 +183,8 @@ namespace rexlog
     rex::DebugString m_msg;
   };
 
-  REXLOG_API void throw_rexlog_ex(const rex::DebugString& msg, int lastErrno);
-  REXLOG_API void throw_rexlog_ex(rex::DebugString msg);
+   void throw_rexlog_ex(const rex::DebugString& msg, int lastErrno);
+   void throw_rexlog_ex(rex::DebugString msg);
 
   struct SourceLoc
   {

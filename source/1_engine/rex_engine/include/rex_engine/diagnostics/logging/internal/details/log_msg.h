@@ -10,7 +10,7 @@ namespace rexlog
 {
   namespace details
   {
-    struct REXLOG_API LogMsg
+    struct  LogMsg
     {
       LogMsg() = default;
       LogMsg(log_clock::time_point logTime, SourceLoc loc, string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);

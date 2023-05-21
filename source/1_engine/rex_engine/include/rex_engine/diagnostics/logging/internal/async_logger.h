@@ -32,7 +32,7 @@ namespace rexlog
     class ThreadPool;
   } // namespace details
 
-  class REXLOG_API AsyncLogger final : public rsl::enable_shared_from_this<AsyncLogger>, public Logger // NOLINT(fuchsia-multiple-inheritance)
+   class AsyncLogger final : public rsl::enable_shared_from_this<AsyncLogger>, public Logger // NOLINT(fuchsia-multiple-inheritance)
   {
     friend class details::ThreadPool;
 

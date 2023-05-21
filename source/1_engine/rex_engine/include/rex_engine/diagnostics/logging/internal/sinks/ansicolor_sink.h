@@ -5,11 +5,9 @@
 #include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_std/memory.h"
-
-#include <array>
-#include <mutex>
-#include <string>
+#include "rex_std_extra/utility/enum_reflection.h"
 
 namespace rexlog
 {
@@ -37,7 +35,7 @@ namespace rexlog
       ansicolor_sink& operator=(const ansicolor_sink& other) = delete;
       ansicolor_sink& operator=(ansicolor_sink&& other)      = delete;
 
-      void set_color(level::level_enum color_level, string_view_t color);
+      void set_color(level::LevelEnum color_level, string_view_t color);
       void set_color_mode(ColorMode mode);
       bool should_color();
 
@@ -86,7 +84,7 @@ namespace rexlog
       mutex_t& m_mutex;
       bool should_do_colors_;
       rsl::unique_ptr<rexlog::formatter> m_formatter;
-      rsl::array<rex::DebugString, level::n_levels> m_colors;
+      rsl::array<rex::DebugString, rsl::enum_refl::enum_count<level::LevelEnum>()> m_colors;
       void print_ccode_impl(const string_view_t& color_code);
       void print_range_impl(const memory_buf_t& formatted, size_t start, size_t end);
       static rex::DebugString to_string_impl(const string_view_t& sv);
@@ -96,15 +94,29 @@ namespace rexlog
     class ansicolor_stdout_sink : public ansicolor_sink<ConsoleMutex>
     {
     public:
-      explicit ansicolor_stdout_sink(ColorMode mode = ColorMode::automatic);
+      explicit ansicolor_stdout_sink(ColorMode mode = ColorMode::Automatic);
     };
 
     template <typename ConsoleMutex>
     class ansicolor_stderr_sink : public ansicolor_sink<ConsoleMutex>
     {
     public:
-      explicit ansicolor_stderr_sink(ColorMode mode = ColorMode::automatic);
+      explicit ansicolor_stderr_sink(ColorMode mode = ColorMode::Automatic);
     };
+
+    // ansicolor_stdout_sink
+    template <typename ConsoleMutex>
+    ansicolor_stdout_sink<ConsoleMutex>::ansicolor_stdout_sink(ColorMode mode)
+        : ansicolor_sink<ConsoleMutex>(stdout, mode)
+    {
+    }
+
+    // ansicolor_stderr_sink
+    template <typename ConsoleMutex>
+    ansicolor_stderr_sink<ConsoleMutex>::ansicolor_stderr_sink(ColorMode mode)
+        : ansicolor_sink<ConsoleMutex>(stderr, mode)
+    {
+    }
 
     using ansicolor_stdout_sink_mt = ansicolor_stdout_sink<details::ConsoleMutex>;
     using ansicolor_stdout_sink_st = ansicolor_stdout_sink<details::ConsoleNullMutex>;

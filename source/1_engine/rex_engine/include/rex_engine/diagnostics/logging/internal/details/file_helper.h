@@ -19,7 +19,7 @@ namespace rexlog
       filename_t ext;
     };
 
-    class REXLOG_API FileHelper
+     class FileHelper
     {
     public:
       FileHelper() = default;

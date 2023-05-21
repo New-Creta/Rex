@@ -5,6 +5,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
 #include "rex_engine/diagnostics/logging/internal/details/mpmc_blocking_q.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/diagnostics/logging/internal/async_logger.h"
 #include "rex_engine/types.h"
 #include "rex_std/chrono.h"
 #include "rex_std/memory.h"
@@ -83,7 +84,7 @@ namespace rexlog
       }
     };
 
-    class REXLOG_API ThreadPool
+     class ThreadPool
     {
     public:
       using item_type = AsyncMsg;

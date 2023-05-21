@@ -12,7 +12,7 @@ namespace rexlog
     // Extend LogMsg with internal buffer to store its payload.
     // This is needed since LogMsg holds string_views that points to stack data.
 
-    class REXLOG_API LogMsgBuffer : public LogMsg
+     class LogMsgBuffer : public LogMsg
     {
       memory_buf_t m_buffer;
       void update_string_views();

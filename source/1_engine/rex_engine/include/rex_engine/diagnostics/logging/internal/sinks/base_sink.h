@@ -17,7 +17,7 @@ namespace rexlog
   namespace sinks
   {
     template <typename Mutex>
-    class REXLOG_API BaseSink : public sink
+     class BaseSink : public sink
     {
     public:
       BaseSink();

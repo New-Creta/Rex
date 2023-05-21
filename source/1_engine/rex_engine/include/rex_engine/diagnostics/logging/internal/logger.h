@@ -25,7 +25,7 @@
 namespace rexlog
 {
 
-  class REXLOG_API Logger
+   class Logger
   {
   public:
     // Empty Logger

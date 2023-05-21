@@ -11,7 +11,7 @@ namespace rexlog
 
   namespace sinks
   {
-    class REXLOG_API sink
+     class sink
     {
     public:
       virtual ~sink()                                                              = default;

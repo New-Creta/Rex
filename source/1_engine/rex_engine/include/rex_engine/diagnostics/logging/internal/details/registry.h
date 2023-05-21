@@ -24,7 +24,7 @@ namespace rexlog
   {
     class ThreadPool;
 
-    class REXLOG_API Registry
+     class Registry
     {
     public:
       using log_levels                     = rex::DebugHashTable<rex::DebugString, level::LevelEnum>;

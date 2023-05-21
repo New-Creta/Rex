@@ -15,7 +15,7 @@ namespace rexlog
 {
   namespace details
   {
-    class REXLOG_API Backtracer
+     class Backtracer
     {
       mutable rsl::mutex m_mutex;
       rsl::atomic<bool> m_enabled {false};

@@ -19,7 +19,7 @@ namespace rexlog
   namespace details
   {
 
-    class REXLOG_API PeriodicWorker
+     class PeriodicWorker
     {
     public:
       template <typename Rep, typename Period>

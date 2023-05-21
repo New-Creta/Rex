@@ -45,7 +45,7 @@ namespace rexlog
       bool m_enabled = false;
     };
 
-    class REXLOG_API FlagFormatter
+     class FlagFormatter
     {
     public:
       explicit FlagFormatter(PaddingInfo padinfo)
@@ -73,7 +73,7 @@ namespace rexlog
 
   } // namespace details
 
-  class REXLOG_API CustomFlagFormatter : public details::FlagFormatter
+   class CustomFlagFormatter : public details::FlagFormatter
   {
   public:
     virtual rsl::unique_ptr<CustomFlagFormatter> clone() const = 0;
@@ -84,7 +84,7 @@ namespace rexlog
     }
   };
 
-  class REXLOG_API PatternFormatter final : public formatter
+   class PatternFormatter final : public formatter
   {
   public:
     using custom_flags = rex::DebugHashTable<char, rsl::unique_ptr<CustomFlagFormatter>>;

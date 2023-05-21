@@ -6,11 +6,6 @@
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 
-#include <chrono>
-#include <cstdio>
-#include <mutex>
-#include <string>
-
 // Duplicate message removal sink.
 // Skip the message if previous one is identical and less than "max_skip_duration" have passed
 //
@@ -42,7 +37,7 @@ namespace rexlog
     {
     public:
       template <class Rep, class Period>
-      explicit dup_filter_sink(rsl::chrono::duration<Rep, Period> max_skip_duration, level::level_enum notification_level = level::info)
+      explicit dup_filter_sink(rsl::chrono::duration<Rep, Period> max_skip_duration, level::LevelEnum notification_level = level::info)
           : max_skip_duration_ {max_skip_duration}
           , log_level_ {notification_level}
       {
@@ -53,7 +48,7 @@ namespace rexlog
       log_clock::time_point last_msg_time_;
       rex::DebugString last_msg_payload_;
       size_t skip_counter_ = 0;
-      level::level_enum log_level_;
+      level::LevelEnum log_level_;
 
       void sink_it_impl(const details::LogMsg& msg) override
       {

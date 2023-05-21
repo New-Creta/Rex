@@ -43,40 +43,40 @@ namespace rexlog
   // Example:
   //   auto mylogger = rsl::make_shared<rexlog::Logger>("mylogger", ...);
   //   rexlog::initialize_logger(mylogger);
-  REXLOG_API void initialize_logger(rsl::shared_ptr<Logger> logger);
+   void initialize_logger(rsl::shared_ptr<Logger> logger);
 
   // Return an existing Logger or nullptr if a Logger with such name doesn't
   // exist.
   // example: rexlog::get("my_logger")->info("hello {}", "world");
-  REXLOG_API rsl::shared_ptr<Logger> get(const rex::DebugString& name);
+   rsl::shared_ptr<Logger> get(const rex::DebugString& name);
 
   // Set global formatter. Each sink in each Logger will get a clone of this object
-  REXLOG_API void set_formatter(rsl::unique_ptr<rexlog::formatter> formatter);
+   void set_formatter(rsl::unique_ptr<rexlog::formatter> formatter);
 
   // Set global format string.
   // example: rexlog::set_pattern("%Y-%m-%d %H:%M:%S.%e %l : %v");
-  REXLOG_API void set_pattern(const rex::DebugString& pattern, PatternTimeType timeType = PatternTimeType::Local);
+   void set_pattern(const rex::DebugString& pattern, PatternTimeType timeType = PatternTimeType::Local);
 
   // enable global backtrace support
-  REXLOG_API void enable_backtrace(size_t nMessages);
+   void enable_backtrace(size_t nMessages);
 
   // disable global backtrace support
-  REXLOG_API void disable_backtrace();
+   void disable_backtrace();
 
   // call dump backtrace on default Logger
-  REXLOG_API void dump_backtrace();
+   void dump_backtrace();
 
   // Get global logging level
-  REXLOG_API level::LevelEnum get_level();
+   level::LevelEnum get_level();
 
   // Set global logging level
-  REXLOG_API void set_level(level::LevelEnum logLevel);
+   void set_level(level::LevelEnum logLevel);
 
   // Determine whether the default Logger should log messages with a certain level
-  REXLOG_API bool should_log(level::LevelEnum logLevel);
+   bool should_log(level::LevelEnum logLevel);
 
   // Set global flush level
-  REXLOG_API void flush_on(level::LevelEnum logLevel);
+   void flush_on(level::LevelEnum logLevel);
 
   // Start/Restart a periodic flusher thread
   // Warning: Use only if all your loggers are thread safe!
@@ -87,27 +87,27 @@ namespace rexlog
   }
 
   // Set global error handler
-  REXLOG_API void set_error_handler(void (*handler)(const rex::DebugString& msg));
+   void set_error_handler(void (*handler)(const rex::DebugString& msg));
 
   // Register the given Logger with the given name
-  REXLOG_API void register_logger(rsl::shared_ptr<Logger> logger);
+   void register_logger(rsl::shared_ptr<Logger> logger);
 
   // Apply a user defined function on all registered loggers
   // Example:
   // rexlog::apply_all([&](rsl::shared_ptr<rexlog::Logger> l) {l->flush();});
-  REXLOG_API void apply_all(const rsl::function<void(rsl::shared_ptr<Logger>)>& fun);
+   void apply_all(const rsl::function<void(rsl::shared_ptr<Logger>)>& fun);
 
   // Drop the reference to the given Logger
-  REXLOG_API void drop(const rex::DebugString& name);
+   void drop(const rex::DebugString& name);
 
   // Drop all references from the Registry
-  REXLOG_API void drop_all();
+   void drop_all();
 
   // stop any running threads started by rexlog and clean Registry loggers
-  REXLOG_API void shutdown();
+   void shutdown();
 
   // Automatic registration of loggers when using rexlog::create() or rexlog::create_async
-  REXLOG_API void set_automatic_registration(bool automaticRegistration);
+   void set_automatic_registration(bool automaticRegistration);
 
   // API for using default Logger (stdout_color_mt),
   // e.g: rexlog::info("Message {}", 1);
@@ -124,11 +124,11 @@ namespace rexlog
   // set_default_logger() *should not* be used concurrently with the default API.
   // e.g do not call set_default_logger() from one thread while calling rexlog::info() from another.
 
-  REXLOG_API rsl::shared_ptr<rexlog::Logger> default_logger();
+   rsl::shared_ptr<rexlog::Logger> default_logger();
 
-  REXLOG_API rexlog::Logger* default_logger_raw();
+   rexlog::Logger* default_logger_raw();
 
-  REXLOG_API void set_default_logger(rsl::shared_ptr<rexlog::Logger> defaultLogger);
+   void set_default_logger(rsl::shared_ptr<rexlog::Logger> defaultLogger);
 
   // Initialize Logger level based on environment configs.
   //
@@ -137,7 +137,7 @@ namespace rexlog
   // Example:
   //   auto mylogger = rsl::make_shared<rexlog::Logger>("mylogger", ...);
   //   rexlog::apply_logger_env_levels(mylogger);
-  REXLOG_API void apply_logger_env_levels(rsl::shared_ptr<Logger> logger);
+   void apply_logger_env_levels(rsl::shared_ptr<Logger> logger);
 
   template <typename... Args>
   inline void log(SourceLoc source, level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
