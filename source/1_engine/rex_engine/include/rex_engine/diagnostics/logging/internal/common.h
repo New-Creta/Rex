@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_engine/debug_types.h"
+#include "rex_engine/function_signature_define.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
-#include "rex_engine/diagnostics/logging/internal/tweakme.h"
 #include "rex_std/atomic.h"
 #include "rex_std/chrono.h"
 #include "rex_std/format.h"
@@ -44,9 +44,7 @@
   #endif
 #endif
 
-#ifndef REXLOG_FUNCTION
-  #define REXLOG_FUNCTION static_cast<const char*>(__FUNCTION__)
-#endif
+#define REXLOG_FUNCTION REX_FUNC_SIG
 
 #define REXLOG_TRY
 #define REXLOG_THROW(ex)                                                                                                                                                                                                                                 \
@@ -127,8 +125,7 @@ namespace rexlog
       Warn     = REXLOG_LEVEL_WARN,
       Err      = REXLOG_LEVEL_ERROR,
       Critical = REXLOG_LEVEL_CRITICAL,
-      Off      = REXLOG_LEVEL_OFF,
-      NLevels
+      Off      = REXLOG_LEVEL_OFF
     };
 
 #define REXLOG_LEVEL_NAME_TRACE    rexlog::string_view_t("trace", 5)
@@ -139,20 +136,15 @@ namespace rexlog
 #define REXLOG_LEVEL_NAME_CRITICAL rexlog::string_view_t("critical", 8)
 #define REXLOG_LEVEL_NAME_OFF      rexlog::string_view_t("off", 3)
 
-#if !defined(REXLOG_LEVEL_NAMES)
-  #define REXLOG_LEVEL_NAMES                                                                                                                                                                                                                             \
-    {                                                                                                                                                                                                                                                    \
-      REXLOG_LEVEL_NAME_TRACE, REXLOG_LEVEL_NAME_DEBUG, REXLOG_LEVEL_NAME_INFO, REXLOG_LEVEL_NAME_WARNING, REXLOG_LEVEL_NAME_ERROR, REXLOG_LEVEL_NAME_CRITICAL, REXLOG_LEVEL_NAME_OFF                                                                    \
+#define REXLOG_LEVEL_NAMES                                                                                                                                                                                                                             \
+    {                                                                                                                                                                                                                                                  \
+      REXLOG_LEVEL_NAME_TRACE, REXLOG_LEVEL_NAME_DEBUG, REXLOG_LEVEL_NAME_INFO, REXLOG_LEVEL_NAME_WARNING, REXLOG_LEVEL_NAME_ERROR, REXLOG_LEVEL_NAME_CRITICAL, REXLOG_LEVEL_NAME_OFF                                                                  \
     }
-#endif
 
-#if !defined(REXLOG_SHORT_LEVEL_NAMES)
-
-  #define REXLOG_SHORT_LEVEL_NAMES                                                                                                                                                                                                                       \
-    {                                                                                                                                                                                                                                                    \
-      "T", "D", "I", "W", "E", "C", "O"                                                                                                                                                                                                                  \
+#define REXLOG_SHORT_LEVEL_NAMES                                                                                                                                                                                                                       \
+    {                                                                                                                                                                                                                                                  \
+      "T", "D", "I", "W", "E", "C", "O"                                                                                                                                                                                                                \
     }
-#endif
 
     REXLOG_API const string_view_t& to_string_view(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT;
     REXLOG_API const char* to_short_c_str(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT;
@@ -247,17 +239,11 @@ namespace rexlog
       return str;
     }
 
-#ifdef REXLOG_USE_STD_FORMAT
-  #if __cpp_lib_format >= 202207L
     template <typename T, typename... Args>
     REXLOG_CONSTEXPR_FUNC rsl::basic_string_view<T> to_string_view(rsl::basic_format_string<T, Args...> fmt) REXLOG_NOEXCEPT
     {
       return fmt.get();
     }
-  #endif
-#endif
-
-    // make_unique support for pre c++14
 
     using rsl::enable_if_t;
     using rsl::make_unique;

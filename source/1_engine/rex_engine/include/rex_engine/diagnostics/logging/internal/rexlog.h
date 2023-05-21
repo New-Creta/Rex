@@ -12,7 +12,6 @@
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/logger.h"
-#include "rex_engine/diagnostics/logging/internal/version.h"
 #include "rex_std/memory.h"
 
 #include <chrono>

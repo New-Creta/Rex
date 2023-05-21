@@ -14,7 +14,7 @@ namespace rexlog
     constexpr
 #endif
 
-        static string_view_t level_string_views[] REXLOG_LEVEL_NAMES; // NOLINT(modernize-avoid-c-arrays)
+    static string_view_t level_string_views[] REXLOG_LEVEL_NAMES; // NOLINT(modernize-avoid-c-arrays)
 
     static const char* g_short_level_names[] REXLOG_SHORT_LEVEL_NAMES; // NOLINT(modernize-avoid-c-arrays, cppcoreguidelines-avoid-non-const-global-variables)
 

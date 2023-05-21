@@ -10,7 +10,6 @@ namespace rexlog
 {
   namespace details
   {
-
     struct ConsoleMutex
     {
       using mutex_t = rsl::mutex;

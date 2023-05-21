@@ -123,35 +123,9 @@ namespace rexlog
       {
 #ifdef _WIN32
         *fp = ::_fsopen((filename.c_str()), mode.c_str(), _SH_DENYNO);
-  #if defined(REXLOG_PREVENT_CHILD_FD)
-        if(*fp != nullptr)
-        {
-          auto file_handle = reinterpret_cast<HANDLE>(_get_osfhandle(::_fileno(*fp)));
-          if(!::SetHandleInformation(file_handle, HANDLE_FLAG_INHERIT, 0))
-          {
-            ::fclose(*fp);
-            *fp = nullptr;
-          }
-        }
-  #endif
 #else // unix
-  #if defined(REXLOG_PREVENT_CHILD_FD)
-        const int mode_flag = mode == REXLOG_FILENAME_T("ab") ? O_APPEND : O_TRUNC;
-        const int fd        = ::open((filename.c_str()), O_CREAT | O_WRONLY | O_CLOEXEC | mode_flag, mode_t(0644));
-        if(fd == -1)
-        {
-          return true;
-        }
-        *fp = ::fdopen(fd, mode.c_str());
-        if(*fp == nullptr)
-        {
-          ::close(fd);
-        }
-  #else
-        *fp    = ::fopen((filename.c_str()), mode.c_str());
-  #endif
+        *fp = ::fopen((filename.c_str()), mode.c_str());
 #endif
-
         return *fp == nullptr;
       }
 

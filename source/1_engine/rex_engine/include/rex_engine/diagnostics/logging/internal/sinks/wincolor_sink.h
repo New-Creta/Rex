@@ -7,6 +7,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include "rex_std/memory.h"
+#include "rex_std_extra/utility/enum_reflection.h"
 
 #include <array>
 #include <cstdint>
@@ -58,7 +59,7 @@ namespace rexlog
       mutex_t* m_mutex;
       bool m_should_do_colors {};
       rsl::unique_ptr<rexlog::formatter> m_formatter;
-      rsl::array<rsl::uint16, level::NLevels> m_colors;
+      rsl::array<rsl::uint16, rsl::enum_refl::enum_count<level::LevelEnum>()> m_colors;
     };
 
     template <typename ConsoleMutex>

@@ -10,6 +10,10 @@
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/types.h"
 
+#ifndef REX_DEBUG
+  #define REXLOG_DISABLE_DEFAULT_LOGGER 
+#endif
+
 #ifndef REXLOG_DISABLE_DEFAULT_LOGGER
   // support for the default stdout color Logger
   #ifdef _WIN32
