@@ -72,17 +72,25 @@ public class Globals
     }
   }
 
+  static public string BuildFolder
+  {
+    get
+    {
+      return Path.Combine(root, settings.intermediate_folder, settings.build_folder);
+    }
+  }
+
   static public void Init()
   {
     root = Utils.FindInParent(Directory.GetCurrentDirectory(), folder_in_root);
 
-    string settings_json_path = Path.Combine(root, "build", "config", "settings.json");
+    string settings_json_path = Path.Combine(root, "_build", "config", "settings.json");
     string json_blob = File.ReadAllText(settings_json_path);
     settings = JsonSerializer.Deserialize<BuildSettings>(json_blob);
 
     source_root = Path.Combine(root, settings.source_folder);
     thirdparty_root = Path.Combine(source_root, "0_thirdparty");
-    sharpmake_root = Path.Combine(root, "build", "sharpmake");
+    sharpmake_root = Path.Combine(root, "_build", "sharpmake");
 
     System.Console.WriteLine($"Root path:{root}");
   }

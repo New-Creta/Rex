@@ -35,7 +35,7 @@ public class SharpmakeProject : CSharpProject
   [Configure()]
   public virtual void Configure(RexConfiguration conf, RexTarget target)
   {
-    conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "build", target.DevEnv.ToString(), Name);
+    conf.ProjectPath = Path.Combine(Globals.BuildFolder, target.DevEnv.ToString(), Name);
     conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
     conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
     conf.Output = Configuration.OutputType.DotNetClassLibrary;

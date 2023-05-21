@@ -11,7 +11,7 @@ import regis.git_hooks
 import shutil
 
 root_path = regis.util.find_root()
-settings = regis.rex_json.load_file(os.path.join(root_path, "build", "config", "settings.json"))
+settings = regis.rex_json.load_file(os.path.join(root_path, regis.util.settingsPathFromRoot))
 intermediate_dir = os.path.join(regis.util.find_root(), settings["intermediate_folder"])
 misc_folders = settings["misc_folders"]
 misc_extensions = settings["misc_extensions"]
@@ -60,7 +60,7 @@ def run(shouldClean):
   regis.install_externals.run()
       
   # Lastly, install the git hooks
-  regis.git_hooks.run(os.path.join(root_path, "build", "scripts", "git", "hooks"))
+  regis.git_hooks.run(os.path.join(root_path, "_build", "scripts", "git", "hooks"))
   
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()

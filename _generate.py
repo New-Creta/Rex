@@ -29,7 +29,7 @@ if __name__ == "__main__":
   args, unknown = parser.parse_known_args()
 
   root = regis.util.find_root()
-  settings_path = os.path.join(root, "build", "config", "settings.json")
+  settings_path = os.path.join(root, "_build", "config", "settings.json")
 
   run_any_tests = args.unit_tests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
