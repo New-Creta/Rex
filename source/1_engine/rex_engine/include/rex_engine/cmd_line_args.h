@@ -10,6 +10,8 @@ namespace rex
   public:
     explicit CommandLineArguments(const char8* cmdLine);
 
+    const rsl::vector<rsl::string_view>& arguments() const;
+
   private:
     void parse_cmd_line(rsl::string_view cmdLine);
 

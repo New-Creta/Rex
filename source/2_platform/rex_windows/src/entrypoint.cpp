@@ -1,5 +1,5 @@
 #include "rex_engine/entrypoint.h"
-
+#include "rex_engine/diagnostics/logging/logger_config.h"
 #include "rex_std/bonus/utility/has_flag.h"
 #include "rex_std/string_view.h"
 #include "rex_std/vector.h"
@@ -17,6 +17,11 @@
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
   rex::CommandLineArguments cmd_args(GetCommandLineA());
+
+#if REX_DEBUG
+  rex::diagnostics::load_log_levels(cmd_args.arguments());
+#endif
+
   rex::PlatformCreationParams creation_params {};
   creation_params.instance      = hInstance;
   creation_params.prev_instance = hPrevInstance;
