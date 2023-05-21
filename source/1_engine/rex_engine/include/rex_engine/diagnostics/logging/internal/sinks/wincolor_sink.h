@@ -67,6 +67,9 @@ namespace rexlog
     {
     public:
       explicit WincolorStdoutSink(ColorMode mode = ColorMode::Automatic);
+
+    private:
+        void* sink_handle();
     };
 
     template <typename ConsoleMutex>
@@ -74,7 +77,24 @@ namespace rexlog
     {
     public:
       explicit WincolorStderrSink(ColorMode mode = ColorMode::Automatic);
+
+    private:
+        void* sink_handle();
     };
+
+    // wincolor_stdout_sink
+    template <typename ConsoleMutex>
+     WincolorStdoutSink<ConsoleMutex>::WincolorStdoutSink(ColorMode mode)
+        : WincolorSink<ConsoleMutex>(sink_handle(), mode)
+    {
+    }
+
+    // wincolor_stderr_sink
+    template <typename ConsoleMutex>
+     WincolorStderrSink<ConsoleMutex>::WincolorStderrSink(ColorMode mode)
+        : WincolorSink<ConsoleMutex>(sink_handle(), mode)
+    {
+    }
 
     using wincolor_stdout_sink_mt = WincolorStdoutSink<details::ConsoleMutex>;
     using wincolor_stdout_sink_st = WincolorStdoutSink<details::ConsoleNullMutex>;
