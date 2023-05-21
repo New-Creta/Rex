@@ -2,7 +2,7 @@
   "intermediate_folder": ".rex",
   "misc_folders": [".ninja",".vs",".vscode"],
   "misc_extensions": [".ninja",".sln"],
-  "build_folder": "build",
+  "build_folder": "_build",
   "tests_folder": "tests",
   "tools_folder": "tools",
   "libs_folder": "libs",
