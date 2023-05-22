@@ -1,16 +1,17 @@
 #pragma once
 
-#include "rex_engine/cmd_line_args.h"
 #include "rex_engine/core_application_state.h"
 #include "rex_engine/state_controller.h"
 #include "rex_engine/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/limits.h"
-#include "rex_std/memory.h"
 #include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
 {
+  class FrameInfo;
+  class CommandLineArguments;
+
   struct EngineParams
   {
     using init_func     = rsl::function<bool()>;
@@ -24,8 +25,6 @@ namespace rex
     update_func app_update_func     = nullptr;
     shutdown_func app_shutdown_func = nullptr;
   };
-
-  class FrameInfo;
 
   // to make it accessible throughout the code
   // client API can call this function to access the frame info

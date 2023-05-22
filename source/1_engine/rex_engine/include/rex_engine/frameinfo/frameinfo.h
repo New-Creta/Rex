@@ -2,6 +2,7 @@
 
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {

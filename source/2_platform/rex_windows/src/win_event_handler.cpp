@@ -2,10 +2,12 @@
 
 #include "rex_engine/core_window.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/win/win_call.h"
+#include "rex_engine/event.h"
 #include "rex_engine/event_system.h"
 #include "rex_engine/event_type.h"
-#include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_std/bonus/utility.h"
 #include "rex_windows/log.h"
 
 #define NOMINMAX

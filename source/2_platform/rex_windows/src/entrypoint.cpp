@@ -1,14 +1,12 @@
 #include "rex_engine/entrypoint.h"
 
-#include "rex_engine/memory/memory_tracking.h"
-#include "rex_std/bonus/utility/has_flag.h"
-#include "rex_std/string_view.h"
-#include "rex_std/vector.h"
-#include "rex_windows/console_application.h"
+#include "rex_engine/cmd_line_args.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/types.h"
+#include "rex_std/bonus/utility.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
-#include "rex_windows/win_types.h"
 
 #define NOMINMAX
 #include <Windows.h>

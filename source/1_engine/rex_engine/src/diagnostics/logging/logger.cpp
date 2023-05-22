@@ -6,9 +6,9 @@
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/memory/untracked_allocator.h"
-#include "rex_std/filesystem.h"
-#include "rex_std/unordered_map.h"
-#include "rex_std/utility.h"
+#include "rex_engine/types.h"
+#include "rex_std/bonus/hashtable.h"
+#include "rex_std/bonus/utility.h"
 #include "rex_std/vector.h"
 
 namespace rex
