@@ -2,6 +2,10 @@
 
 #include "rex_directx/dxgi/util.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_std/memory.h"
+
+#include <Windows.h>
+#include <d3d12.h>
 
 namespace
 {

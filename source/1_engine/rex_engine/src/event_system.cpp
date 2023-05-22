@@ -1,5 +1,7 @@
 #include "rex_engine/event_system.h"
 
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/event.h"
 #include "rex_engine/event_type.h"
 #include "rex_engine/log.h"
 #include "rex_std/unordered_map.h"
