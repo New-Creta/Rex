@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/memory/blob.h"
+#include "rex_engine/memory/blob.h" // IWYU pragma: keep
 #include "rex_std/memory.h"
 #include "rex_std_extra/memory/memory_size.h"
 
@@ -28,7 +28,7 @@ namespace rex
     template <typename T>
     T rex::memory::BlobReader::read()
     {
-      T value = m_blob.template read<T>(m_read_offset);
+      T value = m_blob->read<T>(m_read_offset);
       m_read_offset += sizeof(T);
       return value;
     }
@@ -40,14 +40,14 @@ namespace rex
       T read(const memory::Blob& b)
       {
         BlobReader reader(b);
-        return reader.template read<T>();
+        return reader.read<T>();
       }
       //-------------------------------------------------------------------------
       template <typename T>
       T read(const memory::Blob& b, const rsl::memory_size& offset)
       {
         BlobReader reader(b, offset);
-        return reader.template read<T>();
+        return reader.read<T>();
       }
 
       //-------------------------------------------------------------------------

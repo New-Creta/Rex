@@ -15,8 +15,9 @@
 #include "rex_engine/diagnostics/logging/internal/rexlog-inl.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink-inl.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink-inl.h"
+#include "rex_std/mutex.h"
 
-#include <mutex>
+// IWYU pragma: no_include <built-in>
 
 // template instantiate Logger constructor with sinks init list
 template REXLOG_API rexlog::Logger::Logger(rex::DebugString name, sinks_init_list::iterator begin, sinks_init_list::iterator end);

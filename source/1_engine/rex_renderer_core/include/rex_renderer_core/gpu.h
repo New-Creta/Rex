@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_engine/types.h"
+#include "rex_std/bonus/string.h"
 #include "rex_std/ostream.h"
-#include "rex_std/string.h"
 #include "rex_std_extra/memory/memory_size.h"
 
 namespace rex
@@ -14,8 +14,8 @@ namespace rex
     {
       Description();
 
-      rsl::string name;
-      rsl::string vendor_name;
+      rsl::small_stack_string name;
+      rsl::small_stack_string vendor_name;
 
       u32 vendor_id;
       u32 device_id;

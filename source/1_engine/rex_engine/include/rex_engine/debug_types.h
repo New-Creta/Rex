@@ -14,7 +14,7 @@ namespace rex
   // and pass it as a template argument.
   // Strings usually won't need special allocators, at least not at the moment, but that might change in the future
   using DebugString       = rsl::basic_string<char8, rsl::char_traits<char8>, rex::DebugAllocator<rex::UntrackedAllocator>>;
-  using DebugStringStream = rsl::basic_istringstream<char8, rsl::char_traits<char8>, rex::DebugAllocator<rex::UntrackedAllocator>>;
+  using DebugStringStream = rsl::basic_stringstream<char8, rsl::char_traits<char8>, rex::DebugAllocator<rex::UntrackedAllocator>>;
 
   template <typename T, typename Allocator = rex::UntrackedAllocator>
   using DebugVector = rsl::vector<T, rex::DebugAllocator<Allocator>>;

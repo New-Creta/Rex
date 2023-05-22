@@ -2,7 +2,10 @@
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/string/stringentry.h"
-#include "rex_std/functional.h"
+#include "rex_std/bonus/functional.h"
+#include "rex_std/bonus/hashtable.h"
+#include "rex_std/bonus/utility.h"
+#include "rex_std/cstring.h"
 #include "rex_std/internal/utility/pair.h"
 #include "rex_std/unordered_map.h"
 

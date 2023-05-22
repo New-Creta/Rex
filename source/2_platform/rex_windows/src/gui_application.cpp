@@ -1,20 +1,24 @@
 #include "rex_windows/gui_application.h"
 
+#include "rex_engine/core_window.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/event.h" // IWYU pragma: keep
 #include "rex_engine/event_system.h"
+#include "rex_engine/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
-#include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
+#include "rex_std/ratio.h"
 #include "rex_std/thread.h"
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
-
-#include <Windows.h>
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -110,7 +114,7 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title    = m_gui_params.window_title.to_string_view();
+        wnd_description.title    = m_gui_params.window_title;
         wnd_description.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
 
         if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
