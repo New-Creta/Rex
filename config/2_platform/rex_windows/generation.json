@@ -1,3 +1,9 @@
 {
-    "MemoryTags" : ["Windows"]
+    "MemoryTags": {
+        "ClassName": "MemoryTag",
+        "Values": [
+            "Windows"
+        ],
+        "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+    }
 }
