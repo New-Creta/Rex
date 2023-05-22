@@ -4,6 +4,7 @@
 #include "rex_std/array.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/stacktrace.h"
+#include "rex_std/iostream.h"
 
 namespace rex
 {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rex_std/bonus/types.h"
+
 namespace rex
 {
   struct PlatformCreationParams;
