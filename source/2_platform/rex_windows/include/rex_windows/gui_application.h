@@ -2,20 +2,18 @@
 
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/core_application.h"
-#include "rex_engine/defines.h"
-#include "rex_engine/string/stringid.h"
+#include "rex_engine/types.h"
 #include "rex_std/memory.h"
-#include "rex_std/utility.h"
+#include "rex_std/vector.h"
 #include "rex_windows/platform_creation_params.h"
-#include "rex_windows/win_types.h"
 
 namespace rex
 {
   struct GuiParams
   {
-    s32 window_width      = 1280;
-    s32 window_height     = 720;
-    StringID window_title = "Application"_sid;
+    s32 window_width              = 1280;
+    s32 window_height             = 720;
+    rsl::string_view window_title = "Application";
 
     s32 max_render_commands = 1 << 16;
     s32 max_fps             = 60;

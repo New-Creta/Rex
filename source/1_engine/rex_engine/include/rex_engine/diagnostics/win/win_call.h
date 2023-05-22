@@ -14,7 +14,6 @@
 
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
-#include "rex_std/string_view.h"
 
 namespace rex
 {
@@ -56,7 +55,7 @@ namespace rex
 #ifdef REX_ENABLE_WIN_CALL
   #define CHECK_FOR_WIN_ERRORS() rex::win::check_for_win_errors(__FILE__, __FUNCTION__, __LINE__)
 
-  #define WIN_CALL_IGNORE(function, errorSuccess) rsl::win::call_to_win32_api<decltype(function)>([&]() { return function; }, errorSuccess, __FILE__, __FUNCTION__, __LINE__)
+  #define WIN_CALL_IGNORE(function, errorSuccess) rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, errorSuccess, __FILE__, __FUNCTION__, __LINE__)
 
   #define WIN_CALL(function)    rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, ERROR_SUCCESS, __FILE__, __FUNCTION__, __LINE__)
   #define WIN_SUCCESS(function) rex::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()

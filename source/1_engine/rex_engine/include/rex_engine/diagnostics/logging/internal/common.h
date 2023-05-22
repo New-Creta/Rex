@@ -3,19 +3,19 @@
 #include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/tweakme.h"
-#include "rex_std/atomic.h"
+#include "rex_std/bonus/atomic/atomic.h"
+#include "rex_std/bonus/compiler.h"
+#include "rex_std/bonus/memory.h"
 #include "rex_std/chrono.h"
-#include "rex_std/format.h"
 #include "rex_std/functional.h"
 #include "rex_std/initializer_list.h"
 #include "rex_std/internal/exception/abort.h"
 #include "rex_std/memory.h"
 #include "rex_std/string.h"
-#include "rex_std/string_view.h"
-#include "rex_std/type_traits.h"
 
 #include <cstdio>
-#include <version>
+
+// IWYU pragma: no_include <built-in>
 
 #undef REXLOG_HEADER_ONLY
 
@@ -59,8 +59,7 @@
 
 namespace rexlog
 {
-
-  class formatter;
+  class formatter; // IWYU pragma: keep
 
   namespace sinks
   {

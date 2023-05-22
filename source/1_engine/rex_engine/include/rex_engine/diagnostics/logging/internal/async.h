@@ -13,6 +13,7 @@
 // This is because each message in the queue holds a shared_ptr to the
 // originating Logger.
 
+#include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/async_logger.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
@@ -21,11 +22,11 @@
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 
-#include <utility>
+#include <cstddef>
 
 namespace rexlog
 {
-
+  class Logger;
   namespace details
   {
     static const size_t g_default_async_q_size = 8192;
@@ -66,13 +67,13 @@ namespace rexlog
   template <typename Sink, typename... SinkArgs>
   inline rsl::shared_ptr<rexlog::Logger> create_async(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
   {
-    return async_factory::create<Sink>(rsl::move(logger_name), rsl::forward<SinkArgs>(sink_args)...);
+    return async_factory::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
   }
 
   template <typename Sink, typename... SinkArgs>
   inline rsl::shared_ptr<rexlog::Logger> create_async_nb(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
   {
-    return async_factory_nonblock::create<Sink>(rsl::move(logger_name), rsl::forward<SinkArgs>(sink_args)...);
+    return async_factory_nonblock::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
   }
 
   // set global thread pool.
