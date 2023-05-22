@@ -2,7 +2,14 @@
 
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/log.h"
-#include "rex_std/stdlib.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/types.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/string.h"
+#include "rex_std_extra/memory/memory_size.h"
+
+#include <cstdlib>
+#include <wrl/client.h>
 
 namespace
 {

@@ -1,20 +1,22 @@
 #pragma once
 
 #include "rex_engine/memory/debug_allocator.h"
-#include "rex_engine/memory/memory_header.h"
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/memory/untracked_allocator.h"
 #include "rex_engine/types.h"
+#include "rex_std/array.h"
+#include "rex_std/bonus/defines.h"
 #include "rex_std/mutex.h"
-#include "rex_std/stacktrace.h"
-#include "rex_std/thread.h"
+#include "rex_std/vector.h"
 #include "rex_std_extra/memory/memory_size.h"
 #include "rex_std_extra/utility/enum_reflection.h"
 #include "rex_std_extra/utility/high_water_mark.h"
 
 namespace rex
 {
+  class MemoryHeader;
+
   struct MemoryUsageStats
   {
     using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;

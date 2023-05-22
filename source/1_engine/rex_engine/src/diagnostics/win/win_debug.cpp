@@ -4,6 +4,7 @@
 
 #define NOMINMAX
 #include <Windows.h>
+#include <debugapi.h>
 
 bool rex::win::is_debugger_attached()
 {
