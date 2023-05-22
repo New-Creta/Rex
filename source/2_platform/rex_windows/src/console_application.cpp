@@ -11,7 +11,7 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogWinConsoleApp, rex::LogVerbosity::Log);
 
-    CoreApplication* g_this_app = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+    CoreApplication* g_this_app = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables, cppcoreguidelines-avoid-non-const-global-variables)
 
     BOOL WINAPI handler_routine(DWORD eventCode)
     {
@@ -87,8 +87,9 @@ namespace rex
 
     ConsoleApplication::ConsoleApplication(ApplicationCreationParams&& appParams)
         : CoreApplication(appParams.engine_params, appParams.cmd_args)
-        , m_internal(rsl::make_unique<Internal>())
+        , m_internal(nullptr)
     {
+      m_internal = rsl::make_unique<ConsoleApplication::Internal>(this, rsl::move(appParams));
     }
 
     ConsoleApplication::~ConsoleApplication() = default;

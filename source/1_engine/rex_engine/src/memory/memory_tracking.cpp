@@ -3,15 +3,15 @@
 #include "rex_engine/core_application.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/stacktrace.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/log.h"
+#include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/memory/memory_header.h"
 #include "rex_engine/memory/win/win_mem_stats.h"
 #include "rex_std/bonus/types.h"
-#include "rex_engine/memory/global_allocator.h"
 #include "rex_std_extra/time/timepoint.h"
-#include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/diagnostics/stacktrace.h"
 
 namespace rex
 {
@@ -23,7 +23,7 @@ namespace rex
 
   rsl::array<MemoryTag, g_max_allowed_mem_tags>& thread_local_memory_tag_stack()
   {
-    thread_local static rsl::array<MemoryTag, g_max_allowed_mem_tags> stack = { MemoryTag::Global };
+    thread_local static rsl::array<MemoryTag, g_max_allowed_mem_tags> stack = {MemoryTag::Global};
     return stack;
   }
 
@@ -31,9 +31,9 @@ namespace rex
   {
   public:
     AllocationCallStack(CallStack callstack, card64 size)
-      : m_callstack(rsl::move(callstack))
-      , m_size(size)
-      , m_ref_count(1)
+        : m_callstack(rsl::move(callstack))
+        , m_size(size)
+        , m_ref_count(1)
     {
     }
 
@@ -73,7 +73,7 @@ namespace rex
   // stores the headers for all allocations
   auto& allocation_headers()
   {
-    static UntrackedAllocator allocator{};
+    static UntrackedAllocator allocator {};
     static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
     static DebugVector<MemoryHeader*> alloc_headers(dbg_alloc);
     return alloc_headers;
@@ -81,7 +81,7 @@ namespace rex
 
   auto& allocation_info_table()
   {
-    static UntrackedAllocator allocator{};
+    static UntrackedAllocator allocator {};
     static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
     static DebugHashTable<CallStack, AllocationInfo> alloc_info_table(dbg_alloc);
     return alloc_info_table;
@@ -94,8 +94,8 @@ namespace rex
   }
 
   MemoryTracker::MemoryTracker()
-    : m_mem_usage(0)
-    , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
+      : m_mem_usage(0)
+      , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
   {
   }
 
@@ -107,27 +107,27 @@ namespace rex
     // That's why we track the initial memory usage before the initialization
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
-    m_max_mem_usage = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
+    m_max_mem_usage        = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
     m_mem_stats_on_startup = query_memory_stats();
   }
 
   MemoryHeader* MemoryTracker::track_alloc(void* mem, card64 size)
   {
-    const MemoryTag tag = current_tag();
+    const MemoryTag tag             = current_tag();
     const rsl::thread::id thread_id = rsl::this_thread::get_id();
 
     rex::GlobalDebugAllocator& dbg_alloc = rex::global_debug_allocator();
-    rex::MemoryHeader* dbg_header_addr = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
-    const card32 frame_idx = globals::frame_info().index();
-    const CallStack callstack = current_callstack();
+    rex::MemoryHeader* dbg_header_addr   = static_cast<rex::MemoryHeader*>(dbg_alloc.allocate(sizeof(MemoryHeader)));
+    const card32 frame_idx               = globals::frame_info().index();
+    const CallStack callstack            = current_callstack();
 
     // track the callstack, if we this callstack allocated memory before
     // add to the callstack the size of the memory we just allocated
     auto& alloc_info = allocation_info_table();
-    auto it = alloc_info.find(callstack);
-    if (it == alloc_info.end())
+    auto it          = alloc_info.find(callstack);
+    if(it == alloc_info.end())
     {
-      alloc_info.insert({ callstack, AllocationInfo {AllocationCallStack(callstack, size)} });
+      alloc_info.insert({callstack, AllocationInfo {AllocationCallStack(callstack, size)}});
     }
     else
     {
@@ -156,20 +156,20 @@ namespace rex
     REX_ASSERT_X(it != allocation_headers().cend(), "Trying to remove a memory header that wasn't tracked");
     REX_ASSERT_X(m_mem_usage >= 0, "Mem usage below 0");
 
-    auto& alloc_info = allocation_info_table();
+    auto& alloc_info   = allocation_info_table();
     auto alloc_info_it = alloc_info.find(header->callstack());
     REX_ASSERT_X(alloc_info_it != alloc_info.end(), "tracking a deallocation which allocation didn't get tracked");
     alloc_info_it->value.allocation_callstack.sub_size(header->size());
 
     // add unique deleter callstacks
     DebugVector<CallStack>& del_callstacks = alloc_info.at(header->callstack()).deleter_callstacks;
-    const CallStack current_callstack = rex::current_callstack();
-    if (rsl::find(del_callstacks.cbegin(), del_callstacks.cend(), current_callstack) == del_callstacks.cend())
+    const CallStack current_callstack      = rex::current_callstack();
+    if(rsl::find(del_callstacks.cbegin(), del_callstacks.cend(), current_callstack) == del_callstacks.cend())
     {
       del_callstacks.push_back(rex::current_callstack());
     }
 
-    if (alloc_info_it->value.allocation_callstack.size() == 0)
+    if(alloc_info_it->value.allocation_callstack.size() == 0)
     {
       alloc_info.erase(header->callstack());
     }
@@ -199,12 +199,12 @@ namespace rex
   {
     MemoryUsageStats stats = current_stats();
 
-    static UntrackedAllocator allocator{};
+    static UntrackedAllocator allocator {};
     static DebugAllocator dbg_alloc(allocator); // NOLINT(misc-const-correctness)
 
     DebugStringStream ss(rsl::io::openmode::in | rsl::io::openmode::out, dbg_alloc);
 
-    for (count_t i = 0; i < stats.usage_per_tag.size(); ++i)
+    for(count_t i = 0; i < stats.usage_per_tag.size(); ++i)
     {
       const MemoryTag tag = static_cast<MemoryTag>(i);
       ss << rsl::format("{}: {} bytes\n", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
@@ -218,7 +218,7 @@ namespace rex
 
     // copy the alloc callstacks as it's possible allocations occur while formatting or logging to file
     const auto alloc_info_table = allocation_info_table();
-    for (const auto& [callstack, alloc_info] : alloc_info_table)
+    for(const auto& [callstack, alloc_info]: alloc_info_table)
     {
       ss << rsl::format("Count: {}\n", alloc_info.allocation_callstack.ref_count());
       ss << rsl::format("Size: {}\n", alloc_info.allocation_callstack.size());
@@ -226,7 +226,7 @@ namespace rex
 
       const ResolvedCallstack resolved_callstack(callstack);
 
-      for (count_t i = 0; i < resolved_callstack.size(); ++i)
+      for(count_t i = 0; i < resolved_callstack.size(); ++i)
       {
         ss << rsl::format("{}\n", resolved_callstack[i]);
       }
@@ -250,8 +250,8 @@ namespace rex
   MemoryUsageStats MemoryTracker::current_stats()
   {
     const rsl::unique_lock lock(m_mem_tracking_mutex);
-    MemoryUsageStats stats{};
-    stats.usage_per_tag = m_usage_per_tag;
+    MemoryUsageStats stats {};
+    stats.usage_per_tag      = m_usage_per_tag;
     stats.allocation_headers = allocation_headers();
     return stats;
   }
@@ -272,17 +272,17 @@ namespace rex
     const DebugVector<MemoryHeader*> alloc_headers = allocation_headers(); // copy here on purpose as we don't want any race conditions when looping over it
     lock.unlock();
 
-    MemoryUsageStats stats{};
+    MemoryUsageStats stats {};
     stats.allocation_headers.reserve(alloc_headers.size());
 
-    for (MemoryHeader* header : alloc_headers)
+    for(MemoryHeader* header: alloc_headers)
     {
-      if (header->frame_index() == idx)
+      if(header->frame_index() == idx)
       {
         stats.allocation_headers.push_back(header);
         stats.usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size();
       }
-      else if (header->frame_index() > idx)
+      else if(header->frame_index() > idx)
       {
         break;
       }

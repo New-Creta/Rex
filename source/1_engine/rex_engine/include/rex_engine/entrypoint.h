@@ -15,5 +15,5 @@ namespace rex
   {
     void pre_app_entry(const char8* cmdLine);
     void post_app_shutdown();
-  }
+  } // namespace internal
 } // namespace rex
