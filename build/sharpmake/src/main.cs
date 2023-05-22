@@ -173,10 +173,10 @@ namespace rex
       GenerateSettings.ClangTidyRegex = clangTidyRegex;
     }
 
-    [Sharpmake.CommandLine.Option("performAllChecks")]
-    public void CommandLinePerformAllChecks(bool performAllChecks)
+    [Sharpmake.CommandLine.Option("enableSecondPass")]
+    public void CommandLinePerformAllChecks()
     {
-      GenerateSettings.PerformAllChecks = performAllChecks;
+      GenerateSettings.EnableSecondPass = true;
     }
 
     [Sharpmake.CommandLine.Option("intermediateDir")]
@@ -192,7 +192,7 @@ namespace rex
     }
 
     [Sharpmake.CommandLine.Option("enableCodeCoverage")]
-    public void CommandLinePerformAllChecks()
+    public void CommandLineEnableCodeCoverage()
     {
       GenerateSettings.CoverageEnabled = true;
     }

@@ -325,6 +325,41 @@ namespace rex
       g_keep_processing = false;
     }
 
+    rsl::unique_array<char8> open_read(rsl::string_view filepath)
+  {
+    rsl::medium_stack_string path = create_full_path(filepath);
+
+    rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(path.data(),               // Path to file
+                                                       GENERIC_READ,              // General read and write access
+                                                       FILE_SHARE_READ,           // Other processes can also read the file
+                                                       NULL,                      // No SECURITY_ATTRIBUTES
+                                                       OPEN_EXISTING,             // Open the file, only if it exists
+                                                       FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
+                                                       NULL                       // No template file
+                                                       ),
+                                            ERROR_ALREADY_EXISTS));
+
+    // prepare a buffer to receive the file content
+    const card32 file_size          = static_cast<card32>(GetFileSize(handle.get(), nullptr));
+    rsl::unique_array<char8> buffer = rsl::make_unique<char8[]>(file_size + 1); // NOLINT(modernize-avoid-c-arrays)
+    buffer[file_size]               = 0;                                        // make sure we end with a null char
+
+    // actually read the file
+    DWORD bytes_read = 0;
+    WIN_CALL(ReadFile(handle.get(), buffer.get(), static_cast<DWORD>(buffer.count()), &bytes_read, NULL));
+
+    // return the buffer
+    return buffer;
+  }
+
+  ReadRequest open_read_async(MountRoot root, rsl::string_view filepath)
+  {
+    rsl::medium_stack_string path(g_roots.at(root));
+    path += "/";
+    path += filepath;
+    return open_read_async(path);
+  }
+
     memory::Blob open_read(MountingPoint root, rsl::string_view filepath)
     {
       rsl::medium_stack_string path(g_roots.at(root));

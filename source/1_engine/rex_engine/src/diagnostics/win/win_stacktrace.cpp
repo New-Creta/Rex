@@ -1,5 +1,7 @@
 #include "rex_engine/diagnostics/win/win_stacktrace.h"
 
+#include "rex_engine/diagnostics/win/win_call.h"
+
 // NOLINTBEGIN(llvm-include-order)
 // clang-format off
 #include <Windows.h> // this needs to be included before DbgHelp.h
@@ -116,6 +118,8 @@ namespace rex
           }
         }
       }
+
+      win::clear_win_errors();
     }
 
     const rsl::array<rsl::stacktrace_entry, g_max_stack_entries>& ResolvedCallstack::pointers() const
@@ -133,9 +137,20 @@ namespace rex
       return m_resolved_stacktrace[idx];
     }
 
+    rsl::ostream& operator<<(rsl::ostream& os, const ResolvedCallstack& callstack)
+    {
+      for(count_t i = 0; i < callstack.size(); ++i)
+      {
+        os << callstack[i] << "\n";
+      }
+
+      return os;
+    }
+
     CallStack current_callstack()
     {
-      return load_stack_pointers(0);
+      // skip 2 stacks, the stackframe of current_callstack and the one of load_stack_pointers
+      return load_stack_pointers(2);
     }
   } // namespace win
 } // namespace rex

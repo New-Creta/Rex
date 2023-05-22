@@ -32,7 +32,7 @@ public class GenerateSettings
 {
   static public bool EnableVisualStudio = false;
   static public bool NoClangTools = false;
-  static public bool PerformAllChecks = false;
+  static public bool EnableSecondPass = false;
   static public bool DisableClangTidyForThirdParty = false;
   static public string IntermediateDir = "";
 
