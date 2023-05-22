@@ -32,17 +32,23 @@ namespace rex
 
     void initialize(rsl::memory_size maxMemUsage);
 
-    void track_alloc(void* mem, MemoryHeader* header);
-    void track_dealloc(void* mem, MemoryHeader* header);
+    MemoryHeader* track_alloc(void* mem, card64 size);
+    void track_dealloc(MemoryHeader* header);
 
     void push_tag(MemoryTag tag);
     void pop_tag();
 
     MemoryTag current_tag() const;
 
-    MemoryUsageStats current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    void dump_stats_to_file(rsl::string_view filepath);
+
+    REX_NO_DISCARD MemoryUsageStats current_stats();      // deliberate copy as we don't want to have any race conditions when accessing
+    REX_NO_DISCARD MemoryUsageStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    REX_NO_DISCARD MemoryUsageStats get_init_stats();     // deliberate copy as we don't want to have any race conditions when accessing
 
   private:
+    REX_NO_DISCARD MemoryUsageStats get_stats_for_frame(card32 idx);
+
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_usage;                   // maximum allowed memory usage
     MemoryStats m_mem_stats_on_startup;    // stats queried from the OS at init time

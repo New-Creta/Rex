@@ -6,7 +6,7 @@
 
 namespace
 {
-  const uint32 g_adapter_description_size = 128;
+  const uint32 g_adapter_description_size = rsl::small_stack_string::max_size();
 
   //-------------------------------------------------------------------------
   /**
@@ -38,9 +38,9 @@ namespace
   }
 
   //-------------------------------------------------------------------------
-  rsl::string to_multibyte(const tchar* wideCharacterBuffer, count_t size)
+  rsl::small_stack_string to_multibyte(const tchar* wideCharacterBuffer, count_t size)
   {
-    std::string buffer(size, NULL);
+    rsl::small_stack_string buffer;
 
     // Convert wide character string to multi byte character string.
     // size_t converted_chars => The amount of converted characters.
@@ -50,12 +50,12 @@ namespace
     if(result != 0)
     {
       REX_ERROR(LogDirectX, "Failed to convert wide character string to multi byte character string.");
-      return rsl::string("Invalid String");
+      return rsl::small_stack_string("Invalid String");
     }
 
-    buffer.resize(converted_chars);
+    buffer.resize(static_cast<count_t>(converted_chars));
 
-    return rsl::string(buffer.data(), size); // NOLINT(readability-redundant-string-cstr)
+    return rsl::small_stack_string(buffer.data(), static_cast<count_t>(converted_chars)); // NOLINT(readability-redundant-string-cstr)
   }
 
   //-------------------------------------------------------------------------

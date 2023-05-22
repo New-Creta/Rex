@@ -227,7 +227,7 @@ public class BasicCPPProject : BaseProject
         string clangToolsPath = GetClangToolsOutputFolder(conf);
         if (Directory.Exists(clangToolsPath))
         {
-          Directory.Delete(clangToolsPath, recursive:true);
+          Directory.Delete(clangToolsPath, recursive: true);
         }
       }
 
@@ -240,7 +240,7 @@ public class BasicCPPProject : BaseProject
       postbuildCommandArguments += $" -srcroot={SourceRootPath}";
       postbuildCommandArguments += $" -clang_tidy_regex=\"{GenerateSettings.ClangTidyRegex}\"";
 
-      if (GenerateSettings.PerformAllChecks)
+      if (GenerateSettings.EnableSecondPass)
       {
         postbuildCommandArguments += $" -perform_all_checks";
       }
@@ -319,7 +319,6 @@ public class BasicCPPProject : BaseProject
     foreach (string key in config.Keys)
     {
       EnumGenerationConfig enum_config = config[key];
-
       if (!GenerateSettings.EnumsToAutoGenerate.ContainsKey(key))
       {
         GenerateSettings.EnumsToAutoGenerate.Add(key, new EnumGenerationSettings());
