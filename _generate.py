@@ -19,8 +19,8 @@ from pathlib import Path
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument("-no_clang_tools", help="don't generate a compiler db", action="store_true")
+  parser.add_argument("-unit_tests", help="generate unit tests", action="store_true")
   parser.add_argument("-enable_second_pass", help="Enable second pass of clang-tidy checks", action="store_true")
-  parser.add_argument("-unittests", help="generate unit tests", action="store_true")
   parser.add_argument("-coverage", help="generate coverage", action="store_true")
   parser.add_argument("-asan", help="generate address sanitizer", action="store_true")
   parser.add_argument("-ubsan", help="generate undefined behavior sanitizer", action="store_true")
@@ -30,9 +30,9 @@ if __name__ == "__main__":
   args, unknown = parser.parse_known_args()
 
   root = regis.util.find_root()
-  settings_path = os.path.join(root, "build", "config", "settings.json")
+  settings_path = os.path.join(root, "_build", "config", "settings.json")
 
-  run_any_tests = args.unittests or args.coverage or args.asan or args.ubsan or args.fuzzy
+  run_any_tests = args.unit_tests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
   sharpmake_args = "/enableVisualStudio /disableClangTidyForThirdParty"
   if args.no_clang_tools:
