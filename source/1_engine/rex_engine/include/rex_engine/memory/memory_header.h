@@ -21,7 +21,7 @@ namespace rex
     card32 frame_index() const;
 
   private:
-    CallStack m_callstack;
+    CallStack m_callstack;       // the callstack for this allocation
     rsl::memory_size m_size;     // size of the memory allocated
     void* m_ptr;                 // the pointer that's allocated
     rsl::thread::id m_thread_id; // the thread id this was allocated on
