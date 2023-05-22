@@ -5,6 +5,7 @@
 #include "rex_engine/types.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_windows/gui_application.h"
+#include "rex_windows/console_application.h"
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 

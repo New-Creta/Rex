@@ -20,7 +20,7 @@ namespace rex
   {
     s32 window_width      = 1280;
     s32 window_height     = 720;
-    StringID window_title = "Application"_sid;
+    rsl::string_view window_title = "Application";
 
     s32 max_render_commands = 1 << 16;
     s32 max_fps             = 60;

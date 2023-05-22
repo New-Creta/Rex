@@ -10,6 +10,8 @@
 #include "rex_std/bonus/types.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std_extra/time/timepoint.h"
+#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/diagnostics/stacktrace.h"
 
 namespace rex
 {
