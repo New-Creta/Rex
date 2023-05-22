@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_std/assert.h"
+#include "rex_std/bonus/defines.h"
 #include "rex_std/format.h"
 #include "rex_std/source_location.h"
 

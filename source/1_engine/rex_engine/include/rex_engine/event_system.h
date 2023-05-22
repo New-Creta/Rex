@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/event.h"
+#include "rex_engine/event.h" // IWYU pragma: keep
 #include "rex_std/functional.h"
 
 namespace rex

@@ -2,8 +2,12 @@
 
 #include "rex_engine/string/stringentry.h"
 #include "rex_engine/types.h"
+#include "rex_std/bonus/functional.h"
+#include "rex_std/memory.h"
 #include "rex_std/ostream.h"
 #include "rex_std/string.h"
+
+#include <cstddef>
 
 namespace rex
 {

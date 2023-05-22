@@ -51,7 +51,6 @@ namespace rexlog
 // Support for fmt formatting  (e.g. "{:012.9}" or just "{}")
 namespace rsl
 {
-
   template <>
   struct formatter<rexlog::stopwatch> : formatter<double>
   {
