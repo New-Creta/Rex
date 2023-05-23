@@ -432,23 +432,6 @@ public class BasicCPPProject : BaseProject
   }
 }
 
-public class TestProject : BaseProject
-{
-  public override void Configure(RexConfiguration conf, RexTarget target)
-  {
-    base.Configure(conf, target);
-
-    if (GenerateSettings.AddressSanitizerEnabled)
-    {
-      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
-    }
-    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
-    {
-      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
-    }
-  }
-}
-
 // All projects sitting in 0_thirdparty folder should inherit from this
 public class ThirdPartyProject : BasicCPPProject
 {
@@ -518,5 +501,22 @@ public class ToolsProject : BasicCPPProject
     base.Configure(conf, target);
 
     conf.SolutionFolder = "4_tools";
+  }
+}
+
+public class TestProject : BasicCPPProject
+{
+  public override void Configure(RexConfiguration conf, RexTarget target)
+  {
+    base.Configure(conf, target);
+
+    if (GenerateSettings.AddressSanitizerEnabled)
+    {
+      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
+    }
+    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
+    {
+      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
+    }
   }
 }

@@ -41,7 +41,7 @@ if __name__ == "__main__":
   if args.enable_second_pass:
     sharpmake_args += " /enableSecondPass"
 
-  if args.unittests:
+  if args.unit_tests:
     sharpmake_args += " /generateUnitTests"
 
   elif args.coverage:
