@@ -27,21 +27,27 @@ namespace rex
     REX_LOG(LogRegina, "shutting down Regina");
   }
 
-#ifndef REX_ENABLE_AUTO_TESTS
-  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
+  ApplicationCreationParams create_regina_app_creation_params(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
   {
     ApplicationCreationParams app_params(rsl::move(platformParams), rsl::move(cmdArgs));
 
-    app_params.gui_params.window_width  = 1280;
+    app_params.gui_params.window_width = 1280;
     app_params.gui_params.window_height = 720;
-    app_params.gui_params.window_title  = "Regina";
+    app_params.gui_params.window_title = "Regina";
 
-    app_params.engine_params.max_memory        = 256_kb;
-    app_params.engine_params.app_init_func     = initialize;
-    app_params.engine_params.app_update_func   = update;
+    app_params.engine_params.max_memory = 256_kb;
+    app_params.engine_params.app_init_func = initialize;
+    app_params.engine_params.app_update_func = update;
     app_params.engine_params.app_shutdown_func = shutdown;
 
     return app_params;
+  }
+
+#ifndef REX_ENABLE_AUTO_TESTS
+
+  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
+  {
+    return create_regina_app_creation_params(rsl::move(platformParams), rsl::move(cmdArgs));
   }
 #endif
 } // namespace rex
