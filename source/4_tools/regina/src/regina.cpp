@@ -27,6 +27,7 @@ namespace rex
     REX_LOG(LogRegina, "shutting down Regina");
   }
 
+#ifndef REX_ENABLE_AUTO_TESTS
   ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
   {
     ApplicationCreationParams app_params(rsl::move(platformParams), rsl::move(cmdArgs));
@@ -42,4 +43,5 @@ namespace rex
 
     return app_params;
   }
+#endif
 } // namespace rex
