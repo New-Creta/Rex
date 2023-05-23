@@ -43,6 +43,7 @@ public class GenerateSettings
   static public bool AddressSanitizerEnabled = false;
   static public bool UndefinedBehaviorSanitizerEnabled = false;
   static public bool GenerateFuzzyTests = false;
+  static public bool EnableAutoTests = false;
 
 
   static public string ClangTidyRegex { get; set; }

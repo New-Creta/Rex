@@ -123,7 +123,12 @@ public class MainSolution : Solution
       conf.AddProject<RexStdFuzzy>(target);
     }
 
-    if (GenerateSettings.EnableDefaultGeneration)
+    if (GenerateSettings.EnableAutoTests)
+    {
+      conf.AddProject<ReginaTest>(target);
+    }
+
+    else if (GenerateSettings.EnableDefaultGeneration)
     {
       conf.AddProject<Regina>(target);
     }
@@ -255,6 +260,12 @@ namespace rex
     public void CommandLineDisableClangTidyForThirdParty()
     {
       GenerateSettings.DisableClangTidyForThirdParty = true;
+    }
+
+    [Sharpmake.CommandLine.Option("enableAutoTests")]
+    public void CommandLineEnableAutoTests()
+    {
+      GenerateSettings.EnableAutoTests = true;
     }
   }
 }
