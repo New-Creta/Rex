@@ -5,6 +5,17 @@
 
 namespace rex
 {
+  struct CommandLineArgument
+  {
+    rsl::string_view name;
+    rsl::string_view desc;
+  };
+
+  rsl::array command_line_arguments
+  {
+    CommandLineArgument{ "AutoTest", "Specify which auto test to run"}
+  };
+
   class CommandLineArguments
   {
   public:
