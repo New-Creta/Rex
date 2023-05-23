@@ -34,7 +34,6 @@ namespace rex
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
           : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
-          , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
       {
@@ -75,7 +74,6 @@ namespace rex
 
     private:
       PlatformCreationParams m_platform_creation_params;
-      CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
 
@@ -85,14 +83,9 @@ namespace rex
     };
 
     ConsoleApplication::ConsoleApplication(ApplicationCreationParams&& appParams)
-        : CoreApplication(appParams.engine_params, appParams.cmd_args)
-        , m_internal_obj()
-        , m_internal(m_internal_obj.get<ConsoleApplication::Internal>())
+        : CoreApplication(appParams.engine_params)
+        , m_internal(rsl::make_unique<ConsoleApplication::Internal>(this, rsl::move(appParams)))
     {
-      static_assert(s_internal_size == sizeof(ConsoleApplication::Internal), "size of internal structure should match size of internal implementation");
-      static_assert(s_internal_alignment == alignof(ConsoleApplication::Internal), "alignment of internal structure should match alignment of internal implementation");
-
-      new(m_internal)(ConsoleApplication::Internal)(this, rsl::move(appParams));
     }
 
     ConsoleApplication::~ConsoleApplication() = default;

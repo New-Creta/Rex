@@ -24,7 +24,7 @@ namespace rex
   } // namespace globals
 
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
+  CoreApplication::CoreApplication(const EngineParams& engineParams)
       : m_app_state(ApplicationState::Created)
   {
     mem_tracker().initialize(engineParams.max_memory);

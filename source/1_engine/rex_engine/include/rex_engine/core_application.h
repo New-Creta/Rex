@@ -36,7 +36,7 @@ namespace rex
   class CoreApplication
   {
   public:
-    CoreApplication(const EngineParams& engineParams, const CommandLineArguments& cmdArgs);
+    CoreApplication(const EngineParams& engineParams);
     CoreApplication(const CoreApplication&) = delete;
     CoreApplication(CoreApplication&&)      = delete;
     virtual ~CoreApplication();

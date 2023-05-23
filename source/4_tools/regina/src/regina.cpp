@@ -27,9 +27,17 @@ namespace rex
     REX_LOG(LogRegina, "shutting down Regina");
   }
 
-  ApplicationCreationParams create_regina_app_creation_params(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
+  namespace cmdline
   {
-    ApplicationCreationParams app_params(rsl::move(platformParams), rsl::move(cmdArgs));
+    CommandLineArgumentsView receive_cmd_line_args()
+    {
+      return { nullptr, 0 };
+    }
+  }
+
+  ApplicationCreationParams create_regina_app_creation_params(PlatformCreationParams&& platformParams)
+  {
+    ApplicationCreationParams app_params(rsl::move(platformParams));
 
     app_params.gui_params.window_width = 1280;
     app_params.gui_params.window_height = 720;
@@ -45,9 +53,9 @@ namespace rex
 
 #ifndef REX_ENABLE_AUTO_TESTS
 
-  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
+  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams)
   {
-    return create_regina_app_creation_params(rsl::move(platformParams), rsl::move(cmdArgs));
+    return create_regina_app_creation_params(rsl::move(platformParams));
   }
 #endif
 } // namespace rex

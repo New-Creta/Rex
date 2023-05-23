@@ -13,16 +13,14 @@
 #include <processenv.h>
 
 //-------------------------------------------------------------------------
-INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
+INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
-  rex::CommandLineArguments cmd_args(GetCommandLineA());
   rex::PlatformCreationParams creation_params {};
   creation_params.instance      = hInstance;
   creation_params.prev_instance = hPrevInstance;
-  creation_params.cmd_line      = lpCmdLine;
   creation_params.show_cmd      = nShowCmd;
 
-  rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
+  rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params));
 
   // this doesn't initialize anything but simply prepares the application for initialization
   rex::win32::GuiApplication application(rsl::move(app_params));
@@ -38,6 +36,8 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 
 int main()
 {
+  rex::pre_app_entry(GetCommandLine());
+
   STARTUPINFOW si;
   GetStartupInfoW(&si);
 

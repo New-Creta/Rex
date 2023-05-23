@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_engine/memory/untracked_allocator.h"
+#include "rex_engine/cmdline.h"
 #include "rex_engine/string/stringid.h"
 #include "rex_std/atomic.h"
 #include "rex_std/bonus/platform/windows/handle.h"
@@ -222,6 +223,11 @@ namespace rex
 
     void init(rsl::string_view root)
     {
+      if (rsl::optional<rsl::string_view> arg = cmdline::get_argument("Root"))
+      {
+        root = arg.value();
+      }
+
       if(root.empty())
       {
         WIN_CALL(GetCurrentDirectoryA(g_root.max_size(), g_root.data()));
