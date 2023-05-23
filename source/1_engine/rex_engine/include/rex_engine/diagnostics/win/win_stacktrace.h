@@ -3,6 +3,7 @@
 #include "rex_engine/platform.h" // IWYU pragma: keep
 #include "rex_std/array.h"
 #include "rex_std/bonus/types.h"
+#include "rex_std/iostream.h"
 #include "rex_std/stacktrace.h"
 
 namespace rex
@@ -42,12 +43,12 @@ namespace rsl
       rsl::hash_result operator()(const rex::win::CallStack& callstack) const
       {
         const count_t size = callstack.size();
-        card64 seed  = 0;
+        card64 seed        = 0;
         for(count_t i = 0; i < size; ++i)
         {
-          void* stack_pointer = callstack[i];
-          const intptr address      = *reinterpret_cast<intptr*>(&stack_pointer); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-          seed                = internal::hash_combine(seed, address);
+          void* stack_pointer  = callstack[i];
+          const intptr address = *reinterpret_cast<intptr*>(&stack_pointer); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+          seed                 = internal::hash_combine(seed, address);
         }
 
         return static_cast<rsl::hash_result>(seed);
