@@ -319,7 +319,6 @@ public class BasicCPPProject : BaseProject
     foreach (string key in config.Keys)
     {
       EnumGenerationConfig enum_config = config[key];
-      
       if (!GenerateSettings.EnumsToAutoGenerate.ContainsKey(key))
       {
         GenerateSettings.EnumsToAutoGenerate.Add(key, new EnumGenerationSettings());
