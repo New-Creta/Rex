@@ -9,7 +9,7 @@ namespace rex
     namespace internal
     {
       void update();
-    }
+    } // namespace internal
 
     bool is_key_pressed(char8 key);
     bool is_key_down(char8 key);

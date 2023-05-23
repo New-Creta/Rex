@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/cmd_line_args.h"
 #include "rex_engine/string/stringid.h"
 #include "rex_windows/win_types.h"
 
@@ -18,9 +19,9 @@ namespace rex
 
   struct GuiParams
   {
-    s32 window_width      = 1280;
-    s32 window_height     = 720;
-    StringID window_title = "Application"_sid;
+    s32 window_width              = 1280;
+    s32 window_height             = 720;
+    rsl::string_view window_title = "Application";
 
     s32 max_render_commands = 1 << 16;
     s32 max_fps             = 60;

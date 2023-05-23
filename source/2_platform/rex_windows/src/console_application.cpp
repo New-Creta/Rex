@@ -11,7 +11,7 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogWinConsoleApp, rex::LogVerbosity::Log);
 
-    CoreApplication* g_this_app = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
+    CoreApplication* g_this_app = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables, cppcoreguidelines-avoid-non-const-global-variables)
 
     BOOL WINAPI handler_routine(DWORD eventCode)
     {
@@ -51,7 +51,8 @@ namespace rex
 
       bool initialize()
       {
-        SetConsoleCtrlHandler(handler_routine, true); // NOLINT(readability-implicit-bool-conversion)
+        constexpr bool is_adding = true;
+        SetConsoleCtrlHandler(handler_routine, is_adding); // NOLINT(readability-implicit-bool-conversion)
 
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
 
@@ -86,13 +87,9 @@ namespace rex
 
     ConsoleApplication::ConsoleApplication(ApplicationCreationParams&& appParams)
         : CoreApplication(appParams.engine_params, appParams.cmd_args)
-        , m_internal_obj()
-        , m_internal(m_internal_obj.get<ConsoleApplication::Internal>())
+        , m_internal(nullptr)
     {
-      static_assert(s_internal_size == sizeof(ConsoleApplication::Internal), "size of internal structure should match size of internal implementation");
-      static_assert(s_internal_alignment == alignof(ConsoleApplication::Internal), "alignment of internal structure should match alignment of internal implementation");
-
-      new(m_internal)(ConsoleApplication::Internal)(this, rsl::move(appParams));
+      m_internal = rsl::make_unique<ConsoleApplication::Internal>(this, rsl::move(appParams));
     }
 
     ConsoleApplication::~ConsoleApplication() = default;

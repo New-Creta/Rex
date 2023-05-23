@@ -4,13 +4,16 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/utility.h"
+#include "rex_windows/console_application.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 
 #define NOMINMAX
 #include <Windows.h>
-#include <processenv.h>
+#include <cstdlib>
+#include <iostream>
+#include <shellapi.h>
 
 //-------------------------------------------------------------------------
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
@@ -51,10 +54,10 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
 // main is always the entry point.
 // on a graphical application however, we call into WinMain
 // as this is supposed to be the entry point for a graphical application
-// This is also the entry point that will be used without a console for simplicity
+// This is also the entry point that will be used without a console.
 int main()
 {
-  rex::pre_app_entry(GetCommandLine());
+  rex::internal::pre_app_entry(GetCommandLine());
 
   STARTUPINFOW si;
   GetStartupInfoW(&si);
@@ -66,5 +69,9 @@ int main()
     show_window = SW_SHOWNORMAL;
   }
 
-  return WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), show_window);
+  const int result = WinMain(GetModuleHandle(nullptr), nullptr, GetCommandLine(), show_window);
+
+  rex::internal::post_app_shutdown();
+
+  return result;
 }
