@@ -13,7 +13,9 @@ namespace rex
       WindowStopWindowResize,
       WindowMinimized,
       WindowMaximized,
-      WindowRestored
+      WindowRestored,
+
+      QuitApp
     };
   } // namespace event_system
 } // namespace rex

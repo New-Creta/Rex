@@ -3,6 +3,7 @@
 #include "rex_engine/core_application.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/log.h"
