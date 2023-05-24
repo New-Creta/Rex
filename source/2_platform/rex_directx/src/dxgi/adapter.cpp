@@ -118,7 +118,7 @@ namespace rex
     //-------------------------------------------------------------------------
     Adapter::Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, uint32 version)
         : ComObject(rsl::move(adapter), version)
-        , m_description(::get_description(adapter))
+        , m_description(::get_description(com_ptr()))
     {
     }
 
