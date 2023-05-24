@@ -8,7 +8,7 @@
 #include "rex_directx/log.h"
 #include "rex_directx/wrl/wrl_types.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_renderer_core/gpu.h"
+#include "rex_renderer_core/gpu_description.h"
 #include "rex_renderer_core/renderer.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/string.h"
