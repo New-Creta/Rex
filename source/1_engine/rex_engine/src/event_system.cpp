@@ -33,6 +33,7 @@ namespace rex
         case EventType::WindowActivate:
         case EventType::WindowDeactivate:
         case EventType::WindowStartWindowResize:
+        case EventType::QuitApp:
         case EventType::WindowStopWindowResize: REX_LOG(LogEngine, "Firing event: Event Type: {0}", rsl::enum_refl::enum_name(evt.type)); break;
         case EventType::WindowMinimized:
         case EventType::WindowMaximized:
