@@ -8,5 +8,17 @@
             ],
             "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
         }
-    }
+    },
+    "CommandLineArgs": {
+        "Type": "Array",
+        "Content": {
+          "Name": "g_command_line_args",
+          "ElementType": "cmdline::CommandLineArgument",
+          "Includes" : ["rex_engine/cmdline.h"],
+          "Values": [
+            "\"AutoTest\", \"Specify the autotest to run\""
+          ],
+          "Filepath": "1_engine/rex_engine/include/rex_engine/cmd_args.h"
+        }
+      }
 }
