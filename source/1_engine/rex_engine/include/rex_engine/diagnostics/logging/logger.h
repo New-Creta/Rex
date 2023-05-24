@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/diagnostics/logging/internal/logger.h"
+#include "rex_engine/diagnostics/logging/internal/rexlog_logger.h"
 #include "rex_engine/diagnostics/logging/log_category.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 

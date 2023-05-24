@@ -4,7 +4,6 @@
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/rexlog.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"

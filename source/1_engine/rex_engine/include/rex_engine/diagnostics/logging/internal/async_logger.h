@@ -13,7 +13,7 @@
 // Upon destruction, logs all remaining messages in the queue before
 // destructing..
 
-#include "rex_engine/diagnostics/logging/internal/logger.h"
+#include "rex_engine/diagnostics/logging/internal/rexlog_logger.h"
 #include "rex_std/memory.h"
 
 namespace rexlog

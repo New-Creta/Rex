@@ -1,7 +1,7 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/periodic_worker.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/diagnostics/logging/internal/logger.h"
+#include "rex_engine/diagnostics/logging/internal/rexlog_logger.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/types.h"
@@ -13,9 +13,9 @@
 #ifndef REXLOG_DISABLE_DEFAULT_LOGGER
   // support for the default stdout color Logger
   #ifdef _WIN32
-    #include "rex_engine/diagnostics/logging/internal/sinks/wincolor_sink.h"
+    #include "rex_engine/diagnostics/logging/internal/sinks/win/wincolor_sink.h"
   #else
-    #include "rex_engine/diagnostics/logging/internal/sinks/ansicolor_sink.h"
+    #include "rex_engine/diagnostics/logging/internal/sinks/unix/ansicolor_sink.h"
   #endif
 #endif // REXLOG_DISABLE_DEFAULT_LOGGER
 
