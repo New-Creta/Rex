@@ -123,6 +123,9 @@ namespace rex
           const CommandLineArgument& lhs_arg = args[i];
           for (count_t j = 0; j < arg_count; ++j)
           {
+            if (i == j)
+              continue;
+
             const CommandLineArgument& rhs_arg = args[j];
             REX_ASSERT_X(lhs_arg.name != rhs_arg.name, "Command line arg {} exists in both engine args and project args, this is not allowed", lhs_arg.name);
           }
