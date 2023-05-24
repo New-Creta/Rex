@@ -314,37 +314,38 @@ public class BasicCPPProject : BaseProject
 
     string mem_tag_config_path = GenerationConfigPath;
     string json_blob = File.ReadAllText(mem_tag_config_path);
-    Dictionary<string, EnumGenerationConfig> config = JsonSerializer.Deserialize<Dictionary<string, EnumGenerationConfig>>(json_blob);
+    Dictionary<string, JsonDocument> config = JsonSerializer.Deserialize<Dictionary<string, JsonDocument>>(json_blob);
 
     foreach (string key in config.Keys)
     {
-      EnumGenerationConfig enum_config = config[key];
+      JsonDocument enum_config = config[key];
+      var test = enum_config.RootElement.GetProperty("ClassName").GetString();
       if (!GenerateSettings.EnumsToAutoGenerate.ContainsKey(key))
       {
         GenerateSettings.EnumsToAutoGenerate.Add(key, new EnumGenerationSettings());
 
         // we use the config settings of the first enum we encounter, all others need to match this
-        GenerateSettings.EnumsToAutoGenerate[key].ClassName = enum_config.ClassName;
-        GenerateSettings.EnumsToAutoGenerate[key].Filepath = enum_config.Filepath;
+        //GenerateSettings.EnumsToAutoGenerate[key].ClassName = enum_config.ClassName;
+        //GenerateSettings.EnumsToAutoGenerate[key].Filepath = enum_config.Filepath;
       }
       else
       {
         EnumGenerationSettings enum_gen_settings = GenerateSettings.EnumsToAutoGenerate[key];
 
-        // class names and filenames should be consistent among all generation files
-        if (enum_gen_settings.ClassName != enum_config.ClassName)
-        {
-          throw new Error($"Enum generation error - unexpected classname: '{enum_config.ClassName}' - expected: {enum_gen_settings.ClassName} for project: {Name}");
-        }
+        //// class names and filenames should be consistent among all generation files
+        //if (enum_gen_settings.ClassName != enum_config.ClassName)
+        //{
+        //  throw new Error($"Enum generation error - unexpected classname: '{enum_config.ClassName}' - expected: {enum_gen_settings.ClassName} for project: {Name}");
+        //}
 
-        if (enum_gen_settings.Filepath != enum_config.Filepath)
-        {
-          throw new Error($"Enum generation error - unexpected filepath: '{enum_config.Filepath}' - expected: {enum_gen_settings.Filepath} for project: {Name}");
-        }
+        //if (enum_gen_settings.Filepath != enum_config.Filepath)
+        //{
+        //  throw new Error($"Enum generation error - unexpected filepath: '{enum_config.Filepath}' - expected: {enum_gen_settings.Filepath} for project: {Name}");
+        //}
       }
 
-      EnumGenerationSettings enum_gen_setting = GenerateSettings.EnumsToAutoGenerate[key];
-      enum_gen_setting.ProjectToEnumValues.Add(Name, enum_config.Values);
+      //EnumGenerationSettings enum_gen_setting = GenerateSettings.EnumsToAutoGenerate[key];
+      //enum_gen_setting.ProjectToEnumValues.Add(Name, enum_config.Values);
     }
   }
 
