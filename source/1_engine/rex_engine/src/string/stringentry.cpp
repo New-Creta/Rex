@@ -1,7 +1,5 @@
 #include "rex_engine/string/stringentry.h"
 
-#include <rex_std/memory.h>
-
 namespace rex
 {
   //-------------------------------------------------------------------------

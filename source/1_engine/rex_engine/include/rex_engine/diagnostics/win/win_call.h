@@ -14,7 +14,6 @@
 
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
-#include "rex_std/string_view.h"
 
 namespace rex
 {

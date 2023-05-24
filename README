@@ -11,7 +11,11 @@ Project description here ...
 
 <u>Downloading the repository:</u>
 
-Download description here ...
+1. Start by cloning with `git clone https://github.com/New-Creta/Rex`
+2. Run `_setup.py` in the root directory
+3. Run `_generate.py` to generate the visual studio solution (and Ninja files).
+4. Run `_build.py` to build the engine
+5. Run `_test.py -all` to run all the tests
 
 <u>Configuring the project:</u>
 

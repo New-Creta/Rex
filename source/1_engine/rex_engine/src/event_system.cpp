@@ -1,5 +1,7 @@
 #include "rex_engine/event_system.h"
 
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/event.h"
 #include "rex_engine/event_type.h"
 #include "rex_engine/log.h"
 #include "rex_std/unordered_map.h"
@@ -31,6 +33,7 @@ namespace rex
         case EventType::WindowActivate:
         case EventType::WindowDeactivate:
         case EventType::WindowStartWindowResize:
+        case EventType::QuitApp:
         case EventType::WindowStopWindowResize: REX_LOG(LogEngine, "Firing event: Event Type: {0}", rsl::enum_refl::enum_name(evt.type)); break;
         case EventType::WindowMinimized:
         case EventType::WindowMaximized:

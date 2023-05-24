@@ -25,6 +25,7 @@ namespace rexlog
   {
     details::Registry::instance().set_formatter(rsl::move(formatter));
   }
+#include "rex_std/mutex.h"
 
   void set_pattern(const rex::DebugString& pattern, PatternTimeType timeType)
   {

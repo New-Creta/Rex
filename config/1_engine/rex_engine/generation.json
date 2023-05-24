@@ -1,3 +1,12 @@
 {
-    "MemoryTags" : ["Global", "Engine", "FileIO"]
+  "MemoryTags": {
+    "ClassName": "MemoryTag",
+    "Values": [ "Global", "Engine", "FileIO" ],
+    "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+  },
+  "MountingPoints": {
+    "ClassName": "MountingPoint",
+    "Values": [ "Logs" ],
+    "Filepath": "1_engine/rex_engine/include/rex_engine/filesystem/mounting_point.h"
+  }
 }

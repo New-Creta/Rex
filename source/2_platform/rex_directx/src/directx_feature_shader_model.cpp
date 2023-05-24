@@ -1,5 +1,8 @@
 #include "rex_directx/directx_feature_shader_model.h"
 
+#include <Windows.h>
+#include <sdkddkver.h>
+
 namespace rex
 {
   //-------------------------------------------------------------------------

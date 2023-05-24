@@ -1,10 +1,12 @@
 #include "rex_engine/diagnostics/win/hr_call.h"
 
+#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/log.h"
+#include "rex_std/bonus/attributes.h"
 
 #define NOMINMAX
+#include <Windows.h>
 #include <comdef.h>
-#include <windows.h>
 
 rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED rsl::string_view file, REX_MAYBE_UNUSED rsl::string_view function, REX_MAYBE_UNUSED card32 lineNr)
     : m_has_failed(FAILED(hr))

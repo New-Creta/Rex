@@ -1,13 +1,24 @@
 #include "rex_directx/directx_feature_level.h"
 #include "rex_directx/directx_feature_shader_model.h"
-#include "rex_directx/directx_util.h"
+#include "rex_directx/directx_util.h" // IWYU pragma: keep
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
+#include "rex_directx/dxgi/util.h"
 #include "rex_directx/log.h"
+#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_renderer_core/gpu_description.h"
 #include "rex_renderer_core/renderer.h"
+#include "rex_std/algorithm.h"
+#include "rex_std/bonus/string.h"
 #include "rex_std/memory.h"
-#include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_std/vector.h"
+#include "rex_std_extra/memory/memory_size.h"
+
+#include <Windows.h>
+#include <cstddef>
+#include <d3d12.h>
 
 namespace rex
 {
@@ -16,18 +27,18 @@ namespace rex
     namespace internal
     {
       //-------------------------------------------------------------------------
-      const Gpu* highest_scoring_gpu(const rsl::vector<rsl::unique_ptr<Gpu>>& gpus)
+      count_t highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
       {
         auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
-                                   [](const rsl::unique_ptr<Gpu>& lhs, const rsl::unique_ptr<Gpu>& rhs)
+                                   [](const GpuDescription& lhs, const GpuDescription& rhs)
                                    {
-                                     const size_t lhs_vram = lhs->description().dedicated_video_memory.size_in_bytes();
-                                     const size_t rhs_vram = rhs->description().dedicated_video_memory.size_in_bytes();
+                                     const size_t lhs_vram = lhs.dedicated_video_memory.size_in_bytes();
+                                     const size_t rhs_vram = rhs.dedicated_video_memory.size_in_bytes();
 
                                      return rhs_vram > lhs_vram;
                                    });
 
-        return it != gpus.cend() ? it->get() : nullptr;
+        return it != gpus.cend() ? rsl::distance(gpus.cbegin(), it) : -1;
       }
     } // namespace internal
 
@@ -80,11 +91,12 @@ namespace rex
         }
 
         const dxgi::AdapterManager adapter_manager(&factory, &internal::highest_scoring_gpu);
-        const dxgi::Adapter* adapter = static_cast<const dxgi::Adapter*>(adapter_manager.selected()); // NNOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        const dxgi::Adapter* selected_gpu = adapter_manager.selected();
+        IDXGIAdapter* adapter             = selected_gpu->c_ptr();
 
-        const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter->c_ptr());
+        const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
 
-        if(FAILED(D3D12CreateDevice(adapter->c_ptr(), static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx.device))))
+        if(FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx.device))))
         {
           REX_ERROR(LogDirectX, "Software adapter not supported");
           REX_ERROR(LogDirectX, "Failed to create DX12 Device");
@@ -97,8 +109,8 @@ namespace rex
 
         directx::g_renderer_info.shader_version = rsl::string(shader_model_name(shader_model));
         directx::g_renderer_info.api_version    = rsl::string(feature_level_name(feature_level));
-        directx::g_renderer_info.adaptor        = adapter->description().name;
-        directx::g_renderer_info.vendor         = adapter->description().vendor_name;
+        directx::g_renderer_info.adaptor        = selected_gpu->description().name;
+        directx::g_renderer_info.vendor         = selected_gpu->description().vendor_name;
 
         return true;
       }
