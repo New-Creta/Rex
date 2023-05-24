@@ -28,6 +28,7 @@ public class EnumGenerationSettings
   public string ClassName = "";
   public string Filepath = "";
   public Dictionary<string, List<string>> ProjectToEnumValues = new Dictionary<string, List<string>>();
+  public Dictionary<string, string> ProjectToGenerationFile = new Dictionary<string, string>();
 }
 
 public class ArrayGenerationSettings
@@ -37,6 +38,7 @@ public class ArrayGenerationSettings
   public string Filepath = "";
   public List<string> Includes = new List<string>();
   public Dictionary<string, List<string>> ProjectToArrayValues = new Dictionary<string, List<string>>();
+  public Dictionary<string, string> ProjectToGenerationFile = new Dictionary<string, string>();
 }
 
 public enum GraphicsAPI

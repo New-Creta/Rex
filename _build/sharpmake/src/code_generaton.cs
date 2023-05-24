@@ -3,18 +3,18 @@ using Sharpmake;
 
 public class CodeGeneration
 {
-  public static void Generate(string projectName, string key, string typename, JsonElement content)
+  public static void Generate(string projectName, string key, string typename, JsonElement content, string generationFilePath)
   {
     switch (typename)
     {
-      case "Enum": GenerateEnum(projectName, key, content); break;
-      case "Array": GenerateArray(projectName, key, content); break;
+      case "Enum": GenerateEnum(projectName, key, content, generationFilePath); break;
+      case "Array": GenerateArray(projectName, key, content, generationFilePath); break;
       default:
         break;
     }
   }
 
-  private static void GenerateEnum(string projectName, string key, JsonElement content)
+  private static void GenerateEnum(string projectName, string key, JsonElement content, string generationFilePath)
   {
     EnumGenerationConfig enum_config = JsonSerializer.Deserialize<EnumGenerationConfig>(content.ToString());
 
@@ -44,9 +44,10 @@ public class CodeGeneration
 
     EnumGenerationSettings settings = GenerateSettings.EnumsToAutoGenerate[key];
     settings.ProjectToEnumValues.Add(projectName, enum_config.Values);
+    settings.ProjectToGenerationFile.Add(projectName, generationFilePath);
   }
 
-  private static void GenerateArray(string projectName, string key, JsonElement content)
+  private static void GenerateArray(string projectName, string key, JsonElement content, string generationFilePath)
   {
     ArrayGenerationConfig enum_config = JsonSerializer.Deserialize<ArrayGenerationConfig>(content.ToString());
 
@@ -75,11 +76,6 @@ public class CodeGeneration
         throw new Error($"Array generation error - unexpected name: '{enum_config.Name}' - expected: {array_gen_settings.Name} for projectName: {projectName}");
       }
 
-      if (array_gen_settings.Includes != enum_config.Includes)
-      {
-        throw new Error($"Array generation error - unexpected includes: '{enum_config.Includes}' - expected: {array_gen_settings.Includes} for projectName: {projectName}");
-      }
-
       if (array_gen_settings.Filepath != enum_config.Filepath)
       {
         throw new Error($"Array generation error - unexpected filepath: '{enum_config.Filepath}' - expected: {array_gen_settings.Filepath} for projectName: {projectName}");
@@ -88,5 +84,6 @@ public class CodeGeneration
 
     ArrayGenerationSettings settings = GenerateSettings.ArraysToAutoGenerate[key];
     settings.ProjectToArrayValues.Add(projectName, enum_config.Values);
+    settings.ProjectToGenerationFile.Add(projectName, generationFilePath);
   }
 }

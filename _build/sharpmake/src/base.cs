@@ -321,7 +321,7 @@ public class BasicCPPProject : BaseProject
       JsonDocument doc = config[key];
       string typename = doc.RootElement.GetProperty("Type").GetString();
       JsonElement content = doc.RootElement.GetProperty("Content");
-      CodeGeneration.Generate(Name, key, typename, content);
+      CodeGeneration.Generate(Name, key, typename, content, GenerationConfigPath);
     }
   }
 
