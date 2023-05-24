@@ -13,12 +13,30 @@ public class EnumGenerationConfig
   public string Filepath { get; set; }
 }
 
+public class ArrayGenerationConfig
+{
+  public string ElementType { get; set; }
+  public string Name { get; set; }
+  public List<string> Includes { get; set; }
+  public List<string> Values { get; set; }
+  public string Filepath { get; set; }
+}
+
 // this is the object we use
 public class EnumGenerationSettings
 {
   public string ClassName = "";
   public string Filepath = "";
   public Dictionary<string, List<string>> ProjectToEnumValues = new Dictionary<string, List<string>>();
+}
+
+public class ArrayGenerationSettings
+{
+  public string ElementType = "";
+  public string Name = "";
+  public string Filepath = "";
+  public List<string> Includes = new List<string>();
+  public Dictionary<string, List<string>> ProjectToArrayValues = new Dictionary<string, List<string>>();
 }
 
 public enum GraphicsAPI
@@ -50,6 +68,7 @@ public class GenerateSettings
   static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;
   
   static public Dictionary<string, EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, EnumGenerationSettings>();
+  static public Dictionary<string, ArrayGenerationSettings> ArraysToAutoGenerate = new Dictionary<string, ArrayGenerationSettings>();
 
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
 }

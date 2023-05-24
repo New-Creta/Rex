@@ -18,12 +18,17 @@ namespace rex
     class CommandLineArguments
     {
     public:
-      explicit CommandLineArguments(rsl::string_view cmdLine, CommandLineArgumentsView engineArgs, CommandLineArgumentsView projectArgs)
-        : m_engine_args(engineArgs)
-        , m_project_args(projectArgs)
+      explicit CommandLineArguments()
       {
-        verify_args(engineArgs, projectArgs);
+      }
 
+      void register_commands(CommandLineArgumentsView args)
+      {
+        verify_args(args);
+      }
+
+      void init(rsl::string_view cmdLine)
+      {
         if (cmdLine.empty())
         {
           REX_LOG(LogEngine, "No command line arguments to parse");
@@ -62,27 +67,44 @@ namespace rex
         // the first argument should always be the path to the executable itself
         REX_ASSERT_X(start_pos != -1, "No arguments given to your exe, there should always be at least 1 arg.");
 
+        // the module we're launching is always the first argument on the commandline
+        // we skip this
         count_t space_pos = cmdLine.find_first_of(' ', start_pos);
+        start_pos = space_pos + 1;
+
+        const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         while (start_pos != -1 && space_pos != -1)
         {
           const count_t length = space_pos - start_pos;
-          add_argument(cmdLine.substr(start_pos + 1, length)); // + 1 to ignore '-'
+          add_argument(cmdLine.substr(start_pos + arg_prefix.size(), length));
           start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
           space_pos = cmdLine.find_first_of(' ', start_pos);
         }
 
         if (start_pos != -1)
         {
-          add_argument(cmdLine.substr(start_pos + 1)); // + 1 to ignore '-'
+          add_argument(cmdLine.substr(start_pos + arg_prefix.size())); // + 1 to ignore '-'
         }
       }
 
       void add_argument(rsl::string_view arg)
       {
         count_t equal_pos = arg.find('=');
-        REX_ERROR_X(LogEngine, equal_pos != -1, "no '=' found for argument {}. argument will be skipped", arg);
-        rsl::string_view key = arg.substr(0, equal_pos);
-        rsl::string_view value = arg.substr(equal_pos + 1);
+        rsl::string_view key = ""; 
+        rsl::string_view value = ""; 
+        
+        // if the argument is of type -MyArg=Something
+        if (equal_pos != -1)
+        {
+          key = arg.substr(0, equal_pos);
+          value = arg.substr(equal_pos + 1);
+        }
+        // if the argument is of type -EnableSomething
+        else
+        {
+          key = arg;
+          value = "1"; // this is so we can easily convert to bool/int
+        }
 
         auto engine_args_begin = m_engine_args.args;
         auto engine_args_end = m_engine_args.args + m_engine_args.count;
@@ -115,7 +137,7 @@ namespace rex
         m_arguments.push_back({key, value});
       }
 
-      void verify_args(CommandLineArgumentsView engineArgs, CommandLineArgumentsView projectArgs)
+      void verify_args(CommandLineArgumentsView args)
       {
         for (count_t i = 0; i < engineArgs.count; ++i)
         {
@@ -132,7 +154,12 @@ namespace rex
       CommandLineArgumentsView m_project_args;
     };
 
-    rsl::unique_ptr<CommandLineArguments> g_cmd_line_args;
+    CommandLineArguments g_cmd_line_args;
+
+    void register_commands(CommandLineArgumentsView args)
+    {
+
+    }
 
     void init(rsl::string_view cmdLine, CommandLineArgumentsView engineArgs, CommandLineArgumentsView projectArgs)
     {

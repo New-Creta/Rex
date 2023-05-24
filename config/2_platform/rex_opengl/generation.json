@@ -1,9 +1,12 @@
 {
     "MemoryTags": {
-        "ClassName": "MemoryTag",
-        "Values": [
-            "OpenGL"
-        ],
-        "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+        "Type": "Enum",
+        "Content": {
+            "ClassName": "MemoryTag",
+            "Values": [
+                "OpenGL"
+            ],
+            "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+        }
     }
 }
