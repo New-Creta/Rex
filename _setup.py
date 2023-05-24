@@ -14,7 +14,7 @@ import subprocess
 import sys
 import time
   
-rexpy_version = "0.1.35"
+rexpy_version = "0.1.36"
 
 def __intsall_regis():
   os.system(f"py -m pip uninstall --yes regis")
@@ -25,7 +25,7 @@ def __main():
   args, unknown = parser.parse_known_args()
 
   # let's assume if "build" and "source" are found, we're in the root
-  build_exists = os.path.exists("./build")
+  build_exists = os.path.exists("./_build")
   source_exists = os.path.exists("./source")
 
   if not build_exists or not source_exists:
@@ -39,7 +39,7 @@ def __main():
   for arg in unknown:
     arguments_to_pass_on += f" {arg}"
 
-  return os.system(f"py build/scripts/setup.py{arguments_to_pass_on}")
+  return os.system(f"py _build/scripts/setup.py{arguments_to_pass_on}")
 
 if __name__ == "__main__":
   res = __main()
