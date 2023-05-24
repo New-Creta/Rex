@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_engine/diagnostics/stacktrace.h"
+#include "rex_engine/diagnostics/win/win_stacktrace.h"
 #include "rex_engine/memory/memory_tags.h"
-#include "rex_engine/platform.h"
+#include "rex_std/bonus/types.h"
 #include "rex_std/thread.h"
 #include "rex_std_extra/memory/memory_size.h"
 
@@ -21,7 +21,7 @@ namespace rex
     card32 frame_index() const;
 
   private:
-    CallStack m_callstack;
+    CallStack m_callstack;       // the callstack for this allocation
     rsl::memory_size m_size;     // size of the memory allocated
     void* m_ptr;                 // the pointer that's allocated
     rsl::thread::id m_thread_id; // the thread id this was allocated on

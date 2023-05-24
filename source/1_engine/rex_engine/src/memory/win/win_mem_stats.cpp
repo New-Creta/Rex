@@ -4,6 +4,10 @@
 // clang-format off
 #include <Windows.h>
 #include <Psapi.h>
+
+#include "rex_engine/memory/memory_stats.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std_extra/memory/memory_size.h"
 // clang-format on
 // NOLINTEND(llvm-include-order)
 

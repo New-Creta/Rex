@@ -1,11 +1,15 @@
 #include "rex_directx/dxgi/adapter_manager.h"
 
-#include "rex_directx/dxgi/adapter.h"
+#include "rex_directx/dxgi/adapter.h" // IWYU pragma: keep
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/dxgi/util.h"
-#include "rex_directx/log.h"
+#include "rex_directx/wrl/wrl_types.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
+
+#include <Windows.h>
+#include <d3d12.h>
 
 namespace
 {

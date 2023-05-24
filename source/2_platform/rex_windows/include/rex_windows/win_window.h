@@ -2,6 +2,7 @@
 
 #include "rex_engine/core_window.h"
 #include "rex_engine/state_controller.h"
+#include "rex_engine/types.h"
 #include "rex_windows/win_event_handler.h"
 #include "rex_windows/win_types.h"
 #include "rex_windows/win_window_class.h"

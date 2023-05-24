@@ -7,7 +7,8 @@
 #include "rex_engine/diagnostics/logging/internal/async.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 
-#include <mutex>
+// IWYU pragma: no_include <built-in>
+
 //
 // color sinks
 //

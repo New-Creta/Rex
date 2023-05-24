@@ -1,11 +1,12 @@
-#include "rex_engine/defines.h"
+#include "rex_engine/cmd_line_args.h"
+#include "rex_engine/core_application.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/entrypoint.h"
-#include "rex_engine/memory/memory_tracking.h"
-#include "rex_engine/string/stringid.h"
-#include "rex_std/iostream.h"
-#include "rex_std_extra/utility/type_id.h"
+#include "rex_std/string.h"
+#include "rex_std_extra/memory/memory_size.h"
 #include "rex_windows/gui_application.h"
+#include "rex_windows/platform_creation_params.h"
 
 DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
