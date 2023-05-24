@@ -10,7 +10,6 @@ namespace rex
   struct ConsoleApplicationCreationParams;
 
   void pre_app_entry(const char8* cmdLine);
-  cmdline::CommandLineArgumentsView receive_engine_cmd_args();
 
   extern ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams);
   void post_app_shutdown();

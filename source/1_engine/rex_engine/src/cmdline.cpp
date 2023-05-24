@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/log.h"
+#include "rex_engine/cmd_args.h"
 
 namespace rex
 {
@@ -18,17 +19,11 @@ namespace rex
     class CommandLineArguments
     {
     public:
-      explicit CommandLineArguments()
+      explicit CommandLineArguments(rsl::string_view cmdLine)
       {
-      }
+        // verify the auto generated command line arguments
+        verify_args(g_command_line_args.data(), g_command_line_args.size());
 
-      void register_commands(CommandLineArgumentsView args)
-      {
-        verify_args(args);
-      }
-
-      void init(rsl::string_view cmdLine)
-      {
         if (cmdLine.empty())
         {
           REX_LOG(LogEngine, "No command line arguments to parse");
@@ -106,29 +101,13 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto engine_args_begin = m_engine_args.args;
-        auto engine_args_end = m_engine_args.args + m_engine_args.count;
-
-        auto project_args_begin = m_project_args.args;
-        auto project_args_end = m_project_args.args + m_project_args.count;
-
-        auto engine_it = rsl::find_if(engine_args_begin, engine_args_end,
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(),
           [key](const CommandLineArgument& cmdArg)
           {
             return key == cmdArg.name;
           });
 
-        auto project_it = project_args_end;
-        if (engine_it == engine_args_end)
-        {
-          project_it = rsl::find_if(project_args_begin, project_args_end,
-            [key](const CommandLineArgument& cmdArg)
-            {
-              return key == cmdArg.name;
-            });
-        }
-
-        if (engine_it == engine_args_end && project_it == project_args_end)
+        if (cmd_it == g_command_line_args.cend())
         {
             REX_WARN(LogEngine, "Command {} passed in but it's not recognised as a valid command so will be ignored", arg);
             return;
@@ -137,33 +116,28 @@ namespace rex
         m_arguments.push_back({key, value});
       }
 
-      void verify_args(CommandLineArgumentsView args)
+      void verify_args(const CommandLineArgument* args, count_t arg_count)
       {
-        for (count_t i = 0; i < engineArgs.count; ++i)
+        for (count_t i = 0; i < arg_count; ++i)
         {
-          for (count_t j = 0; j < projectArgs.count; ++j)
+          const CommandLineArgument& lhs_arg = args[i];
+          for (count_t j = 0; j < arg_count; ++j)
           {
-            REX_ASSERT_X(engineArgs.args[i].name != projectArgs.args[j].name, "Command line arg {} exists in both engine args and project args, this is not allowed", engineArgs.args[i].name)
+            const CommandLineArgument& rhs_arg = args[j];
+            REX_ASSERT_X(lhs_arg.name != rhs_arg.name, "Command line arg {} exists in both engine args and project args, this is not allowed", lhs_arg.name);
           }
         }
       }
 
     private:
       rsl::vector<ActiveArgument> m_arguments;
-      CommandLineArgumentsView m_engine_args;
-      CommandLineArgumentsView m_project_args;
     };
 
-    CommandLineArguments g_cmd_line_args;
+    rsl::unique_ptr<CommandLineArguments> g_cmd_line_args;
 
-    void register_commands(CommandLineArgumentsView args)
+    void init(rsl::string_view cmdLine)
     {
-
-    }
-
-    void init(rsl::string_view cmdLine, CommandLineArgumentsView engineArgs, CommandLineArgumentsView projectArgs)
-    {
-      g_cmd_line_args = rsl::make_unique<CommandLineArguments>(cmdLine, engineArgs, projectArgs);
+      g_cmd_line_args = rsl::make_unique<CommandLineArguments>(cmdLine);
     }
 
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)

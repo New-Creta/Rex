@@ -27,14 +27,6 @@ namespace rex
     REX_LOG(LogRegina, "shutting down Regina");
   }
 
-  namespace cmdline
-  {
-    CommandLineArgumentsView receive_cmd_line_args()
-    {
-      return { nullptr, 0 };
-    }
-  }
-
   ApplicationCreationParams create_regina_app_creation_params(PlatformCreationParams&& platformParams)
   {
     ApplicationCreationParams app_params(rsl::move(platformParams));
