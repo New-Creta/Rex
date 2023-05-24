@@ -63,11 +63,13 @@ public class RexEngine : EngineProject
       case Platform.win32:
         conf.add_public_define("REX_PLATFORM_X86");
         conf.add_public_define("REX_PLATFORM_WINDOWS");
+        conf.SourceFilesBuildExcludeRegex.Add("unix/*"); // exclude unix files
         break;
       case Platform.win64:
         conf.add_public_define("REX_PLATFORM_X64");
         conf.add_public_define("REX_PLATFORM_WINDOWS");
-        break;
+        conf.SourceFilesBuildExcludeRegex.Add("unix/*"); // exclude unix files
+                break;
       case Platform.linux:
         conf.add_public_define("REX_PLATFORM_LINUX");
         conf.SourceFilesBuildExcludeRegex.Add("win/*"); // exclude windows files
