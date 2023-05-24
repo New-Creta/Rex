@@ -1,6 +1,5 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
-#include "rex_engine/diagnostics/logging/internal/logger.h"
-#include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/win/winstdout_color_sinks.h"
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

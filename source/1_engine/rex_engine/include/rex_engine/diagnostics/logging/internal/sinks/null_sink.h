@@ -12,7 +12,6 @@ namespace rexlog
 {
   namespace sinks
   {
-
     template <typename Mutex>
     class null_sink : public BaseSink<Mutex>
     {

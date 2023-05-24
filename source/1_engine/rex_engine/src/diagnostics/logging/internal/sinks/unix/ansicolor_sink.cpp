@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
-#include "rex_engine/diagnostics/logging/internal/sinks/ansicolor_sink.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/unix/ansicolor_sink.h"
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

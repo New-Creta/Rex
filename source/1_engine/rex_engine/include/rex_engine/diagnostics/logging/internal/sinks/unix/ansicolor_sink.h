@@ -22,7 +22,7 @@ namespace rexlog
      */
 
     template <typename ConsoleMutex>
-    class ansicolor_sink : public sink
+    class ansicolor_sink : public AbstractSink
     {
     public:
       using mutex_t = typename ConsoleMutex::mutex_t;

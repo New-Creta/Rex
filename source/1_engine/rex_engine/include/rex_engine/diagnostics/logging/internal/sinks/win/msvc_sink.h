@@ -6,9 +6,6 @@
   #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
   #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
-  #include <mutex>
-  #include <string>
-
 // Avoid including windows.h (https://stackoverflow.com/a/30741042)
 extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char* lpOutputString);
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();

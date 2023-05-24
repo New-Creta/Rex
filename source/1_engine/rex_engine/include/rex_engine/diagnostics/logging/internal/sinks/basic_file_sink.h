@@ -6,6 +6,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
 
 #include <mutex>
 #include <string>
@@ -32,6 +33,33 @@ namespace rexlog
       details::FileHelper m_file_helper;
     };
 
+    template <typename Mutex>
+    BasicFileSink<Mutex>::BasicFileSink(const filename_t& filename, bool truncate, const FileEventHandlers& eventHandlers)
+        : m_file_helper{ eventHandlers }
+    {
+        m_file_helper.open(filename, truncate);
+    }
+
+    template <typename Mutex>
+    const filename_t& BasicFileSink<Mutex>::filename() const
+    {
+        return m_file_helper.filename();
+    }
+
+    template <typename Mutex>
+    void BasicFileSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
+    {
+        memory_buf_t formatted;
+        BaseSink<Mutex>::formatter()->format(msg, formatted);
+        m_file_helper.write(formatted);
+    }
+
+    template <typename Mutex>
+    void BasicFileSink<Mutex>::flush_impl()
+    {
+        m_file_helper.flush();
+    }
+
     using basic_file_sink_mt = BasicFileSink<rsl::mutex>;
     using basic_file_sink_st = BasicFileSink<details::NullMutex>;
 
@@ -41,15 +69,14 @@ namespace rexlog
   // factory functions
   //
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<Logger> basic_logger_mt(const rex::DebugString& loggerName, const filename_t& filename, bool truncate = false, const FileEventHandlers& eventHandlers = {})
+  rsl::shared_ptr<Logger> basic_logger_mt(const rex::DebugString& loggerName, const filename_t& filename, bool truncate = false, const FileEventHandlers& eventHandlers = {})
   {
-    return Factory::template create<sinks::basic_file_sink_mt>(logger_name, filename, truncate, event_handlers);
+      return Factory::template create<sinks::basic_file_sink_mt>(logger_name, filename, truncate, event_handlers);
   }
-
   template <typename Factory = rexlog::SynchronousFactory>
-  inline rsl::shared_ptr<Logger> basic_logger_st(const rex::DebugString& loggerName, const filename_t& filename, bool truncate = false, const FileEventHandlers& eventHandlers = {})
+  rsl::shared_ptr<Logger> basic_logger_st(const rex::DebugString& loggerName, const filename_t& filename, bool truncate = false, const FileEventHandlers& eventHandlers = {})
   {
-    return Factory::template create<sinks::basic_file_sink_st>(logger_name, filename, truncate, event_handlers);
+      return Factory::template create<sinks::basic_file_sink_st>(logger_name, filename, truncate, event_handlers);
   }
 
 } // namespace rexlog

@@ -7,19 +7,26 @@
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 
-bool rexlog::sinks::sink::should_log(rexlog::level::LevelEnum msgLevel) const
+namespace rexlog
 {
-  return msgLevel >= m_level.load(rsl::memory_order_relaxed);
+    namespace sinks
+    {
+        bool AbstractSink::should_log(rexlog::level::LevelEnum msgLevel) const
+        {
+            return msgLevel >= m_level.load(rsl::memory_order_relaxed);
+        }
+
+        void AbstractSink::set_level(level::LevelEnum logLevel)
+        {
+            m_level.store(logLevel, rsl::memory_order_relaxed);
+        }
+
+        rexlog::level::LevelEnum AbstractSink::level() const
+        {
+            return static_cast<rexlog::level::LevelEnum>(m_level.load(rsl::memory_order_relaxed));
+        }
+    }
 }
 
-void rexlog::sinks::sink::set_level(level::LevelEnum logLevel)
-{
-  m_level.store(logLevel, rsl::memory_order_relaxed);
-}
-
-rexlog::level::LevelEnum rexlog::sinks::sink::level() const
-{
-  return static_cast<rexlog::level::LevelEnum>(m_level.load(rsl::memory_order_relaxed));
-}
 
 // NOLINTEND(misc-definitions-in-headers)

@@ -54,19 +54,18 @@
 
 namespace rexlog
 {
-
   class formatter;
 
   namespace sinks
   {
-    class sink;
+    class AbstractSink;
   } // namespace sinks
 
   using filename_t = rex::DebugString;
 #define REXLOG_FILENAME_T(s) s
 
   using log_clock       = rsl::chrono::system_clock;
-  using sink_ptr        = rsl::shared_ptr<sinks::sink>;
+  using sink_ptr        = rsl::shared_ptr<sinks::AbstractSink>;
   using sinks_init_list = rsl::initializer_list<sink_ptr>;
   using err_handler     = rsl::function<void(const rex::DebugString& errMsg)>;
   namespace fmt_lib     = rsl;
