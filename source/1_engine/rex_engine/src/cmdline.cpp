@@ -22,7 +22,7 @@ namespace rex
       explicit CommandLineArguments(rsl::string_view cmdLine)
       {
         // verify the auto generated command line arguments
-        verify_args(g_command_line_args.data(), g_command_line_args.size());
+        REX_ASSERT_X(verify_args(g_command_line_args.data(), g_command_line_args.size()), "You have ambuguous command line arguments");
 
         if (cmdLine.empty())
         {
@@ -35,14 +35,9 @@ namespace rex
 
       rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
       {
-        rsl::medium_stack_string arg_lower(arg);
-        arg_lower.lower();
         for (ActiveArgument active_arg : m_arguments)
         {
-          rsl::medium_stack_string str(active_arg.argument);
-          str.lower();
-
-          if (str == arg_lower)
+          if (rsl::strincmp(arg.data(), active_arg.argument.data(), arg.length()) == 0)
           {
             return active_arg.value;
           }
@@ -67,11 +62,15 @@ namespace rex
         count_t space_pos = cmdLine.find_first_of(' ', start_pos);
         start_pos = space_pos + 1;
 
+        // get the new space pos
+        space_pos = cmdLine.find_first_of(' ', start_pos);
+
         const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         while (start_pos != -1 && space_pos != -1)
         {
-          const count_t length = space_pos - start_pos;
-          add_argument(cmdLine.substr(start_pos + arg_prefix.size(), length));
+          const count_t length = space_pos - start_pos - arg_prefix.size();
+          const rsl::string_view argument = cmdLine.substr(start_pos + arg_prefix.size(), length);
+          add_argument(argument);
           start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
           space_pos = cmdLine.find_first_of(' ', start_pos);
         }
@@ -116,7 +115,7 @@ namespace rex
         m_arguments.push_back({key, value});
       }
 
-      void verify_args(const CommandLineArgument* args, count_t arg_count)
+      bool verify_args(const CommandLineArgument* args, count_t arg_count)
       {
         for (count_t i = 0; i < arg_count; ++i)
         {
@@ -127,9 +126,15 @@ namespace rex
               continue;
 
             const CommandLineArgument& rhs_arg = args[j];
-            REX_ASSERT_X(lhs_arg.name != rhs_arg.name, "Command line arg {} exists in both engine args and project args, this is not allowed", lhs_arg.name);
+            if (rsl::strincmp(lhs_arg.name.data(), rhs_arg.name.data(), lhs_arg.name.length()) == 0)
+            {
+              REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity", lhs_arg.name);
+              return false;
+            }
           }
         }
+
+        return true;
       }
 
     private:
@@ -147,5 +152,30 @@ namespace rex
     {
       return g_cmd_line_args->get_argument(arg);
     }
+
+    void print_args()
+    {
+      REX_LOG(LogEngine, "Listing Command line arguments");
+
+      rsl::unordered_map<rsl::string_view, rsl::vector<CommandLineArgument>> project_to_arguments;
+
+      for (CommandLineArgument cmd : g_command_line_args)
+      {
+        project_to_arguments[cmd.module].push_back(cmd);
+      }
+
+      for (auto [project, cmds] : project_to_arguments)
+      {
+        REX_LOG(LogEngine, "");
+        REX_LOG(LogEngine, "Commandline Arguments For {}", project);
+        REX_LOG(LogEngine, "------------------------------");
+
+        for (CommandLineArgument cmd : cmds)
+        {
+          REX_LOG(LogEngine, "\"{}\" - {}", cmd.name, cmd.desc);
+        }
+      }
+    }
+
   }
 }

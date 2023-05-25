@@ -370,7 +370,7 @@ public static class Main
 
       foreach (string val in project_vals.Value)
       {
-        sb.AppendLine($"    {elementType}{{ {val} }},");
+        sb.AppendLine($"    {elementType}{{ {val}, \"{project_vals.Key}\" }},");
       }
       sb.AppendLine(" ");
     }
