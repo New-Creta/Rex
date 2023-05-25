@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_directx/directx_util.h"
-#include "rex_engine/types.h"
-#include "rex_std/string_view.h"
+#include "rex_std/string.h"
+
+#include <d3d12.h>
 
 namespace rex
 {

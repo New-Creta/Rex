@@ -1,32 +1,28 @@
 #pragma once
 
 #include "rex_engine/memory/debug_allocator.h"
-#include "rex_engine/memory/memory_header.h"
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/memory/untracked_allocator.h"
 #include "rex_engine/types.h"
+#include "rex_std/array.h"
+#include "rex_std/bonus/defines.h"
 #include "rex_std/mutex.h"
-#include "rex_std/stacktrace.h"
-#include "rex_std/thread.h"
+#include "rex_std/vector.h"
 #include "rex_std_extra/memory/memory_size.h"
 #include "rex_std_extra/utility/enum_reflection.h"
 #include "rex_std_extra/utility/high_water_mark.h"
 
 namespace rex
 {
+  class MemoryHeader;
+
   struct MemoryUsageStats
   {
     using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;
 
     UsagePerTag usage_per_tag;
     rsl::vector<MemoryHeader*, DebugAllocator<UntrackedAllocator>> allocation_headers;
-  };
-
-  enum class AllocOp
-  {
-    Allocation, 
-    Deallocation
   };
 
   class MemoryTracker
@@ -48,28 +44,18 @@ namespace rex
 
     void dump_stats_to_file(rsl::string_view filepath);
 
-    REX_NO_DISCARD MemoryUsageStats current_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    REX_NO_DISCARD MemoryUsageStats current_stats();      // deliberate copy as we don't want to have any race conditions when accessing
     REX_NO_DISCARD MemoryUsageStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
-    REX_NO_DISCARD MemoryUsageStats get_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    REX_NO_DISCARD MemoryUsageStats get_init_stats();     // deliberate copy as we don't want to have any race conditions when accessing
 
   private:
     REX_NO_DISCARD MemoryUsageStats get_stats_for_frame(card32 idx);
-
-  private:
-    enum class Status
-    {
-      Uninit,
-      PreInit,
-      Init,
-      Running
-    };
 
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_usage;                   // maximum allowed memory usage
     MemoryStats m_mem_stats_on_startup;    // stats queried from the OS at init time
     rsl::mutex m_mem_tracking_mutex;
     UsagePerTag m_usage_per_tag;
-    Status m_status;
   };
 
   MemoryTracker& mem_tracker();

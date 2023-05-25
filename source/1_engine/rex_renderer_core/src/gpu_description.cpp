@@ -1,12 +1,10 @@
-#include "rex_renderer_core/gpu.h"
+#include "rex_renderer_core/gpu_description.h"
 
 namespace rex
 {
   //-------------------------------------------------------------------------
-  rsl::ostream& operator<<(rsl::ostream& os, const Gpu& obj)
+  rsl::ostream& operator<<(rsl::ostream& os, const GpuDescription& desc)
   {
-    const Gpu::Description& desc = obj.description();
-
     os << "\n";
     os << "Description: " << desc.name << "\n";
     os << "Vendor Name: " << desc.vendor_name << "\n";
@@ -23,7 +21,7 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  Gpu::Gpu::Description::Description()
+  GpuDescription::GpuDescription()
       : name("")
       , vendor_name("")
       , vendor_id(0)
@@ -32,17 +30,5 @@ namespace rex
       , dedicated_system_memory(0)
       , shared_system_memory(0)
   {
-  }
-
-  //-------------------------------------------------------------------------
-  Gpu::Gpu(const Gpu::Description& desc)
-      : m_description(desc)
-  {
-  }
-
-  //-------------------------------------------------------------------------
-  const Gpu::Description& Gpu::description() const
-  {
-    return m_description;
   }
 } // namespace rex

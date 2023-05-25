@@ -1,20 +1,24 @@
 #include "rex_windows/gui_application.h"
 
+#include "rex_engine/core_window.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/event.h" // IWYU pragma: keep
 #include "rex_engine/event_system.h"
+#include "rex_engine/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
-#include "rex_std/bonus/utility/scopeguard.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
+#include "rex_std/ratio.h"
 #include "rex_std/thread.h"
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
-
-#include <Windows.h>
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -124,7 +128,7 @@ namespace rex
 
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { event_system::fire_event(event_system::Event{ event_system::EventType::QuitApp }); });
+        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { event_system::fire_event(event_system::Event {event_system::EventType::QuitApp}); });
         event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
         event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
         event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });

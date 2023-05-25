@@ -2,7 +2,14 @@
 
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/log.h"
-#include "rex_std/stdlib.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/types.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/string.h"
+#include "rex_std_extra/memory/memory_size.h"
+
+#include <cstdlib>
+#include <wrl/client.h>
 
 namespace
 {
@@ -60,9 +67,9 @@ namespace
 
   //-------------------------------------------------------------------------
   template <typename DXGIAdapterDesc>
-  rex::Gpu::Description convert_description(const DXGIAdapterDesc& dxgiDesc)
+  rex::GpuDescription convert_description(const DXGIAdapterDesc& dxgiDesc)
   {
-    rex::Gpu::Description desc;
+    rex::GpuDescription desc;
 
     desc.name        = to_multibyte(dxgiDesc.Description, g_adapter_description_size);
     desc.vendor_name = vendor_to_string(dxgiDesc.VendorId);
@@ -78,9 +85,9 @@ namespace
   }
 
   //-------------------------------------------------------------------------
-  rex::Gpu::Description get_description(const rex::wrl::com_ptr<IDXGIAdapter>& adapter)
+  rex::GpuDescription get_description(const rex::wrl::com_ptr<IDXGIAdapter>& adapter)
   {
-    rex::Gpu::Description desc;
+    rex::GpuDescription desc;
 
     // MSDN says that you shouldn't use dxgi 1.0 and dxgi 1.1
     // in the same application.
@@ -110,9 +117,15 @@ namespace rex
   {
     //-------------------------------------------------------------------------
     Adapter::Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, uint32 version)
-        : Gpu(::get_description(adapter))
-        , ComObject(rsl::move(adapter), version)
+        : ComObject(rsl::move(adapter), version)
+        , m_description(::get_description(com_ptr()))
     {
+    }
+
+    //-------------------------------------------------------------------------
+    const GpuDescription& Adapter::description() const
+    {
+      return m_description;
     }
   } // namespace dxgi
 } // namespace rex

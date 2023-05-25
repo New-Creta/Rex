@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/types.h"
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {
@@ -9,7 +9,11 @@ namespace rex
   struct ConsoleApplicationCreationParams;
   class CommandLineArguments;
 
-  void pre_app_entry(const char8* cmdLine);
   extern ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs);
-  void post_app_shutdown();
+
+  namespace internal
+  {
+    void pre_app_entry(const char8* cmdLine);
+    void post_app_shutdown();
+  } // namespace internal
 } // namespace rex

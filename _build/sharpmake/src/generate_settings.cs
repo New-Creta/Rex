@@ -32,7 +32,7 @@ public class GenerateSettings
 {
   static public bool EnableVisualStudio = false;
   static public bool NoClangTools = false;
-  static public bool PerformAllChecks = false;
+  static public bool EnableSecondPass = false;
   static public bool DisableClangTidyForThirdParty = false;
   static public string IntermediateDir = "";
 
@@ -47,7 +47,7 @@ public class GenerateSettings
 
   static public string ClangTidyRegex { get; set; }
   static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;
-
+  
   static public Dictionary<string, EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, EnumGenerationSettings>();
 
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();

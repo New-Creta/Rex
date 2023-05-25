@@ -36,7 +36,7 @@ public class SharpmakeProject : CSharpProject
   [Configure()]
   public virtual void Configure(RexConfiguration conf, RexTarget target)
   {
-    conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "build", target.DevEnv.ToString(), Name);
+    conf.ProjectPath = Path.Combine(Globals.BuildFolder, target.DevEnv.ToString(), Name);
     conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
     conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
     conf.Output = Configuration.OutputType.DotNetClassLibrary;
@@ -174,10 +174,10 @@ namespace rex
       GenerateSettings.ClangTidyRegex = clangTidyRegex;
     }
 
-    [Sharpmake.CommandLine.Option("performAllChecks")]
-    public void CommandLinePerformAllChecks(bool performAllChecks)
+    [Sharpmake.CommandLine.Option("enableSecondPass")]
+    public void CommandLinePerformAllChecks()
     {
-      GenerateSettings.PerformAllChecks = performAllChecks;
+      GenerateSettings.EnableSecondPass = true;
     }
 
     [Sharpmake.CommandLine.Option("intermediateDir")]
@@ -193,7 +193,7 @@ namespace rex
     }
 
     [Sharpmake.CommandLine.Option("enableCodeCoverage")]
-    public void CommandLinePerformAllChecks()
+    public void CommandLineEnableCodeCoverage()
     {
       GenerateSettings.CoverageEnabled = true;
     }
