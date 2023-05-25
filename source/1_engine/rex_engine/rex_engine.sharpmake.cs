@@ -22,6 +22,11 @@ public class RexEngine : EngineProject
 
     SourceFilesExcludeFromJumboRegex.Add("new_delete.cpp"); // needs to be excluded to avoid linker issues
 
+    // Only needs to happen on Windows
+    SourceFilesExcludeRegex.Add("unix/*");
+    //// Only needs to happen on Linux
+    //SourceFilesExcludeRegex.Add("win/*");
+
     string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
     GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
 
