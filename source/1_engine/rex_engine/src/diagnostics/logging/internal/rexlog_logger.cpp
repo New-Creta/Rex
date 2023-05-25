@@ -1,7 +1,5 @@
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_engine/diagnostics/logging/internal/details/backtracer.h"
 #include "rex_engine/diagnostics/logging/internal/rexlog_logger.h"
-#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/types.h"
@@ -13,260 +11,248 @@
 
 namespace rexlog
 {
-
-  // public methods
-  Logger::Logger(const Logger& other)
-      : m_name(other.m_name)
-      , m_sinks(other.m_sinks)
-      , m_level(other.m_level.load(rsl::memory_order_relaxed))
-      , m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed))
-      , m_custom_err_handler(other.m_custom_err_handler)
-      , m_tracer(other.m_tracer)
-  {
-  }
-
-  Logger::Logger(Logger&& other) REXLOG_NOEXCEPT : m_name(rsl::move(other.m_name)),
-                                                                 m_sinks(rsl::move(other.m_sinks)),
-                                                                 m_level(other.m_level.load(rsl::memory_order_relaxed)),
-                                                                 m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed)),
-                                                                 m_custom_err_handler(rsl::move(other.m_custom_err_handler)),
-                                                                 m_tracer(rsl::move(other.m_tracer))
-  {
-  }
-
-  Logger& Logger::operator=(const Logger& other) REXLOG_NOEXCEPT
-  {
-    Logger tmp(other);
-    this->swap(tmp);
-    return *this;
-  }
-
-  Logger& Logger::operator=(Logger&& other) REXLOG_NOEXCEPT
-  {
-    this->swap(other);
-    return *this;
-  }
-
-  void Logger::swap(rexlog::Logger& other) REXLOG_NOEXCEPT
-  {
-    m_name.swap(other.m_name);
-    m_sinks.swap(other.m_sinks);
-
-    // swap level_
-    auto other_level = other.m_level.load();
-    auto my_level    = m_level.exchange(other_level);
-    other.m_level.store(my_level);
-
-    // swap flush level_
-    other_level = other.m_flush_level.load();
-    my_level    = m_flush_level.exchange(other_level);
-    other.m_flush_level.store(my_level);
-
-    m_custom_err_handler.swap(other.m_custom_err_handler);
-    rsl::swap(m_tracer, other.m_tracer);
-  }
-
-  void swap(Logger& a, Logger& b)
-  {
-    a.swap(b);
-  }
-
-  void Logger::set_level(level::LevelEnum logLevel)
-  {
-    m_level.store(logLevel);
-  }
-
-  level::LevelEnum Logger::level() const
-  {
-    return static_cast<level::LevelEnum>(m_level.load(rsl::memory_order_relaxed));
-  }
-
-  const rex::DebugString& Logger::name() const
-  {
-    return m_name;
-  }
-
-  // set formatting for the sinks in this Logger.
-  // each sink will get a separate instance of the formatter object.
-  void Logger::set_formatter(rsl::unique_ptr<formatter> f)
-  {
-    for(auto it = m_sinks.begin(); it != m_sinks.end(); ++it)
+    //-------------------------------------------------------------------------
+    Logger::Logger(rex::DebugString name)
+        : m_name(rsl::move(name))
+        , m_sinks()
     {
-      auto& sink = *it;
-      if(++it == m_sinks.end())
-      {
-        // last element - we can be move it.
-        sink->set_formatter(rsl::move(f));
-        break; // to prevent clang-tidy warning
-      }
-      else
-      {
-        (*it)->set_formatter(f->clone());
-      }
     }
-  }
 
-  void Logger::set_pattern(rex::DebugString pattern, PatternTimeType timeType)
-  {
-    auto new_formatter = details::make_unique<PatternFormatter>(rsl::move(pattern), timeType);
-    set_formatter(rsl::move(new_formatter));
-  }
-
-  // create new backtrace sink and move to it all our child sinks
-  void Logger::enable_backtrace(size_t nMessages)
-  {
-    m_tracer.enable(nMessages);
-  }
-
-  // restore orig sinks and level and delete the backtrace sink
-  void Logger::disable_backtrace()
-  {
-    m_tracer.disable();
-  }
-
-  void Logger::dump_backtrace()
-  {
-    dump_backtrace_impl();
-  }
-
-  // flush functions
-  void Logger::flush()
-  {
-    flush_impl();
-  }
-
-  void Logger::flush_on(level::LevelEnum logLevel)
-  {
-    m_flush_level.store(logLevel);
-  }
-
-  level::LevelEnum Logger::flush_level() const
-  {
-    return static_cast<level::LevelEnum>(m_flush_level.load(rsl::memory_order_relaxed));
-  }
-
-  // sinks
-  const rex::DebugVector<sink_ptr>& Logger::sinks() const
-  {
-    return m_sinks;
-  }
-
-  rex::DebugVector<sink_ptr>& Logger::sinks()
-  {
-    return m_sinks;
-  }
-
-  // error handler
-  void Logger::set_error_handler(err_handler handler)
-  {
-    m_custom_err_handler = rsl::move(handler);
-  }
-
-  // create new Logger with same sinks and configuration.
-  rsl::shared_ptr<Logger> Logger::clone(rex::DebugString loggerName)
-  {
-    auto cloned    = rsl::allocate_shared<Logger>(rex::global_debug_allocator(), *this);
-    cloned->m_name = rsl::move(loggerName);
-    return cloned;
-  }
-
-  // protected methods
-  void Logger::log_it_impl(const rexlog::details::LogMsg& logMsg, bool logEnabled, bool tracebackEnabled)
-  {
-    if(logEnabled)
+    //-------------------------------------------------------------------------
+    Logger::Logger(rex::DebugString name, sink_ptr singleSink)
+        : Logger(rsl::move(name), { rsl::move(singleSink) })
     {
-      sink_it_impl(logMsg);
     }
-    if(tracebackEnabled)
-    {
-      m_tracer.push_back(logMsg);
-    }
-  }
 
-  void Logger::sink_it_impl(const details::LogMsg& msg)
-  {
-    for(auto& sink: m_sinks)
+    //-------------------------------------------------------------------------
+    Logger::Logger(rex::DebugString name, sinks_init_list sinks)
+        : Logger(rsl::move(name), sinks.begin(), sinks.end())
     {
-      if(sink->should_log(msg.level))
-      {
-        REXLOG_TRY
+    }
+
+    //-------------------------------------------------------------------------
+    Logger::Logger(const Logger& other)
+        : m_name(other.m_name)
+        , m_sinks(other.m_sinks)
+        , m_level(other.m_level.load(rsl::memory_order_relaxed))
+        , m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed))
+    {
+    }
+
+    //-------------------------------------------------------------------------
+    Logger::Logger(Logger&& other) noexcept 
+        : m_name(rsl::move(other.m_name))
+        , m_sinks(rsl::move(other.m_sinks))
+        , m_level(other.m_level.load(rsl::memory_order_relaxed))
+        , m_flush_level(other.m_flush_level.load(rsl::memory_order_relaxed))
+    {
+    }
+
+    //-------------------------------------------------------------------------
+    Logger& Logger::operator=(const Logger& other) noexcept
+    {
+        Logger tmp(other);
+        this->swap(tmp);
+        return *this;
+    }
+
+    //-------------------------------------------------------------------------
+    Logger& Logger::operator=(Logger&& other) noexcept
+    {
+        this->swap(other);
+        return *this;
+    }
+
+    //-------------------------------------------------------------------------
+    bool Logger::should_log(level::LevelEnum msgLevel) const
+    {
+        return (int32)msgLevel >= m_level.load(rsl::memory_order_relaxed);
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::log(log_clock::time_point logTime, SourceLoc loc, level::LevelEnum lvl, string_view_t msg)
+    {
+        const bool log_enabled = should_log(lvl);
+        if (!log_enabled)
         {
-          sink->log(msg);
+            return;
         }
-        REXLOG_LOGGER_CATCH(msg.source)
-      }
+
+        details::LogMsg const log_msg(logTime, loc, m_name, lvl, msg);
+        log_it_impl(log_msg, log_enabled);
     }
 
-    if(should_flush_impl(msg))
+    //-------------------------------------------------------------------------
+    void Logger::log(SourceLoc loc, level::LevelEnum lvl, string_view_t msg)
     {
-      flush_impl();
-    }
-  }
+        const bool log_enabled = should_log(lvl);
+        if (!log_enabled)
+        {
+            return;
+        }
 
-  void Logger::flush_impl()
-  {
-    for(auto& sink: m_sinks)
+        details::LogMsg const log_msg(loc, m_name, lvl, msg);
+        log_it_impl(log_msg, log_enabled);
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::log(level::LevelEnum lvl, string_view_t msg)
     {
-      REXLOG_TRY
-      {
-        sink->flush();
-      }
-      REXLOG_LOGGER_CATCH(source_loc())
+        log(SourceLoc{}, lvl, msg);
     }
-  }
 
-  void Logger::dump_backtrace_impl()
-  {
-    using details::LogMsg;
-    if(m_tracer.enabled() && !m_tracer.empty())
+    //-------------------------------------------------------------------------
+    void Logger::set_level(level::LevelEnum logLevel)
     {
-      sink_it_impl(LogMsg {name(), level::Info, "****************** Backtrace Start ******************"});
-      m_tracer.foreach_pop([this](const LogMsg& msg) { this->sink_it_impl(msg); });
-      sink_it_impl(LogMsg {name(), level::Info, "****************** Backtrace End ********************"});
+        m_level.store((int32)logLevel);
     }
-  }
 
-  bool Logger::should_flush_impl(const details::LogMsg& msg)
-  {
-    auto flush_level = m_flush_level.load(rsl::memory_order_relaxed);
-    return (msg.level >= flush_level) && (msg.level != level::Off);
-  }
-
-  void Logger::err_handler_impl(const rex::DebugString& msg)
-  {
-    if(m_custom_err_handler)
+    //-------------------------------------------------------------------------
+    void Logger::set_formatter(PatternFormatter f)
     {
-      m_custom_err_handler(msg);
+        for (auto it = m_sinks.begin(); it != m_sinks.end(); ++it)
+        {
+            auto& sink = *it;
+            if (++it == m_sinks.end())
+            {
+                // last element - we can be move it.
+                sink->set_formatter(rsl::move(f));
+                break; // to prevent clang-tidy warning
+            }
+            else
+            {
+                (*it)->set_formatter(f.clone());
+            }
+        }
     }
-    else
-    {
-      using rsl::chrono::system_clock;
-      static rsl::mutex mutex;
-      static rsl::chrono::system_clock::time_point last_report_time;
-      static size_t err_counter = 0;
-      const rsl::unique_lock<rsl::mutex> lk {mutex};
-      auto now = system_clock::now();
-      err_counter++;
-      if(now - last_report_time < rsl::chrono::seconds(1))
-      {
-        return;
-      }
-      last_report_time = now;
-      auto tm_time     = details::os::localtime(system_clock::to_time_t(now));
-      rsl::array<char, 64> date_buf; // NOLINT(misc-const-correctness)
-      REX_ASSERT_X(strftime(date_buf.data(), date_buf.size(), "%Y-%m-%d %H:%M:%S", &tm_time) != 0, "failed to formate date");
-#if defined(USING_R) && defined(R_R_H) // if in R environment
-      REprintf("[*** LOG ERROR #%04zu ***] [%s] [%s] {%s}\n", err_counter, date_buf, name().c_str(), msg.c_str());
-#else
-      REX_ASSERT_X(fprintf(stderr, "[*** LOG ERROR #%04zu ***] [%s] [%s] {%s}\n", err_counter, date_buf.data(), name().c_str(), msg.c_str()) != 0, "failed to format string");
-#endif
-    }
-  }
 
-  void Logger::set_name(rex::DebugString&& name)
-  {
-    m_name = rsl::move(name);
-  }
+    //-------------------------------------------------------------------------
+    void Logger::set_pattern(const rsl::small_stack_string& pattern, PatternTimeType timeType)
+    {
+        auto new_formatter = PatternFormatter(rsl::move(pattern), timeType);
+        set_formatter(rsl::move(new_formatter));
+    }
+
+    //-------------------------------------------------------------------------
+    const rex::DebugString& Logger::name() const
+    {
+        return m_name;
+    }
+
+    //-------------------------------------------------------------------------
+    level::LevelEnum Logger::level() const
+    {
+        return static_cast<level::LevelEnum>(m_level.load(rsl::memory_order_relaxed));
+    }
+
+    //-------------------------------------------------------------------------
+    level::LevelEnum Logger::flush_level() const
+    {
+        return static_cast<level::LevelEnum>(m_flush_level.load(rsl::memory_order_relaxed));
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::flush()
+    {
+        flush_it_impl();
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::flush_on(level::LevelEnum logLevel)
+    {
+        m_flush_level.store((int32)logLevel);
+    }
+
+    //-------------------------------------------------------------------------
+    const Sinks& Logger::sinks() const
+    {
+        return m_sinks;
+    }
+
+    //-------------------------------------------------------------------------
+    Sinks& Logger::sinks()
+    {
+        return m_sinks;
+    }
+
+    //-------------------------------------------------------------------------
+    rsl::shared_ptr<Logger> Logger::clone(rex::DebugString loggerName)
+    {
+        auto cloned = rsl::allocate_shared<Logger>(rex::global_debug_allocator(), *this);
+        cloned->m_name = rsl::move(loggerName);
+        return cloned;
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::swap(rexlog::Logger& other) noexcept
+    {
+        m_name.swap(other.m_name);
+        m_sinks.swap(other.m_sinks);
+
+        // swap level_
+        auto other_level = other.m_level.load();
+        auto my_level = m_level.exchange(other_level);
+        other.m_level.store(my_level);
+
+        // swap flush level_
+        other_level = other.m_flush_level.load();
+        my_level = m_flush_level.exchange(other_level);
+        other.m_flush_level.store(my_level);
+    }
+
+    //-------------------------------------------------------------------------
+    bool Logger::should_flush_impl(const details::LogMsg& msg)
+    {
+        auto flush_level = m_flush_level.load(rsl::memory_order_relaxed);
+        return ((int32)msg.level >= flush_level) && (msg.level != level::LevelEnum::Off);
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::log_it_impl(const rexlog::details::LogMsg& logMsg, bool logEnabled)
+    {
+        if (logEnabled)
+        {
+            sink_it_impl(logMsg);
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::sink_it_impl(const details::LogMsg& msg)
+    {
+        for (auto& sink : m_sinks)
+        {
+            if (sink->should_log(msg.level))
+            {
+                sink->log(msg);
+            }
+        }
+
+        if (should_flush_impl(msg))
+        {
+            flush_it_impl();
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::flush_it_impl()
+    {
+        for (auto& sink : m_sinks)
+        {
+            sink->flush();
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    void Logger::set_name(rex::DebugString&& name)
+    {
+        m_name = rsl::move(name);
+    }
+
+    //-------------------------------------------------------------------------
+    void swap(Logger& a, Logger& b)
+    {
+        a.swap(b);
+    }
 } // namespace rexlog
 
 // NOLINTEND(misc-definitions-in-headers)
