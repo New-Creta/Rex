@@ -3,6 +3,9 @@
 #include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
+#include "rex_engine/diagnostics/logging/internal/rexlog.h"
+#include "rex_engine/diagnostics/logging/internal/async.h"
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/memory/untracked_allocator.h"
@@ -57,7 +60,7 @@ namespace rex
 
     // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
 
-    rexlog::Logger* logger = find_logger(category.get_category_name());
+    auto logger = rexlog::get(rex::DebugString(category.get_category_name()));
     if(logger != nullptr)
       return *logger;
 
@@ -66,7 +69,7 @@ namespace rex
     // rsl::filesystem::path filename(category.get_category_name().data());
     // rsl::filesystem::path full_path = working_dir / log_dir / filename;
 
-    rex::DebugVector<rexlog::sink_ptr> sinks;
+    rex::DebugVector<rsl::shared_ptr<rexlog::sinks::AbstractSink>> sinks;
 
 #if REX_DEBUG
     // Only push rexout color sink when we are in debug mode
@@ -74,7 +77,16 @@ namespace rex
 #endif
     // sinks.push_back(rsl::make_shared<rexlog::sinks::basic_file_sink_mt>(full_path.string(), true));
 
-    rsl::shared_ptr<rexlog::Logger> new_logger = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), rex::DebugString(category.get_category_name()), rsl::begin(sinks), rsl::end(sinks));
+    rsl::shared_ptr<rexlog::Logger> new_logger = nullptr;
+
+    if (category.is_async())
+    {
+        new_logger = rexlog::create_async<rexlog::sinks::dist_sink_mt>(rex::DebugString(category.get_category_name()), sinks);
+    }
+    else
+    {
+        new_logger = rexlog::create<rexlog::sinks::dist_sink_st>(rex::DebugString(category.get_category_name()), sinks);
+    }
 
     new_logger->set_pattern(rsl::small_stack_string(default_pattern));
     new_logger->set_level(log_levels.at(category.get_verbosity()));

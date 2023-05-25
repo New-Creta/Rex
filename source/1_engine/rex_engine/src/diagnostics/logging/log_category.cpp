@@ -3,17 +3,23 @@
 namespace rex
 {
   //-------------------------------------------------------------------------
-  LogCategory::LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity)
+  LogCategory::LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync async)
       : m_verbosity(inDefaultVerbosity & LogVerbosity::VerbosityMask)
       , m_category_name(inCategoryName)
+      , m_is_async(async)
   {
-    // LOG CATEGORY? (CategoryName, InDefaultVerbosity);
   }
 
   //-------------------------------------------------------------------------
   bool LogCategory::is_suppressed(LogVerbosity level) const
   {
     return (level & LogVerbosity::VerbosityMask) > m_verbosity;
+  }
+
+  //-------------------------------------------------------------------------
+  bool LogCategory::is_async() const
+  {
+      return m_is_async == IsAsync::yes;
   }
 
   //-------------------------------------------------------------------------
