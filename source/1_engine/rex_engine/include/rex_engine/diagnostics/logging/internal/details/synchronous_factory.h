@@ -6,7 +6,6 @@
 
 namespace rexlog
 {
-
     // Default Logger factory-  creates synchronous loggers
     class Logger;
 
