@@ -7,16 +7,17 @@
 #include "rex_std/array.h"
 namespace rex
 {
-  inline rsl::array g_command_line_args = {
-      // cmdline::CommandLineArgument values for Regina
-      // generated from D:\Engines\Rex\config\4_tools\regina\generation.json
-      cmdline::CommandLineArgument {"AutoTest", "Specify the autotest to run", "Regina"},
-
-      // cmdline::CommandLineArgument values for RexEngine
-      // generated from D:\Engines\Rex\config\1_engine\rex_engine\generation.json
-      cmdline::CommandLineArgument {"Root", "The directory to initialize the vfs with. this is similar as setting the working root directory", "RexEngine"},
-      cmdline::CommandLineArgument {"Help", "This will list all command line arguments for the executable", "RexEngine"},
-
+  inline rsl::array g_command_line_args = 
+  {
+    // cmdline::CommandLineArgument values for Regina
+    // generated from D:\Engines\Rex\config\4_tools\regina\generation.json
+    cmdline::CommandLineArgument{ "AutoTest", "Specify the autotest to run", "Regina" },
+ 
+    // cmdline::CommandLineArgument values for RexEngine
+    // generated from D:\Engines\Rex\config\1_engine\rex_engine\generation.json
+    cmdline::CommandLineArgument{ "Root", "The directory to initialize the vfs with. this is similar as setting the working root directory", "RexEngine" },
+    cmdline::CommandLineArgument{ "Help", "This will list all command line arguments for the executable", "RexEngine" },
+ 
   };
 } // namespace rex
 // NOLINTEND

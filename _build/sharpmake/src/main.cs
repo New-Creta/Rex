@@ -68,7 +68,8 @@ public class SharpmakeProject : CSharpProject
     {
       if (file.EndsWith(".sharpmake.cs"))
       {
-        sharpmake_sources.Add($"{quote}{file}{quote}");
+        string fileWithSlashes = file.Replace('\\', '/');
+        sharpmake_sources.Add($"{quote}{fileWithSlashes}{quote}");
       }
     }
 
