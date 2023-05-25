@@ -37,7 +37,7 @@ namespace rexlog
 
         protected:
             void sink_it_impl(const details::LogMsg& msg) override;
-            void flush_impl() override;
+            void flush_it_impl() override;
             void set_pattern_impl(const rex::DebugString& pattern) override;
             void set_formatter_impl(PatternFormatter sink_formatter) override;
 
@@ -91,7 +91,7 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void dist_sink<Mutex>::flush_impl()
+        void dist_sink<Mutex>::flush_it_impl()
         {
             for (auto& sub_sink : sinks_)
             {
@@ -102,7 +102,7 @@ namespace rexlog
         template <typename Mutex>
         void dist_sink<Mutex>::set_pattern_impl(const rex::DebugString& pattern)
         {
-            set_formatter_impl(details::make_unique<rexlog::pattern_formatter>(pattern));
+            set_formatter_impl(PatternFormatter(pattern));
         }
 
         template <typename Mutex>

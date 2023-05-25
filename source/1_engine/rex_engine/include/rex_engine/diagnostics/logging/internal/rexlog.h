@@ -3,6 +3,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/async.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/rexlog_logger.h"
@@ -11,7 +12,7 @@
 
 namespace rexlog
 {
-    using default_factory = SynchronousFactory;
+    using sync_factory = SynchronousFactory;
 
     // Create and register a Logger with a templated sink type
     // The Logger's level, formatter and flush level will be set according the
@@ -22,7 +23,22 @@ namespace rexlog
     template <typename Sink, typename... SinkArgs>
     rsl::shared_ptr<rexlog::Logger> create(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
     {
-        return default_factory::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+        return sync_factory::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+    }
+
+    using async_factory = AsyncFactoryImpl<AsyncOverflowPolicy::Block>;
+    using async_factory_nonblock = AsyncFactoryImpl<AsyncOverflowPolicy::OverrunOldest>;
+
+    template <typename Sink, typename... SinkArgs>
+    rsl::shared_ptr<rexlog::Logger> create_async(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
+    {
+        return async_factory::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+    }
+
+    template <typename Sink, typename... SinkArgs>
+    rsl::shared_ptr<rexlog::Logger> create_async_nb(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
+    {
+        return async_factory_nonblock::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
     }
 
     // Initialize and register a Logger,
@@ -41,7 +57,7 @@ namespace rexlog
     // Return an existing Logger or nullptr if a Logger with such name doesn't
     // exist.
     // example: rexlog::get("my_logger")->info("hello {}", "world");
-    rsl::shared_ptr<Logger> get(rsl::string_view name);
+    rsl::shared_ptr<Logger> get(const rex::DebugString& name);
 
     // Set global formatter. Each sink in each Logger will get a clone of this object
     void set_formatter(PatternFormatter&& formatter);

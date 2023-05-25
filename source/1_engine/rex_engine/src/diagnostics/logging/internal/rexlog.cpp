@@ -25,7 +25,7 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    rsl::shared_ptr<Logger> get(rsl::string_view name)
+    rsl::shared_ptr<Logger> get(const rex::DebugString& name)
     {
         return details::Registry::instance().get(name);
     }

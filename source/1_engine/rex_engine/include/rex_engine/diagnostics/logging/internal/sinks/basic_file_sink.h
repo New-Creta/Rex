@@ -27,7 +27,7 @@ namespace rexlog
 
     protected:
       void sink_it_impl(const details::LogMsg& msg) override;
-      void flush_impl() override;
+      void flush_it_impl() override;
 
     private:
       details::FileHelper m_file_helper;
@@ -55,7 +55,7 @@ namespace rexlog
     }
 
     template <typename Mutex>
-    void BasicFileSink<Mutex>::flush_impl()
+    void BasicFileSink<Mutex>::flush_it_impl()
     {
         m_file_helper.flush();
     }

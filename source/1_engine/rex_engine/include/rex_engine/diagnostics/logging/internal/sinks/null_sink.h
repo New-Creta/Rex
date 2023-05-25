@@ -17,7 +17,7 @@ namespace rexlog
     {
     protected:
       void sink_it_impl(const details::LogMsg&) override {}
-      void flush_impl() override {}
+      void flush_it_impl() override {}
     };
 
     using null_sink_mt = null_sink<details::NullMutex>;

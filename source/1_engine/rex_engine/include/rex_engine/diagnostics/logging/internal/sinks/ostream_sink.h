@@ -23,7 +23,7 @@ namespace rexlog
 
         protected:
             void sink_it_impl(const details::LogMsg& msg) override;
-            void flush_impl() override;
+            void flush_it_impl() override;
 
         private:
             rsl::ostream& ostream_;
@@ -50,7 +50,7 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void ostream_sink<Mutex>::flush_impl()
+        void ostream_sink<Mutex>::flush_it_impl()
         {
             ostream_.flush();
         }

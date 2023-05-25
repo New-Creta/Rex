@@ -38,7 +38,7 @@ namespace rexlog
         OutputDebugStringA(formatted.data());
       }
 
-      void flush_impl() override {}
+      void flush_it_impl() override {}
 
       bool check_debugger_present_ = true;
     };
