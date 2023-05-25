@@ -17,5 +17,5 @@ namespace rex
 
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg);
     void print_args();
-  }
-}
+  } // namespace cmdline
+} // namespace rex

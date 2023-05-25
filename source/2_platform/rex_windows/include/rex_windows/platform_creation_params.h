@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/cmd_line_args.h"
+#include "rex_engine/engine_params.h"
 #include "rex_engine/string/stringid.h"
 #include "rex_windows/win_types.h"
 
@@ -29,7 +30,7 @@ namespace rex
   struct ApplicationCreationParams
   {
   public:
-    ApplicationCreationParams(PlatformCreationParams&& platformParams)
+    explicit ApplicationCreationParams(PlatformCreationParams&& platformParams)
         : engine_params()
         , platform_params(rsl::move(platformParams))
         , gui_params()

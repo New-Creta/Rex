@@ -16,15 +16,14 @@
 #include <shellapi.h>
 
 //-------------------------------------------------------------------------
-INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
+INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR /*lpCmdLine*/, int nShowCmd)
 {
-  rex::CommandLineArguments cmd_args(GetCommandLineA());
   rex::PlatformCreationParams creation_params {};
   creation_params.instance      = hInstance;
   creation_params.prev_instance = hPrevInstance;
   creation_params.show_cmd      = nShowCmd;
 
-  rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
+  rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params));
 
   s32 result = 0;
   if(app_params.create_window)
