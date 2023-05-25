@@ -24,7 +24,7 @@ namespace rexlog
         {
         public:
             BaseSink();
-            explicit BaseSink(rsl::unique_ptr<rexlog::formatter> formatter);
+            explicit BaseSink(PatternFormatter formatter);
             ~BaseSink() override = default;
 
             BaseSink(const BaseSink&) = delete;
@@ -35,21 +35,21 @@ namespace rexlog
 
             void log(const details::LogMsg& msg) final;
             void flush() final;
-            void set_pattern(const rex::DebugString& pattern) final;
-            void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) final;
+            void set_pattern(const rsl::small_stack_string& pattern) final;
+            void set_formatter(PatternFormatter sinkFormatter) final;
 
         protected:
             virtual void sink_it_impl(const details::LogMsg& msg) = 0;
             virtual void flush_impl() = 0;
             virtual void set_pattern_impl(const rex::DebugString& pattern);
-            virtual void set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sinkFormatter);
+            virtual void set_formatter_impl(PatternFormatter sinkFormatter);
 
-            rexlog::formatter* formatter();
+            const PatternFormatter& formatter();
             Mutex& mutex();
 
         private:
             // sink formatter
-            rsl::unique_ptr<rexlog::formatter> m_formatter;
+            PatternFormatter m_formatter;
             Mutex m_mutex;
         };
 
@@ -60,7 +60,7 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        rexlog::sinks::BaseSink<Mutex>::BaseSink(rsl::unique_ptr<rexlog::formatter> formatter)
+        rexlog::sinks::BaseSink<Mutex>::BaseSink(PatternFormatter formatter)
             : m_formatter{ rsl::move(formatter) }
         {
         }
@@ -80,14 +80,14 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void  rexlog::sinks::BaseSink<Mutex>::set_pattern(const rex::DebugString& pattern)
+        void  rexlog::sinks::BaseSink<Mutex>::set_pattern(const rsl::small_stack_string& pattern)
         {
             const rsl::unique_lock<Mutex> lock(m_mutex);
             set_pattern_impl(pattern);
         }
 
         template <typename Mutex>
-        void  rexlog::sinks::BaseSink<Mutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
+        void  rexlog::sinks::BaseSink<Mutex>::set_formatter(PatternFormatter sinkFormatter)
         {
             const rsl::unique_lock<Mutex> lock(m_mutex);
             set_formatter_impl(rsl::move(sinkFormatter));
@@ -100,15 +100,15 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void  rexlog::sinks::BaseSink<Mutex>::set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
+        void  rexlog::sinks::BaseSink<Mutex>::set_formatter_impl(PatternFormatter sinkFormatter)
         {
             m_formatter = rsl::move(sinkFormatter);
         }
 
         template <typename Mutex>
-        rexlog::formatter* rexlog::sinks::BaseSink<Mutex>::formatter()
+        const PatternFormatter& rexlog::sinks::BaseSink<Mutex>::formatter()
         {
-            return m_formatter.get();
+            return m_formatter;
         }
 
         template <typename Mutex>

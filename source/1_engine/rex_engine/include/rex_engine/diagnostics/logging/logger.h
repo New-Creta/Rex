@@ -7,7 +7,6 @@
 
 namespace rex
 {
-
   rexlog::Logger& get_logger(const LogCategory& category);
 
   template <typename T>

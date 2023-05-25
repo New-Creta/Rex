@@ -18,7 +18,7 @@ namespace rexlog
     {
       if(threadsN == 0 || threadsN > 1000)
       {
-        throw_rexlog_ex(rex::DebugString("rexlog::ThreadPool(): invalid threads_n param (valid range is 1-1000)", rex::global_debug_allocator()));
+        printf("rexlog::ThreadPool(): invalid threads_n param (valid range is 1-1000)");
       }
       for(size_t i = 0; i < threadsN; i++)
       {
@@ -46,8 +46,6 @@ namespace rexlog
     // message all threads to terminate gracefully join them
      ThreadPool::~ThreadPool()
     {
-      REXLOG_TRY
-      {
         for(count_t i = 0; i < m_threads.size(); i++)
         {
           post_async_msg_impl(AsyncMsg(AsyncMsgType::Terminate), AsyncOverflowPolicy::Block);
@@ -57,8 +55,6 @@ namespace rexlog
         {
           t.join();
         }
-      }
-      REXLOG_CATCH_STD
     }
 
     void  ThreadPool::post_log(async_logger_ptr&& workerPtr, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy)

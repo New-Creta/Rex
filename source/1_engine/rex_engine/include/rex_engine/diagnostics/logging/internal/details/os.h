@@ -13,15 +13,15 @@ namespace rexlog
     namespace os
     {
 
-       rexlog::log_clock::time_point now() REXLOG_NOEXCEPT;
+       rexlog::log_clock::time_point now() noexcept;
 
-       tm localtime(const time_t& timeTt) REXLOG_NOEXCEPT;
+       tm localtime(const time_t& timeTt) noexcept;
 
-       tm localtime() REXLOG_NOEXCEPT;
+       tm localtime() noexcept;
 
-       tm gmtime(const time_t& timeTt) REXLOG_NOEXCEPT;
+       tm gmtime(const time_t& timeTt) noexcept;
 
-       tm gmtime() REXLOG_NOEXCEPT;
+       tm gmtime() noexcept;
 
 // eol definition
 #if !defined(REXLOG_EOL)
@@ -32,7 +32,7 @@ namespace rexlog
   #endif
 #endif
 
-      REXLOG_CONSTEXPR static const char* default_eol = REXLOG_EOL;
+      constexpr static const char* default_eol = REXLOG_EOL;
 
 // folder separator
 #if !defined(REXLOG_FOLDER_SEPS)
@@ -43,23 +43,23 @@ namespace rexlog
   #endif
 #endif
 
-      REXLOG_CONSTEXPR static const rsl::string_view folder_seps          = REXLOG_FOLDER_SEPS;
-      REXLOG_CONSTEXPR static const rsl::string_view folder_seps_filename = REXLOG_FILENAME_T(REXLOG_FOLDER_SEPS);
+      constexpr static const rsl::string_view folder_seps          = REXLOG_FOLDER_SEPS;
+      constexpr static const rsl::string_view folder_seps_filename = REXLOG_FILENAME_T(REXLOG_FOLDER_SEPS);
 
       // fopen_s on non windows for writing
        bool fopen_s(FILE** fp, const filename_t& filename, const filename_t& mode);
 
       // Remove filename. return 0 on success
-       int remove(const filename_t& filename) REXLOG_NOEXCEPT;
+       int remove(const filename_t& filename) noexcept;
 
       // Remove file if exists. return 0 on success
       // Note: Non atomic (might return failure to delete if concurrently deleted by other process/thread)
-       int remove_if_exists(const filename_t& filename) REXLOG_NOEXCEPT;
+       int remove_if_exists(const filename_t& filename) noexcept;
 
-       int rename(const filename_t& filename1, const filename_t& filename2) REXLOG_NOEXCEPT;
+       int rename(const filename_t& filename1, const filename_t& filename2) noexcept;
 
       // Return if file exists.
-       bool path_exists(const filename_t& filename) REXLOG_NOEXCEPT;
+       bool path_exists(const filename_t& filename) noexcept;
 
       // Return file size according to open FILE* object
        size_t filesize(FILE* f);
@@ -70,26 +70,26 @@ namespace rexlog
       // Return current thread id as size_t
       // It exists because the rsl::this_thread::get_id() is much slower(especially
       // under VS 2013)
-       size_t thread_id() REXLOG_NOEXCEPT;
+       size_t thread_id() noexcept;
 
       // Return current thread id as size_t (from thread local storage)
       
 
       // This is avoid msvc issue in sleep_for that happens if the clock changes.
       // See https://github.com/gabime/rexlog/issues/609
-       void sleep_for_millis(unsigned int milliseconds) REXLOG_NOEXCEPT;
+       void sleep_for_millis(unsigned int milliseconds) noexcept;
 
        rex::DebugString filename_to_str(const filename_t& filename);
 
-       int pid() REXLOG_NOEXCEPT;
+       int pid() noexcept;
 
       // Determine if the terminal supports colors
       // Source: https://github.com/agauniyal/rang/
-       bool is_color_terminal() REXLOG_NOEXCEPT;
+       bool is_color_terminal() noexcept;
 
       // Determine if the terminal attached
       // Source: https://github.com/agauniyal/rang/
-       bool in_terminal(FILE* file) REXLOG_NOEXCEPT;
+       bool in_terminal(FILE* file) noexcept;
 
       // Return directory name from given path or empty string
       // "abc/file" => "abc"

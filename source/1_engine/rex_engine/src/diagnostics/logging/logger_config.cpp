@@ -28,7 +28,6 @@ namespace rex
   {
     namespace helpers
     {
-
       // inplace convert to lowercase
       inline rex::DebugString& to_lower_impl(rex::DebugString& str)
       {
@@ -97,16 +96,16 @@ namespace rex
 
         auto key_vals = extract_key_vals_impl(input);
         rex::DebugHashTable<rex::DebugString, rexlog::level::LevelEnum> levels;
-        rexlog::level::LevelEnum global_level = rexlog::level::Info;
+        rexlog::level::LevelEnum global_level = rexlog::level::LevelEnum::Info;
         bool global_level_found       = false;
 
         for(auto& name_level: key_vals)
         {
           const auto& logger_name = name_level.key;
-          auto level_name         = rex::DebugString(to_lower_impl(name_level.value));
+          auto level_name         = to_lower_impl(name_level.value);
           auto level              = rexlog::level::from_str(level_name);
           // ignore unrecognized level names
-          if(level == rexlog::level::Off && level_name != "off")
+          if(level == rexlog::level::LevelEnum::Off && level_name != "off")
           {
             continue;
           }
@@ -129,7 +128,7 @@ namespace rex
     // search for REXLOG_LEVEL= in the args and use it to init the levels
     void load_log_levels(const rsl::vector<rsl::string_view>& args)
     {
-      const rex::DebugString rexlog_level_prefix("REXLOG_LEVEL=");
+      const rsl::string_view rexlog_level_prefix("REXLOG_LEVEL=");
 
       for(rsl::string_view s : args)
       {

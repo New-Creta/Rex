@@ -38,7 +38,7 @@ namespace rexlog
 
       // move cannot be default,
       // since we need to reset m_head, m_tail, etc to zero in the moved object
-      CircularQ(CircularQ&& other) REXLOG_NOEXCEPT
+      CircularQ(CircularQ&& other) noexcept
       {
         copy_moveable(rsl::move(other));
       }
@@ -46,7 +46,7 @@ namespace rexlog
       ~CircularQ() = default;
 
       CircularQ& operator=(const CircularQ&) = default;
-      CircularQ& operator=(CircularQ&& other) REXLOG_NOEXCEPT
+      CircularQ& operator=(CircularQ&& other) noexcept
       {
         copy_moveable(rsl::move(other));
         return *this;
@@ -135,7 +135,7 @@ namespace rexlog
 
     private:
       // copy from other&& and reset it to disabled state
-      void copy_moveable(CircularQ&& other) REXLOG_NOEXCEPT
+      void copy_moveable(CircularQ&& other) noexcept
       {
         m_max_items       = other.m_max_items;
         m_head            = other.m_head;

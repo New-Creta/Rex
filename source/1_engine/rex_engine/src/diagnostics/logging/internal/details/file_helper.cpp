@@ -66,14 +66,15 @@ namespace rexlog
       err += "Failed opening file ";
       err += os::filename_to_str(m_filename);
       err += " for writing";
-      throw_rexlog_ex(err, errno);
+      err += " %d";
+      printf(err.data(), errno);
     }
 
      void FileHelper::reopen(bool truncate)
     {
       if(m_filename.empty())
       {
-        throw_rexlog_ex(rex::DebugString("Failed re opening file - was not opened before", rex::global_debug_allocator()));
+        printf("Failed re opening file - was not opened before");
       }
       this->open(m_filename, truncate);
     }
@@ -85,7 +86,8 @@ namespace rexlog
         rex::DebugString err(rex::global_debug_allocator());
         err += "Failed flush to file ";
         err += os::filename_to_str(m_filename);
-        throw_rexlog_ex(err, errno);
+        err += " %d";
+        printf(err.data(), errno);
       }
     }
 
@@ -96,7 +98,8 @@ namespace rexlog
         rex::DebugString err(rex::global_debug_allocator());
         err += "Failed to fsync file ";
         err += os::filename_to_str(m_filename);
-        throw_rexlog_ex(err, errno);
+        err += " %d";
+        printf(err.data(), errno);
       }
     }
 
@@ -128,7 +131,8 @@ namespace rexlog
         rex::DebugString err(rex::global_debug_allocator());
         err += "Failed writing to file ";
         err += os::filename_to_str(m_filename);
-        throw_rexlog_ex(err, errno);
+        err += " %d";
+        printf(err.data(), errno);
       }
     }
 
@@ -139,7 +143,7 @@ namespace rexlog
         rex::DebugString err(rex::global_debug_allocator());
         err += "Cannot use size() on closed file ";
         err += os::filename_to_str(m_filename);
-        throw_rexlog_ex(err);
+        printf(err.data());
       }
       return os::filesize(m_fd);
     }

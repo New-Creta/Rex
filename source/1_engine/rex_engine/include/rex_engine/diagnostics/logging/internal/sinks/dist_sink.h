@@ -39,7 +39,7 @@ namespace rexlog
             void sink_it_impl(const details::LogMsg& msg) override;
             void flush_impl() override;
             void set_pattern_impl(const rex::DebugString& pattern) override;
-            void set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sink_formatter) override;
+            void set_formatter_impl(PatternFormatter sink_formatter) override;
 
         private:
             rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks_;
@@ -106,7 +106,7 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void dist_sink<Mutex>::set_formatter_impl(rsl::unique_ptr<rexlog::formatter> sink_formatter)
+        void dist_sink<Mutex>::set_formatter_impl(PatternFormatter sink_formatter)
         {
             BaseSink<Mutex>::m_formatter = rsl::move(sink_formatter);
             for (auto& sub_sink : sinks_)

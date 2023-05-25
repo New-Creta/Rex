@@ -18,7 +18,7 @@ namespace rexlog
       LogMsg(string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
 
       string_view_t logger_name;
-      level::LevelEnum level {level::Off};
+      level::LevelEnum level {level::LevelEnum::Off};
       log_clock::time_point time;
       size_t thread_id {0};
 

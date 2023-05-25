@@ -9,6 +9,7 @@
 #include "rex_engine/types.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/utility.h"
+#include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/vector.h"
 
 namespace rex
@@ -30,13 +31,13 @@ namespace rex
   {
     // clang-format off
     return {
-      {LogVerbosity::NoLogging,       rexlog::level::Off}, 
-      {LogVerbosity::Fatal,           rexlog::level::Critical}, 
-      {LogVerbosity::Error,           rexlog::level::Err},        
-      {LogVerbosity::Warning,         rexlog::level::Warn},
-      {LogVerbosity::Log,             rexlog::level::Info},      
-      {LogVerbosity::Verbose,         rexlog::level::Debug},  
-      {LogVerbosity::VeryVerbose,     rexlog::level::Trace}};
+      {LogVerbosity::NoLogging,       rexlog::level::LevelEnum::Off}, 
+      {LogVerbosity::Fatal,           rexlog::level::LevelEnum::Critical}, 
+      {LogVerbosity::Error,           rexlog::level::LevelEnum::Err},        
+      {LogVerbosity::Warning,         rexlog::level::LevelEnum::Warn},
+      {LogVerbosity::Log,             rexlog::level::LevelEnum::Info},      
+      {LogVerbosity::Verbose,         rexlog::level::LevelEnum::Debug},  
+      {LogVerbosity::VeryVerbose,     rexlog::level::LevelEnum::Trace}};
     // clang-format on
   }
 
@@ -75,7 +76,7 @@ namespace rex
 
     rsl::shared_ptr<rexlog::Logger> new_logger = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), rex::DebugString(category.get_category_name()), rsl::begin(sinks), rsl::end(sinks));
 
-    new_logger->set_pattern(rsl::basic_string<char8, rsl::char_traits<char8>, DebugAllocator<UntrackedAllocator>>(default_pattern, global_debug_allocator()));
+    new_logger->set_pattern(rsl::small_stack_string(default_pattern));
     new_logger->set_level(log_levels.at(category.get_verbosity()));
 
     loggers().insert({category.get_category_name(), new_logger});

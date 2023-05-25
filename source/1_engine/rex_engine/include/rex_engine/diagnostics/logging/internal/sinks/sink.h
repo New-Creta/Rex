@@ -3,7 +3,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
-#include "rex_engine/diagnostics/logging/internal/formatter.h"
+#include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/types.h"
 
 namespace rexlog
@@ -16,8 +16,8 @@ namespace rexlog
             virtual ~AbstractSink() = default;
             virtual void log(const details::LogMsg& msg) = 0;
             virtual void flush() = 0;
-            virtual void set_pattern(const rex::DebugString& pattern) = 0;
-            virtual void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) = 0;
+            virtual void set_pattern(const rsl::small_stack_string& pattern) = 0;
+            virtual void set_formatter(PatternFormatter sinkFormatter) = 0;
 
             void set_level(level::LevelEnum logLevel);
             level::LevelEnum level() const;
@@ -25,7 +25,7 @@ namespace rexlog
 
         private:
             // sink log level - default is all
-            level_t m_level{ level::Trace };
+            level_t m_level{ (int32)level::LevelEnum::Trace };
         };
 
     } // namespace sinks

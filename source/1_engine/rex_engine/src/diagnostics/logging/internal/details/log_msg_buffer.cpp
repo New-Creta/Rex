@@ -23,7 +23,7 @@ namespace rexlog
       update_string_views();
     }
 
-     LogMsgBuffer::LogMsgBuffer(LogMsgBuffer&& other) REXLOG_NOEXCEPT : LogMsg {other}, m_buffer {rsl::move(other.m_buffer)}
+     LogMsgBuffer::LogMsgBuffer(LogMsgBuffer&& other) noexcept : LogMsg {other}, m_buffer {rsl::move(other.m_buffer)}
     {
       update_string_views();
     }
@@ -37,7 +37,7 @@ namespace rexlog
       return *this;
     }
 
-     LogMsgBuffer& LogMsgBuffer::operator=(LogMsgBuffer&& other) REXLOG_NOEXCEPT
+     LogMsgBuffer& LogMsgBuffer::operator=(LogMsgBuffer&& other) noexcept
     {
       LogMsg::operator=(other);
       m_buffer = rsl::move(other.m_buffer);

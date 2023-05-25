@@ -41,14 +41,14 @@ namespace rexlog
 
             void log(const details::LogMsg& msg) override;
             void flush() override;
-            void set_pattern(const rex::DebugString& pattern) override;
+            void set_pattern(const rsl::small_stack_string& pattern) override;
 
-            void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) override;
+            void set_formatter(PatternFormatter sinkFormatter) override;
 
         private:
             mutex_t* m_mutex;
             FILE* m_file;
-            rsl::unique_ptr<rexlog::formatter> m_formatter;
+            PatternFormatter m_formatter;
             HANDLE m_handle;
         };
 
@@ -102,14 +102,14 @@ namespace rexlog
         }
 
         template <typename ConsoleMutex>
-        void StdoutSinkBase<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
+        void StdoutSinkBase<ConsoleMutex>::set_pattern(const rsl::small_stack_string& pattern)
         {
             const rsl::unique_lock<mutex_t> lock(*m_mutex);
             m_formatter = rsl::make_unique<rexlog::PatternFormatter>(pattern);
         }
 
         template <typename ConsoleMutex>
-        void StdoutSinkBase<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
+        void StdoutSinkBase<ConsoleMutex>::set_formatter(PatternFormatter sinkFormatter)
         {
             const rsl::unique_lock<mutex_t> lock(*m_mutex);
             m_formatter = rsl::move(sinkFormatter);
@@ -152,13 +152,28 @@ namespace rexlog
     } // namespace sinks
 
     // factory methods
-    template <typename Factory = rexlog::SynchronousFactory>
-    rsl::shared_ptr<Logger> stdout_logger_mt(const rex::DebugString& loggerName);
-    template <typename Factory = rexlog::SynchronousFactory>
-    rsl::shared_ptr<Logger> stdout_logger_st(const rex::DebugString& loggerName);
-    template <typename Factory = rexlog::SynchronousFactory>
-    rsl::shared_ptr<Logger> stderr_logger_mt(const rex::DebugString& loggerName);
-    template <typename Factory = rexlog::SynchronousFactory>
-    rsl::shared_ptr<Logger> stderr_logger_st(const rex::DebugString& loggerName);
+    template <typename Factory>
+    rsl::shared_ptr<Logger> stdout_logger_mt(const rex::DebugString& loggerName)
+    {
+        return Factory::template create<sinks::stdout_sink_mt>(rex::DebugString(loggerName));
+    }
+
+    template <typename Factory>
+    rsl::shared_ptr<Logger> stdout_logger_st(const rex::DebugString& loggerName)
+    {
+        return Factory::template create<sinks::stdout_sink_st>(rex::DebugString(loggerName));
+    }
+
+    template <typename Factory>
+    rsl::shared_ptr<Logger> stderr_logger_mt(const rex::DebugString& loggerName)
+    {
+        return Factory::template create<sinks::stderr_sink_mt>(rex::DebugString(loggerName));
+    }
+
+    template <typename Factory>
+    rsl::shared_ptr<Logger> stderr_logger_st(const rex::DebugString& loggerName)
+    {
+        return Factory::template create<sinks::stderr_sink_st>(rex::DebugString(loggerName));
+    }
 
 } // namespace rexlog

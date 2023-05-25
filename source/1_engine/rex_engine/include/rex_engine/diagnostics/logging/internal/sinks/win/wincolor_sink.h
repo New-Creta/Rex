@@ -33,8 +33,8 @@ namespace rexlog
       void set_color(level::LevelEnum level, rsl::uint16 color);
       void log(const details::LogMsg& msg) final;
       void flush() final;
-      void set_pattern(const rex::DebugString& pattern) final;
-      void set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter) final;
+      void set_pattern(const rsl::small_stack_string& pattern) final;
+      void set_formatter(PatternFormatter sinkFormatter) final;
       void set_color_mode(ColorMode mode);
 
     protected:
@@ -55,7 +55,7 @@ namespace rexlog
       void* m_out_handle;
       mutex_t* m_mutex;
       bool m_should_do_colors {};
-      rsl::unique_ptr<rexlog::formatter> m_formatter;
+      PatternFormatter m_formatter;
       rsl::array<rsl::uint16, rsl::enum_refl::enum_count<level::LevelEnum>()> m_colors;
     };
 
@@ -63,17 +63,17 @@ namespace rexlog
     WincolorSink<ConsoleMutex>::WincolorSink(void* outHandle, ColorMode mode)
         : m_out_handle(outHandle)
         , m_mutex(&ConsoleMutex::mutex())
-        , m_formatter(details::make_unique<rexlog::PatternFormatter>())
+        , m_formatter()
     {
         set_color_mode_impl(mode);
         // set level colors
-        m_colors[level::Trace] = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;                                               // white
-        m_colors[level::Debug] = FOREGROUND_GREEN | FOREGROUND_BLUE;                                                                // cyan
-        m_colors[level::Info] = FOREGROUND_GREEN;                                                                                   // green
-        m_colors[level::Warn] = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;                                           // intense yellow
-        m_colors[level::Err] = FOREGROUND_RED | FOREGROUND_INTENSITY;                                                               // intense red
-        m_colors[level::Critical] = BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;    // intense white on red background
-        m_colors[level::Off] = 0;
+        m_colors[(int32)level::LevelEnum::Trace] = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;                                               // white
+        m_colors[(int32)level::LevelEnum::Debug] = FOREGROUND_GREEN | FOREGROUND_BLUE;                                                                // cyan
+        m_colors[(int32)level::LevelEnum::Info] = FOREGROUND_GREEN;                                                                                   // green
+        m_colors[(int32)level::LevelEnum::Warn] = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;                                           // intense yellow
+        m_colors[(int32)level::LevelEnum::Err] = FOREGROUND_RED | FOREGROUND_INTENSITY;                                                               // intense red
+        m_colors[(int32)level::LevelEnum::Critical] = BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY;    // intense white on red background
+        m_colors[(int32)level::LevelEnum::Off] = 0;
     }
 
     template <typename ConsoleMutex>
@@ -102,7 +102,7 @@ namespace rexlog
         msg.color_range_start = 0;
         msg.color_range_end = 0;
         memory_buf_t formatted;
-        m_formatter->format(msg, formatted);
+        m_formatter.format(msg, formatted);
         if (m_should_do_colors && msg.color_range_end > msg.color_range_start)
         {
             // before color range
@@ -127,14 +127,14 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void  WincolorSink<ConsoleMutex>::set_pattern(const rex::DebugString& pattern)
+    void  WincolorSink<ConsoleMutex>::set_pattern(const rsl::small_stack_string& pattern)
     {
         const rsl::unique_lock<mutex_t> lock(*m_mutex);
-        m_formatter = rsl::make_unique<PatternFormatter>(pattern);
+        m_formatter = PatternFormatter(pattern);
     }
 
     template <typename ConsoleMutex>
-    void  WincolorSink<ConsoleMutex>::set_formatter(rsl::unique_ptr<rexlog::formatter> sinkFormatter)
+    void  WincolorSink<ConsoleMutex>::set_formatter(PatternFormatter sinkFormatter)
     {
         const rsl::unique_lock<mutex_t> lock(*m_mutex);
         m_formatter = rsl::move(sinkFormatter);
