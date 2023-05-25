@@ -2,6 +2,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padding_info.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_std/array.h"
 
 namespace rexlog
