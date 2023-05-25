@@ -41,16 +41,16 @@ namespace
 
   //-------------------------------------------------------------------------
   template <typename DXGIAdapterInterface>
-  rsl::vector<rsl::unique_ptr<rex::Gpu>> get_adapters(const rsl::function<HRESULT(UINT, DXGIAdapterInterface**)>& enumarationFnc, uint32 version)
+  rsl::vector<rex::dxgi::Adapter> get_adapters(const rsl::function<HRESULT(UINT, DXGIAdapterInterface**)>& enumarationFnc, uint32 version)
   {
     uint32 i                      = 0;
     DXGIAdapterInterface* adapter = nullptr;
 
-    rsl::vector<rsl::unique_ptr<rex::Gpu>> adapters;
+    rsl::vector<rex::dxgi::Adapter> adapters;
     while(enumarationFnc(i, &adapter) != DXGI_ERROR_NOT_FOUND)
     {
       if(adapter)
-        adapters.push_back(rsl::make_unique<rex::dxgi::Adapter>(adapter, version));
+        adapters.emplace_back(adapter, version);
 
       ++i;
     }
@@ -71,7 +71,18 @@ namespace rex
 
       REX_ASSERT_X(!m_adapters.empty(), "No adapters found");
 
-      m_selected_adapter = scorerFn(m_adapters);
+      // this can be fixed once we have vector views/ranges
+      rsl::vector<GpuDescription> gpus;
+      gpus.reserve(m_adapters.size());
+      for(const Adapter& adapter: m_adapters)
+      {
+        gpus.push_back(adapter.description());
+      }
+      const count_t selected_adapter_idx = scorerFn(gpus);
+      if(selected_adapter_idx != -1)
+      {
+        m_selected_adapter = &m_adapters[selected_adapter_idx];
+      }
     }
     //-------------------------------------------------------------------------
     AdapterManager::~AdapterManager() = default;
@@ -95,21 +106,21 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const Gpu* AdapterManager::selected() const
+    const Adapter* AdapterManager::selected() const
     {
       REX_ASSERT_X(m_selected_adapter, "No adapter selected. Call \" select(uint32 adapterID) \" first");
 
       return m_selected_adapter;
     }
     //-------------------------------------------------------------------------
-    const Gpu* AdapterManager::first() const
+    const Adapter* AdapterManager::first() const
     {
       REX_ASSERT_X(!m_adapters.empty(), "No adapters found");
 
-      return m_adapters[0].get();
+      return &m_adapters.front();
     }
     //-------------------------------------------------------------------------
-    const rsl::vector<rsl::unique_ptr<Gpu>>& AdapterManager::all() const
+    const rsl::vector<Adapter>& AdapterManager::all() const
     {
       REX_ASSERT_X(!m_adapters.empty(), "No adapters found");
 

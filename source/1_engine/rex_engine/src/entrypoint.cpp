@@ -10,23 +10,26 @@
 
 namespace rex
 {
-  void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine) 
+  namespace internal
   {
-    cmdline::init(rsl::string_view(cmdLine));
-
-    // if a user wants to know the arguments for the executable, we want to perform as minimal setup as possible.
-    // we just initialize the commandline, print what's possible and exit the program
-    if (cmdline::get_argument("help"))
+    void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine) 
     {
-      cmdline::print_args();
-      rsl::exit(0);
+      cmdline::init(rsl::string_view(cmdLine));
+
+      // if a user wants to know the arguments for the executable, we want to perform as minimal setup as possible.
+      // we just initialize the commandline, print what's possible and exit the program
+      if (cmdline::get_argument("help"))
+      {
+        cmdline::print_args();
+        rsl::exit(0);
+      }
+
+      vfs::init();
     }
 
-    vfs::init();
-  }
+    void post_app_shutdown() 
+    {
 
-  void post_app_shutdown() 
-  {
-
-  }
+    }
+  } // namespace internal
 } // namespace rex
