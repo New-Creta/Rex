@@ -22,7 +22,6 @@ INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdL
   rex::PlatformCreationParams creation_params {};
   creation_params.instance      = hInstance;
   creation_params.prev_instance = hPrevInstance;
-  creation_params.cmd_line      = lpCmdLine;
   creation_params.show_cmd      = nShowCmd;
 
   rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params), rsl::move(cmd_args));
