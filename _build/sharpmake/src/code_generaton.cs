@@ -4,7 +4,7 @@ using System.IO;
 using Sharpmake;
 using System.Text;
 
-public class CodeGeneration
+public static class CodeGeneration
 {
   static private Dictionary<string, EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, EnumGenerationSettings>();
   static private Dictionary<string, ArrayGenerationSettings> ArraysToAutoGenerate = new Dictionary<string, ArrayGenerationSettings>();
