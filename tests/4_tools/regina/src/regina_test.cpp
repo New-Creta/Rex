@@ -1,40 +1,24 @@
-#include "regina/regina.h"
-#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/entrypoint.h"
-#include "rex_engine/event_system.h"
+#include "rex_engine/engine_params.h"
 #include "rex_windows/gui_application.h"
 
-namespace regina_test
-{
-  bool initialize()
-  {
-    return rex::initialize();
-  }
-  void update()
-  {
-    rex::event_system::Event ev {};
-    ev.type = rex::event_system::EventType::QuitApp;
-    rex::event_system::fire_event(ev);
-  }
-  void shutdown()
-  {
-    rex::shutdown();
-  }
-} // namespace regina_test
+#include "regina_test/regina_boot_test.h"
+#include "rex_engine/cmdline.h"
+#include "rex_engine/diagnostics/assert.h"
 
 namespace rex
 {
-  rex::ApplicationCreationParams app_entry(rex::PlatformCreationParams&& platformParams, rex::CommandLineArguments&& cmdArgs)
+  rex::ApplicationCreationParams app_entry(rex::PlatformCreationParams&& platformParams)
   {
-    rex::ApplicationCreationParams app_params = create_regina_app_creation_params(rsl::move(platformParams), rsl::move(cmdArgs));
+    rsl::optional<rsl::string_view> cmdline = cmdline::get_argument("AutoTest");
 
-    // overwrite settings for auto tests
-    app_params.gui_params.window_title  = "Regina Test";
+    REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline");
 
-    app_params.engine_params.app_init_func     = regina_test::initialize;
-    app_params.engine_params.app_update_func   = regina_test::update;
-    app_params.engine_params.app_shutdown_func = regina_test::shutdown;
+    if (rsl::strincmp(cmdline.value().data(), "Boot", cmdline.value().length()) == 0)
+    {
+      return regina_test::boot_test_entry(rsl::move(platformParams));
+    }
 
-    return app_params;
+    return rex::ApplicationCreationParams(rsl::move(platformParams));
   }
 } // namespace rex

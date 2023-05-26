@@ -35,7 +35,7 @@ namespace rex
 
       rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
       {
-        for(ActiveArgument active_arg: m_arguments)
+        for(ActiveArgument active_arg : m_arguments)
         {
           if(rsl::strincmp(arg.data(), active_arg.argument.data(), arg.length()) == 0)
           {
@@ -100,7 +100,10 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const CommandLineArgument& cmdArg) { return key == cmdArg.name; });
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const CommandLineArgument& cmdArg) 
+          { 
+            return rsl::strincmp(key.data(), cmdArg.name.data(), key.length()) == 0;
+          });
 
         if(cmd_it == g_command_line_args.cend())
         {
