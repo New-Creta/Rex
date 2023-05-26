@@ -8,17 +8,52 @@
 
 namespace rex
 {
+  class AutoTest
+  {
+  public:
+    using auto_test_entry = rex::ApplicationCreationParams(*)(rex::PlatformCreationParams&&);
+
+    AutoTest(rsl::string_view cmdline, auto_test_entry entryFunc)
+      : m_cmd_line(cmdline)
+      , m_entry_func(entryFunc)
+    {}
+
+    bool is_enabled(rsl::string_view cmdline)
+    {
+      return rsl::strincmp(cmdline.data(), m_cmd_line.data(), cmdline.length()) == 0;
+    }
+
+    ApplicationCreationParams launch(rex::PlatformCreationParams&& platformParams)
+    {
+      return m_entry_func(rsl::move(platformParams));
+    }
+
+  private:
+    rsl::string_view m_cmd_line;
+    auto_test_entry m_entry_func;
+  };
+
+  rsl::array g_auto_tests =
+  {
+    AutoTest("Boot", regina_test::boot_test_entry)
+  };
+
   rex::ApplicationCreationParams app_entry(rex::PlatformCreationParams&& platformParams)
   {
     rsl::optional<rsl::string_view> cmdline = cmdline::get_argument("AutoTest");
 
     REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline");
 
-    if (rsl::strincmp(cmdline.value().data(), "Boot", cmdline.value().length()) == 0)
+    for (AutoTest& auto_test : g_auto_tests)
     {
-      return regina_test::boot_test_entry(rsl::move(platformParams));
+      if (auto_test.is_enabled(cmdline.value()))
+      {
+        return auto_test.launch(rsl::move(platformParams));
+      }
     }
 
+    REX_ASSERT("No auto test found for {}", cmdline.value());
+      
     return rex::ApplicationCreationParams(rsl::move(platformParams));
   }
 } // namespace rex
