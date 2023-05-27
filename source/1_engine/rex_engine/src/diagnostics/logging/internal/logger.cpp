@@ -204,7 +204,7 @@ namespace rexlog
     bool Logger::should_flush_impl(const details::LogMsg& msg)
     {
         auto flush_level = m_flush_level.load(rsl::memory_order_relaxed);
-        return ((int32)msg.level >= flush_level) && (msg.level != level::LevelEnum::Off);
+        return ((int32)msg.level() >= flush_level) && (msg.level() != level::LevelEnum::Off);
     }
 
     //-------------------------------------------------------------------------
@@ -221,7 +221,7 @@ namespace rexlog
     {
         for (auto& sink : m_sinks)
         {
-            if (sink->should_log(msg.level))
+            if (sink->should_log(msg.level()))
             {
                 sink->log(msg);
             }

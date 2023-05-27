@@ -74,8 +74,8 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                ScopedPadder p(msg.logger_name.size(), padding_info(), dest);
-                fmt_helper::append_string_view(msg.logger_name, dest);
+                ScopedPadder p(msg.logger_name().size(), padding_info(), dest);
+                fmt_helper::append_string_view(msg.logger_name(), dest);
             }
         };
 
@@ -92,7 +92,7 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                const string_view_t& level_name = level::to_string_view(msg.level);
+                const string_view_t& level_name = level::to_string_view(msg.level());
                 ScopedPadder p(level_name.size(), padding_info(), dest);
                 fmt_helper::append_string_view(level_name, dest);
             }
@@ -111,7 +111,7 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                const string_view_t level_name{ level::to_short_c_str(msg.level) };
+                const string_view_t level_name{ level::to_short_c_str(msg.level()) };
                 ScopedPadder p(level_name.size(), padding_info(), dest);
                 fmt_helper::append_string_view(level_name, dest);
             }
@@ -412,7 +412,7 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                auto millis = fmt_helper::time_fraction<rsl::chrono::milliseconds>(msg.time);
+                auto millis = fmt_helper::time_fraction<rsl::chrono::milliseconds>(msg.time());
                 const size_t field_size = 3;
                 ScopedPadder p(field_size, padding_info(), dest);
                 fmt_helper::pad3(static_cast<uint32_t>(millis.count()), dest);
@@ -432,7 +432,7 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                auto micros = fmt_helper::time_fraction<rsl::chrono::microseconds>(msg.time);
+                auto micros = fmt_helper::time_fraction<rsl::chrono::microseconds>(msg.time());
 
                 const size_t field_size = 6;
                 ScopedPadder p(field_size, padding_info(), dest);
@@ -453,7 +453,7 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                auto ns = fmt_helper::time_fraction<rsl::chrono::nanoseconds>(msg.time);
+                auto ns = fmt_helper::time_fraction<rsl::chrono::nanoseconds>(msg.time());
                 const size_t field_size = 9;
                 ScopedPadder p(field_size, padding_info(), dest);
                 fmt_helper::pad9(static_cast<size_t>(ns.count()), dest);
@@ -475,7 +475,7 @@ namespace rexlog
             {
                 const size_t field_size = 10;
                 ScopedPadder p(field_size, padding_info(), dest);
-                auto duration = msg.time.time_since_epoch();
+                auto duration = msg.time().time_since_epoch();
                 auto seconds = rsl::chrono::duration_cast<rsl::chrono::seconds>(duration).count();
                 fmt_helper::append_int(seconds, dest);
             }
@@ -617,10 +617,10 @@ namespace rexlog
             int get_cached_offset(const LogMsg& msg, const tm& tm_time)
             {
                 // refresh every 10 seconds
-                if (msg.time - last_update_ >= rsl::chrono::seconds(10))
+                if (msg.time() - last_update_ >= rsl::chrono::seconds(10))
                 {
                     offset_minutes_ = os::utc_minutes_offset(tm_time);
-                    last_update_ = msg.time;
+                    last_update_ = msg.time();
                 }
                 return offset_minutes_;
             }
@@ -639,9 +639,9 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                const auto field_size = ScopedPadder::count_digits(msg.thread_id);
+                const auto field_size = ScopedPadder::count_digits(msg.thread_id());
                 ScopedPadder p(field_size, padding_info(), dest);
-                fmt_helper::append_int(msg.thread_id, dest);
+                fmt_helper::append_int(msg.thread_id(), dest);
             }
         };
 
@@ -677,8 +677,8 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                ScopedPadder p(msg.payload.size(), padding_info(), dest);
-                fmt_helper::append_string_view(msg.payload, dest);
+                ScopedPadder p(msg.payload().size(), padding_info(), dest);
+                fmt_helper::append_string_view(msg.payload(), dest);
             }
         };
 
@@ -695,7 +695,7 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source().empty())
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
@@ -705,7 +705,7 @@ namespace rexlog
                 if (padding_info().enabled)
                 {
                     // calc text size for padding based on "filename:line"
-                    text_size = rsl::char_traits<char>::length(msg.source.filename) + ScopedPadder::count_digits(msg.source.line) + 1;
+                    text_size = rsl::char_traits<char>::length(msg.source().filename) + ScopedPadder::count_digits(msg.source().line) + 1;
                 }
                 else
                 {
@@ -713,9 +713,9 @@ namespace rexlog
                 }
 
                 ScopedPadder p(text_size, padding_info(), dest);
-                fmt_helper::append_string_view(string_view_t(msg.source.filename), dest);
+                fmt_helper::append_string_view(string_view_t(msg.source().filename), dest);
                 dest.push_back(':');
-                fmt_helper::append_int(msg.source.line, dest);
+                fmt_helper::append_int(msg.source().line, dest);
             }
         };
 
@@ -732,14 +732,14 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source().empty())
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
                 }
-                const count_t text_size = padding_info().enabled ? rsl::char_traits<char>::length(msg.source.filename) : 0;
+                const count_t text_size = padding_info().enabled ? rsl::char_traits<char>::length(msg.source().filename) : 0;
                 ScopedPadder p(text_size, padding_info(), dest);
-                fmt_helper::append_string_view(string_view_t(msg.source.filename), dest);
+                fmt_helper::append_string_view(string_view_t(msg.source().filename), dest);
             }
         };
 
@@ -781,12 +781,12 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source().empty())
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
                 }
-                const auto filename = basename(msg.source.filename); // NOLINT(readability-qualified-auto)
+                const auto filename = basename(msg.source().filename); // NOLINT(readability-qualified-auto)
                 const count_t text_size = padding_info().enabled ? rsl::char_traits<char>::length(filename) : 0;
                 ScopedPadder p(text_size, padding_info(), dest);
                 fmt_helper::append_string_view(rsl::string_view(filename), dest);
@@ -805,15 +805,15 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source().empty())
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
                 }
 
-                auto field_size = ScopedPadder::count_digits(msg.source.line);
+                auto field_size = ScopedPadder::count_digits(msg.source().line);
                 ScopedPadder p(field_size, padding_info(), dest);
-                fmt_helper::append_int(msg.source.line, dest);
+                fmt_helper::append_int(msg.source().line, dest);
             }
         };
 
@@ -830,14 +830,14 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source().empty())
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
                 }
-                const count_t text_size = padding_info().enabled ? rsl::char_traits<char>::length(msg.source.funcname) : 0;
+                const count_t text_size = padding_info().enabled ? rsl::char_traits<char>::length(msg.source().funcname) : 0;
                 ScopedPadder p(text_size, padding_info(), dest);
-                fmt_helper::append_string_view(string_view_t(msg.source.funcname), dest);
+                fmt_helper::append_string_view(string_view_t(msg.source().funcname), dest);
             }
         };
 
@@ -857,9 +857,9 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                auto delta = (rsl::max)(msg.time - last_message_time_, log_clock::duration::zero());
+                auto delta = (rsl::max)(msg.time() - last_message_time_, log_clock::duration::zero());
                 auto delta_units = rsl::chrono::duration_cast<DurationUnits>(delta);
-                last_message_time_ = msg.time;
+                last_message_time_ = msg.time();
                 auto delta_count = static_cast<size_t>(delta_units.count());
                 auto n_digits = static_cast<size_t>(ScopedPadder::count_digits(delta_count));
                 ScopedPadder p(n_digits, padding_info(), dest);

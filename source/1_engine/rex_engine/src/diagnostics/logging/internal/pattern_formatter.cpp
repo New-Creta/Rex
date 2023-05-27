@@ -18,10 +18,10 @@ namespace rexlog
         {
             if (timeType == PatternTimeType::Local)
             {
-                return details::os::localtime(log_clock::to_time_t(msg.time));
+                return details::os::localtime(log_clock::to_time_t(msg.time()));
             }
 
-            return details::os::gmtime(log_clock::to_time_t(msg.time));
+            return details::os::gmtime(log_clock::to_time_t(msg.time()));
         }
 
         //-------------------------------------------------------------------------
@@ -113,7 +113,7 @@ namespace rexlog
     {
         if (m_need_localtime)
         {
-            const auto secs = rsl::chrono::duration_cast<rsl::chrono::seconds>(msg.time.time_since_epoch());
+            const auto secs = rsl::chrono::duration_cast<rsl::chrono::seconds>(msg.time().time_since_epoch());
             if (secs != m_last_log_secs)
             {
                 m_cached_tm = details::get_time_impl(m_pattern_time_type, msg);

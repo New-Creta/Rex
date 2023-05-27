@@ -81,7 +81,7 @@ namespace rexlog
         {
             for (auto& sub_sink : sinks_)
             {
-                if (sub_sink->should_log(msg.level))
+                if (sub_sink->should_log(msg.level()))
                 {
                     sub_sink->log(msg);
                 }

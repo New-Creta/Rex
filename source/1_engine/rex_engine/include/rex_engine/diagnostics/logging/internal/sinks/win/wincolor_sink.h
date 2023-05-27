@@ -99,20 +99,20 @@ namespace rexlog
         }
 
         const rsl::unique_lock<mutex_t> lock(*m_mutex);
-        msg.color_range_start = 0;
-        msg.color_range_end = 0;
+        msg.m_color_range_start = 0;
+        msg.m_color_range_end = 0;
         memory_buf_t formatted;
         m_formatter.format(msg, formatted);
-        if (m_should_do_colors && msg.color_range_end > msg.color_range_start)
+        if (m_should_do_colors && msg.m_color_range_end > msg.m_color_range_start)
         {
             // before color range
-            print_range_impl(formatted, 0, msg.color_range_start);
+            print_range_impl(formatted, 0, msg.m_color_range_start);
             // in color range
-            auto orig_attribs = static_cast<WORD>(set_foreground_color_impl(m_colors[static_cast<count_t>(msg.level)]));
-            print_range_impl(formatted, msg.color_range_start, msg.color_range_end);
+            auto orig_attribs = static_cast<WORD>(set_foreground_color_impl(m_colors[static_cast<count_t>(msg.level())]));
+            print_range_impl(formatted, msg.m_color_range_start, msg.m_color_range_end);
             // reset to orig colors
             ::SetConsoleTextAttribute(static_cast<HANDLE>(m_out_handle), orig_attribs);
-            print_range_impl(formatted, msg.color_range_end, formatted.size());
+            print_range_impl(formatted, msg.m_color_range_end, formatted.size());
         }
         else // print without colors if color range is invalid (or color is disabled)
         {

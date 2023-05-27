@@ -16,8 +16,8 @@ namespace rexlog
         LogMsgBuffer::LogMsgBuffer(const LogMsgBuffer& other)
             : LogMsg{ other }
         {
-            m_buffer.append(logger_name.begin(), logger_name.end());
-            m_buffer.append(payload.begin(), payload.end());
+            m_buffer.append(logger_name().begin(), logger_name().end());
+            m_buffer.append(payload().begin(), payload().end());
             update_string_views();
         }
 
@@ -37,8 +37,8 @@ namespace rexlog
         LogMsgBuffer::LogMsgBuffer(const LogMsg& origMsg)
             : LogMsg{ origMsg }
         {
-            m_buffer.append(logger_name.begin(), logger_name.end());
-            m_buffer.append(payload.begin(), payload.end());
+            m_buffer.append(logger_name().begin(), logger_name().end());
+            m_buffer.append(payload().begin(), payload().end());
             update_string_views();
         }
 
@@ -64,8 +64,8 @@ namespace rexlog
         //-------------------------------------------------------------------------
         void LogMsgBuffer::update_string_views()
         {
-            logger_name = string_view_t{ m_buffer.data(), logger_name.size() };
-            payload = string_view_t{ m_buffer.data() + logger_name.size(), payload.size() };
+            set_logger_name(string_view_t{ m_buffer.data(), logger_name().size() });
+            set_payload(string_view_t{ m_buffer.data() + logger_name().size(), payload().size() });
         }
     } // namespace details
 } // namespace rexlog

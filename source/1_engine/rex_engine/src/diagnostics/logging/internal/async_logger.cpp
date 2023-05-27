@@ -54,7 +54,7 @@ namespace rexlog
     {
         for (auto& sink : sinks())
         {
-            if (sink->should_log(msg.level))
+            if (sink->should_log(msg.level()))
             {
                 sink->log(msg);
             }

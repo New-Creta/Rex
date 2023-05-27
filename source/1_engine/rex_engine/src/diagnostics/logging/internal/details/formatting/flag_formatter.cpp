@@ -109,7 +109,7 @@ namespace rexlog
         //-------------------------------------------------------------------------
         void color_start_formatter::format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest)
         {
-            msg.color_range_start = dest.size();
+            msg.m_color_range_start = dest.size();
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ namespace rexlog
         //-------------------------------------------------------------------------
         void color_stop_formatter::format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest)
         {
-            msg.color_range_end = dest.size();
+            msg.m_color_range_end = dest.size();
         }
 
         ///////////////////////////////////////////////////////////////////////
@@ -146,7 +146,7 @@ namespace rexlog
             using rsl::chrono::seconds;
 
             // cache the date/time part for the next second.
-            auto duration = msg.time.time_since_epoch();
+            auto duration = msg.time().time_since_epoch();
             auto secs = duration_cast<seconds>(duration);
 
             if (cache_timestamp_ != secs || cached_datetime_.empty())
@@ -175,40 +175,40 @@ namespace rexlog
             }
             dest.append(cached_datetime_.begin(), cached_datetime_.end());
 
-            auto millis = fmt_helper::time_fraction<milliseconds>(msg.time);
+            auto millis = fmt_helper::time_fraction<milliseconds>(msg.time());
             fmt_helper::pad3(static_cast<uint32_t>(millis.count()), dest);
             dest.push_back(']');
             dest.push_back(' ');
 
             // append logger name if exists
-            if (!msg.logger_name.empty())
+            if (!msg.logger_name().empty())
             {
                 dest.push_back('[');
-                fmt_helper::append_string_view(string_view_t(msg.logger_name), dest);
+                fmt_helper::append_string_view(string_view_t(msg.logger_name()), dest);
                 dest.push_back(']');
                 dest.push_back(' ');
             }
 
             dest.push_back('[');
             // wrap the level name with color
-            msg.color_range_start = dest.size();
-            fmt_helper::append_string_view(level::to_string_view(msg.level), dest);
-            msg.color_range_end = dest.size();
+            msg.m_color_range_start = dest.size();
+            fmt_helper::append_string_view(level::to_string_view(msg.level()), dest);
+            msg.m_color_range_end = dest.size();
             dest.push_back(']');
             dest.push_back(' ');
 
             // add source location if present
-            if (!msg.source.empty())
+            if (!msg.source().empty())
             {
                 dest.push_back('[');
-                const char* filename = details::short_filename_formatter<details::NullScopedPadder>::basename(msg.source.filename);
+                const char* filename = details::short_filename_formatter<details::NullScopedPadder>::basename(msg.source().filename);
                 fmt_helper::append_string_view(rsl::string_view(filename), dest);
                 dest.push_back(':');
-                fmt_helper::append_int(msg.source.line, dest);
+                fmt_helper::append_int(msg.source().line, dest);
                 dest.push_back(']');
                 dest.push_back(' ');
             }
-            fmt_helper::append_string_view(string_view_t(msg.payload), dest);
+            fmt_helper::append_string_view(string_view_t(msg.payload()), dest);
         }
     }
 }
