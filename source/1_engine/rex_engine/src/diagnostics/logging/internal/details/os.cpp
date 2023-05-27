@@ -64,17 +64,9 @@ namespace rexlog
     {
         namespace os
         {
-
             rexlog::log_clock::time_point now() noexcept
             {
-#if defined __linux__ && defined REXLOG_CLOCK_COARSE
-                timespec ts;
-                ::clock_gettime(CLOCK_REALTIME_COARSE, &ts);
-                return rsl::chrono::time_point<log_clock, typename log_clock::duration>(rsl::chrono::duration_cast<typename log_clock::duration>(rsl::chrono::seconds(ts.tv_sec) + rsl::chrono::nanoseconds(ts.tv_nsec)));
-
-#else
                 return log_clock::now();
-#endif
             }
             tm localtime(const time_t& time) noexcept
             {
@@ -119,7 +111,7 @@ namespace rexlog
             {
 #ifdef _WIN32
                 * fp = ::_fsopen((filename.c_str()), mode.c_str(), _SH_DENYNO);
-#else // unix
+#else
                 * fp = ::fopen((filename.c_str()), mode.c_str());
 #endif
                 return *fp == nullptr;
@@ -128,16 +120,6 @@ namespace rexlog
             int remove(const filename_t& filename) noexcept
             {
                 return ::remove(filename.c_str());
-            }
-
-            int remove_if_exists(const filename_t& filename) noexcept
-            {
-                return path_exists(filename) ? remove(filename) : 0;
-            }
-
-            int rename(const filename_t& filename1, const filename_t& filename2) noexcept
-            {
-                return ::rename(filename1.c_str(), filename2.c_str());
             }
 
             // Return true if path exists (file or directory)
@@ -158,7 +140,7 @@ namespace rexlog
 #pragma warning(disable : 4702)
 #endif
 
-      // Return file size according to open FILE* object
+            // Return file size according to open FILE* object
             size_t filesize(FILE* f)
             {
                 if (f == nullptr)
@@ -315,12 +297,8 @@ namespace rexlog
             // Return current thread id as size_t (from thread local storage)
             size_t thread_id() noexcept
             {
-#if defined(REXLOG_NO_TLS)
-                return _thread_id();
-#else // cache thread id in tls
                 static thread_local const size_t s_tid = thread_id_impl();
                 return s_tid;
-#endif
             }
 
             // This is avoid msvc issue in sleep_for that happens if the clock changes.
@@ -345,48 +323,6 @@ namespace rexlog
                 return conditional_static_cast<int>(::GetCurrentProcessId());
 #else
                 return conditional_static_cast<int>(::getpid());
-#endif
-            }
-
-            // Determine if the terminal supports colors
-            // Based on: https://github.com/agauniyal/rang/
-            bool is_color_terminal() noexcept
-            {
-#ifdef _WIN32
-                return true;
-#else
-
-                static const bool result = []()
-                {
-                    const char* env_colorterm_p = rsl::getenv("COLORTERM");
-                    if (env_colorterm_p != nullptr)
-                    {
-                        return true;
-                    }
-
-                    static constexpr rsl::array<const char*, 16> terms = { {"ansi", "color", "console", "cygwin", "gnome", "konsole", "kterm", "linux", "msys", "putty", "rxvt", "screen", "vt100", "xterm", "alacritty", "vt102"} };
-
-                    const char* env_term_p = rsl::getenv("TERM");
-                    if (env_term_p == nullptr)
-                    {
-                        return false;
-                    }
-
-                    return rsl::any_of(terms.begin(), terms.end(), [&](const char* term) { return rsl::strstr(env_term_p, term) != nullptr; });
-                }();
-
-                return result;
-#endif
-            }
-
-            // Determine if the terminal attached
-            // Source: https://github.com/agauniyal/rang/
-            bool in_terminal(FILE* file) noexcept
-            {
-#ifdef _WIN32
-                return ::_isatty(_fileno(file)) != 0;
-#else
-                return ::isatty(fileno(file)) != 0;
 #endif
             }
 
@@ -445,23 +381,6 @@ namespace rexlog
             {
                 auto pos = path.find_last_of(rsl::string_view(folder_seps_filename));
                 return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t{};
-            }
-
-            rex::DebugString getenv(const char* field)
-            {
-#if defined(_MSC_VER)
-#if defined(__cplusplus_winrt)
-                return rex::DebugString{}; // not supported under uwp
-#else
-                size_t len = 0;
-                rsl::array<char, 128> buf;
-                const bool ok = ::getenv_s(&len, buf.data(), buf.size(), field) == 0;
-                return ok ? rex::DebugString(buf.data()) : rex::DebugString{};
-#endif
-#else // revert to getenv
-                char* buf = ::getenv(field);
-                return buf ? buf : rex::DebugString{};
-#endif
             }
 
             // Do fsync by FILE handlerpointer

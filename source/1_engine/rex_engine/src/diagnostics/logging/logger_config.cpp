@@ -1,7 +1,6 @@
 #include "rex_engine/diagnostics/logging/logger_config.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/diagnostics/logging/internal/rexlog.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/algorithm.h"
