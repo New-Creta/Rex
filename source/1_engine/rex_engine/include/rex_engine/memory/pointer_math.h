@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_std/bonus/types.h"
+#include "rex_engine/diagnostics/assert.h"
 
 namespace rex
 {
@@ -15,5 +16,11 @@ namespace rex
     rsl::byte* mem_as_bytes = static_cast<rsl::byte*>(mem);
     mem_as_bytes -= count;
     return mem_as_bytes;
+  }
+  constexpr uintptr align(uintptr addr, card32 alignment)
+  {
+    const card32 mask = alignment - 1;
+    REX_ASSERT_X((alignment & mask) == 0, "Alignment must be a power of 2");
+    return (addr + mask) & ~mask;
   }
 } // namespace rex
