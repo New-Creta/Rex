@@ -1,11 +1,11 @@
-#include "rex_engine/diagnostics/logging/logger.h"
+#include "rex_engine/diagnostics/logging/log_functions.h"
 
 #include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
-#include "rex_engine/diagnostics/logging/internal/rexlog.h"
-#include "rex_engine/diagnostics/logging/internal/async.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
+#include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/memory/untracked_allocator.h"
@@ -60,7 +60,7 @@ namespace rex
 
     // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
 
-    auto logger = rexlog::get(rex::DebugString(category.get_category_name()));
+    auto logger = rexlog::details::Registry::instance().get(rex::DebugString(category.get_category_name()));
     if(logger != nullptr)
       return *logger;
 

@@ -1,5 +1,5 @@
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_engine/diagnostics/logging/internal/rexlog_logger.h"
+#include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/types.h"

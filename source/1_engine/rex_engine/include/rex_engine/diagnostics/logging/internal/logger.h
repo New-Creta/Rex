@@ -20,8 +20,6 @@
 #include "rex_std/atomic.h"
 #include "rex_std/format.h"
 
-#define REXLOG_LOGGER_CATCH(location)
-
 namespace rexlog
 {
     using Sinks = rex::DebugVector<sink_ptr>;
@@ -200,5 +198,30 @@ namespace rexlog
     };
 
     void swap(Logger& a, Logger& b);
+
+    namespace internal
+    {
+        // Create and register a Logger with a templated sink type
+        // The Logger's level, formatter and flush level will be set according the
+        // global settings.
+        //
+        // Example:
+        //   rexlog::create<daily_file_sink_st>("logger_name", "dailylog_filename", 11, 59);
+        template <typename Sink, typename... SinkArgs>
+        static rsl::shared_ptr<rexlog::Logger> create(rex::DebugString loggerName, SinkArgs&&... args)
+        {
+            auto sink = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
+            auto new_logger = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink));
+            details::Registry::instance().initialize_logger(new_logger);
+            return new_logger;
+        }
+    };
+
+
+    template <typename Sink, typename... SinkArgs>
+    rsl::shared_ptr<rexlog::Logger> create(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
+    {
+        return internal::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+    }
 
 } // namespace rexlog
