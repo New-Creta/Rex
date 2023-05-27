@@ -69,8 +69,5 @@ public class GenerateSettings
   static public string ClangTidyRegex { get; set; }
   static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;
   
-  static public Dictionary<string, EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, EnumGenerationSettings>();
-  static public Dictionary<string, ArrayGenerationSettings> ArraysToAutoGenerate = new Dictionary<string, ArrayGenerationSettings>();
-
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
 }
