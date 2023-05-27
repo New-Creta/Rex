@@ -66,7 +66,7 @@ namespace rexlog
                 }
                 else // unlikely, but just in case, let fmt deal with it
                 {
-                    rsl::format_to(rsl::back_inserter(dest), REXLOG_FMT_STRING("{:02}"), n);
+                    rsl::format_to(rsl::back_inserter(dest), "{:02}", n);
                 }
             }
 
