@@ -12,31 +12,4 @@ namespace rexlog
       using stderr_color_sink_mt = ansicolor_stderr_sink_mt;
       using stderr_color_sink_st = ansicolor_stderr_sink_st;
   } // namespace sinks
-
-  //
-  // factory functions
-  //
-    template <typename Factory>
-   rsl::shared_ptr<Logger> stdout_color_mt(const rex::DebugString& loggerName, ColorMode mode= ColorMode::Automatic)
-  {
-    return Factory::template create<sinks::stdout_color_sink_mt>(rex::DebugString(loggerName), mode);
-  }
-
-  template <typename Factory>
-   rsl::shared_ptr<Logger> stdout_color_st(const rex::DebugString& loggerName, ColorMode mode= ColorMode::Automatic)
-  {
-    return Factory::template create<sinks::stdout_color_sink_st>(rex::DebugString(loggerName), mode);
-  }
-
-  template <typename Factory>
-   rsl::shared_ptr<Logger> stderr_color_mt(const rex::DebugString& loggerName, ColorMode mode= ColorMode::Automatic)
-  {
-    return Factory::template create<sinks::stderr_color_sink_mt>(rex::DebugString(loggerName), mode);
-  }
-
-  template <typename Factory>
-   rsl::shared_ptr<Logger> stderr_color_st(const rex::DebugString& loggerName, ColorMode mode= ColorMode::Automatic)
-  {
-    return Factory::template create<sinks::stderr_color_sink_st>(rex::DebugString(loggerName), mode);
-  }
 } // namespace rexlog

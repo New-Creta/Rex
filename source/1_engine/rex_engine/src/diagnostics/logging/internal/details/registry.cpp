@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/diagnostics/logging/internal/rexlog_logger.h"
+#include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/types.h"

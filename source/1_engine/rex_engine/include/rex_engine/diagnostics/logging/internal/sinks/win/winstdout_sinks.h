@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
+#include "rex_engine/diagnostics/logging/internal/details/console_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/details/synchronous_factory.h"
 #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"

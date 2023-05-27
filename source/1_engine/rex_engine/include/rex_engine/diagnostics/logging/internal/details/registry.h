@@ -56,7 +56,7 @@ namespace rexlog
             void                        shutdown();
 
             rsl::shared_ptr<ThreadPool> tp();
-            rsl::recursive_mutex&       tp_mutex();
+            rsl::recursive_mutex& tp_mutex();
 
         private:
             Registry();
@@ -66,7 +66,7 @@ namespace rexlog
 
             LoggerObjectPtrMap          m_loggers;
             LogLevels                   m_log_levels;
-            
+
             rsl::mutex                  m_logger_map_mutex;
             rsl::mutex                  m_flusher_mutex;
             rsl::recursive_mutex        m_tp_mutex;

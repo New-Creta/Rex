@@ -3,7 +3,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
-#include "rex_engine/diagnostics/logging/internal/details/console_globals.h"
+#include "rex_engine/diagnostics/logging/internal/details/console_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include "rex_std/memory.h"
