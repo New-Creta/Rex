@@ -120,25 +120,6 @@ namespace rexlog
         Utc    // log utc
     };
 
-    struct SourceLoc
-    {
-        constexpr SourceLoc() = default;
-        constexpr SourceLoc(const char* filenameIn, int lineIn, const char* funcnameIn)
-            : filename{ filenameIn }
-            , line{ lineIn }
-            , funcname{ funcnameIn }
-        {
-        }
-
-        constexpr bool empty() const noexcept
-        {
-            return line == 0;
-        }
-        const char* filename{ nullptr };
-        int line{ 0 };
-        const char* funcname{ nullptr };
-    };
-
     namespace details
     {
         // to_string_view

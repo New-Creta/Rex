@@ -695,7 +695,7 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source.file_name() != "")
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
@@ -705,7 +705,7 @@ namespace rexlog
                 if (padding_info().enabled)
                 {
                     // calc text size for padding based on "filename:line"
-                    text_size = rsl::char_traits<char>::length(msg.source.filename) + ScopedPadder::count_digits(msg.source.line) + 1;
+                    text_size = msg.source.file_name().length() + ScopedPadder::count_digits(msg.source.line()) + 1;
                 }
                 else
                 {
@@ -713,9 +713,9 @@ namespace rexlog
                 }
 
                 ScopedPadder p(text_size, padding_info(), dest);
-                fmt_helper::append_string_view(string_view_t(msg.source.filename), dest);
+                fmt_helper::append_string_view(string_view_t(msg.source.file_name()), dest);
                 dest.push_back(':');
-                fmt_helper::append_int(msg.source.line, dest);
+                fmt_helper::append_int(msg.source.line(), dest);
             }
         };
 
@@ -732,14 +732,14 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source.file_name() != "")
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
                 }
-                const count_t text_size = padding_info().enabled ? rsl::char_traits<char>::length(msg.source.filename) : 0;
+                const count_t text_size = padding_info().enabled ? msg.source.file_name().length() : 0;
                 ScopedPadder p(text_size, padding_info(), dest);
-                fmt_helper::append_string_view(string_view_t(msg.source.filename), dest);
+                fmt_helper::append_string_view(string_view_t(msg.source.file_name()), dest);
             }
         };
 
@@ -781,12 +781,12 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source.file_name() != "")
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
                 }
-                const auto filename = basename(msg.source.filename); // NOLINT(readability-qualified-auto)
+                const auto filename = basename(msg.source.file_name().data()); // NOLINT(readability-qualified-auto)
                 const count_t text_size = padding_info().enabled ? rsl::char_traits<char>::length(filename) : 0;
                 ScopedPadder p(text_size, padding_info(), dest);
                 fmt_helper::append_string_view(rsl::string_view(filename), dest);
@@ -805,15 +805,15 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source.file_name() != "")
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
                 }
 
-                auto field_size = ScopedPadder::count_digits(msg.source.line);
+                auto field_size = ScopedPadder::count_digits(msg.source.line());
                 ScopedPadder p(field_size, padding_info(), dest);
-                fmt_helper::append_int(msg.source.line, dest);
+                fmt_helper::append_int(msg.source.line(), dest);
             }
         };
 
@@ -830,14 +830,14 @@ namespace rexlog
 
             void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
             {
-                if (msg.source.empty())
+                if (msg.source.file_name() != "")
                 {
                     ScopedPadder p(0, padding_info(), dest);
                     return;
                 }
-                const count_t text_size = padding_info().enabled ? rsl::char_traits<char>::length(msg.source.funcname) : 0;
+                const count_t text_size = padding_info().enabled ? msg.source.function_name().length() : 0;
                 ScopedPadder p(text_size, padding_info(), dest);
-                fmt_helper::append_string_view(string_view_t(msg.source.funcname), dest);
+                fmt_helper::append_string_view(string_view_t(msg.source.function_name()), dest);
             }
         };
 

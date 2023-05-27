@@ -7,7 +7,7 @@ namespace rexlog
 {
     namespace details
     {
-        LogMsg::LogMsg(rexlog::log_clock::time_point logTime, rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        LogMsg::LogMsg(rexlog::log_clock::time_point logTime, rsl::source_location loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
             : logger_name(aLoggerName)
             , level(lvl)
             , time(logTime)
@@ -17,13 +17,13 @@ namespace rexlog
         {
         }
 
-        LogMsg::LogMsg(rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        LogMsg::LogMsg(rsl::source_location loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
             : LogMsg(os::now(), loc, aLoggerName, lvl, msg)
         {
         }
 
         LogMsg::LogMsg(string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
-            : LogMsg(os::now(), SourceLoc{}, aLoggerName, lvl, msg)
+            : LogMsg(os::now(), rsl::source_location{}, aLoggerName, lvl, msg)
         {
         }
 

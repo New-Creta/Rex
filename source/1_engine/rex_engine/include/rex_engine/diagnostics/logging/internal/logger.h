@@ -70,31 +70,31 @@ namespace rexlog
         void                                swap(rexlog::Logger& other) noexcept;
 
     public:
-        void log(log_clock::time_point logTime, SourceLoc loc, level::LevelEnum lvl, string_view_t msg);
-        void log(SourceLoc loc, level::LevelEnum lvl, string_view_t msg);
+        void log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, string_view_t msg);
+        void log(rsl::source_location loc, level::LevelEnum lvl, string_view_t msg);
         void log(level::LevelEnum lvl, string_view_t msg);
 
         // T cannot be statically converted to format string (including string_view/wstring_view)
         template <class T, typename rsl::enable_if<!IsConvertibleToAnyFormatString<const T&>::value, int>::type = 0>
-        void log(SourceLoc loc, level::LevelEnum lvl, const T& msg)
+        void log(rsl::source_location loc, level::LevelEnum lvl, const T& msg)
         {
             log(loc, lvl, "{}", msg);
         }
 
         template <typename... Args>
-        void log(SourceLoc loc, level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
+        void log(rsl::source_location loc, level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
         {
             log_impl(loc, lvl, details::to_string_view(fmt), rsl::forward<Args>(args)...);
         }
         template <typename... Args>
         void log(level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
         {
-            log(SourceLoc{}, lvl, fmt, rsl::forward<Args>(args)...);
+            log(rsl::source_location{}, lvl, fmt, rsl::forward<Args>(args)...);
         }
         template <typename T>
         void log(level::LevelEnum lvl, const T& msg)
         {
-            log(SourceLoc{}, lvl, msg);
+            log(rsl::source_location{}, lvl, msg);
         }
 
         template <typename... Args>
@@ -166,7 +166,7 @@ namespace rexlog
     protected:
         // common implementation for after templated public api has been resolved
         template <typename... Args>
-        void log_impl(SourceLoc loc, level::LevelEnum lvl, string_view_t fmt, Args&&... args)
+        void log_impl(rsl::source_location loc, level::LevelEnum lvl, string_view_t fmt, Args&&... args)
         {
             const bool log_enabled = should_log(lvl);
             if (!log_enabled)
