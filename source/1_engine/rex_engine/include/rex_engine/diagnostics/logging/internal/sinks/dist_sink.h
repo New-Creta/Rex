@@ -9,9 +9,7 @@
 #include "rex_engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
-
-#include <algorithm>
-#include <mutex>
+#include "rex_std/bonus/string/stack_string.h"
 
 // Distribution sink (mux). Stores a vector of sinks which get called when log
 // is called
@@ -38,7 +36,7 @@ namespace rexlog
         protected:
             void sink_it_impl(const details::LogMsg& msg) override;
             void flush_it_impl() override;
-            void set_pattern_impl(const rex::DebugString& pattern) override;
+            void set_pattern_impl(const rsl::small_stack_string& pattern) override;
             void set_formatter_impl(PatternFormatter sink_formatter) override;
 
         private:
@@ -47,7 +45,7 @@ namespace rexlog
 
         template <typename Mutex>
         dist_sink<Mutex>::dist_sink(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks)
-            : sinks_impl(sinks)
+            : sinks_(sinks)
         {
         }
 
@@ -100,7 +98,7 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void dist_sink<Mutex>::set_pattern_impl(const rex::DebugString& pattern)
+        void dist_sink<Mutex>::set_pattern_impl(const rsl::small_stack_string& pattern)
         {
             set_formatter_impl(PatternFormatter(pattern));
         }
@@ -108,10 +106,11 @@ namespace rexlog
         template <typename Mutex>
         void dist_sink<Mutex>::set_formatter_impl(PatternFormatter sink_formatter)
         {
-            BaseSink<Mutex>::m_formatter = rsl::move(sink_formatter);
+            BaseSink<Mutex>::set_formatter(rsl::move(sink_formatter));
+
             for (auto& sub_sink : sinks_)
             {
-                sub_sink->set_formatter(BaseSink<Mutex>::m_formatter->clone());
+                sub_sink->set_formatter(BaseSink<Mutex>::formatter().clone());
             }
         }
 

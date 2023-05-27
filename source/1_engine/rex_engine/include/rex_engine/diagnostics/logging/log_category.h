@@ -17,8 +17,9 @@ namespace rex
          * Constructor, registers with the log suppression system and sets up the default values.
          * @param CategoryName, name of the category
          * @param InDefaultVerbosity, default verbosity for the category, may ignored and overridden by many other mechanisms
+         * @param inAsync, should this Category log async or not.
          **/
-        LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync async = IsAsync::no);
+        LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync inAsync = IsAsync::no);
 
         /** Gets the category name **/
         const LogCategoryName& get_category_name() const;

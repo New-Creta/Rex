@@ -25,7 +25,7 @@
 
   #include "rex_engine/diagnostics/logging/log_category.h"  // IWYU pragma: keep
   #include "rex_engine/diagnostics/logging/log_verbosity.h" // IWYU pragma: keep
-  #include "rex_engine/diagnostics/logging/logger.h"        // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/log_functions.h" // IWYU pragma: keep
 
 namespace rex
 {
@@ -38,8 +38,8 @@ namespace rex
     }
   } // namespace internal
 
-  #define DEFINE_LOG_CATEGORY(Name, Verbosity) inline const rex::LogCategory Name(#Name, Verbosity, IsAsync::no) // NOLINT(fuchsia-statically-constructed-objects)
-  #define DEFINE_LOG_CATEGORY_ASYNC(Name, Verbosity) inline const rex::LogCategory Name(#Name, Verbosity, IsAsync::yes) // NOLINT(fuchsia-statically-constructed-objects)
+  #define DEFINE_LOG_CATEGORY(Name, Verbosity) inline const rex::LogCategory Name(#Name, Verbosity, rex::IsAsync::no) // NOLINT(fuchsia-statically-constructed-objects)
+  #define DEFINE_LOG_CATEGORY_ASYNC(Name, Verbosity) inline const rex::LogCategory Name(#Name, Verbosity, rex::IsAsync::yes) // NOLINT(fuchsia-statically-constructed-objects)
 } // namespace rex
 
 //-------------------------------------------------------------------------

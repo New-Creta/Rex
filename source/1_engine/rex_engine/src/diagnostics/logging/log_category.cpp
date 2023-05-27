@@ -3,10 +3,10 @@
 namespace rex
 {
   //-------------------------------------------------------------------------
-  LogCategory::LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync async)
+  LogCategory::LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync inAsync)
       : m_verbosity(inDefaultVerbosity & LogVerbosity::VerbosityMask)
       , m_category_name(inCategoryName)
-      , m_is_async(async)
+      , m_is_async(inAsync)
   {
   }
 
