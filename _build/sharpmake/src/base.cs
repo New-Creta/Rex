@@ -93,11 +93,6 @@ public class BaseProject : Project
     conf.use_compiler_options();
     conf.use_linker_options();
 
-    //if (target.DevEnv == DevEnv.vs2019)
-    //{
-    //  conf.AddPublicDependency<SharpmakeProject>(target);
-    //}
-
     switch (target.Optimization)
     {
       case Optimization.NoOpt:
@@ -312,17 +307,7 @@ public class BasicCPPProject : BaseProject
       return;
     }
 
-    string mem_tag_config_path = GenerationConfigPath;
-    string json_blob = File.ReadAllText(mem_tag_config_path);
-    Dictionary<string, JsonDocument> config = JsonSerializer.Deserialize<Dictionary<string, JsonDocument>>(json_blob);
-
-    foreach (string key in config.Keys)
-    {
-      JsonDocument doc = config[key];
-      string typename = doc.RootElement.GetProperty("Type").GetString();
-      JsonElement content = doc.RootElement.GetProperty("Content");
-      CodeGeneration.Generate(Name, key, typename, content, GenerationConfigPath);
-    }
+    CodeGeneration.ReadGenerationFile(Name, GenerationConfigPath);
   }
 
   private string GetCompilerDBOutputPath(RexConfiguration config)
