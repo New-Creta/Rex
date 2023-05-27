@@ -13,7 +13,7 @@
 // Upon destruction, logs all remaining messages in the queue before
 // destructing..
 
-#include "rex_engine/diagnostics/logging/internal/rexlog_logger.h"
+#include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_std/memory.h"
 
 namespace rexlog
@@ -22,8 +22,7 @@ namespace rexlog
     enum class AsyncOverflowPolicy
     {
         Block,        // Block until message can be enqueued
-        OverrunOldest // Discard oldest message in the queue if full when trying to
-                      // add new item.
+        OverrunOldest // Discard oldest message in the queue if full when trying to add new item.
     };
 
     namespace details
@@ -60,4 +59,52 @@ namespace rexlog
         rsl::weak_ptr<details::ThreadPool> m_thread_pool;
         AsyncOverflowPolicy m_overflow_policy;
     };
+
+    static const size_t g_default_async_q_size = 8192;
+
+    namespace internal
+    {
+        // async Logger factory - creates async loggers backed with thread pool.
+        // if a global thread pool doesn't already exist, create it with default queue
+        // size of 8192 items and single thread.
+        template <AsyncOverflowPolicy OverflowPolicy = AsyncOverflowPolicy::Block>
+        struct AsyncFactoryImpl
+        {
+            template <typename Sink, typename... SinkArgs>
+            static rsl::shared_ptr<AsyncLogger> create(rex::DebugString loggerName, SinkArgs&&... args)
+            {
+                auto& registry_inst = details::Registry::instance();
+
+                // create global thread pool if not already exists..
+                const rsl::unique_lock<rsl::recursive_mutex> tp_lock(registry_inst.tp_mutex());
+
+                auto tp = registry_inst.tp();
+                if (tp == nullptr)
+                {
+                    tp = rsl::allocate_shared<details::ThreadPool>(rex::global_debug_allocator(), g_default_async_q_size, 1U);
+                    registry_inst.set_tp(tp);
+                }
+
+                auto sink = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
+                auto new_logger = rsl::allocate_shared<AsyncLogger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink), rsl::move(tp), OverflowPolicy);
+                registry_inst.initialize_logger(new_logger);
+                return rsl::shared_ptr<AsyncLogger>(rsl::move(new_logger));
+            }
+        };
+    }
+
+    using async_factory = internal::AsyncFactoryImpl<AsyncOverflowPolicy::Block>;
+    using async_factory_nonblock = internal::AsyncFactoryImpl<AsyncOverflowPolicy::OverrunOldest>;
+
+    template <typename Sink, typename... SinkArgs>
+    rsl::shared_ptr<rexlog::Logger> create_async(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
+    {
+        return async_factory::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+    }
+
+    template <typename Sink, typename... SinkArgs>
+    rsl::shared_ptr<rexlog::Logger> create_async_nb(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
+    {
+        return async_factory_nonblock::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+    }
 } // namespace rexlog

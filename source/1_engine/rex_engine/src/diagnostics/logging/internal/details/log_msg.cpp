@@ -5,32 +5,29 @@
 
 namespace rexlog
 {
-  namespace details
-  {
-
-     LogMsg::LogMsg(rexlog::log_clock::time_point logTime, rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
-        : logger_name(aLoggerName)
-        , level(lvl)
-        , time(logTime)
-#ifndef REXLOG_NO_THREAD_ID
-        , thread_id(os::thread_id())
-#endif
-        , source(loc)
-        , payload(msg)
+    namespace details
     {
-    }
+        LogMsg::LogMsg(rexlog::log_clock::time_point logTime, rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+            : logger_name(aLoggerName)
+            , level(lvl)
+            , time(logTime)
+            , thread_id(os::thread_id())
+            , source(loc)
+            , payload(msg)
+        {
+        }
 
-     LogMsg::LogMsg(rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
-        : LogMsg(os::now(), loc, aLoggerName, lvl, msg)
-    {
-    }
+        LogMsg::LogMsg(rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+            : LogMsg(os::now(), loc, aLoggerName, lvl, msg)
+        {
+        }
 
-     LogMsg::LogMsg(string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
-        : LogMsg(os::now(), SourceLoc {}, aLoggerName, lvl, msg)
-    {
-    }
+        LogMsg::LogMsg(string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+            : LogMsg(os::now(), SourceLoc{}, aLoggerName, lvl, msg)
+        {
+        }
 
-  } // namespace details
+    } // namespace details
 } // namespace rexlog
 
 // NOLINTEND(misc-definitions-in-headers)

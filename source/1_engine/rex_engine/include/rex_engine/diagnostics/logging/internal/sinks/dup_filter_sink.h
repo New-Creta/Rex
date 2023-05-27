@@ -30,73 +30,73 @@
 
 namespace rexlog
 {
-  namespace sinks
-  {
-    template <typename Mutex>
-    class dup_filter_sink : public dist_sink<Mutex>
+    namespace sinks
     {
-    public:
-      template <class Rep, class Period>
-      explicit dup_filter_sink(rsl::chrono::duration<Rep, Period> max_skip_duration, level::LevelEnum notification_level = level::info);
-
-    protected:
-        void sink_it_impl(const details::LogMsg& msg) override;
-        bool filter_impl(const details::LogMsg& msg);
-
-    private:
-      rsl::chrono::microseconds max_skip_duration_;
-      log_clock::time_point last_msg_time_;
-      rex::DebugString last_msg_payload_;
-      size_t skip_counter_ = 0;
-      level::LevelEnum log_level_;
-    };
-
-    template <typename Mutex>
-    template <class Rep, class Period>
-    dup_filter_sink<Mutex>::dup_filter_sink(rsl::chrono::duration<Rep, Period> max_skip_duration, level::LevelEnum notification_level)
-        : max_skip_duration_{ max_skip_duration }
-        , log_level_{ notification_level }
-    {
-    }
-
-    template <typename Mutex>
-    void dup_filter_sink<Mutex>::sink_it_impl(const details::LogMsg& msg)
-    {
-        bool filtered = filter_impl(msg);
-        if (!filtered)
+        template <typename Mutex>
+        class dup_filter_sink : public dist_sink<Mutex>
         {
-            skip_counter_ += 1;
-            return;
+        public:
+            template <class Rep, class Period>
+            explicit dup_filter_sink(rsl::chrono::duration<Rep, Period> max_skip_duration, level::LevelEnum notification_level = level::info);
+
+        protected:
+            void sink_it_impl(const details::LogMsg& msg) override;
+            bool filter_impl(const details::LogMsg& msg);
+
+        private:
+            rsl::chrono::microseconds max_skip_duration_;
+            log_clock::time_point last_msg_time_;
+            rex::DebugString last_msg_payload_;
+            size_t skip_counter_ = 0;
+            level::LevelEnum log_level_;
+        };
+
+        template <typename Mutex>
+        template <class Rep, class Period>
+        dup_filter_sink<Mutex>::dup_filter_sink(rsl::chrono::duration<Rep, Period> max_skip_duration, level::LevelEnum notification_level)
+            : max_skip_duration_{ max_skip_duration }
+            , log_level_{ notification_level }
+        {
         }
 
-        // log the "skipped.." message
-        if (skip_counter_ > 0)
+        template <typename Mutex>
+        void dup_filter_sink<Mutex>::sink_it_impl(const details::LogMsg& msg)
         {
-            char buf[64];
-            auto msg_size = ::snprintf(buf, sizeof(buf), "Skipped %u duplicate messages..", static_cast<unsigned>(skip_counter_));
-            if (msg_size > 0 && static_cast<size_t>(msg_size) < sizeof(buf))
+            bool filtered = filter_impl(msg);
+            if (!filtered)
             {
-                details::LogMsg skipped_msg{ msg.source, msg.logger_name, log_level_, string_view_t {buf, static_cast<size_t>(msg_size)} };
-                dist_sink<Mutex>::sink_it_impl(skipped_msg);
+                skip_counter_ += 1;
+                return;
             }
+
+            // log the "skipped.." message
+            if (skip_counter_ > 0)
+            {
+                char buf[64];
+                auto msg_size = ::snprintf(buf, sizeof(buf), "Skipped %u duplicate messages..", static_cast<unsigned>(skip_counter_));
+                if (msg_size > 0 && static_cast<size_t>(msg_size) < sizeof(buf))
+                {
+                    details::LogMsg skipped_msg{ msg.source, msg.logger_name, log_level_, string_view_t {buf, static_cast<size_t>(msg_size)} };
+                    dist_sink<Mutex>::sink_it_impl(skipped_msg);
+                }
+            }
+
+            // log current message
+            dist_sink<Mutex>::sink_it_impl(msg);
+            last_msg_time_ = msg.time;
+            skip_counter_ = 0;
+            last_msg_payload_.assign(msg.payload.data(), msg.payload.data() + msg.payload.size());
         }
 
-        // log current message
-        dist_sink<Mutex>::sink_it_impl(msg);
-        last_msg_time_ = msg.time;
-        skip_counter_ = 0;
-        last_msg_payload_.assign(msg.payload.data(), msg.payload.data() + msg.payload.size());
-    }
+        template <typename Mutex>
+        bool dup_filter_sink<Mutex>::filter_impl(const details::LogMsg& msg)
+        {
+            auto filter_duration = msg.time - last_msg_time_;
+            return (filter_duration > max_skip_duration_) || (msg.payload != last_msg_payload_);
+        }
 
-    template <typename Mutex>
-    bool dup_filter_sink<Mutex>::filter_impl(const details::LogMsg& msg)
-    {
-        auto filter_duration = msg.time - last_msg_time_;
-        return (filter_duration > max_skip_duration_) || (msg.payload != last_msg_payload_);
-    }
+        using dup_filter_sink_mt = dup_filter_sink<rsl::mutex>;
+        using dup_filter_sink_st = dup_filter_sink<details::NullMutex>;
 
-    using dup_filter_sink_mt = dup_filter_sink<rsl::mutex>;
-    using dup_filter_sink_st = dup_filter_sink<details::NullMutex>;
-
-  } // namespace sinks
+    } // namespace sinks
 } // namespace rexlog
