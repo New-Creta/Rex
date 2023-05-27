@@ -43,6 +43,8 @@ namespace rex
 
         m_on_update = m_engine_params.app_update_func ? m_engine_params.app_update_func : [&]() {};
 
+        m_on_paused_update = m_engine_params.app_paused_update_func ? m_engine_params.app_paused_update_func : [&]() {};
+
         m_on_shutdown = m_engine_params.app_shutdown_func ? m_engine_params.app_shutdown_func : [&]() {};
       }
 
@@ -82,6 +84,8 @@ namespace rex
         // update the window (this pulls input as well)
         m_window->update();
 
+        // when the application is paused, you shouldn't do a full update
+        // you should definitely not render as there's no point in doing so.
         if(!m_app_instance->is_paused())
         {
           // call the client code, let it update
@@ -90,13 +94,15 @@ namespace rex
           // update the graphics code
           renderer::backend::clear();
           renderer::backend::present();
-
-          // update the timing stats
-          m_delta_time.update();
-          m_fps.update();
-
-          ++m_frame_idx;
         }
+        else
+        {
+          m_on_paused_update();
+        }
+
+        // update the timing stats
+        m_delta_time.update();
+        m_fps.update();
 
         cap_frame_rate();
       }
@@ -264,6 +270,7 @@ namespace rex
 
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;
+      rsl::function<void()> m_on_paused_update;
       rsl::function<void()> m_on_shutdown;
 
       PlatformCreationParams m_platform_creation_params;
@@ -271,8 +278,6 @@ namespace rex
       CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
-
-      card32 m_frame_idx = 0;
     };
 
     //-------------------------------------------------------------------------
