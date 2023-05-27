@@ -17,8 +17,6 @@
 
 // IWYU pragma: no_include <built-in>
 
-#undef REXLOG_HEADER_ONLY
-
 #define REXLOG_FMT_RUNTIME(format_string) format_string
 #define REXLOG_FMT_STRING(format_string)  format_string
 
