@@ -26,8 +26,8 @@ namespace rexlog
       close();
       m_filename = fname;
 
-      const auto* mode       = REXLOG_FILENAME_T("ab");
-      const auto* trunc_mode = REXLOG_FILENAME_T("wb");
+      const auto* mode       = "ab";
+      const auto* trunc_mode = "wb";
 
       if(m_event_handlers.before_open)
       {

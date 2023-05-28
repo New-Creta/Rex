@@ -39,7 +39,7 @@ namespace rexlog
 #endif
 #endif
             constexpr static const rsl::string_view folder_seps = REXLOG_FOLDER_SEPS;
-            constexpr static const rsl::string_view folder_seps_filename = REXLOG_FILENAME_T(REXLOG_FOLDER_SEPS);
+            constexpr static const rsl::string_view folder_seps_filename = REXLOG_FOLDER_SEPS;
 
             // fopen_s on non windows for writing
             bool fopen_s(FILE** fp, const filename_t& filename, const filename_t& mode);
