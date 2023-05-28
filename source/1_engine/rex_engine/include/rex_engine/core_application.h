@@ -23,7 +23,6 @@ namespace rex
     rsl::memory_size max_memory     = rsl::memory_size((rsl::numeric_limits<s64>::max)());
     init_func app_init_func         = nullptr;
     update_func app_update_func = nullptr;
-    update_func app_paused_update_func     = nullptr;
     shutdown_func app_shutdown_func = nullptr;
   };
 
