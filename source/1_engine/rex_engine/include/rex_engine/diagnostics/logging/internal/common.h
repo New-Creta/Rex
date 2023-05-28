@@ -17,9 +17,6 @@
 
 // IWYU pragma: no_include <built-in>
 
-#define REXLOG_FMT_RUNTIME(format_string) format_string
-#define REXLOG_FMT_STRING(format_string)  format_string
-
 #define REXLOG_FUNCTION REX_FUNC_SIG
 
 namespace rexlog
@@ -28,8 +25,6 @@ namespace rexlog
     {
         class AbstractSink;
     } // namespace sinks
-
-    #define REXLOG_FILENAME_T(s) s
 
     using filename_t        = rex::DebugString;
     using string_view_t     = rsl::string_view;
