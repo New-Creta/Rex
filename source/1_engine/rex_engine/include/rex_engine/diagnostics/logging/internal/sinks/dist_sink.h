@@ -106,7 +106,7 @@ namespace rexlog
         template <typename Mutex>
         void dist_sink<Mutex>::set_formatter_impl(PatternFormatter sink_formatter)
         {
-            BaseSink<Mutex>::set_formatter(rsl::move(sink_formatter));
+            BaseSink<Mutex>::set_formatter_impl(rsl::move(sink_formatter));
 
             for (auto& sub_sink : sinks_)
             {
