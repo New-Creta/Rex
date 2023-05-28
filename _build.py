@@ -16,17 +16,6 @@ import regis.util
 import regis.diagnostics
 import regis.task_raii_printing
 
-from pathlib import Path
-
-def find_sln_in_cwd():
-  dirs = os.listdir()
-  for dir in dirs:
-    if os.path.isfile(dir) and Path(dir).suffix == ".nsln":
-      return dir
-    
-  return ""
-
-
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   
@@ -38,10 +27,6 @@ if __name__ == "__main__":
 
   args, unknown = parser.parse_known_args()
 
-  sln_file = args.sln
-  if sln_file == "":
-    sln_file = find_sln_in_cwd()
-
   if args.compiler == "unknown":
     if regis.util.is_windows():
       args.compiler = "msvc"
@@ -51,7 +36,7 @@ if __name__ == "__main__":
   intermediate_dir = ""
 
   task = regis.task_raii_printing.TaskRaiiPrint("Building")
-  result = regis.build.new_build(sln_file, args.project, args.config, args.compiler, intermediate_dir, args.clean)
+  result = regis.build.new_build(args.project, args.config, args.compiler, intermediate_dir, args.clean, args.sln)
 
   if result != 0:
     regis.diagnostics.log_err("Build failed")
