@@ -22,7 +22,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        LogMsg::LogMsg(rexlog::log_clock::time_point logTime, rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        LogMsg::LogMsg(rexlog::log_clock::time_point logTime, const rsl::source_location& loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
             : m_logger_name(aLoggerName)
             , m_level(lvl)
             , m_time(logTime)
@@ -35,14 +35,14 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        LogMsg::LogMsg(rexlog::SourceLoc loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        LogMsg::LogMsg(const rsl::source_location& loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
             : LogMsg(os::now(), loc, aLoggerName, lvl, msg)
         {
         }
 
         //-------------------------------------------------------------------------
         LogMsg::LogMsg(string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
-            : LogMsg(os::now(), SourceLoc{}, aLoggerName, lvl, msg)
+            : LogMsg(os::now(), rsl::source_location{}, aLoggerName, lvl, msg)
         {
         }
 
@@ -79,7 +79,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void LogMsg::set_source(const SourceLoc& sourceLoc)
+        void LogMsg::set_source(const rsl::source_location& sourceLoc)
         {
             m_source = sourceLoc;
         }
@@ -122,7 +122,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        SourceLoc LogMsg::source() const
+        const rsl::source_location& LogMsg::source() const
         {
             return m_source;
         }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_std/source_location.h"
 
 #include <string>
 
@@ -17,8 +18,8 @@ namespace rexlog
             mutable size_t          m_color_range_end;
 
             LogMsg();
-            LogMsg(log_clock::time_point logTime, SourceLoc loc, string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
-            LogMsg(SourceLoc loc, string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
+            LogMsg(log_clock::time_point logTime, const rsl::source_location& loc, string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
+            LogMsg(const rsl::source_location& loc, string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
             LogMsg(string_view_t loggerName, level::LevelEnum lvl, string_view_t msg);
 
             void                    set_logger_name(string_view_t loggerName);
@@ -29,7 +30,7 @@ namespace rexlog
             void                    set_color_range_start(size_t cs);
             void                    set_color_range_end(size_t ce);
 
-            void                    set_source(const SourceLoc& sourceLoc);
+            void                    set_source(const rsl::source_location& sourceLoc);
             void                    set_payload(string_view_t p);
 
             string_view_t           logger_name() const;
@@ -49,7 +50,7 @@ namespace rexlog
             log_clock::time_point   m_time;
             size_t                  m_thread_id;
 
-            SourceLoc               m_source;
+            rsl::source_location    m_source;
             string_view_t           m_payload;
         };
     } // namespace details

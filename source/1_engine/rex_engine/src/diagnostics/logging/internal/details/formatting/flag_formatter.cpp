@@ -198,13 +198,13 @@ namespace rexlog
             dest.push_back(' ');
 
             // add source location if present
-            if (!msg.source().empty())
+            if (msg.source.file_name() != "")
             {
                 dest.push_back('[');
-                const char* filename = details::short_filename_formatter<details::NullScopedPadder>::basename(msg.source().filename);
+                const char* filename = details::short_filename_formatter<details::NullScopedPadder>::basename(msg.source.file_name().data());
                 fmt_helper::append_string_view(rsl::string_view(filename), dest);
                 dest.push_back(':');
-                fmt_helper::append_int(msg.source().line, dest);
+                fmt_helper::append_int(msg.source.line(), dest);
                 dest.push_back(']');
                 dest.push_back(' ');
             }
