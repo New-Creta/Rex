@@ -12,7 +12,11 @@ import shutil
 
 root_path = regis.util.find_root()
 settings = regis.rex_json.load_file(os.path.join(root_path, regis.util.settingsPathFromRoot))
-intermediate_dir = os.path.join(regis.util.find_root(), settings["intermediate_folder"])
+intermediate_dir = os.path.join(root_path, settings["intermediate_folder"])
+
+vscode_dir = os.path.join(root_path, ".vscode")
+vscode_build_dir = os.path.join(root_path, "_build", "vscode")
+
 misc_folders = settings["misc_folders"]
 misc_extensions = settings["misc_extensions"]
 
@@ -62,6 +66,12 @@ def run(shouldClean):
   # libraries like Windows SDK, C++ standard library is always required for development, where as libraries like ImGui
   # are not required and can always be replaced if a better library comes along.
   regis.install_externals.run()
+
+  # This setup is optional, but for users using VSCode as an IDE we copy over a "tasks.json" file
+  # this file will help in running the different scripts to generate/build/test rex
+  if not os.path.exists(vscode_dir):
+    os.mkdir(vscode_dir)
+  shutil.copyfile(os.path.join(vscode_build_dir, "tasks.json"), os.path.join(vscode_dir, "tasks.json"))  
       
   # Lastly, install the git hooks
   regis.git_hooks.run(os.path.join(root_path, "_build", "scripts", "git", "hooks"))

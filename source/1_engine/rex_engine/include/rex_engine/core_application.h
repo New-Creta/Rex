@@ -10,7 +10,6 @@
 namespace rex
 {
   class FrameInfo;
-  class CommandLineArguments;
   struct EngineParams;
 
   // to make it accessible throughout the code
@@ -23,7 +22,7 @@ namespace rex
   class CoreApplication
   {
   public:
-    explicit CoreApplication(const EngineParams& engineParams);
+    CoreApplication(const EngineParams& engineParams);
     CoreApplication(const CoreApplication&) = delete;
     CoreApplication(CoreApplication&&)      = delete;
     virtual ~CoreApplication();
