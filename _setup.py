@@ -14,7 +14,7 @@ import subprocess
 import sys
 import time
   
-rexpy_version = "0.1.38"
+rexpy_version = "0.1.40"
 
 def __intsall_regis():
   os.system(f"py -m pip uninstall --yes regis")
