@@ -101,7 +101,7 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const CommandLineArgument& cmdArg) { return key == cmdArg.name; });
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return key == cmdArg.name; });
 
         if(cmd_it == g_command_line_args.cend())
         {
@@ -112,17 +112,17 @@ namespace rex
         m_arguments.push_back({key, value});
       }
 
-      bool verify_args(const CommandLineArgument* args, count_t argCount) // NOLINT(readability-convert-member-functions-to-static)
+      bool verify_args(const Argument* args, count_t argCount) // NOLINT(readability-convert-member-functions-to-static)
       {
         for(count_t i = 0; i < argCount; ++i)
         {
-          const CommandLineArgument& lhs_arg = args[i];
+          const Argument& lhs_arg = args[i];
           for(count_t j = 0; j < argCount; ++j)
           {
             if(i == j)
               continue;
 
-            const CommandLineArgument& rhs_arg = args[j];
+            const Argument& rhs_arg = args[j];
             if(rsl::strincmp(lhs_arg.name.data(), rhs_arg.name.data(), lhs_arg.name.length()) == 0)
             {
               REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity", lhs_arg.name);
@@ -145,18 +145,13 @@ namespace rex
       g_cmd_line_args = rsl::make_unique<CommandLineArguments>(cmdLine);
     }
 
-    rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
-    {
-      return g_cmd_line_args->get_argument(arg);
-    }
-
     void print_args()
     {
       REX_LOG(LogEngine, "Listing Command line arguments");
 
-      rsl::unordered_map<rsl::string_view, rsl::vector<CommandLineArgument>> project_to_arguments;
+      rsl::unordered_map<rsl::string_view, rsl::vector<Argument>> project_to_arguments;
 
-      for(CommandLineArgument cmd: g_command_line_args)
+      for(Argument cmd: g_command_line_args)
       {
         project_to_arguments[cmd.module].push_back(cmd);
       }
@@ -167,11 +162,16 @@ namespace rex
         REX_LOG(LogEngine, "Commandline Arguments For {}", project);
         REX_LOG(LogEngine, "------------------------------");
 
-        for(CommandLineArgument cmd: cmds)
+        for(Argument cmd: cmds)
         {
           REX_LOG(LogEngine, "\"{}\" - {}", cmd.name, cmd.desc);
         }
       }
+    }
+
+    rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
+    {
+      return g_cmd_line_args->get_argument(arg);
     }
 
   } // namespace cmdline
