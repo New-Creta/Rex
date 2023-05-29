@@ -50,7 +50,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        LoggerObjectPtr Registry::get(const rex::DebugString& loggerName)
+        LoggerObjectPtr Registry::get(rsl::string_view loggerName)
         {
             const rsl::unique_lock<rsl::mutex> lock(m_logger_map_mutex);
 
