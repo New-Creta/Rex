@@ -65,27 +65,38 @@ namespace rex
         // get the new space pos
         space_pos = cmdLine.find_first_of(' ', start_pos);
 
-        const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         while(start_pos != -1 && space_pos != -1)
         {
-          const count_t length            = space_pos - start_pos - arg_prefix.size();
-          const rsl::string_view argument = cmdLine.substr(start_pos + arg_prefix.size(), length);
+          const count_t length            = space_pos - start_pos;
+          const rsl::string_view argument = cmdLine.substr(start_pos, length);
+          
           add_argument(argument);
+
           start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
           space_pos = cmdLine.find_first_of(' ', start_pos);
         }
 
         if(start_pos != -1)
         {
-          add_argument(cmdLine.substr(start_pos + arg_prefix.size())); // + 1 to ignore '-'
+          const rsl::string_view argument = cmdLine.substr(start_pos);
+          add_argument(argument);
         }
       }
 
       void add_argument(rsl::string_view arg)
       {
+        static const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
+        if (arg.starts_with(arg_prefix) == false)
+        {
+          REX_ERROR(LogEngine, "Argument '{}' does not start with '{}'. This argument will be ignored", arg, arg_prefix);
+          return;
+        }
+
+        arg = arg.substr(arg_prefix.length());
+
         const count_t equal_pos = arg.find('=');
-        rsl::string_view key    = "";
-        rsl::string_view value  = "";
+        rsl::string_view key = "";
+        rsl::string_view value = "";
 
         // if the argument is of type -MyArg=Something
         if(equal_pos != -1)
@@ -107,7 +118,7 @@ namespace rex
 
         if(cmd_it == g_command_line_args.cend())
         {
-          REX_WARN(LogEngine, "Command {} passed in but it's not recognised as a valid command so will be ignored", arg);
+          REX_WARN(LogEngine, "Command '{}' passed in but it's not recognised as a valid command so will be ignored", arg);
           return;
         }
 
