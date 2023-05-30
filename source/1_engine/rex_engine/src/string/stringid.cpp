@@ -18,7 +18,19 @@ namespace rex
         return StringEntryID(); // StringID::is_none() == true
       }
 
-      return *string_pool::store(characters);
+      return string_pool::make(characters);
+    }
+
+        //-------------------------------------------------------------------------
+    StringEntryID make_and_store(rsl::string_view characters)
+    {
+      if(characters.empty())
+      {
+        REX_WARN(LogEngine, "Trying to create a StringID with an empty string, this is not allowed.");
+        return StringEntryID(); // StringID::is_none() == true
+      }
+
+      return string_pool::make_and_store(characters);
     }
   } // namespace internal
 
@@ -33,10 +45,19 @@ namespace rex
 
   //-------------------------------------------------------------------------
   /**
+   * Create an StringID with a StringEntryID.
+   */
+  StringID::StringID(StringEntryID entryID)
+      : m_comparison_hash(entryID)
+  {
+  }
+
+  //-------------------------------------------------------------------------
+  /**
    * Create an StringID with characters.
    */
-  StringID::StringID(rsl::string_view characters)
-      : m_comparison_hash(internal::make(characters))
+  StringID::StringID(rsl::string_view stringView)
+      : m_comparison_hash(internal::make(stringView))
   {
   }
 
@@ -97,20 +118,22 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  StringID create_sid(rsl::string_view stringView)
+  StringID create_sid(rsl::string_view characters)
   {
-    return StringID(stringView);
+    StringEntryID entry_id = internal::make_and_store(characters);
+
+    return StringID(entry_id);
   }
 
   //-------------------------------------------------------------------------
   bool operator==(rsl::string_view s, const StringID& sid)
   {
-    return create_sid(s) == sid;
+    return StringID(s) == sid;
   }
   //-------------------------------------------------------------------------
   bool operator!=(rsl::string_view s, const StringID& sid)
   {
-    return create_sid(s) != sid;
+    return StringID(s) != sid;
   }
   //-------------------------------------------------------------------------
   bool operator==(const StringID& sid, rsl::string_view s)

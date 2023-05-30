@@ -15,7 +15,8 @@ namespace rex
   {
   public:
     StringID();
-    explicit StringID(rsl::string_view characters);
+    explicit StringID(StringEntryID entryID);
+    explicit StringID(rsl::string_view stringView);
 
     explicit operator u32() const;
 
