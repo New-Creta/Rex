@@ -36,14 +36,14 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const StringEntryID* store(rsl::hash_result hash, rsl::string_view characters)
+    StringEntryID store(rsl::hash_result hash, rsl::string_view characters)
     {
       auto it = get_entries().find(hash);
       if(it != rsl::cend(get_entries()))
       {
         REX_ASSERT_X(rsl::strcmp(characters.data(), it->value.characters().data()) == 0, "Hash collision");
 
-        return &it->key;
+        return it->key;
       }
 
       StringEntryID entry_id(hash);
@@ -52,25 +52,25 @@ namespace rex
       auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
       if(result.emplace_successful)
       {
-        return &result.inserted_element->key;
+        return result.inserted_element->key;
       }
 
       REX_ASSERT("This path should never be reached, insertion into the string pool failed somehow.");
-      return nullptr;
+      return {};
     }
 
     //-------------------------------------------------------------------------
     rsl::string_view resolve(const StringEntryID& entryID)
     {
-      const StringEntry* entry = find(entryID);
+      const StringEntry& entry = find(entryID);
 
-      REX_ASSERT_X(entry != nullptr, "Entry not found");
+      REX_ASSERT_X(entry.is_valid(), "Entry not found");
 
-      return entry->characters();
+      return entry.characters();
     }
 
     //-------------------------------------------------------------------------
-    const StringEntry* find(const StringEntryID& entryID)
+    const StringEntry& find(const StringEntryID& entryID)
     {
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
@@ -80,11 +80,11 @@ namespace rex
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
 
-      return &(it->value);
+      return (it->value);
     }
 
     //-------------------------------------------------------------------------
-    const StringEntryID* store(rsl::string_view characters)
+    StringEntryID store(rsl::string_view characters)
     {
       return store(rsl::hash<rsl::string_view> {}(characters), characters);
     }

@@ -18,7 +18,7 @@ namespace rex
         return StringEntryID(); // StringID::is_none() == true
       }
 
-      return *string_pool::store(characters);
+      return string_pool::store(characters);
     }
   } // namespace internal
 
