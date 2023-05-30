@@ -13,7 +13,7 @@
         "Type": "Array",
         "Content": {
           "Name": "g_command_line_args",
-          "ElementType": "cmdline::CommandLineArgument",
+          "ElementType": "cmdline::Argument",
           "Includes" : ["rex_engine/cmdline.h"],
           "Values": [
             "\"AutoTest\", \"Specify the autotest to run\""

@@ -25,7 +25,7 @@
     "Type": "Array",
     "Content": {
       "Name": "g_command_line_args",
-      "ElementType": "cmdline::CommandLineArgument",
+      "ElementType": "cmdline::Argument",
       "Includes" : ["rex_engine/cmdline.h"],
       "Values": [
         "\"Root\", \"The directory to initialize the vfs with. this is similar as setting the working root directory\"",

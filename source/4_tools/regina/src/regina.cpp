@@ -1,4 +1,3 @@
-#include "rex_engine/cmd_line_args.h"
 #include "rex_engine/core_application.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
