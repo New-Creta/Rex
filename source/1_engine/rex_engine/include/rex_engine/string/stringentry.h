@@ -19,6 +19,8 @@ namespace rex
     StringEntry& operator=(const StringEntry& other) = delete;
     StringEntry& operator=(StringEntry&& other) noexcept;
 
+    bool is_valid() const;
+
     rsl::string_view characters() const;
 
     s32 size() const;
