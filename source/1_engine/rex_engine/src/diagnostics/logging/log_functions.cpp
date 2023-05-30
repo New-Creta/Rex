@@ -1,6 +1,7 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
 #include "rex_engine/debug_types.h"
+#include "rex_engine/diagnostics/logging/internal/logger_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
