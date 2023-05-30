@@ -36,27 +36,33 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const StringEntryID* store(rsl::hash_result hash, rsl::string_view characters)
+    StringEntryID make(rsl::hash_result hash, rsl::string_view characters)
     {
       auto it = get_entries().find(hash);
       if(it != rsl::cend(get_entries()))
       {
         REX_ASSERT_X(rsl::strcmp(characters.data(), it->value.characters().data()) == 0, "Hash collision");
 
-        return &it->key;
+        return it->key;
       }
 
-      StringEntryID entry_id(hash);
+      return StringEntryID(hash);
+    }
+
+    //-------------------------------------------------------------------------
+    StringEntryID make_and_store(rsl::hash_result hash, rsl::string_view characters)
+    {
+      StringEntryID entry_id = make(hash, characters);
       StringEntry entry(characters);
 
       auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
       if(result.emplace_successful)
       {
-        return &result.inserted_element->key;
+        return result.inserted_element->key;
       }
 
       REX_ASSERT("This path should never be reached, insertion into the string pool failed somehow.");
-      return nullptr;
+      return {};
     }
 
     //-------------------------------------------------------------------------
@@ -84,9 +90,14 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const StringEntryID* store(rsl::string_view characters)
+    StringEntryID make(rsl::string_view characters)
     {
-      return store(rsl::hash<rsl::string_view> {}(characters), characters);
+      return make(rsl::hash<rsl::string_view> {}(characters), characters);
+    }
+    //-------------------------------------------------------------------------
+    StringEntryID make_and_store(rsl::string_view characters)
+    {
+      return make_and_store(rsl::hash<rsl::string_view> {}(characters), characters);
     }
   } // namespace string_pool
 } // namespace rex
