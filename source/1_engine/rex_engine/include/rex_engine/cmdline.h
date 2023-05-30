@@ -14,6 +14,7 @@ namespace rex
     };
 
     void init(rsl::string_view cmdLine);
+    void shutdown();
 
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg);
     void print_args();

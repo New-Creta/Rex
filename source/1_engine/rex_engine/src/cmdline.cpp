@@ -155,6 +155,13 @@ namespace rex
       g_cmd_line_args = rsl::make_unique<CommandLineArguments>(cmdLine);
     }
 
+    // we need to manually shut this down, otherwise it's memory might get tracked
+    // by an already deleted memory tracking, causing an assert on shutdown
+    void shutdown()
+    {
+      g_cmd_line_args.reset();
+    }
+
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
     {
       return g_cmd_line_args->get_argument(arg);
