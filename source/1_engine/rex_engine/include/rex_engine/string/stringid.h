@@ -11,55 +11,56 @@
 
 namespace rex
 {
-  class StringID
-  {
-  public:
-    StringID();
-    explicit StringID(StringEntryID entryID);
-    explicit StringID(rsl::string_view stringView);
+    class StringViewID;
 
-    explicit operator u32() const;
+    class StringID
+    {
+    public:
+        StringID();
+        explicit StringID(rsl::string_view stringView);
 
-    bool operator==(const StringID& other) const;
-    bool operator!=(const StringID& other) const;
+        explicit operator u32() const;
 
-    bool operator==(const StringEntryID& entryID) const;
-    bool operator!=(const StringEntryID& entryID) const;
+        bool operator==(const StringID& other) const;
+        bool operator!=(const StringID& other) const;
 
-    rsl::string_view to_string_view() const;
-    bool is_none() const;
-    u32 value() const;
+        bool operator==(const StringEntryID& entryID) const;
+        bool operator!=(const StringEntryID& entryID) const;
 
-  private:
-    /** Hash into the StringID hash table */
-    StringEntryID m_comparison_hash;
-  };
+        rsl::string_view to_string_view() const;
+        bool is_none() const;
+        u32 value() const;
 
-  StringID create_sid(rsl::string_view stringView);
+    private:
+        /** Hash into the StringID hash table */
+        StringEntryID m_comparison_hash;
+    };
 
-  bool operator==(rsl::string_view s, const StringID& sid);
-  bool operator!=(rsl::string_view s, const StringID& sid);
-  bool operator==(const StringID& sid, rsl::string_view s);
-  bool operator!=(const StringID& sid, rsl::string_view s);
+    StringID create_sid(rsl::string_view stringView);
+
+    bool operator==(rsl::string_view s, const StringID& sid);
+    bool operator!=(rsl::string_view s, const StringID& sid);
+    bool operator==(const StringID& sid, rsl::string_view s);
+    bool operator!=(const StringID& sid, rsl::string_view s);
+    bool operator==(const StringID& sid, const StringViewID& svid);
+    bool operator!=(const StringID& sid, const StringViewID& svid);
 } // namespace rex
-
-rex::StringID operator""_sid(const char* string, size_t size);
 
 rsl::ostream& operator<<(rsl::ostream& os, const rex::StringID& stringID);
 
 // custom specialization of rsl::hash can be injected in namespace rsl
 namespace rsl
 {
-  inline namespace v1
-  {
-    //-------------------------------------------------------------------------
-    template <>
-    struct hash<rex::StringID>
+    inline namespace v1
     {
-      rsl::hash_result operator()(const rex::StringID& s) const noexcept
-      {
-        return s.value();
-      }
-    };
-  } // namespace v1
+        //-------------------------------------------------------------------------
+        template <>
+        struct hash<rex::StringID>
+        {
+            rsl::hash_result operator()(const rex::StringID& s) const noexcept
+            {
+                return s.value();
+            }
+        };
+    } // namespace v1
 } // namespace rsl
