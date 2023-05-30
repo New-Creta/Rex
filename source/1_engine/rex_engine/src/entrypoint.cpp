@@ -26,7 +26,7 @@ namespace rex
       vfs::init();
     }
 
-    void post_app_shutdown() 
+    void post_app_shutdown()
     {
       vfs::shutdown();
     }

@@ -35,7 +35,7 @@ namespace rex
 
       rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
       {
-        for(ActiveArgument active_arg : m_arguments)
+        for(ActiveArgument active_arg: m_arguments)
         {
           if(rsl::strincmp(arg.data(), active_arg.argument.data(), arg.length()) == 0)
           {
@@ -69,7 +69,7 @@ namespace rex
         {
           const count_t length            = space_pos - start_pos;
           const rsl::string_view argument = cmdLine.substr(start_pos, length);
-          
+
           add_argument(argument);
 
           start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
@@ -85,8 +85,8 @@ namespace rex
 
       void add_argument(rsl::string_view arg)
       {
-        static const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
-        if (arg.starts_with(arg_prefix) == false)
+        const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
+        if(arg.starts_with(arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           REX_ERROR(LogEngine, "Argument '{}' does not start with '{}'. This argument will be ignored", arg, arg_prefix);
           return;
@@ -95,8 +95,8 @@ namespace rex
         arg = arg.substr(arg_prefix.length());
 
         const count_t equal_pos = arg.find('=');
-        rsl::string_view key = "";
-        rsl::string_view value = "";
+        rsl::string_view key    = "";
+        rsl::string_view value  = "";
 
         // if the argument is of type -MyArg=Something
         if(equal_pos != -1)
@@ -111,10 +111,7 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const CommandLineArgument& cmdArg) 
-          { 
-            return rsl::strincmp(key.data(), cmdArg.name.data(), key.length()) == 0;
-          });
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const CommandLineArgument& cmdArg) { return rsl::strincmp(key.data(), cmdArg.name.data(), key.length()) == 0; });
 
         if(cmd_it == g_command_line_args.cend())
         {
