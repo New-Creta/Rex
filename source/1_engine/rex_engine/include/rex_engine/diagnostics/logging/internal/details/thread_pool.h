@@ -27,12 +27,21 @@ namespace rexlog
             Terminate
         };
 
+        struct AsyncMsgLogFunctions
+        {
+            using LogFunction = std::function<void(const details::LogMsg&)>;
+            using FlushFunction = std::function<void()>;
+
+            LogFunction log_fn;
+            FlushFunction flush_fn;
+        };
+
         // Async msg to move to/from the queue movable only
         // This should never be copied
         struct AsyncMsg : LogMsgBuffer
         {
             AsyncMsgType msg_type{ AsyncMsgType::Log };
-            async_logger_ptr worker_ptr;
+            AsyncMsgLogFunctions logger_fns;
 
             AsyncMsg() = default;
             ~AsyncMsg() = default;
@@ -42,22 +51,22 @@ namespace rexlog
             AsyncMsg& operator=(const AsyncMsg&) = delete;
             AsyncMsg& operator=(AsyncMsg&&) = default;
 
-            AsyncMsg(async_logger_ptr&& worker, AsyncMsgType theType, const details::LogMsg& m)
+            AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType, const details::LogMsg& m)
                 : LogMsgBuffer{ m }
                 , msg_type{ theType }
-                , worker_ptr{ rsl::move(worker) }
+                , logger_fns{ rsl::move(fns) }
             {
             }
 
-            AsyncMsg(async_logger_ptr&& worker, AsyncMsgType theType)
+            AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType)
                 : LogMsgBuffer{}
                 , msg_type{ theType }
-                , worker_ptr{ rsl::move(worker) }
+                , logger_fns{ rsl::move(fns) }
             {
             }
 
             explicit AsyncMsg(AsyncMsgType theType)
-                : AsyncMsg{ nullptr, theType }
+                : AsyncMsg{ {}, theType }
             {
             }
         };
@@ -80,8 +89,8 @@ namespace rexlog
             ThreadPool& operator=(const ThreadPool&) = delete;
             ThreadPool& operator=(ThreadPool&&) = delete;
 
-            void post_log(async_logger_ptr&& workerPtr, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
-            void post_flush(async_logger_ptr&& workerPtr, AsyncOverflowPolicy overflowPolicy);
+            void post_log(AsyncMsgLogFunctions&& loggerFns, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
+            void post_flush(AsyncMsgLogFunctions&& loggerFns, AsyncOverflowPolicy overflowPolicy);
             size_t overrun_counter();
             void reset_overrun_counter();
             size_t queue_size();

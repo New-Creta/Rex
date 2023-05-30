@@ -26,7 +26,7 @@ namespace rexlog
     {
         if (auto pool_ptr = m_thread_pool.lock())
         {
-            pool_ptr->post_log(shared_from_this(), msg, m_overflow_policy);
+            pool_ptr->post_log(make_msg_log_functions(), msg, m_overflow_policy);
         }
         else
         {
@@ -40,7 +40,7 @@ namespace rexlog
     {
         if (auto pool_ptr = m_thread_pool.lock())
         {
-            pool_ptr->post_flush(shared_from_this(), m_overflow_policy);
+            pool_ptr->post_flush(make_msg_log_functions(), m_overflow_policy);
         }
         else
         {
@@ -84,6 +84,17 @@ namespace rexlog
 
         return cloned;
     }
+
+    //-------------------------------------------------------------------------
+    rexlog::details::AsyncMsgLogFunctions AsyncLogger::make_msg_log_functions()
+    {
+        return
+        {
+            [&](const details::LogMsg& msg) { backend_sink_it_impl(msg); },
+            [&]() { backend_flush_impl(); }
+        };
+    }
+
 }
 
 // NOLINTEND(misc-definitions-in-headers)
