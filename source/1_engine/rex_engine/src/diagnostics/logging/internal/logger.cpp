@@ -49,6 +49,12 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
+    Logger::~Logger()
+    {
+
+    }
+
+    //-------------------------------------------------------------------------
     Logger& Logger::operator=(const Logger& other) noexcept
     {
         Logger tmp(other);
