@@ -4,9 +4,12 @@
 
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
+#include "rex_std_extra/utility/yes_no.h"
 
 #include <mutex>
 #include <ostream>
+
+DEFINE_YES_NO_ENUM(ForceFlush);
 
 namespace rexlog
 {
@@ -16,7 +19,7 @@ namespace rexlog
         class ostream_sink final : public BaseSink<Mutex>
         {
         public:
-            explicit ostream_sink(rsl::ostream& os, bool force_flush = false);
+            explicit ostream_sink(rsl::ostream& os, ForceFlush force_flush = ForceFlush::no);
 
             ostream_sink(const ostream_sink&) = delete;
             ostream_sink& operator=(const ostream_sink&) = delete;
@@ -27,11 +30,11 @@ namespace rexlog
 
         private:
             rsl::ostream& ostream_;
-            bool force_flush_;
+            ForceFlush force_flush_;
         };
 
         template <typename Mutex>
-        ostream_sink<Mutex>::ostream_sink(rsl::ostream& os, bool force_flush)
+        ostream_sink<Mutex>::ostream_sink(rsl::ostream& os, ForceFlush force_flush)
             : ostream_impl(os)
             , force_flush_impl(force_flush)
         {

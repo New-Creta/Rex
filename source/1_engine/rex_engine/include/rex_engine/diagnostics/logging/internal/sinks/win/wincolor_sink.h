@@ -33,7 +33,7 @@ namespace rexlog
       void set_color(level::LevelEnum level, rsl::uint16 color);
       void log(const details::LogMsg& msg) final;
       void flush() final;
-      void set_pattern(const rsl::small_stack_string& pattern) final;
+      void set_pattern(rsl::string_view pattern) final;
       void set_formatter(PatternFormatter sinkFormatter) final;
       void set_color_mode(ColorMode mode);
 
@@ -44,10 +44,10 @@ namespace rexlog
       rsl::uint16 set_foreground_color_impl(rsl::uint16 attribs);
 
       // print a range of formatted message to console
-      void print_range_impl(const memory_buf_t& formatted, card32 start, card32 end);
+      void print_range_impl(rsl::string_view formatted, s32 start, s32 end);
 
       // in case we are redirected to file (not in console mode)
-      void write_to_file_impl(const memory_buf_t& formatted);
+      void write_to_file_impl(rsl::string_view formatted);
 
       void set_color_mode_impl(ColorMode mode);
 
@@ -101,7 +101,7 @@ namespace rexlog
         const rsl::unique_lock<mutex_t> lock(*m_mutex);
         msg.m_color_range_start = 0;
         msg.m_color_range_end = 0;
-        memory_buf_t formatted;
+        rsl::big_stack_string formatted;
         m_formatter.format(msg, formatted);
         if (m_should_do_colors && msg.m_color_range_end > msg.m_color_range_start)
         {
@@ -127,7 +127,7 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void  WincolorSink<ConsoleMutex>::set_pattern(const rsl::small_stack_string& pattern)
+    void  WincolorSink<ConsoleMutex>::set_pattern(rsl::string_view pattern)
     {
         const rsl::unique_lock<mutex_t> lock(*m_mutex);
         m_formatter = PatternFormatter(pattern);
@@ -183,7 +183,7 @@ namespace rexlog
 
     // print a range of formatted message to console
     template <typename ConsoleMutex>
-    void  WincolorSink<ConsoleMutex>::print_range_impl(const memory_buf_t& formatted, card32 start, card32 end)
+    void  WincolorSink<ConsoleMutex>::print_range_impl(rsl::string_view formatted, s32 start, s32 end)
     {
         if (end > start)
         {
@@ -194,7 +194,7 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void  WincolorSink<ConsoleMutex>::write_to_file_impl(const memory_buf_t& formatted)
+    void  WincolorSink<ConsoleMutex>::write_to_file_impl(rsl::string_view formatted)
     {
         auto size = static_cast<DWORD>(formatted.size());
         DWORD bytes_written = 0;

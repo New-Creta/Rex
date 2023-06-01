@@ -42,7 +42,7 @@ namespace rexlog
 
       void log(const details::LogMsg& msg) override;
       void flush() override;
-      void set_pattern(const rsl::small_stack_string& pattern) final;
+      void set_pattern(rsl::string_view pattern) final;
       void set_formatter(PatternFormatter sink_formatter) override;
 
       // Formatting codes
@@ -81,38 +81,40 @@ namespace rexlog
       const rsl::string_view bold_on_red = "\033[1m\033[41m";
 
     private:
+      void print_ccode_impl(rsl::string_view color_code);
+      void print_range_impl(rsl::string_view formatted, s32 start, s32 end);
+    
+    private:
       FILE* m_target_file;
       mutex_t& m_mutex;
       bool should_do_colors_;
       PatternFormatter m_formatter;
-      rsl::array<rex::DebugString, rsl::enum_refl::enum_count<level::LevelEnum>()> m_colors;
-      void print_ccode_impl(const rsl::string_view& color_code);
-      void print_range_impl(const memory_buf_t& formatted, card32 start, card32 end);
-      static rex::DebugString to_string_impl(const rsl::string_view& sv);
+      rsl::array<rsl::string_view, rsl::enum_refl::enum_count<level::LevelEnum>()> m_colors;
     };
 
     template <typename ConsoleMutex>
     ansicolor_sink<ConsoleMutex>::ansicolor_sink(FILE* target_file, ColorMode mode)
         : m_target_file(target_file)
         , m_mutex(ConsoleMutex::mutex())
-        , m_formatter(details::make_unique<rexlog::pattern_formatter>())
+        , m_formatter(rsl::make_unique<rexlog::pattern_formatter>())
 
     {
       set_color_mode(mode);
-      m_colors[level::trace]    = to_string_impl(white);
-      m_colors[level::debug]    = to_string_impl(cyan);
-      m_colors[level::info]     = to_string_impl(green);
-      m_colors[level::warn]     = to_string_impl(yellow_bold);
-      m_colors[level::err]      = to_string_impl(red_bold);
-      m_colors[level::critical] = to_string_impl(bold_on_red);
-      m_colors[level::off]      = to_string_impl(reset);
+
+      m_colors[level::trace]    = white;
+      m_colors[level::debug]    = cyan;
+      m_colors[level::info]     = green;
+      m_colors[level::warn]     = yellow_bold;
+      m_colors[level::err]      = red_bold;
+      m_colors[level::critical] = bold_on_red;
+      m_colors[level::off]      = reset;
     }
 
     template <typename ConsoleMutex>
     void ansicolor_sink<ConsoleMutex>::set_color(level::LevelEnum color_level, rsl::string_view color)
     {
       rsl::lock_guard<mutex_t> lock(m_mutex);
-      m_colors[static_cast<card32>(color_level)] = to_string_impl(color);
+      m_colors[static_cast<s32>(color_level)] = color;
     }
 
     template <typename ConsoleMutex>
@@ -123,14 +125,14 @@ namespace rexlog
       rsl::lock_guard<mutex_t> lock(m_mutex);
       msg.color_range_start = 0;
       msg.color_range_end   = 0;
-      memory_buf_t formatted;
+      rsl::big_stack_string formatted;
       m_formatter->format(msg, formatted);
       if(should_do_colors_ && msg.color_range_end > msg.color_range_start)
       {
         // before color range
         print_range_impl(formatted, 0, msg.color_range_start);
         // in color range
-        print_ccode_impl(m_colors[static_cast<card32>(msg.level)]);
+        print_ccode_impl(m_colors[static_cast<s32>(msg.level)]);
         print_range_impl(formatted, msg.color_range_start, msg.color_range_end);
         print_ccode_impl(reset);
         // after color range
@@ -151,7 +153,7 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::set_pattern(const rsl::small_stack_string& pattern)
+    void ansicolor_sink<ConsoleMutex>::set_pattern(rsl::string_view pattern)
     {
       rsl::lock_guard<mutex_t> lock(m_mutex);
       m_formatter = PatternFormatter(pattern);
@@ -176,28 +178,22 @@ namespace rexlog
       switch(mode)
       {
         case ColorMode::Always: should_do_colors_ = true; return;
-        case ColorMode::automatic: should_do_colors_ = details::os::in_terminal(m_target_file) && details::os::is_color_terminal(); return;
-        case ColorMode::never: should_do_colors_ = false; return;
+        case ColorMode::Automatic: should_do_colors_ = details::os::in_terminal(m_target_file) && details::os::is_color_terminal(); return;
+        case ColorMode::Never: should_do_colors_ = false; return;
         default: should_do_colors_ = false;
       }
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::print_ccode_impl(const rsl::string_view& color_code)
+    void ansicolor_sink<ConsoleMutex>::print_ccode_impl(rsl::string_view color_code)
     {
       fwrite(color_code.data(), sizeof(char), color_code.size(), m_target_file);
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::print_range_impl(const memory_buf_t& formatted, card32 start, card32 end)
+    void ansicolor_sink<ConsoleMutex>::print_range_impl(rsl::string_view formatted, s32 start, s32 end)
     {
       fwrite(formatted.data() + start, sizeof(char), end - start, m_target_file);
-    }
-
-    template <typename ConsoleMutex>
-    rex::DebugString ansicolor_sink<ConsoleMutex>::to_string_impl(const rsl::string_view& sv)
-    {
-      return rex::DebugString(sv.data(), sv.size());
     }
 
     template <typename ConsoleMutex>

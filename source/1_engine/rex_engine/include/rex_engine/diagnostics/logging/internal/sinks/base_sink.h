@@ -35,13 +35,13 @@ namespace rexlog
 
             void log(const details::LogMsg& msg) final;
             void flush() final;
-            void set_pattern(const rsl::small_stack_string& pattern) final;
+            void set_pattern(rsl::string_view pattern) final;
             void set_formatter(PatternFormatter sinkFormatter) final;
 
         protected:
             virtual void sink_it_impl(const details::LogMsg& msg) = 0;
             virtual void flush_it_impl() = 0;
-            virtual void set_pattern_impl(const rsl::small_stack_string& pattern);
+            virtual void set_pattern_impl(rsl::string_view pattern);
             virtual void set_formatter_impl(PatternFormatter sinkFormatter);
 
             const PatternFormatter& formatter();
@@ -80,7 +80,7 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void  rexlog::sinks::BaseSink<Mutex>::set_pattern(const rsl::small_stack_string& pattern)
+        void  rexlog::sinks::BaseSink<Mutex>::set_pattern(rsl::string_view pattern)
         {
             const rsl::unique_lock<Mutex> lock(m_mutex);
             set_pattern_impl(pattern);
@@ -94,7 +94,7 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void  rexlog::sinks::BaseSink<Mutex>::set_pattern_impl(const rsl::small_stack_string& pattern)
+        void  rexlog::sinks::BaseSink<Mutex>::set_pattern_impl(rsl::string_view pattern)
         {
             set_formatter_impl(rexlog::PatternFormatter(pattern));
         }

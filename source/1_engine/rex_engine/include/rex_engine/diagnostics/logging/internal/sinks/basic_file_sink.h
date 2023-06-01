@@ -21,8 +21,8 @@ namespace rexlog
     class BasicFileSink final : public BaseSink<Mutex>
     {
     public:
-      explicit BasicFileSink(const filename_t& filename, bool truncate = false, const FileEventHandlers& eventHandlers = {});
-      const filename_t& filename() const;
+      explicit BasicFileSink(rsl::string_view filename, bool truncate = false, const FileEventHandlers& eventHandlers = {});
+      rsl::string_view filename() const;
 
     protected:
       void sink_it_impl(const details::LogMsg& msg) override;
@@ -33,14 +33,14 @@ namespace rexlog
     };
 
     template <typename Mutex>
-    BasicFileSink<Mutex>::BasicFileSink(const filename_t& filename, bool truncate, const FileEventHandlers& eventHandlers)
+    BasicFileSink<Mutex>::BasicFileSink(rsl::string_view filename, bool truncate, const FileEventHandlers& eventHandlers)
         : m_file_helper{ eventHandlers }
     {
         m_file_helper.open(filename, truncate);
     }
 
     template <typename Mutex>
-    const filename_t& BasicFileSink<Mutex>::filename() const
+    rsl::string_view BasicFileSink<Mutex>::filename() const
     {
         return m_file_helper.filename();
     }

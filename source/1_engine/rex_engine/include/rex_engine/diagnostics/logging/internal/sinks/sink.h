@@ -16,7 +16,7 @@ namespace rexlog
             virtual ~AbstractSink() = default;
             virtual void log(const details::LogMsg& msg) = 0;
             virtual void flush() = 0;
-            virtual void set_pattern(const rsl::small_stack_string& pattern) = 0;
+            virtual void set_pattern(rsl::string_view pattern) = 0;
             virtual void set_formatter(PatternFormatter sinkFormatter) = 0;
 
             void set_level(level::LevelEnum logLevel);

@@ -56,7 +56,7 @@ namespace rexlog
         StdoutSinkBase<ConsoleMutex>::StdoutSinkBase(FILE* file)
             : m_mutex(&ConsoleMutex::mutex())
             , m_file(file)
-            , m_formatter(details::make_unique<rexlog::PatternFormatter>())
+            , m_formatter(rsl::make_unique<rexlog::PatternFormatter>())
             , m_handle(reinterpret_cast<HANDLE>(::_get_osfhandle(::_fileno(m_file)))) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
         {
             // get windows handle from the FILE* object

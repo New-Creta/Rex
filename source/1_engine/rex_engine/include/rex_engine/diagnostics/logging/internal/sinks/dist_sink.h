@@ -31,12 +31,11 @@ namespace rexlog
             void add_sink(rsl::shared_ptr<AbstractSink> sub_sink);
             void remove_sink(rsl::shared_ptr<AbstractSink> sub_sink);
             void set_sinks(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks);
-            rex::DebugVector<rsl::shared_ptr<AbstractSink>>& sinks();
 
         protected:
             void sink_it_impl(const details::LogMsg& msg) override;
             void flush_it_impl() override;
-            void set_pattern_impl(const rsl::small_stack_string& pattern) override;
+            void set_pattern_impl(rsl::string_view pattern) override;
             void set_formatter_impl(PatternFormatter sink_formatter) override;
 
         private:
@@ -53,7 +52,7 @@ namespace rexlog
         void dist_sink<Mutex>::add_sink(rsl::shared_ptr<AbstractSink> sub_sink)
         {
             rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
-            sinks_.push_back(sub_sink);
+            sinks_.push_back(rsl::move(sub_sink));
         }
 
         template <typename Mutex>
@@ -68,12 +67,6 @@ namespace rexlog
         {
             rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
             sinks_ = rsl::move(sinks);
-        }
-
-        template <typename Mutex>
-        rex::DebugVector<rsl::shared_ptr<AbstractSink>>& dist_sink<Mutex>::sinks()
-        {
-            return sinks_;
         }
 
         template <typename Mutex>
@@ -98,7 +91,7 @@ namespace rexlog
         }
 
         template <typename Mutex>
-        void dist_sink<Mutex>::set_pattern_impl(const rsl::small_stack_string& pattern)
+        void dist_sink<Mutex>::set_pattern_impl(rsl::string_view pattern)
         {
             set_formatter_impl(PatternFormatter(pattern));
         }

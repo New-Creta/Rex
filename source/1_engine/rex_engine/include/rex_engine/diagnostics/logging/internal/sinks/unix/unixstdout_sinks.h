@@ -28,7 +28,7 @@ namespace rexlog
 
       void log(const details::LogMsg& msg) override;
       void flush() override;
-      void set_pattern(const rsl::small_stack_string& pattern) override;
+      void set_pattern(rsl::string_view pattern) override;
 
       void set_formatter(PatternFormatter sinkFormatter) override;
 
@@ -42,7 +42,7 @@ namespace rexlog
     StdoutSinkBase<ConsoleMutex>::StdoutSinkBase(FILE* file)
         : m_mutex(&ConsoleMutex::mutex())
         , m_file(file)
-        , m_formatter(details::make_unique<rexlog::PatternFormatter>())
+        , m_formatter(rsl::make_unique<rexlog::PatternFormatter>())
         , m_handle(reinterpret_cast<HANDLE>(::_get_osfhandle(::_fileno(m_file)))) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
     {
     }
@@ -51,7 +51,7 @@ namespace rexlog
     void StdoutSinkBase<ConsoleMutex>::log(const details::LogMsg& msg)
     {
         rsl::unique_lock<mutex_t> lock(*m_mutex);
-        memory_buf_t formatted;
+        rsl::big_stack_string formatted;
         m_formatter->format(msg, formatted);
         ::fwrite(formatted.data(), sizeof(char), formatted.size(), file_);
         ::fflush(file_); // flush every line to terminal
@@ -65,7 +65,7 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void StdoutSinkBase<ConsoleMutex>::set_pattern(const rsl::small_stack_string& pattern)
+    void StdoutSinkBase<ConsoleMutex>::set_pattern(rsl::string_view pattern)
     {
         const rsl::unique_lock<mutex_t> lock(*m_mutex);
         m_formatter = rsl::make_unique<rexlog::PatternFormatter>(pattern);
