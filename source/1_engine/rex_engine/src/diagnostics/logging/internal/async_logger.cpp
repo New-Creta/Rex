@@ -9,14 +9,14 @@
 namespace rexlog
 {
     //-------------------------------------------------------------------------
-    rexlog::AsyncLogger::AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy)
-        : AsyncLogger(rsl::move(loggerName), sinksList.begin(), sinksList.end(), rsl::move(tp), overflowPolicy)
+    rexlog::AsyncLogger::AsyncLogger(rsl::string_view loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy)
+        : AsyncLogger(loggerName, sinksList.begin(), sinksList.end(), rsl::move(tp), overflowPolicy)
     {
     }
 
     //-------------------------------------------------------------------------
-    rexlog::AsyncLogger::AsyncLogger(rex::DebugString loggerName, sink_ptr singleSink, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy)
-        : AsyncLogger(rsl::move(loggerName), { rsl::move(singleSink) }, rsl::move(tp), overflowPolicy)
+    rexlog::AsyncLogger::AsyncLogger(rsl::string_view loggerName, sink_ptr singleSink, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy)
+        : AsyncLogger(loggerName, { rsl::move(singleSink) }, rsl::move(tp), overflowPolicy)
     {
     }
 
@@ -76,11 +76,11 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    rsl::shared_ptr<rexlog::Logger> rexlog::AsyncLogger::clone(rex::DebugString newName)
+    rsl::shared_ptr<rexlog::Logger> rexlog::AsyncLogger::clone(rsl::string_view newName)
     {
         auto cloned = rsl::allocate_shared<rexlog::AsyncLogger>(rex::global_debug_allocator(), *this);
 
-        cloned->set_name(rsl::move(newName));
+        cloned->set_name(newName);
 
         return cloned;
     }

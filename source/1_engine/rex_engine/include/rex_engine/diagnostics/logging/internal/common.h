@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/debug_types.h"
+#include "rex_engine/types.h"
 #include "rex_engine/function_signature_define.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_std/bonus/atomic/atomic.h"
@@ -27,9 +28,8 @@ namespace rexlog
     } // namespace sinks
 
     using filename_t        = rex::DebugString;
-    using string_view_t     = rsl::string_view;
-    using level_t           = rsl::atomic<int>;
     using memory_buf_t      = rex::DebugString;
+    using level_t           = rsl::atomic<int>;
     using log_clock         = rsl::chrono::system_clock;
     using sink_ptr          = rsl::shared_ptr<sinks::AbstractSink>;
     using sinks_init_list   = rsl::initializer_list<sink_ptr>;
@@ -39,57 +39,57 @@ namespace rexlog
     using format_string_t   = rsl::format_string<Args...>;
 
     template <class T, class Char = char>
-    struct IsConvertibleToBasicFormatString : rsl::integral_constant<bool, rsl::is_convertible<T, rsl::basic_string_view<Char>>::value>
+    struct IsConvertibleToBasicStringView : rsl::integral_constant<bool, rsl::is_convertible<T, rsl::basic_string_view<Char>>::value>
     {
     };
     template <class T>
-    struct IsConvertibleToAnyFormatString : rsl::integral_constant<bool, IsConvertibleToBasicFormatString<T, char>::value || IsConvertibleToBasicFormatString<T, wchar_t>::value>
+    struct IsConvertibleToAnyFormatString : rsl::integral_constant<bool, IsConvertibleToBasicStringView<T, char>::value || IsConvertibleToBasicStringView<T, wchar_t>::value>
     {
     };
 
-#define REXLOG_LEVEL_TRACE    0
-#define REXLOG_LEVEL_DEBUG    1
-#define REXLOG_LEVEL_INFO     2
-#define REXLOG_LEVEL_WARN     3
-#define REXLOG_LEVEL_ERROR    4
-#define REXLOG_LEVEL_CRITICAL 5
-#define REXLOG_LEVEL_OFF      6
+    inline constexpr s8 g_level_trace = 0;
+    inline constexpr s8 g_level_debug = 1;
+    inline constexpr s8 g_level_info = 2;
+    inline constexpr s8 g_level_warning = 3;
+    inline constexpr s8 g_level_error = 4;
+    inline constexpr s8 g_level_critical = 5;
+    inline constexpr s8 g_level_off = 6;
 
 #if !defined(REXLOG_ACTIVE_LEVEL)
-    #define REXLOG_ACTIVE_LEVEL REXLOG_LEVEL_INFO
+    #define REXLOG_ACTIVE_LEVEL g_level_info
 #endif
 
     namespace level
     {
-        #define REXLOG_LEVEL_NAME_TRACE     rexlog::string_view_t("trace", 5)
-        #define REXLOG_LEVEL_NAME_DEBUG     rexlog::string_view_t("debug", 5)
-        #define REXLOG_LEVEL_NAME_INFO      rexlog::string_view_t("info", 4)
-        #define REXLOG_LEVEL_NAME_WARNING   rexlog::string_view_t("warning", 7)
-        #define REXLOG_LEVEL_NAME_ERROR     rexlog::string_view_t("error", 5)
-        #define REXLOG_LEVEL_NAME_CRITICAL  rexlog::string_view_t("critical", 8)
-        #define REXLOG_LEVEL_NAME_OFF       rexlog::string_view_t("off", 3)
+        inline constexpr rsl::string_view g_level_name_trace("trace", 5);
+        inline constexpr rsl::string_view g_level_name_debug("debug", 5);
+        inline constexpr rsl::string_view g_level_name_info("info", 4);
+        inline constexpr rsl::string_view g_level_name_warning("warning", 7);
+        inline constexpr rsl::string_view g_level_name_error("error", 5);
+        inline constexpr rsl::string_view g_level_name_critical("critical", 8);
+        inline constexpr rsl::string_view g_level_name_off("off", 3);
 
-        #define REXLOG_LEVEL_SNAME_TRACE    rexlog::string_view_t("T", 1)
-        #define REXLOG_LEVEL_SNAME_DEBUG    rexlog::string_view_t("D", 1)
-        #define REXLOG_LEVEL_SNAME_INFO     rexlog::string_view_t("I", 1)
-        #define REXLOG_LEVEL_SNAME_WARNING  rexlog::string_view_t("W", 1)
-        #define REXLOG_LEVEL_SNAME_ERROR    rexlog::string_view_t("E", 1)
-        #define REXLOG_LEVEL_SNAME_CRITICAL rexlog::string_view_t("C", 1)
-        #define REXLOG_LEVEL_SNAME_OFF      rexlog::string_view_t("O", 1)
+        inline constexpr rsl::string_view g_level_sname_trace("T", 1);
+        inline constexpr rsl::string_view g_level_sname_debug("D", 1);
+        inline constexpr rsl::string_view g_level_sname_info("I", 1);
+        inline constexpr rsl::string_view g_level_sname_warning("W", 1);
+        inline constexpr rsl::string_view g_level_sname_error("E", 1);
+        inline constexpr rsl::string_view g_level_sname_critical("C", 1);
+        inline constexpr rsl::string_view g_level_sname_off("O", 1);
 
         enum class LevelEnum : int32
         {
-            Trace       = REXLOG_LEVEL_TRACE,
-            Debug       = REXLOG_LEVEL_DEBUG,
-            Info        = REXLOG_LEVEL_INFO,
-            Warn        = REXLOG_LEVEL_WARN,
-            Err         = REXLOG_LEVEL_ERROR,
-            Critical    = REXLOG_LEVEL_CRITICAL,
-            Off         = REXLOG_LEVEL_OFF
+            Trace       = g_level_trace,
+            Debug       = g_level_debug,
+            Info        = g_level_info,
+            Warn        = g_level_warning,
+            Err         = g_level_error,
+            Critical    = g_level_critical,
+            Off         = g_level_off
         };
 
-        string_view_t               to_string_view(rexlog::level::LevelEnum l) noexcept;
-        string_view_t               to_short_c_str(rexlog::level::LevelEnum l) noexcept;
+        rsl::string_view            to_string_view(rexlog::level::LevelEnum l) noexcept;
+        rsl::string_view            to_short_c_str(rexlog::level::LevelEnum l) noexcept;
 
         rexlog::level::LevelEnum    from_str(const rex::DebugString& name) noexcept;
 
@@ -119,12 +119,12 @@ namespace rexlog
     {
         // to_string_view
 
-        constexpr rexlog::string_view_t to_string_view(const memory_buf_t& buf) noexcept
+        constexpr rsl::string_view to_string_view(const memory_buf_t& buf) noexcept
         {
-            return rexlog::string_view_t{ buf.data(), buf.size() };
+            return rsl::string_view{ buf.data(), buf.size() };
         }
 
-        constexpr rexlog::string_view_t to_string_view(rexlog::string_view_t str) noexcept
+        constexpr rsl::string_view to_string_view(rsl::string_view str) noexcept
         {
             return str;
         }

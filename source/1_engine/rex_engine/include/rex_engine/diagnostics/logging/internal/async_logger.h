@@ -31,22 +31,22 @@ namespace rexlog
         struct AsyncMsgLogFunctions;
     } // namespace details
 
-    class AsyncLogger final : public Logger // NOLINT(fuchsia-multiple-inheritance)
+    class AsyncLogger final : public Logger
     {
     public:
         template <typename It>
-        AsyncLogger(rex::DebugString loggerName, It begin, It end, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block)
-            : Logger(rsl::move(loggerName), begin, end)
+        AsyncLogger(rsl::string_view loggerName, It begin, It end, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block)
+            : Logger(loggerName, begin, end)
             , m_thread_pool(rsl::move(tp))
             , m_overflow_policy(overflowPolicy)
         {
             // Nothing to implement
         }
 
-        AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
-        AsyncLogger(rex::DebugString loggerName, sink_ptr singleSink, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
+        AsyncLogger(rsl::string_view loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
+        AsyncLogger(rsl::string_view loggerName, sink_ptr singleSink, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
 
-        rsl::shared_ptr<Logger> clone(rex::DebugString newName) override;
+        rsl::shared_ptr<Logger> clone(rsl::string_view newName) override;
 
     protected:
         void sink_it_impl(const details::LogMsg& msg) override;

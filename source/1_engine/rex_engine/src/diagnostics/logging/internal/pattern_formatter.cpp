@@ -82,8 +82,8 @@ namespace rexlog
     } // namespace details
 
     //-------------------------------------------------------------------------
-    PatternFormatter::PatternFormatter(const rsl::small_stack_string& pattern, PatternTimeType timeType, const rsl::tiny_stack_string& eol)
-        : m_pattern(rsl::move(pattern))
+    PatternFormatter::PatternFormatter(rsl::string_view pattern, PatternTimeType timeType, const rsl::tiny_stack_string& eol)
+        : m_pattern(rsl::small_stack_string(pattern))
         , m_eol(rsl::move(eol))
         , m_pattern_time_type(timeType)
         , m_need_localtime(false)

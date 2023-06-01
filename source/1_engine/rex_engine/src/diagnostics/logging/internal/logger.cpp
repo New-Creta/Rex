@@ -12,21 +12,21 @@
 namespace rexlog
 {
     //-------------------------------------------------------------------------
-    Logger::Logger(rex::DebugString name)
-        : m_name(rsl::move(name))
+    Logger::Logger(rsl::string_view name)
+        : m_name(rex::DebugString(name))
         , m_sinks()
     {
     }
 
     //-------------------------------------------------------------------------
-    Logger::Logger(rex::DebugString name, sink_ptr singleSink)
-        : Logger(rsl::move(name), { rsl::move(singleSink) })
+    Logger::Logger(rsl::string_view name, sink_ptr singleSink)
+        : Logger(name, { rsl::move(singleSink) })
     {
     }
 
     //-------------------------------------------------------------------------
-    Logger::Logger(rex::DebugString name, sinks_init_list sinks)
-        : Logger(rsl::move(name), sinks.begin(), sinks.end())
+    Logger::Logger(rsl::string_view name, sinks_init_list sinks)
+        : Logger(name, sinks.begin(), sinks.end())
     {
     }
 
@@ -76,7 +76,7 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void Logger::log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, string_view_t msg)
+    void Logger::log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, string_view msg)
     {
         const bool log_enabled = should_log(lvl);
         if (!log_enabled)
@@ -89,7 +89,7 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void Logger::log(rsl::source_location loc, level::LevelEnum lvl, string_view_t msg)
+    void Logger::log(rsl::source_location loc, level::LevelEnum lvl, string_view msg)
     {
         const bool log_enabled = should_log(lvl);
         if (!log_enabled)
@@ -102,7 +102,7 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void Logger::log(level::LevelEnum lvl, string_view_t msg)
+    void Logger::log(level::LevelEnum lvl, string_view msg)
     {
         log(rsl::source_location{}, lvl, msg);
     }
@@ -133,9 +133,9 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void Logger::set_pattern(const rsl::small_stack_string& pattern, PatternTimeType timeType)
+    void Logger::set_pattern(rsl::string_view pattern, PatternTimeType timeType)
     {
-        auto new_formatter = PatternFormatter(rsl::move(pattern), timeType);
+        auto new_formatter = PatternFormatter(pattern, timeType);
         set_formatter(rsl::move(new_formatter));
     }
 
@@ -182,10 +182,10 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    rsl::shared_ptr<Logger> Logger::clone(rex::DebugString loggerName)
+    rsl::shared_ptr<Logger> Logger::clone(rsl::string_view loggerName)
     {
         auto cloned = rsl::allocate_shared<Logger>(rex::global_debug_allocator(), *this);
-        cloned->m_name = rsl::move(loggerName);
+        cloned->m_name = rex::DebugString(loggerName);
         return cloned;
     }
 
@@ -249,9 +249,9 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void Logger::set_name(rex::DebugString&& name)
+    void Logger::set_name(rsl::string_view name)
     {
-        m_name = rsl::move(name);
+        m_name = rex::DebugString(name);
     }
 
     //-------------------------------------------------------------------------

@@ -27,15 +27,15 @@ namespace rexlog
     class Logger
     {
     public:
-        explicit Logger(rex::DebugString name);
+        explicit Logger(rsl::string_view name);
 
-        Logger(rex::DebugString name, sink_ptr singleSink);
-        Logger(rex::DebugString name, sinks_init_list sinks);
+        Logger(rsl::string_view name, sink_ptr singleSink);
+        Logger(rsl::string_view name, sinks_init_list sinks);
         
         //-------------------------------------------------------------------------
         template <typename It>
-        Logger(rex::DebugString name, It begin, It end)
-            : m_name(rsl::move(name))
+        Logger(rsl::string_view name, It begin, It end)
+            : m_name(DebugString(name))
             , m_sinks(begin, end)
         {
         }
@@ -51,7 +51,7 @@ namespace rexlog
     public:
         void                                set_level(level::LevelEnum logLevel);
         void                                set_formatter(PatternFormatter f);
-        void                                set_pattern(const rsl::small_stack_string& pattern, PatternTimeType timeType = PatternTimeType::Local);
+        void                                set_pattern(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local);
 
         bool                                should_log(level::LevelEnum msgLevel) const;
 
@@ -66,14 +66,14 @@ namespace rexlog
         const Sinks&                        sinks() const;
         Sinks&                              sinks();
 
-        virtual rsl::shared_ptr<Logger>     clone(rex::DebugString loggerName);
+        virtual rsl::shared_ptr<Logger>     clone(rsl::string_view loggerName);
 
         void                                swap(rexlog::Logger& other) noexcept;
 
     public:
-        void                                log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, string_view_t msg);
-        void                                log(rsl::source_location loc, level::LevelEnum lvl, string_view_t msg);
-        void                                log(level::LevelEnum lvl, string_view_t msg);
+        void                                log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, string_view msg);
+        void                                log(rsl::source_location loc, level::LevelEnum lvl, string_view msg);
+        void                                log(level::LevelEnum lvl, string_view msg);
 
         //-------------------------------------------------------------------------
         // T cannot be statically converted to format string (including string_view/wstring_view)
@@ -105,7 +105,7 @@ namespace rexlog
         //-------------------------------------------------------------------------
         // common implementation for after templated public api has been resolved
         template <typename... Args>
-        void                                log_impl(rsl::source_location loc, level::LevelEnum lvl, string_view_t fmt, Args&&... args)
+        void                                log_impl(rsl::source_location loc, level::LevelEnum lvl, string_view fmt, Args&&... args)
         {
             const bool log_enabled = should_log(lvl);
             if (!log_enabled)
@@ -116,7 +116,7 @@ namespace rexlog
             memory_buf_t buf;
             rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_format_args(rsl::forward<Args>(args)...));
 
-            const details::LogMsg log_msg(loc, m_name, lvl, string_view_t(buf.data(), buf.size()));
+            const details::LogMsg log_msg(loc, m_name, lvl, string_view(buf.data(), buf.size()));
             log_it_impl(log_msg, log_enabled);
         }
 
@@ -127,7 +127,7 @@ namespace rexlog
         virtual void                        sink_it_impl(const details::LogMsg& msg);
         virtual void                        flush_it_impl();
 
-        void                                set_name(rex::DebugString&& name);
+        void                                set_name(rsl::string_view name);
 
     private:
         rex::DebugString                    m_name;

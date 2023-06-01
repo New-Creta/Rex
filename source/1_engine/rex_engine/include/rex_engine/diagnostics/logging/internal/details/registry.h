@@ -42,7 +42,7 @@ namespace rexlog
             void                        register_logger(LoggerObjectPtr newLogger);
             void                        initialize_logger(LoggerObjectPtr newLogger);
 
-            LoggerObjectPtr             get(const rex::DebugString& loggerName);
+            LoggerObjectPtr             get(rsl::string_view loggerName);
             level::LevelEnum            get_global_level() const;
 
             void                        set_tp(rsl::shared_ptr<ThreadPool> tp);
