@@ -77,9 +77,9 @@ namespace rexlog
             using item_type = AsyncMsg;
             using q_type = details::MpmcBlockingQueue<item_type>;
 
-            ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
-            ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart);
-            ThreadPool(size_t qMaxItems, size_t threadsN);
+            ThreadPool(card32 qMaxItems, card32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
+            ThreadPool(card32 qMaxItems, card32 threadsN, const rsl::function<void()>& onThreadStart);
+            ThreadPool(card32 qMaxItems, card32 threadsN);
 
             // message all threads to terminate gracefully and join them
             ~ThreadPool();

@@ -22,7 +22,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        LogMsg::LogMsg(rexlog::log_clock::time_point logTime, const rsl::source_location& loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        LogMsg::LogMsg(rexlog::log_clock::time_point logTime, const rsl::source_location& loc, rsl::string_view aLoggerName, rexlog::level::LevelEnum lvl, rsl::string_view msg)
             : m_logger_name(aLoggerName)
             , m_level(lvl)
             , m_time(logTime)
@@ -35,19 +35,19 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        LogMsg::LogMsg(const rsl::source_location& loc, string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        LogMsg::LogMsg(const rsl::source_location& loc, rsl::string_view aLoggerName, rexlog::level::LevelEnum lvl, rsl::string_view msg)
             : LogMsg(os::now(), loc, aLoggerName, lvl, msg)
         {
         }
 
         //-------------------------------------------------------------------------
-        LogMsg::LogMsg(string_view_t aLoggerName, rexlog::level::LevelEnum lvl, rexlog::string_view_t msg)
+        LogMsg::LogMsg(rsl::string_view aLoggerName, rexlog::level::LevelEnum lvl, rsl::string_view msg)
             : LogMsg(os::now(), rsl::source_location{}, aLoggerName, lvl, msg)
         {
         }
 
         //-------------------------------------------------------------------------
-        void LogMsg::set_logger_name(string_view_t loggerName)
+        void LogMsg::set_logger_name(rsl::string_view loggerName)
         {
             m_logger_name = loggerName;
         }
@@ -68,12 +68,12 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void LogMsg::set_color_range_start(size_t cs)
+        void LogMsg::set_color_range_start(card32 cs)
         {
             m_color_range_start = cs;
         }
         //-------------------------------------------------------------------------
-        void LogMsg::set_color_range_end(size_t ce)
+        void LogMsg::set_color_range_end(card32 ce)
         {
             m_color_range_end = ce;
         }
@@ -84,13 +84,13 @@ namespace rexlog
             m_source = sourceLoc;
         }
         //-------------------------------------------------------------------------
-        void LogMsg::set_payload(string_view_t p)
+        void LogMsg::set_payload(rsl::string_view p)
         {
             m_payload = p;
         }
 
         //-------------------------------------------------------------------------
-        string_view_t LogMsg::logger_name() const
+        rsl::string_view LogMsg::logger_name() const
         {
             return m_logger_name;
         }
@@ -111,12 +111,12 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        size_t LogMsg::color_range_start() const
+        card32 LogMsg::color_range_start() const
         {
             return m_color_range_start;
         }
         //-------------------------------------------------------------------------
-        size_t LogMsg::color_range_end() const
+        card32 LogMsg::color_range_end() const
         {
             return m_color_range_end;
         }
@@ -127,7 +127,7 @@ namespace rexlog
             return m_source;
         }
         //-------------------------------------------------------------------------
-        string_view_t LogMsg::payload() const
+        rsl::string_view LogMsg::payload() const
         {
             return m_payload;
         }

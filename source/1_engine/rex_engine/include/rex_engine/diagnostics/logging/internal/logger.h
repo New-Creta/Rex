@@ -71,9 +71,9 @@ namespace rexlog
         void                                swap(rexlog::Logger& other) noexcept;
 
     public:
-        void                                log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, string_view msg);
-        void                                log(rsl::source_location loc, level::LevelEnum lvl, string_view msg);
-        void                                log(level::LevelEnum lvl, string_view msg);
+        void                                log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, rsl::string_view msg);
+        void                                log(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view msg);
+        void                                log(level::LevelEnum lvl, rsl::string_view msg);
 
         //-------------------------------------------------------------------------
         // T cannot be statically converted to format string (including string_view/wstring_view)

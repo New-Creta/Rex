@@ -64,8 +64,8 @@ namespace rexlog
         //-------------------------------------------------------------------------
         void LogMsgBuffer::update_string_views()
         {
-            set_logger_name(string_view_t{ m_buffer.data(), logger_name().size() });
-            set_payload(string_view_t{ m_buffer.data() + logger_name().size(), payload().size() });
+            set_logger_name(rsl::string_view{ m_buffer.data(), logger_name().size() });
+            set_payload(rsl::string_view{ m_buffer.data() + logger_name().size(), payload().size() });
         }
     } // namespace details
 } // namespace rexlog

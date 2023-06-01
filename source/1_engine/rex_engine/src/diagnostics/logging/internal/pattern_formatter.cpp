@@ -33,7 +33,7 @@ namespace rexlog
             using details::PaddingInfo;
             using details::ScopedPadder;
 
-            const size_t max_width = 64;
+            const card32 max_width = 64;
             if (it == end)
             {
                 return PaddingInfo{};
@@ -58,10 +58,10 @@ namespace rexlog
                 return PaddingInfo{}; // no padding if no digit found here
             }
 
-            auto width = static_cast<size_t>(*it) - '0';
+            auto width = static_cast<card32>(*it) - '0';
             for (++it; it != end && rsl::is_digit(static_cast<unsigned char>(*it)); ++it)
             {
-                auto digit = static_cast<size_t>(*it) - '0';
+                auto digit = static_cast<card32>(*it) - '0';
                 width = width * 10 + digit;
             }
 
@@ -76,7 +76,7 @@ namespace rexlog
             {
                 truncate = false;
             }
-            return details::PaddingInfo{ rsl::min<size_t>(width, max_width), side, truncate };
+            return details::PaddingInfo{ rsl::min<card32>(width, max_width), side, truncate };
         }
 
     } // namespace details

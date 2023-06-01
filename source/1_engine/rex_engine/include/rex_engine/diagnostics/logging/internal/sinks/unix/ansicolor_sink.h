@@ -36,7 +36,7 @@ namespace rexlog
       ansicolor_sink& operator=(const ansicolor_sink& other) = delete;
       ansicolor_sink& operator=(ansicolor_sink&& other)      = delete;
 
-      void set_color(level::LevelEnum color_level, string_view_t color);
+      void set_color(level::LevelEnum color_level, rsl::string_view color);
       void set_color_mode(ColorMode mode);
       bool should_color();
 
@@ -46,39 +46,39 @@ namespace rexlog
       void set_formatter(PatternFormatter sink_formatter) override;
 
       // Formatting codes
-      const string_view_t reset      = "\033[m";
-      const string_view_t bold       = "\033[1m";
-      const string_view_t dark       = "\033[2m";
-      const string_view_t underline  = "\033[4m";
-      const string_view_t blink      = "\033[5m";
-      const string_view_t reverse    = "\033[7m";
-      const string_view_t concealed  = "\033[8m";
-      const string_view_t clear_line = "\033[K";
+      const rsl::string_view reset      = "\033[m";
+      const rsl::string_view bold       = "\033[1m";
+      const rsl::string_view dark       = "\033[2m";
+      const rsl::string_view underline  = "\033[4m";
+      const rsl::string_view blink      = "\033[5m";
+      const rsl::string_view reverse    = "\033[7m";
+      const rsl::string_view concealed  = "\033[8m";
+      const rsl::string_view clear_line = "\033[K";
 
       // Foreground colors
-      const string_view_t black   = "\033[30m";
-      const string_view_t red     = "\033[31m";
-      const string_view_t green   = "\033[32m";
-      const string_view_t yellow  = "\033[33m";
-      const string_view_t blue    = "\033[34m";
-      const string_view_t magenta = "\033[35m";
-      const string_view_t cyan    = "\033[36m";
-      const string_view_t white   = "\033[37m";
+      const rsl::string_view black   = "\033[30m";
+      const rsl::string_view red     = "\033[31m";
+      const rsl::string_view green   = "\033[32m";
+      const rsl::string_view yellow  = "\033[33m";
+      const rsl::string_view blue    = "\033[34m";
+      const rsl::string_view magenta = "\033[35m";
+      const rsl::string_view cyan    = "\033[36m";
+      const rsl::string_view white   = "\033[37m";
 
       /// Background colors
-      const string_view_t on_black   = "\033[40m";
-      const string_view_t on_red     = "\033[41m";
-      const string_view_t on_green   = "\033[42m";
-      const string_view_t on_yellow  = "\033[43m";
-      const string_view_t on_blue    = "\033[44m";
-      const string_view_t on_magenta = "\033[45m";
-      const string_view_t on_cyan    = "\033[46m";
-      const string_view_t on_white   = "\033[47m";
+      const rsl::string_view on_black   = "\033[40m";
+      const rsl::string_view on_red     = "\033[41m";
+      const rsl::string_view on_green   = "\033[42m";
+      const rsl::string_view on_yellow  = "\033[43m";
+      const rsl::string_view on_blue    = "\033[44m";
+      const rsl::string_view on_magenta = "\033[45m";
+      const rsl::string_view on_cyan    = "\033[46m";
+      const rsl::string_view on_white   = "\033[47m";
 
       /// Bold colors
-      const string_view_t yellow_bold = "\033[33m\033[1m";
-      const string_view_t red_bold    = "\033[31m\033[1m";
-      const string_view_t bold_on_red = "\033[1m\033[41m";
+      const rsl::string_view yellow_bold = "\033[33m\033[1m";
+      const rsl::string_view red_bold    = "\033[31m\033[1m";
+      const rsl::string_view bold_on_red = "\033[1m\033[41m";
 
     private:
       FILE* m_target_file;
@@ -86,9 +86,9 @@ namespace rexlog
       bool should_do_colors_;
       PatternFormatter m_formatter;
       rsl::array<rex::DebugString, rsl::enum_refl::enum_count<level::LevelEnum>()> m_colors;
-      void print_ccode_impl(const string_view_t& color_code);
-      void print_range_impl(const memory_buf_t& formatted, size_t start, size_t end);
-      static rex::DebugString to_string_impl(const string_view_t& sv);
+      void print_ccode_impl(const rsl::string_view& color_code);
+      void print_range_impl(const memory_buf_t& formatted, card32 start, card32 end);
+      static rex::DebugString to_string_impl(const rsl::string_view& sv);
     };
 
     template <typename ConsoleMutex>
@@ -109,10 +109,10 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::set_color(level::LevelEnum color_level, string_view_t color)
+    void ansicolor_sink<ConsoleMutex>::set_color(level::LevelEnum color_level, rsl::string_view color)
     {
       rsl::lock_guard<mutex_t> lock(m_mutex);
-      m_colors[static_cast<size_t>(color_level)] = to_string_impl(color);
+      m_colors[static_cast<card32>(color_level)] = to_string_impl(color);
     }
 
     template <typename ConsoleMutex>
@@ -130,7 +130,7 @@ namespace rexlog
         // before color range
         print_range_impl(formatted, 0, msg.color_range_start);
         // in color range
-        print_ccode_impl(m_colors[static_cast<size_t>(msg.level)]);
+        print_ccode_impl(m_colors[static_cast<card32>(msg.level)]);
         print_range_impl(formatted, msg.color_range_start, msg.color_range_end);
         print_ccode_impl(reset);
         // after color range
@@ -183,19 +183,19 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::print_ccode_impl(const string_view_t& color_code)
+    void ansicolor_sink<ConsoleMutex>::print_ccode_impl(const rsl::string_view& color_code)
     {
       fwrite(color_code.data(), sizeof(char), color_code.size(), m_target_file);
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::print_range_impl(const memory_buf_t& formatted, size_t start, size_t end)
+    void ansicolor_sink<ConsoleMutex>::print_range_impl(const memory_buf_t& formatted, card32 start, card32 end)
     {
       fwrite(formatted.data() + start, sizeof(char), end - start, m_target_file);
     }
 
     template <typename ConsoleMutex>
-    rex::DebugString ansicolor_sink<ConsoleMutex>::to_string_impl(const string_view_t& sv)
+    rex::DebugString ansicolor_sink<ConsoleMutex>::to_string_impl(const rsl::string_view& sv)
     {
       return rex::DebugString(sv.data(), sv.size());
     }

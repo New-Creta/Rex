@@ -29,7 +29,7 @@ namespace rexlog
             template <typename Sink, typename... SinkArgs>
             static rsl::shared_ptr<AsyncLogger> create(rex::DebugString loggerName, SinkArgs&&... args)
             {
-                constexpr size_t g_default_async_q_size = 8192;
+                constexpr card32 g_default_async_q_size = 8192;
 
                 auto& registry_inst = details::Registry::instance();
 

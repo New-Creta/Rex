@@ -350,7 +350,7 @@ namespace rexlog
                     return false;
                 }
 
-                size_t search_offset = 0;
+                card32 search_offset = 0;
                 do
                 {
                     auto token_pos = path.find_first_of(rsl::string_view(folder_seps_filename), static_cast<count_t>(search_offset));

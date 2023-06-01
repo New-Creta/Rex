@@ -47,7 +47,7 @@ namespace rexlog
             rsl::chrono::microseconds max_skip_duration_;
             log_clock::time_point last_msg_time_;
             rex::DebugString last_msg_payload_;
-            size_t skip_counter_ = 0;
+            card32 skip_counter_ = 0;
             level::LevelEnum log_level_;
         };
 
@@ -74,9 +74,9 @@ namespace rexlog
             {
                 char buf[64];
                 auto msg_size = ::snprintf(buf, sizeof(buf), "Skipped %u duplicate messages..", static_cast<unsigned>(skip_counter_));
-                if (msg_size > 0 && static_cast<size_t>(msg_size) < sizeof(buf))
+                if (msg_size > 0 && static_cast<card32>(msg_size) < sizeof(buf))
                 {
-                    details::LogMsg skipped_msg{ msg.source, msg.logger_name, log_level_, string_view_t {buf, static_cast<size_t>(msg_size)} };
+                    details::LogMsg skipped_msg{ msg.source, msg.logger_name, log_level_, rsl::string_view {buf, static_cast<card32>(msg_size)} };
                     dist_sink<Mutex>::sink_it_impl(skipped_msg);
                 }
             }

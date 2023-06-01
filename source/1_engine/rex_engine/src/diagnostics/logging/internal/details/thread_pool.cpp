@@ -13,14 +13,14 @@ namespace rexlog
     namespace details
     {
 
-        ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop)
+        ThreadPool::ThreadPool(card32 qMaxItems, card32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop)
             : m_q(qMaxItems)
         {
             if (threadsN == 0 || threadsN > 1000)
             {
                 printf("rexlog::ThreadPool(): invalid threads_n param (valid range is 1-1000)");
             }
-            for (size_t i = 0; i < threadsN; i++)
+            for (card32 i = 0; i < threadsN; i++)
             {
                 m_threads.emplace_back(
                     [this, onThreadStart, onThreadStop]
@@ -32,12 +32,12 @@ namespace rexlog
             }
         }
 
-        ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart)
+        ThreadPool::ThreadPool(card32 qMaxItems, card32 threadsN, const rsl::function<void()>& onThreadStart)
             : ThreadPool(qMaxItems, threadsN, onThreadStart, [] {})
         {
         }
 
-        ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN)
+        ThreadPool::ThreadPool(card32 qMaxItems, card32 threadsN)
             : ThreadPool(
                 qMaxItems, threadsN, [] {}, [] {})
         {
@@ -68,7 +68,7 @@ namespace rexlog
             post_async_msg_impl(AsyncMsg(rsl::move(loggerFns), AsyncMsgType::Flush), overflowPolicy);
         }
 
-        size_t ThreadPool::overrun_counter()
+        card32 ThreadPool::overrun_counter()
         {
             return m_q.overrun_counter();
         }
@@ -78,7 +78,7 @@ namespace rexlog
             m_q.reset_overrun_counter();
         }
 
-        size_t ThreadPool::queue_size()
+        card32 ThreadPool::queue_size()
         {
             return m_q.size();
         }

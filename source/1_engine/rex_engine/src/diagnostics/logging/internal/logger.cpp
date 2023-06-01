@@ -76,7 +76,7 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void Logger::log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, string_view msg)
+    void Logger::log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, rsl::string_view msg)
     {
         const bool log_enabled = should_log(lvl);
         if (!log_enabled)
@@ -89,7 +89,7 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void Logger::log(rsl::source_location loc, level::LevelEnum lvl, string_view msg)
+    void Logger::log(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view msg)
     {
         const bool log_enabled = should_log(lvl);
         if (!log_enabled)
@@ -102,7 +102,7 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void Logger::log(level::LevelEnum lvl, string_view msg)
+    void Logger::log(level::LevelEnum lvl, rsl::string_view msg)
     {
         log(rsl::source_location{}, lvl, msg);
     }

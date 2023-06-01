@@ -13,7 +13,7 @@ namespace rexlog
             // Nothing to implement
         }
 
-        PaddingInfo::PaddingInfo(size_t width, PaddingInfo::PadSide side, bool truncate)
+        PaddingInfo::PaddingInfo(card32 width, PaddingInfo::PadSide side, bool truncate)
             : width(width)
             , side(side)
             , truncate(truncate)

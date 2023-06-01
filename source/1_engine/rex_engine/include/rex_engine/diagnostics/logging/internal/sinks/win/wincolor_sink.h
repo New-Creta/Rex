@@ -44,7 +44,7 @@ namespace rexlog
       rsl::uint16 set_foreground_color_impl(rsl::uint16 attribs);
 
       // print a range of formatted message to console
-      void print_range_impl(const memory_buf_t& formatted, size_t start, size_t end);
+      void print_range_impl(const memory_buf_t& formatted, card32 start, card32 end);
 
       // in case we are redirected to file (not in console mode)
       void write_to_file_impl(const memory_buf_t& formatted);
@@ -183,7 +183,7 @@ namespace rexlog
 
     // print a range of formatted message to console
     template <typename ConsoleMutex>
-    void  WincolorSink<ConsoleMutex>::print_range_impl(const memory_buf_t& formatted, size_t start, size_t end)
+    void  WincolorSink<ConsoleMutex>::print_range_impl(const memory_buf_t& formatted, card32 start, card32 end)
     {
         if (end > start)
         {

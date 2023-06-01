@@ -9,17 +9,17 @@ namespace rexlog
     namespace level
     {
 
-        static string_view_t g_level_string_views[]
+        static rsl::string_view g_level_string_views[]
         {
             REXLOG_LEVEL_NAME_TRACE, REXLOG_LEVEL_NAME_DEBUG, REXLOG_LEVEL_NAME_INFO, REXLOG_LEVEL_NAME_WARNING, REXLOG_LEVEL_NAME_ERROR, REXLOG_LEVEL_NAME_CRITICAL, REXLOG_LEVEL_NAME_OFF                                                                  \
         };
 
-        static string_view_t g_short_level_names[]
+        static rsl::string_view g_short_level_names[]
         {
             REXLOG_LEVEL_SNAME_TRACE, REXLOG_LEVEL_SNAME_DEBUG, REXLOG_LEVEL_SNAME_INFO, REXLOG_LEVEL_SNAME_WARNING, REXLOG_LEVEL_SNAME_ERROR, REXLOG_LEVEL_SNAME_CRITICAL, REXLOG_LEVEL_SNAME_OFF                                                           \
         };
 
-        string_view_t to_string_view(rexlog::level::LevelEnum l) noexcept
+        rsl::string_view to_string_view(rexlog::level::LevelEnum l) noexcept
         {
             switch (l)
             {
@@ -36,7 +36,7 @@ namespace rexlog
             }
         };
 
-        string_view_t to_short_c_str(rexlog::level::LevelEnum l) noexcept
+        rsl::string_view to_short_c_str(rexlog::level::LevelEnum l) noexcept
         {
             switch (l)
             {

@@ -124,7 +124,7 @@ namespace rexlog
 
      void FileHelper::write(const memory_buf_t& buf)
     {
-      const size_t msg_size = buf.size();
+      const card32 msg_size = buf.size();
       const auto* data      = buf.data();
       if(fwrite(data, 1, msg_size, m_fd) != msg_size)
       {

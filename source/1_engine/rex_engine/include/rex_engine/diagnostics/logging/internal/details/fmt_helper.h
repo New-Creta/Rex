@@ -13,7 +13,7 @@ namespace rexlog
     namespace fmt_helper
     {
 
-      inline void append_string_view(rexlog::string_view_t view, memory_buf_t& dest)
+      inline void append_string_view(rsl::string_view view, memory_buf_t& dest)
       {
         dest += view;
       }

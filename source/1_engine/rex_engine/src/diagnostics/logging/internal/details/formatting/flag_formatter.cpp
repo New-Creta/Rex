@@ -184,7 +184,7 @@ namespace rexlog
             if (!msg.logger_name().empty())
             {
                 dest.push_back('[');
-                fmt_helper::append_string_view(string_view_t(msg.logger_name()), dest);
+                fmt_helper::append_string_view(rsl::string_view(msg.logger_name()), dest);
                 dest.push_back(']');
                 dest.push_back(' ');
             }
@@ -208,7 +208,7 @@ namespace rexlog
                 dest.push_back(']');
                 dest.push_back(' ');
             }
-            fmt_helper::append_string_view(string_view_t(msg.payload()), dest);
+            fmt_helper::append_string_view(rsl::string_view(msg.payload()), dest);
         }
     }
 }

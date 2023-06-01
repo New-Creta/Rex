@@ -8,10 +8,10 @@ namespace rexlog
         // Scoped Padder
         ///////////////////////////////////////////////////////////////////////
         //-------------------------------------------------------------------------
-        ScopedPadder::ScopedPadder(size_t wrapped_size, const PaddingInfo& padinfo, memory_buf_t& dest)
+        ScopedPadder::ScopedPadder(card32 wrappedSize, const PaddingInfo& padinfo, memory_buf_t& dest)
             : m_padinfo(&padinfo)
             , m_dest(&dest)
-            , m_remaining_pag(static_cast<long>(padinfo.width) - static_cast<long>(wrapped_size))
+            , m_remaining_pag(static_cast<long>(padinfo.width) - static_cast<long>(wrappedSize))
             , m_spaces({ "                                                                ", 64 })
         {
             if (m_remaining_pag <= 0)
@@ -50,14 +50,14 @@ namespace rexlog
         //-------------------------------------------------------------------------
         void ScopedPadder::pad_it(ulong count)
         {
-            fmt_helper::append_string_view(string_view_t(m_spaces.data(), static_cast<count_t>(count)), *m_dest);
+            fmt_helper::append_string_view(rsl::string_view(m_spaces.data(), static_cast<count_t>(count)), *m_dest);
         }
 
         ///////////////////////////////////////////////////////////////////////
         // Null Scoped Padder
         ///////////////////////////////////////////////////////////////////////
         //-------------------------------------------------------------------------
-        NullScopedPadder::NullScopedPadder(size_t /*wrapped_size*/, const PaddingInfo& /*padinfo*/, memory_buf_t& /*dest*/)
+        NullScopedPadder::NullScopedPadder(card32 /*wrappedSize*/, const PaddingInfo& /*padinfo*/, memory_buf_t& /*dest*/)
         {
 
         }
