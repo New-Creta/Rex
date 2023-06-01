@@ -23,13 +23,13 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  const LogCategoryName& LogCategory::get_category_name() const
+  rsl::string_view LogCategory::get_category_name() const
   {
     return m_category_name;
   }
 
   //-------------------------------------------------------------------------
-  const LogVerbosity& LogCategory::get_verbosity() const
+  LogVerbosity LogCategory::get_verbosity() const
   {
     return m_verbosity;
   }

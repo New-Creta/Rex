@@ -22,10 +22,10 @@ namespace rex
         LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync inAsync = IsAsync::no);
 
         /** Gets the category name **/
-        const LogCategoryName& get_category_name() const;
+        rsl::string_view get_category_name() const;
 
         /** Gets the working verbosity **/
-        const LogVerbosity& get_verbosity() const;
+        LogVerbosity get_verbosity() const;
 
         /** Should not generally be used directly. Tests the runtime verbosity and maybe triggers a debug break, etc. **/
         bool is_suppressed(LogVerbosity verbosityLevel) const;

@@ -18,7 +18,7 @@
 
 namespace rex
 {
-  using LogPattern  = const char*;
+  using LogPattern  = rsl::string_view;
   using LogLevelMap = DebugHashTable<LogVerbosity, rexlog::level::LevelEnum>;
 
   using LoggerObjectPtr    = rsl::shared_ptr<rexlog::Logger>;
@@ -61,7 +61,7 @@ namespace rex
 
     // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
 
-    auto logger = rexlog::details::Registry::instance().get(rex::DebugString(category.get_category_name()));
+    auto logger = rexlog::details::Registry::instance().get(category.get_category_name());
     if(logger != nullptr)
       return *logger;
 
@@ -82,14 +82,14 @@ namespace rex
 
     if (category.is_async())
     {
-        new_logger = rexlog::create_async<rexlog::sinks::dist_sink_mt>(rex::DebugString(category.get_category_name()), sinks);
+        new_logger = rexlog::create_async<rexlog::sinks::dist_sink_mt>(category.get_category_name(), sinks);
     }
     else
     {
-        new_logger = rexlog::create<rexlog::sinks::dist_sink_st>(rex::DebugString(category.get_category_name()), sinks);
+        new_logger = rexlog::create<rexlog::sinks::dist_sink_st>(category.get_category_name(), sinks);
     }
 
-    new_logger->set_pattern(rsl::small_stack_string(default_pattern));
+    new_logger->set_pattern(default_pattern);
     new_logger->set_level(log_levels.at(category.get_verbosity()));
 
     loggers().insert({category.get_category_name(), new_logger});
