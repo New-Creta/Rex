@@ -38,7 +38,7 @@ namespace rex
     //-------------------------------------------------------------------------
     const StringEntryID* store(rsl::hash_result hash, rsl::string_view characters)
     {
-      auto it = get_entries().find(hash);
+      auto it = get_entries().find(StringEntryID(hash));
       if(it != rsl::cend(get_entries()))
       {
         REX_ASSERT_X(rsl::strcmp(characters.data(), it->value.characters().data()) == 0, "Hash collision");
@@ -75,7 +75,7 @@ namespace rex
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
       {
-        it = get_entries().find(StringEntryID::s_none_state_hash);
+        it = get_entries().find(StringEntryID(StringEntryID::s_none_state_hash));
 
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
