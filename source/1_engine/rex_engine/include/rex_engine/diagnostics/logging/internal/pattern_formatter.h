@@ -22,11 +22,11 @@ namespace rexlog
     class PatternFormatter
     {
     public:
-        explicit PatternFormatter(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local, const rsl::tiny_stack_string& eol = rsl::tiny_stack_string(rexlog::details::os::default_eol));
-        explicit PatternFormatter(PatternTimeType timeType = PatternTimeType::Local, const rsl::tiny_stack_string& eol = rsl::tiny_stack_string(rexlog::details::os::default_eol));
+        explicit PatternFormatter(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local, rsl::string_view eol = rexlog::details::os::g_default_eol);
+        explicit PatternFormatter(PatternTimeType timeType = PatternTimeType::Local, rsl::string_view eol = rexlog::details::os::g_default_eol);
 
-        void format(const details::LogMsg& msg, memory_buf_t& dest);
-        void set_pattern(const rsl::small_stack_string& pattern);
+        void format(const details::LogMsg& msg, rsl::big_stack_string& dest);
+        void set_pattern(rsl::string_view pattern);
         void need_localtime(bool need = true);
 
         PatternFormatter clone() const;
@@ -36,7 +36,7 @@ namespace rexlog
 
         template <typename Padder>
         void handle_flag_impl(char flag, details::PaddingInfo padding);
-        void compile_pattern_impl(const rsl::small_stack_string& pattern);
+        void compile_pattern_impl(rsl::string_view pattern);
 
         rsl::small_stack_string m_pattern;
         rsl::tiny_stack_string  m_eol;

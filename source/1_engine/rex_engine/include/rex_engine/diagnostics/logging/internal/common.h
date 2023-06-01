@@ -61,21 +61,21 @@ namespace rexlog
 
     namespace level
     {
-        inline constexpr rsl::string_view g_level_name_trace("trace");
-        inline constexpr rsl::string_view g_level_name_debug("debug");
-        inline constexpr rsl::string_view g_level_name_info("info");
-        inline constexpr rsl::string_view g_level_name_warning("warning");
-        inline constexpr rsl::string_view g_level_name_error("error");
-        inline constexpr rsl::string_view g_level_name_critical("critical");
-        inline constexpr rsl::string_view g_level_name_off("off");
+        inline rsl::string_view g_level_name_trace("trace");
+        inline rsl::string_view g_level_name_debug("debug");
+        inline rsl::string_view g_level_name_info("info");
+        inline rsl::string_view g_level_name_warning("warning");
+        inline rsl::string_view g_level_name_error("error");
+        inline rsl::string_view g_level_name_critical("critical");
+        inline rsl::string_view g_level_name_off("off");
 
-        inline constexpr rsl::string_view g_level_sname_trace("T");
-        inline constexpr rsl::string_view g_level_sname_debug("D");
-        inline constexpr rsl::string_view g_level_sname_info("I");
-        inline constexpr rsl::string_view g_level_sname_warning("W");
-        inline constexpr rsl::string_view g_level_sname_error("E");
-        inline constexpr rsl::string_view g_level_sname_critical("C");
-        inline constexpr rsl::string_view g_level_sname_off("O");
+        inline rsl::string_view g_level_sname_trace("T");
+        inline rsl::string_view g_level_sname_debug("D");
+        inline rsl::string_view g_level_sname_info("I");
+        inline rsl::string_view g_level_sname_warning("W");
+        inline rsl::string_view g_level_sname_error("E");
+        inline rsl::string_view g_level_sname_critical("C");
+        inline rsl::string_view g_level_sname_off("O");
 
         enum class LevelEnum : int32
         {
@@ -91,7 +91,7 @@ namespace rexlog
         rsl::string_view            to_string_view(rexlog::level::LevelEnum l) noexcept;
         rsl::string_view            to_short_c_str(rexlog::level::LevelEnum l) noexcept;
 
-        rexlog::level::LevelEnum    from_str(const rex::DebugString& name) noexcept;
+        rexlog::level::LevelEnum    from_str(rsl::string_view name) noexcept;
 
     } // namespace level
 
@@ -136,13 +136,13 @@ namespace rexlog
         }
 
         // to avoid useless casts (see https://github.com/nlohmann/json/issues/2893#issuecomment-889152324)
-        template <typename T, typename U, enable_if_t<!rsl::is_same<T, U>::value, int> = 0>
+        template <typename T, typename U, rsl::enable_if_t<!rsl::is_same<T, U>::value, int> = 0>
         constexpr T conditional_static_cast(U value)
         {
             return static_cast<T>(value);
         }
 
-        template <typename T, typename U, enable_if_t<rsl::is_same<T, U>::value, int> = 0>
+        template <typename T, typename U, rsl::enable_if_t<rsl::is_same<T, U>::value, int> = 0>
         constexpr T conditional_static_cast(U value)
         {
             return value;

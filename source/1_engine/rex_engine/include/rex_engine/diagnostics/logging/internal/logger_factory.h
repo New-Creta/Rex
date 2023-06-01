@@ -10,7 +10,7 @@ namespace rexlog
         struct SyncFactoryImpl
         {
             template <typename Sink, typename... SinkArgs>
-            static rsl::shared_ptr<rexlog::Logger> create(rex::DebugString loggerName, SinkArgs&&... args)
+            static rsl::shared_ptr<rexlog::Logger> create(rsl::string_view loggerName, SinkArgs&&... args)
             {
                 auto sink = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
                 auto new_logger = rsl::allocate_shared<rexlog::Logger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink));
@@ -27,26 +27,26 @@ namespace rexlog
         struct AsyncFactoryImpl
         {
             template <typename Sink, typename... SinkArgs>
-            static rsl::shared_ptr<AsyncLogger> create(rex::DebugString loggerName, SinkArgs&&... args)
+            static rsl::shared_ptr<AsyncLogger> create(rsl::string_view loggerName, SinkArgs&&... args)
             {
-                constexpr card32 g_default_async_q_size = 8192;
+                constexpr s32 g_default_async_q_size = 8192;
 
                 auto& registry_inst = details::Registry::instance();
 
                 // create global thread pool if not already exists..
-                const rsl::unique_lock<rsl::recursive_mutex> tp_lock(registry_inst.tp_mutex());
+                const rsl::unique_lock<rsl::recursive_mutex> tp_lock(registry_inst.thread_pool_mutex());
 
-                auto tp = registry_inst.tp();
+                auto tp = registry_inst.thread_pool();
                 if (tp == nullptr)
                 {
                     tp = rsl::allocate_shared<details::ThreadPool>(rex::global_debug_allocator(), g_default_async_q_size, 1U);
-                    registry_inst.set_tp(tp);
+                    registry_inst.set_thread_pool(tp);
                 }
 
                 auto sink = rsl::allocate_shared<Sink>(rex::global_debug_allocator(), rsl::forward<SinkArgs>(args)...);
                 auto new_logger = rsl::allocate_shared<AsyncLogger>(rex::global_debug_allocator(), rsl::move(loggerName), rsl::move(sink), rsl::move(tp), OverflowPolicy);
                 registry_inst.initialize_logger(new_logger);
-                return rsl::shared_ptr<AsyncLogger>(rsl::move(new_logger));
+                return new_logger;
             }
         };
     };
@@ -55,9 +55,9 @@ namespace rexlog
 
     //-------------------------------------------------------------------------
     template <typename Sink, typename... SinkArgs>
-    rsl::shared_ptr<rexlog::Logger> create(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
+    rsl::shared_ptr<rexlog::Logger> create(rsl::string_view loggerName, SinkArgs&&... sinkArgs)
     {
-        return sync_factory::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+        return sync_factory::create<Sink>(loggerName, rsl::forward<SinkArgs>(sinkArgs)...);
     }
 
     using async_factory = internal::AsyncFactoryImpl<AsyncOverflowPolicy::Block>;
@@ -65,15 +65,15 @@ namespace rexlog
 
     //-------------------------------------------------------------------------
     template <typename Sink, typename... SinkArgs>
-    rsl::shared_ptr<rexlog::Logger> create_async(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
+    rsl::shared_ptr<rexlog::Logger> create_async(rsl::string_view loggerName, SinkArgs&&... sinkArgs)
     {
-        return async_factory::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+        return async_factory::create<Sink>(loggerName, rsl::forward<SinkArgs>(sinkArgs)...);
     }
 
     //-------------------------------------------------------------------------
     template <typename Sink, typename... SinkArgs>
-    rsl::shared_ptr<rexlog::Logger> create_async_nb(rex::DebugString loggerName, SinkArgs&&... sinkArgs)
+    rsl::shared_ptr<rexlog::Logger> create_async_nb(rsl::string_view loggerName, SinkArgs&&... sinkArgs)
     {
-        return async_factory_nonblock::create<Sink>(rsl::move(loggerName), rsl::forward<SinkArgs>(sinkArgs)...);
+        return async_factory_nonblock::create<Sink>(loggerName, rsl::forward<SinkArgs>(sinkArgs)...);
     }
 }

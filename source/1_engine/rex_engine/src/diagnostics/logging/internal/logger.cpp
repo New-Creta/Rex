@@ -140,7 +140,7 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    const rex::DebugString& Logger::name() const
+    rsl::string_view Logger::name() const
     {
         return m_name;
     }

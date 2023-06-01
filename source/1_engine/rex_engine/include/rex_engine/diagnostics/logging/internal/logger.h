@@ -35,7 +35,7 @@ namespace rexlog
         //-------------------------------------------------------------------------
         template <typename It>
         Logger(rsl::string_view name, It begin, It end)
-            : m_name(DebugString(name))
+            : m_name(rex::DebugString(name))
             , m_sinks(begin, end)
         {
         }
@@ -55,7 +55,7 @@ namespace rexlog
 
         bool                                should_log(level::LevelEnum msgLevel) const;
 
-        const rex::DebugString&             name() const;
+        rsl::string_view                    name() const;
 
         level::LevelEnum                    level() const;
         level::LevelEnum                    flush_level() const;
@@ -105,7 +105,7 @@ namespace rexlog
         //-------------------------------------------------------------------------
         // common implementation for after templated public api has been resolved
         template <typename... Args>
-        void                                log_impl(rsl::source_location loc, level::LevelEnum lvl, string_view fmt, Args&&... args)
+        void                                log_impl(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view fmt, Args&&... args)
         {
             const bool log_enabled = should_log(lvl);
             if (!log_enabled)
@@ -113,10 +113,10 @@ namespace rexlog
                 return;
             }
 
-            memory_buf_t buf;
+            rsl::big_stack_string buf;
             rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_format_args(rsl::forward<Args>(args)...));
 
-            const details::LogMsg log_msg(loc, m_name, lvl, string_view(buf.data(), buf.size()));
+            const details::LogMsg log_msg(loc, m_name, lvl, rsl::string_view(buf.data(), buf.size()));
             log_it_impl(log_msg, log_enabled);
         }
 
