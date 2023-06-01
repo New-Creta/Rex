@@ -7,17 +7,17 @@ namespace rexlog
         PaddingInfo::PaddingInfo()
             :width(0)
             ,side(PadSide::Left)
-            ,truncate(false)
-            ,enabled(false)
+            ,truncate(Truncate::no)
+            ,enabled(Enabled::no)
         {
             // Nothing to implement
         }
 
-        PaddingInfo::PaddingInfo(card32 width, PaddingInfo::PadSide side, bool truncate)
+        PaddingInfo::PaddingInfo(s32 width, PaddingInfo::PadSide side, Truncate truncate)
             : width(width)
             , side(side)
             , truncate(truncate)
-            , enabled(true)
+            , enabled(Enabled::yes)
         {
             // Nothing to implement
         }

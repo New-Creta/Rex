@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/types.h"
 #include "rex_std_extra/utility/yes_no.h"
 
 DEFINE_YES_NO_ENUM(Truncate);
@@ -19,9 +20,9 @@ namespace rexlog
             };
 
             PaddingInfo();
-            PaddingInfo(card32 width, PaddingInfo::PadSide side, Truncate truncate);
+            PaddingInfo(s32 width, PaddingInfo::PadSide side, Truncate truncate);
 
-            card32      width;
+            s32      width;
             PadSide     side;
             Truncate    truncate;
             Enabled     enabled;

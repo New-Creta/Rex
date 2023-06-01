@@ -10,7 +10,7 @@ namespace rexlog
         class ScopedPadder
         {
         public:
-            ScopedPadder(card32 wrappedSize, const PaddingInfo& padinfo, memory_buf_t& dest);
+            ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo, rsl::big_stack_string& dest);
 
             ScopedPadder(const ScopedPadder&) = delete;
             ScopedPadder(ScopedPadder&&) = delete;
@@ -29,16 +29,16 @@ namespace rexlog
         private:
             void pad_it(ulong count);
 
-            const PaddingInfo*  m_padinfo;
-            memory_buf_t*       m_dest;
-            ulong               m_remaining_pag;
-            rsl::string_view    m_spaces;
+            const PaddingInfo*      m_padinfo;
+            rsl::big_stack_string*  m_dest;
+            ulong                   m_remaining_pag;
+            rsl::string_view        m_spaces;
         };
 
         class NullScopedPadder
         {
         public:
-            NullScopedPadder(card32 /*wrappedSize*/, const PaddingInfo& /*padinfo*/, memory_buf_t& /*dest*/);
+            NullScopedPadder(s32 /*wrappedSize*/, const PaddingInfo& /*padinfo*/, rsl::big_stack_string& /*dest*/);
 
             template <typename T>
             static unsigned int count_digits(T /* number */)

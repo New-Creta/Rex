@@ -9,10 +9,10 @@ namespace rexlog
         ///////////////////////////////////////////////////////////////////////
         // Time information
         ///////////////////////////////////////////////////////////////////////
-        const rsl::array<const char*, 7>    DayNames::days = { {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"} };
-        const rsl::array<const char*, 7>    DayNames::full_days = { {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"} };
-        const rsl::array<const char*, 12>   MonthNames::months = { {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"} };
-        const rsl::array<const char*, 12>   MonthNames::full_months = { {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"} };
+        const rsl::array<rsl::string_view, 7>    DayNames::days = { {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"} };
+        const rsl::array<rsl::string_view, 7>    DayNames::full_days = { {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"} };
+        const rsl::array<rsl::string_view, 12>   MonthNames::months = { {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"} };
+        const rsl::array<rsl::string_view, 12>   MonthNames::full_months = { {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"} };
 
 
         ///////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void ch_formatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest)
+        void ch_formatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, rsl::big_stack_string& dest)
         {
             dest.push_back(ch_);
         }
@@ -91,7 +91,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void aggregate_formatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest)
+        void aggregate_formatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, rsl::big_stack_string& dest)
         {
             fmt_helper::append_string_view(str_, dest);
         }
@@ -107,7 +107,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void color_start_formatter::format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest)
+        void color_start_formatter::format(const details::LogMsg& msg, const tm& /*unused*/, rsl::big_stack_string& dest)
         {
             msg.m_color_range_start = dest.size();
         }
@@ -123,7 +123,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void color_stop_formatter::format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest)
+        void color_stop_formatter::format(const details::LogMsg& msg, const tm& /*unused*/, rsl::big_stack_string& dest)
         {
             msg.m_color_range_end = dest.size();
         }
@@ -139,7 +139,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void full_formatter::format(const details::LogMsg& msg, const tm& tm_time, memory_buf_t& dest)
+        void full_formatter::format(const details::LogMsg& msg, const tm& tm_time, rsl::big_stack_string& dest)
         {
             using rsl::chrono::duration_cast;
             using rsl::chrono::milliseconds;
@@ -173,7 +173,8 @@ namespace rexlog
 
                 cache_timestamp_ = secs;
             }
-            dest.append(cached_datetime_.begin(), cached_datetime_.end());
+
+            dest.append(cached_datetime_.data(), cached_datetime_.size());
 
             auto millis = fmt_helper::time_fraction<milliseconds>(msg.time());
             fmt_helper::pad3(static_cast<uint32_t>(millis.count()), dest);
