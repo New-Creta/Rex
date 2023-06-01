@@ -20,7 +20,7 @@ namespace rex
     {
       EntryMap map;
 
-      StringEntryID entry_id(StringEntryID::s_none_state_hash);
+      StringEntryID entry_id(StringEntryID::create_invalid());
       StringEntry entry("Invalid StringID");
 
       map.emplace(rsl::move(entry_id), rsl::move(entry));
@@ -36,27 +36,33 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const StringEntryID* store(rsl::hash_result hash, rsl::string_view characters)
+    StringEntryID make(rsl::hash_result hash, rsl::string_view newCharacters)
     {
-      auto it = get_entries().find(hash);
+      auto it = get_entries().find(StringEntryID(hash));
       if(it != rsl::cend(get_entries()))
       {
-        REX_ASSERT_X(rsl::strcmp(characters.data(), it->value.characters().data()) == 0, "Hash collision");
+        REX_ASSERT_X(rsl::strcmp(newCharacters.data(), it->value.characters().data()) == 0, "Hash collision");
 
-        return &it->key;
+        return it->key;
       }
 
-      StringEntryID entry_id(hash);
-      StringEntry entry(characters);
+      return StringEntryID(hash);
+    }
+
+    //-------------------------------------------------------------------------
+    StringEntryID make_and_store(rsl::hash_result hash, rsl::string_view newCharacters)
+    {
+      StringEntryID entry_id = make(hash, newCharacters);
+      StringEntry entry(newCharacters);
 
       auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
       if(result.emplace_successful)
       {
-        return &result.inserted_element->key;
+        return result.inserted_element->key;
       }
 
       REX_ASSERT("This path should never be reached, insertion into the string pool failed somehow.");
-      return nullptr;
+      return {};
     }
 
     //-------------------------------------------------------------------------
@@ -75,7 +81,7 @@ namespace rex
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
       {
-        it = get_entries().find(StringEntryID::s_none_state_hash);
+        it = get_entries().find(StringEntryID::create_invalid());
 
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
@@ -84,9 +90,14 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const StringEntryID* store(rsl::string_view characters)
+    StringEntryID make(rsl::string_view characters)
     {
-      return store(rsl::hash<rsl::string_view> {}(characters), characters);
+      return make(rsl::hash<rsl::string_view> {}(characters), characters);
+    }
+    //-------------------------------------------------------------------------
+    StringEntryID make_and_store(rsl::string_view characters)
+    {
+      return make_and_store(rsl::hash<rsl::string_view> {}(characters), characters);
     }
   } // namespace string_pool
 } // namespace rex

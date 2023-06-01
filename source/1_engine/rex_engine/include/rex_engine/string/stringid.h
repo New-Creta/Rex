@@ -3,10 +3,10 @@
 #include "rex_engine/string/stringentry.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/functional.h"
+#include "rex_std/internal/format/core.h"
 #include "rex_std/memory.h"
 #include "rex_std/ostream.h"
 #include "rex_std/string.h"
-#include "rex_std/internal/format/core.h"
 
 #include <cstddef>
 
@@ -66,14 +66,17 @@ namespace rsl
     template <>
     struct rsl::formatter<rex::StringID>
     {
-        constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+      constexpr auto parse(format_parse_context& ctx)
+      {
+        return ctx.begin();
+      }
 
-        template <typename FormatContext>
-        auto format(const rex::StringID& sid, FormatContext& ctx) 
-        {
-            // Format your type's output here
-            return rsl::format_to(ctx.out(), "{}", sid.to_string_view());
-        }
+      template <typename FormatContext>
+      auto format(const rex::StringID& sid, FormatContext& ctx)
+      {
+        // Format your type's output here
+        return rsl::format_to(ctx.out(), "{}", sid.to_string_view());
+      }
     };
   } // namespace v1
 } // namespace rsl
