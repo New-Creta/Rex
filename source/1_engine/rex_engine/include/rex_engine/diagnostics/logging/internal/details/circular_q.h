@@ -16,10 +16,10 @@ namespace rexlog
         template <typename T>
         class CircularQ
         {
-            size_t m_max_items = 0;
+            s32 m_max_items = 0;
             typename rex::DebugVector<T>::size_type m_head = 0;
             typename rex::DebugVector<T>::size_type m_tail = 0;
-            size_t m_overrun_counter = 0;
+            s32 m_overrun_counter = 0;
             rex::DebugVector<T> m_v;
 
         public:
@@ -28,9 +28,9 @@ namespace rexlog
             // empty ctor - create a disabled queue with no elements allocated at all
             CircularQ() = default;
 
-            explicit CircularQ(size_t maxItems)
+            explicit CircularQ(s32 maxItems)
                 : m_max_items(maxItems + 1)                        // one item is reserved as marker for full q
-                , m_v(rsl::Size(static_cast<card32>(m_max_items))) // NOLINT(google-readability-casting)
+                , m_v(rsl::Size(static_cast<s32>(m_max_items))) // NOLINT(google-readability-casting)
             {
             }
 
@@ -81,7 +81,7 @@ namespace rexlog
             }
 
             // Return number of elements actually stored
-            size_t size() const
+            s32 size() const
             {
                 if (m_tail >= m_head)
                 {
@@ -95,7 +95,7 @@ namespace rexlog
 
             // Return const reference to item by index.
             // If index is out of range 0…size()-1, the behavior is undefined.
-            const T& at(size_t i) const
+            const T& at(s32 i) const
             {
                 assert(i < size());
                 return m_v[(m_head + i) % m_max_items];
@@ -123,7 +123,7 @@ namespace rexlog
                 return false;
             }
 
-            size_t overrun_counter() const
+            s32 overrun_counter() const
             {
                 return m_overrun_counter;
             }

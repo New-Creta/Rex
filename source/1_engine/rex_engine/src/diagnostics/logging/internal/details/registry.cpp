@@ -67,7 +67,7 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void Registry::set_tp(rsl::shared_ptr<ThreadPool> tp)
+        void Registry::set_thread_pool(rsl::shared_ptr<ThreadPool> tp)
         {
             const rsl::unique_lock<rsl::recursive_mutex> lock(m_tp_mutex);
             m_tp = rsl::move(tp);
@@ -152,14 +152,14 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        rsl::shared_ptr<ThreadPool> Registry::tp()
+        rsl::shared_ptr<ThreadPool> Registry::thread_pool()
         {
             const rsl::unique_lock<rsl::recursive_mutex> lock(m_tp_mutex);
             return m_tp;
         }
 
         //-------------------------------------------------------------------------
-        rsl::recursive_mutex& Registry::tp_mutex()
+        rsl::recursive_mutex& Registry::thread_pool_mutex()
         {
             return m_tp_mutex;
         }

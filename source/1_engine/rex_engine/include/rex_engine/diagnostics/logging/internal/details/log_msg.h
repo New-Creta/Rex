@@ -14,8 +14,8 @@ namespace rexlog
         class LogMsg
         {
         public:
-            mutable card32              m_color_range_start;
-            mutable card32              m_color_range_end;
+            mutable s32              m_color_range_start;
+            mutable s32              m_color_range_end;
 
             LogMsg();
             LogMsg(log_clock::time_point logTime, const rsl::source_location& loc, rsl::string_view loggerName, level::LevelEnum lvl, rsl::string_view msg);
@@ -27,8 +27,8 @@ namespace rexlog
             void                        set_time(log_clock::time_point tp);
             void                        set_thread_id(size_t id);
 
-            void                        set_color_range_start(card32 cs);
-            void                        set_color_range_end(card32 ce);
+            void                        set_color_range_start(s32 cs);
+            void                        set_color_range_end(s32 ce);
 
             void                        set_source(const rsl::source_location& sourceLoc);
             void                        set_payload(rsl::string_view p);
@@ -38,8 +38,8 @@ namespace rexlog
             log_clock::time_point       time() const;
             size_t                      thread_id() const;
 
-            card32                      color_range_start() const;
-            card32                      color_range_end() const;
+            s32                      color_range_start() const;
+            s32                      color_range_end() const;
 
             const rsl::source_location& source() const;
             rsl::string_view            payload() const;

@@ -23,7 +23,7 @@ namespace rexlog
         public:
             using item_type = T;
 
-            explicit MpmcBlockingQueue(size_t maxItems)
+            explicit MpmcBlockingQueue(s32 maxItems)
                 : m_q(maxItems)
             {}
 
@@ -77,13 +77,13 @@ namespace rexlog
                 m_pop_cv.notify_one();
             }
 
-            size_t overrun_counter()
+            s32 overrun_counter()
             {
                 const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
                 return m_q.overrun_counter();
             }
 
-            size_t size()
+            s32 size()
             {
                 const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
                 return m_q.size();

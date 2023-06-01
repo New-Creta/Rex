@@ -21,10 +21,10 @@ namespace rexlog
       close();
     }
 
-     void FileHelper::open(const filename_t& fname, bool truncate)
+     void FileHelper::open(rsl::string_view fname, bool truncate)
     {
       close();
-      m_filename = fname;
+      m_filename = filename_t(fname);
 
       const auto* mode       = "ab";
       const auto* trunc_mode = "wb";
@@ -124,7 +124,7 @@ namespace rexlog
 
      void FileHelper::write(const memory_buf_t& buf)
     {
-      const card32 msg_size = buf.size();
+      const s32 msg_size = buf.size();
       const auto* data      = buf.data();
       if(fwrite(data, 1, msg_size, m_fd) != msg_size)
       {
@@ -148,7 +148,7 @@ namespace rexlog
       return os::filesize(m_fd);
     }
 
-     const filename_t& FileHelper::filename() const
+     rsl::string_view FileHelper::filename() const
     {
       return m_filename;
     }
@@ -179,7 +179,7 @@ namespace rexlog
       }
 
       // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
-      auto folder_index = fname.find_last_of(rsl::string_view(details::os::folder_seps_filename));
+      auto folder_index = fname.find_last_of(details::os::g_folder_seps_filename);
       if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
       {
         return FilenameWithExtension {fname, filename_t()};

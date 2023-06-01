@@ -77,9 +77,9 @@ namespace rexlog
             using item_type = AsyncMsg;
             using q_type = details::MpmcBlockingQueue<item_type>;
 
-            ThreadPool(card32 qMaxItems, card32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
-            ThreadPool(card32 qMaxItems, card32 threadsN, const rsl::function<void()>& onThreadStart);
-            ThreadPool(card32 qMaxItems, card32 threadsN);
+            ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
+            ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart);
+            ThreadPool(s32 qMaxItems, s32 threadsN);
 
             // message all threads to terminate gracefully and join them
             ~ThreadPool();
@@ -91,9 +91,9 @@ namespace rexlog
 
             void post_log(AsyncMsgLogFunctions&& loggerFns, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
             void post_flush(AsyncMsgLogFunctions&& loggerFns, AsyncOverflowPolicy overflowPolicy);
-            size_t overrun_counter();
+            s32 overrun_counter();
             void reset_overrun_counter();
-            size_t queue_size();
+            s32 queue_size();
 
         private:
             void post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy);

@@ -68,12 +68,12 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        void LogMsg::set_color_range_start(card32 cs)
+        void LogMsg::set_color_range_start(s32 cs)
         {
             m_color_range_start = cs;
         }
         //-------------------------------------------------------------------------
-        void LogMsg::set_color_range_end(card32 ce)
+        void LogMsg::set_color_range_end(s32 ce)
         {
             m_color_range_end = ce;
         }
@@ -111,12 +111,12 @@ namespace rexlog
         }
 
         //-------------------------------------------------------------------------
-        card32 LogMsg::color_range_start() const
+        s32 LogMsg::color_range_start() const
         {
             return m_color_range_start;
         }
         //-------------------------------------------------------------------------
-        card32 LogMsg::color_range_end() const
+        s32 LogMsg::color_range_end() const
         {
             return m_color_range_end;
         }

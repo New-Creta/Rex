@@ -30,8 +30,8 @@ namespace rexlog
 
         struct FilenameWithExtension
         {
-            filename_t filename;
-            filename_t ext;
+            rsl::small_stack_string filename;
+            rsl::tiny_stack_string ext;
         };
 
         class FileHelper
@@ -44,14 +44,14 @@ namespace rexlog
             FileHelper& operator=(const FileHelper&) = delete;
             ~FileHelper();
 
-            void open(const filename_t& fname, bool truncate = false);
+            void open(rsl::string_view fname, bool truncate = false);
             void reopen(bool truncate);
             void flush();
             void sync();
             void close();
             void write(const memory_buf_t& buf);
             size_t size() const;
-            const filename_t& filename() const;
+            rsl::string_view filename() const;
 
             //
             // return file path and its extension:

@@ -107,10 +107,10 @@ namespace rexlog
             }
 
             // fopen_s on non windows for writing
-            bool fopen_s(FILE** fp, const filename_t& filename, const filename_t& mode)
+            bool fopen_s(FILE** fp, rsl::string_view filename, const filename_t& mode)
             {
 #ifdef _WIN32
-                * fp = ::_fsopen((filename.c_str()), mode.c_str(), _SH_DENYNO);
+                * fp = ::_fsopen((filename.data()), mode.c_str(), _SH_DENYNO);
 #else
                 * fp = ::fopen((filename.c_str()), mode.c_str());
 #endif
@@ -350,10 +350,10 @@ namespace rexlog
                     return false;
                 }
 
-                card32 search_offset = 0;
+                s32 search_offset = 0;
                 do
                 {
-                    auto token_pos = path.find_first_of(rsl::string_view(folder_seps_filename), static_cast<count_t>(search_offset));
+                    auto token_pos = path.find_first_of(g_folder_seps_filename, static_cast<count_t>(search_offset));
                     // treat the entire path as a folder if no folder separator not found
                     if (token_pos == filename_t::npos())
                     {
@@ -377,9 +377,9 @@ namespace rexlog
             // "abc/" => "abc"
             // "abc" => ""
             // "abc///" => "abc//"
-            filename_t dir_name(const filename_t& path)
+            filename_t dir_name(rsl::string_view path)
             {
-                auto pos = path.find_last_of(rsl::string_view(folder_seps_filename));
+                auto pos = path.find_last_of(g_folder_seps_filename);
                 return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t{};
             }
 

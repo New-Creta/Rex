@@ -45,7 +45,7 @@ namespace rexlog
             LoggerObjectPtr             get(rsl::string_view loggerName);
             level::LevelEnum            get_global_level() const;
 
-            void                        set_tp(rsl::shared_ptr<ThreadPool> tp);
+            void                        set_thread_pool(rsl::shared_ptr<ThreadPool> tp);
             void                        set_formatter(PatternFormatter&& formatter);
             void                        set_level(level::LevelEnum logLevel);
             void                        set_levels(LogLevels levels, const level::LevelEnum* globalLevel);
@@ -55,8 +55,8 @@ namespace rexlog
 
             void                        shutdown();
 
-            rsl::shared_ptr<ThreadPool> tp();
-            rsl::recursive_mutex& tp_mutex();
+            rsl::shared_ptr<ThreadPool> thread_pool();
+            rsl::recursive_mutex&       thread_pool_mutex();
 
         private:
             Registry();

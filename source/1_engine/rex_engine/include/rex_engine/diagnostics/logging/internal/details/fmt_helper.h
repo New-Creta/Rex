@@ -13,19 +13,19 @@ namespace rexlog
     namespace fmt_helper
     {
 
-      inline void append_string_view(rsl::string_view view, memory_buf_t& dest)
+      inline void append_string_view(rsl::string_view view, rsl::big_stack_string& dest)
       {
         dest += view;
       }
 
       template <typename T>
-      inline void append_int(T n, memory_buf_t& dest)
+      inline void append_int(T n, rsl::big_stack_string& dest)
       {
         static_assert(rsl::is_integral_v<T>, "n needs to be an integral value");
 
         auto x = rsl::to_string(n);
 
-        dest.append(x);
+        dest.append(x.data(), x.size());
       }
 
       template <typename T>
@@ -58,7 +58,7 @@ namespace rexlog
         return count_digits_fallback(static_cast<count_type>(n));
       }
 
-      inline void pad2(int n, memory_buf_t& dest)
+      inline void pad2(int n, rsl::big_stack_string& dest)
       {
         if (n >= 0 && n < 100) // 0-99
         {
@@ -72,7 +72,7 @@ namespace rexlog
       }
 
       template <typename T>
-      inline void pad_uint(T n, unsigned int width, memory_buf_t& dest)
+      inline void pad_uint(T n, unsigned int width, rsl::big_stack_string& dest)
       {
         static_assert(rsl::is_unsigned<T>::value, "pad_uint must get unsigned T");
         for (auto digits = count_digits(n); digits < width; digits++)
@@ -83,7 +83,7 @@ namespace rexlog
       }
 
       template <typename T>
-      inline void pad3(T n, memory_buf_t& dest)
+      inline void pad3(T n, rsl::big_stack_string& dest)
       {
         static_assert(rsl::is_unsigned<T>::value, "pad3 must get unsigned T");
         if (n < 1000)
@@ -100,13 +100,13 @@ namespace rexlog
       }
 
       template <typename T>
-      inline void pad6(T n, memory_buf_t& dest)
+      inline void pad6(T n, rsl::big_stack_string& dest)
       {
         pad_uint(n, 6, dest);
       }
 
       template <typename T>
-      inline void pad9(T n, memory_buf_t& dest)
+      inline void pad9(T n, rsl::big_stack_string& dest)
       {
         pad_uint(n, 9, dest);
       }

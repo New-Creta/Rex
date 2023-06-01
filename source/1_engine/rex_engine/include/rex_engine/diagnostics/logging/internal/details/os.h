@@ -28,7 +28,7 @@ namespace rexlog
 #define REXLOG_EOL "\n"
 #endif
 #endif
-            constexpr static const char* default_eol = REXLOG_EOL;
+            inline rsl::string_view g_default_eol = REXLOG_EOL;
 
             // folder separator
 #if !defined(REXLOG_FOLDER_SEPS)
@@ -38,11 +38,11 @@ namespace rexlog
 #define REXLOG_FOLDER_SEPS "/"
 #endif
 #endif
-            constexpr static const rsl::string_view folder_seps = REXLOG_FOLDER_SEPS;
-            constexpr static const rsl::string_view folder_seps_filename = REXLOG_FOLDER_SEPS;
+            inline rsl::string_view g_folder_seps = REXLOG_FOLDER_SEPS;
+            inline rsl::string_view g_folder_seps_filename = REXLOG_FOLDER_SEPS;
 
             // fopen_s on non windows for writing
-            bool fopen_s(FILE** fp, const filename_t& filename, const filename_t& mode);
+            bool fopen_s(FILE** fp, rsl::string_view filename, const filename_t& mode);
 
             // Remove filename. return 0 on success
             int remove(const filename_t& filename) noexcept;
@@ -74,7 +74,7 @@ namespace rexlog
             // "abc/" => "abc"
             // "abc" => ""
             // "abc///" => "abc//"
-            filename_t dir_name(const filename_t& path);
+            filename_t dir_name(rsl::string_view path);
 
             // Create a dir from the given path.
             // Return true if succeeded or if this dir already exists.
