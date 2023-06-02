@@ -32,7 +32,7 @@ namespace rex
   class StringEntryID
   {
   public:
-    constexpr static u32 s_none_state_hash = 0;
+    static StringEntryID create_invalid();
 
     StringEntryID();
     StringEntryID(rsl::hash_result value); // NOLINT(google-explicit-constructor)

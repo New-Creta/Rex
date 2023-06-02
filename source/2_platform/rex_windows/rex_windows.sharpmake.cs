@@ -19,10 +19,10 @@ public class RexWindows : PlatformProject
 
         switch (GenerateSettings.GraphicsAPI)
         {
-            case GraphicsAPI.OpenGL:
+            case GenerationTypes.GraphicsAPI.OpenGL:
                 SourceFilesBuildExcludeRegex.Add("win_directx_context.cpp");
                 break;
-            case GraphicsAPI.DirectX12:
+            case GenerationTypes.GraphicsAPI.DirectX12:
                 SourceFilesBuildExcludeRegex.Add("win_opengl_context.cpp");
                 break;
             default:
@@ -39,10 +39,10 @@ public class RexWindows : PlatformProject
         conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
         switch (GenerateSettings.GraphicsAPI)
         {
-            case GraphicsAPI.OpenGL:
+            case GenerationTypes.GraphicsAPI.OpenGL:
                 conf.AddPublicDependency<RexOpenGL>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
                 break;
-            case GraphicsAPI.DirectX12:
+            case GenerationTypes.GraphicsAPI.DirectX12:
                 conf.AddPublicDependency<RexDirectX>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
                 break;
             default:

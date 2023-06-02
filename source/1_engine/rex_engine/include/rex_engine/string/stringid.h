@@ -3,6 +3,7 @@
 #include "rex_engine/string/stringentry.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/functional.h"
+#include "rex_std/internal/format/core.h"
 #include "rex_std/memory.h"
 #include "rex_std/ostream.h"
 #include "rex_std/string.h"
@@ -58,6 +59,23 @@ namespace rsl
       rsl::hash_result operator()(const rex::StringID& s) const noexcept
       {
         return s.value();
+      }
+    };
+
+    //-------------------------------------------------------------------------
+    template <>
+    struct rsl::formatter<rex::StringID>
+    {
+      constexpr auto parse(format_parse_context& ctx) //NOLINT (readability-convert-member-functions-to-static)
+      {
+        return ctx.begin();
+      }
+
+      template <typename FormatContext>
+      auto format(const rex::StringID& sid, FormatContext& ctx)
+      {
+        // Format your type's output here
+        return rsl::format_to(ctx.out(), "{}", sid.to_string_view());
       }
     };
   } // namespace v1
