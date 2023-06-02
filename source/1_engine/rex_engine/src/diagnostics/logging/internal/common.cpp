@@ -9,11 +9,11 @@ namespace rexlog
   namespace level
   {
 
-    const rsl::array<rsl::string_view, 7> g_level_string_views = {
+    const rsl::array<rsl::string_view, 7> g_level_string_views = {                          // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
         g_level_name_trace, g_level_name_debug,    g_level_name_info, g_level_name_warning, // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
         g_level_name_error, g_level_name_critical, g_level_name_off};                       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
 
-    const rsl::array<rsl::string_view, 7> g_short_level_names[] = {
+    const rsl::array<rsl::string_view, 7> g_short_level_names[] = {                             // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
         g_level_sname_trace, g_level_sname_debug,    g_level_sname_info, g_level_sname_warning, // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
         g_level_sname_error, g_level_sname_critical, g_level_sname_off};                        // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
 
