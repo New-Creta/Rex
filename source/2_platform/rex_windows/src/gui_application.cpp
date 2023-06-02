@@ -82,21 +82,19 @@ namespace rex
         // update the window (this pulls input as well)
         m_window->update();
 
+        m_on_update();
+
+        // don't render when the application is paused
         if(!m_app_instance->is_paused())
         {
-          // call the client code, let it update
-          m_on_update();
-
           // update the graphics code
           renderer::backend::clear();
           renderer::backend::present();
-
-          // update the timing stats
-          m_delta_time.update();
-          m_fps.update();
-
-          ++m_frame_idx;
         }
+
+        // update the timing stats
+        m_delta_time.update();
+        m_fps.update();
 
         cap_frame_rate();
       }
@@ -271,8 +269,6 @@ namespace rex
       CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
-
-      card32 m_frame_idx = 0;
     };
 
     //-------------------------------------------------------------------------

@@ -18,44 +18,44 @@
 
 namespace rexlog
 {
-
   // Async overflow policy - block by default.
   enum class AsyncOverflowPolicy
   {
     Block,        // Block until message can be enqueued
-    OverrunOldest // Discard oldest message in the queue if full when trying to
-                  // add new item.
+    OverrunOldest // Discard oldest message in the queue if full when trying to add new item.
   };
 
   namespace details
   {
     class ThreadPool;
+    struct AsyncMsgLogFunctions;
   } // namespace details
 
-  class REXLOG_API AsyncLogger final : public rsl::enable_shared_from_this<AsyncLogger>, public Logger // NOLINT(fuchsia-multiple-inheritance)
+  class AsyncLogger final : public Logger
   {
-    friend class details::ThreadPool;
-
   public:
     template <typename It>
-    AsyncLogger(rex::DebugString loggerName, It begin, It end, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block)
-        : Logger(rsl::move(loggerName), begin, end)
+    AsyncLogger(rsl::string_view loggerName, It begin, It end, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block)
+        : Logger(loggerName, begin, end)
         , m_thread_pool(rsl::move(tp))
         , m_overflow_policy(overflowPolicy)
     {
+      // Nothing to implement
     }
 
-    AsyncLogger(rex::DebugString loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
+    AsyncLogger(rsl::string_view loggerName, sinks_init_list sinksList, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
+    AsyncLogger(rsl::string_view loggerName, sink_ptr singleSink, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
 
-    AsyncLogger(rex::DebugString loggerName, sink_ptr singleSink, rsl::weak_ptr<details::ThreadPool> tp, AsyncOverflowPolicy overflowPolicy = AsyncOverflowPolicy::Block);
-
-    rsl::shared_ptr<Logger> clone(rex::DebugString newName) override;
+    rsl::shared_ptr<Logger> clone(rsl::string_view newName) override;
 
   protected:
     void sink_it_impl(const details::LogMsg& msg) override;
-    void flush_impl() override;
+    void flush_it_impl() override;
     void backend_sink_it_impl(const details::LogMsg& incomingLogMsg);
     void backend_flush_impl();
+
+  private:
+    details::AsyncMsgLogFunctions make_msg_log_functions();
 
   private:
     rsl::weak_ptr<details::ThreadPool> m_thread_pool;

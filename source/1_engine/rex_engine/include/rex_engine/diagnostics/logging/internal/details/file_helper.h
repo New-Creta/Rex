@@ -6,20 +6,35 @@
 
 namespace rexlog
 {
+  struct FileEventHandlers
+  {
+    FileEventHandlers()
+        : before_open(nullptr)
+        , after_open(nullptr)
+        , before_close(nullptr)
+        , after_close(nullptr)
+    {
+    }
+
+    rsl::function<void(const filename_t& filename)> before_open;
+    rsl::function<void(const filename_t& filename, FILE* fileStream)> after_open;
+    rsl::function<void(const filename_t& filename, FILE* fileStream)> before_close;
+    rsl::function<void(const filename_t& filename)> after_close;
+  };
+
   namespace details
   {
-
     // Helper class for file sinks.
     // When failing to open a file, retry several times(5) with a delay interval(10 ms).
     // Throw rexlog_ex exception on errors.
 
     struct FilenameWithExtension
     {
-      filename_t filename;
-      filename_t ext;
+      rsl::small_stack_string filename;
+      rsl::tiny_stack_string ext;
     };
 
-    class REXLOG_API FileHelper
+    class FileHelper
     {
     public:
       FileHelper() = default;
@@ -29,14 +44,14 @@ namespace rexlog
       FileHelper& operator=(const FileHelper&) = delete;
       ~FileHelper();
 
-      void open(const filename_t& fname, bool truncate = false);
+      void open(rsl::string_view fname, bool truncate = false);
       void reopen(bool truncate);
       void flush();
       void sync();
       void close();
       void write(const memory_buf_t& buf);
       size_t size() const;
-      const filename_t& filename() const;
+      rsl::string_view filename() const;
 
       //
       // return file path and its extension:
@@ -51,7 +66,7 @@ namespace rexlog
       // ".mylog" => (".mylog". "")
       // "my_folder/.mylog" => ("my_folder/.mylog", "")
       // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
-      static FilenameWithExtension split_by_extension(const filename_t& fname);
+      static FilenameWithExtension split_by_extension(rsl::string_view fname);
 
     private:
       static constexpr int s_open_tries             = 5;

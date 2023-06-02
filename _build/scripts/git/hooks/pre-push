@@ -2,10 +2,12 @@
 
 import os
 import sys
+import argparse
 import threading
 import regis.util
 import regis.generation
 import regis.build
+import regis.diagnostics
 import regis.test
 import regis.git
 import regis.rex_json
@@ -44,7 +46,7 @@ def __gen_cached_changes_regex():
   return __build_regex(files)
 
 def __generate():
-  settings_path = os.path.join(root, "build", "config", "settings.json")
+  settings_path = os.path.join(root, regis.util.settingsPathFromRoot)
 
   regex = __gen_cached_changes_regex()
 
@@ -93,6 +95,12 @@ def __test():
   return result
 
 def main():
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument("-branch", help="branch to check", default="")
+
+  args, unknown = parser.parse_known_args()
+
 	# we purposely don't run setup here, it's assumed the user has done this before pushing
   # this is to decrease push times
   regis.diagnostics.log_info(f"running pre-push hook")
@@ -101,7 +109,7 @@ def main():
 
   current_branch = regis.git.get_local_branchname()
 
-  if current_branch == "main":
+  if current_branch == args.branch:
 
     result = __generate()
     if result != 0:

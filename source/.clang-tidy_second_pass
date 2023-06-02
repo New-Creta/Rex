@@ -81,6 +81,12 @@
 # [llvm-header-guard]
 #  we use #pragma once instead of header guards
 #
+# [llvm-include-order]
+#  these are checked in the first pass and shouldn't break the second pass
+#
+# [llvm-namespace-comment]
+#  these are checked in the first pass and shouldn't break the second pass
+#
 # [llvmlibc-callee-namespace]
 #  this check doesn't apply to us, we're creating our own standard library after all
 #
@@ -114,6 +120,9 @@
 #
 # [performance-noexcept-move-constructor]
 #  we don't use exceptions, so no point in using this
+#
+# [readability-duplicate-include]
+#  these are checked in the first pass and shouldn't break the second pass
 #
 # [readability-else-after-return]
 #  we don't follow the single return design
@@ -291,6 +300,8 @@ Checks: >
   -google-readability-todo,
   -google-runtime-int,
   -llvm-header-guard,
+  -llvm-include-order,
+  -llvm-namespace-comment,
   -llvmlibc-callee-namespace,
   -llvmlibc-implementation-in-namespace,
   -llvmlibc-restrict-system-libc-headers,
@@ -302,6 +313,7 @@ Checks: >
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type, 
   -performance-noexcept-move-constructor,
+  -readability-duplicate-include,
   -readability-else-after-return,
   -readability-identifier-length,
   -readability-magic-numbers,

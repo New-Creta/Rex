@@ -3,11 +3,11 @@
 namespace rex
 {
   //-------------------------------------------------------------------------
-  LogCategory::LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity)
+  LogCategory::LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync inAsync)
       : m_verbosity(inDefaultVerbosity & LogVerbosity::VerbosityMask)
       , m_category_name(inCategoryName)
+      , m_is_async(inAsync)
   {
-    // LOG CATEGORY? (CategoryName, InDefaultVerbosity);
   }
 
   //-------------------------------------------------------------------------
@@ -17,13 +17,19 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  const LogCategoryName& LogCategory::get_category_name() const
+  bool LogCategory::is_async() const
+  {
+    return m_is_async;
+  }
+
+  //-------------------------------------------------------------------------
+  rsl::string_view LogCategory::get_category_name() const
   {
     return m_category_name;
   }
 
   //-------------------------------------------------------------------------
-  const LogVerbosity& LogCategory::get_verbosity() const
+  LogVerbosity LogCategory::get_verbosity() const
   {
     return m_verbosity;
   }
