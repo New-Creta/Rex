@@ -40,6 +40,13 @@ namespace rex
     {
       StringEntryID entry_id = StringEntryID(hash);
       StringEntry entry(newCharacters);
+      auto it = get_entries().find(entry_id);
+      if(it != rsl::cend(get_entries()))
+      {
+        REX_ASSERT_X(rsl::strcmp(newCharacters.data(), it->value.characters().data()) == 0, "Hash collision");
+
+        return it->key;
+      }
 
       auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
       if(result.emplace_successful)
@@ -75,11 +82,6 @@ namespace rex
       return &(it->value);
     }
 
-    //-------------------------------------------------------------------------
-    StringEntryID make(rsl::string_view characters)
-    {
-      return StringEntryID(rsl::hash<rsl::string_view> {}(characters));
-    }
     //-------------------------------------------------------------------------
     StringEntryID make_and_store(rsl::string_view characters)
     {
