@@ -43,11 +43,10 @@ namespace rex
       auto it = get_entries().find(entry_id);
       if(it != rsl::cend(get_entries()))
       {
-        REX_ASSERT_X(rsl::strcmp(characters.data(), it->value.characters().data()) == 0, "Hash collision");
+        REX_ASSERT_X(rsl::strcmp(newCharacters.data(), it->value.characters().data()) == 0, "Hash collision");
 
         return it->key;
       }
-
 
       auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
       if(result.emplace_successful)

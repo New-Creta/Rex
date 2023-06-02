@@ -29,12 +29,18 @@ namespace rex
 
   class StringEntryID
   {
+  private:
+    static constexpr u32 s_none_state_hash_val = 0;
+
   public:
-    static StringEntryID create_invalid();
+    static constexpr StringEntryID create_invalid()
+    {
+      return StringEntryID(s_none_state_hash_val);
+    }
 
     //-------------------------------------------------------------------------
     constexpr StringEntryID()
-        : m_value(s_none_state_hash)
+        : m_value(s_none_state_hash_val)
     {
     }
     //-------------------------------------------------------------------------
@@ -77,7 +83,7 @@ namespace rex
     //-------------------------------------------------------------------------
     constexpr explicit operator bool() const
     {
-      return m_value != s_none_state_hash;
+      return m_value != s_none_state_hash_val;
     }
     //-------------------------------------------------------------------------
     constexpr explicit operator rsl::hash_result() const

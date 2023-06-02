@@ -41,12 +41,4 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  rex::StringEntryID StringEntryID::create_invalid()
-  {
-    constexpr static u32 s_none_state_hash = 0;
-
-    return StringEntryID(s_none_state_hash);
-  }
-
-  //-------------------------------------------------------------------------
 } // namespace rex

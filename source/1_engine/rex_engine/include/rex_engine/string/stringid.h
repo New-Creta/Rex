@@ -33,7 +33,7 @@ namespace rex
      * Create an empty StringID.
      */
     constexpr StringID()
-        : m_comparison_hash(StringEntryID::s_none_state_hash)
+        : m_comparison_hash(StringEntryID::create_invalid())
     {
     }
 
@@ -90,7 +90,7 @@ namespace rex
     /** True for StringID() and StringID("Invalid StringID") */
     constexpr bool is_none() const
     {
-      return m_comparison_hash == StringEntryID::s_none_state_hash;
+      return m_comparison_hash == StringEntryID::create_invalid();
     }
 
     //-------------------------------------------------------------------------
@@ -142,7 +142,7 @@ namespace rsl
     template <>
     struct rsl::formatter<rex::StringID>
     {
-      constexpr auto parse(format_parse_context& ctx) //NOLINT (readability-convert-member-functions-to-static)
+      constexpr auto parse(format_parse_context& ctx) // NOLINT (readability-convert-member-functions-to-static)
       {
         return ctx.begin();
       }
@@ -151,7 +151,7 @@ namespace rsl
       auto format(const rex::StringID& sid, FormatContext& ctx)
       {
         // Format your type's output here
-        return rsl::format_to(ctx.out(), "{}", sid.to_string_view());
+        return rsl::format_to(ctx.out(), "{}", rex::restore_sid(sid));
       }
     };
   } // namespace v1
