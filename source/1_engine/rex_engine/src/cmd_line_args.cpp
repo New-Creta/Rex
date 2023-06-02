@@ -18,6 +18,11 @@ namespace rex
     parse_cmd_line(rsl::string_view(cmdLine));
   }
 
+  const rsl::vector<rsl::string_view>& CommandLineArguments::arguments() const
+  {
+    return m_arguments;
+  }
+
   void CommandLineArguments::parse_cmd_line(rsl::string_view cmdLine)
   {
     // all we have to do is split the command line based with spaces

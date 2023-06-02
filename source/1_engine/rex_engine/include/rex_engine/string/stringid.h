@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/string/stringentry.h"
+#include "rex_engine/string/stringpool.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/functional.h"
 #include "rex_std/internal/format/core.h"
@@ -12,30 +13,102 @@
 
 namespace rex
 {
+  /**
+   * The process of generating a standalone StringID object lacks a hash collision check,
+   *   which implies that in extremely rare scenarios, different strings may exist with the same hash value.
+   *
+   * With CRC-32, which generates a 32-bit hash value, the theoretical probability of a collision occurring randomly is approximately 1 in 4.3 billion.
+   * However, the likelihood can vary based on the data being hashed.
+   *
+   * If issues arise when using StringIDs, one possible explanation could be a hash collision.
+   *
+   * Hash collisions can only be prevented through the utilization of runtime generated StringIDs,
+   *   which is achieved by employing the "rex::store_sid" function.
+   */
   class StringID
   {
   public:
-    StringID();
-    explicit StringID(rsl::string_view characters);
+    //-------------------------------------------------------------------------
+    /**
+     * Create an empty StringID.
+     */
+    constexpr StringID()
+        : m_comparison_hash(StringEntryID::create_invalid())
+    {
+    }
 
-    explicit operator u32() const;
+    //-------------------------------------------------------------------------
+    /**
+     * Create a runtime generated StringEntryID.
+     */
+    constexpr explicit StringID(StringEntryID entryID)
+        : m_comparison_hash(entryID)
+    {
+    }
 
-    bool operator==(const StringID& other) const;
-    bool operator!=(const StringID& other) const;
+    //-------------------------------------------------------------------------
+    /**
+     * Create an StringID with characters.
+     */
+    constexpr explicit StringID(rsl::string_view stringView)
+        : m_comparison_hash(StringEntryID(rsl::hash<rsl::string_view> {}(stringView)))
+    {
+    }
 
-    bool operator==(const StringEntryID& entryID) const;
-    bool operator!=(const StringEntryID& entryID) const;
+    //-------------------------------------------------------------------------
+    /**
+     * Retrieve the hashed value
+     */
+    constexpr operator u32() const // NOLINT(google-explicit-constructor)
+    {
+      return static_cast<u32>(m_comparison_hash);
+    }
 
-    rsl::string_view to_string_view() const;
-    bool is_none() const;
-    u32 value() const;
+    //-------------------------------------------------------------------------
+    constexpr bool operator==(const StringID& other) const
+    {
+      return m_comparison_hash == other.m_comparison_hash;
+    }
+    //-------------------------------------------------------------------------
+    constexpr bool operator!=(const StringID& other) const
+    {
+      return !(*this == other);
+    }
+
+    //-------------------------------------------------------------------------
+    constexpr bool operator==(const StringEntryID& entryID) const
+    {
+      return m_comparison_hash == static_cast<uint32>(entryID);
+    }
+    //-------------------------------------------------------------------------
+    constexpr bool operator!=(const StringEntryID& entryID) const
+    {
+      return m_comparison_hash != static_cast<uint32>(entryID);
+    }
+
+    //-------------------------------------------------------------------------
+    /** True for StringID() and StringID("Invalid StringID") */
+    constexpr bool is_none() const
+    {
+      return m_comparison_hash == StringEntryID::create_invalid();
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Retrieve the hashed value
+     */
+    constexpr u32 value() const
+    {
+      return static_cast<u32>(m_comparison_hash);
+    }
 
   private:
     /** Hash into the StringID hash table */
     StringEntryID m_comparison_hash;
   };
 
-  StringID create_sid(rsl::string_view stringView);
+  StringID store_sid(rsl::string_view characters);
+  rsl::string_view restore_sid(const StringID& sid);
 
   bool operator==(rsl::string_view s, const StringID& sid);
   bool operator!=(rsl::string_view s, const StringID& sid);
@@ -43,7 +116,10 @@ namespace rex
   bool operator!=(const StringID& sid, rsl::string_view s);
 } // namespace rex
 
-rex::StringID operator""_sid(const char* string, size_t size);
+constexpr rex::StringID operator""_sid(const char* string, size_t size)
+{
+  return rex::StringID(rsl::string_view(string, static_cast<u32>(size))); // NOLINT(cppcoreguidelines-narrowing-conversions)
+}
 
 rsl::ostream& operator<<(rsl::ostream& os, const rex::StringID& stringID);
 
@@ -75,7 +151,7 @@ namespace rsl
       auto format(const rex::StringID& sid, FormatContext& ctx)
       {
         // Format your type's output here
-        return rsl::format_to(ctx.out(), "{}", sid.to_string_view());
+        return rsl::format_to(ctx.out(), "{}", rex::restore_sid(sid));
       }
     };
   } // namespace v1

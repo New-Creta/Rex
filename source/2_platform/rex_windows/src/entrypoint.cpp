@@ -2,6 +2,7 @@
 
 #include "rex_engine/cmd_line_args.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/logging/logger_config.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_windows/console_application.h"
@@ -19,6 +20,11 @@
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
   rex::CommandLineArguments cmd_args(GetCommandLineA());
+
+#if REX_DEBUG
+  rex::diagnostics::load_log_levels(cmd_args.arguments());
+#endif
+
   rex::PlatformCreationParams creation_params {};
   creation_params.instance      = hInstance;
   creation_params.prev_instance = hPrevInstance;
