@@ -84,10 +84,10 @@ public class RexEngine : EngineProject
 
     switch (GenerateSettings.GraphicsAPI)
     {
-        case GraphicsAPI.OpenGL:
+        case GenerationTypes.GraphicsAPI.OpenGL:
             conf.add_public_define("REX_API_OPENGL");
             break;
-        case GraphicsAPI.DirectX12:
+        case GenerationTypes.GraphicsAPI.DirectX12:
             conf.add_public_define("REX_API_DIRECTX12");
             break;
         default:

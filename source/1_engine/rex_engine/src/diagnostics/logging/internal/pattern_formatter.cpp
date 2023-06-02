@@ -366,7 +366,7 @@ namespace rexlog
         // rexlog::set_pattern("[%3!!] %v") => "[mai] some message"
         else
         {
-          padding.truncate = Truncate::no;
+          padding.truncate = details::Truncate::no;
           m_formatters.push_back(rsl::make_unique<details::SourceFunctionNameFormatter<Padder>>(padding));
           unknown_flag->add_ch(flag);
           m_formatters.push_back((rsl::move(unknown_flag)));

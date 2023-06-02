@@ -176,14 +176,14 @@ namespace rexlog
       // extension
       if(ext_index == filename_t::npos() || ext_index == 0 || ext_index == fname.size() - 1)
       {
-        return FilenameWithExtension {fname, {}};
+        return FilenameWithExtension {fname, rsl::tiny_stack_string()};
       }
 
       // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
       auto folder_index = fname.find_last_of(details::os::g_folder_seps_filename);
       if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
       {
-        return FilenameWithExtension {fname, {}};
+        return FilenameWithExtension {fname, rsl::tiny_stack_string()};
       }
 
       // finally - return a valid base and extension tuple

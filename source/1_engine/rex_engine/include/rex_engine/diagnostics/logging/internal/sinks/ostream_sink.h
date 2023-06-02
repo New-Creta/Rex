@@ -9,12 +9,12 @@
 #include <mutex>
 #include <ostream>
 
-DEFINE_YES_NO_ENUM(ForceFlush);
-
 namespace rexlog
 {
   namespace sinks
   {
+    DEFINE_YES_NO_ENUM(ForceFlush);
+
     template <typename Mutex>
     class OStreamSink final : public BaseSink<Mutex>
     {

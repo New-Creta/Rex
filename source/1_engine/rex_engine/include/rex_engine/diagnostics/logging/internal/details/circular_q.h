@@ -29,8 +29,8 @@ namespace rexlog
       CircularQ() = default;
 
       explicit CircularQ(s32 maxItems)
-          : m_max_items(maxItems + 1)                     // one item is reserved as marker for full q
-          , m_v(rsl::Size(static_cast<s32>(m_max_items))) // NOLINT(google-readability-casting)
+          : m_max_items(maxItems + 1)   // one item is reserved as marker for full q
+          , m_v(rsl::Size(m_max_items)) // NOLINT(google-readability-casting)
       {
       }
 

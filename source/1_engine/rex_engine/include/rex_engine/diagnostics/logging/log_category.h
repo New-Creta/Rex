@@ -44,6 +44,6 @@ namespace rex
     LogCategoryName m_category_name;
 
     /** Should this logger be an async logger **/
-    IsAsync m_is_async;
+    bool m_is_async;
   };
 } // namespace rex

@@ -3,13 +3,13 @@
 #include "rex_engine/types.h"
 #include "rex_std_extra/utility/yes_no.h"
 
-DEFINE_YES_NO_ENUM(Truncate);
-DEFINE_YES_NO_ENUM(Enabled);
-
 namespace rexlog
 {
   namespace details
   {
+    DEFINE_YES_NO_ENUM(Truncate);
+    DEFINE_YES_NO_ENUM(Enabled);
+
     struct PaddingInfo
     {
       enum class PadSide
