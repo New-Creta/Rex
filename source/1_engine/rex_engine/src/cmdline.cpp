@@ -39,7 +39,7 @@ namespace rex
         for(ActiveArgument active_arg: m_arguments)
         {
           // early optimization that strincmp can't do
-          if (arg.length() != active_arg.argument.length())
+          if(arg.length() != active_arg.argument.length())
             continue;
 
           if(rsl::strincmp(arg.data(), active_arg.argument.data(), arg.length()) == 0)
@@ -105,11 +105,7 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), 
-          [key](const Argument& cmdArg) 
-          { 
-            return key == cmdArg.name; 
-          });
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return key == cmdArg.name; });
 
         if(cmd_it == g_command_line_args.cend())
         {
@@ -117,13 +113,9 @@ namespace rex
           return;
         }
 
-        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(),
-        [key](const ActiveArgument& active_arg)
-        {
-          return active_arg.argument == key;
-        });
+        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return activeArg.argument == key; });
 
-        if (active_it != m_arguments.cend())
+        if(active_it != m_arguments.cend())
         {
           REX_WARN(LogEngine, "Command {} was already passed in. passing the same argument multiple times is not supported. will be skipped", key);
           return;
