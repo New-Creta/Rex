@@ -41,8 +41,16 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
+  rex::StringEntryID StringEntryID::create_invalid()
+  {
+    constexpr static u32 s_none_state_hash = 0;
+
+    return StringEntryID(s_none_state_hash);
+  }
+
+  //-------------------------------------------------------------------------
   StringEntryID::StringEntryID()
-      : m_value(s_none_state_hash)
+      : m_value(create_invalid())
   {
   }
   //-------------------------------------------------------------------------
@@ -85,7 +93,7 @@ namespace rex
   //-------------------------------------------------------------------------
   StringEntryID::operator bool() const
   {
-    return m_value != s_none_state_hash;
+    return create_invalid() != m_value;
   }
   //-------------------------------------------------------------------------
   StringEntryID::operator rsl::hash_result() const

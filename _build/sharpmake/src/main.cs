@@ -245,11 +245,11 @@ namespace rex
         string lower_graphics_api = graphicsAPI.ToLower();
         if(lower_graphics_api == "directx12")
             {
-                GenerateSettings.GraphicsAPI = GraphicsAPI.DirectX12;
+                GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.DirectX12;
             }
         else if(lower_graphics_api == "opengl")
             {
-                GenerateSettings.GraphicsAPI = GraphicsAPI.OpenGL;
+                GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
             }
         else
             {
@@ -313,30 +313,51 @@ public static class Main
     KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
   }
 
-    private static void InitializeGraphicsAPI()
-    {
-        if (GenerateSettings.GraphicsAPI == GraphicsAPI.Unknown)
-        {
-            OperatingSystem os = Environment.OSVersion;
-            switch (os.Platform)
-            {
-                case PlatformID.Win32NT:
-                case PlatformID.Xbox:
-                    GenerateSettings.GraphicsAPI = GraphicsAPI.DirectX12;
-                    break;
-                case PlatformID.Unix:
-                case PlatformID.MacOSX:
-                    GenerateSettings.GraphicsAPI = GraphicsAPI.OpenGL;
-                    break;
-                default:
-                    Console.WriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
-                    GenerateSettings.GraphicsAPI = GraphicsAPI.OpenGL;
-                    break;
-            }
-        }
+  private static void InitializeGraphicsAPI()
+  {
+      if (GenerateSettings.GraphicsAPI == GenerationTypes.GraphicsAPI.Unknown)
+      {
+          OperatingSystem os = Environment.OSVersion;
+          switch (os.Platform)
+          {
+              case PlatformID.Win32NT:
+              case PlatformID.Xbox:
+                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.DirectX12;
+                  break;
+              case PlatformID.Unix:
+              case PlatformID.MacOSX:
+                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
+                  break;
+              default:
+                  Console.WriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
+                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
+                  break;
+          }
+      }
 
-        Console.WriteLine($"Using Graphics API: {GenerateSettings.GraphicsAPI}");
-    }
+      Console.WriteLine($"Using Graphics API: {GenerateSettings.GraphicsAPI}");
+  }
+
+  private static void InitializePlatform()
+  {
+      if (GenerateSettings.Platform == GenerationTypes.Platform.Unknown)
+      {
+          OperatingSystem os = Environment.OSVersion;
+          switch (os.Platform)
+          {
+              case PlatformID.Win32NT:
+                  GenerateSettings.Platform = GenerationTypes.Platform.Windows;
+                  break;
+              case PlatformID.Unix:
+                  GenerateSettings.Platform = GenerationTypes.Platform.Unix;
+                  break;
+              default:
+                  throw new Error($"Unable to determine Platform.");
+          }
+      }
+
+      Console.WriteLine($"Using Platform: {GenerateSettings.Platform}");
+  }
 
   private static void InitializeGenerationSettings()
   {

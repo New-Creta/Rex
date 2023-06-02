@@ -60,7 +60,7 @@ namespace
       return rsl::small_stack_string("Invalid String");
     }
 
-    buffer.resize(static_cast<count_t>(converted_chars));
+    buffer.reset_null_termination_offset();
 
     return rsl::small_stack_string(buffer.data(), static_cast<count_t>(converted_chars)); // NOLINT(readability-redundant-string-cstr)
   }

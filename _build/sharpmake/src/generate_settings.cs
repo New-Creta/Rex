@@ -41,12 +41,22 @@ public class ArrayGenerationSettings
   public Dictionary<string, string> ProjectToGenerationFile = new Dictionary<string, string>();
 }
 
-public enum GraphicsAPI
+public static class GenerationTypes
 {
-    Unknown,
-    OpenGL,
-    DirectX12
-}
+  public enum GraphicsAPI
+  {
+      Unknown,
+      OpenGL,
+      DirectX12
+  }
+
+  public enum Platform
+  {
+      Unknown,
+      Windows,
+      Unix
+  }
+};
 
 public class GenerateSettings
 {
@@ -67,7 +77,8 @@ public class GenerateSettings
 
 
   static public string ClangTidyRegex { get; set; }
-  static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;
+  static public GenerationTypes.GraphicsAPI GraphicsAPI = GenerationTypes.GraphicsAPI.Unknown;
+  static public GenerationTypes.Platform Platform = GenerationTypes.Platform.Unknown;
   
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
 }
