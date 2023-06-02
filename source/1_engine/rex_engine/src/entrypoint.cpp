@@ -1,8 +1,8 @@
 #include "rex_engine/entrypoint.h"
 
 #include "rex_engine/cmdline.h"
-#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/diagnostics/logging/logger_config.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_std/array.h"
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/string.h"

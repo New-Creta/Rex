@@ -6,11 +6,11 @@
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/algorithm.h"
+#include "rex_std/ctype.h"
 #include "rex_std/internal/utility/pair.h"
 #include "rex_std/sstream.h"
 #include "rex_std/string.h"
 #include "rex_std/utility.h"
-#include "rex_std/ctype.h"
 
 #include <algorithm>
 
@@ -37,15 +37,15 @@ namespace rex
         rsl::vector<rsl::string_view> result;
 
         count_t start = 0;
-        count_t end = 0;
-        for (count_t i = 0; i < str.length(); ++i)
+        count_t end   = 0;
+        for(count_t i = 0; i < str.length(); ++i)
         {
           auto it = rsl::find(delim.cbegin(), delim.cend(), str[i]);
-          if (it != delim.cend())
+          if(it != delim.cend())
           {
             end = i;
-            
-            if (start == end)
+
+            if(start == end)
             {
               ++start;
               continue;
@@ -57,7 +57,7 @@ namespace rex
           }
         }
 
-        if (start != end)
+        if(start != end)
         {
           rsl::string_view value = str.substr(start, end - start);
           result.push_back(value);
@@ -70,10 +70,10 @@ namespace rex
       // "a=AAA,b=BBB,c=CCC,.." => {("a","AAA"),("b","BBB"),("c", "CCC"),...}
       rsl::unordered_map<rsl::string_view, rsl::string_view> extract_key_vals(rsl::string_view str)
       {
-        rsl::unordered_map<rsl::string_view, rsl::string_view> rv{};
+        rsl::unordered_map<rsl::string_view, rsl::string_view> rv {};
         rsl::vector<rsl::string_view> key_value_pairs = split(str, ",");
-        
-        for (rsl::string_view key_value_pair : key_value_pairs)
+
+        for(rsl::string_view key_value_pair: key_value_pairs)
         {
           rsl::vector<rsl::string_view> key_value = split(key_value_pair, "=");
 
@@ -86,7 +86,7 @@ namespace rex
 
       void load_levels(rsl::string_view input)
       {
-        if (input.empty() || input.size() > 512)
+        if(input.empty() || input.size() > 512)
         {
           return;
         }
@@ -94,22 +94,22 @@ namespace rex
         auto key_vals = extract_key_vals(input);
         rsl::unordered_map<rsl::string_view, rexlog::level::LevelEnum> levels;
         rexlog::level::LevelEnum global_level = rexlog::level::LevelEnum::Info;
-        bool global_level_found = false;
+        bool global_level_found               = false;
 
-        for (auto& name_level : key_vals)
+        for(auto& name_level: key_vals)
         {
           const auto& logger_name = name_level.key;
-          auto level_name = name_level.value;
-          auto level = rexlog::level::from_str(level_name);
+          auto level_name         = name_level.value;
+          auto level              = rexlog::level::from_str(level_name);
           // ignore unrecognized level names
-          if (level == rexlog::level::LevelEnum::Off && level_name != "off")
+          if(level == rexlog::level::LevelEnum::Off && level_name != "off")
           {
             continue;
           }
-          if (logger_name.empty()) // no Logger name indicate global level
+          if(logger_name.empty()) // no Logger name indicate global level
           {
             global_level_found = true;
-            global_level = level;
+            global_level       = level;
           }
           else
           {
@@ -127,7 +127,7 @@ namespace rex
     {
       rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogLevel");
 
-      if (log_level)
+      if(log_level)
       {
         helpers::load_levels(log_level.value());
       }
