@@ -80,7 +80,7 @@ namespace rex
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
 
-      return (it->value);
+      return it->value;
     }
 
     //-------------------------------------------------------------------------
