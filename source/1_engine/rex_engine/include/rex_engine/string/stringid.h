@@ -66,7 +66,7 @@ namespace rsl
     template <>
     struct rsl::formatter<rex::StringID>
     {
-      constexpr auto parse(format_parse_context& ctx) //NOLINT (readability-convert-member-functions-to-static)
+      constexpr auto parse(format_parse_context& ctx) // NOLINT (readability-convert-member-functions-to-static)
       {
         return ctx.begin();
       }

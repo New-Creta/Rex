@@ -31,7 +31,7 @@ namespace rex
   //-------------------------------------------------------------------------
   bool StringEntry::is_valid() const
   {
-      return m_characters && m_characters.count() != 0;
+    return m_characters && m_characters.count() != 0;
   }
 
   //-------------------------------------------------------------------------
