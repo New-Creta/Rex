@@ -17,19 +17,17 @@ namespace rexlog
 {
   namespace details
   {
-
     template <typename T>
     class MpmcBlockingQueue
     {
     public:
       using item_type = T;
-      explicit MpmcBlockingQueue(size_t maxItems)
+
+      explicit MpmcBlockingQueue(s32 maxItems)
           : m_q(maxItems)
       {
       }
 
-#ifndef __MINGW32__
-      // try to enqueue and block if no room left
       void enqueue(T&& item)
       {
         {
@@ -37,37 +35,37 @@ namespace rexlog
           m_pop_cv.wait(lock, [this] { return !this->m_q.full(); });
           m_q.push_back(rsl::move(item));
         }
+
         m_push_cv.notify_one();
       }
 
-      // enqueue immediately. overrun oldest message in the queue if no room left.
       void enqueue_nowait(T&& item)
       {
         {
           const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
           m_q.push_back(rsl::move(item));
         }
+
         m_push_cv.notify_one();
       }
 
-      // dequeue with a timeout.
-      // Return true, if succeeded dequeue item, false otherwise
       bool dequeue_for(T& poppedItem, rsl::chrono::milliseconds waitDuration)
       {
         {
           rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-          if(!m_push_cv.wait_for(lock, wait_duration, [this] { return !this->m_q.empty(); }))
+          if(!m_push_cv.wait_for(lock, waitDuration, [this] { return !this->m_q.empty(); }))
           {
             return false;
           }
-          popped_item = rsl::move(m_q.front());
+
+          poppedItem = rsl::move(m_q.front());
           m_q.pop_front();
         }
+
         m_pop_cv.notify_one();
         return true;
       }
 
-      // blocking dequeue without a timeout.
       void dequeue(T& poppedItem)
       {
         {
@@ -76,64 +74,17 @@ namespace rexlog
           poppedItem = rsl::move(m_q.front());
           m_q.pop_front();
         }
+
         m_pop_cv.notify_one();
       }
 
-#else
-      // apparently mingw deadlocks if the mutex is released before cv.notify_one(),
-      // so release the mutex at the very end each function.
-
-      // try to enqueue and block if no room left
-      void enqueue(T&& item)
-      {
-        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-        m_pop_cv.wait(lock, [this] { return !this->m_q.full(); });
-        m_q.push_back(rsl::move(item));
-        m_push_cv.notify_one();
-      }
-
-      // enqueue immediately. overrun oldest message in the queue if no room left.
-      void enqueue_nowait(T&& item)
-      {
-        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-        m_q.push_back(rsl::move(item));
-        m_push_cv.notify_one();
-      }
-
-      // dequeue with a timeout.
-      // Return true, if succeeded dequeue item, false otherwise
-      bool dequeue_for(T& popped_item, rsl::chrono::milliseconds wait_duration)
-      {
-        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-        if(!m_push_cv.wait_for(lock, wait_duration, [this] { return !this->m_q.empty(); }))
-        {
-          return false;
-        }
-        popped_item = rsl::move(m_q.front());
-        m_q.pop_front();
-        m_pop_cv.notify_one();
-        return true;
-      }
-
-      // blocking dequeue without a timeout.
-      void dequeue(T& popped_item)
-      {
-        rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-        m_push_cv.wait(lock, [this] { return !this->m_q.empty(); });
-        popped_item = rsl::move(m_q.front());
-        m_q.pop_front();
-        m_pop_cv.notify_one();
-      }
-
-#endif
-
-      size_t overrun_counter()
+      s32 overrun_counter()
       {
         const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
         return m_q.overrun_counter();
       }
 
-      size_t size()
+      s32 size()
       {
         const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
         return m_q.size();
