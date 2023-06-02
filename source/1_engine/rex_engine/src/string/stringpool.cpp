@@ -20,7 +20,7 @@ namespace rex
     {
       EntryMap map;
 
-      StringEntryID entry_id(StringEntryID::s_none_state_hash);
+      StringEntryID entry_id(StringEntryID::create_invalid());
       StringEntry entry("Invalid StringID");
 
       map.emplace(rsl::move(entry_id), rsl::move(entry));
@@ -36,8 +36,10 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    StringEntryID make(rsl::hash_result hash, rsl::string_view characters)
+    StringEntryID make_and_store(rsl::hash_result hash, rsl::string_view newCharacters)
     {
+      StringEntryID entry_id = StringEntryID(hash);
+      StringEntry entry(newCharacters);
       auto it = get_entries().find(hash);
       if(it != rsl::cend(get_entries()))
       {
@@ -53,7 +55,6 @@ namespace rex
     StringEntryID make_and_store(rsl::hash_result hash, rsl::string_view characters)
     {
       StringEntryID entry_id = make(hash, characters);
-      StringEntry entry(characters);
 
       auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
       if(result.emplace_successful)
@@ -81,7 +82,7 @@ namespace rex
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
       {
-        it = get_entries().find(StringEntryID::s_none_state_hash);
+        it = get_entries().find(StringEntryID::create_invalid());
 
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
@@ -92,7 +93,7 @@ namespace rex
     //-------------------------------------------------------------------------
     StringEntryID make(rsl::string_view characters)
     {
-      return make(rsl::hash<rsl::string_view> {}(characters), characters);
+      return StringEntryID(rsl::hash<rsl::string_view> {}(characters));
     }
     //-------------------------------------------------------------------------
     StringEntryID make_and_store(rsl::string_view characters)
