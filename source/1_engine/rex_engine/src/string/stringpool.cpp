@@ -36,9 +36,10 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    StringEntryID make_and_store(rsl::hash_result hash, rsl::string_view newCharacters)
+    StringEntryID store(rsl::hash_result hash, rsl::string_view newCharacters)
     {
       StringEntryID entry_id = StringEntryID(hash);
+
       StringEntry entry(newCharacters);
       auto it = get_entries().find(entry_id);
       if(it != rsl::cend(get_entries()))
@@ -61,15 +62,15 @@ namespace rex
     //-------------------------------------------------------------------------
     rsl::string_view resolve(const StringEntryID& entryID)
     {
-      const StringEntry* entry = find(entryID);
+      const StringEntry& entry = find(entryID);
 
-      REX_ASSERT_X(entry != nullptr, "Entry not found");
+      REX_ASSERT_X(entry.is_valid(), "Entry not found");
 
-      return entry->characters();
+      return entry.characters();
     }
 
     //-------------------------------------------------------------------------
-    const StringEntry* find(const StringEntryID& entryID)
+    const StringEntry& find(const StringEntryID& entryID)
     {
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
@@ -79,13 +80,13 @@ namespace rex
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
 
-      return &(it->value);
+      return it->value;
     }
 
     //-------------------------------------------------------------------------
     StringEntryID make_and_store(rsl::string_view characters)
     {
-      return make_and_store(rsl::hash<rsl::string_view> {}(characters), characters);
+      return store(rsl::hash<rsl::string_view> {}(characters), characters);
     }
   } // namespace string_pool
 } // namespace rex
