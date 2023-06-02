@@ -13,7 +13,6 @@ namespace rex
 
     const StringEntry* find(const StringEntryID& entryID);
 
-    StringEntryID make(rsl::string_view characters);
     StringEntryID make_and_store(rsl::string_view characters);
   } // namespace string_pool
 } // namespace rex
