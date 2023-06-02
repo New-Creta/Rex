@@ -32,19 +32,58 @@ namespace rex
   public:
     constexpr static u32 s_none_state_hash = 0;
 
-    StringEntryID();
-    StringEntryID(rsl::hash_result value); // NOLINT(google-explicit-constructor)
+    //-------------------------------------------------------------------------
+    constexpr StringEntryID()
+        : m_value(s_none_state_hash)
+    {
+    }
+    //-------------------------------------------------------------------------
+    constexpr explicit StringEntryID(rsl::hash_result value)
+        : m_value(value)
+    {
+    }
 
-    bool operator<(const StringEntryID& rhs) const;
-    bool operator>(const StringEntryID& rhs) const;
+    //-------------------------------------------------------------------------
+    constexpr bool operator<(const StringEntryID& rhs) const
+    {
+      return m_value < rhs.m_value;
+    }
+    //-------------------------------------------------------------------------
+    constexpr bool operator>(const StringEntryID& rhs) const
+    {
+      return rhs.m_value < m_value;
+    }
 
-    bool operator==(const StringEntryID& rhs) const;
-    bool operator==(const rsl::hash_result& rhs) const;
-    bool operator!=(const StringEntryID& rhs) const;
-    bool operator!=(const rsl::hash_result& rhs) const;
-
-    explicit operator bool() const;
-    explicit operator rsl::hash_result() const;
+    //-------------------------------------------------------------------------
+    constexpr bool operator==(const StringEntryID& rhs) const
+    {
+      return m_value == rhs.m_value;
+    }
+    //-------------------------------------------------------------------------
+    constexpr bool operator==(const rsl::hash_result& rhs) const
+    {
+      return m_value == rhs;
+    }
+    //-------------------------------------------------------------------------
+    constexpr bool operator!=(const StringEntryID& rhs) const
+    {
+      return m_value != rhs.m_value;
+    }
+    //-------------------------------------------------------------------------
+    constexpr bool operator!=(const rsl::hash_result& rhs) const
+    {
+      return m_value != rhs;
+    }
+    //-------------------------------------------------------------------------
+    constexpr explicit operator bool() const
+    {
+      return m_value != s_none_state_hash;
+    }
+    //-------------------------------------------------------------------------
+    constexpr explicit operator rsl::hash_result() const
+    {
+      return m_value;
+    }
 
   private:
     rsl::hash_result m_value;

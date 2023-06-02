@@ -1,9 +1,7 @@
 #include "rex_engine/string/stringid.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/string/stringviewid.h"
 #include "rex_engine/log.h"
-#include "rex_engine/string/stringpool.h"
 #include "rex_std/bonus/types.h"
 
 namespace rex
@@ -24,83 +22,9 @@ namespace rex
   } // namespace internal
 
   //-------------------------------------------------------------------------
-  /**
-   * Create an empty StringID.
-   */
-  StringID::StringID()
-      : m_comparison_hash(StringEntryID::s_none_state_hash)
+  StringID store_sid(rsl::string_view characters)
   {
-  }
-
-  //-------------------------------------------------------------------------
-  /**
-   * Create an StringID with characters.
-   */
-  StringID::StringID(rsl::string_view stringView)
-      : m_comparison_hash(internal::make_and_store(stringView))
-  {
-  }
-
-  //-------------------------------------------------------------------------
-  /**
-   * Retrieve the hashed value
-   */
-  StringID::operator u32() const
-  {
-    return static_cast<u32>(m_comparison_hash);
-  }
-
-  //-------------------------------------------------------------------------
-  bool StringID::operator==(const StringID& other) const
-  {
-    return m_comparison_hash == other.m_comparison_hash;
-  }
-  //-------------------------------------------------------------------------
-  bool StringID::operator!=(const StringID& other) const
-  {
-    return !(*this == other);
-  }
-
-  //-------------------------------------------------------------------------
-  bool StringID::operator==(const StringEntryID& entryID) const
-  {
-    return m_comparison_hash == static_cast<uint32>(entryID);
-  }
-  //-------------------------------------------------------------------------
-  bool StringID::operator!=(const StringEntryID& entryID) const
-  {
-    return m_comparison_hash != static_cast<uint32>(entryID);
-  }
-
-  //-------------------------------------------------------------------------
-  /**
-   * Converts an StringID to a readable format
-   */
-  rsl::string_view StringID::to_string_view() const
-  {
-    return string_pool::resolve(m_comparison_hash);
-  }
-
-  //-------------------------------------------------------------------------
-  /** True for StringID() and StringID("Invalid StringID") */
-  bool StringID::is_none() const
-  {
-    return m_comparison_hash == StringEntryID::s_none_state_hash;
-  }
-
-  //-------------------------------------------------------------------------
-  /**
-   * Retrieve the hashed value
-   */
-  u32 StringID::value() const
-  {
-    return static_cast<u32>(m_comparison_hash);
-  }
-
-  //-------------------------------------------------------------------------
-  StringID create_sid(rsl::string_view characters)
-  {
-    return StringID(characters);
+    return StringID(string_pool::make_and_store(characters));
   }
 
   //-------------------------------------------------------------------------
@@ -122,16 +46,6 @@ namespace rex
   bool operator!=(const StringID& sid, rsl::string_view s)
   {
     return s != sid;
-  }
-  //-------------------------------------------------------------------------
-  bool operator==(const StringID& sid, const StringViewID& svid)
-  {
-      return sid.value() == svid.value();
-  }
-  //-------------------------------------------------------------------------
-  bool operator!=(const StringID& sid, const StringViewID& svid)
-  {
-      return sid.value() == svid.value();
   }
 } // namespace rex
 
