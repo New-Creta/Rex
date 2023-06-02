@@ -6,7 +6,7 @@ namespace rex
   LogCategory::LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync inAsync)
       : m_verbosity(inDefaultVerbosity & LogVerbosity::VerbosityMask)
       , m_category_name(inCategoryName)
-      , m_is_async(inAsync)
+      , m_is_async((inAsync == IsAsync::yes) == true)
   {
   }
 
@@ -19,7 +19,7 @@ namespace rex
   //-------------------------------------------------------------------------
   bool LogCategory::is_async() const
   {
-    return m_is_async == IsAsync::yes; // NOLINT (readability-implicit-bool-conversion)
+    return m_is_async;
   }
 
   //-------------------------------------------------------------------------
