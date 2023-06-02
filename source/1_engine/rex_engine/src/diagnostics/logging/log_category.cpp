@@ -19,17 +19,17 @@ namespace rex
   //-------------------------------------------------------------------------
   bool LogCategory::is_async() const
   {
-      return m_is_async == IsAsync::yes;
+    return m_is_async == IsAsync::yes; // NOLINT (readability-implicit-bool-conversion)
   }
 
   //-------------------------------------------------------------------------
-  const LogCategoryName& LogCategory::get_category_name() const
+  rsl::string_view LogCategory::get_category_name() const
   {
     return m_category_name;
   }
 
   //-------------------------------------------------------------------------
-  const LogVerbosity& LogCategory::get_verbosity() const
+  LogVerbosity LogCategory::get_verbosity() const
   {
     return m_verbosity;
   }

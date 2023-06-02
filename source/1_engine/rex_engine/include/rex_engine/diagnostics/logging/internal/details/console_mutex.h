@@ -7,26 +7,26 @@
 
 namespace rexlog
 {
-    namespace details
+  namespace details
+  {
+    struct ConsoleMutex
     {
-        struct ConsoleMutex
-        {
-            using mutex_t = rsl::mutex;
-            static mutex_t& mutex()
-            {
-                static mutex_t s_mutex;
-                return s_mutex;
-            }
-        };
+      using mutex_t = rsl::mutex;
+      static mutex_t& mutex()
+      {
+        static mutex_t s_mutex;
+        return s_mutex;
+      }
+    };
 
-        struct ConsoleNullMutex
-        {
-            using mutex_t = NullMutex;
-            static mutex_t& mutex()
-            {
-                static mutex_t s_mutex;
-                return s_mutex;
-            }
-        };
-    } // namespace details
+    struct ConsoleNullMutex
+    {
+      using mutex_t = NullMutex;
+      static mutex_t& mutex()
+      {
+        static mutex_t s_mutex;
+        return s_mutex;
+      }
+    };
+  } // namespace details
 } // namespace rexlog

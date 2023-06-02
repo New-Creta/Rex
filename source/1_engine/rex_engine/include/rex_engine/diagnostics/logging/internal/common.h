@@ -1,8 +1,9 @@
 #pragma once
 
 #include "rex_engine/debug_types.h"
-#include "rex_engine/function_signature_define.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/function_signature_define.h"
+#include "rex_engine/types.h"
 #include "rex_std/bonus/atomic/atomic.h"
 #include "rex_std/bonus/compiler.h"
 #include "rex_std/bonus/memory.h"
@@ -21,135 +22,131 @@
 
 namespace rexlog
 {
-    namespace sinks
-    {
-        class AbstractSink;
-    } // namespace sinks
+  namespace sinks
+  {
+    class AbstractSink;
+  } // namespace sinks
 
-    using filename_t        = rex::DebugString;
-    using string_view_t     = rsl::string_view;
-    using level_t           = rsl::atomic<int>;
-    using memory_buf_t      = rex::DebugString;
-    using log_clock         = rsl::chrono::system_clock;
-    using sink_ptr          = rsl::shared_ptr<sinks::AbstractSink>;
-    using sinks_init_list   = rsl::initializer_list<sink_ptr>;
-    using err_handler       = rsl::function<void(const rex::DebugString& errMsg)>;
-    
-    template <typename... Args>
-    using format_string_t   = rsl::format_string<Args...>;
+  using filename_t      = rex::DebugString;
+  using memory_buf_t    = rex::DebugString;
+  using level_t         = rsl::atomic<int>;
+  using log_clock       = rsl::chrono::system_clock;
+  using sink_ptr        = rsl::shared_ptr<sinks::AbstractSink>;
+  using sinks_init_list = rsl::initializer_list<sink_ptr>;
+  using err_handler     = rsl::function<void(const rex::DebugString& errMsg)>;
 
-    template <class T, class Char = char>
-    struct IsConvertibleToBasicFormatString : rsl::integral_constant<bool, rsl::is_convertible<T, rsl::basic_string_view<Char>>::value>
-    {
-    };
-    template <class T>
-    struct IsConvertibleToAnyFormatString : rsl::integral_constant<bool, IsConvertibleToBasicFormatString<T, char>::value || IsConvertibleToBasicFormatString<T, wchar_t>::value>
-    {
-    };
+  template <typename... Args>
+  using format_string_t = rsl::format_string<Args...>;
 
-#define REXLOG_LEVEL_TRACE    0
-#define REXLOG_LEVEL_DEBUG    1
-#define REXLOG_LEVEL_INFO     2
-#define REXLOG_LEVEL_WARN     3
-#define REXLOG_LEVEL_ERROR    4
-#define REXLOG_LEVEL_CRITICAL 5
-#define REXLOG_LEVEL_OFF      6
+  template <class T, class Char = char>
+  struct IsConvertibleToBasicStringView : rsl::integral_constant<bool, rsl::is_convertible<T, rsl::basic_string_view<Char>>::value>
+  {
+  };
+  template <class T>
+  struct IsConvertibleToAnyFormatString : rsl::integral_constant<bool, IsConvertibleToBasicStringView<T, char>::value || IsConvertibleToBasicStringView<T, wchar_t>::value>
+  {
+  };
+
+  inline constexpr s8 g_level_trace    = 0;
+  inline constexpr s8 g_level_debug    = 1;
+  inline constexpr s8 g_level_info     = 2;
+  inline constexpr s8 g_level_warning  = 3;
+  inline constexpr s8 g_level_error    = 4;
+  inline constexpr s8 g_level_critical = 5;
+  inline constexpr s8 g_level_off      = 6;
 
 #if !defined(REXLOG_ACTIVE_LEVEL)
-    #define REXLOG_ACTIVE_LEVEL REXLOG_LEVEL_INFO
+  #define REXLOG_ACTIVE_LEVEL g_level_info
 #endif
 
-    namespace level
+  namespace level
+  {
+    inline rsl::string_view g_level_name_trace("trace");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_debug("debug");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_info("info");         // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_warning("warning");   // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_error("error");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_critical("critical"); // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_off("off");           // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+
+    inline rsl::string_view g_level_sname_trace("T");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_debug("D");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_info("I");     // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_warning("W");  // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_error("E");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_critical("C"); // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_off("O");      // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+
+    enum class LevelEnum : int32
     {
-        #define REXLOG_LEVEL_NAME_TRACE     rexlog::string_view_t("trace", 5)
-        #define REXLOG_LEVEL_NAME_DEBUG     rexlog::string_view_t("debug", 5)
-        #define REXLOG_LEVEL_NAME_INFO      rexlog::string_view_t("info", 4)
-        #define REXLOG_LEVEL_NAME_WARNING   rexlog::string_view_t("warning", 7)
-        #define REXLOG_LEVEL_NAME_ERROR     rexlog::string_view_t("error", 5)
-        #define REXLOG_LEVEL_NAME_CRITICAL  rexlog::string_view_t("critical", 8)
-        #define REXLOG_LEVEL_NAME_OFF       rexlog::string_view_t("off", 3)
-
-        #define REXLOG_LEVEL_SNAME_TRACE    rexlog::string_view_t("T", 1)
-        #define REXLOG_LEVEL_SNAME_DEBUG    rexlog::string_view_t("D", 1)
-        #define REXLOG_LEVEL_SNAME_INFO     rexlog::string_view_t("I", 1)
-        #define REXLOG_LEVEL_SNAME_WARNING  rexlog::string_view_t("W", 1)
-        #define REXLOG_LEVEL_SNAME_ERROR    rexlog::string_view_t("E", 1)
-        #define REXLOG_LEVEL_SNAME_CRITICAL rexlog::string_view_t("C", 1)
-        #define REXLOG_LEVEL_SNAME_OFF      rexlog::string_view_t("O", 1)
-
-        enum class LevelEnum : int32
-        {
-            Trace       = REXLOG_LEVEL_TRACE,
-            Debug       = REXLOG_LEVEL_DEBUG,
-            Info        = REXLOG_LEVEL_INFO,
-            Warn        = REXLOG_LEVEL_WARN,
-            Err         = REXLOG_LEVEL_ERROR,
-            Critical    = REXLOG_LEVEL_CRITICAL,
-            Off         = REXLOG_LEVEL_OFF
-        };
-
-        string_view_t               to_string_view(rexlog::level::LevelEnum l) noexcept;
-        string_view_t               to_short_c_str(rexlog::level::LevelEnum l) noexcept;
-
-        rexlog::level::LevelEnum    from_str(const rex::DebugString& name) noexcept;
-
-    } // namespace level
-
-    //
-    // Color mode used by sinks with color support.
-    //
-    enum class ColorMode
-    {
-        Always,
-        Automatic,
-        Never
+      Trace    = g_level_trace,
+      Debug    = g_level_debug,
+      Info     = g_level_info,
+      Warn     = g_level_warning,
+      Err      = g_level_error,
+      Critical = g_level_critical,
+      Off      = g_level_off
     };
 
-    //
-    // Pattern time - specific time getting to use for pattern_formatter.
-    // local time by default
-    //
-    enum class PatternTimeType
+    rsl::string_view to_string_view(rexlog::level::LevelEnum l) noexcept;
+    rsl::string_view to_short_c_str(rexlog::level::LevelEnum l) noexcept;
+
+    rexlog::level::LevelEnum from_str(rsl::string_view name) noexcept;
+
+  } // namespace level
+
+  //
+  // Color mode used by sinks with color support.
+  //
+  enum class ColorMode
+  {
+    Always,
+    Automatic,
+    Never
+  };
+
+  //
+  // Pattern time - specific time getting to use for pattern_formatter.
+  // local time by default
+  //
+  enum class PatternTimeType
+  {
+    Local, // log localtime
+    Utc    // log utc
+  };
+
+  namespace details
+  {
+    // to_string_view
+
+    constexpr rsl::string_view to_string_view(const memory_buf_t& buf) noexcept
     {
-        Local, // log localtime
-        Utc    // log utc
-    };
+      return rsl::string_view {buf.data(), buf.size()};
+    }
 
-    namespace details
+    constexpr rsl::string_view to_string_view(rsl::string_view str) noexcept
     {
-        // to_string_view
+      return str;
+    }
 
-        constexpr rexlog::string_view_t to_string_view(const memory_buf_t& buf) noexcept
-        {
-            return rexlog::string_view_t{ buf.data(), buf.size() };
-        }
+    template <typename T, typename... Args>
+    constexpr rsl::basic_string_view<T> to_string_view(rsl::basic_format_string<T, Args...> fmt) noexcept
+    {
+      return rsl::basic_string_view<T>(fmt); // NOLINT(google-readability-casting)
+    }
 
-        constexpr rexlog::string_view_t to_string_view(rexlog::string_view_t str) noexcept
-        {
-            return str;
-        }
+    // to avoid useless casts (see https://github.com/nlohmann/json/issues/2893#issuecomment-889152324)
+    template <typename T, typename U, rsl::enable_if_t<!rsl::is_same<T, U>::value, int> = 0>
+    constexpr T conditional_static_cast(U value)
+    {
+      return static_cast<T>(value);
+    }
 
-        template <typename T, typename... Args>
-        constexpr rsl::basic_string_view<T> to_string_view(rsl::basic_format_string<T, Args...> fmt) noexcept
-        {
-            return rsl::basic_string_view<T>(fmt);
-        }
+    template <typename T, typename U, rsl::enable_if_t<rsl::is_same<T, U>::value, int> = 0>
+    constexpr T conditional_static_cast(U value)
+    {
+      return value;
+    }
 
-        using rsl::enable_if_t;
-        using rsl::make_unique;
-
-        // to avoid useless casts (see https://github.com/nlohmann/json/issues/2893#issuecomment-889152324)
-        template <typename T, typename U, enable_if_t<!rsl::is_same<T, U>::value, int> = 0>
-        constexpr T conditional_static_cast(U value)
-        {
-            return static_cast<T>(value);
-        }
-
-        template <typename T, typename U, enable_if_t<rsl::is_same<T, U>::value, int> = 0>
-        constexpr T conditional_static_cast(U value)
-        {
-            return value;
-        }
-
-    } // namespace details
+  } // namespace details
 } // namespace rexlog

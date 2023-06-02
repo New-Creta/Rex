@@ -9,7 +9,6 @@
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
-
 #include "rex_std/chrono.h"
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
@@ -19,63 +18,63 @@
 
 namespace rexlog
 {
-    class Logger;
+  class Logger;
 
-    using LoggerObjectPtr = rsl::shared_ptr<Logger>;
-    using LoggerObjectPtrMap = rex::DebugHashTable<rex::DebugString, LoggerObjectPtr>;
+  using LoggerObjectPtr    = rsl::shared_ptr<Logger>;
+  using LoggerObjectPtrMap = rex::DebugHashTable<rex::DebugString, LoggerObjectPtr>;
 
-    namespace details
+  namespace details
+  {
+    class ThreadPool;
+
+    class Registry
     {
-        class ThreadPool;
+    public:
+      using LogLevels = rex::DebugHashTable<rex::DebugString, level::LevelEnum>;
 
-        class Registry
-        {
-        public:
-            using LogLevels = rex::DebugHashTable<rex::DebugString, level::LevelEnum>;
+      static Registry& instance();
 
-            static Registry& instance();
+      Registry(const Registry&)            = delete;
+      Registry& operator=(const Registry&) = delete;
 
-            Registry(const Registry&) = delete;
-            Registry& operator=(const Registry&) = delete;
+    public:
+      void register_logger(LoggerObjectPtr newLogger);
+      void initialize_logger(LoggerObjectPtr newLogger);
 
-        public:
-            void                        register_logger(LoggerObjectPtr newLogger);
-            void                        initialize_logger(LoggerObjectPtr newLogger);
+      LoggerObjectPtr get(rsl::string_view loggerName);
+      level::LevelEnum get_global_level() const;
 
-            LoggerObjectPtr             get(rsl::string_view loggerName);
-            level::LevelEnum            get_global_level() const;
+      void set_thread_pool(rsl::shared_ptr<ThreadPool> tp);
+      void set_formatter(PatternFormatter&& formatter);
+      void set_level(level::LevelEnum logLevel);
+      void set_levels(LogLevels levels, const level::LevelEnum* globalLevel);
 
-            void                        set_tp(rsl::shared_ptr<ThreadPool> tp);
-            void                        set_formatter(PatternFormatter&& formatter);
-            void                        set_level(level::LevelEnum logLevel);
-            void                        set_levels(LogLevels levels, const level::LevelEnum* globalLevel);
+      void flush_on(level::LevelEnum logLevel);
+      void flush_all();
 
-            void                        flush_on(level::LevelEnum logLevel);
-            void                        flush_all();
+      void shutdown();
 
-            void                        shutdown();
+      rsl::shared_ptr<ThreadPool> thread_pool();
+      rsl::recursive_mutex& thread_pool_mutex();
 
-            rsl::shared_ptr<ThreadPool> tp();
-            rsl::recursive_mutex& tp_mutex();
+    private:
+      Registry();
+      ~Registry();
 
-        private:
-            Registry();
-            ~Registry();
+      void register_logger_impl(LoggerObjectPtr newLogger);
 
-            void register_logger_impl(LoggerObjectPtr newLogger);
+      LoggerObjectPtrMap m_loggers;
+      LogLevels m_log_levels;
 
-            LoggerObjectPtrMap          m_loggers;
-            LogLevels                   m_log_levels;
+      rsl::mutex m_logger_map_mutex;
+      rsl::mutex m_flusher_mutex;
+      rsl::recursive_mutex m_tp_mutex;
 
-            rsl::mutex                  m_logger_map_mutex;
-            rsl::mutex                  m_flusher_mutex;
-            rsl::recursive_mutex        m_tp_mutex;
+      PatternFormatter m_formatter;
+      rexlog::level::LevelEnum m_global_log_level;
+      level::LevelEnum m_flush_level;
+      rsl::shared_ptr<ThreadPool> m_tp;
+    };
 
-            PatternFormatter            m_formatter;
-            rexlog::level::LevelEnum    m_global_log_level;
-            level::LevelEnum            m_flush_level;
-            rsl::shared_ptr<ThreadPool> m_tp;
-        };
-
-    } // namespace details
+  } // namespace details
 } // namespace rexlog

@@ -6,74 +6,68 @@
 
 namespace rexlog
 {
-    namespace level
+  namespace level
+  {
+
+    const rsl::array<rsl::string_view, 7> g_level_string_views = {                          // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
+        g_level_name_trace, g_level_name_debug,    g_level_name_info, g_level_name_warning, // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
+        g_level_name_error, g_level_name_critical, g_level_name_off};                       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
+
+    const rsl::array<rsl::string_view, 7> g_short_level_names[] = {                             // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
+        g_level_sname_trace, g_level_sname_debug,    g_level_sname_info, g_level_sname_warning, // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
+        g_level_sname_error, g_level_sname_critical, g_level_sname_off};                        // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables, modernize-avoid-c-arrays)
+
+    rsl::string_view to_string_view(rexlog::level::LevelEnum l) noexcept
     {
+      switch(l)
+      {
+        case LevelEnum::Off: return g_level_name_off;
+        case LevelEnum::Critical: return g_level_name_critical;
+        case LevelEnum::Err: return g_level_name_error;
+        case LevelEnum::Warn: return g_level_name_warning;
+        case LevelEnum::Info: return g_level_name_info;
+        case LevelEnum::Debug: return g_level_name_debug;
+        case LevelEnum::Trace: return g_level_name_trace;
+        default: printf("Invalid level::LevelEnum - No conversion possible"); return "";
+      }
+    };
 
-        static string_view_t g_level_string_views[]
-        {
-            REXLOG_LEVEL_NAME_TRACE, REXLOG_LEVEL_NAME_DEBUG, REXLOG_LEVEL_NAME_INFO, REXLOG_LEVEL_NAME_WARNING, REXLOG_LEVEL_NAME_ERROR, REXLOG_LEVEL_NAME_CRITICAL, REXLOG_LEVEL_NAME_OFF                                                                  \
-        };
+    rsl::string_view to_short_c_str(rexlog::level::LevelEnum l) noexcept
+    {
+      switch(l)
+      {
+        case LevelEnum::Off: return g_level_sname_trace;
+        case LevelEnum::Critical: return g_level_sname_critical;
+        case LevelEnum::Err: return g_level_sname_error;
+        case LevelEnum::Warn: return g_level_sname_warning;
+        case LevelEnum::Info: return g_level_sname_info;
+        case LevelEnum::Debug: return g_level_sname_debug;
+        case LevelEnum::Trace: return g_level_sname_trace;
+        default: printf("Invalid level::LevelEnum - No conversion possible"); return "";
+      }
+    }
 
-        static string_view_t g_short_level_names[]
-        {
-            REXLOG_LEVEL_SNAME_TRACE, REXLOG_LEVEL_SNAME_DEBUG, REXLOG_LEVEL_SNAME_INFO, REXLOG_LEVEL_SNAME_WARNING, REXLOG_LEVEL_SNAME_ERROR, REXLOG_LEVEL_SNAME_CRITICAL, REXLOG_LEVEL_SNAME_OFF                                                           \
-        };
+    rexlog::level::LevelEnum from_str(rsl::string_view name) noexcept
+    {
+      const auto it = rsl::find(rsl::cbegin(g_level_string_views), rsl::cend(g_level_string_views), name);
+      if(it != rsl::end(g_level_string_views))
+      {
+        return static_cast<level::LevelEnum>(rsl::distance(rsl::cbegin(g_level_string_views), it));
+      }
 
-        string_view_t to_string_view(rexlog::level::LevelEnum l) noexcept
-        {
-            switch (l)
-            {
-            case LevelEnum::Off: return REXLOG_LEVEL_NAME_OFF;
-            case LevelEnum::Critical: return REXLOG_LEVEL_NAME_CRITICAL;
-            case LevelEnum::Err: return REXLOG_LEVEL_NAME_ERROR;
-            case LevelEnum::Warn: return REXLOG_LEVEL_NAME_WARNING;
-            case LevelEnum::Info: return REXLOG_LEVEL_NAME_INFO;
-            case LevelEnum::Debug: return REXLOG_LEVEL_NAME_DEBUG;
-            case LevelEnum::Trace: return REXLOG_LEVEL_NAME_TRACE;
-            default:
-                printf("Invalid level::LevelEnum - No conversion possible");
-                return "";
-            }
-        };
+      // check also for "warn" and "err" before giving up..
+      if(name == "warn")
+      {
+        return level::LevelEnum::Warn;
+      }
+      if(name == "err")
+      {
+        return level::LevelEnum::Err;
+      }
 
-        string_view_t to_short_c_str(rexlog::level::LevelEnum l) noexcept
-        {
-            switch (l)
-            {
-            case LevelEnum::Off: return REXLOG_LEVEL_SNAME_OFF;
-            case LevelEnum::Critical: return REXLOG_LEVEL_SNAME_CRITICAL;
-            case LevelEnum::Err: return REXLOG_LEVEL_SNAME_ERROR;
-            case LevelEnum::Warn: return REXLOG_LEVEL_SNAME_WARNING;
-            case LevelEnum::Info: return REXLOG_LEVEL_SNAME_INFO;
-            case LevelEnum::Debug: return REXLOG_LEVEL_SNAME_DEBUG;
-            case LevelEnum::Trace: return REXLOG_LEVEL_SNAME_TRACE;
-            default:
-                printf("Invalid level::LevelEnum - No conversion possible");
-                return "";
-            }
-        }
-
-        rexlog::level::LevelEnum from_str(const rex::DebugString& name) noexcept
-        {
-            const auto* it = rsl::find(rsl::begin(g_level_string_views), rsl::end(g_level_string_views), name);
-            if (it != rsl::end(g_level_string_views))
-            {
-                return static_cast<level::LevelEnum>(rsl::distance(rsl::cbegin(g_level_string_views), it));
-            }
-
-            // check also for "warn" and "err" before giving up..
-            if (name == "warn")
-            {
-                return level::LevelEnum::Warn;
-            }
-            if (name == "err")
-            {
-                return level::LevelEnum::Err;
-            }
-
-            return level::LevelEnum::Off;
-        }
-    } // namespace level
+      return level::LevelEnum::Off;
+    }
+  } // namespace level
 } // namespace rexlog
 
 // NOLINTEND(misc-definitions-in-headers)

@@ -1,7 +1,8 @@
 #include "rex_engine/diagnostics/logging/logger_config.h"
+
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/internal/utility/pair.h"
@@ -96,7 +97,7 @@ namespace rex
         auto key_vals = extract_key_vals_impl(input);
         rex::DebugHashTable<rex::DebugString, rexlog::level::LevelEnum> levels;
         rexlog::level::LevelEnum global_level = rexlog::level::LevelEnum::Info;
-        bool global_level_found       = false;
+        bool global_level_found               = false;
 
         for(auto& name_level: key_vals)
         {
@@ -129,7 +130,7 @@ namespace rex
     {
       const rsl::string_view rexlog_level_prefix("REXLOG_LEVEL=");
 
-      for(rsl::string_view s : args)
+      for(const rsl::string_view s: args)
       {
         if(s.find(rexlog_level_prefix) == 0)
         {
@@ -138,5 +139,5 @@ namespace rex
         }
       }
     }
-  }
-}
+  } // namespace diagnostics
+} // namespace rex

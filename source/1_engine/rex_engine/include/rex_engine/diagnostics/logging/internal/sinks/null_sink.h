@@ -9,18 +9,18 @@
 
 namespace rexlog
 {
-    namespace sinks
+  namespace sinks
+  {
+    template <typename Mutex>
+    class NullSink : public BaseSink<Mutex>
     {
-        template <typename Mutex>
-        class null_sink : public BaseSink<Mutex>
-        {
-        protected:
-            void sink_it_impl(const details::LogMsg&) override {}
-            void flush_it_impl() override {}
-        };
+    protected:
+      void sink_it_impl(const details::LogMsg&) override {}
+      void flush_it_impl() override {}
+    };
 
-        using null_sink_mt = null_sink<details::NullMutex>;
-        using null_sink_st = null_sink<details::NullMutex>;
+    using NullSink_mt = NullSink<details::NullMutex>;
+    using NullSink_st = NullSink<details::NullMutex>;
 
-    } // namespace sinks
+  } // namespace sinks
 } // namespace rexlog

@@ -13,19 +13,19 @@ namespace rexlog
     namespace fmt_helper
     {
 
-      inline void append_string_view(rexlog::string_view_t view, memory_buf_t& dest)
+      inline void append_string_view(rsl::string_view view, rsl::big_stack_string& dest)
       {
         dest += view;
       }
 
       template <typename T>
-      inline void append_int(T n, memory_buf_t& dest)
+      inline void append_int(T n, rsl::big_stack_string& dest)
       {
         static_assert(rsl::is_integral_v<T>, "n needs to be an integral value");
 
         auto x = rsl::to_string(n);
 
-        dest.append(x);
+        dest.append(x.data(), x.size());
       }
 
       template <typename T>
@@ -33,18 +33,18 @@ namespace rexlog
       {
         // taken from fmt: https://github.com/fmtlib/fmt/blob/8.0.1/include/fmt/format.h#L899-L912
         unsigned int count = 1;
-        for (;;)
+        for(;;)
         {
           // Integer division is slow so do it for a group of four digits instead
           // of for every digit. The idea comes from the talk by Alexandrescu
           // "Three Optimization Tips for C++". See speed-test for a comparison.
-          if (n < 10)
+          if(n < 10)
             return count;
-          if (n < 100)
+          if(n < 100)
             return count + 1;
-          if (n < 1000)
+          if(n < 1000)
             return count + 2;
-          if (n < 10000)
+          if(n < 10000)
             return count + 3;
           n /= 10000u;
           count += 4;
@@ -58,11 +58,11 @@ namespace rexlog
         return count_digits_fallback(static_cast<count_type>(n));
       }
 
-      inline void pad2(int n, memory_buf_t& dest)
+      inline void pad2(int n, rsl::big_stack_string& dest)
       {
-        if (n >= 0 && n < 100) // 0-99
+        if(n >= 0 && n < 100) // 0-99
         {
-          rsl::time_digits time_digits(n);
+          const rsl::time_digits time_digits(n);
           dest += time_digits.to_string();
         }
         else // unlikely, but just in case, let fmt deal with it
@@ -72,10 +72,10 @@ namespace rexlog
       }
 
       template <typename T>
-      inline void pad_uint(T n, unsigned int width, memory_buf_t& dest)
+      inline void pad_uint(T n, unsigned int width, rsl::big_stack_string& dest)
       {
         static_assert(rsl::is_unsigned<T>::value, "pad_uint must get unsigned T");
-        for (auto digits = count_digits(n); digits < width; digits++)
+        for(auto digits = count_digits(n); digits < width; digits++)
         {
           dest.push_back('0');
         }
@@ -83,14 +83,14 @@ namespace rexlog
       }
 
       template <typename T>
-      inline void pad3(T n, memory_buf_t& dest)
+      inline void pad3(T n, rsl::big_stack_string& dest)
       {
         static_assert(rsl::is_unsigned<T>::value, "pad3 must get unsigned T");
-        if (n < 1000)
+        if(n < 1000)
         {
           dest.push_back(static_cast<char>(n / 100 + '0'));
           n = n % 100;
-          rsl::time_digits time_digits(n);
+          const rsl::time_digits time_digits(n);
           dest += time_digits.to_string();
         }
         else
@@ -100,13 +100,13 @@ namespace rexlog
       }
 
       template <typename T>
-      inline void pad6(T n, memory_buf_t& dest)
+      inline void pad6(T n, rsl::big_stack_string& dest)
       {
         pad_uint(n, 6, dest);
       }
 
       template <typename T>
-      inline void pad9(T n, memory_buf_t& dest)
+      inline void pad9(T n, rsl::big_stack_string& dest)
       {
         pad_uint(n, 9, dest);
       }
@@ -120,7 +120,7 @@ namespace rexlog
         using rsl::chrono::duration_cast;
         using rsl::chrono::seconds;
         auto duration = tp.time_since_epoch();
-        auto secs = duration_cast<seconds>(duration);
+        auto secs     = duration_cast<seconds>(duration);
         return duration_cast<ToDuration>(duration) - duration_cast<ToDuration>(secs);
       }
 

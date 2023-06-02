@@ -15,91 +15,92 @@
 
 namespace rexlog
 {
-    namespace details
+  namespace details
+  {
+    template <typename T>
+    class MpmcBlockingQueue
     {
-        template <typename T>
-        class MpmcBlockingQueue
+    public:
+      using item_type = T;
+
+      explicit MpmcBlockingQueue(s32 maxItems)
+          : m_q(maxItems)
+      {
+      }
+
+      void enqueue(T&& item)
+      {
         {
-        public:
-            using item_type = T;
+          rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          m_pop_cv.wait(lock, [this] { return !this->m_q.full(); });
+          m_q.push_back(rsl::move(item));
+        }
 
-            explicit MpmcBlockingQueue(size_t maxItems)
-                : m_q(maxItems)
-            {}
+        m_push_cv.notify_one();
+      }
 
-            void enqueue(T&& item)
-            {
-                {
-                    rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-                    m_pop_cv.wait(lock, [this] { return !this->m_q.full(); });
-                    m_q.push_back(rsl::move(item));
-                }
+      void enqueue_nowait(T&& item)
+      {
+        {
+          const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          m_q.push_back(rsl::move(item));
+        }
 
-                m_push_cv.notify_one();
-            }
+        m_push_cv.notify_one();
+      }
 
-            void enqueue_nowait(T&& item)
-            {
-                {
-                    const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-                    m_q.push_back(rsl::move(item));
-                }
+      bool dequeue_for(T& poppedItem, rsl::chrono::milliseconds waitDuration)
+      {
+        {
+          rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          if(!m_push_cv.wait_for(lock, waitDuration, [this] { return !this->m_q.empty(); }))
+          {
+            return false;
+          }
 
-                m_push_cv.notify_one();
-            }
+          poppedItem = rsl::move(m_q.front());
+          m_q.pop_front();
+        }
 
-            bool dequeue_for(T& poppedItem, rsl::chrono::milliseconds waitDuration)
-            {
-                {
-                    rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-                    if (!m_push_cv.wait_for(lock, waitDuration, [this] { return !this->m_q.empty(); }))
-                    {
-                        return false;
-                    }
+        m_pop_cv.notify_one();
+        return true;
+      }
 
-                    poppedItem = rsl::move(m_q.front());
-                    m_q.pop_front();
-                }
+      void dequeue(T& poppedItem)
+      {
+        {
+          rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+          m_push_cv.wait(lock, [this] { return !this->m_q.empty(); });
+          poppedItem = rsl::move(m_q.front());
+          m_q.pop_front();
+        }
 
-                m_pop_cv.notify_one();
-                return true;
-            }
+        m_pop_cv.notify_one();
+      }
 
-            void dequeue(T& poppedItem)
-            {
-                {
-                    rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-                    m_push_cv.wait(lock, [this] { return !this->m_q.empty(); });
-                    poppedItem = rsl::move(m_q.front());
-                    m_q.pop_front();
-                }
+      s32 overrun_counter()
+      {
+        const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        return m_q.overrun_counter();
+      }
 
-                m_pop_cv.notify_one();
-            }
+      s32 size()
+      {
+        const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        return m_q.size();
+      }
 
-            size_t overrun_counter()
-            {
-                const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-                return m_q.overrun_counter();
-            }
+      void reset_overrun_counter()
+      {
+        const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
+        m_q.reset_overrun_counter();
+      }
 
-            size_t size()
-            {
-                const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-                return m_q.size();
-            }
-
-            void reset_overrun_counter()
-            {
-                const rsl::unique_lock<rsl::mutex> lock(m_queue_mutex);
-                m_q.reset_overrun_counter();
-            }
-
-        private:
-            rsl::mutex m_queue_mutex;
-            rsl::condition_variable m_push_cv;
-            rsl::condition_variable m_pop_cv;
-            rexlog::details::CircularQ<T> m_q;
-        };
-    } // namespace details
+    private:
+      rsl::mutex m_queue_mutex;
+      rsl::condition_variable m_push_cv;
+      rsl::condition_variable m_pop_cv;
+      rexlog::details::CircularQ<T> m_q;
+    };
+  } // namespace details
 } // namespace rexlog

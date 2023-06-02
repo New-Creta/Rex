@@ -8,9 +8,9 @@ namespace rexlog
 {
   namespace sinks
   {
-      using stdout_color_sink_mt = wincolor_stdout_sink_mt;
-      using stdout_color_sink_st = wincolor_stdout_sink_st;
-      using stderr_color_sink_mt = wincolor_stderr_sink_mt;
-      using stderr_color_sink_st = wincolor_stderr_sink_st;
+    using StdoutColorSinkMt = WinColorStdoutSinkMt;
+    using StdoutColorSinkSt = WinColorStdoutSinkSt;
+    using StderrColorSinkMt = WinColorStderrSinkMt;
+    using StderrColorSinkSt = WinColorStderrSinkSt;
   } // namespace sinks
 } // namespace rexlog

@@ -1,6 +1,7 @@
+#include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
+
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
-#include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/memory/global_allocator.h"
 
@@ -11,20 +12,20 @@ namespace rexlog
   namespace details
   {
 
-     FileHelper::FileHelper(const FileEventHandlers& eventHandlers)
+    FileHelper::FileHelper(const FileEventHandlers& eventHandlers)
         : m_event_handlers(eventHandlers)
     {
     }
 
-     FileHelper::~FileHelper()
+    FileHelper::~FileHelper()
     {
       close();
     }
 
-     void FileHelper::open(const filename_t& fname, bool truncate)
+    void FileHelper::open(rsl::string_view fname, bool truncate)
     {
       close();
-      m_filename = fname;
+      m_filename = filename_t(fname);
 
       const auto* mode       = "ab";
       const auto* trunc_mode = "wb";
@@ -67,10 +68,10 @@ namespace rexlog
       err += os::filename_to_str(m_filename);
       err += " for writing";
       err += " %d";
-      printf(err.data(), errno);
+      printf("%s, %d", err.data(), errno);
     }
 
-     void FileHelper::reopen(bool truncate)
+    void FileHelper::reopen(bool truncate)
     {
       if(m_filename.empty())
       {
@@ -79,7 +80,7 @@ namespace rexlog
       this->open(m_filename, truncate);
     }
 
-     void FileHelper::flush()
+    void FileHelper::flush()
     {
       if(fflush(m_fd) != 0)
       {
@@ -87,11 +88,11 @@ namespace rexlog
         err += "Failed flush to file ";
         err += os::filename_to_str(m_filename);
         err += " %d";
-        printf(err.data(), errno);
+        printf("%s, %d", err.data(), errno);
       }
     }
 
-     void FileHelper::sync()
+    void FileHelper::sync()
     {
       if(!os::fsync(m_fd))
       {
@@ -99,11 +100,11 @@ namespace rexlog
         err += "Failed to fsync file ";
         err += os::filename_to_str(m_filename);
         err += " %d";
-        printf(err.data(), errno);
+        printf("%s, %d", err.data(), errno);
       }
     }
 
-     void FileHelper::close()
+    void FileHelper::close()
     {
       if(m_fd != nullptr)
       {
@@ -122,33 +123,33 @@ namespace rexlog
       }
     }
 
-     void FileHelper::write(const memory_buf_t& buf)
+    void FileHelper::write(const memory_buf_t& buf)
     {
-      const size_t msg_size = buf.size();
-      const auto* data      = buf.data();
+      const s32 msg_size = buf.size();
+      const auto* data   = buf.data();
       if(fwrite(data, 1, msg_size, m_fd) != msg_size)
       {
         rex::DebugString err(rex::global_debug_allocator());
         err += "Failed writing to file ";
         err += os::filename_to_str(m_filename);
         err += " %d";
-        printf(err.data(), errno);
+        printf("%s, %d", err.data(), errno);
       }
     }
 
-     size_t FileHelper::size() const
+    size_t FileHelper::size() const
     {
       if(m_fd == nullptr)
       {
         rex::DebugString err(rex::global_debug_allocator());
         err += "Cannot use size() on closed file ";
         err += os::filename_to_str(m_filename);
-        printf(err.data());
+        printf("%s", err.data());
       }
       return os::filesize(m_fd);
     }
 
-     const filename_t& FileHelper::filename() const
+    rsl::string_view FileHelper::filename() const
     {
       return m_filename;
     }
@@ -167,7 +168,7 @@ namespace rexlog
     // "my_folder/.mylog" => ("my_folder/.mylog", "")
     // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
 
-     FilenameWithExtension FileHelper::split_by_extension(const filename_t& fname)
+    FilenameWithExtension FileHelper::split_by_extension(rsl::string_view fname)
     {
       auto ext_index = fname.rfind('.');
 
@@ -175,18 +176,18 @@ namespace rexlog
       // extension
       if(ext_index == filename_t::npos() || ext_index == 0 || ext_index == fname.size() - 1)
       {
-        return FilenameWithExtension {fname, filename_t()};
+        return FilenameWithExtension {fname, {}};
       }
 
       // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
-      auto folder_index = fname.find_last_of(rsl::string_view(details::os::folder_seps_filename));
+      auto folder_index = fname.find_last_of(details::os::g_folder_seps_filename);
       if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
       {
-        return FilenameWithExtension {fname, filename_t()};
+        return FilenameWithExtension {fname, {}};
       }
 
       // finally - return a valid base and extension tuple
-      return FilenameWithExtension {filename_t(fname.substr(0, ext_index), rex::global_debug_allocator()), filename_t(fname.substr(ext_index), rex::global_debug_allocator())};
+      return FilenameWithExtension {rsl::small_stack_string(fname.substr(0, ext_index)), rsl::tiny_stack_string(fname.substr(ext_index))};
     }
 
   } // namespace details

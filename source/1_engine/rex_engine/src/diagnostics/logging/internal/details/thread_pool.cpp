@@ -1,5 +1,6 @@
-#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
+
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/types.h"
 
@@ -13,14 +14,14 @@ namespace rexlog
   namespace details
   {
 
-     ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop)
+    ThreadPool::ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop)
         : m_q(qMaxItems)
     {
       if(threadsN == 0 || threadsN > 1000)
       {
         printf("rexlog::ThreadPool(): invalid threads_n param (valid range is 1-1000)");
       }
-      for(size_t i = 0; i < threadsN; i++)
+      for(s32 i = 0; i < threadsN; i++)
       {
         m_threads.emplace_back(
             [this, onThreadStart, onThreadStop]
@@ -32,58 +33,58 @@ namespace rexlog
       }
     }
 
-     ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart)
+    ThreadPool::ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart)
         : ThreadPool(qMaxItems, threadsN, onThreadStart, [] {})
     {
     }
 
-     ThreadPool::ThreadPool(size_t qMaxItems, size_t threadsN)
+    ThreadPool::ThreadPool(s32 qMaxItems, s32 threadsN)
         : ThreadPool(
               qMaxItems, threadsN, [] {}, [] {})
     {
     }
 
     // message all threads to terminate gracefully join them
-     ThreadPool::~ThreadPool()
+    ThreadPool::~ThreadPool()
     {
-        for(count_t i = 0; i < m_threads.size(); i++)
-        {
-          post_async_msg_impl(AsyncMsg(AsyncMsgType::Terminate), AsyncOverflowPolicy::Block);
-        }
+      for(count_t i = 0; i < m_threads.size(); i++)
+      {
+        post_async_msg_impl(AsyncMsg(AsyncMsgType::Terminate), AsyncOverflowPolicy::Block);
+      }
 
-        for(auto& t: m_threads)
-        {
-          t.join();
-        }
+      for(auto& t: m_threads)
+      {
+        t.join();
+      }
     }
 
-    void  ThreadPool::post_log(async_logger_ptr&& workerPtr, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy)
+    void ThreadPool::post_log(AsyncMsgLogFunctions&& loggerFns, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy)
     {
-      AsyncMsg async_m(rsl::move(workerPtr), AsyncMsgType::Log, msg);
+      AsyncMsg async_m(rsl::move(loggerFns), AsyncMsgType::Log, msg);
       post_async_msg_impl(rsl::move(async_m), overflowPolicy);
     }
 
-     void ThreadPool::post_flush(async_logger_ptr&& workerPtr, AsyncOverflowPolicy overflowPolicy)
+    void ThreadPool::post_flush(AsyncMsgLogFunctions&& loggerFns, AsyncOverflowPolicy overflowPolicy)
     {
-      post_async_msg_impl(AsyncMsg(rsl::move(workerPtr), AsyncMsgType::Flush), overflowPolicy);
+      post_async_msg_impl(AsyncMsg(rsl::move(loggerFns), AsyncMsgType::Flush), overflowPolicy);
     }
 
-     size_t ThreadPool::overrun_counter()
+    s32 ThreadPool::overrun_counter()
     {
       return m_q.overrun_counter();
     }
 
-     void ThreadPool::reset_overrun_counter()
+    void ThreadPool::reset_overrun_counter()
     {
       m_q.reset_overrun_counter();
     }
 
-     size_t ThreadPool::queue_size()
+    s32 ThreadPool::queue_size()
     {
       return m_q.size();
     }
 
-     void ThreadPool::post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy)
+    void ThreadPool::post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy)
     {
       if(overflowPolicy == AsyncOverflowPolicy::Block)
       {
@@ -95,7 +96,7 @@ namespace rexlog
       }
     }
 
-     void ThreadPool::worker_loop_impl()
+    void ThreadPool::worker_loop_impl()
     {
       while(process_next_msg_impl())
       {
@@ -105,7 +106,7 @@ namespace rexlog
     // process next message in the queue
     // return true if this thread should still be active (while no terminate msg
     // was received)
-     bool ThreadPool::process_next_msg_impl()
+    bool ThreadPool::process_next_msg_impl()
     {
       AsyncMsg incoming_async_msg;
       m_q.dequeue(incoming_async_msg);
@@ -114,12 +115,12 @@ namespace rexlog
       {
         case AsyncMsgType::Log:
         {
-          incoming_async_msg.worker_ptr->backend_sink_it_impl(incoming_async_msg);
+          incoming_async_msg.logger_fns.log_fn(incoming_async_msg);
           return true;
         }
         case AsyncMsgType::Flush:
         {
-          incoming_async_msg.worker_ptr->backend_flush_impl();
+          incoming_async_msg.logger_fns.flush_fn();
           return true;
         }
 

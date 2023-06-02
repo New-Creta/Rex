@@ -8,25 +8,25 @@
 
 namespace rexlog
 {
-    namespace sinks
+  namespace sinks
+  {
+    class AbstractSink
     {
-        class AbstractSink
-        {
-        public:
-            virtual ~AbstractSink() = default;
-            virtual void log(const details::LogMsg& msg) = 0;
-            virtual void flush() = 0;
-            virtual void set_pattern(const rsl::small_stack_string& pattern) = 0;
-            virtual void set_formatter(PatternFormatter sinkFormatter) = 0;
+    public:
+      virtual ~AbstractSink()                                    = default;
+      virtual void log(const details::LogMsg& msg)               = 0;
+      virtual void flush()                                       = 0;
+      virtual void set_pattern(rsl::string_view pattern)         = 0;
+      virtual void set_formatter(PatternFormatter sinkFormatter) = 0;
 
-            void set_level(level::LevelEnum logLevel);
-            level::LevelEnum level() const;
-            bool should_log(level::LevelEnum msgLevel) const;
+      void set_level(level::LevelEnum logLevel);
+      level::LevelEnum level() const;
+      bool should_log(level::LevelEnum msgLevel) const;
 
-        private:
-            // sink log level - default is all
-            level_t m_level{ (int32)level::LevelEnum::Trace };
-        };
+    private:
+      // sink log level - default is all
+      level_t m_level {static_cast<s32>(level::LevelEnum::Trace)};
+    };
 
-    } // namespace sinks
+  } // namespace sinks
 } // namespace rexlog

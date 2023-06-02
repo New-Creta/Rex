@@ -1,7 +1,7 @@
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/logger.h"
-#include "rex_engine/diagnostics/logging/internal/async_logger.h"
 #include "rex_engine/diagnostics/logging/log_category.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_std/memory.h"
@@ -13,63 +13,63 @@ namespace rex
   template <typename T>
   void trace_fatal_log(const LogCategory& category, const T& msg)
   {
-    get_logger(category).critical(msg);
+    get_logger(category).log(rexlog::level::LevelEnum::Critical, msg);
   }
   template <typename T>
   void trace_error_log(const LogCategory& category, const T& msg)
   {
-    get_logger(category).error(msg);
+    get_logger(category).log(rexlog::level::LevelEnum::Err, msg);
   }
   template <typename T>
   void trace_warning_log(const LogCategory& category, const T& msg)
   {
-    get_logger(category).warn(msg);
+    get_logger(category).log(rexlog::level::LevelEnum::Warn, msg);
   }
   template <typename T>
   void trace_log_log(const LogCategory& category, const T& msg)
   {
-    get_logger(category).info(msg);
+    get_logger(category).log(rexlog::level::LevelEnum::Info, msg);
   }
   template <typename T>
   void trace_verbose_log(const LogCategory& category, const T& msg)
   {
-    get_logger(category).debug(msg);
+    get_logger(category).log(rexlog::level::LevelEnum::Debug, msg);
   }
   template <typename T>
   void trace_very_verbose_log(const LogCategory& category, const T& msg)
   {
-    get_logger(category).trace(msg);
+    get_logger(category).log(rexlog::level::LevelEnum::Trace, msg);
   }
 
   template <typename FormatString, typename... Args>
   void trace_fatal_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
-    get_logger(category).critical(fmt, rsl::forward<Args>(args)...);
+    get_logger(category).log(rexlog::level::LevelEnum::Critical, fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
   void trace_error_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
-    get_logger(category).error(fmt, rsl::forward<Args>(args)...);
+    get_logger(category).log(rexlog::level::LevelEnum::Err, fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
   void trace_warning_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
-    get_logger(category).warn(fmt, rsl::forward<Args>(args)...);
+    get_logger(category).log(rexlog::level::LevelEnum::Warn, fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
   void trace_log_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
-    get_logger(category).info(fmt, rsl::forward<Args>(args)...);
+    get_logger(category).log(rexlog::level::LevelEnum::Info, fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
   void trace_verbose_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
-    get_logger(category).debug(fmt, rsl::forward<Args>(args)...);
+    get_logger(category).log(rexlog::level::LevelEnum::Debug, fmt, rsl::forward<Args>(args)...);
   }
   template <typename FormatString, typename... Args>
   void trace_very_verbose_log(const LogCategory& category, const FormatString& fmt, Args&&... args)
   {
-    get_logger(category).trace(fmt, rsl::forward<Args>(args)...);
+    get_logger(category).log(rexlog::level::LevelEnum::Trace, fmt, rsl::forward<Args>(args)...);
   }
 
   template <typename T>

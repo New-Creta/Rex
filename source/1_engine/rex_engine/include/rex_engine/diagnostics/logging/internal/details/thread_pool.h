@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/async_logger.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
 #include "rex_engine/diagnostics/logging/internal/details/mpmc_blocking_q.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
-#include "rex_engine/diagnostics/logging/internal/async_logger.h"
 #include "rex_engine/types.h"
 #include "rex_std/chrono.h"
 #include "rex_std/memory.h"
@@ -14,92 +14,101 @@
 
 namespace rexlog
 {
-    class AsyncLogger;
+  class AsyncLogger;
 
-    namespace details
+  namespace details
+  {
+    using async_logger_ptr = rsl::shared_ptr<rexlog::AsyncLogger>;
+
+    enum class AsyncMsgType
     {
-        using async_logger_ptr = rsl::shared_ptr<rexlog::AsyncLogger>;
+      Log,
+      Flush,
+      Terminate
+    };
 
-        enum class AsyncMsgType
-        {
-            Log,
-            Flush,
-            Terminate
-        };
+    struct AsyncMsgLogFunctions
+    {
+      using LogFunction   = std::function<void(const details::LogMsg&)>;
+      using FlushFunction = std::function<void()>;
 
-        // Async msg to move to/from the queue movable only
-        // This should never be copied
-        struct AsyncMsg : LogMsgBuffer
-        {
-            AsyncMsgType msg_type{ AsyncMsgType::Log };
-            async_logger_ptr worker_ptr;
+      LogFunction log_fn;
+      FlushFunction flush_fn;
+    };
 
-            AsyncMsg() = default;
-            ~AsyncMsg() = default;
+    // Async msg to move to/from the queue movable only
+    // This should never be copied
+    struct AsyncMsg : LogMsgBuffer
+    {
+      AsyncMsgType msg_type {AsyncMsgType::Log};
+      AsyncMsgLogFunctions logger_fns;
 
-            AsyncMsg(const AsyncMsg&) = delete;
-            AsyncMsg(AsyncMsg&&) = default;
-            AsyncMsg& operator=(const AsyncMsg&) = delete;
-            AsyncMsg& operator=(AsyncMsg&&) = default;
+      AsyncMsg()           = default;
+      ~AsyncMsg() override = default;
 
-            AsyncMsg(async_logger_ptr&& worker, AsyncMsgType theType, const details::LogMsg& m)
-                : LogMsgBuffer{ m }
-                , msg_type{ theType }
-                , worker_ptr{ rsl::move(worker) }
-            {
-            }
+      AsyncMsg(const AsyncMsg&)            = delete;
+      AsyncMsg(AsyncMsg&&)                 = default;
+      AsyncMsg& operator=(const AsyncMsg&) = delete;
+      AsyncMsg& operator=(AsyncMsg&&)      = default;
 
-            AsyncMsg(async_logger_ptr&& worker, AsyncMsgType theType)
-                : LogMsgBuffer{}
-                , msg_type{ theType }
-                , worker_ptr{ rsl::move(worker) }
-            {
-            }
+      AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType, const details::LogMsg& m)
+          : LogMsgBuffer {m}
+          , msg_type {theType}
+          , logger_fns {rsl::move(fns)}
+      {
+      }
 
-            explicit AsyncMsg(AsyncMsgType theType)
-                : AsyncMsg{ nullptr, theType }
-            {
-            }
-        };
+      AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType)
+          : LogMsgBuffer {}
+          , msg_type {theType}
+          , logger_fns {rsl::move(fns)}
+      {
+      }
 
-        class ThreadPool
-        {
-        public:
-            using item_type = AsyncMsg;
-            using q_type = details::MpmcBlockingQueue<item_type>;
+      explicit AsyncMsg(AsyncMsgType theType)
+          : AsyncMsg {{}, theType}
+      {
+      }
+    };
 
-            ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
-            ThreadPool(size_t qMaxItems, size_t threadsN, const rsl::function<void()>& onThreadStart);
-            ThreadPool(size_t qMaxItems, size_t threadsN);
+    class ThreadPool
+    {
+    public:
+      using item_type = AsyncMsg;
+      using q_type    = details::MpmcBlockingQueue<item_type>;
 
-            // message all threads to terminate gracefully and join them
-            ~ThreadPool();
+      ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
+      ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart);
+      ThreadPool(s32 qMaxItems, s32 threadsN);
 
-            ThreadPool(const ThreadPool&) = delete;
-            ThreadPool(ThreadPool&&) = delete;
-            ThreadPool& operator=(const ThreadPool&) = delete;
-            ThreadPool& operator=(ThreadPool&&) = delete;
+      // message all threads to terminate gracefully and join them
+      ~ThreadPool();
 
-            void post_log(async_logger_ptr&& workerPtr, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
-            void post_flush(async_logger_ptr&& workerPtr, AsyncOverflowPolicy overflowPolicy);
-            size_t overrun_counter();
-            void reset_overrun_counter();
-            size_t queue_size();
+      ThreadPool(const ThreadPool&)            = delete;
+      ThreadPool(ThreadPool&&)                 = delete;
+      ThreadPool& operator=(const ThreadPool&) = delete;
+      ThreadPool& operator=(ThreadPool&&)      = delete;
 
-        private:
-            void post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy);
-            void worker_loop_impl();
+      void post_log(AsyncMsgLogFunctions&& loggerFns, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
+      void post_flush(AsyncMsgLogFunctions&& loggerFns, AsyncOverflowPolicy overflowPolicy);
+      s32 overrun_counter();
+      void reset_overrun_counter();
+      s32 queue_size();
 
-            // process next message in the queue
-            // return true if this thread should still be active 
-            // while no terminate msg was received
-            bool process_next_msg_impl();
+    private:
+      void post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy);
+      void worker_loop_impl();
 
-        private:
-            q_type m_q;
+      // process next message in the queue
+      // return true if this thread should still be active
+      // while no terminate msg was received
+      bool process_next_msg_impl();
 
-            rex::DebugVector<rsl::thread> m_threads;
-        };
+    private:
+      q_type m_q;
 
-    } // namespace details
+      rex::DebugVector<rsl::thread> m_threads;
+    };
+
+  } // namespace details
 } // namespace rexlog

@@ -11,12 +11,12 @@
 
 namespace rexlog
 {
-    namespace details
+  namespace details
+  {
+    struct NullMutex
     {
-        struct NullMutex
-        {
-            void lock() const {}
-            void unlock() const {}
-        };
-    } // namespace details
+      void lock() const {}
+      void unlock() const {}
+    };
+  } // namespace details
 } // namespace rexlog

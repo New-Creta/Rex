@@ -18,11 +18,11 @@ namespace rexlog
      * MSVC sink (logging using OutputDebugStringA)
      */
     template <typename Mutex>
-    class msvc_sink : public BaseSink<Mutex>
+    class MSVCSink : public BaseSink<Mutex>
     {
     public:
-      msvc_sink() = default;
-      msvc_sink(bool check_debugger_present)
+      MSVCSink() = default;
+      MSVCSink(bool check_debugger_present)
           : check_debugger_present_ {check_debugger_present} {};
 
     protected:
@@ -43,11 +43,11 @@ namespace rexlog
       bool check_debugger_present_ = true;
     };
 
-    using msvc_sink_mt = msvc_sink<rsl::mutex>;
-    using msvc_sink_st = msvc_sink<details::NullMutex>;
+    using MSVCSinkMt = MSVCSink<rsl::mutex>;
+    using MSVCSinkSt = MSVCSink<details::NullMutex>;
 
-    using windebug_sink_mt = msvc_sink_mt;
-    using windebug_sink_st = msvc_sink_st;
+    using WinDebugSinkMt = MSVCSinkMt;
+    using WinDebugSinkSt = MSVCSinkSt;
 
   } // namespace sinks
 } // namespace rexlog
