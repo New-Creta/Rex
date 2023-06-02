@@ -28,6 +28,8 @@ namespace rexlog
       DistSink(const DistSink&)            = delete;
       DistSink& operator=(const DistSink&) = delete;
 
+      ~DistSink() override = default;
+
       void add_sink(rsl::shared_ptr<AbstractSink> subSink);
       void remove_sink(rsl::shared_ptr<AbstractSink> subSink);
       void set_sinks(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks);
@@ -43,7 +45,7 @@ namespace rexlog
     };
 
     template <typename Mutex>
-    DistSink<Mutex>::DistSink(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks)
+    DistSink<Mutex>::DistSink(const rex::DebugVector<rsl::shared_ptr<AbstractSink>>& sinks)
         : m_sinks(sinks)
     {
     }
@@ -72,11 +74,11 @@ namespace rexlog
     template <typename Mutex>
     void DistSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
     {
-      for(auto& subSink: m_sinks)
+      for(auto& sub_sink: m_sinks)
       {
-        if(subSink->should_log(msg.level()))
+        if(sub_sink->should_log(msg.level()))
         {
-          subSink->log(msg);
+          sub_sink->log(msg);
         }
       }
     }
@@ -84,9 +86,9 @@ namespace rexlog
     template <typename Mutex>
     void DistSink<Mutex>::flush_it_impl()
     {
-      for(auto& subSink: m_sinks)
+      for(auto& sub_sink: m_sinks)
       {
-        subSink->flush();
+        sub_sink->flush();
       }
     }
 
@@ -101,9 +103,9 @@ namespace rexlog
     {
       BaseSink<Mutex>::set_formatter_impl(rsl::move(sinkFormatter));
 
-      for(auto& subSink: m_sinks)
+      for(auto& sub_sink: m_sinks)
       {
-        subSink->set_formatter(BaseSink<Mutex>::formatter().clone());
+        sub_sink->set_formatter(BaseSink<Mutex>::formatter().clone());
       }
     }
 

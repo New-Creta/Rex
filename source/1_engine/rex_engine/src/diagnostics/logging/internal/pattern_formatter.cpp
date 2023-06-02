@@ -309,7 +309,7 @@ namespace rexlog
         break;
 
       case('$'): // color range end
-        m_formatters.push_back(rsl::make_unique<details::ColorStartFormatter>(padding));
+        m_formatters.push_back(rsl::make_unique<details::ColorEndFormatter>(padding));
         break;
 
       case('@'): // source location (filename:filenumber)

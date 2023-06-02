@@ -43,7 +43,7 @@ namespace rexlog
       AsyncMsgType msg_type {AsyncMsgType::Log};
       AsyncMsgLogFunctions logger_fns;
 
-      AsyncMsg()  = default;
+      AsyncMsg()           = default;
       ~AsyncMsg() override = default;
 
       AsyncMsg(const AsyncMsg&)            = delete;

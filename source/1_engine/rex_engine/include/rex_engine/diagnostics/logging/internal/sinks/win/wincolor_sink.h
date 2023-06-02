@@ -212,7 +212,7 @@ namespace rexlog
     // wincolor_stdout_sink
     template <typename ConsoleMutex>
     WincolorStdoutSink<ConsoleMutex>::WincolorStdoutSink(ColorMode mode)
-        : WinColorSink<ConsoleMutex>(::GetStdHandle(StD_OUTPUT_HANDLE), mode)
+        : WinColorSink<ConsoleMutex>(::GetStdHandle(STD_OUTPUT_HANDLE), mode)
     {
     }
 

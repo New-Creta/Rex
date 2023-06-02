@@ -178,7 +178,7 @@ namespace rexlog
       dest.push_back(' ');
 
       // add source location if present
-      if(msg.source().file_name() != "")
+      if(!msg.source().file_name().empty())
       {
         dest.push_back('[');
         const char* filename = details::ShortFileNameFormatter<details::NullScopedPadder>::basename(msg.source().file_name().data());

@@ -14,8 +14,8 @@ namespace rexlog
     class LogMsg
     {
     public:
-      mutable s32 m_color_range_start;    //NOLINT(misc-non-private-member-variables-in-classes)
-      mutable s32 m_color_range_end;    //NOLINT(misc-non-private-member-variables-in-classes)
+      mutable s32 m_color_range_start; // NOLINT(misc-non-private-member-variables-in-classes)
+      mutable s32 m_color_range_end;   // NOLINT(misc-non-private-member-variables-in-classes)
 
       LogMsg();
       LogMsg(log_clock::time_point logTime, const rsl::source_location& loc, rsl::string_view loggerName, level::LevelEnum lvl, rsl::string_view msg);

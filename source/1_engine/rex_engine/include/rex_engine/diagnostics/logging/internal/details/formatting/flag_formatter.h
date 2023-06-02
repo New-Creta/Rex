@@ -673,7 +673,7 @@ namespace rexlog
 
     //-------------------------------------------------------------------------
     template <typename ScopedPadder>
-    class v_Formatter final : public FlagFormatter  // NOLINT(readability-identifier-naming)
+    class v_Formatter final : public FlagFormatter // NOLINT(readability-identifier-naming)
     {
     public:
       explicit v_Formatter(PaddingInfo padinfo)

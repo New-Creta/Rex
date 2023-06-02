@@ -17,7 +17,7 @@ namespace rexlog
       LogMsgBuffer() = default;
       LogMsgBuffer(const LogMsgBuffer& other);
       LogMsgBuffer(LogMsgBuffer&& other) noexcept;
-      
+
       ~LogMsgBuffer() override = default;
 
       explicit LogMsgBuffer(const LogMsg& origMsg);
