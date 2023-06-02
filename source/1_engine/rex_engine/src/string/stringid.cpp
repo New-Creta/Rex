@@ -93,7 +93,7 @@ namespace rex
    */
   u32 StringID::value() const
   {
-    return static_cast<u32>(StringEntryID::create_invalid());
+    return static_cast<u32>(m_comparison_hash);
   }
 
   //-------------------------------------------------------------------------
