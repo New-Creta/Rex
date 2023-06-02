@@ -221,7 +221,7 @@ namespace rexlog
         return offset;
 #else
 
-  #if defined(sun) || defined(__sun) || defined(_AIX) || (defined(__NEWLIB__) && !defined(__TM_GMTOFF)) || (!defined(_BSD_SOURCE) && !defined(_GNU_SOURCE))
+  #if defined(sun) || defined(__sun) || defined(_AIX) || (defined(__NEWLIB__) && !defined(__TM_GMtOFF)) || (!defined(_BSD_SOURCE) && !defined(_GNU_SOURCE))
         // 'tm_gmtoff' field is BSD extension and it's missing on SunOS/Solaris
         struct helper
         {

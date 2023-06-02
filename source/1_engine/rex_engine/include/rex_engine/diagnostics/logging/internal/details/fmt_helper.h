@@ -62,7 +62,7 @@ namespace rexlog
       {
         if(n >= 0 && n < 100) // 0-99
         {
-          rsl::time_digits time_digits(n);
+          const rsl::time_digits time_digits(n);
           dest += time_digits.to_string();
         }
         else // unlikely, but just in case, let fmt deal with it
@@ -90,7 +90,7 @@ namespace rexlog
         {
           dest.push_back(static_cast<char>(n / 100 + '0'));
           n = n % 100;
-          rsl::time_digits time_digits(n);
+          const rsl::time_digits time_digits(n);
           dest += time_digits.to_string();
         }
         else

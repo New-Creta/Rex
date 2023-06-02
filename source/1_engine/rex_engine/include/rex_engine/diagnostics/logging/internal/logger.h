@@ -40,7 +40,7 @@ namespace rexlog
     {
     }
 
-    ~Logger();
+    virtual ~Logger() = default;
 
     Logger(const Logger& other);
     Logger(Logger&& other) noexcept;
@@ -131,8 +131,8 @@ namespace rexlog
   private:
     rex::DebugString m_name;
     Sinks m_sinks;
-    rexlog::level_t m_level {(int32)level::LevelEnum::Info};
-    rexlog::level_t m_flush_level {(int32)level::LevelEnum::Off};
+    rexlog::level_t m_level {static_cast<s32>(level::LevelEnum::Info)};
+    rexlog::level_t m_flush_level {static_cast<s32>(level::LevelEnum::Off)};
   };
 
   void swap(Logger& a, Logger& b);

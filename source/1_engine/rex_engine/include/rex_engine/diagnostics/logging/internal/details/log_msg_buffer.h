@@ -14,10 +14,11 @@ namespace rexlog
     class LogMsgBuffer : public LogMsg
     {
     public:
-      LogMsgBuffer();
+      LogMsgBuffer() = default;
       LogMsgBuffer(const LogMsgBuffer& other);
       LogMsgBuffer(LogMsgBuffer&& other) noexcept;
-      ~LogMsgBuffer();
+      
+      ~LogMsgBuffer() override = default;
 
       explicit LogMsgBuffer(const LogMsg& origMsg);
 

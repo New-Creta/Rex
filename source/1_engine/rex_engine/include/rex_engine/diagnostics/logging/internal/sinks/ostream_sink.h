@@ -16,13 +16,13 @@ namespace rexlog
   namespace sinks
   {
     template <typename Mutex>
-    class ostream_sink final : public BaseSink<Mutex>
+    class OStreamSink final : public BaseSink<Mutex>
     {
     public:
-      explicit ostream_sink(rsl::ostream& os, ForceFlush force_flush = ForceFlush::no);
+      explicit OStreamSink(rsl::ostream& os, ForceFlush force_flush = ForceFlush::no);
 
-      ostream_sink(const ostream_sink&)            = delete;
-      ostream_sink& operator=(const ostream_sink&) = delete;
+      OStreamSink(const OStreamSink&)            = delete;
+      OStreamSink& operator=(const OStreamSink&) = delete;
 
     protected:
       void sink_it_impl(const details::LogMsg& msg) override;
@@ -34,14 +34,14 @@ namespace rexlog
     };
 
     template <typename Mutex>
-    ostream_sink<Mutex>::ostream_sink(rsl::ostream& os, ForceFlush force_flush)
+    OStreamSink<Mutex>::OStreamSink(rsl::ostream& os, ForceFlush force_flush)
         : ostream_impl(os)
         , force_flush_impl(force_flush)
     {
     }
 
     template <typename Mutex>
-    void ostream_sink<Mutex>::sink_it_impl(const details::LogMsg& msg)
+    void OStreamSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
     {
       memory_buf_t formatted;
       BaseSink<Mutex>::m_formatter->format(msg, formatted);
@@ -53,13 +53,13 @@ namespace rexlog
     }
 
     template <typename Mutex>
-    void ostream_sink<Mutex>::flush_it_impl()
+    void OStreamSink<Mutex>::flush_it_impl()
     {
       ostream_.flush();
     }
 
-    using ostream_sink_mt = ostream_sink<rsl::mutex>;
-    using ostream_sink_st = ostream_sink<details::NullMutex>;
+    using OStreamSink_mt = OStreamSink<rsl::mutex>;
+    using OStreamSink_st = OStreamSink<details::NullMutex>;
 
   } // namespace sinks
 } // namespace rexlog

@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
@@ -22,18 +20,18 @@ namespace rexlog
      */
 
     template <typename ConsoleMutex>
-    class ansicolor_sink : public AbstractSink
+    class ANSIColorSink : public AbstractSink
     {
     public:
       using mutex_t = typename ConsoleMutex::mutex_t;
-      ansicolor_sink(FILE* target_file, ColorMode mode);
-      ~ansicolor_sink() override = default;
+      ANSIColorSink(FILE* target_file, ColorMode mode);
+      ~ANSIColorSink() override = default;
 
-      ansicolor_sink(const ansicolor_sink& other) = delete;
-      ansicolor_sink(ansicolor_sink&& other)      = delete;
+      ANSIColorSink(const ANSIColorSink& other) = delete;
+      ANSIColorSink(ANSIColorSink&& other)      = delete;
 
-      ansicolor_sink& operator=(const ansicolor_sink& other) = delete;
-      ansicolor_sink& operator=(ansicolor_sink&& other)      = delete;
+      ANSIColorSink& operator=(const ANSIColorSink& other) = delete;
+      ANSIColorSink& operator=(ANSIColorSink&& other)      = delete;
 
       void set_color(level::LevelEnum color_level, rsl::string_view color);
       void set_color_mode(ColorMode mode);
@@ -92,7 +90,7 @@ namespace rexlog
     };
 
     template <typename ConsoleMutex>
-    ansicolor_sink<ConsoleMutex>::ansicolor_sink(FILE* target_file, ColorMode mode)
+    ANSIColorSink<ConsoleMutex>::ANSIColorSink(FILE* target_file, ColorMode mode)
         : m_target_file(target_file)
         , m_mutex(ConsoleMutex::mutex())
         , m_formatter(rsl::make_unique<rexlog::pattern_formatter>())
@@ -110,14 +108,14 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::set_color(level::LevelEnum color_level, rsl::string_view color)
+    void ANSIColorSink<ConsoleMutex>::set_color(level::LevelEnum color_level, rsl::string_view color)
     {
       rsl::lock_guard<mutex_t> lock(m_mutex);
       m_colors[static_cast<s32>(color_level)] = color;
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::log(const details::LogMsg& msg)
+    void ANSIColorSink<ConsoleMutex>::log(const details::LogMsg& msg)
     {
       // Wrap the originally formatted message in color codes.
       // If color is not supported in the terminal, log as is instead.
@@ -145,34 +143,34 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::flush()
+    void ANSIColorSink<ConsoleMutex>::flush()
     {
       rsl::lock_guard<mutex_t> lock(m_mutex);
       fflush(m_target_file);
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::set_pattern(rsl::string_view pattern)
+    void ANSIColorSink<ConsoleMutex>::set_pattern(rsl::string_view pattern)
     {
       rsl::lock_guard<mutex_t> lock(m_mutex);
       m_formatter = PatternFormatter(pattern);
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::set_formatter(PatternFormatter sink_formatter)
+    void ANSIColorSink<ConsoleMutex>::set_formatter(PatternFormatter sink_formatter)
     {
       rsl::lock_guard<mutex_t> lock(m_mutex);
       m_formatter = rsl::move(sink_formatter);
     }
 
     template <typename ConsoleMutex>
-    bool ansicolor_sink<ConsoleMutex>::should_color()
+    bool ANSIColorSink<ConsoleMutex>::should_color()
     {
       return should_do_colors_;
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::set_color_mode(ColorMode mode)
+    void ANSIColorSink<ConsoleMutex>::set_color_mode(ColorMode mode)
     {
       switch(mode)
       {
@@ -184,50 +182,50 @@ namespace rexlog
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::print_ccode_impl(rsl::string_view color_code)
+    void ANSIColorSink<ConsoleMutex>::print_ccode_impl(rsl::string_view color_code)
     {
       fwrite(color_code.data(), sizeof(char), color_code.size(), m_target_file);
     }
 
     template <typename ConsoleMutex>
-    void ansicolor_sink<ConsoleMutex>::print_range_impl(rsl::string_view formatted, s32 start, s32 end)
+    void ANSIColorSink<ConsoleMutex>::print_range_impl(rsl::string_view formatted, s32 start, s32 end)
     {
       fwrite(formatted.data() + start, sizeof(char), end - start, m_target_file);
     }
 
     template <typename ConsoleMutex>
-    class ansicolor_stdout_sink : public ansicolor_sink<ConsoleMutex>
+    class ANSIColorStdoutSink : public ANSIColorSink<ConsoleMutex>
     {
     public:
-      explicit ansicolor_stdout_sink(ColorMode mode = ColorMode::Automatic);
+      explicit ANSIColorStdoutSink(ColorMode mode = ColorMode::Automatic);
     };
 
-    // ansicolor_stdout_sink
+    // ANSIColorStdoutSink
     template <typename ConsoleMutex>
-    ansicolor_stdout_sink<ConsoleMutex>::ansicolor_stdout_sink(ColorMode mode)
-        : ansicolor_sink<ConsoleMutex>(stdout, mode)
+    ANSIColorStdoutSink<ConsoleMutex>::ANSIColorStdoutSink(ColorMode mode)
+        : ANSIColorSink<ConsoleMutex>(stdout, mode)
     {
     }
 
     template <typename ConsoleMutex>
-    class ansicolor_stderr_sink : public ansicolor_sink<ConsoleMutex>
+    class ANSIColorStderrSink : public ANSIColorSink<ConsoleMutex>
     {
     public:
-      explicit ansicolor_stderr_sink(ColorMode mode = ColorMode::Automatic);
+      explicit ANSIColorStderrSink(ColorMode mode = ColorMode::Automatic);
     };
 
-    // ansicolor_stderr_sink
+    // ANSIColorStderrSink
     template <typename ConsoleMutex>
-    ansicolor_stderr_sink<ConsoleMutex>::ansicolor_stderr_sink(ColorMode mode)
-        : ansicolor_sink<ConsoleMutex>(stderr, mode)
+    ANSIColorStderrSink<ConsoleMutex>::ANSIColorStderrSink(ColorMode mode)
+        : ANSIColorSink<ConsoleMutex>(stderr, mode)
     {
     }
 
-    using ansicolor_stdout_sink_mt = ansicolor_stdout_sink<details::ConsoleMutex>;
-    using ansicolor_stdout_sink_st = ansicolor_stdout_sink<details::ConsoleNullMutex>;
+    using ANSIColorStdoutSinkMt = ANSIColorStdoutSink<details::ConsoleMutex>;
+    using ANSIColorStdoutSinkSt = ANSIColorStdoutSink<details::ConsoleNullMutex>;
 
-    using ansicolor_stderr_sink_mt = ansicolor_stderr_sink<details::ConsoleMutex>;
-    using ansicolor_stderr_sink_st = ansicolor_stderr_sink<details::ConsoleNullMutex>;
+    using ANSIColorStderrSinkMt = ANSIColorStderrSink<details::ConsoleMutex>;
+    using ANSIColorStderrSinkSt = ANSIColorStderrSink<details::ConsoleNullMutex>;
 
   } // namespace sinks
 } // namespace rexlog

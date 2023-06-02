@@ -25,7 +25,7 @@ namespace rexlog
 
     private:
       // sink log level - default is all
-      level_t m_level {(int32)level::LevelEnum::Trace};
+      level_t m_level {static_cast<s32>(level::LevelEnum::Trace)};
     };
 
   } // namespace sinks

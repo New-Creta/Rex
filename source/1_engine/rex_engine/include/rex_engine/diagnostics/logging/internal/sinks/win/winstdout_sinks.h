@@ -143,11 +143,11 @@ namespace rexlog
     {
     }
 
-    using stdout_sink_mt = StdoutSink<details::ConsoleMutex>;
-    using stdout_sink_st = StdoutSink<details::ConsoleNullMutex>;
+    using StdoutSinkMt = StdoutSink<details::ConsoleMutex>;
+    using StdoutSinkSt = StdoutSink<details::ConsoleNullMutex>;
 
-    using stderr_sink_mt = StderrSink<details::ConsoleMutex>;
-    using stderr_sink_st = StderrSink<details::ConsoleNullMutex>;
+    using StderrSinkMt = StderrSink<details::ConsoleMutex>;
+    using StderrSinkSt = StderrSink<details::ConsoleNullMutex>;
 
   } // namespace sinks
 
@@ -155,25 +155,25 @@ namespace rexlog
   template <typename Factory>
   rsl::shared_ptr<Logger> stdout_logger_mt(const rex::DebugString& loggerName)
   {
-    return Factory::template create<sinks::stdout_sink_mt>(rex::DebugString(loggerName));
+    return Factory::template create<sinks::StdoutSinkMt>(rex::DebugString(loggerName));
   }
 
   template <typename Factory>
   rsl::shared_ptr<Logger> stdout_logger_st(const rex::DebugString& loggerName)
   {
-    return Factory::template create<sinks::stdout_sink_st>(rex::DebugString(loggerName));
+    return Factory::template create<sinks::StdoutSinkSt>(rex::DebugString(loggerName));
   }
 
   template <typename Factory>
   rsl::shared_ptr<Logger> stderr_logger_mt(const rex::DebugString& loggerName)
   {
-    return Factory::template create<sinks::stderr_sink_mt>(rex::DebugString(loggerName));
+    return Factory::template create<sinks::StderrSinkMt>(rex::DebugString(loggerName));
   }
 
   template <typename Factory>
   rsl::shared_ptr<Logger> stderr_logger_st(const rex::DebugString& loggerName)
   {
-    return Factory::template create<sinks::stderr_sink_st>(rex::DebugString(loggerName));
+    return Factory::template create<sinks::StderrSinkSt>(rex::DebugString(loggerName));
   }
 
 } // namespace rexlog

@@ -10,12 +10,12 @@ namespace rexlog
   {
     bool AbstractSink::should_log(rexlog::level::LevelEnum msgLevel) const
     {
-      return (int32)msgLevel >= m_level.load(rsl::memory_order_relaxed);
+      return static_cast<s32>(msgLevel) >= m_level.load(rsl::memory_order_relaxed);
     }
 
     void AbstractSink::set_level(level::LevelEnum logLevel)
     {
-      m_level.store((int32)logLevel, rsl::memory_order_relaxed);
+      m_level.store(static_cast<s32>(logLevel), rsl::memory_order_relaxed);
     }
 
     rexlog::level::LevelEnum AbstractSink::level() const

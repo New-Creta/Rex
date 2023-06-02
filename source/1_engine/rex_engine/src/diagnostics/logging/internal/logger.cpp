@@ -50,9 +50,6 @@ namespace rexlog
   }
 
   //-------------------------------------------------------------------------
-  Logger::~Logger() {}
-
-  //-------------------------------------------------------------------------
   Logger& Logger::operator=(const Logger& other) noexcept
   {
     Logger tmp(other);
@@ -70,7 +67,7 @@ namespace rexlog
   //-------------------------------------------------------------------------
   bool Logger::should_log(level::LevelEnum msgLevel) const
   {
-    return (int32)msgLevel >= m_level.load(rsl::memory_order_relaxed);
+    return static_cast<s32>(msgLevel) >= m_level.load(rsl::memory_order_relaxed);
   }
 
   //-------------------------------------------------------------------------
@@ -108,7 +105,7 @@ namespace rexlog
   //-------------------------------------------------------------------------
   void Logger::set_level(level::LevelEnum logLevel)
   {
-    m_level.store((int32)logLevel);
+    m_level.store(static_cast<s32>(logLevel));
   }
 
   //-------------------------------------------------------------------------
@@ -164,7 +161,7 @@ namespace rexlog
   //-------------------------------------------------------------------------
   void Logger::flush_on(level::LevelEnum logLevel)
   {
-    m_flush_level.store((int32)logLevel);
+    m_flush_level.store(static_cast<s32>(logLevel));
   }
 
   //-------------------------------------------------------------------------
@@ -208,7 +205,7 @@ namespace rexlog
   bool Logger::should_flush_impl(const details::LogMsg& msg)
   {
     auto flush_level = m_flush_level.load(rsl::memory_order_relaxed);
-    return ((int32)msg.level() >= flush_level) && (msg.level() != level::LevelEnum::Off);
+    return ((static_cast<s32>(msg.level()) >= flush_level) && (msg.level() != level::LevelEnum::Off));
   }
 
   //-------------------------------------------------------------------------

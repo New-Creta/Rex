@@ -7,12 +7,6 @@ namespace rexlog
   namespace details
   {
     //-------------------------------------------------------------------------
-    LogMsgBuffer::LogMsgBuffer()
-    {
-      // Nothing to implement
-    }
-
-    //-------------------------------------------------------------------------
     LogMsgBuffer::LogMsgBuffer(const LogMsgBuffer& other)
         : LogMsg {other}
     {
@@ -27,12 +21,6 @@ namespace rexlog
         , m_buffer {rsl::move(other.m_buffer)}
     {
       update_string_views();
-    }
-
-    //-------------------------------------------------------------------------
-    LogMsgBuffer::~LogMsgBuffer()
-    {
-      // Nothing to implement
     }
 
     //-------------------------------------------------------------------------

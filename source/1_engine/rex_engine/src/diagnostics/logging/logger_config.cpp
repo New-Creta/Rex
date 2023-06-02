@@ -130,7 +130,7 @@ namespace rex
     {
       const rsl::string_view rexlog_level_prefix("REXLOG_LEVEL=");
 
-      for(rsl::string_view s: args)
+      for(const rsl::string_view s: args)
       {
         if(s.find(rexlog_level_prefix) == 0)
         {

@@ -10,10 +10,10 @@ namespace rexlog
     ///////////////////////////////////////////////////////////////////////
     // Time information
     ///////////////////////////////////////////////////////////////////////
-    const rsl::array<rsl::string_view, 7> DayNames::days           = {{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}};
-    const rsl::array<rsl::string_view, 7> DayNames::full_days      = {{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}};
-    const rsl::array<rsl::string_view, 12> MonthNames::months      = {{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"}};
-    const rsl::array<rsl::string_view, 12> MonthNames::full_months = {{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}};
+    const rsl::array<rsl::string_view, 7> DayNames::s_days           = {{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}};
+    const rsl::array<rsl::string_view, 7> DayNames::s_full_days      = {{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}};
+    const rsl::array<rsl::string_view, 12> MonthNames::s_months      = {{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"}};
+    const rsl::array<rsl::string_view, 12> MonthNames::s_full_months = {{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}};
 
     ///////////////////////////////////////////////////////////////////////
     // Date time pattern appenders
@@ -32,19 +32,10 @@ namespace rexlog
     ///////////////////////////////////////////////////////////////////////
     // FlagFormatter
     ///////////////////////////////////////////////////////////////////////
-    FlagFormatter::FlagFormatter()
-    {
-      // Nothing to implement
-    }
     FlagFormatter::FlagFormatter(PaddingInfo padinfo)
         : m_padinfo(padinfo)
     {
       // Nothing to implement
-    }
-
-    FlagFormatter::~FlagFormatter()
-    {
-      // Nothingto implement
     }
 
     void FlagFormatter::set_padding_info(const details::PaddingInfo& padding)
@@ -63,37 +54,29 @@ namespace rexlog
 
     //-------------------------------------------------------------------------
     CharacterFormatter::CharacterFormatter(char ch)
-        : ch_(ch)
+        : m_character(ch)
     {
     }
 
     //-------------------------------------------------------------------------
     void CharacterFormatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, rsl::big_stack_string& dest)
     {
-      dest.push_back(ch_);
+      dest.push_back(m_character);
     }
 
     ///////////////////////////////////////////////////////////////////////
     // aggregate formatter
     ///////////////////////////////////////////////////////////////////////
-
-    //-------------------------------------------------------------------------
-    // aggregate user chars to display as is
-    AggregateFormatter::AggregateFormatter()
-    {
-      // Nothing to implement
-    }
-
     //-------------------------------------------------------------------------
     void AggregateFormatter::add_ch(char ch)
     {
-      str_ += ch;
+      m_string += ch;
     }
 
     //-------------------------------------------------------------------------
     void AggregateFormatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, rsl::big_stack_string& dest)
     {
-      fmt_helper::append_string_view(str_, dest);
+      fmt_helper::append_string_view(m_string, dest);
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -139,38 +122,38 @@ namespace rexlog
     }
 
     //-------------------------------------------------------------------------
-    void FullFormatter::format(const details::LogMsg& msg, const tm& tm_time, rsl::big_stack_string& dest)
+    void FullFormatter::format(const details::LogMsg& msg, const tm& tmTime, rsl::big_stack_string& dest)
     {
       // cache the date/time part for the next second.
       auto duration = msg.time().time_since_epoch();
       auto secs     = rsl::chrono::duration_cast<rsl::chrono::seconds>(duration);
 
-      if(cache_timestamp_ != secs || cached_datetime_.empty())
+      if(m_cache_timestamp != secs || m_cached_datetime.empty())
       {
-        cached_datetime_.clear();
-        cached_datetime_.push_back('[');
-        fmt_helper::append_int(tm_time.tm_year + 1900, cached_datetime_);
-        cached_datetime_.push_back('-');
+        m_cached_datetime.clear();
+        m_cached_datetime.push_back('[');
+        fmt_helper::append_int(tmTime.tm_year + 1900, m_cached_datetime);
+        m_cached_datetime.push_back('-');
 
-        fmt_helper::pad2(tm_time.tm_mon + 1, cached_datetime_);
-        cached_datetime_.push_back('-');
+        fmt_helper::pad2(tmTime.tm_mon + 1, m_cached_datetime);
+        m_cached_datetime.push_back('-');
 
-        fmt_helper::pad2(tm_time.tm_mday, cached_datetime_);
-        cached_datetime_.push_back(' ');
+        fmt_helper::pad2(tmTime.tm_mday, m_cached_datetime);
+        m_cached_datetime.push_back(' ');
 
-        fmt_helper::pad2(tm_time.tm_hour, cached_datetime_);
-        cached_datetime_.push_back(':');
+        fmt_helper::pad2(tmTime.tm_hour, m_cached_datetime);
+        m_cached_datetime.push_back(':');
 
-        fmt_helper::pad2(tm_time.tm_min, cached_datetime_);
-        cached_datetime_.push_back(':');
+        fmt_helper::pad2(tmTime.tm_min, m_cached_datetime);
+        m_cached_datetime.push_back(':');
 
-        fmt_helper::pad2(tm_time.tm_sec, cached_datetime_);
-        cached_datetime_.push_back('.');
+        fmt_helper::pad2(tmTime.tm_sec, m_cached_datetime);
+        m_cached_datetime.push_back('.');
 
-        cache_timestamp_ = secs;
+        m_cache_timestamp = secs;
       }
 
-      dest.append(cached_datetime_.data(), cached_datetime_.size());
+      dest.append(m_cached_datetime.data(), m_cached_datetime.size());
 
       auto millis = fmt_helper::time_fraction<rsl::chrono::milliseconds>(msg.time());
       fmt_helper::pad3(static_cast<uint32_t>(millis.count()), dest);
@@ -181,7 +164,7 @@ namespace rexlog
       if(!msg.logger_name().empty())
       {
         dest.push_back('[');
-        fmt_helper::append_string_view(rsl::string_view(msg.logger_name()), dest);
+        fmt_helper::append_string_view(msg.logger_name(), dest);
         dest.push_back(']');
         dest.push_back(' ');
       }
@@ -205,7 +188,7 @@ namespace rexlog
         dest.push_back(']');
         dest.push_back(' ');
       }
-      fmt_helper::append_string_view(rsl::string_view(msg.payload()), dest);
+      fmt_helper::append_string_view(msg.payload(), dest);
     }
   } // namespace details
 } // namespace rexlog

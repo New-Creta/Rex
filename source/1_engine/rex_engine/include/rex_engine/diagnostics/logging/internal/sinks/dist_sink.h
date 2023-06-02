@@ -19,96 +19,96 @@ namespace rexlog
   namespace sinks
   {
     template <typename Mutex>
-    class dist_sink : public BaseSink<Mutex>
+    class DistSink : public BaseSink<Mutex>
     {
     public:
-      dist_sink() = default;
-      explicit dist_sink(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks);
+      DistSink() = default;
+      explicit DistSink(const rex::DebugVector<rsl::shared_ptr<AbstractSink>>& sinks);
 
-      dist_sink(const dist_sink&)            = delete;
-      dist_sink& operator=(const dist_sink&) = delete;
+      DistSink(const DistSink&)            = delete;
+      DistSink& operator=(const DistSink&) = delete;
 
-      void add_sink(rsl::shared_ptr<AbstractSink> sub_sink);
-      void remove_sink(rsl::shared_ptr<AbstractSink> sub_sink);
+      void add_sink(rsl::shared_ptr<AbstractSink> subSink);
+      void remove_sink(rsl::shared_ptr<AbstractSink> subSink);
       void set_sinks(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks);
 
     protected:
       void sink_it_impl(const details::LogMsg& msg) override;
       void flush_it_impl() override;
       void set_pattern_impl(rsl::string_view pattern) override;
-      void set_formatter_impl(PatternFormatter sink_formatter) override;
+      void set_formatter_impl(PatternFormatter sinkFormatter) override;
 
     private:
-      rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks_;
+      rex::DebugVector<rsl::shared_ptr<AbstractSink>> m_sinks;
     };
 
     template <typename Mutex>
-    dist_sink<Mutex>::dist_sink(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks)
-        : sinks_(sinks)
+    DistSink<Mutex>::DistSink(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks)
+        : m_sinks(sinks)
     {
     }
 
     template <typename Mutex>
-    void dist_sink<Mutex>::add_sink(rsl::shared_ptr<AbstractSink> sub_sink)
+    void DistSink<Mutex>::add_sink(rsl::shared_ptr<AbstractSink> subSink)
     {
       rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
-      sinks_.push_back(rsl::move(sub_sink));
+      m_sinks.push_back(rsl::move(subSink));
     }
 
     template <typename Mutex>
-    void dist_sink<Mutex>::remove_sink(rsl::shared_ptr<AbstractSink> sub_sink)
+    void DistSink<Mutex>::remove_sink(rsl::shared_ptr<AbstractSink> subSink)
     {
       rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
-      sinks_.erase(rsl::remove(sinks_.begin(), sinks_.end(), sub_sink), sinks_.end());
+      m_sinks.erase(rsl::remove(m_sinks.begin(), m_sinks.end(), subSink), m_sinks.end());
     }
 
     template <typename Mutex>
-    void dist_sink<Mutex>::set_sinks(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks)
+    void DistSink<Mutex>::set_sinks(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks)
     {
       rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
-      sinks_ = rsl::move(sinks);
+      m_sinks = rsl::move(sinks);
     }
 
     template <typename Mutex>
-    void dist_sink<Mutex>::sink_it_impl(const details::LogMsg& msg)
+    void DistSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
     {
-      for(auto& sub_sink: sinks_)
+      for(auto& subSink: m_sinks)
       {
-        if(sub_sink->should_log(msg.level()))
+        if(subSink->should_log(msg.level()))
         {
-          sub_sink->log(msg);
+          subSink->log(msg);
         }
       }
     }
 
     template <typename Mutex>
-    void dist_sink<Mutex>::flush_it_impl()
+    void DistSink<Mutex>::flush_it_impl()
     {
-      for(auto& sub_sink: sinks_)
+      for(auto& subSink: m_sinks)
       {
-        sub_sink->flush();
+        subSink->flush();
       }
     }
 
     template <typename Mutex>
-    void dist_sink<Mutex>::set_pattern_impl(rsl::string_view pattern)
+    void DistSink<Mutex>::set_pattern_impl(rsl::string_view pattern)
     {
       set_formatter_impl(PatternFormatter(pattern));
     }
 
     template <typename Mutex>
-    void dist_sink<Mutex>::set_formatter_impl(PatternFormatter sink_formatter)
+    void DistSink<Mutex>::set_formatter_impl(PatternFormatter sinkFormatter)
     {
-      BaseSink<Mutex>::set_formatter_impl(rsl::move(sink_formatter));
+      BaseSink<Mutex>::set_formatter_impl(rsl::move(sinkFormatter));
 
-      for(auto& sub_sink: sinks_)
+      for(auto& subSink: m_sinks)
       {
-        sub_sink->set_formatter(BaseSink<Mutex>::formatter().clone());
+        subSink->set_formatter(BaseSink<Mutex>::formatter().clone());
       }
     }
 
-    using dist_sink_mt = dist_sink<rsl::mutex>;
-    using dist_sink_st = dist_sink<details::NullMutex>;
+    using DistSink_mt = DistSink<rsl::mutex>;
+    using DistSink_st = DistSink<details::NullMutex>;
 
   } // namespace sinks
 } // namespace rexlog

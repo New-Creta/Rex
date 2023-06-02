@@ -28,7 +28,7 @@ namespace rexlog
     #define REXLOG_EOL "\n"
   #endif
 #endif
-      inline rsl::string_view g_default_eol = REXLOG_EOL;
+      inline rsl::string_view g_default_eol = REXLOG_EOL; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
       // folder separator
 #if !defined(REXLOG_FOLDER_SEPS)
@@ -38,8 +38,8 @@ namespace rexlog
     #define REXLOG_FOLDER_SEPS "/"
   #endif
 #endif
-      inline rsl::string_view g_folder_seps          = REXLOG_FOLDER_SEPS;
-      inline rsl::string_view g_folder_seps_filename = REXLOG_FOLDER_SEPS;
+      inline rsl::string_view g_folder_seps          = REXLOG_FOLDER_SEPS; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+      inline rsl::string_view g_folder_seps_filename = REXLOG_FOLDER_SEPS; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
       // fopen_s on non windows for writing
       bool fopen_s(FILE** fp, rsl::string_view filename, const filename_t& mode);

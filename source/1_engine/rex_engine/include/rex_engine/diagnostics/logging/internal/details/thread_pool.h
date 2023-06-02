@@ -44,7 +44,7 @@ namespace rexlog
       AsyncMsgLogFunctions logger_fns;
 
       AsyncMsg()  = default;
-      ~AsyncMsg() = default;
+      ~AsyncMsg() override = default;
 
       AsyncMsg(const AsyncMsg&)            = delete;
       AsyncMsg(AsyncMsg&&)                 = default;

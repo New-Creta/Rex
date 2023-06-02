@@ -61,21 +61,21 @@ namespace rexlog
 
   namespace level
   {
-    inline rsl::string_view g_level_name_trace("trace");
-    inline rsl::string_view g_level_name_debug("debug");
-    inline rsl::string_view g_level_name_info("info");
-    inline rsl::string_view g_level_name_warning("warning");
-    inline rsl::string_view g_level_name_error("error");
-    inline rsl::string_view g_level_name_critical("critical");
-    inline rsl::string_view g_level_name_off("off");
+    inline rsl::string_view g_level_name_trace("trace");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_debug("debug");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_info("info");         // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_warning("warning");   // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_error("error");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_critical("critical"); // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_name_off("off");           // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
-    inline rsl::string_view g_level_sname_trace("T");
-    inline rsl::string_view g_level_sname_debug("D");
-    inline rsl::string_view g_level_sname_info("I");
-    inline rsl::string_view g_level_sname_warning("W");
-    inline rsl::string_view g_level_sname_error("E");
-    inline rsl::string_view g_level_sname_critical("C");
-    inline rsl::string_view g_level_sname_off("O");
+    inline rsl::string_view g_level_sname_trace("T");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_debug("D");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_info("I");     // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_warning("W");  // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_error("E");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_critical("C"); // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline rsl::string_view g_level_sname_off("O");      // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
     enum class LevelEnum : int32
     {
@@ -132,7 +132,7 @@ namespace rexlog
     template <typename T, typename... Args>
     constexpr rsl::basic_string_view<T> to_string_view(rsl::basic_format_string<T, Args...> fmt) noexcept
     {
-      return rsl::basic_string_view<T>(fmt);
+      return rsl::basic_string_view<T>(fmt); // NOLINT(google-readability-casting)
     }
 
     // to avoid useless casts (see https://github.com/nlohmann/json/issues/2893#issuecomment-889152324)

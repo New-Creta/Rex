@@ -74,7 +74,7 @@ namespace rex
 
 #if REX_DEBUG
     // Only push rexout color sink when we are in debug mode
-    sinks.push_back(rsl::allocate_shared<rexlog::sinks::stdout_color_sink_mt>(rex::global_debug_allocator()));
+    sinks.push_back(rsl::allocate_shared<rexlog::sinks::StdoutColorSinkMt>(rex::global_debug_allocator()));
 #endif
     // sinks.push_back(rsl::make_shared<rexlog::sinks::basic_file_sink_mt>(full_path.string(), true));
 
@@ -82,11 +82,11 @@ namespace rex
 
     if(category.is_async())
     {
-      new_logger = rexlog::create_async<rexlog::sinks::dist_sink_mt>(category.get_category_name(), sinks);
+      new_logger = rexlog::create_async<rexlog::sinks::DistSink_mt>(category.get_category_name(), sinks);
     }
     else
     {
-      new_logger = rexlog::create<rexlog::sinks::dist_sink_st>(category.get_category_name(), sinks);
+      new_logger = rexlog::create<rexlog::sinks::DistSink_st>(category.get_category_name(), sinks);
     }
 
     new_logger->set_pattern(default_pattern);
