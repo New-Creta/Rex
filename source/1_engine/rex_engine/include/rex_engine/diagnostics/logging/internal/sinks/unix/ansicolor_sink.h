@@ -9,7 +9,6 @@
 #include "rex_std/memory.h"
 #include "rex_std_extra/utility/enum_reflection.h"
 
-
 namespace rexlog
 {
   namespace sinks
@@ -83,7 +82,7 @@ namespace rexlog
     private:
       void print_ccode_impl(rsl::string_view color_code);
       void print_range_impl(rsl::string_view formatted, s32 start, s32 end);
-    
+
     private:
       FILE* m_target_file;
       mutex_t& m_mutex;

@@ -1,19 +1,19 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
 #include "rex_engine/debug_types.h"
-#include "rex_engine/diagnostics/logging/internal/logger_factory.h"
-#include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
-#include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
-#include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
+#include "rex_engine/diagnostics/logging/internal/logger_factory.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
+#include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/memory/untracked_allocator.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/hashtable.h"
-#include "rex_std/bonus/utility.h"
 #include "rex_std/bonus/string/stack_string.h"
+#include "rex_std/bonus/utility.h"
 #include "rex_std/vector.h"
 
 namespace rex
@@ -80,13 +80,13 @@ namespace rex
 
     rsl::shared_ptr<rexlog::Logger> new_logger = nullptr;
 
-    if (category.is_async())
+    if(category.is_async())
     {
-        new_logger = rexlog::create_async<rexlog::sinks::dist_sink_mt>(category.get_category_name(), sinks);
+      new_logger = rexlog::create_async<rexlog::sinks::dist_sink_mt>(category.get_category_name(), sinks);
     }
     else
     {
-        new_logger = rexlog::create<rexlog::sinks::dist_sink_st>(category.get_category_name(), sinks);
+      new_logger = rexlog::create<rexlog::sinks::dist_sink_st>(category.get_category_name(), sinks);
     }
 
     new_logger->set_pattern(default_pattern);

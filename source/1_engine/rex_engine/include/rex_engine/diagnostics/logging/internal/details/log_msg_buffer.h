@@ -6,28 +6,28 @@
 
 namespace rexlog
 {
-    namespace details
+  namespace details
+  {
+    // Extend LogMsg with internal buffer to store its payload.
+    // This is needed since LogMsg holds string_views that points to stack data.
+
+    class LogMsgBuffer : public LogMsg
     {
-        // Extend LogMsg with internal buffer to store its payload.
-        // This is needed since LogMsg holds string_views that points to stack data.
+    public:
+      LogMsgBuffer();
+      LogMsgBuffer(const LogMsgBuffer& other);
+      LogMsgBuffer(LogMsgBuffer&& other) noexcept;
+      ~LogMsgBuffer();
 
-        class LogMsgBuffer : public LogMsg
-        {
-        public:
-            LogMsgBuffer();
-            LogMsgBuffer(const LogMsgBuffer& other);
-            LogMsgBuffer(LogMsgBuffer&& other) noexcept;
-            ~LogMsgBuffer();
+      explicit LogMsgBuffer(const LogMsg& origMsg);
 
-            explicit LogMsgBuffer(const LogMsg& origMsg);
+      LogMsgBuffer& operator=(const LogMsgBuffer& other);
+      LogMsgBuffer& operator=(LogMsgBuffer&& other) noexcept;
 
-            LogMsgBuffer& operator=(const LogMsgBuffer& other);
-            LogMsgBuffer& operator=(LogMsgBuffer&& other) noexcept;
+    private:
+      void update_string_views();
 
-        private:
-            void update_string_views();
-
-            memory_buf_t m_buffer;
-        };
-    } // namespace details
+      memory_buf_t m_buffer;
+    };
+  } // namespace details
 } // namespace rexlog

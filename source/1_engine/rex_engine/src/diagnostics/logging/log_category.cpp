@@ -19,7 +19,7 @@ namespace rex
   //-------------------------------------------------------------------------
   bool LogCategory::is_async() const
   {
-      return m_is_async == IsAsync::yes;
+    return m_is_async == IsAsync::yes;
   }
 
   //-------------------------------------------------------------------------

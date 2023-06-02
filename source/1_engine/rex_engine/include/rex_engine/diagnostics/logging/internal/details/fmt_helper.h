@@ -33,18 +33,18 @@ namespace rexlog
       {
         // taken from fmt: https://github.com/fmtlib/fmt/blob/8.0.1/include/fmt/format.h#L899-L912
         unsigned int count = 1;
-        for (;;)
+        for(;;)
         {
           // Integer division is slow so do it for a group of four digits instead
           // of for every digit. The idea comes from the talk by Alexandrescu
           // "Three Optimization Tips for C++". See speed-test for a comparison.
-          if (n < 10)
+          if(n < 10)
             return count;
-          if (n < 100)
+          if(n < 100)
             return count + 1;
-          if (n < 1000)
+          if(n < 1000)
             return count + 2;
-          if (n < 10000)
+          if(n < 10000)
             return count + 3;
           n /= 10000u;
           count += 4;
@@ -60,7 +60,7 @@ namespace rexlog
 
       inline void pad2(int n, rsl::big_stack_string& dest)
       {
-        if (n >= 0 && n < 100) // 0-99
+        if(n >= 0 && n < 100) // 0-99
         {
           rsl::time_digits time_digits(n);
           dest += time_digits.to_string();
@@ -75,7 +75,7 @@ namespace rexlog
       inline void pad_uint(T n, unsigned int width, rsl::big_stack_string& dest)
       {
         static_assert(rsl::is_unsigned<T>::value, "pad_uint must get unsigned T");
-        for (auto digits = count_digits(n); digits < width; digits++)
+        for(auto digits = count_digits(n); digits < width; digits++)
         {
           dest.push_back('0');
         }
@@ -86,7 +86,7 @@ namespace rexlog
       inline void pad3(T n, rsl::big_stack_string& dest)
       {
         static_assert(rsl::is_unsigned<T>::value, "pad3 must get unsigned T");
-        if (n < 1000)
+        if(n < 1000)
         {
           dest.push_back(static_cast<char>(n / 100 + '0'));
           n = n % 100;
@@ -120,7 +120,7 @@ namespace rexlog
         using rsl::chrono::duration_cast;
         using rsl::chrono::seconds;
         auto duration = tp.time_since_epoch();
-        auto secs = duration_cast<seconds>(duration);
+        auto secs     = duration_cast<seconds>(duration);
         return duration_cast<ToDuration>(duration) - duration_cast<ToDuration>(secs);
       }
 

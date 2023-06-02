@@ -50,32 +50,32 @@ namespace rexlog
     template <typename ConsoleMutex>
     void StdoutSinkBase<ConsoleMutex>::log(const details::LogMsg& msg)
     {
-        rsl::unique_lock<mutex_t> lock(*m_mutex);
-        rsl::big_stack_string formatted;
-        m_formatter->format(msg, formatted);
-        ::fwrite(formatted.data(), sizeof(char), formatted.size(), file_);
-        ::fflush(file_); // flush every line to terminal
+      rsl::unique_lock<mutex_t> lock(*m_mutex);
+      rsl::big_stack_string formatted;
+      m_formatter->format(msg, formatted);
+      ::fwrite(formatted.data(), sizeof(char), formatted.size(), file_);
+      ::fflush(file_); // flush every line to terminal
     }
 
     template <typename ConsoleMutex>
     void StdoutSinkBase<ConsoleMutex>::flush()
     {
-        const rsl::unique_lock<mutex_t> lock(*m_mutex);
-        REX_ASSERT_X(::fflush(m_file), "Failed to flush buffer");
+      const rsl::unique_lock<mutex_t> lock(*m_mutex);
+      REX_ASSERT_X(::fflush(m_file), "Failed to flush buffer");
     }
 
     template <typename ConsoleMutex>
     void StdoutSinkBase<ConsoleMutex>::set_pattern(rsl::string_view pattern)
     {
-        const rsl::unique_lock<mutex_t> lock(*m_mutex);
-        m_formatter = rsl::make_unique<rexlog::PatternFormatter>(pattern);
+      const rsl::unique_lock<mutex_t> lock(*m_mutex);
+      m_formatter = rsl::make_unique<rexlog::PatternFormatter>(pattern);
     }
 
     template <typename ConsoleMutex>
     void StdoutSinkBase<ConsoleMutex>::set_formatter(PatternFormatter sinkFormatter)
     {
-        const rsl::unique_lock<mutex_t> lock(*m_mutex);
-        m_formatter = rsl::move(sinkFormatter);
+      const rsl::unique_lock<mutex_t> lock(*m_mutex);
+      m_formatter = rsl::move(sinkFormatter);
     }
 
     template <typename ConsoleMutex>

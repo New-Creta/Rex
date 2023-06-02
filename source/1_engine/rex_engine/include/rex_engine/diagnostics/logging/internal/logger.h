@@ -22,119 +22,118 @@
 
 namespace rexlog
 {
-    using Sinks = rex::DebugVector<sink_ptr>;
+  using Sinks = rex::DebugVector<sink_ptr>;
 
-    class Logger
+  class Logger
+  {
+  public:
+    explicit Logger(rsl::string_view name);
+
+    Logger(rsl::string_view name, sink_ptr singleSink);
+    Logger(rsl::string_view name, sinks_init_list sinks);
+
+    //-------------------------------------------------------------------------
+    template <typename It>
+    Logger(rsl::string_view name, It begin, It end)
+        : m_name(rex::DebugString(name))
+        , m_sinks(begin, end)
     {
-    public:
-        explicit Logger(rsl::string_view name);
+    }
 
-        Logger(rsl::string_view name, sink_ptr singleSink);
-        Logger(rsl::string_view name, sinks_init_list sinks);
-        
-        //-------------------------------------------------------------------------
-        template <typename It>
-        Logger(rsl::string_view name, It begin, It end)
-            : m_name(rex::DebugString(name))
-            , m_sinks(begin, end)
-        {
-        }
+    ~Logger();
 
-        ~Logger();
+    Logger(const Logger& other);
+    Logger(Logger&& other) noexcept;
+    Logger& operator=(const Logger& other) noexcept;
+    Logger& operator=(Logger&& other) noexcept;
 
-        Logger(const Logger& other);
-        Logger(Logger&& other) noexcept;
-        Logger& operator=(const Logger& other) noexcept;
-        Logger& operator=(Logger&& other) noexcept;
+  public:
+    void set_level(level::LevelEnum logLevel);
+    void set_formatter(PatternFormatter f);
+    void set_pattern(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local);
 
+    bool should_log(level::LevelEnum msgLevel) const;
 
-    public:
-        void                                set_level(level::LevelEnum logLevel);
-        void                                set_formatter(PatternFormatter f);
-        void                                set_pattern(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local);
+    rsl::string_view name() const;
 
-        bool                                should_log(level::LevelEnum msgLevel) const;
+    level::LevelEnum level() const;
+    level::LevelEnum flush_level() const;
 
-        rsl::string_view                    name() const;
+    void flush();
+    void flush_on(level::LevelEnum logLevel);
 
-        level::LevelEnum                    level() const;
-        level::LevelEnum                    flush_level() const;
+    const Sinks& sinks() const;
+    Sinks& sinks();
 
-        void                                flush();
-        void                                flush_on(level::LevelEnum logLevel);
+    virtual rsl::shared_ptr<Logger> clone(rsl::string_view loggerName);
 
-        const Sinks&                        sinks() const;
-        Sinks&                              sinks();
+    void swap(rexlog::Logger& other) noexcept;
 
-        virtual rsl::shared_ptr<Logger>     clone(rsl::string_view loggerName);
+  public:
+    void log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, rsl::string_view msg);
+    void log(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view msg);
+    void log(level::LevelEnum lvl, rsl::string_view msg);
 
-        void                                swap(rexlog::Logger& other) noexcept;
+    //-------------------------------------------------------------------------
+    // T cannot be statically converted to format string (including string_view/wstring_view)
+    template <class T, typename rsl::enable_if<!IsConvertibleToAnyFormatString<const T&>::value, int>::type = 0>
+    void log(rsl::source_location loc, level::LevelEnum lvl, const T& msg)
+    {
+      log(loc, lvl, "{}", msg);
+    }
+    //-------------------------------------------------------------------------
+    template <typename... Args>
+    void log(rsl::source_location loc, level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
+    {
+      log_impl(loc, lvl, details::to_string_view(fmt), rsl::forward<Args>(args)...);
+    }
+    //-------------------------------------------------------------------------
+    template <typename... Args>
+    void log(level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
+    {
+      log(rsl::source_location {}, lvl, fmt, rsl::forward<Args>(args)...);
+    }
+    //-------------------------------------------------------------------------
+    template <typename T>
+    void log(level::LevelEnum lvl, const T& msg)
+    {
+      log(rsl::source_location {}, lvl, msg);
+    }
 
-    public:
-        void                                log(log_clock::time_point logTime, rsl::source_location loc, level::LevelEnum lvl, rsl::string_view msg);
-        void                                log(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view msg);
-        void                                log(level::LevelEnum lvl, rsl::string_view msg);
+  protected:
+    //-------------------------------------------------------------------------
+    // common implementation for after templated public api has been resolved
+    template <typename... Args>
+    void log_impl(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view fmt, Args&&... args)
+    {
+      const bool log_enabled = should_log(lvl);
+      if(!log_enabled)
+      {
+        return;
+      }
 
-        //-------------------------------------------------------------------------
-        // T cannot be statically converted to format string (including string_view/wstring_view)
-        template <class T, typename rsl::enable_if<!IsConvertibleToAnyFormatString<const T&>::value, int>::type = 0>
-        void                                log(rsl::source_location loc, level::LevelEnum lvl, const T& msg)
-        {
-            log(loc, lvl, "{}", msg);
-        }
-        //-------------------------------------------------------------------------
-        template <typename... Args>
-        void                                log(rsl::source_location loc, level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
-        {
-            log_impl(loc, lvl, details::to_string_view(fmt), rsl::forward<Args>(args)...);
-        }
-        //-------------------------------------------------------------------------
-        template <typename... Args>
-        void                                log(level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
-        {
-            log(rsl::source_location{}, lvl, fmt, rsl::forward<Args>(args)...);
-        }
-        //-------------------------------------------------------------------------
-        template <typename T>
-        void                                log(level::LevelEnum lvl, const T& msg)
-        {
-            log(rsl::source_location{}, lvl, msg);
-        }
+      rsl::big_stack_string buf;
+      rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_format_args(rsl::forward<Args>(args)...));
 
-    protected:
-        //-------------------------------------------------------------------------
-        // common implementation for after templated public api has been resolved
-        template <typename... Args>
-        void                                log_impl(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view fmt, Args&&... args)
-        {
-            const bool log_enabled = should_log(lvl);
-            if (!log_enabled)
-            {
-                return;
-            }
+      const details::LogMsg log_msg(loc, m_name, lvl, rsl::string_view(buf.data(), buf.size()));
+      log_it_impl(log_msg, log_enabled);
+    }
 
-            rsl::big_stack_string buf;
-            rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_format_args(rsl::forward<Args>(args)...));
+  protected:
+    bool should_flush_impl(const details::LogMsg& msg);
 
-            const details::LogMsg log_msg(loc, m_name, lvl, rsl::string_view(buf.data(), buf.size()));
-            log_it_impl(log_msg, log_enabled);
-        }
+    void log_it_impl(const details::LogMsg& logMsg, bool logEnabled);
+    virtual void sink_it_impl(const details::LogMsg& msg);
+    virtual void flush_it_impl();
 
-    protected:
-        bool                                should_flush_impl(const details::LogMsg& msg);
+    void set_name(rsl::string_view name);
 
-        void                                log_it_impl(const details::LogMsg& logMsg, bool logEnabled);
-        virtual void                        sink_it_impl(const details::LogMsg& msg);
-        virtual void                        flush_it_impl();
+  private:
+    rex::DebugString m_name;
+    Sinks m_sinks;
+    rexlog::level_t m_level {(int32)level::LevelEnum::Info};
+    rexlog::level_t m_flush_level {(int32)level::LevelEnum::Off};
+  };
 
-        void                                set_name(rsl::string_view name);
-
-    private:
-        rex::DebugString                    m_name;
-        Sinks                               m_sinks;
-        rexlog::level_t                     m_level{ (int32)level::LevelEnum::Info };
-        rexlog::level_t                     m_flush_level{ (int32)level::LevelEnum::Off };
-    };
-
-    void swap(Logger& a, Logger& b);
+  void swap(Logger& a, Logger& b);
 } // namespace rexlog

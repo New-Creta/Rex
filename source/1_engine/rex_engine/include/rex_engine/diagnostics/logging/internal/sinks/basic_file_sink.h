@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
-#include "rex_engine/diagnostics/logging/internal/common.h"
 
 #include <mutex>
 #include <string>
@@ -34,29 +34,29 @@ namespace rexlog
 
     template <typename Mutex>
     BasicFileSink<Mutex>::BasicFileSink(rsl::string_view filename, bool truncate, const FileEventHandlers& eventHandlers)
-        : m_file_helper{ eventHandlers }
+        : m_file_helper {eventHandlers}
     {
-        m_file_helper.open(filename, truncate);
+      m_file_helper.open(filename, truncate);
     }
 
     template <typename Mutex>
     rsl::string_view BasicFileSink<Mutex>::filename() const
     {
-        return m_file_helper.filename();
+      return m_file_helper.filename();
     }
 
     template <typename Mutex>
     void BasicFileSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
     {
-        memory_buf_t formatted;
-        BaseSink<Mutex>::formatter()->format(msg, formatted);
-        m_file_helper.write(formatted);
+      memory_buf_t formatted;
+      BaseSink<Mutex>::formatter()->format(msg, formatted);
+      m_file_helper.write(formatted);
     }
 
     template <typename Mutex>
     void BasicFileSink<Mutex>::flush_it_impl()
     {
-        m_file_helper.flush();
+      m_file_helper.flush();
     }
 
     using basic_file_sink_mt = BasicFileSink<rsl::mutex>;

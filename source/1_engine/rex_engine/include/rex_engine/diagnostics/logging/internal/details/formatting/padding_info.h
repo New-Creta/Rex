@@ -8,24 +8,24 @@ DEFINE_YES_NO_ENUM(Enabled);
 
 namespace rexlog
 {
-    namespace details
+  namespace details
+  {
+    struct PaddingInfo
     {
-        struct PaddingInfo
-        {
-            enum class PadSide
-            {
-                Left,
-                Right,
-                Center
-            };
+      enum class PadSide
+      {
+        Left,
+        Right,
+        Center
+      };
 
-            PaddingInfo();
-            PaddingInfo(s32 width, PaddingInfo::PadSide side, Truncate truncate);
+      PaddingInfo();
+      PaddingInfo(s32 width, PaddingInfo::PadSide side, Truncate truncate);
 
-            s32      width;
-            PadSide     side;
-            Truncate    truncate;
-            Enabled     enabled;
-        };
-    }
-}
+      s32 width;
+      PadSide side;
+      Truncate truncate;
+      Enabled enabled;
+    };
+  } // namespace details
+} // namespace rexlog
