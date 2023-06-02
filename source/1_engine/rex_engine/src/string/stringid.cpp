@@ -27,7 +27,7 @@ namespace rex
    * Create an empty StringID.
    */
   StringID::StringID()
-      : m_comparison_hash(StringEntryID::s_none_state_hash)
+      : m_comparison_hash(StringEntryID::create_invalid())
   {
   }
 
@@ -84,7 +84,7 @@ namespace rex
   /** True for StringID() and StringID("Invalid StringID") */
   bool StringID::is_none() const
   {
-    return m_comparison_hash == StringEntryID::s_none_state_hash;
+    return m_comparison_hash == StringEntryID::create_invalid();
   }
 
   //-------------------------------------------------------------------------
