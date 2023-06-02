@@ -51,7 +51,7 @@ namespace rex
               continue;
             }
 
-            rsl::string_view value = str.substr(start, end - start);
+            const rsl::string_view value = str.substr(start, end - start);
             result.push_back(value);
             start = end + 1;
           }
@@ -59,7 +59,7 @@ namespace rex
 
         if(start != end)
         {
-          rsl::string_view value = str.substr(start, end - start);
+          const rsl::string_view value = str.substr(start, end - start);
           result.push_back(value);
         }
 
@@ -71,9 +71,9 @@ namespace rex
       rsl::unordered_map<rsl::string_view, rsl::string_view> extract_key_vals(rsl::string_view str)
       {
         rsl::unordered_map<rsl::string_view, rsl::string_view> rv {};
-        rsl::vector<rsl::string_view> key_value_pairs = split(str, ",");
+        const rsl::vector<rsl::string_view> key_value_pairs = split(str, ",");
 
-        for(rsl::string_view key_value_pair: key_value_pairs)
+        for(const rsl::string_view key_value_pair: key_value_pairs)
         {
           rsl::vector<rsl::string_view> key_value = split(key_value_pair, "=");
 
