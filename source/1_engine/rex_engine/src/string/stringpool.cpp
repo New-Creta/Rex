@@ -36,9 +36,11 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    StringEntryID make(rsl::hash_result hash, rsl::string_view characters)
+    StringEntryID make_and_store(rsl::hash_result hash, rsl::string_view characters)
     {
-      auto it = get_entries().find(hash);
+      StringEntryID entry_id = StringEntryID(hash);
+
+      auto it = get_entries().find(entry_id);
       if(it != rsl::cend(get_entries()))
       {
         REX_ASSERT_X(rsl::strcmp(characters.data(), it->value.characters().data()) == 0, "Hash collision");
@@ -46,13 +48,6 @@ namespace rex
         return it->key;
       }
 
-      return StringEntryID(hash);
-    }
-
-    //-------------------------------------------------------------------------
-    StringEntryID make_and_store(rsl::hash_result hash, rsl::string_view characters)
-    {
-      StringEntryID entry_id = make(hash, characters);
       StringEntry entry(characters);
 
       auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
@@ -81,7 +76,7 @@ namespace rex
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
       {
-        it = get_entries().find(StringEntryID::s_none_state_hash);
+        it = get_entries().find(StringEntryID(StringEntryID::s_none_state_hash));
 
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
@@ -89,11 +84,6 @@ namespace rex
       return &(it->value);
     }
 
-    //-------------------------------------------------------------------------
-    StringEntryID make(rsl::string_view characters)
-    {
-      return make(rsl::hash<rsl::string_view> {}(characters), characters);
-    }
     //-------------------------------------------------------------------------
     StringEntryID make_and_store(rsl::string_view characters)
     {
