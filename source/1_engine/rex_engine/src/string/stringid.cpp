@@ -26,6 +26,11 @@ namespace rex
   {
     return StringID(string_pool::make_and_store(characters));
   }
+  //-------------------------------------------------------------------------
+  rsl::string_view restore_sid(const StringID& sid)
+  {
+    return string_pool::resolve(StringEntryID(sid.value()));
+  }
 
   //-------------------------------------------------------------------------
   bool operator==(rsl::string_view s, const StringID& sid)
@@ -52,7 +57,7 @@ namespace rex
 //-------------------------------------------------------------------------
 rsl::ostream& operator<<(rsl::ostream& os, const rex::StringID& stringID)
 {
-  os << stringID.to_string_view();
+  os << rex::restore_sid(stringID);
 
   return os;
 }

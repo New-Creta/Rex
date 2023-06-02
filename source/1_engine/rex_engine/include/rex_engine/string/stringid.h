@@ -58,7 +58,7 @@ namespace rex
     /**
      * Retrieve the hashed value
      */
-    constexpr operator u32() const //NOLINT(google-explicit-constructor)
+    constexpr operator u32() const // NOLINT(google-explicit-constructor)
     {
       return static_cast<u32>(m_comparison_hash);
     }
@@ -107,6 +107,7 @@ namespace rex
   };
 
   StringID store_sid(rsl::string_view characters);
+  rsl::string_view restore_sid(const StringID& sid);
 
   bool operator==(rsl::string_view s, const StringID& sid);
   bool operator!=(rsl::string_view s, const StringID& sid);
