@@ -61,21 +61,21 @@ namespace rexlog
 
   namespace level
   {
-    inline rsl::string_view g_level_name_trace("trace");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_name_debug("debug");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_name_info("info");         // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_name_warning("warning");   // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_name_error("error");       // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_name_critical("critical"); // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_name_off("off");           // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline constexpr rsl::string_view g_level_name_trace("trace");
+    inline constexpr rsl::string_view g_level_name_debug("debug");
+    inline constexpr rsl::string_view g_level_name_info("info");
+    inline constexpr rsl::string_view g_level_name_warning("warning");
+    inline constexpr rsl::string_view g_level_name_error("error");
+    inline constexpr rsl::string_view g_level_name_critical("critical");
+    inline constexpr rsl::string_view g_level_name_off("off");
 
-    inline rsl::string_view g_level_sname_trace("T");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_sname_debug("D");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_sname_info("I");     // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_sname_warning("W");  // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_sname_error("E");    // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_sname_critical("C"); // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    inline rsl::string_view g_level_sname_off("O");      // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    inline constexpr rsl::string_view g_level_sname_trace("T");
+    inline constexpr rsl::string_view g_level_sname_debug("D");
+    inline constexpr rsl::string_view g_level_sname_info("I");
+    inline constexpr rsl::string_view g_level_sname_warning("W");
+    inline constexpr rsl::string_view g_level_sname_error("E");
+    inline constexpr rsl::string_view g_level_sname_critical("C");
+    inline constexpr rsl::string_view g_level_sname_off("O");
 
     enum class LevelEnum : int32
     {
