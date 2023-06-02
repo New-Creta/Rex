@@ -21,6 +21,6 @@ namespace rex
   {
     const card32 mask = alignment - 1;
     REX_ASSERT_X((alignment & mask) == 0, "Alignment must be a power of 2"); // NOLINT(hicpp-signed-bitwise)
-    return (addr + mask) & ~mask; // NOLINT(hicpp-signed-bitwise)
+    return (addr + mask) & ~mask;                                            // NOLINT(hicpp-signed-bitwise)
   }
 } // namespace rex

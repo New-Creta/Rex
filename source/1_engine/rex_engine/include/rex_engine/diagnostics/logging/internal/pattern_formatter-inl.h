@@ -85,9 +85,9 @@ namespace rexlog
       string_view_t m_spaces {"                                                                ", 64};
     };
 
-    struct null_scoped_padder
+    struct NullScopedPadder
     {
-      null_scoped_padder(size_t /*wrapped_size*/, const PaddingInfo& /*padinfo*/, memory_buf_t& /*dest*/) {}
+      NullScopedPadder(size_t /*wrapped_size*/, const PaddingInfo& /*padinfo*/, memory_buf_t& /*dest*/) {}
 
       template <typename T>
       static unsigned int count_digits(T /* number */)
@@ -1033,7 +1033,7 @@ namespace rexlog
         if(!msg.source.empty())
         {
           dest.push_back('[');
-          const char* filename = details::short_filename_formatter<details::null_scoped_padder>::basename(msg.source.filename);
+          const char* filename = details::short_filename_formatter<details::NullScopedPadder>::basename(msg.source.filename);
           fmt_helper::append_string_view(rsl::string_view(filename), dest);
           dest.push_back(':');
           fmt_helper::append_int(msg.source.line, dest);
@@ -1441,7 +1441,7 @@ namespace rexlog
           }
           else
           {
-            handle_flag_impl<details::null_scoped_padder>(*it, padding);
+            handle_flag_impl<details::NullScopedPadder>(*it, padding);
           }
         }
         else
