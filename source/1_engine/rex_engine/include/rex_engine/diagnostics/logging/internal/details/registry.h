@@ -30,7 +30,7 @@ namespace rexlog
     class Registry
     {
     public:
-      using LogLevels = rex::DebugHashTable<rex::DebugString, level::LevelEnum>;
+      using LogLevels = rsl::unordered_map<rsl::string_view, level::LevelEnum>;
 
       static Registry& instance();
 

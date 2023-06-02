@@ -47,7 +47,11 @@ namespace rexlog
 
     rexlog::level::LevelEnum from_str(rsl::string_view name) noexcept
     {
-      const auto it = rsl::find(rsl::cbegin(g_level_string_views), rsl::cend(g_level_string_views), name);
+      const auto it = rsl::find_if(rsl::cbegin(g_level_string_views), rsl::cend(g_level_string_views), 
+        [name](rsl::string_view level)
+        {
+          return rsl::strincmp(name.data(), level.data(), level.length()) == 0;
+        });
       if(it != rsl::end(g_level_string_views))
       {
         return static_cast<level::LevelEnum>(rsl::distance(rsl::cbegin(g_level_string_views), it));

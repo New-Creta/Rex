@@ -29,7 +29,8 @@
       "Includes" : ["rex_engine/cmdline.h"],
       "Values": [
         "\"Root\", \"The directory to initialize the vfs with. this is similar as setting the working root directory\"",
-        "\"Help\", \"This will list all command line arguments for the executable\""
+        "\"Help\", \"This will list all command line arguments for the executable\"",
+        "\"LogLevel\", \"Specify log level per logger (eg. -LogLevel=Engine=trace,Renderer=info)\""
       ],
       "Filepath": "1_engine/rex_engine/include/rex_engine/cmd_args.h"
     }

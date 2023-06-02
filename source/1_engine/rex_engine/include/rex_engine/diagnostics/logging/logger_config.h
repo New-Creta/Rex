@@ -6,6 +6,6 @@ namespace rex
 {
   namespace diagnostics
   {
-    void load_log_levels(const rsl::vector<rsl::string_view>& args);
+    void init();
   } // namespace diagnostics
 } // namespace rex
