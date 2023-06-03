@@ -92,7 +92,7 @@ namespace rex
         }
 
         auto key_vals = extract_key_vals(input);
-        rsl::unordered_map<rsl::string_view, rexlog::level::LevelEnum> levels;
+        rexlog::details::Registry::LogLevels levels;
         rexlog::level::LevelEnum global_level = rexlog::level::LevelEnum::Info;
         bool global_level_found               = false;
 
