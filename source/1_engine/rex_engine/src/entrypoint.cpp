@@ -31,7 +31,7 @@ namespace rex
       // we close down the program
       if (cmdline::get_argument("BreakOnBoot"))
       {
-        using namespace rsl::chrono_literals;
+        using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
         auto i = 1s;
         while (i < 10min)
         {
