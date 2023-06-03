@@ -43,7 +43,7 @@ public static class CodeGeneration
       case "Enum": ProcessEnum(projectName, key, content, generationFilePath); break;
       case "Array": ProcessArray(projectName, key, content, generationFilePath); break;
       default:
-        break;
+        throw new Error($"Unknown typename in code generation: '{typename}' for project '{projectName}'");
     }
   }
 
@@ -144,7 +144,6 @@ public static class CodeGeneration
     sb.AppendLine("  };");
 
     WriteEndNamespace(sb);
-    WriteCustomGenerationFooter(sb);
     WriteToDisk(sb, Path.Combine(Globals.SourceRoot, filename));
   }
 
@@ -181,7 +180,6 @@ public static class CodeGeneration
     sb.AppendLine("  };");
 
     WriteEndNamespace(sb);
-    WriteCustomGenerationFooter(sb);
     WriteToDisk(sb, Path.Combine(Globals.SourceRoot, filename));
   }
 
@@ -199,9 +197,6 @@ public static class CodeGeneration
     sb.AppendLine($"namespace {namespaceName}");
     sb.AppendLine($"{{");
   }
-
-  private static void WriteCustomGenerationFooter(StringBuilder sb)
-  { }
 
   private static void WriteEndNamespace(StringBuilder sb, string namespaceName = "rex")
   {
