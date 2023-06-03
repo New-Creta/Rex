@@ -39,7 +39,7 @@ namespace rex
   };
 
   // back up function in case we fail to find an auto test
-  bool initialize()
+  bool bad_init()
   {
     return false;
   }
@@ -48,7 +48,7 @@ namespace rex
   {
     rex::ApplicationCreationParams app_params(rsl::move(platformParams));
 
-    app_params.engine_params.app_init_func = regina_test::initialize;
+    app_params.engine_params.app_init_func = rex::bad_init;
 
     return app_params;
   }
