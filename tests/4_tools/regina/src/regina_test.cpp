@@ -38,6 +38,21 @@ namespace rex
     AutoTest("Boot", regina_test::boot_test_entry)
   };
 
+  // back up function in case we fail to find an auto test
+  bool initialize()
+  {
+    return false;
+  }
+
+  rex::ApplicationCreationParams invalid_app_params(rex::PlatformCreationParams&& platformParams)
+  {
+    rex::ApplicationCreationParams app_params(rsl::move(platformParams));
+
+    app_params.engine_params.app_init_func = regina_test::initialize;
+
+    return app_params;
+  }
+
   rex::ApplicationCreationParams app_entry(rex::PlatformCreationParams&& platformParams)
   {
     rsl::optional<rsl::string_view> cmdline = cmdline::get_argument("AutoTest");
@@ -54,6 +69,6 @@ namespace rex
 
     REX_ASSERT("No auto test found for {}", cmdline.value());
       
-    return rex::ApplicationCreationParams(rsl::move(platformParams));
+    return invalid_app_params(rsl::move(platformParams));
   }
 } // namespace rex
