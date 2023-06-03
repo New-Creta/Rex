@@ -19,11 +19,6 @@
 //-------------------------------------------------------------------------
 int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
-  //while (true)
-  //{
-
-  //}
-
   rex::internal::pre_app_entry(lpCmdLine);
 
   rex::PlatformCreationParams creation_params{};
