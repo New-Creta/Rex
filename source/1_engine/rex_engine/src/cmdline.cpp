@@ -65,6 +65,14 @@ namespace rex
         // the module we're launching is always the first argument on the commandline
         // we skip this
         count_t space_pos = cmdLine.find_first_of(' ', start_pos);
+
+        // if we have no arguments, we just return
+        // this is possible when running without a debugger
+        if (space_pos == -1)
+        {
+          return;
+        }
+
         start_pos         = space_pos + 1;
 
         // get the new space pos
