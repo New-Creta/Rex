@@ -43,7 +43,7 @@ namespace rex
         rsl::exit(0);
       }
 
-      diagnostics::init();
+      diagnostics::init_log_levels();
       vfs::init();
     }
 

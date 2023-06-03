@@ -123,7 +123,7 @@ namespace rex
     } // namespace helpers
 
     // search for REXLOG_LEVEL= in the args and use it to init the levels
-    void init()
+    void init_log_levels()
     {
       rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogLevel");
 
