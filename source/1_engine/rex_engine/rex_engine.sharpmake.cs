@@ -22,11 +22,13 @@ public class RexEngine : EngineProject
 
     SourceFilesExcludeFromJumboRegex.Add("new_delete.cpp"); // needs to be excluded to avoid linker issues
 
+    // Only needs to happen on Windows
+    SourceFilesExcludeRegex.Add("unix/*");
+    //// Only needs to happen on Linux
+    //SourceFilesExcludeRegex.Add("win/*");
+
     string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
     GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
-
-    MemoryTagsHeaderFile = Path.Combine(SourceRootPath, "include", "rex_engine", "memory", "memory_tags.h");
-    TouchGenerationFile(MemoryTagsHeaderFile);
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)
@@ -62,11 +64,13 @@ public class RexEngine : EngineProject
       case Platform.win32:
         conf.add_public_define("REX_PLATFORM_X86");
         conf.add_public_define("REX_PLATFORM_WINDOWS");
+        conf.SourceFilesBuildExcludeRegex.Add("unix/*"); // exclude unix files
         break;
       case Platform.win64:
         conf.add_public_define("REX_PLATFORM_X64");
         conf.add_public_define("REX_PLATFORM_WINDOWS");
-        break;
+        conf.SourceFilesBuildExcludeRegex.Add("unix/*"); // exclude unix files
+                break;
       case Platform.linux:
         conf.add_public_define("REX_PLATFORM_LINUX");
         conf.SourceFilesBuildExcludeRegex.Add("win/*"); // exclude windows files
@@ -77,10 +81,10 @@ public class RexEngine : EngineProject
 
     switch (GenerateSettings.GraphicsAPI)
     {
-        case GraphicsAPI.OpenGL:
+        case GenerationTypes.GraphicsAPI.OpenGL:
             conf.add_public_define("REX_API_OPENGL");
             break;
-        case GraphicsAPI.DirectX12:
+        case GenerationTypes.GraphicsAPI.DirectX12:
             conf.add_public_define("REX_API_DIRECTX12");
             break;
         default:
@@ -93,19 +97,5 @@ public class RexEngine : EngineProject
   public override void AfterConfigure()
   {
     base.AfterConfigure();
-  }
-
-  private void TouchGenerationFile(string filePath)
-  {
-    if (File.Exists(filePath))
-    {
-      FileStream tmp = File.Open(filePath, FileMode.Truncate);
-      tmp.Close();
-    }
-    else
-    {
-      FileStream tmp = File.Create(filePath);
-      tmp.Close();
-    }
   }
 }

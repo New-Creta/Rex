@@ -9,80 +9,63 @@ namespace rexlog
   namespace level
   {
 
-#if __cplusplus >= 201703L
-    constexpr
-#endif
+    const rsl::array<rsl::string_view, 7> g_level_string_views = { // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+        g_level_name_trace, g_level_name_debug, g_level_name_info, g_level_name_warning, g_level_name_error, g_level_name_critical, g_level_name_off};
 
-        static string_view_t level_string_views[] REXLOG_LEVEL_NAMES; // NOLINT(modernize-avoid-c-arrays)
+    const rsl::array<rsl::string_view, 7> g_short_level_names = { // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+        g_level_sname_trace, g_level_sname_debug, g_level_sname_info, g_level_sname_warning, g_level_sname_error, g_level_sname_critical, g_level_sname_off};
 
-    static const char* g_short_level_names[] REXLOG_SHORT_LEVEL_NAMES; // NOLINT(modernize-avoid-c-arrays, cppcoreguidelines-avoid-non-const-global-variables)
-
-    REXLOG_INLINE const string_view_t& to_string_view(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT
+    rsl::string_view to_string_view(rexlog::level::LevelEnum l) noexcept
     {
-      return level_string_views[l];
-    }
-
-    REXLOG_INLINE const char* to_short_c_str(rexlog::level::LevelEnum l) REXLOG_NOEXCEPT
-    {
-      return g_short_level_names[l];
-    }
-
-    REXLOG_INLINE rexlog::level::LevelEnum from_str(const rex::DebugString& name) REXLOG_NOEXCEPT
-    {
-      const auto* it = rsl::find(rsl::begin(level_string_views), rsl::end(level_string_views), name);
-      if(it != rsl::end(level_string_views))
+      switch(l)
       {
-        return static_cast<level::LevelEnum>(rsl::distance(rsl::cbegin(level_string_views), it));
+        case LevelEnum::Off: return g_level_name_off;
+        case LevelEnum::Critical: return g_level_name_critical;
+        case LevelEnum::Err: return g_level_name_error;
+        case LevelEnum::Warn: return g_level_name_warning;
+        case LevelEnum::Info: return g_level_name_info;
+        case LevelEnum::Debug: return g_level_name_debug;
+        case LevelEnum::Trace: return g_level_name_trace;
+        default: printf("Invalid level::LevelEnum - No conversion possible"); return "";
+      }
+    };
+
+    rsl::string_view to_short_c_str(rexlog::level::LevelEnum l) noexcept
+    {
+      switch(l)
+      {
+        case LevelEnum::Off: return g_level_sname_trace;
+        case LevelEnum::Critical: return g_level_sname_critical;
+        case LevelEnum::Err: return g_level_sname_error;
+        case LevelEnum::Warn: return g_level_sname_warning;
+        case LevelEnum::Info: return g_level_sname_info;
+        case LevelEnum::Debug: return g_level_sname_debug;
+        case LevelEnum::Trace: return g_level_sname_trace;
+        default: printf("Invalid level::LevelEnum - No conversion possible"); return "";
+      }
+    }
+
+    rexlog::level::LevelEnum from_str(rsl::string_view name) noexcept
+    {
+      const auto it = rsl::find_if(rsl::cbegin(g_level_string_views), rsl::cend(g_level_string_views), [name](rsl::string_view level) { return rsl::strincmp(name.data(), level.data(), level.length()) == 0; });
+      if(it != rsl::end(g_level_string_views))
+      {
+        return static_cast<level::LevelEnum>(rsl::distance(rsl::cbegin(g_level_string_views), it));
       }
 
       // check also for "warn" and "err" before giving up..
       if(name == "warn")
       {
-        return level::Warn;
+        return level::LevelEnum::Warn;
       }
       if(name == "err")
       {
-        return level::Err;
+        return level::LevelEnum::Err;
       }
-      return level::Off;
+
+      return level::LevelEnum::Off;
     }
   } // namespace level
-
-  REXLOG_INLINE RexlogEx::RexlogEx(rex::DebugString msg)
-      : m_msg(rsl::move(msg))
-  {
-  }
-
-  REXLOG_INLINE RexlogEx::RexlogEx(const rex::DebugString& msg, int lastErrno)
-  {
-    m_msg = rex::DebugString(rsl::format("{} : {}", msg, lastErrno));
-  }
-
-  REXLOG_INLINE const char* RexlogEx::what() const REXLOG_NOEXCEPT
-  {
-    return m_msg.c_str();
-  }
-
-  REXLOG_INLINE void throw_rexlog_ex(const rex::DebugString& msg, int lastErrno)
-  {
-    REXLOG_THROW(RexlogEx(msg, lastErrno));
-  }
-
-  REXLOG_INLINE void throw_rexlog_ex(const char* msg, int lastErrno)
-  {
-    throw_rexlog_ex(rex::DebugString(msg), lastErrno);
-  }
-
-  REXLOG_INLINE void throw_rexlog_ex(rex::DebugString msg)
-  {
-    REXLOG_THROW(RexlogEx(rsl::move(msg)));
-  }
-
-  REXLOG_INLINE void throw_rexlog_ex(const char* msg)
-  {
-    throw_rexlog_ex(rex::DebugString(msg));
-  }
-
 } // namespace rexlog
 
 // NOLINTEND(misc-definitions-in-headers)

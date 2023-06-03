@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/log.h"
+#include "rex_std/cstring.h"
 #include "rex_std/vector.h"
 
 namespace rex
@@ -37,6 +38,10 @@ namespace rex
       {
         for(ActiveArgument active_arg: m_arguments)
         {
+          // early optimization that strincmp can't do
+          if(arg.length() != active_arg.argument.length())
+            continue;
+
           if(rsl::strincmp(arg.data(), active_arg.argument.data(), arg.length()) == 0)
           {
             return active_arg.value;
@@ -65,35 +70,24 @@ namespace rex
         // get the new space pos
         space_pos = cmdLine.find_first_of(' ', start_pos);
 
+        const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         while(start_pos != -1 && space_pos != -1)
         {
-          const count_t length            = space_pos - start_pos;
-          const rsl::string_view argument = cmdLine.substr(start_pos, length);
-
+          const count_t length            = space_pos - start_pos - arg_prefix.size();
+          const rsl::string_view argument = cmdLine.substr(start_pos + arg_prefix.size(), length);
           add_argument(argument);
-
           start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
           space_pos = cmdLine.find_first_of(' ', start_pos);
         }
 
         if(start_pos != -1)
         {
-          const rsl::string_view argument = cmdLine.substr(start_pos);
-          add_argument(argument);
+          add_argument(cmdLine.substr(start_pos + arg_prefix.size())); // + 1 to ignore '-'
         }
       }
 
       void add_argument(rsl::string_view arg)
       {
-        const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
-        if(arg.starts_with(arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr)
-        {
-          REX_ERROR(LogEngine, "Argument '{}' does not start with '{}'. This argument will be ignored", arg, arg_prefix);
-          return;
-        }
-
-        arg = arg.substr(arg_prefix.length());
-
         const count_t equal_pos = arg.find('=');
         rsl::string_view key    = "";
         rsl::string_view value  = "";
@@ -111,28 +105,36 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const CommandLineArgument& cmdArg) { return rsl::strincmp(key.data(), cmdArg.name.data(), key.length()) == 0; });
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return key == cmdArg.name; });
 
         if(cmd_it == g_command_line_args.cend())
         {
-          REX_WARN(LogEngine, "Command '{}' passed in but it's not recognised as a valid command so will be ignored", arg);
+          REX_WARN(LogEngine, "Command {} passed in but it's not recognised as a valid command so will be ignored", arg);
+          return;
+        }
+
+        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return activeArg.argument == key; });
+
+        if(active_it != m_arguments.cend())
+        {
+          REX_WARN(LogEngine, "Command {} was already passed in. passing the same argument multiple times is not supported. will be skipped", key);
           return;
         }
 
         m_arguments.push_back({key, value});
       }
 
-      bool verify_args(const CommandLineArgument* args, count_t argCount) // NOLINT(readability-convert-member-functions-to-static)
+      bool verify_args(const Argument* args, count_t argCount) // NOLINT(readability-convert-member-functions-to-static)
       {
         for(count_t i = 0; i < argCount; ++i)
         {
-          const CommandLineArgument& lhs_arg = args[i];
+          const Argument& lhs_arg = args[i];
           for(count_t j = 0; j < argCount; ++j)
           {
             if(i == j)
               continue;
 
-            const CommandLineArgument& rhs_arg = args[j];
+            const Argument& rhs_arg = args[j];
             if(rsl::strincmp(lhs_arg.name.data(), rhs_arg.name.data(), lhs_arg.name.length()) == 0)
             {
               REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity", lhs_arg.name);
@@ -155,25 +157,13 @@ namespace rex
       g_cmd_line_args = rsl::make_unique<CommandLineArguments>(cmdLine);
     }
 
-    // we need to manually shut this down, otherwise it's memory might get tracked
-    // by an already deleted memory tracking, causing an assert on shutdown
-    void shutdown()
-    {
-      g_cmd_line_args.reset();
-    }
-
-    rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
-    {
-      return g_cmd_line_args->get_argument(arg);
-    }
-
     void print_args()
     {
       REX_LOG(LogEngine, "Listing Command line arguments");
 
-      rsl::unordered_map<rsl::string_view, rsl::vector<CommandLineArgument>> project_to_arguments;
+      rsl::unordered_map<rsl::string_view, rsl::vector<Argument>> project_to_arguments;
 
-      for(CommandLineArgument cmd: g_command_line_args)
+      for(Argument cmd: g_command_line_args)
       {
         project_to_arguments[cmd.module].push_back(cmd);
       }
@@ -184,11 +174,23 @@ namespace rex
         REX_LOG(LogEngine, "Commandline Arguments For {}", project);
         REX_LOG(LogEngine, "------------------------------");
 
-        for(CommandLineArgument cmd: cmds)
+        for(Argument cmd: cmds)
         {
           REX_LOG(LogEngine, "\"{}\" - {}", cmd.name, cmd.desc);
         }
       }
+    }
+
+    // we need to manually shut this down, otherwise it's memory might get tracked
+    // by an already deleted memory tracking, causing an assert on shutdown
+    void shutdown()
+    {
+      g_cmd_line_args.reset();
+    }
+
+    rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
+    {
+      return g_cmd_line_args->get_argument(arg);
     }
 
   } // namespace cmdline

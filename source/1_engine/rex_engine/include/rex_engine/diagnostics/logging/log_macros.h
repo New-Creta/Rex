@@ -24,8 +24,8 @@
 #else
 
   #include "rex_engine/diagnostics/logging/log_category.h"  // IWYU pragma: keep
+  #include "rex_engine/diagnostics/logging/log_functions.h" // IWYU pragma: keep
   #include "rex_engine/diagnostics/logging/log_verbosity.h" // IWYU pragma: keep
-  #include "rex_engine/diagnostics/logging/logger.h"        // IWYU pragma: keep
 
 namespace rex
 {
@@ -34,11 +34,12 @@ namespace rex
     template <int VerbosityToCheck, typename CategoryType>
     inline bool is_log_active(const CategoryType& category)
     {
-      return !category.IsSuppressed((LogVerbosity)VerbosityToCheck);
+      return !category.is_suppressed((LogVerbosity)VerbosityToCheck);
     }
   } // namespace internal
 
-  #define DEFINE_LOG_CATEGORY(Name, Verbosity) inline const rex::LogCategory Name(#Name, Verbosity) // NOLINT(fuchsia-statically-constructed-objects)
+  #define DEFINE_LOG_CATEGORY(Name, Verbosity)       inline const rex::LogCategory Name(#Name, Verbosity, rex::IsAsync::no)  // NOLINT(fuchsia-statically-constructed-objects)
+  #define DEFINE_LOG_CATEGORY_ASYNC(Name, Verbosity) inline const rex::LogCategory Name(#Name, Verbosity, rex::IsAsync::yes) // NOLINT(fuchsia-statically-constructed-objects)
 } // namespace rex
 
 //-------------------------------------------------------------------------
