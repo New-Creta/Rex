@@ -73,7 +73,8 @@ namespace rex
           return;
         }
 
-        start_pos         = space_pos + 1;
+        // skip all additional spaces
+        start_pos = cmdLine.find_first_not_of(' ', space_pos);
 
         // get the new space pos
         space_pos = cmdLine.find_first_of(' ', start_pos);
