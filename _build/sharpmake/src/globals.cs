@@ -11,7 +11,7 @@ public class BuildSettings
   public string[] misc_folders { get; set; }
   public string[] misc_extensions { get; set; }
   public string build_folder { get; set; }
-  public string test_folder { get; set; }
+  public string tests_folder { get; set; }
   public string tools_folder { get; set; }
   public string libs_folder { get; set; }
   public string source_folder { get; set; }
@@ -41,6 +41,14 @@ public class Globals
     get
     {
       return Path.Combine(root, settings.source_folder);
+    }
+  }
+  
+  static public string TestsRoot
+  {
+    get
+    {
+      return Path.Combine(root, settings.tests_folder);
     }
   }
   static public string ThirdpartyRoot
