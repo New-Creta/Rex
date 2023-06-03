@@ -22,8 +22,16 @@ public class Regina : ToolsProject
   {
     base.Configure(conf, target);
 
-    conf.Output = Configuration.OutputType.Exe;
-    
+    if (GenerateSettings.EnableAutoTests)
+    {
+      conf.Output = Configuration.OutputType.Lib;
+      conf.add_public_define("REX_ENABLE_AUTO_TESTS");
+    }
+    else
+    {
+      conf.Output = Configuration.OutputType.Exe;
+    }
+
     string ThisFileFolder = Path.GetFileName(Path.GetDirectoryName(Utils.CurrentFile()));
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
     conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);

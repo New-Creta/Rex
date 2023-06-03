@@ -1,14 +1,18 @@
 #include "rex_engine/diagnostics/logging/logger_config.h"
 
+#include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/algorithm.h"
+#include "rex_std/ctype.h"
 #include "rex_std/internal/utility/pair.h"
 #include "rex_std/sstream.h"
 #include "rex_std/string.h"
 #include "rex_std/utility.h"
+
+#include <algorithm>
 
 //
 // Init log levels using each argv entry that starts with "REXLOG_LEVEL="
@@ -28,81 +32,74 @@ namespace rex
   {
     namespace helpers
     {
-      // inplace convert to lowercase
-      inline rex::DebugString& to_lower_impl(rex::DebugString& str)
+      rsl::vector<rsl::string_view> split(rsl::string_view str, rsl::string_view delim)
       {
-        rsl::transform(str.begin(), str.end(), str.begin(), [](char ch) { return static_cast<char>((ch >= 'A' && ch <= 'Z') ? ch + ('a' - 'A') : ch); });
-        return str;
-      }
+        rsl::vector<rsl::string_view> result;
 
-      // inplace trim spaces
-      inline rex::DebugString& trim_impl(rex::DebugString& str)
-      {
-        const char* spaces = " \n\r\t";
-        str.erase(str.find_last_not_of(rsl::string_view(spaces)) + 1);
-        str.erase(0, str.find_first_not_of(rsl::string_view(spaces)));
-        return str;
-      }
-
-      // return (name,value) trimmed pair from given "name=value" string.
-      // return empty string on missing parts
-      // "key=val" => ("key", "val")
-      // " key  =  val " => ("key", "val")
-      // "key=" => ("key", "")
-      // "val" => ("", "val")
-
-      inline rsl::pair<rex::DebugString, rex::DebugString> extract_kv_impl(char sep, const rex::DebugString& str)
-      {
-        auto n = str.find(sep);
-        rex::DebugString k;
-        rex::DebugString v;
-        if(n == rex::DebugString::npos())
+        count_t start = 0;
+        count_t end   = 0;
+        for(count_t i = 0; i < str.length(); ++i)
         {
-          v = str;
+          auto it = rsl::find(delim.cbegin(), delim.cend(), str[i]);
+          if(it != delim.cend())
+          {
+            end = i;
+
+            if(start == end)
+            {
+              ++start;
+              continue;
+            }
+
+            const rsl::string_view value = str.substr(start, end - start);
+            result.push_back(value);
+            start = end + 1;
+          }
         }
-        else
+
+        if(start != end)
         {
-          k = rex::DebugString(str.substr(0, n));
-          v = rex::DebugString(str.substr(n + 1));
+          const rsl::string_view value = str.substr(start, end - start);
+          result.push_back(value);
         }
-        return rsl::make_pair(trim_impl(k), trim_impl(v));
+
+        return result;
       }
 
       // return vector of key/value pairs from sequence of "K1=V1,K2=V2,.."
       // "a=AAA,b=BBB,c=CCC,.." => {("a","AAA"),("b","BBB"),("c", "CCC"),...}
-      inline rex::DebugHashTable<rex::DebugString, rex::DebugString> extract_key_vals_impl(const rex::DebugString& str)
+      rsl::unordered_map<rsl::string_view, rsl::string_view> extract_key_vals(rsl::string_view str)
       {
-        rex::DebugString token;
-        rex::DebugStringStream token_stream(str);
-        rex::DebugHashTable<rex::DebugString, rex::DebugString> rv {};
-        while(rsl::getline(token_stream, token, ','))
+        rsl::unordered_map<rsl::string_view, rsl::string_view> rv {};
+        const rsl::vector<rsl::string_view> key_value_pairs = split(str, ",");
+
+        for(const rsl::string_view key_value_pair: key_value_pairs)
         {
-          if(token.empty())
-          {
-            continue;
-          }
-          auto kv      = extract_kv_impl('=', token);
-          rv[kv.first] = kv.second;
+          rsl::vector<rsl::string_view> key_value = split(key_value_pair, "=");
+
+          REX_ASSERT_X(key_value.size() == 2, "Invalid logger level found at {}", key_value_pair);
+          rv[key_value[0]] = key_value[1];
         }
+
         return rv;
       }
 
-      void load_levels(const rex::DebugString& input)
+      void load_levels(rsl::string_view input)
       {
         if(input.empty() || input.size() > 512)
         {
           return;
         }
 
-        auto key_vals = extract_key_vals_impl(input);
-        rex::DebugHashTable<rex::DebugString, rexlog::level::LevelEnum> levels;
+        auto key_vals = extract_key_vals(input);
+        rexlog::details::Registry::LogLevels levels;
         rexlog::level::LevelEnum global_level = rexlog::level::LevelEnum::Info;
         bool global_level_found               = false;
 
         for(auto& name_level: key_vals)
         {
           const auto& logger_name = name_level.key;
-          auto level_name         = to_lower_impl(name_level.value);
+          auto level_name         = name_level.value;
           auto level              = rexlog::level::from_str(level_name);
           // ignore unrecognized level names
           if(level == rexlog::level::LevelEnum::Off && level_name != "off")
@@ -126,17 +123,13 @@ namespace rex
     } // namespace helpers
 
     // search for REXLOG_LEVEL= in the args and use it to init the levels
-    void load_log_levels(const rsl::vector<rsl::string_view>& args)
+    void init_log_levels()
     {
-      const rsl::string_view rexlog_level_prefix("REXLOG_LEVEL=");
+      rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogLevel");
 
-      for(const rsl::string_view s: args)
+      if(log_level)
       {
-        if(s.find(rexlog_level_prefix) == 0)
-        {
-          auto levels_string = s.substr(rexlog_level_prefix.size());
-          helpers::load_levels(rex::DebugString(levels_string));
-        }
+        helpers::load_levels(log_level.value());
       }
     }
   } // namespace diagnostics

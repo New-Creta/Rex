@@ -33,7 +33,6 @@ namespace rex
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
           : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
           , m_gui_params(rsl::move(appCreationParams.gui_params))
-          , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
       {
@@ -126,7 +125,13 @@ namespace rex
 
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
+        event_system::subscribe(event_system::EventType::WindowClose,
+                                [this](const event_system::Event& /*evt*/)
+                                {
+                                  rex::event_system::Event ev {};
+                                  ev.type = rex::event_system::EventType::QuitApp;
+                                  rex::event_system::fire_event(ev);
+                                });
         event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
         event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
         event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });
@@ -134,6 +139,7 @@ namespace rex
         event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { on_minimize(); });
         event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { on_maximize(evt); });
         event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { on_restore(evt); });
+        event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
       }
 
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
@@ -266,14 +272,13 @@ namespace rex
 
       PlatformCreationParams m_platform_creation_params;
       GuiParams m_gui_params;
-      CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
     };
 
     //-------------------------------------------------------------------------
     GuiApplication::GuiApplication(ApplicationCreationParams&& appParams)
-        : CoreApplication(appParams.engine_params, appParams.cmd_args)
+        : CoreApplication(appParams.engine_params)
         , m_internal_ptr(rsl::make_unique<Internal>(this, rsl::move(appParams)))
     {
     }

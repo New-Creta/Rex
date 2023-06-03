@@ -93,11 +93,6 @@ public class BaseProject : Project
     conf.use_compiler_options();
     conf.use_linker_options();
 
-    //if (target.DevEnv == DevEnv.vs2019)
-    //{
-    //  conf.AddPublicDependency<SharpmakeProject>(target);
-    //}
-
     switch (target.Optimization)
     {
       case Optimization.NoOpt:
@@ -312,40 +307,7 @@ public class BasicCPPProject : BaseProject
       return;
     }
 
-    string mem_tag_config_path = GenerationConfigPath;
-    string json_blob = File.ReadAllText(mem_tag_config_path);
-    Dictionary<string, EnumGenerationConfig> config = JsonSerializer.Deserialize<Dictionary<string, EnumGenerationConfig>>(json_blob);
-
-    foreach (string key in config.Keys)
-    {
-      EnumGenerationConfig enum_config = config[key];
-      if (!GenerateSettings.EnumsToAutoGenerate.ContainsKey(key))
-      {
-        GenerateSettings.EnumsToAutoGenerate.Add(key, new EnumGenerationSettings());
-
-        // we use the config settings of the first enum we encounter, all others need to match this
-        GenerateSettings.EnumsToAutoGenerate[key].ClassName = enum_config.ClassName;
-        GenerateSettings.EnumsToAutoGenerate[key].Filepath = enum_config.Filepath;
-      }
-      else
-      {
-        EnumGenerationSettings enum_gen_settings = GenerateSettings.EnumsToAutoGenerate[key];
-
-        // class names and filenames should be consistent among all generation files
-        if (enum_gen_settings.ClassName != enum_config.ClassName)
-        {
-          throw new Error($"Enum generation error - unexpected classname: '{enum_config.ClassName}' - expected: {enum_gen_settings.ClassName} for project: {Name}");
-        }
-
-        if (enum_gen_settings.Filepath != enum_config.Filepath)
-        {
-          throw new Error($"Enum generation error - unexpected filepath: '{enum_config.Filepath}' - expected: {enum_gen_settings.Filepath} for project: {Name}");
-        }
-      }
-
-      EnumGenerationSettings enum_gen_setting = GenerateSettings.EnumsToAutoGenerate[key];
-      enum_gen_setting.ProjectToEnumValues.Add(Name, enum_config.Values);
-    }
+    CodeGeneration.ReadGenerationFile(Name, GenerationConfigPath);
   }
 
   private string GetCompilerDBOutputPath(RexConfiguration config)
@@ -432,23 +394,6 @@ public class BasicCPPProject : BaseProject
   }
 }
 
-public class TestProject : BaseProject
-{
-  public override void Configure(RexConfiguration conf, RexTarget target)
-  {
-    base.Configure(conf, target);
-
-    if (GenerateSettings.AddressSanitizerEnabled)
-    {
-      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
-    }
-    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
-    {
-      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
-    }
-  }
-}
-
 // All projects sitting in 0_thirdparty folder should inherit from this
 public class ThirdPartyProject : BasicCPPProject
 {
@@ -518,5 +463,22 @@ public class ToolsProject : BasicCPPProject
     base.Configure(conf, target);
 
     conf.SolutionFolder = "4_tools";
+  }
+}
+
+public class TestProject : BasicCPPProject
+{
+  public override void Configure(RexConfiguration conf, RexTarget target)
+  {
+    base.Configure(conf, target);
+
+    if (GenerateSettings.AddressSanitizerEnabled)
+    {
+      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
+    }
+    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
+    {
+      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
+    }
   }
 }

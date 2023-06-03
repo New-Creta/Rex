@@ -1,12 +1,39 @@
 {
   "MemoryTags": {
-    "ClassName": "MemoryTag",
-    "Values": [ "Global", "Engine", "FileIO" ],
-    "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+    "Type": "Enum",
+    "Content": {
+      "ClassName": "MemoryTag",
+      "Values": [
+        "Global",
+        "Engine",
+        "FileIO"
+      ],
+      "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+    }
   },
   "MountingPoints": {
-    "ClassName": "MountingPoint",
-    "Values": [ "Logs" ],
-    "Filepath": "1_engine/rex_engine/include/rex_engine/filesystem/mounting_point.h"
+    "Type": "Enum",
+    "Content": {
+      "ClassName": "MountingPoint",
+      "Values": [
+        "Logs"
+      ],
+      "Filepath": "1_engine/rex_engine/include/rex_engine/filesystem/mounting_point.h"
+    }
+  },
+  "CommandLineArgs": {
+    "Type": "Array",
+    "Content": {
+      "Name": "g_command_line_args",
+      "ElementType": "cmdline::Argument",
+      "Includes" : ["rex_engine/cmdline.h"],
+      "Values": [
+        "\"Root\", \"The directory to initialize the vfs with. this is similar as setting the working root directory\"",
+        "\"Help\", \"This will list all command line arguments for the executable\"",
+        "\"LogLevel\", \"Specify log level per logger (eg. -LogLevel=Engine=trace,Renderer=info)\"",
+        "\"BreakOnBoot\", \"Break on boot so you can attach a debugger\""
+      ],
+      "Filepath": "1_engine/rex_engine/include/rex_engine/cmd_args.h"
+    }
   }
 }

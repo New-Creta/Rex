@@ -11,20 +11,7 @@ namespace rex
 {
   class FrameInfo;
   class CommandLineArguments;
-
-  struct EngineParams
-  {
-    using init_func     = rsl::function<bool()>;
-    using update_func   = rsl::function<void()>;
-    using shutdown_func = rsl::function<void()>;
-
-    // how much memory is the entire app allowed to use.
-    // by default, there's no limit on this.
-    rsl::memory_size max_memory     = rsl::memory_size((rsl::numeric_limits<s64>::max)());
-    init_func app_init_func         = nullptr;
-    update_func app_update_func     = nullptr;
-    shutdown_func app_shutdown_func = nullptr;
-  };
+  struct EngineParams;
 
   // to make it accessible throughout the code
   // client API can call this function to access the frame info
@@ -36,7 +23,7 @@ namespace rex
   class CoreApplication
   {
   public:
-    CoreApplication(const EngineParams& engineParams, const CommandLineArguments& cmdArgs);
+    explicit CoreApplication(const EngineParams& engineParams);
     CoreApplication(const CoreApplication&) = delete;
     CoreApplication(CoreApplication&&)      = delete;
     virtual ~CoreApplication();

@@ -1,5 +1,6 @@
 #include "rex_engine/filesystem/vfs.h"
 
+#include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/win/win_call.h"
@@ -220,34 +221,8 @@ namespace rex
     rsl::atomic<bool> g_keep_processing = false;
     // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
 
-    void init(rsl::string_view root)
+    void start_threads()
     {
-      if(root.empty())
-      {
-        WIN_CALL(GetCurrentDirectoryA(g_root.max_size(), g_root.data()));
-        g_root.reset_null_termination_offset();
-      }
-      else if(is_abs(root))
-      {
-        g_root = root;
-      }
-      else
-      {
-        rsl::medium_stack_string cwd;
-        WIN_CALL(GetCurrentDirectoryA(cwd.max_size(), cwd.data()));
-        cwd.reset_null_termination_offset();
-
-        g_root = cwd;
-        g_root += "/";
-        g_root += root;
-      }
-
-      g_is_initialized  = true;
-      g_keep_processing = true;
-
-      REX_ASSERT_X(is_dir(g_root), "root of vfs is not a directory");
-      REX_LOG(RexFileSystem, "FileSystem initialised with root '{}'", g_root);
-
       g_reading_thread = rsl::thread(
           []()
           {
@@ -309,6 +284,42 @@ namespace rex
               rsl::this_thread::sleep_for(1ms);
             }
           });
+    }
+
+    void init(rsl::string_view root)
+    {
+      if(rsl::optional<rsl::string_view> arg = cmdline::get_argument("Root"))
+      {
+        root = arg.value();
+      }
+
+      if(root.empty())
+      {
+        WIN_CALL(GetCurrentDirectoryA(g_root.max_size(), g_root.data()));
+        g_root.reset_null_termination_offset();
+      }
+      else if(is_abs(root))
+      {
+        g_root = root;
+      }
+      else
+      {
+        rsl::medium_stack_string cwd;
+        WIN_CALL(GetCurrentDirectoryA(cwd.max_size(), cwd.data()));
+        cwd.reset_null_termination_offset();
+
+        g_root = cwd;
+        g_root += "/";
+        g_root += root;
+      }
+
+      g_is_initialized  = true;
+      g_keep_processing = true;
+
+      REX_ASSERT_X(is_dir(g_root), "root of vfs is not a directory");
+      REX_LOG(RexFileSystem, "FileSystem initialised with root '{}'", g_root);
+
+      start_threads();
     }
 
     void mount(MountingPoint root, rsl::string_view path)
