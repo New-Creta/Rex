@@ -1,6 +1,8 @@
 #include "rex_engine/string/stringpool.h"
 
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/memory/memory_tags.h"
+#include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/string/stringentry.h"
 #include "rex_std/bonus/functional.h"
 #include "rex_std/bonus/hashtable.h"
@@ -18,6 +20,8 @@ namespace rex
     //-------------------------------------------------------------------------
     EntryMap load_entry_map()
     {
+      REX_MEM_TAG_SCOPE(MemoryTag::StringPool);
+
       EntryMap map;
 
       StringEntryID entry_id(StringEntryID::create_invalid());
@@ -38,6 +42,8 @@ namespace rex
     //-------------------------------------------------------------------------
     StringEntryID store(rsl::hash_result hash, rsl::string_view newCharacters)
     {
+      REX_MEM_TAG_SCOPE(MemoryTag::StringPool);
+
       StringEntryID entry_id = StringEntryID(hash);
 
       StringEntry entry(newCharacters);
