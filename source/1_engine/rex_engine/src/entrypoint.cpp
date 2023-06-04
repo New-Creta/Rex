@@ -29,11 +29,11 @@ namespace rex
       // so we can attach a debugger and continue from then on
       // we'll have a timer in place to break for 2 minutes, if no debugger is attached
       // we close down the program
-      if (cmdline::get_argument("BreakOnBoot"))
+      if(cmdline::get_argument("BreakOnBoot"))
       {
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
         auto i = 1s;
-        while (i < 10min)
+        while(i < 10min)
         {
           rsl::this_thread::sleep_for(1s);
           ++i;
