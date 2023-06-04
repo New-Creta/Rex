@@ -97,7 +97,12 @@ namespace rex
 
         if(start_pos != -1)
         {
-          add_argument(cmdLine.substr(start_pos + arg_prefix.size())); // + 1 to ignore '-'
+          const rsl::string_view full_argument = cmdLine.substr(start_pos);
+          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false)
+          {
+            const rsl::string_view argument = full_argument.substr(arg_prefix.size());
+            add_argument(argument);
+          }
         }
       }
 
