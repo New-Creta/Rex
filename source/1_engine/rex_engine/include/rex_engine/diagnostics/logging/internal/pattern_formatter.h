@@ -9,6 +9,7 @@
 #include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
+#include "rex_std/string_view.h"
 
 namespace rexlog
 {
@@ -46,5 +47,7 @@ namespace rexlog
     tm m_cached_tm;
     rsl::chrono::seconds m_last_log_secs;
     Formatters m_formatters;
+
+    static constexpr rsl::string_view s_default_pattern = "%^[%T][%=8l] %n: %v%$";
   };
 } // namespace rexlog

@@ -61,7 +61,7 @@ namespace rex
         return true;                                                                                                                                                                                                                                     \
       }                                                                                                                                                                                                                                                  \
       return false;                                                                                                                                                                                                                                      \
-    }
+    }()
 
   #define REX_ERROR_X(CategoryName, cond, ...)                                                                                                                                                                                                           \
     [&]()                                                                                                                                                                                                                                                \
@@ -72,7 +72,7 @@ namespace rex
         return true;                                                                                                                                                                                                                                     \
       }                                                                                                                                                                                                                                                  \
       return false;                                                                                                                                                                                                                                      \
-    }
+    }()
   #define REX_WARN_X(CategoryName, cond, ...)                                                                                                                                                                                                            \
     [&]()                                                                                                                                                                                                                                                \
     {                                                                                                                                                                                                                                                    \
@@ -82,7 +82,7 @@ namespace rex
         return true;                                                                                                                                                                                                                                     \
       }                                                                                                                                                                                                                                                  \
       return false;                                                                                                                                                                                                                                      \
-    }
+    }()
   #define REX_LOG_X(CategoryName, cond, ...)                                                                                                                                                                                                             \
     [&]()                                                                                                                                                                                                                                                \
     {                                                                                                                                                                                                                                                    \
@@ -102,7 +102,7 @@ namespace rex
         return true;                                                                                                                                                                                                                                     \
       }                                                                                                                                                                                                                                                  \
       return false;                                                                                                                                                                                                                                      \
-    }
+    }()
   #define REX_VERYVERBOSE_X(CategoryName, cond, ...)                                                                                                                                                                                                     \
     [&]()                                                                                                                                                                                                                                                \
     {                                                                                                                                                                                                                                                    \
@@ -112,6 +112,6 @@ namespace rex
         return true;                                                                                                                                                                                                                                     \
       }                                                                                                                                                                                                                                                  \
       return false;                                                                                                                                                                                                                                      \
-    }
+    }()
 
 #endif
