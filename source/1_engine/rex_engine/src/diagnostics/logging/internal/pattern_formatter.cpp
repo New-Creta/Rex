@@ -98,7 +98,7 @@ namespace rexlog
   //-------------------------------------------------------------------------
   // use by default full formatter for if pattern is not given
   PatternFormatter::PatternFormatter(PatternTimeType timeType, rsl::string_view eol)
-      : m_pattern("%+")
+      : m_pattern(s_default_pattern)
       , m_eol(rsl::tiny_stack_string(eol))
       , m_pattern_time_type(timeType)
       , m_need_localtime(true)
