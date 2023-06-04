@@ -92,7 +92,7 @@ namespace rex
         }
 
         auto key_vals = extract_key_vals(input);
-        rsl::unordered_map<rsl::string_view, rexlog::level::LevelEnum> levels;
+        rexlog::details::Registry::LogLevels levels;
         rexlog::level::LevelEnum global_level = rexlog::level::LevelEnum::Info;
         bool global_level_found               = false;
 
@@ -123,7 +123,7 @@ namespace rex
     } // namespace helpers
 
     // search for REXLOG_LEVEL= in the args and use it to init the levels
-    void init()
+    void init_log_levels()
     {
       rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogLevel");
 

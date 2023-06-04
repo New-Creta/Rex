@@ -6,6 +6,6 @@ namespace rex
 {
   namespace diagnostics
   {
-    void init();
+    void init_log_levels();
   } // namespace diagnostics
 } // namespace rex

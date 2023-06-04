@@ -75,7 +75,8 @@ namespace rex
           return;
         }
 
-        start_pos         = space_pos + 1;
+        // skip all additional spaces
+        start_pos = cmdLine.find_first_not_of(' ', space_pos);
 
         // get the new space pos
         space_pos = cmdLine.find_first_of(' ', start_pos);
@@ -125,7 +126,10 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return key == cmdArg.name; });
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) 
+          { 
+            return rsl::strincmp(key.data(), cmdArg.name.data(), cmdArg.name.length()) == 0; 
+          });
 
         if(cmd_it == g_command_line_args.cend())
         {
@@ -133,7 +137,11 @@ namespace rex
           return;
         }
 
-        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return activeArg.argument == key; });
+        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), 
+          [key](const ActiveArgument& activeArg) 
+          { 
+            return rsl::strincmp(key.data(), activeArg.argument.data(), activeArg.argument.length()) == 0;
+          });
 
         if(active_it != m_arguments.cend())
         {
