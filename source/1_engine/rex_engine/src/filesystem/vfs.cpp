@@ -338,6 +338,11 @@ namespace rex
       g_closing_thread.join();
     }
 
+    rsl::string_view root()
+    {
+      return g_root;
+    }
+
     memory::Blob open_read(MountingPoint root, rsl::string_view filepath)
     {
       rsl::medium_stack_string path(g_roots.at(root));

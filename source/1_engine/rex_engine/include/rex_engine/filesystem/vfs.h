@@ -51,6 +51,8 @@ namespace rex
     void mount(MountingPoint root, rsl::string_view path);
     void shutdown();
 
+    rsl::string_view root();
+
     REX_NO_DISCARD memory::Blob open_read(rsl::string_view filepath);
     REX_NO_DISCARD memory::Blob open_read(MountingPoint root, rsl::string_view filepath);
     REX_NO_DISCARD ReadRequest open_read_async(rsl::string_view filepath);

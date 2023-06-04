@@ -6,11 +6,11 @@ namespace rex
   struct ApplicationCreationParams;
 }
 
-namespace regina_boot_test
+namespace regina_vfs_test
 {
   bool initialize();
   void update();
   void shutdown();
 
-  rex::ApplicationCreationParams boot_test_entry(rex::PlatformCreationParams&& platformParams);
+  rex::ApplicationCreationParams vfs_test_entry(rex::PlatformCreationParams&& platformParams);
 } // namespace regina_test

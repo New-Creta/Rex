@@ -3,6 +3,7 @@
 #include "rex_windows/gui_application.h"
 
 #include "regina_test/regina_boot_test.h"
+#include "regina_test/regina_vfs_test.h"
 #include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 
@@ -35,7 +36,8 @@ namespace rex
 
   rsl::array g_auto_tests =
   {
-    AutoTest("Boot", regina_test::boot_test_entry)
+    AutoTest("Boot", regina_boot_test::boot_test_entry),
+    AutoTest("Vfs", regina_vfs_test::vfs_test_entry)
   };
 
   // back up function in case we fail to find an auto test

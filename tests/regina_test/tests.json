@@ -2,5 +2,9 @@
   "Boot" : 
   {
     "command_line" : "-AutoTest=Boot"
+  },
+  "VFS" : 
+  {
+    "command_line" : "-AutoTest=Vfs -root=\"I:\\dsquad\\rex\""
   }
 }
