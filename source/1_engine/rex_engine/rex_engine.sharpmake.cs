@@ -26,9 +26,6 @@ public class RexEngine : EngineProject
     SourceFilesExcludeRegex.Add("unix/*");
     //// Only needs to happen on Linux
     //SourceFilesExcludeRegex.Add("win/*");
-
-    string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
-    GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)

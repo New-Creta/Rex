@@ -17,10 +17,10 @@ namespace rex
       rsl::string_view value;
     };
 
-    class CommandLineArguments
+    class Processor
     {
     public:
-      explicit CommandLineArguments(rsl::string_view cmdLine)
+      explicit Processor(rsl::string_view cmdLine)
       {
         // verify the auto generated command line arguments
         REX_ASSERT_X(verify_args(g_command_line_args.data(), g_command_line_args.size()), "You have ambuguous command line arguments");
@@ -36,11 +36,13 @@ namespace rex
 
       rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
       {
-        for(ActiveArgument active_arg: m_arguments)
+        for(const ActiveArgument& active_arg: m_arguments)
         {
           // early optimization that strincmp can't do
-          if(arg.length() != active_arg.argument.length())
+          if (arg.length() != active_arg.argument.length())
+          {
             continue;
+          }
 
           if(rsl::strincmp(arg.data(), active_arg.argument.data(), arg.length()) == 0)
           {
@@ -82,16 +84,26 @@ namespace rex
         const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         while(start_pos != -1 && space_pos != -1)
         {
-          const count_t length            = space_pos - start_pos - arg_prefix.size();
-          const rsl::string_view argument = cmdLine.substr(start_pos + arg_prefix.size(), length);
-          add_argument(argument);
+          const count_t length            = space_pos - start_pos;
+          const rsl::string_view full_argument = cmdLine.substr(start_pos, length);
+          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          {
+            const rsl::string_view argument = full_argument.substr(arg_prefix.size());
+            add_argument(argument);
+          }
+
           start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
           space_pos = cmdLine.find_first_of(' ', start_pos);
         }
 
         if(start_pos != -1)
         {
-          add_argument(cmdLine.substr(start_pos + arg_prefix.size())); // + 1 to ignore '-'
+          const rsl::string_view full_argument = cmdLine.substr(start_pos);
+          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          {
+            const rsl::string_view argument = full_argument.substr(arg_prefix.size());
+            add_argument(argument);
+          }
         }
       }
 
@@ -147,8 +159,10 @@ namespace rex
           const Argument& lhs_arg = args[i];
           for(count_t j = 0; j < argCount; ++j)
           {
-            if(i == j)
+            if (i == j)
+            {
               continue;
+            }
 
             const Argument& rhs_arg = args[j];
             if(rsl::strincmp(lhs_arg.name.data(), rhs_arg.name.data(), lhs_arg.name.length()) == 0)
@@ -166,11 +180,11 @@ namespace rex
       rsl::vector<ActiveArgument> m_arguments;
     };
 
-    rsl::unique_ptr<CommandLineArguments> g_cmd_line_args; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    rsl::unique_ptr<cmdline::Processor> g_cmd_line_args; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
     void init(rsl::string_view cmdLine)
     {
-      g_cmd_line_args = rsl::make_unique<CommandLineArguments>(cmdLine);
+      g_cmd_line_args = rsl::make_unique<cmdline::Processor>(cmdLine);
     }
 
     void print_args()
@@ -179,22 +193,29 @@ namespace rex
 
       rsl::unordered_map<rsl::string_view, rsl::vector<Argument>> project_to_arguments;
 
-      for(Argument cmd: g_command_line_args)
+      for(const Argument& cmd: g_command_line_args)
       {
         project_to_arguments[cmd.module].push_back(cmd);
       }
 
-      for(auto [project, cmds]: project_to_arguments)
+      for(auto& [project, cmds]: project_to_arguments)
       {
         REX_LOG(LogEngine, "");
         REX_LOG(LogEngine, "Commandline Arguments For {}", project);
         REX_LOG(LogEngine, "------------------------------");
 
-        for(Argument cmd: cmds)
+        for(const Argument& cmd: cmds)
         {
           REX_LOG(LogEngine, "\"{}\" - {}", cmd.name, cmd.desc);
         }
       }
+    }
+
+    // we need to manually shut this down, otherwise it's memory might get tracked
+    // by an already deleted memory tracking, causing an assert on shutdown
+    void shutdown()
+    {
+      g_cmd_line_args.reset();
     }
 
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)

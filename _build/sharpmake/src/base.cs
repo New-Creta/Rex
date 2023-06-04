@@ -296,6 +296,11 @@ public class BasicCPPProject : BaseProject
 
   private void ReadGenerationConfigFile()
   {
+    // the generation path always follows the same relative path from {root}/config
+    // as it does from {root} to the source code
+    string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.Root), SourceRootPath);
+    GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
+
     if (string.IsNullOrEmpty(GenerationConfigPath))
     {
       return;
@@ -480,5 +485,7 @@ public class TestProject : BasicCPPProject
     {
       conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
     }
+
+    conf.SolutionFolder = "5_tests";
   }
 }

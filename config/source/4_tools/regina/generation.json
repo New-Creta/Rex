@@ -1,0 +1,12 @@
+{
+    "MemoryTags": {
+        "Type": "Enum",
+        "Content": {
+            "ClassName": "MemoryTag",
+            "Values": [
+                "Editor"
+            ],
+            "Filepath": "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h"
+        }
+    }
+}

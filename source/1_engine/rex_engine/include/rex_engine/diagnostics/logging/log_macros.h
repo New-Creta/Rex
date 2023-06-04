@@ -92,7 +92,7 @@ namespace rex
         return true;                                                                                                                                                                                                                                     \
       }                                                                                                                                                                                                                                                  \
       return false;                                                                                                                                                                                                                                      \
-    }
+    }()
   #define REX_VERBOSE_X(CategoryName, cond, ...)                                                                                                                                                                                                         \
     [&]()                                                                                                                                                                                                                                                \
     {                                                                                                                                                                                                                                                    \

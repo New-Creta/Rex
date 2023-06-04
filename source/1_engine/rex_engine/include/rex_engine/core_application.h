@@ -10,7 +10,6 @@
 namespace rex
 {
   class FrameInfo;
-  class CommandLineArguments;
   struct EngineParams;
 
   // to make it accessible throughout the code

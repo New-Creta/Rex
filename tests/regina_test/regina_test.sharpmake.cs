@@ -13,9 +13,6 @@ public class ReginaTest : TestProject
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     SourceRootPath = ThisFileFolder;
-
-    string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
-    GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
   }
 
   public override void Configure(RexConfiguration conf, RexTarget target)

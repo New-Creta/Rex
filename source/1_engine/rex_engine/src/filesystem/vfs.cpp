@@ -334,6 +334,8 @@ namespace rex
     void shutdown()
     {
       g_keep_processing = false;
+      g_reading_thread.join();
+      g_closing_thread.join();
     }
 
     memory::Blob open_read(MountingPoint root, rsl::string_view filepath)
