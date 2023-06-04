@@ -86,7 +86,7 @@ namespace rex
         {
           const count_t length            = space_pos - start_pos;
           const rsl::string_view full_argument = cmdLine.substr(start_pos, length);
-          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false)
+          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
@@ -99,7 +99,7 @@ namespace rex
         if(start_pos != -1)
         {
           const rsl::string_view full_argument = cmdLine.substr(start_pos);
-          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false)
+          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
