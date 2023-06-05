@@ -180,7 +180,7 @@ namespace rexlog
       }
 
       // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
-      auto folder_index = fname.find_last_of(details::os::g_folder_seps_filename);
+      auto folder_index = fname.find_last_of(rex::g_folder_seps_filename);
       if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
       {
         return FilenameWithExtension {fname, rsl::tiny_stack_string()};
