@@ -45,6 +45,4 @@ namespace rex
   {
     return m_characters.count();
   }
-
-  //-------------------------------------------------------------------------
 } // namespace rex
