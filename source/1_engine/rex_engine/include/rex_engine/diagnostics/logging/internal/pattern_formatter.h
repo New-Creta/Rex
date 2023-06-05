@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "rex_engine/constants.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/flag_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
