@@ -29,6 +29,16 @@
     #error DEBUG_BREAK unsupported machine instruction ...
   #endif
 
+  //-------------------------------------------------------------------------
+  // End of line
+  #ifndef REX_EOL
+    #ifdef REX_PLATFORM_WINDOWS
+      #define REX_EOL "\r\n"
+    #else
+      #define REX_EOL "\n"
+    #endif
+  #endif
+
 #endif
 
 //-------------------------------------------------------------------------
