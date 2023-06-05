@@ -16,7 +16,7 @@ namespace rex
       if(characters.empty())
       {
         REX_WARN(LogEngine, "Trying to create a StringID with an empty string, this is not allowed.");
-        return StringID(); // StringID::is_none() == true
+        return StringID::create_invalid();
       }
 
       return string_pool::make_and_store(characters);
