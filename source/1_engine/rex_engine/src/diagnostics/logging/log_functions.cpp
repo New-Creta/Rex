@@ -56,7 +56,7 @@ namespace rex
   //-------------------------------------------------------------------------
   rexlog::Logger& get_logger(const LogCategory& category)
   {
-    const LogLevelMap log_levels     = get_log_levels();
+    const LogLevelMap log_levels = get_log_levels();
 
     // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
 

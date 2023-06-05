@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/defines.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/filesystem/path_defines.h"
 
 #include <ctime> // time_t
