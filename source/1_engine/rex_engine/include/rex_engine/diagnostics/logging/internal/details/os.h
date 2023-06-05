@@ -22,13 +22,6 @@ namespace rexlog
       tm gmtime(const time_t& timeTt) noexcept;
       tm gmtime() noexcept;
 
-      inline constexpr rsl::string_view g_default_eol = REX_EOL;
-
-      // folder separator
-
-      inline constexpr rsl::string_view g_folder_seps          = REX_FOLDER_SEPS;
-      inline constexpr rsl::string_view g_folder_seps_filename = REX_FOLDER_SEPS;
-
       // fopen_s on non windows for writing
       bool fopen_s(FILE** fp, rsl::string_view filename, const filename_t& mode);
 
