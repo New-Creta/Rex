@@ -1,7 +1,9 @@
+
 #ifndef REX_DEFINES
   #define REX_DEFINES
 
   #include "rex_std/bonus/compiler.h"
+  #include "rex_std/string_view.h"
 
   //-------------------------------------------------------------------------
   // Unused parameter.
@@ -29,15 +31,18 @@
     #error DEBUG_BREAK unsupported machine instruction ...
   #endif
 
-  //-------------------------------------------------------------------------
-  // End of line
+//-------------------------------------------------------------------------
+// End of line
+namespace rex
+{
   #ifndef REX_EOL
     #ifdef REX_PLATFORM_WINDOWS
-      #define REX_EOL "\r\n"
+  inline constexpr rsl::string_view g_default_eol = "\r\n";
     #else
-      #define REX_EOL "\n"
+  inline constexpr rsl::string_view g_default_eol = "\n";
     #endif
   #endif
+} // namespace rex
 
 #endif
 
