@@ -14,8 +14,6 @@
 #include <iostream>
 #include <shellapi.h>
 
-#pragma warning(disable : 4702)
-
 //-------------------------------------------------------------------------
 int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
