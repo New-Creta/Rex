@@ -81,6 +81,8 @@ namespace rex
         // update the window (this pulls input as well)
         m_window->update();
 
+        event_system::fire_events();
+
         m_on_update();
 
         // don't render when the application is paused
@@ -130,7 +132,7 @@ namespace rex
                                 {
                                   rex::event_system::Event ev {};
                                   ev.type = rex::event_system::EventType::QuitApp;
-                                  rex::event_system::fire_event(ev);
+                                  rex::event_system::enqueue_event(ev);
                                 });
         event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
         event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
