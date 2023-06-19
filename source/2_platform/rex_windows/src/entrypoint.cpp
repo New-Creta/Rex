@@ -1,6 +1,7 @@
 #include "rex_engine/entrypoint.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/verify.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_windows/console_application.h"
@@ -14,22 +15,22 @@
 #include <iostream>
 #include <shellapi.h>
 
-#pragma warning (disable : 4702)
+#pragma warning(disable : 4702)
 
 //-------------------------------------------------------------------------
 int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
 {
   rex::internal::pre_app_entry(lpCmdLine);
 
-  rex::PlatformCreationParams creation_params{};
-  creation_params.instance = hInstance;
+  rex::PlatformCreationParams creation_params {};
+  creation_params.instance      = hInstance;
   creation_params.prev_instance = hPrevInstance;
-  creation_params.show_cmd = nShowCmd;
+  creation_params.show_cmd      = nShowCmd;
 
   rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params));
 
   s32 result = 0;
-  if (app_params.create_window)
+  if(app_params.create_window)
   {
     // this doesn't initialize anything but simply prepares the application for initialization
     rex::win32::GuiApplication application(rsl::move(app_params));
@@ -53,8 +54,6 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, in
 
   return result;
 }
-
-
 
 //-------------------------------------------------------------------------
 INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)

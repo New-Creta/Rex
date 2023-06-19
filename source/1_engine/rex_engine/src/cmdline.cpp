@@ -39,7 +39,7 @@ namespace rex
         for(const ActiveArgument& active_arg: m_arguments)
         {
           // early optimization that strincmp can't do
-          if (arg.length() != active_arg.argument.length())
+          if(arg.length() != active_arg.argument.length())
           {
             continue;
           }
@@ -84,9 +84,10 @@ namespace rex
         const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         while(start_pos != -1 && space_pos != -1)
         {
-          const count_t length            = space_pos - start_pos;
+          const count_t length                 = space_pos - start_pos;
           const rsl::string_view full_argument = cmdLine.substr(start_pos, length);
-          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
+             false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
@@ -99,7 +100,8 @@ namespace rex
         if(start_pos != -1)
         {
           const rsl::string_view full_argument = cmdLine.substr(start_pos);
-          if (REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
+             false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
@@ -152,7 +154,7 @@ namespace rex
           const Argument& lhs_arg = args[i];
           for(count_t j = 0; j < argCount; ++j)
           {
-            if (i == j)
+            if(i == j)
             {
               continue;
             }
