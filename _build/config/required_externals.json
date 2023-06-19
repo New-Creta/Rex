@@ -1,20 +1,26 @@
 {
-  "rex_std": {
-    "name": "rex_std",
-    "url": "https://github.com/RisingLiberty/RexStl/",
-    "tag": "v1.1.50",
-    "storage": "~/source/0_thirdparty"
-  },
-  "rex_glad": {
-    "name": "rex_glad",
-    "url": "https://gitlab.com/rex-externals/rex-glad/",
-    "tag": "v1.0.0",
-    "storage": "~/source/0_thirdparty"
-  },
-  "rex_glm": {
-    "name": "rex_glm",
-    "url": "https://gitlab.com/rex-externals/rex-glm/",
-    "tag": "v1.0.0",
-    "storage": "~/source/0_thirdparty"
-  }
+    "rex_std": {
+        "name": "rex_std",
+        "url": "https://github.com/RisingLiberty/RexStl/",
+        "tag": "v1.1.50",
+        "storage": "~/source/0_thirdparty"
+    },
+    "rex_glad": {
+        "name": "rex_glad",
+        "url": "https://gitlab.com/rex-externals/rex-glad/",
+        "tag": "v1.0.0",
+        "storage": "~/source/0_thirdparty"
+    },
+    "rex_glm": {
+        "name": "rex_glm",
+        "url": "https://gitlab.com/rex-externals/rex-glm/",
+        "tag": "v1.0.0",
+        "storage": "~/source/0_thirdparty"
+    },
+    "rex_tiny_file_dialogs": {
+        "name": "rex_tiny_file_dialogs",
+        "url": "https://gitlab.com/rex-externals/rex-tiny-file-dialogs/",
+        "tag": "v1.0.0",
+        "storage": "~/source/0_thirdparty"
+    }
 }
