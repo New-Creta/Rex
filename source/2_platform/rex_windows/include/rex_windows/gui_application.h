@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_engine/cmd_line_args.h"
 #include "rex_engine/core_application.h"
 #include "rex_engine/types.h"
 #include "rex_std/memory.h"

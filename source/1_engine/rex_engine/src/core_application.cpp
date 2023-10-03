@@ -1,6 +1,7 @@
 #include "rex_engine/core_application.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/engine_params.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/log.h"
 #include "rex_engine/memory/memory_tracking.h"
@@ -24,7 +25,7 @@ namespace rex
   } // namespace globals
 
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const EngineParams& engineParams, const CommandLineArguments& /*cmdArgs*/)
+  CoreApplication::CoreApplication(const EngineParams& engineParams)
       : m_app_state(ApplicationState::Created)
   {
     mem_tracker().initialize(engineParams.max_memory);

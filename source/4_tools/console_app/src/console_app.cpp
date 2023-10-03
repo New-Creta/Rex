@@ -7,7 +7,9 @@
 #include "rex_windows/console_application.h"
 #include "rex_engine/event_system.h"
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/memory/memory_header.h"
 #include "rex_windows/input/input.h"
+#include "rex_engine/diagnostics/win/win_stacktrace.h"
 
 #include <Windows.h>
 
@@ -74,7 +76,7 @@ namespace rex
 
   bool initialize()
   {
-    vfs::mount(MountRoot::Logs, "logs");
+    vfs::mount(MountingPoint::Logs, "logs");
 
     //vfs::ReadRequest request = vfs::open_read_async("this_is_a_test_file.txt");
 
@@ -95,9 +97,9 @@ namespace rex
   {
   }
 
-  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
+  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams)
   {
-    ApplicationCreationParams app_params(rsl::move(platformParams), rsl::move(cmdArgs));
+    ApplicationCreationParams app_params(rsl::move(platformParams));
 
     app_params.engine_params.max_memory        = 256_kb;
     app_params.engine_params.app_init_func     = initialize;

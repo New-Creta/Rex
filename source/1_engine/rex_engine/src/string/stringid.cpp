@@ -2,6 +2,8 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/log.h"
+#include "rex_engine/string/stringentry.h"
+#include "rex_engine/string/stringpool.h"
 #include "rex_std/bonus/types.h"
 
 namespace rex
@@ -9,12 +11,12 @@ namespace rex
   namespace internal
   {
     //-------------------------------------------------------------------------
-    StringEntryID make_and_store(rsl::string_view characters)
+    StringID make_and_store(rsl::string_view characters)
     {
       if(characters.empty())
       {
         REX_WARN(LogEngine, "Trying to create a StringID with an empty string, this is not allowed.");
-        return StringEntryID(); // StringID::is_none() == true
+        return StringID::create_invalid();
       }
 
       return string_pool::make_and_store(characters);
@@ -24,12 +26,12 @@ namespace rex
   //-------------------------------------------------------------------------
   StringID store_sid(rsl::string_view characters)
   {
-    return StringID(string_pool::make_and_store(characters));
+    return string_pool::make_and_store(characters);
   }
   //-------------------------------------------------------------------------
   rsl::string_view restore_sid(const StringID& sid)
   {
-    return string_pool::resolve(StringEntryID(sid.value()));
+    return string_pool::resolve(sid);
   }
 
   //-------------------------------------------------------------------------

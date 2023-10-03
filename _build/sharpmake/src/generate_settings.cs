@@ -13,12 +13,32 @@ public class EnumGenerationConfig
   public string Filepath { get; set; }
 }
 
+public class ArrayGenerationConfig
+{
+  public string ElementType { get; set; }
+  public string Name { get; set; }
+  public List<string> Includes { get; set; }
+  public List<string> Values { get; set; }
+  public string Filepath { get; set; }
+}
+
 // this is the object we use
 public class EnumGenerationSettings
 {
   public string ClassName = "";
   public string Filepath = "";
   public Dictionary<string, List<string>> ProjectToEnumValues = new Dictionary<string, List<string>>();
+  public Dictionary<string, string> ProjectToGenerationFile = new Dictionary<string, string>();
+}
+
+public class ArrayGenerationSettings
+{
+  public string ElementType = "";
+  public string Name = "";
+  public string Filepath = "";
+  public List<string> Includes = new List<string>();
+  public Dictionary<string, List<string>> ProjectToArrayValues = new Dictionary<string, List<string>>();
+  public Dictionary<string, string> ProjectToGenerationFile = new Dictionary<string, string>();
 }
 
 public static class GenerationTypes
@@ -53,13 +73,12 @@ public class GenerateSettings
   static public bool AddressSanitizerEnabled = false;
   static public bool UndefinedBehaviorSanitizerEnabled = false;
   static public bool GenerateFuzzyTests = false;
+  static public bool EnableAutoTests = false;
 
 
   static public string ClangTidyRegex { get; set; }
   static public GenerationTypes.GraphicsAPI GraphicsAPI = GenerationTypes.GraphicsAPI.Unknown;
   static public GenerationTypes.Platform Platform = GenerationTypes.Platform.Unknown;
   
-  static public Dictionary<string, EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, EnumGenerationSettings>();
-
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
 }

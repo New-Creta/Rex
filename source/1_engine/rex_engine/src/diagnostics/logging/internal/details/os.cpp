@@ -354,7 +354,7 @@ namespace rexlog
         s32 search_offset = 0;
         do
         {
-          auto token_pos = path.find_first_of(g_folder_seps_filename, static_cast<count_t>(search_offset));
+          auto token_pos = path.find_first_of(rex::g_folder_seps_filename, static_cast<count_t>(search_offset));
           // treat the entire path as a folder if no folder separator not found
           if(token_pos == filename_t::npos())
           {
@@ -380,7 +380,7 @@ namespace rexlog
       // "abc///" => "abc//"
       filename_t dir_name(rsl::string_view path)
       {
-        auto pos = path.find_last_of(g_folder_seps_filename);
+        auto pos = path.find_last_of(rex::g_folder_seps_filename);
         return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t {};
       }
 

@@ -64,6 +64,7 @@ if __name__ == "__main__":
   # Apparantly we cannot pass doulbe quotes as an argument to python
   # At least by my knowledge ... 
   sharpmake_args = sharpmake_args.replace("\'", "\"")
+  sharpmake_args = sharpmake_args.replace("\\", "\/")
 
   proc = regis.generation.new_generation(settings_path, sharpmake_args)
   proc.wait()

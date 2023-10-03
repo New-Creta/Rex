@@ -2,12 +2,14 @@
 
 #pragma once
 
+#include "rex_engine/constants.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/flag_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/memory.h"
+#include "rex_std/string_view.h"
 #include "rex_std/vector.h"
 
 namespace rexlog
@@ -22,8 +24,8 @@ namespace rexlog
   class PatternFormatter
   {
   public:
-    explicit PatternFormatter(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local, rsl::string_view eol = rexlog::details::os::g_default_eol);
-    explicit PatternFormatter(PatternTimeType timeType = PatternTimeType::Local, rsl::string_view eol = rexlog::details::os::g_default_eol);
+    explicit PatternFormatter(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local, rsl::string_view eol = rex::g_default_eol);
+    explicit PatternFormatter(PatternTimeType timeType = PatternTimeType::Local, rsl::string_view eol = rex::g_default_eol);
 
     void format(const details::LogMsg& msg, rsl::big_stack_string& dest);
     void set_pattern(rsl::string_view pattern);
@@ -46,5 +48,7 @@ namespace rexlog
     tm m_cached_tm;
     rsl::chrono::seconds m_last_log_secs;
     Formatters m_formatters;
+
+    static constexpr rsl::string_view s_default_pattern = "%^[%T][%=8l] %n: %v%$";
   };
 } // namespace rexlog

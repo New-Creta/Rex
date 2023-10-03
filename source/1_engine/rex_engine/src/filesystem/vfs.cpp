@@ -1,5 +1,6 @@
 #include "rex_engine/filesystem/vfs.h"
 
+#include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/win/win_call.h"
@@ -18,7 +19,7 @@
 
 #include <Windows.h>
 
-DEFINE_LOG_CATEGORY(RexFileSystem, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Log);
 
 // NOLINTBEGIN(modernize-use-nullptr)
 
@@ -220,34 +221,18 @@ namespace rex
     rsl::atomic<bool> g_keep_processing = false;
     // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
 
-    void init(rsl::string_view root)
+    rsl::string_view remove_quotes(rsl::string_view path)
     {
-      if(root.empty())
+      if(path.starts_with("\""))
       {
-        WIN_CALL(GetCurrentDirectoryA(g_root.max_size(), g_root.data()));
-        g_root.reset_null_termination_offset();
-      }
-      else if(is_abs(root))
-      {
-        g_root = root;
-      }
-      else
-      {
-        rsl::medium_stack_string cwd;
-        WIN_CALL(GetCurrentDirectoryA(cwd.max_size(), cwd.data()));
-        cwd.reset_null_termination_offset();
-
-        g_root = cwd;
-        g_root += "/";
-        g_root += root;
+        path = path.substr(1, path.length() - 2);
       }
 
-      g_is_initialized  = true;
-      g_keep_processing = true;
+      return path;
+    }
 
-      REX_ASSERT_X(is_dir(g_root), "root of vfs is not a directory");
-      REX_LOG(RexFileSystem, "FileSystem initialised with root '{}'", g_root);
-
+    void start_threads()
+    {
       g_reading_thread = rsl::thread(
           []()
           {
@@ -311,6 +296,44 @@ namespace rex
           });
     }
 
+    void init(rsl::string_view root)
+    {
+      g_is_initialized  = true;
+      g_keep_processing = true;
+
+      set_root(cmdline::get_argument("Root").value_or(root));
+
+      start_threads();
+
+      REX_LOG(FileSystem, "FileSystem initialized");
+    }
+
+    void set_root(rsl::string_view root)
+    {
+      if(root.empty())
+      {
+        WIN_CALL(GetCurrentDirectoryA(g_root.max_size(), g_root.data()));
+        g_root.reset_null_termination_offset();
+      }
+      else if(is_abs(root))
+      {
+        g_root = root;
+      }
+      else
+      {
+        rsl::medium_stack_string cwd;
+        WIN_CALL(GetCurrentDirectoryA(cwd.max_size(), cwd.data()));
+        cwd.reset_null_termination_offset();
+
+        g_root = cwd;
+        g_root += "/";
+        g_root += root;
+      }
+
+      REX_ASSERT_X(is_dir(g_root), "root of vfs is not a directory");
+      REX_LOG(FileSystem, "FileSystem root changed to: {}", g_root);
+    }
+
     void mount(MountingPoint root, rsl::string_view path)
     {
       REX_ASSERT_X(!g_roots.contains(root), "root {} is already mapped. currently mapped to '{}'", rsl::enum_refl::enum_name(root), g_roots.at(root));
@@ -323,6 +346,8 @@ namespace rex
     void shutdown()
     {
       g_keep_processing = false;
+      g_reading_thread.join();
+      g_closing_thread.join();
     }
 
     memory::Blob open_read(MountingPoint root, rsl::string_view filepath)
@@ -382,15 +407,17 @@ namespace rex
       return request;
     }
 
-    void save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    bool save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
+      filepath = remove_quotes(filepath);
+
       rsl::medium_stack_string path(g_roots.at(root));
       path += "/";
       path += filepath;
-      save_to_file(path, data, size, shouldAppend);
+      return save_to_file(path, data, size, shouldAppend);
     }
 
-    void save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    bool save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
       rsl::medium_stack_string fullpath = create_full_path(filepath);
 
@@ -404,44 +431,51 @@ namespace rex
                                                          ),
                                               ERROR_ALREADY_EXISTS));
 
-      if(shouldAppend)
-      {
-        WIN_CALL(SetFilePointer(handle.get(), 0, NULL, FILE_END));
-        WIN_CALL(SetEndOfFile(handle.get()));
-      }
+      DWORD move_method = shouldAppend ? FILE_END : FILE_BEGIN;
+
+      // either trunc or append to the file
+      WIN_CALL(SetFilePointer(handle.get(), 0, NULL, move_method));
+      WIN_CALL(SetEndOfFile(handle.get()));
 
       DWORD bytes_written = 0;
-      WIN_CALL(WriteFile(handle.get(), data, static_cast<DWORD>(size), &bytes_written, NULL));
+      return WIN_SUCCESS(WriteFile(handle.get(), data, static_cast<DWORD>(size), &bytes_written, NULL));
     }
 
-    void save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    bool save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
+      filepath = remove_quotes(filepath);
+
       rsl::medium_stack_string path(g_roots.at(root));
       path += "/";
       path += filepath;
-      save_to_file(path, blob.data(), blob.size(), shouldAppend);
+      return save_to_file(path, blob.data(), blob.size(), shouldAppend);
     }
 
-    void save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    bool save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
-      save_to_file(filepath, blob.data(), blob.size(), shouldAppend);
+      return save_to_file(filepath, blob.data(), blob.size(), shouldAppend);
     }
 
-    void create_dir(MountingPoint root, rsl::string_view path)
+    bool create_dir(MountingPoint root, rsl::string_view path)
     {
+      path = remove_quotes(path);
+
       rsl::medium_stack_string filepath(g_roots.at(root));
       filepath += "/";
       filepath += path;
-      create_dir(filepath);
+      return create_dir(filepath);
     }
-    void create_dir(rsl::string_view path)
+
+    bool create_dir(rsl::string_view path)
     {
       rsl::medium_stack_string fullpath = create_full_path(path);
-      WIN_CALL_IGNORE(CreateDirectory(fullpath.data(), NULL), ERROR_ALREADY_EXISTS);
+      return WIN_SUCCESS_IGNORE(CreateDirectory(fullpath.data(), NULL), ERROR_ALREADY_EXISTS);
     }
 
     bool exists(MountingPoint root, rsl::string_view path)
     {
+      path = remove_quotes(path);
+
       rsl::medium_stack_string filepath(g_roots.at(root));
       filepath += "/";
       filepath += path;
@@ -454,13 +488,17 @@ namespace rex
 
       const DWORD ftyp = GetFileAttributesA(fullpath.data());
       if(ftyp == INVALID_FILE_ATTRIBUTES)
+      {
+        rex::win::clear_win_errors();
         return false; // NOLINT(readability-simplify-boolean-expr)
-
+      }
       return true;
     }
 
     bool is_dir(MountingPoint root, rsl::string_view path)
     {
+      path = remove_quotes(path);
+
       rsl::medium_stack_string filepath(g_roots.at(root));
       filepath += "/";
       filepath += path;
@@ -481,6 +519,8 @@ namespace rex
     }
     bool is_file(MountingPoint root, rsl::string_view path)
     {
+      path = remove_quotes(path);
+
       rsl::medium_stack_string filepath(g_roots.at(root));
       filepath += "/";
       filepath += path;
@@ -501,6 +541,8 @@ namespace rex
     }
     bool is_abs(rsl::string_view path)
     {
+      path = remove_quotes(path);
+
       if(path.length() < 2)
         return false;
 
@@ -525,6 +567,8 @@ namespace rex
       REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
       REX_ASSERT_X(!is_abs(path), "Passed an absolute path into a function that doesn't allow absolute paths");
 
+      path = remove_quotes(path);
+
       rsl::medium_stack_string full_path(g_roots.at(root));
       full_path += "/";
       full_path += path;
@@ -533,6 +577,8 @@ namespace rex
     rsl::medium_stack_string create_full_path(rsl::string_view path)
     {
       REX_ASSERT_X(g_is_initialized, "Trying to use vfs before it's initialized");
+
+      path = remove_quotes(path);
 
       if(is_abs(path))
       {

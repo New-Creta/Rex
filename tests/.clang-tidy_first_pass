@@ -1,0 +1,11 @@
+---
+# Configure clang-tidy for this project that emit warnings but no errors.
+# It's recommended that these should be trivial checks (eg. include orders)
+# that don't hurt the codebase, but should be avoided.
+
+Checks: >
+  -*,
+  llvm-include-order,
+  llvm-namespace-comment,
+  readability-duplicate-include,
+

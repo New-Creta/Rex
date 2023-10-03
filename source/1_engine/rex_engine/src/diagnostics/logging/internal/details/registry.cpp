@@ -44,7 +44,6 @@ namespace rexlog
       auto new_level = it != m_log_levels.end() ? it->value : m_global_log_level;
 
       newLogger->set_level(new_level);
-      newLogger->set_formatter(m_formatter.clone());
       newLogger->flush_on(m_flush_level);
 
       register_logger_impl(newLogger);

@@ -14,9 +14,6 @@ public class RexWindows : PlatformProject
         string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
         SourceRootPath = ThisFileFolder;
 
-    string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
-    GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
-
         switch (GenerateSettings.GraphicsAPI)
         {
             case GenerationTypes.GraphicsAPI.OpenGL:

@@ -96,7 +96,13 @@ namespace rex
   MemoryTracker::MemoryTracker()
       : m_mem_usage(0)
       , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
+      , m_active(true)
   {
+  }
+
+  MemoryTracker::~MemoryTracker()
+  {
+    m_active = false;
   }
 
   void MemoryTracker::initialize(rsl::memory_size maxMemUsage)
@@ -146,9 +152,17 @@ namespace rex
 
   void MemoryTracker::track_dealloc(MemoryHeader* header)
   {
-    const rsl::unique_lock lock(m_mem_tracking_mutex);
+    // This is possible if static data gets deleted after the memory tracker is already destructed
+    if (!m_active)
+    {
+      return;
+    }
 
-    REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
+    // REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
+
+    // Postpone lock after logging to initialize the logger first ( on first access ).
+    // Logger requires the same mutex to be locked and we cannot lock the same mutex twice from the same thread.
+    const rsl::unique_lock lock(m_mem_tracking_mutex);
 
     m_mem_usage -= header->size().size_in_bytes();
     auto it = rsl::find(allocation_headers().cbegin(), allocation_headers().cend(), header);

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef REX_DEFINES
   #define REX_DEFINES
 
@@ -29,8 +31,8 @@
     #error DEBUG_BREAK unsupported machine instruction ...
   #endif
 
-#endif
+  //-------------------------------------------------------------------------
+  // BIT TWIDDLING
+  #define BIT(x) (1 << x)
 
-//-------------------------------------------------------------------------
-// BIT TWIDDLING
-#define BIT(x) (1 << x)
+#endif

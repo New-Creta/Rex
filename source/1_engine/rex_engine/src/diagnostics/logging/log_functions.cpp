@@ -56,8 +56,7 @@ namespace rex
   //-------------------------------------------------------------------------
   rexlog::Logger& get_logger(const LogCategory& category)
   {
-    const LogPattern default_pattern = "%^[%T][%=8l] %n: %v%$";
-    const LogLevelMap log_levels     = get_log_levels();
+    const LogLevelMap log_levels = get_log_levels();
 
     // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
 
@@ -82,14 +81,13 @@ namespace rex
 
     if(category.is_async())
     {
-      new_logger = rexlog::create_async<rexlog::sinks::DistSink_mt>(category.get_category_name(), sinks);
+      new_logger = rexlog::create_async<rexlog::sinks::DistSink_mt>(category.get_category_name(), rsl::move(sinks));
     }
     else
     {
-      new_logger = rexlog::create<rexlog::sinks::DistSink_st>(category.get_category_name(), sinks);
+      new_logger = rexlog::create<rexlog::sinks::DistSink_st>(category.get_category_name(), rsl::move(sinks));
     }
 
-    new_logger->set_pattern(default_pattern);
     new_logger->set_level(log_levels.at(category.get_verbosity()));
 
     loggers().insert({category.get_category_name(), new_logger});

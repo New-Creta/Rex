@@ -11,7 +11,7 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogWinConsoleApp, rex::LogVerbosity::Log);
 
-    CoreApplication* g_this_app = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables, cppcoreguidelines-avoid-non-const-global-variables)
+    CoreApplication* g_this_app = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
     BOOL WINAPI handler_routine(DWORD eventCode)
     {
@@ -34,7 +34,6 @@ namespace rex
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
           : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
-          , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
       {
@@ -51,8 +50,7 @@ namespace rex
 
       bool initialize()
       {
-        constexpr bool is_adding = true;
-        SetConsoleCtrlHandler(handler_routine, is_adding); // NOLINT(readability-implicit-bool-conversion)
+        SetConsoleCtrlHandler(handler_routine, true); // NOLINT(readability-implicit-bool-conversion)
 
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
 
@@ -76,7 +74,6 @@ namespace rex
 
     private:
       PlatformCreationParams m_platform_creation_params;
-      CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
 
@@ -86,10 +83,9 @@ namespace rex
     };
 
     ConsoleApplication::ConsoleApplication(ApplicationCreationParams&& appParams)
-        : CoreApplication(appParams.engine_params, appParams.cmd_args)
-        , m_internal(nullptr)
+        : CoreApplication(appParams.engine_params)
+        , m_internal(rsl::make_unique<ConsoleApplication::Internal>(this, rsl::move(appParams)))
     {
-      m_internal = rsl::make_unique<ConsoleApplication::Internal>(this, rsl::move(appParams));
     }
 
     ConsoleApplication::~ConsoleApplication() = default;

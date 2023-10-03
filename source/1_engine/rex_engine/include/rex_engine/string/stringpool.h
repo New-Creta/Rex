@@ -5,14 +5,14 @@
 namespace rex
 {
   class StringEntry;
-  class StringEntryID;
+  class StringID;
 
   namespace string_pool
   {
-    rsl::string_view resolve(const StringEntryID& entryID);
+    rsl::string_view resolve(const StringID& entryID);
 
-    const StringEntry* find(const StringEntryID& entryID);
+    const StringEntry& find(const StringID& entryID);
 
-    StringEntryID make_and_store(rsl::string_view characters);
+    StringID make_and_store(rsl::string_view characters);
   } // namespace string_pool
 } // namespace rex

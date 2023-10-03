@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/cmd_line_args.h"
+#include "rex_engine/engine_params.h"
 #include "rex_engine/string/stringid.h"
 #include "rex_windows/win_types.h"
 
@@ -13,7 +13,6 @@ namespace rex
   {
     rex::win32::HInstance instance;
     rex::win32::HInstance prev_instance;
-    rex::win32::LPtStr cmd_line;
     s32 show_cmd;
   };
 
@@ -30,11 +29,10 @@ namespace rex
   struct ApplicationCreationParams
   {
   public:
-    ApplicationCreationParams(PlatformCreationParams&& platformParams, CommandLineArguments&& cmdArgs)
+    explicit ApplicationCreationParams(PlatformCreationParams&& platformParams)
         : engine_params()
         , platform_params(rsl::move(platformParams))
         , gui_params()
-        , cmd_args(rsl::move(cmdArgs))
         , create_window(false)
     {
     }
@@ -43,7 +41,6 @@ namespace rex
     EngineParams engine_params;
     PlatformCreationParams platform_params;
     GuiParams gui_params;
-    CommandLineArguments cmd_args;
     bool create_window;
   };
 } // namespace rex

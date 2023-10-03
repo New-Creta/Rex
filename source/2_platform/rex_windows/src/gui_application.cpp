@@ -33,7 +33,6 @@ namespace rex
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
           : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
           , m_gui_params(rsl::move(appCreationParams.gui_params))
-          , m_cmd_line_args(rsl::move(appCreationParams.cmd_args))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
       {
@@ -266,14 +265,13 @@ namespace rex
 
       PlatformCreationParams m_platform_creation_params;
       GuiParams m_gui_params;
-      CommandLineArguments m_cmd_line_args;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
     };
 
     //-------------------------------------------------------------------------
     GuiApplication::GuiApplication(ApplicationCreationParams&& appParams)
-        : CoreApplication(appParams.engine_params, appParams.cmd_args)
+        : CoreApplication(appParams.engine_params)
         , m_internal_ptr(rsl::make_unique<Internal>(this, rsl::move(appParams)))
     {
     }

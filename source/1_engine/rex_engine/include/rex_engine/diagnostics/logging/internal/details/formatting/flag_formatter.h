@@ -767,9 +767,9 @@ namespace rexlog
       {
         // if the size is 2 (1 character + null terminator) we can use the more efficient strrchr
         // the branch will be elided by optimizations
-        if(sizeof(os::g_folder_seps) == 2)
+        if(sizeof(rex::g_folder_seps) == 2)
         {
-          const char* rv = rsl::strrchr(filename, os::g_folder_seps[0]);
+          const char* rv = rsl::strrchr(filename, rex::g_folder_seps[0]);
           return rv != nullptr ? rv + 1 : filename;
         }
         else
@@ -777,7 +777,7 @@ namespace rexlog
           const rsl::reverse_iterator<const char*> begin(filename + rsl::strlen(filename));
           const rsl::reverse_iterator<const char*> end(filename);
 
-          const auto it = begin + rsl::find_first_of(begin, rsl::strlen(filename), os::g_folder_seps.data(), os::g_folder_seps.size());
+          const auto it = begin + rsl::find_first_of(begin, rsl::strlen(filename), rex::g_folder_seps.data(), rex::g_folder_seps.size());
           return it != end ? it.base() : filename;
         }
       }

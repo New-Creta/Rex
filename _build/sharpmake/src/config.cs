@@ -34,21 +34,23 @@ public class RexConfiguration : Sharpmake.Project.Configuration
   public void enable_exceptions()
   {
     Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
+
+    Defines.Remove("_HAS_EXCEPTIONS=0");
     Defines.Add("_HAS_EXCEPTIONS=1");
   }
 
   public void disable_exceptions()
   {
     Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Disable);
+
+    Defines.Remove("_HAS_EXCEPTIONS=1");
     Defines.Add("_HAS_EXCEPTIONS=0");
   }
 
   public void use_general_options()
   {
-    //Options.Add(Sharpmake.Options.Vc.General.JumboBuild.Enable);
     Options.Add(Sharpmake.Options.Vc.General.CharacterSet.MultiByte);
     Options.Add(Sharpmake.Options.Vc.General.PlatformToolset.v142);
-    //Options.Add(Sharpmake.Options.Vc.General.VCToolsVersion.v14_21_27702);
     Options.Add(Sharpmake.Options.Vc.General.WarningLevel.Level4);
     Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Enable);
   }

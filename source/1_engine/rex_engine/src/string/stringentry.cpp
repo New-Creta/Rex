@@ -29,6 +29,12 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
+  bool StringEntry::is_valid() const
+  {
+    return m_characters && m_characters.count() != 0;
+  }
+
+  //-------------------------------------------------------------------------
   rsl::string_view StringEntry::characters() const
   {
     return rsl::string_view(m_characters.get(), m_characters.count());
@@ -39,6 +45,4 @@ namespace rex
   {
     return m_characters.count();
   }
-
-  //-------------------------------------------------------------------------
 } // namespace rex
