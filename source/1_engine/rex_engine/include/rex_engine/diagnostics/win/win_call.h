@@ -21,11 +21,12 @@ namespace rex
   {
     using DWord = unsigned long;
 
+    REX_CREATE_STRONG_TYPE(ErrorSuccess, DWord);
+
     class WinCall
     {
     public:
-      WinCall(rsl::string_view file, rsl::string_view function, card32 lineNr);
-      WinCall(DWord errorSuccess, rsl::string_view file, rsl::string_view function, card32 lineNr);
+      WinCall(ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr);
 
       bool has_failed() const;
       bool has_succeeded() const;
@@ -34,6 +35,7 @@ namespace rex
 
     private:
       DWord m_error;
+      DWord m_error_success;
       rsl::medium_stack_string m_error_message;
     };
 
@@ -45,30 +47,38 @@ namespace rex
     {
       check_for_win_errors(file, function, lineNr);
       WinObject obj = func();
-      rex::win::WinCall(errorSuccess, file, function, lineNr);
+      rex::win::WinCall(ErrorSuccess(errorSuccess), file, function, lineNr);
       return obj;
     }
   } // namespace win
 } // namespace rex
 
-#define REX_ENABLE_WIN_CALL
 #ifdef REX_ENABLE_WIN_CALL
   #define CHECK_FOR_WIN_ERRORS() rex::win::check_for_win_errors(__FILE__, __FUNCTION__, __LINE__)
 
-  #define WIN_CALL_IGNORE(function, errorSuccess) rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, errorSuccess, __FILE__, __FUNCTION__, __LINE__)
-
+// Wrapper around a Win API call.
+// It'll verify internally if the call was successful.
+// Used for Win API calls that do NOT return HRESULT
   #define WIN_CALL(function)    rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, ERROR_SUCCESS, __FILE__, __FUNCTION__, __LINE__)
-  #define WIN_SUCCESS(function) rex::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
-  #define WIN_FAILED(function)  rex::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_failed()
+  #define WIN_SUCCESS(function) rex::win::WinCall(rex::win::ErrorFail(function), rex::win::ErrorSuccess(ERROR_SUCCESS), __FILE__, __FUNCTION__, __LINE__).has_succeeded()
+  #define WIN_FAILED(function)  rex::win::WinCall(rex::win::ErrorFail(function), rex::win::ErrorSuccess(ERROR_SUCCESS), __FILE__, __FUNCTION__, __LINE__).has_failed()
+
+  // Same as the above but the user is able to provide an error value to be ignored.
+  // This is usefull as some Win API functions can succeed while still returning an error code
+  #define WIN_CALL_IGNORE(function, errorSuccess)    rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, errorSuccess, __FILE__, __FUNCTION__, __LINE__)
+  #define WIN_SUCCESS_IGNORE(function, errorSuccess) rex::win::WinCall(rex::win::ErrorFail(function), rex::win::ErrorSuccess(errorSuccess), __FILE__, __FUNCTION__, __LINE__).has_succeeded()
+  #define WIN_FAILED_IGNORE(function, errorSuccess)  rex::win::WinCall(rex::win::ErrorFail(function), rex::win::ErrorSuccess(errorSuccess), __FILE__, __FUNCTION__, __LINE__).has_failed()
 
 #else
 
   #define CHECK_FOR_WIN_ERRORS()
 
-  #define WIN_CALL_IGNORE(function, errorSuccess) function
-
   #define WIN_CALL(function)    function
   #define WIN_SUCCESS(function) function
   #define WIN_FAILED(function)  function
+
+  #define WIN_CALL_IGNORE(function, errorSuccess)    function
+  #define WIN_SUCCESS_IGNORE(function, errorSuccess) function, true
+  #define WIN_FAILED_IGNORE(function, errorSuccess)  function, false
 
 #endif

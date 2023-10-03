@@ -2,39 +2,20 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/log.h"
+#include "rex_engine/diagnostics/win/win_debug.h"
 
 #define NOMINMAX
 #include <Windows.h>
 #include <comdef.h>
 
-namespace rex::win
-{
-  rsl::medium_stack_string report_hr_error(HRESULT hr, [[maybe_unused]] const rsl::string_view file, [[maybe_unused]] const rsl::string_view function, [[maybe_unused]] card32 lineNr)
-  {
-    const _com_error err(hr);
-    rsl::medium_stack_string error_message(err.ErrorMessage());
-    REX_ERROR(LogEngine, "Windows Error");
-    REX_ERROR(LogEngine, "File: {}", file);
-    REX_ERROR(LogEngine, "Function: {}", function);
-    REX_ERROR(LogEngine, "On line: {}", lineNr);
-    REX_ERROR(LogEngine, "Windows error: {}", error_message);
-
-    return error_message;
-  }
-} // namespace rex::win
-
-rex::win::WinCall::WinCall(rsl::string_view file, rsl::string_view function, card32 lineNr)
-    : WinCall(ERROR_SUCCESS, file, function, lineNr)
-{
-}
-
-rex::win::WinCall::WinCall(DWord errorSuccess, rsl::string_view file, rsl::string_view function, card32 lineNr)
+rex::win::WinCall::WinCall(ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)
     : m_error(GetLastError())
+    , m_error_success(errorSuccess.get())
 {
-  if(m_error != errorSuccess && m_error != ERROR_SUCCESS)
+  if(has_failed())
   {
     const HRESULT hr = HRESULT_FROM_WIN32(m_error);
-    m_error_message  = report_hr_error(hr, file, function, lineNr);
+    m_error_message  = report_win_error(hr, winFunc, file, function, lineNr);
   }
 
   // GetLastError() is not always cleared when a function succeeds
@@ -44,7 +25,7 @@ rex::win::WinCall::WinCall(DWord errorSuccess, rsl::string_view file, rsl::strin
 
 bool rex::win::WinCall::has_failed() const
 {
-  return m_error != ERROR_SUCCESS;
+  return m_error != ERROR_SUCCESS && m_error != m_error_success;
 }
 bool rex::win::WinCall::has_succeeded() const
 {
