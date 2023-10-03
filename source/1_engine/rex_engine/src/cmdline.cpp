@@ -160,7 +160,7 @@ namespace rex
             }
 
             const Argument& rhs_arg = args[j];
-            if(rsl::strincmp(lhs_arg.name.data(), rhs_arg.name.data(), lhs_arg.name.length()) == 0)
+            if(lhs_arg.name == rhs_arg.name)
             {
               REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity", lhs_arg.name);
               return false;
