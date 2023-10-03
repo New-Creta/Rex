@@ -133,6 +133,10 @@ public class MainSolution : Solution
     {
       conf.AddProject<Regina>(target);
     }
+
+    conf.AddProject<NtfsJournalParser>(target);
+    conf.AddProject<ProjectedFileSystem>(target);
+    conf.AddProject<DokanFs>(target);
   }
 
   protected string GenerateName(string baseName)
@@ -371,7 +375,7 @@ public static class Main
     Dictionary<string, string> paths = JsonSerializer.Deserialize<Dictionary<string, string>>(json_blob);
 
     KitsRootPaths.SetCompilerPaths(Compiler.MSVC, paths["msvc_compiler_path"], paths["msvc_linker_path"], paths["msvc_archiver_path"], "");
-    KitsRootPaths.SetCompilerPaths(Compiler.Clang, paths["clang_compiler_path"], paths["clang_linker_path"], paths["clang_archiver_path"], paths["clang_ranlib_path"]);
+    KitsRootPaths.SetCompilerPaths(Compiler.Clang, paths["clang++_compiler_path"], paths["clang_linker_path"], paths["clang_archiver_path"], paths["clang_ranlib_path"], paths["clang_compiler_path"]);
     KitsRootPaths.SetNinjaPath(paths["ninja_path"]);
   }
 }

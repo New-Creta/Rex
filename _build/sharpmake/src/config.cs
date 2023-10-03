@@ -34,12 +34,16 @@ public class RexConfiguration : Sharpmake.Project.Configuration
   public void enable_exceptions()
   {
     Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
+
+    Defines.Remove("_HAS_EXCEPTIONS=0");
     Defines.Add("_HAS_EXCEPTIONS=1");
   }
 
   public void disable_exceptions()
   {
     Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Disable);
+
+    Defines.Remove("_HAS_EXCEPTIONS=1");
     Defines.Add("_HAS_EXCEPTIONS=0");
   }
 
