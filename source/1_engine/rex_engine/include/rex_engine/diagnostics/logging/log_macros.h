@@ -38,7 +38,6 @@ namespace rex
     }
   } // namespace internal
 
-  #define DECLARE_LOG_CATEGORY(Name)                 extern const rex::LogCategory Name;
   #define DEFINE_LOG_CATEGORY(Name, Verbosity)       inline const rex::LogCategory Name(#Name, Verbosity, rex::IsAsync::no)  // NOLINT(fuchsia-statically-constructed-objects)
   #define DEFINE_LOG_CATEGORY_ASYNC(Name, Verbosity) inline const rex::LogCategory Name(#Name, Verbosity, rex::IsAsync::yes) // NOLINT(fuchsia-statically-constructed-objects)
 } // namespace rex
