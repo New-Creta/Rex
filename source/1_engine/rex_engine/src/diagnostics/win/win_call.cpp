@@ -8,7 +8,7 @@
 #include <Windows.h>
 #include <comdef.h>
 
-rex::win::WinCall::WinCall(ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)
+rex::win::WinCall::WinCall(DWord /*funcResult*/, ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)
     : m_error(GetLastError())
     , m_error_success(errorSuccess.get())
 {
@@ -22,6 +22,10 @@ rex::win::WinCall::WinCall(ErrorSuccess errorSuccess, rsl::string_view winFunc, 
   // So we just clear it ourselves
   clear_win_errors();
 }
+
+rex::win::WinCall::WinCall(DWord /*funcResult*/, ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)
+  : WinCall(0, errorSuccess, winFunc, file, function, lineNr)
+{}
 
 bool rex::win::WinCall::has_failed() const
 {
