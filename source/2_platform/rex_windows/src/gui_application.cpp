@@ -64,7 +64,15 @@ namespace rex
         }
 
         // renderer initialization
-        if(renderer::initialize(nullptr, m_gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
+
+        RendererOutputWindowUserData user_data;
+        user_data.primary_display_handle = m_window->primary_display_handle();
+        user_data.refresh_rate = m_gui_params.max_fps;
+        user_data.window_width = m_window->width();
+        user_data.window_height = m_window->height();
+        user_data.windowed = m_gui_params.fullscreen == false;
+
+        if(renderer::initialize(user_data, m_gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
@@ -87,8 +95,10 @@ namespace rex
         if(!m_app_instance->is_paused())
         {
           // update the graphics code
+          renderer::backend::new_frame();
           renderer::backend::clear();
           renderer::backend::present();
+          renderer::backend::end_frame();
         }
 
         // update the timing stats
