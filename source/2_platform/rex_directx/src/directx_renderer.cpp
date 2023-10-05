@@ -234,6 +234,14 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
+      bool create_dsv()
+      {
+        D3D12_RESOURCE_DESC depth_stencil_desc = {};
+
+        depth_stencil_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+      }
+
+      //-------------------------------------------------------------------------
       bool initialize(const RendererOutputWindowUserData& userData)
       {
 #if defined(REX_DEBUG)
