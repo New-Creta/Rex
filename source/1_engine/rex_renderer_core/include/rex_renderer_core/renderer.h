@@ -50,11 +50,11 @@ namespace rex
       void shutdown();
 
       // functions to synchronize the render and main threads
-      void new_frame();
-      void end_frame();
+      bool new_frame();
+      bool end_frame();
 
       void clear();
-      void present();
+      bool present();
     } // namespace backend
   }   // namespace renderer
 } // namespace rex
