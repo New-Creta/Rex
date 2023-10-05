@@ -13,6 +13,18 @@ namespace rex
     rsl::small_stack_string vendor;
   };
 
+  struct RendererOutputWindowUserData
+  {
+    void* primary_display_handle;
+
+    s32 window_width;
+    s32 window_height;
+
+    s32 refresh_rate;
+
+    bool windowed;
+  };
+
   enum class ShaderPlatform
   {
     GLSL,
@@ -21,7 +33,7 @@ namespace rex
 
   namespace renderer
   {
-    bool initialize(void* userData, u32 maxCommands);
+    bool initialize(const RendererOutputWindowUserData& userData, u32 maxCommands);
     void shutdown();
 
     // general accessors
@@ -34,7 +46,7 @@ namespace rex
     namespace backend
     {
       // Platform specific implementation, implements these function
-      bool initialize();
+      bool initialize(const RendererOutputWindowUserData& userData);
       void shutdown();
 
       // functions to synchronize the render and main threads

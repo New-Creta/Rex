@@ -6,14 +6,13 @@ namespace rex
 {
   namespace renderer
   {
-
     //-------------------------------------------------------------------------
-    bool initialize(void* userData, u32 maxCommands)
+    bool initialize(const RendererOutputWindowUserData& userData, u32 maxCommands)
     {
       UNUSED_PARAM(userData);
       UNUSED_PARAM(maxCommands);
 
-      return backend::initialize();
+      return backend::initialize(userData);
     }
     //-------------------------------------------------------------------------
     void shutdown()
