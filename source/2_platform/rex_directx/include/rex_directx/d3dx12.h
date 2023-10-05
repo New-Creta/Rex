@@ -9,6 +9,10 @@
 //
 //*********************************************************
 
+#pragma warning(push)
+#pragma warning(disable : 4324)
+#pragma warning(disable : 4238)
+
 #ifndef __D3DX12_H__
 #define __D3DX12_H__
 
@@ -3214,3 +3218,5 @@ private:
 #endif // defined( __cplusplus )
 
 #endif //__D3DX12_H__
+
+#pragma warning(pop)
