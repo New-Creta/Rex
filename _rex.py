@@ -8,6 +8,12 @@
 import os
 import argparse
 
+try:
+  rexpy_installed = True
+  import rexpy
+except:
+  rexpy_installed = False
+
 def exec_setup():
   print(f"the user choose setup")
   return
@@ -30,35 +36,46 @@ def exec_test():
 
 def ask_user_action():
   print('What would you like to do?')
-  print('1) Setup')
-  print('2) Generate')
-  print('3) Build')
-  print('4) Run')
-  print('5) Test')
+  print('- Setup')
+
+  if rexpy_installed:
+    print('- Generate')
+    print('- Build')
+    print('- Run')
+    print('- Test')
+  
   return input()
 
 def launch_user_action(userAction : str):
   userAction = userAction.lower()
   if "setup" == userAction:
     exec_setup()
-  elif "generate" == userAction:
-    exec_generate()
-  elif "build" == userAction:
-    exec_build()
-  elif "run" in userAction:
-    exec_run()
-  elif "test" in userAction:
-    exec_test()
-  else:
-    print("I'm sorry, I didn't get that.")
-    return False
-  
-  return True
+    return True
+
+  if rexpy_installed:
+    if "generate" == userAction:
+      exec_generate()
+      return True
+    elif "build" == userAction:
+      exec_build()
+      return True
+    elif "run" in userAction:
+      exec_run()
+      return True
+    elif "test" in userAction:
+      exec_test()
+      return True
+
+  print("I'm sorry, I didn't get that.")
+  return False  
 
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
   args, unknown = parser.parse_known_args()
+
+  if not rexpy_installed:
+    print("rexpy not installed. Only setup is possible.")
 
   has_user_chosen_an_action = False
   while not has_user_chosen_an_action:
