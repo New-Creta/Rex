@@ -1,3 +1,19 @@
+# This is the internal setup script used by Rex Engine.
+# This script is meant to be called by _setup.py,
+# which sits in the root directory of the engine
+# and is not supposed be called directly by the user.
+#
+# This script's is responsible for preparing current working directory
+# for Rex Engine development.
+# This includes but is not limited to:
+# - Installing tools (eg. Compilers, Linkers, ..)
+# - Installing libraries (eg. Windows SDK, ..)
+# - Installing externals (eg. rexstd, glm, ..)
+# - Initializing supported IDEs (Eg. VS Code)
+#
+# It's possible the functionality of this script might change in the future
+# Time of writing - [06/Oct/2023] - Nick DB
+
 import os
 import argparse
 import regis.util
@@ -44,7 +60,7 @@ def __clean_intermediate():
 
 def run(shouldClean):
   if shouldClean:
-    task = regis.task_raii_printing.TaskRaiiPrint("cleaning.")
+    task = regis.task_raii_printing.TaskRaiiPrint("cleaning..")
     __clean_intermediate()
 
   task = regis.task_raii_printing.TaskRaiiPrint("running setup")
