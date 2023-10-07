@@ -10,13 +10,18 @@ import argparse
 
 try:
   rexpy_installed = True
-  import rexpy
+  import regis
 except:
   rexpy_installed = False
 
+def __install_regis():
+  rexpy_version = "0.1.45"
+  os.system(f"py -m pip install --upgrade \"regis=={rexpy_version}\"")
+
 def exec_setup():
-  print(f"the user choose setup")
-  return
+  __install_regis()
+  global rexpy_installed
+  rexpy_installed = True
 
 def exec_generate():
   print(f"the user choose generate")
@@ -34,6 +39,9 @@ def exec_test():
   print(f"the user choose test")
   return
 
+def exec_exit():
+  exit(0)
+
 def ask_user_action():
   print('What would you like to do?')
   print('- Setup')
@@ -44,30 +52,31 @@ def ask_user_action():
     print('- Run')
     print('- Test')
   
+  print('- Exit')
+  
   return input()
 
 def launch_user_action(userAction : str):
   userAction = userAction.lower()
   if "setup" == userAction:
     exec_setup()
-    return True
 
   if rexpy_installed:
     if "generate" == userAction:
       exec_generate()
-      return True
     elif "build" == userAction:
       exec_build()
-      return True
     elif "run" in userAction:
       exec_run()
-      return True
     elif "test" in userAction:
       exec_test()
-      return True
+
+  if "exit" == userAction:
+    exec_exit()
+    return True
 
   print("I'm sorry, I didn't get that.")
-  return False  
+  return False
 
 def main():
   parser = argparse.ArgumentParser()
@@ -77,10 +86,10 @@ def main():
   if not rexpy_installed:
     print("rexpy not installed. Only setup is possible.")
 
-  has_user_chosen_an_action = False
-  while not has_user_chosen_an_action:
+  should_exit = False
+  while not should_exit:
     chosen_action = ask_user_action()
-    has_user_chosen_an_action = launch_user_action(chosen_action)
+    should_exit = launch_user_action(chosen_action)
 
 if __name__ == "__main__":
   main()
