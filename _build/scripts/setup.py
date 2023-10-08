@@ -1,5 +1,5 @@
 # This is the internal setup script used by Rex Engine.
-# This script is meant to be called by _setup.py,
+# This script is meant to be called by _rex.py,
 # which sits in the root directory of the engine
 # and is not supposed be called directly by the user.
 #
@@ -16,6 +16,7 @@
 
 import os
 import argparse
+import sys
 import regis.util
 import regis.rex_json
 import regis.required_tools
@@ -36,7 +37,8 @@ vscode_build_dir = os.path.join(root_path, "_build", "vscode")
 misc_folders = settings["misc_folders"]
 misc_extensions = settings["misc_extensions"]
 
-def __clean_intermediate():
+def _exec_clean():
+  """Remove all the files in the intermediate directory"""
   regis.diagnostics.log_info(f"cleaning intermediates")
   
   try:
@@ -57,11 +59,26 @@ def __clean_intermediate():
   except Exception as ex:
     regis.diagnostics.log_err(f'Failed to clean intermediates: {ex}')
     exit(0)
+  
+def _exec_query():
+  """Query what still needs to get installed."""
 
-def run(shouldClean):
-  if shouldClean:
-    task = regis.task_raii_printing.TaskRaiiPrint("cleaning..")
-    __clean_intermediate()
+  regis.diagnostics.log_no_color('--------------------------------')
+  regis.required_tools.query()
+
+  regis.diagnostics.log_no_color('--------------------------------')
+  regis.required_libs.query()
+  
+  regis.diagnostics.log_no_color('--------------------------------')
+  regis.install_externals.query()
+  
+  regis.diagnostics.log_no_color('--------------------------------')
+
+def _exec_run():
+  """Run the actual setup"""
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
 
   task = regis.task_raii_printing.TaskRaiiPrint("running setup")
 
@@ -85,16 +102,30 @@ def run(shouldClean):
 
   # This setup is optional, but for users using VSCode as an IDE we copy over a "tasks.json" file
   # this file will help in running the different scripts to generate/build/test rex
+  # Should maybe be moved to the generation step and not the setup step
   if not os.path.exists(vscode_dir):
     os.mkdir(vscode_dir)
   shutil.copyfile(os.path.join(vscode_build_dir, "tasks.json"), os.path.join(vscode_dir, "tasks.json"))  
       
   # Lastly, install the git hooks
   regis.git_hooks.run(os.path.join(root_path, "_build", "scripts", "git", "hooks"))
-  
+
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
+  # we disable help because it always exists after displayed through the commandline.
+  # we don't want to exit when it's shown so we overwrite it ourselves
+  parser = argparse.ArgumentParser(add_help=False)
+  parser.add_argument("-query", help="Don't display any options and just run the script", action="store_true")
   parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
   args, unknown = parser.parse_known_args()
 
-  run(args.clean)
+  if args.query:
+    _exec_query()
+    exit(0)
+
+  if args.clean:
+    _exec_clean()
+
+  _exec_run()  
+
+  exit(0)
+
