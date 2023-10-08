@@ -21,7 +21,7 @@ import regis.util
 import regis.rex_json
 import regis.required_tools
 import regis.required_libs
-import regis.install_externals
+import regis.required_externals
 import regis.diagnostics
 import regis.task_raii_printing
 import regis.git_hooks
@@ -70,7 +70,7 @@ def _exec_query():
   regis.required_libs.query()
   
   regis.diagnostics.log_no_color('--------------------------------')
-  regis.install_externals.query()
+  regis.required_externals.query()
   
   regis.diagnostics.log_no_color('--------------------------------')
 
@@ -98,7 +98,7 @@ def _exec_run():
   # we (Rex developers) decided that we need these libraries and we can decide to remove them at any point.
   # libraries like Windows SDK, C++ standard library is always required for development, where as libraries like ImGui
   # are not required and can always be replaced if a better library comes along.
-  regis.install_externals.run()
+  regis.required_externals.run()
 
   # This setup is optional, but for users using VSCode as an IDE we copy over a "tasks.json" file
   # this file will help in running the different scripts to generate/build/test rex

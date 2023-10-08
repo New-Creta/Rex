@@ -24,7 +24,7 @@ try:
 except:
   rexpy_installed = False
 
-required_rexpy_version = "0.1.45"
+required_rexpy_version = "0.1.46"
 
 def _run_script(scriptPath : str, args : list[str]):
   abs_path = os.path.abspath(scriptPath)
