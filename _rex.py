@@ -4,92 +4,135 @@
 # This file allows you to setup, generate, build, run and test the engine.
 
 # It's possible rexpy is not installed yet when this file executes
+# Other than testing if its installed, we can't use regis at all in this script.
+
+# The rex workflow is the following:
+#                              +--> Run
+# Setup -> Generate -> Build --+ 
+#                              +--> Test
 
 import os
 import argparse
+import sys
+import pkg_resources
 
+# Check if we have regis installed.
+# If not, we limit the amount of user input possibilities later on.
 try:
   rexpy_installed = True
   import regis
 except:
   rexpy_installed = False
 
-def __install_regis():
-  rexpy_version = "0.1.45"
-  os.system(f"py -m pip install --upgrade \"regis=={rexpy_version}\"")
+required_rexpy_version = "0.1.45"
 
-def exec_setup():
-  __install_regis()
-  global rexpy_installed
-  rexpy_installed = True
-
-def exec_generate():
-  print(f"the user choose generate")
-  return
-
-def exec_build():
-  print(f"the user choose build")
-  return
-
-def exec_run():
-  print(f"the user choose run")
-  return
-
-def exec_test():
-  print(f"the user choose test")
-  return
-
-def exec_exit():
-  exit(0)
-
-def ask_user_action():
-  print('What would you like to do?')
-  print('- Setup')
-
-  if rexpy_installed:
-    print('- Generate')
-    print('- Build')
-    print('- Run')
-    print('- Test')
+def _run_script(scriptPath : str, args : list[str]):
+  abs_path = os.path.abspath(scriptPath)
+  if not os.path.exists(abs_path):
+    print(f'Error: script path "{abs_path}" doesn\'t exist.')
+    print(f'This is possible if you\'re not running from the root of the repository')
+    print(f'You\'re current working directory is: "{os.getcwd()}"')
+    return
   
-  print('- Exit')
+  return os.system(f"py {scriptPath} {' '.join(args)}")
+
+def exec_version():
+  root = os.path.dirname(__file__)
+  rex_version_filename = os.path.join(root, 'rex.version')
+  with open(rex_version_filename) as f:
+    version = f.readline()
+    print(f'Rex Engine version: {version}')
+
+def _install_regis():
+  os.system(f"py -m pip install --upgrade \"regis=={required_rexpy_version}\"")
+
+def _correct_regis_installed():
+  if not rexpy_installed:
+    return False
   
-  return input()
+  if not pkg_resources.get_distribution("regis").version == required_rexpy_version:
+    return False
+  
+  return True
 
-def launch_user_action(userAction : str):
-  userAction = userAction.lower()
-  if "setup" == userAction:
-    exec_setup()
+def exec_setup(argsToPassOn : list[str]):
+  # As it's possible regis is not installed yet
+  # We need to make sure we install it first.
+  # After it's installed, we can call all other scripts
+  # including the internal setup script.
+  if not _correct_regis_installed():
+    _install_regis()
 
-  if rexpy_installed:
-    if "generate" == userAction:
-      exec_generate()
-    elif "build" == userAction:
-      exec_build()
-    elif "run" in userAction:
-      exec_run()
-    elif "test" in userAction:
-      exec_test()
+  # Now that we have regis installed, 
+  # We call the internal setup scripts
+  internal_script_setup_path  = os.path.join('_build', 'scripts', 'setup.py')
+  _run_script(internal_script_setup_path, argsToPassOn)
 
-  if "exit" == userAction:
-    exec_exit()
-    return True
+def exec_generate(argsToPassOn : str):
+  internal_script_setup_path  = os.path.join('_build', 'scripts', 'generate.py')
+  _run_script(internal_script_setup_path, argsToPassOn)
+  return
 
-  print("I'm sorry, I didn't get that.")
-  return False
+def exec_build(argsToPassOn : str):
+  internal_script_setup_path  = os.path.join('_build', 'scripts', 'build.py')
+  _run_script(internal_script_setup_path, argsToPassOn)
+  return
+
+def exec_launch(argsToPassOn : str):
+  internal_script_setup_path  = os.path.join('_build', 'scripts', 'run.py')
+  _run_script(internal_script_setup_path, argsToPassOn)
+  return
+
+def exec_test(argsToPassOn : str):
+  internal_script_setup_path  = os.path.join('_build', 'scripts', 'test.py')
+  _run_script(internal_script_setup_path, argsToPassOn)
+  return
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
-  args, unknown = parser.parse_known_args()
+  parser.add_argument("-version", help="Display the version of the rex engine and exit", action="store_true")
+  parser.add_argument("-setup", help="Perform the setup of the rex engine", action="store_true")
+  parser.add_argument("-setup_arg", default=[], help="Arguments to pass on to setup script", action="append")
 
   if not rexpy_installed:
-    print("rexpy not installed. Only setup is possible.")
+    print("Warning: rexpy not installed. Only setup is possible.")
+  else:
+    parser.add_argument("-generate", help="Generate the solution of rex engine", action="store_true")
+    parser.add_argument("-generate_arg", default=[], help="Arguments to pass on to generate script", action="append")
+    parser.add_argument("-build", help="Build the rex engine", action="store_true")
+    parser.add_argument("-build_arg", default=[], help="Arguments to pass on to the build script", action="store_true")
+    parser.add_argument("-launch", help="Launch a previous build project with the engine.", action="store_true")
+    parser.add_argument("-launch_arg", default=[], help="Arguments to pass on to the launch script.", action="store_true")
+    parser.add_argument("-test", help="Run a test on the engine.", action="store_true")
+    parser.add_argument("-test_arg", default=[], help="Arguments to pass on to the test script.", action="store_true")
 
-  should_exit = False
-  while not should_exit:
-    chosen_action = ask_user_action()
-    should_exit = launch_user_action(chosen_action)
+  args, unknown_args = parser.parse_known_args()
+
+  if len(sys.argv) == 1:
+    parser.print_help()
+    exit(0)
+
+  if args.version:
+    exec_version()
+    exit(0)
+  
+  if args.setup:
+    exec_setup(args.setup_arg)
+
+  if rexpy_installed:
+    if args.generate:
+      exec_generate(args.generate_arg)
+
+    if args.build:
+      exec_build(args.build_arg)
+
+    if args.launch:
+      exec_launch(args.launch_arg)
+
+    if args.test:
+      exec_test(args.test_arg)
+
+  exit(0)
 
 if __name__ == "__main__":
   main()
