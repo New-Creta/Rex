@@ -34,11 +34,10 @@ if __name__ == "__main__":
 
   args, unknown = parser.parse_known_args()
 
-  root = regis.util.find_root()
-  settings_path = os.path.join(root, "_build", "config", "settings.json")
-
   sharpmake_args = "/enableVisualStudio /disableClangTidyForThirdParty"
 
+  # If a test is specified, look up its arguments and add them
+  # to the arguments we'll pass to sharpmake
   if args.enabled_test:
     if args.enabled_test in supported_tests:
       sharpmake_args += supported_tests[args.enabled_test]
@@ -56,13 +55,19 @@ if __name__ == "__main__":
   if args.sharpmake_args:
     sharpmake_args += f" {args.sharpmake_args}"
 
-  result = 0
-
-  # Apparantly we cannot pass doulbe quotes as an argument to python
+  # Apparently we cannot pass double quotes as an argument to python
   # At least by my knowledge ... 
   sharpmake_args = sharpmake_args.replace("\'", "\"")
+  # We also need to make sure we use forward slashes.
   sharpmake_args = sharpmake_args.replace("\\", "\/")
 
+  root = regis.util.find_root()
+  settings_path = os.path.join(root, "_build", "config", "settings.json")
+
+  # To avoid duplicating code in the toolchain and to avoid hardcoded paths
+  # as much as possible, we save most paths, extensions and other hardcoded values
+  # into a settings file.
+  # this way multiple script can use these settings, including the engine itself.
   proc = regis.generation.new_generation(settings_path, sharpmake_args)
   proc.wait()
   result = proc.returncode

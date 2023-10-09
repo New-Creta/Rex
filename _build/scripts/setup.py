@@ -46,10 +46,15 @@ def _exec_clean():
     if os.path.exists(intermediate_dir):
       shutil.rmtree(intermediate_dir)
 
+    # There are a few misc folders other than our own intermediate directory
+    # that need to get cleaned (eg. .vscode folder)
     for misc_folder in misc_folders:
       if os.path.exists(misc_folder):
         shutil.rmtree(misc_folder)
 
+    # There are also a few files generated in the root
+    # that need to get removed when performing a clean setup
+    # eg. the visual studio solution of the engine.
     files = os.listdir()
     for file in files:
       if os.path.isfile(file):
