@@ -25,6 +25,12 @@ except:
   rexpy_installed = False
 
 required_rexpy_version = "0.1.46"
+scripts_path = os.path.join('_build', 'scripts')
+setup_script_path = os.path.join(scripts_path, 'setup.py')
+generate_script_path = os.path.join(scripts_path, 'generate.py')
+build_script_path = os.path.join(scripts_path, 'build.py')
+launch_script_path = os.path.join(scripts_path, 'launch.py')
+test_script_path = os.path.join(scripts_path, 'test.py')
 
 def _run_script(scriptPath : str, args : list[str]):
   abs_path = os.path.abspath(scriptPath)
@@ -36,7 +42,35 @@ def _run_script(scriptPath : str, args : list[str]):
   
   return os.system(f"py {scriptPath} {' '.join(args)}")
 
-def exec_version():
+def _exec_ext_help(parser : argparse.ArgumentParser):
+  parser.print_help()
+
+  print(f'-------------------------')
+  print(f'Extended help info for scripts')
+  print(f'-------------------------')
+  print(f'SETUP')
+  print(f'-------------------------')
+  _run_script(setup_script_path, ['-h'])
+  print(f'-------------------------')
+  print(f'GENERATE')
+  print(f'-------------------------')
+  _run_script(generate_script_path, ['-h'])
+  print(f'-------------------------')
+  print(f'BUILD')
+  print(f'-------------------------')
+  _run_script(build_script_path, ['-h'])
+  print(f'-------------------------')
+  print(f'LAUNCH')
+  print(f'-------------------------')
+  _run_script(launch_script_path, ['-h'])
+  print(f'-------------------------')
+  print(f'TEST')
+  print(f'-------------------------')
+  _run_script(test_script_path, ['-h'])
+  print(f'-------------------------')
+
+
+def _exec_version():
   root = os.path.dirname(__file__)
   rex_version_filename = os.path.join(root, 'rex.version')
   with open(rex_version_filename) as f:
@@ -55,7 +89,7 @@ def _correct_regis_installed():
   
   return True
 
-def exec_setup(argsToPassOn : list[str]):
+def _exec_setup(argsToPassOn : list[str]):
   # As it's possible regis is not installed yet
   # We need to make sure we install it first.
   # After it's installed, we can call all other scripts
@@ -65,31 +99,27 @@ def exec_setup(argsToPassOn : list[str]):
 
   # Now that we have regis installed, 
   # We call the internal setup scripts
-  internal_script_setup_path  = os.path.join('_build', 'scripts', 'setup.py')
-  _run_script(internal_script_setup_path, argsToPassOn)
+  _run_script(setup_script_path, argsToPassOn)
 
-def exec_generate(argsToPassOn : str):
-  internal_script_setup_path  = os.path.join('_build', 'scripts', 'generate.py')
-  _run_script(internal_script_setup_path, argsToPassOn)
+def _exec_generate(argsToPassOn : str):
+  _run_script(generate_script_path, argsToPassOn)
   return
 
-def exec_build(argsToPassOn : str):
-  internal_script_setup_path  = os.path.join('_build', 'scripts', 'build.py')
-  _run_script(internal_script_setup_path, argsToPassOn)
+def _exec_build(argsToPassOn : str):
+  _run_script(build_script_path, argsToPassOn)
   return
 
-def exec_launch(argsToPassOn : str):
-  internal_script_setup_path  = os.path.join('_build', 'scripts', 'run.py')
-  _run_script(internal_script_setup_path, argsToPassOn)
+def _exec_launch(argsToPassOn : str):
+  _run_script(launch_script_path, argsToPassOn)
   return
 
-def exec_test(argsToPassOn : str):
-  internal_script_setup_path  = os.path.join('_build', 'scripts', 'test.py')
-  _run_script(internal_script_setup_path, argsToPassOn)
+def _exec_test(argsToPassOn : str):
+  _run_script(test_script_path, argsToPassOn)
   return
 
 def main():
   parser = argparse.ArgumentParser()
+  parser.add_argument("-ext_help", help="Display extended help information and exit", action="store_true")
   parser.add_argument("-version", help="Display the version of the rex engine and exit", action="store_true")
   parser.add_argument("-setup", help="Perform the setup of the rex engine", action="store_true")
   parser.add_argument("-setup_arg", default=[], help="Arguments to pass on to setup script", action="append")
@@ -112,25 +142,29 @@ def main():
     parser.print_help()
     exit(0)
 
+  if args.ext_help:
+    _exec_ext_help(parser)
+    exit(0)
+
   if args.version:
-    exec_version()
+    _exec_version()
     exit(0)
   
   if args.setup:
-    exec_setup(args.setup_arg)
+    _exec_setup(args.setup_arg)
 
   if rexpy_installed:
     if args.generate:
-      exec_generate(args.generate_arg)
+      _exec_generate(args.generate_arg)
 
     if args.build:
-      exec_build(args.build_arg)
+      _exec_build(args.build_arg)
 
     if args.launch:
-      exec_launch(args.launch_arg)
+      _exec_launch(args.launch_arg)
 
     if args.test:
-      exec_test(args.test_arg)
+      _exec_test(args.test_arg)
 
   exit(0)
 
