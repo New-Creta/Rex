@@ -18,6 +18,7 @@ from pathlib import Path
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+  parser.add_argument("-enabled_test", default='', help="Enable the solution to run these kind of tests")
   parser.add_argument("-no_clang_tools", help="don't generate a compiler db", action="store_true")
   parser.add_argument("-unit_tests", help="generate unit tests", action="store_true")
   parser.add_argument("-enable_second_pass", help="Enable second pass of clang-tidy checks", action="store_true")
@@ -32,6 +33,7 @@ if __name__ == "__main__":
   root = regis.util.find_root()
   settings_path = os.path.join(root, "_build", "config", "settings.json")
 
+  run_any_tests = args.enabled_test
   run_any_tests = args.unit_tests or args.coverage or args.asan or args.ubsan or args.fuzzy
 
   sharpmake_args = "/enableVisualStudio /disableClangTidyForThirdParty"
@@ -41,19 +43,19 @@ if __name__ == "__main__":
   if args.enable_second_pass:
     sharpmake_args += " /enableSecondPass"
 
-  if args.unit_tests:
+  if "unit_tests" == args.enabled_test:
     sharpmake_args += " /generateUnitTests"
 
-  elif args.coverage:
+  elif "coverage" == args.enabled_test:
     sharpmake_args += " /generateUnitTests /enableCoverage"
 
-  elif args.asan:
+  elif "asan" == args.enabled_test:
     sharpmake_args += " /generateUnitTests /enableAddressSanitizer"
 
-  elif args.ubsan:
+  elif "ubsan" == args.enabled_test:
     sharpmake_args += " /generateUnitTests /enableUBSanitizer"
 
-  elif args.fuzzy:
+  elif "fuzzy" == args.enabled_test:
     sharpmake_args += " /enableFuzzyTesting"
 
   if args.sharpmake_args:
