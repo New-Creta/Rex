@@ -63,26 +63,24 @@ public class BaseProject : Project
       conf.Output = Configuration.OutputType.Lib;
     }
 
-    if (target.Config == Config.coverage)
+    switch (target.Config)
     {
-      conf.NinjaGenerateCodeCoverage = true;
-    }
-
-    if (target.Config == Config.address_sanitizer)
-    {
-      conf.NinjaEnableAddressSanitizer = true;
-    }
-
-    if (target.Config == Config.undefined_behavior_sanitizer)
-    {
-      conf.NinjaEnableUndefinedBehaviorSanitizer = true;
-    }
-
-    if (target.Config == Config.fuzzy)
-    {
-      conf.NinjaEnableAddressSanitizer = true;
-      conf.NinjaEnableUndefinedBehaviorSanitizer = true;
-      conf.NinjaEnableFuzzyTesting = true;
+      case Config.coverage:
+        conf.NinjaGenerateCodeCoverage = true;
+        break;
+      case Config.address_sanitizer:
+        conf.NinjaEnableAddressSanitizer = true;
+        break;
+      case Config.undefined_behavior_sanitizer:
+        conf.NinjaEnableUndefinedBehaviorSanitizer = true;
+        break;
+      case Config.fuzzy:
+        conf.NinjaEnableAddressSanitizer = true;
+        conf.NinjaEnableUndefinedBehaviorSanitizer = true;
+        conf.NinjaEnableFuzzyTesting = true;
+        break;
+      default:
+        break;
     }
 
     conf.IncludePaths.Add($@"{SourceRootPath}\include");
@@ -235,7 +233,7 @@ public class BasicCPPProject : BaseProject
       postbuildCommandArguments += $" -srcroot={SourceRootPath}";
       postbuildCommandArguments += $" -clang_tidy_regex=\"{GenerateSettings.ClangTidyRegex}\"";
 
-      if (GenerateSettings.EnableSecondPass)
+      if (GenerateSettings.PerformAllClangTidyChecks)
       {
         postbuildCommandArguments += $" -perform_all_checks";
       }

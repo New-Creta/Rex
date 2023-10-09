@@ -181,10 +181,10 @@ namespace rex
       GenerateSettings.ClangTidyRegex = clangTidyRegex;
     }
 
-    [Sharpmake.CommandLine.Option("enableSecondPass")]
+    [Sharpmake.CommandLine.Option("PerformAllClangTidyChecks")]
     public void CommandLinePerformAllChecks()
     {
-      GenerateSettings.EnableSecondPass = true;
+      GenerateSettings.PerformAllClangTidyChecks = true;
     }
 
     [Sharpmake.CommandLine.Option("intermediateDir")]
