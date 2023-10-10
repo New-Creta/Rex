@@ -141,6 +141,8 @@ def _exec_test(argsToPassOn : str):
   return
 
 def main():
+  # look into sub parsers
+
   parser = argparse.ArgumentParser()
   parser.add_argument("-ext_help", help="Display extended help information and exit", action="store_true")
   parser.add_argument("-version", help="Display the version of the rex engine and exit", action="store_true")

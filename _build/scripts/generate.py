@@ -17,6 +17,11 @@ import regis.diagnostics
 import glob
 from pathlib import Path
 
+# TODO: Somehow make it happen that these arguments are like plugins
+# that way the maintenance of them is taken out of sharpmake so any script
+# or application can talk to them and these arguments don't need to be just known
+# Avoiding duplication and making it more scalable.
+
 supported_tests = {
   "unit_test" : " /generateUnitTests",
   "coverage" : " /generateUnitTests /enableCoverage",
