@@ -42,6 +42,8 @@ namespace rex
 
         m_on_update = m_engine_params.app_update_func ? m_engine_params.app_update_func : [&]() {};
 
+        m_on_draw = m_engine_params.app_draw_func ? m_engine_params.app_draw_func : [&]() {};
+
         m_on_shutdown = m_engine_params.app_shutdown_func ? m_engine_params.app_shutdown_func : [&]() {};
       }
 
@@ -97,6 +99,13 @@ namespace rex
           // update the graphics code
           renderer::backend::new_frame();
           renderer::backend::clear();
+
+          // TODO: this call eventually has to go.
+          // we will query the scenegraph and pull geometry from the scene instead of letting the user
+          // execute draw commands manually. However, for the setup of this framework we will
+          // provide this API to be able to execute draw commands properly
+          m_on_draw();
+
           renderer::backend::present();
           renderer::backend::end_frame();
         }
@@ -278,6 +287,7 @@ namespace rex
 
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;
+      rsl::function<void()> m_on_draw;
       rsl::function<void()> m_on_shutdown;
 
       PlatformCreationParams m_platform_creation_params;
