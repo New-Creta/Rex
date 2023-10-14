@@ -19,7 +19,7 @@ public class Regina : ToolsProject
   {
     base.Configure(conf, target);
 
-    if (GenerateSettings.EnableAutoTests)
+    if (GenerateSettings.AutoTestsEnabled)
     {
       conf.Output = Configuration.OutputType.Lib;
       conf.add_public_define("REX_ENABLE_AUTO_TESTS");

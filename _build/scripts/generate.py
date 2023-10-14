@@ -22,12 +22,14 @@ def make_optional_arg(arg : str):
   return f'-{arg}'
 
 def _add_config_arguments(parser : argparse.ArgumentParser, defaultConfig : dict):
+  """Load the sharpmake config file from disk and add the options as arguments to this script."""
+  
   for setting in defaultConfig:
     arg = make_optional_arg(setting)
-    val = default_config[setting]['value']
-    desc = default_config[setting]['description']
-    if 'options' in default_config[setting]:
-      desc += f' Options: {default_config[setting]["options"]}'
+    val = default_config[setting]['Value']
+    desc = default_config[setting]['Description']
+    if 'Options' in default_config[setting]:
+      desc += f' Options: {default_config[setting]["Options"]}'
     
     if type(val) == bool:
       parser.add_argument(arg, help=desc, action='store_true')
@@ -35,18 +37,22 @@ def _add_config_arguments(parser : argparse.ArgumentParser, defaultConfig : dict
       parser.add_argument(arg, help=desc, default=val)
 
 def _create_new_config(defaultConfig : dict, args):
-  config : dict = copy.deepcopy(default_config)
+  """Create a config dictionary based on the arguments passed in."""
+
+  config : dict = copy.deepcopy(defaultConfig)
   for arg in vars(args):
     arg_name = arg
     arg_name = arg_name.replace('_', '-') # python converts all hyphens into underscores so we need to convert them back
     arg_val = getattr(args, arg)
 
     if arg_name in config:
-      config[arg_name]['value'] = arg_val
+      config[arg_name]['Value'] = arg_val
 
   return config
 
 def _save_config_file(settings : dict, config : dict):
+  """Create a new config file. This file will be passed over to sharpmake"""
+
   config_dir = os.path.join(os.path.join(root, settings['intermediate_folder'], settings['build_folder']))
   if not os.path.exists(config_dir):
     os.mkdir(config_dir)
@@ -54,7 +60,7 @@ def _save_config_file(settings : dict, config : dict):
   config_path = os.path.join(config_dir, 'config.json')
   regis.rex_json.save_file(config_path, config)
 
-  return config_path
+  return config_path.replace('\\', '/')
 
 if __name__ == "__main__":
   root = regis.util.find_root()
@@ -75,7 +81,7 @@ if __name__ == "__main__":
   config_path = _save_config_file(settings, config)
 
   # call generation code to launch sharpmake
-  sharpmake_args = f"/configFile({config_path})"
+  sharpmake_args = f"/configFile(\"{config_path}\")"
   proc = regis.generation.new_generation(settings_path, sharpmake_args)
   proc.wait()
   result = proc.returncode

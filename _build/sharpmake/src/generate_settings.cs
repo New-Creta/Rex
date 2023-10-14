@@ -56,6 +56,12 @@ public static class GenerationTypes
       Windows,
       Unix
   }
+
+  public enum IDE
+  {
+    VisualStudio,
+    VSCode
+  }
 };
 
 public class GenerateSettings
@@ -65,15 +71,18 @@ public class GenerateSettings
   static public bool PerformAllClangTidyChecks = false;
   static public bool DisableClangTidyForThirdParty = false;
   static public string IntermediateDir = "";
+  static public string ConfigFileDir = "";
 
-  // Test flags
+  // Flags for various different tests
   static public bool EnableDefaultGeneration = true;
-  static public bool GenerateUnitTests = false;
+  static public bool UnitTestsEnabled = false;
   static public bool CoverageEnabled = false;
-  static public bool AddressSanitizerEnabled = false;
-  static public bool UndefinedBehaviorSanitizerEnabled = false;
-  static public bool GenerateFuzzyTests = false;
-  static public bool EnableAutoTests = false;
+  static public bool AsanEnabled = false;
+  static public bool UbsanEnabled = false;
+  static public bool FuzzyTestingEnabled = false;
+  static public bool AutoTestsEnabled = false;
+
+  static public GenerationTypes.IDE IDE = GenerationTypes.IDE.VisualStudio;
 
 
   static public string ClangTidyRegex { get; set; }

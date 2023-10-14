@@ -114,17 +114,17 @@ public class MainSolution : Solution
       conf.AddProject<SharpmakeProject>(target);
     }
 
-    if (GenerateSettings.GenerateUnitTests)
+    if (GenerateSettings.UnitTestsEnabled)
     {
       conf.AddProject<RexStdTest>(target);
     }
 
-    if (GenerateSettings.GenerateFuzzyTests)
+    if (GenerateSettings.FuzzyTestingEnabled)
     {
       conf.AddProject<RexStdFuzzy>(target);
     }
 
-    if (GenerateSettings.EnableAutoTests)
+    if (GenerateSettings.AutoTestsEnabled)
     {
       conf.AddProject<ReginaTest>(target);
     }
@@ -132,7 +132,7 @@ public class MainSolution : Solution
     else if (GenerateSettings.EnableDefaultGeneration)
     {
       conf.AddProject<Regina>(target);
-      conf.AddProject<ConsoleApp>(target);
+      //conf.AddProject<ConsoleApp>(target);
     }
 
   }
@@ -152,15 +152,15 @@ public class MainSolution : Solution
     {
       AddTargets(RexTarget.GetCoverageTarget());
     }
-    else if (GenerateSettings.AddressSanitizerEnabled)
+    else if (GenerateSettings.AsanEnabled)
     {
       AddTargets(RexTarget.GetAsanTarget());
     }
-    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
+    else if (GenerateSettings.UbsanEnabled)
     {
       AddTargets(RexTarget.GetUBsanTarget());
     }
-    else if (GenerateSettings.GenerateFuzzyTests)
+    else if (GenerateSettings.FuzzyTestingEnabled)
     {
       AddTargets(RexTarget.GetFuzzyTarget());
     }
@@ -175,100 +175,10 @@ namespace rex
 {
   public class CmdLineArguments
   {
-    [Sharpmake.CommandLine.Option("clangTidyRegex", "Add this regex to clang-tidy to filter which files it should process")]
-    public void CommandLineClangTiyRegex(string clangTidyRegex)
+    [Sharpmake.CommandLine.Option("configFile")]
+    public void CommandLineConfigFile(string configFileDir)
     {
-      GenerateSettings.ClangTidyRegex = clangTidyRegex;
-    }
-
-    [Sharpmake.CommandLine.Option("PerformAllClangTidyChecks")]
-    public void CommandLinePerformAllChecks()
-    {
-      GenerateSettings.PerformAllClangTidyChecks = true;
-    }
-
-    [Sharpmake.CommandLine.Option("intermediateDir")]
-    public void CommandLineIntermediateDir(string intermediateDir)
-    {
-      GenerateSettings.IntermediateDir = intermediateDir;
-    }
-
-    [Sharpmake.CommandLine.Option("generateUnitTests")]
-    public void CommandLineGenerateUnitTests()
-    {
-      GenerateSettings.GenerateUnitTests = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableCodeCoverage")]
-    public void CommandLineEnableCodeCoverage()
-    {
-      GenerateSettings.CoverageEnabled = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableAsan")]
-    public void CommandLineEnableAsan()
-    {
-      GenerateSettings.AddressSanitizerEnabled = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableUBsan")]
-    public void CommandLineEnableUBsan()
-    {
-      GenerateSettings.UndefinedBehaviorSanitizerEnabled = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableFuzzyTests")]
-    public void CommandLineEnableFuzzyTests()
-    {
-      GenerateSettings.GenerateFuzzyTests = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableVisualStudio")]
-    public void CommandLineEnableVisualStudio()
-    {
-      GenerateSettings.EnableVisualStudio = true;
-    }
-
-    [Sharpmake.CommandLine.Option("noClangTools")]
-    public void CommandLineDisableClangTools()
-    {
-      GenerateSettings.NoClangTools = true;
-    }
-
-    [Sharpmake.CommandLine.Option("disableDefaultGeneration")]
-    public void CommandLineDisableDefaultGeneration()
-    {
-      GenerateSettings.EnableDefaultGeneration = false;
-    }
-
-    [Sharpmake.CommandLine.Option("GraphicsAPI")]
-    public void CommandLineGraphicsAPI(string graphicsAPI)
-    {
-        string lower_graphics_api = graphicsAPI.ToLower();
-        if(lower_graphics_api == "directx12")
-            {
-                GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.DirectX12;
-            }
-        else if(lower_graphics_api == "opengl")
-            {
-                GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
-            }
-        else
-            {
-                Console.WriteLine("[WARNING] Invalid graphics API (directx12 | opengl), reverting to default for this platform.");
-            }
-    }
-
-    [Sharpmake.CommandLine.Option("disableClangTidyForThirdParty")]
-    public void CommandLineDisableClangTidyForThirdParty()
-    {
-      GenerateSettings.DisableClangTidyForThirdParty = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableAutoTests")]
-    public void CommandLineEnableAutoTests()
-    {
-      GenerateSettings.EnableAutoTests = true;
+      GenerateSettings.ConfigFileDir = configFileDir;
     }
   }
 }
@@ -278,17 +188,35 @@ public static class Main
   [Sharpmake.Main]
   public static void SharpmakeMain(Arguments arguments)
   {
+    // First parse the commandline arguments that are passed in to sharpmake.
     rex.CmdLineArguments Arguments = new rex.CmdLineArguments();
     CommandLine.ExecuteOnObject(Arguments);
 
+    // Initialize the globals, they get used all over the place
+    // so best to initialize them as early as possible
     Globals.Init();
 
-    InitializeGenerationSettings();
+    // Load the config file so we can load the generate settings afterwards
+    Dictionary<string, ConfigSetting> config = LoadConfigFile();
+
+    // Initialize the generation settings and sharpmake.
+    InitializeGenerationSettings(config);
     InitializeSharpmake();
 
+    // Specify the solution that needs to get generate.
+    // We only have one, so pass in the solution of the Rex Engine
     arguments.Generate<MainSolution>();
 
+    // Add the post generation events.
+    // Our scripts need to be setup before can run those steps
+    // That's why we do it post generation.
     Builder.Instance.EventPostGeneration += PostGenerationEvent;
+  }
+
+  private static Dictionary<string, ConfigSetting> LoadConfigFile()
+  {
+    string json = File.ReadAllText(GenerateSettings.ConfigFileDir);
+    return JsonSerializer.Deserialize<Dictionary<string, ConfigSetting>>(json);
   }
 
   private static void PostGenerationEvent(List<Project> projects, List<Solution> solutions)
@@ -309,64 +237,57 @@ public static class Main
 
   private static void InitializeSharpmake()
   {
-    InitializeNinja();
+    InitializeToolChain();
 
     // Initialize Visual Studio settings
     KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
   }
 
-  private static void InitializeGraphicsAPI()
+  private static void InitializeGraphicsAPI(Dictionary<string, ConfigSetting> config)
   {
-      if (GenerateSettings.GraphicsAPI == GenerationTypes.GraphicsAPI.Unknown)
+    if (!Enum.TryParse(config["graphics-api"].Value.GetString(), ignoreCase: true, out GenerateSettings.GraphicsAPI))
+    {
+      OperatingSystem os = Environment.OSVersion;
+      switch (os.Platform)
       {
-          OperatingSystem os = Environment.OSVersion;
-          switch (os.Platform)
-          {
-              case PlatformID.Win32NT:
-              case PlatformID.Xbox:
-                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.DirectX12;
-                  break;
-              case PlatformID.Unix:
-              case PlatformID.MacOSX:
-                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
-                  break;
-              default:
-                  Console.WriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
-                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
-                  break;
-          }
+        case PlatformID.Win32NT:
+        case PlatformID.Xbox:
+          GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.DirectX12;
+          break;
+        case PlatformID.Unix:
+        case PlatformID.MacOSX:
+          GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
+          break;
+        default:
+          Console.WriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
+          GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
+          break;
       }
+    }
 
       Console.WriteLine($"Using Graphics API: {GenerateSettings.GraphicsAPI}");
   }
 
-  private static void InitializePlatform()
+  private static void InitializeGenerationSettings(Dictionary<string, ConfigSetting> config)
   {
-      if (GenerateSettings.Platform == GenerationTypes.Platform.Unknown)
-      {
-          OperatingSystem os = Environment.OSVersion;
-          switch (os.Platform)
-          {
-              case PlatformID.Win32NT:
-                  GenerateSettings.Platform = GenerationTypes.Platform.Windows;
-                  break;
-              case PlatformID.Unix:
-                  GenerateSettings.Platform = GenerationTypes.Platform.Unix;
-                  break;
-              default:
-                  throw new Error($"Unable to determine Platform.");
-          }
-      }
+    InitializeGraphicsAPI(config);
 
-      Console.WriteLine($"Using Platform: {GenerateSettings.Platform}");
+    GenerateSettings.ClangTidyRegex = config["clang-tidy-regex"].Value.GetString();
+    GenerateSettings.PerformAllClangTidyChecks = config["perform-all-clang-tidy-checks"].Value.GetBoolean();
+    GenerateSettings.NoClangTools = config["no-clang-tools"].Value.GetBoolean();
+    GenerateSettings.IntermediateDir = config["intermediate-dir"].Value.GetString();
+    GenerateSettings.UnitTestsEnabled = config["enable-unit-tests"].Value.GetBoolean();
+    GenerateSettings.CoverageEnabled = config["enable-code-coverage"].Value.GetBoolean();
+    GenerateSettings.AsanEnabled = config["enable-address-sanitizer"].Value.GetBoolean();
+    GenerateSettings.UbsanEnabled = config["enable-ub-sanitizer"].Value.GetBoolean();
+    GenerateSettings.FuzzyTestingEnabled = config["enable-fuzzy-testing"].Value.GetBoolean();
+    GenerateSettings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
+    Enum.TryParse(config["IDE"].Value.GetString(), out GenerateSettings.IDE);
+    GenerateSettings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
+
   }
 
-  private static void InitializeGenerationSettings()
-  {
-        InitializeGraphicsAPI();
-    }
-
-  private static void InitializeNinja()
+  private static void InitializeToolChain()
   {
     string tools_json_path = Path.Combine(Globals.ToolsRoot, "tool_paths.json");
     string json_blob = File.ReadAllText(tools_json_path);

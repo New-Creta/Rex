@@ -135,15 +135,15 @@ public class BaseProject : Project
     {
       AddTargets(RexTarget.GetCoverageTarget());
     }
-    else if (GenerateSettings.AddressSanitizerEnabled)
+    else if (GenerateSettings.AsanEnabled)
     {
       AddTargets(RexTarget.GetAsanTarget());
     }
-    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
+    else if (GenerateSettings.UbsanEnabled)
     {
       AddTargets(RexTarget.GetUBsanTarget());
     }
-    else if (GenerateSettings.GenerateFuzzyTests)
+    else if (GenerateSettings.FuzzyTestingEnabled)
     {
       AddTargets(RexTarget.GetFuzzyTarget());
     }
@@ -206,7 +206,7 @@ public class BasicCPPProject : BaseProject
         break;
     }
 
-    if (target.Compiler == Compiler.Clang && (GenerateSettings.GenerateUnitTests == false && conf.is_config_for_testing() == false))
+    if (target.Compiler == Compiler.Clang && (GenerateSettings.UnitTestsEnabled == false && conf.is_config_for_testing() == false))
     {
       // setup post build command
       string compilerDBPath = GetCompilerDBOutputFolder(conf);
@@ -475,11 +475,11 @@ public class TestProject : BasicCPPProject
   {
     base.Configure(conf, target);
 
-    if (GenerateSettings.AddressSanitizerEnabled)
+    if (GenerateSettings.AsanEnabled)
     {
       conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
     }
-    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
+    else if (GenerateSettings.UbsanEnabled)
     {
       conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min)
     }

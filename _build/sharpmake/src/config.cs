@@ -1,4 +1,5 @@
 using Sharpmake;
+using System.Collections.Generic;
 
 [Fragment, System.Flags]
 public enum Config
@@ -57,6 +58,7 @@ public class RexConfiguration : Sharpmake.Project.Configuration
 
   public void use_compiler_options()
   {
+    // C++ Options
     Options.Add(Sharpmake.Options.Vc.Compiler.SupportJustMyCode.No); // this adds a call to __CheckForDebuggerJustMyCode into every function that slows down runtime significantly
     Options.Add(Sharpmake.Options.Vc.Compiler.CppLanguageStandard.CPP17);
     Options.Add(Sharpmake.Options.Vc.Compiler.RTTI.Disable);
@@ -69,6 +71,9 @@ public class RexConfiguration : Sharpmake.Project.Configuration
     Options.Add(Sharpmake.Options.Vc.Compiler.FloatingPointExceptions.Disable);
     Options.Add(Sharpmake.Options.Vc.Compiler.OpenMP.Disable);
     Options.Add(Sharpmake.Options.Vc.Compiler.JumboBuild.Enable);
+
+    // C# Options
+    Options.Add(Sharpmake.Options.CSharp.LanguageVersion.CSharp8);
   }
 
   public void use_linker_options()
@@ -180,4 +185,13 @@ public class ConfigManager
     }
     return Optimization.FullOpt;
   }
+}
+
+public class ConfigSetting
+{
+  public string Description { get; set; }
+  public System.Text.Json.JsonElement Value { get; set; }
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+  public string[]? Options { get; set; }
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 }

@@ -1,15 +1,9 @@
 using Sharpmake;
 using System.IO;
-using System.Text.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 [Generate]
 public class RexEngine : EngineProject
 {
-  private string MemoryTagsHeaderFile;
-
   public RexEngine() : base()
   {
     // The name of the project in Visual Studio. The default is the name of
@@ -37,7 +31,7 @@ public class RexEngine : EngineProject
     conf.AddPublicDependency<RexStdExtra>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
 
-    if (GenerateSettings.GenerateUnitTests)
+    if (GenerateSettings.UnitTestsEnabled)
     {
       conf.AddPublicDependency<RexStdTest>(target, DependencySetting.Default);
     }
