@@ -5,6 +5,8 @@ using System.Text.Json;
 
 [module: Sharpmake.Reference("System.Text.Json.dll")]
 
+// This class matches the settings.json file found in
+// _build/config/settings.json
 public class BuildSettings
 {
   public string intermediate_folder { get; set; }
@@ -21,6 +23,7 @@ public class BuildSettings
   public string clang_tools_project_extension { get; set; }
 }
 
+// Global variables, accessible throughout sharpmake scripts
 public class Globals
 {
   static readonly private string folder_in_root = "source";
@@ -97,6 +100,7 @@ public class Globals
     }
   }
 
+  // Initialize the global variables, based on the settings file loaded from disk
   static public void Init()
   {
     root = Utils.FindInParent(Directory.GetCurrentDirectory(), folder_in_root);
