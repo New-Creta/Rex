@@ -62,11 +62,24 @@ public static class GenerationTypes
     VisualStudio,
     VSCode
   }
+
+  public class GenerateCompilerDBCommand
+  {
+    public string NinjaFile { get; set; }
+    public string CompilerDBBuildCommand { get; set; }
+    public string OutputPath { get; set; }
+
+    public GenerateCompilerDBCommand(string ninjaFile, string compilerDBBuildCommand, string output)
+    {
+      NinjaFile = ninjaFile;
+      CompilerDBBuildCommand = compilerDBBuildCommand;
+      OutputPath = output;
+    }
+  }
 };
 
 public class GenerateSettings
 {
-  static public bool EnableVisualStudio = false;
   static public bool NoClangTools = false;
   static public bool PerformAllClangTidyChecks = false;
   static public bool DisableClangTidyForThirdParty = false;
@@ -84,10 +97,10 @@ public class GenerateSettings
 
   static public GenerationTypes.IDE IDE = GenerationTypes.IDE.VisualStudio;
 
-
   static public string ClangTidyRegex { get; set; }
   static public GenerationTypes.GraphicsAPI GraphicsAPI = GenerationTypes.GraphicsAPI.Unknown;
   static public GenerationTypes.Platform Platform = GenerationTypes.Platform.Unknown;
   
   static public List<System.Diagnostics.Process> GenerateCompilerDBProcesses = new List<System.Diagnostics.Process>();
+  static public List<GenerationTypes.GenerateCompilerDBCommand> GenerateCompilerDBCommands = new List<GenerationTypes.GenerateCompilerDBCommand>();
 }

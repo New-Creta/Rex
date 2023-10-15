@@ -18,6 +18,7 @@ public class BuildSettings
   public string coverage_folder { get; set; }
   public string asan_folder { get; set; }
   public string ubsan_folder { get; set; }
+  public string clang_tools_project_extension { get; set; }
 }
 
 public class Globals
@@ -85,6 +86,14 @@ public class Globals
     get
     {
       return Path.Combine(root, settings.intermediate_folder, settings.build_folder);
+    }
+  }
+
+  static public string ClangToolsProjectExtension
+  {
+    get
+    {
+      return settings.clang_tools_project_extension;
     }
   }
 

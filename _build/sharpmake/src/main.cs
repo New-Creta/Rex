@@ -1,181 +1,20 @@
 using System.IO;
-using System.Linq;
 using Sharpmake;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text;
 
 [module: Sharpmake.Reference("System.Text.Json.dll")]
 [module: Sharpmake.Reference("System.Memory.dll")]
 
-// The sharpmake project that generates the solution
-// It makes life a lot easier if this is directly in the solution.
-[Generate]
-public class SharpmakeProject : CSharpProject
-{
-  public SharpmakeProject() : base(typeof(RexTarget), typeof(RexConfiguration))
-  {
-    SourceFilesExtensions.Clear();
-    SourceFilesExtensions.Add(".sharpmake.cs");
-    SourceRootPath = Globals.Root;
-
-    // manually add the sharpmake root files
-    var RootSharpmakeFiles = Directory.GetFiles(Path.Combine(Globals.SharpmakeRoot, "src"));
-    foreach (var File in RootSharpmakeFiles)
-    {
-      SourceFiles.Add(File);
-    }
-
-    RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-
-    // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget);
-  }
-
-  [Configure()]
-  public virtual void Configure(RexConfiguration conf, RexTarget target)
-  {
-    conf.ProjectPath = Path.Combine(Globals.BuildFolder, target.DevEnv.ToString(), Name);
-    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
-    conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
-    conf.Output = Configuration.OutputType.DotNetClassLibrary;
-    conf.StartWorkingDirectory = Globals.SharpmakeRoot;
-
-    string sharpmakeAppPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-    string sharpmakeDllPath = Path.Combine(Path.GetDirectoryName(sharpmakeAppPath), "sharpmake.dll");
-
-    conf.ReferencesByPath.Add(sharpmakeDllPath);
-    conf.ReferencesByName.AddRange(new Strings("System",
-                                               "System.Core",
-                                               "System.Memory"
-                                               ));
-
-    conf.ReferencesByNuGetPackage.Add("System.Text.Json", "5.0.2"); // same version sharpmake uses
-
-    conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
-    conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
-
-    string quote = "\'"; // Use single quote that is cross platform safe
-    List<string> sharpmake_sources = new List<string>();
-    foreach (string sourceFile in SourceFiles)
-    {
-      string file = sourceFile.Replace('\\', '/');
-      sharpmake_sources.Add($"{quote}{file}{quote}");
-    }
-
-    foreach (string file in Directory.EnumerateFiles(SourceRootPath, "*.*", SearchOption.AllDirectories))
-    {
-      if (file.EndsWith(".sharpmake.cs"))
-      {
-        string fileWithSlashes = file.Replace('\\', '/');
-        sharpmake_sources.Add($"{quote}{fileWithSlashes}{quote}");
-      }
-    }
-
-    string sourcesArg = @"/sources(";
-    foreach (string file in sharpmake_sources)
-    {
-      sourcesArg += file;
-      sourcesArg += ", ";
-    }
-    sourcesArg = sourcesArg.Substring(0, sourcesArg.Length - 2); // remove ", ";
-    sourcesArg += ")";
-
-    conf.CsprojUserFile.StartArguments = $@"{sourcesArg} /diagnostics";
-    conf.CsprojUserFile.StartProgram = sharpmakeAppPath;
-    conf.CsprojUserFile.WorkingDirectory = Directory.GetCurrentDirectory();
-  }
-}
-
-// Represents the solution that will be generated and that will contain the
-// project with the sample code.
-[Generate]
-public class MainSolution : Solution
-{
-  public MainSolution() : base(typeof(RexTarget))
-  {
-    // The name of the solution.
-    Name = GenerateName("rex");
-    GenerateTargets();
-  }
-
-  // Configure for all 4 generated targets. Note that the type of the
-  // configuration object is of type Solution.Configuration this time.
-  // (Instead of Project.Configuration.)
-  [Configure]
-  public void Configure(Configuration conf, RexTarget target)
-  {
-    // Puts the generated solution in the root folder.
-    conf.SolutionPath = Globals.Root;
-
-    if (target.DevEnv == DevEnv.vs2019)
-    {
-      conf.AddProject<SharpmakeProject>(target);
-    }
-
-    if (GenerateSettings.UnitTestsEnabled)
-    {
-      conf.AddProject<RexStdTest>(target);
-    }
-
-    if (GenerateSettings.FuzzyTestingEnabled)
-    {
-      conf.AddProject<RexStdFuzzy>(target);
-    }
-
-    if (GenerateSettings.AutoTestsEnabled)
-    {
-      conf.AddProject<ReginaTest>(target);
-    }
-
-    else if (GenerateSettings.EnableDefaultGeneration)
-    {
-      conf.AddProject<Regina>(target);
-      //conf.AddProject<ConsoleApp>(target);
-    }
-
-  }
-
-  protected string GenerateName(string baseName)
-  {
-    return baseName;
-  }
-
-  protected void GenerateTargets()
-  {
-    if (GenerateSettings.EnableVisualStudio)
-    {
-      AddTargets(RexTarget.GetAllDefaultTargets());
-    }
-    else if (GenerateSettings.CoverageEnabled)
-    {
-      AddTargets(RexTarget.GetCoverageTarget());
-    }
-    else if (GenerateSettings.AsanEnabled)
-    {
-      AddTargets(RexTarget.GetAsanTarget());
-    }
-    else if (GenerateSettings.UbsanEnabled)
-    {
-      AddTargets(RexTarget.GetUBsanTarget());
-    }
-    else if (GenerateSettings.FuzzyTestingEnabled)
-    {
-      AddTargets(RexTarget.GetFuzzyTarget());
-    }
-    else
-    {
-      AddTargets(RexTarget.GetNinjaOnlyTarget());
-    }
-  }
-}
-
 namespace rex
 {
+  // The commandline arguments possible to give to sharpmake
+  // Each argument must be prefixed with '/' and it's value must between brackets (eg. /configFile("data/config.json"))
+  // The default config file is found in data/default_config.json of where this script is located.
   public class CmdLineArguments
   {
-    [Sharpmake.CommandLine.Option("configFile")]
+    [Sharpmake.CommandLine.Option("configFile", "Path to the config file meant to be read by Sharpmake.")]
     public void CommandLineConfigFile(string configFileDir)
     {
       GenerateSettings.ConfigFileDir = configFileDir;
@@ -185,6 +24,7 @@ namespace rex
 
 public static class Main
 {
+  // This is the entry point called from the Sharpmake executable
   [Sharpmake.Main]
   public static void SharpmakeMain(Arguments arguments)
   {
@@ -205,7 +45,7 @@ public static class Main
 
     // Specify the solution that needs to get generate.
     // We only have one, so pass in the solution of the Rex Engine
-    arguments.Generate<MainSolution>();
+    arguments.Generate<rex.MainSolution>();
 
     // Add the post generation events.
     // Our scripts need to be setup before can run those steps
@@ -213,28 +53,50 @@ public static class Main
     Builder.Instance.EventPostGeneration += PostGenerationEvent;
   }
 
+  // Load the specified config file from disk
+  // Returns a dictionary to each item in the config file.
   private static Dictionary<string, ConfigSetting> LoadConfigFile()
   {
     string json = File.ReadAllText(GenerateSettings.ConfigFileDir);
     return JsonSerializer.Deserialize<Dictionary<string, ConfigSetting>>(json);
   }
 
+  // Perform post generation steps here.
+  // You can assume that the generation of all projects in the solution are done.
+  // Therefore you can use the dependency graph
   private static void PostGenerationEvent(List<Project> projects, List<Solution> solutions)
   {
     GenerateCompilerDatabases();
     CodeGeneration.Generate();
   }
 
+  // Compiler database are not generated through Sharpmake directly.
+  // We have the option to do so, but we chose to use Ninja to generate them
+  // This way we only need to maintain our ninja files and we get the copmiler dbs for free
   private static void GenerateCompilerDatabases()
   {
     Console.WriteLine("Generating compiler databases");
-    foreach (System.Diagnostics.Process proc in GenerateSettings.GenerateCompilerDBProcesses)
+
+    System.Diagnostics.ProcessStartInfo start_info = new System.Diagnostics.ProcessStartInfo();
+    start_info.FileName = "cmd.exe";
+    start_info.RedirectStandardOutput = true;
+    start_info.RedirectStandardError = true;
+    start_info.UseShellExecute = false;
+
+    foreach (GenerationTypes.GenerateCompilerDBCommand cmd in GenerateSettings.GenerateCompilerDBCommands)
     {
-      proc.Start();
-      proc.WaitForExit();
+      // An example command would be: cmd.exe /C ninja.exe -f my_ninja_file.ninja compdb_rex_debug_clang --quiet > compiler_commands.json
+      start_info.Arguments = $"/C {KitsRootPaths.GetNinjaPath()} -f {cmd.NinjaFile} {cmd.CompilerDBBuildCommand} --quiet > {cmd.OutputPath}";
+
+      System.Diagnostics.Process process = new System.Diagnostics.Process();
+      process.StartInfo = start_info;
+
+      process.Start();
+      process.WaitForExit();
     }
   }
 
+  // Pass in the paths to the toolchain tools to sharpmake and specify the windows target version
   private static void InitializeSharpmake()
   {
     InitializeToolChain();
@@ -243,6 +105,8 @@ public static class Main
     KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
   }
 
+  // Initialize the graphics API based on the config
+  // If no Graphics API is specified, we base it on the OS this script is running on
   private static void InitializeGraphicsAPI(Dictionary<string, ConfigSetting> config)
   {
     if (!Enum.TryParse(config["graphics-api"].Value.GetString(), ignoreCase: true, out GenerateSettings.GraphicsAPI))
@@ -265,9 +129,10 @@ public static class Main
       }
     }
 
-      Console.WriteLine($"Using Graphics API: {GenerateSettings.GraphicsAPI}");
+    Console.WriteLine($"Using Graphics API: {GenerateSettings.GraphicsAPI}");
   }
 
+  // Initialize the generation settings based on the config that's loaded from disk
   private static void InitializeGenerationSettings(Dictionary<string, ConfigSetting> config)
   {
     InitializeGraphicsAPI(config);
@@ -287,6 +152,7 @@ public static class Main
 
   }
 
+  // Pass the toolchain paths over to sharpmake so it can use it for generation.
   private static void InitializeToolChain()
   {
     string tools_json_path = Path.Combine(Globals.ToolsRoot, "tool_paths.json");
