@@ -34,26 +34,23 @@ namespace rex
         conf.AddProject<SharpmakeProject>(target);
       }
 
-      if (GenerateSettings.UnitTestsEnabled)
+      if (ProjectGen.Settings.UnitTestsEnabled)
       {
         conf.AddProject<RexStdTest>(target);
       }
 
-      if (GenerateSettings.FuzzyTestingEnabled)
+      if (ProjectGen.Settings.FuzzyTestingEnabled)
       {
         conf.AddProject<RexStdFuzzy>(target);
       }
 
-      if (GenerateSettings.AutoTestsEnabled)
+      if (ProjectGen.Settings.AutoTestsEnabled)
       {
         conf.AddProject<ReginaTest>(target);
       }
 
-      else if (GenerateSettings.EnableDefaultGeneration)
-      {
-        conf.AddProject<Regina>(target);
-        //conf.AddProject<ConsoleApp>(target);
-      }
+      conf.AddProject<Regina>(target);
+      //conf.AddProject<ConsoleApp>(target);
 
     }
 
@@ -64,23 +61,23 @@ namespace rex
 
     protected void GenerateTargets()
     {
-      if (GenerateSettings.IDE == GenerationTypes.IDE.VisualStudio)
+      if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio)
       {
         AddTargets(RexTarget.GetAllDefaultTargets());
       }
-      else if (GenerateSettings.CoverageEnabled)
+      else if (ProjectGen.Settings.CoverageEnabled)
       {
         AddTargets(RexTarget.GetCoverageTarget());
       }
-      else if (GenerateSettings.AsanEnabled)
+      else if (ProjectGen.Settings.AsanEnabled)
       {
         AddTargets(RexTarget.GetAsanTarget());
       }
-      else if (GenerateSettings.UbsanEnabled)
+      else if (ProjectGen.Settings.UbsanEnabled)
       {
         AddTargets(RexTarget.GetUBsanTarget());
       }
-      else if (GenerateSettings.FuzzyTestingEnabled)
+      else if (ProjectGen.Settings.FuzzyTestingEnabled)
       {
         AddTargets(RexTarget.GetFuzzyTarget());
       }

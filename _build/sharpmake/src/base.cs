@@ -57,7 +57,7 @@ public class BaseConfiguration
   // Setup project paths like the project path itself, intermediate path, target path, pdb paths, ..
   private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
   {
-    conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "build", GenerateSettings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
+    conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "build", ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
     conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
     conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
     conf.UseRelativePdbPath = false;
@@ -107,7 +107,7 @@ public abstract class BasicCPPProject : Project
   {
     LoadToolPaths();
 
-    ClangToolsEnabled = !GenerateSettings.NoClangTools;
+    ClangToolsEnabled = !ProjectGen.Settings.NoClangTools;
   }
 
   // Legacy function and should be removed
@@ -123,7 +123,7 @@ public abstract class BasicCPPProject : Project
 
     // This is a dirty hack for rex std which is technically a thirdparty project
     // but inherits from BasicCPPProject.
-    if (GenerateSettings.DisableClangTidyForThirdParty && SourceRootPath.Contains(Globals.ThirdpartyRoot))
+    if (ProjectGen.Settings.DisableClangTidyForThirdParty && SourceRootPath.Contains(Globals.ThirdpartyRoot))
     {
       ClangToolsEnabled = false;
     }
@@ -173,25 +173,25 @@ public abstract class BasicCPPProject : Project
     AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
 
     // If we're targeting a visual studio solution, we need to add it as a target as well.
-    if (GenerateSettings.IDE == GenerationTypes.IDE.VisualStudio)
+    if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio)
     {
       AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC));
     }
     // The other checks specified here are checks for various testing types
     // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
-    else if (GenerateSettings.CoverageEnabled)
+    else if (ProjectGen.Settings.CoverageEnabled)
     {
       AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.coverage, Compiler.Clang));
     }
-    else if (GenerateSettings.AsanEnabled)
+    else if (ProjectGen.Settings.AsanEnabled)
     {
       AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.address_sanitizer, Compiler.Clang));
     }
-    else if (GenerateSettings.UbsanEnabled)
+    else if (ProjectGen.Settings.UbsanEnabled)
     {
       AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.undefined_behavior_sanitizer, Compiler.Clang));
     }
-    else if (GenerateSettings.FuzzyTestingEnabled)
+    else if (ProjectGen.Settings.FuzzyTestingEnabled)
     {
       AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.fuzzy, Compiler.Clang));
     }
@@ -451,8 +451,8 @@ public abstract class BasicCPPProject : Project
     string post_build_command = "";
     post_build_command += $" -compdb={CompilerDBPath}";
     post_build_command += $" -use_clang_tools";
-    post_build_command += $" -clang_tidy_regex=\"{GenerateSettings.ClangTidyRegex}\"";
-    if (GenerateSettings.PerformAllClangTidyChecks)
+    post_build_command += $" -clang_tidy_regex=\"{ProjectGen.Settings.ClangTidyRegex}\"";
+    if (ProjectGen.Settings.PerformAllClangTidyChecks)
     {
       post_build_command += $" -perform_all_checks";
     }
@@ -610,7 +610,7 @@ public abstract class BasicCPPProject : Project
     string ninja_file_path = GetNinjaFilePath(config);
     string build_step_name = $"compdb_{Name.ToLower()}_{config.Name}_clang";
     string outputPath = GetCompilerDBOutputPath(config);
-    GenerateSettings.GenerateCompilerDBCommands.Add(new GenerationTypes.GenerateCompilerDBCommand(ninja_file_path, build_step_name, outputPath));
+    ProjectGen.Settings.GenerateCompilerDBCommands.Add(new ProjectGen.GenerateCompilerDBCommand(ninja_file_path, build_step_name, outputPath));
   }
 
   // To make clang tool processing easier

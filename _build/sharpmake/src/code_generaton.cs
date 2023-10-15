@@ -4,207 +4,181 @@ using System.IO;
 using Sharpmake;
 using System.Text;
 
+// THE CODE GENERATION SYSTEM
+// Some code in the engine gets auto generated.
+// While other engines allow users to extend the headers file, 
+// We generate the content of these files from disk.
+// The benefit we get from that is that the engine code and project code stays split.
+// For example, the engine's memory tags get auto generated,
+// the engine has its own memory tags and each project can have their own as well.
+// In engines like Unreal, one must change the header file of this enum and change it accordingly for the project
+// This means that these enum values get hardcoded into engine code, which is not where they belong in our opinion.
+// If we use configuration files, yes, they will end up in that header file,
+// but where they come from is from the project you're working on
+// splitting responsibility from the engine.
+
+// Sharpmake reads code generation config files and combines what's found 
+// and generates code in the destination files.
+// It works similar to how the C++ compiler works.
+// A key is mapped with values and 1 (and only 1) entry can define its type and class name
+// this is similar as the ODR rule that many programming languages follow
+// Supported type of generation are enum classes and static arrays and their values.
+// an example of a config could be
+//
+// Owning definition
+// {
+// "MemoryTags": {
+//   "Type" : "Enum",
+//     "ClassName" : "MemoryTag",
+//     "Filepath" : "1_engine/rex_engine/include/rex_engine/memory/memory_tags.h",
+//     "Content" : 
+//     ["Global", "Engine", "FileIO", "StringPool"]
+//   }
+// }
+//
+//
+// Non-Owning definition
+// {
+// "MemoryTags": {
+//     "Content" : [
+//     "Global", "Engine", "FileIO", "StringPool"
+//     ]
+//   }
+// }
+//
+//
+
 public static class CodeGeneration
 {
-  static private Dictionary<string, EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, EnumGenerationSettings>();
-  static private Dictionary<string, ArrayGenerationSettings> ArraysToAutoGenerate = new Dictionary<string, ArrayGenerationSettings>();
+  //static private Dictionary<string, CodeGen.EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, CodeGen.EnumGenerationSettings>();
+  //static private Dictionary<string, CodeGen.ArrayGenerationSettings> ArraysToAutoGenerate = new Dictionary<string, CodeGen.ArrayGenerationSettings>();
+  static private Dictionary<string, CodeGen.TypeToGenerate> TypesToGenerate = new Dictionary<string, CodeGen.TypeToGenerate>();
+  static private Dictionary<string, CodeGen.UnknownTypeConfig> UnknownTypesToGenerate = new Dictionary<string, CodeGen.UnknownTypeConfig>();
 
+  // Reads the generation config file and processes it
   public static void ReadGenerationFile(string projectName, string filePath)
   {
+    // Deserialize the json document into a dictionary
     string json_blob = File.ReadAllText(filePath);
     Dictionary<string, JsonDocument> config = JsonSerializer.Deserialize<Dictionary<string, JsonDocument>>(json_blob);
 
+    // Loop over the dict by key, for each key, check its key and process accordingly
     foreach (string key in config.Keys)
     {
       JsonDocument doc = config[key];
-      string typename = doc.RootElement.GetProperty("Type").GetString();
-      JsonElement content = doc.RootElement.GetProperty("Content");
-      Process(projectName, key, typename, content, filePath);
+      Process(projectName, doc, key);
     }
   }
 
+  // Process the generation config file.
+  // Either creating a type known to generate or holding on to the values
+  // so we can add them to known types later
+  private static void Process(string projectName, JsonDocument doc, string key)
+  {
+    JsonElement contentElement = doc.RootElement.GetProperty("Content");
+    List<string> content = JsonSerializer.Deserialize<List<string>>(contentElement.ToString());
+
+    JsonElement type = new JsonElement();
+    // If we find a type, we own this type
+    // We can start filling in all the missing details
+    if (doc.RootElement.TryGetProperty("Type", out type))
+    {
+      string typename = type.GetString();
+
+      switch (typename)
+      {
+        case "Enum": 
+          ProcessEnum(projectName, doc, content, key);
+          break;
+        case "Array": 
+          ProcessArray(projectName, doc, content, key);
+          break;
+        default:
+          throw new Error($"Unknown typename in code generation: '{typename}' for project '{projectName}' at key '{key}'");
+      }
+    }
+    // If we can't find the type, this is just a key pair with content.
+    // We find the rest of the info later but for now store its content
+    // so we can add it to the content of the type later
+    else
+    {
+      // If we already have an enum for this, add the content to 
+      if (TypesToGenerate.ContainsKey(key))
+      {
+        TypesToGenerate[key].AddContent(projectName, content);
+      }
+
+      // The type for this key is not known yet, we need to add it to the dict of unknown types
+      // If the key doesn't exist yet in that dict, we need to add it first
+      else if (!UnknownTypesToGenerate.ContainsKey(key))
+      {
+        UnknownTypesToGenerate.Add(key, new CodeGen.UnknownTypeConfig());
+      }
+
+      // Add the content to the unknown type in the dict
+      UnknownTypesToGenerate[key].AddContent(projectName, content);
+    }
+  }
+
+  // Process am enum type
+  private static void ProcessEnum(string projectName, JsonDocument typeDefine, List<string> content, string key)
+  {
+    string className = typeDefine.RootElement.GetProperty("ClassName").GetString();
+    string filepath = typeDefine.RootElement.GetProperty("Filepath").GetString();
+
+    TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));    
+
+    // Add remaining unknown types with the same key to the enum settings
+    if (UnknownTypesToGenerate.ContainsKey(key))
+    {
+      CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
+      foreach (string project in unknownType.ProjectToContent.Keys)
+      {
+        List<string> unknownTypeContent = unknownType.ProjectToContent[project];
+        TypesToGenerate[key].AddContent(project, unknownTypeContent);
+      }
+    }
+  }
+
+  // Process an array type
+  private static void ProcessArray(string projectName, JsonDocument typeDefine, List<string> content, string key)
+  {
+    string elementType = typeDefine.RootElement.GetProperty("ElementType").GetString();
+    string name = typeDefine.RootElement.GetProperty("Name").GetString();
+    string filepath = typeDefine.RootElement.GetProperty("Filepath").GetString();
+    List<string> includes = new List<string>();
+    JsonElement includesElement = new JsonElement();
+    if (typeDefine.RootElement.TryGetProperty("Includes", out includesElement))
+    {
+      includes = JsonSerializer.Deserialize<List<string>>(includesElement.ToString());
+    }
+
+    TypesToGenerate.Add(key, new CodeGen.ArrayToGenerate(elementType, name, filepath, includes, projectName, content));
+
+    // Add remaining unknown types with the same key to the enum settings
+    if (UnknownTypesToGenerate.ContainsKey(key))
+    {
+      CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
+      foreach (string project in unknownType.ProjectToContent.Keys)
+      {
+        List<string> unknownTypeContent = unknownType.ProjectToContent[project];
+        TypesToGenerate[key].AddContent(project, unknownTypeContent);
+      }
+    }
+  }
+
+  // go over the dict holding the types to generate and generate all of them
   public static void Generate()
   {
-    foreach (EnumGenerationSettings enum_gen_settings in EnumsToAutoGenerate.Values)
+    foreach (string key in TypesToGenerate.Keys)
     {
-      WriteAutoGeneratedEnumToFile(enum_gen_settings.ClassName, enum_gen_settings.ProjectToEnumValues, enum_gen_settings.Filepath, enum_gen_settings.ProjectToGenerationFile);
-    }
-
-    foreach (ArrayGenerationSettings array_gen_settings in ArraysToAutoGenerate.Values)
-    {
-      WriteAutoGeneratedArrayToFile(array_gen_settings.ElementType, array_gen_settings.Name, array_gen_settings.Includes, array_gen_settings.ProjectToArrayValues, array_gen_settings.Filepath, array_gen_settings.ProjectToGenerationFile);
+      string typeText = TypesToGenerate[key].AsString(key);
+      WriteToDisk(TypesToGenerate[key].FilePath, typeText);
     }
   }
 
-  private static void Process(string projectName, string key, string typename, JsonElement content, string generationFilePath)
-  {
-    switch (typename)
-    {
-      case "Enum": ProcessEnum(projectName, key, content, generationFilePath); break;
-      case "Array": ProcessArray(projectName, key, content, generationFilePath); break;
-      default:
-        throw new Error($"Unknown typename in code generation: '{typename}' for project '{projectName}'");
-    }
-  }
-
-  private static void ProcessEnum(string projectName, string key, JsonElement content, string generationFilePath)
-  {
-    EnumGenerationConfig enum_config = JsonSerializer.Deserialize<EnumGenerationConfig>(content.ToString());
-
-    if (!EnumsToAutoGenerate.ContainsKey(key))
-    {
-      EnumsToAutoGenerate.Add(key, new EnumGenerationSettings());
-
-      // we use the config settings of the first enum we encounter, all others need to match this
-      EnumsToAutoGenerate[key].ClassName = enum_config.ClassName;
-      EnumsToAutoGenerate[key].Filepath = enum_config.Filepath;
-    }
-    else
-    {
-      EnumGenerationSettings enum_gen_settings = EnumsToAutoGenerate[key];
-
-      // class names and filenames should be consistent among all generation files
-      if (enum_gen_settings.ClassName != enum_config.ClassName)
-      {
-        throw new Error($"Enum generation error - unexpected classname: '{enum_config.ClassName}' - expected: {enum_gen_settings.ClassName} for projectName: {projectName}");
-      }
-
-      if (enum_gen_settings.Filepath != enum_config.Filepath)
-      {
-        throw new Error($"Enum generation error - unexpected filepath: '{enum_config.Filepath}' - expected: {enum_gen_settings.Filepath} for projectName: {projectName}");
-      }
-    }
-
-    EnumGenerationSettings settings = EnumsToAutoGenerate[key];
-    settings.ProjectToEnumValues.Add(projectName, enum_config.Values);
-    settings.ProjectToGenerationFile.Add(projectName, generationFilePath);
-  }
-
-  private static void ProcessArray(string projectName, string key, JsonElement content, string generationFilePath)
-  {
-    ArrayGenerationConfig enum_config = JsonSerializer.Deserialize<ArrayGenerationConfig>(content.ToString());
-
-    if (!ArraysToAutoGenerate.ContainsKey(key))
-    {
-      ArraysToAutoGenerate.Add(key, new ArrayGenerationSettings());
-
-      // we use the config settings of the first enum we encounter, all others need to match this
-      ArraysToAutoGenerate[key].ElementType = enum_config.ElementType;
-      ArraysToAutoGenerate[key].Name = enum_config.Name;
-      ArraysToAutoGenerate[key].Includes = enum_config.Includes;
-      ArraysToAutoGenerate[key].Filepath = enum_config.Filepath;
-    }
-    else
-    {
-      ArrayGenerationSettings array_gen_settings = ArraysToAutoGenerate[key];
-
-      // element types, class types includes, and filepaths should be consistent among all generation files
-      if (array_gen_settings.ElementType != enum_config.ElementType)
-      {
-        throw new Error($"Array generation error - unexpected element type: '{enum_config.ElementType}' - expected: {array_gen_settings.ElementType} for projectName: {projectName}");
-      }
-
-      if (array_gen_settings.Name != enum_config.Name)
-      {
-        throw new Error($"Array generation error - unexpected name: '{enum_config.Name}' - expected: {array_gen_settings.Name} for projectName: {projectName}");
-      }
-
-      if (array_gen_settings.Filepath != enum_config.Filepath)
-      {
-        throw new Error($"Array generation error - unexpected filepath: '{enum_config.Filepath}' - expected: {array_gen_settings.Filepath} for projectName: {projectName}");
-      }
-    }
-
-    ArrayGenerationSettings settings = ArraysToAutoGenerate[key];
-    settings.ProjectToArrayValues.Add(projectName, enum_config.Values);
-    settings.ProjectToGenerationFile.Add(projectName, generationFilePath);
-  }
-
-  private static void WriteAutoGeneratedEnumToFile(string className, Dictionary<string, List<string>> enumValues, string filename, Dictionary<string, string> projectToGenerationFile)
-  {
-    StringBuilder sb = new StringBuilder();
-    WriteCustomGenerationHeader(sb);
-    WriteBeginNamespace(sb);
-
-    sb.AppendLine($"  enum class {className}");
-    sb.AppendLine("  {");
-
-    foreach (var project_vals in enumValues)
-    {
-      sb.AppendLine($"    // {className} values for {project_vals.Key}");
-      sb.AppendLine($"    // generated from {projectToGenerationFile[project_vals.Key]}");
-
-      foreach (string val in project_vals.Value)
-      {
-        sb.AppendLine($"    {val},");
-      }
-      sb.AppendLine(" ");
-    }
-
-    sb.AppendLine("  };");
-
-    WriteEndNamespace(sb);
-    WriteToDisk(sb, Path.Combine(Globals.SourceRoot, filename));
-  }
-
-  private static void WriteAutoGeneratedArrayToFile(string elementType, string name, List<string> includes, Dictionary<string, List<string>> arrayValues, string filename, Dictionary<string, string> projectToGenrationFile)
-  {
-    StringBuilder sb = new StringBuilder();
-
-    WriteCustomGenerationHeader(sb);
-
-    foreach (string include in includes)
-    {
-      sb.AppendLine($"#include \"{include}\"");
-    }
-
-    sb.AppendLine($"#include \"rex_std/array.h\"");
-
-    WriteBeginNamespace(sb);
-
-    sb.AppendLine($"  inline rsl::array {name} = ");
-    sb.AppendLine("  {");
-
-    foreach (var project_vals in arrayValues)
-    {
-      sb.AppendLine($"    // {elementType} values for {project_vals.Key}");
-      sb.AppendLine($"    // generated from {projectToGenrationFile[project_vals.Key]}");
-
-      foreach (string val in project_vals.Value)
-      {
-        sb.AppendLine($"    {elementType}{{ {val}, \"{project_vals.Key}\" }},");
-      }
-      sb.AppendLine(" ");
-    }
-
-    sb.AppendLine("  };");
-
-    WriteEndNamespace(sb);
-    WriteToDisk(sb, Path.Combine(Globals.SourceRoot, filename));
-  }
-
-  private static void WriteCustomGenerationHeader(StringBuilder sb)
-  {
-    sb.AppendLine("#pragma once");
-    sb.AppendLine("");
-    sb.AppendLine("// DON'T EDIT - This file is auto generated by sharpmake");
-    sb.AppendLine("// NOLINTBEGIN");
-    sb.AppendLine("");
-  }
-
-  private static void WriteBeginNamespace(StringBuilder sb, string namespaceName = "rex")
-  {
-    sb.AppendLine($"namespace {namespaceName}");
-    sb.AppendLine($"{{");
-  }
-
-  private static void WriteEndNamespace(StringBuilder sb, string namespaceName = "rex")
-  {
-    sb.AppendLine($"}} // namespace {namespaceName}");
-    sb.AppendLine($"// NOLINTEND");
-  }
-
-  private static void WriteToDisk(StringBuilder sb, string filePath)
+  // write the type text to disk at the given filepath
+  private static void WriteToDisk(string filePath, string text)
   {
     FileStream stream;
     if (!File.Exists(filePath))
@@ -216,8 +190,8 @@ public static class CodeGeneration
       stream = File.Open(filePath, FileMode.Truncate);
     }
 
-    byte[] bytes = Encoding.ASCII.GetBytes(sb.ToString());
-    stream.Write(bytes, 0, sb.Length);
+    byte[] bytes = Encoding.ASCII.GetBytes(text);
+    stream.Write(bytes, 0, text.Length);
     stream.Close();
 
   }

@@ -31,7 +31,7 @@ public class RexEngine : EngineProject
     conf.AddPublicDependency<RexStdExtra>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
 
-    if (GenerateSettings.UnitTestsEnabled)
+    if (ProjectGen.Settings.UnitTestsEnabled)
     {
       conf.AddPublicDependency<RexStdTest>(target, DependencySetting.Default);
     }
@@ -72,12 +72,12 @@ public class RexEngine : EngineProject
         break;
     }
 
-    switch (GenerateSettings.GraphicsAPI)
+    switch (ProjectGen.Settings.GraphicsAPI)
     {
-        case GenerationTypes.GraphicsAPI.OpenGL:
+        case ProjectGen.GraphicsAPI.OpenGL:
             conf.add_public_define("REX_API_OPENGL");
             break;
-        case GenerationTypes.GraphicsAPI.DirectX12:
+        case ProjectGen.GraphicsAPI.DirectX12:
             conf.add_public_define("REX_API_DIRECTX12");
             break;
         default:

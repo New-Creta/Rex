@@ -17,7 +17,7 @@ namespace rex
     [Sharpmake.CommandLine.Option("configFile", "Path to the config file meant to be read by Sharpmake.")]
     public void CommandLineConfigFile(string configFileDir)
     {
-      GenerateSettings.ConfigFileDir = configFileDir;
+      ProjectGen.Settings.ConfigFileDir = configFileDir;
     }
   }
 }
@@ -57,7 +57,7 @@ public static class Main
   // Returns a dictionary to each item in the config file.
   private static Dictionary<string, ConfigSetting> LoadConfigFile()
   {
-    string json = File.ReadAllText(GenerateSettings.ConfigFileDir);
+    string json = File.ReadAllText(ProjectGen.Settings.ConfigFileDir);
     return JsonSerializer.Deserialize<Dictionary<string, ConfigSetting>>(json);
   }
 
@@ -83,7 +83,7 @@ public static class Main
     start_info.RedirectStandardError = true;
     start_info.UseShellExecute = false;
 
-    foreach (GenerationTypes.GenerateCompilerDBCommand cmd in GenerateSettings.GenerateCompilerDBCommands)
+    foreach (ProjectGen.GenerateCompilerDBCommand cmd in ProjectGen.Settings.GenerateCompilerDBCommands)
     {
       // An example command would be: cmd.exe /C ninja.exe -f my_ninja_file.ninja compdb_rex_debug_clang --quiet > compiler_commands.json
       start_info.Arguments = $"/C {KitsRootPaths.GetNinjaPath()} -f {cmd.NinjaFile} {cmd.CompilerDBBuildCommand} --quiet > {cmd.OutputPath}";
@@ -109,27 +109,27 @@ public static class Main
   // If no Graphics API is specified, we base it on the OS this script is running on
   private static void InitializeGraphicsAPI(Dictionary<string, ConfigSetting> config)
   {
-    if (!Enum.TryParse(config["graphics-api"].Value.GetString(), ignoreCase: true, out GenerateSettings.GraphicsAPI))
+    if (!Enum.TryParse(config["graphics-api"].Value.GetString(), ignoreCase: true, out ProjectGen.Settings.GraphicsAPI))
     {
       OperatingSystem os = Environment.OSVersion;
       switch (os.Platform)
       {
         case PlatformID.Win32NT:
         case PlatformID.Xbox:
-          GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.DirectX12;
+          ProjectGen.Settings.GraphicsAPI = ProjectGen.GraphicsAPI.DirectX12;
           break;
         case PlatformID.Unix:
         case PlatformID.MacOSX:
-          GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
+          ProjectGen.Settings.GraphicsAPI = ProjectGen.GraphicsAPI.OpenGL;
           break;
         default:
           Console.WriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
-          GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
+          ProjectGen.Settings.GraphicsAPI = ProjectGen.GraphicsAPI.OpenGL;
           break;
       }
     }
 
-    Console.WriteLine($"Using Graphics API: {GenerateSettings.GraphicsAPI}");
+    Console.WriteLine($"Using Graphics API: {ProjectGen.Settings.GraphicsAPI}");
   }
 
   // Initialize the generation settings based on the config that's loaded from disk
@@ -137,18 +137,18 @@ public static class Main
   {
     InitializeGraphicsAPI(config);
 
-    GenerateSettings.ClangTidyRegex = config["clang-tidy-regex"].Value.GetString();
-    GenerateSettings.PerformAllClangTidyChecks = config["perform-all-clang-tidy-checks"].Value.GetBoolean();
-    GenerateSettings.NoClangTools = config["no-clang-tools"].Value.GetBoolean();
-    GenerateSettings.IntermediateDir = config["intermediate-dir"].Value.GetString();
-    GenerateSettings.UnitTestsEnabled = config["enable-unit-tests"].Value.GetBoolean();
-    GenerateSettings.CoverageEnabled = config["enable-code-coverage"].Value.GetBoolean();
-    GenerateSettings.AsanEnabled = config["enable-address-sanitizer"].Value.GetBoolean();
-    GenerateSettings.UbsanEnabled = config["enable-ub-sanitizer"].Value.GetBoolean();
-    GenerateSettings.FuzzyTestingEnabled = config["enable-fuzzy-testing"].Value.GetBoolean();
-    GenerateSettings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
-    Enum.TryParse(config["IDE"].Value.GetString(), out GenerateSettings.IDE);
-    GenerateSettings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
+    ProjectGen.Settings.ClangTidyRegex = config["clang-tidy-regex"].Value.GetString();
+    ProjectGen.Settings.PerformAllClangTidyChecks = config["perform-all-clang-tidy-checks"].Value.GetBoolean();
+    ProjectGen.Settings.NoClangTools = config["no-clang-tools"].Value.GetBoolean();
+    ProjectGen.Settings.IntermediateDir = config["intermediate-dir"].Value.GetString();
+    ProjectGen.Settings.UnitTestsEnabled = config["enable-unit-tests"].Value.GetBoolean();
+    ProjectGen.Settings.CoverageEnabled = config["enable-code-coverage"].Value.GetBoolean();
+    ProjectGen.Settings.AsanEnabled = config["enable-address-sanitizer"].Value.GetBoolean();
+    ProjectGen.Settings.UbsanEnabled = config["enable-ub-sanitizer"].Value.GetBoolean();
+    ProjectGen.Settings.FuzzyTestingEnabled = config["enable-fuzzy-testing"].Value.GetBoolean();
+    ProjectGen.Settings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
+    Enum.TryParse(config["IDE"].Value.GetString(), out ProjectGen.Settings.IDE);
+    ProjectGen.Settings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
 
   }
 
