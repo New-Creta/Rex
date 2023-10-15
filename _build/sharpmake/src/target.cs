@@ -31,7 +31,21 @@ public class RexTarget : ITarget
 
   public Optimization Optimization
   {
-    get { return ConfigManager.get_optimization_for_config(Config); }
+    get
+    {
+      switch (Config)
+      {
+        case Config.assert: return Optimization.FullOptWithPdb;
+        case Config.debug: return Optimization.NoOpt;
+        case Config.coverage: return Optimization.NoOpt;
+        case Config.debug_opt: return Optimization.FullOptWithPdb;
+        case Config.address_sanitizer: return Optimization.FullOptWithPdb;
+        case Config.undefined_behavior_sanitizer: return Optimization.FullOptWithPdb;
+        case Config.fuzzy: return Optimization.FullOptWithPdb;
+        case Config.release: return Optimization.FullOpt;
+      }
+      return Optimization.FullOpt;
+    }
   }
 
   public static RexTarget[] GetAllDefaultTargets()
