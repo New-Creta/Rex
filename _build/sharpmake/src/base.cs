@@ -93,7 +93,7 @@ public class BaseConfiguration
 
 // This is the base class for every C++ project used in the rex solution
 // Some of its functionality is sharedwith BasicCSProject through BaseConfiguration
-public class BasicCPPProject : Project
+public abstract class BasicCPPProject : Project
 {
   // holds the paths to tools needed to generate/build/run/test rex engine
   private Dictionary<string, string[]> ToolPaths;
@@ -138,13 +138,13 @@ public class BasicCPPProject : Project
   // However, we create our own virtual functions called by base type Configure function.
   // This is meant to make it more scaleable, easier to read and search for specific configuration settings.
   [Configure]
-  public void Configure(RexConfiguration conf, RexTarget target)
+  public virtual void Configure(RexConfiguration conf, RexTarget target)
   {
     BaseConfiguration baseConfig = new BaseConfiguration(this);
     baseConfig.Configure(conf, target);
 
     // These are private and are not virtualized to be configurable derived projects
-    SetupDefaultConfigurationSettings(conf, target);
+    SetupConfigSettings(conf, target);
 
     // These are protected and optionally changed by derived projects
     SetupSolutionFolder(conf, target);
@@ -216,7 +216,7 @@ public class BasicCPPProject : Project
   }
 
   // Setup default configuration settings for C++ projects
-  private void SetupDefaultConfigurationSettings(RexConfiguration conf, RexTarget target)
+  protected virtual void SetupConfigSettings(RexConfiguration conf, RexTarget target)
   {
     conf.disable_exceptions();
 
@@ -240,6 +240,11 @@ public class BasicCPPProject : Project
     conf.Options.Add(Options.Vc.Linker.GenerateManifest.Disable);
     conf.Options.Add(Options.Vc.Linker.TreatLinkerWarningAsErrors.Enable);
   }
+
+  // Setup the output type of this project
+  // This is usually a static lib or an executable
+  // This is meant to be overriden by derived projects.
+  protected abstract void SetupOutputType(RexConfiguration conf, RexTarget target);
 
   // Specify the include paths of the project.
   // This is meant to be overriden by derived projects and extended where needed
@@ -385,7 +390,6 @@ public class BasicCPPProject : Project
       case Config.release:
         ClangToolsEnabled = true;
         break;
-      case Config.tests:
       case Config.coverage:
       case Config.address_sanitizer:
       case Config.undefined_behavior_sanitizer:
@@ -672,7 +676,7 @@ public class BasicCSProject : CSharpProject
   }
 
   [Configure]
-  public void Configure(RexConfiguration conf, RexTarget target)
+  public virtual void Configure(RexConfiguration conf, RexTarget target)
   {
     BaseConfiguration baseConfig = new BaseConfiguration(this);
     baseConfig.Configure(conf, target);
@@ -684,12 +688,18 @@ public class ThirdPartyProject : BasicCPPProject
 {
   public ThirdPartyProject() : base()
   {
+    // By default we don't enable clang tools for any of our thirdparty projects
     ClangToolsEnabled = false;
   }
 
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     conf.SolutionFolder = "0_thirdparty";
+  }
+
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
+  {
+    conf.Output = Configuration.OutputType.Lib;
   }
 }
 
@@ -702,6 +712,11 @@ public class EngineProject : BasicCPPProject
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     conf.SolutionFolder = "1_engine";
+  }
+
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
+  {
+    conf.Output = Configuration.OutputType.Lib;
   }
 }
 
@@ -716,6 +731,10 @@ public class PlatformProject : BasicCPPProject
     conf.SolutionFolder = "2_platform";
   }
 
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
+  {
+    conf.Output = Configuration.OutputType.Lib;
+  }
 }
 
 // All projects sitting in 3_app_libs folder should inherit from this
@@ -729,6 +748,10 @@ public class AppLibrariesProject : BasicCPPProject
     conf.SolutionFolder = "3_app_libs";
   }
 
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
+  {
+    conf.Output = Configuration.OutputType.Lib;
+  }
 }
 
 // All projects sitting in 5_tools folder should inherit from this
@@ -740,6 +763,11 @@ public class ToolsProject : BasicCPPProject
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     conf.SolutionFolder = "4_tools";
+  }
+
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
+  {
+    conf.Output = Configuration.OutputType.Lib;
   }
 }
 
@@ -763,5 +791,10 @@ public class TestProject : BasicCPPProject
       default:
         break;
     }
+  }
+
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
+  {
+    conf.Output = Configuration.OutputType.Lib;
   }
 }

@@ -1,6 +1,12 @@
 using Sharpmake;
 using System.Collections.Generic;
 
+// This file describes the classes used to configuring projects.
+// A configuration is often tied to optimisation levels
+// That's why the optimisation level is described here as well.
+
+// For documentation about each configuraton
+// Please read _docs/books/build_pipeline.html
 [Fragment, System.Flags]
 public enum Config
 {
@@ -8,13 +14,14 @@ public enum Config
   debug = (1 << 1),
   debug_opt = (1 << 2),
   release = (1 << 3),
-  tests = (1 << 4),
-  coverage = (1 << 5),
-  address_sanitizer = (1 << 6),
-  undefined_behavior_sanitizer = (1 << 7),
+  coverage = (1 << 4),
+  address_sanitizer = (1 << 5),
+  undefined_behavior_sanitizer = (1 << 6),
   fuzzy = (1 << 8)
 }
 
+// High level different kind of optimizations we support
+// Compiler and Linker options are set based on these values
 [Fragment, System.Flags]
 public enum Optimization
 {
@@ -23,15 +30,11 @@ public enum Optimization
   FullOpt = (1 << 2)
 }
 
+// The RexConfiguration class is what's used to set configuration options
+// These can be optimisation level, include paths, dependencies, ..
 public class RexConfiguration : Sharpmake.Project.Configuration
 {
-  public bool GenerateCompilerDB { get; set; }
-
-  public RexConfiguration()
-  {
-    GenerateCompilerDB = true;
-  }
-
+  // Enables exceptions for this configuration
   public void enable_exceptions()
   {
     Options.Remove(Sharpmake.Options.Vc.Compiler.Exceptions.Disable);
@@ -42,6 +45,7 @@ public class RexConfiguration : Sharpmake.Project.Configuration
     Defines.Add("_HAS_EXCEPTIONS=1");
   }
 
+  // Disables exceptions for this configuration
   public void disable_exceptions()
   {
     Options.Remove(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
@@ -52,65 +56,19 @@ public class RexConfiguration : Sharpmake.Project.Configuration
     Defines.Add("_HAS_EXCEPTIONS=0");
   }
 
+  // Adds a define to this configuration which is propagated
+  // to other projects that have a dependency on this project
+  // and use this configuration for it as well.
   public void add_public_define(string define)
   {
     Defines.Add(define);
     ExportDefines.Add(define);
   }
-
-  public void set_precomp_header(string projectFolderName, string preCompHeaderName)
-  {
-    PrecompHeader = projectFolderName + @"/" + preCompHeaderName + @".h";
-    PrecompSource = preCompHeaderName + @".cpp";
-  }
-
-  public bool is_config_for_testing()
-  {
-    RexTarget rex_target = Target as RexTarget;
-    switch (rex_target.Config)
-    {
-      case Config.tests:
-      case Config.coverage:
-      case Config.address_sanitizer:
-      case Config.undefined_behavior_sanitizer:
-      case Config.fuzzy:
-        return true;
-
-      case Config.assert:
-      case Config.debug:
-      case Config.debug_opt:
-      case Config.release:
-      default:
-        return false;
-    }
-  }
 }
 
-public class ConfigManager
-{
-  public static Config get_all_configs()
-  {
-    return Config.assert | Config.debug | Config.debug_opt | Config.release | Config.tests;
-  }
-
-  public static Optimization get_optimization_for_config(Config config)
-  {
-    switch (config)
-    {
-      case Config.assert: return Optimization.FullOptWithPdb;
-      case Config.debug: return Optimization.NoOpt;
-      case Config.coverage: return Optimization.NoOpt;
-      case Config.debug_opt: return Optimization.FullOptWithPdb;
-      case Config.address_sanitizer: return Optimization.FullOptWithPdb;
-      case Config.undefined_behavior_sanitizer: return Optimization.FullOptWithPdb;
-      case Config.fuzzy: return Optimization.FullOptWithPdb;
-      case Config.release: return Optimization.FullOpt;
-      case Config.tests: return Optimization.NoOpt;
-    }
-    return Optimization.FullOpt;
-  }
-}
-
+// Every entry in the config file that's passed in to a call into sharpmake
+// is deserialized into this structure.
+// This is then used to initialize the generation settings
 public class ConfigSetting
 {
   public string Description { get; set; }
