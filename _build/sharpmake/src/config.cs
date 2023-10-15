@@ -34,98 +34,22 @@ public class RexConfiguration : Sharpmake.Project.Configuration
 
   public void enable_exceptions()
   {
+    Options.Remove(Sharpmake.Options.Vc.Compiler.Exceptions.Disable);
     Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
 
+    // Requirement for MSVC
     Defines.Remove("_HAS_EXCEPTIONS=0");
     Defines.Add("_HAS_EXCEPTIONS=1");
   }
 
   public void disable_exceptions()
   {
+    Options.Remove(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
     Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Disable);
 
+    // Requirement for MSVC
     Defines.Remove("_HAS_EXCEPTIONS=1");
     Defines.Add("_HAS_EXCEPTIONS=0");
-  }
-
-  public void use_general_options()
-  {
-    Options.Add(Sharpmake.Options.Vc.General.CharacterSet.MultiByte);
-    Options.Add(Sharpmake.Options.Vc.General.PlatformToolset.v142);
-    Options.Add(Sharpmake.Options.Vc.General.WarningLevel.Level4);
-    Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Enable);
-  }
-
-  public void use_compiler_options()
-  {
-    // C++ Options
-    Options.Add(Sharpmake.Options.Vc.Compiler.SupportJustMyCode.No); // this adds a call to __CheckForDebuggerJustMyCode into every function that slows down runtime significantly
-    Options.Add(Sharpmake.Options.Vc.Compiler.CppLanguageStandard.CPP17);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RTTI.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeChecks.Default);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FloatingPointModel.Fast);
-    Options.Add(Sharpmake.Options.Vc.Compiler.MultiProcessorCompilation.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.StringPooling.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.BufferSecurityCheck.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FunctionLevelLinking.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FloatingPointExceptions.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.OpenMP.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.JumboBuild.Enable);
-
-    // C# Options
-    Options.Add(Sharpmake.Options.CSharp.LanguageVersion.CSharp8);
-  }
-
-  public void use_linker_options()
-  {
-    Options.Add(Sharpmake.Options.Vc.Linker.LargeAddress.SupportLargerThan2Gb);
-    Options.Add(Sharpmake.Options.Vc.Linker.GenerateMapFile.Disable);
-    Options.Add(Sharpmake.Options.Vc.Linker.GenerateManifest.Disable);
-    Options.Add(Sharpmake.Options.Vc.Linker.TreatLinkerWarningAsErrors.Enable);
-  }
-
-  public void enable_optimization()
-  {
-    Options.Add(Sharpmake.Options.Vc.General.WholeProgramOptimization.LinkTime);
-
-    Options.Add(Sharpmake.Options.Vc.Compiler.Optimization.MaximizeSpeed);
-    Options.Add(Sharpmake.Options.Vc.Compiler.Intrinsic.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeLibrary.MultiThreaded);
-    Options.Add(Sharpmake.Options.Vc.Compiler.Inline.AnySuitable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FiberSafe.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeChecks.Default);
-
-    Options.Add(Sharpmake.Options.Vc.Compiler.MinimalRebuild.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FavorSizeOrSpeed.FastCode);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FunctionLevelLinking.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.OmitFramePointers.Enable);
-
-    Options.Add(Sharpmake.Options.Vc.Linker.LinkTimeCodeGeneration.UseLinkTimeCodeGeneration);
-    Options.Add(Sharpmake.Options.Vc.Linker.EnableCOMDATFolding.RemoveRedundantCOMDATs);
-    Options.Add(Sharpmake.Options.Vc.Linker.Reference.EliminateUnreferencedData);
-    //Options.Add(Sharpmake.Options.Vc.Linker.Incremental.Enable);
-  }
-
-  public void disable_optimization()
-  {
-    Defines.Add("USING_DEBUG_RUNTIME_LIBS");
-
-    Options.Add(Sharpmake.Options.Vc.Compiler.Optimization.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.Intrinsic.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeLibrary.MultiThreadedDebug);
-    Options.Add(Sharpmake.Options.Vc.Compiler.Inline.Default);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FiberSafe.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeChecks.Both);
-    Options.Add(Sharpmake.Options.Vc.Compiler.MinimalRebuild.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FavorSizeOrSpeed.Neither);
-    Options.Add(Sharpmake.Options.Vc.Compiler.OmitFramePointers.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FunctionLevelLinking.Enable);
-
-    Options.Add(Sharpmake.Options.Vc.Linker.LinkTimeCodeGeneration.Default);
-    Options.Add(Sharpmake.Options.Vc.Linker.EnableCOMDATFolding.DoNotRemoveRedundantCOMDATs);
-    Options.Add(Sharpmake.Options.Vc.Linker.CreateHotPatchableImage.Enable);
-    Options.Add(Sharpmake.Options.Vc.Linker.Incremental.Enable);
-    Options.Add(Sharpmake.Options.Vc.Linker.GenerateDebugInformation.Enable);
   }
 
   public void add_public_define(string define)
@@ -191,7 +115,5 @@ public class ConfigSetting
 {
   public string Description { get; set; }
   public System.Text.Json.JsonElement Value { get; set; }
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-  public string[]? Options { get; set; }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+  public string[] Options { get; set; }
 }
