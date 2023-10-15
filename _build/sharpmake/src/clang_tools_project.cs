@@ -18,7 +18,7 @@ class ClangToolsProject
   {
     get
     {
-      return System.IO.Path.Combine(Path, $"{Name}.project");
+      return System.IO.Path.Combine(Path, $"{Name}{Globals.ClangToolsProjectExtension}");
     }
   }
 }
