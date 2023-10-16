@@ -6,8 +6,7 @@ using System.Collections.Generic;
 
 namespace rex
 {
-  // Represents the solution that will be generated and that will contain the
-  // project with the sample code.
+  // Represents the solution that will be generated
   [Generate]
   public class MainSolution : Solution
   {
