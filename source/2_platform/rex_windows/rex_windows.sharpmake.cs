@@ -27,24 +27,22 @@ public class RexWindows : PlatformProject
         }
     }
 
-    public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupLibDependencies(conf, target);
+
+    conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+    switch (ProjectGen.Settings.GraphicsAPI)
     {
-        base.Configure(conf, target);
-
-        conf.Output = Configuration.OutputType.Lib;
-
-        conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-        switch (ProjectGen.Settings.GraphicsAPI)
-        {
-            case ProjectGen.GraphicsAPI.OpenGL:
-                conf.AddPublicDependency<RexOpenGL>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-                break;
-            case ProjectGen.GraphicsAPI.DirectX12:
-                conf.AddPublicDependency<RexDirectX>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-                break;
-            default:
-                break;
-        }
-        conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+      case ProjectGen.GraphicsAPI.OpenGL:
+        conf.AddPublicDependency<RexOpenGL>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+        break;
+      case ProjectGen.GraphicsAPI.DirectX12:
+        conf.AddPublicDependency<RexDirectX>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+        break;
+      default:
+        break;
     }
+    conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+  }
 }

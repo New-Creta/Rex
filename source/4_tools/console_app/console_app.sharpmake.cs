@@ -18,21 +18,16 @@ public class ConsoleApp : ToolsProject
     GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
+    base.SetupConfigSettings(conf, target);
 
-    conf.Output = Configuration.OutputType.Exe;
     conf.Options.Add(Options.Vc.Linker.SubSystem.Console);
+  }
 
-    string ThisFileFolder = Path.GetFileName(Path.GetDirectoryName(Utils.CurrentFile()));
-    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);
-
-    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
-    {
-      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
-    }
+  protected override void SetupPlatformRules(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupPlatformRules(conf, target);
 
     switch (target.Platform)
     {

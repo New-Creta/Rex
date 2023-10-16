@@ -22,11 +22,9 @@ public class RexEngine : EngineProject
     //SourceFilesExcludeRegex.Add("win/*");
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
-
-    conf.Output = Configuration.OutputType.Lib;
+    base.SetupLibDependencies(conf, target);
 
     conf.AddPublicDependency<RexStdExtra>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
@@ -35,6 +33,11 @@ public class RexEngine : EngineProject
     {
       conf.AddPublicDependency<RexStdTest>(target, DependencySetting.Default);
     }
+  }
+
+  protected override void SetupConfigRules(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigRules(conf, target);
 
     switch (target.Config)
     {
@@ -50,7 +53,11 @@ public class RexEngine : EngineProject
         conf.add_public_define("REX_DEBUG");
         break;
     }
+  }
 
+  protected override void SetupPlatformRules(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupPlatformRules(conf, target);
 
     switch (conf.Platform)
     {
@@ -63,7 +70,7 @@ public class RexEngine : EngineProject
         conf.add_public_define("REX_PLATFORM_X64");
         conf.add_public_define("REX_PLATFORM_WINDOWS");
         conf.SourceFilesBuildExcludeRegex.Add("unix/*"); // exclude unix files
-                break;
+        break;
       case Platform.linux:
         conf.add_public_define("REX_PLATFORM_LINUX");
         conf.SourceFilesBuildExcludeRegex.Add("win/*"); // exclude windows files
@@ -71,24 +78,24 @@ public class RexEngine : EngineProject
       default:
         break;
     }
+  }
+
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigSettings(conf, target);
 
     switch (ProjectGen.Settings.GraphicsAPI)
     {
-        case ProjectGen.GraphicsAPI.OpenGL:
-            conf.add_public_define("REX_API_OPENGL");
-            break;
-        case ProjectGen.GraphicsAPI.DirectX12:
-            conf.add_public_define("REX_API_DIRECTX12");
-            break;
-        default:
-            break;
+      case ProjectGen.GraphicsAPI.OpenGL:
+        conf.add_public_define("REX_API_OPENGL");
+        break;
+      case ProjectGen.GraphicsAPI.DirectX12:
+        conf.add_public_define("REX_API_DIRECTX12");
+        break;
+      default:
+        break;
     }
 
     conf.add_public_define("REXLOG_COMPILED_LIB");
-  }
-
-  public override void AfterConfigure()
-  {
-    base.AfterConfigure();
   }
 }

@@ -15,13 +15,10 @@ public class ReginaTest : TestProject
     SourceRootPath = ThisFileFolder;
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
+    base.SetupLibDependencies(conf, target);
 
     conf.AddPublicDependency<Regina>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-
-    conf.Output = Configuration.OutputType.Exe;
-
   }
 }

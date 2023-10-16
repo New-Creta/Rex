@@ -36,22 +36,8 @@ public class BaseConfiguration
     SetupProjectPaths(conf, target);
     SetupDefaultConfigurationSettings(conf, target);
 
-    // These are protected and optionally extended by derived projects
-    SetupOutputType(conf, target);
-
     // These are protected and optionally changed by derived projects
     SetupSolutionFolder(conf, target);
-  }
-
-  // Setup the output type of this project
-  // This is usually a static lib or an executable
-  // This is meant to be overriden by derived projects.
-  private void SetupOutputType(RexConfiguration conf, RexTarget target)
-  {
-    if (target.Compiler == Compiler.GCC && conf.Output == RexConfiguration.OutputType.Dll) // Sharpmake doesn't support DLLs for GCC
-    {
-      conf.Output = RexConfiguration.OutputType.Lib;
-    }
   }
 
   // Setup project paths like the project path itself, intermediate path, target path, pdb paths, ..
@@ -138,7 +124,7 @@ public abstract class BasicCPPProject : Project
   // However, we create our own virtual functions called by base type Configure function.
   // This is meant to make it more scaleable, easier to read and search for specific configuration settings.
   [Configure]
-  public virtual void Configure(RexConfiguration conf, RexTarget target)
+  public void Configure(RexConfiguration conf, RexTarget target)
   {
     BaseConfiguration baseConfig = new BaseConfiguration(this);
     baseConfig.Configure(conf, target);
@@ -148,6 +134,7 @@ public abstract class BasicCPPProject : Project
 
     // These are protected and optionally changed by derived projects
     SetupSolutionFolder(conf, target);
+    SetupOutputType(conf, target);
 
     // These are protected and optionally extended by derived projects
     SetupIncludePaths(conf, target);
@@ -765,6 +752,20 @@ public class ToolsProject : BasicCPPProject
     conf.SolutionFolder = "4_tools";
   }
 
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigSettings(conf, target);
+
+    string ThisFileFolder = Path.GetFileName(Path.GetDirectoryName(Utils.CurrentFile()));
+    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);
+
+    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
+    {
+      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
+    }
+  }
+
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
   {
     conf.Output = Configuration.OutputType.Lib;
@@ -795,6 +796,6 @@ public class TestProject : BasicCPPProject
 
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
   {
-    conf.Output = Configuration.OutputType.Lib;
+    conf.Output = Configuration.OutputType.Exe;
   }
 }
