@@ -741,7 +741,7 @@ public class AppLibrariesProject : BasicCPPProject
   }
 }
 
-// All projects sitting in 5_tools folder should inherit from this
+// All projects sitting in 4_tools folder should inherit from this
 public class ToolsProject : BasicCPPProject
 {
   public ToolsProject() : base()
@@ -772,6 +772,7 @@ public class ToolsProject : BasicCPPProject
   }
 }
 
+// All projects sitting in the tests directory should inherit from this
 public class TestProject : BasicCPPProject
 {
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
