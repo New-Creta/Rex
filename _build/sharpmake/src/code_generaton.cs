@@ -7,19 +7,19 @@ using System.Text;
 // THE CODE GENERATION SYSTEM
 // Some code in the engine gets auto generated.
 // While other engines allow users to extend the headers file, 
-// We generate the content of these files from disk.
+// we generate the content of these files from disk.
 // The benefit we get from that is that the engine code and project code stays split.
 // For example, the engine's memory tags get auto generated,
 // the engine has its own memory tags and each project can have their own as well.
 // In engines like Unreal, one must change the header file of this enum and change it accordingly for the project
-// This means that these enum values get hardcoded into engine code, which is not where they belong in our opinion.
+// While this is effective, this means that these enum values get hardcoded into engine code,
+// which is not where they belong in our opinion.
 // If we use configuration files, yes, they will end up in that header file,
 // but where they come from is from the project you're working on
-// splitting responsibility from the engine.
+// splitting responsibility from the engine and putting on the custom project.
 
 // Sharpmake reads code generation config files and combines what's found 
 // and generates code in the destination files.
-// It works similar to how the C++ compiler works.
 // A key is mapped with values and 1 (and only 1) entry can define its type and class name
 // this is similar as the ODR rule that many programming languages follow
 // Supported type of generation are enum classes and static arrays and their values.
@@ -41,11 +41,22 @@ using System.Text;
 // {
 // "MemoryTags": {
 //     "Content" : [
-//     "Global", "Engine", "FileIO", "StringPool"
+//     "Global", "CustomTag1", "CustomTag2", "CustomTag3"
 //     ]
 //   }
 // }
 //
+// This would result in the following enum created in the file 1_engine/rex_engine/include/rex_engine/memory/memory_tags.h
+// enum class MemoryTag
+// {
+//    Global,
+//    Engine,
+//    FileIO,
+//    StringPool,
+//    CustomTag1,
+//    CustomTag2,
+//    CustomTag3,
+// };
 //
 
 public static class CodeGeneration
@@ -123,9 +134,11 @@ public static class CodeGeneration
   // Process am enum type
   private static void ProcessEnum(string projectName, JsonDocument typeDefine, List<string> content, string key)
   {
+    // Take the variables out of the json element
     string className = typeDefine.RootElement.GetProperty("ClassName").GetString();
     string filepath = typeDefine.RootElement.GetProperty("Filepath").GetString();
 
+    // Create the type that needs to get generated
     TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));    
 
     // Add remaining unknown types with the same key to the enum settings
@@ -143,6 +156,7 @@ public static class CodeGeneration
   // Process an array type
   private static void ProcessArray(string projectName, JsonDocument typeDefine, List<string> content, string key)
   {
+    // Take the variables out of the json element
     string elementType = typeDefine.RootElement.GetProperty("ElementType").GetString();
     string name = typeDefine.RootElement.GetProperty("Name").GetString();
     string filepath = typeDefine.RootElement.GetProperty("Filepath").GetString();
@@ -153,6 +167,7 @@ public static class CodeGeneration
       includes = JsonSerializer.Deserialize<List<string>>(includesElement.ToString());
     }
 
+    // Create the type that needs to get generated
     TypesToGenerate.Add(key, new CodeGen.ArrayToGenerate(elementType, name, filepath, includes, projectName, content));
 
     // Add remaining unknown types with the same key to the enum settings
@@ -180,6 +195,7 @@ public static class CodeGeneration
   // write the type text to disk at the given filepath
   private static void WriteToDisk(string filePath, string text)
   {
+    // Open a stream, create the file if it doesn't exist yet
     FileStream stream;
     if (!File.Exists(filePath))
     {
@@ -190,7 +206,10 @@ public static class CodeGeneration
       stream = File.Open(filePath, FileMode.Truncate);
     }
 
+    // Load the text into an array of bytes
     byte[] bytes = Encoding.ASCII.GetBytes(text);
+
+    // Write the array of bytes to disk
     stream.Write(bytes, 0, text.Length);
     stream.Close();
 
