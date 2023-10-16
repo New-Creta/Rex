@@ -58,11 +58,6 @@ public class BaseConfiguration
     conf.Options.Add(Options.Vc.General.PlatformToolset.v142);
     conf.Options.Add(Options.Vc.General.WarningLevel.Level4);
     conf.Options.Add(Options.Vc.General.TreatWarningsAsErrors.Enable);
-
-    // Compiler options
-
-    // C# Options
-    conf.Options.Add(Options.CSharp.LanguageVersion.CSharp8);
   }
   // Setup the solution folder of this project.
   private void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
@@ -85,9 +80,6 @@ public abstract class BasicCPPProject : Project
   private Dictionary<string, string[]> ToolPaths;
   // indicates if the project creates a compiler DB for itself
   protected bool ClangToolsEnabled = true;
-
-  protected string CompilerDBPath { get; set; }
-  protected string GenerationConfigPath { get; set; }
 
   public BasicCPPProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
@@ -433,10 +425,9 @@ public abstract class BasicCPPProject : Project
     QueueCompilerDatabaseGeneration(conf);
     CopyClangToolConfigFiles(compilerDBPath);
 
-
     // create the extra arguments to be passed in to post_build.py
     string post_build_command = "";
-    post_build_command += $" -compdb={CompilerDBPath}";
+    post_build_command += $" -compdb={compilerDBPath}";
     post_build_command += $" -use_clang_tools";
     post_build_command += $" -clang_tidy_regex=\"{ProjectGen.Settings.ClangTidyRegex}\"";
     if (ProjectGen.Settings.PerformAllClangTidyChecks)
@@ -502,7 +493,7 @@ public abstract class BasicCPPProject : Project
   // It's used to build up the commandline to be passed to clang-tools
   private void GenerateClangToolProjectFile(RexConfiguration conf, RexTarget target)
   {
-    if (ClangToolsEnabled)
+    if (!ClangToolsEnabled)
     {
       return;
     }
@@ -543,13 +534,13 @@ public abstract class BasicCPPProject : Project
     // the generation path always follows the same relative path from {root}/config
     // as it does from {root} to the source code
     string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.Root), SourceRootPath);
-    GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "code_generation.json");
+    string codeGenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "code_generation.json");
 
     // Not every project has a code generation config file
     // if one doesn't exists, we early out here
-    if (!File.Exists(GenerationConfigPath))
+    if (!File.Exists(codeGenerationConfigPath))
     {
-      System.Diagnostics.Debug.WriteLine($"Warning: GenerationConfigPath does not exist '{GenerationConfigPath}'");
+      System.Diagnostics.Debug.WriteLine($"Warning: GenerationConfigPath does not exist '{codeGenerationConfigPath}'");
       return;
     }
 
@@ -560,7 +551,7 @@ public abstract class BasicCPPProject : Project
     // And therefore we cannot know what we have to autogenerate until that step has finished.
     // So the target files exist in version control and are automatically added to the project
     // but their content is only filled in after the project and solution has been generated.
-    CodeGeneration.ReadGenerationFile(Name, GenerationConfigPath);
+    CodeGeneration.ReadGenerationFile(Name, codeGenerationConfigPath);
   }
 
   // Simple helper function to get the path of the compiler db

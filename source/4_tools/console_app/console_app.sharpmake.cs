@@ -15,7 +15,6 @@ public class ConsoleApp : ToolsProject
     SourceRootPath = ThisFileFolder;
 
     string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
-    GenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "generation.json");
   }
 
   protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
