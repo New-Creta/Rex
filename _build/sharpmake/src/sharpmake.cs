@@ -31,13 +31,25 @@ namespace rex
       AddTargets(vsTarget);
     }
 
-    public override void Configure(RexConfiguration conf, RexTarget target)
+    protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
     {
-      conf.ProjectPath = Path.Combine(Globals.BuildFolder, target.DevEnv.ToString(), Name);
-      conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
-      conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
       conf.Output = Configuration.OutputType.DotNetClassLibrary;
+    }
+
+    // Setup default configuration settings for C++ projects
+    protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+    {
+      base.SetupConfigSettings(conf, target);
+
       conf.StartWorkingDirectory = Globals.SharpmakeRoot;
+
+      conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
+      conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
+    }
+
+    protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
+    {
+      base.SetupLibDependencies(conf, target);
 
       string sharpmakeAppPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
       string sharpmakeDllPath = Path.Combine(Path.GetDirectoryName(sharpmakeAppPath), "sharpmake.dll");
@@ -49,9 +61,6 @@ namespace rex
                                                  ));
 
       conf.ReferencesByNuGetPackage.Add("System.Text.Json", "5.0.2"); // same version sharpmake uses
-
-      conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
-      conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
 
       string quote = "\'"; // Use single quote that is cross platform safe
       List<string> sharpmake_sources = new List<string>();

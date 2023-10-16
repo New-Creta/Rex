@@ -43,7 +43,7 @@ public class BaseConfiguration
   // Setup project paths like the project path itself, intermediate path, target path, pdb paths, ..
   private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
   {
-    conf.ProjectPath = Path.Combine(Globals.Root, ".rex", "build", ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
+    conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
     conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
     conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
     conf.UseRelativePdbPath = false;
@@ -394,7 +394,7 @@ public abstract class BasicCPPProject : Project
 
     conf.EventPostBuild.Add($"py {postbuildCommandScriptPath}{postbuildCommandArguments}");
   }
-
+  // Set the foldername of the solution folder this project belongs to
   protected virtual void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     // Nothing to implement
@@ -646,7 +646,7 @@ public abstract class BasicCPPProject : Project
 
 // This is the base class for every C# project used in the rex solution
 // Some of its functionality is sharedwith BasicCPPProject through BaseConfiguration
-public class BasicCSProject : CSharpProject
+public abstract class BasicCSProject : CSharpProject
 {
   public BasicCSProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
@@ -654,10 +654,50 @@ public class BasicCSProject : CSharpProject
   }
 
   [Configure]
-  public virtual void Configure(RexConfiguration conf, RexTarget target)
+  public void Configure(RexConfiguration conf, RexTarget target)
   {
     BaseConfiguration baseConfig = new BaseConfiguration(this);
     baseConfig.Configure(conf, target);
+
+    SetupOutputType(conf, target);
+    SetupLibDependencies(conf, target);
+    SetupConfigRules(conf, target);
+    SetupConfigRules(conf, target);
+    SetupPostBuildEvents(conf, target);
+    SetupSolutionFolder(conf, target);
+  }
+
+  protected abstract void SetupOutputType(RexConfiguration conf, RexTarget target);
+
+  // Setup default configuration settings for C++ projects
+  protected virtual void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    // Nothing to implement
+  }
+  // Specify the library dependencies of this project.
+  // Library paths, library files and other sharpmake project dependencies are set here.
+  protected virtual void SetupLibDependencies(RexConfiguration conf, RexTarget target)
+  {
+    // Nthing to implement
+  }
+
+  // Setup rules that need to be defined based on the config
+  // This usually means adding or removing defines, but other options are available as well.
+  // This is meant to be overriden by derived projects and extended where needed
+  protected virtual void SetupConfigRules(RexConfiguration conf, RexTarget target)
+  {
+    // Nothing to implement
+  }
+  // Setup rules for events that need to get fired after a build has finished.
+  // Remember that these need to be in batch format.
+  protected virtual void SetupPostBuildEvents(RexConfiguration conf, RexTarget target)
+  {
+    // Nothing to implement
+  }
+  // Set the foldername of the solution folder this project belongs to
+  protected virtual void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
+  {
+    // Nothing to implement
   }
 }
 
