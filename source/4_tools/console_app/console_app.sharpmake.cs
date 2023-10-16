@@ -13,8 +13,6 @@ public class ConsoleApp : ToolsProject
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     SourceRootPath = ThisFileFolder;
-
-    string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.SourceRoot), SourceRootPath);
   }
 
   protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
