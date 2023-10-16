@@ -71,7 +71,10 @@ public class RexConfiguration : Sharpmake.Project.Configuration
 // This is then used to initialize the generation settings
 public class ConfigSetting
 {
+  // A description of the config setting
   public string Description { get; set; }
+  // The value of this setting (can be bool, int, array, string)
   public System.Text.Json.JsonElement Value { get; set; }
+  // optional list of possible values. This is useful if the entry is supposed to be parsed to an enum.
   public string[] Options { get; set; }
 }
