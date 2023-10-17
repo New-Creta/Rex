@@ -29,7 +29,8 @@ required_rexpy_version = "0.1.46"
 # all scripts are located in ~/_build/scripts path.
 # to make it easier to call these scripts wherever we need them
 # we cache their paths here.
-scripts_path = os.path.join('_build', 'scripts')
+root = os.path.dirname(__file__)
+scripts_path = os.path.join(root, '_build', 'scripts')
 setup_script_path = os.path.join(scripts_path, 'setup.py')
 generate_script_path = os.path.join(scripts_path, 'generate.py')
 build_script_path = os.path.join(scripts_path, 'build.py')
@@ -142,7 +143,6 @@ def _exec_test(argsToPassOn : str):
 
 def main():
   # look into sub parsers
-
   parser = argparse.ArgumentParser()
   parser.add_argument("-ext_help", help="Display extended help information and exit", action="store_true")
   parser.add_argument("-version", help="Display the version of the rex engine and exit", action="store_true")

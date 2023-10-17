@@ -15,8 +15,7 @@ import regis.generation
 import regis.rex_json
 import regis.util
 import regis.diagnostics
-import glob
-from pathlib import Path
+import shutil
 
 def make_optional_arg(arg : str):
   return f'-{arg}'
@@ -85,5 +84,15 @@ if __name__ == "__main__":
   proc = regis.generation.new_generation(settings_path, sharpmake_args)
   proc.wait()
   result = proc.returncode
+
+  # This setup is optional, but for users using VSCode as an IDE we copy over a "tasks.json" file
+  # this file will help in running the different scripts to generate/build/test rex
+  # Should maybe be moved to the generation step and not the setup step
+  vscode_dir = os.path.join(root, ".vscode")
+  vscode_build_dir = os.path.join(root, "_build", "vscode")
+  if not os.path.exists(vscode_dir):
+    os.mkdir(vscode_dir)
+  shutil.copyfile(os.path.join(vscode_build_dir, "tasks.json"), os.path.join(vscode_dir, "tasks.json"))  
+
 
   exit(result)
