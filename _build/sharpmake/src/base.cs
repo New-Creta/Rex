@@ -199,6 +199,9 @@ public abstract class BasicCPPProject : Project
   {
     conf.disable_exceptions();
 
+    // This allows sharpmake to include dependencies of static libs
+    conf.ExportAdditionalLibrariesEvenForStaticLib = true;
+
     // Compiler options
     conf.Options.Add(Options.Vc.Compiler.SupportJustMyCode.No); // this adds a call to __CheckForDebuggerJustMyCode into every function that slows down runtime significantly
     conf.Options.Add(Options.Vc.Compiler.CppLanguageStandard.CPP17);
