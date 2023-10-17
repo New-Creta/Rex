@@ -42,9 +42,6 @@ namespace rex
       base.SetupConfigSettings(conf, target);
 
       conf.StartWorkingDirectory = Globals.SharpmakeRoot;
-
-      conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
-      conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
     }
 
     protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
@@ -62,33 +59,13 @@ namespace rex
 
       conf.ReferencesByNuGetPackage.Add("System.Text.Json", "5.0.2"); // same version sharpmake uses
 
-      string quote = "\'"; // Use single quote that is cross platform safe
-      List<string> sharpmake_sources = new List<string>();
-      foreach (string sourceFile in SourceFiles)
-      {
-        string file = sourceFile.Replace('\\', '/');
-        sharpmake_sources.Add($"{quote}{file}{quote}");
-      }
+      List<string> listOfArgs = Environment.GetCommandLineArgs().ToList();
+      listOfArgs.RemoveAt(0); // Removing the first argument as it's the path to sharpmake
+      string args = string.Join(string.Empty, listOfArgs);
 
-      foreach (string file in Directory.EnumerateFiles(SourceRootPath, "*.*", SearchOption.AllDirectories))
-      {
-        if (file.EndsWith(".sharpmake.cs"))
-        {
-          string fileWithSlashes = file.Replace('\\', '/');
-          sharpmake_sources.Add($"{quote}{fileWithSlashes}{quote}");
-        }
-      }
-
-      string sourcesArg = @"/sources(";
-      foreach (string file in sharpmake_sources)
-      {
-        sourcesArg += file;
-        sourcesArg += ", ";
-      }
-      sourcesArg = sourcesArg.Substring(0, sourcesArg.Length - 2); // remove ", ";
-      sourcesArg += ")";
-
-      conf.CsprojUserFile.StartArguments = $@"{sourcesArg} /diagnostics";
+      conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
+      conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
+      conf.CsprojUserFile.StartArguments = $@"{args} /diagnostics";
       conf.CsprojUserFile.StartProgram = sharpmakeAppPath;
       conf.CsprojUserFile.WorkingDirectory = Directory.GetCurrentDirectory();
     }
