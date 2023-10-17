@@ -24,7 +24,7 @@ try:
 except:
   rexpy_installed = False
 
-required_rexpy_version = "0.1.46"
+required_rexpy_version = "0.1.47"
 
 # all scripts are located in ~/_build/scripts path.
 # to make it easier to call these scripts wherever we need them
@@ -155,11 +155,11 @@ def main():
     parser.add_argument("-generate", help="Generate the solution of rex engine", action="store_true")
     parser.add_argument("-generate_arg", default=[], help="Arguments to pass on to generate script", action="append")
     parser.add_argument("-build", help="Build the rex engine", action="store_true")
-    parser.add_argument("-build_arg", default=[], help="Arguments to pass on to the build script", action="store_true")
+    parser.add_argument("-build_arg", default=[], help="Arguments to pass on to the build script", action="append")
     parser.add_argument("-launch", help="Launch a previous build project with the engine.", action="store_true")
-    parser.add_argument("-launch_arg", default=[], help="Arguments to pass on to the launch script.", action="store_true")
+    parser.add_argument("-launch_arg", default=[], help="Arguments to pass on to the launch script.", action="append")
     parser.add_argument("-test", help="Run a test on the engine.", action="store_true")
-    parser.add_argument("-test_arg", default=[], help="Arguments to pass on to the test script.", action="store_true")
+    parser.add_argument("-test_arg", default=[], help="Arguments to pass on to the test script.", action="append")
 
   args, unknown_args = parser.parse_known_args()
 

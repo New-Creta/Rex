@@ -24,6 +24,7 @@ if __name__ == "__main__":
   parser.add_argument("-project", default="regina", help="project to build")
   parser.add_argument("-config", default="debug_opt", help="configuration to build for")
   parser.add_argument("-compiler", default="unknown", help="configuration to build with")
+  parser.add_argument("-dont_build_dependencies", default=False, help="build only the project specified and not its dependencies", action="store_true")
 
   args, unknown = parser.parse_known_args()
 
@@ -36,7 +37,7 @@ if __name__ == "__main__":
   intermediate_dir = ""
 
   task = regis.task_raii_printing.TaskRaiiPrint("Building")
-  result = regis.build.new_build(args.project, args.config, args.compiler, intermediate_dir, args.clean, args.sln)
+  result = regis.build.new_build(args.project, args.config, args.compiler, intermediate_dir, args.clean, args.sln, args.dont_build_dependencies)
 
   if result != 0:
     regis.diagnostics.log_err("Build failed")

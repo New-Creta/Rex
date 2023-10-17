@@ -202,6 +202,14 @@ public abstract class BasicCPPProject : Project
     // This allows sharpmake to include dependencies of static libs
     conf.ExportAdditionalLibrariesEvenForStaticLib = true;
 
+    conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
+
+    string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
+    // Visual Studio takes care of the dependency chain, and will call this build command for each project it needs to build
+    // That's why we have to give the argument "dont_build_dependencies" so we don't build projects twice.
+    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} -build -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
+    conf.CustomBuildSettings.OutputFile = conf.TargetPath;
+
     // Compiler options
     conf.Options.Add(Options.Vc.Compiler.SupportJustMyCode.No); // this adds a call to __CheckForDebuggerJustMyCode into every function that slows down runtime significantly
     conf.Options.Add(Options.Vc.Compiler.CppLanguageStandard.CPP17);
