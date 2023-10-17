@@ -293,7 +293,6 @@ public abstract class BasicCPPProject : Project
         conf.Options.Add(Options.Vc.Linker.LinkTimeCodeGeneration.UseLinkTimeCodeGeneration);
         conf.Options.Add(Options.Vc.Linker.EnableCOMDATFolding.RemoveRedundantCOMDATs);
         conf.Options.Add(Options.Vc.Linker.Reference.EliminateUnreferencedData);
-        conf.Options.Add(Options.Vc.Linker.Incremental.Enable);
         break;
       case Optimization.FullOpt:
         conf.Options.Add(Options.Vc.General.DebugInformation.Disable);
@@ -315,7 +314,7 @@ public abstract class BasicCPPProject : Project
         conf.Options.Add(Options.Vc.Linker.LinkTimeCodeGeneration.UseLinkTimeCodeGeneration);
         conf.Options.Add(Options.Vc.Linker.EnableCOMDATFolding.RemoveRedundantCOMDATs);
         conf.Options.Add(Options.Vc.Linker.Reference.EliminateUnreferencedData);
-        conf.Options.Add(Options.Vc.Linker.Incremental.Enable); break;
+        break;
     }
   }
   // Setup rules that need to be defined based on the platform
