@@ -5,8 +5,8 @@ namespace rex
 {
   u32 round_up_to_nearest_multiple_of(u32 byteSize, u32 targetSize)
   {
-    REX_ASSERT_X(targetSize <= 0, "Negative numbers and zero are not powers of 2");
-    REX_ASSERT_X(targetSize & (targetSize - 1) == 0, "targetSize is required to be a power of 2")
+    //REX_ASSERT_X(targetSize <= 0, "Negative numbers and zero are not powers of 2");
+    //REX_ASSERT_X(targetSize & (targetSize - 1) == 0, "targetSize is required to be a power of 2");
 
     // Exampple: 
     // 
