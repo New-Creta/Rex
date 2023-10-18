@@ -106,8 +106,8 @@ namespace rex
                 wrl::com_ptr<ID3D12DescriptorHeap> dsv_heap = nullptr;
 
                 wrl::com_ptr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count];
-
                 DXGI_FORMAT depth_stencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
                 wrl::com_ptr<ID3D12Resource> depth_stencil_buffer = nullptr;
 
                 D3D12_VIEWPORT screen_viewport = {};
@@ -155,6 +155,8 @@ namespace rex
             //-------------------------------------------------------------------------
             bool create_swapchain_object(dxgi::Factory* factory, const RendererOutputWindowUserData& userData)
             {
+                g_ctx.swapchain.Reset();
+
                 DXGI_SWAP_CHAIN_DESC sd;
                 sd.BufferDesc.Width = userData.window_width;
                 sd.BufferDesc.Height = userData.window_height;
@@ -235,7 +237,10 @@ namespace rex
             {
                 // Release the previous resources we will be recreating.
                 for (int i = 0; i < s_swapchain_buffer_count; ++i)
+                {
                     g_ctx.rtv_buffers[i].Reset();
+                }
+
                 g_ctx.depth_stencil_buffer.Reset();
 
                 // Resize the swap chain.
@@ -267,19 +272,25 @@ namespace rex
             //-------------------------------------------------------------------------
             bool create_dsv(const RendererOutputWindowUserData& userData)
             {
-                D3D12_RESOURCE_DESC depth_stencil_desc = {};
+                D3D12_RESOURCE_DESC resource_tex2d_desc = {};
+                resource_tex2d_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+                resource_tex2d_desc.Alignment = 0;
+                resource_tex2d_desc.Width = userData.window_width;
+                resource_tex2d_desc.Height = userData.window_height;
+                resource_tex2d_desc.DepthOrArraySize = 1;
+                resource_tex2d_desc.MipLevels = 1;
 
-                depth_stencil_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-                depth_stencil_desc.Alignment = 0;
-                depth_stencil_desc.Width = userData.window_width;
-                depth_stencil_desc.Height = userData.window_height;
-                depth_stencil_desc.DepthOrArraySize = 1;
-                depth_stencil_desc.MipLevels = 1;
-                depth_stencil_desc.Format = g_ctx.depth_stencil_format;
-                depth_stencil_desc.SampleDesc.Count = g_ctx.msaa_state ? 4 : 1;
-                depth_stencil_desc.SampleDesc.Quality = g_ctx.msaa_state ? g_ctx.msaa_quality - 1 : 0;
-                depth_stencil_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-                depth_stencil_desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+                // SSAO requires an SRV to the depth buffer to read from
+                // the depth buffer.  Therefore, because we need to create two views to the same resource:
+                //   1. SRV format: DXGI_FORMAT_R24_UNORM_X8_TYPELESS
+                //   2. DSV Format: DXGI_FORMAT_D24_UNORM_S8_UINT
+                // we need to create the depth buffer resource with a typeless format.  
+                resource_tex2d_desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+
+                resource_tex2d_desc.SampleDesc.Count = g_ctx.msaa_state ? 4 : 1;
+                resource_tex2d_desc.SampleDesc.Quality = g_ctx.msaa_state ? g_ctx.msaa_quality - 1 : 0;
+                resource_tex2d_desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+                resource_tex2d_desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
                 D3D12_CLEAR_VALUE optimized_clear_value = {};
                 optimized_clear_value.Format = g_ctx.depth_stencil_format;
@@ -290,7 +301,7 @@ namespace rex
 
                 if (FAILED(g_ctx.device->CreateCommittedResource(&heap_properties
                     , D3D12_HEAP_FLAG_NONE
-                    , &depth_stencil_desc
+                    , &resource_tex2d_desc
                     , D3D12_RESOURCE_STATE_COMMON
                     , &optimized_clear_value
                     , IID_PPV_ARGS(g_ctx.depth_stencil_buffer.GetAddressOf()))))
@@ -515,10 +526,10 @@ namespace rex
                 g_ctx.screen_viewport.Width = static_cast<f32>(userData.window_width);
                 g_ctx.screen_viewport.Height = static_cast<f32>(userData.window_height);
                 g_ctx.screen_viewport.MinDepth = 0.0f;
-                g_ctx.screen_viewport.MaxDepth = 0.0f;
+                g_ctx.screen_viewport.MaxDepth = 1.0f;
 
                 // Cull pixels drawn outside of the backbuffer ( such as UI elements )
-                g_ctx.scissor_rect = { 0, 0, static_cast<s32>(userData.window_width * 0.5f), static_cast<s32>(userData.window_height * 0.5f) };
+                g_ctx.scissor_rect = { 0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height) };
 
                 return true;
             }
