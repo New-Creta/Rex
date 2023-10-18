@@ -1,6 +1,7 @@
 #include "rex_windows/gui_application.h"
 
 #include "rex_engine/core_window.h"
+#include "rex_engine/windowinfo.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/event.h" // IWYU pragma: keep
@@ -25,6 +26,16 @@
 
 namespace rex
 {
+  namespace globals
+  {
+    WindowInfo g_window_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)S
+
+    //-------------------------------------------------------------------------
+    const WindowInfo& window_info()
+    {
+      return g_window_info;
+    }
+  } // namespace globals
   namespace win32
   {
     class GuiApplication::Internal
@@ -57,6 +68,10 @@ namespace rex
         {
           return false;
         }
+
+        globals::g_window_info.width = m_window->width();
+        globals::g_window_info.height = m_window->height();
+
         subscribe_window_events();
 
         // graphics context initialization
