@@ -54,7 +54,7 @@ namespace rex
                 CD3DX12_HEAP_PROPERTIES upload_heap_properties   = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
                 CD3DX12_RESOURCE_DESC contant_buffer_description = CD3DX12_RESOURCE_DESC::Buffer(m_element_byte_size * elementCount);
 
-                hr = (device->CreateCommittedResource(&upload_heap_properties, D3D12_HEAP_FLAG_NONE, &contant_buffer_description, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_upload_buffer));
+                hr = device->CreateCommittedResource(&upload_heap_properties, D3D12_HEAP_FLAG_NONE, &contant_buffer_description, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_upload_buffer));
                 REX_ASSERT_X(SUCCEEDED(hr), "Could not created commited resource for constant buffer");
 
                 hr = m_upload_buffer->Map(0, nullptr, reinterpret_cast<void**>(&m_mapped_data));
