@@ -261,7 +261,16 @@ namespace rex
                         return false;
                     }
 
-                    g_ctx.device->CreateRenderTargetView(g_ctx.rtv_buffers[i].Get(), nullptr, rtv_handle);
+                    // We need to define our own desc struct to enabled SRGB.
+                    // We can't initialize the swapchain with 'DXGI_FORMAT_R8G8B8A8_UNORM_SRGB'
+                    // so we have to initialize the render targets with this format
+                    // and then pass that through to CreateRenderTargetView
+                    D3D12_RENDER_TARGET_VIEW_DESC rtv_desc;
+                    rtv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+                    rtv_desc.Texture2D.MipSlice = 0;
+                    rtv_desc.Texture2D.PlaneSlice = 0;
+                    rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+                    g_ctx.device->CreateRenderTargetView(g_ctx.rtv_buffers[i].Get(), &rtv_desc, rtv_handle);
 
                     rtv_handle.Offset(1, g_ctx.rtv_desc_size);
                 }
