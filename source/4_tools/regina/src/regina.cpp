@@ -493,6 +493,16 @@ namespace rex
     void shutdown()
     {
         REX_LOG(LogRegina, "shutting down Regina");
+
+        g_regina_ctx.root_signature.Reset();
+        g_regina_ctx.cbv_heap.Reset();
+
+        g_regina_ctx.object_constant_buffer.reset();
+
+        g_regina_ctx.mesh_cube.reset();
+
+        g_regina_ctx.vertex_shader_byte_code.Reset();
+        g_regina_ctx.pixel_shader_byte_code.Reset();
     }
 
     ApplicationCreationParams create_regina_app_creation_params(PlatformCreationParams&& platformParams)
