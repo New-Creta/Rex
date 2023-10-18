@@ -45,16 +45,31 @@ namespace rex
 
     namespace backend
     {
+      void*   get_device();
+      void*   get_command_queue();
+      void*   get_command_list();
+      void*   get_command_allocator();
+
+      s32     get_backbuffer_format();
+      s32     get_depthstencil_format();
+
+      bool    get_msaa_enabled();
+      s32     get_msaa_quality();
+
+      bool    create_pipeline_state_object(void* psoDescription);
+
       // Platform specific implementation, implements these function
-      bool initialize(const RendererOutputWindowUserData& userData);
-      void shutdown();
+      bool  	initialize(const RendererOutputWindowUserData& userData);
+      void  	shutdown();
 
       // functions to synchronize the render and main threads
-      bool new_frame();
-      bool end_frame();
+      bool    new_frame();
+      bool    end_frame();
 
-      void clear();
-      bool present();
+      bool    flush_command_queue();
+
+      void    clear();
+      bool    present();
     } // namespace backend
   }   // namespace renderer
 } // namespace rex
