@@ -111,18 +111,11 @@ namespace rex
         // don't render when the application is paused
         if(!m_app_instance->is_paused())
         {
-          // update the graphics code
-          renderer::backend::new_frame();
-          renderer::backend::clear();
-
           // TODO: this call eventually has to go.
           // we will query the scenegraph and pull geometry from the scene instead of letting the user
           // execute draw commands manually. However, for the setup of this framework we will
           // provide this API to be able to execute draw commands properly
           m_on_draw();
-
-          renderer::backend::present();
-          renderer::backend::end_frame();
         }
 
         // update the timing stats
