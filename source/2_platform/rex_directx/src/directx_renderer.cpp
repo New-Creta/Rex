@@ -8,7 +8,7 @@
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/log.h"
 #include "rex_directx/wrl/wrl_types.h"
-#include "rex_directx/directx_vertex.h"
+#include "rex_directx/resources/vertex.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_renderer_core/gpu_description.h"
