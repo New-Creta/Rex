@@ -137,7 +137,7 @@ def _exec_launch(argsToPassOn : str):
   return
 
 def _exec_test(argsToPassOn : str):
-  """EXecute the internal test script"""
+  """Execute the internal test script"""
   _run_script(test_script_path, argsToPassOn)
   return
 
