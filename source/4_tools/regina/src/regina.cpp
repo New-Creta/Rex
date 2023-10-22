@@ -1,6 +1,6 @@
-#include "rex_directx/directx_upload_buffer.h"
 #include "rex_directx/directx_util.h"
-#include "rex_directx/directx_vertex.h"
+#include "rex_directx/resources/upload_buffer.h"
+#include "rex_directx/resources/vertex.h"
 #include "rex_directx/wrl/wrl_types.h"
 
 #include "rex_renderer_core/renderer.h"
@@ -475,6 +475,10 @@ namespace rex
     }
     void draw()
     {
+        renderer::backend::new_frame();
+
+        renderer::backend::clear();
+
         ID3D12DescriptorHeap* descriptor_heaps[] = { g_regina_ctx.cbv_heap.Get() };
         get_dx12_command_list()->SetDescriptorHeaps(_countof(descriptor_heaps), descriptor_heaps);
 
@@ -489,6 +493,9 @@ namespace rex
         get_dx12_command_list()->SetGraphicsRootDescriptorTable(0, g_regina_ctx.cbv_heap->GetGPUDescriptorHandleForHeapStart());
 
         get_dx12_command_list()->DrawIndexedInstanced(g_regina_ctx.mesh_cube->draw_args["box"].index_count, 1, 0, 0, 0);
+
+        renderer::backend::present();
+        renderer::backend::end_frame();
     }
     void shutdown()
     {
