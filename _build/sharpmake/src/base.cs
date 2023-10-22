@@ -44,11 +44,6 @@ public class BaseConfiguration
   private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
   {
     conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
-    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
-    conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
-    conf.UseRelativePdbPath = false;
-    conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Project.Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
-    conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Project.Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
   }
   // Setup default configuration settings.
   private void SetupDefaultConfigurationSettings(RexConfiguration conf, RexTarget target)
@@ -122,9 +117,10 @@ public abstract class BasicCPPProject : Project
     baseConfig.Configure(conf, target);
 
     // These are private and are not virtualized to be configurable derived projects
-    SetupConfigSettings(conf, target);
+    SetupProjectPaths(conf, target);
 
     // These are protected and optionally changed by derived projects
+    SetupConfigSettings(conf, target);
     SetupSolutionFolder(conf, target);
     SetupOutputType(conf, target);
 
@@ -227,13 +223,18 @@ public abstract class BasicCPPProject : Project
 
       // rex python script at the root is the entry point and interface with the rex pipeline
       string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
+      
+      // The target file extension isn't configured yet at point so we need to query it ourselves
+      var configurationTasks = PlatformRegistry.Get<Configuration.IConfigurationTasks>(target.Platform);
+      string targetFileExtension = configurationTasks.GetDefaultOutputFullExtension(conf.Output);
+      string fullFileName = $"{conf.TargetFileFullName}_{conf.Name}_{target.Compiler}{targetFileExtension}";
 
       // Because Visual Studio takes care of the dependency chain, we have to pass in the argument to not build the dependencies
+      // We need to somehow configure the paths so that the visual studio projects are pointing correctly
+      // but we still use the ninja files that are located elsewhere.
       conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
       conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} -build -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
       conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} -build -build_arg=-clean -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
-      string fullFileName = $"{conf.TargetFileFullName}_{conf.Name}_{target.Compiler}{conf.TargetFileFullExtension}";
-
       conf.CustomBuildSettings.OutputFile = Path.Combine(conf.TargetPath, fullFileName);
     }
 
@@ -667,7 +668,7 @@ public abstract class BasicCPPProject : Project
     return Path.Combine(config.ProjectPath, "ninja", GetPerConfigFileName(config, config.Target.GetFragment<Compiler>()));
   }
   // Helper function to create a unique filename for the ninja file based on the config
-  private string GetPerConfigFileName(Project.Configuration config, Compiler compiler)
+  private string GetPerConfigFileName(RexConfiguration config, Compiler compiler)
   {
     return $"{config.Project.Name}.{config.Name}.{compiler}.ninja";
   }
@@ -678,6 +679,19 @@ public abstract class BasicCPPProject : Project
     string tools_json_path = Path.Combine(Globals.LibsRoot, "lib_paths.json");
     string json_blob = File.ReadAllText(tools_json_path);
     ToolPaths = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json_blob);
+  }
+
+  // Setup the target path and pdb locations
+  private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
+  {
+    // Because we use ninja files we store binaries and intermediates with the ninja files
+    // we hardcode "ninja" as that's the name of the devenv when ninja is selected
+    string ninjaFilesPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, "ninja", Name);
+    conf.TargetPath = Path.Combine(ninjaFilesPath, "bin", conf.Name);
+    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
+    conf.UseRelativePdbPath = false;
+    conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
+    conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
   }
 }
 
@@ -696,6 +710,7 @@ public abstract class BasicCSProject : CSharpProject
     BaseConfiguration baseConfig = new BaseConfiguration(this);
     baseConfig.Configure(conf, target);
 
+    SetupProjectPaths(conf, target);
     SetupOutputType(conf, target);
     SetupLibDependencies(conf, target);
     SetupConfigRules(conf, target);
@@ -735,6 +750,15 @@ public abstract class BasicCSProject : CSharpProject
   protected virtual void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     // Nothing to implement
+  }
+  // Setup the target path and pdb locations
+  private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
+  {
+    conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
+    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
+    conf.UseRelativePdbPath = false;
+    conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
+    conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
   }
 }
 
