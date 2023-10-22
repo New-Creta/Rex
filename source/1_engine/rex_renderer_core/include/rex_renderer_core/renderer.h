@@ -2,29 +2,10 @@
 
 #include "rex_engine/types.h"
 #include "rex_std/bonus/string.h"
+#include "rex_renderer_core/parameters/renderer_params.h"
 
 namespace rex
 {
-  struct RendererInfo
-  {
-    rsl::small_stack_string api_version;
-    rsl::small_stack_string shader_version;
-    rsl::small_stack_string adaptor;
-    rsl::small_stack_string vendor;
-  };
-
-  struct RendererOutputWindowUserData
-  {
-    void* primary_display_handle;
-
-    s32 window_width;
-    s32 window_height;
-
-    s32 refresh_rate;
-
-    bool windowed;
-  };
-
   enum class ShaderPlatform
   {
     GLSL,
@@ -33,15 +14,40 @@ namespace rex
 
   namespace renderer
   {
-    bool initialize(const RendererOutputWindowUserData& userData, u32 maxCommands);
+    struct Info
+    {
+        rsl::small_stack_string api_version;
+        rsl::small_stack_string shader_version;
+        rsl::small_stack_string adaptor;
+        rsl::small_stack_string vendor;
+    };
+
+    struct OutputWindowUserData
+    {
+        void* primary_display_handle;
+
+        s32 window_width;
+        s32 window_height;
+
+        s32 refresh_rate;
+
+        bool windowed;
+    };
+
+    bool initialize(const OutputWindowUserData& userData, u32 maxCommands);
     void shutdown();
 
     // general accessors
-    const RendererInfo& info();
+    const Info& info();
     ShaderPlatform shader_platform();
 
     bool is_y_up();
     bool is_depth_0_to_1();
+
+    // public-api will buffer all commands for dispatch on dedicated thread
+    u32 create_clear_state(const parameters::ClearState& clearStateParams);
+
+    void clear(u32 clearStateSlot);
 
     namespace backend
     {
@@ -59,7 +65,7 @@ namespace rex
       bool    create_pipeline_state_object(void* psoDescription);
 
       // Platform specific implementation, implements these function
-      bool  	initialize(const RendererOutputWindowUserData& userData);
+      bool  	initialize(const OutputWindowUserData& userData);
       void  	shutdown();
 
       // functions to synchronize the render and main threads
