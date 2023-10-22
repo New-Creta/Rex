@@ -82,7 +82,7 @@ namespace rex
 
         // renderer initialization
 
-        RendererOutputWindowUserData user_data;
+        OutputWindowUserData user_data;
         user_data.primary_display_handle = m_window->primary_display_handle();
         user_data.refresh_rate = m_gui_params.max_fps;
         user_data.window_width = m_window->width();
@@ -171,7 +171,7 @@ namespace rex
 
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
       {
-        RendererInfo info = renderer::info();
+        Info info = renderer::info();
         REX_LOG(LogWindows, "Renderer Info - API Version: {}", info.api_version);
         REX_LOG(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
         REX_LOG(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);

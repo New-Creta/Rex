@@ -48,11 +48,11 @@ namespace rex
 
         namespace directx
         {
-            RendererInfo g_renderer_info; // NOLINT (fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+            Info g_renderer_info; // NOLINT (fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
         }                               // namespace directx
 
         //-------------------------------------------------------------------------
-        const RendererInfo& info()
+        const Info& info()
         {
             return directx::g_renderer_info;
         }
@@ -153,7 +153,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_swapchain_object(dxgi::Factory* factory, const RendererOutputWindowUserData& userData)
+            bool create_swapchain_object(dxgi::Factory* factory, const OutputWindowUserData& userData)
             {
                 g_ctx.swapchain.Reset();
 
@@ -233,7 +233,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_rtvs_for_swapchain(const RendererOutputWindowUserData& userData)
+            bool create_rtvs_for_swapchain(const OutputWindowUserData& userData)
             {
                 // Release the previous resources we will be recreating.
                 for (int i = 0; i < s_swapchain_buffer_count; ++i)
@@ -279,7 +279,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_dsv(const RendererOutputWindowUserData& userData)
+            bool create_dsv(const OutputWindowUserData& userData)
             {
                 D3D12_RESOURCE_DESC resource_tex2d_desc = {};
                 resource_tex2d_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -394,7 +394,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool initialize(const RendererOutputWindowUserData& userData)
+            bool initialize(const OutputWindowUserData& userData)
             {
 #if defined(REX_DEBUG)
                 // Enable extra debuggin and send debug messages to the VC++ output window
