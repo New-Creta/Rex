@@ -235,6 +235,7 @@ public abstract class BasicCPPProject : Project
       conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
       conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} -build -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
       conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} -build -build_arg=-clean -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
+      conf.CustomBuildSettings.CleanCommand = $"py {rexpyPath} -build -build_arg=-nobuild -build_arg=-clean -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
       conf.CustomBuildSettings.OutputFile = Path.Combine(conf.TargetPath, fullFileName);
     }
 
