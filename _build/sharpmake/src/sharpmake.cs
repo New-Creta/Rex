@@ -61,11 +61,26 @@ namespace rex
 
       List<string> listOfArgs = Environment.GetCommandLineArgs().ToList();
       listOfArgs.RemoveAt(0); // Removing the first argument as it's the path to sharpmake
-      string args = string.Join(string.Empty, listOfArgs);
+      string argsAsString = string.Join(" ", listOfArgs);
+
+      // We need to quote all our sources
+      // we extract our sources string, and quote all of them
+      string sourcesPrefix = "/sources(";
+      int sourcesPrefixStart = argsAsString.IndexOf(sourcesPrefix);
+      int closeBracketPos = argsAsString.IndexOf(')', sourcesPrefixStart);
+      string sources = argsAsString.Substring(sourcesPrefixStart + sourcesPrefix.Length, closeBracketPos);
+      
+      string args = "";
+      args += argsAsString.Substring(0, sourcesPrefixStart);
+      args += argsAsString.Substring(sourcesPrefixStart, sourcesPrefixStart + sourcesPrefix.Length);
+      args += "\"";
+      args += sources.Replace(",", "\", \"");
+      args += "\")";
+      args += argsAsString.Substring(closeBracketPos);
 
       conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
       conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
-      conf.CsprojUserFile.StartArguments = $@"{args} /diagnostics";
+      conf.CsprojUserFile.StartArguments = $@"{args}";
       conf.CsprojUserFile.StartProgram = sharpmakeAppPath;
       conf.CsprojUserFile.WorkingDirectory = Directory.GetCurrentDirectory();
     }
