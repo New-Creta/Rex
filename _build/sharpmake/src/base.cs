@@ -29,7 +29,7 @@ public class BaseConfiguration
   // This is called by configure functions of top level project types
   public void Configure(RexConfiguration conf, RexTarget target)
   {
-    conf.Name = target.Config.ToString().ToLower();
+    conf.Name = string.Concat(target.Config.ToString().ToLower(), target.Compiler.ToString().ToLower());
     conf.DumpDependencyGraph = true;
 
     // These are private and are not virtualized to be configurable derived projects
@@ -150,7 +150,7 @@ public abstract class BasicCPPProject : Project
     // If we're targeting a visual studio solution, we need to add it as a target as well.
     if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio)
     {
-      AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC));
+      AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
     }
     // The other checks specified here are checks for various testing types
     // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
@@ -227,7 +227,7 @@ public abstract class BasicCPPProject : Project
       // The target file extension isn't configured yet at point so we need to query it ourselves
       var configurationTasks = PlatformRegistry.Get<Configuration.IConfigurationTasks>(target.Platform);
       string targetFileExtension = configurationTasks.GetDefaultOutputFullExtension(conf.Output);
-      string fullFileName = $"{conf.TargetFileFullName}_{conf.Name}_{target.Compiler}{targetFileExtension}";
+      string fullFileName = $"{conf.TargetFileFullName}_{target.ProjectConfigurationName}_{target.Compiler}{targetFileExtension}";
 
       // Because Visual Studio takes care of the dependency chain, we have to pass in the argument to not build the dependencies
       // We need to somehow configure the paths so that the visual studio projects are pointing correctly
@@ -403,10 +403,8 @@ public abstract class BasicCPPProject : Project
       case Config.debug:
       case Config.debug_opt:
         conf.add_public_define("REX_ENABLE_ASSERTS");
-        ClangToolsEnabled = true;
         break;
       case Config.release:
-        ClangToolsEnabled = true;
         break;
       case Config.coverage:
       case Config.address_sanitizer:
@@ -426,7 +424,7 @@ public abstract class BasicCPPProject : Project
     string postbuildCommandArguments = "";
     postbuildCommandArguments += $" -p={Name}";
     postbuildCommandArguments += $" -comp={target.Compiler}";
-    postbuildCommandArguments += $" -conf={conf.Name}";
+    postbuildCommandArguments += $" -conf={target.ProjectConfigurationName}";
     postbuildCommandArguments += $" -srcroot={SourceRootPath}";
 
     postbuildCommandArguments += SetupClangTools(conf, target); ;
@@ -671,7 +669,7 @@ public abstract class BasicCPPProject : Project
   // Helper function to create a unique filename for the ninja file based on the config
   private string GetPerConfigFileName(RexConfiguration config, Compiler compiler)
   {
-    return $"{config.Project.Name}.{config.Name}.{compiler}.ninja";
+    return $"{config.Project.Name}.{config.Target.ProjectConfigurationName}.{compiler}.ninja";
   }
 
   // Load the json file that specifies all the paths of all the tools needed by rex engine.
@@ -688,11 +686,11 @@ public abstract class BasicCPPProject : Project
     // Because we use ninja files we store binaries and intermediates with the ninja files
     // we hardcode "ninja" as that's the name of the devenv when ninja is selected
     string ninjaFilesPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, "ninja", Name);
-    conf.TargetPath = Path.Combine(ninjaFilesPath, "bin", conf.Name);
-    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
+    conf.TargetPath = Path.Combine(ninjaFilesPath, "bin", target.ProjectConfigurationName);
+    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", target.ProjectConfigurationName, target.Compiler.ToString());
     conf.UseRelativePdbPath = false;
-    conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
-    conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{conf.Name}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
+    conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
+    conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
   }
 }
 
