@@ -28,7 +28,7 @@ namespace rex
 
       // Because the sharpmake project only gets added to Visual Studio
       // We can only add its dependency if the target development env is Visual Studio
-      if (target.DevEnv == DevEnv.vs2019)
+      if (target.DevEnv == DevEnv.vs2019 && target.Compiler == Compiler.MSVC)
       {
         conf.AddProject<SharpmakeProject>(target);
       }
