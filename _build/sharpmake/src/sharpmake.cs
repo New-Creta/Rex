@@ -68,14 +68,13 @@ namespace rex
       string sourcesPrefix = "/sources(";
       int sourcesPrefixStart = argsAsString.IndexOf(sourcesPrefix);
       int closeBracketPos = argsAsString.IndexOf(')', sourcesPrefixStart);
-      string sources = argsAsString.Substring(sourcesPrefixStart + sourcesPrefix.Length, closeBracketPos);
+      string sources = argsAsString.Substring(sourcesPrefixStart + sourcesPrefix.Length, closeBracketPos - (sourcesPrefixStart + sourcesPrefix.Length));
       
       string args = "";
-      args += argsAsString.Substring(0, sourcesPrefixStart);
-      args += argsAsString.Substring(sourcesPrefixStart, sourcesPrefixStart + sourcesPrefix.Length);
+      args += argsAsString.Substring(0, sourcesPrefixStart + sourcesPrefix.Length);
       args += "\"";
-      args += sources.Replace(",", "\", \"");
-      args += "\")";
+      args += sources.Replace(", ", "\", \"");
+      args += "\"";
       args += argsAsString.Substring(closeBracketPos);
 
       conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
