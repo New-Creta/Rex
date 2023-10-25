@@ -153,7 +153,7 @@ namespace rex
   void MemoryTracker::track_dealloc(MemoryHeader* header)
   {
     // This is possible if static data gets deleted after the memory tracker is already destructed
-    if (!m_active)
+    if(!m_active)
     {
       return;
     }

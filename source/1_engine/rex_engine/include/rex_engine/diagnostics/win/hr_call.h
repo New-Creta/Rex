@@ -12,9 +12,9 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/win/win_types.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
-#include "rex_engine/diagnostics/win/win_types.h"
 
 namespace rex
 {

@@ -9,4 +9,4 @@ namespace rex
       Success
     };
   }
-}
+} // namespace rex

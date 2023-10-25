@@ -1,8 +1,8 @@
 #include "rex_engine/diagnostics/win/win_call.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/log.h"
 #include "rex_engine/diagnostics/win/win_debug.h"
+#include "rex_engine/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -24,8 +24,9 @@ rex::win::WinCall::WinCall(DWord /*funcResult*/, ErrorSuccess errorSuccess, rsl:
 }
 
 rex::win::WinCall::WinCall(ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)
-  : WinCall(0, errorSuccess, winFunc, file, function, lineNr)
-{}
+    : WinCall(0, errorSuccess, winFunc, file, function, lineNr)
+{
+}
 
 bool rex::win::WinCall::has_failed() const
 {

@@ -1,13 +1,13 @@
 #include "rex_engine/diagnostics/win/win_debug.h"
 
-#include "rex_engine/diagnostics/win/win_message_box.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/win/win_message_box.h"
 #include "rex_engine/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
-#include <debugapi.h>
 #include <comdef.h>
+#include <debugapi.h>
 
 bool rex::win::is_debugger_attached()
 {
