@@ -23,9 +23,20 @@ public class RexTarget : ITarget
   {
     get
     {
-      string config_str = string.Concat(Config.ToString().ToString().Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString()));
+      string config = string.Concat(Config.ToString().Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString()));
+      string comp = Compiler.ToString();
 
-      return (config_str).ToLowerInvariant();
+      string name = string.Concat(config, " - ", comp);
+      return name;
+    }
+  }
+
+  public override string ProjectConfigurationName
+  {
+    get
+    {
+      string config = string.Concat(Config.ToString().Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString()));
+      return config;
     }
   }
 
