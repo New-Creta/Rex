@@ -69,7 +69,7 @@ public class RexTarget : ITarget
   }
   public static RexTarget GetVSOnlyTarget()
   {
-    return new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
+    return new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
   }
 
   public static RexTarget GetNinjaOnlyTarget()
