@@ -110,6 +110,8 @@ namespace rex
 
                 wrl::com_ptr<ID3D12Resource> depth_stencil_buffer = nullptr;
 
+                rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, wrl::com_ptr<ID3D12DescriptorHeap>> descriptor_heap_pool;
+
                 D3D12_VIEWPORT screen_viewport = {};
                 RECT scissor_rect = {};
 
@@ -235,6 +237,15 @@ namespace rex
             //-------------------------------------------------------------------------
             bool create_rtvs_for_swapchain(const OutputWindowUserData& userData)
             {
+                // Flush before changing any resources.
+                flush_command_queue();
+
+                if (FAILED(g_ctx.command_list->Reset(g_ctx.command_allocator.Get(), nullptr)))
+                {
+                    REX_ERROR(LogDirectX, "Failed to reset command list");
+                    return false;
+                }
+
                 // Release the previous resources we will be recreating.
                 for (int i = 0; i < s_swapchain_buffer_count; ++i)
                 {
@@ -279,7 +290,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_dsv(const OutputWindowUserData& userData)
+            bool create_dsv_for_swapchain(const OutputWindowUserData& userData)
             {
                 D3D12_RESOURCE_DESC resource_tex2d_desc = {};
                 resource_tex2d_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -332,6 +343,34 @@ namespace rex
                 // Transition the resouce from it's inital state to be used as a depth buffer
                 CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(g_ctx.depth_stencil_buffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
                 g_ctx.command_list->ResourceBarrier(1, &depth_write_transition);
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool create_descriptor_set_pools(u32 num)
+            {
+                D3D12_DESCRIPTOR_HEAP_DESC heap_descs[] =
+                {
+                    {
+                        D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+                        num,
+                        D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+                        0    // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+                    }
+                };
+
+                for (s32 i = 0; i < _countof(heap_descs); ++i)
+                {
+                    auto heap_desc = &heap_descs[i];
+                    auto heap = g_ctx.descriptor_heap_pool[heap_desc->Type];
+
+                    if (FAILED(g_ctx.device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&heap))))
+                    {
+                        REX_ERROR(LogDirectX, "Failed to create descriptor heap for constant buffer");
+                        return false;
+                    }
+                }
 
                 return true;
             }
@@ -489,17 +528,6 @@ namespace rex
                     return false;
                 }
 
-                // Flush before changing any resources.
-                flush_command_queue();
-
-                // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the 
-                // command list reuses memory.
-                if (FAILED(g_ctx.command_list->Reset(g_ctx.command_allocator.Get(), nullptr)))
-                {
-                    REX_ERROR(LogDirectX, "Failed to reset command list");
-                    return false;
-                }
-
                 // Create rtvs for each render target within the swapchain
                 if (create_rtvs_for_swapchain(userData) == false)
                 {
@@ -509,9 +537,16 @@ namespace rex
 
                 // Create depth/stencil view to bind to the pipeline and
                 // depth/stencil buffer as resource to write depth values to
-                if (create_dsv(userData) == false)
+                if (create_dsv_for_swapchain(userData) == false)
                 {
                     REX_ERROR(LogDirectX, "Failed to create dsv");
+                    return false;
+                }
+
+                // Create an initial set of descriptors
+                if(create_descriptor_set_pools(32) == false)
+                {
+                    REX_ERROR(LogDirectX, "Failed to create descriptor set pools");
                     return false;
                 }
 
@@ -526,6 +561,7 @@ namespace rex
                 ID3D12CommandList* command_lists[] = { g_ctx.command_list.Get() };
                 g_ctx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
 
+                // Wait until resize is complete.
                 flush_command_queue();
 
                 // Create viewport to render our image in
