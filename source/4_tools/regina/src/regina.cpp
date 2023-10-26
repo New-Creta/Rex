@@ -108,6 +108,43 @@ namespace rex
         }
     };
 
+    static const s32 s_num_frame_resources = 3;
+
+    struct RenderItem
+    {
+        RenderItem() = default;
+
+        // World matrix of the shape that describes the object's local space
+        // relative to the world space, which defines the position, orientation,
+        // and scale of the object in the world.
+        DirectX::XMFLOAT4X4 world = math_helper::Identity4x4();
+
+        // Dirty flag indicating the object data has changed and we need to update the constant buffer.
+        // Because we have an object cbuffer for each FrameResource, we have to apply the
+        // update to each FrameResource.  Thus, when we modify obect data we should set 
+        // NumFramesDirty = gNumFrameResources so that each frame resource gets the update.
+        s32 num_frames_dirty = s_num_frame_resources;
+
+        // Index into GPU constant buffer corresponding to the ObjectCB for this render item.
+        u32 cb_index = REX_INVALID_INDEX;
+
+        Mesh* mesh = nullptr;
+
+        // Primitive topology.
+        D3D12_PRIMITIVE_TOPOLOGY primitive_type = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+        // DrawIndexedInstanced parameters.
+        u32 index_count = 0;
+        u32 start_index_location = 0;
+        s32 base_vertex_location = 0;
+    };
+
+    struct Scene
+    {
+        // List of all the render items.
+        std::vector<std::unique_ptr<RenderItem>> render_items;
+    };
+
     struct ObjectConstants
     {
         DirectX::XMFLOAT4X4 world_view_proj = math_helper::Identity4x4();
