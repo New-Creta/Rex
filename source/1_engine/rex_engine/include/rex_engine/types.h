@@ -44,3 +44,10 @@ using a_bool = rsl::atomic<bool>;
 using a_s32  = rsl::atomic<s32>;
   #define rex_atomic_load(a) a.load() // NOLINT(readability-identifier-naming)
 #endif
+
+#define REX_INVALID_INDEX ((u32)-1)
+
+inline bool is_valid(u32 handle)
+{
+    return handle != REX_INVALID_INDEX;
+}
