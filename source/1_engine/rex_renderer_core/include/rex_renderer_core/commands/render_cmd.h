@@ -3,8 +3,26 @@
 #include "rex_engine/types.h"
 
 #include "rex_renderer_core/commands/clear_cmd.h"
+#include "rex_renderer_core/commands/release_resource_cmd.h"
+#include "rex_renderer_core/commands/draw_cmd.h"
+#include "rex_renderer_core/commands/draw_indexed_cmd.h"
+#include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
+#include "rex_renderer_core/commands/set_render_target_cmd.h"
+#include "rex_renderer_core/commands/set_input_layout_cmd.h"
+#include "rex_renderer_core/commands/set_vertex_buffer_cmd.h"
+#include "rex_renderer_core/commands/set_index_buffer_cmd.h"
+#include "rex_renderer_core/commands/set_shader_cmd.h"
+#include "rex_renderer_core/commands/set_raster_state_cmd.h"
 
 #include "rex_renderer_core/parameters/clear_state_params.h"
+#include "rex_renderer_core/parameters/raster_state_params.h"
+#include "rex_renderer_core/parameters/create_input_layout_params.h"
+#include "rex_renderer_core/parameters/create_buffer_params.h"
+#include "rex_renderer_core/parameters/load_shader_params.h"
+#include "rex_renderer_core/parameters/link_shader_params.h"
+ 
+#include "rex_renderer_core/viewport.h"
+#include "rex_renderer_core/scissor_rect.h"
 
 namespace rex
 {
@@ -13,74 +31,66 @@ namespace rex
         enum class CommandType
         {
             NONE = 0,
-            NEW_FRAME,
-            CLEAR,
-            CLEAR_TEXTURE,
-            PRESENT,
-            LOAD_SHADER,
-            SET_SHADER,
-            LINK_SHADER,
-            CREATE_INPUT_LAYOUT,
-            SET_INPUT_LAYOUT,
+            CREATE_CLEAR_STATE,
+            CREATE_RASTER_STATE,
+            CREATE_INPUT_LAYOUT_STATE,
             CREATE_BUFFER,
-            SET_VERTEX_BUFFER,
-            SET_INDEX_BUFFER,
+            LOAD_SHADER,
+            LINK_SHADER,
+            RELEASE_RESOURCE,
+            CLEAR,
             DRAW,
             DRAW_INDEXED,
             DRAW_INDEXED_INSTANCED,
-            CREATE_TEXTURE,
-            RELEASE_SHADER,
-            RELEASE_BUFFER,
-            RELEASE_TEXTURE_2D,
-            CREATE_SAMPLER,
-            SET_TEXTURE,
-            CREATE_RASTER_STATE,
-            SET_RASTER_STATE,
+            SET_RENDER_TARGETS,
+            SET_INPUT_LAYOUT,
             SET_VIEWPORT,
             SET_SCISSOR_RECT,
-            SET_VIEWPORT_RATIO,
-            SET_SCISSOR_RECT_RATIO,
-            RELEASE_RASTER_STATE,
-            CREATE_BLEND_STATE,
-            SET_BLEND_STATE,
-            SET_CONSTANT_BUFFER,
-            SET_STRUCTURED_BUFFER,
-            UPDATE_BUFFER,
-            CREATE_DEPTH_STENCIL_STATE,
-            SET_DEPTH_STENCIL_STATE,
-            UPDATE_QUERIES,
-            CREATE_RENDER_TARGET,
-            SET_TARGETS,
-            RELEASE_BLEND_STATE,
-            RELEASE_RENDER_TARGET,
-            RELEASE_INPUT_LAYOUT,
-            RELEASE_SAMPLER,
-            RELEASE_PROGRAM,
-            RELEASE_CLEAR_STATE,
-            RELEASE_DEPTH_STENCIL_STATE,
-            CREATE_SO_SHADER,
-            SET_SO_TARGET,
-            RESOLVE_TARGET,
-            DRAW_AUTO,
-            MAP_RESOURCE,
-            REPLACE_RESOURCE,
-            CREATE_CLEAR_STATE,
-            PUSH_PERF_MARKER,
-            POP_PERF_MARKER,
-            DISPATCH_COMPUTE,
-            SET_STENCIL_REF
+            SET_VERTEX_BUFFER,
+            SET_INDEX_BUFFER,
+            SET_SHADER,
+            SET_RASTER_STATE,
+            NEW_FRAME,
+            END_FRAME,
+            PRESENT
         };
 
         struct RenderCommand
         {
+            RenderCommand()
+                :command_type(CommandType::NONE)
+                ,resource_slot(REX_INVALID_INDEX)
+                ,frame_index(REX_INVALID_INDEX)
+            {}
+
             CommandType command_type;
+
             u32 resource_slot;
             u64 frame_index;
 
             union
             {
                 commands::Clear                 clear;
+                commands::ReleaseResource       release_resource;
+                commands::Draw                  draw;
+                commands::DrawIndexed           draw_indexed;
+                commands::DrawIndexedInstanced  draw_indexed_instanced;
+                commands::SetRenderTarget       set_render_target;
+                commands::SetInputLayout        set_input_layout;
+                commands::SetVertexBuffer       set_vertex_buffer;
+                commands::SetIndexBuffer        set_index_buffer;
+                commands::SetShader             set_shader;
+                commands::SetRasterState        set_raster_state;
+
                 parameters::ClearState          clear_state_params;
+                parameters::RasterState         raster_state_params;
+                parameters::CreateInputLayout   create_input_layout_params;
+                parameters::CreateBuffer        create_buffer_params;
+                parameters::LoadShader          load_shader_params;
+                parameters::LinkShader          link_shader_params;
+
+                Viewport                        viewport;
+                ScissorRect                     scissor_rect;
             };
         };
     }

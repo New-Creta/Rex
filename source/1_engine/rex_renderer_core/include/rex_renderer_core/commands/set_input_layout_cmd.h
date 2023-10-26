@@ -8,13 +8,13 @@ namespace rex
     {
         namespace commands
         {
-            struct Clear
+            struct SetInputLayout
             {
-                Clear()
-                    :clear_state(REX_INVALID_INDEX)
+                SetInputLayout()
+                    :input_layout(REX_INVALID_INDEX)
                 {}
 
-                u32 clear_state;
+                u32 input_layout;
             };
         }
     }
