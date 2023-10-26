@@ -228,6 +228,7 @@ namespace rex
             {
                 return CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.rtv_heap->GetCPUDescriptorHandleForHeapStart(), g_ctx.current_back_buffer, g_ctx.rtv_desc_size);
             }
+            
             //-------------------------------------------------------------------------
             D3D12_CPU_DESCRIPTOR_HANDLE get_depthstencil_descriptor()
             {
@@ -380,16 +381,19 @@ namespace rex
             {
                 return g_ctx.device.Get();
             }
+            
             //-------------------------------------------------------------------------
             void* get_command_queue()
             {
                 return g_ctx.command_queue.Get();
             }
+            
             //-------------------------------------------------------------------------
             void* get_command_list()
             {
                 return g_ctx.command_list.Get();
             }
+            
             //-------------------------------------------------------------------------
             void* get_command_allocator()
             {
@@ -401,6 +405,7 @@ namespace rex
             {
                 return static_cast<s32>(g_ctx.back_buffer_format);
             }
+            
             //-------------------------------------------------------------------------
             s32 get_depthstencil_format()
             {
@@ -412,6 +417,7 @@ namespace rex
             {
                 return g_ctx.msaa_state;
             }
+            
             //-------------------------------------------------------------------------
             s32 get_msaa_quality()
             {

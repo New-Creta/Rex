@@ -3,6 +3,7 @@
 #include "rex_renderer_core/resource_slots.h"
 #include "rex_engine/defines.h"
 #include "rex_engine/ring_buffer.h"
+#include "rex_renderer_core/commands/render_cmd.h"
 
 #if REX_SINGLE_THREADED
 #define add_cmd(cmd) exec_cmd(cmd)
@@ -22,6 +23,117 @@ namespace rex
         };
 
         Context g_ctx;
+
+
+        void exec_cmd(const RenderCommand& cmd)
+        {
+            switch (cmd.command_type)
+            {
+            case CommandType::CREATE_CLEAR_STATE:
+                backend::create_clear_state(cmd.clear_state_params, cmd.resource_slot);
+                break;
+            case CommandType::CREATE_RASTER_STATE:
+                backend::create_raster_state(cmd.raster_state_params, cmd.resource_slot);
+                break;
+            case CommandType::CREATE_INPUT_LAYOUT_STATE:
+                backend::create_input_layout(cmd.create_input_layout_params, cmd.resource_slot);
+                memory_free(cmd.create_input_layout_params.vs_byte_code);
+                memory_free(cmd.create_input_layout_params.input_layout);
+                break;
+            case CommandType::CREATE_BUFFER:
+                backend::create_buffer(cmd.create_buffer_params, cmd.resource_slot);
+                memory_free(cmd.create_buffer.data);
+                break;
+            case CommandType::LOAD_SHADER:
+                backend::load_shader(cmd.load_shader_params, cmd.resource_slot);
+                memory_free(cmd.load_shader_params.byte_code);
+                break;
+            case CommandType::LINK_SHADER:
+                backend::link_shader_program(cmd.link_shader_params, cmd.resource_slot);
+                for (u32 i = 0; i < cmd.link_shader_params.num_constants; ++i)
+                    memory_free(cmd.link_shader_params.constants[i].name);
+                memory_free(cmd.link_shader_params.constants);
+                break;
+
+            case CommandType::RELEASE_RESOURCE:
+                backend::release_resource(cmd.release_resource.resource_index);
+                break;
+
+            case CommandType::CLEAR:
+                backend::clear(cmd.clear.clear_state, cmd.clear.array_index, cmd.clear.array_index);
+                break;
+
+            case CommandType::DRAW:
+                backend::draw(cmd.draw.vertex_count
+                    , cmd.draw.start_vertex
+                    , cmd.draw.primitive_topology);
+                break;
+            case CommandType::DRAW_INDEXED:
+                backend::draw_indexed(cmd.draw_indexed.index_count
+                    , cmd.draw_indexed.start_index
+                    , cmd.draw_indexed.base_vertex
+                    , cmd.draw_indexed.primitive_topology);
+                break;
+            case CommandType::DRAW_INDEXED_INSTANCED:
+                backend::draw_indexed_instanced(cmd.draw_indexed_instanced.instance_count
+                    , cmd.draw_indexed_instanced.start_instance
+                    , cmd.draw_indexed_instanced.index_count
+                    , cmd.draw_indexed_instanced.start_index
+                    , cmd.draw_indexed_instanced.base_vertex
+                    , cmd.draw_indexed_instanced.primitive_topology);
+                break;
+
+            case CommandType::SET_RENDER_TARGETS:
+                backend::set_render_targets(cmd.set_render_target.color
+                    , cmd.set_render_target.num_color
+                    , cmd.set_render_target.depth
+                    , cmd.set_render_target.array_index
+                    , cmd.set_render_target.array_index);
+                break;
+            case CommandType::SET_INPUT_LAYOUT:
+                backend::set_input_layout(cmd.set_input_layout.input_layout);
+                break;
+            case CommandType::SET_VIEWPORT:
+                backend::set_viewport(cmd.viewport);
+                break;
+            case CommandType::SET_SCISSOR_RECT:
+                backend::set_scissor_rect(cmd.scissor_rect);
+                break;
+            case CommandType::SET_VERTEX_BUFFER:
+                backend::set_vertex_buffers(cmd.set_vertex_buffer.buffer_indices
+                    , cmd.set_vertex_buffer.num_buffers
+                    , cmd.set_vertex_buffer.start_slot
+                    , cmd.set_vertex_buffer.strides
+                    , cmd.set_vertex_buffer.offsets);
+                memory_free(cmd.set_vertex_buffer.buffer_indices);
+                memory_free(cmd.set_vertex_buffer.strides);
+                memory_free(cmd.set_vertex_buffer.offsets);
+                break;
+            case CommandType::SET_INDEX_BUFFER:
+                backend::set_index_buffer(cmd.set_index_buffer.buffer_index
+                    , cmd.set_index_buffer.format
+                    , cmd.set_index_buffer.offset);
+                break;
+            case CommandType::SET_SHADER:
+                backend::set_shader(cmd.set_shader.shader_index, cmd.set_shader.shader_type);
+                break;
+            case CommandType::SET_RASTER_STATE:
+                backend::set_raster_state(cmd.set_raster_state.raster_state);
+                break;
+
+            case CommandType::NEW_FRAME:
+                //new_frame_internal();
+                break;
+            case CommandType::END_FRAME:
+                //end_frame_internal();
+                break;
+
+            case CommandType::PRESENT:
+                backend::present();
+                break;
+
+            }
+        }
 
         //-------------------------------------------------------------------------
         bool initialize(const OutputWindowUserData& userData, u32 maxCommands)
