@@ -61,8 +61,6 @@ using System.Text;
 
 public static class CodeGeneration
 {
-  //static private Dictionary<string, CodeGen.EnumGenerationSettings> EnumsToAutoGenerate = new Dictionary<string, CodeGen.EnumGenerationSettings>();
-  //static private Dictionary<string, CodeGen.ArrayGenerationSettings> ArraysToAutoGenerate = new Dictionary<string, CodeGen.ArrayGenerationSettings>();
   static private Dictionary<string, CodeGen.TypeToGenerate> TypesToGenerate = new Dictionary<string, CodeGen.TypeToGenerate>();
   static private Dictionary<string, CodeGen.UnknownTypeConfig> UnknownTypesToGenerate = new Dictionary<string, CodeGen.UnknownTypeConfig>();
 
