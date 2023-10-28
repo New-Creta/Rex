@@ -8,11 +8,19 @@
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/log.h"
 #include "rex_directx/wrl/wrl_types.h"
-#include "rex_directx/resources/vertex.h"
+#include "rex_directx/utility/vertex.h"
+#include "rex_directx/resources/clear_state_resource.h"
+#include "rex_directx/resources/raster_state_resource.h"
+#include "rex_directx/resources/input_layout_resource.h"
+#include "rex_directx/resources/pixel_shader_resource.h"
+#include "rex_directx/resources/vertex_shader_resource.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/memory/memory_allocation.h"
 #include "rex_renderer_core/gpu_description.h"
 #include "rex_renderer_core/renderer.h"
+#include "rex_renderer_core/resource_pool.h"
+
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/memory.h"
@@ -22,7 +30,9 @@
 #include <Windows.h>
 #include <cstddef>
 #include <d3d12.h>
+
 #include <DirectXColors.h>
+#include <D3Dcompiler.h>
 
 namespace rex
 {
@@ -49,7 +59,111 @@ namespace rex
         namespace directx
         {
             Info g_renderer_info; // NOLINT (fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-        }                               // namespace directx
+
+            //-------------------------------------------------------------------------
+            D3D12_FILL_MODE to_d3d12_fill_mode(FillMode mode)
+            {
+                switch (mode)
+                {
+                case FillMode::SOLID:
+                    return D3D12_FILL_MODE_SOLID;
+                case FillMode::WIREFRAME:
+                    return D3D12_FILL_MODE_WIREFRAME;
+                }
+
+                REX_ASSERT_X(false, "Unsupported fill mode given");
+                return D3D12_FILL_MODE_SOLID;
+            }
+            //-------------------------------------------------------------------------
+            D3D12_CULL_MODE to_d3d12_cull_mode(CullMode mode)
+            {
+                switch (mode)
+                {
+                case CullMode::NONE:
+                    return D3D12_CULL_MODE_NONE;
+                case CullMode::FRONT:
+                    return D3D12_CULL_MODE_FRONT;
+                case CullMode::BACK:
+                    return D3D12_CULL_MODE_BACK;
+                }
+
+                REX_ASSERT_X(false, "Unsupported cull mode given");
+                return D3D12_CULL_MODE_NONE;
+            }
+            //-------------------------------------------------------------------------
+            DXGI_FORMAT to_d3d12_vertex_format(VertexBufferFormat format)
+            {
+                switch (format)
+                {
+                case VertexBufferFormat::FLOAT1:
+                    return DXGI_FORMAT_R32_FLOAT;
+                case VertexBufferFormat::FLOAT2:
+                    return DXGI_FORMAT_R32G32_FLOAT;
+                case VertexBufferFormat::FLOAT3:
+                    return DXGI_FORMAT_R32G32B32_FLOAT;
+                case VertexBufferFormat::FLOAT4:
+                    return DXGI_FORMAT_R32G32B32A32_FLOAT;
+                case VertexBufferFormat::UNORM1:
+                    return DXGI_FORMAT_R8_UNORM;
+                case VertexBufferFormat::UNORM2:
+                    return DXGI_FORMAT_R8G8_UNORM;
+                case VertexBufferFormat::UNORM4:
+                    return DXGI_FORMAT_R8G8B8A8_UNORM;
+                }
+                REX_ASSERT_X(false, "Unsupported vertex buffer format given");
+                return DXGI_FORMAT_UNKNOWN;
+            }
+            //-------------------------------------------------------------------------
+            DXGI_FORMAT to_d3d12_index_format(IndexBufferFormat format)
+            {
+                switch (format)
+                {
+                case IndexBufferFormat::R16_UINT:
+                    return DXGI_FORMAT_R16_UINT;
+                case IndexBufferFormat::R32_UINT:
+                    return DXGI_FORMAT_R32_UINT;
+                }
+                REX_ASSERT_X(false, "Unsupported index buffer format given");
+                return DXGI_FORMAT_UNKNOWN;
+            }
+            //-------------------------------------------------------------------------
+            D3D12_PRIMITIVE_TOPOLOGY to_d3d12_topology(PrimitiveTopology topology)
+            {
+                switch (topology)
+                {
+                case PrimitiveTopology::LINELIST:
+                    return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+                case PrimitiveTopology::LINESTRIP:
+                    return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+                case PrimitiveTopology::POINTLIST:
+                    return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+                case PrimitiveTopology::TRIANGLELIST:
+                    return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+                case PrimitiveTopology::TRIANGLESTRIP:
+                    return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+                }
+                REX_ASSERT_X(false, "Unsupported primitive topology given");
+                return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+            }
+
+            //-------------------------------------------------------------------------
+            char8* heapdesc_type_to_string(D3D12_DESCRIPTOR_HEAP_TYPE type)
+            {
+                switch (type)
+                {
+                case D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
+                    return "D3D12_DESCRIPTOR_HEAP_TYPE_RTV";
+                case D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
+                    return "D3D12_DESCRIPTOR_HEAP_TYPE_DSV";
+                case D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
+                    return "D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV";
+                }
+
+                REX_ASSERT_X(false, "Unsupported descriptor heap type");
+                return "D3D12_DESCRIPTOR_HEAP_TYPE_UNKNOWN";
+            }
+
+        } // namespace directx
 
         //-------------------------------------------------------------------------
         const Info& info()
@@ -78,6 +192,7 @@ namespace rex
         namespace backend
         {
             static const u32 s_swapchain_buffer_count = 2;
+            static const u32 s_max_color_targets = 8;
 
             struct DirectXContext
             {
@@ -116,6 +231,14 @@ namespace rex
                 RECT scissor_rect = {};
 
                 wrl::com_ptr<ID3D12PipelineState> pipeline_state_object;
+
+                ResourcePool<rsl::unique_ptr<IResource>> resource_pool;
+                
+                u32 backbuffer_color;
+                u32 backbuffer_depth;
+                u32 active_color_targets[s_max_color_targets] = {0};
+                u32 active_depth_target;
+                u32 num_active_color_targets;
             };
 
             DirectXContext g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
@@ -236,7 +359,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_rtvs_for_swapchain(const OutputWindowUserData& userData)
+            bool create_rtvs_for_swapchain(const OutputWindowUserData& userData, u32 bbColorTargetSlot)
             {
                 // Flush before changing any resources.
                 flush_command_queue();
@@ -291,7 +414,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_dsv_for_swapchain(const OutputWindowUserData& userData)
+            bool create_dsv_for_swapchain(const OutputWindowUserData& userData, s32 bbDepthTargetSlot)
             {
                 D3D12_RESOURCE_DESC resource_tex2d_desc = {};
                 resource_tex2d_desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -349,13 +472,25 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_descriptor_set_pools(u32 num)
+            bool create_descriptor_set_pools(u32 numRTV, u32 numDSV, u32 numCBV)
             {
                 D3D12_DESCRIPTOR_HEAP_DESC heap_descs[] =
                 {
                     {
+                        D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+                        numRTV,
+                        D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+                        0    // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+                    },
+                    {
+                        D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
+                        numDSV,
+                        D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+                        0    // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+                    },
+                    {
                         D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-                        num,
+                        numCBV,
                         D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
                         0    // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
                     }
@@ -368,7 +503,7 @@ namespace rex
 
                     if (FAILED(g_ctx.device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&heap))))
                     {
-                        REX_ERROR(LogDirectX, "Failed to create descriptor heap for constant buffer");
+                        REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", directx::heapdesc_type_to_string(heap_desc->Type));
                         return false;
                     }
                 }
@@ -439,7 +574,230 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool initialize(const OutputWindowUserData& userData)
+            bool flush_command_queue()
+            {
+                // Advance the fence value to mark commands up to this fence point.
+                g_ctx.current_fence++;
+
+                // Add an instruction to the command queue to set a new fence point. Because we
+                // are on the GPU timeline, the new fence point won't be set until the GPU finishes
+                // processing all the commands prior to this Signal().
+                if (FAILED(g_ctx.command_queue->Signal(g_ctx.fence.Get(), g_ctx.current_fence)))
+                {
+                    REX_ERROR(LogDirectX, "Failed to signal command queue with fence");
+                    return false;
+                }
+
+                if (g_ctx.fence->GetCompletedValue() < g_ctx.current_fence)
+                {
+                    HANDLE event_handle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+
+                    //Fire event when GPU hits current fence
+                    if (FAILED(g_ctx.fence->SetEventOnCompletion(g_ctx.current_fence, event_handle)))
+                    {
+                        REX_ERROR(LogDirectX, "Failed to set completion event for fence");
+                        return false;
+                    }
+
+                    WaitForSingleObject(event_handle, INFINITE);
+                    CloseHandle(event_handle);
+                }
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool create_clear_state(const parameters::ClearState& cs, u32 resourceSlot)
+            {
+                resources::ClearState rcs;
+
+                rcs.rgba = cs.rgba;
+                rcs.depth = cs.depth;
+                rcs.stencil = cs.stencil;               
+                rcs.flags = cs.flags;
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = rsl::make_unique<ClearStateResource>(rcs);
+
+                return true;
+            }
+            //-------------------------------------------------------------------------
+            bool create_raster_state(const parameters::RasterState& rs, u32 resourceSlot)
+            {
+                D3D12_RASTERIZER_DESC d3d_rs;
+
+                d3d_rs.FillMode = directx::to_d3d12_fill_mode(rs.fill_mode);
+                d3d_rs.CullMode = directx::to_d3d12_cull_mode(rs.cull_mode);
+                d3d_rs.FrontCounterClockwise = rs.front_ccw;
+                d3d_rs.DepthBias = rs.depth_bias;
+                d3d_rs.DepthBiasClamp = rs.depth_bias_clamp;
+                d3d_rs.SlopeScaledDepthBias = rs.sloped_scale_depth_bias;
+                d3d_rs.DepthClipEnable = rs.depth_clip_enable;
+                d3d_rs.ForcedSampleCount = rs.forced_sample_count;
+
+                /**
+                * Conservative rasterization means that all pixels that are at least partially covered by a rendered primitive are rasterized, which means that the pixel shader is invoked. 
+                * Normal behavior is sampling, which is not used if conservative rasterization is enabled.
+                * 
+                * Conservative rasterization is useful in a number of situations outside of rendering (collision detection, occlusion culling, and visibility detection).
+                * 
+                * https://learn.microsoft.com/en-us/windows/win32/direct3d11/conservative-rasterization
+                */
+                d3d_rs.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+                d3d_rs.MultisampleEnable = rs.multisample;
+                d3d_rs.AntialiasedLineEnable = rs.aa_lines;
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = rsl::make_unique<RasterStateResource>(d3d_rs);
+
+                return true;
+            }
+            //-------------------------------------------------------------------------
+            bool create_input_layout(const parameters::CreateInputLayout& cil, u32 resourceSlot)
+            {
+                rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Capacity(cil.num_elements));
+
+                for (s32 i = 0; i < cil.num_elements; ++i)
+                {
+                    input_element_descriptions[i].SemanticName = cil.input_layout[i].semantic_name;
+                    input_element_descriptions[i].SemanticIndex = cil.input_layout[i].semantic_index;
+                    input_element_descriptions[i].Format = directx::to_d3d12_vertex_format(cil.input_layout[i].format);
+                    input_element_descriptions[i].InputSlot = cil.input_layout[i].input_slot;
+                    input_element_descriptions[i].AlignedByteOffset = cil.input_layout[i].aligned_byte_offset;
+                    input_element_descriptions[i].InputSlotClass = cil.input_layout[i].input_slot_class 
+                        ? D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA 
+                        : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+                    input_element_descriptions[i].InstanceDataStepRate = cil.input_layout[i].instance_data_step_rate;
+                }
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = rsl::make_unique<InputLayoutResource>(input_element_descriptions);
+
+                return true;
+            }
+            //-------------------------------------------------------------------------
+            bool create_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot)
+            {
+
+            }
+
+            //-------------------------------------------------------------------------
+            bool load_shader(const parameters::LoadShader& ls, u32 resourceSlot)
+            {
+                wrl::com_ptr<ID3DBlob> byte_code;
+                if (FAILED(D3DCreateBlob(ls.byte_code_size, byte_code.GetAddressOf())))
+                {
+                    REX_ERROR(LogDirectX, "Failed to load shader");
+                    return false;
+                }
+
+                // Copy the data into the ID3DBlob's memory.
+                memcpy(byte_code->GetBufferPointer(), ls.byte_code, ls.byte_code_size);
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+
+                switch (ls.shader_type)
+                {
+                case ShaderType::VERTEX:
+                    g_ctx.resource_pool[resourceSlot] = rsl::make_unique<VertexShaderResource>(byte_code);
+                    break;
+                case ShaderType::PIXEL:
+                    g_ctx.resource_pool[resourceSlot] = rsl::make_unique<PixelShaderResource>(byte_code);
+                    break;
+
+                default:
+                    REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
+                    return false;
+                }
+
+                return true;
+            }
+            //-------------------------------------------------------------------------
+            bool link_shader(const parameters::LinkShader& /*ls*/, u32 /*resourceSlot*/)
+            {
+                // Nothing to do on this platform
+            }
+            //-------------------------------------------------------------------------
+            bool compile_shader(const parameters::CompileShader& cs, u32 resourceSlot)
+            {
+                u32 compile_flags = 0;
+#if defined(REX_DEBUG)
+                compile_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+                HRESULT hr = S_OK;
+
+                wrl::com_ptr<ID3DBlob> byte_code = nullptr;
+                wrl::com_ptr<ID3DBlob> errors = nullptr;
+
+                hr = D3DCompile2(cs.shader_code, cs.shader_code_size, cs.shader_name.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, cs.shader_entry_point, cs.shader_feature_target, compile_flags, 0, 0, 0, 0, &byte_code, &errors);
+
+                if (errors != nullptr)
+                {
+                    REX_ERROR(LogDirectX, "{}", (char*)errors->GetBufferPointer());
+                    return false;
+                }
+
+                if (FAILED(hr))
+                {
+                    REX_ERROR(LogDirectX, "Failed to compile shader");
+                    return false;
+                }
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+
+                switch (cs.shader_type)
+                {
+                case ShaderType::VERTEX:
+                    g_ctx.resource_pool[resourceSlot] = rsl::make_unique<VertexShaderResource>(byte_code);
+                    break;
+                case ShaderType::PIXEL:
+                    g_ctx.resource_pool[resourceSlot] = rsl::make_unique<PixelShaderResource>(byte_code);
+                    break;
+
+                default:
+                    REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
+                    return false;
+                }                
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            void clear(u32 clearStateIndex)
+            {
+                const ClearStateResource& csr = get_resource_from_pool_as<ClearStateResource>(g_ctx.resource_pool, clearStateIndex);
+
+                ClearBits flags = csr.get()->flags;
+
+                REX_ASSERT_X(flags != ClearBits::NONE, "No clear flags given but renderer::backend::clear was called.");
+
+                if (flags & ClearBits::CLEAR_COLOR_BUFFER)
+                {
+                    D3D12_CPU_DESCRIPTOR_HANDLE backbuffer_desc = get_current_backbuffer_descriptor();
+
+                    g_ctx.command_list->ClearRenderTargetView(backbuffer_desc, csr.get()->rgba.getData(), 0, nullptr);
+                }
+
+                if (flags & ClearBits::CLEAR_DEPTH_BUFFER || flags & ClearBits::CLEAR_STENCIL_BUFFER)
+                {
+                    D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_desc = get_depthstencil_descriptor();
+
+                    u32 depth_stencil_clear_flags = 0;
+                    depth_stencil_clear_flags |= flags & ClearBits::CLEAR_DEPTH_BUFFER ? D3D12_CLEAR_FLAG_DEPTH : 0;
+                    depth_stencil_clear_flags |= flags & ClearBits::CLEAR_STENCIL_BUFFER ? D3D12_CLEAR_FLAG_STENCIL : 0;
+
+                    g_ctx.command_list->ClearDepthStencilView(depthstencil_desc, (D3D12_CLEAR_FLAGS)depth_stencil_clear_flags, csr.get()->depth, csr.get()->stencil, 0, nullptr);
+                }
+            }
+
+            //-------------------------------------------------------------------------
+            bool release_resource(u32 resourceSlot)
+            {
+            }
+
+            //-------------------------------------------------------------------------
+            bool initialize(const OutputWindowUserData& userData, u32 bbColorTargetSlot, u32 bbDepthTargetSlot)
             {
 #if defined(REX_DEBUG)
                 // Enable extra debuggin and send debug messages to the VC++ output window
@@ -525,17 +883,18 @@ namespace rex
                     return false;
                 }
 
+                // Create an initial set of descriptors
                 // Create descriptor heaps for storing the rtv and dsv.
                 // We need "swapchain_buffer_count" amount of rtvs to describe the buffer resources within the swapchain
                 //  and one dsv to describe the depth/stencil buffer resource for depth testing.
-                if (create_rtvs_and_dsv_descriptor_heaps() == false)
+                if (create_descriptor_set_pools(s_swapchain_buffer_count, 1, 32) == false)
                 {
-                    REX_ERROR(LogDirectX, "Failed to create descriptor heap objects");
+                    REX_ERROR(LogDirectX, "Failed to create descriptor set pools");
                     return false;
                 }
 
                 // Create rtvs for each render target within the swapchain
-                if (create_rtvs_for_swapchain(userData) == false)
+                if (create_rtvs_for_swapchain(userData, bbColorTargetSlot) == false)
                 {
                     REX_ERROR(LogDirectX, "Failed to create rtvs for swapchain");
                     return false;
@@ -543,16 +902,9 @@ namespace rex
 
                 // Create depth/stencil view to bind to the pipeline and
                 // depth/stencil buffer as resource to write depth values to
-                if (create_dsv_for_swapchain(userData) == false)
+                if (create_dsv_for_swapchain(userData, bbDepthTargetSlot) == false)
                 {
                     REX_ERROR(LogDirectX, "Failed to create dsv");
-                    return false;
-                }
-
-                // Create an initial set of descriptors
-                if(create_descriptor_set_pools(32) == false)
-                {
-                    REX_ERROR(LogDirectX, "Failed to create descriptor set pools");
                     return false;
                 }
 
@@ -592,6 +944,69 @@ namespace rex
                 {
                     flush_command_queue();
                 }
+            }
+
+            //-------------------------------------------------------------------------
+            void draw(u32 vertexCount, u32 startVertex, PrimitiveTopology topology)
+            {
+                REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
+            }
+            //-------------------------------------------------------------------------
+            void draw_indexed(u32 indexCount, u32 startIndex, u32 baseVertex, PrimitiveTopology topology)
+            {
+                REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
+            }
+            //-------------------------------------------------------------------------
+            void draw_indexed_instanced(u32 instanceCount, u32 startInstance, u32 indexCount, u32 startIndex, u32 baseVertex, PrimitiveTopology topology)
+            {
+                g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
+                g_ctx.command_list->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstance);
+            }
+            void draw_instanced(u32 vertexCount, u32 instanceCount, u32 startVertex, u32 startInstance, PrimitiveTopology topology)
+            {
+                g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
+                g_ctx.command_list->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
+            }
+
+            //-------------------------------------------------------------------------
+            bool set_render_targets(const u32* const colorTargets, u32 numColorTargets, u32 depthTarget, u32 color_slice = 0, u32 depth_slice = 0)
+            {
+                mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
+            }
+            //-------------------------------------------------------------------------
+            bool set_input_layout(u32 inputLayoutSlot)
+            {
+
+            }
+            //-------------------------------------------------------------------------
+            bool set_viewport(const Viewport& viewport)
+            {
+                g_ctx.command_list->RSSetViewports(1, (D3D12_VIEWPORT*)&viewport)
+            }
+            //-------------------------------------------------------------------------
+            bool set_scissor_rect(const ScissorRect& rect)
+            {
+                g_ctx.command_list->RSSetScissorRects(1, (D3D12_RECT*)&rect);
+            }
+            //-------------------------------------------------------------------------
+            bool set_vertex_buffers(u32* bufferIndices, u32 numBuffers, u32 startSlot, const u32* strides, const u32* offsets)
+            {
+
+            }
+            //-------------------------------------------------------------------------
+            bool set_index_buffer(u32 bufferIndex, IndexBufferFormat format, u32 offset)
+            {
+
+            }
+            //-------------------------------------------------------------------------
+            bool set_shader(u32 shaderIndex, ShaderType shaderType)
+            {
+
+            }
+            //-------------------------------------------------------------------------
+            bool set_raster_state(u32 rasterStateIndex)
+            {
+
             }
 
             //-------------------------------------------------------------------------
@@ -635,53 +1050,6 @@ namespace rex
                 flush_command_queue();
 
                 return true;
-            }
-
-            //-------------------------------------------------------------------------
-            bool flush_command_queue()
-            {
-                // Advance the fence value to mark commands up to this fence point.
-                g_ctx.current_fence++;
-
-                // Add an instruction to the command queue to set a new fence point. Because we
-                // are on the GPU timeline, the new fence point won't be set until the GPU finishes
-                // processing all the commands prior to this Signal().
-                if (FAILED(g_ctx.command_queue->Signal(g_ctx.fence.Get(), g_ctx.current_fence)))
-                {
-                    REX_ERROR(LogDirectX, "Failed to signal command queue with fence");
-                    return false;
-                }
-
-                if (g_ctx.fence->GetCompletedValue() < g_ctx.current_fence)
-                {
-                    HANDLE event_handle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
-
-                    //Fire event when GPU hits current fence
-                    if (FAILED(g_ctx.fence->SetEventOnCompletion(g_ctx.current_fence, event_handle)))
-                    {
-                        REX_ERROR(LogDirectX, "Failed to set completion event for fence");
-                        return false;
-                    }
-
-                    WaitForSingleObject(event_handle, INFINITE);
-                    CloseHandle(event_handle);
-                }
-
-                return true;
-            }
-
-            //-------------------------------------------------------------------------
-            void clear()
-            {
-                D3D12_CPU_DESCRIPTOR_HANDLE backbuffer_desc = get_current_backbuffer_descriptor();
-                D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_desc = get_depthstencil_descriptor();
-
-                // Clear the back buffer and depth buffer
-                g_ctx.command_list->ClearRenderTargetView(backbuffer_desc, DirectX::Colors::LightSteelBlue, 0, nullptr);
-                g_ctx.command_list->ClearDepthStencilView(depthstencil_desc, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-                // Specify the buffers we are going to render towards.
-                g_ctx.command_list->OMSetRenderTargets(1, &backbuffer_desc, true, &depthstencil_desc);
             }
 
             //-------------------------------------------------------------------------
