@@ -78,35 +78,42 @@ namespace rex
         // skip all additional spaces
         start_pos = cmdLine.find_first_not_of(' ', space_pos);
 
-        // get the new space pos
-        space_pos = cmdLine.find_first_of(' ', start_pos);
+        // Here the actual command line parsing begins
+        // It gets a bit tricky but here are some examples of command lines we all support
+        // 1. -something -else
+        // 2. -something=1 -else
+        // 3. -something="path/to/something" -else
+        // 4. -something="this has spaces" -else
+        // So command line arguments are always split between a key and a possible value
+        // Arguments always start with a '-', which is the start token of every key.
+        // A key argument ends at the next space or '=' token, whichever comes first.
+        // A value argument starts after the '=' sign, or the '"" that comes after the '=' token
+        // a value arguments ends at the first space or at '"' if it started with one.
+        REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
 
         const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
-        while(start_pos != -1 && space_pos != -1)
+        while(start_pos != -1)
         {
-          const count_t length                 = space_pos - start_pos;
-          const rsl::string_view full_argument = cmdLine.substr(start_pos, length);
-          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
-             false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
+          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
           }
 
-          start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
-          space_pos = cmdLine.find_first_of(' ', start_pos);
+          start_pos = cmdLine.find_first_not_of(" \"", start_pos + full_argument.length()); // skip all additional spaces
         }
 
         if(start_pos != -1)
         {
-          const rsl::string_view full_argument = cmdLine.substr(start_pos);
-          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
-             false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
+          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
           }
         }
+
       }
 
       void add_argument(rsl::string_view arg)
@@ -120,6 +127,12 @@ namespace rex
         {
           key   = arg.substr(0, equal_pos);
           value = arg.substr(equal_pos + 1);
+
+          // Remove the quote at the beginning if it starts with one
+          if (value.starts_with('"'))
+          {
+            value = value.substr(1);
+          }
         }
         // if the argument is of type -EnableSomething
         else
@@ -132,7 +145,7 @@ namespace rex
 
         if(cmd_it == g_command_line_args.cend())
         {
-          REX_WARN(LogEngine, "Command {} passed in but it's not recognised as a valid command so will be ignored", arg);
+          REX_WARN(LogEngine, "Command '{}' passed in but it's not recognised as a valid command so will be ignored", key);
           return;
         }
 
@@ -140,7 +153,7 @@ namespace rex
 
         if(active_it != m_arguments.cend())
         {
-          REX_WARN(LogEngine, "Command {} was already passed in. passing the same argument multiple times is not supported. will be skipped", key);
+          REX_WARN(LogEngine, "Command '{}' was already passed in. passing the same argument multiple times is not supported. will be skipped", key);
           return;
         }
 
@@ -169,6 +182,22 @@ namespace rex
         }
 
         return true;
+      }
+
+      rsl::string_view find_next_full_argument(rsl::string_view cmdLine, count_t startPos)
+      {
+        count_t space_pos = cmdLine.find_first_of(' ', startPos);
+        count_t comma_pos = cmdLine.find_first_of('"', startPos);
+        count_t pos_to_use = space_pos;
+        if (comma_pos < space_pos && comma_pos != -1)
+        {
+          comma_pos = cmdLine.find_first_of('"', comma_pos + 1);
+          pos_to_use = comma_pos;
+        }
+
+        return pos_to_use != -1
+          ? cmdLine.substr(startPos, pos_to_use - startPos)
+          : cmdLine.substr(startPos);
       }
 
     private:
