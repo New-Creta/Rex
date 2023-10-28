@@ -82,7 +82,7 @@ namespace rex
 
         // renderer initialization
 
-        OutputWindowUserData user_data;
+        renderer::OutputWindowUserData user_data;
         user_data.primary_display_handle = m_window->primary_display_handle();
         user_data.refresh_rate = m_gui_params.max_fps;
         user_data.window_width = m_window->width();
