@@ -37,19 +37,18 @@ namespace rex
                 break;
             case CommandType::CREATE_INPUT_LAYOUT_STATE:
                 backend::create_input_layout(cmd.create_input_layout_params, cmd.resource_slot);
-                memory_free(cmd.create_input_layout_params.vs_byte_code);
                 memory_free(cmd.create_input_layout_params.input_layout);
                 break;
             case CommandType::CREATE_BUFFER:
                 backend::create_buffer(cmd.create_buffer_params, cmd.resource_slot);
-                memory_free(cmd.create_buffer.data);
+                memory_free(cmd.create_buffer_params.data);
                 break;
             case CommandType::LOAD_SHADER:
                 backend::load_shader(cmd.load_shader_params, cmd.resource_slot);
                 memory_free(cmd.load_shader_params.byte_code);
                 break;
             case CommandType::LINK_SHADER:
-                backend::link_shader_program(cmd.link_shader_params, cmd.resource_slot);
+                backend::link_shader(cmd.link_shader_params, cmd.resource_slot);
                 for (u32 i = 0; i < cmd.link_shader_params.num_constants; ++i)
                     memory_free(cmd.link_shader_params.constants[i].name);
                 memory_free(cmd.link_shader_params.constants);
@@ -195,10 +194,6 @@ namespace rex
             cmd.resource_slot = resource_slot;
 
             cmd.create_input_layout_params.num_elements = createInputLayoutParams.num_elements;
-            cmd.create_input_layout_params.vs_byte_code_size = createInputLayoutParams.vs_byte_code_size;
-
-            cmd.create_input_layout_params.vs_byte_code = memory_alloc(createInputLayoutParams.vs_byte_code_size);
-            memcpy(cmd.create_input_layout_params.vs_byte_code, createInputLayoutParams.vs_byte_code, createInputLayoutParams.vs_byte_code_size);
 
             u32 input_layouts_size = sizeof(parameters::InputLayoutDescription) * createInputLayoutParams.num_elements;
             cmd.create_input_layout_params.input_layout = (parameters::InputLayoutDescription*)memory_alloc(input_layouts_size);
@@ -244,7 +239,7 @@ namespace rex
             cmd.resource_slot = resource_slot;
 
             cmd.load_shader_params.byte_code_size = loadShaderParams.byte_code_size;
-            cmd.load_shader_params.type = loadShaderParams.type;
+            cmd.load_shader_params.shader_type = loadShaderParams.shader_type;
 
             if (loadShaderParams.byte_code)
             {
@@ -285,6 +280,23 @@ namespace rex
                 memcpy(c[i].name, linkShaderParams.constants[i].name, len);
                 c[i].name[len] = '\0';
             }
+
+            add_cmd(cmd);
+
+            return resource_slot;
+        }
+
+        //-------------------------------------------------------------------------
+        u32 compile_shader(const parameters::CompileShader& compileShaderParams)
+        {
+            RenderCommand cmd;
+
+            u32 resource_slot = g_ctx.slot_resources.next_slot();
+
+            cmd.command_type = CommandType::COMPILE_SHADER;
+            cmd.resource_slot = resource_slot;
+
+            memcpy(&cmd.compile_shader_params, (void*)&compileShaderParams, sizeof(parameters::CompileShader));
 
             add_cmd(cmd);
 
@@ -352,6 +364,21 @@ namespace rex
             cmd.draw_indexed_instanced.start_index = startIndex;
             cmd.draw_indexed_instanced.base_vertex = baseVertex;
             cmd.draw_indexed_instanced.primitive_topology = primitiveTopology;
+
+            add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        void renderer_draw_instanced(u32 vertexCount, u32 instanceCount, u32 startVertex, u32 startInstance, PrimitiveTopology topology)
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::DRAW_INSTANCED;
+            cmd.draw_instanced.instance_count = instanceCount;
+            cmd.draw_instanced.start_instance = startInstance;
+            cmd.draw_instanced.vertex_count = vertexCount;
+            cmd.draw_instanced.start_vertex = startVertex;
+            cmd.draw_instanced.primitive_topology = topology;
 
             add_cmd(cmd);
         }
@@ -461,7 +488,7 @@ namespace rex
             add_cmd(cmd);
         }
         //-------------------------------------------------------------------------
-        void set_index_buffer(u32 indexBufferTarget, u32 format, u32 offset)
+        void set_index_buffer(u32 indexBufferTarget, IndexBufferFormat format, u32 offset)
         {
             RenderCommand cmd;
 

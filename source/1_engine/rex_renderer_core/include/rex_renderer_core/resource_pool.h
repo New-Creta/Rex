@@ -1,85 +1,81 @@
 #pragma once
 
 #include "rex_engine/types.h"
+#include "rex_engine/threading/spin_lock.h"
 
 #include <rex_std/memory.h>
+#include <rex_std/vector.h>
+#include <rex_std/atomic.h>
 
 namespace rex
 {
     namespace renderer
     {
-        // lockless single producer multiple consumer - thread safe resource pool which will grow to accomodate contents
         template <typename T>
         class ResourcePool
         {
         public:
-            ResourcePool();
-            ~ResourcePool();
-
-            void init(u32 reserved_capacity);
-            void grow(u32 min_capacity);
+            void initialize(u32 reservedCapacity);
+            void validate_and_grow_if_necessary(u32 minCapacity);
             void insert(const T& resource, u32 slot);
 
-            T& get(u32 slot);
             T& operator[](u32 slot);
+            const T& operator[](u32 slot) const;
 
         private:
-            T* m_resources = nullptr;
-            std::atomic<size_t> m_capacity;
+            rsl::vector<T> m_resources;
+            SpinLock m_lock;
         };
 
-        template <typename T>
-        ResourcePool<T>::ResourcePool()
+        template<typename U, typename T>
+        U& get_resource_from_pool_as(ResourcePool<T>& pool, u32 slot)
         {
-            m_capacity = 0;
+            return static_cast<U&>(pool[slot]);
+        }
+        template<typename U, typename T>
+        const U& get_resource_from_pool_as(const ResourcePool<T>& pool, u32 slot)
+        {
+            return static_cast<const U&>(pool[slot]);
         }
 
+        //-----------------------------------------------------------------------
         template <typename T>
-        ResourcePool<T>::~ResourcePool()
+        void ResourcePool<T>::initialize(u32 reservedCapacity)
         {
-            rex::memory_free(m_resources);
+            m_resources.reserve(reservedCapacity);
         }
 
+        //-----------------------------------------------------------------------
         template <typename T>
-        void ResourcePool<T>::init(u32 reserved_capacity)
+        void ResourcePool<T>::validate_and_grow_if_necessary(u32 minCapacity)
         {
-            m_capacity = reserved_capacity;
-            m_resources = (T*)rex::memory_alloc(sizeof(T) * reserved_capacity);
-
-            rsl::memset(m_resources, 0x0, sizeof(T) * m_capacity);
-        }
-
-        template <typename T>
-        void ResourcePool<T>::grow(u32 min_capacity)
-        {
-            if (m_capacity <= min_capacity)
+            m_lock.lock();
+            if (minCapacity >= m_resources.capacity())
             {
-                size_t new_cap = (min_capacity * 2);
-
-                m_resources = (T*)rex::memory_realloc(m_resources, new_cap * sizeof(T));
-
-                size_t existing_offset = m_capacity * sizeof(T);
-                memset(((u8*)m_resources) + existing_offset, 0x0, sizeof(T) * m_capacity);
-
-                m_capacity = new_cap;
+                u32 new_cap = minCapacity * 2; // Grow to accommodate the slot
+                m_resources.resize(new_cap);
             }
+            m_lock.unlock();
         }
 
+        //-----------------------------------------------------------------------
         template <typename T>
         void ResourcePool<T>::insert(const T& resource, u32 slot)
         {
-            grow(slot);
-            memcpy(&m_resources[slot], &resource, sizeof(T));
+            m_lock.lock();
+            m_resources[slot] = resource;
+            m_lock.unlock();
         }
 
+        //-----------------------------------------------------------------------
         template <typename T>
-        T& ResourcePool<T>::get(u32 slot)
+        T& ResourcePool<T>::operator[](u32 slot)
         {
             return m_resources[slot];
         }
-
+        //-----------------------------------------------------------------------
         template <typename T>
-        T& ResourcePool<T>::operator[](u32 slot)
+        const T& ResourcePool<T>::operator[](u32 slot) const
         {
             return m_resources[slot];
         }

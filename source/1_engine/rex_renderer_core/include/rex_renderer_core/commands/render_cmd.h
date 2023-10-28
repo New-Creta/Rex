@@ -7,6 +7,7 @@
 #include "rex_renderer_core/commands/draw_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
+#include "rex_renderer_core/commands/draw_instanced_cmd.h"
 #include "rex_renderer_core/commands/set_render_target_cmd.h"
 #include "rex_renderer_core/commands/set_input_layout_cmd.h"
 #include "rex_renderer_core/commands/set_vertex_buffer_cmd.h"
@@ -37,11 +38,13 @@ namespace rex
             CREATE_BUFFER,
             LOAD_SHADER,
             LINK_SHADER,
+            COMPILE_SHADER,
             RELEASE_RESOURCE,
             CLEAR,
             DRAW,
             DRAW_INDEXED,
             DRAW_INDEXED_INSTANCED,
+            DRAW_INSTANCED,
             SET_RENDER_TARGETS,
             SET_INPUT_LAYOUT,
             SET_VIEWPORT,
@@ -75,6 +78,7 @@ namespace rex
                 commands::Draw                  draw;
                 commands::DrawIndexed           draw_indexed;
                 commands::DrawIndexedInstanced  draw_indexed_instanced;
+                commands::DrawInstanced         draw_instanced;
                 commands::SetRenderTarget       set_render_target;
                 commands::SetInputLayout        set_input_layout;
                 commands::SetVertexBuffer       set_vertex_buffer;
@@ -88,6 +92,7 @@ namespace rex
                 parameters::CreateBuffer        create_buffer_params;
                 parameters::LoadShader          load_shader_params;
                 parameters::LinkShader          link_shader_params;
+                parameters::CompileShader       compile_shader_params;
 
                 Viewport                        viewport;
                 ScissorRect                     scissor_rect;

@@ -5,6 +5,7 @@
 #include "rex_renderer_core/commands/release_resource_cmd.h"
 #include "rex_renderer_core/commands/draw_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_cmd.h"
+#include "rex_renderer_core/commands/draw_instanced_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
 #include "rex_renderer_core/commands/set_render_target_cmd.h"
 #include "rex_renderer_core/commands/set_input_layout_cmd.h"
