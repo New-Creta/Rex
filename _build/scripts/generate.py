@@ -8,6 +8,12 @@
 #
 # ============================================
 
+# This script acts as the interface into sharpmake generation code.
+# usually called by the _rex.py script that sits on the root.
+# in short, it loads the template sharpmake configure script
+# sets its values based on the command line passed in to this script
+# and then calls sharpmake with that config file.
+
 import os
 import argparse
 import copy
@@ -66,7 +72,7 @@ if __name__ == "__main__":
   default_config : dict = regis.rex_json.load_file(os.path.join(root, "_build", "sharpmake", "data", "default_config.json"))
 
   # initialize the argument parser by loading the arguments from the config file
-  parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+  parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('-clean', help='Clean the intermediates before generation')
   _add_config_arguments(parser, default_config)
 

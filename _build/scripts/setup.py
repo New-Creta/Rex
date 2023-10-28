@@ -108,7 +108,7 @@ def _exec_run():
 if __name__ == "__main__":
   # we disable help because it always exists after displayed through the commandline.
   # we don't want to exit when it's shown so we overwrite it ourselves
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("-query", help="Don't display any options and just run the script", action="store_true")
   parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
   args, unknown = parser.parse_known_args()
