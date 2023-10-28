@@ -141,8 +141,7 @@ namespace rex
 
     struct Scene
     {
-        // List of all the render items.
-        std::vector<std::unique_ptr<RenderItem>> render_items;
+        std::vector<std::unique_ptr<Mesh>> render_items;
     };
 
     struct ObjectConstants
