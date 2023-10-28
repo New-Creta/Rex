@@ -12,10 +12,10 @@ namespace rex
         {
             struct LoadShader
             {
-                ShaderType  type;
+                ShaderType shader_type;
 
                 void* byte_code;
-                u32         byte_code_size;
+                u32 byte_code_size;
             };
         }
     }

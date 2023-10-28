@@ -20,9 +20,9 @@ namespace rex
                 f32 depth_bias_clamp = 0.0f;
                 f32 sloped_scale_depth_bias = 0.0f;
                 s32 depth_clip_enable = 1;
-                s32 scissor_enable = 0;
                 s32 multisample = 0;
                 s32 aa_lines = 0;
+                s32 forced_sample_count = 0;
             };
         }
     }

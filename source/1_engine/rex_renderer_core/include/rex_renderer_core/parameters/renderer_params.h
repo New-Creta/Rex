@@ -6,3 +6,4 @@
 #include "rex_renderer_core/parameters/create_buffer_params.h"
 #include "rex_renderer_core/parameters/load_shader_params.h"
 #include "rex_renderer_core/parameters/link_shader_params.h"
+#include "rex_renderer_core/parameters/compile_shader_params.h"

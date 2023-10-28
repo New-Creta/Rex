@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rex_engine/types.h"
+#include "rex_renderer_core/clear_bits.h"
+#include "rex_std_extra/math/color.h"
 
 namespace rex
 {
@@ -11,19 +13,16 @@ namespace rex
             struct ClearState
             {
                 ClearState()
-                    :r(0.0f)
-                    ,g(0.0f)
-                    ,b(0.0f)
-                    ,a(1.0f)
-                    ,depth(1.0f)
-                    ,stencil(0)
-                    ,flags(0)
+                    : rgba(0.0f, 0.0f, 0.0f, 1.0f)
+                    , depth(1.0f)
+                    , stencil(0x00)
+                    , flags(ClearBits::CLEAR_COLOR_BUFFER)
                 {}
 
-                f32 r, g, b, a;
+                rsl::Color4f rgba;
                 f32 depth;
-                u8  stencil;
-                u32 flags;
+                u8 stencil;
+                ClearBits flags;
             };
         }
     }
