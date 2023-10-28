@@ -233,9 +233,9 @@ public abstract class BasicCPPProject : Project
       // We need to somehow configure the paths so that the visual studio projects are pointing correctly
       // but we still use the ninja files that are located elsewhere.
       conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
-      conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} -build -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
-      conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} -build -build_arg=-clean -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
-      conf.CustomBuildSettings.CleanCommand = $"py {rexpyPath} -build -build_arg=-nobuild -build_arg=-clean -build_arg=-project={Name} -build_arg=-config={target.Config} -build_arg=-compiler={target.Compiler} -build_arg=-dont_build_dependencies";
+      conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} build -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
+      conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} build -clean -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
+      conf.CustomBuildSettings.CleanCommand = $"py {rexpyPath} build -nobuild -clean -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
       conf.CustomBuildSettings.OutputFile = Path.Combine(conf.TargetPath, fullFileName);
     }
 
