@@ -60,29 +60,34 @@ namespace rex
 
     protected void GenerateTargets()
     {
-      if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio)
+      // The checks specified here are checks for various testing types
+      // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
+      if (ProjectGen.Settings.CoverageEnabled)
       {
-        AddTargets(RexTarget.GetAllDefaultTargets());
-      }
-      else if (ProjectGen.Settings.CoverageEnabled)
-      {
-        AddTargets(RexTarget.GetCoverageTarget());
+        AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.coverage, Compiler.Clang));
       }
       else if (ProjectGen.Settings.AsanEnabled)
       {
-        AddTargets(RexTarget.GetAsanTarget());
+        AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.address_sanitizer, Compiler.Clang));
       }
       else if (ProjectGen.Settings.UbsanEnabled)
       {
-        AddTargets(RexTarget.GetUBsanTarget());
+        AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.undefined_behavior_sanitizer, Compiler.Clang));
       }
       else if (ProjectGen.Settings.FuzzyTestingEnabled)
       {
-        AddTargets(RexTarget.GetFuzzyTarget());
+        AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.fuzzy, Compiler.Clang));
       }
       else
       {
-        AddTargets(RexTarget.GetNinjaOnlyTarget());
+        // Always add the ninja target. Ninja is our main build system and is used what gets used by the rex development pipeline
+        AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
+
+        // If we're targeting a visual studio solution, we need to add it as a target as well.
+        if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio)
+        {
+          AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
+        }
       }
     }
   }

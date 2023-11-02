@@ -144,17 +144,9 @@ public abstract class BasicCPPProject : Project
   // The targets for this project are based on the generation settings that are setup by the config file passed in to sharpmake.
   public void GenerateTargets()
   {
-    // Always add the ninja target. Ninja is our main build system and is used what gets used by the rex development pipeline
-    AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
-
-    // If we're targeting a visual studio solution, we need to add it as a target as well.
-    if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio)
-    {
-      AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
-    }
-    // The other checks specified here are checks for various testing types
+    // The checks specified here are checks for various testing types
     // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
-    else if (ProjectGen.Settings.CoverageEnabled)
+    if (ProjectGen.Settings.CoverageEnabled)
     {
       AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.coverage, Compiler.Clang));
     }
@@ -169,6 +161,17 @@ public abstract class BasicCPPProject : Project
     else if (ProjectGen.Settings.FuzzyTestingEnabled)
     {
       AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.fuzzy, Compiler.Clang));
+    }
+    else
+    {
+      // Always add the ninja target. Ninja is our main build system and is used what gets used by the rex development pipeline
+      AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
+
+      // If we're targeting a visual studio solution, we need to add it as a target as well.
+      if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio)
+      {
+        AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
+      }
     }
   }
   // Specify the library dependencies of this project.
