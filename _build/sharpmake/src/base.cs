@@ -612,7 +612,7 @@ public abstract class BasicCPPProject : Project
   // Simple helper function to create a directory name that's unique per configuration
   private static string PerConfigFolderFormat(RexConfiguration conf)
   {
-    return Path.Combine(conf.Target.GetFragment<Compiler>().ToString(), conf.Name);
+    return Path.Combine(conf.Target.GetFragment<Compiler>().ToString(), conf.Target.ProjectConfigurationName);
   }
 
   // Queue up the command for compiler db generation.
