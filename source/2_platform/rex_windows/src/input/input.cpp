@@ -27,7 +27,7 @@ namespace rex
         constexpr card32 max_input_keys = (rsl::numeric_limits<uint8>::max)();
         for(card32 i = g_current_input_idx; i < max_input_keys; ++i, ++g_current_input_idx)
         {
-          uint8 key = static_cast<uint8>(i);
+          const uint8 key = static_cast<uint8>(i);
 
           if(WIN_CALL(GetAsyncKeyState(key)) & 0x8000u) // NOLINT(hicpp-signed-bitwise)
           {
