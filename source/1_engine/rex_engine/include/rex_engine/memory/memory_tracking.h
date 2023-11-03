@@ -31,6 +31,8 @@ namespace rex
     using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;
 
     MemoryTracker();
+    MemoryTracker(const MemoryTracker&) = delete;
+    MemoryTracker(MemoryTracker&&) = delete;
     ~MemoryTracker();
 
     void initialize(rsl::memory_size maxMemUsage);
