@@ -52,7 +52,8 @@
     "Value": "Visual Studio",
     "Options": [
       "VisualStudio",
-      "VSCode"
+      "VSCode",
+      "None"
     ]
   },
   "disable-clang-tidy-for-thirdparty": {

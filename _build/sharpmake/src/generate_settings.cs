@@ -192,6 +192,7 @@ namespace ProjectGen
   // The IDE to be used for project generation
   public enum IDE
   {
+    None,
     VisualStudio,
     VSCode
   }
