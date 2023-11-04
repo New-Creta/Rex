@@ -63,6 +63,7 @@ public static class CodeGeneration
 {
   static private Dictionary<string, CodeGen.TypeToGenerate> TypesToGenerate = new Dictionary<string, CodeGen.TypeToGenerate>();
   static private Dictionary<string, CodeGen.UnknownTypeConfig> UnknownTypesToGenerate = new Dictionary<string, CodeGen.UnknownTypeConfig>();
+  static private object MemberAccessLock = new object();
 
   // Reads the generation config file and processes it
   public static void ReadGenerationFile(string projectName, string filePath)
@@ -111,6 +112,11 @@ public static class CodeGeneration
     // so we can add it to the content of the type later
     else
     {
+      // Sharpmake runs multithreaded, so we need to make sure we use a mutex here
+      // Otherwise generation might fail because of a data race.
+
+      lock (MemberAccessLock)
+    {
       // If we already have an enum for this, add the content to 
       if (TypesToGenerate.ContainsKey(key))
       {
@@ -127,6 +133,7 @@ public static class CodeGeneration
       // Add the content to the unknown type in the dict
       UnknownTypesToGenerate[key].AddContent(projectName, content);
     }
+  }
   }
 
   // Process am enum type
