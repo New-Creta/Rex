@@ -18,6 +18,8 @@ namespace rex
             void initialize(u32 reservedCapacity);
             void validate_and_grow_if_necessary(u32 minCapacity);
             void insert(const T& resource, u32 slot);
+            void clear();
+            bool has_slot(u32 slot);
 
             T& operator[](u32 slot);
             const T& operator[](u32 slot) const;
@@ -65,6 +67,21 @@ namespace rex
             m_lock.lock();
             m_resources[slot] = resource;
             m_lock.unlock();
+        }
+
+        //-----------------------------------------------------------------------
+        void ResourcePool<T>::clear()
+        {
+            m_lock.lock();
+            m_resources.clear();
+            m_lock.unlock();
+        }
+
+        //-----------------------------------------------------------------------
+        template<typename T>
+        bool ResourcePool<T>::has_slot(u32 slot)
+        {
+            return rsl::find(rsl::cbegin(m_resources), rsl::cend(m_resources), slot) != rsl::cend(m_resources);
         }
 
         //-----------------------------------------------------------------------
