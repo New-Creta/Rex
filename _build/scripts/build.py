@@ -30,6 +30,10 @@ build_projects_path = os.path.join(intermediate_path, settings['build_projects_f
 def update_cleaned_projects(project : str, config : str, compiler : str, deletedPrograms : list[str]):
   build_projects = regis.rex_json.load_file(build_projects_path)
 
+  project = project.lower()
+  config = config.lower()
+  compiler = compiler.lower()
+
   if project not in build_projects:
     return
   
@@ -51,6 +55,10 @@ def update_cleaned_projects(project : str, config : str, compiler : str, deleted
 
 def update_build_projects(project : str, config : str, compiler : str, paths : list[str]):
   build_projects = regis.rex_json.load_file(build_projects_path)
+
+  project = project.lower()
+  config = config.lower()
+  compiler = compiler.lower()
 
   if project not in build_projects:
     build_projects[project] = {}
@@ -96,8 +104,11 @@ if __name__ == "__main__":
   programs_deleted = dir_watcher.filter_deleted_files(lambda path: path.endswith('.exe'))
   programs_created = dir_watcher.filter_created_or_modified_files(lambda path: path.endswith('.exe'))
 
-  update_cleaned_projects(args.project, args.config, args.compiler, programs_deleted)
-  update_build_projects(args.project, args.config, args.compiler, programs_created)
+  # it's possible nothing gets done because everything is up to date
+  # in that case, we don't need to update anything
+  if len(programs_deleted) != 0 and len(programs_created) != 0:
+    update_cleaned_projects(args.project, args.config, args.compiler, programs_deleted)
+    update_build_projects(args.project, args.config, args.compiler, programs_created)
 
   if result != 0:
     regis.diagnostics.log_err("Build failed")

@@ -41,6 +41,10 @@ def find_project_path(project : str, config : str, compiler : str, program : str
   Possible to specify the program name you want to launch in case there are multiple."""
   build_projects = regis.rex_json.load_file(build_projects_path)
   
+  project = project.lower()
+  config = config.lower()
+  compiler = compiler.lower()
+
   # We need to make sure that the project with the config and compiler exists.
   # It's possible a launch request comes in for something that doesn't exist yet.
   # We need to capture these cases here and report something to the user when it doesn't exist.
