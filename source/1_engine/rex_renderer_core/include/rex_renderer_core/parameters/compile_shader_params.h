@@ -26,6 +26,7 @@ namespace rex
                     ,shader_entry_point("")
                     ,shader_code(nullptr)
                     ,shader_code_size(0)
+                    ,shader_constant_buffer_count(0)
                 {
                     switch (shader_type)
                     {
@@ -45,6 +46,8 @@ namespace rex
 
                 char8* shader_code;
                 u64 shader_code_size;
+
+                u32 shader_constant_buffer_count;
             };
         }
     }

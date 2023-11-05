@@ -16,6 +16,8 @@ namespace rex
 
                 void* byte_code;
                 u32 byte_code_size;
+
+                u32 constant_buffer_count;
             };
         }
     }
