@@ -170,102 +170,19 @@ namespace rex
 
     ReginaContext g_regina_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
-    ID3D12Device* get_dx12_device()
-    {
-        return reinterpret_cast<ID3D12Device*>(renderer::backend::get_device());
-    }
-
-    ID3D12CommandQueue* get_dx12_command_queue()
-    {
-        return reinterpret_cast<ID3D12CommandQueue*>(renderer::backend::get_command_queue());
-    }
-
-    ID3D12GraphicsCommandList* get_dx12_command_list()
-    {
-        return reinterpret_cast<ID3D12GraphicsCommandList*>(renderer::backend::get_command_list());
-    }
-
-    ID3D12CommandAllocator* get_dx12_command_allocator()
-    {
-        return reinterpret_cast<ID3D12CommandAllocator*>(renderer::backend::get_command_allocator());
-    }
-
-    DXGI_FORMAT get_dx12_backbuffer_format()
-    {
-        return static_cast<DXGI_FORMAT>(renderer::backend::get_backbuffer_format());
-    }
-
-    DXGI_FORMAT get_dx12_depthstencil_format()
-    {
-        return static_cast<DXGI_FORMAT>(renderer::backend::get_depthstencil_format());
-    }
-
     wrl::com_ptr<ID3DBlob> compile_shader(const std::wstring& filename, const D3D_SHADER_MACRO* defines, const std::string& entrypoint, const std::string& target)
     {
-        u32 compile_flags = 0;
-#if defined(REX_DEBUG)
-        compile_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
 
-        HRESULT hr = S_OK;
-
-        wrl::com_ptr<ID3DBlob> byte_code = nullptr;
-        wrl::com_ptr<ID3DBlob> errors = nullptr;
-
-        hr = D3DCompileFromFile(filename.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, entrypoint.c_str(), target.c_str(), compile_flags, 0, &byte_code, &errors);
-
-        if (errors != nullptr)
-        {
-            REX_ERROR(LogRegina, "{}", (char*)errors->GetBufferPointer());
-            return nullptr;
-        }
-
-        if (FAILED(hr))
-        {
-            REX_ERROR(LogRegina, "Failed to compile shader");
-            return nullptr;
-        }
-
-        return byte_code;
     }
 
     bool build_descriptor_heaps()
     {
-        D3D12_DESCRIPTOR_HEAP_DESC cbv_heap_desc;
 
-        cbv_heap_desc.NumDescriptors = 1;
-        cbv_heap_desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        cbv_heap_desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        cbv_heap_desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-
-        if (FAILED(get_dx12_device()->CreateDescriptorHeap(&cbv_heap_desc, IID_PPV_ARGS(&g_regina_ctx.cbv_heap))))
-        {
-            REX_ERROR(LogRegina, "Failed to create descriptor heap for constant buffer");
-            return false;
-        }
-
-        return true;
     }
 
     bool build_constant_buffers()
     {
-        g_regina_ctx.object_constant_buffer = rsl::make_unique<renderer::directx::UploadBuffer<ObjectConstants>>(get_dx12_device(), 1, renderer::directx::IsConstantBuffer::yes);
 
-        u32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(sizeof(ObjectConstants), 256);
-
-        D3D12_GPU_VIRTUAL_ADDRESS cb_address = g_regina_ctx.object_constant_buffer->resource()->GetGPUVirtualAddress();
-
-        s32 box_constant_buffer_index = 0;
-        cb_address += box_constant_buffer_index *= obj_cb_byte_size;
-
-        D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
-
-        cbv_desc.BufferLocation = cb_address;
-        cbv_desc.SizeInBytes = rex::round_up_to_nearest_multiple_of(sizeof(ObjectConstants), 256);
-
-        get_dx12_device()->CreateConstantBufferView(&cbv_desc, g_regina_ctx.cbv_heap->GetCPUDescriptorHandleForHeapStart());
-
-        return true;
     }
 
     bool build_root_signature()
@@ -316,23 +233,7 @@ namespace rex
 
     bool build_shader_and_input_layout()
     {
-        g_regina_ctx.vertex_shader_byte_code = compile_shader(L"shaders\\color.hlsl", nullptr, "VS", "vs_5_0");
-        if (g_regina_ctx.vertex_shader_byte_code == nullptr)
-        {
-            REX_ERROR(LogRegina, "Failed to compile vertex shader");
-            return false;
-        }
-        g_regina_ctx.pixel_shader_byte_code = compile_shader(L"shaders\\color.hlsl", nullptr, "PS", "ps_5_0");
-        if (g_regina_ctx.pixel_shader_byte_code == nullptr)
-        {
-            REX_ERROR(LogRegina, "Failed to compile pixel shader");
-            return false;
-        }
 
-        g_regina_ctx.input_layout[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-        g_regina_ctx.input_layout[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-
-        return true;
     }
 
     bool build_cube_geometry()
@@ -382,32 +283,8 @@ namespace rex
         g_regina_ctx.mesh_cube = rsl::make_unique<Mesh>();
         g_regina_ctx.mesh_cube->name = rsl::string("box_geometry");
 
-        if (FAILED(D3DCreateBlob(vb_byte_size, &g_regina_ctx.mesh_cube->vertex_buffer_cpu)))
-        {
-            REX_ERROR(LogRegina, "Could not create vertex buffer blob");
-            return false;
-        }
-        CopyMemory(g_regina_ctx.mesh_cube->vertex_buffer_cpu->GetBufferPointer(), vertices.data(), vb_byte_size);
-
-        if (FAILED(D3DCreateBlob(ib_byte_size, &g_regina_ctx.mesh_cube->index_buffer_cpu)))
-        {
-            REX_ERROR(LogRegina, "Could not create index buffer blob");
-            return false;
-        }
-        CopyMemory(g_regina_ctx.mesh_cube->index_buffer_cpu->GetBufferPointer(), indices.data(), ib_byte_size);
-
-        g_regina_ctx.mesh_cube->vertex_buffer_gpu = renderer::directx::create_default_buffer(get_dx12_device(), get_dx12_command_list(), vertices.data(), vb_byte_size, g_regina_ctx.mesh_cube->vertex_buffer_uploader);
-        if (g_regina_ctx.mesh_cube->vertex_buffer_gpu == nullptr)
-        {
-            REX_ERROR(LogRegina, "Could not create GPU vertex buffer");
-            return false;
-        }
-        g_regina_ctx.mesh_cube->index_buffer_gpu = renderer::directx::create_default_buffer(get_dx12_device(), get_dx12_command_list(), indices.data(), ib_byte_size, g_regina_ctx.mesh_cube->index_buffer_uploader);
-        if (g_regina_ctx.mesh_cube->index_buffer_gpu == nullptr)
-        {
-            REX_ERROR(LogRegina, "Could not create GPU index buffer");
-            return false;
-        }
+        // Create vertex buffer
+        // Create index buffer
 
         g_regina_ctx.mesh_cube->vertex_byte_stride = sizeof(renderer::directx::VertexPosCol);
         g_regina_ctx.mesh_cube->vertex_buffer_byte_size = vb_byte_size;
