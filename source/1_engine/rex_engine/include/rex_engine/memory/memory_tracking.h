@@ -35,6 +35,9 @@ namespace rex
     MemoryTracker(MemoryTracker&&) = delete;
     ~MemoryTracker();
 
+    MemoryTracker& operator=(const MemoryTracker&) = delete;
+    MemoryTracker& operator=(MemoryTracker&&) = delete;
+
     void initialize(rsl::memory_size maxMemUsage);
 
     MemoryHeader* track_alloc(void* mem, card64 size);

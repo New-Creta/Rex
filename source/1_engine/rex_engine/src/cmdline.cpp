@@ -66,7 +66,7 @@ namespace rex
 
         // the module we're launching is always the first argument on the commandline
         // we skip this
-        count_t space_pos = cmdLine.find_first_of(' ', start_pos);
+        const count_t space_pos = cmdLine.find_first_of(' ', start_pos);
 
         // if we have no arguments, we just return
         // this is possible when running without a debugger
@@ -184,9 +184,9 @@ namespace rex
         return true;
       }
 
-      rsl::string_view find_next_full_argument(rsl::string_view cmdLine, count_t startPos)
+      rsl::string_view find_next_full_argument(rsl::string_view cmdLine, count_t startPos) // NOLINT(readability-convert-member-functions-to-static)
       {
-        count_t space_pos = cmdLine.find_first_of(' ', startPos);
+        const count_t space_pos = cmdLine.find_first_of(' ', startPos);
         count_t comma_pos = cmdLine.find_first_of('"', startPos);
         count_t pos_to_use = space_pos;
         if (comma_pos < space_pos && comma_pos != -1)

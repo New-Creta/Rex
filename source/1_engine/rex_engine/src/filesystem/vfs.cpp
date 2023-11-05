@@ -362,7 +362,7 @@ namespace rex
     {
       rsl::medium_stack_string path = create_full_path(filepath);
 
-      rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(path.data(),               // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(path.data(),               // Path to file
                                                          GENERIC_READ,              // General read and write access
                                                          FILE_SHARE_READ,           // Other processes can also read the file
                                                          NULL,                      // No SECURITY_ATTRIBUTES
@@ -421,7 +421,7 @@ namespace rex
     {
       rsl::medium_stack_string fullpath = create_full_path(filepath);
 
-      rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(fullpath.data(),           // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(fullpath.data(),           // Path to file
                                                          GENERIC_WRITE,             // General read and write access
                                                          FILE_SHARE_READ,           // Other processes can also read the file
                                                          NULL,                      // No SECURITY_ATTRIBUTES
@@ -431,7 +431,7 @@ namespace rex
                                                          ),
                                               ERROR_ALREADY_EXISTS));
 
-      DWORD move_method = shouldAppend ? FILE_END : FILE_BEGIN;
+      const DWORD move_method = shouldAppend ? FILE_END : FILE_BEGIN;
 
       // either trunc or append to the file
       WIN_CALL(SetFilePointer(handle.get(), 0, NULL, move_method));
