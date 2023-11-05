@@ -52,7 +52,10 @@ namespace rex
     u32             create_clear_state(const parameters::ClearState& clearStateParams);
     u32             create_raster_state(const parameters::RasterState& rasterStateParams);
     u32             create_input_layout(const parameters::CreateInputLayout& createInputLayoutParams);
-    u32             create_buffer(const parameters::CreateBuffer& createBufferParams);
+    u32             create_vertex_buffer(const parameters::CreateBuffer& createBufferParams);
+    u32             create_index_buffer(const parameters::CreateBuffer& createBufferParams);
+    u32             create_constant_buffer(const parameters::CreateConstantBuffer& createBufferParams);
+    u32             create_pipeline_state_object(const parameters::CreatePipelineState& createPipelineStateParams);
     u32             load_shader(const parameters::LoadShader& loadShaderParams);
     u32             link_shader(const parameters::LinkShader& linkShaderParams);
     u32             compile_shader(const parameters::CompileShader& compileShaderParams);
@@ -76,6 +79,7 @@ namespace rex
     void            set_vertex_buffers(u32* vertexBufferTargets, u32 numBuffers, u32 startSlot, const u32* strides, const u32* offsets);
     void            set_index_buffer(u32 indexBufferTarget, IndexBufferFormat format, u32 offset);
     void            set_shader(u32 shaderTarget, ShaderType shaderType);
+    void            set_pipeline_state_object(u32 psoTarget);
 
     void            new_frame();
     void            end_frame();
@@ -84,26 +88,16 @@ namespace rex
 
     namespace backend
     {
-      void*         get_device();
-      void*         get_command_queue();
-      void*         get_command_list();
-      void*         get_command_allocator();
-
-      s32           get_backbuffer_format();
-      s32           get_depthstencil_format();
-
-      bool          get_msaa_enabled();
-      s32           get_msaa_quality();
-
-      bool          create_pipeline_state_object(void* psoDescription);
-
       bool          flush_command_queue();
 
       // Platform specific implementation, implements these function
       bool          create_clear_state(const parameters::ClearState& cs, u32 resourceSlot);
       bool          create_raster_state(const parameters::RasterState& rs, u32 resourceSlot);
       bool          create_input_layout(const parameters::CreateInputLayout& cil, u32 resourceSlot);
-      bool          create_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot);
+      bool          create_vertex_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot);
+      bool          create_index_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot);
+      bool          create_constant_buffer(const parameters::CreateConstantBuffer& cb, u32 resourceSlot);
+      bool          create_pipeline_state_object(const parameters::CreatePipelineState& cps, u32 resourceSlot);
 
       bool          load_shader(const parameters::LoadShader& ls, u32 resourceSlot);
       bool          link_shader(const parameters::LinkShader& ls, u32 resourceSlot);
@@ -129,12 +123,13 @@ namespace rex
       bool          set_index_buffer(u32 bufferIndex, IndexBufferFormat format, u32 offset);
       bool          set_shader(u32 shaderIndex, ShaderType shaderType);
       bool          set_raster_state(u32 rasterStateIndex);
+      bool          set_pipeline_state_object(u32 psoTarget);
 
       // functions to synchronize the render and main threads
       bool          new_frame();
       bool          end_frame();
 
       bool          present();
-    } // namespace backend
-  }   // namespace renderer
-} // namespace rex
+    }       // namespace backend
+  }     // namespace renderer
+}   // namespace rex

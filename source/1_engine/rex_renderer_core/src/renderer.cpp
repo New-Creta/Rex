@@ -1,6 +1,7 @@
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/resource_slots.h"
+#include "rex_renderer_core/log.h"
 #include "rex_engine/defines.h"
 #include "rex_engine/ring_buffer.h"
 #include "rex_renderer_core/commands/render_cmd.h"
@@ -15,6 +16,57 @@ namespace rex
 {
     namespace renderer
     {
+        namespace internal
+        {
+            //-------------------------------------------------------------------------
+            s32 create_buffer(CommandType commandType, const parameters::CreateBuffer& createBufferParams)
+            {
+                RenderCommand cmd;
+
+                u32 resource_slot = g_ctx.slot_resources.next_slot();
+
+                cmd.command_type = commandType;
+                cmd.resource_slot = resource_slot;
+
+                memcpy(&cmd.create_buffer_params, (void*)&createBufferParams, sizeof(parameters::CreateBuffer));
+
+                if (createBufferParams.data)
+                {
+                    // make a copy of the buffers data
+                    cmd.create_buffer_params.data = memory_alloc(createBufferParams.buffer_size);
+                    memcpy(cmd.create_buffer_params.data, createBufferParams.data, createBufferParams.buffer_size);
+                }
+
+                add_cmd(cmd);
+
+                return resource_slot;
+            }
+
+            //-------------------------------------------------------------------------
+            s32 create_constant_buffer(CommandType commandType, const parameters::CreateConstantBuffer& createBufferParams)
+            {
+                RenderCommand cmd;
+
+                u32 resource_slot = g_ctx.slot_resources.next_slot();
+
+                cmd.command_type = commandType;
+                cmd.resource_slot = resource_slot;
+
+                memcpy(&cmd.create_buffer_params, (void*)&createBufferParams, sizeof(parameters::CreateConstantBuffer));
+
+                if (createBufferParams.data)
+                {
+                    // make a copy of the buffers data
+                    cmd.create_buffer_params.data = memory_alloc(createBufferParams.buffer_size);
+                    memcpy(cmd.create_buffer_params.data, createBufferParams.data, createBufferParams.buffer_size);
+                }
+
+                add_cmd(cmd);
+
+                return resource_slot;
+            }
+        }
+
         struct Context
         {
             ResourceSlots slot_resources;
@@ -24,42 +76,54 @@ namespace rex
 
         Context g_ctx;
 
-
+        //-------------------------------------------------------------------------
         void exec_cmd(const RenderCommand& cmd)
         {
+            bool result = true;
+
             switch (cmd.command_type)
             {
             case CommandType::CREATE_CLEAR_STATE:
-                backend::create_clear_state(cmd.clear_state_params, cmd.resource_slot);
+                result = backend::create_clear_state(cmd.clear_state_params, cmd.resource_slot);
                 break;
             case CommandType::CREATE_RASTER_STATE:
-                backend::create_raster_state(cmd.raster_state_params, cmd.resource_slot);
+                result = backend::create_raster_state(cmd.raster_state_params, cmd.resource_slot);
                 break;
             case CommandType::CREATE_INPUT_LAYOUT_STATE:
-                backend::create_input_layout(cmd.create_input_layout_params, cmd.resource_slot);
+                result = backend::create_input_layout(cmd.create_input_layout_params, cmd.resource_slot);
                 memory_free(cmd.create_input_layout_params.input_layout);
                 break;
-            case CommandType::CREATE_BUFFER:
-                backend::create_buffer(cmd.create_buffer_params, cmd.resource_slot);
+            case CommandType::CREATE_VERTEX_BUFFER:
+                result = backend::create_vertex_buffer(cmd.create_buffer_params, cmd.resource_slot);
                 memory_free(cmd.create_buffer_params.data);
                 break;
+            case CommandType::CREATE_INDEX_BUFFER:
+                result = backend::create_index_buffer(cmd.create_buffer_params, cmd.resource_slot);
+                memory_free(cmd.create_buffer_params.data);
+                break;
+            case CommandType::CREATE_CONSTANT_BUFFER:
+                result = backend::create_constant_buffer(cmd.create_constant_buffer_params, cmd.resource_slot);
+                memory_free(cmd.create_buffer_params.data);
+                break;
+            case CommandType::CREATE_PIPELINE_STATE:
+                result = backend::create_pipeline_state_object(cmd.create_pipeline_state_params, cmd.resource_slot);
             case CommandType::LOAD_SHADER:
-                backend::load_shader(cmd.load_shader_params, cmd.resource_slot);
+                result = backend::load_shader(cmd.load_shader_params, cmd.resource_slot);
                 memory_free(cmd.load_shader_params.byte_code);
                 break;
             case CommandType::LINK_SHADER:
-                backend::link_shader(cmd.link_shader_params, cmd.resource_slot);
+                result = backend::link_shader(cmd.link_shader_params, cmd.resource_slot);
                 for (u32 i = 0; i < cmd.link_shader_params.num_constants; ++i)
                     memory_free(cmd.link_shader_params.constants[i].name);
                 memory_free(cmd.link_shader_params.constants);
                 break;
 
             case CommandType::RELEASE_RESOURCE:
-                backend::release_resource(cmd.release_resource.resource_index);
+                result = backend::release_resource(cmd.release_resource.resource_index);
                 break;
 
             case CommandType::CLEAR:
-                backend::clear(cmd.clear.clear_state, cmd.clear.array_index, cmd.clear.array_index);
+                backend::clear(cmd.clear.clear_state);
                 break;
 
             case CommandType::DRAW:
@@ -83,23 +147,23 @@ namespace rex
                 break;
 
             case CommandType::SET_RENDER_TARGETS:
-                backend::set_render_targets(cmd.set_render_target.color
+                result = backend::set_render_targets(cmd.set_render_target.color
                     , cmd.set_render_target.num_color
                     , cmd.set_render_target.depth
                     , cmd.set_render_target.array_index
                     , cmd.set_render_target.array_index);
                 break;
             case CommandType::SET_INPUT_LAYOUT:
-                backend::set_input_layout(cmd.set_input_layout.input_layout);
+                result = backend::set_input_layout(cmd.set_input_layout.input_layout);
                 break;
             case CommandType::SET_VIEWPORT:
-                backend::set_viewport(cmd.viewport);
+                result = backend::set_viewport(cmd.viewport);
                 break;
             case CommandType::SET_SCISSOR_RECT:
-                backend::set_scissor_rect(cmd.scissor_rect);
+                result = backend::set_scissor_rect(cmd.scissor_rect);
                 break;
             case CommandType::SET_VERTEX_BUFFER:
-                backend::set_vertex_buffers(cmd.set_vertex_buffer.buffer_indices
+                result = backend::set_vertex_buffers(cmd.set_vertex_buffer.buffer_indices
                     , cmd.set_vertex_buffer.num_buffers
                     , cmd.set_vertex_buffer.start_slot
                     , cmd.set_vertex_buffer.strides
@@ -109,15 +173,18 @@ namespace rex
                 memory_free(cmd.set_vertex_buffer.offsets);
                 break;
             case CommandType::SET_INDEX_BUFFER:
-                backend::set_index_buffer(cmd.set_index_buffer.buffer_index
+                result = backend::set_index_buffer(cmd.set_index_buffer.buffer_index
                     , cmd.set_index_buffer.format
                     , cmd.set_index_buffer.offset);
                 break;
             case CommandType::SET_SHADER:
-                backend::set_shader(cmd.set_shader.shader_index, cmd.set_shader.shader_type);
+                result = backend::set_shader(cmd.set_shader.shader_index, cmd.set_shader.shader_type);
                 break;
             case CommandType::SET_RASTER_STATE:
-                backend::set_raster_state(cmd.set_raster_state.raster_state);
+                result = backend::set_raster_state(cmd.set_raster_state.raster_state);
+                break;
+            case CommandType::SET_PIPELINE_STATE:
+                result = backend::set_pipeline_state_object(cmd.set_pipeline_state.pipeline_state);
                 break;
 
             case CommandType::NEW_FRAME:
@@ -128,9 +195,14 @@ namespace rex
                 break;
 
             case CommandType::PRESENT:
-                backend::present();
+                result = backend::present();
                 break;
 
+            }
+
+            if (!result)
+            {
+                REX_ERROR(LogRendererCore, "Failed to execute render command: {}", (s32)cmd.command_type);
             }
         }
 
@@ -205,23 +277,33 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        u32 create_buffer(const parameters::CreateBuffer& createBufferParams)
+        u32 create_vertex_buffer(const parameters::CreateBuffer& createBufferParams)
+        {
+            return internal::create_buffer(CommandType::CREATE_VERTEX_BUFFER, createBufferParams);
+        }
+
+        //-------------------------------------------------------------------------
+        u32 create_index_buffer(const parameters::CreateBuffer& createBufferParams)
+        {
+            return internal::create_buffer(CommandType::CREATE_INDEX_BUFFER, createBufferParams);
+        }
+
+        //-------------------------------------------------------------------------
+        u32 create_constant_buffer(const parameters::CreateConstantBuffer& createBufferParams)
+        {
+            return internal::create_constant_buffer(CommandType::CREATE_CONSTANT_BUFFER, createBufferParams);
+        }
+
+        u32 create_pipeline_state_object(const parameters::CreatePipelineState& createPipelineStateParams)
         {
             RenderCommand cmd;
 
             u32 resource_slot = g_ctx.slot_resources.next_slot();
 
-            cmd.command_type = CommandType::CREATE_BUFFER;
+            cmd.command_type = CommandType::CREATE_PIPELINE_STATE;
             cmd.resource_slot = resource_slot;
 
-            memcpy(&cmd.create_buffer_params, (void*)&createBufferParams, sizeof(parameters::CreateBuffer));
-
-            if (createBufferParams.data)
-            {
-                // make a copy of the buffers data
-                cmd.create_buffer_params.data = memory_alloc(createBufferParams.buffer_size);
-                memcpy(cmd.create_buffer_params.data, createBufferParams.data, createBufferParams.buffer_size);
-            }
+            memcpy(&cmd.raster_state_params, (void*)&createPipelineStateParams, sizeof(parameters::CreatePipelineState));
 
             add_cmd(cmd);
 
@@ -509,6 +591,18 @@ namespace rex
 
             cmd.set_shader.shader_index = shaderTarget;
             cmd.set_shader.shader_type = shaderType;
+
+            add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        void set_pipeline_state_object(u32 psoTarget)
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::SET_PIPELINE_STATE;
+
+            cmd.set_pipeline_state.pipeline_state = psoTarget;
 
             add_cmd(cmd);
         }
