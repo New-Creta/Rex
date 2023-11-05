@@ -144,34 +144,41 @@ public abstract class BasicCPPProject : Project
   // The targets for this project are based on the generation settings that are setup by the config file passed in to sharpmake.
   public void GenerateTargets()
   {
+    DevEnv devEnv = DevEnv.ninja;
+    switch (ProjectGen.Settings.IDE)
+    {
+      case ProjectGen.IDE.VisualStudio:
+        devEnv |= DevEnv.vs2019;
+        break;
+      case ProjectGen.IDE.VSCode:
+        devEnv |= DevEnv.vscode;
+        break;
+      default:
+        break;
+    }
+
     // The checks specified here are checks for various testing types
     // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
     if (ProjectGen.Settings.CoverageEnabled)
     {
-      AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.coverage, Compiler.Clang));
+      AddTargets(new RexTarget(Platform.win64, devEnv, Config.coverage, Compiler.Clang));
     }
     else if (ProjectGen.Settings.AsanEnabled)
     {
-      AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.address_sanitizer, Compiler.Clang));
+      AddTargets(new RexTarget(Platform.win64, devEnv, Config.address_sanitizer, Compiler.Clang));
     }
     else if (ProjectGen.Settings.UbsanEnabled)
     {
-      AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.undefined_behavior_sanitizer, Compiler.Clang));
+      AddTargets(new RexTarget(Platform.win64, devEnv, Config.undefined_behavior_sanitizer, Compiler.Clang));
     }
     else if (ProjectGen.Settings.FuzzyTestingEnabled)
     {
-      AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.fuzzy, Compiler.Clang));
+      AddTargets(new RexTarget(Platform.win64, devEnv, Config.fuzzy, Compiler.Clang));
     }
     else
     {
       // Always add the ninja target. Ninja is our main build system and is used what gets used by the rex development pipeline
-      AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
-
-      // If we're targeting a visual studio solution, we need to add it as a target as well.
-      if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio)
-      {
-        AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
-      }
+      AddTargets(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
     }
   }
   // Specify the library dependencies of this project.
