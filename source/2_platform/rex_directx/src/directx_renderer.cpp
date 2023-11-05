@@ -14,9 +14,14 @@
 #include "rex_directx/resources/input_layout_resource.h"
 #include "rex_directx/resources/pixel_shader_resource.h"
 #include "rex_directx/resources/vertex_shader_resource.h"
+#include "rex_directx/resources/buffer_resource.h"
+#include "rex_directx/resources/constant_buffer_view_resource.h"
+#include "rex_directx/resources/pipeline_state_resource.h"
+#include "rex_directx/resources/shader_program_resource.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/memory/memory_allocation.h"
+#include "rex_engine/memory/memory_alighment_helper.h"
 #include "rex_renderer_core/gpu_description.h"
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/resource_pool.h"
@@ -193,6 +198,9 @@ namespace rex
         {
             static const u32 s_swapchain_buffer_count = 2;
             static const u32 s_max_color_targets = 8;
+            static const u32 s_constant_buffer_min_allocation_size = 256;
+            static const u32 s_dsv_descriptor_count = 1;
+            static const u32 s_cbv_descriptor_count = 32;
 
             struct DirectXContext
             {
@@ -228,17 +236,17 @@ namespace rex
                 rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, wrl::com_ptr<ID3D12DescriptorHeap>> descriptor_heap_pool;
 
                 D3D12_VIEWPORT screen_viewport = {};
-                RECT scissor_rect = {};
-
-                wrl::com_ptr<ID3D12PipelineState> pipeline_state_object;
+                RECT scissor_rect = {};;
 
                 ResourcePool<rsl::unique_ptr<IResource>> resource_pool;
                 
-                u32 backbuffer_color;
-                u32 backbuffer_depth;
-                u32 active_color_targets[s_max_color_targets] = {0};
-                u32 active_depth_target;
-                u32 num_active_color_targets;
+                u32 active_constant_buffers = 0;
+                u32 active_depth_target = REX_INVALID_INDEX;
+                u32 active_color_targets = 0;
+                u32 active_color_target[s_max_color_targets];
+
+                rsl::unordered_map<rsl::hash_result, wrl::com_ptr<ID3D12PipelineState>> pipeline_state_objects;
+                u32 active_pipeline_state_object = REX_INVALID_INDEX;
             };
 
             DirectXContext g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
@@ -338,6 +346,202 @@ namespace rex
                 }
 
                 return true;
+            }
+
+            //-------------------------------------------------------------------------
+            wrl::com_ptr<ID3D12Resource> create_default_buffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, wrl::com_ptr<ID3D12Resource>& uploadBuffer)
+            {
+                wrl::com_ptr<ID3D12Resource> default_buffer;
+
+                // Create the actual default buffer resource.
+                CD3DX12_HEAP_PROPERTIES heap_properties_default(D3D12_HEAP_TYPE_DEFAULT);
+                auto buffer_default = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
+
+                if (FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_NONE, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.GetAddressOf()))))
+                {
+                    REX_ERROR(LogDirectX, "Failed to create commited resource for a default buffer.");
+                    return nullptr;
+                }
+
+                // In order to copy CPU memory data into our default buffer, we need to create
+                // an intermediate upload heap.
+                CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
+                auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
+
+                if (FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadBuffer.GetAddressOf()))))
+                {
+                    REX_ERROR(LogDirectX, "Failed to create commited resource for intermediate upload heap.");
+                    return nullptr;
+                }
+
+                // Describe the data we want to copy into the default buffer.
+                D3D12_SUBRESOURCE_DATA sub_resource_data = {};
+                sub_resource_data.pData = initData;
+                sub_resource_data.RowPitch = byteSize;
+                sub_resource_data.SlicePitch = sub_resource_data.RowPitch;
+
+                // Schedule to copy the data to the default buffer resource.  
+                // At a high level, the helper function UpdateSubresources will copy the CPU memory into the intermediate upload heap.
+                // Then, using ID3D12CommandList::CopySubresourceRegion, the intermediate upload heap data will be copied to mBuffer.
+                auto transition_common_copydest = CD3DX12_RESOURCE_BARRIER::Transition(default_buffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+                cmdList->ResourceBarrier(1, &transition_common_copydest);
+                UpdateSubresources<1>(cmdList, default_buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &sub_resource_data);
+                auto transition_copydest_generic_read = CD3DX12_RESOURCE_BARRIER::Transition(default_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+                cmdList->ResourceBarrier(1, &transition_copydest_generic_read);
+
+                // Note: uploadbuffer has to be kept alive after the above function calls because
+                // the command list has not been executed yet that performs the actual copy.
+                // The caller can Release the uploadBuffer after it knows the copy has been executed.
+
+                return default_buffer;
+            }
+
+            //-------------------------------------------------------------------------
+            rsl::unique_ptr<BufferResource> create_buffer(u32 bufferByteSize, void* bufferData)
+            {
+                wrl::com_ptr<ID3DBlob> buffer_cpu;
+                wrl::com_ptr<ID3D12Resource> buffer_gpu;
+                wrl::com_ptr<ID3D12Resource> buffer_uploader;
+
+                if (FAILED(D3DCreateBlob(bufferByteSize, &buffer_cpu)))
+                {
+                    REX_ERROR(LogDirectX, "Could not create buffer blob");
+                    return nullptr;
+                }
+                CopyMemory(buffer_cpu->GetBufferPointer(), bufferData, bufferByteSize);
+
+                buffer_gpu = create_default_buffer(g_ctx.device.Get(), g_ctx.command_list.Get(), bufferData, bufferByteSize, buffer_uploader);
+                if (buffer_gpu == nullptr)
+                {
+                    REX_ERROR(LogDirectX, "Could not create GPU buffer");
+                    return false;
+                }
+
+                return rsl::make_unique<BufferResource>(buffer_cpu, buffer_gpu, buffer_uploader, bufferByteSize);
+            }
+
+            //-------------------------------------------------------------------------
+            rsl::unique_ptr<ConstantBufferResource> create_constant_buffer_view(u32 bufferCount, u32 bufferByteSize, void* bufferData)
+            {
+                u32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
+
+                wrl::com_ptr<ID3D12Resource> constant_buffer_uploader;
+
+                CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
+                CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size);
+
+                if (FAILED(g_ctx.device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
+                {
+                    REX_ERROR(LogDirectX, "Could not create commited resource ( constant buffer )");
+                    return nullptr;
+                }
+
+                if (FAILED(constant_buffer_uploader->Map(0, nullptr, &bufferData)))
+                {
+                    REX_ERROR(LogDirectX, "Could not map data to commited resource ( constant buffer )");
+                    return nullptr;
+                }
+
+                for (s32 i = 0; i < bufferCount; ++i)
+                {
+                    D3D12_GPU_VIRTUAL_ADDRESS cb_address = constant_buffer_uploader->GetGPUVirtualAddress();
+                    cb_address += i * obj_cb_byte_size;
+
+                    s32 heap_index = g_ctx.active_constant_buffers + i;
+                    CD3DX12_CPU_DESCRIPTOR_HANDLE handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetCPUDescriptorHandleForHeapStart());
+                    handle.Offset(heap_index, g_ctx.cbv_srv_uav_desc_size);
+
+                    D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
+                    cbv_desc.BufferLocation = cb_address;
+                    cbv_desc.SizeInBytes = obj_cb_byte_size;
+
+                    g_ctx.device->CreateConstantBufferView(&cbv_desc, handle);
+                }
+
+                g_ctx.active_constant_buffers += bufferCount;
+
+                return rsl::make_unique<ConstantBufferResource>(constant_buffer_uploader);
+            }
+
+            //-------------------------------------------------------------------------
+            CD3DX12_DESCRIPTOR_RANGE create_constant_buffer_descriptor_range(const parameters::ConstantLayoutDescription& desc)
+            {
+                CD3DX12_DESCRIPTOR_RANGE table;
+
+                table.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, desc.location);
+
+                return table;
+            }
+
+            //-------------------------------------------------------------------------
+            rsl::unordered_map<parameters::ConstantType, rsl::function<CD3DX12_DESCRIPTOR_RANGE(const parameters::ConstantLayoutDescription&)>> get_descriptor_ranges_create_func()
+            {
+                return 
+                {
+                    { parameters::ConstantType::CBUFFER, create_constant_buffer_descriptor_range }
+                };
+            }
+
+            //-------------------------------------------------------------------------
+            wrl::com_ptr<ID3D12RootSignature> create_shader_root_signature(parameters::ConstantLayoutDescription* constants, u32 numConstants)
+            {
+                auto descriptor_ranges_create_funcs = get_descriptor_ranges_create_func();
+                auto descriptor_ranges_map = rsl::unordered_map<parameters::ConstantType, rsl::vector<CD3DX12_DESCRIPTOR_RANGE>>();
+
+                for (s32 i = 0; i < numConstants; ++i)
+                {
+                    parameters::ConstantLayoutDescription& constant = constants[i];
+                    parameters::ConstantType constant_type = constant.type;
+
+                    if (descriptor_ranges_create_funcs.find(constant_type) != descriptor_ranges_create_funcs.cend())
+                    {
+                        CD3DX12_DESCRIPTOR_RANGE descriptor_range = descriptor_ranges_create_funcs[constant_type](constant);
+                        descriptor_ranges_map[constant_type].push_back(descriptor_range);
+                    }
+                }
+
+                // Root parameter can be a table, root descriptor or root constants.
+                auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(numConstants));
+                for(auto& pair : descriptor_ranges_map)
+                {
+                    for (auto& table : pair.value)
+                    {
+                        // Create root CBVs.
+                        CD3DX12_ROOT_PARAMETER root_param;
+                        root_param.InitAsDescriptorTable(1, &table);
+
+                        root_parameters.push_back(root_param);
+                    }
+                }
+
+                // A root signature is an array of root parameters.
+                CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(root_parameters.size(), root_parameters.data(), 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+                // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+                wrl::com_ptr<ID3DBlob> serialized_root_sig = nullptr;
+                wrl::com_ptr<ID3DBlob> error_blob = nullptr;
+
+                HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
+                if (error_blob != nullptr)
+                {
+                    REX_ERROR(LogDirectX, "{}", (char*)error_blob->GetBufferPointer());
+                    return nullptr;
+                }
+
+                if (FAILED(hr))
+                {
+                    REX_ERROR(LogDirectX, "Failed to serialize root signature");
+                    return nullptr;
+                }
+
+                wrl::com_ptr<ID3D12RootSignature> root_signature;
+                if (FAILED(g_ctx.device->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+                {
+                    REX_ERROR(LogDirectX, "Failed to create root signature");
+                    return nullptr;
+                }
+
+                return root_signature;
             }
 
             //-------------------------------------------------------------------------
@@ -512,68 +716,6 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            void* get_device()
-            {
-                return g_ctx.device.Get();
-            }
-            
-            //-------------------------------------------------------------------------
-            void* get_command_queue()
-            {
-                return g_ctx.command_queue.Get();
-            }
-            
-            //-------------------------------------------------------------------------
-            void* get_command_list()
-            {
-                return g_ctx.command_list.Get();
-            }
-            
-            //-------------------------------------------------------------------------
-            void* get_command_allocator()
-            {
-                return g_ctx.command_allocator.Get();
-            }
-
-            //-------------------------------------------------------------------------
-            s32 get_backbuffer_format()
-            {
-                return static_cast<s32>(g_ctx.back_buffer_format);
-            }
-            
-            //-------------------------------------------------------------------------
-            s32 get_depthstencil_format()
-            {
-                return static_cast<s32>(g_ctx.depth_stencil_format);
-            }
-
-            //-------------------------------------------------------------------------
-            bool get_msaa_enabled()
-            {
-                return g_ctx.msaa_state;
-            }
-            
-            //-------------------------------------------------------------------------
-            s32 get_msaa_quality()
-            {
-                return g_ctx.msaa_quality;
-            }
-
-            //------------------------------------------------------------------------
-            bool create_pipeline_state_object(void* psoDescription)
-            {
-                D3D12_GRAPHICS_PIPELINE_STATE_DESC* pso_desc = reinterpret_cast<D3D12_GRAPHICS_PIPELINE_STATE_DESC*>(psoDescription);
-
-                if (FAILED(g_ctx.device->CreateGraphicsPipelineState(pso_desc, IID_PPV_ARGS(&g_ctx.pipeline_state_object))))
-                {
-                    REX_ERROR(LogDirectX, "Failed to create pipeline state object");
-                    return false;
-                }
-
-                return true;
-            }
-
-            //-------------------------------------------------------------------------
             bool flush_command_queue()
             {
                 // Advance the fence value to mark commands up to this fence point.
@@ -621,6 +763,7 @@ namespace rex
 
                 return true;
             }
+            
             //-------------------------------------------------------------------------
             bool create_raster_state(const parameters::RasterState& rs, u32 resourceSlot)
             {
@@ -652,6 +795,7 @@ namespace rex
 
                 return true;
             }
+            
             //-------------------------------------------------------------------------
             bool create_input_layout(const parameters::CreateInputLayout& cil, u32 resourceSlot)
             {
@@ -675,10 +819,130 @@ namespace rex
 
                 return true;
             }
+            
             //-------------------------------------------------------------------------
-            bool create_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot)
+            bool create_vertex_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot)
             {
+                REX_ASSERT_X(cb.data != nullptr && cb.buffer_size != 0, "Trying to create an empty vertex buffer");
 
+                rsl::unique_ptr<BufferResource> resource = create_buffer(cb.buffer_size, cb.data);
+
+                if (resource == nullptr)
+                {
+                    REX_ERROR(LogDirectX, "Failed to create vertex buffer");
+                    return false;
+                }
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = std::move(resource);
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool create_index_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot)
+            {
+                REX_ASSERT_X(cb.data != nullptr && cb.buffer_size != 0, "Trying to create an empty index buffer");
+
+                rsl::unique_ptr<BufferResource> resource = create_buffer(cb.buffer_size, cb.data);
+
+                if (resource == nullptr)
+                {
+                    REX_ERROR(LogDirectX, "Failed to create index buffer");
+                    return false;
+                }
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = std::move(resource);
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool create_constant_buffer(const parameters::CreateConstantBuffer& cb, u32 resourceSlot)
+            {
+                REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
+
+                rsl::unique_ptr<ConstantBufferResource> resource = create_constant_buffer_view(cb.count, cb.buffer_size, cb.data);
+
+                if (resource == nullptr)
+                {
+                    REX_ERROR(LogDirectX, "Failed to create constant buffer");
+                    return false;
+                }
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = std::move(resource);
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool create_pipeline_state_object(const parameters::CreatePipelineState& cps, u32 resourceSlot)
+            {
+                REX_ASSERT_X(cps.input_layout != REX_INVALID_INDEX, "Invalid input layout resource slot given");
+                REX_ASSERT_X(cps.shader_program != REX_INVALID_INDEX, "Invalid shader program resource slot given");
+
+                rsl::hash_result hash = rsl::hash<parameters::CreatePipelineState>{}(cps);
+
+                if (g_ctx.pipeline_state_objects.find(hash) != g_ctx.pipeline_state_objects.cend())
+                {
+                    g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                    g_ctx.resource_pool[resourceSlot] = rsl::make_unique<PipelineStateResource>(g_ctx.pipeline_state_objects.at(hash));
+
+                    return true;
+                }
+
+                auto& input_layout_resource = get_resource_from_pool_as<InputLayoutResource>(g_ctx.resource_pool, cps.input_layout);
+                auto& shader_program_resource = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, cps.shader_program);
+
+                D3D12_RASTERIZER_DESC raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+                if (cps.rasterizer_state != REX_INVALID_INDEX)
+                {
+                    auto& raster_state_resource = get_resource_from_pool_as<RasterStateResource>(g_ctx.resource_pool, cps.rasterizer_state);
+                    raster_state = *raster_state_resource.get();
+                }
+                D3D12_BLEND_DESC blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+                if (cps.blend_state != REX_INVALID_INDEX)
+                {
+                    // TODO:
+                    // Create a Blend State Resource
+                }
+                D3D12_DEPTH_STENCIL_DESC depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+                if (cps.depth_stencil_state != REX_INVALID_INDEX)
+                {
+                    // TODO:
+                    // Create a Depth Stencil State Resource
+                }
+
+                D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc;
+                ZeroMemory(&pso_desc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+
+                pso_desc.InputLayout = { input_layout_resource.get()->data(), (u32)input_layout_resource.get()->size() };
+                pso_desc.pRootSignature = shader_program_resource.get()->root_signature.Get();
+                pso_desc.VS = { reinterpret_cast<BYTE*>(shader_program_resource.get()->vertex_shader->GetBufferPointer()), shader_program_resource.get()->vertex_shader->GetBufferSize()};
+                pso_desc.PS = { reinterpret_cast<BYTE*>(shader_program_resource.get()->pixel_shader->GetBufferPointer()), shader_program_resource.get()->pixel_shader->GetBufferSize()};
+                pso_desc.RasterizerState = raster_state;
+                pso_desc.BlendState = blend_state;
+                pso_desc.DepthStencilState = depth_stencil_state;
+                pso_desc.SampleMask = UINT_MAX;
+                pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+                pso_desc.NumRenderTargets = 1;
+                pso_desc.RTVFormats[0] = g_ctx.back_buffer_format;
+                pso_desc.SampleDesc.Count = g_ctx.msaa_state ? 4 : 1;
+                pso_desc.SampleDesc.Quality = g_ctx.msaa_state ? g_ctx.msaa_quality - 1 : 0;
+                pso_desc.DSVFormat = g_ctx.depth_stencil_format;
+
+                if (FAILED(g_ctx.device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx.pipeline_state_objects[hash]))))
+                {
+                    REX_ERROR(LogDirectX, "Failed to create pipeline state object");
+                    return false;
+                }
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = rsl::make_unique<PipelineStateResource>(g_ctx.pipeline_state_objects.at(hash));
+
+                return true;
             }
 
             //-------------------------------------------------------------------------
@@ -712,11 +976,30 @@ namespace rex
 
                 return true;
             }
+            
             //-------------------------------------------------------------------------
-            bool link_shader(const parameters::LinkShader& /*ls*/, u32 /*resourceSlot*/)
+            bool link_shader(const parameters::LinkShader& ls, u32 resourceSlot)
             {
-                // Nothing to do on this platform
+                auto root_sig = create_shader_root_signature(ls.constants, ls.num_constants);
+
+                if (root_sig == nullptr)
+                {
+                    REX_ERROR(LogDirectX, "Failed to create root signature");
+                    return false;
+                }
+
+                auto& vsr = get_resource_from_pool_as<VertexShaderResource>(g_ctx.resource_pool, ls.vertex_shader);
+                auto& psr = get_resource_from_pool_as<PixelShaderResource>(g_ctx.resource_pool, ls.pixel_shader);
+
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = rsl::make_unique<ShaderProgramResource>(root_sig, vsr.get()->vertex_shader, psr.get()->pixel_shader);
+
+                release_resource(ls.vertex_shader);    // vertex shader is referenced in the shader program
+                release_resource(ls.pixel_shader);     // pixel shader is referenced in the shader program
+
+                return true;
             }
+            
             //-------------------------------------------------------------------------
             bool compile_shader(const parameters::CompileShader& cs, u32 resourceSlot)
             {
@@ -794,6 +1077,11 @@ namespace rex
             //-------------------------------------------------------------------------
             bool release_resource(u32 resourceSlot)
             {
+                if(g_ctx.resource_pool.has_slot(resourceSlot))
+                {
+                    g_ctx.resource_pool[resourceSlot].release();
+                    g_ctx.resource_pool[resourceSlot] = nullptr;
+                }
             }
 
             //-------------------------------------------------------------------------
@@ -887,7 +1175,7 @@ namespace rex
                 // Create descriptor heaps for storing the rtv and dsv.
                 // We need "swapchain_buffer_count" amount of rtvs to describe the buffer resources within the swapchain
                 //  and one dsv to describe the depth/stencil buffer resource for depth testing.
-                if (create_descriptor_set_pools(s_swapchain_buffer_count, 1, 32) == false)
+                if (create_descriptor_set_pools(s_swapchain_buffer_count, s_dsv_descriptor_count, s_cbv_descriptor_count) == false)
                 {
                     REX_ERROR(LogDirectX, "Failed to create descriptor set pools");
                     return false;
@@ -944,6 +1232,8 @@ namespace rex
                 {
                     flush_command_queue();
                 }
+
+                g_ctx.resource_pool.clear();
             }
 
             //-------------------------------------------------------------------------
@@ -951,17 +1241,21 @@ namespace rex
             {
                 REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
             }
+            
             //-------------------------------------------------------------------------
             void draw_indexed(u32 indexCount, u32 startIndex, u32 baseVertex, PrimitiveTopology topology)
             {
                 REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
             }
+            
             //-------------------------------------------------------------------------
             void draw_indexed_instanced(u32 instanceCount, u32 startInstance, u32 indexCount, u32 startIndex, u32 baseVertex, PrimitiveTopology topology)
             {
                 g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
                 g_ctx.command_list->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstance);
             }
+            
+            //-------------------------------------------------------------------------
             void draw_instanced(u32 vertexCount, u32 instanceCount, u32 startVertex, u32 startInstance, PrimitiveTopology topology)
             {
                 g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
@@ -971,42 +1265,138 @@ namespace rex
             //-------------------------------------------------------------------------
             bool set_render_targets(const u32* const colorTargets, u32 numColorTargets, u32 depthTarget, u32 color_slice = 0, u32 depth_slice = 0)
             {
-                mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
-            }
-            //-------------------------------------------------------------------------
-            bool set_input_layout(u32 inputLayoutSlot)
-            {
+                g_ctx.active_depth_target = depthTarget;
+                g_ctx.active_color_targets = numColorTargets;
 
+                u32 num_views = numColorTargets;
+                CD3DX12_CPU_DESCRIPTOR_HANDLE render_target_handles[s_max_color_targets];
+
+                for (s32 i = 0; i < numColorTargets; ++i)
+                {
+                    u32 color_target = colorTargets[i];
+                    g_ctx.active_color_target[i] = color_target;
+
+                    if (color_target != 0 && color_target != REX_INVALID_INDEX)
+                    {
+                        render_target_handles[i] = g_ctx.resource_pool[color_target].render_target->get_active_buffer_description();
+                    }
+                    else
+                    {
+                        g_ctx.active_color_target[i] = 0;
+                    }
+                }
+
+                D3D12_CPU_DESCRIPTOR_HANDLE depth_stencil_handle;
+                if (depthTarget != 0 && depthTarget != REX_INVALID_INDEX)
+                {
+                    depth_stencil_handle = g_ctx.resource_pool[depthTarget].depth_target->get_buffer_description();
+                }
+                else
+                {
+                    g_ctx.active_depth_target = 0;
+                }
+
+                g_ctx.command_list->OMSetRenderTargets(num_views, render_target_handles, true, &depth_stencil_handle);
             }
+            
+            //-------------------------------------------------------------------------
+            bool set_input_layout(u32 /*inputLayoutSlot*/)
+            {
+                // Nothing to to on this platform
+            }
+            
             //-------------------------------------------------------------------------
             bool set_viewport(const Viewport& viewport)
             {
-                g_ctx.command_list->RSSetViewports(1, (D3D12_VIEWPORT*)&viewport)
+                g_ctx.screen_viewport.TopLeftX = viewport.top_left_x;
+                g_ctx.screen_viewport.TopLeftY = viewport.top_left_y;
+                g_ctx.screen_viewport.Width = viewport.width;
+                g_ctx.screen_viewport.Height = viewport.height;               
+                g_ctx.screen_viewport.MinDepth = viewport.min_depth;
+                g_ctx.screen_viewport.MaxDepth = viewport.max_depth;
+
+                g_ctx.command_list->RSSetViewports(1, &g_ctx.screen_viewport)
             }
+            
             //-------------------------------------------------------------------------
             bool set_scissor_rect(const ScissorRect& rect)
             {
-                g_ctx.command_list->RSSetScissorRects(1, (D3D12_RECT*)&rect);
+                g_ctx.scissor_rect.top = rect.top;
+                g_ctx.scissor_rect.left = rect.left;
+                g_ctx.scissor_rect.bottom = rect.bottom;
+                g_ctx.scissor_rect.right = rect.right;
+
+                g_ctx.command_list->RSSetScissorRects(1, &g_ctx.scissor_rect);
             }
+            
             //-------------------------------------------------------------------------
             bool set_vertex_buffers(u32* bufferIndices, u32 numBuffers, u32 startSlot, const u32* strides, const u32* offsets)
             {
+                auto views = rsl::vector<D3D12_VERTEX_BUFFER_VIEW>(rsl::Capacity(numBuffers));
 
+                for (s32 i = 0; i < numBuffers; ++i)
+                {
+                    auto& buffer_resource = get_resource_from_pool_as<BufferResource>(g_ctx.resource_pool, bufferIndices[i]);
+
+                    D3D12_VERTEX_BUFFER_VIEW view;
+
+                    D3D12_GPU_VIRTUAL_ADDRESS vb_address = buffer_resource.get()->gpu_buffer->GetGPUVirtualAddress();
+                    vb_address += offsets[i];
+
+                    view.BufferLocation = vb_address;
+                    view.StrideInBytes = strides[i];
+                    view.SizeInBytes = buffer_resource.get()->size_in_bytes;
+
+                    views.push_back(view);
+                }
+
+                g_ctx.command_list->IASetVertexBuffers(startSlot, numBuffers, views.data());
             }
+            
             //-------------------------------------------------------------------------
             bool set_index_buffer(u32 bufferIndex, IndexBufferFormat format, u32 offset)
             {
+                auto& buffer_resource = get_resource_from_pool_as<BufferResource>(g_ctx.resource_pool, bufferIndex);
 
+                D3D12_INDEX_BUFFER_VIEW ibv;
+
+                D3D12_GPU_VIRTUAL_ADDRESS ib_address = buffer_resource.get()->gpu_buffer->GetGPUVirtualAddress();
+                ib_address += offset;
+
+                ibv.BufferLocation = ib_address;
+                ibv.Format = directx::to_d3d12_index_format(format);
+                ibv.SizeInBytes = buffer_resource.get()->size_in_bytes;
+
+                g_ctx.command_list->IASetIndexBuffer(&ibv);
             }
+            
             //-------------------------------------------------------------------------
-            bool set_shader(u32 shaderIndex, ShaderType shaderType)
+            bool set_shader(u32 shaderIndex, ShaderType /*shaderType*/)
             {
+                auto& shader_program = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, shaderIndex);
 
+                g_ctx.command_list->SetGraphicsRootSignature(shader_program.get()->root_signature.Get());
+
+                return true;
             }
-            //-------------------------------------------------------------------------
-            bool set_raster_state(u32 rasterStateIndex)
-            {
 
+            //-------------------------------------------------------------------------
+            bool set_pipeline_state_object(u32 psoTarget)
+            {
+                if (g_ctx.resource_pool.has_slot(psoTarget) == false)
+                {
+                    return false;
+                }
+
+                g_ctx.active_pipeline_state_object = psoTarget;
+
+                return true;
+            }
+            
+            //-------------------------------------------------------------------------
+            bool set_raster_state(u32 /*rasterStateIndex*/)
+            {
+                // Nothing to to on this platform
             }
 
             //-------------------------------------------------------------------------
@@ -1023,7 +1413,8 @@ namespace rex
 
                 // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the 
                 // command list reuses memory.
-                if (FAILED(g_ctx.command_list->Reset(g_ctx.command_allocator.Get(), g_ctx.pipeline_state_object.Get())))
+                PipelineStateResource pso = get_resource_from_pool_as<PipelineStateResource>(g_ctx.resource_pool, g_ctx.active_pipeline_state_object);
+                if (FAILED(g_ctx.command_list->Reset(g_ctx.command_allocator.Get(), pso.get())))
                 {
                     REX_ERROR(LogDirectX, "Failed to reset command list");
                     return false;
