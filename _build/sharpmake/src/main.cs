@@ -169,7 +169,7 @@ public static class Main
     ProjectGen.Settings.UbsanEnabled = config["enable-ub-sanitizer"].Value.GetBoolean();
     ProjectGen.Settings.FuzzyTestingEnabled = config["enable-fuzzy-testing"].Value.GetBoolean();
     ProjectGen.Settings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
-    Enum.TryParse(config["IDE"].Value.GetString(), out ProjectGen.Settings.IDE);
+    Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE);
     ProjectGen.Settings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
 
   }
