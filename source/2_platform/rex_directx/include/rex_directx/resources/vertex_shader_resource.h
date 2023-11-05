@@ -8,21 +8,33 @@ namespace rex
 {
     namespace renderer
     {
-        class VertexShaderResource : BaseResource<ID3DBlob>
+        namespace resources
+        {
+            struct VertexShader
+            {
+                wrl::com_ptr<ID3DBlob> vertex_shader;
+            };
+        }
+
+        class VertexShaderResource : BaseResource<resources::VertexShader>
         {
         public:
             VertexShaderResource(const wrl::com_ptr<ID3DBlob>& vs)
-                :m_vertex_shader(vs)
+                :m_vertex_shader({ vs })
             {}
             ~VertexShaderResource() override = default;
 
-            const ID3DBlob* get() const
+            resources::VertexShader* get()
             {
-                return m_vertex_shader.Get();
+                return &m_vertex_shader;
+            }
+            const resources::VertexShader* get() const
+            {
+                return &m_vertex_shader;
             }
 
         private:
-            wrl::com_ptr<ID3DBlob> m_vertex_shader;
+            resources::VertexShader m_vertex_shader;
         };
     }
 }

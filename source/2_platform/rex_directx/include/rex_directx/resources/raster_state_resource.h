@@ -17,6 +17,10 @@ namespace rex
             {}
             ~RasterStateResource() override = default;
 
+            D3D12_RASTERIZER_DESC* get()
+            {
+                return &m_raster_state;
+            }
             const D3D12_RASTERIZER_DESC* get() const
             {
                 return &m_raster_state;

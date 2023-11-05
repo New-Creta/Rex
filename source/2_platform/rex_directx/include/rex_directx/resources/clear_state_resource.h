@@ -28,6 +28,10 @@ namespace rex
             {}
             ~ClearStateResource() override = default;
 
+            resources::ClearState* get()
+            {
+                return &m_clear_state;
+            }
             const resources::ClearState* get() const
             {
                 return &m_clear_state;

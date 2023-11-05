@@ -19,6 +19,10 @@ namespace rex
             {}
             ~InputLayoutResource() override = default;
 
+            rsl::vector<D3D12_INPUT_ELEMENT_DESC>* get()
+            {
+                return &m_input_elements;
+            }
             const rsl::vector<D3D12_INPUT_ELEMENT_DESC>* get() const
             {
                 return &m_input_elements;

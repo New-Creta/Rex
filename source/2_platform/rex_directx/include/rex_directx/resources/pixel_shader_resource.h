@@ -8,21 +8,33 @@ namespace rex
 {
     namespace renderer
     {
-        class PixelShaderResource : BaseResource<ID3DBlob>
+        namespace resources
+        {
+            struct PixelShader
+            {
+                wrl::com_ptr<ID3DBlob> pixel_shader;
+            };
+        }
+
+        class PixelShaderResource : BaseResource<resources::PixelShader>
         {
         public:
             PixelShaderResource(const wrl::com_ptr<ID3DBlob>& ps)
-                :m_pixel_shader(ps)
+                :m_pixel_shader({ ps })
             {}
             ~PixelShaderResource() override = default;
 
-            const ID3DBlob* get() const
+            resources::PixelShader* get()
             {
-                return m_pixel_shader.Get();
+                return &m_pixel_shader;
+            }
+            const resources::PixelShader* get() const
+            {
+                return &m_pixel_shader;
             }
 
         private:
-            wrl::com_ptr<ID3DBlob> m_pixel_shader;
+            resources::PixelShader m_pixel_shader;
         };
     }
 }

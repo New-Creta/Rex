@@ -18,6 +18,7 @@ namespace rex
             BaseResource() = default;
             ~BaseResource() override = default;
 
+            virtual T* get() = 0;
             virtual const T* get() const = 0;
         };
     }
