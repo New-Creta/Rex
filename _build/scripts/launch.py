@@ -64,6 +64,10 @@ def find_project_path(project : str, config : str, compiler : str, program : str
 
   paths : list[str] = build_projects[project][config][compiler] 
 
+  if len(paths) == 0:
+    regis.diagnostics.log_warn(f'{project} - {config} - {compiler} hasn\'t been build yet')
+    return None
+
   # It's possible an executable has a dependency on another executable.
   # If that happens we have more than 1 exe to run
   # When that happens, the user needs to specify which program they want to run.
