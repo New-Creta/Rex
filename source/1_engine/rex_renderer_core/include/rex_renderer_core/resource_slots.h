@@ -23,19 +23,21 @@ namespace rex
         class ResourceSlots
         {
         public:
+            ~ResourceSlots();
+
             /**
              * Initialize the ResourceSlots class with an initial capacity
              *
              * @param num The initial number of resource slots to manage.
              */
-            void initialize(u32 num);
+            void initialize(s32 num);
 
             /**
              * Allocate the next available resource slot.
              *
              * @return The index of the allocated resource slot.
              */
-            u32 next_slot();
+            s32 next_slot();
 
             /**
              * Free a previously allocated resource slot.
@@ -43,7 +45,7 @@ namespace rex
              * @param slot The index of the resource slot to be freed.
              * @return `true` if the slot was successfully freed, `false` if the slot is not in use or out of range.
              */
-            bool free_slot(u32 slot);
+            bool free_slot(s32 slot);
 
         private:
             /**
@@ -51,11 +53,12 @@ namespace rex
              *
              * @param num The new number of resource slots to support.
              */
-            void resize(u32 num);
+            void resize(s32 num);
 
         private:
             // An array of atomic flags to manage resource slot states.
-            rsl::vector<rsl::atomic_flag> flags;
+            rsl::atomic_flag* m_flags;
+            rsl::count_t m_flag_capacity;
         };
     }
 }
