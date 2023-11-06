@@ -16,6 +16,15 @@ namespace rex
 {
     namespace renderer
     {
+        struct Context
+        {
+            ResourceSlots slot_resources;
+
+            RingBuffer<RenderCommand> cmd_buffer;
+        };
+
+        Context g_ctx;
+
         namespace internal
         {
             //-------------------------------------------------------------------------
@@ -66,15 +75,6 @@ namespace rex
                 return resource_slot;
             }
         }
-
-        struct Context
-        {
-            ResourceSlots slot_resources;
-
-            RingBuffer<RenderCommand> cmd_buffer;
-        };
-
-        Context g_ctx;
 
         //-------------------------------------------------------------------------
         void exec_cmd(const RenderCommand& cmd)
@@ -149,9 +149,7 @@ namespace rex
             case CommandType::SET_RENDER_TARGETS:
                 result = backend::set_render_targets(cmd.set_render_target.color
                     , cmd.set_render_target.num_color
-                    , cmd.set_render_target.depth
-                    , cmd.set_render_target.array_index
-                    , cmd.set_render_target.array_index);
+                    , cmd.set_render_target.depth);
                 break;
             case CommandType::SET_INPUT_LAYOUT:
                 result = backend::set_input_layout(cmd.set_input_layout.input_layout);
@@ -214,7 +212,10 @@ namespace rex
             g_ctx.slot_resources.initialize(32);
             g_ctx.cmd_buffer.initialize(maxCommands);
 
-            return backend::initialize(userData);
+            return backend::initialize(userData
+                , (u32)DefaultTargets::REX_FRONT_BUFFER_COLOR
+                , (u32)DefaultTargets::REX_BACK_BUFFER_COLOR
+                , (u32)DefaultTargets::REX_BUFFER_DEPTH);
         }
         //-------------------------------------------------------------------------
         void shutdown()
@@ -477,7 +478,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_render_targets(u32* colorTargets, u32 numColorTargets, u32 depthTarget, u32 arrayIndex)
+        void set_render_targets(u32* colorTargets, u32 numColorTargets, u32 depthTarget)
         {
             RenderCommand cmd;
 
@@ -485,7 +486,6 @@ namespace rex
             cmd.set_render_target.num_color = numColorTargets;
             memcpy(&cmd.set_render_target.color, colorTargets, numColorTargets * sizeof(u32));
             cmd.set_render_target.depth = depthTarget;
-            cmd.set_render_target.array_index = arrayIndex;
 
             add_cmd(cmd);
         }
@@ -499,7 +499,6 @@ namespace rex
             cmd.set_render_target.num_color = is_valid(colorTarget) ? 1 : 0;
             cmd.set_render_target.color[0] = colorTarget;
             cmd.set_render_target.depth = depthTarget;
-            cmd.set_render_target.array_index = 0;
 
             add_cmd(cmd);
         }
