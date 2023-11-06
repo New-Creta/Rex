@@ -48,9 +48,7 @@ namespace rsl
                 card64 seed = 0;
                 
                 seed = internal::hash_combine(seed, params.input_layout);
-                seed = internal::hash_combine(seed, params.root_signature);
-                seed = internal::hash_combine(seed, params.vertex_shader);
-                seed = internal::hash_combine(seed, params.pixel_shader);
+                seed = internal::hash_combine(seed, params.shader_program);
                 seed = internal::hash_combine(seed, params.rasterizer_state);
                 seed = internal::hash_combine(seed, params.blend_state);
                 seed = internal::hash_combine(seed, params.depth_stencil_state);
