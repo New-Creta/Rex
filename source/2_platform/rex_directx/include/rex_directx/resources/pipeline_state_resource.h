@@ -8,7 +8,7 @@ namespace rex
 {
     namespace renderer
     {
-        class PipelineStateResource : BaseResource<ID3D12PipelineState>
+        class PipelineStateResource : public BaseResource<ID3D12PipelineState>
         {
         public:
             PipelineStateResource(const wrl::com_ptr<ID3D12PipelineState>& pso)

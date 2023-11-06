@@ -8,7 +8,7 @@ namespace rex
 {
     namespace renderer
     {
-        class ConstantBufferResource : BaseResource<ID3D12Resource>
+        class ConstantBufferResource : public BaseResource<ID3D12Resource>
         {
         public:
             ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader)

@@ -18,7 +18,7 @@ namespace rex
             };
         }
 
-        class ShaderProgramResource : BaseResource<resources::ShaderProgram>
+        class ShaderProgramResource : public BaseResource<resources::ShaderProgram>
         {
         public:
             ShaderProgramResource(const wrl::com_ptr<ID3D12RootSignature>& rootSig, const wrl::com_ptr<ID3DBlob>& vs, const wrl::com_ptr<ID3DBlob>& ps)

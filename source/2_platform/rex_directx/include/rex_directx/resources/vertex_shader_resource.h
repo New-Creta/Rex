@@ -16,7 +16,7 @@ namespace rex
             };
         }
 
-        class VertexShaderResource : BaseResource<resources::VertexShader>
+        class VertexShaderResource : public BaseResource<resources::VertexShader>
         {
         public:
             VertexShaderResource(const wrl::com_ptr<ID3DBlob>& vs)

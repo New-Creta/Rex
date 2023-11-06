@@ -16,7 +16,7 @@ namespace rex
             };
         }
 
-        class PixelShaderResource : BaseResource<resources::PixelShader>
+        class PixelShaderResource : public BaseResource<resources::PixelShader>
         {
         public:
             PixelShaderResource(const wrl::com_ptr<ID3DBlob>& ps)

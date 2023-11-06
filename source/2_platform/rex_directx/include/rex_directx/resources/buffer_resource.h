@@ -21,7 +21,7 @@ namespace rex
             };
         }
 
-        class BufferResource : BaseResource<resources::Buffer>
+        class BufferResource : public BaseResource<resources::Buffer>
         {
         public:
             BufferResource(const wrl::com_ptr<ID3DBlob>& cpuBuffer, const wrl::com_ptr<ID3D12Resource>& gpuBuffer, const wrl::com_ptr<ID3D12Resource>& uploader, u32 sizeInBytes)
