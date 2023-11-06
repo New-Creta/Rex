@@ -32,7 +32,7 @@ namespace rex
             {
                 RenderCommand cmd;
 
-                u32 resource_slot = g_ctx.slot_resources.next_slot();
+                s32 resource_slot = g_ctx.slot_resources.next_slot();
 
                 cmd.command_type = commandType;
                 cmd.resource_slot = resource_slot;
@@ -56,7 +56,7 @@ namespace rex
             {
                 RenderCommand cmd;
 
-                u32 resource_slot = g_ctx.slot_resources.next_slot();
+                s32 resource_slot = g_ctx.slot_resources.next_slot();
 
                 cmd.command_type = commandType;
                 cmd.resource_slot = resource_slot;
@@ -113,7 +113,7 @@ namespace rex
                 break;
             case CommandType::LINK_SHADER:
                 result = backend::link_shader(cmd.link_shader_params, cmd.resource_slot);
-                for (u32 i = 0; i < cmd.link_shader_params.num_constants; ++i)
+                for (s32 i = 0; i < cmd.link_shader_params.num_constants; ++i)
                     memory_free(cmd.link_shader_params.constants[i].name);
                 memory_free(cmd.link_shader_params.constants);
                 break;
@@ -205,7 +205,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool initialize(const OutputWindowUserData& userData, u32 maxCommands)
+        bool initialize(const OutputWindowUserData& userData, s32 maxCommands)
         {
             UNUSED_PARAM(userData);
 
@@ -213,9 +213,9 @@ namespace rex
             g_ctx.cmd_buffer.initialize(maxCommands);
 
             return backend::initialize(userData
-                , (u32)DefaultTargets::REX_FRONT_BUFFER_COLOR
-                , (u32)DefaultTargets::REX_BACK_BUFFER_COLOR
-                , (u32)DefaultTargets::REX_BUFFER_DEPTH);
+                , (s32)DefaultTargets::REX_FRONT_BUFFER_COLOR
+                , (s32)DefaultTargets::REX_BACK_BUFFER_COLOR
+                , (s32)DefaultTargets::REX_BUFFER_DEPTH);
         }
         //-------------------------------------------------------------------------
         void shutdown()
@@ -224,11 +224,11 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        u32 create_clear_state(const parameters::ClearState& clearStateParams)
+        s32 create_clear_state(const parameters::ClearState& clearStateParams)
         {
             RenderCommand cmd;
 
-            u32 resource_slot = g_ctx.slot_resources.next_slot();
+            s32 resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_CLEAR_STATE;
             cmd.clear_state_params = clearStateParams;
@@ -240,11 +240,11 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        u32 create_raster_state(const parameters::RasterState& rasterStateParams)
+        s32 create_raster_state(const parameters::RasterState& rasterStateParams)
         {
             RenderCommand cmd;
 
-            u32 resource_slot = g_ctx.slot_resources.next_slot();
+            s32 resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_RASTER_STATE;
             cmd.resource_slot = resource_slot;
@@ -257,18 +257,18 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        u32 create_input_layout(const parameters::CreateInputLayout& createInputLayoutParams)
+        s32 create_input_layout(const parameters::CreateInputLayout& createInputLayoutParams)
         {
             RenderCommand cmd;
 
-            u32 resource_slot = g_ctx.slot_resources.next_slot();
+            s32 resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_INPUT_LAYOUT_STATE;
             cmd.resource_slot = resource_slot;
 
             cmd.create_input_layout_params.num_elements = createInputLayoutParams.num_elements;
 
-            u32 input_layouts_size = sizeof(parameters::InputLayoutDescription) * createInputLayoutParams.num_elements;
+            s32 input_layouts_size = sizeof(parameters::InputLayoutDescription) * createInputLayoutParams.num_elements;
             cmd.create_input_layout_params.input_layout = (parameters::InputLayoutDescription*)memory_alloc(input_layouts_size);
             memcpy(cmd.create_input_layout_params.input_layout, createInputLayoutParams.input_layout, input_layouts_size);
 
@@ -278,28 +278,28 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        u32 create_vertex_buffer(const parameters::CreateBuffer& createBufferParams)
+        s32 create_vertex_buffer(const parameters::CreateBuffer& createBufferParams)
         {
             return internal::create_buffer(CommandType::CREATE_VERTEX_BUFFER, createBufferParams);
         }
 
         //-------------------------------------------------------------------------
-        u32 create_index_buffer(const parameters::CreateBuffer& createBufferParams)
+        s32 create_index_buffer(const parameters::CreateBuffer& createBufferParams)
         {
             return internal::create_buffer(CommandType::CREATE_INDEX_BUFFER, createBufferParams);
         }
 
         //-------------------------------------------------------------------------
-        u32 create_constant_buffer(const parameters::CreateConstantBuffer& createBufferParams)
+        s32 create_constant_buffer(const parameters::CreateConstantBuffer& createBufferParams)
         {
             return internal::create_constant_buffer(CommandType::CREATE_CONSTANT_BUFFER, createBufferParams);
         }
 
-        u32 create_pipeline_state_object(const parameters::CreatePipelineState& createPipelineStateParams)
+        s32 create_pipeline_state_object(const parameters::CreatePipelineState& createPipelineStateParams)
         {
             RenderCommand cmd;
 
-            u32 resource_slot = g_ctx.slot_resources.next_slot();
+            s32 resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_PIPELINE_STATE;
             cmd.resource_slot = resource_slot;
@@ -312,11 +312,11 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        u32 load_shader(const parameters::LoadShader& loadShaderParams)
+        s32 load_shader(const parameters::LoadShader& loadShaderParams)
         {
             RenderCommand cmd;
 
-            u32 resource_slot = g_ctx.slot_resources.next_slot();
+            s32 resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::LOAD_SHADER;
             cmd.resource_slot = resource_slot;
@@ -336,28 +336,28 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        u32 link_shader(const parameters::LinkShader& linkShaderParams)
+        s32 link_shader(const parameters::LinkShader& linkShaderParams)
         {
             RenderCommand cmd;
 
-            u32 resource_slot = g_ctx.slot_resources.next_slot();
+            s32 resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::LINK_SHADER;
             cmd.resource_slot = resource_slot;
 
             cmd.link_shader_params = linkShaderParams;
 
-            u32 num = linkShaderParams.num_constants;
-            u32 layout_size = sizeof(parameters::ConstantLayoutDescription) * num;
+            s32 num = linkShaderParams.num_constants;
+            s32 layout_size = sizeof(parameters::ConstantLayoutDescription) * num;
             cmd.link_shader_params.constants = (parameters::ConstantLayoutDescription*)memory_alloc(layout_size);
 
             parameters::ConstantLayoutDescription* c = cmd.link_shader_params.constants;
-            for (u32 i = 0; i < num; ++i)
+            for (s32 i = 0; i < num; ++i)
             {
                 c[i].location = linkShaderParams.constants[i].location;
                 c[i].type = linkShaderParams.constants[i].type;
 
-                u32 len = rsl::strlen(linkShaderParams.constants[i].name);
+                s32 len = rsl::strlen(linkShaderParams.constants[i].name);
                 c[i].name = (char8*)memory_alloc(len + 1);
 
                 memcpy(c[i].name, linkShaderParams.constants[i].name, len);
@@ -370,11 +370,11 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        u32 compile_shader(const parameters::CompileShader& compileShaderParams)
+        s32 compile_shader(const parameters::CompileShader& compileShaderParams)
         {
             RenderCommand cmd;
 
-            u32 resource_slot = g_ctx.slot_resources.next_slot();
+            s32 resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::COMPILE_SHADER;
             cmd.resource_slot = resource_slot;
@@ -387,7 +387,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void release_resource(u32 resourceTarget)
+        void release_resource(s32 resourceTarget)
         {
             RenderCommand cmd;
 
@@ -398,7 +398,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void clear(u32 clearStateTarget)
+        void clear(s32 clearStateTarget)
         {
             RenderCommand cmd;
 
@@ -409,7 +409,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void renderer_draw(u32 vertexCount, u32 startVertex, PrimitiveTopology primitiveTopology)
+        void renderer_draw(s32 vertexCount, s32 startVertex, PrimitiveTopology primitiveTopology)
         {
             RenderCommand cmd;
 
@@ -422,7 +422,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void renderer_draw_indexed(u32 indexCount, u32 startIndex, u32 baseVertex, PrimitiveTopology primitiveTopology)
+        void renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology)
         {
             RenderCommand cmd;
 
@@ -436,7 +436,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void renderer_draw_indexed_instanced(u32 instanceCount, u32 startInstance, u32 indexCount, u32 startIndex, u32 baseVertex, PrimitiveTopology primitiveTopology)
+        void renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology)
         {
             RenderCommand cmd;
 
@@ -452,7 +452,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void renderer_draw_instanced(u32 vertexCount, u32 instanceCount, u32 startVertex, u32 startInstance, PrimitiveTopology topology)
+        void renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology)
         {
             RenderCommand cmd;
 
@@ -467,7 +467,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_raster_state(u32 rasterStateTarget)
+        void set_raster_state(s32 rasterStateTarget)
         {
             RenderCommand cmd;
 
@@ -478,20 +478,20 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_render_targets(u32* colorTargets, u32 numColorTargets, u32 depthTarget)
+        void set_render_targets(s32* colorTargets, s32 numColorTargets, s32 depthTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_RENDER_TARGETS;
             cmd.set_render_target.num_color = numColorTargets;
-            memcpy(&cmd.set_render_target.color, colorTargets, numColorTargets * sizeof(u32));
+            memcpy(&cmd.set_render_target.color, colorTargets, numColorTargets * sizeof(s32));
             cmd.set_render_target.depth = depthTarget;
 
             add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_render_targets(u32 colorTarget, u32 depthTarget)
+        void set_render_targets(s32 colorTarget, s32 depthTarget)
         {
             RenderCommand cmd;
 
@@ -526,7 +526,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_input_layout(u32 inputLayoutTarget)
+        void set_input_layout(s32 inputLayoutTarget)
         {
             RenderCommand cmd;
 
@@ -537,16 +537,16 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_vertex_buffer(u32 vertexBufferTarget, u32 startSlot, u32 stride, u32 offset)
+        void set_vertex_buffer(s32 vertexBufferTarget, s32 startSlot, s32 stride, s32 offset)
         {
-            u32* vertex_buffer_target = &vertexBufferTarget;
-            const u32* stride_target = &stride;
-            const u32* offset_target = &offset;
+            s32* vertex_buffer_target = &vertexBufferTarget;
+            const s32* stride_target = &stride;
+            const s32* offset_target = &offset;
 
             set_vertex_buffers(vertex_buffer_target, 1, startSlot, stride_target, offset_target);
         }
         //-------------------------------------------------------------------------
-        void set_vertex_buffers(u32* vertexBufferTargets, u32 numBuffers, u32 startSlot, const u32* strides, const u32* offsets)
+        void set_vertex_buffers(s32* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
         {
             RenderCommand cmd;
 
@@ -555,11 +555,11 @@ namespace rex
             cmd.set_vertex_buffer.start_slot = startSlot;
             cmd.set_vertex_buffer.num_buffers = numBuffers;
 
-            cmd.set_vertex_buffer.buffer_indices = (u32*)memory_alloc(sizeof(u32) * numBuffers);
-            cmd.set_vertex_buffer.strides = (u32*)memory_alloc(sizeof(u32) * numBuffers);
-            cmd.set_vertex_buffer.offsets = (u32*)memory_alloc(sizeof(u32) * numBuffers);
+            cmd.set_vertex_buffer.buffer_indices = (s32*)memory_alloc(sizeof(s32) * numBuffers);
+            cmd.set_vertex_buffer.strides = (s32*)memory_alloc(sizeof(s32) * numBuffers);
+            cmd.set_vertex_buffer.offsets = (s32*)memory_alloc(sizeof(s32) * numBuffers);
 
-            for (u32 i = 0; i < numBuffers; ++i)
+            for (s32 i = 0; i < numBuffers; ++i)
             {
                 cmd.set_vertex_buffer.buffer_indices[i] = vertexBufferTargets[i];
                 cmd.set_vertex_buffer.strides[i] = strides[i];
@@ -569,7 +569,7 @@ namespace rex
             add_cmd(cmd);
         }
         //-------------------------------------------------------------------------
-        void set_index_buffer(u32 indexBufferTarget, IndexBufferFormat format, u32 offset)
+        void set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset)
         {
             RenderCommand cmd;
 
@@ -582,7 +582,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_shader(u32 shaderTarget, ShaderType shaderType)
+        void set_shader(s32 shaderTarget, ShaderType shaderType)
         {
             RenderCommand cmd;
 
@@ -595,7 +595,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_pipeline_state_object(u32 psoTarget)
+        void set_pipeline_state_object(s32 psoTarget)
         {
             RenderCommand cmd;
 

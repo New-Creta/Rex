@@ -14,7 +14,7 @@ namespace rex
                     :pipeline_state(REX_INVALID_INDEX)
                 {}
 
-                u32 pipeline_state;
+                s32 pipeline_state;
             };
         }
     }

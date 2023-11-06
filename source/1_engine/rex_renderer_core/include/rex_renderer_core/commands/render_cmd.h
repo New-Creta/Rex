@@ -75,8 +75,8 @@ namespace rex
 
             CommandType command_type;
 
-            u32 resource_slot;
-            u64 frame_index;
+            s32 resource_slot;
+            s64 frame_index;
 
             union
             {

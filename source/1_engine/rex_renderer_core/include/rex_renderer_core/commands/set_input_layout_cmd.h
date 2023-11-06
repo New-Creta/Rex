@@ -14,7 +14,7 @@ namespace rex
                     :input_layout(REX_INVALID_INDEX)
                 {}
 
-                u32 input_layout;
+                s32 input_layout;
             };
         }
     }

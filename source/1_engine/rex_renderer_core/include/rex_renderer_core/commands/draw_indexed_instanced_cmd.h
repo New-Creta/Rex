@@ -21,11 +21,11 @@ namespace rex
                     ,primitive_topology(PrimitiveTopology::NONE)
                 {}
 
-                u32 instance_count;
-                u32 start_instance;
-                u32 index_count;
-                u32 start_index;
-                u32 base_vertex;
+                s32 instance_count;
+                s32 start_instance;
+                s32 index_count;
+                s32 start_index;
+                s32 base_vertex;
                 PrimitiveTopology primitive_topology;
             };
         }

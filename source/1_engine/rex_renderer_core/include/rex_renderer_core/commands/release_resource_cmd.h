@@ -14,7 +14,7 @@ namespace rex
                     :resource_index(REX_INVALID_INDEX)
                 {}
 
-                u32 resource_index;
+                s32 resource_index;
             };
         }
     }

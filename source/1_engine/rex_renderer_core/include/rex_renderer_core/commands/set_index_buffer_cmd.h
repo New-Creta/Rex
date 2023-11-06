@@ -18,9 +18,9 @@ namespace rex
                     ,offset(0)
                 {}
 
-                u32 buffer_index;
+                s32 buffer_index;
                 IndexBufferFormat format;
-                u32 offset;
+                s32 offset;
             };
         }
     }

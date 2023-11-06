@@ -18,7 +18,7 @@ namespace rex
                     ,data(nullptr)
                 {}
 
-                u32 buffer_size;
+                s32 buffer_size;
                 void* data;
             };
         }

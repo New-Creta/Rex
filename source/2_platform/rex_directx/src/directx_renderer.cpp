@@ -33,6 +33,7 @@
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 #include "rex_std_extra/memory/memory_size.h"
+#include "rex_std_extra/utility/casting.h"
 
 #include <Windows.h>
 #include <cstddef>
@@ -198,16 +199,16 @@ namespace rex
 
         namespace backend
         {
-            static const u32 s_swapchain_buffer_count = 2;
+            static const s32 s_swapchain_buffer_count = 2;
 
-            static const u32 s_max_color_targets = 8;
-            static const u32 s_max_depth_targets = 1;
+            static const s32 s_max_color_targets = 8;
+            static const s32 s_max_depth_targets = 1;
             
-            static const u32 s_constant_buffer_min_allocation_size = 256;
+            static const s32 s_constant_buffer_min_allocation_size = 256;
 
-            static const u32 s_rtv_descriptor_count = s_max_color_targets; 
-            static const u32 s_dsv_descriptor_count = s_max_depth_targets;
-            static const u32 s_cbv_descriptor_count = 32;
+            static const s32 s_rtv_descriptor_count = s_max_color_targets; 
+            static const s32 s_dsv_descriptor_count = s_max_depth_targets;
+            static const s32 s_cbv_descriptor_count = 32;
 
             struct DirectXContext
             {
@@ -216,15 +217,15 @@ namespace rex
 
                 u64 current_fence;
 
-                u32 rtv_desc_size = 0;
-                u32 dsv_desc_size = 0;
-                u32 cbv_srv_uav_desc_size = 0;
+                s32 rtv_desc_size = 0;
+                s32 dsv_desc_size = 0;
+                s32 cbv_srv_uav_desc_size = 0;
 
                 DXGI_FORMAT back_buffer_format = DXGI_FORMAT_R8G8B8A8_UNORM;
                 DXGI_FORMAT depth_stencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
                 bool msaa_state = false;
-                u32 msaa_quality = 0;
+                s32 msaa_quality = 0;
 
                 wrl::com_ptr<ID3D12CommandQueue> command_queue = nullptr;
                 wrl::com_ptr<ID3D12GraphicsCommandList> command_list = nullptr;
@@ -240,16 +241,16 @@ namespace rex
 
                 ResourcePool<rsl::unique_ptr<IResource>> resource_pool;
                 
-                u32 active_constant_buffers = 0;                        // Amount of active constant buffers
-                u32 active_depth_target = REX_INVALID_INDEX;            // Current depth buffer to write to
-                u32 active_color_targets = 0;                           // Amount of color targets to write to
-                u32 active_color_target[s_max_color_targets];           // Current color buffers to write to
-                u32 active_pipeline_state_object = REX_INVALID_INDEX;   // Active pipeline state used for drawing
+                s32 active_constant_buffers = 0;                        // Amount of active constant buffers
+                s32 active_depth_target = REX_INVALID_INDEX;            // Current depth buffer to write to
+                s32 active_color_targets = 0;                           // Amount of color targets to write to
+                s32 active_color_target[s_max_color_targets];           // Current color buffers to write to
+                s32 active_pipeline_state_object = REX_INVALID_INDEX;   // Active pipeline state used for drawing
 
-                u32 swapchain_rt_buffer_indices[s_swapchain_buffer_count] = { REX_INVALID_INDEX, REX_INVALID_INDEX };   // swapchain render target buffer indices
-                u32 swapchain_current_rt_buffer_index = 0;                                                              // swapchain current render target buffer to write to
-                u32 swapchain_ds_buffer_index = REX_INVALID_INDEX;                                                      // swapchain depth stencil index
-                u32 swapchain_current_ds_buffer_index = 0;                                                              // swapchain current depth stencil target buffer to write to
+                s32 swapchain_rt_buffer_indices[s_swapchain_buffer_count] = { REX_INVALID_INDEX, REX_INVALID_INDEX };   // swapchain render target buffer indices
+                s32 swapchain_current_rt_buffer_index = 0;                                                              // swapchain current render target buffer to write to
+                s32 swapchain_ds_buffer_index = REX_INVALID_INDEX;                                                      // swapchain depth stencil index
+                s32 swapchain_current_ds_buffer_index = 0;                                                              // swapchain current depth stencil target buffer to write to
             };
 
             DirectXContext g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
@@ -370,7 +371,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            rsl::unique_ptr<BufferResource> create_buffer(u32 bufferByteSize, void* bufferData)
+            rsl::unique_ptr<BufferResource> create_buffer(s32 bufferByteSize, void* bufferData)
             {
                 wrl::com_ptr<ID3DBlob> buffer_cpu;
                 wrl::com_ptr<ID3D12Resource> buffer_gpu;
@@ -394,9 +395,9 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            rsl::unique_ptr<ConstantBufferResource> create_constant_buffer_view(u32 bufferCount, u32 bufferByteSize, void* bufferData)
+            rsl::unique_ptr<ConstantBufferResource> create_constant_buffer_view(s32 bufferCount, s32 bufferByteSize, void* bufferData)
             {
-                u32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
+                s32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
 
                 wrl::com_ptr<ID3D12Resource> constant_buffer_uploader;
 
@@ -415,7 +416,7 @@ namespace rex
                     return nullptr;
                 }
 
-                for (u32 i = 0; i < bufferCount; ++i)
+                for (s32 i = 0; i < bufferCount; ++i)
                 {
                     D3D12_GPU_VIRTUAL_ADDRESS cb_address = constant_buffer_uploader->GetGPUVirtualAddress();
                     cb_address += i * obj_cb_byte_size;
@@ -456,12 +457,12 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            wrl::com_ptr<ID3D12RootSignature> create_shader_root_signature(parameters::ConstantLayoutDescription* constants, u32 numConstants)
+            wrl::com_ptr<ID3D12RootSignature> create_shader_root_signature(parameters::ConstantLayoutDescription* constants, s32 numConstants)
             {
                 auto descriptor_ranges_create_funcs = get_descriptor_ranges_create_func();
                 auto descriptor_ranges_map = rsl::unordered_map<parameters::ConstantType, rsl::vector<CD3DX12_DESCRIPTOR_RANGE>>();
 
-                for (u32 i = 0; i < numConstants; ++i)
+                for (s32 i = 0; i < numConstants; ++i)
                 {
                     parameters::ConstantLayoutDescription& constant = constants[i];
                     parameters::ConstantType constant_type = constant.type;
@@ -528,19 +529,19 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            D3D12_CPU_DESCRIPTOR_HANDLE rendertarget_buffer_descriptor(u32 idx)
+            D3D12_CPU_DESCRIPTOR_HANDLE rendertarget_buffer_descriptor(s32 idx)
             {
                 return CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart(), idx, g_ctx.rtv_desc_size);
             }
             
             //-------------------------------------------------------------------------
-            D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_buffer_descriptor(u32 idx)
+            D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_buffer_descriptor(s32 idx)
             {
                 return CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart(), idx, g_ctx.dsv_desc_size);
             }
 
             //-------------------------------------------------------------------------
-            bool create_rtvs_for_swapchain(s32 width, s32 height, u32 frontBufferSlot, u32 backBufferSlot)
+            bool create_rtvs_for_swapchain(s32 width, s32 height, s32 frontBufferSlot, s32 backBufferSlot)
             {
                 // Release the previous resources we will be recreating.
                 for (int i = 0; i < s_swapchain_buffer_count; ++i)
@@ -560,7 +561,7 @@ namespace rex
 
                 wrl::com_ptr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count]; 
                 CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
-                for (u32 i = 0; i < s_swapchain_buffer_count; ++i)
+                for (s32 i = 0; i < s_swapchain_buffer_count; ++i)
                 {
                     if (FAILED(g_ctx.swapchain->GetBuffer(i, IID_PPV_ARGS(rtv_buffers[i].GetAddressOf()))))
                     {
@@ -658,25 +659,25 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_descriptor_set_pools(u32 numRTV, u32 numDSV, u32 numCBV)
+            bool create_descriptor_set_pools(s32 numRTV, s32 numDSV, s32 numCBV)
             {
                 D3D12_DESCRIPTOR_HEAP_DESC heap_descs[] =
                 {
                     {
                         D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-                        numRTV,
+                        rsl::safe_numeric_cast<UINT>(numRTV),
                         D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
                         0    // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
                     },
                     {
                         D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
-                        numDSV,
+                        rsl::safe_numeric_cast<UINT>(numDSV),
                         D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
                         0    // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
                     },
                     {
                         D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-                        numCBV,
+                        rsl::safe_numeric_cast<UINT>(numCBV),
                         D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
                         0    // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
                     }
@@ -731,7 +732,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_clear_state(const parameters::ClearState& cs, u32 resourceSlot)
+            bool create_clear_state(const parameters::ClearState& cs, s32 resourceSlot)
             {
                 resources::ClearState rcs;
 
@@ -747,7 +748,7 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool create_raster_state(const parameters::RasterState& rs, u32 resourceSlot)
+            bool create_raster_state(const parameters::RasterState& rs, s32 resourceSlot)
             {
                 D3D12_RASTERIZER_DESC d3d_rs;
 
@@ -779,11 +780,11 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool create_input_layout(const parameters::CreateInputLayout& cil, u32 resourceSlot)
+            bool create_input_layout(const parameters::CreateInputLayout& cil, s32 resourceSlot)
             {
                 rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Capacity(cil.num_elements));
 
-                for (u32 i = 0; i < cil.num_elements; ++i)
+                for (s32 i = 0; i < cil.num_elements; ++i)
                 {
                     input_element_descriptions[i].SemanticName = cil.input_layout[i].semantic_name;
                     input_element_descriptions[i].SemanticIndex = cil.input_layout[i].semantic_index;
@@ -803,7 +804,7 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool create_vertex_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot)
+            bool create_vertex_buffer(const parameters::CreateBuffer& cb, s32 resourceSlot)
             {
                 REX_ASSERT_X(cb.data != nullptr && cb.buffer_size != 0, "Trying to create an empty vertex buffer");
 
@@ -822,7 +823,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_index_buffer(const parameters::CreateBuffer& cb, u32 resourceSlot)
+            bool create_index_buffer(const parameters::CreateBuffer& cb, s32 resourceSlot)
             {
                 REX_ASSERT_X(cb.data != nullptr && cb.buffer_size != 0, "Trying to create an empty index buffer");
 
@@ -841,7 +842,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_constant_buffer(const parameters::CreateConstantBuffer& cb, u32 resourceSlot)
+            bool create_constant_buffer(const parameters::CreateConstantBuffer& cb, s32 resourceSlot)
             {
                 REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
@@ -860,7 +861,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_pipeline_state_object(const parameters::CreatePipelineState& cps, u32 resourceSlot)
+            bool create_pipeline_state_object(const parameters::CreatePipelineState& cps, s32 resourceSlot)
             {
                 REX_ASSERT_X(cps.input_layout != REX_INVALID_INDEX, "Invalid input layout resource slot given");
                 REX_ASSERT_X(cps.shader_program != REX_INVALID_INDEX, "Invalid shader program resource slot given");
@@ -900,7 +901,7 @@ namespace rex
                 D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc;
                 ZeroMemory(&pso_desc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 
-                pso_desc.InputLayout = { input_layout_resource.get()->data(), (u32)input_layout_resource.get()->size() };
+                pso_desc.InputLayout = { input_layout_resource.get()->data(), rsl::safe_numeric_cast<UINT>(input_layout_resource.get()->size()) };
                 pso_desc.pRootSignature = shader_program_resource.get()->root_signature.Get();
                 pso_desc.VS = { reinterpret_cast<BYTE*>(shader_program_resource.get()->vertex_shader->GetBufferPointer()), shader_program_resource.get()->vertex_shader->GetBufferSize()};
                 pso_desc.PS = { reinterpret_cast<BYTE*>(shader_program_resource.get()->pixel_shader->GetBufferPointer()), shader_program_resource.get()->pixel_shader->GetBufferSize()};
@@ -928,7 +929,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool load_shader(const parameters::LoadShader& ls, u32 resourceSlot)
+            bool load_shader(const parameters::LoadShader& ls, s32 resourceSlot)
             {
                 wrl::com_ptr<ID3DBlob> byte_code;
                 if (FAILED(D3DCreateBlob(ls.byte_code_size, byte_code.GetAddressOf())))
@@ -960,7 +961,7 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool link_shader(const parameters::LinkShader& ls, u32 resourceSlot)
+            bool link_shader(const parameters::LinkShader& ls, s32 resourceSlot)
             {
                 auto root_sig = create_shader_root_signature(ls.constants, ls.num_constants);
 
@@ -983,9 +984,9 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool compile_shader(const parameters::CompileShader& cs, u32 resourceSlot)
+            bool compile_shader(const parameters::CompileShader& cs, s32 resourceSlot)
             {
-                u32 compile_flags = 0;
+                s32 compile_flags = 0;
 #if defined(REX_DEBUG)
                 compile_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
@@ -1029,7 +1030,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            void clear(u32 clearStateIndex)
+            void clear(s32 clearStateIndex)
             {
                 const ClearStateResource& csr = get_resource_from_pool_as<ClearStateResource>(g_ctx.resource_pool, clearStateIndex);
 
@@ -1048,7 +1049,7 @@ namespace rex
                 {
                     D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_desc = depthstencil_buffer_descriptor(g_ctx.swapchain_current_ds_buffer_index);
 
-                    u32 depth_stencil_clear_flags = 0;
+                    s32 depth_stencil_clear_flags = 0;
                     depth_stencil_clear_flags |= flags & ClearBits::CLEAR_DEPTH_BUFFER ? D3D12_CLEAR_FLAG_DEPTH : 0;
                     depth_stencil_clear_flags |= flags & ClearBits::CLEAR_STENCIL_BUFFER ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
@@ -1057,7 +1058,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool release_resource(u32 resourceSlot)
+            bool release_resource(s32 resourceSlot)
             {
                 if(g_ctx.resource_pool.has_slot(resourceSlot))
                 {
@@ -1069,7 +1070,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool initialize(const OutputWindowUserData& userData, u32 fbColorTargetSlot, u32 bbColorTargetSlot, u32 depthTargetSlot)
+            bool initialize(const OutputWindowUserData& userData, s32 fbColorTargetSlot, s32 bbColorTargetSlot, s32 depthTargetSlot)
             {
 #if defined(REX_DEBUG)
                 // Enable extra debuggin and send debug messages to the VC++ output window
@@ -1232,43 +1233,43 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            void draw(u32 /*vertexCount*/, u32 /*startVertex*/, PrimitiveTopology /*topology*/)
+            void draw(s32 /*vertexCount*/, s32 /*startVertex*/, PrimitiveTopology /*topology*/)
             {
                 REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
             }
             
             //-------------------------------------------------------------------------
-            void draw_indexed(u32 /*indexCount*/, u32 /*startIndex*/, u32 /*baseVertex*/, PrimitiveTopology /*topology*/)
+            void draw_indexed(s32 /*indexCount*/, s32 /*startIndex*/, s32 /*baseVertex*/, PrimitiveTopology /*topology*/)
             {
                 REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
             }
             
             //-------------------------------------------------------------------------
-            void draw_indexed_instanced(u32 instanceCount, u32 startInstance, u32 indexCount, u32 startIndex, u32 baseVertex, PrimitiveTopology topology)
+            void draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology topology)
             {
                 g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
                 g_ctx.command_list->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstance);
             }
             
             //-------------------------------------------------------------------------
-            void draw_instanced(u32 vertexCount, u32 instanceCount, u32 startVertex, u32 startInstance, PrimitiveTopology topology)
+            void draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology)
             {
                 g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
                 g_ctx.command_list->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
             }
 
             //-------------------------------------------------------------------------
-            bool set_render_targets(const u32* const colorTargets, u32 numColorTargets, u32 depthTarget)
+            bool set_render_targets(const s32* const colorTargets, s32 numColorTargets, s32 depthTarget)
             {
                 g_ctx.active_depth_target = depthTarget;
                 g_ctx.active_color_targets = numColorTargets;
 
-                u32 num_views = numColorTargets;
+                s32 num_views = numColorTargets;
                 CD3DX12_CPU_DESCRIPTOR_HANDLE render_target_handles[s_max_color_targets];
 
-                for (u32 i = 0; i < numColorTargets; ++i)
+                for (s32 i = 0; i < numColorTargets; ++i)
                 {
-                    u32 color_target = colorTargets[i];
+                    s32 color_target = colorTargets[i];
                     g_ctx.active_color_target[i] = color_target;
 
                     if (color_target != 0 && color_target != REX_INVALID_INDEX)
@@ -1301,7 +1302,7 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool set_input_layout(u32 /*inputLayoutSlot*/)
+            bool set_input_layout(s32 /*inputLayoutSlot*/)
             {
                 // Nothing to to on this platform
                 
@@ -1337,11 +1338,11 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool set_vertex_buffers(u32* bufferIndices, u32 numBuffers, u32 startSlot, const u32* strides, const u32* offsets)
+            bool set_vertex_buffers(s32* bufferIndices, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
             {
                 auto views = rsl::vector<D3D12_VERTEX_BUFFER_VIEW>(rsl::Capacity(numBuffers));
 
-                for (u32 i = 0; i < numBuffers; ++i)
+                for (s32 i = 0; i < numBuffers; ++i)
                 {
                     auto& buffer_resource = get_resource_from_pool_as<BufferResource>(g_ctx.resource_pool, bufferIndices[i]);
 
@@ -1363,7 +1364,7 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool set_index_buffer(u32 bufferIndex, IndexBufferFormat format, u32 offset)
+            bool set_index_buffer(s32 bufferIndex, IndexBufferFormat format, s32 offset)
             {
                 auto& buffer_resource = get_resource_from_pool_as<BufferResource>(g_ctx.resource_pool, bufferIndex);
 
@@ -1382,7 +1383,7 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool set_shader(u32 shaderIndex, ShaderType /*shaderType*/)
+            bool set_shader(s32 shaderIndex, ShaderType /*shaderType*/)
             {
                 auto& shader_program = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, shaderIndex);
 
@@ -1392,7 +1393,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool set_pipeline_state_object(u32 psoTarget)
+            bool set_pipeline_state_object(s32 psoTarget)
             {
                 if (g_ctx.resource_pool.has_slot(psoTarget) == false)
                 {
@@ -1405,7 +1406,7 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool set_raster_state(u32 /*rasterStateIndex*/)
+            bool set_raster_state(s32 /*rasterStateIndex*/)
             {
                 // Nothing to to on this platform
 

@@ -10,12 +10,12 @@ namespace rex
         {
             struct SetVertexBuffer
             {
-                u32  buffer_index;
-                u32  start_slot;
-                u32* buffer_indices;
-                u32  num_buffers;
-                u32* strides;
-                u32* offsets;
+                s32  buffer_index;
+                s32  start_slot;
+                s32* buffer_indices;
+                s32  num_buffers;
+                s32* strides;
+                s32* offsets;
             };
         }
     }

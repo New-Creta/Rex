@@ -14,7 +14,7 @@ namespace rex
                     :raster_state(REX_INVALID_INDEX)
                 {}
 
-                u32 raster_state;
+                s32 raster_state;
             };
         }
     }

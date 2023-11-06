@@ -18,8 +18,8 @@ namespace rex
                     , primitive_topology(PrimitiveTopology::NONE)
                 {}
 
-                u32 vertex_count;
-                u32 start_vertex;
+                s32 vertex_count;
+                s32 start_vertex;
                 PrimitiveTopology primitive_topology;
             };
         }

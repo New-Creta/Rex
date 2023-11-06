@@ -15,9 +15,9 @@ namespace rex
                 ShaderType shader_type;
 
                 void* byte_code;
-                u32 byte_code_size;
+                s32 byte_code_size;
 
-                u32 constant_buffer_count;
+                s32 constant_buffer_count;
             };
         }
     }

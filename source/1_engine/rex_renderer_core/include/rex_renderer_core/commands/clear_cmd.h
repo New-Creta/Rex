@@ -16,9 +16,9 @@ namespace rex
                     ,texture_index(REX_INVALID_INDEX)
                 {}
 
-                u32 clear_state;
-                u32 array_index;
-                u32 texture_index;
+                s32 clear_state;
+                s32 array_index;
+                s32 texture_index;
             };
         }
     }

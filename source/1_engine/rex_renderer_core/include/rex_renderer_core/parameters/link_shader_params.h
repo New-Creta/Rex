@@ -26,16 +26,16 @@ namespace rex
                 ConstantType type;
 
                 char8* name;
-                u32 location;
+                s32 location;
             };
 
             struct LinkShader
             {
-                u32 vertex_shader;
-                u32 pixel_shader;
+                s32 vertex_shader;
+                s32 pixel_shader;
 
                 ConstantLayoutDescription* constants;
-                u32 num_constants;
+                s32 num_constants;
             };
         }
     }

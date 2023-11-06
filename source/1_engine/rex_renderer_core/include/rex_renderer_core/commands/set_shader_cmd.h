@@ -17,7 +17,7 @@ namespace rex
                     ,shader_type(ShaderType::NONE)
                 {}
 
-                u32 shader_index;
+                s32 shader_index;
                 ShaderType shader_type;
             };
         }

@@ -21,10 +21,10 @@ namespace rex
                     memset(&color, (s32)REX_INVALID_INDEX, s_max_color_targets * sizeof(u32));
                 }
 
-                u32 num_color;
-                u32 color[s_max_color_targets];
-                u32 depth;
-                u32 array_index;
+                s32 num_color;
+                s32 color[s_max_color_targets];
+                s32 depth;
+                s32 array_index;
             };
         }
     }

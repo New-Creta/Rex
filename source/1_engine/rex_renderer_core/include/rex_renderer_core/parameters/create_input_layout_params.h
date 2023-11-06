@@ -3,6 +3,7 @@
 #include "rex_engine/types.h"
 
 #include "rex_renderer_core/vertex_buffer_format.h"
+#include "rex_renderer_core/input_layout_classification.h"
 
 namespace rex
 {
@@ -12,13 +13,13 @@ namespace rex
         {
             struct InputLayoutDescription
             {
-                const char8*        semantic_name;
-                u32                 semantic_index;
-                VertexBufferFormat  format;
-                u32                 input_slot;
-                u32                 aligned_byte_offset;
-                u32                 input_slot_class;
-                u32                 instance_data_step_rate;
+                const char8*                semantic_name;
+                s32                         semantic_index;
+                VertexBufferFormat          format;
+                s32                         input_slot;
+                s32                         aligned_byte_offset;
+                InputLayoutClassification   input_slot_class;
+                s32                         instance_data_step_rate;
             };
 
             struct CreateInputLayout
@@ -29,7 +30,7 @@ namespace rex
                 {}
 
                 InputLayoutDescription* input_layout;
-                u32 num_elements;
+                s32 num_elements;
             };
         }
     }

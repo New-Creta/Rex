@@ -45,9 +45,9 @@ namespace rex
                 char8* shader_feature_target;
 
                 char8* shader_code;
-                u64 shader_code_size;
+                s64 shader_code_size;
 
-                u32 shader_constant_buffer_count;
+                s32 shader_constant_buffer_count;
             };
         }
     }
