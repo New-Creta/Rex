@@ -18,6 +18,13 @@ namespace rex
 {
   namespace renderer
   {
+    enum class DefaultTargets
+    {
+      REX_FRONT_BUFFER_COLOR = 1,
+      REX_BACK_BUFFER_COLOR = 2,
+      REX_BUFFER_DEPTH = 3
+    };
+
     struct Info
     {
         rsl::small_stack_string api_version;
@@ -70,7 +77,7 @@ namespace rex
     void            renderer_draw_instanced(u32 vertexCount, u32 instanceCount, u32 startVertex, u32 startInstance, PrimitiveTopology topology);
 
     void            set_raster_state(u32 rasterStateTarget);
-    void            set_render_targets(u32* colorTargets, u32 numColorTargets, u32 depthTarget, u32 arrayIndex);
+    void            set_render_targets(u32* colorTargets, u32 numColorTargets, u32 depthTarget);
     void            set_render_targets(u32 colorTarget, u32 depthTarget);
     void            set_viewport(const Viewport& vp);
     void            set_scissor_rect(const ScissorRect& sr);
@@ -107,7 +114,7 @@ namespace rex
 
       bool          release_resource(u32 resourceSlot);
 
-      bool  	    initialize(const OutputWindowUserData& userData, u32 bbColorTargetSlot, u32 bbDepthTargetSlot);
+      bool  	    initialize(const OutputWindowUserData& userData, u32 fbColorTargetSlot, u32 bbColorTargetSlot, u32 depthTargetSlot);
       void          shutdown();
 
       void          draw(u32 vertexCount, u32 startVertex, PrimitiveTopology topology);
@@ -115,7 +122,7 @@ namespace rex
       void          draw_instanced(u32 vertexCount, u32 instanceCount, u32 startVertex, u32 startInstance, PrimitiveTopology topology);
       void          draw_indexed_instanced(u32 instanceCount, u32 startInstance, u32 indexCount, u32 startIndex, u32 baseVertex, PrimitiveTopology topology);
 
-      bool          set_render_targets(const u32* const colorTargets, u32 numColorTargets, u32 depthTarget, u32 color_slice = 0, u32 depth_slice = 0);
+      bool          set_render_targets(const u32* const colorTargets, u32 numColorTargets, u32 depthTarget);
       bool          set_input_layout(u32 inputLayoutSlot);
       bool          set_viewport(const Viewport& viewport);
       bool          set_scissor_rect(const ScissorRect& rect);
