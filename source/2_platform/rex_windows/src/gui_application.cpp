@@ -171,7 +171,7 @@ namespace rex
 
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
       {
-        Info info = renderer::info();
+        renderer::Info info = renderer::info();
         REX_LOG(LogWindows, "Renderer Info - API Version: {}", info.api_version);
         REX_LOG(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
         REX_LOG(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);
