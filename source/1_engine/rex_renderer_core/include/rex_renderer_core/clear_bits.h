@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/defines.h"
 #include "rex_engine/types.h"
 
 namespace rex
@@ -9,10 +10,10 @@ namespace rex
         //-------------------------------------------------------------------------
         enum class ClearBits
         {
-            NONE = REX_INVALID_INDEX,
-            CLEAR_COLOR_BUFFER = BIT(0),
-            CLEAR_DEPTH_BUFFER = BIT(1),
-            CLEAR_STENCIL_BUFFER = BIT(2),
+            NONE = BIT(0),
+            CLEAR_COLOR_BUFFER = BIT(1),
+            CLEAR_DEPTH_BUFFER = BIT(2),
+            CLEAR_STENCIL_BUFFER = BIT(3),
         };
 
         //-------------------------------------------------------------------------
