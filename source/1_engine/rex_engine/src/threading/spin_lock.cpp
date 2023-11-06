@@ -10,11 +10,11 @@ namespace rex
     //-------------------------------------------------------------------------
     void SpinLock::lock()
     {
-        while (m_flag.test_and_set(std::memory_order_acquire)) {}
+        while (m_flag.test_and_set(rsl::memory_order_acquire)) {}
     }
     //-------------------------------------------------------------------------
     void SpinLock::unlock()
     {
-        m_flag.clear(std::memory_order_release);
+        m_flag.clear(rsl::memory_order_release);
     }
 }
