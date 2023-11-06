@@ -7,6 +7,8 @@
 #include <rex_std/vector.h>
 #include <rex_std/atomic.h>
 
+#include <rex_std_extra/utility/casting.h>
+
 namespace rex
 {
     namespace renderer
@@ -32,7 +34,7 @@ namespace rex
         template<typename U, typename T>
         U& get_resource_from_pool_as(ResourcePool<T>& pool, u32 slot)
         {
-            return static_cast<U&>(pool[slot]);
+            return static_cast<U&>(*pool[slot]);
         }
         template<typename U, typename T>
         const U& get_resource_from_pool_as(const ResourcePool<T>& pool, u32 slot)
@@ -52,7 +54,7 @@ namespace rex
         void ResourcePool<T>::validate_and_grow_if_necessary(u32 minCapacity)
         {
             m_lock.lock();
-            if (minCapacity >= m_resources.capacity())
+            if(rsl::safe_numeric_cast<s32>(minCapacity) >= m_resources.capacity())
             {
                 u32 new_cap = minCapacity * 2; // Grow to accommodate the slot
                 m_resources.resize(new_cap);
@@ -70,6 +72,7 @@ namespace rex
         }
 
         //-----------------------------------------------------------------------
+        template <typename T>
         void ResourcePool<T>::clear()
         {
             m_lock.lock();
@@ -81,7 +84,7 @@ namespace rex
         template<typename T>
         bool ResourcePool<T>::has_slot(u32 slot)
         {
-            return rsl::find(rsl::cbegin(m_resources), rsl::cend(m_resources), slot) != rsl::cend(m_resources);
+            return rsl::safe_numeric_cast<s32>(slot) < m_resources.capacity();
         }
 
         //-----------------------------------------------------------------------
