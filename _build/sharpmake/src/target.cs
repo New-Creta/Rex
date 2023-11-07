@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
 using Sharpmake;
 
 public class RexTarget : ITarget
@@ -93,6 +94,51 @@ public class RexTarget : ITarget
   public static RexTarget GetFuzzyTarget()
   {
     return new RexTarget(Platform.win64, DevEnv.ninja, Config.fuzzy, Compiler.Clang);
+  }
+
+
+  public static List<RexTarget> CreateTargets()
+  {
+    List<RexTarget> targets = new List<RexTarget>();
+
+    DevEnv devEnv = DevEnv.ninja;
+    switch (ProjectGen.Settings.IDE)
+    {
+      case ProjectGen.IDE.VisualStudio:
+        devEnv |= DevEnv.vs2019;
+        break;
+      case ProjectGen.IDE.VSCode:
+        devEnv |= DevEnv.vscode;
+        break;
+      default:
+        break;
+    }
+
+    // The checks specified here are checks for various testing types
+    // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
+    if (ProjectGen.Settings.CoverageEnabled)
+    {
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.coverage, Compiler.Clang));
+    }
+    else if (ProjectGen.Settings.AsanEnabled)
+    {
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.address_sanitizer, Compiler.Clang));
+    }
+    else if (ProjectGen.Settings.UbsanEnabled)
+    {
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.undefined_behavior_sanitizer, Compiler.Clang));
+    }
+    else if (ProjectGen.Settings.FuzzyTestingEnabled)
+    {
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.fuzzy, Compiler.Clang));
+    }
+    else
+    {
+      // Always add the ninja target. Ninja is our main build system and is used what gets used by the rex development pipeline
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
+    }
+
+    return targets;
   }
 
 }
