@@ -24,7 +24,7 @@ import regis.diagnostics
 # This gets generated during the build phase.
 # This script uses that file to determine which projects exist and can be launched
 root = regis.util.find_root()  
-settings_path = os.path.join(root, "_build", "config", "settings.json")
+settings_path = os.path.join(root, regis.util.settingsPathFromRoot)
 settings = regis.rex_json.load_file(settings_path)
 intermediate_path = os.path.join(root, settings['intermediate_folder'], settings['build_folder'])
 build_projects_path = os.path.join(intermediate_path, settings['build_projects_filename'])
@@ -103,8 +103,6 @@ if __name__ == "__main__":
   parser.add_argument("-exe_args", default=[], action='append', help="The arguments to pass to the exe")
 
   args, unknown = parser.parse_known_args()
-
-  root = regis.util.find_root()
 
   project = args.project
   config = args.config
