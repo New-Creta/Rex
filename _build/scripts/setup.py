@@ -106,8 +106,6 @@ def _exec_run():
   regis.git_hooks.run(os.path.join(root_path, "_build", "scripts", "git", "hooks"))
 
 if __name__ == "__main__":
-  # we disable help because it always exists after displayed through the commandline.
-  # we don't want to exit when it's shown so we overwrite it ourselves
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument("-query", help="Don't display any options and just run the script", action="store_true")
   parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
