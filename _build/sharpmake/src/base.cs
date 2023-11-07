@@ -266,9 +266,10 @@ public abstract class BasicCPPProject : Project
   }
   // Setup rules that need to be defined based on optimization settings
   // This usually means adding or removing defines, but other options are available as well.
-  // This is meant to be overriden by derived projects and extended where needed
+  // This is meant to be overridden by derived projects and extended where needed
   protected virtual void SetupOptimizationRules(RexConfiguration conf, RexTarget target)
   {
+    // Setup differences between debug vs optimized builds
     switch (target.Optimization)
     {
       case Optimization.NoOpt:
@@ -292,28 +293,7 @@ public abstract class BasicCPPProject : Project
         conf.Options.Add(Options.Vc.Linker.GenerateDebugInformation.Enable);
         break;
       case Optimization.FullOptWithPdb:
-        conf.Options.Add(Options.Vc.General.WholeProgramOptimization.LinkTime);
-        conf.Options.Add(Options.Vc.General.DebugInformation.ProgramDatabase);
-
-        conf.Options.Add(Options.Vc.Compiler.Optimization.MaximizeSpeed);
-        conf.Options.Add(Options.Vc.Compiler.Intrinsic.Enable);
-        conf.Options.Add(Options.Vc.Compiler.RuntimeLibrary.MultiThreaded);
-        conf.Options.Add(Options.Vc.Compiler.Inline.AnySuitable);
-        conf.Options.Add(Options.Vc.Compiler.FiberSafe.Enable);
-        conf.Options.Add(Options.Vc.Compiler.RuntimeChecks.Default);
-
-        conf.Options.Add(Options.Vc.Compiler.MinimalRebuild.Enable);
-        conf.Options.Add(Options.Vc.Compiler.FavorSizeOrSpeed.FastCode);
-        conf.Options.Add(Options.Vc.Compiler.FunctionLevelLinking.Enable);
-        conf.Options.Add(Options.Vc.Compiler.OmitFramePointers.Disable);         // Disable so we can have a stack trace
-
-        conf.Options.Add(Options.Vc.Linker.LinkTimeCodeGeneration.UseLinkTimeCodeGeneration);
-        conf.Options.Add(Options.Vc.Linker.EnableCOMDATFolding.RemoveRedundantCOMDATs);
-        conf.Options.Add(Options.Vc.Linker.Reference.EliminateUnreferencedData);
-        break;
       case Optimization.FullOpt:
-        conf.Options.Add(Options.Vc.General.DebugInformation.Disable);
-        conf.Options.Add(Options.Vc.General.WholeProgramOptimization.Optimize);
         conf.Options.Add(Options.Vc.General.WholeProgramOptimization.LinkTime);
 
         conf.Options.Add(Options.Vc.Compiler.Optimization.MaximizeSpeed);
@@ -332,6 +312,17 @@ public abstract class BasicCPPProject : Project
         conf.Options.Add(Options.Vc.Linker.EnableCOMDATFolding.RemoveRedundantCOMDATs);
         conf.Options.Add(Options.Vc.Linker.Reference.EliminateUnreferencedData);
         break;
+    }
+
+    // Setup the difference between optimized builds vs shipping builds
+    switch (target.Optimization)
+    {
+      case Optimization.FullOptWithPdb:
+        conf.Options.Add(Options.Vc.General.DebugInformation.ProgramDatabase);   
+        conf.Options.Add(Options.Vc.Compiler.OmitFramePointers.Disable);         // Disable so we can have a stack trace
+      case Optimization.FullOpt:
+        conf.Options.Add(Options.Vc.General.DebugInformation.Disable);
+        conf.Options.Add(Options.Vc.Compiler.OmitFramePointers.Enable);
     }
   }
   // Setup rules that need to be defined based on the platform
@@ -548,13 +539,13 @@ public abstract class BasicCPPProject : Project
     // the generation path always follows the same relative path from {root}/config
     // as it does from {root} to the source code
     string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.Root), SourceRootPath);
-    string codeGenerationConfigPath = Path.Combine(Globals.Root, "config", relative_source_path, "code_generation.json");
+    string code_generation_config_path = Path.Combine(Globals.Root, "config", relative_source_path, "code_generation.json");
 
     // Not every project has a code generation config file
     // if one doesn't exists, we early out here
-    if (!File.Exists(codeGenerationConfigPath))
+    if (!File.Exists(code_generation_config_path))
     {
-      System.Diagnostics.Debug.WriteLine($"Warning: GenerationConfigPath does not exist '{codeGenerationConfigPath}'");
+      System.Diagnostics.Debug.WriteLine($"Warning: GenerationConfigPath does not exist '{code_generation_config_path}'");
       return;
     }
 
@@ -565,7 +556,7 @@ public abstract class BasicCPPProject : Project
     // And therefore we cannot know what we have to autogenerate until that step has finished.
     // So the target files exist in version control and are automatically added to the project
     // but their content is only filled in after the project and solution has been generated.
-    CodeGeneration.ReadGenerationFile(Name, codeGenerationConfigPath);
+    CodeGeneration.ReadGenerationFile(Name, code_generation_config_path);
   }
 
   // Simple helper function to get the path of the compiler db
@@ -612,30 +603,30 @@ public abstract class BasicCPPProject : Project
   // The first that's found will be used and copied over
   private void CopyClangToolConfigFiles(string compilerDBPath)
   {
-    string clangTidyFirstPassFilename = ".clang-tidy_first_pass";
-    string clangTidySecondPassFilename = ".clang-tidy_second_pass";
-    string clangFormatFilename = ".clang-format";
-    string iwyuFilename = "iwyu.imp";
+    string clang_tidy_first_pass_filename = ".clang-tidy_first_pass";
+    string clang_tidy_second_pass_filename = ".clang-tidy_second_pass";
+    string clang_format_filename = ".clang-format";
+    string iwyu_filename = "iwyu.imp";
 
-    string clangTidyFirstPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidyFirstPassFilename), clangTidyFirstPassFilename);
-    string clangTidySecondPassSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangTidySecondPassFilename), clangTidySecondPassFilename);
-    string clangFormatSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, clangFormatFilename), clangFormatFilename);
-    string iwyuSrcPath = Path.Combine(Utils.FindInParent(SourceRootPath, iwyuFilename), iwyuFilename);
+    string clang_tidy_first_pass_src_path = Path.Combine(Utils.FindInParent(SourceRootPath, clang_tidy_first_pass_filename), clang_tidy_first_pass_filename);
+    string clang_tidy_second_pass_src_path = Path.Combine(Utils.FindInParent(SourceRootPath, clang_tidy_second_pass_filename), clang_tidy_second_pass_filename);
+    string clang_format_src_path = Path.Combine(Utils.FindInParent(SourceRootPath, clang_format_filename), clang_format_filename);
+    string iwyu_src_path = Path.Combine(Utils.FindInParent(SourceRootPath, iwyu_filename), iwyu_filename);
 
-    string clangTidyFirstPassDstPath = Path.Combine(compilerDBPath, clangTidyFirstPassFilename);
-    string clangTidySecondPassDstPath = Path.Combine(compilerDBPath, clangTidySecondPassFilename);
-    string clangFormatDstPath = Path.Combine(compilerDBPath, clangFormatFilename);
-    string iwyuDstPath = Path.Combine(compilerDBPath, iwyuFilename);
+    string clang_tidy_first_pass_dst_path = Path.Combine(compilerDBPath, clang_tidy_first_pass_filename);
+    string clang_tidy_second_pass_dst_path = Path.Combine(compilerDBPath, clang_tidy_second_pass_filename);
+    string clang_format_dst_path = Path.Combine(compilerDBPath, clang_format_filename);
+    string iwyu_dst_path = Path.Combine(compilerDBPath, iwyu_filename);
 
     if (Directory.Exists(compilerDBPath) == false)
     {
       Directory.CreateDirectory(compilerDBPath);
     }
 
-    File.Copy(clangTidyFirstPassSrcPath, clangTidyFirstPassDstPath, true);
-    File.Copy(clangTidySecondPassSrcPath, clangTidySecondPassDstPath, true);
-    File.Copy(clangFormatSrcPath, clangFormatDstPath, true);
-    File.Copy(iwyuSrcPath, iwyuDstPath, true);
+    File.Copy(clang_tidy_first_pass_src_path, clang_tidy_first_pass_dst_path, true);
+    File.Copy(clang_tidy_second_pass_src_path, clang_tidy_second_pass_dst_path, true);
+    File.Copy(clang_format_src_path, clang_format_dst_path, true);
+    File.Copy(iwyu_src_path, iwyu_dst_path, true);
   }
 
   // Helper function to get the filepath of the ninja file that'll get generated
@@ -662,8 +653,8 @@ public abstract class BasicCPPProject : Project
   {
     // Because we use ninja files we store binaries and intermediates with the ninja files
     // we hardcode "ninja" as that's the name of the devenv when ninja is selected
-    string ninjaFilesPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, "ninja", Name);
-    conf.TargetPath = Path.Combine(ninjaFilesPath, "bin", target.ProjectConfigurationName);
+    string ninja_files_path = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, "ninja", Name);
+    conf.TargetPath = Path.Combine(ninja_files_path, "bin", target.ProjectConfigurationName);
     conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", target.ProjectConfigurationName, target.Compiler.ToString());
     conf.UseRelativePdbPath = false;
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
@@ -686,7 +677,10 @@ public abstract class BasicCSProject : CSharpProject
     BaseConfiguration baseConfig = new BaseConfiguration(this);
     baseConfig.Configure(conf, target);
 
+    // This is a private func, not to be overridden with derived projects
     SetupProjectPaths(conf, target);
+
+    // These are protected and optionally extended by derived projects
     SetupOutputType(conf, target);
     SetupLibDependencies(conf, target);
     SetupConfigRules(conf, target);
@@ -706,7 +700,7 @@ public abstract class BasicCSProject : CSharpProject
   // Library paths, library files and other sharpmake project dependencies are set here.
   protected virtual void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    // Nthing to implement
+    // Nothing to implement
   }
 
   // Setup rules that need to be defined based on the config
