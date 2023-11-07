@@ -60,43 +60,6 @@ public class RexTarget : ITarget
     }
   }
 
-  public static RexTarget[] GetAllDefaultTargets()
-  {
-    return new RexTarget[]
-    {
-      GetVSOnlyTarget(),
-      GetNinjaOnlyTarget()
-    };
-  }
-  public static RexTarget GetVSOnlyTarget()
-  {
-    return new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
-  }
-
-  public static RexTarget GetNinjaOnlyTarget()
-  {
-    return new RexTarget(Platform.win64, DevEnv.ninja, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang);
-  }
-
-  public static RexTarget GetCoverageTarget()
-  {
-    return new RexTarget(Platform.win64, DevEnv.ninja, Config.coverage, Compiler.Clang);
-  }
-
-  public static RexTarget GetAsanTarget()
-  {
-    return new RexTarget(Platform.win64, DevEnv.ninja, Config.address_sanitizer, Compiler.Clang);
-  }
-  public static RexTarget GetUBsanTarget()
-  {
-    return new RexTarget(Platform.win64, DevEnv.ninja, Config.undefined_behavior_sanitizer, Compiler.Clang);
-  }
-  public static RexTarget GetFuzzyTarget()
-  {
-    return new RexTarget(Platform.win64, DevEnv.ninja, Config.fuzzy, Compiler.Clang);
-  }
-
-
   public static List<RexTarget> CreateTargets()
   {
     List<RexTarget> targets = new List<RexTarget>();
