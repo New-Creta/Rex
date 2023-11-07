@@ -17,8 +17,8 @@ def main():
   regis.diagnostics.log_info(f"running post-checkout hook")
 
   root = regis.util.find_root()
-  if os.system(f"py {os.path.join(root, '_rex.py')} -setup") == 0:
-    os.system(f"py {os.path.join(root, '_rex.py')} -generate")
+  if os.system(f"py {os.path.join(root, '_rex.py')} setup") == 0:
+    os.system(f"py {os.path.join(root, '_rex.py')} generate")
   else:
     regis.diagnostics.log_err("setup failed.")
      
