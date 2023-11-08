@@ -153,6 +153,20 @@ namespace rex
                 REX_ASSERT_X(false, "Unsupported primitive topology given");
                 return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
             }
+            //-------------------------------------------------------------------------
+            D3D12_INPUT_CLASSIFICATION to_d3d12_input_layout_classification(InputLayoutClassification classification)
+            {
+                switch (classification)
+                {
+                case InputLayoutClassification::PER_VERTEX_DATA:
+                    return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+                case InputLayoutClassification::PER_INSTANCE_DATA:
+                    return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+                }
+
+                REX_ASSERT_X(false, "Unsupported input layout classification given");
+                return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+            }
 
             //-------------------------------------------------------------------------
             char8* heapdesc_type_to_string(D3D12_DESCRIPTOR_HEAP_TYPE type)
@@ -246,6 +260,7 @@ namespace rex
                 s32 active_color_targets = 0;                           // Amount of color targets to write to
                 s32 active_color_target[s_max_color_targets];           // Current color buffers to write to
                 s32 active_pipeline_state_object = REX_INVALID_INDEX;   // Active pipeline state used for drawing
+                s32 active_shader_program = REX_INVALID_INDEX;          // Active shader program
 
                 s32 swapchain_rt_buffer_indices[s_swapchain_buffer_count] = { REX_INVALID_INDEX, REX_INVALID_INDEX };   // swapchain render target buffer indices
                 s32 swapchain_current_rt_buffer_index = 0;                                                              // swapchain current render target buffer to write to
@@ -739,7 +754,7 @@ namespace rex
                 rcs.rgba = cs.rgba;
                 rcs.depth = cs.depth;
                 rcs.stencil = cs.stencil;               
-                rcs.flags = cs.flags;
+                rcs.flags = cs.flags.get_state();
 
                 g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
                 g_ctx.resource_pool[resourceSlot] = rsl::make_unique<ClearStateResource>(rcs);
@@ -791,9 +806,7 @@ namespace rex
                     input_element_descriptions[i].Format = directx::to_d3d12_vertex_format(cil.input_layout[i].format);
                     input_element_descriptions[i].InputSlot = cil.input_layout[i].input_slot;
                     input_element_descriptions[i].AlignedByteOffset = cil.input_layout[i].aligned_byte_offset;
-                    input_element_descriptions[i].InputSlotClass = cil.input_layout[i].input_slot_class 
-                        ? D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA 
-                        : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+                    input_element_descriptions[i].InputSlotClass = directx::to_d3d12_input_layout_classification(cil.input_layout[i].input_slot_class);
                     input_element_descriptions[i].InstanceDataStepRate = cil.input_layout[i].instance_data_step_rate;
                 }
 
@@ -975,7 +988,11 @@ namespace rex
                 auto& psr = get_resource_from_pool_as<PixelShaderResource>(g_ctx.resource_pool, ls.pixel_shader);
 
                 g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
-                g_ctx.resource_pool[resourceSlot] = rsl::make_unique<ShaderProgramResource>(root_sig, vsr.get()->vertex_shader, psr.get()->pixel_shader);
+                g_ctx.resource_pool[resourceSlot] = rsl::make_unique<ShaderProgramResource>(root_sig
+                    , vsr.get()->vertex_shader
+                    , psr.get()->pixel_shader
+                    , ls.constants
+                    , ls.num_constants);
 
                 release_resource(ls.vertex_shader);    // vertex shader is referenced in the shader program
                 release_resource(ls.pixel_shader);     // pixel shader is referenced in the shader program
@@ -1247,6 +1264,8 @@ namespace rex
             //-------------------------------------------------------------------------
             void draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology topology)
             {
+                REX_ASSERT_X(g_ctx.active_shader_program != REX_INVALID_INDEX, "Call renderer::set_shader before issuing a draw command");
+
                 g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
                 g_ctx.command_list->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstance);
             }
@@ -1254,6 +1273,8 @@ namespace rex
             //-------------------------------------------------------------------------
             void draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology)
             {
+                REX_ASSERT_X(g_ctx.active_shader_program != REX_INVALID_INDEX, "Call renderer::set_shader before issuing a draw command");
+
                 g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
                 g_ctx.command_list->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
             }
@@ -1385,6 +1406,10 @@ namespace rex
             //-------------------------------------------------------------------------
             bool set_shader(s32 shaderIndex, ShaderType /*shaderType*/)
             {
+                g_ctx.active_shader_program = shaderIndex;
+
+                REX_ASSERT_X(g_ctx.resource_pool.has_slot(shaderIndex), "Shader program target ({0}), was not found", shaderIndex);
+
                 auto& shader_program = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, shaderIndex);
 
                 g_ctx.command_list->SetGraphicsRootSignature(shader_program.get()->root_signature.Get());
@@ -1434,16 +1459,6 @@ namespace rex
                     return false;
                 }
 
-                // Set the viewport and scissor rect. This needs to be reset
-                // whenever the command list is reset.
-                g_ctx.command_list->RSSetViewports(1, &g_ctx.screen_viewport);
-                g_ctx.command_list->RSSetScissorRects(1, &g_ctx.scissor_rect);
-
-                // Indicate a state transition on the resouce usage.
-                D3D12_RESOURCE_BARRIER render_target_transition = CD3DX12_RESOURCE_BARRIER::Transition(current_backbuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-                g_ctx.command_list->ResourceBarrier(1, &render_target_transition);
-
                 return true;
             }
 
@@ -1458,12 +1473,28 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool present()
+            bool begin_draw()
+            {
+                // Indicate a state transition on the resouce usage.
+                D3D12_RESOURCE_BARRIER render_target_transition = CD3DX12_RESOURCE_BARRIER::Transition(current_backbuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+                g_ctx.command_list->ResourceBarrier(1, &render_target_transition);
+
+                ID3D12DescriptorHeap* desc_heap = g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].Get();
+                ID3D12DescriptorHeap* desc_heaps[] = { desc_heap };
+                g_ctx.command_list->SetDescriptorHeaps(_countof(desc_heaps), desc_heaps);
+            }
+
+            //-------------------------------------------------------------------------
+            bool end_draw()
             {
                 // Indicate a state transition on the resouce usage.
                 D3D12_RESOURCE_BARRIER present_transition = CD3DX12_RESOURCE_BARRIER::Transition(current_backbuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
                 g_ctx.command_list->ResourceBarrier(1, &present_transition);
+            }
 
+            //-------------------------------------------------------------------------
+            bool present()
+            {
                 // Done recording commands!
                 if (FAILED(g_ctx.command_list->Close()))
                 {
