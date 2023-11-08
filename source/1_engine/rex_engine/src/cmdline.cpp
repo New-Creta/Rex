@@ -23,7 +23,7 @@ namespace rex
       explicit Processor(rsl::string_view cmdLine)
       {
         // verify the auto generated command line arguments
-        REX_ASSERT_X(verify_args(g_command_line_args.data(), g_command_line_args.size()), "You have ambuguous command line arguments");
+        REX_ASSERT_X(verify_args(g_command_line_args.data(), g_command_line_args.size()), "You have ambiguous command line arguments");
 
         if(cmdLine.empty())
         {
@@ -141,7 +141,7 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return rsl::strincmp(key.data(), cmdArg.name.data(), cmdArg.name.length()) == 0; });
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return rsl::strincmp(key.data(), cmdArg.name.data(), key.length()) == 0; });
 
         if(cmd_it == g_command_line_args.cend())
         {
@@ -149,7 +149,7 @@ namespace rex
           return;
         }
 
-        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return rsl::strincmp(key.data(), activeArg.argument.data(), activeArg.argument.length()) == 0; });
+        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return rsl::strincmp(key.data(), activeArg.argument.data(), key.length()) == 0; });
 
         if(active_it != m_arguments.cend())
         {
@@ -173,9 +173,9 @@ namespace rex
             }
 
             const Argument& rhs_arg = args[j];
-            if(lhs_arg.name == rhs_arg.name)
+            if(rsl::strincmp(lhs_arg.name.data(), rhs_arg.name.data(), lhs_arg.name.length()) == 0)
             {
-              REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity", lhs_arg.name);
+              REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity by changing the code_generation file resulting in this ambiguity", lhs_arg.name);
               return false;
             }
           }
