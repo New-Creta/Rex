@@ -48,6 +48,6 @@ namespace rex
 #else
 
   #define HR_CALL(function)    function
-  #define HR_SUCCESS(function) function
-  #define HR_FAILED(function)  function
+  #define HR_SUCCESS(function) function, true
+  #define HR_FAILED(function)  function, false
 #endif
