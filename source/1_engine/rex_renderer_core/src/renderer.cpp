@@ -125,6 +125,13 @@ namespace rex
             case CommandType::CLEAR:
                 backend::clear(cmd.clear.clear_state);
                 break;
+                
+            case CommandType::BEGIN_DRAW:
+                backend::begin_draw();
+                break;
+            case CommandType::END_DRAW:
+                backend::end_draw();
+                break;
 
             case CommandType::DRAW:
                 backend::draw(cmd.draw.vertex_count
@@ -184,12 +191,15 @@ namespace rex
             case CommandType::SET_PIPELINE_STATE:
                 result = backend::set_pipeline_state_object(cmd.set_pipeline_state.pipeline_state);
                 break;
+            case CommandType::SET_CONSTANT_BUFFER:
+                result = backend::set_constant_buffer(cmd.set_constant_buffer.buffer_index, cmd.set_constant_buffer.offset);
+                break;
 
             case CommandType::NEW_FRAME:
-                //new_frame_internal();
+                result = backend::new_frame();
                 break;
             case CommandType::END_FRAME:
-                //end_frame_internal();
+                result = backend::end_frame();
                 break;
 
             case CommandType::PRESENT:
@@ -602,6 +612,19 @@ namespace rex
             cmd.command_type = CommandType::SET_PIPELINE_STATE;
 
             cmd.set_pipeline_state.pipeline_state = psoTarget;
+
+            add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        void set_constant_buffer(s32 constantBufferTarget, s32 offset)
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::SET_CONSTANT_BUFFER;
+
+            cmd.set_constant_buffer.buffer_index = constantBufferTarget;
+            cmd.set_constant_buffer.offset = offset;
 
             add_cmd(cmd);
         }
