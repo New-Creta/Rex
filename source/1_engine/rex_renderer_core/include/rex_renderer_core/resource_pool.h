@@ -29,11 +29,13 @@ namespace rex
             SpinLock m_lock;
         };
 
+        //-----------------------------------------------------------------------
         template<typename U, typename T>
         U& get_resource_from_pool_as(ResourcePool<T>& pool, s32 slot)
         {
             return static_cast<U&>(*pool[slot]);
         }
+        //-----------------------------------------------------------------------
         template<typename U, typename T>
         const U& get_resource_from_pool_as(const ResourcePool<T>& pool, s32 slot)
         {
