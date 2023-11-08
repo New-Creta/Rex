@@ -96,13 +96,13 @@ namespace rex
   MemoryTracker::MemoryTracker()
       : m_mem_usage(0)
       , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
-      , m_active(true)
+      , m_is_active(true)
   {
   }
 
   MemoryTracker::~MemoryTracker()
   {
-    m_active = false;
+    m_is_active = false;
   }
 
   void MemoryTracker::initialize(rsl::memory_size maxMemUsage)
@@ -153,7 +153,7 @@ namespace rex
   void MemoryTracker::track_dealloc(MemoryHeader* header)
   {
     // This is possible if static data gets deleted after the memory tracker is already destructed
-    if(!m_active)
+    if(!m_is_active)
     {
       return;
     }
