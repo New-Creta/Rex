@@ -39,6 +39,11 @@ namespace rex
       return (static_cast<u32>(m_state) & static_cast<u32>(state)) != 0u;
     }
 
+    TState get_state() const
+    {
+        return m_state;
+    }
+
   private:
     TState m_state;
   };
