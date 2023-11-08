@@ -6,6 +6,7 @@ namespace rex
   {
     enum class Error
     {
+      // This is meant to get extended in the future
       Success
     };
   }
