@@ -16,6 +16,7 @@ import argparse
 import sys
 import pkg_resources
 import subprocess
+import pip
 
 # Check if we have regis installed.
 # If not, we limit the amount of user input possibilities later on.
@@ -50,11 +51,11 @@ def _run_script(scriptPath : str, args : list[str]):
     print(f'You\'re current working directory is: "{os.getcwd()}"')
     return
   
-  scriptArgs = []
-  scriptArgs.append('python')
-  scriptArgs.append(scriptPath)
-  scriptArgs.extend(args)
-  proc = subprocess.Popen(args=scriptArgs)
+  script_args = []
+  script_args.append('python')
+  script_args.append(scriptPath)
+  script_args.extend(args)
+  proc = subprocess.Popen(args=script_args)
   proc.communicate()
 
 def _exec_version():
