@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/types.h"
+#include "rex_engine/state_controller.h"
 #include "rex_renderer_core/clear_bits.h"
 #include "rex_std_extra/math/color.h"
 
@@ -22,7 +23,7 @@ namespace rex
                 rsl::Color4f rgba;
                 f32 depth;
                 u8 stencil;
-                ClearBits flags;
+                StateController<ClearBits> flags;
             };
         }
     }
