@@ -223,7 +223,7 @@ namespace rex
 
     rsl::string_view remove_quotes(rsl::string_view path)
     {
-      if(path.starts_with("\""))
+      if(path.starts_with("\"") && path.ends_with("\""))
       {
         path = path.substr(1, path.length() - 2);
       }
