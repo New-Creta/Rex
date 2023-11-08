@@ -15,6 +15,9 @@
 #include "rex_renderer_core/commands/set_shader_cmd.h"
 #include "rex_renderer_core/commands/set_raster_state_cmd.h"
 #include "rex_renderer_core/commands/set_pipeline_state_cmd.h"
+#include "rex_renderer_core/commands/begin_draw_cmd.h"
+#include "rex_renderer_core/commands/end_draw_cmd.h"
+#include "rex_renderer_core/commands/set_constant_buffer_cmd.h"
 
 #include "rex_renderer_core/parameters/clear_state_params.h"
 #include "rex_renderer_core/parameters/raster_state_params.h"
@@ -47,6 +50,8 @@ namespace rex
             COMPILE_SHADER,
             RELEASE_RESOURCE,
             CLEAR,
+            BEGIN_DRAW,
+            END_DRAW,
             DRAW,
             DRAW_INDEXED,
             DRAW_INDEXED_INSTANCED,
@@ -60,6 +65,7 @@ namespace rex
             SET_SHADER,
             SET_RASTER_STATE,
             SET_PIPELINE_STATE,
+            SET_CONSTANT_BUFFER,
             NEW_FRAME,
             END_FRAME,
             PRESENT
@@ -82,6 +88,8 @@ namespace rex
             {
                 commands::Clear                     clear;
                 commands::ReleaseResource           release_resource;
+                commands::BeginDraw                 begin_draw;
+                commands::EndDraw                   end_draw;
                 commands::Draw                      draw;
                 commands::DrawIndexed               draw_indexed;
                 commands::DrawIndexedInstanced      draw_indexed_instanced;
@@ -93,6 +101,7 @@ namespace rex
                 commands::SetShader                 set_shader;
                 commands::SetRasterState            set_raster_state;
                 commands::SetPipelineState          set_pipeline_state;
+                commands::SetConstantBuffer         set_constant_buffer;
 
                 parameters::ClearState              clear_state_params;
                 parameters::RasterState             raster_state_params;

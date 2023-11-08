@@ -13,3 +13,6 @@
 #include "rex_renderer_core/commands/set_shader_cmd.h"
 #include "rex_renderer_core/commands/set_raster_state_cmd.h"
 #include "rex_renderer_core/commands/set_pipeline_state_cmd.h"
+#include "rex_renderer_core/commands/begin_draw_cmd.h"
+#include "rex_renderer_core/commands/end_draw_cmd.h"
+#include "rex_renderer_core/commands/set_constant_buffer_cmd.h"
