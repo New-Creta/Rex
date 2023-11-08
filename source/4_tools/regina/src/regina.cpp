@@ -9,6 +9,7 @@
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/entrypoint.h"
 #include "rex_engine/windowinfo.h"
+#include "rex_engine/filesystem/vfs.h"
 
 #include "rex_std/string.h"
 #include "rex_std_extra/memory/memory_size.h"
@@ -74,17 +75,46 @@ namespace rex
 
     struct ObjectConstants
     {
-        DirectX::XMFLOAT4X4 world_view_proj = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 world = math_helper::Identity4x4();
+    };
+
+    struct PassConstants
+    {
+        DirectX::XMFLOAT4X4 view = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 inv_view = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 proj = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 inv_proj = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 view_proj = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 inv_view_proj = math_helper::Identity4x4();
+
+        DirectX::XMFLOAT3 eye_pos_w = { 0.0f, 0.0f, 0.0f };
+        f32 cb_padding_1 = 0.0f;
+
+        DirectX::XMFLOAT2 render_target_size = { 0.0f, 0.0f };
+        DirectX::XMFLOAT2 inv_render_target_size = { 0.0f, 0.0f };
+
+        f32 near_z = 0.0f;
+        f32 far_z = 0.0f;
+
+        f32 total_time = 0.0f;
+        f32 delta_time = 0.0f;
     };
 
     struct ReginaContext
     {
         rsl::unique_ptr<Mesh> mesh_cube = nullptr;
 
+        s32 clear_state;
+
         s32 shader_program;
         s32 input_layout;
-        s32 constant_buffer;
         s32 pso;
+
+        std::vector<s32> object_constant_buffers;
+        std::vector<s32> pass_constants_buffers;
+
+        s32 solid_raster_state;
+        s32 wire_raster_state;
 
         DirectX::XMFLOAT4X4 world = math_helper::Identity4x4();
         DirectX::XMFLOAT4X4 view = math_helper::Identity4x4();
@@ -93,14 +123,86 @@ namespace rex
 
     ReginaContext g_regina_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
+    //-------------------------------------------------------------------------
+    renderer::parameters::CompileShader create_compile_shader_parameters(const rsl::small_stack_string& shaderName, renderer::ShaderType shaderType, rsl::string_view filePath)
+    {
+        memory::Blob file_memory = vfs::open_read(filePath);
+
+        renderer::parameters::CompileShader compile_shader_params;
+
+        char8* entry_point;
+        char8* target;
+
+        switch (shaderType)
+        {
+        case renderer::ShaderType::VERTEX:
+            entry_point = "VS";
+            target = "vs_5_1";
+            break;
+        case renderer::ShaderType::PIXEL:
+            entry_point = "PS";
+            target = "ps_5_1";
+            break;
+        }
+
+        compile_shader_params.shader_code = file_memory.data_as<char8>();
+        compile_shader_params.shader_code_size = file_memory.size();
+        compile_shader_params.shader_entry_point = entry_point;
+        compile_shader_params.shader_feature_target = target;
+        compile_shader_params.shader_name = shaderName;
+        compile_shader_params.shader_type = shaderType;
+
+        return compile_shader_params;
+    }
+
+    //-------------------------------------------------------------------------
+    template<typename T>
+    renderer::parameters::CreateBuffer create_buffer_parameters(T* data, s32 num)
+    {
+        renderer::parameters::CreateBuffer create_buffer_params;
+
+        create_buffer_params.data = (void*)&data[0];
+        create_buffer_params.buffer_size = sizeof(T) * num;
+
+        return create_buffer_params;
+    }
+
+    //-------------------------------------------------------------------------
+    bool build_clear_state()
+    {
+        renderer::parameters::ClearState create_clear_state_params;
+
+        create_clear_state_params.rgba = { 0.0f, 0.0, 0.5f, 1.0f };
+        create_clear_state_params.depth = 1.0f;
+        create_clear_state_params.stencil = 0x00;
+
+        StateController<renderer::ClearBits> clear_flags;
+        clear_flags.add_state(renderer::ClearBits::CLEAR_COLOR_BUFFER);
+        clear_flags.add_state(renderer::ClearBits::CLEAR_DEPTH_BUFFER);
+        clear_flags.add_state(renderer::ClearBits::CLEAR_STENCIL_BUFFER);
+
+        create_clear_state_params.flags = clear_flags;;
+
+        return true;
+    }
+
+    //-------------------------------------------------------------------------
     bool build_shader_and_input_layout()
     {
         // Shader
-        renderer::parameters::CompileShader vs_compile_params;
-        renderer::parameters::CompileShader ps_compile_params;
-        s32 vertex_shader = renderer::compile_shader(vs_compile_params);
-        s32 pixel_shader = renderer::compile_shader(ps_compile_params);
+        renderer::parameters::ConstantLayoutDescription constants[2] = 
+        {
+            {renderer::parameters::ConstantType::CBUFFER, "ObjectConstants", 0},
+            {renderer::parameters::ConstantType::CBUFFER, "PassConstants", 1}
+        };
+
+        renderer::parameters::CompileShader vs_compile_params = create_compile_shader_parameters(rsl::small_stack_string("standardVS"), renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
+        renderer::parameters::CompileShader ps_compile_params = create_compile_shader_parameters(rsl::small_stack_string("opaquePS"), renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
         renderer::parameters::LinkShader link_shader_params;
+        link_shader_params.vertex_shader = renderer::compile_shader(vs_compile_params);
+        link_shader_params.pixel_shader = renderer::compile_shader(ps_compile_params);
+        link_shader_params.constants = constants;
+        link_shader_params.num_constants = _countof(constants);
         g_regina_ctx.shader_program = renderer::link_shader(link_shader_params);
 
         // Input Layout
@@ -116,6 +218,7 @@ namespace rex
         g_regina_ctx.input_layout = renderer::create_input_layout(input_layout_params);
     }
 
+    //-------------------------------------------------------------------------
     bool build_cube_geometry()
     {
         rsl::array<renderer::directx::VertexPosCol, 8> vertices =
@@ -163,9 +266,9 @@ namespace rex
         g_regina_ctx.mesh_cube = rsl::make_unique<Mesh>();
         g_regina_ctx.mesh_cube->name = rsl::string("box_geometry");
 
-        renderer::parameters::CreateBuffer v_create_buffer_params;
+        renderer::parameters::CreateBuffer v_create_buffer_params = create_buffer_parameters<renderer::directx::VertexPosCol>(vertices.data(), vertices.size());
         g_regina_ctx.mesh_cube->vertex_buffer = renderer::create_vertex_buffer(v_create_buffer_params);
-        renderer::parameters::CreateBuffer i_create_buffer_params;
+        renderer::parameters::CreateBuffer i_create_buffer_params = create_buffer_parameters<u16>(indices.data(), indices.size());
         g_regina_ctx.mesh_cube->index_buffer = renderer::create_index_buffer(i_create_buffer_params);
 
         g_regina_ctx.mesh_cube->vertex_byte_stride = sizeof(renderer::directx::VertexPosCol);
@@ -183,29 +286,82 @@ namespace rex
         return true;
     }
 
+    //-------------------------------------------------------------------------
     bool build_constant_buffers()
     {
-        renderer::parameters::CreateConstantBuffer create_const_buffer_params;
-        g_regina_ctx.constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
+        s32 num_render_items = 1;
+        s32 num_frame_resources = 1;
+
+        // Need a CBV descriptor for each object for each frame resource.
+        for (s32 frame = 0; frame < num_frame_resources; ++frame)
+        {
+            renderer::parameters::CreateConstantBuffer create_const_buffer_params;
+
+            create_const_buffer_params.count = num_render_items;
+            create_const_buffer_params.data = nullptr;
+            create_const_buffer_params.buffer_size = sizeof(ObjectConstants);
+
+            s32 constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
+
+            g_regina_ctx.object_constant_buffers.push_back(constant_buffer);
+        }
+
+        // Last three descriptors are the pass CBVs for each frame resource.
+        for (s32 frame = 0; frame < num_frame_resources; ++frame)
+        {
+            renderer::parameters::CreateConstantBuffer create_const_buffer_params;
+
+            create_const_buffer_params.count = 1;
+            create_const_buffer_params.data = nullptr;
+            create_const_buffer_params.buffer_size = sizeof(PassConstants);
+
+            s32 constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
+
+            g_regina_ctx.pass_constants_buffers.push_back(constant_buffer);
+        }
 
         return true;
     }
 
+    //-------------------------------------------------------------------------
+    bool build_raster_state()
+    {
+        renderer::parameters::RasterState solid_rs;
+        solid_rs.fill_mode = renderer::FillMode::SOLID;
+        solid_rs.cull_mode = renderer::CullMode::BACK;
+        g_regina_ctx.solid_raster_state = renderer::create_raster_state(solid_rs);
+
+        renderer::parameters::RasterState wire_rs;
+        wire_rs.fill_mode = renderer::FillMode::SOLID;
+        wire_rs.cull_mode = renderer::CullMode::BACK;
+        g_regina_ctx.wire_raster_state = renderer::create_raster_state(wire_rs);
+
+        return true;
+    }
+
+    //-------------------------------------------------------------------------
     bool build_pipeline_state_object()
     {
         renderer::parameters::CreatePipelineState create_pso_params;
+        create_pso_params.input_layout = g_regina_ctx.input_layout;
+        create_pso_params.num_render_targets = 1;
+        create_pso_params.shader_program = g_regina_ctx.shader_program;
+        create_pso_params.rasterizer_state = g_regina_ctx.solid_raster_state;
         g_regina_ctx.pso = renderer::create_pipeline_state_object(create_pso_params);
 
         return true;
     }
 
+    //-------------------------------------------------------------------------
     bool initialize()
     {
         REX_LOG(LogRegina, "Initializing Regina");
 
+        if (!build_clear_state()) return false;
         if (!build_shader_and_input_layout()) return false;
         if (!build_cube_geometry()) return false;
         if (!build_constant_buffers()) return false;
+        if (!build_raster_state()) return false;
         if (!build_pipeline_state_object()) return false;
 
         // The window resized, so update the aspect ratio and recompute the projection matrix.
@@ -215,12 +371,13 @@ namespace rex
 
         return true;
     }
+    //-------------------------------------------------------------------------
     void update()
     {
         // Convert Spherical to Cartesian coordinates.
-        float x = 5.0f * sinf(DirectX::XM_PIDIV4) * cosf(1.5f * DirectX::XM_PI);
-        float z = 5.0f * sinf(DirectX::XM_PIDIV4) * sinf(1.5f * DirectX::XM_PI);
-        float y = 5.0f * cosf(DirectX::XM_PIDIV4);
+        f32 x = 5.0f * sinf(DirectX::XM_PIDIV4) * cosf(1.5f * DirectX::XM_PI);
+        f32 z = 5.0f * sinf(DirectX::XM_PIDIV4) * sinf(1.5f * DirectX::XM_PI);
+        f32 y = 5.0f * cosf(DirectX::XM_PIDIV4);
 
         // Build the view matrix.
         DirectX::XMVECTOR pos = DirectX::XMVectorSet(x, y, z, 1.0f);
@@ -239,11 +396,20 @@ namespace rex
         DirectX::XMStoreFloat4x4(&obj_constants.world_view_proj, DirectX::XMMatrixTranspose(wvp));
         g_regina_ctx.object_constant_buffer->copy_data(0, obj_constants);
     }
+    //-------------------------------------------------------------------------
     void draw()
     {
-        renderer::backend::new_frame();
+        Viewport vp = { 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f };
+        ScissorRect sr = { vp.top_left_x, vp.top_left_y, vp.width, vp.height };
 
-        renderer::backend::clear();
+        renderer::new_frame();
+
+        renderer::set_render_targets((s32)renderer::DefaultTargets::REX_BACK_BUFFER_COLOR, (s32)renderer::DefaultTargets::REX_BUFFER_DEPTH);
+        renderer::set_viewport(vp);
+        renderer::set_scissor_rect(sr);
+        renderer::set_raster_state(g_regina_ctx.solid_raster_state);
+
+        renderer::clear(g_regina_ctx.clear_state);
 
         ID3D12DescriptorHeap* descriptor_heaps[] = { g_regina_ctx.cbv_heap.Get() };
         get_dx12_command_list()->SetDescriptorHeaps(_countof(descriptor_heaps), descriptor_heaps);
@@ -263,6 +429,7 @@ namespace rex
         renderer::backend::present();
         renderer::backend::end_frame();
     }
+    //-------------------------------------------------------------------------
     void shutdown()
     {
         REX_LOG(LogRegina, "shutting down Regina");
@@ -278,6 +445,7 @@ namespace rex
         g_regina_ctx.pixel_shader_byte_code.Reset();
     }
 
+    //-------------------------------------------------------------------------
     ApplicationCreationParams create_regina_app_creation_params(PlatformCreationParams&& platformParams)
     {
         ApplicationCreationParams app_params(rsl::move(platformParams));
@@ -298,10 +466,11 @@ namespace rex
     }
 
 #ifndef REX_ENABLE_AUTO_TESTS
-
+    //-------------------------------------------------------------------------
     ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams)
     {
         return create_regina_app_creation_params(rsl::move(platformParams));
     }
+
 #endif
 } // namespace rex
