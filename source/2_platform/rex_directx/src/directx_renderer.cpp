@@ -1404,7 +1404,7 @@ namespace rex
             }
             
             //-------------------------------------------------------------------------
-            bool set_shader(s32 shaderIndex, ShaderType /*shaderType*/)
+            bool set_shader(s32 shaderIndex)
             {
                 g_ctx.active_shader_program = shaderIndex;
 
@@ -1413,6 +1413,16 @@ namespace rex
                 auto& shader_program = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, shaderIndex);
 
                 g_ctx.command_list->SetGraphicsRootSignature(shader_program.get()->root_signature.Get());
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool set_constant_buffer(s32 location, s32 offset)
+            {
+                auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetGPUDescriptorHandleForHeapStart());
+                cbv_handle.Offset(offset, g_ctx.cbv_srv_uav_desc_size);
+                g_ctx.command_list->SetGraphicsRootDescriptorTable(location, cbv_handle);
 
                 return true;
             }
