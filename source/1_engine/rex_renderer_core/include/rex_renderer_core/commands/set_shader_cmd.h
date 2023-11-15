@@ -14,11 +14,9 @@ namespace rex
             {
                 SetShader()
                     :shader_index(REX_INVALID_INDEX)
-                    ,shader_type(ShaderType::NONE)
                 {}
 
                 s32 shader_index;
-                ShaderType shader_type;
             };
         }
     }
