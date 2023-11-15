@@ -85,15 +85,15 @@ namespace rex
     void            set_vertex_buffer(s32 vertexBufferTarget, s32 startSlot, s32 stride, s32 offset);
     void            set_vertex_buffers(s32* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
     void            set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset);
-    void            set_shader(s32 shaderTarget, ShaderType shaderType);
+    void            set_shader(s32 shaderTarget);
     void            set_pipeline_state_object(s32 psoTarget);
-    void            set_constant_buffer(s32 constantBufferTarget, s32 offset);
+    void            set_constant_buffer(s32 location, s32 offset);
 
     void            new_frame();
     void            end_frame();
 
-    bool            begin_draw();
-    bool            end_draw();
+    void            begin_draw();
+    void            end_draw();
 
     void            present();
 
@@ -132,7 +132,7 @@ namespace rex
       bool          set_scissor_rect(const ScissorRect& rect);
       bool          set_vertex_buffers(s32* bufferIndices, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
       bool          set_index_buffer(s32 bufferIndex, IndexBufferFormat format, s32 offset);
-      bool          set_constant_buffer(s32 bufferIndex, s32 location, s32 offset);
+      bool          set_constant_buffer(s32 location, s32 offset);
       bool          set_shader(s32 shaderIndex, ShaderType shaderType);
       bool          set_raster_state(s32 rasterStateIndex);
       bool          set_pipeline_state_object(s32 psoTarget);

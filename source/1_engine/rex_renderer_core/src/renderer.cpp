@@ -183,7 +183,7 @@ namespace rex
                     , cmd.set_index_buffer.offset);
                 break;
             case CommandType::SET_SHADER:
-                result = backend::set_shader(cmd.set_shader.shader_index, cmd.set_shader.shader_type);
+                result = backend::set_shader(cmd.set_shader.shader_index);
                 break;
             case CommandType::SET_RASTER_STATE:
                 result = backend::set_raster_state(cmd.set_raster_state.raster_state);
@@ -192,7 +192,7 @@ namespace rex
                 result = backend::set_pipeline_state_object(cmd.set_pipeline_state.pipeline_state);
                 break;
             case CommandType::SET_CONSTANT_BUFFER:
-                result = backend::set_constant_buffer(cmd.set_constant_buffer.buffer_index, cmd.set_constant_buffer.location, cmd.set_constant_buffer.offset);
+                result = backend::set_constant_buffer(cmd.set_constant_buffer.location, cmd.set_constant_buffer.offset);
                 break;
 
             case CommandType::NEW_FRAME:
@@ -592,14 +592,13 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_shader(s32 shaderTarget, ShaderType shaderType)
+        void set_shader(s32 shaderTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_SHADER;
 
             cmd.set_shader.shader_index = shaderTarget;
-            cmd.set_shader.shader_type = shaderType;
 
             add_cmd(cmd);
         }
@@ -617,13 +616,12 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void set_constant_buffer(s32 constantBufferTarget, s32 location, s32 offset)
+        void set_constant_buffer(s32 location, s32 offset)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_CONSTANT_BUFFER;
 
-            cmd.set_constant_buffer.buffer_index = constantBufferTarget;
             cmd.set_constant_buffer.location = location;
             cmd.set_constant_buffer.offset = offset;
 
@@ -646,6 +644,26 @@ namespace rex
             RenderCommand cmd;
 
             cmd.command_type = CommandType::END_FRAME;
+
+            add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        void begin_draw()
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::BEGIN_DRAW;
+
+            add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        void end_draw()
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::END_DRAW;
 
             add_cmd(cmd);
         }
