@@ -53,6 +53,12 @@ namespace rex
 
     struct Mesh
     {
+        ~Mesh()
+        {
+            renderer::release_resource(vertex_buffer);
+            renderer::release_resource(index_buffer);
+        }
+
         // Give it a name so we can look it up by name.
         rsl::string name;
 
@@ -402,6 +408,7 @@ namespace rex
         Viewport vp = { 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f };
         ScissorRect sr = { vp.top_left_x, vp.top_left_y, vp.width, vp.height };
 
+        renderer::set_pipeline_state_object(g_regina_ctx.pso);
         renderer::new_frame();
 
         renderer::set_render_targets((s32)renderer::DefaultTargets::REX_BACK_BUFFER_COLOR, (s32)renderer::DefaultTargets::REX_BUFFER_DEPTH);
@@ -409,22 +416,18 @@ namespace rex
         renderer::set_scissor_rect(sr);
         renderer::set_raster_state(g_regina_ctx.solid_raster_state);
 
+        renderer::begin_draw();
+
         renderer::clear(g_regina_ctx.clear_state);
 
-        ID3D12DescriptorHeap* descriptor_heaps[] = { g_regina_ctx.cbv_heap.Get() };
-        get_dx12_command_list()->SetDescriptorHeaps(_countof(descriptor_heaps), descriptor_heaps);
+        renderer::set_shader(g_regina_ctx.shader_program);
+        renderer::set_constant_buffer(0, 0);
+        renderer::set_vertex_buffer(g_regina_ctx.mesh_cube->vertex_buffer, 0, 0, 0);
+        renderer::set_index_buffer(g_regina_ctx.mesh_cube->index_buffer, renderer::IndexBufferFormat::R16_UINT, 0);
 
-        get_dx12_command_list()->SetGraphicsRootSignature(g_regina_ctx.root_signature.Get());
+        renderer::renderer_draw_indexed_instanced(g_regina_ctx.mesh_cube->draw_args["box"].index_count, 1, 0, 0, 0, renderer::PrimitiveTopology::TRIANGLELIST);
 
-        auto vertex_buffer_view = g_regina_ctx.mesh_cube->vertex_buffer_view();
-        auto index_buffer_view = g_regina_ctx.mesh_cube->index_buffer_view();
-        get_dx12_command_list()->IASetVertexBuffers(0, 1, &vertex_buffer_view);
-        get_dx12_command_list()->IASetIndexBuffer(&index_buffer_view);
-        get_dx12_command_list()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-        get_dx12_command_list()->SetGraphicsRootDescriptorTable(0, g_regina_ctx.cbv_heap->GetGPUDescriptorHandleForHeapStart());
-
-        get_dx12_command_list()->DrawIndexedInstanced(g_regina_ctx.mesh_cube->draw_args["box"].index_count, 1, 0, 0, 0);
+        renderer::end_draw();
 
         renderer::backend::present();
         renderer::backend::end_frame();
@@ -434,15 +437,25 @@ namespace rex
     {
         REX_LOG(LogRegina, "shutting down Regina");
 
-        g_regina_ctx.root_signature.Reset();
-        g_regina_ctx.cbv_heap.Reset();
+        renderer::release_resource(g_regina_ctx.clear_state);
 
-        g_regina_ctx.object_constant_buffer.reset();
+        renderer::release_resource(g_regina_ctx.shader_program);
+        renderer::release_resource(g_regina_ctx.input_layout);
+        renderer::release_resource(g_regina_ctx.pso);
+
+        for(s32 ocb: g_regina_ctx.object_constant_buffers)
+        {
+            renderer::release_resource(ocb);
+        }
+        for(s32 pcb: g_regina_ctx.pass_constants_buffers)
+        {
+            renderer::release_resource(pcb);
+        }
+
+        renderer::release_resource(g_regina_ctx.solid_raster_state);
+        renderer::release_resource(g_regina_ctx.wire_raster_state);
 
         g_regina_ctx.mesh_cube.reset();
-
-        g_regina_ctx.vertex_shader_byte_code.Reset();
-        g_regina_ctx.pixel_shader_byte_code.Reset();
     }
 
     //-------------------------------------------------------------------------
