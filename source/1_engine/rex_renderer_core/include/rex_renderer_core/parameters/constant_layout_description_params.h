@@ -28,6 +28,8 @@ namespace rex
                 char8* name;
                 s32 location;
             };
+
+            using ConstantLayoutDescriptions = rsl::vector<ConstantLayoutDescription>;
         }
     }
 }

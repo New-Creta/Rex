@@ -10,8 +10,9 @@ namespace rex
         {
             struct SetConstantBuffer
             {
-                s32  buffer_index;
-                s32  offset;
+                s32 buffer_index;
+                s32 location;
+                s32 offset;
             };
         }
     }

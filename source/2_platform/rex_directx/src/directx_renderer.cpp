@@ -1482,6 +1482,8 @@ namespace rex
                 ID3D12DescriptorHeap* desc_heap = g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].Get();
                 ID3D12DescriptorHeap* desc_heaps[] = { desc_heap };
                 g_ctx.command_list->SetDescriptorHeaps(_countof(desc_heaps), desc_heaps);
+
+                return true;
             }
 
             //-------------------------------------------------------------------------
@@ -1490,6 +1492,8 @@ namespace rex
                 // Indicate a state transition on the resouce usage.
                 D3D12_RESOURCE_BARRIER present_transition = CD3DX12_RESOURCE_BARRIER::Transition(current_backbuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
                 g_ctx.command_list->ResourceBarrier(1, &present_transition);
+
+                return true;
             }
 
             //-------------------------------------------------------------------------
