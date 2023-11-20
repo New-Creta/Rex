@@ -43,7 +43,12 @@ public class BaseConfiguration
   // Setup project paths like the project path itself, intermediate path, target path, pdb paths, ..
   private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
   {
+    // The target file extension isn't configured yet at point so we need to query it ourselves
+    var configurationTasks = PlatformRegistry.Get<Project.Configuration.IConfigurationTasks>(target.Platform);
+    string targetFileExtension = configurationTasks.GetDefaultOutputFullExtension(conf.Output);
+
     conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
+    conf.TargetFileName = $"{conf.TargetFileName}_{target.ProjectConfigurationName}_{target.Compiler}{targetFileExtension}";
   }
   // Setup default configuration settings.
   private void SetupDefaultConfigurationSettings(RexConfiguration conf, RexTarget target)
@@ -64,6 +69,41 @@ public class BaseConfiguration
     {
       conf.SolutionFolder = "0_thirdparty";
     }
+  }
+}
+
+// This is a very dirty hack but here's how it works
+// Because Visual Studio will start the dependencies on the same node all at once
+// We need to find a way to run a generation before any of the dependencies
+// get run, but only do it once (not per project build)
+// So what we do is, we create a dummy project that every project depends on
+// which does nothing except rerunning sharpmake
+// Because every project depends on this, this project will be put on the top node
+// with no other projects at the same level, so this project gets "build" before any other
+// and only once, resulting in the rerunning sharpmake only once
+[Generate]
+public class RegenerateProjects : Project
+{
+  public RegenerateProjects() : base(typeof(RexTarget), typeof(RexConfiguration))
+  {
+    // We need to mimic the targets generated, but only for visual studio IDE
+    AddTargets(RexTarget.CreateTargetsForDevEnv(DevEnv.vs2019).ToArray());
+  }
+
+  [Configure]
+  public void Configure(RexConfiguration conf, RexTarget target)
+  {
+    // We need give the configuration a proper name or sharpmake fails to generate
+    conf.Name = string.Concat(target.Config.ToString().ToLower(), target.Compiler.ToString().ToLower());
+
+    string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
+
+    // The custom build steps just perform a generation step
+    conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
+    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -no_config";
+    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -clean -no_config";
+    conf.CustomBuildSettings.CleanCommand = "";
+    conf.CustomBuildSettings.OutputFile = "";
   }
 }
 
@@ -165,6 +205,12 @@ public abstract class BasicCPPProject : Project
         conf.LibraryPaths.Add(path);
       }
     }
+
+    // Add the dependency to the regenerate project for all C++ projects.
+    if (target.DevEnv == DevEnv.vs2019)
+    {
+      conf.AddPublicDependency<RegenerateProjects>(target, DependencySetting.OnlyBuildOrder);
+    }
   }
 
   protected virtual void SetupConfigSettings(RexConfiguration conf, RexTarget target)
@@ -201,11 +247,6 @@ public abstract class BasicCPPProject : Project
       // rex python script at the root is the entry point and interface with the rex pipeline
       string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
       
-      // The target file extension isn't configured yet at point so we need to query it ourselves
-      var configurationTasks = PlatformRegistry.Get<Configuration.IConfigurationTasks>(target.Platform);
-      string targetFileExtension = configurationTasks.GetDefaultOutputFullExtension(conf.Output);
-      string fullFileName = $"{conf.TargetFileFullName}_{target.ProjectConfigurationName}_{target.Compiler}{targetFileExtension}";
-
       // Because Visual Studio takes care of the dependency chain, we have to pass in the argument to not build the dependencies
       // We need to somehow configure the paths so that the visual studio projects are pointing correctly
       // but we still use the ninja files that are located elsewhere.
@@ -213,7 +254,7 @@ public abstract class BasicCPPProject : Project
       conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} build -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
       conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} build -clean -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
       conf.CustomBuildSettings.CleanCommand = $"py {rexpyPath} build -nobuild -clean -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
-      conf.CustomBuildSettings.OutputFile = Path.Combine(conf.TargetPath, fullFileName);
+      conf.CustomBuildSettings.OutputFile = Path.Combine(conf.TargetPath, conf.TargetFileFullName);
     }
 
     // Compiler options
@@ -320,9 +361,11 @@ public abstract class BasicCPPProject : Project
       case Optimization.FullOptWithPdb:
         conf.Options.Add(Options.Vc.General.DebugInformation.ProgramDatabase);   
         conf.Options.Add(Options.Vc.Compiler.OmitFramePointers.Disable);         // Disable so we can have a stack trace
+        break;
       case Optimization.FullOpt:
         conf.Options.Add(Options.Vc.General.DebugInformation.Disable);
         conf.Options.Add(Options.Vc.Compiler.OmitFramePointers.Enable);
+        break;
     }
   }
   // Setup rules that need to be defined based on the platform
