@@ -29,16 +29,17 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('-clean', help='Clean the intermediates before generation')
   parser.add_argument('-sharpmake_arg', dest="sharpmake_args", default=[], action="append", help='Argument to be passed to sharpmake directly')
+  parser.add_argument('-no_config', default=False, action="store_true", help='Don\'t generate a config but use the config of what\'t previously generated')
   regis.generation.add_config_arguments_to_parser(parser)
 
   # parse the arguments passed to this script
   args, unknown = parser.parse_known_args()
-  config = regis.generation.create_config(args)
+  config = None
+  if not args.no_config:
+    config = regis.generation.create_config(args)
 
   # call generation code to launch sharpmake
   settings_path = os.path.join(root, regis.util.settingsPathFromRoot)
-  proc = regis.generation.new_generation(settings_path, config, args.sharpmake_args)
-  proc.wait()
-  result = proc.returncode
+  result = regis.generation.new_generation(settings_path, config, args.sharpmake_args)
 
   exit(result)
