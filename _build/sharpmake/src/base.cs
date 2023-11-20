@@ -95,6 +95,7 @@ public class RegenerateProjects : Project
   {
     // We need give the configuration a proper name or sharpmake fails to generate
     conf.Name = string.Concat(target.Config.ToString().ToLower(), target.Compiler.ToString().ToLower());
+    conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Name);
 
     string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
 
