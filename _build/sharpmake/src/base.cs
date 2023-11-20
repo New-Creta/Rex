@@ -269,7 +269,11 @@ public abstract class BasicCPPProject : Project
     conf.Options.Add(Options.Vc.Compiler.FunctionLevelLinking.Disable);
     conf.Options.Add(Options.Vc.Compiler.FloatingPointExceptions.Disable);
     conf.Options.Add(Options.Vc.Compiler.OpenMP.Disable);
-    conf.Options.Add(Options.Vc.Compiler.JumboBuild.Enable);
+
+    if (!ProjectGen.Settings.UnityBuildsDisabled)
+    {
+      conf.Options.Add(Options.Vc.Compiler.JumboBuild.Enable);
+    }
 
     // Linker options
     conf.Options.Add(Options.Vc.Linker.LargeAddress.SupportLargerThan2Gb);

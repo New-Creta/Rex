@@ -234,6 +234,7 @@ namespace ProjectGen
 
     static public string ClangTidyRegex = "";                     // Regex of files to run clang-tidy on
     static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;  // The graphics API to be used by the engine
+    static public bool UnityBuildsDisabled = false;               // Disable unity builds (aka jumbo builds or combi builds)
 
     static public List<GenerateCompilerDBCommand> GenerateCompilerDBCommands = new List<GenerateCompilerDBCommand>(); // List of command wrappers to generate compiler dbs for.
   }

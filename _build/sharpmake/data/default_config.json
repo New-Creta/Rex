@@ -59,5 +59,9 @@
   "disable-clang-tidy-for-thirdparty": {
     "Description": "Disable clang-tidy usage on third-party projects",
     "Value": true
+  },
+  "disable-unity-builds": {
+    "Description": "Disable unity builds (aka jumbo builds, combi builds)",
+    "Value": true
   }
 }

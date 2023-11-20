@@ -168,7 +168,7 @@ public static class Main
     ProjectGen.Settings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
     Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE);
     ProjectGen.Settings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
-
+    ProjectGen.Settings.UnityBuildsDisabled = config["disable-unity-builds"].Value.GetBoolean();
   }
 
   // Pass the toolchain paths over to sharpmake so it can use it for generation.
