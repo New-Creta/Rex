@@ -64,18 +64,27 @@ public class RexTarget : ITarget
   {
     List<RexTarget> targets = new List<RexTarget>();
 
-    DevEnv devEnv = DevEnv.ninja;
+    // Always add the ninja target. Ninja is our main build system and is used what gets used by the rex development pipeline
+    targets.AddRange(CreateTargetsForDevEnv(DevEnv.ninja));
+
     switch (ProjectGen.Settings.IDE)
     {
       case ProjectGen.IDE.VisualStudio:
-        devEnv |= DevEnv.vs2019;
+        targets.AddRange(CreateTargetsForDevEnv(DevEnv.vs2019));
         break;
       case ProjectGen.IDE.VSCode:
-        devEnv |= DevEnv.vscode;
+        targets.AddRange(CreateTargetsForDevEnv(DevEnv.vscode));
         break;
       default:
         break;
     }
+
+    return targets;
+  }
+
+  public static List<RexTarget> CreateTargetsForDevEnv(DevEnv devEnv)
+  {
+    List<RexTarget> targets = new List<RexTarget>();
 
     // The checks specified here are checks for various testing types
     // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
@@ -97,7 +106,6 @@ public class RexTarget : ITarget
     }
     else
     {
-      // Always add the ninja target. Ninja is our main build system and is used what gets used by the rex development pipeline
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
     }
 
