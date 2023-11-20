@@ -20,6 +20,22 @@ import regis.diagnostics
 import regis.task_raii_printing
 import regis.dir_watcher
 import regis.rex_json
+import regis.generation
+import time
+
+# Unit test for the build pipeline are not yet available
+# The following should be tested whenever a change is made to the build pipeline
+#
+# Test Rebuilding
+# -----------------------
+# - All configs compilable
+# - All configs compilable with cleaning
+# Test Incremental Building 
+# -----------------------
+# - A single .cpp file change should only trigger a recompilation of that file, it's lib/exe and what depends on them
+# - A single .h file change should only trigger a recompilation of files including this header, their libs and what depends on them
+#
+# The above should be tested in every config and with every compiler
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -45,7 +61,11 @@ if __name__ == "__main__":
       args.compiler = "clang"
 
   task = regis.task_raii_printing.TaskRaiiPrint("Building")
+
+  start = time.perf_counter()
   result = regis.build.new_build(args.project, args.config, args.compiler, not args.nobuild, args.clean, args.sln, not args.dont_build_dependencies)
+  end = time.perf_counter()
+  regis.diagnostics.log_info(f"Tests took {end - start:0.4f} seconds")
 
   if result != 0:
     regis.diagnostics.log_err("Build failed")
