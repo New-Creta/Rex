@@ -122,6 +122,10 @@ namespace rex
                 result = backend::release_resource(cmd.release_resource.resource_index);
                 break;
 
+            case CommandType::UPDATE_CONSTANT_BUFFER: 
+                backend::update_constant_buffer();
+                break;
+
             case CommandType::CLEAR:
                 backend::clear(cmd.clear.clear_state);
                 break;
@@ -394,6 +398,19 @@ namespace rex
             add_cmd(cmd);
 
             return resource_slot;
+        }
+
+        //-------------------------------------------------------------------------
+        void update_constant_buffer(s32 constantBufferTarget, const parameters::UpdateConstantBuffer& updateConstantBufferParams)
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::UPDATE_CONSTANT_BUFFER;
+            cmd.resource_slot = constantBufferTarget;
+            
+            memcpy(&cmd.update_constant_buffer_params, (void*)&updateConstantBufferParams, sizeof(parameters::UpdateConstantBuffer));
+
+            add_cmd(cmd);            
         }
 
         //-------------------------------------------------------------------------

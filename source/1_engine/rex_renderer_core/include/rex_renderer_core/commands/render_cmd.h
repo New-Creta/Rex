@@ -27,6 +27,7 @@
 #include "rex_renderer_core/parameters/load_shader_params.h"
 #include "rex_renderer_core/parameters/link_shader_params.h"
 #include "rex_renderer_core/parameters/create_pipeline_state_params.h"
+#include "rex_renderer_core/parameters/update_constant_buffer_params.h"
  
 #include "rex_renderer_core/viewport.h"
 #include "rex_renderer_core/scissor_rect.h"
@@ -49,6 +50,7 @@ namespace rex
             LINK_SHADER,
             COMPILE_SHADER,
             RELEASE_RESOURCE,
+            UPDATE_CONSTANT_BUFFER,
             CLEAR,
             BEGIN_DRAW,
             END_DRAW,
@@ -112,6 +114,7 @@ namespace rex
                 parameters::LinkShader              link_shader_params;
                 parameters::CompileShader           compile_shader_params;
                 parameters::CreatePipelineState     create_pipeline_state_params;
+                parameters::UpdateConstantBuffer    update_constant_buffer_params;
 
                 Viewport                            viewport;
                 ScissorRect                         scissor_rect;

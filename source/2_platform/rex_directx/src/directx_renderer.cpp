@@ -1047,6 +1047,12 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
+            void update_constant_buffer(s32 resourceSlot, const parameters::UpdateConstantBuffer& updateConstantBuffer)
+            {
+
+            }
+
+            //-------------------------------------------------------------------------
             void clear(s32 clearStateIndex)
             {
                 const ClearStateResource& csr = get_resource_from_pool_as<ClearStateResource>(g_ctx.resource_pool, clearStateIndex);

@@ -63,9 +63,12 @@ namespace rex
     s32             create_index_buffer(const parameters::CreateBuffer& createBufferParams);
     s32             create_constant_buffer(const parameters::CreateConstantBuffer& createBufferParams);
     s32             create_pipeline_state_object(const parameters::CreatePipelineState& createPipelineStateParams);
+
     s32             load_shader(const parameters::LoadShader& loadShaderParams);
     s32             link_shader(const parameters::LinkShader& linkShaderParams);
     s32             compile_shader(const parameters::CompileShader& compileShaderParams);
+
+    void            update_constant_buffer(s32 constantBufferTarget, const parameters::UpdateConstantBuffer& updateConstantBufferParams);
 
     void            release_resource(s32 resourceTarget);
 
@@ -114,9 +117,11 @@ namespace rex
       bool          link_shader(const parameters::LinkShader& ls, s32 resourceSlot);
       bool          compile_shader(const parameters::CompileShader& cs, s32 resourceSlot);
 
-      void          clear(s32 clearStateIndex);
+      void          update_constant_buffer(s32 resourceSlot, const parameters::UpdateConstantBuffer& updateConstantBuffer);
 
       bool          release_resource(s32 resourceSlot);
+
+      void          clear(s32 clearStateIndex);
 
       bool  	    initialize(const OutputWindowUserData& userData, s32 fbColorTargetSlot, s32 bbColorTargetSlot, s32 depthTargetSlot);
       void          shutdown();
@@ -133,7 +138,7 @@ namespace rex
       bool          set_vertex_buffers(s32* bufferIndices, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
       bool          set_index_buffer(s32 bufferIndex, IndexBufferFormat format, s32 offset);
       bool          set_constant_buffer(s32 location, s32 offset);
-      bool          set_shader(s32 shaderIndex, ShaderType shaderType);
+      bool          set_shader(s32 shaderIndex);
       bool          set_raster_state(s32 rasterStateIndex);
       bool          set_pipeline_state_object(s32 psoTarget);
 
