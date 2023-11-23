@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
   # initialize the argument parser by loading the arguments from the config file
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-  parser.add_argument('-clean', help='Clean the intermediates before generation')
+  parser.add_argument('-clean', action="store_true", help='Clean the intermediates before generation')
   parser.add_argument('-sharpmake_arg', dest="sharpmake_args", default=[], action="append", help='Argument to be passed to sharpmake directly')
   parser.add_argument('-no_config', default=False, action="store_true", help='Don\'t generate a config but use the config of what\'t previously generated')
   regis.generation.add_config_arguments_to_parser(parser)
