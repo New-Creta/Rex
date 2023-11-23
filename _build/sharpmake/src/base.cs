@@ -48,7 +48,7 @@ public class BaseConfiguration
     string targetFileExtension = configurationTasks.GetDefaultOutputFullExtension(conf.Output);
 
     conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
-    conf.TargetFileName = $"{conf.TargetFileName}_{target.ProjectConfigurationName}_{target.Compiler}{targetFileExtension}";
+    conf.TargetFileName = $"{conf.TargetFileName}_{target.ProjectConfigurationName}_{target.Compiler}";
   }
   // Setup default configuration settings.
   private void SetupDefaultConfigurationSettings(RexConfiguration conf, RexTarget target)
@@ -95,6 +95,7 @@ public class RegenerateProjects : Project
   {
     // We need give the configuration a proper name or sharpmake fails to generate
     conf.Name = string.Concat(target.Config.ToString().ToLower(), target.Compiler.ToString().ToLower());
+    conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Name);
 
     string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
 
