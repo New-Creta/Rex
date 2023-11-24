@@ -316,7 +316,7 @@ namespace rex
       }
 
       // join everything back together and return the result
-      return rsl::join(norm_splitted, '\\').as_string();
+      return rsl::join(norm_splitted, "\\").as_string();
     }
     // Returns a relative path to path, starting from the start directory
     rsl::string rel_path(rsl::string_view path, rsl::string_view start)
@@ -325,7 +325,7 @@ namespace rex
       rsl::vector<rsl::string_view> splitted_start = rsl::split(start, "/\\");
 
       auto res = rsl::mismatch(splitted_path.cbegin(), splitted_path.cend(), splitted_start.cbegin(), splitted_start.cend());
-      return rsl::join(res.lhs_it, splitted_path.cend(), g_seperation_char).as_string();
+      return rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char)).as_string();
     }
     // Returns the latest access time of the file or directory at the given path
     card32 get_access_time(rsl::string_view path)
