@@ -53,7 +53,7 @@ if __name__ == "__main__":
     if args.auto_test_timeout:
       auto_test_timeout_secs = args.auto_test_timeout
 
-    regis.test.run_auto_tests(["debug", "debug_opt", "release"], ["msvc","clang"], ["reginatest"], int(auto_test_timeout_secs), args.clean, args.single_threaded)
+    regis.test.run_auto_tests(["debug", "debug_opt", "release"], ["msvc","clang"], ["reginaautotest"], int(auto_test_timeout_secs), args.clean, args.single_threaded)
 
   regis.diagnostics.log_no_color("")
   regis.diagnostics.log_info("Summary Report")

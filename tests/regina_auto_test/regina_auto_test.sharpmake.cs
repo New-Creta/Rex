@@ -2,13 +2,13 @@ using Sharpmake;
 using System.IO;
 
 [Generate]
-public class ReginaTest : TestProject
+public class ReginaAutoTest : TestProject
 {
-  public ReginaTest() : base()
+  public ReginaAutoTest() : base()
   {
     // The name of the project in Visual Studio. The default is the name of
     // the class, but you usually want to override that.
-    Name = "ReginaTest";
+    Name = "ReginaAutoTest";
     GenerateTargets();
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
