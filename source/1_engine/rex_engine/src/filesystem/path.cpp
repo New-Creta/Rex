@@ -328,7 +328,7 @@ namespace rex
       return rsl::join(res.lhs_it, splitted_path.cend(), g_seperation_char).as_string();
     }
     // Returns the latest access time of the file or directory at the given path
-    card32 get_access_time(rsl::string_view path)
+    card64 get_access_time(rsl::string_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -340,10 +340,10 @@ namespace rex
 
       FILETIME access_time{};
       GetFileTime(file.get(), NULL, &access_time, NULL);
-      rsl::win::to_integer(access_time);
+      return rsl::win::to_integer(access_time);
     }
     // Returns the modification time of the file or directory at the given path
-    card32 get_modification_time(rsl::string_view path)
+    card64 get_modification_time(rsl::string_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -355,10 +355,10 @@ namespace rex
 
       FILETIME modification_time{};
       GetFileTime(file.get(), NULL, NULL, &modification_time);
-      rsl::win::to_integer(modification_time);
+      return rsl::win::to_integer(modification_time);
     }
     // Returns the creation time of the file or directory at the given path
-    card32 get_creation_time(rsl::string_view path)
+    card64 get_creation_time(rsl::string_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -370,7 +370,7 @@ namespace rex
 
       FILETIME creation_time{};
       GetFileTime(file.get(), &creation_time, NULL, NULL);
-      rsl::win::to_integer(creation_time);
+      return rsl::win::to_integer(creation_time);
     }
     // Returns the creation time of the file or directory at the given path
     card64 get_file_size(rsl::string_view path)
