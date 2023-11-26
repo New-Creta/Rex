@@ -69,7 +69,7 @@ namespace rex
     {
     }
     //-------------------------------------------------------------------------
-    Factory::Factory(wrl::com_ptr<IDXGIFactory>&& object, uint32 version)
+    Factory::Factory(wrl::com_ptr<IDXGIFactory>&& object, u32 version)
         : ComObject(rsl::move(object), version)
     {
     }
