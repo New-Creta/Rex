@@ -2,9 +2,11 @@
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/resource_slots.h"
 #include "rex_renderer_core/log.h"
+#include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_engine/defines.h"
 #include "rex_engine/ring_buffer.h"
-#include "rex_renderer_core/commands/render_cmd.h"
+
+#include "rex_std_extra/utility/enum_reflection.h"
 
 #if REX_SINGLE_THREADED
 #define add_cmd(cmd) exec_cmd(cmd)
@@ -14,6 +16,23 @@
 
 namespace rex
 {
+    namespace globals
+    {
+        DefaultTargetsInfo g_default_targets_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+        DefaultDepthInfo g_default_depth_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+
+        //-------------------------------------------------------------------------
+        const DefaultTargetsInfo& default_targets_info()
+        {
+            return g_default_targets_info;
+        }
+        //-------------------------------------------------------------------------
+        const DefaultDepthInfo& default_depth_info()
+        {
+            return g_default_depth_info;
+        }
+    } // namespace globals
+
     namespace renderer
     {
         struct Context
@@ -107,6 +126,14 @@ namespace rex
                 break;
             case CommandType::CREATE_PIPELINE_STATE:
                 result = backend::create_pipeline_state_object(cmd.create_pipeline_state_params, cmd.resource_slot);
+                break;
+            case CommandType::CREATE_FRAME_RESOURCE:
+                result = backend::create_frame_resource(cmd.resource_slot);
+                break;
+            case CommandType::COMPILE_SHADER:
+                result = backend::compile_shader(cmd.compile_shader_params, cmd.resource_slot);
+                memory_free(cmd.compile_shader_params.shader_code);
+                break;
             case CommandType::LOAD_SHADER:
                 result = backend::load_shader(cmd.load_shader_params, cmd.resource_slot);
                 memory_free(cmd.load_shader_params.byte_code);
@@ -117,30 +144,23 @@ namespace rex
                     memory_free(cmd.link_shader_params.constants[i].name);
                 memory_free(cmd.link_shader_params.constants);
                 break;
-
             case CommandType::RELEASE_RESOURCE:
                 result = backend::release_resource(cmd.release_resource.resource_index);
                 break;
-
-            case CommandType::UPDATE_CONSTANT_BUFFER: 
-                backend::update_constant_buffer();
+            case CommandType::UPDATE_CONSTANT_BUFFER:
+                backend::update_constant_buffer(cmd.update_constant_buffer_params, cmd.resource_slot);
                 break;
-
             case CommandType::CLEAR:
                 backend::clear(cmd.clear.clear_state);
                 break;
-                
             case CommandType::BEGIN_DRAW:
                 backend::begin_draw();
                 break;
             case CommandType::END_DRAW:
                 backend::end_draw();
                 break;
-
             case CommandType::DRAW:
-                backend::draw(cmd.draw.vertex_count
-                    , cmd.draw.start_vertex
-                    , cmd.draw.primitive_topology);
+                backend::draw(cmd.draw.vertex_count, cmd.draw.start_vertex, cmd.draw.primitive_topology);
                 break;
             case CommandType::DRAW_INDEXED:
                 backend::draw_indexed(cmd.draw_indexed.index_count
@@ -156,7 +176,6 @@ namespace rex
                     , cmd.draw_indexed_instanced.base_vertex
                     , cmd.draw_indexed_instanced.primitive_topology);
                 break;
-
             case CommandType::SET_RENDER_TARGETS:
                 result = backend::set_render_targets(cmd.set_render_target.color
                     , cmd.set_render_target.num_color
@@ -214,22 +233,27 @@ namespace rex
 
             if (!result)
             {
-                REX_ERROR(LogRendererCore, "Failed to execute render command: {}", (s32)cmd.command_type);
+                REX_ERROR(LogRendererCore, "Failed to execute render command: {}", rsl::enum_refl::enum_name(cmd.command_type));
             }
         }
 
         //-------------------------------------------------------------------------
-        bool initialize(const OutputWindowUserData& userData, s32 maxCommands)
+        bool initialize(const OutputWindowUserData& userData, s32 maxCommands, s32 maxFrameResources)
         {
             UNUSED_PARAM(userData);
 
             g_ctx.slot_resources.initialize(32);
             g_ctx.cmd_buffer.initialize(maxCommands);
 
+            globals::g_default_targets_info.front_buffer_color = g_ctx.slot_resources.next_slot();
+            globals::g_default_targets_info.back_buffer_color = g_ctx.slot_resources.next_slot();
+            globals::g_default_targets_info.depth_buffer = g_ctx.slot_resources.next_slot();
+
             return backend::initialize(userData
-                , (s32)DefaultTargets::REX_FRONT_BUFFER_COLOR
-                , (s32)DefaultTargets::REX_BACK_BUFFER_COLOR
-                , (s32)DefaultTargets::REX_BUFFER_DEPTH);
+                , maxFrameResources
+                , globals::g_default_targets_info.front_buffer_color
+                , globals::g_default_targets_info.back_buffer_color
+                , globals::g_default_targets_info.depth_buffer);
         }
         //-------------------------------------------------------------------------
         void shutdown()
@@ -309,6 +333,7 @@ namespace rex
             return internal::create_constant_buffer(CommandType::CREATE_CONSTANT_BUFFER, createBufferParams);
         }
 
+        //-------------------------------------------------------------------------
         s32 create_pipeline_state_object(const parameters::CreatePipelineState& createPipelineStateParams)
         {
             RenderCommand cmd;
@@ -319,6 +344,21 @@ namespace rex
             cmd.resource_slot = resource_slot;
 
             memcpy(&cmd.raster_state_params, (void*)&createPipelineStateParams, sizeof(parameters::CreatePipelineState));
+
+            add_cmd(cmd);
+
+            return resource_slot;
+        }
+
+        //-------------------------------------------------------------------------
+        s32 create_frame_resource()
+        {
+            RenderCommand cmd;
+
+            s32 resource_slot = g_ctx.slot_resources.next_slot();
+
+            cmd.command_type = CommandType::CREATE_FRAME_RESOURCE;
+            cmd.resource_slot = resource_slot;
 
             add_cmd(cmd);
 
@@ -401,16 +441,28 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void update_constant_buffer(s32 constantBufferTarget, const parameters::UpdateConstantBuffer& updateConstantBufferParams)
+        void update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBufferParams, s32 constantBufferTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::UPDATE_CONSTANT_BUFFER;
             cmd.resource_slot = constantBufferTarget;
-            
+
             memcpy(&cmd.update_constant_buffer_params, (void*)&updateConstantBufferParams, sizeof(parameters::UpdateConstantBuffer));
 
-            add_cmd(cmd);            
+            add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        void wait_for_active_frame()
+        {
+            wait_for_frame(renderer::active_frame());
+        }
+
+        //-------------------------------------------------------------------------
+        void wait_for_frame(s32 resourceSlot)
+        {
+            backend::wait_for_frame(resourceSlot);
         }
 
         //-------------------------------------------------------------------------
@@ -663,6 +715,9 @@ namespace rex
             cmd.command_type = CommandType::END_FRAME;
 
             add_cmd(cmd);
+
+            // Execute all commands
+            flush();
         }
 
         //-------------------------------------------------------------------------
@@ -695,5 +750,28 @@ namespace rex
             add_cmd(cmd);
         }
 
+        //-------------------------------------------------------------------------
+        void flush()
+        {
+            RenderCommand* cmd = g_ctx.cmd_buffer.get();
+
+            backend::reset_command_list();
+
+            while (cmd)
+            {
+                exec_cmd(*cmd);
+
+                // break at present
+                if (cmd->command_type == CommandType::PRESENT)
+                {
+                    break;
+                }
+
+                cmd = g_ctx.cmd_buffer.get();
+            }
+
+            backend::close_command_list();
+            backend::exec_command_list();
+        }
     } // namespace renderer
 } // namespace rex

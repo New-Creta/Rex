@@ -20,6 +20,7 @@
 #include "rex_directx/resources/shader_program_resource.h"
 #include "rex_directx/resources/render_target_resource.h"
 #include "rex_directx/resources/depth_stencil_target_resource.h"
+#include "rex_directx/resources/frame_resource.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/memory/memory_allocation.h"
@@ -187,6 +188,27 @@ namespace rex
 
         } // namespace directx
 
+        struct FrameContext
+        {
+            FrameContext(s32 maxFrameResources)
+                :frame_resources()
+                ,curr_frame_resource(REX_INVALID_INDEX)
+                ,curr_frame_resource_index(REX_INVALID_INDEX)
+                ,num_frame_resources(maxFrameResources)
+            {}
+
+            rsl::vector<s32> frame_resources;
+
+            s32 curr_frame_resource;
+            s32 curr_frame_resource_index;
+
+            s32 num_frame_resources;
+        };
+
+        static const s32 s_num_frame_resources = 3;
+
+        FrameContext g_frame_ctx(s_num_frame_resources);
+
         //-------------------------------------------------------------------------
         const Info& info()
         {
@@ -209,6 +231,12 @@ namespace rex
         bool is_depth_0_to_1()
         {
             return true;
+        }
+
+        //-------------------------------------------------------------------------
+        s32 active_frame()
+        {
+            return g_frame_ctx.curr_frame_resource;
         }
 
         namespace backend
@@ -299,7 +327,11 @@ namespace rex
                 // Start off in a closed state. This is because the first time we
                 // refer to the command list we will Reset it, and it needs to be closed
                 // before calling Reset.
-                g_ctx.command_list->Close();
+                if (FAILED(g_ctx.command_list->Close()))
+                {
+                    REX_ERROR(LogDirectX, "Failed to close command list");
+                    return false;
+                }
 
                 return true;
             }
@@ -410,7 +442,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            rsl::unique_ptr<ConstantBufferResource> create_constant_buffer_view(s32 bufferCount, s32 bufferByteSize, void* bufferData)
+            rsl::unique_ptr<ConstantBufferResource> create_constant_buffer_view(s32 bufferCount, s32 bufferByteSize, u8* bufferData)
             {
                 s32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
 
@@ -425,7 +457,7 @@ namespace rex
                     return nullptr;
                 }
 
-                if (FAILED(constant_buffer_uploader->Map(0, nullptr, &bufferData)))
+                if (FAILED(constant_buffer_uploader->Map(0, nullptr, reinterpret_cast<void**>(&bufferData))))
                 {
                     REX_ERROR(LogDirectX, "Could not map data to commited resource ( constant buffer )");
                     return nullptr;
@@ -449,7 +481,7 @@ namespace rex
 
                 g_ctx.active_constant_buffers += bufferCount;
 
-                return rsl::make_unique<ConstantBufferResource>(constant_buffer_uploader);
+                return rsl::make_unique<ConstantBufferResource>(constant_buffer_uploader, bufferData, bufferByteSize);
             }
 
             //-------------------------------------------------------------------------
@@ -561,7 +593,10 @@ namespace rex
                 // Release the previous resources we will be recreating.
                 for (int i = 0; i < s_swapchain_buffer_count; ++i)
                 {
-                    release_resource(g_ctx.swapchain_rt_buffer_indices[i]);
+                    if (g_ctx.swapchain_rt_buffer_indices[i] != REX_INVALID_INDEX)
+                    {
+                        release_resource(g_ctx.swapchain_rt_buffer_indices[i]);
+                    }
                 }
 
                 g_ctx.swapchain_rt_buffer_indices[0] = frontBufferSlot;
@@ -609,7 +644,10 @@ namespace rex
             //-------------------------------------------------------------------------
             bool create_dsv_for_swapchain(s32 width, s32 height, s32 depthStencilTargetSlot)
             {
-                release_resource(g_ctx.swapchain_ds_buffer_index);
+                if (g_ctx.swapchain_ds_buffer_index != REX_INVALID_INDEX)
+                {
+                    release_resource(g_ctx.swapchain_ds_buffer_index);
+                }
 
                 g_ctx.swapchain_ds_buffer_index = depthStencilTargetSlot;
 
@@ -701,9 +739,8 @@ namespace rex
                 for (s32 i = 0; i < _countof(heap_descs); ++i)
                 {
                     auto heap_desc = &heap_descs[i];
-                    auto heap = g_ctx.descriptor_heap_pool[heap_desc->Type];
 
-                    if (FAILED(g_ctx.device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&heap))))
+                    if (FAILED(g_ctx.device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&g_ctx.descriptor_heap_pool[heap_desc->Type]))))
                     {
                         REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", directx::heapdesc_type_to_string(heap_desc->Type));
                         return false;
@@ -711,6 +748,35 @@ namespace rex
                 }
 
                 return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool reset_command_list()
+            {
+                if (FAILED(g_ctx.command_list->Reset(g_ctx.command_allocator.Get(), nullptr)))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool close_command_list()
+            {
+                if (FAILED(g_ctx.command_list->Close()))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            void exec_command_list()
+            {
+                ID3D12CommandList* command_lists[] = { g_ctx.command_list.Get() };
+                g_ctx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
             }
 
             //-------------------------------------------------------------------------
@@ -797,7 +863,7 @@ namespace rex
             //-------------------------------------------------------------------------
             bool create_input_layout(const parameters::CreateInputLayout& cil, s32 resourceSlot)
             {
-                rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Capacity(cil.num_elements));
+                rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(cil.num_elements));
 
                 for (s32 i = 0; i < cil.num_elements; ++i)
                 {
@@ -942,6 +1008,30 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
+            bool create_frame_resource(s32 resourceSlot)
+            {
+                wrl::com_ptr<ID3D12CommandAllocator> cmd_list_alloc;
+
+                if (FAILED(g_ctx.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_list_alloc.GetAddressOf()))))
+                {
+                    REX_ERROR(LogDirectX, "Failed to create command list allocator for frame resource");
+                    return false;
+                }
+                
+                g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
+                g_ctx.resource_pool[resourceSlot] = rsl::make_unique<FrameResource>(cmd_list_alloc);
+
+                // Activate the first frame resource
+                g_frame_ctx.frame_resources.push_back(resourceSlot);
+                if (g_frame_ctx.curr_frame_resource == REX_INVALID_INDEX)
+                {
+                    g_frame_ctx.curr_frame_resource = resourceSlot;
+                }
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
             bool load_shader(const parameters::LoadShader& ls, s32 resourceSlot)
             {
                 wrl::com_ptr<ID3DBlob> byte_code;
@@ -1013,7 +1103,7 @@ namespace rex
                 wrl::com_ptr<ID3DBlob> byte_code = nullptr;
                 wrl::com_ptr<ID3DBlob> errors = nullptr;
 
-                hr = D3DCompile2(cs.shader_code, cs.shader_code_size, cs.shader_name.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, cs.shader_entry_point, cs.shader_feature_target, compile_flags, 0, 0, 0, 0, &byte_code, &errors);
+                hr = D3DCompile2(cs.shader_code, cs.shader_code_size, cs.shader_name.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, cs.shader_entry_point.data(), cs.shader_feature_target.data(), compile_flags, 0, 0, 0, 0, &byte_code, &errors);
 
                 if (errors != nullptr)
                 {
@@ -1047,15 +1137,42 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            void update_constant_buffer(s32 resourceSlot, const parameters::UpdateConstantBuffer& updateConstantBuffer)
+            void update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBuffer, s32 resourceSlot)
             {
+                auto& cbr = get_resource_from_pool_as<ConstantBufferResource>(g_ctx.resource_pool, resourceSlot);
+                auto  cs = cbr.get();
 
+                memcpy(&cs->m_mapped_data[updateConstantBuffer.element_index * cbr.get()->m_mapped_data_byte_size], &updateConstantBuffer.data, updateConstantBuffer.data_size);
+            }
+
+            //-------------------------------------------------------------------------
+            void wait_for_frame(s32 resourceSlot)
+            {
+                REX_ASSERT_X(g_ctx.resource_pool.has_slot(resourceSlot), "Invalid frame resource slot");
+
+                auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, resourceSlot);
+                auto  f = fr.get();
+
+                if (f->fence != 0 && g_ctx.fence->GetCompletedValue() < f->fence)
+                {
+                    HANDLE event_handle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+
+                    //Fire event when GPU hits current fence
+                    if (FAILED(g_ctx.fence->SetEventOnCompletion(f->fence, event_handle)))
+                    {
+                        REX_ERROR(LogDirectX, "Failed to set completion event for fence");
+                        return;
+                    }
+
+                    WaitForSingleObject(event_handle, INFINITE);
+                    CloseHandle(event_handle);
+                }
             }
 
             //-------------------------------------------------------------------------
             void clear(s32 clearStateIndex)
             {
-                const ClearStateResource& csr = get_resource_from_pool_as<ClearStateResource>(g_ctx.resource_pool, clearStateIndex);
+                auto& csr = get_resource_from_pool_as<ClearStateResource>(g_ctx.resource_pool, clearStateIndex);
 
                 ClearBits flags = csr.get()->flags;
 
@@ -1093,8 +1210,9 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool initialize(const OutputWindowUserData& userData, s32 fbColorTargetSlot, s32 bbColorTargetSlot, s32 depthTargetSlot)
+            bool initialize(const OutputWindowUserData& userData, s32 maxFrameResources, s32 fbColorTargetSlot, s32 bbColorTargetSlot, s32 depthTargetSlot)
             {
+                // Diagnostic Layer
 #if defined(REX_DEBUG)
                 // Enable extra debuggin and send debug messages to the VC++ output window
                 rex::wrl::com_ptr<ID3D12Debug> debug_controller;
@@ -1107,6 +1225,16 @@ namespace rex
                 debug_controller->EnableDebugLayer();
 #endif
 
+                // Setup frame context
+                if (maxFrameResources != s_num_frame_resources)
+                {
+                    g_frame_ctx = FrameContext(maxFrameResources);
+                }
+
+                g_frame_ctx.curr_frame_resource_index = 0;
+                g_frame_ctx.curr_frame_resource = REX_INVALID_INDEX;
+
+                // Create dxgi factory
                 dxgi::Factory factory = dxgi::Factory::create();
                 if (!factory)
                 {
@@ -1114,10 +1242,12 @@ namespace rex
                     return false;
                 }
 
+                // Find highest scoring gpu
                 const dxgi::AdapterManager adapter_manager(&factory, &internal::highest_scoring_gpu);
                 const dxgi::Adapter* selected_gpu = adapter_manager.selected();
                 IDXGIAdapter* adapter = selected_gpu->c_ptr();
 
+                // Create device
                 const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
 
                 if (FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx.device))))
@@ -1129,6 +1259,7 @@ namespace rex
 
                 REX_LOG(LogDirectX, "D3D12 Device Created!");
 
+                // Find shader model
                 const D3D_SHADER_MODEL shader_model = query_shader_model_version(g_ctx.device.Get());
 
                 directx::g_renderer_info.shader_version = rsl::string(shader_model_name(shader_model));
@@ -1189,14 +1320,15 @@ namespace rex
                     return false;
                 }
 
+                // Flush before changing any resources.
                 flush_command_queue();
 
                 // Reuse the memory assosiated with command recording.
                 // We can only reset when the associated command lists have finished
                 // execution on the GPU.
-                if(FAILED(g_ctx.command_allocator->Reset()))
+                if(!reset_command_list())
                 {
-                    REX_ERROR(LogDirectX, "Failed to reset command allocator");
+                    REX_ERROR(LogDirectX, "Failed to reset command list");
                     return false;
                 }
 
@@ -1215,18 +1347,15 @@ namespace rex
                     return false;
                 }
 
-                // Done recording commands!
-                if (FAILED(g_ctx.command_list->Close()))
+                // Execute the swapchain buffer creation commands.
+                if (!close_command_list())
                 {
                     REX_ERROR(LogDirectX, "Failed to close command list");
                     return false;
                 }
+                exec_command_list();
 
-                // Add the command list to the queue for execution
-                ID3D12CommandList* command_lists[] = { g_ctx.command_list.Get() };
-                g_ctx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
-
-                // Wait until resize is complete.
+                // Wait until creation is complete.
                 flush_command_queue();
 
                 // Create viewport to render our image in
@@ -1240,7 +1369,6 @@ namespace rex
 
                 // Cull pixels drawn outside of the backbuffer ( such as UI elements )
                 g_ctx.scissor_rect = { 0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height) };
-
                 return true;
             }
 
@@ -1457,10 +1585,17 @@ namespace rex
             //-------------------------------------------------------------------------
             bool new_frame()
             {
+                // Cycle through the circular frame resource array.
+                g_frame_ctx.curr_frame_resource_index = (g_frame_ctx.curr_frame_resource_index + 1) % g_frame_ctx.num_frame_resources;
+                g_frame_ctx.curr_frame_resource = g_frame_ctx.frame_resources[g_frame_ctx.curr_frame_resource_index];
+
+                auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
+                auto  f = fr.get();
+
                 // Reuse the memory assosiated with command recording.
                 // We can only reset when the associated command lists have finished
                 // execution on the GPU.
-                if (FAILED(g_ctx.command_allocator->Reset()))
+                if (FAILED(f->cmd_list_allocator->Reset()))
                 {
                     REX_ERROR(LogDirectX, "Failed to reset command allocator");
                     return false;
@@ -1469,7 +1604,7 @@ namespace rex
                 // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the 
                 // command list reuses memory.
                 PipelineStateResource pso = get_resource_from_pool_as<PipelineStateResource>(g_ctx.resource_pool, g_ctx.active_pipeline_state_object);
-                if (FAILED(g_ctx.command_list->Reset(g_ctx.command_allocator.Get(), pso.get())))
+                if (FAILED(g_ctx.command_list->Reset(f->cmd_list_allocator.Get(), pso.get())))
                 {
                     REX_ERROR(LogDirectX, "Failed to reset command list");
                     return false;
@@ -1481,10 +1616,6 @@ namespace rex
             //-------------------------------------------------------------------------
             bool end_frame()
             {
-                // Wait until frame commands are complete. This waiting is 
-                // inefficient and is done for simplicity.
-                flush_command_queue();
-
                 return true;
             }
 
