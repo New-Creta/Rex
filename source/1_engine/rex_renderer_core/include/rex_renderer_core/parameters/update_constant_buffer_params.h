@@ -16,13 +16,13 @@ namespace rex
         UpdateConstantBuffer()
             : data(nullptr)
             , data_size(0)
-            , offset(0)
+            , element_index(REX_INVALID_INDEX)
         {
         }
 
         void*   data;
         s32     data_size;
-        s32     offset;
+        s32     element_index;
       };
     } // namespace parameters
   }   // namespace renderer

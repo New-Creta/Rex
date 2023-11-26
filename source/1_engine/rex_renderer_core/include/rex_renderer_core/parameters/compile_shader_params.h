@@ -13,10 +13,10 @@ namespace rex
     {
         namespace parameters
         {
-            rsl::tiny_stack_string s_vertex_entry_point = "VS";
-            rsl::tiny_stack_string s_pixel_entry_point = "PS";
-            rsl::tiny_stack_string s_geometry_entry_point = "GS";
-            rsl::tiny_stack_string s_compute_entry_point = "CS";
+            static rsl::tiny_stack_string s_vertex_entry_point = "VS";
+            static rsl::tiny_stack_string s_pixel_entry_point = "PS";
+            static rsl::tiny_stack_string s_geometry_entry_point = "GS";
+            static rsl::tiny_stack_string s_compute_entry_point = "CS";
 
             struct CompileShader
             {
@@ -40,8 +40,8 @@ namespace rex
                 
                 rsl::small_stack_string shader_name;
                 
-                char8* shader_entry_point;
-                char8* shader_feature_target;
+                rsl::tiny_stack_string shader_entry_point;
+                rsl::tiny_stack_string shader_feature_target;
 
                 char8* shader_code;
                 s64 shader_code_size;

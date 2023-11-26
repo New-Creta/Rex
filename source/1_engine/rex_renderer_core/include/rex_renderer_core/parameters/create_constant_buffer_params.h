@@ -21,7 +21,7 @@ namespace rex
 
                 s32 count;
                 s32 buffer_size;
-                void* data;
+                u8* data;
             };
         }
     }
