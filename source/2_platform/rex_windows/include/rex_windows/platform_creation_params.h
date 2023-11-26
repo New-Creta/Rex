@@ -24,6 +24,7 @@ namespace rex
     bool fullscreen               = false;
 
     s32 max_render_commands       = 1 << 16;
+    s32 max_frames_in_flight      = 3;
     s32 max_fps                   = 60;
   };
 
