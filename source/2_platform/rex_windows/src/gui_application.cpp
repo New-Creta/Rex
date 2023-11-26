@@ -89,7 +89,7 @@ namespace rex
         user_data.window_height = m_window->height();
         user_data.windowed = m_gui_params.fullscreen == false;
 
-        if(renderer::initialize(user_data, m_gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
+        if(renderer::initialize(user_data, m_gui_params.max_render_commands, m_gui_params.max_frames_in_flight) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
@@ -97,7 +97,17 @@ namespace rex
         display_renderer_info();
 
         // call client code so it can get initialized
-        return m_on_initialize();
+        bool result = m_on_initialize();
+
+        if (!result)
+        {
+            return result;
+        }
+
+        // Execute initialization commands!
+        renderer::flush();
+
+        return true;
       }
       void update()
       {
