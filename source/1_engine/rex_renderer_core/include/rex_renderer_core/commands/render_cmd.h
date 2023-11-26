@@ -46,6 +46,7 @@ namespace rex
             CREATE_INDEX_BUFFER,
             CREATE_CONSTANT_BUFFER,
             CREATE_PIPELINE_STATE,
+            CREATE_FRAME_RESOURCE,
             LOAD_SHADER,
             LINK_SHADER,
             COMPILE_SHADER,
