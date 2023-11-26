@@ -8,28 +8,41 @@ namespace rex
 {
     namespace renderer
     {
-        class ConstantBufferResource : public BaseResource<ID3D12Resource>
+        namespace resources
+        {
+            struct ConstantBuffer
+            {
+                ~ConstantBuffer()
+                {
+                    m_uploader->Unmap(0, nullptr);
+                }
+
+                wrl::com_ptr<ID3D12Resource> m_uploader;
+
+                u8* m_mapped_data;
+                s32 m_mapped_data_byte_size;
+            };
+        }
+
+        class ConstantBufferResource : public BaseResource<resources::ConstantBuffer>
         {
         public:
-            ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader)
-                :m_uploader(uploader)
+            ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, u8* mappedData, s32 mappedDataByteSize)
+                :m_constant_buffer({uploader, mappedData, mappedDataByteSize})
             {}
-            ~ConstantBufferResource() override
-            {
-                m_uploader->Unmap(0, nullptr);
-            }
+            ~ConstantBufferResource() override = default;
 
-            ID3D12Resource* get()
+            resources::ConstantBuffer* get()
             {
-                return m_uploader.Get();
+                return &m_constant_buffer;
             }
-            const ID3D12Resource* get() const
+            const resources::ConstantBuffer* get() const
             {
-                return m_uploader.Get();
+                return &m_constant_buffer;
             }
 
         private:
-            wrl::com_ptr<ID3D12Resource> m_uploader;
+            resources::ConstantBuffer m_constant_buffer;
         };
     }
 }
