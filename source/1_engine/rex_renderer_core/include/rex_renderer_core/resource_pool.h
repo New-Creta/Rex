@@ -2,6 +2,7 @@
 
 #include "rex_engine/types.h"
 #include "rex_engine/threading/spin_lock.h"
+#include "rex_engine/diagnostics/assert.h"
 
 #include <rex_std/memory.h>
 #include <rex_std/vector.h>
@@ -54,9 +55,9 @@ namespace rex
         void ResourcePool<T>::validate_and_grow_if_necessary(s32 minCapacity)
         {
             m_lock.lock();
-            if(minCapacity >= m_resources.capacity())
+            if(minCapacity >= m_resources.size())
             {
-                s32 new_cap = minCapacity * 2; // Grow to accommodate the slot
+                s32 new_cap = (minCapacity * 2) + 1; // Grow to accommodate the slot
                 m_resources.resize(new_cap);
             }
             m_lock.unlock();
@@ -91,12 +92,14 @@ namespace rex
         template <typename T>
         T& ResourcePool<T>::operator[](s32 slot)
         {
+            REX_ASSERT_X(slot < m_resources.size(), "Slot is not present in resource pool");
             return m_resources[slot];
         }
         //-----------------------------------------------------------------------
         template <typename T>
         const T& ResourcePool<T>::operator[](s32 slot) const
         {
+            REX_ASSERT_X(slot < m_resources.size(), "Slot is not present in resource pool");
             return m_resources[slot];
         }
     }
