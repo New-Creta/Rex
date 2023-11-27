@@ -34,12 +34,14 @@ namespace rex
         template<typename U, typename T>
         U& get_resource_from_pool_as(ResourcePool<T>& pool, s32 slot)
         {
+            REX_ASSERT_X(U::static_type() == pool[slot]->type(), "Invalid type cast for given resource");
             return static_cast<U&>(*pool[slot]);
         }
         //-----------------------------------------------------------------------
         template<typename U, typename T>
         const U& get_resource_from_pool_as(const ResourcePool<T>& pool, s32 slot)
         {
+            REX_ASSERT_X(U::static_type() == pool[slot]->type(), "Invalid type cast for given resource");
             return static_cast<const U&>(pool[slot]);
         }
 

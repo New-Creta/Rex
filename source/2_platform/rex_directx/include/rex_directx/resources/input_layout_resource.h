@@ -14,6 +14,8 @@ namespace rex
         class InputLayoutResource : public BaseResource<rsl::vector<D3D12_INPUT_ELEMENT_DESC>>
         {
         public:
+            RESOURCE_CLASS_TYPE(InputLayoutResource);
+
             InputLayoutResource(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements)
                 :m_input_elements(elements)
             {}

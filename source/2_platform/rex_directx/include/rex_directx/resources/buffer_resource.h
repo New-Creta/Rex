@@ -24,6 +24,8 @@ namespace rex
         class BufferResource : public BaseResource<resources::Buffer>
         {
         public:
+            RESOURCE_CLASS_TYPE(BufferResource);
+
             BufferResource(const wrl::com_ptr<ID3DBlob>& cpuBuffer, const wrl::com_ptr<ID3D12Resource>& gpuBuffer, const wrl::com_ptr<ID3D12Resource>& uploader, u32 sizeInBytes)
                 :m_buffer_resource({ cpuBuffer , gpuBuffer, uploader, sizeInBytes })
             {}

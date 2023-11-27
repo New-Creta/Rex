@@ -15,13 +15,15 @@ namespace rex
             {
                 wrl::com_ptr<ID3D12CommandAllocator> cmd_list_allocator;
 
-                s32 fence;
+                u64 fence;
             };
         }
 
         class FrameResource : public BaseResource<resources::Frame>
         {
         public:
+            RESOURCE_CLASS_TYPE(FrameResource);
+
             FrameResource(const wrl::com_ptr<ID3D12CommandAllocator>& allocator)
                 :m_frame({allocator, 0})
             {}

@@ -23,6 +23,8 @@ namespace rex
         class ClearStateResource : public BaseResource<resources::ClearState>
         {
         public:
+            RESOURCE_CLASS_TYPE(ClearStateResource);
+
             ClearStateResource(const resources::ClearState& cs)
                 :m_clear_state(cs)
             {}

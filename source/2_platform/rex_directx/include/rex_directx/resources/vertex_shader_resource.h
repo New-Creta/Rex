@@ -19,6 +19,8 @@ namespace rex
         class VertexShaderResource : public BaseResource<resources::VertexShader>
         {
         public:
+            RESOURCE_CLASS_TYPE(VertexShaderResource);
+
             VertexShaderResource(const wrl::com_ptr<ID3DBlob>& vs)
                 :m_vertex_shader({ vs })
             {}

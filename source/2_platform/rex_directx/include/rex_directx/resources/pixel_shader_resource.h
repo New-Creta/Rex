@@ -19,6 +19,8 @@ namespace rex
         class PixelShaderResource : public BaseResource<resources::PixelShader>
         {
         public:
+            RESOURCE_CLASS_TYPE(PixelShaderResource);
+
             PixelShaderResource(const wrl::com_ptr<ID3DBlob>& ps)
                 :m_pixel_shader({ ps })
             {}

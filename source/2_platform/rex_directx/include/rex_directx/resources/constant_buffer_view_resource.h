@@ -3,6 +3,7 @@
 #include "rex_directx/resources/resource.h"
 #include "rex_directx/directx_util.h"
 #include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/memory/memory_allocation.h"
 
 namespace rex
 {
@@ -12,23 +13,40 @@ namespace rex
         {
             struct ConstantBuffer
             {
+                ConstantBuffer(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
+                    :uploader(uploader)
+                    ,mapped_data(nullptr)
+                    ,element_data_byte_size(elementDataByteSize)
+                    ,mapped_data_byte_size(mappedDataByteSize)
+                {}
+
                 ~ConstantBuffer()
                 {
-                    m_uploader->Unmap(0, nullptr);
+                    if (uploader)
+                    {
+                        uploader->Unmap(0, nullptr);
+                    }
+
+                    mapped_data = nullptr;
+                    mapped_data_byte_size = 0;
                 }
 
-                wrl::com_ptr<ID3D12Resource> m_uploader;
+                wrl::com_ptr<ID3D12Resource> uploader;
 
-                u8* m_mapped_data;
-                s32 m_mapped_data_byte_size;
+                u8* mapped_data;
+                s32 mapped_data_byte_size;
+
+                s32 element_data_byte_size;
             };
         }
 
         class ConstantBufferResource : public BaseResource<resources::ConstantBuffer>
         {
         public:
-            ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, u8* mappedData, s32 mappedDataByteSize)
-                :m_constant_buffer({uploader, mappedData, mappedDataByteSize})
+            RESOURCE_CLASS_TYPE(ConstantBufferResource);
+
+            ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
+                :m_constant_buffer(uploader, elementDataByteSize, mappedDataByteSize)
             {}
             ~ConstantBufferResource() override = default;
 

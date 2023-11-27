@@ -6,37 +6,38 @@
 
 namespace rex
 {
-  namespace renderer
-  {
-    namespace resources
+    namespace renderer
     {
-      struct RenderTarget
-      {
-        wrl::com_ptr<ID3D12Resource> render_target;
-        s32 array_index;
-      };
-    } // namespace resources
+        namespace resources
+        {
+            struct RenderTarget
+            {
+                wrl::com_ptr<ID3D12Resource> render_target;
+                s32 array_index;
+            };
+        } // namespace resources
 
-    class RenderTargetResource : public BaseResource<resources::RenderTarget>
-    {
-    public:
-      RenderTargetResource(const wrl::com_ptr<ID3D12Resource>& rt, s32 arrayIndex)
-          : m_render_target({rt, arrayIndex})
-      {
-      }
-      ~RenderTargetResource() override = default;
+        class RenderTargetResource : public BaseResource<resources::RenderTarget>
+        {
+        public:
+            RESOURCE_CLASS_TYPE(RenderTargetResource);
 
-      resources::RenderTarget* get()
-      {
-        return &m_render_target;
-      }
-      const resources::RenderTarget* get() const
-      {
-        return &m_render_target;
-      }
+            RenderTargetResource(const wrl::com_ptr<ID3D12Resource>& rt, s32 arrayIndex)
+                : m_render_target({ rt, arrayIndex })
+            {}
+            ~RenderTargetResource() override = default;
 
-    private:
-      resources::RenderTarget m_render_target;
-    };
-  } // namespace renderer
+            resources::RenderTarget* get()
+            {
+                return &m_render_target;
+            }
+            const resources::RenderTarget* get() const
+            {
+                return &m_render_target;
+            }
+
+        private:
+            resources::RenderTarget m_render_target;
+        };
+    } // namespace renderer
 } // namespace rex

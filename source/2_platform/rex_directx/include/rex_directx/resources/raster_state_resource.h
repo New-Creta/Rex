@@ -12,6 +12,8 @@ namespace rex
         class RasterStateResource : public BaseResource<D3D12_RASTERIZER_DESC>
         {
         public:
+            RESOURCE_CLASS_TYPE(RasterStateResource);
+
             RasterStateResource(const D3D12_RASTERIZER_DESC& rs)
                 :m_raster_state(rs)
             {}
