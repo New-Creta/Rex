@@ -194,15 +194,16 @@ namespace rex
                 :frame_resources()
                 ,curr_frame_resource(REX_INVALID_INDEX)
                 ,curr_frame_resource_index(REX_INVALID_INDEX)
-                ,num_frame_resources(maxFrameResources)
-            {}
+            {
+                REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
+
+                frame_resources.reserve(maxFrameResources);
+            }
 
             rsl::vector<s32> frame_resources;
 
             s32 curr_frame_resource;
             s32 curr_frame_resource_index;
-
-            s32 num_frame_resources;
         };
 
         static const s32 s_num_frame_resources = 3;
@@ -237,6 +238,11 @@ namespace rex
         s32 active_frame()
         {
             return g_frame_ctx.curr_frame_resource;
+        }
+        //-------------------------------------------------------------------------
+        s32 num_frames_in_flight()
+        {
+            return g_frame_ctx.frame_resources.capacity();
         }
 
         namespace backend
@@ -298,6 +304,45 @@ namespace rex
 
             DirectXContext g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
+            static bool g_is_open = true;
+
+            //-------------------------------------------------------------------------
+            bool reset_command_list(ID3D12CommandAllocator* commandAllocator, ID3D12PipelineState* pipelineState)
+            {
+                REX_ASSERT_X(commandAllocator != nullptr, "Invalid frame resource to reset command list");
+
+                if (FAILED(g_ctx.command_list->Reset(commandAllocator, pipelineState)))
+                {
+                    REX_ERROR(LogDirectX, "Failed to reset command list");
+                    return false;
+                }
+
+                g_is_open = true;
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool close_command_list()
+            {
+                if (FAILED(g_ctx.command_list->Close()))
+                {
+                    REX_ERROR(LogDirectX, "Failed to close command list");
+                    return false;
+                }
+
+                g_is_open = false;
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            void exec_command_list()
+            {
+                ID3D12CommandList* command_lists[] = { g_ctx.command_list.Get() };
+                g_ctx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
+            }
+
             //-------------------------------------------------------------------------
             bool create_command_objects()
             {
@@ -327,7 +372,7 @@ namespace rex
                 // Start off in a closed state. This is because the first time we
                 // refer to the command list we will Reset it, and it needs to be closed
                 // before calling Reset.
-                if (FAILED(g_ctx.command_list->Close()))
+                if (close_command_list() == false)
                 {
                     REX_ERROR(LogDirectX, "Failed to close command list");
                     return false;
@@ -442,14 +487,14 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            rsl::unique_ptr<ConstantBufferResource> create_constant_buffer_view(s32 bufferCount, s32 bufferByteSize, u8* bufferData)
+            rsl::unique_ptr<ConstantBufferResource> create_constant_buffer_view(s32 bufferCount, s32 bufferByteSize)
             {
                 s32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
 
                 wrl::com_ptr<ID3D12Resource> constant_buffer_uploader;
 
                 CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
-                CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size);
+                CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size * bufferCount);
 
                 if (FAILED(g_ctx.device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
                 {
@@ -457,7 +502,9 @@ namespace rex
                     return nullptr;
                 }
 
-                if (FAILED(constant_buffer_uploader->Map(0, nullptr, reinterpret_cast<void**>(&bufferData))))
+                rsl::unique_ptr<ConstantBufferResource> constant_buffer_resources = rsl::make_unique<ConstantBufferResource>(constant_buffer_uploader, obj_cb_byte_size, obj_cb_byte_size * bufferCount);
+
+                if (FAILED(constant_buffer_uploader->Map(0, nullptr, reinterpret_cast<void**>(&constant_buffer_resources->get()->mapped_data))))
                 {
                     REX_ERROR(LogDirectX, "Could not map data to commited resource ( constant buffer )");
                     return nullptr;
@@ -481,7 +528,7 @@ namespace rex
 
                 g_ctx.active_constant_buffers += bufferCount;
 
-                return rsl::make_unique<ConstantBufferResource>(constant_buffer_uploader, bufferData, bufferByteSize);
+                return constant_buffer_resources;
             }
 
             //-------------------------------------------------------------------------
@@ -751,35 +798,6 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool reset_command_list()
-            {
-                if (FAILED(g_ctx.command_list->Reset(g_ctx.command_allocator.Get(), nullptr)))
-                {
-                    return false;
-                }
-
-                return true;
-            }
-
-            //-------------------------------------------------------------------------
-            bool close_command_list()
-            {
-                if (FAILED(g_ctx.command_list->Close()))
-                {
-                    return false;
-                }
-
-                return true;
-            }
-
-            //-------------------------------------------------------------------------
-            void exec_command_list()
-            {
-                ID3D12CommandList* command_lists[] = { g_ctx.command_list.Get() };
-                g_ctx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
-            }
-
-            //-------------------------------------------------------------------------
             bool flush_command_queue()
             {
                 // Advance the fence value to mark commands up to this fence point.
@@ -925,7 +943,7 @@ namespace rex
             {
                 REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
-                rsl::unique_ptr<ConstantBufferResource> resource = create_constant_buffer_view(cb.count, cb.buffer_size, cb.data);
+                rsl::unique_ptr<ConstantBufferResource> resource = create_constant_buffer_view(cb.count, cb.buffer_size);
 
                 if (resource == nullptr)
                 {
@@ -1142,7 +1160,7 @@ namespace rex
                 auto& cbr = get_resource_from_pool_as<ConstantBufferResource>(g_ctx.resource_pool, resourceSlot);
                 auto  cs = cbr.get();
 
-                memcpy(&cs->m_mapped_data[updateConstantBuffer.element_index * cbr.get()->m_mapped_data_byte_size], &updateConstantBuffer.data, updateConstantBuffer.data_size);
+                memcpy(&cs->mapped_data[updateConstantBuffer.element_index * cbr.get()->element_data_byte_size], &updateConstantBuffer.data, updateConstantBuffer.data_size);
             }
 
             //-------------------------------------------------------------------------
@@ -1226,6 +1244,12 @@ namespace rex
 #endif
 
                 // Setup frame context
+                if (maxFrameResources <= 0)
+                {
+                    REX_ERROR(LogDirectX, "Unable to initialize renderer when no frame resources are allocated.");
+                    return false;
+                }
+
                 if (maxFrameResources != s_num_frame_resources)
                 {
                     g_frame_ctx = FrameContext(maxFrameResources);
@@ -1326,7 +1350,7 @@ namespace rex
                 // Reuse the memory assosiated with command recording.
                 // We can only reset when the associated command lists have finished
                 // execution on the GPU.
-                if(!reset_command_list())
+                if(!reset_command_list(g_ctx.command_allocator.Get(), nullptr))
                 {
                     REX_ERROR(LogDirectX, "Failed to reset command list");
                     return false;
@@ -1348,11 +1372,12 @@ namespace rex
                 }
 
                 // Execute the swapchain buffer creation commands.
-                if (!close_command_list())
+                if (close_command_list() == false)
                 {
                     REX_ERROR(LogDirectX, "Failed to close command list");
                     return false;
                 }
+
                 exec_command_list();
 
                 // Wait until creation is complete.
@@ -1586,7 +1611,7 @@ namespace rex
             bool new_frame()
             {
                 // Cycle through the circular frame resource array.
-                g_frame_ctx.curr_frame_resource_index = (g_frame_ctx.curr_frame_resource_index + 1) % g_frame_ctx.num_frame_resources;
+                g_frame_ctx.curr_frame_resource_index = (g_frame_ctx.curr_frame_resource_index + 1) % g_frame_ctx.frame_resources.size();
                 g_frame_ctx.curr_frame_resource = g_frame_ctx.frame_resources[g_frame_ctx.curr_frame_resource_index];
 
                 auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
@@ -1603,10 +1628,10 @@ namespace rex
 
                 // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the 
                 // command list reuses memory.
-                PipelineStateResource pso = get_resource_from_pool_as<PipelineStateResource>(g_ctx.resource_pool, g_ctx.active_pipeline_state_object);
-                if (FAILED(g_ctx.command_list->Reset(f->cmd_list_allocator.Get(), pso.get())))
+                auto& pso = get_resource_from_pool_as<PipelineStateResource>(g_ctx.resource_pool, g_ctx.active_pipeline_state_object);
+                if (reset_command_list(f->cmd_list_allocator.Get(), pso.get()) == false)
                 {
-                    REX_ERROR(LogDirectX, "Failed to reset command list");
+                    REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_frame_ctx.curr_frame_resource_index);
                     return false;
                 }
 
@@ -1616,6 +1641,17 @@ namespace rex
             //-------------------------------------------------------------------------
             bool end_frame()
             {
+                auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
+                auto  f = fr.get();
+
+                // Advance the fence value to mark commands up to this fence point.
+                f->fence = ++g_ctx.current_fence;
+
+                // Add an instruction to the command queue to set a new fence point. 
+                // Because we are on the GPU timeline, the new fence point won't be 
+                // set until the GPU finishes processing all the commands prior to this Signal().
+                g_ctx.command_queue->Signal(g_ctx.fence.Get(), g_ctx.current_fence);
+
                 return true;
             }
 
@@ -1647,15 +1683,14 @@ namespace rex
             bool present()
             {
                 // Done recording commands!
-                if (FAILED(g_ctx.command_list->Close()))
+                if (close_command_list() == false)
                 {
                     REX_ERROR(LogDirectX, "Failed to close command list");
                     return false;
                 }
 
                 // Add the command list to the queue for execution
-                ID3D12CommandList* command_lists[] = { g_ctx.command_list.Get() };
-                g_ctx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
+                exec_command_list();
 
                 // Swap the back and front buffers
                 if (FAILED(g_ctx.swapchain->Present(0, 0)))
