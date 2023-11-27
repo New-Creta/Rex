@@ -65,7 +65,11 @@ namespace rex
                     memcpy(cmd.create_buffer_params.data, createBufferParams.data, createBufferParams.buffer_size);
                 }
 
-                add_cmd(cmd);
+                if (!add_cmd(cmd))
+                {
+                    REX_ERROR(LogRendererCore, "Unable to add/exec create buffer command");
+                    return REX_INVALID_INDEX;
+                }
 
                 return resource_slot;
             }
@@ -82,21 +86,18 @@ namespace rex
 
                 memcpy(&cmd.create_buffer_params, (void*)&createBufferParams, sizeof(parameters::CreateConstantBuffer));
 
-                if (createBufferParams.data)
+                if (!add_cmd(cmd))
                 {
-                    // make a copy of the buffers data
-                    cmd.create_buffer_params.data = memory_alloc(createBufferParams.buffer_size);
-                    memcpy(cmd.create_buffer_params.data, createBufferParams.data, createBufferParams.buffer_size);
+                    REX_ERROR(LogRendererCore, "Unable to add/exec create constant buffer command");
+                    return REX_INVALID_INDEX;
                 }
-
-                add_cmd(cmd);
 
                 return resource_slot;
             }
         }
 
         //-------------------------------------------------------------------------
-        void exec_cmd(const RenderCommand& cmd)
+        bool exec_cmd(const RenderCommand& cmd)
         {
             bool result = true;
 
@@ -122,7 +123,6 @@ namespace rex
                 break;
             case CommandType::CREATE_CONSTANT_BUFFER:
                 result = backend::create_constant_buffer(cmd.create_constant_buffer_params, cmd.resource_slot);
-                memory_free(cmd.create_buffer_params.data);
                 break;
             case CommandType::CREATE_PIPELINE_STATE:
                 result = backend::create_pipeline_state_object(cmd.create_pipeline_state_params, cmd.resource_slot);
@@ -234,7 +234,10 @@ namespace rex
             if (!result)
             {
                 REX_ERROR(LogRendererCore, "Failed to execute render command: {}", rsl::enum_refl::enum_name(cmd.command_type));
+                return false;
             }
+
+            return true;
         }
 
         //-------------------------------------------------------------------------
@@ -272,7 +275,11 @@ namespace rex
             cmd.clear_state_params = clearStateParams;
             cmd.resource_slot = resource_slot;
 
-            add_cmd(cmd);
+            if (!add_cmd(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec create clear state command");
+                return REX_INVALID_INDEX;
+            }
 
             return resource_slot;
         }
@@ -289,7 +296,11 @@ namespace rex
 
             memcpy(&cmd.raster_state_params, (void*)&rasterStateParams, sizeof(parameters::RasterState));
 
-            add_cmd(cmd);
+            if (!add_cmd(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec create raster state command");
+                return REX_INVALID_INDEX;
+            }
 
             return resource_slot;
         }
@@ -310,7 +321,11 @@ namespace rex
             cmd.create_input_layout_params.input_layout = (parameters::InputLayoutDescription*)memory_alloc(input_layouts_size);
             memcpy(cmd.create_input_layout_params.input_layout, createInputLayoutParams.input_layout, input_layouts_size);
 
-            add_cmd(cmd);
+            if (!add_cmd(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec create input layout command");
+                return REX_INVALID_INDEX;
+            }
 
             return resource_slot;
         }
@@ -345,7 +360,11 @@ namespace rex
 
             memcpy(&cmd.raster_state_params, (void*)&createPipelineStateParams, sizeof(parameters::CreatePipelineState));
 
-            add_cmd(cmd);
+            if (!add_cmd(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec create pipeline state object command");
+                return REX_INVALID_INDEX;
+            }
 
             return resource_slot;
         }
@@ -360,7 +379,11 @@ namespace rex
             cmd.command_type = CommandType::CREATE_FRAME_RESOURCE;
             cmd.resource_slot = resource_slot;
 
-            add_cmd(cmd);
+            if (!add_cmd(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec create frame resource command");
+                return REX_INVALID_INDEX;
+            }
 
             return resource_slot;
         }
@@ -384,7 +407,11 @@ namespace rex
                 memcpy(cmd.load_shader_params.byte_code, loadShaderParams.byte_code, loadShaderParams.byte_code_size);
             }
 
-            add_cmd(cmd);
+            if (!add_cmd(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec load shader command");
+                return REX_INVALID_INDEX;
+            }
 
             return resource_slot;
         }
@@ -418,7 +445,11 @@ namespace rex
                 c[i].name[len] = '\0';
             }
 
-            add_cmd(cmd);
+            if (!add_cmd(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec link shader command");
+                return REX_INVALID_INDEX;
+            }
 
             return resource_slot;
         }
@@ -435,13 +466,17 @@ namespace rex
 
             memcpy(&cmd.compile_shader_params, (void*)&compileShaderParams, sizeof(parameters::CompileShader));
 
-            add_cmd(cmd);
+            if (!add_cmd(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec compile shader command");
+                return REX_INVALID_INDEX;
+            }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        void update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBufferParams, s32 constantBufferTarget)
+        bool update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBufferParams, s32 constantBufferTarget)
         {
             RenderCommand cmd;
 
@@ -450,7 +485,7 @@ namespace rex
 
             memcpy(&cmd.update_constant_buffer_params, (void*)&updateConstantBufferParams, sizeof(parameters::UpdateConstantBuffer));
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
@@ -466,29 +501,29 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void release_resource(s32 resourceTarget)
+        bool release_resource(s32 resourceTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::RELEASE_RESOURCE;
             cmd.release_resource.resource_index = resourceTarget;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void clear(s32 clearStateTarget)
+        bool clear(s32 clearStateTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::CLEAR;
             cmd.clear.clear_state = clearStateTarget;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void renderer_draw(s32 vertexCount, s32 startVertex, PrimitiveTopology primitiveTopology)
+        bool renderer_draw(s32 vertexCount, s32 startVertex, PrimitiveTopology primitiveTopology)
         {
             RenderCommand cmd;
 
@@ -497,11 +532,11 @@ namespace rex
             cmd.draw.start_vertex = startVertex;
             cmd.draw.primitive_topology = primitiveTopology;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology)
+        bool renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology)
         {
             RenderCommand cmd;
 
@@ -511,11 +546,11 @@ namespace rex
             cmd.draw_indexed.base_vertex = baseVertex;
             cmd.draw_indexed.primitive_topology = primitiveTopology;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology)
+        bool renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology)
         {
             RenderCommand cmd;
 
@@ -527,11 +562,11 @@ namespace rex
             cmd.draw_indexed_instanced.base_vertex = baseVertex;
             cmd.draw_indexed_instanced.primitive_topology = primitiveTopology;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology)
+        bool renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology)
         {
             RenderCommand cmd;
 
@@ -542,22 +577,22 @@ namespace rex
             cmd.draw_instanced.start_vertex = startVertex;
             cmd.draw_instanced.primitive_topology = topology;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_raster_state(s32 rasterStateTarget)
+        bool set_raster_state(s32 rasterStateTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_RASTER_STATE;
             cmd.set_raster_state.raster_state = rasterStateTarget;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_render_targets(s32* colorTargets, s32 numColorTargets, s32 depthTarget)
+        bool set_render_targets(s32* colorTargets, s32 numColorTargets, s32 depthTarget)
         {
             RenderCommand cmd;
 
@@ -566,11 +601,11 @@ namespace rex
             memcpy(&cmd.set_render_target.color, colorTargets, numColorTargets * sizeof(s32));
             cmd.set_render_target.depth = depthTarget;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_render_targets(s32 colorTarget, s32 depthTarget)
+        bool set_render_targets(s32 colorTarget, s32 depthTarget)
         {
             RenderCommand cmd;
 
@@ -579,53 +614,53 @@ namespace rex
             cmd.set_render_target.color[0] = colorTarget;
             cmd.set_render_target.depth = depthTarget;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_viewport(const Viewport& vp)
+        bool set_viewport(const Viewport& vp)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_VIEWPORT;
             memcpy(&cmd.viewport, (void*)&vp, sizeof(Viewport));
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_scissor_rect(const ScissorRect& sr)
+        bool set_scissor_rect(const ScissorRect& sr)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_SCISSOR_RECT;
             memcpy(&cmd.scissor_rect, (void*)&sr, sizeof(ScissorRect));
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_input_layout(s32 inputLayoutTarget)
+        bool set_input_layout(s32 inputLayoutTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_INPUT_LAYOUT;
             cmd.set_input_layout.input_layout = inputLayoutTarget;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_vertex_buffer(s32 vertexBufferTarget, s32 startSlot, s32 stride, s32 offset)
+        bool set_vertex_buffer(s32 vertexBufferTarget, s32 startSlot, s32 stride, s32 offset)
         {
             s32* vertex_buffer_target = &vertexBufferTarget;
             const s32* stride_target = &stride;
             const s32* offset_target = &offset;
 
-            set_vertex_buffers(vertex_buffer_target, 1, startSlot, stride_target, offset_target);
+            return set_vertex_buffers(vertex_buffer_target, 1, startSlot, stride_target, offset_target);
         }
         //-------------------------------------------------------------------------
-        void set_vertex_buffers(s32* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
+        bool set_vertex_buffers(s32* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
         {
             RenderCommand cmd;
 
@@ -645,10 +680,10 @@ namespace rex
                 cmd.set_vertex_buffer.offsets[i] = offsets[i];
             }
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
         //-------------------------------------------------------------------------
-        void set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset)
+        bool set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset)
         {
             RenderCommand cmd;
 
@@ -657,11 +692,11 @@ namespace rex
             cmd.set_index_buffer.format = format;
             cmd.set_index_buffer.offset = offset;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_shader(s32 shaderTarget)
+        bool set_shader(s32 shaderTarget)
         {
             RenderCommand cmd;
 
@@ -669,11 +704,11 @@ namespace rex
 
             cmd.set_shader.shader_index = shaderTarget;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_pipeline_state_object(s32 psoTarget)
+        bool set_pipeline_state_object(s32 psoTarget)
         {
             RenderCommand cmd;
 
@@ -681,11 +716,11 @@ namespace rex
 
             cmd.set_pipeline_state.pipeline_state = psoTarget;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void set_constant_buffer(s32 location, s32 offset)
+        bool set_constant_buffer(s32 location, s32 offset)
         {
             RenderCommand cmd;
 
@@ -694,72 +729,77 @@ namespace rex
             cmd.set_constant_buffer.location = location;
             cmd.set_constant_buffer.offset = offset;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void new_frame()
+        bool new_frame()
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::NEW_FRAME;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void end_frame()
+        bool end_frame()
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::END_FRAME;
 
-            add_cmd(cmd);
+            if (add_cmd(cmd))
+            {
+                // Execute all commands
+                return flush();
+            }
 
-            // Execute all commands
-            flush();
+            return false;
         }
 
         //-------------------------------------------------------------------------
-        void begin_draw()
+        bool begin_draw()
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::BEGIN_DRAW;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void end_draw()
+        bool end_draw()
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::END_DRAW;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void present()
+        bool present()
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::PRESENT;
 
-            add_cmd(cmd);
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        void flush()
+        bool flush()
         {
             RenderCommand* cmd = g_ctx.cmd_buffer.get();
 
-            backend::reset_command_list();
-
             while (cmd)
             {
-                exec_cmd(*cmd);
+                if (exec_cmd(*cmd) == false)
+                {
+                    REX_ERROR(LogRendererCore, "Failed to flush commands");
+                    return false;
+                }
 
                 // break at present
                 if (cmd->command_type == CommandType::PRESENT)
@@ -770,8 +810,7 @@ namespace rex
                 cmd = g_ctx.cmd_buffer.get();
             }
 
-            backend::close_command_list();
-            backend::exec_command_list();
+            return true;
         }
     } // namespace renderer
 } // namespace rex

@@ -57,6 +57,7 @@ namespace rex
         bool            is_depth_0_to_1();
 
         s32             active_frame();
+        s32             num_frames_in_flight();
 
         // public-api will buffer all commands for dispatch on dedicated thread
         s32             create_clear_state(const parameters::ClearState& clearStateParams);
@@ -72,47 +73,43 @@ namespace rex
         s32             link_shader(const parameters::LinkShader& linkShaderParams);
         s32             compile_shader(const parameters::CompileShader& compileShaderParams);
 
-        void            update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBufferParams, s32 constantBufferTarget);
+        bool            update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBufferParams, s32 constantBufferTarget);
         void            wait_for_active_frame();
         void            wait_for_frame(s32 resourceSlot);
 
-        void            release_resource(s32 resourceTarget);
+        bool            release_resource(s32 resourceTarget);
 
-        void            clear(s32 clearStateTarget);
+        bool            clear(s32 clearStateTarget);
 
-        void            renderer_draw(s32 vertexCount, s32 startVertex, PrimitiveTopology primitiveTopology);
-        void            renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology);
-        void            renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology);
-        void            renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology);
+        bool            renderer_draw(s32 vertexCount, s32 startVertex, PrimitiveTopology primitiveTopology);
+        bool            renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology);
+        bool            renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology);
+        bool            renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology);
 
-        void            set_raster_state(s32 rasterStateTarget);
-        void            set_render_targets(s32* colorTargets, s32 numColorTargets, s32 depthTarget);
-        void            set_render_targets(s32 colorTarget, s32 depthTarget);
-        void            set_viewport(const Viewport& vp);
-        void            set_scissor_rect(const ScissorRect& sr);
-        void            set_input_layout(s32 inputLayoutTarget);
-        void            set_vertex_buffer(s32 vertexBufferTarget, s32 startSlot, s32 stride, s32 offset);
-        void            set_vertex_buffers(s32* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
-        void            set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset);
-        void            set_shader(s32 shaderTarget);
-        void            set_pipeline_state_object(s32 psoTarget);
-        void            set_constant_buffer(s32 location, s32 offset);
+        bool            set_raster_state(s32 rasterStateTarget);
+        bool            set_render_targets(s32* colorTargets, s32 numColorTargets, s32 depthTarget);
+        bool            set_render_targets(s32 colorTarget, s32 depthTarget);
+        bool            set_viewport(const Viewport& vp);
+        bool            set_scissor_rect(const ScissorRect& sr);
+        bool            set_input_layout(s32 inputLayoutTarget);
+        bool            set_vertex_buffer(s32 vertexBufferTarget, s32 startSlot, s32 stride, s32 offset);
+        bool            set_vertex_buffers(s32* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
+        bool            set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset);
+        bool            set_shader(s32 shaderTarget);
+        bool            set_pipeline_state_object(s32 psoTarget);
+        bool            set_constant_buffer(s32 location, s32 offset);
 
-        void            new_frame();
-        void            end_frame();
+        bool            new_frame();
+        bool            end_frame();
 
-        void            begin_draw();
-        void            end_draw();
+        bool            begin_draw();
+        bool            end_draw();
 
-        void            present();
-        void            flush();
+        bool            present();
+        bool            flush();
 
         namespace backend
         {
-            bool          reset_command_list();
-            bool          close_command_list();
-            void          exec_command_list();
-
             bool          flush_command_queue();
 
             // Platform specific implementation, implements these function
