@@ -105,7 +105,11 @@ namespace rex
         }
 
         // Execute initialization commands!
-        renderer::flush();
+        if (!renderer::flush())
+        {
+            REX_ERROR(LogWindows, "Unable to flush initialization commands for renderer");
+            return false;
+        }
 
         return true;
       }
