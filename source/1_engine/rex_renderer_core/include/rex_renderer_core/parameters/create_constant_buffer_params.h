@@ -16,12 +16,10 @@ namespace rex
                 CreateConstantBuffer()
                     : count(1)
                     , buffer_size(0)
-                    , data(nullptr)
                 {}
 
                 s32 count;
                 s32 buffer_size;
-                u8* data;
             };
         }
     }
