@@ -19,7 +19,7 @@ namespace rex
         ~RingBuffer();
 
         void initialize(u32 cap);
-        void put(const T& item);
+        bool put(const T& item);
 
         T* get();
         T* check();
@@ -83,11 +83,12 @@ namespace rex
 
     //-------------------------------------------------------------------------
     template <typename T>
-    void RingBuffer<T>::put(const T& item)
+    bool RingBuffer<T>::put(const T& item)
     {
-        
         m_data[m_put_pos] = item;
         m_put_pos = (m_put_pos + 1) % m_capacity;
+
+        return true;
     }
 
     //-------------------------------------------------------------------------
