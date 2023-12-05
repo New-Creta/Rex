@@ -35,6 +35,7 @@ namespace rex
         U& get_resource_from_pool_as(ResourcePool<T>& pool, s32 slot)
         {
             REX_ASSERT_X(U::static_type() == pool[slot]->type(), "Invalid type cast for given resource");
+            REX_ASSERT_X(slot != REX_INVALID_INDEX, "Invalid index given to retrieve resource from resource pool");
             return static_cast<U&>(*pool[slot]);
         }
         //-----------------------------------------------------------------------
@@ -42,6 +43,7 @@ namespace rex
         const U& get_resource_from_pool_as(const ResourcePool<T>& pool, s32 slot)
         {
             REX_ASSERT_X(U::static_type() == pool[slot]->type(), "Invalid type cast for given resource");
+            REX_ASSERT_X(slot != REX_INVALID_INDEX, "Invalid index given to retrieve resource from resource pool");
             return static_cast<const U&>(pool[slot]);
         }
 
