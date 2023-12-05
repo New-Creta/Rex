@@ -482,6 +482,8 @@ namespace rex
         g_regina_ctx.scene = rsl::make_unique<renderer::Scene>();
         g_regina_ctx.scene_renderer = rsl::make_unique<renderer::SceneRenderer>(g_regina_ctx.scene.get());
 
+        renderer::new_frame();
+
         if (!build_clear_state()) return false;
         if (!build_shader_and_input_layout()) return false;
         if (!build_cube_geometry()) return false;
@@ -490,6 +492,8 @@ namespace rex
         if (!build_constant_buffers()) return false;
         if (!build_raster_state()) return false;
         if (!build_pipeline_state_object()) return false;
+
+        renderer::end_frame();
 
         // The window resized, so update the aspect ratio and recompute the projection matrix.
         f32 aspect_ratio = static_cast<f32>(globals::window_info().width) / static_cast<f32>(globals::window_info().height);

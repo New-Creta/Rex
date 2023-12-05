@@ -204,6 +204,9 @@ namespace rex
 
             s32 curr_frame_resource;
             s32 curr_frame_resource_index;
+
+            // Stores the active amount of frames in flight
+            s32 active_frames;
         };
 
         static const s32 s_num_frame_resources = 3;
@@ -1610,28 +1613,47 @@ namespace rex
             //-------------------------------------------------------------------------
             bool new_frame()
             {
-                // Cycle through the circular frame resource array.
-                g_frame_ctx.curr_frame_resource_index = (g_frame_ctx.curr_frame_resource_index + 1) % g_frame_ctx.frame_resources.size();
-                g_frame_ctx.curr_frame_resource = g_frame_ctx.frame_resources[g_frame_ctx.curr_frame_resource_index];
+                g_frame_ctx.active_frames = g_frame_ctx.frame_resources.size();
 
-                auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
-                auto  f = fr.get();
+                if(g_frame_ctx.active_frames != 0)
+                {
+                    // Cycle through the circular frame resource array.
+                    g_frame_ctx.curr_frame_resource_index = (g_frame_ctx.curr_frame_resource_index + 1) % g_frame_ctx.frame_resources.size();
+                    g_frame_ctx.curr_frame_resource       = g_frame_ctx.frame_resources[g_frame_ctx.curr_frame_resource_index];
 
-                // Reuse the memory assosiated with command recording.
-                // We can only reset when the associated command lists have finished
-                // execution on the GPU.
-                if (FAILED(f->cmd_list_allocator->Reset()))
+                    auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
+                    auto f   = fr.get();
+
+                    // Reuse the memory assosiated with command recording.
+                    // We can only reset when the associated command lists have finished
+                    // execution on the GPU.
+                    if(FAILED(f->cmd_list_allocator->Reset()))
+                    {
+                        REX_ERROR(LogDirectX, "Failed to reset command allocator");
+                        return false;
+                    }
+
+                    // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the
+                    // command list reuses memory.
+                    auto& pso = get_resource_from_pool_as<PipelineStateResource>(g_ctx.resource_pool, g_ctx.active_pipeline_state_object);
+                    if(reset_command_list(f->cmd_list_allocator.Get(), pso.get()) == false)
+                    {
+                        REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_frame_ctx.curr_frame_resource_index);
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                if(FAILED(g_ctx.command_allocator->Reset()))
                 {
                     REX_ERROR(LogDirectX, "Failed to reset command allocator");
                     return false;
                 }
 
-                // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the 
-                // command list reuses memory.
-                auto& pso = get_resource_from_pool_as<PipelineStateResource>(g_ctx.resource_pool, g_ctx.active_pipeline_state_object);
-                if (reset_command_list(f->cmd_list_allocator.Get(), pso.get()) == false)
+                if(reset_command_list(g_ctx.command_allocator.Get(), nullptr) == false)
                 {
-                    REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_frame_ctx.curr_frame_resource_index);
+                    REX_ERROR(LogDirectX, "Failed to reset command list");
                     return false;
                 }
 
@@ -1641,14 +1663,22 @@ namespace rex
             //-------------------------------------------------------------------------
             bool end_frame()
             {
-                auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
-                auto  f = fr.get();
+                if(g_frame_ctx.active_frames != 0)
+                {
+                    auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
+                    auto f   = fr.get();
 
-                // Advance the fence value to mark commands up to this fence point.
-                f->fence = ++g_ctx.current_fence;
+                    // Advance the fence value to mark commands up to this fence point.
+                    f->fence = ++g_ctx.current_fence;
+                }
+                else
+                {
+                    // Advance the fence value to mark commands up to this fence point.
+                    ++g_ctx.current_fence;
+                }
 
-                // Add an instruction to the command queue to set a new fence point. 
-                // Because we are on the GPU timeline, the new fence point won't be 
+                // Add an instruction to the command queue to set a new fence point.
+                // Because we are on the GPU timeline, the new fence point won't be
                 // set until the GPU finishes processing all the commands prior to this Signal().
                 g_ctx.command_queue->Signal(g_ctx.fence.Get(), g_ctx.current_fence);
 
