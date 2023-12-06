@@ -160,21 +160,19 @@ namespace rex
                 backend::end_draw();
                 break;
             case CommandType::DRAW:
-                backend::draw(cmd.draw.vertex_count, cmd.draw.start_vertex, cmd.draw.primitive_topology);
+                backend::draw(cmd.draw.vertex_count, cmd.draw.start_vertex);
                 break;
             case CommandType::DRAW_INDEXED:
                 backend::draw_indexed(cmd.draw_indexed.index_count
                     , cmd.draw_indexed.start_index
-                    , cmd.draw_indexed.base_vertex
-                    , cmd.draw_indexed.primitive_topology);
+                    , cmd.draw_indexed.base_vertex);
                 break;
             case CommandType::DRAW_INDEXED_INSTANCED:
                 backend::draw_indexed_instanced(cmd.draw_indexed_instanced.instance_count
                     , cmd.draw_indexed_instanced.start_instance
                     , cmd.draw_indexed_instanced.index_count
                     , cmd.draw_indexed_instanced.start_index
-                    , cmd.draw_indexed_instanced.base_vertex
-                    , cmd.draw_indexed_instanced.primitive_topology);
+                    , cmd.draw_indexed_instanced.base_vertex);
                 break;
             case CommandType::SET_RENDER_TARGETS:
                 result = backend::set_render_targets(cmd.set_render_target.color
@@ -216,6 +214,9 @@ namespace rex
                 break;
             case CommandType::SET_CONSTANT_BUFFER:
                 result = backend::set_constant_buffer(cmd.set_constant_buffer.target, cmd.set_constant_buffer.location);
+                break;
+            case CommandType::SET_PRIMITIVE_TOPOLOGY:
+                result = backend::set_primitive_topology(cmd.topology);
                 break;
 
             case CommandType::NEW_FRAME:
@@ -552,20 +553,19 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool renderer_draw(s32 vertexCount, s32 startVertex, PrimitiveTopology primitiveTopology)
+        bool renderer_draw(s32 vertexCount, s32 startVertex)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::DRAW;
             cmd.draw.vertex_count = vertexCount;
             cmd.draw.start_vertex = startVertex;
-            cmd.draw.primitive_topology = primitiveTopology;
 
             return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        bool renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology)
+        bool renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex)
         {
             RenderCommand cmd;
 
@@ -573,13 +573,12 @@ namespace rex
             cmd.draw_indexed.index_count = indexCount;
             cmd.draw_indexed.start_index = startIndex;
             cmd.draw_indexed.base_vertex = baseVertex;
-            cmd.draw_indexed.primitive_topology = primitiveTopology;
 
             return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        bool renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology)
+        bool renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex)
         {
             RenderCommand cmd;
 
@@ -589,13 +588,12 @@ namespace rex
             cmd.draw_indexed_instanced.index_count = indexCount;
             cmd.draw_indexed_instanced.start_index = startIndex;
             cmd.draw_indexed_instanced.base_vertex = baseVertex;
-            cmd.draw_indexed_instanced.primitive_topology = primitiveTopology;
 
             return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        bool renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology)
+        bool renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance)
         {
             RenderCommand cmd;
 
@@ -604,7 +602,6 @@ namespace rex
             cmd.draw_instanced.start_instance = startInstance;
             cmd.draw_instanced.vertex_count = vertexCount;
             cmd.draw_instanced.start_vertex = startVertex;
-            cmd.draw_instanced.primitive_topology = topology;
 
             return add_cmd(cmd);
         }
@@ -757,6 +754,18 @@ namespace rex
 
             cmd.set_constant_buffer.target = constantBufferTarget;
             cmd.set_constant_buffer.location = location;
+
+            return add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        bool set_primitive_topology(PrimitiveTopology primitiveTopology)
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::SET_PRIMITIVE_TOPOLOGY;
+
+            cmd.topology = primitiveTopology;
 
             return add_cmd(cmd);
         }

@@ -15,12 +15,10 @@ namespace rex
                 Draw()
                     : vertex_count(0)
                     , start_vertex(REX_INVALID_INDEX)
-                    , primitive_topology(PrimitiveTopology::NONE)
                 {}
 
                 s32 vertex_count;
                 s32 start_vertex;
-                PrimitiveTopology primitive_topology;
             };
         }
     }

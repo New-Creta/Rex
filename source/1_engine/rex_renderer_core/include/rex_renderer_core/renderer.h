@@ -84,10 +84,10 @@ namespace rex
 
         bool            clear(s32 clearStateTarget);
 
-        bool            renderer_draw(s32 vertexCount, s32 startVertex, PrimitiveTopology primitiveTopology);
-        bool            renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology);
-        bool            renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology primitiveTopology);
-        bool            renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology);
+        bool            renderer_draw(s32 vertexCount, s32 startVertex);
+        bool            renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex);
+        bool            renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex);
+        bool            renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance);
 
         bool            set_raster_state(s32 rasterStateTarget);
         bool            set_render_targets(s32* colorTargets, s32 numColorTargets, s32 depthTarget);
@@ -101,6 +101,7 @@ namespace rex
         bool            set_shader(s32 shaderTarget);
         bool            set_pipeline_state_object(s32 psoTarget);
         bool            set_constant_buffer(s32 constantBufferTarget, s32 location);
+        bool            set_primitive_topology(PrimitiveTopology primitiveTopology);
 
         bool            new_frame();
         bool            end_frame();
@@ -143,10 +144,10 @@ namespace rex
             bool  	      initialize(const OutputWindowUserData& userData, s32 maxFrameResources, s32 fbColorTargetSlot, s32 bbColorTargetSlot, s32 depthTargetSlot);
             void          shutdown();
 
-            void          draw(s32 vertexCount, s32 startVertex, PrimitiveTopology topology);
-            void          draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology topology);
-            void          draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology);
-            void          draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology topology);
+            void          draw(s32 vertexCount, s32 startVertex);
+            void          draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex);
+            void          draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance);
+            void          draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex);
 
             bool          set_render_targets(const s32* const colorTargets, s32 numColorTargets, s32 depthTarget);
             bool          set_input_layout(s32 inputLayoutSlot);
@@ -158,6 +159,7 @@ namespace rex
             bool          set_shader(s32 shaderIndex);
             bool          set_raster_state(s32 rasterStateIndex);
             bool          set_pipeline_state_object(s32 psoTarget);
+            bool          set_primitive_topology(PrimitiveTopology primitiveTopology);
 
             // functions to synchronize the render and main threads
             bool          new_frame();

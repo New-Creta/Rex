@@ -69,6 +69,7 @@ namespace rex
             SET_RASTER_STATE,
             SET_PIPELINE_STATE,
             SET_CONSTANT_BUFFER,
+            SET_PRIMITIVE_TOPOLOGY,
             NEW_FRAME,
             END_FRAME,
             PRESENT,
@@ -121,6 +122,7 @@ namespace rex
 
                 Viewport                            viewport;
                 ScissorRect                         scissor_rect;
+                PrimitiveTopology                   topology;
             };
         };
     }

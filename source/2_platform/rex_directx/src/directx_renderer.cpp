@@ -1536,32 +1536,30 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            void draw(s32 /*vertexCount*/, s32 /*startVertex*/, PrimitiveTopology /*topology*/)
+            void draw(s32 /*vertexCount*/, s32 /*startVertex*/)
             {
                 REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
             }
 
             //-------------------------------------------------------------------------
-            void draw_indexed(s32 /*indexCount*/, s32 /*startIndex*/, s32 /*baseVertex*/, PrimitiveTopology /*topology*/)
+            void draw_indexed(s32 /*indexCount*/, s32 /*startIndex*/, s32 /*baseVertex*/)
             {
                 REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
             }
 
             //-------------------------------------------------------------------------
-            void draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex, PrimitiveTopology topology)
+            void draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex)
             {
                 REX_ASSERT_X(g_ctx.active_shader_program != REX_INVALID_INDEX, "Call renderer::set_shader before issuing a draw command");
 
-                g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
                 g_ctx.command_list->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstance);
             }
 
             //-------------------------------------------------------------------------
-            void draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance, PrimitiveTopology topology)
+            void draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance)
             {
                 REX_ASSERT_X(g_ctx.active_shader_program != REX_INVALID_INDEX, "Call renderer::set_shader before issuing a draw command");
 
-                g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
                 g_ctx.command_list->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
             }
 
@@ -1711,6 +1709,14 @@ namespace rex
                 auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetGPUDescriptorHandleForHeapStart());
                 cbv_handle.Offset(buffer_resource.get()->buffer_index, g_ctx.cbv_srv_uav_desc_size);
                 g_ctx.command_list->SetGraphicsRootDescriptorTable(location, cbv_handle);
+
+                return true;
+            }
+
+            //-------------------------------------------------------------------------
+            bool set_primitive_topology(PrimitiveTopology topology)
+            {
+                g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
 
                 return true;
             }

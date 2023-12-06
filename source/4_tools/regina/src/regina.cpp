@@ -17,6 +17,8 @@
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/memory/memory_allocation.h"
+#include "rex_engine/primitives/mesh_factory.h"
+#include "rex_engine/primitives/box.h"
 
 #include "rex_std/string.h"
 #include "rex_std_extra/memory/memory_size.h"
@@ -99,26 +101,26 @@ namespace rex
     //-------------------------------------------------------------------------
     s32 get_active_object_constant_buffer_for_frame(s32 frame)
     {
-        auto it = std::find_if(std::cbegin(g_regina_ctx.frame_resource_data), std::cend(g_regina_ctx.frame_resource_data), 
+        auto it = rsl::find_if(rsl::cbegin(g_regina_ctx.frame_resource_data), rsl::cend(g_regina_ctx.frame_resource_data), 
             [frame](const FrameData& data)
         {
                 return frame == data.frame;
         });
 
-        return it != std::cend(g_regina_ctx.frame_resource_data)
+        return it != rsl::cend(g_regina_ctx.frame_resource_data)
             ? it->object_constant_buffer
             : REX_INVALID_INDEX;
     }
     //-------------------------------------------------------------------------
     s32 get_active_pass_constant_buffer_for_frame(s32 frame)
     {
-        auto it = std::find_if(std::cbegin(g_regina_ctx.frame_resource_data), std::cend(g_regina_ctx.frame_resource_data),
+        auto it = rsl::find_if(rsl::cbegin(g_regina_ctx.frame_resource_data), rsl::cend(g_regina_ctx.frame_resource_data),
             [frame](const FrameData& data)
             {
                 return frame == data.frame;
             });
 
-        return it != std::cend(g_regina_ctx.frame_resource_data)
+        return it != rsl::cend(g_regina_ctx.frame_resource_data)
             ? it->pass_constant_buffer
             : REX_INVALID_INDEX;
     }
@@ -221,54 +223,30 @@ namespace rex
     //-------------------------------------------------------------------------
     bool build_cube_geometry()
     {
-        rsl::array<renderer::directx::VertexPosCol, 8> vertices =
+        auto box = mesh_factory::create_box<u16>(1.5f, 0.5f, 1.5f, 0);
+
+        auto total_vertex_count = box.vertices().size();
+        auto total_index_count = box.indices().size();
+
+        rsl::vector<renderer::directx::VertexPosCol> box_vertices((rsl::Capacity)total_vertex_count);
+        for (const mesh_factory::Vertex& v : box.vertices())
         {
-            renderer::directx::VertexPosCol({ DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f), DirectX::XMFLOAT4(DirectX::Colors::White) }),
-            renderer::directx::VertexPosCol({ DirectX::XMFLOAT3(-1.0f, +1.0f, -1.0f), DirectX::XMFLOAT4(DirectX::Colors::Black) }),
-            renderer::directx::VertexPosCol({ DirectX::XMFLOAT3(+1.0f, +1.0f, -1.0f), DirectX::XMFLOAT4(DirectX::Colors::Red) }),
-            renderer::directx::VertexPosCol({ DirectX::XMFLOAT3(+1.0f, -1.0f, -1.0f), DirectX::XMFLOAT4(DirectX::Colors::Green) }),
-            renderer::directx::VertexPosCol({ DirectX::XMFLOAT3(-1.0f, -1.0f, +1.0f), DirectX::XMFLOAT4(DirectX::Colors::Blue) }),
-            renderer::directx::VertexPosCol({ DirectX::XMFLOAT3(-1.0f, +1.0f, +1.0f), DirectX::XMFLOAT4(DirectX::Colors::Yellow) }),
-            renderer::directx::VertexPosCol({ DirectX::XMFLOAT3(+1.0f, +1.0f, +1.0f), DirectX::XMFLOAT4(DirectX::Colors::Cyan) }),
-            renderer::directx::VertexPosCol({ DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f), DirectX::XMFLOAT4(DirectX::Colors::Magenta) })
-        };
+            renderer::directx::VertexPosCol nv({ DirectX::XMFLOAT3(v.position.x, v.position.y, v.position.z), DirectX::XMFLOAT4(DirectX::Colors::White)});
+            box_vertices.push_back(nv);
+        }
 
-        rsl::array<u16, 36> indices =
-        {
-            // front face
-            0, 1, 2,
-            0, 2, 3,
+        rsl::vector<u16> box_indices((rsl::Capacity)total_index_count);
+        box_indices.insert(box_indices.end(), rsl::begin(box.indices()), rsl::end(box.indices()));
 
-            // back face
-            4, 6, 5,
-            4, 7, 6,
-
-            // left face
-            4, 5, 1,
-            4, 1, 0,
-
-            // right face
-            3, 2, 6,
-            3, 6, 7,
-
-            // top face
-            1, 5, 6,
-            1, 6, 2,
-
-            // bottom face
-            4, 0, 3,
-            4, 3, 7
-        };
-
-        const u32 vb_byte_size = (u32)vertices.size() * sizeof(renderer::directx::VertexPosCol);
-        const u32 ib_byte_size = (u32)indices.size() * sizeof(u16);
+        const u32 vb_byte_size = (u32)box_vertices.size() * sizeof(renderer::directx::VertexPosCol);
+        const u32 ib_byte_size = (u32)box_indices.size() * sizeof(u16);
 
         g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>();
         g_regina_ctx.mesh_cube->name = rsl::medium_stack_string("box_geometry");
 
-        renderer::parameters::CreateBuffer v_create_buffer_params = create_buffer_parameters<renderer::directx::VertexPosCol>(vertices.data(), vertices.size());
+        renderer::parameters::CreateBuffer v_create_buffer_params = create_buffer_parameters<renderer::directx::VertexPosCol>(box_vertices.data(), box_vertices.size());
         g_regina_ctx.mesh_cube->vertex_buffer = renderer::create_vertex_buffer(v_create_buffer_params);
-        renderer::parameters::CreateBuffer i_create_buffer_params = create_buffer_parameters<u16>(indices.data(), indices.size());
+        renderer::parameters::CreateBuffer i_create_buffer_params = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
         g_regina_ctx.mesh_cube->index_buffer = renderer::create_index_buffer(i_create_buffer_params);
 
         g_regina_ctx.mesh_cube->vertex_byte_stride = sizeof(renderer::directx::VertexPosCol);
@@ -277,7 +255,7 @@ namespace rex
         g_regina_ctx.mesh_cube->index_buffer_byte_size = ib_byte_size;
 
         renderer::Submesh submesh;
-        submesh.index_count = (UINT)indices.size();
+        submesh.index_count = (UINT)box_indices.size();
         submesh.start_index_location = 0;
         submesh.base_vertex_location = 0;
 
@@ -519,7 +497,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void draw()
     {
-        Viewport vp = { 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 1.0f };
+        Viewport vp = { 0.0f, 0.0f, (f32)globals::window_info().width, (f32)globals::window_info().height, 0.0f, 1.0f};
         ScissorRect sr = { vp.top_left_x, vp.top_left_y, vp.width, vp.height };
 
         renderer::set_pipeline_state_object(g_regina_ctx.pso);
@@ -536,16 +514,18 @@ namespace rex
 
         renderer::set_shader(g_regina_ctx.shader_program);
 
-        s32 curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
         s32 curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
 
-        renderer::set_constant_buffer(curr_object_cb, 0);
         renderer::set_constant_buffer(curr_pass_cb, 1);
 
         renderer::set_vertex_buffer(g_regina_ctx.mesh_cube->vertex_buffer, 0, 0, 0);
         renderer::set_index_buffer(g_regina_ctx.mesh_cube->index_buffer, renderer::IndexBufferFormat::R16_UINT, 0);
+        renderer::set_primitive_topology(renderer::PrimitiveTopology::TRIANGLELIST);
 
-        renderer::renderer_draw_indexed_instanced(g_regina_ctx.mesh_cube->draw_args[rsl::small_stack_string("box")].index_count, 1, 0, 0, 0, renderer::PrimitiveTopology::TRIANGLELIST);
+        s32 curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
+        renderer::set_constant_buffer(curr_object_cb, 0);
+
+        renderer::renderer_draw_indexed_instanced(1, 0, g_regina_ctx.mesh_cube->draw_args[rsl::small_stack_string("box")].index_count, 0, 0);
 
         renderer::end_draw();
 
