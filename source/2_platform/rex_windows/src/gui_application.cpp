@@ -96,18 +96,41 @@ namespace rex
 
         display_renderer_info();
 
+        // if the client calls render commands some preparation is required before 
+        // we can actually execute those commands.
+        // 
+        // this function does this preparation.
+        // 
+        // eg: on DX12 we require to reset and allow the command list to record commands
+        if (!renderer::prepare_user_initialization())
+        {
+            REX_ERROR(LogWindows, "Unable to start drawing frame");
+            return false;
+        }
+
         // call client code so it can get initialized
         bool result = m_on_initialize();
-
+        
         if (!result)
         {
             return result;
         }
 
-        // Execute initialization commands!
+        // if the client had called render commands some closing up has to be done before
+        // we can actually execute these commands.
+        //
+        // this function does the close
+        //
+        // eg: on DX12 we require to close the command list and execute them
+        if (!renderer::finish_user_initialization())
+        {
+            REX_ERROR(LogWindows, "Unable to end draw on current frame");
+            return false;
+        }
+
         if (!renderer::flush())
         {
-            REX_ERROR(LogWindows, "Unable to flush initialization commands for renderer");
+            REX_ERROR(LogWindows, "Unable to flush all commands");
             return false;
         }
 
