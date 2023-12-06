@@ -168,7 +168,7 @@ namespace rex
     {
         renderer::parameters::ClearState create_clear_state_params;
 
-        create_clear_state_params.rgba = { 0.0f, 0.0, 0.5f, 1.0f };
+        create_clear_state_params.rgba = { 0.0f, 0.0, 1.0, 1.0f };
         create_clear_state_params.depth = 1.0f;
         create_clear_state_params.stencil = 0x00;
 
@@ -299,6 +299,14 @@ namespace rex
         cube_r_item.start_index_location = cube_r_item.geometry->draw_args[rsl::small_stack_string("box")].start_index_location;
         cube_r_item.base_vertex_location = cube_r_item.geometry->draw_args[rsl::small_stack_string("box")].base_vertex_location;
 
+        // Dirty flag indicating the object data has changed and we need to update the constant buffer.
+        // Because we have an object cbuffer for each FrameResource, we have to apply the
+        // update to each FrameResource. 
+        // 
+        // Thus, when we modify object data we should set NumFramesDirty = gNumFrameResources 
+        // so that each frame resource gets the update.
+        cube_r_item.num_frames_dirty = renderer::num_frames_in_flight();
+
         g_regina_ctx.scene->add_render_item(rsl::move(cube_r_item));
 
         return true;
@@ -325,14 +333,18 @@ namespace rex
         // Need a CBV descriptor for each object for each frame resource.
         for (s32 frame = 0; frame < renderer::num_frames_in_flight(); ++frame)
         {
-            renderer::parameters::CreateConstantBuffer create_const_buffer_params;
+            for (s32 i = 0; i < num_render_items; ++i)
+            {
+                renderer::parameters::CreateConstantBuffer create_const_buffer_params;
 
-            create_const_buffer_params.count = num_render_items;
-            create_const_buffer_params.buffer_size = sizeof(ObjectConstants);
+                create_const_buffer_params.count = num_render_items;
+                create_const_buffer_params.buffer_size = sizeof(ObjectConstants);
+                create_const_buffer_params.array_index = (frame * num_render_items) + i;
 
-            s32 object_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
+                s32 object_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
 
-            g_regina_ctx.frame_resource_data[frame].object_constant_buffer = object_constant_buffer;
+                g_regina_ctx.frame_resource_data[frame].object_constant_buffer = object_constant_buffer;
+            }
         }
 
         // Last three descriptors are the pass CBVs for each frame resource.
@@ -342,6 +354,7 @@ namespace rex
 
             create_const_buffer_params.count = 1;
             create_const_buffer_params.buffer_size = sizeof(PassConstants);
+            create_const_buffer_params.array_index = g_regina_ctx.frame_resource_data.size() + frame;
 
             s32 pass_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
 
@@ -473,8 +486,6 @@ namespace rex
         g_regina_ctx.scene = rsl::make_unique<renderer::Scene>();
         g_regina_ctx.scene_renderer = rsl::make_unique<renderer::SceneRenderer>(g_regina_ctx.scene.get());
 
-        renderer::new_frame();
-
         if (!build_clear_state()) return false;
         if (!build_shader_and_input_layout()) return false;
         if (!build_cube_geometry()) return false;
@@ -483,8 +494,6 @@ namespace rex
         if (!build_constant_buffers()) return false;
         if (!build_raster_state()) return false;
         if (!build_pipeline_state_object()) return false;
-
-        renderer::end_frame();
 
         // The window resized, so update the aspect ratio and recompute the projection matrix.
         f32 aspect_ratio = static_cast<f32>(globals::window_info().width) / static_cast<f32>(globals::window_info().height);
@@ -516,7 +525,7 @@ namespace rex
         renderer::set_pipeline_state_object(g_regina_ctx.pso);
         renderer::new_frame();
 
-        renderer::set_render_targets(globals::default_targets_info().back_buffer_color, globals::default_targets_info().depth_buffer);
+        renderer::set_render_targets(globals::default_targets_info().back_buffer_color , globals::default_targets_info().depth_buffer);
         renderer::set_viewport(vp);
         renderer::set_scissor_rect(sr);
         renderer::set_raster_state(g_regina_ctx.solid_raster_state);
@@ -526,7 +535,13 @@ namespace rex
         renderer::clear(g_regina_ctx.clear_state);
 
         renderer::set_shader(g_regina_ctx.shader_program);
-        renderer::set_constant_buffer(0, 0);
+
+        s32 curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
+        s32 curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
+
+        renderer::set_constant_buffer(curr_object_cb, 0);
+        renderer::set_constant_buffer(curr_pass_cb, 1);
+
         renderer::set_vertex_buffer(g_regina_ctx.mesh_cube->vertex_buffer, 0, 0, 0);
         renderer::set_index_buffer(g_regina_ctx.mesh_cube->index_buffer, renderer::IndexBufferFormat::R16_UINT, 0);
 
@@ -536,6 +551,8 @@ namespace rex
 
         renderer::present();
         renderer::end_frame();
+
+        renderer::flush();
     }
     //-------------------------------------------------------------------------
     void shutdown()
