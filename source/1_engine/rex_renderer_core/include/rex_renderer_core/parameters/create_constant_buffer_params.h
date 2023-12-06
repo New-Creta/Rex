@@ -16,10 +16,12 @@ namespace rex
                 CreateConstantBuffer()
                     : count(1)
                     , buffer_size(0)
+                    , array_index(REX_INVALID_INDEX)
                 {}
 
                 s32 count;
                 s32 buffer_size;
+                s32 array_index;
             };
         }
     }

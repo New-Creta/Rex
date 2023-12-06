@@ -13,11 +13,12 @@ namespace rex
         {
             struct ConstantBuffer
             {
-                ConstantBuffer(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
+                ConstantBuffer(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize, s32 bufferIndex)
                     :uploader(uploader)
                     ,mapped_data(nullptr)
                     ,element_data_byte_size(elementDataByteSize)
                     ,mapped_data_byte_size(mappedDataByteSize)
+                    ,buffer_index(bufferIndex)
                 {}
 
                 ~ConstantBuffer()
@@ -37,6 +38,8 @@ namespace rex
                 s32 mapped_data_byte_size;
 
                 s32 element_data_byte_size;
+
+                s32 buffer_index;
             };
         }
 
@@ -45,8 +48,8 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(ConstantBufferResource);
 
-            ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
-                :m_constant_buffer(uploader, elementDataByteSize, mappedDataByteSize)
+            ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize, s32 bufferIndex)
+                :m_constant_buffer(uploader, elementDataByteSize, mappedDataByteSize, bufferIndex)
             {}
             ~ConstantBufferResource() override = default;
 
