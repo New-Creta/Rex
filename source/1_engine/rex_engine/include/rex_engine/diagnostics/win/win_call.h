@@ -57,7 +57,14 @@ namespace rex
 
   #define WIN_CALL_IGNORE(function, errorSuccess) rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, errorSuccess, __FILE__, __FUNCTION__, __LINE__)
 
+  // This is just a wrapper around a Win32 call, it will log if something happened and return the result of the function call
   #define WIN_CALL(function)    rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, ERROR_SUCCESS, __FILE__, __FUNCTION__, __LINE__)
+
+  // These two macros do exactly the same thing as WIN_CALL the only difference is that it will check if it was successfull or not.
+  // if (WIN_FAILED(...))
+  // {
+  //     // Do some additional logic here
+  // }
   #define WIN_SUCCESS(function) rex::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
   #define WIN_FAILED(function)  rex::win::WinCall(function, __FILE__, __FUNCTION__, __LINE__).has_failed()
 
