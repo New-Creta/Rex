@@ -3,6 +3,7 @@
 #include "rex_engine/types.h"
 
 #include <rex_std/vector.h>
+#include <rex_std_extra/utility/casting.h>
 
 #include <glm/glm.hpp>
 
@@ -12,6 +13,21 @@ namespace rex
     {
         struct Vertex
         {
+            Vertex()
+                :position()
+                ,normal()
+                ,tangent()
+                ,uv()
+            {}
+            Vertex(f32 xp, f32 yp, f32 zp, f32 xn, f32 yn, f32 zn, f32 xt, f32 yt, f32 zt, f32 xu, f32 yu)
+                :position(xp, yp, zp)
+                ,normal(xn, yn, zn)
+                ,tangent(xt, yt, zt)
+                ,uv(xu, yu)
+            {
+
+            }
+
             glm::vec3 position;
             glm::vec3 normal;
             glm::vec3 tangent;
@@ -27,8 +43,8 @@ namespace rex
             MeshData();
             MeshData(rsl::vector<Vertex>&& vertices, rsl::vector<index_type>&& indices);
 
-            void assign_vertices(Vertex* vertices, u32 numVerticess);
-            void assign_indices(index_type* indices, u32 numIndices);
+            void assign_vertices(const Vertex* vertices, u32 numVerticess);
+            void assign_indices(const index_type* indices, u32 numIndices);
 
             void add_vertex(const Vertex& v);
             void add_index(index_type i);
@@ -59,21 +75,25 @@ namespace rex
         //-----------------------------------------------------------------------
         template<typename T>
         MeshData<T>::MeshData(rsl::vector<Vertex>&& vertices, rsl::vector<MeshData<T>::index_type>&& indices)
-            :m_vertices(std::move(vertices))
-            ,m_indices(std::move(indices))
+            :m_vertices(rsl::move(vertices))
+            ,m_indices(rsl::move(indices))
         {}
 
         //-----------------------------------------------------------------------
         template<typename T>
-        void MeshData<T>::assign_vertices(Vertex* vertices, u32 numVertices)
+        void MeshData<T>::assign_vertices(const Vertex* vertices, u32 numVertices)
         {
-            m_vertices.assign(&vertices[0], &vertices[numVertices]);
+            //m_vertices.assign(&vertices[0], &vertices[numVertices]);
+            for (u32 i = 0; i < numVertices; ++i)
+                m_vertices.push_back(vertices[i]);
         }
         //-----------------------------------------------------------------------
         template<typename T>
-        void MeshData<T>::assign_indices(MeshData<T>::index_type* indices, u32 numIndices)
+        void MeshData<T>::assign_indices(const MeshData<T>::index_type* indices, u32 numIndices)
         {
-            m_indices.assign(&indices[0], &indices[numIndices]);
+            //m_indices.assign(&indices[0], &indices[numIndices]);
+            for (u32 i = 0; i < numIndices; ++i)
+                m_indices.push_back(indices[i]);
         }
 
         //-----------------------------------------------------------------------
@@ -129,13 +149,13 @@ namespace rex
         }
         //-----------------------------------------------------------------------
         template<typename T>
-        const rsl::vector<MeshData<T>::index_type>& MeshData<T>::indices() const
+        const rsl::vector<typename MeshData<T>::index_type>& MeshData<T>::indices() const
         {
             return m_indices;
         }
         //-----------------------------------------------------------------------
         template<typename T>
-        rsl::vector<MeshData<T>::index_type>& MeshData<T>::indices()
+        rsl::vector<typename MeshData<T>::index_type>& MeshData<T>::indices()
         {
             return m_indices;
         }
@@ -174,8 +194,8 @@ namespace rex
         	// *-----*-----*
             // v0    m2     v2
 
-            u32 num_tris = input_copy.indices().size() / 3;
-            for (u32 i = 0; i < num_tris; ++i)
+            s32 num_tris = input_copy.indices().size() / 3;
+            for (s32 i = 0; i < num_tris; ++i)
             {
                 Vertex v0 = input_copy.vertices()[input_copy.indices()[i * 3 + 0]];
                 Vertex v1 = input_copy.vertices()[input_copy.indices()[i * 3 + 1]];
@@ -200,21 +220,21 @@ namespace rex
                 meshData.add_vertex(m1); // 4
                 meshData.add_vertex(m2); // 5
 
-                meshData.add_index(i * 6 + 0);
-                meshData.add_index(i * 6 + 3);
-                meshData.add_index(i * 6 + 5);
+                meshData.add_index((T)i * 6 + 0);
+                meshData.add_index((T)i * 6 + 3);
+                meshData.add_index((T)i * 6 + 5);
 
-                meshData.add_index(i * 6 + 3);
-                meshData.add_index(i * 6 + 4);
-                meshData.add_index(i * 6 + 5);
+                meshData.add_index((T)i * 6 + 3);
+                meshData.add_index((T)i * 6 + 4);
+                meshData.add_index((T)i * 6 + 5);
 
-                meshData.add_index(i * 6 + 5);
-                meshData.add_index(i * 6 + 4);
-                meshData.add_index(i * 6 + 2);
+                meshData.add_index((T)i * 6 + 5);
+                meshData.add_index((T)i * 6 + 4);
+                meshData.add_index((T)i * 6 + 2);
 
-                meshData.add_index(i * 6 + 3);
-                meshData.add_index(i * 6 + 1);
-                meshData.add_index(i * 6 + 4);
+                meshData.add_index((T)i * 6 + 3);
+                meshData.add_index((T)i * 6 + 1);
+                meshData.add_index((T)i * 6 + 4);
             }
         }
     }
