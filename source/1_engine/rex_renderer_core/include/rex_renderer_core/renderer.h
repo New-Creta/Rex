@@ -74,10 +74,13 @@ namespace rex
         s32             compile_shader(const parameters::CompileShader& compileShaderParams);
 
         bool            update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBufferParams, s32 constantBufferTarget);
+
         void            wait_for_active_frame();
-        void            wait_for_frame(s32 resourceSlot);
 
         bool            release_resource(s32 resourceTarget);
+
+        bool            prepare_user_initialization();
+        bool            finish_user_initialization();
 
         bool            clear(s32 clearStateTarget);
 
@@ -97,7 +100,7 @@ namespace rex
         bool            set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset);
         bool            set_shader(s32 shaderTarget);
         bool            set_pipeline_state_object(s32 psoTarget);
-        bool            set_constant_buffer(s32 location, s32 offset);
+        bool            set_constant_buffer(s32 constantBufferTarget, s32 location);
 
         bool            new_frame();
         bool            end_frame();
@@ -127,9 +130,13 @@ namespace rex
             bool          compile_shader(const parameters::CompileShader& cs, s32 resourceSlot);
 
             void          update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBuffer, s32 resourceSlot);
-            void          wait_for_frame(s32 resourceSlot);
+            
+            void          wait_for_active_frame();
 
             bool          release_resource(s32 resourceSlot);
+
+            bool          prepare_user_initialization();
+            bool          finish_user_initialization();
 
             void          clear(s32 clearStateIndex);
 
@@ -147,7 +154,7 @@ namespace rex
             bool          set_scissor_rect(const ScissorRect& rect);
             bool          set_vertex_buffers(s32* bufferIndices, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
             bool          set_index_buffer(s32 bufferIndex, IndexBufferFormat format, s32 offset);
-            bool          set_constant_buffer(s32 location, s32 offset);
+            bool          set_constant_buffer(s32 constantBufferTarget, s32 location);
             bool          set_shader(s32 shaderIndex);
             bool          set_raster_state(s32 rasterStateIndex);
             bool          set_pipeline_state_object(s32 psoTarget);

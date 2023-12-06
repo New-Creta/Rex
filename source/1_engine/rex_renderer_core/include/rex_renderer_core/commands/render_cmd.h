@@ -71,7 +71,9 @@ namespace rex
             SET_CONSTANT_BUFFER,
             NEW_FRAME,
             END_FRAME,
-            PRESENT
+            PRESENT,
+            USER_PREPARE,
+            USER_FINISH
         };
 
         struct RenderCommand

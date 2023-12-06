@@ -215,7 +215,7 @@ namespace rex
                 result = backend::set_pipeline_state_object(cmd.set_pipeline_state.pipeline_state);
                 break;
             case CommandType::SET_CONSTANT_BUFFER:
-                result = backend::set_constant_buffer(cmd.set_constant_buffer.location, cmd.set_constant_buffer.offset);
+                result = backend::set_constant_buffer(cmd.set_constant_buffer.target, cmd.set_constant_buffer.location);
                 break;
 
             case CommandType::NEW_FRAME:
@@ -227,6 +227,14 @@ namespace rex
 
             case CommandType::PRESENT:
                 result = backend::present();
+                rsl::swap(globals::g_default_targets_info.front_buffer_color, globals::g_default_targets_info.back_buffer_color);
+                break;
+
+            case CommandType::USER_PREPARE:
+                backend::prepare_user_initialization();
+                break;
+            case CommandType::USER_FINISH:
+                backend::finish_user_initialization();
                 break;
 
             }
@@ -483,7 +491,14 @@ namespace rex
             cmd.command_type = CommandType::UPDATE_CONSTANT_BUFFER;
             cmd.resource_slot = constantBufferTarget;
 
-            memcpy(&cmd.update_constant_buffer_params, (void*)&updateConstantBufferParams, sizeof(parameters::UpdateConstantBuffer));
+            if (updateConstantBufferParams.data)
+            {
+                cmd.update_constant_buffer_params.data = memory_alloc(updateConstantBufferParams.data_size);
+                memcpy(cmd.update_constant_buffer_params.data, updateConstantBufferParams.data, updateConstantBufferParams.data_size);
+
+                cmd.update_constant_buffer_params.data_size = updateConstantBufferParams.data_size;
+                cmd.update_constant_buffer_params.element_index = updateConstantBufferParams.element_index;
+            }
 
             return add_cmd(cmd);
         }
@@ -491,13 +506,7 @@ namespace rex
         //-------------------------------------------------------------------------
         void wait_for_active_frame()
         {
-            wait_for_frame(renderer::active_frame());
-        }
-
-        //-------------------------------------------------------------------------
-        void wait_for_frame(s32 resourceSlot)
-        {
-            backend::wait_for_frame(resourceSlot);
+            backend::wait_for_active_frame();
         }
 
         //-------------------------------------------------------------------------
@@ -507,6 +516,26 @@ namespace rex
 
             cmd.command_type = CommandType::RELEASE_RESOURCE;
             cmd.release_resource.resource_index = resourceTarget;
+
+            return add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        bool prepare_user_initialization()
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::USER_PREPARE;
+
+            return add_cmd(cmd);
+        }
+
+        //-------------------------------------------------------------------------
+        bool finish_user_initialization()
+        {
+            RenderCommand cmd;
+
+            cmd.command_type = CommandType::USER_FINISH;
 
             return add_cmd(cmd);
         }
@@ -720,14 +749,14 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_constant_buffer(s32 location, s32 offset)
+        bool set_constant_buffer(s32 constantBufferTarget, s32 location)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_CONSTANT_BUFFER;
 
+            cmd.set_constant_buffer.target = constantBufferTarget;
             cmd.set_constant_buffer.location = location;
-            cmd.set_constant_buffer.offset = offset;
 
             return add_cmd(cmd);
         }
@@ -749,13 +778,7 @@ namespace rex
 
             cmd.command_type = CommandType::END_FRAME;
 
-            if (add_cmd(cmd))
-            {
-                // Execute all commands
-                return flush();
-            }
-
-            return false;
+            return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
@@ -799,12 +822,6 @@ namespace rex
                 {
                     REX_ERROR(LogRendererCore, "Failed to flush commands");
                     return false;
-                }
-
-                // break at present
-                if (cmd->command_type == CommandType::PRESENT)
-                {
-                    break;
                 }
 
                 cmd = g_ctx.cmd_buffer.get();
