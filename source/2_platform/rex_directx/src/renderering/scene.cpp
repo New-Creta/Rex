@@ -7,7 +7,7 @@ namespace rex
         //-------------------------------------------------------------------------
         void Scene::add_render_item(RenderItem&& item)
         {
-            m_render_items.push_back(std::move(item));
+            m_render_items.push_back(rsl::move(item));
         }
         //-------------------------------------------------------------------------
         void Scene::clear_render_items()

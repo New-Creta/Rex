@@ -30,7 +30,7 @@ namespace rex
         a_u32 m_get_pos;
         a_u32 m_put_pos;
 
-        std::atomic<size_t> m_capacity;
+        rsl::atomic<size_t> m_capacity;
     };
 
     //-------------------------------------------------------------------------

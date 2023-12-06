@@ -924,7 +924,7 @@ namespace rex
                 }
 
                 g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
-                g_ctx.resource_pool[resourceSlot] = std::move(resource);
+                g_ctx.resource_pool[resourceSlot] = rsl::move(resource);
 
                 return true;
             }
@@ -943,7 +943,7 @@ namespace rex
                 }
 
                 g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
-                g_ctx.resource_pool[resourceSlot] = std::move(resource);
+                g_ctx.resource_pool[resourceSlot] = rsl::move(resource);
 
                 return true;
             }
@@ -962,7 +962,7 @@ namespace rex
                 }
 
                 g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
-                g_ctx.resource_pool[resourceSlot] = std::move(resource);
+                g_ctx.resource_pool[resourceSlot] = rsl::move(resource);
 
                 return true;
             }

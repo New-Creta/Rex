@@ -18,6 +18,9 @@
 
 #include "d3d12.h"
 
+#include <rex_std/list.h>
+#include <rex_std/vector.h>
+
 #if defined(__cplusplus)
 
 struct CD3DX12_DEFAULT
@@ -1508,8 +1511,8 @@ inline UINT64 UpdateSubresources(_In_ ID3D12GraphicsCommandList* pCmdList, _In_ 
   {
     if(pRowSizesInBytes[i] > SIZE_T(-1))
       return 0;
-    D3D12_MEMCPY_DEST DestData = {pData + pLayouts[i].Offset, pLayouts[i].Footprint.RowPitch, SIZE_T(pLayouts[i].Footprint.RowPitch) * SIZE_T(pNumRows[i])};
-    MemcpySubresource(&DestData, &pSrcData[i], static_cast<SIZE_T>(pRowSizesInBytes[i]), pNumRows[i], pLayouts[i].Footprint.Depth);
+    D3D12_MEMCPY_DEST Derslata = {pData + pLayouts[i].Offset, pLayouts[i].Footprint.RowPitch, SIZE_T(pLayouts[i].Footprint.RowPitch) * SIZE_T(pNumRows[i])};
+    MemcpySubresource(&Derslata, &pSrcData[i], static_cast<SIZE_T>(pRowSizesInBytes[i]), pNumRows[i], pLayouts[i].Footprint.Depth);
   }
   pIntermediate->Unmap(0, nullptr);
 
@@ -2508,11 +2511,11 @@ private:
                                                     // for repointing pointers in subobjects
   } SUBOBJECT_WRAPPER;
   D3D12_STATE_OBJECT_DESC m_Desc;
-  std::list<SUBOBJECT_WRAPPER> m_SubobjectList;        // Pointers to list nodes handed out so
+  rsl::list<SUBOBJECT_WRAPPER> m_SubobjectList;        // Pointers to list nodes handed out so
                                                        // these can be edited live
-  std::vector<D3D12_STATE_SUBOBJECT> m_SubobjectArray; // Built at the end, copying list contents
+  rsl::vector<D3D12_STATE_SUBOBJECT> m_SubobjectArray; // Built at the end, copying list contents
 
-  std::list<D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION> m_RepointedAssociations; // subobject type that contains pointers to other subobjects,
+  rsl::list<D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION> m_RepointedAssociations; // subobject type that contains pointers to other subobjects,
                                                                              // repointed to flattened array
 
   class StringContainer
@@ -2525,11 +2528,11 @@ private:
         if(bSingleString)
         {
           m_Strings.clear();
-          m_Strings.push_back(string);
+          m_Strings.push_back(rsl::wstring(string));
         }
         else
         {
-          m_Strings.push_back(string);
+          m_Strings.push_back(rsl::wstring(string));
         }
         return m_Strings.back().c_str();
       }
@@ -2544,7 +2547,7 @@ private:
     }
 
   private:
-    std::list<std::wstring> m_Strings;
+    rsl::list<rsl::wstring> m_Strings;
   };
 
   class SUBOBJECT_HELPER_BASE
@@ -2571,7 +2574,7 @@ private:
   };
 
     #if(__cplusplus >= 201103L)
-  std::list<std::unique_ptr<const SUBOBJECT_HELPER_BASE>> m_OwnedSubobjectHelpers;
+  rsl::list<rsl::unique_ptr<const SUBOBJECT_HELPER_BASE>> m_OwnedSubobjectHelpers;
     #else
   class OWNED_HELPER
   {
@@ -2587,7 +2590,7 @@ private:
     const SUBOBJECT_HELPER_BASE* m_pHelper;
   };
 
-  std::list<OWNED_HELPER> m_OwnedSubobjectHelpers;
+  rsl::list<OWNED_HELPER> m_OwnedSubobjectHelpers;
     #endif
 
   friend class CD3DX12_DXIL_LIBRARY_SUBOBJECT;
@@ -2673,7 +2676,7 @@ private:
   }
   D3D12_DXIL_LIBRARY_DESC m_Desc;
   CD3DX12_STATE_OBJECT_DESC::StringContainer m_Strings;
-  std::vector<D3D12_EXPORT_DESC> m_Exports;
+  rsl::vector<D3D12_EXPORT_DESC> m_Exports;
 };
 
 //------------------------------------------------------------------------------------------------
@@ -2748,7 +2751,7 @@ private:
   D3D12_EXISTING_COLLECTION_DESC m_Desc;
   Microsoft::WRL::ComPtr<ID3D12StateObject> m_CollectionRef;
   CD3DX12_STATE_OBJECT_DESC::StringContainer m_Strings;
-  std::vector<D3D12_EXPORT_DESC> m_Exports;
+  rsl::vector<D3D12_EXPORT_DESC> m_Exports;
 };
 
 //------------------------------------------------------------------------------------------------
@@ -2816,7 +2819,7 @@ private:
   }
   D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION m_Desc;
   CD3DX12_STATE_OBJECT_DESC::StringContainer m_Strings;
-  std::vector<LPCWSTR> m_Exports;
+  rsl::vector<LPCWSTR> m_Exports;
 };
 
 //------------------------------------------------------------------------------------------------
@@ -2886,7 +2889,7 @@ private:
   D3D12_DXIL_SUBOBJECT_TO_EXPORTS_ASSOCIATION m_Desc;
   CD3DX12_STATE_OBJECT_DESC::StringContainer m_Strings;
   CD3DX12_STATE_OBJECT_DESC::StringContainer m_SubobjectName;
-  std::vector<LPCWSTR> m_Exports;
+  rsl::vector<LPCWSTR> m_Exports;
 };
 
 //------------------------------------------------------------------------------------------------
