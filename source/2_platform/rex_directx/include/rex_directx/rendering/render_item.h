@@ -5,7 +5,7 @@
 #include "rex_renderer_core/primitive_topology.h"
 #include "rex_renderer_core/resources/mesh.h"
 
-#include <DirectXMath.h>
+#include "rex_directx/utility/math_helper.h"
 
 namespace rex
 {
@@ -13,7 +13,7 @@ namespace rex
     {
         struct RenderItem
         {
-            DirectX::XMFLOAT4X4 world;
+            DirectX::XMFLOAT4X4 world = math_helper::Identity4x4();
 
             u32 constant_buffer_index;
 

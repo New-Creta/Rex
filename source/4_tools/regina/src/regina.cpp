@@ -3,6 +3,7 @@
 #include "rex_directx/wrl/wrl_types.h"
 #include "rex_directx/rendering/scene.h"
 #include "rex_directx/rendering/scene_renderer.h"
+#include "rex_directx/utility/math_helper.h"
 
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/resources/mesh.h"
@@ -32,29 +33,19 @@ DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
 namespace rex
 {
-    namespace math_helper
-    {
-        DirectX::XMFLOAT4X4 Identity4x4()
-        {
-            static DirectX::XMFLOAT4X4 I(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-
-            return I;
-        }
-    } // namespace math_helper
-
     struct ObjectConstants
     {
-        DirectX::XMFLOAT4X4 world = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 world = renderer::math_helper::Identity4x4();
     };
 
     struct PassConstants
     {
-        DirectX::XMFLOAT4X4 view = math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 inv_view = math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 proj = math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 inv_proj = math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 view_proj = math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 inv_view_proj = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 view = renderer::math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 inv_view = renderer::math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 proj = renderer::math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 inv_proj = renderer::math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 view_proj = renderer::math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 inv_view_proj = renderer::math_helper::Identity4x4();
 
         DirectX::XMFLOAT3 eye_pos_w = { 0.0f, 0.0f, 0.0f };
         f32 cb_padding_1 = 0.0f;
@@ -99,8 +90,8 @@ namespace rex
         bool is_wireframe = false;
 
         DirectX::XMFLOAT3 eye_pos = { 0.0f, 0.0f, 0.0f };
-        DirectX::XMFLOAT4X4 view = math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 proj = math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 view = renderer::math_helper::Identity4x4();
+        DirectX::XMFLOAT4X4 proj = renderer::math_helper::Identity4x4();
     };
 
     ReginaContext g_regina_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
