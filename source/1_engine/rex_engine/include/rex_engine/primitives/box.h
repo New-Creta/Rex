@@ -17,9 +17,9 @@ namespace rex
 
 			Vertex v[24];
 
-			float w2 = 0.5f * width;
-			float h2 = 0.5f * height;
-			float d2 = 0.5f * depth;
+			f32 w2 = 0.5f * width;
+			f32 h2 = 0.5f * height;
+			f32 d2 = 0.5f * depth;
 
 			// Fill in the front face vertex data.
 			v[0] = Vertex(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
@@ -91,7 +91,7 @@ namespace rex
 
 			mesh_data.assign_indices(i, 36);
 
-			for (uint32 i = 0; i < subdivisions; ++i)
+			for (uint32 s = 0; s < subdivisions; ++s)
 			{
 				subdivide<T>(mesh_data);
 			}
