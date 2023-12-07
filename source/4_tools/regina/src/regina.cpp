@@ -170,7 +170,7 @@ namespace rex
     {
         renderer::parameters::ClearState create_clear_state_params;
 
-        create_clear_state_params.rgba = { 0.0f, 0.0, 1.0, 1.0f };
+        create_clear_state_params.rgba = { 0.690196097f, 0.768627524f, 0.870588303f, 1.f };
         create_clear_state_params.depth = 1.0f;
         create_clear_state_params.stencil = 0x00;
 
@@ -231,15 +231,15 @@ namespace rex
         rsl::vector<renderer::directx::VertexPosCol> box_vertices((rsl::Capacity)total_vertex_count);
         for (const mesh_factory::Vertex& v : box.vertices())
         {
-            renderer::directx::VertexPosCol nv({ DirectX::XMFLOAT3(v.position.x, v.position.y, v.position.z), DirectX::XMFLOAT4(DirectX::Colors::White)});
+            renderer::directx::VertexPosCol nv({ DirectX::XMFLOAT3(v.position.x, v.position.y, v.position.z), DirectX::XMFLOAT4(v.position.x, v.position.y, v.position.z, 1.0f)});
             box_vertices.push_back(nv);
         }
 
         rsl::vector<u16> box_indices((rsl::Capacity)total_index_count);
         box_indices.insert(box_indices.end(), rsl::begin(box.indices()), rsl::end(box.indices()));
 
-        const u32 vb_byte_size = (u32)box_vertices.size() * sizeof(renderer::directx::VertexPosCol);
-        const u32 ib_byte_size = (u32)box_indices.size() * sizeof(u16);
+        const u32 vb_byte_size = total_vertex_count * sizeof(renderer::directx::VertexPosCol);
+        const u32 ib_byte_size = total_index_count * sizeof(u16);
 
         g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>();
         g_regina_ctx.mesh_cube->name = rsl::medium_stack_string("box_geometry");
@@ -255,7 +255,7 @@ namespace rex
         g_regina_ctx.mesh_cube->index_buffer_byte_size = ib_byte_size;
 
         renderer::Submesh submesh;
-        submesh.index_count = (UINT)box_indices.size();
+        submesh.index_count = total_index_count;
         submesh.start_index_location = 0;
         submesh.base_vertex_location = 0;
 
@@ -269,7 +269,7 @@ namespace rex
     {
         auto cube_r_item = renderer::RenderItem();
 
-        DirectX::XMStoreFloat4x4(&cube_r_item.world, DirectX::XMMatrixScaling(2.0f, 2.0f, 2.0f) * DirectX::XMMatrixTranslation(0.0f, 0.5f, 0.0f));
+        DirectX::XMStoreFloat4x4(&cube_r_item.world, DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f));
         cube_r_item.constant_buffer_index = 0;
         cube_r_item.geometry = g_regina_ctx.mesh_cube.get();
         cube_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
@@ -398,10 +398,23 @@ namespace rex
             // This needs to be tracked per frame resource.
             if (ri.num_frames_dirty > 0)
             {
+                // Define the rotation angle (in radians) for each frame
+                f32 rotation_angle = 1.0f * globals::frame_info().delta_time().to_seconds(); // You can adjust this value for the desired rotation speed
+
+                // Create a rotation matrix using DirectXMath
+                DirectX::XMMATRIX rotation_matrix = DirectX::XMMatrixRotationZ(rotation_angle); // Change the axis and angle as needed
+
+                // Convert the existing world matrix to XMMATRIX
                 DirectX::XMMATRIX world = DirectX::XMLoadFloat4x4(&ri.world);
 
+                // Multiply the current world matrix with the rotation matrix
+                DirectX::XMMATRIX new_world = DirectX::XMMatrixMultiply(world, rotation_matrix);
+
+                // Store the result back into the world matrix
+                DirectX::XMStoreFloat4x4(&ri.world, new_world);
+
                 ObjectConstants obj_constants;
-                DirectX::XMStoreFloat4x4(&obj_constants.world, XMMatrixTranspose(world));
+                DirectX::XMStoreFloat4x4(&obj_constants.world, XMMatrixTranspose(new_world));
 
                 renderer::parameters::UpdateConstantBuffer update_constant_buffer_params;
                 update_constant_buffer_params.element_index = ri.constant_buffer_index;
@@ -410,8 +423,8 @@ namespace rex
 
                 renderer::update_constant_buffer(update_constant_buffer_params, curr_object_cb);
 
-                // Next FrameResource need to be updated too.
-                ri.num_frames_dirty--;
+                // Updating constant buffer of the cube so the frame should remain dirty
+                ri.num_frames_dirty = renderer::num_frames_in_flight();
             }
         }
     }
@@ -518,7 +531,7 @@ namespace rex
 
         renderer::set_constant_buffer(curr_pass_cb, 1);
 
-        renderer::set_vertex_buffer(g_regina_ctx.mesh_cube->vertex_buffer, 0, 0, 0);
+        renderer::set_vertex_buffer(g_regina_ctx.mesh_cube->vertex_buffer, 0, g_regina_ctx.mesh_cube->vertex_byte_stride, 0);
         renderer::set_index_buffer(g_regina_ctx.mesh_cube->index_buffer, renderer::IndexBufferFormat::R16_UINT, 0);
         renderer::set_primitive_topology(renderer::PrimitiveTopology::TRIANGLELIST);
 
