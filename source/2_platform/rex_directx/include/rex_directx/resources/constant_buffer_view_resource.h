@@ -19,17 +19,8 @@ namespace rex
                     ,element_data_byte_size(elementDataByteSize)
                     ,mapped_data_byte_size(mappedDataByteSize)
                     ,buffer_index(bufferIndex)
-                {}
-
-                ~ConstantBuffer()
                 {
-                    if (uploader)
-                    {
-                        uploader->Unmap(0, nullptr);
-                    }
 
-                    mapped_data = nullptr;
-                    mapped_data_byte_size = 0;
                 }
 
                 wrl::com_ptr<ID3D12Resource> uploader;
@@ -51,7 +42,16 @@ namespace rex
             ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize, s32 bufferIndex)
                 :m_constant_buffer(uploader, elementDataByteSize, mappedDataByteSize, bufferIndex)
             {}
-            ~ConstantBufferResource() override = default;
+            ~ConstantBufferResource() override
+            {
+                if (m_constant_buffer.uploader)
+                {
+                    m_constant_buffer.uploader->Unmap(0, nullptr);
+                }
+
+                m_constant_buffer.mapped_data = nullptr;
+                m_constant_buffer.mapped_data_byte_size = 0;
+            }
 
             resources::ConstantBuffer* get()
             {
