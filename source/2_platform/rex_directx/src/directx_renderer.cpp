@@ -1170,7 +1170,7 @@ namespace rex
                 auto& cbr = get_resource_from_pool_as<ConstantBufferResource>(g_ctx.resource_pool, resourceSlot);
                 auto  cs = cbr.get();
 
-                memcpy(&cs->mapped_data[updateConstantBuffer.element_index * cbr.get()->element_data_byte_size], &updateConstantBuffer.data, updateConstantBuffer.data_size);
+                memcpy(&cs->mapped_data[updateConstantBuffer.element_index * cs->element_data_byte_size], updateConstantBuffer.data, updateConstantBuffer.data_size);
             }
 
             //-------------------------------------------------------------------------
