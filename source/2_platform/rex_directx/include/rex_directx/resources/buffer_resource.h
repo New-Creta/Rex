@@ -29,10 +29,7 @@ namespace rex
             BufferResource(const wrl::com_ptr<ID3DBlob>& cpuBuffer, const wrl::com_ptr<ID3D12Resource>& gpuBuffer, const wrl::com_ptr<ID3D12Resource>& uploader, u32 sizeInBytes)
                 :m_buffer_resource({ cpuBuffer , gpuBuffer, uploader, sizeInBytes })
             {}
-            ~BufferResource() override
-            {
-                m_buffer_resource.uploader->Unmap(0, nullptr);
-            }
+            ~BufferResource() override = default;
 
             resources::Buffer* get()
             {
