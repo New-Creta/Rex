@@ -30,7 +30,7 @@ namespace rex
       // This is useful for creating random filenames and directories
       void fill_with_random_chars(rsl::string& str, card32 numCharsToFill)
       {
-        rsl::small_stack_string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        rsl::small_stack_string chars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
         for (card32 i = 0; i < numCharsToFill; ++i)
         {
           card32 random_idx = std::rand() % chars.length();
