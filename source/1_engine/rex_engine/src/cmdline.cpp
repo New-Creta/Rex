@@ -205,9 +205,11 @@ namespace rex
     };
 
     rsl::unique_ptr<cmdline::Processor> g_cmd_line_args; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    rsl::string_view g_cmd_line; // Saved as string_view, save as string if it's causing lifetime issues. // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
     void init(rsl::string_view cmdLine)
     {
+      g_cmd_line = cmdLine;
       g_cmd_line_args = rsl::make_unique<cmdline::Processor>(cmdLine);
     }
 
@@ -245,6 +247,11 @@ namespace rex
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
     {
       return g_cmd_line_args->get_argument(arg);
+    }
+
+    rsl::string_view get()
+    {
+      return g_cmd_line;
     }
 
   } // namespace cmdline
