@@ -26,7 +26,7 @@ try:
 except:
   rexpy_installed = False
 
-required_rexpy_version = "0.1.61"
+required_rexpy_version = "0.1.62"
 
 # all scripts are located in ~/_build/scripts path.
 # to make it easier to call these scripts wherever we need them
