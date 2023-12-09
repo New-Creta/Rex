@@ -43,10 +43,6 @@ public class BaseConfiguration
   // Setup project paths like the project path itself, intermediate path, target path, pdb paths, ..
   private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
   {
-    // The target file extension isn't configured yet at point so we need to query it ourselves
-    var configurationTasks = PlatformRegistry.Get<Project.Configuration.IConfigurationTasks>(target.Platform);
-    string targetFileExtension = configurationTasks.GetDefaultOutputFullExtension(conf.Output);
-
     conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Project.Name);
     conf.TargetFileName = $"{conf.TargetFileName}_{target.ProjectConfigurationName}_{target.Compiler}";
   }
