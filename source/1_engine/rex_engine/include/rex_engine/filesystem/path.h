@@ -129,6 +129,8 @@ namespace rex
     {
       rsl::string res;
       internal::join_impl(res, rsl::forward<PathLikeTypes>(paths)...);
+
+      res.pop_back(); // remove the last seperation char
       return res;
     }
 
