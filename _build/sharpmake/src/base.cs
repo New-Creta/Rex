@@ -862,9 +862,8 @@ public class ToolsProject : BasicCPPProject
   {
     base.SetupConfigSettings(conf, target);
 
-    string ThisFileFolder = Path.GetFileName(Path.GetDirectoryName(Utils.CurrentFile()));
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
 
     if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
     {
@@ -899,6 +898,20 @@ public class TestProject : BasicCPPProject
       default:
         break;
     }
+  }
+
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigSettings(conf, target);
+
+    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
+
+    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
+    {
+      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
+    }
+
   }
 
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
