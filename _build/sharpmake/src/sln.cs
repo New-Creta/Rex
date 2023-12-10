@@ -32,6 +32,7 @@ namespace rex
       if (ProjectGen.Settings.UnitTestsEnabled)
       {
         conf.AddProject<RexStdTest>(target);
+        conf.AddProject<RexEngineUnitTest>(target);
       }
 
       if (ProjectGen.Settings.FuzzyTestingEnabled)
