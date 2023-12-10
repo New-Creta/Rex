@@ -15,6 +15,13 @@ public class ReginaAutoTest : TestProject
     SourceRootPath = ThisFileFolder;
   }
 
+  protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupSolutionFolder(conf, target);
+
+    conf.SolutionFolder = Path.Combine(conf.SolutionFolder, "4_tools");
+  }
+
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
     base.SetupLibDependencies(conf, target);
