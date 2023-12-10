@@ -110,6 +110,9 @@ public abstract class BasicCPPProject : Project
 {
   // holds the paths to tools needed to generate/build/run/test rex engine
   private Dictionary<string, string[]> ToolPaths;
+  // lock to add to the generate compiler db queue. Sharpmake runs multithreaded so we need to lock when adding to the list
+  static private object QueueToCompilerDBGenerationQueue = new object();
+
   // indicates if the project creates a compiler DB for itself
   protected bool ClangToolsEnabled = true;
 
@@ -637,7 +640,11 @@ public abstract class BasicCPPProject : Project
     string ninja_file_path = GetNinjaFilePath(config);
     string build_step_name = $"compdb_{Name.ToLower()}_{config.Name}_clang";
     string outputPath = GetCompilerDBOutputPath(config);
-    ProjectGen.Settings.GenerateCompilerDBCommands.Add(new ProjectGen.GenerateCompilerDBCommand(ninja_file_path, build_step_name, outputPath));
+
+    lock (QueueToCompilerDBGenerationQueue)
+    {
+      ProjectGen.Settings.GenerateCompilerDBCommands.Add(new ProjectGen.GenerateCompilerDBCommand(ninja_file_path, build_step_name, outputPath));
+    }
   }
 
   // To make clang tool processing easier
