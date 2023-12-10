@@ -4,6 +4,7 @@
 #include "rex_std/bonus/platform.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_engine/numeric.h"
+#include "rex_engine/win/win_com_library.h"
 #include "rex_std_extra/time/win/win_time_functions.h"
 
 #include <random>
@@ -23,7 +24,7 @@ namespace rex
       // if there is any
       card32 extension_start(rsl::string_view path)
       {
-        return path.find_last_of('.');
+        return path.find_first_of('.');
       }
 
       // Fills a string with a number of random characters
@@ -103,7 +104,7 @@ namespace rex
       rsl::string res(split_res.head);
 
       // Add a dot if the provided one doesn't have one
-      if (!extension.starts_with('.'))
+      if (!extension.empty() && !extension.starts_with('.'))
       {
         res += '.';
       }
@@ -149,11 +150,18 @@ namespace rex
     // Returns the absolute path for the given path
     rsl::string abs_path(rsl::string_view path)
     {
+      // If the path is already absolute, just return it
+      if (is_absolute(path))
+      {
+        return rsl::string(path);
+      }
+
       // Get the current working directory and prepend it to the path
       rsl::medium_stack_string current_dir;
       GetCurrentDirectoryA(current_dir.max_size(), current_dir.data());
       current_dir.reset_null_termination_offset();
-      return path::join(current_dir, path);
+      rsl::string res = path::join(current_dir, path);
+      return res.replace("\\", "/");
     }
     // Returns the root directory path of the given path
     rsl::string_view path_root(rsl::string_view path)
@@ -173,7 +181,7 @@ namespace rex
       rsl::medium_stack_string current_dir;
       GetCurrentDirectoryA(current_dir.max_size(), current_dir.data());
       current_dir.reset_null_termination_offset();
-      return rsl::string(current_dir);
+      return rsl::string(current_dir).replace("\\", "/");
     }
     // Returns a random directory, but doesn't create it
     rsl::string random_dir()
@@ -240,7 +248,7 @@ namespace rex
         }
 
         // otherwise store the max iterator where the mismatch occurred on a previous run
-        furthest_path_component_it = rsl::max(furthest_path_component_it, res.lhs_it);
+        furthest_path_component_it = (rsl::max)(furthest_path_component_it, res.lhs_it);
       }
 
       // store the index of the path component to figure out where the common path ends
@@ -262,24 +270,28 @@ namespace rex
     // Otherwise returns the input
     rsl::string real_path(rsl::string_view path)
     {
-      // We need to open a file handle in order to query information about it
-      rsl::win::handle file = internal::open_file_for_attribs(path);
+      rsl::string res = rex::win::com_library().read_link(path);
+      res.replace("\\", "/");
 
-      // When we have an invalid handle, we simply return the input
-      if (!file.is_valid())
-      {
-        return rsl::string(path);
-      }
+      return res;
+      //// We need to open a file handle in order to query information about it
+      //rsl::win::handle file = internal::open_file_for_attribs(path);
 
-      // Query the final path name of the handle
-      rsl::big_stack_string res;
-      WIN_CALL(GetFinalPathNameByHandleA(file.get(), res.data(), res.max_size(), VOLUME_NAME_DOS));
-      res.reset_null_termination_offset();
-      
-      // On Windows, these files will start with "\\?\"
-      rsl::string_view prefix = "\\\\?\\";
-      res = res.substr(prefix.length());
-      return rsl::string(res);
+      //// When we have an invalid handle, we simply return the input
+      //if (!file.is_valid())
+      //{
+      //  return rsl::string(path);
+      //}
+
+      //// Query the final path name of the handle
+      //rsl::big_stack_string res;
+      //WIN_CALL(GetFinalPathNameByHandleA(file.get(), res.data(), res.max_size(), VOLUME_NAME_DOS));
+      //res.reset_null_termination_offset();
+      //
+      //// On Windows, these files will start with "\\?\"
+      //rsl::string_view prefix = "\\\\?\\";
+      //res = res.substr(prefix.length());
+      //return rsl::string(res);
     }
     // Normalizes the path, removing redundant dots for current and parent directories
     // Converts forward slashes to backward slashes
@@ -503,7 +515,10 @@ namespace rex
       card32 pos = path.find_last_of("/\\");
 
       // fill in the values
-      res.head = path.substr(0, pos);
+      if (pos != path.npos())
+      {
+        res.head = path.substr(0, pos);
+      }
       res.tail = path.substr(pos + 1);
 
       // return the result
@@ -521,8 +536,8 @@ namespace rex
       card32 backslash_pos = path.find(":\\");
 
       card32 used_pos = slash_pos != -1 && backslash_pos != -1
-        ? rsl::min(slash_pos, backslash_pos) // if for any reason the path has the root tokens twice, return the first
-        : rsl::max(slash_pos, backslash_pos); // in other case, where there's only one, use the one that's found
+        ? (rsl::min)(slash_pos, backslash_pos) // if for any reason the path has the root tokens twice, return the first
+        : (rsl::max)(slash_pos, backslash_pos); // in other case, where there's only one, use the one that's found
       card32 to_find_length = 2;
 
       // fill in the values
@@ -543,8 +558,15 @@ namespace rex
       card32 ext_start = internal::extension_start(path);
 
       // fill in the values
-      res.head = path.substr(0, ext_start);
-      res.tail = path.substr(ext_start);
+      if (ext_start != path.npos())
+      {
+        res.head = path.substr(0, ext_start);
+        res.tail = path.substr(ext_start);
+      }
+      else
+      {
+        res.head = path;
+      }
 
       // return the result
       return res;
