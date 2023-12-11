@@ -7,6 +7,8 @@
 #include <Windows.h>
 #include <ShlObj.h>
 
+#include "rex_std/iostream.h"
+
 TEST_CASE("Path Joining")
 {
   CHECK(rex::path::join("D:", "foo", "bar") == "D:/foo/bar");

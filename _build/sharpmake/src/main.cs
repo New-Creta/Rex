@@ -87,6 +87,7 @@ public static class Main
   {
     GenerateCompilerDatabases();
     CodeGeneration.Generate();
+    GenerateTestProjectsJsonFile();
   }
 
   // Compiler database are not generated through Sharpmake directly.
@@ -113,6 +114,25 @@ public static class Main
       process.Start();
       process.WaitForExit();
     }
+  }
+
+  // To make it simple for CI and other automated tests
+  // We write out a json file which stores the different kind of projects
+  private static void GenerateTestProjectsJsonFile()
+  {
+    var options = new JsonSerializerOptions
+    {
+      WriteIndented = true, // Makes it a bit more human friendly
+    };
+
+    // Write the text to disk in json format
+    string jsonBlob = JsonSerializer.Serialize(ProjectGen.Settings.TestProjectsFile, options);
+
+    string testProjectsPath = Path.Combine(Globals.Root, Globals.BuildFolder, "test_projects.json");
+
+    Console.WriteLine($"Generating {testProjectsPath}");
+
+    File.WriteAllText(testProjectsPath, jsonBlob);
   }
 
   // Pass in the paths to the toolchain tools to sharpmake and specify the windows target version

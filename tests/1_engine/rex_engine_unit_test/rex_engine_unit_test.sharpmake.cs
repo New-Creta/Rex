@@ -11,6 +11,8 @@ public class RexEngineUnitTest : TestProject
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     SourceRootPath = ThisFileFolder;
+
+    ProjectType = ProjectGen.TestProjectType.UnitTest;
   }
 
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)

@@ -111,7 +111,7 @@ public abstract class BasicCPPProject : Project
   // holds the paths to tools needed to generate/build/run/test rex engine
   private Dictionary<string, string[]> ToolPaths;
   // lock to add to the generate compiler db queue. Sharpmake runs multithreaded so we need to lock when adding to the list
-  static private object QueueToCompilerDBGenerationQueue = new object();
+  static private object LockToCompilerDBGenerationQueue = new object();
 
   // indicates if the project creates a compiler DB for itself
   protected bool ClangToolsEnabled = true;
@@ -192,19 +192,17 @@ public abstract class BasicCPPProject : Project
   // Library paths, library files and other sharpmake project dependencies are set here.
   protected virtual void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    // Just like CL.exe cannot figure out the include paths
-    // Link.exe cannot figure out the link paths on its own
-    // So we need to help it out a little by providing them ourselves
-    if (conf.Compiler == DevEnv.ninja && target.Compiler == Compiler.MSVC)
-    {
-      List<string> libPaths = new List<string>();
+    // To make sure we use the exact same includes, regardless of the compiler
+    // We add them here. Clang can figure them out on its own, but it can possibly
+    // use updated lib files which could break compilation.
+    // This would also cause inconsistency between compilers
+    List<string> libPaths = new List<string>();
       libPaths.AddRange(ToolPaths["windows_sdk_lib"].ToList());
       libPaths.AddRange(ToolPaths["msvc_libs"].ToList());
       foreach (var path in libPaths)
       {
         conf.LibraryPaths.Add(path);
       }
-    }
 
     // Add the dependency to the regenerate project for all C++ projects.
     if (target.DevEnv == DevEnv.vs2019)
@@ -254,7 +252,7 @@ public abstract class BasicCPPProject : Project
       conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} build -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
       conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} build -clean -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
       conf.CustomBuildSettings.CleanCommand = $"py {rexpyPath} build -nobuild -clean -project={Name} -config={target.Config} -compiler={target.Compiler} -dont_build_dependencies";
-      conf.CustomBuildSettings.OutputFile = Path.Combine(conf.TargetPath, conf.TargetFileFullName);
+      conf.CustomBuildSettings.OutputFile = Path.Combine(conf.TargetPath, conf.TargetFileFullNameWithExtension);
     }
 
     // Compiler options
@@ -291,12 +289,10 @@ public abstract class BasicCPPProject : Project
   // This is meant to be overriden by derived projects and extended where needed
   protected virtual void SetupIncludePaths(RexConfiguration conf, RexTarget target)
   {
-    // Clang can figure out these settings on its own from the compiler paths
-    // CL.exe however, Microsoft's compiler, not to be confused with MSBuild which is the toolchain,
-    // cannot figure this out so we need to help it out a little,
-    // by providing them ourselves
-    if (conf.Compiler == DevEnv.ninja && target.Compiler == Compiler.MSVC)
-    {
+    // To make sure we use the exact same includes, regardless of the compiler
+    // We add them here. Clang can figure them out on its own, but it can possibly
+    // use updated include files which could break compilation.
+    // This would also cause inconsistency between compilers
       List<string> includePaths = new List<string>();
       includePaths.AddRange(ToolPaths["windows_sdk_includes"].ToList());
       includePaths.AddRange(ToolPaths["msvc_includes"].ToList());
@@ -304,7 +300,6 @@ public abstract class BasicCPPProject : Project
       {
         conf.IncludeSystemPaths.Add(path);
       }
-    }
 
     // We always add the include folder of the project to its include paths
     conf.IncludePaths.Add($@"{SourceRootPath}\include");
@@ -641,7 +636,7 @@ public abstract class BasicCPPProject : Project
     string build_step_name = $"compdb_{Name.ToLower()}_{config.Name}_clang";
     string outputPath = GetCompilerDBOutputPath(config);
 
-    lock (QueueToCompilerDBGenerationQueue)
+    lock (LockToCompilerDBGenerationQueue)
     {
       ProjectGen.Settings.GenerateCompilerDBCommands.Add(new ProjectGen.GenerateCompilerDBCommand(ninja_file_path, build_step_name, outputPath));
     }
@@ -887,6 +882,16 @@ public class ToolsProject : BasicCPPProject
 // All projects sitting in the tests directory should inherit from this
 public class TestProject : BasicCPPProject
 {
+  // The type of this project
+  protected ProjectGen.TestProjectType ProjectType { get; set; }
+  // Sharpmake runs multithreaded, so for thread safety, we need to put a lock around accessing the project settings array
+  static private object LockToTestProjectSettings = new object();
+
+  public TestProject() : base()
+  {
+    ProjectType = ProjectGen.TestProjectType.Undefined;
+  }
+
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     conf.SolutionFolder = "5_tests";
@@ -918,11 +923,23 @@ public class TestProject : BasicCPPProject
     {
       Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
     }
-
   }
 
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
   {
     conf.Output = Configuration.OutputType.Exe;
+  }
+
+  protected override void PostInvokeConfiguration()
+  {
+    base.PostInvokeConfiguration();
+
+    if (ProjectType != ProjectGen.TestProjectType.Undefined)
+    {
+      lock (LockToTestProjectSettings)
+      {
+        ProjectGen.Settings.TestProjectsFile.AddProject(ProjectType, this);
+      }
+    }
   }
 }
