@@ -9,10 +9,15 @@
 # ============================================
 
 import argparse
+import os
 import time
 import regis.test
 import regis.diagnostics
+import regis.util
 from datetime import datetime
+
+root_path = regis.util.find_root()
+settings = regis.rex_json.load_file(os.path.join(root_path, regis.util.settingsPathFromRoot))
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -20,6 +25,8 @@ if __name__ == "__main__":
   parser.add_argument("-single_threaded", help="run tests in single threaded mode", action="store_true")
   parser.add_argument("-only_errors_and_warnings", help="filter lines to only display warnings and errors", action="store_true")
   parser.add_argument("-auto_fix", help="auto fix where you can (applies to iwyu and clang-tidy)", action="store_true")
+
+  parser.add_argument("-project", dest="projects", help="Append a project to run a test on. Leave empty to run all projects applicable", action="append", default=[])
 
   parser.add_argument("-all", help="run all tests", action="store_true")
   parser.add_argument("-iwyu", help="run include-what-you-use", action="store_true")
@@ -40,20 +47,20 @@ if __name__ == "__main__":
   if args.all or args.clang_tidy:
     regis.test.test_clang_tidy(".*", args.clean, args.single_threaded, args.only_errors_and_warnings, args.auto_fix)
   if args.all or args.unit_tests:
-    regis.test.test_unit_tests(["rexstdtest"], args.clean, args.single_threaded)
+    regis.test.test_unit_tests(args.projects, args.clean, args.single_threaded)
   if args.all or args.coverage:
-    regis.test.test_code_coverage(["rexstdtest"], args.clean, args.single_threaded)
+    regis.test.test_code_coverage(args.projects, args.clean, args.single_threaded)
   if args.all or args.asan:
-    regis.test.test_asan(["rexstdtest"], args.clean, args.single_threaded)
+    regis.test.test_asan(args.projects, args.clean, args.single_threaded)
   if args.all or args.ubsan:
-    regis.test.test_ubsan(["rexstdtest"], args.clean, args.single_threaded)
+    regis.test.test_ubsan(args.projects, args.clean, args.single_threaded)
   if args.all or args.fuzzy:
-    regis.test.test_fuzzy_testing(["rexstdfuzzy"], args.clean, args.single_threaded)
+    regis.test.test_fuzzy_testing(args.projects, args.clean, args.single_threaded)
   if args.all or args.auto_test:
     if args.auto_test_timeout:
       auto_test_timeout_secs = args.auto_test_timeout
 
-    regis.test.run_auto_tests(["debug", "debug_opt", "release"], ["msvc","clang"], ["reginaautotest"], int(auto_test_timeout_secs), args.clean, args.single_threaded)
+    regis.test.run_auto_tests(["debug", "debug_opt", "release"], ["msvc","clang"], args.projects, int(auto_test_timeout_secs), args.clean, args.single_threaded)
 
   regis.diagnostics.log_no_color("")
   regis.diagnostics.log_info("Summary Report")

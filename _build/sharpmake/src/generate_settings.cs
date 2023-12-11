@@ -253,24 +253,14 @@ namespace ProjectGen
 
       private void WriteProjectSettings(Utf8JsonWriter writer, JsonSerializerOptions options, TestProjectType type, List<TestProjectSettings> settings)
       {
-        writer.WritePropertyName(type.ToString().ToLower()); // write test project type
+        writer.WritePropertyName(type.ToString()); // write test project type
 
         writer.WriteStartObject();  // Write the opening brace
 
         foreach (var setting in settings)
         {
           writer.WritePropertyName(setting.Name); // write project name
-          writer.WriteStartObject();
-          writer.WriteString("name", setting.Root);
-          writer.WriteString("working_dir", setting.WorkingDir);
-          writer.WritePropertyName("target_paths");
-          writer.WriteStartArray();
-          foreach (string targetPath in setting.TargetPaths)
-          {
-            writer.WriteStringValue(targetPath);
-          }
-          writer.WriteEndArray();
-          writer.WriteEndObject();
+          JsonSerializer.Serialize(writer, setting, options); // write test project settings
         }
 
         writer.WriteEndObject(); // Write the closing brace
@@ -283,6 +273,7 @@ namespace ProjectGen
       public string Root { get; }
       public string WorkingDir { get; }
       public List<string> TargetPaths { get; } = new List<string>();
+      public List<string> CompilerDBPaths { get; } = new List<string>();
 
       public TestProjectSettings(Project project)
       {
@@ -306,13 +297,14 @@ namespace ProjectGen
           string fullTargetPath = resolver.Resolve(System.IO.Path.Combine(conf.TargetPath, conf.TargetFileFullNameWithExtension));
 
           TargetPaths.Add(fullTargetPath);
+          CompilerDBPaths.Add(Utils.GetCompilerDBOutputPath((RexConfiguration)conf));
         }
 
       }
     }
 
     [JsonConverter(typeof(TestProjectsFile.ToJsonConverter))]
-    public Dictionary<TestProjectType, List<TestProjectSettings>> Settings { get; set; } = new Dictionary<TestProjectType, List<TestProjectSettings>>();
+    public Dictionary<TestProjectType, List<TestProjectSettings>> TypeSettings { get; set; } = new Dictionary<TestProjectType, List<TestProjectSettings>>();
 
     public TestProjectsFile()
     {
@@ -321,12 +313,12 @@ namespace ProjectGen
 
     public void AddProject(TestProjectType type, Project project)
     {
-      if (!Settings.ContainsKey(type))
+      if (!TypeSettings.ContainsKey(type))
       {
-        Settings.Add(type, new List<TestProjectSettings>());
+        TypeSettings.Add(type, new List<TestProjectSettings>());
       }
 
-      Settings[type].Add(new TestProjectSettings(project));
+      TypeSettings[type].Add(new TestProjectSettings(project));
     }
   }
     

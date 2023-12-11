@@ -468,7 +468,7 @@ public abstract class BasicCPPProject : Project
     }
 
     // Prepare to generate the compiler db and copy the config files over
-    string compilerDBPath = GetCompilerDBOutputFolder(conf);
+    string compilerDBPath = Utils.GetCompilerDBOutputFolder(conf);
     QueueCompilerDatabaseGeneration(conf);
     CopyClangToolConfigFiles(compilerDBPath);
 
@@ -514,7 +514,7 @@ public abstract class BasicCPPProject : Project
   // Delete the clang tools output folder if there is one.
   private void DeleteClangToolsFolder(RexConfiguration conf)
   {
-    string clangToolsPath = GetClangToolsOutputFolder(conf);
+    string clangToolsPath = Utils.GetClangToolsOutputFolder(conf);
     if (Directory.Exists(clangToolsPath))
     {
       Directory.Delete(clangToolsPath, recursive: true);
@@ -551,7 +551,7 @@ public abstract class BasicCPPProject : Project
       return;
     }
 
-    string clangToolsProjectPath = GetCompilerDBOutputFolder(conf);
+    string clangToolsProjectPath = Utils.GetCompilerDBOutputFolder(conf);
 
     // The header filter is a list of regexes we care about when using clang-tidy
     // This is useful for ignoring headers of thirdparty libraries we don't want to run clang-tools on.
@@ -601,30 +601,6 @@ public abstract class BasicCPPProject : Project
     CodeGeneration.ReadGenerationFile(Name, code_generation_config_path);
   }
 
-  // Simple helper function to get the path of the compiler db
-  private string GetCompilerDBOutputPath(RexConfiguration config)
-  {
-    return Path.Combine(GetCompilerDBOutputFolder(config), "compile_commands.json");
-  }
-
-  // Simple helper function to get the directory the compiler db will go to.
-  private string GetCompilerDBOutputFolder(RexConfiguration config)
-  {
-    return Path.Combine(GetClangToolsOutputFolder(config), PerConfigFolderFormat(config));
-  }
-
-  // Simple helper function to get the directory clang tools intermediate files get stored
-  private string GetClangToolsOutputFolder(RexConfiguration config)
-  {
-    return Path.Combine(config.ProjectPath, "clang_tools");
-  }
-
-  // Simple helper function to create a directory name that's unique per configuration
-  private static string PerConfigFolderFormat(RexConfiguration conf)
-  {
-    return Path.Combine(conf.Target.GetFragment<Compiler>().ToString(), conf.Target.ProjectConfigurationName);
-  }
-
   // Queue up the command for compiler db generation.
   // This is done after the full generation has finished as we won't know
   // all the commandline arguments until the end.
@@ -634,7 +610,7 @@ public abstract class BasicCPPProject : Project
   {
     string ninja_file_path = GetNinjaFilePath(config);
     string build_step_name = $"compdb_{Name.ToLower()}_{config.Name}_clang";
-    string outputPath = GetCompilerDBOutputPath(config);
+    string outputPath = Utils.GetCompilerDBOutputPath(config);
 
     lock (LockToCompilerDBGenerationQueue)
     {
