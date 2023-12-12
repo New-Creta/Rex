@@ -139,9 +139,6 @@ public static class Main
   private static void InitializeSharpmake()
   {
     InitializeToolChain();
-
-    // Initialize Visual Studio settings
-    KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
   }
 
   // Initialize the graphics API based on the config
