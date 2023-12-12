@@ -141,7 +141,13 @@ public static class Main
     InitializeToolChain();
 
     // Initialize Platform Settings.
-    KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
+
+    // It's possible Visual Studio isn't installed on this machine
+    // If it's not, then we can't set the root for Visual Studio
+    if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
+    {
+      KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
+    }
   }
 
   // Initialize the graphics API based on the config

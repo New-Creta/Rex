@@ -70,7 +70,14 @@ public class RexTarget : ITarget
     switch (ProjectGen.Settings.IDE)
     {
       case ProjectGen.IDE.VisualStudio:
-        targets.AddRange(CreateTargetsForDevEnv(DevEnv.vs2019));
+        if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
+        { 
+          targets.AddRange(CreateTargetsForDevEnv(DevEnv.vs2019));
+        }
+        else
+        {
+          System.Console.WriteLine("Visual Studio IDE specified, but it's not installed");
+        }
         break;
       case ProjectGen.IDE.VSCode:
         targets.AddRange(CreateTargetsForDevEnv(DevEnv.vscode));
