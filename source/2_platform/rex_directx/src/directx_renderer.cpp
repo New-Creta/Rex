@@ -1200,7 +1200,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            void clear(s32 clearStateIndex)
+            void clear(ResourceSlot clearStateIndex)
             {
                 auto& csr = get_resource_from_pool_as<ClearStateResource>(g_ctx.resource_pool, clearStateIndex);
 
