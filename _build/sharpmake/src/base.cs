@@ -97,8 +97,8 @@ public class RegenerateProjects : Project
 
     // The custom build steps just perform a generation step
     conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
-    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -no_config";
-    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -clean -no_config";
+    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -no_default_config -IDE VisualStudio"; // Use what's previously generated
+    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -IDE VisualStudio"; // Perform a generation from scratch
     conf.CustomBuildSettings.CleanCommand = "";
     conf.CustomBuildSettings.OutputFile = "";
   }
