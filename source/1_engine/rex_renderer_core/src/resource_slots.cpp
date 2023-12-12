@@ -7,6 +7,7 @@ namespace rex
 {
     namespace renderer
     {
+        //-------------------------------------------------------------------------
         ResourceSlots::~ResourceSlots()
         {
             delete[] m_flags;
@@ -20,13 +21,13 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        s32 ResourceSlots::next_slot()
+        ResourceSlot ResourceSlots::next_slot()
         {
             for (s32 i = 0; i < m_flag_capacity; ++i)
             {
                 if (!m_flags[i].test_and_set(rsl::memory_order_acquire))
                 {
-                    return i;
+                    return ResourceSlot(i);
                 }
             }
 
@@ -38,10 +39,10 @@ namespace rex
 
             if (!m_flags[current_m_flag_capacity].test_and_set(rsl::memory_order_acquire))
             {
-                return current_m_flag_capacity;
+                return ResourceSlot(current_m_flag_capacity);
             }
 
-            return REX_INVALID_INDEX;
+            return ResourceSlot::make_invalid();
         }
 
         //-------------------------------------------------------------------------

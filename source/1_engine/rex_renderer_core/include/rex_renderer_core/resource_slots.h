@@ -2,6 +2,8 @@
 
 #include "rex_engine/types.h"
 
+#include "rex_renderer_core/resource_slot.h"
+
 #include <rex_std/vector.h>
 #include <rex_std/atomic.h>
 
@@ -37,7 +39,7 @@ namespace rex
              *
              * @return The index of the allocated resource slot.
              */
-            s32 next_slot();
+            ResourceSlot next_slot();
 
             /**
              * Free a previously allocated resource slot.
