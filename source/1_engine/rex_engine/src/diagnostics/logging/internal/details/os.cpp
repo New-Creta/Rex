@@ -1,31 +1,27 @@
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 
+#include <corecrt.h>
+#include <corecrt_io.h>
+#include <corecrt_share.h>
+#include <errno.h>
+#include <sdkddkver.h>
+#include <timezoneapi.h>
+#include <ctime>
+
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/filesystem/filesystem_constants.h"
-
-#include <algorithm>
-#include <array>
-#include <chrono>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <thread>
+#include "rex_engine/types.h"
+#include "rex_std/bonus/attributes.h"
+#include "rex_std/bonus/types.h"
 
 // IWYU pragma: no_include <built-in>
 
 #ifdef _WIN32
 
-  #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
-
   #include <Windows.h>
-  #include <fileapi.h> // for FlushFileBuffers
-  #include <io.h>      // for _get_osfhandle, _isatty, _fileno
-  #include <process.h> // for _get_pid
+
+  #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 
   #ifdef __MINGW32__
     #include <share.h>

@@ -1,10 +1,14 @@
 #include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 
+#include <errno.h>
+
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/filesystem/filesystem_constants.h"
 #include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/debug_types.h"
+#include "rex_engine/types.h"
 
 // IWYU pragma: no_include <built-in>
 
