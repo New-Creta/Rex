@@ -113,17 +113,86 @@ TEST_CASE("Common Path")
   }
 }
 
+TEST_CASE("Random Dir")
+{
+  for (int i = 0; i < 1000; ++i)
+  {
+    CHECK(!rex::path::exists(rex::path::random_dir()));
+  }
+}
+
+TEST_CASE("Random Filename")
+{
+  for (int i = 0; i < 1000; ++i)
+  {
+    CHECK(!rex::path::exists(rex::path::random_filename()));
+  }
+}
+
 TEST_CASE("Real Path")
 {
+  // Make sure that the working directory is set correctly here
   CHECK(rex::path::real_path("shortcut_to_foo.txt.lnk") == rex::path::abs_path("foo.txt"));  
 }
 
 TEST_CASE("Normalise Path")
 {
+  CHECK(rex::path::norm_path("/foo/./bar") == rex::path::join("foo", "bar"));
+  CHECK(rex::path::norm_path("/path/to/dir") == rex::path::join("path","to","dir"));
+  CHECK(rex::path::norm_path("path/to/dir") == rex::path::join("path","to","dir"));
+  CHECK(rex::path::norm_path("/") == "");
+
+  CHECK(rex::path::norm_path("/path/./to/./dir") == rex::path::join("path","to","dir"));
+  CHECK(rex::path::norm_path("/path/to/../dir") == rex::path::join("path","dir"));
+  CHECK(rex::path::norm_path("/path/to/../../dir") == "dir");
+
+  CHECK(rex::path::norm_path("/path/to/dir\\file") == rex::path::join("path","to","dir","file"));
+  CHECK(rex::path::norm_path("\\path\\to\\dir\\file") == rex::path::join("path", "to", "dir", "file"));
+  CHECK(rex::path::norm_path("path/to/dir/file\\") == rex::path::join("path", "to", "dir", "file"));
+
+  CHECK(rex::path::norm_path("//path/to//dir") == rex::path::join("path","to","dir"));
+  CHECK(rex::path::norm_path("/\\path\\to/dir") == rex::path::join("path","to","dir"));
+  CHECK(rex::path::norm_path("/path/to/dir\\") == rex::path::join("path","to","dir"));
+
+  CHECK(rex::path::norm_path("/path//to//dir") == rex::path::join("path","to","dir"));
+  CHECK(rex::path::norm_path("/path/to//dir") == rex::path::join("path","to","dir"));
+  CHECK(rex::path::norm_path("/path/to/dir//") == rex::path::join("path","to","dir"));
+
+  CHECK(rex::path::norm_path("/path//to//dir/") == rex::path::join("path","to","dir"));
+  CHECK(rex::path::norm_path("../..") == rex::path::join("..",".."));
+  CHECK(rex::path::norm_path("path/../..") == "..");
+
+  CHECK(rex::path::norm_path("C:\\path\\to\\dir") == rex::path::join("C:","path","to","dir"));
+  CHECK(rex::path::norm_path("C:\\path\\to\\..\\dir") == rex::path::join("C:","path","dir"));
 }
 
 TEST_CASE("Relative Path")
 {
+  CHECK(rex::path::rel_path("/path/to/dir", "/path") == rex::path::join("to", "dir"));
+  CHECK(rex::path::rel_path("path/to/dir", "path") == rex::path::join("to", "dir"));
+  CHECK(rex::path::rel_path("/", "/") == rex::path::join(""));
+
+  CHECK(rex::path::rel_path("/path/./to/./dir", "/path") == rex::path::join("to", "dir"));
+  CHECK(rex::path::rel_path("/path/to/../dir", "/path") == rex::path::join("dir"));
+  CHECK(rex::path::rel_path("/path/to/../../dir", "/path") == rex::path::join("..", "dir"));
+
+  CHECK(rex::path::rel_path("/path/to/dir\\file", "/path") == rex::path::join("to", "dir", "file"));
+  CHECK(rex::path::rel_path("\\path\\to\\dir\\file", "/path") == rex::path::join("to", "dir", "file"));
+  CHECK(rex::path::rel_path("path/to/dir/file\\", "path") == rex::path::join("to", "dir", "file"));
+
+  CHECK(rex::path::rel_path("//path/to//dir", "/") == rex::path::join("path", "to", "dir"));
+  CHECK(rex::path::rel_path("/\\path\\to/dir", "/") == rex::path::join("path", "to", "dir"));
+  CHECK(rex::path::rel_path("/path/to/dir\\", "/") == rex::path::join("path", "to", "dir"));
+
+  CHECK(rex::path::rel_path("/path//to//dir", "/") == rex::path::join("path", "to", "dir"));
+  CHECK(rex::path::rel_path("/path/to//dir", "/") == rex::path::join("path", "to", "dir"));
+  CHECK(rex::path::rel_path("/path/to/dir//", "/") == rex::path::join("path", "to", "dir"));
+
+  CHECK(rex::path::rel_path("/path//to//dir/", "/") == rex::path::join("path", "to", "dir"));
+  CHECK(rex::path::rel_path("/", "path/to/dir") == rex::path::join("..", "..", ".."));
+
+  CHECK(rex::path::rel_path("C:\\path\\to\\dir", "C:\\path") == rex::path::join("to", "dir"));
+  CHECK(rex::path::rel_path("C:\\path\\to\\..\\dir", "C:\\path") == rex::path::join("dir"));
 }
 
 TEST_CASE("File Creation Time")

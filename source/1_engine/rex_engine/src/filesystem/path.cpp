@@ -22,6 +22,22 @@ namespace rex
 
     namespace internal
     {
+      // concat the arg to the string in filepath format
+      void join_impl(rsl::string& str, rsl::string_view arg)
+      {
+        if (arg.empty())
+        {
+          return;
+        }
+
+        str += arg;
+
+        if (!str.ends_with(seperation_char()))
+        {
+          str += seperation_char();
+        }
+      }
+
       // returns the position of where the extension of the path starts,
       // if there is any
       card32 extension_start(rsl::string_view path)
@@ -183,7 +199,16 @@ namespace rex
       // create a directory name of 8 random characters
       card32 num_dirname_chars = 8;
       rsl::string result;
-      internal::fill_with_random_chars(result, num_dirname_chars);
+
+      do
+      {
+        // clear the result first before adding to it
+        result.clear();
+
+        // create a stem of 8 random characters
+        internal::fill_with_random_chars(result, num_dirname_chars);
+
+      } while(path::exists(result));
 
       return result;
     }
@@ -194,12 +219,19 @@ namespace rex
       card32 num_ext_chars  = 3;
       rsl::string result;
 
-      // create a stem of 8 random characters
-      internal::fill_with_random_chars(result, num_stem_chars);
-      result += '.';
+      do
+      {
+        // clear the result first before adding to it
+        result.clear();
 
-      // create an extension of 3 random characters
-      internal::fill_with_random_chars(result, num_ext_chars);
+        // create a stem of 8 random characters
+        internal::fill_with_random_chars(result, num_stem_chars);
+        result += '.';
+
+        // create an extension of 3 random characters
+        internal::fill_with_random_chars(result, num_ext_chars);
+
+      } while(path::exists(result));
 
       return result;
     }
@@ -268,24 +300,6 @@ namespace rex
       res.replace("\\", "/");
 
       return res;
-      //// We need to open a file handle in order to query information about it
-      // rsl::win::handle file = internal::open_file_for_attribs(path);
-
-      //// When we have an invalid handle, we simply return the input
-      // if (!file.is_valid())
-      //{
-      //   return rsl::string(path);
-      // }
-
-      //// Query the final path name of the handle
-      // rsl::big_stack_string res;
-      // WIN_CALL(GetFinalPathNameByHandleA(file.get(), res.data(), res.max_size(), VOLUME_NAME_DOS));
-      // res.reset_null_termination_offset();
-      //
-      //// On Windows, these files will start with "\\?\"
-      // rsl::string_view prefix = "\\\\?\\";
-      // res = res.substr(prefix.length());
-      // return rsl::string(res);
     }
     // Normalizes the path, removing redundant dots for current and parent directories
     // Converts forward slashes to backward slashes
@@ -310,28 +324,52 @@ namespace rex
         // then we add the parent dir to the normalized path components
         if(path_comp == "..")
         {
-          if(!splitted_path.empty() && splitted_path.back() != "..")
+          if(!norm_splitted.empty() && norm_splitted.back() != "..")
           {
-            splitted_path.pop_back();
+            norm_splitted.pop_back();
             continue;
           }
         }
 
         // in any other case, we add the path component to the list
-        splitted_path.push_back(path_comp);
+        norm_splitted.push_back(path_comp);
       }
 
       // join everything back together and return the result
-      return rsl::join(norm_splitted, "\\").as_string();
+      return rsl::join(norm_splitted, rsl::string_view(&g_seperation_char, 1)).as_string();
     }
     // Returns a relative path to path, starting from the start directory
     rsl::string rel_path(rsl::string_view path, rsl::string_view start)
     {
-      rsl::vector<rsl::string_view> splitted_path  = rsl::split(path, "/\\");
-      rsl::vector<rsl::string_view> splitted_start = rsl::split(start, "/\\");
+      rsl::string norm_path = path::norm_path(path);
+      rsl::string norm_start = path::norm_path(start);
+
+      if (norm_path.empty() && norm_start.empty())
+      {
+        return rsl::string("");
+      }
+
+      rsl::vector<rsl::string_view> splitted_path  = rsl::split(norm_path, rsl::string_view(&g_seperation_char, 1));
+      rsl::vector<rsl::string_view> splitted_start = rsl::split(norm_start, rsl::string_view(&g_seperation_char, 1));
 
       auto res = rsl::mismatch(splitted_path.cbegin(), splitted_path.cend(), splitted_start.cbegin(), splitted_start.cend());
-      return rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char)).as_string();
+
+      // If we need to go up in the filesystem
+      // Check how many "parent dir" tokens we need to add
+      // Eg. target: "dir", start: "path"
+      // result: "../dir"
+      rsl::string result;
+      if (res.lhs_it == splitted_path.cbegin())
+      {
+        card32 num_parent_dir_tokens = splitted_start.size();
+        for (card32 i = 0; i < num_parent_dir_tokens; ++i)
+        {
+          result = path::join(result, "..");
+        }
+        
+      }
+
+      return path::join(result, rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char)).as_string());
     }
     // Returns the latest access time of the file or directory at the given path
     card64 get_access_time(rsl::string_view path)

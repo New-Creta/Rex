@@ -10,15 +10,12 @@ namespace rex
   {
     namespace internal
     {
+      void join_impl(rsl::string& str, rsl::string_view arg);
+
       template <typename PathLikeType, typename... Args>
       void join_impl(rsl::string& str, PathLikeType&& arg)
       {
-        str += arg;
-
-        if(!str.ends_with(seperation_char()))
-        {
-          str += seperation_char();
-        }
+        join_impl(str, rsl::string_view(rsl::forward<PathLikeType>(arg)));
       }
       template <typename PathLikeType, typename... Args>
       void join_impl(rsl::string& str, PathLikeType&& firstArg, Args&&... args)
@@ -129,7 +126,10 @@ namespace rex
       rsl::string res;
       internal::join_impl(res, rsl::forward<PathLikeTypes>(paths)...);
 
-      res.pop_back(); // remove the last seperation char
+      if (!res.empty())
+      {
+        res.pop_back(); // remove the last seperation char
+      }
       return res;
     }
 
