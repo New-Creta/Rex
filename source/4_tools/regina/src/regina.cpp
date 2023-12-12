@@ -8,6 +8,17 @@
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/resources/mesh.h"
 
+#include "rex_renderer_core/commands/compile_shader_cmd.h"
+#include "rex_renderer_core/commands/create_buffer_cmd.h"
+#include "rex_renderer_core/commands/create_clear_state_cmd.h"
+#include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
+#include "rex_renderer_core/commands/create_input_layout_cmd.h"
+#include "rex_renderer_core/commands/create_constant_buffer_cmd.h"
+#include "rex_renderer_core/commands/create_raster_state_cmd.h"
+#include "rex_renderer_core/commands/create_pipeline_state_cmd.h"
+#include "rex_renderer_core/commands/link_shader_cmd.h"
+#include "rex_renderer_core/commands/update_constant_buffer_cmd.h"
+
 #include "rex_engine/core_application.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
@@ -26,9 +37,7 @@
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
 
-#include <D3Dcompiler.h>
 #include <DirectXMath.h>
-#include <DirectXCollision.h>
 #include <DirectXColors.h>
 
 DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
@@ -126,62 +135,57 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    renderer::commands::CompileShader create_compile_shader_parameters(const rsl::small_stack_string& shaderName, renderer::ShaderType shaderType, rsl::string_view filePath)
+    renderer::commands::CompileShaderCommandDesc create_compile_shader_parameters(const rsl::small_stack_string& shaderName, renderer::ShaderType shaderType, rsl::string_view filePath)
     {
-        memory::Blob file_memory = vfs::open_read(filePath);
-
-        renderer::commands::CompileShader compile_shader_params;
+        renderer::commands::CompileShaderCommandDesc compile_shader_command_desc;
 
         switch (shaderType)
         {
         case renderer::ShaderType::VERTEX:
-            compile_shader_params.shader_entry_point = rsl::tiny_stack_string("VS");
-            compile_shader_params.shader_feature_target = rsl::tiny_stack_string("vs_5_1");
+            compile_shader_command_desc.shader_entry_point = rsl::tiny_stack_string("VS");
+            compile_shader_command_desc.shader_feature_target = rsl::tiny_stack_string("vs_5_1");
             break;
         case renderer::ShaderType::PIXEL:
-            compile_shader_params.shader_entry_point = rsl::tiny_stack_string("PS");
-            compile_shader_params.shader_feature_target = rsl::tiny_stack_string("ps_5_1");
+            compile_shader_command_desc.shader_entry_point = rsl::tiny_stack_string("PS");
+            compile_shader_command_desc.shader_feature_target = rsl::tiny_stack_string("ps_5_1");
             break;
         }
 
-        compile_shader_params.shader_code = (char8*)memory_alloc(file_memory.size() * sizeof(char8));
-        memcpy(compile_shader_params.shader_code, file_memory.data_as<char8>(), file_memory.size());
-        compile_shader_params.shader_code_size = file_memory.size();
-        compile_shader_params.shader_name = shaderName;
-        compile_shader_params.shader_type = shaderType;
+        compile_shader_command_desc.shader_code = vfs::open_read(filePath);
+        compile_shader_command_desc.shader_name = shaderName;
+        compile_shader_command_desc.shader_type = shaderType;
 
-        return compile_shader_params;
+        return compile_shader_command_desc;
     }
 
     //-------------------------------------------------------------------------
     template<typename T>
-    renderer::commands::CreateBuffer create_buffer_parameters(T* data, s32 num)
+    renderer::commands::CreateBufferCommandDesc create_buffer_parameters(T* data, s32 num)
     {
-        renderer::commands::CreateBuffer create_buffer_params;
+        renderer::commands::CreateBufferCommandDesc create_buffer_command_desc;
 
-        create_buffer_params.data = (void*)&data[0];
-        create_buffer_params.buffer_size = sizeof(T) * num;
+        create_buffer_command_desc.buffer_data = memory::make_blob((rsl::byte*)&data[0], rsl::memory_size(sizeof(T) * num));
 
-        return create_buffer_params;
+        return create_buffer_command_desc;
     }
 
     //-------------------------------------------------------------------------
     bool build_clear_state()
     {
-        renderer::commands::ClearState create_clear_state_params;
+        renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc;
 
-        create_clear_state_params.rgba = { 0.690196097f, 0.768627524f, 0.870588303f, 1.f };
-        create_clear_state_params.depth = 1.0f;
-        create_clear_state_params.stencil = 0x00;
+        create_clear_state_command_desc.rgba = { 0.690196097f, 0.768627524f, 0.870588303f, 1.f };
+        create_clear_state_command_desc.depth = 1.0f;
+        create_clear_state_command_desc.stencil = 0x00;
 
         StateController<renderer::ClearBits> clear_flags;
         clear_flags.add_state(renderer::ClearBits::CLEAR_COLOR_BUFFER);
         clear_flags.add_state(renderer::ClearBits::CLEAR_DEPTH_BUFFER);
         clear_flags.add_state(renderer::ClearBits::CLEAR_STENCIL_BUFFER);
 
-        create_clear_state_params.flags = clear_flags;
+        create_clear_state_command_desc.flags = clear_flags;
 
-        g_regina_ctx.clear_state = renderer::create_clear_state(create_clear_state_params);
+        g_regina_ctx.clear_state = renderer::create_clear_state(rsl::move(create_clear_state_command_desc));
 
         return true;
     }
@@ -190,32 +194,27 @@ namespace rex
     bool build_shader_and_input_layout()
     {
         // Shader
-        renderer::commands::ConstantLayoutDescription constants[2] = 
-        {
-            {renderer::commands::ConstantType::CBUFFER, "ObjectConstants", 0},
-            {renderer::commands::ConstantType::CBUFFER, "PassConstants", 1}
-        };
+        renderer::commands::CompileShaderCommandDesc vs_compile_command_desc = create_compile_shader_parameters(rsl::small_stack_string("standardVS"), renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
+        renderer::commands::CompileShaderCommandDesc ps_compile_command_desc = create_compile_shader_parameters(rsl::small_stack_string("opaquePS"), renderer::ShaderType::PIXEL, "Shaders\\color.hlsl");
 
-        renderer::commands::CompileShader vs_compile_params = create_compile_shader_parameters(rsl::small_stack_string("standardVS"), renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
-        renderer::commands::CompileShader ps_compile_params = create_compile_shader_parameters(rsl::small_stack_string("opaquePS"), renderer::ShaderType::PIXEL, "Shaders\\color.hlsl");
-        renderer::commands::LinkShader link_shader_params;
-        link_shader_params.vertex_shader = renderer::compile_shader(vs_compile_params);
-        link_shader_params.pixel_shader = renderer::compile_shader(ps_compile_params);
-        link_shader_params.constants = constants;
-        link_shader_params.num_constants = _countof(constants);
-        g_regina_ctx.shader_program = renderer::link_shader(link_shader_params);
+        renderer::commands::LinkShaderCommandDesc link_shader_command_desc;
+        link_shader_command_desc.vertex_shader = renderer::compile_shader(rsl::move(vs_compile_command_desc));
+        link_shader_command_desc.pixel_shader = renderer::compile_shader(rsl::move(ps_compile_command_desc));
+        link_shader_command_desc.constants =
+        {
+            renderer::commands::ConstantLayoutDescription {renderer::commands::ConstantType::CBUFFER, "ObjectConstants", 0},
+            renderer::commands::ConstantLayoutDescription {renderer::commands::ConstantType::CBUFFER, "PassConstants", 1}
+        };
+        g_regina_ctx.shader_program = renderer::link_shader(rsl::move(link_shader_command_desc));
 
         // Input Layout
-        renderer::commands::InputLayoutDescription input_layout_descs[2] =
+        renderer::commands::CreateInputLayoutCommandDesc input_layout_command_desc;
+        input_layout_command_desc.input_layout =
         {
-            { "POSITION", 0, renderer::VertexBufferFormat::FLOAT3, 0, 0, renderer::InputLayoutClassification::PER_VERTEX_DATA, 0 },
-            { "COLOR", 0, renderer::VertexBufferFormat::FLOAT4, 0, 12, renderer::InputLayoutClassification::PER_VERTEX_DATA, 0 }
+            renderer::commands::InputLayoutDescription { "POSITION", 0, renderer::VertexBufferFormat::FLOAT3, 0, 0, renderer::InputLayoutClassification::PER_VERTEX_DATA, 0 },
+            renderer::commands::InputLayoutDescription { "COLOR", 0, renderer::VertexBufferFormat::FLOAT4, 0, 12, renderer::InputLayoutClassification::PER_VERTEX_DATA, 0 }
         };
-
-        renderer::commands::CreateInputLayout input_layout_params;
-        input_layout_params.input_layout = input_layout_descs;
-        input_layout_params.num_elements = _countof(input_layout_descs);
-        g_regina_ctx.input_layout = renderer::create_input_layout(input_layout_params);
+        g_regina_ctx.input_layout = renderer::create_input_layout(rsl::move(input_layout_command_desc));
 
         return true;
     }
@@ -244,10 +243,10 @@ namespace rex
         g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>();
         g_regina_ctx.mesh_cube->name = rsl::medium_stack_string("box_geometry");
 
-        renderer::commands::CreateBuffer v_create_buffer_params = create_buffer_parameters<renderer::directx::VertexPosCol>(box_vertices.data(), box_vertices.size());
-        g_regina_ctx.mesh_cube->vertex_buffer = renderer::create_vertex_buffer(v_create_buffer_params);
-        renderer::commands::CreateBuffer i_create_buffer_params = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
-        g_regina_ctx.mesh_cube->index_buffer = renderer::create_index_buffer(i_create_buffer_params);
+        renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::directx::VertexPosCol>(box_vertices.data(), box_vertices.size());
+        g_regina_ctx.mesh_cube->vertex_buffer = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
+        renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
+        g_regina_ctx.mesh_cube->index_buffer = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
 
         g_regina_ctx.mesh_cube->vertex_byte_stride = sizeof(renderer::directx::VertexPosCol);
         g_regina_ctx.mesh_cube->vertex_buffer_byte_size = vb_byte_size;
@@ -313,13 +312,13 @@ namespace rex
         {
             for (s32 i = 0; i < num_render_items; ++i)
             {
-                renderer::commands::CreateConstantBuffer create_const_buffer_params;
+                renderer::commands::CreateConstantBufferCommandDesc create_const_buffer_command_desc;
 
-                create_const_buffer_params.count = num_render_items;
-                create_const_buffer_params.buffer_size = sizeof(ObjectConstants);
-                create_const_buffer_params.array_index = (frame * num_render_items) + i;
+                create_const_buffer_command_desc.count = num_render_items;
+                create_const_buffer_command_desc.buffer_size = sizeof(ObjectConstants);
+                create_const_buffer_command_desc.array_index = (frame * num_render_items) + i;
 
-                renderer::ResourceSlot object_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
+                renderer::ResourceSlot object_constant_buffer = renderer::create_constant_buffer(rsl::move(create_const_buffer_command_desc));
 
                 g_regina_ctx.frame_resource_data[frame].object_constant_buffer = object_constant_buffer;
             }
@@ -328,13 +327,13 @@ namespace rex
         // Last three descriptors are the pass CBVs for each frame resource.
         for (s32 frame = 0; frame < renderer::num_frames_in_flight(); ++frame)
         {
-            renderer::commands::CreateConstantBuffer create_const_buffer_params;
+            renderer::commands::CreateConstantBufferCommandDesc create_const_buffer_command_desc;
 
-            create_const_buffer_params.count = 1;
-            create_const_buffer_params.buffer_size = sizeof(PassConstants);
-            create_const_buffer_params.array_index = g_regina_ctx.frame_resource_data.size() + frame;
+            create_const_buffer_command_desc.count = 1;
+            create_const_buffer_command_desc.buffer_size = sizeof(PassConstants);
+            create_const_buffer_command_desc.array_index = g_regina_ctx.frame_resource_data.size() + frame;
 
-            renderer::ResourceSlot pass_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
+            renderer::ResourceSlot pass_constant_buffer = renderer::create_constant_buffer(rsl::move(create_const_buffer_command_desc));
 
             g_regina_ctx.frame_resource_data[frame].pass_constant_buffer = pass_constant_buffer;
         }
@@ -345,15 +344,15 @@ namespace rex
     //-------------------------------------------------------------------------
     bool build_raster_state()
     {
-        renderer::commands::RasterState solid_rs;
-        solid_rs.fill_mode = renderer::FillMode::SOLID;
-        solid_rs.cull_mode = renderer::CullMode::BACK;
-        g_regina_ctx.solid_raster_state = renderer::create_raster_state(solid_rs);
+        renderer::commands::CreateRasterStateCommandDesc solid_rs_command_desc;
+        solid_rs_command_desc.fill_mode = renderer::FillMode::SOLID;
+        solid_rs_command_desc.cull_mode = renderer::CullMode::BACK;
+        g_regina_ctx.solid_raster_state = renderer::create_raster_state(rsl::move(solid_rs_command_desc));
 
-        renderer::commands::RasterState wire_rs;
-        wire_rs.fill_mode = renderer::FillMode::SOLID;
-        wire_rs.cull_mode = renderer::CullMode::BACK;
-        g_regina_ctx.wire_raster_state = renderer::create_raster_state(wire_rs);
+        renderer::commands::CreateRasterStateCommandDesc wire_rs_command_desc;
+        wire_rs_command_desc.fill_mode = renderer::FillMode::SOLID;
+        wire_rs_command_desc.cull_mode = renderer::CullMode::BACK;
+        g_regina_ctx.wire_raster_state = renderer::create_raster_state(rsl::move(wire_rs_command_desc));
 
         return true;
     }
@@ -361,12 +360,12 @@ namespace rex
     //-------------------------------------------------------------------------
     bool build_pipeline_state_object()
     {
-        renderer::commands::CreatePipelineState create_pso_params;
-        create_pso_params.input_layout = g_regina_ctx.input_layout;
-        create_pso_params.num_render_targets = 1;
-        create_pso_params.shader_program = g_regina_ctx.shader_program;
-        create_pso_params.rasterizer_state = g_regina_ctx.solid_raster_state;
-        g_regina_ctx.pso = renderer::create_pipeline_state_object(create_pso_params);
+        renderer::commands::CreatePipelineStateCommandDesc create_pso_command_desc;
+        create_pso_command_desc.input_layout = g_regina_ctx.input_layout;
+        create_pso_command_desc.num_render_targets = 1;
+        create_pso_command_desc.shader_program = g_regina_ctx.shader_program;
+        create_pso_command_desc.rasterizer_state = g_regina_ctx.solid_raster_state;
+        g_regina_ctx.pso = renderer::create_pipeline_state_object(rsl::move(create_pso_command_desc));
 
         return true;
     }
@@ -416,12 +415,11 @@ namespace rex
                 ObjectConstants obj_constants;
                 DirectX::XMStoreFloat4x4(&obj_constants.world, XMMatrixTranspose(new_world));
 
-                renderer::commands::UpdateConstantBuffer update_constant_buffer_params;
-                update_constant_buffer_params.element_index = ri.constant_buffer_index;
-                update_constant_buffer_params.data = &obj_constants;
-                update_constant_buffer_params.data_size = sizeof(ObjectConstants);
+                renderer::commands::UpdateConstantBufferCommandDesc update_constant_buffer_command_desc;
+                update_constant_buffer_command_desc.element_index = ri.constant_buffer_index;
+                update_constant_buffer_command_desc.buffer_data = memory::make_blob((rsl::byte*)&obj_constants, rsl::memory_size(sizeof(ObjectConstants)));
 
-                renderer::update_constant_buffer(update_constant_buffer_params, curr_object_cb);
+                renderer::update_constant_buffer(rsl::move(update_constant_buffer_command_desc), curr_object_cb);
 
                 // Updating constant buffer of the cube so the frame should remain dirty
                 ri.num_frames_dirty = renderer::num_frames_in_flight();
@@ -461,12 +459,11 @@ namespace rex
         g_regina_ctx.pass_constants.far_z = globals::default_depth_info().far_plane;
         g_regina_ctx.pass_constants.delta_time = globals::frame_info().delta_time().to_seconds();
 
-        renderer::commands::UpdateConstantBuffer update_constant_buffer_params;
-        update_constant_buffer_params.element_index = 0;
-        update_constant_buffer_params.data = &g_regina_ctx.pass_constants;
-        update_constant_buffer_params.data_size = sizeof(PassConstants);
+        renderer::commands::UpdateConstantBufferCommandDesc update_constant_buffer_command_desc;
+        update_constant_buffer_command_desc.element_index = 0;
+        update_constant_buffer_command_desc.buffer_data = memory::make_blob((rsl::byte*)&g_regina_ctx.pass_constants, rsl::memory_size(sizeof(PassConstants)));
 
-        renderer::update_constant_buffer(update_constant_buffer_params, curr_pass_cb);
+        renderer::update_constant_buffer(rsl::move(update_constant_buffer_command_desc), curr_pass_cb);
     }
 
     //-------------------------------------------------------------------------
@@ -597,6 +594,5 @@ namespace rex
     {
         return create_regina_app_creation_params(rsl::move(platformParams));
     }
-
 #endif
 } // namespace rex
