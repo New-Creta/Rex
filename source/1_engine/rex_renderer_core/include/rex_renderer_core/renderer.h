@@ -2,8 +2,6 @@
 
 #include "rex_engine/types.h"
 
-#include "rex_renderer_core/parameters/renderer_params.h"
-
 #include "rex_renderer_core/viewport.h"
 #include "rex_renderer_core/scissor_rect.h"
 #include "rex_renderer_core/shader_type.h"
@@ -26,6 +24,34 @@ namespace rex
 
     namespace renderer
     {
+        namespace commands
+        {
+            class CreateClearStateCommandDesc;
+            class CreateRasterStateCommandDesc;
+            class CreateBufferCommandDesc;
+            class CreateIndexBufferCommandDesc;
+            class CreateConstantBufferCommandDesc;
+            class CreatePipelineStateCommandDesc;
+            class CreateInputLayoutCommandDesc;
+
+            class BeginDrawCommandDesc;
+            class EndDrawCommandDesc;
+            class NewFrame
+            class EndFrameCommandDesc;
+
+            class CompileShaderCommandDesc;
+            class LinkShaderCommandDesc;
+            class LoadShaderCommandDesc;
+
+            class ClearCommandDesc;
+            class DrawCommandDesc;
+            class DrawIndexedCommandDesc;
+            class DrawIndexedInstancedCommandDesc;
+            class DrawInstanceCommandDesc;
+            class ReleaseResourceCommandDesc;
+
+        }
+
         struct Info
         {
             rsl::small_stack_string api_version;
@@ -56,51 +82,51 @@ namespace rex
         bool            is_y_up();
         bool            is_depth_0_to_1();
 
+        // public-api will buffer all commands for dispatch on dedicated thread
         s32             active_frame();
         s32             num_frames_in_flight();
 
-        // public-api will buffer all commands for dispatch on dedicated thread
-        s32             create_clear_state(const parameters::ClearState& clearStateParams);
-        s32             create_raster_state(const parameters::RasterState& rasterStateParams);
-        s32             create_input_layout(const parameters::CreateInputLayout& createInputLayoutParams);
-        s32             create_vertex_buffer(const parameters::CreateBuffer& createBufferParams);
-        s32             create_index_buffer(const parameters::CreateBuffer& createBufferParams);
-        s32             create_constant_buffer(const parameters::CreateConstantBuffer& createBufferParams);
-        s32             create_pipeline_state_object(const parameters::CreatePipelineState& createPipelineStateParams);
-        s32             create_frame_resource();
+        ResourceSlot    create_clear_state(const commands::ClearState& clearStateParams);
+        ResourceSlot    create_raster_state(const commands::RasterState& rasterStateParams);
+        ResourceSlot    create_input_layout(const commands::CreateInputLayout& createInputLayoutParams);
+        ResourceSlot    create_vertex_buffer(const commands::CreateBuffer& createBufferParams);
+        ResourceSlot    create_index_buffer(const commands::CreateBuffer& createBufferParams);
+        ResourceSlot    create_constant_buffer(const commands::CreateConstantBuffer& createBufferParams);
+        ResourceSlot    create_pipeline_state_object(const commands::CreatePipelineState& createPipelineStateParams);
+        ResourceSlot    create_frame_resource();
 
-        s32             load_shader(const parameters::LoadShader& loadShaderParams);
-        s32             link_shader(const parameters::LinkShader& linkShaderParams);
-        s32             compile_shader(const parameters::CompileShader& compileShaderParams);
+        ResourceSlot    load_shader(const commands::LoadShader& loadShaderParams);
+        ResourceSlot    link_shader(const commands::LinkShader& linkShaderParams);
+        ResourceSlot    compile_shader(const commands::CompileShader& compileShaderParams);
 
-        bool            update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBufferParams, s32 constantBufferTarget);
+        bool            update_constant_buffer(const commands::UpdateConstantBuffer& updateConstantBufferParams, const ResourceSlot& constantBufferTarget);
 
         void            wait_for_active_frame();
 
-        bool            release_resource(s32 resourceTarget);
+        bool            release_resource(ResourceSlot resourceTarget);
 
         bool            prepare_user_initialization();
         bool            finish_user_initialization();
 
-        bool            clear(s32 clearStateTarget);
+        bool            clear(ResourceSlot clearStateTarget);
 
         bool            renderer_draw(s32 vertexCount, s32 startVertex);
         bool            renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex);
         bool            renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex);
         bool            renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance);
 
-        bool            set_raster_state(s32 rasterStateTarget);
-        bool            set_render_targets(s32* colorTargets, s32 numColorTargets, s32 depthTarget);
-        bool            set_render_targets(s32 colorTarget, s32 depthTarget);
+        bool            set_raster_state(ResourceSlot rasterStateTarget);
+        bool            set_render_targets(ResourceSlot* colorTargets, s32 numColorTargets, ResourceSlot depthTarget);
+        bool            set_render_targets(ResourceSlot colorTarget, ResourceSlot depthTarget);
         bool            set_viewport(const Viewport& vp);
         bool            set_scissor_rect(const ScissorRect& sr);
-        bool            set_input_layout(s32 inputLayoutTarget);
-        bool            set_vertex_buffer(s32 vertexBufferTarget, s32 startSlot, s32 stride, s32 offset);
-        bool            set_vertex_buffers(s32* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
-        bool            set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset);
-        bool            set_shader(s32 shaderTarget);
-        bool            set_pipeline_state_object(s32 psoTarget);
-        bool            set_constant_buffer(s32 constantBufferTarget, s32 location);
+        bool            set_input_layout(ResourceSlot inputLayoutTarget);
+        bool            set_vertex_buffer(ResourceSlot vertexBufferTarget, s32 startSlot, s32 stride, s32 offset);
+        bool            set_vertex_buffers(ResourceSlot* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
+        bool            set_index_buffer(ResourceSlot indexBufferTarget, IndexBufferFormat format, s32 offset);
+        bool            set_shader(ResourceSlot shaderTarget);
+        bool            set_pipeline_state_object(ResourceSlot psoTarget);
+        bool            set_constant_buffer(ResourceSlot constantBufferTarget, s32 location);
         bool            set_primitive_topology(PrimitiveTopology primitiveTopology);
 
         bool            new_frame();
@@ -117,20 +143,20 @@ namespace rex
             bool          flush_command_queue();
 
             // Platform specific implementation, implements these function
-            bool          create_clear_state(const parameters::ClearState& cs, s32 resourceSlot);
-            bool          create_raster_state(const parameters::RasterState& rs, s32 resourceSlot);
-            bool          create_input_layout(const parameters::CreateInputLayout& cil, s32 resourceSlot);
-            bool          create_vertex_buffer(const parameters::CreateBuffer& cb, s32 resourceSlot);
-            bool          create_index_buffer(const parameters::CreateBuffer& cb, s32 resourceSlot);
-            bool          create_constant_buffer(const parameters::CreateConstantBuffer& cb, s32 resourceSlot);
-            bool          create_pipeline_state_object(const parameters::CreatePipelineState& cps, s32 resourceSlot);
+            bool          create_clear_state(const commands::ClearState& cs, s32 resourceSlot);
+            bool          create_raster_state(const commands::RasterState& rs, s32 resourceSlot);
+            bool          create_input_layout(const commands::CreateInputLayout& cil, s32 resourceSlot);
+            bool          create_vertex_buffer(const commands::CreateBuffer& cb, s32 resourceSlot);
+            bool          create_index_buffer(const commands::CreateBuffer& cb, s32 resourceSlot);
+            bool          create_constant_buffer(const commands::CreateConstantBuffer& cb, s32 resourceSlot);
+            bool          create_pipeline_state_object(const commands::CreatePipelineState& cps, s32 resourceSlot);
             bool          create_frame_resource(s32 resourceSlot);
 
-            bool          load_shader(const parameters::LoadShader& ls, s32 resourceSlot);
-            bool          link_shader(const parameters::LinkShader& ls, s32 resourceSlot);
-            bool          compile_shader(const parameters::CompileShader& cs, s32 resourceSlot);
+            bool          load_shader(const commands::LoadShader& ls, s32 resourceSlot);
+            bool          link_shader(const commands::LinkShader& ls, s32 resourceSlot);
+            bool          compile_shader(const commands::CompileShader& cs, s32 resourceSlot);
 
-            void          update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBuffer, s32 resourceSlot);
+            void          update_constant_buffer(const commands::UpdateConstantBuffer& updateConstantBuffer, s32 resourceSlot);
             
             void          wait_for_active_frame();
 

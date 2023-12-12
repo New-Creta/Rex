@@ -25,19 +25,13 @@ namespace rex
 
         struct Mesh
         {
-            ~Mesh()
-            {
-                renderer::release_resource(vertex_buffer);
-                renderer::release_resource(index_buffer);
-            }
-
             // Give it a name so we can look it up by name.
             rsl::medium_stack_string name;
 
             // System memory copies.  Use Blobs because the vertex/index format can be generic.
             // It is up to the client to cast appropriately.
-            s32 vertex_buffer;
-            s32 index_buffer;
+            ResourceSlot vertex_buffer;
+            ResourceSlot index_buffer;
 
             // Data about the buffers.
             s32 vertex_byte_stride = 0;

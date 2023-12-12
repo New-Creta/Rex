@@ -18,7 +18,7 @@ namespace rex
                 wrl::com_ptr<ID3DBlob> vertex_shader;
                 wrl::com_ptr<ID3DBlob> pixel_shader;
 
-                parameters::ConstantLayoutDescription* constants;
+                commands::ConstantLayoutDescription* constants;
                 s32 num_constants;
             };
         }
@@ -28,7 +28,7 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(ShaderProgramResource);
 
-            ShaderProgramResource(const wrl::com_ptr<ID3D12RootSignature>& rootSig, const wrl::com_ptr<ID3DBlob>& vs, const wrl::com_ptr<ID3DBlob>& ps, parameters::ConstantLayoutDescription* constants, s32 numConstants)
+            ShaderProgramResource(const wrl::com_ptr<ID3D12RootSignature>& rootSig, const wrl::com_ptr<ID3DBlob>& vs, const wrl::com_ptr<ID3DBlob>& ps, commands::ConstantLayoutDescription* constants, s32 numConstants)
                 :m_shader_program({ rootSig, vs, ps, constants, numConstants })
             {}
             ~ShaderProgramResource() override = default;

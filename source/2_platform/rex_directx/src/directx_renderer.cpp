@@ -548,7 +548,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            CD3DX12_DESCRIPTOR_RANGE create_constant_buffer_descriptor_range(const parameters::ConstantLayoutDescription& desc)
+            CD3DX12_DESCRIPTOR_RANGE create_constant_buffer_descriptor_range(const commands::ConstantLayoutDescription& desc)
             {
                 CD3DX12_DESCRIPTOR_RANGE table;
 
@@ -558,24 +558,24 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            rsl::unordered_map<parameters::ConstantType, rsl::function<CD3DX12_DESCRIPTOR_RANGE(const parameters::ConstantLayoutDescription&)>> get_descriptor_ranges_create_func()
+            rsl::unordered_map<commands::ConstantType, rsl::function<CD3DX12_DESCRIPTOR_RANGE(const commands::ConstantLayoutDescription&)>> get_descriptor_ranges_create_func()
             {
                 return
                 {
-                    { parameters::ConstantType::CBUFFER, create_constant_buffer_descriptor_range }
+                    { commands::ConstantType::CBUFFER, create_constant_buffer_descriptor_range }
                 };
             }
 
             //-------------------------------------------------------------------------
-            wrl::com_ptr<ID3D12RootSignature> create_shader_root_signature(parameters::ConstantLayoutDescription* constants, s32 numConstants)
+            wrl::com_ptr<ID3D12RootSignature> create_shader_root_signature(commands::ConstantLayoutDescription* constants, s32 numConstants)
             {
                 auto descriptor_ranges_create_funcs = get_descriptor_ranges_create_func();
-                auto descriptor_ranges_map = rsl::unordered_map<parameters::ConstantType, rsl::vector<CD3DX12_DESCRIPTOR_RANGE>>();
+                auto descriptor_ranges_map = rsl::unordered_map<commands::ConstantType, rsl::vector<CD3DX12_DESCRIPTOR_RANGE>>();
 
                 for (s32 i = 0; i < numConstants; ++i)
                 {
-                    parameters::ConstantLayoutDescription& constant = constants[i];
-                    parameters::ConstantType constant_type = constant.type;
+                    commands::ConstantLayoutDescription& constant = constants[i];
+                    commands::ConstantType constant_type = constant.type;
 
                     if (descriptor_ranges_create_funcs.find(constant_type) != descriptor_ranges_create_funcs.cend())
                     {
@@ -841,7 +841,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_clear_state(const parameters::ClearState& cs, s32 resourceSlot)
+            bool create_clear_state(const commands::ClearState& cs, s32 resourceSlot)
             {
                 resources::ClearState rcs;
 
@@ -857,7 +857,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_raster_state(const parameters::RasterState& rs, s32 resourceSlot)
+            bool create_raster_state(const commands::RasterState& rs, s32 resourceSlot)
             {
                 D3D12_RASTERIZER_DESC d3d_rs;
 
@@ -889,7 +889,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_input_layout(const parameters::CreateInputLayout& cil, s32 resourceSlot)
+            bool create_input_layout(const commands::CreateInputLayout& cil, s32 resourceSlot)
             {
                 rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(cil.num_elements));
 
@@ -911,7 +911,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_vertex_buffer(const parameters::CreateBuffer& cb, s32 resourceSlot)
+            bool create_vertex_buffer(const commands::CreateBuffer& cb, s32 resourceSlot)
             {
                 REX_ASSERT_X(cb.data != nullptr && cb.buffer_size != 0, "Trying to create an empty vertex buffer");
 
@@ -930,7 +930,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_index_buffer(const parameters::CreateBuffer& cb, s32 resourceSlot)
+            bool create_index_buffer(const commands::CreateBuffer& cb, s32 resourceSlot)
             {
                 REX_ASSERT_X(cb.data != nullptr && cb.buffer_size != 0, "Trying to create an empty index buffer");
 
@@ -949,7 +949,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_constant_buffer(const parameters::CreateConstantBuffer& cb, s32 resourceSlot)
+            bool create_constant_buffer(const commands::CreateConstantBuffer& cb, s32 resourceSlot)
             {
                 REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
@@ -968,12 +968,12 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool create_pipeline_state_object(const parameters::CreatePipelineState& cps, s32 resourceSlot)
+            bool create_pipeline_state_object(const commands::CreatePipelineState& cps, s32 resourceSlot)
             {
-                REX_ASSERT_X(cps.input_layout != REX_INVALID_INDEX, "Invalid input layout resource slot given");
-                REX_ASSERT_X(cps.shader_program != REX_INVALID_INDEX, "Invalid shader program resource slot given");
+                REX_ASSERT_X(cps.input_layout.is_valid(), "Invalid input layout resource slot given");
+                REX_ASSERT_X(cps.shader_program.is_valid(), "Invalid shader program resource slot given");
 
-                rsl::hash_result hash = rsl::hash<parameters::CreatePipelineState>{}(cps);
+                rsl::hash_result hash = rsl::hash<commands::CreatePipelineState>{}(cps);
 
                 if (g_ctx.pipeline_state_objects.find(hash) != g_ctx.pipeline_state_objects.cend())
                 {
@@ -983,23 +983,23 @@ namespace rex
                     return true;
                 }
 
-                auto& input_layout_resource = get_resource_from_pool_as<InputLayoutResource>(g_ctx.resource_pool, cps.input_layout);
-                auto& shader_program_resource = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, cps.shader_program);
+                auto& input_layout_resource = get_resource_from_pool_as<InputLayoutResource>(g_ctx.resource_pool, cps.input_layout.slot_id());
+                auto& shader_program_resource = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, cps.shader_program.slot_id());
 
                 D3D12_RASTERIZER_DESC raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-                if (cps.rasterizer_state != REX_INVALID_INDEX)
+                if (cps.rasterizer_state.is_valid())
                 {
-                    auto& raster_state_resource = get_resource_from_pool_as<RasterStateResource>(g_ctx.resource_pool, cps.rasterizer_state);
+                    auto& raster_state_resource = get_resource_from_pool_as<RasterStateResource>(g_ctx.resource_pool, cps.rasterizer_state.slot_id());
                     raster_state = *raster_state_resource.get();
                 }
                 D3D12_BLEND_DESC blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-                if (cps.blend_state != REX_INVALID_INDEX)
+                if (cps.blend_state.is_valid())
                 {
                     // TODO:
                     // Create a Blend State Resource
                 }
                 D3D12_DEPTH_STENCIL_DESC depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-                if (cps.depth_stencil_state != REX_INVALID_INDEX)
+                if (cps.depth_stencil_state.is_valid())
                 {
                     // TODO:
                     // Create a Depth Stencil State Resource
@@ -1060,7 +1060,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool load_shader(const parameters::LoadShader& ls, s32 resourceSlot)
+            bool load_shader(const commands::LoadShader& ls, s32 resourceSlot)
             {
                 wrl::com_ptr<ID3DBlob> byte_code;
                 if (FAILED(D3DCreateBlob(ls.byte_code_size, byte_code.GetAddressOf())))
@@ -1092,7 +1092,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool link_shader(const parameters::LinkShader& ls, s32 resourceSlot)
+            bool link_shader(const commands::LinkShader& ls, s32 resourceSlot)
             {
                 auto root_sig = create_shader_root_signature(ls.constants, ls.num_constants);
 
@@ -1102,8 +1102,8 @@ namespace rex
                     return false;
                 }
 
-                auto& vsr = get_resource_from_pool_as<VertexShaderResource>(g_ctx.resource_pool, ls.vertex_shader);
-                auto& psr = get_resource_from_pool_as<PixelShaderResource>(g_ctx.resource_pool, ls.pixel_shader);
+                auto& vsr = get_resource_from_pool_as<VertexShaderResource>(g_ctx.resource_pool, ls.vertex_shader.slot_id());
+                auto& psr = get_resource_from_pool_as<PixelShaderResource>(g_ctx.resource_pool, ls.pixel_shader.slot_id());
 
                 g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot);
                 g_ctx.resource_pool[resourceSlot] = rsl::make_unique<ShaderProgramResource>(root_sig
@@ -1119,7 +1119,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            bool compile_shader(const parameters::CompileShader& cs, s32 resourceSlot)
+            bool compile_shader(const commands::CompileShader& cs, s32 resourceSlot)
             {
                 s32 compile_flags = 0;
 #if defined(REX_DEBUG)
@@ -1165,7 +1165,7 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            void update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBuffer, s32 resourceSlot)
+            void update_constant_buffer(const commands::UpdateConstantBuffer& updateConstantBuffer, s32 resourceSlot)
             {
                 auto& cbr = get_resource_from_pool_as<ConstantBufferResource>(g_ctx.resource_pool, resourceSlot);
                 auto  cs = cbr.get();

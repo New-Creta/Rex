@@ -11,7 +11,7 @@
 #if REX_SINGLE_THREADED
 #define add_cmd(cmd) exec_cmd(cmd)
 #else
-#define add_cmd(cmd) g_ctx.cmd_buffer.put(cmd)
+#define add_cmd(cmd) g_ctx.cmd_buffer.put(rsl::move(cmd))
 #endif
 
 namespace rex
@@ -47,16 +47,16 @@ namespace rex
         namespace internal
         {
             //-------------------------------------------------------------------------
-            s32 create_buffer(CommandType commandType, const parameters::CreateBuffer& createBufferParams)
+            ResourceSlot create_buffer(CommandType commandType, const commands::CreateBuffer& createBufferParams)
             {
                 RenderCommand cmd;
 
-                s32 resource_slot = g_ctx.slot_resources.next_slot();
+                ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
                 cmd.command_type = commandType;
-                cmd.resource_slot = resource_slot;
+                cmd.resource_slot = resource_slot.slot_id();
 
-                memcpy(&cmd.create_buffer_params, (void*)&createBufferParams, sizeof(parameters::CreateBuffer));
+                memcpy(&cmd.create_buffer_params, (void*)&createBufferParams, sizeof(commands::CreateBuffer));
 
                 if (createBufferParams.data)
                 {
@@ -68,28 +68,28 @@ namespace rex
                 if (!add_cmd(cmd))
                 {
                     REX_ERROR(LogRendererCore, "Unable to add/exec create buffer command");
-                    return REX_INVALID_INDEX;
+                    return ResourceSlot::make_invalid();
                 }
 
                 return resource_slot;
             }
 
             //-------------------------------------------------------------------------
-            s32 create_constant_buffer(CommandType commandType, const parameters::CreateConstantBuffer& createBufferParams)
+            ResourceSlot create_constant_buffer(CommandType commandType, const commands::CreateConstantBuffer& createBufferParams)
             {
                 RenderCommand cmd;
 
-                s32 resource_slot = g_ctx.slot_resources.next_slot();
+                ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
                 cmd.command_type = commandType;
-                cmd.resource_slot = resource_slot;
+                cmd.resource_slot = resource_slot.slot_id();
 
-                memcpy(&cmd.create_buffer_params, (void*)&createBufferParams, sizeof(parameters::CreateConstantBuffer));
+                memcpy(&cmd.create_buffer_params, (void*)&createBufferParams, sizeof(commands::CreateConstantBuffer));
 
                 if (!add_cmd(cmd))
                 {
                     REX_ERROR(LogRendererCore, "Unable to add/exec create constant buffer command");
-                    return REX_INVALID_INDEX;
+                    return ResourceSlot::make_invalid();
                 }
 
                 return resource_slot;
@@ -103,120 +103,8 @@ namespace rex
 
             switch (cmd.command_type)
             {
-            case CommandType::CREATE_CLEAR_STATE:
-                result = backend::create_clear_state(cmd.clear_state_params, cmd.resource_slot);
-                break;
-            case CommandType::CREATE_RASTER_STATE:
-                result = backend::create_raster_state(cmd.raster_state_params, cmd.resource_slot);
-                break;
-            case CommandType::CREATE_INPUT_LAYOUT_STATE:
-                result = backend::create_input_layout(cmd.create_input_layout_params, cmd.resource_slot);
-                memory_free(cmd.create_input_layout_params.input_layout);
-                break;
-            case CommandType::CREATE_VERTEX_BUFFER:
-                result = backend::create_vertex_buffer(cmd.create_buffer_params, cmd.resource_slot);
-                memory_free(cmd.create_buffer_params.data);
-                break;
-            case CommandType::CREATE_INDEX_BUFFER:
-                result = backend::create_index_buffer(cmd.create_buffer_params, cmd.resource_slot);
-                memory_free(cmd.create_buffer_params.data);
-                break;
-            case CommandType::CREATE_CONSTANT_BUFFER:
-                result = backend::create_constant_buffer(cmd.create_constant_buffer_params, cmd.resource_slot);
-                break;
-            case CommandType::CREATE_PIPELINE_STATE:
-                result = backend::create_pipeline_state_object(cmd.create_pipeline_state_params, cmd.resource_slot);
-                break;
             case CommandType::CREATE_FRAME_RESOURCE:
                 result = backend::create_frame_resource(cmd.resource_slot);
-                break;
-            case CommandType::COMPILE_SHADER:
-                result = backend::compile_shader(cmd.compile_shader_params, cmd.resource_slot);
-                memory_free(cmd.compile_shader_params.shader_code);
-                break;
-            case CommandType::LOAD_SHADER:
-                result = backend::load_shader(cmd.load_shader_params, cmd.resource_slot);
-                memory_free(cmd.load_shader_params.byte_code);
-                break;
-            case CommandType::LINK_SHADER:
-                result = backend::link_shader(cmd.link_shader_params, cmd.resource_slot);
-                for (s32 i = 0; i < cmd.link_shader_params.num_constants; ++i)
-                    memory_free(cmd.link_shader_params.constants[i].name);
-                memory_free(cmd.link_shader_params.constants);
-                break;
-            case CommandType::RELEASE_RESOURCE:
-                result = backend::release_resource(cmd.release_resource.resource_index);
-                break;
-            case CommandType::UPDATE_CONSTANT_BUFFER:
-                backend::update_constant_buffer(cmd.update_constant_buffer_params, cmd.resource_slot);
-                break;
-            case CommandType::CLEAR:
-                backend::clear(cmd.clear.clear_state);
-                break;
-            case CommandType::BEGIN_DRAW:
-                backend::begin_draw();
-                break;
-            case CommandType::END_DRAW:
-                backend::end_draw();
-                break;
-            case CommandType::DRAW:
-                backend::draw(cmd.draw.vertex_count, cmd.draw.start_vertex);
-                break;
-            case CommandType::DRAW_INDEXED:
-                backend::draw_indexed(cmd.draw_indexed.index_count
-                    , cmd.draw_indexed.start_index
-                    , cmd.draw_indexed.base_vertex);
-                break;
-            case CommandType::DRAW_INDEXED_INSTANCED:
-                backend::draw_indexed_instanced(cmd.draw_indexed_instanced.instance_count
-                    , cmd.draw_indexed_instanced.start_instance
-                    , cmd.draw_indexed_instanced.index_count
-                    , cmd.draw_indexed_instanced.start_index
-                    , cmd.draw_indexed_instanced.base_vertex);
-                break;
-            case CommandType::SET_RENDER_TARGETS:
-                result = backend::set_render_targets(cmd.set_render_target.color
-                    , cmd.set_render_target.num_color
-                    , cmd.set_render_target.depth);
-                break;
-            case CommandType::SET_INPUT_LAYOUT:
-                result = backend::set_input_layout(cmd.set_input_layout.input_layout);
-                break;
-            case CommandType::SET_VIEWPORT:
-                result = backend::set_viewport(cmd.viewport);
-                break;
-            case CommandType::SET_SCISSOR_RECT:
-                result = backend::set_scissor_rect(cmd.scissor_rect);
-                break;
-            case CommandType::SET_VERTEX_BUFFER:
-                result = backend::set_vertex_buffers(cmd.set_vertex_buffer.buffer_indices
-                    , cmd.set_vertex_buffer.num_buffers
-                    , cmd.set_vertex_buffer.start_slot
-                    , cmd.set_vertex_buffer.strides
-                    , cmd.set_vertex_buffer.offsets);
-                memory_free(cmd.set_vertex_buffer.buffer_indices);
-                memory_free(cmd.set_vertex_buffer.strides);
-                memory_free(cmd.set_vertex_buffer.offsets);
-                break;
-            case CommandType::SET_INDEX_BUFFER:
-                result = backend::set_index_buffer(cmd.set_index_buffer.buffer_index
-                    , cmd.set_index_buffer.format
-                    , cmd.set_index_buffer.offset);
-                break;
-            case CommandType::SET_SHADER:
-                result = backend::set_shader(cmd.set_shader.shader_index);
-                break;
-            case CommandType::SET_RASTER_STATE:
-                result = backend::set_raster_state(cmd.set_raster_state.raster_state);
-                break;
-            case CommandType::SET_PIPELINE_STATE:
-                result = backend::set_pipeline_state_object(cmd.set_pipeline_state.pipeline_state);
-                break;
-            case CommandType::SET_CONSTANT_BUFFER:
-                result = backend::set_constant_buffer(cmd.set_constant_buffer.target, cmd.set_constant_buffer.location);
-                break;
-            case CommandType::SET_PRIMITIVE_TOPOLOGY:
-                result = backend::set_primitive_topology(cmd.topology);
                 break;
 
             case CommandType::NEW_FRAME:
@@ -263,9 +151,9 @@ namespace rex
 
             return backend::initialize(userData
                 , maxFrameResources
-                , globals::g_default_targets_info.front_buffer_color
-                , globals::g_default_targets_info.back_buffer_color
-                , globals::g_default_targets_info.depth_buffer);
+                , globals::g_default_targets_info.front_buffer_color.slot_id()
+                , globals::g_default_targets_info.back_buffer_color.slot_id()
+                , globals::g_default_targets_info.depth_buffer.slot_id());
         }
         //-------------------------------------------------------------------------
         void shutdown()
@@ -274,138 +162,138 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        s32 create_clear_state(const parameters::ClearState& clearStateParams)
+        ResourceSlot create_clear_state(const commands::ClearState& clearStateParams)
         {
             RenderCommand cmd;
 
-            s32 resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_CLEAR_STATE;
             cmd.clear_state_params = clearStateParams;
-            cmd.resource_slot = resource_slot;
+            cmd.resource_slot = resource_slot.slot_id();
 
             if (!add_cmd(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec create clear state command");
-                return REX_INVALID_INDEX;
+                return ResourceSlot::make_invalid();
             }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        s32 create_raster_state(const parameters::RasterState& rasterStateParams)
+        ResourceSlot create_raster_state(const commands::RasterState& rasterStateParams)
         {
             RenderCommand cmd;
 
-            s32 resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_RASTER_STATE;
-            cmd.resource_slot = resource_slot;
+            cmd.resource_slot = resource_slot.slot_id();
 
-            memcpy(&cmd.raster_state_params, (void*)&rasterStateParams, sizeof(parameters::RasterState));
+            memcpy(&cmd.raster_state_params, (void*)&rasterStateParams, sizeof(commands::RasterState));
 
             if (!add_cmd(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec create raster state command");
-                return REX_INVALID_INDEX;
+                return ResourceSlot::make_invalid();
             }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        s32 create_input_layout(const parameters::CreateInputLayout& createInputLayoutParams)
+        ResourceSlot create_input_layout(const commands::CreateInputLayout& createInputLayoutParams)
         {
             RenderCommand cmd;
 
-            s32 resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_INPUT_LAYOUT_STATE;
-            cmd.resource_slot = resource_slot;
+            cmd.resource_slot = resource_slot.slot_id();
 
             cmd.create_input_layout_params.num_elements = createInputLayoutParams.num_elements;
 
-            s32 input_layouts_size = sizeof(parameters::InputLayoutDescription) * createInputLayoutParams.num_elements;
-            cmd.create_input_layout_params.input_layout = (parameters::InputLayoutDescription*)memory_alloc(input_layouts_size);
+            s32 input_layouts_size = sizeof(commands::InputLayoutDescription) * createInputLayoutParams.num_elements;
+            cmd.create_input_layout_params.input_layout = (commands::InputLayoutDescription*)memory_alloc(input_layouts_size);
             memcpy(cmd.create_input_layout_params.input_layout, createInputLayoutParams.input_layout, input_layouts_size);
 
             if (!add_cmd(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec create input layout command");
-                return REX_INVALID_INDEX;
+                return ResourceSlot::make_invalid();
             }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        s32 create_vertex_buffer(const parameters::CreateBuffer& createBufferParams)
+        ResourceSlot create_vertex_buffer(const commands::CreateBuffer& createBufferParams)
         {
             return internal::create_buffer(CommandType::CREATE_VERTEX_BUFFER, createBufferParams);
         }
 
         //-------------------------------------------------------------------------
-        s32 create_index_buffer(const parameters::CreateBuffer& createBufferParams)
+        ResourceSlot create_index_buffer(const commands::CreateBuffer& createBufferParams)
         {
             return internal::create_buffer(CommandType::CREATE_INDEX_BUFFER, createBufferParams);
         }
 
         //-------------------------------------------------------------------------
-        s32 create_constant_buffer(const parameters::CreateConstantBuffer& createBufferParams)
+        ResourceSlot create_constant_buffer(const commands::CreateConstantBuffer& createBufferParams)
         {
             return internal::create_constant_buffer(CommandType::CREATE_CONSTANT_BUFFER, createBufferParams);
         }
 
         //-------------------------------------------------------------------------
-        s32 create_pipeline_state_object(const parameters::CreatePipelineState& createPipelineStateParams)
+        ResourceSlot create_pipeline_state_object(const commands::CreatePipelineState& createPipelineStateParams)
         {
             RenderCommand cmd;
 
-            s32 resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_PIPELINE_STATE;
-            cmd.resource_slot = resource_slot;
+            cmd.resource_slot = resource_slot.slot_id();
 
-            memcpy(&cmd.raster_state_params, (void*)&createPipelineStateParams, sizeof(parameters::CreatePipelineState));
+            memcpy(&cmd.raster_state_params, (void*)&createPipelineStateParams, sizeof(commands::CreatePipelineState));
 
             if (!add_cmd(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec create pipeline state object command");
-                return REX_INVALID_INDEX;
+                return ResourceSlot::make_invalid();
             }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        s32 create_frame_resource()
+        ResourceSlot create_frame_resource()
         {
             RenderCommand cmd;
 
-            s32 resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::CREATE_FRAME_RESOURCE;
-            cmd.resource_slot = resource_slot;
+            cmd.resource_slot = resource_slot.slot_id();
 
             if (!add_cmd(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec create frame resource command");
-                return REX_INVALID_INDEX;
+                return ResourceSlot::make_invalid();
             }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        s32 load_shader(const parameters::LoadShader& loadShaderParams)
+        ResourceSlot load_shader(const commands::LoadShader& loadShaderParams)
         {
             RenderCommand cmd;
 
-            s32 resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::LOAD_SHADER;
-            cmd.resource_slot = resource_slot;
+            cmd.resource_slot = resource_slot.slot_id();
 
             cmd.load_shader_params.byte_code_size = loadShaderParams.byte_code_size;
             cmd.load_shader_params.shader_type = loadShaderParams.shader_type;
@@ -419,29 +307,29 @@ namespace rex
             if (!add_cmd(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec load shader command");
-                return REX_INVALID_INDEX;
+                return ResourceSlot::make_invalid();
             }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        s32 link_shader(const parameters::LinkShader& linkShaderParams)
+        ResourceSlot link_shader(const commands::LinkShader& linkShaderParams)
         {
             RenderCommand cmd;
 
-            s32 resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::LINK_SHADER;
-            cmd.resource_slot = resource_slot;
+            cmd.resource_slot = resource_slot.slot_id();
 
             cmd.link_shader_params = linkShaderParams;
 
             s32 num = linkShaderParams.num_constants;
-            s32 layout_size = sizeof(parameters::ConstantLayoutDescription) * num;
-            cmd.link_shader_params.constants = (parameters::ConstantLayoutDescription*)memory_alloc(layout_size);
+            s32 layout_size = sizeof(commands::ConstantLayoutDescription) * num;
+            cmd.link_shader_params.constants = (commands::ConstantLayoutDescription*)memory_alloc(layout_size);
 
-            parameters::ConstantLayoutDescription* c = cmd.link_shader_params.constants;
+            commands::ConstantLayoutDescription* c = cmd.link_shader_params.constants;
             for (s32 i = 0; i < num; ++i)
             {
                 c[i].location = linkShaderParams.constants[i].location;
@@ -457,40 +345,40 @@ namespace rex
             if (!add_cmd(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec link shader command");
-                return REX_INVALID_INDEX;
+                return ResourceSlot::make_invalid();
             }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        s32 compile_shader(const parameters::CompileShader& compileShaderParams)
+        ResourceSlot compile_shader(const commands::CompileShader& compileShaderParams)
         {
             RenderCommand cmd;
 
-            s32 resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
             cmd.command_type = CommandType::COMPILE_SHADER;
-            cmd.resource_slot = resource_slot;
+            cmd.resource_slot = resource_slot.slot_id();
 
-            memcpy(&cmd.compile_shader_params, (void*)&compileShaderParams, sizeof(parameters::CompileShader));
+            memcpy(&cmd.compile_shader_params, (void*)&compileShaderParams, sizeof(commands::CompileShader));
 
             if (!add_cmd(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec compile shader command");
-                return REX_INVALID_INDEX;
+                return ResourceSlot::make_invalid();
             }
 
             return resource_slot;
         }
 
         //-------------------------------------------------------------------------
-        bool update_constant_buffer(const parameters::UpdateConstantBuffer& updateConstantBufferParams, s32 constantBufferTarget)
+        bool update_constant_buffer(const commands::UpdateConstantBuffer& updateConstantBufferParams, ResourceSlot constantBufferTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::UPDATE_CONSTANT_BUFFER;
-            cmd.resource_slot = constantBufferTarget;
+            cmd.resource_slot = constantBufferTarget.slot_id();
 
             if (updateConstantBufferParams.data)
             {
@@ -511,7 +399,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool release_resource(s32 resourceTarget)
+        bool release_resource(ResourceSlot resourceTarget)
         {
             RenderCommand cmd;
 
@@ -542,7 +430,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool clear(s32 clearStateTarget)
+        bool clear(ResourceSlot clearStateTarget)
         {
             RenderCommand cmd;
 
@@ -607,7 +495,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_raster_state(s32 rasterStateTarget)
+        bool set_raster_state(ResourceSlot rasterStateTarget)
         {
             RenderCommand cmd;
 
@@ -618,25 +506,25 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_render_targets(s32* colorTargets, s32 numColorTargets, s32 depthTarget)
+        bool set_render_targets(ResourceSlot* colorTargets, s32 numColorTargets, ResourceSlot depthTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_RENDER_TARGETS;
             cmd.set_render_target.num_color = numColorTargets;
-            memcpy(&cmd.set_render_target.color, colorTargets, numColorTargets * sizeof(s32));
+            memcpy(&cmd.set_render_target.color, colorTargets, numColorTargets * sizeof(ResourceSlot));
             cmd.set_render_target.depth = depthTarget;
 
             return add_cmd(cmd);
         }
 
         //-------------------------------------------------------------------------
-        bool set_render_targets(s32 colorTarget, s32 depthTarget)
+        bool set_render_targets(ResourceSlot colorTarget, ResourceSlot depthTarget)
         {
             RenderCommand cmd;
 
             cmd.command_type = CommandType::SET_RENDER_TARGETS;
-            cmd.set_render_target.num_color = is_valid(colorTarget) ? 1 : 0;
+            cmd.set_render_target.num_color = colorTarget.is_valid() ? 1 : 0;
             cmd.set_render_target.color[0] = colorTarget;
             cmd.set_render_target.depth = depthTarget;
 
@@ -666,7 +554,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_input_layout(s32 inputLayoutTarget)
+        bool set_input_layout(ResourceSlot inputLayoutTarget)
         {
             RenderCommand cmd;
 
@@ -677,16 +565,16 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_vertex_buffer(s32 vertexBufferTarget, s32 startSlot, s32 stride, s32 offset)
+        bool set_vertex_buffer(ResourceSlot vertexBufferTarget, s32 startSlot, s32 stride, s32 offset)
         {
-            s32* vertex_buffer_target = &vertexBufferTarget;
+            ResourceSlot* vertex_buffer_target = &vertexBufferTarget;
             const s32* stride_target = &stride;
             const s32* offset_target = &offset;
 
             return set_vertex_buffers(vertex_buffer_target, 1, startSlot, stride_target, offset_target);
         }
         //-------------------------------------------------------------------------
-        bool set_vertex_buffers(s32* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
+        bool set_vertex_buffers(ResourceSlot* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
         {
             RenderCommand cmd;
 
@@ -695,7 +583,7 @@ namespace rex
             cmd.set_vertex_buffer.start_slot = startSlot;
             cmd.set_vertex_buffer.num_buffers = numBuffers;
 
-            cmd.set_vertex_buffer.buffer_indices = (s32*)memory_alloc(sizeof(s32) * numBuffers);
+            cmd.set_vertex_buffer.buffer_indices = (ResourceSlot*)memory_alloc(sizeof(s32) * numBuffers);
             cmd.set_vertex_buffer.strides = (s32*)memory_alloc(sizeof(s32) * numBuffers);
             cmd.set_vertex_buffer.offsets = (s32*)memory_alloc(sizeof(s32) * numBuffers);
 
@@ -709,7 +597,7 @@ namespace rex
             return add_cmd(cmd);
         }
         //-------------------------------------------------------------------------
-        bool set_index_buffer(s32 indexBufferTarget, IndexBufferFormat format, s32 offset)
+        bool set_index_buffer(ResourceSlot indexBufferTarget, IndexBufferFormat format, s32 offset)
         {
             RenderCommand cmd;
 
@@ -722,7 +610,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_shader(s32 shaderTarget)
+        bool set_shader(ResourceSlot shaderTarget)
         {
             RenderCommand cmd;
 
@@ -734,7 +622,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_pipeline_state_object(s32 psoTarget)
+        bool set_pipeline_state_object(ResourceSlot psoTarget)
         {
             RenderCommand cmd;
 
@@ -746,7 +634,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_constant_buffer(s32 constantBufferTarget, s32 location)
+        bool set_constant_buffer(ResourceSlot constantBufferTarget, s32 location)
         {
             RenderCommand cmd;
 

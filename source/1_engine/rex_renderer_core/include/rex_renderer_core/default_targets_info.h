@@ -2,12 +2,14 @@
 
 #include "rex_engine/types.h"
 
+#include "rex_renderer_core/resource_slot.h"
+
 namespace rex
 {
     struct DefaultTargetsInfo
     {
-        s32 front_buffer_color = REX_INVALID_INDEX;
-        s32 back_buffer_color = REX_INVALID_INDEX;
-        s32 depth_buffer = REX_INVALID_INDEX;
+        renderer::ResourceSlot front_buffer_color = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot back_buffer_color = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot depth_buffer = renderer::ResourceSlot::make_invalid();
     };
 }

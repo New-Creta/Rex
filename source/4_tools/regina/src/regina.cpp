@@ -64,9 +64,9 @@ namespace rex
 
     struct FrameData
     {
-        s32 frame;
-        s32 object_constant_buffer;
-        s32 pass_constant_buffer;
+        renderer::ResourceSlot frame;
+        renderer::ResourceSlot object_constant_buffer;
+        renderer::ResourceSlot pass_constant_buffer;
     };
 
     struct ReginaContext
@@ -78,14 +78,14 @@ namespace rex
         rsl::unique_ptr<renderer::Scene> scene;
         rsl::unique_ptr<renderer::SceneRenderer> scene_renderer;
 
-        s32 clear_state;
+        renderer::ResourceSlot clear_state;
 
-        s32 shader_program;
-        s32 input_layout;
-        s32 pso;
+        renderer::ResourceSlot shader_program;
+        renderer::ResourceSlot input_layout;
+        renderer::ResourceSlot pso;
 
-        s32 solid_raster_state;
-        s32 wire_raster_state;
+        renderer::ResourceSlot solid_raster_state;
+        renderer::ResourceSlot wire_raster_state;
 
         PassConstants pass_constants;
 
@@ -99,38 +99,38 @@ namespace rex
     ReginaContext g_regina_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
     //-------------------------------------------------------------------------
-    s32 get_active_object_constant_buffer_for_frame(s32 frame)
+    renderer::ResourceSlot get_active_object_constant_buffer_for_frame(s32 frame)
     {
         auto it = rsl::find_if(rsl::cbegin(g_regina_ctx.frame_resource_data), rsl::cend(g_regina_ctx.frame_resource_data), 
             [frame](const FrameData& data)
         {
-                return frame == data.frame;
+                return frame == data.frame.slot_id();
         });
 
         return it != rsl::cend(g_regina_ctx.frame_resource_data)
             ? it->object_constant_buffer
-            : REX_INVALID_INDEX;
+            : renderer::ResourceSlot::make_invalid();
     }
     //-------------------------------------------------------------------------
-    s32 get_active_pass_constant_buffer_for_frame(s32 frame)
+    renderer::ResourceSlot get_active_pass_constant_buffer_for_frame(s32 frame)
     {
         auto it = rsl::find_if(rsl::cbegin(g_regina_ctx.frame_resource_data), rsl::cend(g_regina_ctx.frame_resource_data),
             [frame](const FrameData& data)
             {
-                return frame == data.frame;
+                return frame == data.frame.slot_id();
             });
 
         return it != rsl::cend(g_regina_ctx.frame_resource_data)
             ? it->pass_constant_buffer
-            : REX_INVALID_INDEX;
+            : renderer::ResourceSlot::make_invalid();
     }
 
     //-------------------------------------------------------------------------
-    renderer::parameters::CompileShader create_compile_shader_parameters(const rsl::small_stack_string& shaderName, renderer::ShaderType shaderType, rsl::string_view filePath)
+    renderer::commands::CompileShader create_compile_shader_parameters(const rsl::small_stack_string& shaderName, renderer::ShaderType shaderType, rsl::string_view filePath)
     {
         memory::Blob file_memory = vfs::open_read(filePath);
 
-        renderer::parameters::CompileShader compile_shader_params;
+        renderer::commands::CompileShader compile_shader_params;
 
         switch (shaderType)
         {
@@ -155,9 +155,9 @@ namespace rex
 
     //-------------------------------------------------------------------------
     template<typename T>
-    renderer::parameters::CreateBuffer create_buffer_parameters(T* data, s32 num)
+    renderer::commands::CreateBuffer create_buffer_parameters(T* data, s32 num)
     {
-        renderer::parameters::CreateBuffer create_buffer_params;
+        renderer::commands::CreateBuffer create_buffer_params;
 
         create_buffer_params.data = (void*)&data[0];
         create_buffer_params.buffer_size = sizeof(T) * num;
@@ -168,7 +168,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool build_clear_state()
     {
-        renderer::parameters::ClearState create_clear_state_params;
+        renderer::commands::ClearState create_clear_state_params;
 
         create_clear_state_params.rgba = { 0.690196097f, 0.768627524f, 0.870588303f, 1.f };
         create_clear_state_params.depth = 1.0f;
@@ -190,15 +190,15 @@ namespace rex
     bool build_shader_and_input_layout()
     {
         // Shader
-        renderer::parameters::ConstantLayoutDescription constants[2] = 
+        renderer::commands::ConstantLayoutDescription constants[2] = 
         {
-            {renderer::parameters::ConstantType::CBUFFER, "ObjectConstants", 0},
-            {renderer::parameters::ConstantType::CBUFFER, "PassConstants", 1}
+            {renderer::commands::ConstantType::CBUFFER, "ObjectConstants", 0},
+            {renderer::commands::ConstantType::CBUFFER, "PassConstants", 1}
         };
 
-        renderer::parameters::CompileShader vs_compile_params = create_compile_shader_parameters(rsl::small_stack_string("standardVS"), renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
-        renderer::parameters::CompileShader ps_compile_params = create_compile_shader_parameters(rsl::small_stack_string("opaquePS"), renderer::ShaderType::PIXEL, "Shaders\\color.hlsl");
-        renderer::parameters::LinkShader link_shader_params;
+        renderer::commands::CompileShader vs_compile_params = create_compile_shader_parameters(rsl::small_stack_string("standardVS"), renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
+        renderer::commands::CompileShader ps_compile_params = create_compile_shader_parameters(rsl::small_stack_string("opaquePS"), renderer::ShaderType::PIXEL, "Shaders\\color.hlsl");
+        renderer::commands::LinkShader link_shader_params;
         link_shader_params.vertex_shader = renderer::compile_shader(vs_compile_params);
         link_shader_params.pixel_shader = renderer::compile_shader(ps_compile_params);
         link_shader_params.constants = constants;
@@ -206,13 +206,13 @@ namespace rex
         g_regina_ctx.shader_program = renderer::link_shader(link_shader_params);
 
         // Input Layout
-        renderer::parameters::InputLayoutDescription input_layout_descs[2] =
+        renderer::commands::InputLayoutDescription input_layout_descs[2] =
         {
             { "POSITION", 0, renderer::VertexBufferFormat::FLOAT3, 0, 0, renderer::InputLayoutClassification::PER_VERTEX_DATA, 0 },
             { "COLOR", 0, renderer::VertexBufferFormat::FLOAT4, 0, 12, renderer::InputLayoutClassification::PER_VERTEX_DATA, 0 }
         };
 
-        renderer::parameters::CreateInputLayout input_layout_params;
+        renderer::commands::CreateInputLayout input_layout_params;
         input_layout_params.input_layout = input_layout_descs;
         input_layout_params.num_elements = _countof(input_layout_descs);
         g_regina_ctx.input_layout = renderer::create_input_layout(input_layout_params);
@@ -244,9 +244,9 @@ namespace rex
         g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>();
         g_regina_ctx.mesh_cube->name = rsl::medium_stack_string("box_geometry");
 
-        renderer::parameters::CreateBuffer v_create_buffer_params = create_buffer_parameters<renderer::directx::VertexPosCol>(box_vertices.data(), box_vertices.size());
+        renderer::commands::CreateBuffer v_create_buffer_params = create_buffer_parameters<renderer::directx::VertexPosCol>(box_vertices.data(), box_vertices.size());
         g_regina_ctx.mesh_cube->vertex_buffer = renderer::create_vertex_buffer(v_create_buffer_params);
-        renderer::parameters::CreateBuffer i_create_buffer_params = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
+        renderer::commands::CreateBuffer i_create_buffer_params = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
         g_regina_ctx.mesh_cube->index_buffer = renderer::create_index_buffer(i_create_buffer_params);
 
         g_regina_ctx.mesh_cube->vertex_byte_stride = sizeof(renderer::directx::VertexPosCol);
@@ -295,9 +295,9 @@ namespace rex
     {
         for (int i = 0; i < renderer::num_frames_in_flight(); ++i)
         {
-            s32 frame = renderer::create_frame_resource();
+            renderer::ResourceSlot frame = renderer::create_frame_resource();
 
-            g_regina_ctx.frame_resource_data.push_back({ frame, REX_INVALID_INDEX, REX_INVALID_INDEX });
+            g_regina_ctx.frame_resource_data.push_back({ frame, renderer::ResourceSlot::make_invalid(), renderer::ResourceSlot::make_invalid() });
         }
 
         return true;
@@ -313,13 +313,13 @@ namespace rex
         {
             for (s32 i = 0; i < num_render_items; ++i)
             {
-                renderer::parameters::CreateConstantBuffer create_const_buffer_params;
+                renderer::commands::CreateConstantBuffer create_const_buffer_params;
 
                 create_const_buffer_params.count = num_render_items;
                 create_const_buffer_params.buffer_size = sizeof(ObjectConstants);
                 create_const_buffer_params.array_index = (frame * num_render_items) + i;
 
-                s32 object_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
+                renderer::ResourceSlot object_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
 
                 g_regina_ctx.frame_resource_data[frame].object_constant_buffer = object_constant_buffer;
             }
@@ -328,13 +328,13 @@ namespace rex
         // Last three descriptors are the pass CBVs for each frame resource.
         for (s32 frame = 0; frame < renderer::num_frames_in_flight(); ++frame)
         {
-            renderer::parameters::CreateConstantBuffer create_const_buffer_params;
+            renderer::commands::CreateConstantBuffer create_const_buffer_params;
 
             create_const_buffer_params.count = 1;
             create_const_buffer_params.buffer_size = sizeof(PassConstants);
             create_const_buffer_params.array_index = g_regina_ctx.frame_resource_data.size() + frame;
 
-            s32 pass_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
+            renderer::ResourceSlot pass_constant_buffer = renderer::create_constant_buffer(create_const_buffer_params);
 
             g_regina_ctx.frame_resource_data[frame].pass_constant_buffer = pass_constant_buffer;
         }
@@ -345,12 +345,12 @@ namespace rex
     //-------------------------------------------------------------------------
     bool build_raster_state()
     {
-        renderer::parameters::RasterState solid_rs;
+        renderer::commands::RasterState solid_rs;
         solid_rs.fill_mode = renderer::FillMode::SOLID;
         solid_rs.cull_mode = renderer::CullMode::BACK;
         g_regina_ctx.solid_raster_state = renderer::create_raster_state(solid_rs);
 
-        renderer::parameters::RasterState wire_rs;
+        renderer::commands::RasterState wire_rs;
         wire_rs.fill_mode = renderer::FillMode::SOLID;
         wire_rs.cull_mode = renderer::CullMode::BACK;
         g_regina_ctx.wire_raster_state = renderer::create_raster_state(wire_rs);
@@ -361,7 +361,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool build_pipeline_state_object()
     {
-        renderer::parameters::CreatePipelineState create_pso_params;
+        renderer::commands::CreatePipelineState create_pso_params;
         create_pso_params.input_layout = g_regina_ctx.input_layout;
         create_pso_params.num_render_targets = 1;
         create_pso_params.shader_program = g_regina_ctx.shader_program;
@@ -390,7 +390,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void update_object_constant_buffers()
     {
-        s32 curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
+        renderer::ResourceSlot curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
 
         for (auto& ri : (*g_regina_ctx.scene))
         {
@@ -416,7 +416,7 @@ namespace rex
                 ObjectConstants obj_constants;
                 DirectX::XMStoreFloat4x4(&obj_constants.world, XMMatrixTranspose(new_world));
 
-                renderer::parameters::UpdateConstantBuffer update_constant_buffer_params;
+                renderer::commands::UpdateConstantBuffer update_constant_buffer_params;
                 update_constant_buffer_params.element_index = ri.constant_buffer_index;
                 update_constant_buffer_params.data = &obj_constants;
                 update_constant_buffer_params.data_size = sizeof(ObjectConstants);
@@ -431,7 +431,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void update_pass_constant_buffers()
     {
-        s32 curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
+        renderer::ResourceSlot curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
 
         DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&g_regina_ctx.view);
         DirectX::XMMATRIX proj = DirectX::XMLoadFloat4x4(&g_regina_ctx.proj);
@@ -461,7 +461,7 @@ namespace rex
         g_regina_ctx.pass_constants.far_z = globals::default_depth_info().far_plane;
         g_regina_ctx.pass_constants.delta_time = globals::frame_info().delta_time().to_seconds();
 
-        renderer::parameters::UpdateConstantBuffer update_constant_buffer_params;
+        renderer::commands::UpdateConstantBuffer update_constant_buffer_params;
         update_constant_buffer_params.element_index = 0;
         update_constant_buffer_params.data = &g_regina_ctx.pass_constants;
         update_constant_buffer_params.data_size = sizeof(PassConstants);
@@ -527,7 +527,7 @@ namespace rex
 
         renderer::set_shader(g_regina_ctx.shader_program);
 
-        s32 curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
+        renderer::ResourceSlot curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
 
         renderer::set_constant_buffer(curr_pass_cb, 1);
 
@@ -535,7 +535,7 @@ namespace rex
         renderer::set_index_buffer(g_regina_ctx.mesh_cube->index_buffer, renderer::IndexBufferFormat::R16_UINT, 0);
         renderer::set_primitive_topology(renderer::PrimitiveTopology::TRIANGLELIST);
 
-        s32 curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
+        renderer::ResourceSlot curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
         renderer::set_constant_buffer(curr_object_cb, 0);
 
         renderer::renderer_draw_indexed_instanced(1, 0, g_regina_ctx.mesh_cube->draw_args[rsl::small_stack_string("box")].index_count, 0, 0);
