@@ -13,19 +13,16 @@ namespace rex
 
       struct SetRenderTargetCommandDesc
       {
-        RenderCommandDesc command;
-
         s32 num_color;
-        ResourceSlot color[s_max_color_targets];
+        rsl::array<ResourceSlot, s_max_color_targets> color;
         ResourceSlot depth;
-        s32 array_index;
       };
 
       class SetRenderTarget : public RenderCommand
       {
       public:
         SetRenderTarget(SetRenderTargetCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+            : RenderCommand()
             , m_desc(rsl::move(desc))
         {
         }
@@ -34,11 +31,7 @@ namespace rex
 
         bool execute() override
         {
-          rsl::vector<s32> render_targets((rsl::Capacity)renderer::commands::s_max_color_targets);
-          for(s32 i = 0; i < renderer::commands::s_max_color_targets; ++i)
-            render_targets.push_back(cmd.set_render_target.color[i].slot_id());
-
-          return backend::set_render_targets(render_targets.data(), cmd.set_render_target.num_color, cmd.set_render_target.depth.slot_id());
+          return backend::set_render_targets(m_desc.color.data(), m_desc.num_color, m_desc.depth);
         }
 
       private:

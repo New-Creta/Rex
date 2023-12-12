@@ -10,14 +10,13 @@ namespace rex
         {
             struct EndFrameCommandDesc
             {
-                RenderCommandDesc command;
             };
 
             class EndFrame : public RenderCommand
             {
             public:
                 EndFrame(EndFrameCommandDesc&& desc)
-                    :RenderCommand(rsl::move(desc.command))
+                    :RenderCommand()
                     ,m_desc(rsl::move(desc))
                 {}
 

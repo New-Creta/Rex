@@ -10,14 +10,13 @@ namespace rex
     {
       struct EndDrawCommandDesc
       {
-        RenderCommandDesc command;
       };
 
       class EndDraw : public RenderCommand
       {
       public:
         EndDraw(EndDrawCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+            : RenderCommand()
             , m_desc(rsl::move(desc))
         {
         }
@@ -26,7 +25,7 @@ namespace rex
 
         bool execute() override 
         {
-          bakcend::end_draw();
+          backend::end_draw();
         }
 
       private:

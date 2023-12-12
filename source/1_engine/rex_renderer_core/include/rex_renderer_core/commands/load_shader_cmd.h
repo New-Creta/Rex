@@ -3,6 +3,8 @@
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/shader_type.h"
 
+#include "rex_engine/memory/blob.h"
+
 namespace rex
 {
   namespace renderer
@@ -11,35 +13,32 @@ namespace rex
     {
       struct LoadShaderCommandDesc
       {
-        RenderCommandDesc command;
-
         ShaderType shader_type;
-        void* byte_code;
-        s32 byte_code_size;
+        memory::Blob shader_byte_code;
         s32 constant_buffer_count;
       };
 
       class LoadShader : public RenderCommand
       {
       public:
-        LoadShader(LoadShaderCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        LoadShader(LoadShaderCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
+
         }
 
         ~LoadShader() override = default;
 
         bool execute() override
         {
-          result = backend::load_shader(cmd.load_shader_params, cmd.resource_slot);
-          memory_free(cmd.load_shader_params.byte_code);
-
-          return result;
+          return backend::load_shader(m_desc, m_resource_slot);
         }
 
       private:
         LoadShaderCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

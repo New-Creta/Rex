@@ -2,6 +2,8 @@
 
 #include "rex_renderer_core/commands/render_cmd.h"
 
+#include "rex_engine/memory/blob.h"
+
 namespace rex
 {
   namespace renderer
@@ -10,19 +12,17 @@ namespace rex
     {
       struct UpdateConstantBufferCommandDesc
       {
-        RenderCommandDesc command;
-
-        void* data;
-        s32 data_size;
+        memory::Blob buffer_data;
         s32 element_index;
       };
 
       class UpdateConstantBuffer : public RenderCommand
       {
       public:
-        UpdateConstantBuffer(UpdateConstantBufferCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        UpdateConstantBuffer(UpdateConstantBufferCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -30,13 +30,14 @@ namespace rex
 
         bool execute() override 
         {
-          backend::update_constant_buffer(cmd.update_constant_buffer_params, cmd.resource_slot);
+          backend::update_constant_buffer(m_desc, m_resource_slot);
 
           return true;
         }
 
       private:
         UpdateConstantBufferCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

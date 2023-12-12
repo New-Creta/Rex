@@ -11,17 +11,16 @@ namespace rex
     {
       struct SetRasterStateCommandDesc
       {
-        RenderCommandDesc command;
 
-        ResourceSlot raster_state;
       };
 
       class SetRasterState : public RenderCommand
       {
       public:
-        SetRasterState(SetRasterStateCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        SetRasterState(SetRasterStateCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -29,11 +28,12 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::set_raster_state(cmd.set_raster_state.raster_state.slot_id());
+          return backend::set_raster_state(m_resource_slot);
         }
 
       private:
         SetRasterStateCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

@@ -11,22 +11,21 @@ namespace rex
     {
       struct CreatePipelineStateCommandDesc
       {
-        RenderCommandDesc command;
-
         ResourceSlot input_layout;
         ResourceSlot shader_program;
         ResourceSlot rasterizer_state;
         ResourceSlot blend_state;
         ResourceSlot depth_stencil_state;
-        s32 nurender_targets;
+        s32 num_render_targets;
       };
 
       class CreatePipelineState : public RenderCommand
       {
       public:
-        CreatePipelineState(CreatePipelineStateCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        CreatePipelineState(CreatePipelineStateCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -34,11 +33,12 @@ namespace rex
 
         bool execute() override
         {
-          return backend::create_pipeline_state_object(cmd.create_pipeline_state_params, cmd.resource_slot);
+          return backend::create_pipeline_state_object(m_desc, m_resource_slot);
         }
 
       private:
         CreatePipelineStateCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

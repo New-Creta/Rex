@@ -13,8 +13,6 @@ namespace rex
     {
       struct CreateClearStateCommandDesc
       {
-        RenderCommandDesc command;
-
         rsl::Color4f rgba;
         f32 depth;
         u8 stencil;
@@ -24,9 +22,10 @@ namespace rex
       class CreateClearState : public RenderCommand
       {
       public:
-        CreateClearState(CreateClearStateCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        CreateClearState(CreateClearStateCommandDesc&& desc, const ResourceSlot& slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -34,11 +33,12 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::create_clear_state(cmd.clear_state_params, cmd.resource_slot);  
+          return backend::create_clear_state(m_desc, m_resource_slot);
         }
 
       private:
         CreateClearStateCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

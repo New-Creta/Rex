@@ -11,8 +11,6 @@ namespace rex
     {
       struct SetPrimitiveTopologyCommandDesc
       {
-        RenderCommandDesc command;
-
         PrimitiveTopology topology;
       };
 
@@ -20,7 +18,7 @@ namespace rex
       {
       public:
         SetPrimitiveTopology(SetPrimitiveTopologyCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+            : RenderCommand()
             , m_desc(rsl::move(desc))
         {
         }
@@ -29,7 +27,7 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::set_primitive_topology(cmd.topology);
+          return backend::set_primitive_topology(m_desc.topology);
         }
 
       private:

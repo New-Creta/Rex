@@ -11,8 +11,6 @@ namespace rex
     {
       struct SetViewportCommandDesc
       {
-        RenderCommandDesc command;
-
         Viewport viewport;
       };
 
@@ -20,7 +18,7 @@ namespace rex
       {
       public:
         SetViewport(SetViewportCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+            : RenderCommand()
             , m_desc(rsl::move(desc))
         {
         }
@@ -29,7 +27,7 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::set_viewport(cmd.viewport);
+          return backend::set_viewport(m_desc.viewport);
         }
 
       private:

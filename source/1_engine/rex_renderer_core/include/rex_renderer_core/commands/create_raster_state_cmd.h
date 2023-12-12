@@ -12,8 +12,6 @@ namespace rex
     {
       struct CreateRasterStateCommandDesc
       {
-        RenderCommandDesc command;
-
         FillMode fill_mode;
         CullMode cull_mode;
         s32 front_ccw;
@@ -29,9 +27,10 @@ namespace rex
       class CreateRasterState : public RenderCommand
       {
       public:
-        CreateRasterState(CreateRasterStateCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        CreateRasterState(CreateRasterStateCommandDesc&& desc, const ResourceSlot& slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -39,11 +38,12 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::create_raster_state(cmd.raster_state_params, cmd.resource_slot);  
+          return backend::create_raster_state(m_desc, m_resource_slot);
         }
 
       private:
         CreateRasterStateCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

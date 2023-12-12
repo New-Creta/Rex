@@ -11,16 +11,13 @@ namespace rex
       class CreateVertexBuffer : public CreateBuffer
       {
       public:
-        CreateVertexBuffer(CreateBufferCommandDesc&& desc)
-            :CreateBuffer(rsl::move(desc))
+        CreateVertexBuffer(CreateBufferCommandDesc&& desc, ResourceSlot slot)
+            :CreateBuffer(rsl::move(desc), slot)
         {}
 
         bool execute() override
         {
-          result = backend::create_vertex_buffer(cmd.create_buffer_params, cmd.resource_slot);
-          memory_free(cmd.create_buffer_params.data);
-
-          return result;
+          return backend::create_vertex_buffer(description(), resource_slot());
         }
       };
     } // namespace commands

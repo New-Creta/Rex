@@ -3,6 +3,8 @@
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/shader_type.h"
 
+#include "rex_engine/memory/blob.h"
+
 #include <rex_std/bonus/string/stack_string.h>
 
 namespace rex
@@ -18,22 +20,20 @@ namespace rex
 
       struct CompileShaderCommandDesc
       {
-        RenderCommandDesc command;
-
         ShaderType shader_type;
         rsl::small_stack_string shader_name;
         rsl::tiny_stack_string shader_entry_point;
         rsl::tiny_stack_string shader_feature_target;
-        char8* shader_code;
-        s64 shader_code_size;
+        memory::Blob shader_code;
       };
 
       class CompileShader : public RenderCommand
       {
       public:
-        CompileShader(CompileShaderCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        CompileShader(CompileShaderCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
           switch(m_desc.shader_type)
           {
@@ -48,14 +48,12 @@ namespace rex
 
         bool execute() override
         {
-          result = backend::compile_shader(cmd.compile_shader_params, cmd.resource_slot);
-          memory_free(cmd.compile_shader_params.shader_code);
-
-          return result;
+          return backend::compile_shader(m_desc, m_resource_slot);
         }
 
       private:
         CompileShaderCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

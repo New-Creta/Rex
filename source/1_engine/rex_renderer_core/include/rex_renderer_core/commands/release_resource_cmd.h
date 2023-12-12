@@ -11,17 +11,16 @@ namespace rex
     {
       struct ReleaseResourceCommandDesc
       {
-        RenderCommandDesc command;
-
-        ResourceSlot resource_slot;
+          ResourceSlots* slots;
       };
 
       class ReleaseResource : public RenderCommand
       {
       public:
-        ReleaseResource(ReleaseResourceCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        ReleaseResource(ReleaseResourceCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -29,14 +28,16 @@ namespace rex
 
         bool execute() override
         {
-          result = backend::release_resource(cmd.release_resource.resource_index.slot_id());
-          g_ctx.slot_resources.free_slot(cmd.release_resource.resource_index.slot_id());
+          bool result = backend::release_resource(m_resource_slot);
+
+          m_desc.slots->free_slot(m_resource_slot.slot_id());
 
           return result;
         }
 
       private:
         ReleaseResourceCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

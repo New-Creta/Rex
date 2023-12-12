@@ -5,12 +5,7 @@ namespace rex
   namespace renderer
   {
     //-------------------------------------------------------------------------
-    RenderCommand::RenderCommand(RenderCommand&& desc)
-        : RenderCommand(rsl::move(desc.command))
-, m_desc(rsl::move(desc))
-    {
-    }
-
+    RenderCommand::RenderCommand() = default;
     //-------------------------------------------------------------------------
     RenderCommand::RenderCommand(const RenderCommand& other) = default;
     //-------------------------------------------------------------------------
@@ -22,11 +17,5 @@ namespace rex
     RenderCommand& RenderCommand::operator=(const RenderCommand& other) = default;
     //-------------------------------------------------------------------------
     RenderCommand& RenderCommand::operator=(RenderCommand&& other) = default;
-
-    //-------------------------------------------------------------------------
-    s64 RenderCommand::frame_id() const
-    {
-      return m_desc.frame_index;
-    }
   } // namespace renderer
 } // namespace rex

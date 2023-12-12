@@ -11,17 +11,16 @@ namespace rex
     {
       struct SetShaderCommandDesc
       {
-        RenderCommandDesc command;
 
-        ResourceSlot shader_index;
       };
 
       class SetShader : public RenderCommand
       {
       public:
-        SetShader(SetShaderCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        SetShader(SetShaderCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -29,11 +28,12 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::set_shader(cmd.set_shader.shader_index.slot_id());
+          return backend::set_shader(m_resource_slot);
         }
 
       private:
         SetShaderCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

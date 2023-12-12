@@ -9,16 +9,15 @@ namespace rex
   {
     namespace commands
     {
-      struct BeginDrawDesc
+      struct BeginDrawCommandDesc
       {
-        RenderCommandDesc command;
       };
 
       class BeginDraw : public RenderCommand
       {
       public:
-        BeginDraw(BeginDrawDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        BeginDraw(BeginDrawCommandDesc&& desc)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
         {
         }
@@ -31,7 +30,7 @@ namespace rex
         }
 
       private:
-        BeginDrawDesc m_desc;
+          BeginDrawCommandDesc m_desc;
       };
     } // namespace commands
   }   // namespace renderer

@@ -12,8 +12,6 @@ namespace rex
     {
       struct CreateConstantBufferCommandDesc
       {
-        RenderCommandDesc command;
-
         s32 count;
         s32 buffer_size;
         s32 array_index;
@@ -22,9 +20,10 @@ namespace rex
       class CreateConstantBuffer : public RenderCommand
       {
       public:
-        CreateConstantBuffer(CreateConstantBufferCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        CreateConstantBuffer(CreateConstantBufferCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -32,11 +31,12 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::create_constant_buffer(cmd.create_constant_buffer_params, cmd.resource_slot);
+          return backend::create_constant_buffer(m_desc, m_resource_slot);
         }
 
       private:
         CreateConstantBufferCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

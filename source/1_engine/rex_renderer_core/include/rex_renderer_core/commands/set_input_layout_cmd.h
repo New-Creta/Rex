@@ -11,17 +11,16 @@ namespace rex
     {
       struct SetInputLayoutCommandDesc
       {
-        RenderCommandDesc command;
-
-        ResourceSlot input_layout;
+        
       };
 
       class SetInputLayout : public RenderCommand
       {
       public:
-        SetInputLayout(SetInputLayoutCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        SetInputLayout(SetInputLayoutCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -29,11 +28,12 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::set_input_layout(cmd.set_input_layout.input_layout.slot_id());
+          return backend::set_input_layout(m_resource_slot);
         }
 
       private:
         SetInputLayoutCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

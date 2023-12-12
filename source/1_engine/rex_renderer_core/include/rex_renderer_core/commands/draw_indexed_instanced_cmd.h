@@ -10,8 +10,6 @@ namespace rex
     {
       struct DrawIndexedInstancedCommandDesc
       {
-        RenderCommandDesc command;
-
         s32 instance_count;
         s32 start_instance;
         s32 index_count;
@@ -23,7 +21,7 @@ namespace rex
       {
       public:
         DrawIndexedInstanced(DrawIndexedInstancedCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+            : RenderCommand()
             , m_desc(rsl::move(desc))
         {
         }
@@ -32,7 +30,7 @@ namespace rex
 
         bool execute() override
         {
-          backend::draw_indexed_instanced(cmd.draw_indexed_instanced.instance_count, cmd.draw_indexed_instanced.start_instance, cmd.draw_indexed_instanced.index_count, cmd.draw_indexed_instanced.start_index, cmd.draw_indexed_instanced.base_vertex);
+          backend::draw_indexed_instanced(m_desc.instance_count, m_desc.start_instance, m_desc.index_count, m_desc.start_index, m_desc.base_vertex);
 
           return true;
         }

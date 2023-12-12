@@ -11,19 +11,16 @@ namespace rex
     {
       struct ClearCommandDesc
       {
-        RenderCommandDesc command;
 
-        ResourceSlot clear_state;
-        s32 array_index;
-        s32 texture_index;
       };
 
       class Clear : public RenderCommand
       {
       public:
-        Clear(ClearCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        Clear(ClearCommandDesc&& desc, ResourceSlot resourceSlot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(resourceSlot)
         {
         }
 
@@ -31,13 +28,14 @@ namespace rex
 
         bool execute() override
         {
-          backend::clear(clear_state.slot_id());
+          backend::clear(m_resource_slot);
 
           return true;
         }
 
       private:
         ClearCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

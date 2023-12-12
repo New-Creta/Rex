@@ -2,37 +2,38 @@
 
 #include "rex_renderer_core/commands/render_cmd.h"
 
+#include "rex_engine/memory/blob.h"
+
 namespace rex
 {
-  namespace renderer
-  {
-    namespace commands
+    namespace renderer
     {
-      struct CreateBufferCommandDesc
-      {
-        RenderCommandDesc command;
-
-        s32 buffer_size;
-        void* buffer_data;
-      };
-
-      class CreateBuffer : public RenderCommand
-      {
-      public:
-        CreateBuffer(CreateBufferCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
-            , m_desc(rsl::move(desc))
+        namespace commands
         {
-        }
+            struct CreateBufferCommandDesc
+            {
+                memory::Blob buffer_data;
+            };
 
-        ~CreateBuffer() override = default;
+            class CreateBuffer : public RenderCommand
+            {
+            public:
+                CreateBuffer(CreateBufferCommandDesc&& desc, ResourceSlot slot)
+                    : RenderCommand()
+                    , m_desc(rsl::move(desc))
+                    , m_resource_slot(slot)
+                {}
 
-      protected:
-        const CreateBufferCommandDesc& description() const { return m_desc; }
+                ~CreateBuffer() override = default;
 
-      private:
-          CreateBufferCommandDesc m_desc;
-      };
-    } // namespace commands
-  }   // namespace renderer
+            protected:
+                const CreateBufferCommandDesc& description() const { return m_desc; }
+                const ResourceSlot& resource_slot() const { return m_resource_slot; }
+
+            private:
+                CreateBufferCommandDesc m_desc;
+                ResourceSlot m_resource_slot;
+            };
+        } // namespace commands
+    }   // namespace renderer
 } // namespace rex

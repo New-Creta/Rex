@@ -23,18 +23,16 @@ namespace rex
 
       struct CreateInputLayoutCommandDesc
       {
-        RenderCommandDesc command;
-
-        InputLayoutDescription* m_input_layout;
-        s32 m_num_elements;
+        rsl::vector<InputLayoutDescription> input_layout;
       };
 
       class CreateInputLayout : public RenderCommand
       {
       public:
-        CreateInputLayout(CreateInputLayoutCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        CreateInputLayout(CreateInputLayoutCommandDesc&& desc, const ResourceSlot& slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -42,14 +40,12 @@ namespace rex
 
         bool execute() override
         {
-          result = backend::create_input_layout(cmd.create_input_layout_params, cmd.resource_slot);
-          memory_free(cmd.create_input_layout_params.input_layout);
-
-          return result;
+          return backend::create_input_layout(m_desc, m_resource_slot);
         }
 
       private:
         CreateInputLayoutCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

@@ -10,8 +10,6 @@ namespace rex
     {
       struct DrawCommandDesc
       {
-        RenderCommandDesc command;
-
         s32 vertex_count;
         s32 start_vertex;
       };
@@ -20,7 +18,7 @@ namespace rex
       {
       public:
         Draw(DrawCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+            : RenderCommand()
             , m_desc(rsl::move(desc))
         {
         }
@@ -29,7 +27,7 @@ namespace rex
 
         bool execute() override 
         {
-          backend::draw(cmd.draw.vertex_count, cmd.draw.start_vertex);
+          backend::draw(m_desc.vertex_count, m_desc.start_vertex);
 
           return true;
         }

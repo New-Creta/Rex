@@ -11,8 +11,6 @@ namespace rex
     {
       struct SetScissorRectCommandDesc
       {
-        RenderCommandDesc command;
-
         ScissorRect scissor_rect;
       };
 
@@ -20,7 +18,7 @@ namespace rex
       {
       public:
         SetScissorRect(SetScissorRectCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+            : RenderCommand()
             , m_desc(rsl::move(desc))
         {
         }
@@ -29,7 +27,7 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::set_scissor_rect(cmd.scissor_rect);
+          return backend::set_scissor_rect(m_desc.scissor_rect);
         }
 
       private:

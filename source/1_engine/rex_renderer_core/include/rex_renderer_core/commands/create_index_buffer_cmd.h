@@ -11,16 +11,13 @@ namespace rex
       class CreateIndexBuffer : public CreateBuffer
       {
       public:
-        CreateIndexBuffer(CreateBufferCommandDesc&& desc)
-            :CreateBuffer(rsl::move(desc))
+        CreateIndexBuffer(CreateBufferCommandDesc&& desc, ResourceSlot slot)
+            :CreateBuffer(rsl::move(desc), slot)
         {}
 
         bool execute() override
         {
-          result = backend::create_index_buffer(cmd.create_buffer_params, cmd.resource_slot);
-          memory_free(cmd.create_buffer_params.data);
-
-          return result;
+          return backend::create_index_buffer(description(), resource_slot());
         }
       };
     } // namespace commands

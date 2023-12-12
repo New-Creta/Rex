@@ -12,19 +12,17 @@ namespace rex
     {
       struct SetIndexBufferCommandDesc
       {
-        RenderCommandDesc command;
-
-        ResourceSlot m_buffer_index;
-        IndexBufferFormat m_format;
-        s32 m_offset;
+        IndexBufferFormat format;
+        s32 offset;
       };
 
       class SetIndexBuffer : public RenderCommand
       {
       public:
-        SetIndexBuffer(SetIndexBufferCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        SetIndexBuffer(SetIndexBufferCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -32,11 +30,12 @@ namespace rex
 
         bool execute() override
         {
-          return backend::set_index_buffer(cmd.set_index_buffer.buffer_index.slot_id(), cmd.set_index_buffer.format, cmd.set_index_buffer.offset);
+          return backend::set_index_buffer(m_resource_slot, m_desc.format, m_desc.offset);
         }
 
       private:
         SetIndexBufferCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer

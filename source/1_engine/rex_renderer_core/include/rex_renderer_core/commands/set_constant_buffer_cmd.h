@@ -11,17 +11,15 @@ namespace rex
     {
       struct SetConstantBufferCommandDesc
       {
-        RenderCommandDesc command;
-
-        ResourceSlot target;
         s32 location;
       };
       class SetConstantBuffer : public RenderCommand
       {
       public:
-        SetConstantBuffer(SetConstantBufferCommandDesc&& desc)
-            : RenderCommand(rsl::move(desc.command))
+        SetConstantBuffer(SetConstantBufferCommandDesc&& desc, ResourceSlot slot)
+            : RenderCommand()
             , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
         }
 
@@ -29,11 +27,12 @@ namespace rex
 
         bool execute() override 
         {
-          return backend::set_constant_buffer(cmd.set_constant_buffer.target.slot_id(), cmd.set_constant_buffer.location);
+          return backend::set_constant_buffer(m_resource_slot, m_desc.location);
         }
 
       private:
         SetConstantBufferCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
       };
     } // namespace commands
   }   // namespace renderer
