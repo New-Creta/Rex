@@ -33,7 +33,23 @@ if __name__ == "__main__":
 
   # parse the arguments passed to this script
   args, unknown = parser.parse_known_args()
-  config = regis.generation.create_config(args, useDefault=not args.no_default_config)
+
+  # if we're not allowed to use the default config, we need to mask of to only the args passed in
+  disallow_default_config = args.no_default_config
+  sharpmake_args = args.sharpmake_args
+  if disallow_default_config:
+    args_vars = vars(args)
+    nothing = object()
+    mask = argparse.Namespace(**{arg: nothing for arg in args_vars})
+    masked_namespace = parser.parse_args(namespace=mask)
+    masked_args = {
+        arg: value
+        for arg, value in vars(masked_namespace).items()
+        if value is not nothing
+    }
+    args = argparse.Namespace(**masked_args)
+
+  config = regis.generation.create_config(args, useDefault=not disallow_default_config)
 
   # call generation code to launch sharpmake
   settings_path = os.path.join(root, regis.util.settingsPathFromRoot)
@@ -41,6 +57,6 @@ if __name__ == "__main__":
 
   # Sharpmake expects to be run from the root directory
   with regis.util.temp_cwd(root):
-    result = regis.generation.new_generation(settings, config, args.sharpmake_args)
+    result = regis.generation.new_generation(settings, config, sharpmake_args)
 
   exit(result)
