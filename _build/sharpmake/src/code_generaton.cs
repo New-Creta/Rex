@@ -58,6 +58,14 @@ using System.Text;
 //    CustomTag3,
 // };
 //
+//
+// WARNING: Because some files get updated based on configuration, when running generation - building - generation
+// with different settings, incremental builds get affected as some files might be different, causing the build system
+// to retrigger compilation. 
+// This mostly affects CI as users don't often do this themselves
+//
+//
+
 
 public static class CodeGeneration
 {
