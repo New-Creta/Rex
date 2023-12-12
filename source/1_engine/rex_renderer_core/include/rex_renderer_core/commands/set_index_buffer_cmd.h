@@ -1,27 +1,43 @@
 #pragma once
 
-#include "rex_engine/types.h"
-
+#include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/index_buffer_format.h"
+#include "rex_renderer_core/resource_slot.h"
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace commands
     {
-        namespace commands
-        {
-            struct SetIndexBuffer
-            {
-                SetIndexBuffer()
-                    :buffer_index(REX_INVALID_INDEX)
-                    ,format(IndexBufferFormat::NONE)
-                    ,offset(0)
-                {}
+      struct SetIndexBufferCommandDesc
+      {
+        RenderCommandDesc command;
 
-                s32 buffer_index;
-                IndexBufferFormat format;
-                s32 offset;
-            };
+        ResourceSlot m_buffer_index;
+        IndexBufferFormat m_format;
+        s32 m_offset;
+      };
+
+      class SetIndexBuffer : public RenderCommand
+      {
+      public:
+        SetIndexBuffer(SetIndexBufferCommandDesc&& desc)
+            : RenderCommand(rsl::move(desc.command))
+            , m_desc(rsl::move(desc))
+        {
         }
-    }
-}
+
+        ~SetIndexBuffer() override = default;
+
+        bool execute() override
+        {
+          return backend::set_index_buffer(cmd.set_index_buffer.buffer_index.slot_id(), cmd.set_index_buffer.format, cmd.set_index_buffer.offset);
+        }
+
+      private:
+        SetIndexBufferCommandDesc m_desc;
+      };
+    } // namespace commands
+  }   // namespace renderer
+} // namespace rex

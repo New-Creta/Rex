@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_renderer_core/commands/render_cmd.h"
-#include "rex_renderer_core/resource_slot.h"
 
 namespace rex
 {
@@ -9,31 +8,30 @@ namespace rex
   {
     namespace commands
     {
-      struct SetShaderCommandDesc
+      struct CreateBufferCommandDesc
       {
         RenderCommandDesc command;
 
-        ResourceSlot shader_index;
+        s32 buffer_size;
+        void* buffer_data;
       };
 
-      class SetShader : public RenderCommand
+      class CreateBuffer : public RenderCommand
       {
       public:
-        SetShader(SetShaderCommandDesc&& desc)
+        CreateBuffer(CreateBufferCommandDesc&& desc)
             : RenderCommand(rsl::move(desc.command))
             , m_desc(rsl::move(desc))
         {
         }
 
-        ~SetShader() override = default;
+        ~CreateBuffer() override = default;
 
-        bool execute() override 
-        {
-          return backend::set_shader(cmd.set_shader.shader_index.slot_id());
-        }
+      protected:
+        const CreateBufferCommandDesc& description() const { return m_desc; }
 
       private:
-        SetShaderCommandDesc m_desc;
+          CreateBufferCommandDesc m_desc;
       };
     } // namespace commands
   }   // namespace renderer

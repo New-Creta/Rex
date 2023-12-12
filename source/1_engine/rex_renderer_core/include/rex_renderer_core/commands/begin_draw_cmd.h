@@ -1,20 +1,38 @@
 #pragma once
 
-#include "rex_engine/types.h"
+#include "rex_renderer_core/commands/render_cmd.h"
+#include "rex_renderer_core/resource_slot.h"
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace commands
     {
-        namespace commands
-        {
-            struct BeginDraw
-            {
-                BeginDraw()
-                {}
+      struct BeginDrawDesc
+      {
+        RenderCommandDesc command;
+      };
 
-                s32 shader_program;
-            };
+      class BeginDraw : public RenderCommand
+      {
+      public:
+        BeginDraw(BeginDrawDesc&& desc)
+            : RenderCommand(rsl::move(desc.command))
+            , m_desc(rsl::move(desc))
+        {
         }
-    }
-}
+
+        ~BeginDraw() override = default;
+
+        bool execute() override 
+        {
+          return backend::begin_draw();  
+        }
+
+      private:
+        BeginDrawDesc m_desc;
+      };
+    } // namespace commands
+  }   // namespace renderer
+} // namespace rex

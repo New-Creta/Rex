@@ -1,18 +1,37 @@
 #pragma once
 
-#include "rex_engine/types.h"
+#include "rex_renderer_core/commands/render_cmd.h"
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace commands
     {
-        namespace commands
+      struct EndDrawCommandDesc
+      {
+        RenderCommandDesc command;
+      };
+
+      class EndDraw : public RenderCommand
+      {
+      public:
+        EndDraw(EndDrawCommandDesc&& desc)
+            : RenderCommand(rsl::move(desc.command))
+            , m_desc(rsl::move(desc))
         {
-            struct EndDraw
-            {
-                EndDraw()
-                {}
-            };
         }
-    }
-}
+
+        ~EndDraw() override = default;
+
+        bool execute() override 
+        {
+          bakcend::end_draw();
+        }
+
+      private:
+        EndDrawCommandDesc m_desc;
+      };
+    } // namespace commands
+  }   // namespace renderer
+} // namespace rex

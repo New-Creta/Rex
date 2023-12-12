@@ -1,31 +1,42 @@
 #pragma once
 
-#include "rex_engine/types.h"
-
-#include "rex_renderer_core/primitive_topology.h"
+#include "rex_renderer_core/commands/render_cmd.h"
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace commands
     {
-        namespace commands
-        {
-            struct DrawInstanced
-            {
-                DrawInstanced()
-                    :instance_count(0)
-                    ,start_instance(REX_INVALID_INDEX)
-                    ,vertex_count(0)
-                    ,start_vertex(REX_INVALID_INDEX)
-                    ,primitive_topology(PrimitiveTopology::NONE)
-                {}
+      struct DrawInstanceCommandDesc
+      {
+        RenderCommandDesc command;
 
-                s32 instance_count;
-                s32 start_instance;
-                s32 vertex_count;
-                s32 start_vertex;
-                PrimitiveTopology primitive_topology;
-            };
+        s32 instance_count;
+        s32 start_instance;
+        s32 vertex_count;
+        s32 start_vertex;
+      };
+
+      class DrawInstanced : public RenderCommand
+      {
+      public:
+        DrawInstanced(DrawInstanceCommandDesc&& desc)
+            : RenderCommand(rsl::move(desc.command))
+            , m_desc(rsl::move(desc))
+        {
         }
-    }
-}
+
+        ~DrawInstanced() override = default;
+
+        bool execute() override 
+        {
+          REX_ASSERT_X(false, "Not implemented yet");
+        }
+
+      private:
+        DrawInstanceCommandDesc m_desc;
+      };
+    } // namespace commands
+  }   // namespace renderer
+} // namespace rex
