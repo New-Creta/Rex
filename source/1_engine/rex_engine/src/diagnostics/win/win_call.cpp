@@ -6,7 +6,6 @@
 
 #define NOMINMAX
 #include <Windows.h>
-#include <comdef.h>
 
 rex::win::WinCall::WinCall(DWord /*funcResult*/, ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)
     : m_error(GetLastError())

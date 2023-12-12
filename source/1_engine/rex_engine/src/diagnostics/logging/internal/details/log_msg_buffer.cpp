@@ -1,5 +1,9 @@
 #include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
 
+#include "rex_std/bonus/string.h"
+
+// IWYU pragma: no_include <built-in>
+
 // NOLINTBEGIN(misc-definitions-in-headers)
 
 namespace rexlog

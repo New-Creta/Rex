@@ -5,6 +5,7 @@
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/wrl/wrl_types.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_renderer_core/gpu_description.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 

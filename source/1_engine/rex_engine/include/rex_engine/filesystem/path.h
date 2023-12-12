@@ -1,8 +1,7 @@
 #pragma once
 
-#include "rex_std/array.h"
-#include "rex_std/string.h"
-#include "rex_std/string_view.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/bonus/types.h"
 #include "rex_std/vector.h"
 
 namespace rex
@@ -11,23 +10,23 @@ namespace rex
   {
     namespace internal
     {
-      template <typename PathLikeType, typename ... Args>
+      template <typename PathLikeType, typename... Args>
       void join_impl(rsl::string& str, PathLikeType&& arg)
       {
         str += arg;
-       
-        if (!str.ends_with(seperation_char()))
+
+        if(!str.ends_with(seperation_char()))
         {
           str += seperation_char();
         }
       }
-      template <typename PathLikeType, typename ... Args>
-      void join_impl(rsl::string& str, PathLikeType&& firstArg, Args&& ... args)
+      template <typename PathLikeType, typename... Args>
+      void join_impl(rsl::string& str, PathLikeType&& firstArg, Args&&... args)
       {
         join_impl(str, rsl::forward<PathLikeType>(firstArg)); // append the first arg
-        join_impl(str, rsl::forward<Args>(args)...); // append the rest
+        join_impl(str, rsl::forward<Args>(args)...);          // append the rest
       }
-    }
+    } // namespace internal
     // returns the seperation char for paths
     char8 seperation_char();
 
@@ -35,47 +34,47 @@ namespace rex
     constexpr auto invalid_file_name_chars()
     {
       rsl::array res = {
-        '"',
-        '<',
-        '>',
-        '|',
-        ':',
-        '*',
-        '?',
-        '\\',
-        '/',
-        static_cast<char8>(0),
-        static_cast<char8>(1),
-        static_cast<char8>(2),
-        static_cast<char8>(3),
-        static_cast<char8>(4),
-        static_cast<char8>(5),
-        static_cast<char8>(6),
-        static_cast<char8>(7),
-        static_cast<char8>(8),
-        static_cast<char8>(9),
-        static_cast<char8>(10),
-        static_cast<char8>(11),
-        static_cast<char8>(12),
-        static_cast<char8>(13),
-        static_cast<char8>(14),
-        static_cast<char8>(15),
-        static_cast<char8>(16),
-        static_cast<char8>(17),
-        static_cast<char8>(18),
-        static_cast<char8>(19),
-        static_cast<char8>(20),
-        static_cast<char8>(21),
-        static_cast<char8>(22),
-        static_cast<char8>(23),
-        static_cast<char8>(24),
-        static_cast<char8>(25),
-        static_cast<char8>(26),
-        static_cast<char8>(27),
-        static_cast<char8>(28),
-        static_cast<char8>(29),
-        static_cast<char8>(30),
-        static_cast<char8>(31),
+          '"',
+          '<',
+          '>',
+          '|',
+          ':',
+          '*',
+          '?',
+          '\\',
+          '/',
+          static_cast<char8>(0),
+          static_cast<char8>(1),
+          static_cast<char8>(2),
+          static_cast<char8>(3),
+          static_cast<char8>(4),
+          static_cast<char8>(5),
+          static_cast<char8>(6),
+          static_cast<char8>(7),
+          static_cast<char8>(8),
+          static_cast<char8>(9),
+          static_cast<char8>(10),
+          static_cast<char8>(11),
+          static_cast<char8>(12),
+          static_cast<char8>(13),
+          static_cast<char8>(14),
+          static_cast<char8>(15),
+          static_cast<char8>(16),
+          static_cast<char8>(17),
+          static_cast<char8>(18),
+          static_cast<char8>(19),
+          static_cast<char8>(20),
+          static_cast<char8>(21),
+          static_cast<char8>(22),
+          static_cast<char8>(23),
+          static_cast<char8>(24),
+          static_cast<char8>(25),
+          static_cast<char8>(26),
+          static_cast<char8>(27),
+          static_cast<char8>(28),
+          static_cast<char8>(29),
+          static_cast<char8>(30),
+          static_cast<char8>(31),
       };
 
       return res;
@@ -84,48 +83,48 @@ namespace rex
     constexpr auto invalid_path_chars()
     {
       rsl::array res = {
-      '"',
-      '<',
-      '>',
-      '|',
-      static_cast<char8>(0),
-      static_cast<char8>(1),
-      static_cast<char8>(2),
-      static_cast<char8>(3),
-      static_cast<char8>(4),
-      static_cast<char8>(5),
-      static_cast<char8>(6),
-      static_cast<char8>(7),
-      static_cast<char8>(8),
-      static_cast<char8>(9),
-      static_cast<char8>(10),
-      static_cast<char8>(11),
-      static_cast<char8>(12),
-      static_cast<char8>(13),
-      static_cast<char8>(14),
-      static_cast<char8>(15),
-      static_cast<char8>(16),
-      static_cast<char8>(17),
-      static_cast<char8>(18),
-      static_cast<char8>(19),
-      static_cast<char8>(20),
-      static_cast<char8>(21),
-      static_cast<char8>(22),
-      static_cast<char8>(23),
-      static_cast<char8>(24),
-      static_cast<char8>(25),
-      static_cast<char8>(26),
-      static_cast<char8>(27),
-      static_cast<char8>(28),
-      static_cast<char8>(29),
-      static_cast<char8>(30),
-      static_cast<char8>(31),
+          '"',
+          '<',
+          '>',
+          '|',
+          static_cast<char8>(0),
+          static_cast<char8>(1),
+          static_cast<char8>(2),
+          static_cast<char8>(3),
+          static_cast<char8>(4),
+          static_cast<char8>(5),
+          static_cast<char8>(6),
+          static_cast<char8>(7),
+          static_cast<char8>(8),
+          static_cast<char8>(9),
+          static_cast<char8>(10),
+          static_cast<char8>(11),
+          static_cast<char8>(12),
+          static_cast<char8>(13),
+          static_cast<char8>(14),
+          static_cast<char8>(15),
+          static_cast<char8>(16),
+          static_cast<char8>(17),
+          static_cast<char8>(18),
+          static_cast<char8>(19),
+          static_cast<char8>(20),
+          static_cast<char8>(21),
+          static_cast<char8>(22),
+          static_cast<char8>(23),
+          static_cast<char8>(24),
+          static_cast<char8>(25),
+          static_cast<char8>(26),
+          static_cast<char8>(27),
+          static_cast<char8>(28),
+          static_cast<char8>(29),
+          static_cast<char8>(30),
+          static_cast<char8>(31),
       };
       return res;
     }
     // Join multiple paths together
-    template <typename ... PathLikeTypes>
-    rsl::string join(PathLikeTypes&& ... paths)
+    template <typename... PathLikeTypes>
+    rsl::string join(PathLikeTypes&&... paths)
     {
       rsl::string res;
       internal::join_impl(res, rsl::forward<PathLikeTypes>(paths)...);
@@ -137,7 +136,7 @@ namespace rex
     // Changes the extension of a path string_view
     // If extension argument is empty, the extension is removed
     // if the path doesn't have an extension, the extension specified gets appended
-    rsl::string change_extension(rsl::string_view path, rsl::string_view extension);    
+    rsl::string change_extension(rsl::string_view path, rsl::string_view extension);
     // Returns the directory path of the given path
     rsl::string_view dir_name(rsl::string_view path);
     // Returns the extension of the given path
@@ -229,5 +228,5 @@ namespace rex
     // root: /
     // tail: Users/Sam
     SplitRootResult split_root(rsl::string_view path);
-  }
-}
+  } // namespace path
+} // namespace rex

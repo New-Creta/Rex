@@ -4,7 +4,12 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/log.h"
+#include "rex_std/bonus/hashtable.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/bonus/utility.h"
 #include "rex_std/cstring.h"
+#include "rex_std/format.h"
+#include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
 
 namespace rex
@@ -95,7 +100,8 @@ namespace rex
         while(start_pos != -1)
         {
           const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
-          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
+             false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
@@ -107,13 +113,13 @@ namespace rex
         if(start_pos != -1)
         {
           const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
-          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) == false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
+             false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
           }
         }
-
       }
 
       void add_argument(rsl::string_view arg)
@@ -129,7 +135,7 @@ namespace rex
           value = arg.substr(equal_pos + 1);
 
           // Remove the quote at the beginning if it starts with one
-          if (value.starts_with('"'))
+          if(value.starts_with('"'))
           {
             value = value.substr(1);
           }
@@ -187,17 +193,15 @@ namespace rex
       rsl::string_view find_next_full_argument(rsl::string_view cmdLine, count_t startPos) // NOLINT(readability-convert-member-functions-to-static)
       {
         const count_t space_pos = cmdLine.find_first_of(' ', startPos);
-        count_t comma_pos = cmdLine.find_first_of('"', startPos);
-        count_t pos_to_use = space_pos;
-        if (comma_pos < space_pos && comma_pos != -1)
+        count_t comma_pos       = cmdLine.find_first_of('"', startPos);
+        count_t pos_to_use      = space_pos;
+        if(comma_pos < space_pos && comma_pos != -1)
         {
-          comma_pos = cmdLine.find_first_of('"', comma_pos + 1);
+          comma_pos  = cmdLine.find_first_of('"', comma_pos + 1);
           pos_to_use = comma_pos;
         }
 
-        return pos_to_use != -1
-          ? cmdLine.substr(startPos, pos_to_use - startPos)
-          : cmdLine.substr(startPos);
+        return pos_to_use != -1 ? cmdLine.substr(startPos, pos_to_use - startPos) : cmdLine.substr(startPos);
       }
 
     private:
@@ -205,11 +209,11 @@ namespace rex
     };
 
     rsl::unique_ptr<cmdline::Processor> g_cmd_line_args; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    rsl::string_view g_cmd_line; // Saved as string_view, save as string if it's causing lifetime issues. // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    rsl::string_view g_cmd_line;                         // Saved as string_view, save as string if it's causing lifetime issues. // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
     void init(rsl::string_view cmdLine)
     {
-      g_cmd_line = cmdLine;
+      g_cmd_line      = cmdLine;
       g_cmd_line_args = rsl::make_unique<cmdline::Processor>(cmdLine);
     }
 

@@ -1,11 +1,13 @@
 #pragma once
 
-#include <wrl.h>
-
-#include "rex_engine/win/win_com_ptr.h"
 #include "rex_engine/diagnostics/win/hr_call.h"
+#include "rex_engine/win/win_com_ptr.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/bonus/types.h"
 
-#include "rex_std/string_view.h"
+#include <Windows.h>
+#include <d3d12.h>
+#include <stddef.h>
 
 namespace rex::win
 {
@@ -16,10 +18,10 @@ namespace rex::win
     ~ComLibrary();
 
     ComLibrary(const ComLibrary&) = delete;
-    ComLibrary(ComLibrary&&) = delete;
+    ComLibrary(ComLibrary&&)      = delete;
 
     ComLibrary& operator=(const ComLibrary&) = delete;
-    ComLibrary& operator=(ComLibrary&&) = delete;
+    ComLibrary& operator=(ComLibrary&&)      = delete;
 
     bool is_initialized() const;
 
@@ -54,4 +56,4 @@ namespace rex::win
 
   bool init_com_library();
   ComLibrary& com_library();
-}
+} // namespace rex::win

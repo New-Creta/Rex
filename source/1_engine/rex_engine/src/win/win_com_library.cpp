@@ -1,14 +1,19 @@
 #include "rex_engine/win/win_com_library.h"
 
-#include <ShlObj.h>
+#include <coml2api.h>
+#include <objbase.h>
+#include <objidl.h>
+#include <shlguid.h>
+#include <shobjidl_core.h>
+#include <wtypes.h>
 
 thread_local card32 rex::win::ComLibrary::s_init_succeeded_count = 0;
 
 rex::win::ComLibrary::ComLibrary()
 {
-  if (s_init_succeeded_count == 0)
+  if(s_init_succeeded_count == 0)
   {
-    if (init_lib())
+    if(init_lib())
     {
       inc_ref();
     }
@@ -21,7 +26,7 @@ rex::win::ComLibrary::ComLibrary()
 
 rex::win::ComLibrary::~ComLibrary()
 {
-  if (s_init_succeeded_count == 1)
+  if(s_init_succeeded_count == 1)
   {
     uninit_lib();
   }
@@ -40,18 +45,18 @@ rsl::string rex::win::ComLibrary::read_link(rsl::string_view filepath)
   HRESULT hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl);
   rsl::big_stack_string res;
 
-  if (SUCCEEDED(hres)) 
+  if(SUCCEEDED(hres))
   {
     IPersistFile* ppf;
     hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
 
-    if (SUCCEEDED(hres)) 
+    if(SUCCEEDED(hres))
     {
       // Replace "path_to_your_shortcut.lnk" with the actual path to your shortcut file
       rsl::wstring wide_filepath(filepath.cbegin(), filepath.cend());
       hres = ppf->Load(wide_filepath.c_str(), STGM_READ);
 
-      if (SUCCEEDED(hres)) 
+      if(SUCCEEDED(hres))
       {
         hres = psl->GetPath(res.data(), res.max_size(), NULL, SLGP_UNCPRIORITY);
         res.reset_null_termination_offset();

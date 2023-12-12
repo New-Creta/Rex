@@ -2,11 +2,8 @@
 
 #include "rex_directx/dxgi/comobject.h"
 #include "rex_directx/wrl/wrl_types.h"
-#include "rex_engine/types.h"
 #include "rex_renderer_core/gpu_description.h"
-
-#include <memory>
-#include <string>
+#include "rex_std/bonus/types.h"
 
 struct IDXGIAdapter;
 

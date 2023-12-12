@@ -1,6 +1,9 @@
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_std/chrono.h"
+
+// IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

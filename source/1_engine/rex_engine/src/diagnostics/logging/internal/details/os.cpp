@@ -2,6 +2,7 @@
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/filesystem/filesystem_constants.h"
 
 #include <algorithm>
 #include <array>
@@ -14,6 +15,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <thread>
+
+// IWYU pragma: no_include <built-in>
 
 #ifdef _WIN32
 

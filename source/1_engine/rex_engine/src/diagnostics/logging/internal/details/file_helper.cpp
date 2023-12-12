@@ -3,7 +3,10 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/filesystem/filesystem_constants.h"
 #include "rex_engine/memory/global_allocator.h"
+
+// IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

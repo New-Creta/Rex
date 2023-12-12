@@ -1,13 +1,12 @@
 #pragma once
 
 #include "rex_engine/core_application.h"
-#include "rex_engine/types.h"
 #include "rex_std/memory.h"
-#include "rex_std/vector.h"
-#include "rex_windows/platform_creation_params.h"
 
 namespace rex
 {
+  struct ApplicationCreationParams;
+
   namespace win32
   {
     class GuiApplication : public CoreApplication
@@ -28,6 +27,7 @@ namespace rex
 
     private:
       class Internal;
+
       rsl::unique_ptr<Internal> m_internal_ptr;
     };
   } // namespace win32

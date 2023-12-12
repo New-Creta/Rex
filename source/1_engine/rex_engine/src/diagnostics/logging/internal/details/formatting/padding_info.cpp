@@ -1,5 +1,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padding_info.h"
 
+// IWYU pragma: no_include <built-in>
+
 namespace rexlog
 {
   namespace details

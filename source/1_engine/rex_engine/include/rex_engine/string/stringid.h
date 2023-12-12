@@ -1,9 +1,11 @@
 #pragma once
 
 #include "rex_engine/types.h"
+#include "rex_std/bonus/functional.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/format.h"
 #include "rex_std/internal/format/core.h"
 #include "rex_std/ostream.h"
-#include "rex_std/string.h"
 
 #include <cstddef>
 

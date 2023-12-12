@@ -13,11 +13,18 @@
 // Upon destruction, logs all remaining messages in the queue before
 // destructing..
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/logger.h"
+#include "rex_std/bonus/string.h"
 #include "rex_std/memory.h"
 
 namespace rexlog
 {
+  namespace details
+  {
+    class LogMsg;
+  } // namespace details
+
   // Async overflow policy - block by default.
   enum class AsyncOverflowPolicy
   {

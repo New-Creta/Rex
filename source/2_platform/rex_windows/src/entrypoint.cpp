@@ -10,9 +10,7 @@
 
 #define NOMINMAX
 #include <Windows.h>
-#include <cstdlib>
-#include <iostream>
-#include <shellapi.h>
+#include <processenv.h>
 
 //-------------------------------------------------------------------------
 int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)

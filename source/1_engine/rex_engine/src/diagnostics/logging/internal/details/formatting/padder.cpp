@@ -1,5 +1,9 @@
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padder.h"
 
+#include "rex_std/bonus/types.h"
+
+// IWYU pragma: no_include <built-in>
+
 namespace rexlog
 {
   namespace details
