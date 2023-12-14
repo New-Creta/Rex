@@ -126,7 +126,7 @@ namespace rex
       rsl::string res;
       internal::join_impl(res, rsl::forward<PathLikeTypes>(paths)...);
 
-      if (!res.empty())
+      if(!res.empty())
       {
         res.pop_back(); // remove the last seperation char
       }
@@ -191,10 +191,8 @@ namespace rex
     bool is_junction(rsl::string_view path);
     // Returns true if the given path points to a symlink
     bool is_link(rsl::string_view path);
-    // Returns true if 2 paths point to the same file
-    bool same_file(rsl::string_view path1, rsl::string_view path2);
-    // Returns true if 2 paths point to the same directory
-    bool same_dir(rsl::string_view path);
+    // Returns true if 2 paths point to the same file or directory
+    bool same_path(rsl::string_view path1, rsl::string_view path2);
     struct SplitResult
     {
       rsl::string_view head;

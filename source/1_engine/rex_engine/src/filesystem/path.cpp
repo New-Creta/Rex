@@ -9,6 +9,8 @@
 #include "rex_std_extra/string.h"
 #include "rex_std_extra/time/win/win_time_functions.h"
 
+// The current implementation of this namespace is Windows only
+
 #define NOMINMAX
 #include <Windows.h>
 #include <cstdlib>
@@ -25,14 +27,14 @@ namespace rex
       // concat the arg to the string in filepath format
       void join_impl(rsl::string& str, rsl::string_view arg)
       {
-        if (arg.empty())
+        if(arg.empty())
         {
           return;
         }
 
         str += arg;
 
-        if (!str.ends_with(seperation_char()))
+        if(!str.ends_with(seperation_char()))
         {
           str += seperation_char();
         }
@@ -42,7 +44,28 @@ namespace rex
       // if there is any
       card32 extension_start(rsl::string_view path)
       {
-        return path.find_first_of('.');
+        // because it's possible to have a path like this
+        // ./relative/path/file.txt
+        // we can need to scan for the first dot 
+        // after the first slash
+        auto pos = path.find_last_of("/\\");
+        auto filename = pos != path.npos()
+          ? path.substr(pos + 1)
+          : path;
+
+        // current dir and parent dir "filenames" don't have extensions
+        if (filename == "." || filename == "..")
+        {
+          return path.npos();
+        }
+
+        auto ext_start = filename.find_first_of('.');
+
+        // make sure we convert the pos in the filename back to the pos
+        // of the total input path
+        return ext_start != filename.npos()
+          ? static_cast<card32>(&filename[ext_start] - path.data())
+          : path.npos();
       }
 
       // Fills a string with a number of random characters
@@ -296,9 +319,37 @@ namespace rex
     // Otherwise returns the input
     rsl::string real_path(rsl::string_view path)
     {
-      rsl::string res = rex::win::com_library().read_link(path);
-      res.replace("\\", "/");
+      // It's a bit tricky to get the real path as there are multiple ways 
+      // of linking to a the same file (.lnk files, symlinks, hardlinks, junctions)
 
+      // If the path doesn't exist, just return its input
+      if (!rex::path::exists(path))
+      {
+        return rsl::string(path);
+      }
+
+      // If the path is a .lnk file, we can read its link
+      if (rex::path::extension(path).ends_with(".lnk"))
+      {
+        rsl::string res = rex::win::com_library().read_link(path);
+        res.replace("\\", "/");
+        return res;
+      }
+
+      // For any other case, we'll try GetFullPathName
+      // this can return an empty path in rare cases
+      // If it does, just return the input
+      rsl::big_stack_string stack_res;
+      GetFullPathNameA(path.data(), path.length(), stack_res.data(), NULL);
+      stack_res.reset_null_termination_offset();
+
+      if (stack_res.empty())
+      {
+        return rex::path::norm_path(path);
+      }
+
+      rsl::string res(stack_res);
+      res.replace("\\", "/");
       return res;
     }
     // Normalizes the path, removing redundant dots for current and parent directories
@@ -341,10 +392,10 @@ namespace rex
     // Returns a relative path to path, starting from the start directory
     rsl::string rel_path(rsl::string_view path, rsl::string_view start)
     {
-      rsl::string norm_path = path::norm_path(path);
+      rsl::string norm_path  = path::norm_path(path);
       rsl::string norm_start = path::norm_path(start);
 
-      if (norm_path.empty() && norm_start.empty())
+      if(norm_path.empty() && norm_start.empty())
       {
         return rsl::string("");
       }
@@ -359,17 +410,16 @@ namespace rex
       // Eg. target: "dir", start: "path"
       // result: "../dir"
       rsl::string result;
-      if (res.lhs_it == splitted_path.cbegin())
+      if(res.lhs_it == splitted_path.cbegin())
       {
         card32 num_parent_dir_tokens = splitted_start.size();
-        for (card32 i = 0; i < num_parent_dir_tokens; ++i)
+        for(card32 i = 0; i < num_parent_dir_tokens; ++i)
         {
           result = path::join(result, "..");
         }
-        
       }
 
-      return path::join(result, rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char)).as_string());
+      return path::join(result, rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char, 1)).as_string());
     }
     // Returns the latest access time of the file or directory at the given path
     card64 get_access_time(rsl::string_view path)
@@ -434,7 +484,18 @@ namespace rex
     // Returns if the given path has an extension
     bool has_extension(rsl::string_view path)
     {
-      return internal::extension_start(path) != rsl::string_view::npos();
+      if(path == ".")
+      {
+        return false;
+      }
+
+      if(path == "..")
+      {
+        return false;
+      }
+
+      auto start = internal::extension_start(path);
+      return start != rsl::string_view::npos() && start != path.size() - 1;
     }
     // Returns if the path exists
     bool exists(rsl::string_view path)
@@ -445,12 +506,18 @@ namespace rex
     // Returns if the given path is an absolute path
     bool is_absolute(rsl::string_view path)
     {
-      if(path.length() < 4)
+      // absolute paths
+      // C:\foo - yes
+      // \foo - yes
+      // /foo - yes
+      // anything else - no
+
+      if (path.front() == '/' || path.front() == '\\')
       {
-        return false;
+        return true;
       }
 
-      if(!rsl::is_alpha(path[0]))
+      if(!rsl::is_alpha(path.front()))
       {
         return false;
       }
@@ -460,7 +527,7 @@ namespace rex
         return false;
       }
 
-      if(path[2] != '/' && path[3] != '\\')
+      if(path[2] != '/' && path[2] != '\\')
       {
         return false;
       }
@@ -470,6 +537,21 @@ namespace rex
     // Returns if the given path is a relative path
     bool is_relative(rsl::string_view path)
     {
+      if (path.empty())
+      {
+        return false;
+      }
+
+      if (path == ".")
+      {
+        return false;
+      }
+
+      if (path == "..")
+      {
+        return false;
+      }
+
       return !is_absolute(path);
     }
     // Returns true if the given path points to a file
@@ -519,18 +601,9 @@ namespace rex
       return tag == internal::ReparseTag::Symlink;
     }
     // Returns true if 2 paths point to the same file
-    bool same_file(rsl::string_view path1, rsl::string_view path2)
+    bool same_path(rsl::string_view path1, rsl::string_view path2)
     {
       // simply convert the files into their actual files on disk
-      // then do a string wise comparison
-      rsl::string real_path1 = real_path(path1);
-      rsl::string real_path2 = real_path(path2);
-      return real_path1 == real_path2;
-    }
-    // Returns true if 2 paths point to the same directory
-    bool same_dir(rsl::string_view path1, rsl::string_view path2)
-    {
-      // simply convert the dir into their actual files on disk
       // then do a string wise comparison
       rsl::string real_path1 = real_path(path1);
       rsl::string real_path2 = real_path(path2);
@@ -550,8 +623,12 @@ namespace rex
       if(pos != path.npos())
       {
         res.head = path.substr(0, pos);
+        res.tail = path.substr(pos + 1);
       }
-      res.tail = path.substr(pos + 1);
+      else
+      {
+        res.tail = path;
+      }
 
       // return the result
       return res;
@@ -563,17 +640,32 @@ namespace rex
     {
       SplitResult res {};
 
+      if (path.empty())
+      {
+        return res;
+      }
+
       // get the last slash position
       card32 slash_pos     = path.find(":/");
       card32 backslash_pos = path.find(":\\");
 
       card32 used_pos       = slash_pos != -1 && backslash_pos != -1 ? (rsl::min)(slash_pos, backslash_pos)  // if for any reason the path has the root tokens twice, return the first
                                                                      : (rsl::max)(slash_pos, backslash_pos); // in other case, where there's only one, use the one that's found
-      card32 to_find_length = 2;
-
+      // pos will point to where ':' is found
+      // the head should be "<drive letter>:"
+      // the tail should be everything afterwards, excluding the
+      // slash seperator of the drive
+      
       // fill in the values
-      res.head = path.substr(0, used_pos + to_find_length);
-      res.tail = path.substr(used_pos + to_find_length);
+      if (used_pos != path.npos())
+      {
+        res.head = path.substr(0, used_pos + 1);
+        res.tail = path.substr(used_pos + 2);
+      }
+      else
+      {
+        res.tail = path;
+      }
 
       // return the result
       return res;
@@ -618,9 +710,21 @@ namespace rex
       SplitRootResult res {};
 
       // fill in the values
-      res.drive = splitted_drive.head.substr(0, 2); // split the drive letter and the colon
-      res.root  = splitted_drive.head.substr(2, 1);
-      res.tail  = splitted_drive.tail;
+      if (!splitted_drive.head.empty())
+      {
+        res.drive = splitted_drive.head.substr(0, 2); // split the drive letter and the colon
+        res.root = splitted_drive.head.substr(2, 1);
+        res.tail  = splitted_drive.tail;
+      }
+      else if (path.starts_with('/') || path.starts_with('\\'))
+      {
+        res.root = path.substr(0, 1);
+        res.tail = path.substr(1);
+      }
+      else
+      {
+        res.tail = path;
+      }
 
       // return the result
       return res;
