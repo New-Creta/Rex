@@ -291,7 +291,7 @@ TEST_CASE("File Size")
   CHECK(rex::path::get_file_size("file_1000_bytes.txt") == 1000);
 }
 
-TEST_CASE("Has Extension", "[rex::path::has_extension]")
+TEST_CASE("Has Extension")
 {
   CHECK(rex::path::has_extension("file.txt") == true);
   CHECK(rex::path::has_extension("document.pdf") == true);
@@ -307,6 +307,7 @@ TEST_CASE("Has Extension", "[rex::path::has_extension]")
   CHECK(rex::path::has_extension(".") == false);  // Only a dot, not a valid extension
   CHECK(rex::path::has_extension("..") == false); // Double dots, not a valid extension
 }
+
 TEST_CASE("Path Exists")
 {
   CHECK(rex::path::exists("file_that_definitely_exists.txt"));
