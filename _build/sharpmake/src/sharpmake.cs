@@ -16,7 +16,8 @@ namespace rex
       Name = "SharpmakeProject";
       SourceFilesExtensions.Clear();
       SourceFilesExtensions.Add(".sharpmake.cs");
-      SourceRootPath = Globals.Root;
+      SourceRootPath = Path.Combine(Globals.Root, "source");
+      AdditionalSourceRootPaths.Add(Path.Combine(Globals.Root, "tests"));
 
       // manually add the sharpmake root files
       var RootSharpmakeFiles = Directory.GetFiles(Path.Combine(Globals.SharpmakeRoot, "src"));
