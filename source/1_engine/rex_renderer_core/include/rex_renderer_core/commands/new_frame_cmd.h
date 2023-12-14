@@ -15,21 +15,22 @@ namespace rex
             class NewFrame : public RenderCommand
             {
             public:
-                NewFrame(NewFrameCommandDesc&& desc)
-                    :RenderCommand()
-                    ,m_desc(rsl::move(desc))
-                {}
+              NewFrame(NewFrameCommandDesc&& desc)
+                  : RenderCommand()
+                  , m_desc(rsl::move(desc))
+              {
+              }
 
-                ~NewFrame() override = default;
+              ~NewFrame() override = default;
 
-                bool execute() override
-                {
-                    return backend::new_frame();
-                }
+              bool execute() override
+              {
+                return backend::new_frame();
+              }
 
             private:
-                NewFrameCommandDesc m_desc;
-            }
+              NewFrameCommandDesc m_desc;
+            };
         }
     }
 }

@@ -30,6 +30,8 @@ namespace rex
         bool execute() override 
         {
             backend::draw_instanced(m_desc.vertex_count, m_desc.instance_count, m_desc.start_vertex, m_desc.start_instance);
+
+            return true;
         }
 
       private:

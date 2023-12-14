@@ -15,21 +15,22 @@ namespace rex
             class EndFrame : public RenderCommand
             {
             public:
-                EndFrame(EndFrameCommandDesc&& desc)
-                    :RenderCommand()
-                    ,m_desc(rsl::move(desc))
-                {}
+              EndFrame(EndFrameCommandDesc&& desc)
+                  : RenderCommand()
+                  , m_desc(rsl::move(desc))
+              {
+              }
 
-                ~EndFrame() override = default;
+              ~EndFrame() override = default;
 
-                bool execute() override
-                {
-                    return backend::end_frame();
-                }
+              bool execute() override
+              {
+                return backend::end_frame();
+              }
 
             private:
-                EndFrameCommandDesc m_desc;
-            }
+              EndFrameCommandDesc m_desc;
+            };
         }
     }
 }

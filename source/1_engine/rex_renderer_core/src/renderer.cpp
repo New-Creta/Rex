@@ -45,11 +45,12 @@
 #include "rex_engine/ring_buffer.h"
 
 #include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_std_extra/memory/stack_allocator.h"
 
 #if REX_SINGLE_THREADED
 #define add_cmd(cmd) exec_cmd(cmd)
 #else
-#define add_cmd(cmd) g_ctx.cmd_buffer.put(rsl::move(cmd))
+#define add_cmd(cmd) g_ctx.cmd_buffer.put(cmd)
 #endif
 
 namespace rex
@@ -75,14 +76,25 @@ namespace rex
 
     namespace renderer
     {
+        constexpr s64 cmd_allocator_size = rsl::memory_size(64_kb).size_in_bytes();
+
         struct Context
         {
             ResourceSlots slot_resources;
 
-            RingBuffer<RenderCommand> cmd_buffer;
+            rsl::stack_allocator cmd_allocator { cmd_allocator_size };
+            RingBuffer<RenderCommand*> cmd_buffer;
         };
 
         Context g_ctx;
+
+        //-------------------------------------------------------------------------
+        template <typename TCommandType, typename... Args>
+        TCommandType* create_new_command(Args&&... args)
+        {
+            TCommandType* cmd = (TCommandType*)g_ctx.cmd_allocator.allocate(sizeof(TCommandType));
+            return new(cmd) TCommandType(rsl::forward<Args>(args)...);
+        }
 
         namespace internal
         {
@@ -92,7 +104,7 @@ namespace rex
             {
                 ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-                TCommandType cmd(rsl::move(createBufferParams), resource_slot);
+                TCommandType* cmd = create_new_command<TCommandType>(rsl::move(createBufferParams), resource_slot);
 
                 if (!add_cmd(cmd))
                 {
@@ -108,7 +120,7 @@ namespace rex
             {
                 ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-                commands::CreateConstantBuffer cmd(rsl::move(createBufferParams), resource_slot);
+                commands::CreateConstantBuffer* cmd = create_new_command<commands::CreateConstantBuffer>(rsl::move(createBufferParams), resource_slot);
 
                 if (!add_cmd(cmd))
                 {
@@ -134,9 +146,9 @@ namespace rex
 
             return backend::initialize(userData
                 , maxFrameResources
-                , globals::g_default_targets_info.front_buffer_color.slot_id()
-                , globals::g_default_targets_info.back_buffer_color.slot_id()
-                , globals::g_default_targets_info.depth_buffer.slot_id());
+                , globals::g_default_targets_info.front_buffer_color
+                , globals::g_default_targets_info.back_buffer_color
+                , globals::g_default_targets_info.depth_buffer);
         }
         //-------------------------------------------------------------------------
         void shutdown()
@@ -149,7 +161,7 @@ namespace rex
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-            commands::CreateClearState cmd(rsl::move(desc), resource_slot);
+            commands::CreateClearState* cmd = create_new_command<commands::CreateClearState>(rsl::move(desc), resource_slot);
 
             if (!add_cmd(cmd))
             {
@@ -165,7 +177,7 @@ namespace rex
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-            commands::CreateRasterState cmd(rsl::move(desc), resource_slot);
+            commands::CreateRasterState* cmd = create_new_command<commands::CreateRasterState>(rsl::move(desc), resource_slot);
 
             if (!add_cmd(cmd))
             {
@@ -181,7 +193,7 @@ namespace rex
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-            commands::CreateInputLayout cmd(rsl::move(desc), resource_slot);
+            commands::CreateInputLayout* cmd = create_new_command<commands::CreateInputLayout>(rsl::move(desc), resource_slot);
 
             if (!add_cmd(cmd))
             {
@@ -215,7 +227,7 @@ namespace rex
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-            commands::CreatePipelineState cmd(rsl::move(createPipelineStateParams), resource_slot);
+            commands::CreatePipelineState* cmd = create_new_command<commands::CreatePipelineState>(rsl::move(createPipelineStateParams), resource_slot);
 
             if (!add_cmd(cmd))
             {
@@ -231,7 +243,7 @@ namespace rex
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-            commands::CreateFrameResource cmd(commands::CreateFrameResourceCommandDesc(), resource_slot);
+            commands::CreateFrameResource* cmd = create_new_command<commands::CreateFrameResource>(commands::CreateFrameResourceCommandDesc(), resource_slot);
 
             if (!add_cmd(cmd))
             {
@@ -247,7 +259,7 @@ namespace rex
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-            commands::LoadShader cmd(rsl::move(loadShaderParams), resource_slot);
+            commands::LoadShader* cmd = create_new_command<commands::LoadShader>(rsl::move(loadShaderParams), resource_slot);
 
             if (!add_cmd(cmd))
             {
@@ -263,7 +275,7 @@ namespace rex
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-            commands::LinkShader cmd(rsl::move(linkShaderParams), resource_slot);
+            commands::LinkShader* cmd = create_new_command<commands::LinkShader>(rsl::move(linkShaderParams), resource_slot);
 
             if (!add_cmd(cmd))
             {
@@ -279,7 +291,7 @@ namespace rex
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-            commands::CompileShader cmd(rsl::move(compileShaderParams), resource_slot);
+            commands::CompileShader* cmd = create_new_command<commands::CompileShader>(rsl::move(compileShaderParams), resource_slot);
 
             if (!add_cmd(cmd))
             {
@@ -293,7 +305,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool update_constant_buffer(commands::UpdateConstantBufferCommandDesc&& updateConstantBufferParams, ResourceSlot constantBufferTarget)
         {
-            commands::UpdateConstantBuffer cmd(rsl::move(updateConstantBufferParams), constantBufferTarget);
+            commands::UpdateConstantBuffer* cmd = create_new_command<commands::UpdateConstantBuffer>(rsl::move(updateConstantBufferParams), constantBufferTarget);
 
             return add_cmd(cmd);
         }
@@ -307,7 +319,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool release_resource(ResourceSlot resourceTarget)
         {
-            commands::ReleaseResource cmd(commands::ReleaseResourceCommandDesc {&g_ctx.slot_resources}, resourceTarget);
+            commands::ReleaseResource* cmd = create_new_command<commands::ReleaseResource>(commands::ReleaseResourceCommandDesc {&g_ctx.slot_resources}, resourceTarget);
 
             return add_cmd(cmd);
         }
@@ -315,7 +327,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool prepare_user_initialization()
         {
-            commands::PrepareUserInitialization cmd(commands::PrepareUserInitializationCommandDesc {});
+            commands::PrepareUserInitialization* cmd = create_new_command<commands::PrepareUserInitialization>(commands::PrepareUserInitializationCommandDesc {});
 
             return add_cmd(cmd);
         }
@@ -323,7 +335,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool finish_user_initialization()
         {
-            commands::FinishUserInitialization cmd(commands::FinishUserInitializationCommandDesc {});
+            commands::FinishUserInitialization* cmd = create_new_command<commands::FinishUserInitialization>(commands::FinishUserInitializationCommandDesc {});
 
             return add_cmd(cmd);
         }
@@ -331,7 +343,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool clear(ResourceSlot clearStateTarget)
         {
-            commands::Clear cmd(commands::ClearCommandDesc(), clearStateTarget);
+            commands::Clear* cmd = create_new_command<commands::Clear>(commands::ClearCommandDesc(), clearStateTarget);
 
             return add_cmd(cmd);
         }
@@ -339,7 +351,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool renderer_draw(s32 vertexCount, s32 startVertex)
         {
-            commands::Draw cmd(commands::DrawCommandDesc {vertexCount, startVertex});
+            commands::Draw* cmd = create_new_command<commands::Draw>(commands::DrawCommandDesc {vertexCount, startVertex});
 
             return add_cmd(cmd);
         }
@@ -347,7 +359,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex)
         {
-            commands::DrawIndexed cmd(commands::DrawIndexedCommandDesc {indexCount, startIndex, baseVertex});
+            commands::DrawIndexed* cmd = create_new_command<commands::DrawIndexed>(commands::DrawIndexedCommandDesc {indexCount, startIndex, baseVertex});
 
             return add_cmd(cmd);
         }
@@ -355,7 +367,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex)
         {
-            commands::DrawIndexedInstanced cmd(commands::DrawIndexedInstancedCommandDesc {instanceCount, startInstance, indexCount, startIndex, baseVertex });
+            commands::DrawIndexedInstanced* cmd = create_new_command<commands::DrawIndexedInstanced>(commands::DrawIndexedInstancedCommandDesc {instanceCount, startInstance, indexCount, startIndex, baseVertex});
 
             return add_cmd(cmd);
         }
@@ -363,7 +375,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance)
         {
-            commands::DrawInstanced cmd(commands::DrawInstanceCommandDesc {instanceCount, startInstance, vertexCount, startVertex});
+            commands::DrawInstanced* cmd = create_new_command<commands::DrawInstanced>(commands::DrawInstanceCommandDesc {instanceCount, startInstance, vertexCount, startVertex});
 
             return add_cmd(cmd);
         }
@@ -371,7 +383,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool set_raster_state(ResourceSlot rasterStateTarget)
         {
-            commands::SetRasterState cmd(commands::SetRasterStateCommandDesc {}, rasterStateTarget);
+            commands::SetRasterState* cmd = create_new_command<commands::SetRasterState>(commands::SetRasterStateCommandDesc {}, rasterStateTarget);
 
             return add_cmd(cmd);
         }
@@ -384,7 +396,7 @@ namespace rex
             memcpy(&set_render_target_command_desc.color, colorTargets, numColorTargets * sizeof(ResourceSlot));
             set_render_target_command_desc.depth = depthTarget;
 
-            commands::SetRenderTarget cmd(rsl::move(set_render_target_command_desc));
+            commands::SetRenderTarget* cmd = create_new_command<commands::SetRenderTarget>(rsl::move(set_render_target_command_desc));
 
             return add_cmd(cmd);
         }
@@ -397,7 +409,7 @@ namespace rex
             set_render_target_command_desc.color[0] = colorTarget;
             set_render_target_command_desc.depth = depthTarget;
 
-            commands::SetRenderTarget cmd(rsl::move(set_render_target_command_desc));
+            commands::SetRenderTarget* cmd = create_new_command<commands::SetRenderTarget>(rsl::move(set_render_target_command_desc));
 
             return add_cmd(cmd);
         }
@@ -405,7 +417,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool set_viewport(const Viewport& vp)
         {
-            commands::SetViewport cmd(commands::SetViewportCommandDesc {vp});
+            commands::SetViewport* cmd = create_new_command<commands::SetViewport>(commands::SetViewportCommandDesc {vp});
 
             return add_cmd(cmd);
         }
@@ -413,7 +425,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool set_scissor_rect(const ScissorRect& sr)
         {
-            commands::SetScissorRect cmd(commands::SetScissorRectCommandDesc {sr});
+            commands::SetScissorRect* cmd = create_new_command<commands::SetScissorRect>(commands::SetScissorRectCommandDesc {sr});
 
             return add_cmd(cmd);
         }
@@ -421,7 +433,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool set_input_layout(ResourceSlot inputLayoutTarget)
         {
-            commands::SetInputLayout cmd(commands::SetInputLayoutCommandDesc {}, inputLayoutTarget);
+            commands::SetInputLayout* cmd = create_new_command<commands::SetInputLayout>(commands::SetInputLayoutCommandDesc {}, inputLayoutTarget);
 
             return add_cmd(cmd);
         }
@@ -453,14 +465,14 @@ namespace rex
                 set_vertex_buffer_command_desc.offsets[i] = offsets[i];
             }
 
-            commands::SetVertexBuffer cmd(rsl::move(set_vertex_buffer_command_desc));
+            commands::SetVertexBuffer* cmd = create_new_command<commands::SetVertexBuffer>(rsl::move(set_vertex_buffer_command_desc));
 
             return add_cmd(cmd);
         }
         //-------------------------------------------------------------------------
         bool set_index_buffer(ResourceSlot indexBufferTarget, IndexBufferFormat format, s32 offset)
         {
-            commands::SetIndexBuffer cmd(commands::SetIndexBufferCommandDesc {format, offset}, indexBufferTarget);
+            commands::SetIndexBuffer* cmd = create_new_command<commands::SetIndexBuffer>(commands::SetIndexBufferCommandDesc {format, offset}, indexBufferTarget);
 
             return add_cmd(cmd);
         }
@@ -468,7 +480,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool set_shader(ResourceSlot shaderTarget)
         {
-            commands::SetShader cmd(commands::SetShaderCommandDesc {}, shaderTarget);
+            commands::SetShader* cmd = create_new_command<commands::SetShader>(commands::SetShaderCommandDesc {}, shaderTarget);
 
             return add_cmd(cmd);
         }
@@ -476,7 +488,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool set_pipeline_state_object(ResourceSlot psoTarget)
         {
-            commands::SetPipelineState cmd(commands::SetPipelineStateCommandDesc {}, psoTarget);
+            commands::SetPipelineState* cmd = create_new_command<commands::SetPipelineState>(commands::SetPipelineStateCommandDesc {}, psoTarget);
 
             return add_cmd(cmd);
         }
@@ -484,7 +496,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool set_constant_buffer(ResourceSlot constantBufferTarget, s32 location)
         {
-            commands::SetConstantBuffer cmd(commands::SetConstantBufferCommandDesc {location}, constantBufferTarget);
+            commands::SetConstantBuffer* cmd = create_new_command<commands::SetConstantBuffer>(commands::SetConstantBufferCommandDesc {location}, constantBufferTarget);
 
             return add_cmd(cmd);
         }
@@ -492,7 +504,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool set_primitive_topology(PrimitiveTopology primitiveTopology)
         {
-            commands::SetPrimitiveTopology cmd(commands::SetPrimitiveTopologyCommandDesc {primitiveTopology});
+            commands::SetPrimitiveTopology* cmd = create_new_command<commands::SetPrimitiveTopology>(commands::SetPrimitiveTopologyCommandDesc {primitiveTopology});
 
             return add_cmd(cmd);
         }
@@ -500,7 +512,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool new_frame()
         {
-            commands::NewFrame cmd(commands::NewFrameCommandDesc {});
+            commands::NewFrame* cmd = create_new_command<commands::NewFrame>(commands::NewFrameCommandDesc {});
 
             return add_cmd(cmd);
         }
@@ -508,7 +520,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool end_frame()
         {
-            commands::EndFrame cmd(commands::EndFrameCommandDesc {});
+            commands::EndFrame* cmd = create_new_command<commands::EndFrame>(commands::EndFrameCommandDesc {});
 
             return add_cmd(cmd);
         }
@@ -516,7 +528,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool begin_draw()
         {
-            commands::BeginDraw cmd(commands::BeginDrawCommandDesc {});
+            commands::BeginDraw* cmd = create_new_command<commands::BeginDraw>(commands::BeginDrawCommandDesc {});
 
             return add_cmd(cmd);
         }
@@ -524,7 +536,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool end_draw()
         {
-            commands::EndDraw cmd(commands::EndDrawCommandDesc {});
+            commands::EndDraw* cmd = create_new_command<commands::EndDraw>(commands::EndDrawCommandDesc {});
 
             return add_cmd(cmd);
         }
@@ -532,7 +544,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool present()
         {
-            commands::Present cmd(commands::PresentCommandDesc {&globals::g_default_targets_info.front_buffer_color, &globals::g_default_targets_info.back_buffer_color});
+            commands::Present* cmd = create_new_command<commands::Present>(commands::PresentCommandDesc {&globals::g_default_targets_info.front_buffer_color, &globals::g_default_targets_info.back_buffer_color});
 
             return add_cmd(cmd);
         }
@@ -540,11 +552,11 @@ namespace rex
         //-------------------------------------------------------------------------
         bool flush()
         {
-            RenderCommand* cmd = g_ctx.cmd_buffer.get();
+            RenderCommand** cmd = g_ctx.cmd_buffer.get();
 
             while (cmd)
             {
-                if (cmd->execute() == false)
+                if((*cmd)->execute() == false)
                 {
                     REX_ERROR(LogRendererCore, "Failed to flush commands");
                     return false;

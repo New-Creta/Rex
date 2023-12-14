@@ -49,9 +49,9 @@ namespace rsl
   inline namespace v1
   {
     template <>
-    struct hash<rex::renderer::commands::CreatePipelineState>
+    struct hash<rex::renderer::commands::CreatePipelineStateCommandDesc>
     {
-      rsl::hash_result operator()(const rex::renderer::commands::CreatePipelineState& createPipelineStateCommand) const
+      rsl::hash_result operator()(const rex::renderer::commands::CreatePipelineStateCommandDesc& createPipelineStateCommand) const
       {
         card64 seed = 0;
 
@@ -60,7 +60,7 @@ namespace rsl
         seed = internal::hash_combine(seed, createPipelineStateCommand.rasterizer_state.slot_id());
         seed = internal::hash_combine(seed, createPipelineStateCommand.blend_state.slot_id());
         seed = internal::hash_combine(seed, createPipelineStateCommand.depth_stencil_state.slot_id());
-        seed = internal::hash_combine(seed, createPipelineStateCommand.nurender_targets);
+        seed = internal::hash_combine(seed, createPipelineStateCommand.num_render_targets);
 
         return static_cast<rsl::hash_result>(seed);
       }

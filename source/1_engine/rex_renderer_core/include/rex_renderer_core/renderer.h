@@ -25,31 +25,27 @@ namespace rex
     {
         namespace commands
         {
-            class CreateClearStateCommandDesc;
-            class CreateRasterStateCommandDesc;
-            class CreateBufferCommandDesc;
-            class CreateIndexBufferCommandDesc;
-            class CreateConstantBufferCommandDesc;
-            class CreatePipelineStateCommandDesc;
-            class CreateInputLayoutCommandDesc;
-
-            class BeginDrawCommandDesc;
-            class EndDrawCommandDesc;
-            class NewFrame;
-            class EndFrameCommandDesc;
-
-            class CompileShaderCommandDesc;
-            class LinkShaderCommandDesc;
-            class LoadShaderCommandDesc;
-
-            class ClearCommandDesc;
-            class DrawCommandDesc;
-            class DrawIndexedCommandDesc;
-            class DrawIndexedInstancedCommandDesc;
-            class DrawInstanceCommandDesc;
-            class ReleaseResourceCommandDesc;
-
-            class UpdateConstantBufferCommandDesc;
+            struct CreateClearStateCommandDesc;
+            struct CreateRasterStateCommandDesc;
+            struct CreateBufferCommandDesc;
+            struct CreateIndexBufferCommandDesc;
+            struct CreateConstantBufferCommandDesc;
+            struct CreatePipelineStateCommandDesc;
+            struct CreateInputLayoutCommandDesc;
+            struct BeginDrawCommandDesc;
+            struct EndDrawCommandDesc;
+            struct NewFrameCommandDesc;
+            struct EndFrameCommandDesc;
+            struct CompileShaderCommandDesc;
+            struct LinkShaderCommandDesc;
+            struct LoadShaderCommandDesc;
+            struct ClearCommandDesc;
+            struct DrawCommandDesc;
+            struct DrawIndexedCommandDesc;
+            struct DrawIndexedInstancedCommandDesc;
+            struct DrawInstanceCommandDesc;
+            struct ReleaseResourceCommandDesc;
+            struct UpdateConstantBufferCommandDesc;
         }
 
         struct Info
@@ -142,7 +138,7 @@ namespace rex
         {
             bool          flush_command_queue();
 
-            bool  	      initialize(const OutputWindowUserData& userData, s32 maxFrameResources, s32 fbColorTargetSlot, s32 bbColorTargetSlot, s32 depthTargetSlot);
+            bool initialize(const OutputWindowUserData& userData, s32 maxFrameResources, ResourceSlot fbColorTargetSlot, ResourceSlot bbColorTargetSlot, ResourceSlot depthTargetSlot);
             void          shutdown();
 
             // Platform specific implementation, implements these function

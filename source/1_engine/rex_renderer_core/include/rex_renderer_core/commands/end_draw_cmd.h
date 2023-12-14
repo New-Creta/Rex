@@ -25,7 +25,7 @@ namespace rex
 
         bool execute() override 
         {
-          backend::end_draw();
+          return backend::end_draw();
         }
 
       private:

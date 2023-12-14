@@ -2,6 +2,7 @@
 
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/resource_slot.h"
+#include "rex_renderer_core/resource_slots.h"
 
 namespace rex
 {

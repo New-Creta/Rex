@@ -16,21 +16,22 @@ namespace rex
             class FinishUserInitialization : public RenderCommand
             {
             public:
-                FinishUserInitialization(FinishUserInitializationCommandDesc&& desc)
-                    :RenderCommand()
-                    , m_desc(rsl::move(desc))
-                {}
+              FinishUserInitialization(FinishUserInitializationCommandDesc&& desc)
+                  : RenderCommand()
+                  , m_desc(rsl::move(desc))
+              {
+              }
 
-                ~FinishUserInitialization() override = default;
+              ~FinishUserInitialization() override = default;
 
-                bool execute() override
-                {
-                    return backend::finish_user_initialization();
-                }
+              bool execute() override
+              {
+                return backend::finish_user_initialization();
+              }
 
             private:
-                FinishUserInitializationCommandDesc m_desc;
-            }
+              FinishUserInitializationCommandDesc m_desc;
+            };
         }
     }
 }

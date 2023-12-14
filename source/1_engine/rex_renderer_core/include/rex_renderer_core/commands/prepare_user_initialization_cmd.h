@@ -14,21 +14,22 @@ namespace rex
             class PrepareUserInitialization : public RenderCommand
             {
             public:
-                PrepareUserInitialization(PrepareUserInitializationCommandDesc&& desc)
-                    :RenderCommand()
-                    , m_desc(rsl::move(desc))
-                {}
+              PrepareUserInitialization(PrepareUserInitializationCommandDesc&& desc)
+                  : RenderCommand()
+                  , m_desc(rsl::move(desc))
+              {
+              }
 
-                ~PrepareUserInitialization() override = default;
+              ~PrepareUserInitialization() override = default;
 
-                bool execute() override
-                {
-                    return backend::prepare_user_initialization();
-                }
+              bool execute() override
+              {
+                return backend::prepare_user_initialization();
+              }
 
             private:
-                PrepareUserInitializationCommandDesc m_desc;
-            }
+              PrepareUserInitializationCommandDesc m_desc;
+            };
         }
     }
 }

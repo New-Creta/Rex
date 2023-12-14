@@ -16,23 +16,24 @@ namespace rex
             class CreateFrameResource : public RenderCommand
             {
             public:
-                CreateFrameResource(CreateFrameResourceCommandDesc&& desc, ResourceSlot slot)
-                    :RenderCommand()
-                    ,m_desc(rsl::move(desc))
-                    ,m_resource_slot(slot)
-                {}
+              CreateFrameResource(CreateFrameResourceCommandDesc&& desc, ResourceSlot slot)
+                  : RenderCommand()
+                  , m_desc(rsl::move(desc))
+                  , m_resource_slot(slot)
+              {
+              }
 
-                ~CreateFrameResource() override = default;
+              ~CreateFrameResource() override = default;
 
-                bool execute() override
-                {
-                    return backend::create_frame_resource(m_resource_slot);
-                }
+              bool execute() override
+              {
+                return backend::create_frame_resource(m_resource_slot);
+              }
 
             private:
-                CreateFrameResourceCommandDesc m_desc;
-                ResourceSlot m_resource_slot;
-            }
+              CreateFrameResourceCommandDesc m_desc;
+              ResourceSlot m_resource_slot;
+            };
         }
     }
 }
