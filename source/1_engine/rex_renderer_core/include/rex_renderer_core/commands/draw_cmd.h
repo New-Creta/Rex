@@ -10,6 +10,16 @@ namespace rex
     {
       struct DrawCommandDesc
       {
+        DrawCommandDesc()
+            :vertex_count(0)
+            ,start_vertex(0)
+        {}
+
+        DrawCommandDesc(s32 vertexCount, s32 startVertex)
+            :vertex_count(vertexCount)
+            , start_vertex(startVertex)
+        {}
+
         s32 vertex_count;
         s32 start_vertex;
       };

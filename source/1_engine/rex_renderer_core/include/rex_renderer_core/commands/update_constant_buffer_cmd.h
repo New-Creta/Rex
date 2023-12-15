@@ -12,6 +12,11 @@ namespace rex
     {
       struct UpdateConstantBufferCommandDesc
       {
+        UpdateConstantBufferCommandDesc()
+            :buffer_data()
+            ,element_index(0)
+        {}
+
         memory::Blob buffer_data;
         s32 element_index;
       };

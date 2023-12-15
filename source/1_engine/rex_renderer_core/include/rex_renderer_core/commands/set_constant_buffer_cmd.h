@@ -11,6 +11,14 @@ namespace rex
     {
       struct SetConstantBufferCommandDesc
       {
+        SetConstantBufferCommandDesc()
+            :location(0)
+        {}
+
+        SetConstantBufferCommandDesc(s32 constantBufferLocation)
+            :location(constantBufferLocation)
+        {}
+
         s32 location;
       };
       class SetConstantBuffer : public RenderCommand

@@ -11,7 +11,6 @@ namespace rex
     {
       struct SetPipelineStateCommandDesc
       {
-        
       };
 
       class SetPipelineState : public RenderCommand

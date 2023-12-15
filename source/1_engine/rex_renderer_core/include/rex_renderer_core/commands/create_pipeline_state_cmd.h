@@ -11,6 +11,15 @@ namespace rex
     {
       struct CreatePipelineStateCommandDesc
       {
+        CreatePipelineStateCommandDesc()
+            : input_layout(ResourceSlot::make_invalid())
+            , shader_program(ResourceSlot::make_invalid())
+            , rasterizer_state(ResourceSlot::make_invalid())
+            , blend_state(ResourceSlot::make_invalid())
+            , depth_stencil_state(ResourceSlot::make_invalid())
+            , num_render_targets(0)
+        {}
+
         ResourceSlot input_layout;
         ResourceSlot shader_program;
         ResourceSlot rasterizer_state;

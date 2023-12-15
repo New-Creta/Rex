@@ -11,7 +11,6 @@ namespace rex
     {
       struct SetInputLayoutCommandDesc
       {
-        
       };
 
       class SetInputLayout : public RenderCommand

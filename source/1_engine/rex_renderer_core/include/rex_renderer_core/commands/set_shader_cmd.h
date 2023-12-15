@@ -11,7 +11,6 @@ namespace rex
     {
       struct SetShaderCommandDesc
       {
-
       };
 
       class SetShader : public RenderCommand

@@ -9,7 +9,8 @@ namespace rex
         namespace commands
         {
             struct PrepareUserInitializationCommandDesc
-            {};
+            {
+            };
 
             class PrepareUserInitialization : public RenderCommand
             {

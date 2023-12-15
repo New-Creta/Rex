@@ -12,6 +12,16 @@ namespace rex
     {
       struct SetIndexBufferCommandDesc
       {
+        SetIndexBufferCommandDesc()
+            :format(IndexBufferFormat::NONE)
+            ,offset(0)
+        {}
+
+        SetIndexBufferCommandDesc(IndexBufferFormat indexBufferFormat, s32 indexBufferOffset)
+            :format(indexBufferFormat)
+            , offset(indexBufferOffset)
+        {}
+
         IndexBufferFormat format;
         s32 offset;
       };

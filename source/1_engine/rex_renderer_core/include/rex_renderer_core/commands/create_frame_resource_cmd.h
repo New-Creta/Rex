@@ -9,8 +9,7 @@ namespace rex
         namespace commands
         {
             struct CreateFrameResourceCommandDesc
-            {
-                
+            {    
             };
 
             class CreateFrameResource : public RenderCommand

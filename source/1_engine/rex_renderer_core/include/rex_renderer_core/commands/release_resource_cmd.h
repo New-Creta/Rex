@@ -12,6 +12,14 @@ namespace rex
     {
       struct ReleaseResourceCommandDesc
       {
+          ReleaseResourceCommandDesc()
+              :slots(nullptr)
+          {}
+
+          ReleaseResourceCommandDesc(ResourceSlots* resourceSlots)
+              :slots(resourceSlots)
+          {}
+
           ResourceSlots* slots;
       };
 
@@ -31,7 +39,7 @@ namespace rex
         {
           bool result = backend::release_resource(m_resource_slot);
 
-          m_desc.slots->free_slot(m_resource_slot.slot_id());
+          result = m_desc.slots->free_slot(m_resource_slot.slot_id());
 
           return result;
         }

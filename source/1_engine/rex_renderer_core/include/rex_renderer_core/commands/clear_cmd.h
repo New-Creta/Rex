@@ -11,7 +11,6 @@ namespace rex
     {
       struct ClearCommandDesc
       {
-
       };
 
       class Clear : public RenderCommand

@@ -11,6 +11,14 @@ namespace rex
     {
       struct SetPrimitiveTopologyCommandDesc
       {
+        SetPrimitiveTopologyCommandDesc()
+            :topology(PrimitiveTopology::NONE)
+        {}
+
+        SetPrimitiveTopologyCommandDesc(PrimitiveTopology primitiveTopology)
+            :topology(primitiveTopology)
+        {}
+
         PrimitiveTopology topology;
       };
 

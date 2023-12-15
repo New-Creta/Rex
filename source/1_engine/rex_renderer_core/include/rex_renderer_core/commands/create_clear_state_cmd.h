@@ -13,6 +13,17 @@ namespace rex
     {
       struct CreateClearStateCommandDesc
       {
+        CreateClearStateCommandDesc()
+            :rgba(1.0f, 1.0f, 1.0f, 1.0f)
+            ,depth(1.0f)
+            ,stencil(0x00)
+            ,flags()
+        {
+            flags.add_state(renderer::ClearBits::CLEAR_COLOR_BUFFER);
+            flags.add_state(renderer::ClearBits::CLEAR_DEPTH_BUFFER);
+            flags.add_state(renderer::ClearBits::CLEAR_STENCIL_BUFFER);
+        }
+
         rsl::Color4f rgba;
         f32 depth;
         u8 stencil;

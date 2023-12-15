@@ -11,6 +11,16 @@ namespace rex
         {
             struct PresentCommandDesc
             {
+                PresentCommandDesc()
+                    :front_buffer_color(nullptr)
+                    ,back_buffer_color(nullptr)
+                {}
+
+                PresentCommandDesc(ResourceSlot* fbc, ResourceSlot* bbc)
+                    :front_buffer_color(fbc)
+                    ,back_buffer_color(bbc)
+                {}
+
                 ResourceSlot* front_buffer_color;
                 ResourceSlot* back_buffer_color;
             };

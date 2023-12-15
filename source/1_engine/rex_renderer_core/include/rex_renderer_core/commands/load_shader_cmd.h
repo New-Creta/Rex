@@ -13,6 +13,12 @@ namespace rex
     {
       struct LoadShaderCommandDesc
       {
+        LoadShaderCommandDesc()
+            :shader_type(ShaderType::NONE)
+            ,shader_byte_code()
+            ,constant_buffer_count(0)
+        {}
+
         ShaderType shader_type;
         memory::Blob shader_byte_code;
         s32 constant_buffer_count;

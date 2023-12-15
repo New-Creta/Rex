@@ -10,7 +10,6 @@ namespace rex
         {
             struct FinishUserInitializationCommandDesc
             {
-            
             };
 
             class FinishUserInitialization : public RenderCommand

@@ -11,6 +11,14 @@ namespace rex
     {
       struct SetVertexBufferCommandDesc
       {
+        SetVertexBufferCommandDesc()
+            :buffer_index(0)
+            ,start_slot(0)
+            ,vertex_buffer_targets()
+            ,strides()
+            ,offsets()
+        {}
+
         s32 buffer_index;
         s32 start_slot;
         rsl::vector<ResourceSlot> vertex_buffer_targets;

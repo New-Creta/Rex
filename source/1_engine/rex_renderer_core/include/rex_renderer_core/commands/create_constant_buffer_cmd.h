@@ -12,6 +12,12 @@ namespace rex
     {
       struct CreateConstantBufferCommandDesc
       {
+        CreateConstantBufferCommandDesc()
+            :count(0)
+            ,buffer_size(0)
+            ,array_index(0)
+        {}
+
         s32 count;
         s32 buffer_size;
         s32 array_index;

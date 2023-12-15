@@ -11,7 +11,6 @@ namespace rex
     {
       struct SetRasterStateCommandDesc
       {
-
       };
 
       class SetRasterState : public RenderCommand

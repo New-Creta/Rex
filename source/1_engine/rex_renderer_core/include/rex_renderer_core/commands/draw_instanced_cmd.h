@@ -10,6 +10,20 @@ namespace rex
     {
       struct DrawInstanceCommandDesc
       {
+        DrawInstanceCommandDesc()
+            : instance_count(0)
+            , start_instance(0)
+            , vertex_count(0)
+            , start_vertex(0)
+        {}
+
+        DrawInstanceCommandDesc(s32 instanceCount, s32 startInstance, s32 vertexCount, s32 startVertex)
+            : instance_count(instanceCount)
+            , start_instance(startInstance)
+            , vertex_count(vertexCount)
+            , start_vertex(startVertex)
+        {}
+
         s32 instance_count;
         s32 start_instance;
         s32 vertex_count;
