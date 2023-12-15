@@ -285,6 +285,11 @@ namespace ProjectGen
         {
           var configTasks = PlatformRegistry.Get<Project.Configuration.IConfigurationTasks>(conf.Platform);
 
+          if (conf.Compiler != DevEnv.ninja)
+          {
+            continue;
+          }
+
           // Making sure our prefix and extension are filled in or we get an error when resolving
           if (conf.TargetFilePlatformPrefix == null)
             conf.TargetFilePlatformPrefix = configTasks.GetOutputFileNamePrefix(conf.Output);

@@ -92,6 +92,7 @@ public class RegenerateProjects : Project
     // We need give the configuration a proper name or sharpmake fails to generate
     conf.Name = string.Concat(target.Config.ToString().ToLower(), target.Compiler.ToString().ToLower());
     conf.ProjectPath = Path.Combine(Globals.BuildFolder, ProjectGen.Settings.IntermediateDir, target.DevEnv.ToString(), Name);
+    conf.SolutionFolder = "_Generation";
 
     string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
 
@@ -184,7 +185,7 @@ public abstract class BasicCPPProject : Project
 
   // Specify the targets for this project, meant to be called by every project inherited from this class.
   // The targets for this project are based on the generation settings that are setup by the config file passed in to sharpmake.
-  public void GenerateTargets()
+  public virtual void GenerateTargets()
   {
     AddTargets(RexTarget.CreateTargets().ToArray());
   }
