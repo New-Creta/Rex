@@ -12,6 +12,7 @@
 
 #include <rex_std/bonus/string/stack_string.h>
 #include <rex_std/bonus/string.h>
+#include <rex_std_extra/utility/yes_no.h>
 
 namespace rex
 {
@@ -23,6 +24,8 @@ namespace rex
 
     namespace renderer
     {
+        DEFINE_YES_NO_ENUM(FlushCommands);
+
         namespace commands
         {
             struct CreateClearStateCommandDesc;
@@ -126,7 +129,7 @@ namespace rex
         bool            set_primitive_topology(PrimitiveTopology primitiveTopology);
 
         bool            new_frame();
-        bool            end_frame();
+        bool            end_frame(FlushCommands flush = FlushCommands::yes);
 
         bool            begin_draw();
         bool            end_draw();
@@ -142,6 +145,9 @@ namespace rex
             void            shutdown();
 
             // Platform specific implementation, implements these function
+            s32             active_frame();
+            s32             num_frames_in_flight();
+
             bool            create_clear_state(const commands::CreateClearStateCommandDesc& cs, const ResourceSlot& resourceSlot);
             bool            create_raster_state(const commands::CreateRasterStateCommandDesc& rs, const ResourceSlot& resourceSlot);
             bool            create_input_layout(const commands::CreateInputLayoutCommandDesc& cil, const ResourceSlot& resourceSlot);
