@@ -25,6 +25,7 @@ if __name__ == "__main__":
   parser.add_argument("-single_threaded", help="run tests in single threaded mode", action="store_true")
   parser.add_argument("-only_errors_and_warnings", help="filter lines to only display warnings and errors", action="store_true")
   parser.add_argument("-auto_fix", help="auto fix where you can (applies to iwyu and clang-tidy)", action="store_true")
+  parser.add_argument("-runs", help="num runs to perform (applies to fuzzy testing)", default=10000)
 
   parser.add_argument("-project", dest="projects", help="Append a project to run a test on. Leave empty to run all projects applicable", action="append", default=[])
 
@@ -55,7 +56,7 @@ if __name__ == "__main__":
   if args.all or args.ubsan:
     regis.test.test_ubsan(args.projects, args.clean, args.single_threaded)
   if args.all or args.fuzzy:
-    regis.test.test_fuzzy_testing(args.projects, args.clean, args.single_threaded)
+    regis.test.test_fuzzy_testing(args.projects, args.runs, args.clean, args.single_threaded)
   if args.all or args.auto_test:
     if args.auto_test_timeout:
       auto_test_timeout_secs = args.auto_test_timeout
