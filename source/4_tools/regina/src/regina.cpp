@@ -527,24 +527,24 @@ namespace rex
     {
         REX_LOG(LogRegina, "shutting down Regina");
 
-        g_regina_ctx.clear_state = renderer::ResourceSlot::make_invalid();
+        g_regina_ctx.clear_state.release();
 
-        g_regina_ctx.shader_program = renderer::ResourceSlot::make_invalid();
-        g_regina_ctx.input_layout = renderer::ResourceSlot::make_invalid();
-        g_regina_ctx.pso = renderer::ResourceSlot::make_invalid();
+        g_regina_ctx.shader_program.release();
+        g_regina_ctx.input_layout.release();
+        g_regina_ctx.pso.release();
 
         for(auto& data : g_regina_ctx.frame_resource_data)
         {
-            data.frame = renderer::ResourceSlot::make_invalid();
-            data.object_constant_buffer = renderer::ResourceSlot::make_invalid();
-            data.pass_constant_buffer = renderer::ResourceSlot::make_invalid();
+            data.frame.release();
+            data.object_constant_buffer.release();
+            data.pass_constant_buffer.release();
         }
 
-        g_regina_ctx.solid_raster_state = renderer::ResourceSlot::make_invalid();
-        g_regina_ctx.wire_raster_state = renderer::ResourceSlot::make_invalid();
+        g_regina_ctx.solid_raster_state.release();
+        g_regina_ctx.wire_raster_state.release();
 
-        g_regina_ctx.mesh_cube->vertex_buffer = renderer::ResourceSlot::make_invalid();
-        g_regina_ctx.mesh_cube->index_buffer = renderer::ResourceSlot::make_invalid();
+        g_regina_ctx.mesh_cube->vertex_buffer.release();
+        g_regina_ctx.mesh_cube->index_buffer.release();
 
         g_regina_ctx.mesh_cube.reset();
     }
