@@ -33,13 +33,13 @@ namespace rex
 
             REX_LOG(LogRendererCore, "No available resource slots, resizing resource slots: {} => {}", m_flag_capacity, m_flag_capacity * 2);
 
-            s32 current_m_flag_capacity = m_flag_capacity; // The capacity of the array will be changed after the next call.
+            s32 current_flag_capacity = m_flag_capacity; // The capacity of the array will be changed after the next call.
 
             resize(m_flag_capacity * 2);
 
-            if (!m_flags[current_m_flag_capacity].test_and_set(rsl::memory_order_acquire))
+            if (!m_flags[current_flag_capacity].test_and_set(rsl::memory_order_acquire))
             {
-                return ResourceSlot(current_m_flag_capacity);
+                return ResourceSlot(current_flag_capacity);
             }
 
             return ResourceSlot::make_invalid();
@@ -48,8 +48,15 @@ namespace rex
         //-------------------------------------------------------------------------
         bool ResourceSlots::free_slot(s32 slot)
         {
+            if (slot == REX_INVALID_INDEX)
+            {
+                REX_WARN(LogRendererCore, "Trying to release an invalid resource from ResourceSlots");
+                return true; // Slot is invalid
+            }
+
             if (slot >= m_flag_capacity)
             {
+                REX_ERROR(LogRendererCore, "Trying to release a slot that is out of range of the allocated ResourceSlots");
                 return false; // Slot is not in use or out of range.
             }
 
@@ -89,5 +96,40 @@ namespace rex
             m_flags = new_m_flags;
             m_flag_capacity = num;
         }
-    };
+
+        //-------------------------------------------------------------------------
+        ResourceSlots::Iterator ResourceSlots::begin()
+        {
+            rsl::count_t start = 0;
+            while (start < m_flag_capacity && m_flags[start].test())
+            {
+                ++start;
+            }
+
+            return Iterator(m_flags, m_flag_capacity, start);
+        }
+
+        //-------------------------------------------------------------------------
+        ResourceSlots::Iterator ResourceSlots::end()
+        {
+            return Iterator(m_flags, m_flag_capacity, m_flag_capacity);
+        }
+
+        //-------------------------------------------------------------------------
+        ResourceSlots::ConstIterator ResourceSlots::cbegin() const
+        {
+            rsl::count_t start = 0;
+            while (start < m_flag_capacity && m_flags[start].test())
+            {
+                ++start;
+            }
+            return ConstIterator(m_flags, m_flag_capacity, start);
+        }
+
+        //-------------------------------------------------------------------------
+        ResourceSlots::ConstIterator ResourceSlots::cend() const
+        {
+            return ConstIterator(m_flags, m_flag_capacity, m_flag_capacity);
+        }
+    }
 }

@@ -21,8 +21,7 @@ namespace rex
         ResourceSlot::ResourceSlot(s32 slotId)
             : m_slot_id(slotId)
             , m_ref_count(1) 
-        {
-        }
+        {}
 
         //-------------------------------------------------------------------------
         ResourceSlot::ResourceSlot(const ResourceSlot& other)
@@ -35,9 +34,8 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot::ResourceSlot(ResourceSlot&& other) noexcept 
             : m_slot_id(rsl::exchange(other.m_slot_id, REX_INVALID_INDEX))
-            , m_ref_count(rsl::exchange(other.m_ref_count, 0))
-        {
-        }
+            , m_ref_count(rsl::exchange(other.m_ref_count, 0))  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
+        {}
 
         //-------------------------------------------------------------------------
         ResourceSlot& ResourceSlot::operator=(const ResourceSlot& other)
@@ -64,7 +62,7 @@ namespace rex
             }
             
             m_slot_id = rsl::exchange(other.m_slot_id, REX_INVALID_INDEX);
-            m_ref_count = rsl::exchange(other.m_ref_count, 0);
+            m_ref_count = rsl::exchange(other.m_ref_count, 0);  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
 
             return *this;
         }
@@ -72,18 +70,21 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot::~ResourceSlot()
         {
-            if (rsl::atomic_decrement(m_ref_count) == 0)
+            if (rsl::atomic_decrement(m_ref_count) <= 0)
             {
-                renderer::release_resource(*this);
+                // Only release valid ResourceSlots
+                if (is_valid())
+                {
+                    renderer::release_resource(*this);
+                }
             }
         }
 
         //-------------------------------------------------------------------------
         bool ResourceSlot::is_valid() const
         {
-            // when the slot id is 0, the resource slot will have been deleted
             // when the slot id is REX_INVALID_INDEX, something went wrong during the creation of this slot
-            return m_slot_id != 0 && m_slot_id != REX_INVALID_INDEX;
+            return m_slot_id != REX_INVALID_INDEX;
         }
 
         //-------------------------------------------------------------------------

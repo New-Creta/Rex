@@ -25,29 +25,216 @@ namespace rex
         class ResourceSlots
         {
         public:
+            /**
+             * @brief Iterator class for iterating over the allocated resource slots.
+             *
+             * This iterator allows traversal over the allocated resource slots.
+             */
+            class Iterator
+            {
+            public:
+                // Iterator traits
+                using iterator_category = std::forward_iterator_tag;
+                using value_type = ResourceSlot;
+                using difference_type = std::ptrdiff_t;
+                using pointer = ResourceSlot*;
+                using reference = ResourceSlot&;
+
+                /**
+                  * @brief Constructs an iterator.
+                  *
+                  * Constructs an iterator for the resource slots with the provided flags, capacity, and current index.
+                  *
+                  * @param flags Pointer to the array of atomic flags.
+                  * @param capacity The capacity of the flags array.
+                  * @param current The current index of the iterator.
+                  */
+                Iterator(rsl::atomic_flag* flags, rsl::count_t capacity, rsl::count_t current)
+                    : m_flags(flags), m_capacity(capacity), m_current(current)
+                {}
+
+                /**
+                 * @brief Advances the iterator to the next valid resource slot.
+                 *
+                 * Increments the iterator to point to the next available resource slot.
+                 *
+                 * @return Reference to the updated iterator.
+                 */
+                Iterator& operator++()
+                {
+                    do
+                    {
+                        ++m_current;
+                    } while (m_current < m_capacity && m_flags[m_current].test());
+                    return *this;
+                }
+
+                /**
+                 * @brief Dereferences the iterator to obtain the current resource slot.
+                 *
+                 * Dereferences the iterator to retrieve the current resource slot.
+                 *
+                 * @return The current resource slot.
+                 */
+                ResourceSlot operator*() const
+                {
+                    return ResourceSlot(m_current);
+                }
+
+                /**
+                 * @brief Checks for inequality between iterators.
+                 *
+                 * Checks if two iterators are not equal.
+                 *
+                 * @param other The iterator to compare against.
+                 * @return True if the iterators are not equal, false otherwise.
+                 */
+                bool operator!=(const Iterator& other) const
+                {
+                    return m_current != other.m_current;
+                }
+
+            private:
+                rsl::atomic_flag* m_flags;
+                rsl::count_t m_capacity;
+                rsl::count_t m_current;
+            };
+
+            /**
+             * @brief Const Iterator class for iterating over the allocated resource slots.
+             *
+             * This const iterator allows read-only traversal over the allocated resource slots.
+             */
+            class ConstIterator
+            {
+            public:
+                // Iterator traits
+                using iterator_category = std::forward_iterator_tag;
+                using value_type = const ResourceSlot;
+                using difference_type = std::ptrdiff_t;
+                using pointer = const ResourceSlot*;
+                using reference = const ResourceSlot&;
+
+                /**
+                  * @brief Constructs an iterator.
+                  *
+                  * Constructs an iterator for the resource slots with the provided flags, capacity, and current index.
+                  *
+                  * @param flags Pointer to the array of atomic flags.
+                  * @param capacity The capacity of the flags array.
+                  * @param current The current index of the iterator.
+                  */
+                ConstIterator(const rsl::atomic_flag* flags, rsl::count_t capacity, rsl::count_t current)
+                    : m_flags(flags), m_capacity(capacity), m_current(current)
+                {}
+
+                /**
+                 * @brief Advances the iterator to the next valid resource slot.
+                 *
+                 * Increments the iterator to point to the next available resource slot.
+                 *
+                 * @return Reference to the updated iterator.
+                 */
+                ConstIterator& operator++()
+                {
+                    do
+                    {
+                        ++m_current;
+                    } while (m_current < m_capacity && m_flags[m_current].test());
+                    return *this;
+                }
+
+                /**
+                 * @brief Dereferences the iterator to obtain the current resource slot.
+                 *
+                 * Dereferences the iterator to retrieve the current resource slot.
+                 *
+                 * @return The current resource slot.
+                 */
+                const ResourceSlot operator*() const
+                {
+                    return ResourceSlot(m_current);
+                }
+
+                /**
+                 * @brief Checks for inequality between iterators.
+                 *
+                 * Checks if two iterators are not equal.
+                 *
+                 * @param other The iterator to compare against.
+                 * @return True if the iterators are not equal, false otherwise.
+                 */
+                bool operator!=(const ConstIterator& other) const
+                {
+                    return m_current != other.m_current;
+                }
+
+            private:
+                const rsl::atomic_flag* m_flags;
+                rsl::count_t m_capacity;
+                rsl::count_t m_current;
+            };
+
+        public:
             ~ResourceSlots();
 
             /**
-             * Initialize the ResourceSlots class with an initial capacity
+             * @brief Initialize the ResourceSlots class with an initial capacity
              *
              * @param num The initial number of resource slots to manage.
              */
             void initialize(s32 num);
 
             /**
-             * Allocate the next available resource slot.
+             * @brief Allocate the next available resource slot.
              *
              * @return The index of the allocated resource slot.
              */
             ResourceSlot next_slot();
 
             /**
-             * Free a previously allocated resource slot.
+             * @brief Free a previously allocated resource slot.
              *
              * @param slot The index of the resource slot to be freed.
              * @return `true` if the slot was successfully freed, `false` if the slot is not in use or out of range.
              */
             bool free_slot(s32 slot);
+
+            /**
+             * @brief Returns an iterator pointing to the beginning of the allocated resource slots.
+             *
+             * This function retrieves an iterator pointing to the first allocated resource slot.
+             *
+             * @return An iterator pointing to the beginning of the allocated resource slots.
+             */
+            Iterator begin();
+
+            /**
+             * @brief Returns an iterator pointing to the end of the allocated resource slots.
+             *
+             * This function retrieves an iterator pointing to the end of the allocated resource slots.
+             *
+             * @return An iterator pointing to the end of the allocated resource slots.
+             */
+            Iterator end();
+
+            /**
+             * @brief Returns an iterator pointing to the beginning of the allocated resource slots.
+             *
+             * This function retrieves an iterator pointing to the first allocated resource slot.
+             *
+             * @return An iterator pointing to the beginning of the allocated resource slots.
+             */
+            ConstIterator cbegin() const;
+
+            /**
+             * @brief Returns an iterator pointing to the end of the allocated resource slots.
+             *
+             * This function retrieves an iterator pointing to the end of the allocated resource slots.
+             *
+             * @return An iterator pointing to the end of the allocated resource slots.
+             */
+            ConstIterator cend() const;
 
         private:
             /**
