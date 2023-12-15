@@ -630,7 +630,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool create_rtvs_for_swapchain(s32 width, s32 height, ResourceSlot frontBufferSlot, ResourceSlot backBufferSlot)
+        bool create_rtvs_for_swapchain(s32 width, s32 height, const ResourceSlot& frontBufferSlot, const ResourceSlot& backBufferSlot)
         {
           // Release the previous resources we will be recreating.
           for(int i = 0; i < s_swapchain_buffer_count; ++i)
@@ -688,7 +688,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool create_dsv_for_swapchain(s32 width, s32 height, ResourceSlot depthStencilTargetSlot)
+        bool create_dsv_for_swapchain(s32 width, s32 height, const ResourceSlot& depthStencilTargetSlot)
         {
           if(g_ctx.swapchain_ds_buffer_slot.is_valid())
           {
@@ -832,7 +832,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool initialize(const OutputWindowUserData& userData, s32 maxFrameResources, ResourceSlot fbColorTargetSlot, ResourceSlot bbColorTargetSlot, ResourceSlot depthTargetSlot)
+      bool initialize(const OutputWindowUserData& userData, s32 maxFrameResources, const ResourceSlot& fbColorTargetSlot, const ResourceSlot& bbColorTargetSlot, const ResourceSlot& depthTargetSlot)
       {
         // Diagnostic Layer
 #if defined(REX_DEBUG)
@@ -1077,7 +1077,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_clear_state(const commands::CreateClearStateCommandDesc& cs, ResourceSlot resourceSlot)
+      bool create_clear_state(const commands::CreateClearStateCommandDesc& cs, const ResourceSlot& resourceSlot)
       {
         resources::ClearState rcs;
 
@@ -1093,7 +1093,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_raster_state(const commands::CreateRasterStateCommandDesc& rs, ResourceSlot resourceSlot)
+      bool create_raster_state(const commands::CreateRasterStateCommandDesc& rs, const ResourceSlot& resourceSlot)
       {
         D3D12_RASTERIZER_DESC d3d_rs;
 
@@ -1125,7 +1125,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_input_layout(const commands::CreateInputLayoutCommandDesc& cil, ResourceSlot resourceSlot)
+      bool create_input_layout(const commands::CreateInputLayoutCommandDesc& cil, const ResourceSlot& resourceSlot)
       {
         rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(cil.input_layout.size()));
 
@@ -1147,7 +1147,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_vertex_buffer(const commands::CreateBufferCommandDesc& cb, ResourceSlot resourceSlot)
+      bool create_vertex_buffer(const commands::CreateBufferCommandDesc& cb, const ResourceSlot& resourceSlot)
       {
         REX_ASSERT_X(cb.buffer_data.data() != nullptr && cb.buffer_data.size() != 0, "Trying to create an empty vertex buffer");
 
@@ -1166,7 +1166,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_index_buffer(const commands::CreateBufferCommandDesc& cb, ResourceSlot resourceSlot)
+      bool create_index_buffer(const commands::CreateBufferCommandDesc& cb, const ResourceSlot& resourceSlot)
       {
         REX_ASSERT_X(cb.buffer_data.data() != nullptr && cb.buffer_data.size() != 0, "Trying to create an empty index buffer");
 
@@ -1185,7 +1185,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_constant_buffer(const commands::CreateConstantBufferCommandDesc& cb, ResourceSlot resourceSlot)
+      bool create_constant_buffer(const commands::CreateConstantBufferCommandDesc& cb, const ResourceSlot& resourceSlot)
       {
         REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
@@ -1204,7 +1204,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_pipeline_state_object(const commands::CreatePipelineStateCommandDesc& cps, ResourceSlot resourceSlot)
+      bool create_pipeline_state_object(const commands::CreatePipelineStateCommandDesc& cps, const ResourceSlot& resourceSlot)
       {
         REX_ASSERT_X(cps.input_layout.is_valid(), "Invalid input layout resource slot given");
         REX_ASSERT_X(cps.shader_program.is_valid(), "Invalid shader program resource slot given");
@@ -1272,7 +1272,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_frame_resource(ResourceSlot resourceSlot)
+      bool create_frame_resource(const ResourceSlot& resourceSlot)
       {
         wrl::com_ptr<ID3D12CommandAllocator> cmd_list_alloc;
 
@@ -1296,7 +1296,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool load_shader(const commands::LoadShaderCommandDesc& ls, ResourceSlot resourceSlot)
+      bool load_shader(const commands::LoadShaderCommandDesc& ls, const ResourceSlot& resourceSlot)
       {
         wrl::com_ptr<ID3DBlob> byte_code;
         if(FAILED(D3DCreateBlob(ls.shader_byte_code.size(), byte_code.GetAddressOf())))
@@ -1322,7 +1322,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool link_shader(const commands::LinkShaderCommandDesc& ls, ResourceSlot resourceSlot)
+      bool link_shader(const commands::LinkShaderCommandDesc& ls, const ResourceSlot& resourceSlot)
       {
         auto root_sig = internal::create_shader_root_signature(ls.constants.data(), ls.constants.size());
 
@@ -1348,7 +1348,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool compile_shader(const commands::CompileShaderCommandDesc& cs, ResourceSlot resourceSlot)
+      bool compile_shader(const commands::CompileShaderCommandDesc& cs, const ResourceSlot& resourceSlot)
       {
         s32 compile_flags = 0;
 #if defined(REX_DEBUG)
@@ -1388,7 +1388,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void update_constant_buffer(const commands::UpdateConstantBufferCommandDesc& updateConstantBuffer, ResourceSlot resourceSlot)
+      void update_constant_buffer(const commands::UpdateConstantBufferCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot)
       {
         auto& cbr = get_resource_from_pool_as<ConstantBufferResource>(g_ctx.resource_pool, resourceSlot.slot_id());
         auto cs   = cbr.get();
@@ -1423,7 +1423,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void clear(ResourceSlot resourceSlot)
+      void clear(const ResourceSlot& resourceSlot)
       {
         auto& csr = get_resource_from_pool_as<ClearStateResource>(g_ctx.resource_pool, resourceSlot.slot_id());
 
@@ -1460,8 +1460,14 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool release_resource(ResourceSlot resourceSlot)
+      bool release_resource(const ResourceSlot& resourceSlot)
       {
+        if (resourceSlot.is_valid() == false)
+        {
+            REX_WARN(LogDirectX, "Trying to release an invalid resource from ResourcePool");
+            return true;
+        }
+
         if(g_ctx.resource_pool.has_slot(resourceSlot.slot_id()))
         {
           g_ctx.resource_pool[resourceSlot.slot_id()].reset();
@@ -1537,7 +1543,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_render_targets(const ResourceSlot* const colorTargets, s32 numColorTargets, ResourceSlot depthTarget)
+      bool set_render_targets(const ResourceSlot* const colorTargets, s32 numColorTargets, const ResourceSlot& depthTarget)
       {
         g_ctx.active_depth_target  = depthTarget;
         g_ctx.active_color_targets = numColorTargets;
@@ -1580,7 +1586,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_input_layout(ResourceSlot /*inputLayoutSlot*/)
+      bool set_input_layout(const ResourceSlot& /*inputLayoutSlot*/)
       {
         // Nothing to to on this platform
 
@@ -1616,7 +1622,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_vertex_buffers(ResourceSlot* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
+      bool set_vertex_buffers(const ResourceSlot* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
       {
         auto views = rsl::vector<D3D12_VERTEX_BUFFER_VIEW>(rsl::Capacity(numBuffers));
 
@@ -1642,7 +1648,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_index_buffer(ResourceSlot indexBufferTarget, IndexBufferFormat format, s32 offset)
+      bool set_index_buffer(const ResourceSlot& indexBufferTarget, IndexBufferFormat format, s32 offset)
       {
         auto& buffer_resource = get_resource_from_pool_as<BufferResource>(g_ctx.resource_pool, indexBufferTarget.slot_id());
 
@@ -1661,7 +1667,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_shader(ResourceSlot shaderIndex)
+      bool set_shader(const ResourceSlot& shaderIndex)
       {
         g_ctx.active_shader_program = shaderIndex;
 
@@ -1675,7 +1681,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_constant_buffer(ResourceSlot resourceSlot, s32 location)
+      bool set_constant_buffer(const ResourceSlot& resourceSlot, s32 location)
       {
         auto& buffer_resource = get_resource_from_pool_as<ConstantBufferResource>(g_ctx.resource_pool, resourceSlot.slot_id());
 
@@ -1695,7 +1701,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_pipeline_state_object(ResourceSlot psoTarget)
+      bool set_pipeline_state_object(const ResourceSlot& psoTarget)
       {
         if(g_ctx.resource_pool.has_slot(psoTarget.slot_id()) == false)
         {
@@ -1708,7 +1714,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_raster_state(ResourceSlot /*rasterStateIndex*/)
+      bool set_raster_state(const ResourceSlot& /*rasterStateIndex*/)
       {
         // Nothing to to on this platform
 
