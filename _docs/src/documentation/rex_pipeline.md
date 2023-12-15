@@ -89,11 +89,11 @@ Also known as combi builds and jumbo builds.
 
 Note: this has nothing to do with the Unity game engine.
 
-A unity build allows the build system to merge source files together, creating 1 big source files. This is simply done with C++ include statements including different .cpp files into intermediate .cpp files. 
+A unity build allows the build system to merge source files together, creating 1 big source file. This is simply done with C++ include statements including different .cpp files into intermediate .cpp files. 
 
 These intermediate files are then passed on to the compiler which improves compilation times a lot as the compiler doesn't have to open as many files and can parse more files in 1 go.
 
-Note: unity build support is only for Visual Studio generated projects, it's currently not supported for Ninja builds
+Note: Files modified on disk, different from their repo equivalent are excluded from unity files to improve compilation. They also have optimizations disabled so it's easier to debug them.
 
 ### Generation Script
 The generate script itself is just a wrapper around a sharpmake call.
@@ -105,40 +105,58 @@ It'll scan for all sharpmake files recursively in 3 different folders
 
 all these files are then passed on to sharpmake and executed.
 
-The generation script also has some config flags to enable or disable some behavior done in the generation step.
+Because the generation script is a wrapper around a sharpmake call, the script itself doesn't own the commandline arguments, these are owned by Sharpmake.
+We needed a way to let sharpmake communicate with the python script and back so that we don't have to maintain the same list of commandlines twice, once in sharpmake and once in the python script. We've achieved this by creating a `default_config.json` file that lives next to the sharpmake build sources
 
-| argument                  |  description 
-|--                         |--:            
-| -no_clang_tools           | disables clang tools in any post build command  
-| -unit_tests               |  also generates unit test projects 
-| -coverage                 |  adds code coverage flags to compilation steps 
-| -asan                     | adds code address sanitizer to compilation steps  
-| -ubsan                    | adds code undefined behavior sanitizer to compilation steps  
-| -fuzzy                    |  adds code fuzzy testing to compilation steps 
-| -sharpmake_args           | pass in additional arguments to sharpmake  
+This config file is parsed by the python script and it'll create commandline argument for them. the script will create a `config.json` file in the intermediate build folder which is passed to sharpmake. It'll read the config file and use it to initialize the generation pipeline.
+
+There's only 1 extra commandline argument supported by the generate script which is `-sharpmake_args`. This is to allow a user to pass in arguments that are supported by the native sharpmake executable
+
+We support Visual Studio and Visual Studio Code as IDEs. These just act as text editors as they're in turn call into the build pipeline and build the ninja files which are always generated.
 
 Some Examples (Windows):
 ```sh
 # Default generation. generate files for engine and editor
-py _generate.py
+py _rex.py generate
 
 # Default generation + unit tests
-py _generate.py -unit_tests 
+py _rex.py generate -enable-unit-tests 
 
 # Default generation + unit tests + code coverage
-py _generate.py -unit_tests -coverage 
+py _rex.py generate -enable-unit-tests -enable-code-coverage 
 
-# Default generation + disable clang tools. this skips the argument in the script and passes it directly to sharpmake 
-py _generate.py -sharpmake_args="/noClangTools" 
+# Default generation + unit tests + code coverage + Visual Studio sln and projects
+py _rex.py generate -enable-unit-tests -enable-code-coverage -IDE VisualStudio
+
+# Default generation, but single threaded
+py _rex.py generate -sharpmake_args /multithreaded(false)
 ```
 
+### Code Generation
+The generation step also allows you to auto generate code. The settings for code generation for a particular project are located in the `config` folder and follow the same folder structure as their source root directory.
+
+Sharpmake supports enum and array generation.
+
+A code generation object always has a `key`. multiple projects can have an object with the same key and it's `content` will be merged together in the final source file.
+A key should have 1 and only 1 owner. An owner is a project's code generation object. This owner needs to specify the following
+- `Type` - What are we generating? can be `Enum` or `Array`
+- `Filepath` - This is the file where the code will be generated in
+
+for `Enums` the following needs to be specified
+- `ClassName` - This is the name of the enum class to be generated
+
+for `Arrays` the following needs to be specified
+- `Name` - This is the name of the variable that'll hold the content of the array
+- `ElementType` - This is the type the array will hold
+- `Includes` - This is the files that need to be included at the top of the file
+
 ## Building
-Although the previous explained generation step allows visual studio generation, the actual build pipeline of Rex uses ninja files as explained above.
+Building through Visual Studio and Visual Studio Code works the same as you would otherwise. We leverage the IDE's ability to run commandlines as build steps.
+These commandlines call into the actual build script which perform a build of a project in a specified configuration using a specified compiler.
 
-Therefore the build script ignores the visual studio files and only cares about the ninja files, over which we have full control.
+As mentioned above, the build script takes in the project, configuration and compiler you want to build with. It'll call the ninja files and their dependencies (if specified) and creates their output targets.
 
-the script takes the project, compiler and configuration you want to compile for.
-After which it looks for this the ninja project reflecting the project you specified (which is auto generated by sharpmake) and compiles the configuration specified with the compiler you specified.
+After each build the `build_projects.json` file in the intermediate build folder is updated. This json file acts as a cache for the launch script so it knows what it can launch.
 
 ### Post Build
 the sharpmake scripts for all rex related projects launch the [`post_build.py`](../../../source/post_build.py) script found at the source root.
@@ -148,16 +166,16 @@ This script launches clang-tidy and clang-format if clang tools are enabled. Bec
 Some Examples:
 ```sh
 # Builds regina project and its dependencies in debug mode using msvc compiler
-py _build.py -project=regina -config=debug -comp=msvc
+py _rex.py build -project=regina -config=debug -compiler=msvc
 
 # Cleans all regina and its depedencies' intermediate files and then performs a build afterwards
-py _build.py -project=regina -config=debug -comp=msvc -clean
+py _rex.py build -project=regina -config=debug -compiler=msvc -clean
 ```
 
 ## Testing
-Rex Engine supports many different kind of tests for optimal testing which can all be fired from [`_test.py`](../../../_test.py).
+Rex Engine supports many different kind of tests for optimal testing which can all be fired from the root script
 
-To run all tests, pass in `-all` to [`_test.py`](../../../_test.py)
+To run all tests, pass in `-all` to `_rex.py test`
 
 The following tests are supported for Rex Engine
 
@@ -195,21 +213,21 @@ With this flag enabled, you'll run the fuzzy tests for the Rex Engine.
 Some Examples:
 ```sh
 # This will run all the test of Rex Engine
-py _test.py -all
+py _rex.py test -all
 
 # This will run include-what-you-use on the Rex codebase
-py _test.py -iwyu
+py _rex.py test -iwyu
 
 # This will run include-what-you-use and clang-tidy on the Rex codebase
-py _test.py -iwyu -clang_tidy
+py _rex.py test -iwyu -clang_tidy
 
 # This will run the unit tests of the Rex codebase
-py _test.py -unit_tests
+py _rex.py test -unit_tests
 
 # This will run address sanitizer and undefined behavior on the unit tests of Rex codebase
-py _test.py -asan -ubsan
+py _rex.py test -asan -ubsan
 
 # This will run the fuzzy tests and unit tests of the Rex codebase
-py _test.py -fuzzy -unit_tests
+py _rex.py test -fuzzy -unit_tests
 
 ```
