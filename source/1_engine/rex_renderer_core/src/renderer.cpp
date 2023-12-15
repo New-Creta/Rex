@@ -76,7 +76,7 @@ namespace rex
 
     namespace renderer
     {
-        constexpr s64 cmd_allocator_size = rsl::memory_size(512_kb).size_in_bytes();
+        constexpr s64 cmd_allocator_size = rsl::memory_size(8_kib).size_in_bytes();
 
         struct Context
         {
@@ -180,12 +180,13 @@ namespace rex
         //-------------------------------------------------------------------------
         void shutdown()
         {
-            for (const auto& rs : g_ctx.slot_resources)
-            {
-                renderer::release_resource(rs);
-            }
+            globals::g_default_targets_info.back_buffer_color = ResourceSlot::make_invalid();
+            globals::g_default_targets_info.front_buffer_color = ResourceSlot::make_invalid();
+            globals::g_default_targets_info.depth_buffer = ResourceSlot::make_invalid();
 
-            renderer::flush();
+            flush();
+
+            g_ctx.slot_resources.free_slots();
 
             backend::shutdown();
         }

@@ -199,6 +199,17 @@ namespace rex
         return "D3D12_DESCRIPTOR_HEAP_TYPE_UNKNOWN";
       }
 
+      template<typename TResourceType, u32 TNameLength>
+      void set_debug_name_for(TResourceType* resource, const char(&name)[TNameLength])
+      {
+#if REX_DEBUG
+          resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
+#else
+          (void)resource;
+          (void)name;
+#endif
+      }
+
     } // namespace directx
 
     struct FrameContext
@@ -300,7 +311,6 @@ namespace rex
 
         D3D12_VIEWPORT screen_viewport = {};
         RECT scissor_rect              = {};
-        ;
 
         ResourcePool<rsl::unique_ptr<IResource>> resource_pool;
 
@@ -419,6 +429,8 @@ namespace rex
             return false;
           }
 
+          directx::set_debug_name_for(g_ctx.swapchain.Get(), "SwapChain");
+
           return true;
         }
 
@@ -491,6 +503,9 @@ namespace rex
             return false;
           }
 
+          directx::set_debug_name_for(buffer_gpu.Get(), "Buffer GPU");
+          directx::set_debug_name_for(buffer_uploader.Get(), "Buffer Uploader");
+
           return rsl::make_unique<BufferResource>(buffer_cpu, buffer_gpu, buffer_uploader, bufferByteSize);
         }
 
@@ -509,6 +524,8 @@ namespace rex
             REX_ERROR(LogDirectX, "Could not create commited resource ( constant buffer )");
             return nullptr;
           }
+
+          directx::set_debug_name_for(constant_buffer_uploader.Get(), "Constant Buffer Uploader");
 
           rsl::unique_ptr<ConstantBufferResource> constant_buffer_resources = rsl::make_unique<ConstantBufferResource>(constant_buffer_uploader, obj_cb_byte_size, obj_cb_byte_size * bufferCount, bufferIndex);
 
@@ -614,6 +631,8 @@ namespace rex
             return nullptr;
           }
 
+          directx::set_debug_name_for(root_signature.Get(), "Root Signature");
+
           return root_signature;
         }
 
@@ -660,6 +679,8 @@ namespace rex
               REX_ERROR(LogDirectX, "Failed to retrieve swapchain buffer");
               return false;
             }
+
+            directx::set_debug_name_for(rtv_buffers[i].Get(), "Render Target Buffer");
 
             // We need to define our own desc struct to enabled SRGB.
             // We can't initialize the swapchain with 'DXGI_FORMAT_R8G8B8A8_UNORM_SRGB'
@@ -732,6 +753,8 @@ namespace rex
             return false;
           }
 
+          directx::set_debug_name_for(depth_stencil_buffer.Get(), "Render Target Buffer");
+
           // Create descriptor to mip level 0 of entire resource using the
           // format of the resource
           D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc;
@@ -776,6 +799,19 @@ namespace rex
             {
               REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", directx::heapdesc_type_to_string(heap_desc->Type));
               return false;
+            }
+
+            switch (heap_desc->Type)
+            {
+            case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
+                directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - RTV");
+                break;
+            case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
+                directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - DSV");
+                break;
+            case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
+                directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - CBV");
+                break;
             }
           }
 
@@ -1062,6 +1098,12 @@ namespace rex
 
         // Cull pixels drawn outside of the backbuffer ( such as UI elements )
         g_ctx.scissor_rect = {0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height)};
+
+        directx::set_debug_name_for(g_ctx.command_allocator.Get(), "Global Command Allocator");
+        directx::set_debug_name_for(g_ctx.command_list.Get(), "Global Command List");
+        directx::set_debug_name_for(g_ctx.command_queue.Get(), "Global Command Queue");
+        directx::set_debug_name_for(g_ctx.fence.Get(), "Global Fence");
+
         return true;
       }
 
@@ -1070,10 +1112,48 @@ namespace rex
       {
         if(g_ctx.device != nullptr)
         {
-          flush_command_queue();
-        }
+#if REX_DEBUG
+            wrl::com_ptr<ID3D12DebugDevice> debug_device;
+            g_ctx.device->QueryInterface(IID_PPV_ARGS(&debug_device));
+#endif
 
-        g_ctx.resource_pool.clear();
+            g_frame_ctx.frame_resources.clear();
+
+            backend::release_resource(g_ctx.active_depth_target);
+            for (s32 i = 0; i < s_max_color_targets; ++i)
+            {
+                backend::release_resource(g_ctx.active_color_target[i]);
+            }
+            backend::release_resource(g_ctx.active_pipeline_state_object);
+            backend::release_resource(g_ctx.active_shader_program);
+
+            for (s32 i = 0; i < s_swapchain_buffer_count; ++i)
+            {
+                backend::release_resource(g_ctx.swapchain_rt_buffer_slots[i]);
+            }
+            backend::release_resource(g_ctx.swapchain_ds_buffer_slot);
+
+            flush_command_queue();
+
+            g_ctx.descriptor_heap_pool.clear();
+            g_ctx.pipeline_state_objects.clear();
+            g_ctx.resource_pool.clear();
+
+            g_ctx.swapchain.Reset();
+            g_ctx.command_queue.Reset();
+            g_ctx.command_list.Reset();
+            g_ctx.command_allocator.Reset();
+            g_ctx.fence.Reset();
+            g_ctx.device.Reset();
+
+#if REX_DEBUG
+            if (FAILED(debug_device->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL)))
+            {
+                REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects");
+                return;
+            }
+#endif
+        }
       }
 
       //-------------------------------------------------------------------------
@@ -1265,6 +1345,8 @@ namespace rex
           return false;
         }
 
+        directx::set_debug_name_for(g_ctx.pipeline_state_objects[hash].Get(), "Pipeline State Object");
+
         g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot.slot_id());
         g_ctx.resource_pool[resourceSlot.slot_id()] = rsl::make_unique<PipelineStateResource>(g_ctx.pipeline_state_objects.at(hash));
 
@@ -1281,6 +1363,8 @@ namespace rex
           REX_ERROR(LogDirectX, "Failed to create command list allocator for frame resource");
           return false;
         }
+
+        directx::set_debug_name_for(cmd_list_alloc.Get(), "Frame Command Allocator");
 
         g_ctx.resource_pool.validate_and_grow_if_necessary(resourceSlot.slot_id());
         g_ctx.resource_pool[resourceSlot.slot_id()] = rsl::make_unique<FrameResource>(cmd_list_alloc);
@@ -1510,6 +1594,18 @@ namespace rex
 
         // Wait until ready
         flush_command_queue();
+
+#if REX_DEBUG
+        wrl::com_ptr<ID3D12DebugDevice> debug_device;
+        g_ctx.device->QueryInterface(IID_PPV_ARGS(&debug_device));
+
+        // Call ReportLiveObjects to check for live objects
+        if (FAILED(debug_device->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL)))
+        {
+            REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects");
+            return false;
+        }
+#endif
 
         return true;
       }
