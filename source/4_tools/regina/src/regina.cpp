@@ -20,10 +20,10 @@
 #include "rex_renderer_core/commands/update_constant_buffer_cmd.h"
 
 #include "rex_engine/core_application.h"
-#include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/entrypoint.h"
 #include "rex_engine/windowinfo.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/frameinfo/deltatime.h"
@@ -73,9 +73,9 @@ namespace rex
 
     struct FrameData
     {
-        renderer::ResourceSlot frame;
-        renderer::ResourceSlot object_constant_buffer;
-        renderer::ResourceSlot pass_constant_buffer;
+        renderer::ResourceSlot frame = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot object_constant_buffer = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot pass_constant_buffer = renderer::ResourceSlot::make_invalid();
     };
 
     struct ReginaContext
@@ -83,18 +83,15 @@ namespace rex
         rsl::vector<FrameData> frame_resource_data;
 
         rsl::unique_ptr<renderer::Mesh> mesh_cube = nullptr;
-
         rsl::unique_ptr<renderer::Scene> scene;
         rsl::unique_ptr<renderer::SceneRenderer> scene_renderer;
 
-        renderer::ResourceSlot clear_state;
-
-        renderer::ResourceSlot shader_program;
-        renderer::ResourceSlot input_layout;
-        renderer::ResourceSlot pso;
-
-        renderer::ResourceSlot solid_raster_state;
-        renderer::ResourceSlot wire_raster_state;
+        renderer::ResourceSlot clear_state = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot shader_program = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot input_layout = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot pso = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot solid_raster_state = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot wire_raster_state = renderer::ResourceSlot::make_invalid();
 
         PassConstants pass_constants;
 
@@ -296,7 +293,7 @@ namespace rex
         {
             renderer::ResourceSlot frame = renderer::create_frame_resource();
 
-            g_regina_ctx.frame_resource_data.push_back({ frame, renderer::ResourceSlot::make_invalid(), renderer::ResourceSlot::make_invalid() });
+            g_regina_ctx.frame_resource_data.push_back({rsl::move(frame) , renderer::ResourceSlot::make_invalid(), renderer::ResourceSlot::make_invalid()});
         }
 
         return true;
@@ -320,7 +317,7 @@ namespace rex
 
                 renderer::ResourceSlot object_constant_buffer = renderer::create_constant_buffer(rsl::move(create_const_buffer_command_desc));
 
-                g_regina_ctx.frame_resource_data[frame].object_constant_buffer = object_constant_buffer;
+                g_regina_ctx.frame_resource_data[frame].object_constant_buffer = rsl::move(object_constant_buffer);
             }
         }
 
@@ -335,7 +332,7 @@ namespace rex
 
             renderer::ResourceSlot pass_constant_buffer = renderer::create_constant_buffer(rsl::move(create_const_buffer_command_desc));
 
-            g_regina_ctx.frame_resource_data[frame].pass_constant_buffer = pass_constant_buffer;
+            g_regina_ctx.frame_resource_data[frame].pass_constant_buffer = rsl::move(pass_constant_buffer);
         }
 
         return true;
@@ -500,9 +497,6 @@ namespace rex
         // 
         // This call is not queued but directly executed!
         renderer::wait_for_active_frame();
-
-        update_object_constant_buffers();
-        update_pass_constant_buffers();
     }
     //-------------------------------------------------------------------------
     void draw()
@@ -511,12 +505,16 @@ namespace rex
         ScissorRect sr = { vp.top_left_x, vp.top_left_y, vp.width, vp.height };
 
         renderer::set_pipeline_state_object(g_regina_ctx.pso);
+        renderer::set_raster_state(g_regina_ctx.solid_raster_state);
+
         renderer::new_frame();
+
+        update_object_constant_buffers();
+        update_pass_constant_buffers();
 
         renderer::set_render_targets(globals::default_targets_info().back_buffer_color , globals::default_targets_info().depth_buffer);
         renderer::set_viewport(vp);
         renderer::set_scissor_rect(sr);
-        renderer::set_raster_state(g_regina_ctx.solid_raster_state);
 
         renderer::begin_draw();
 
@@ -525,7 +523,6 @@ namespace rex
         renderer::set_shader(g_regina_ctx.shader_program);
 
         renderer::ResourceSlot curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
-
         renderer::set_constant_buffer(curr_pass_cb, 1);
 
         renderer::set_vertex_buffer(g_regina_ctx.mesh_cube->vertex_buffer, 0, g_regina_ctx.mesh_cube->vertex_byte_stride, 0);
@@ -541,8 +538,6 @@ namespace rex
 
         renderer::present();
         renderer::end_frame();
-
-        renderer::flush();
     }
     //-------------------------------------------------------------------------
     void shutdown()
