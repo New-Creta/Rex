@@ -35,9 +35,10 @@ namespace rex
         conf.AddProject<RexEngineUnitTest>(target);
       }
 
-      if (ProjectGen.Settings.FuzzyTestingEnabled)
+      if (target.Config == Config.fuzzy)
       {
         conf.AddProject<RexStdFuzzy>(target);
+        conf.AddProject<RexEngineFuzzyTest>(target);
       }
 
       if (ProjectGen.Settings.AutoTestsEnabled)

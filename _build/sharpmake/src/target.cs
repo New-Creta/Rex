@@ -99,22 +99,20 @@ public class RexTarget : ITarget
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.coverage, Compiler.Clang));
     }
-    else if (ProjectGen.Settings.AsanEnabled)
+    if (ProjectGen.Settings.AsanEnabled)
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.address_sanitizer, Compiler.Clang));
     }
-    else if (ProjectGen.Settings.UbsanEnabled)
+    if (ProjectGen.Settings.UbsanEnabled)
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.undefined_behavior_sanitizer, Compiler.Clang));
     }
-    else if (ProjectGen.Settings.FuzzyTestingEnabled)
+    if (ProjectGen.Settings.FuzzyTestingEnabled)
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.fuzzy, Compiler.Clang));
     }
-    else
-    {
-      targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
-    }
+    
+    targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
 
     return targets;
   }

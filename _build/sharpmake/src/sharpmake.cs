@@ -16,8 +16,11 @@ namespace rex
       Name = "SharpmakeProject";
       SourceFilesExtensions.Clear();
       SourceFilesExtensions.Add(".sharpmake.cs");
-      SourceRootPath = Path.Combine(Globals.Root, "source");
-      AdditionalSourceRootPaths.Add(Path.Combine(Globals.Root, "tests"));
+      SourceRootPath = Path.Combine(Globals.Root);
+
+      // Ignore the data folder, this folder can become very big
+      // and will never contain any sharpmake files
+      SourceFilesExcludeRegex.Add(Path.Combine(Globals.Root, "data").Replace("\\", "/"));
 
       // manually add the sharpmake root files
       var RootSharpmakeFiles = Directory.GetFiles(Path.Combine(Globals.SharpmakeRoot, "src"));
@@ -30,6 +33,13 @@ namespace rex
 
       // Specify the targets for which we want to generate a configuration for.
       AddTargets(vsTarget);
+    }
+
+    protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
+    {
+      base.SetupSolutionFolder(conf, target);
+
+      conf.SolutionFolder = "_Generation";
     }
 
     protected override void SetupOutputType(RexConfiguration conf, RexTarget target)

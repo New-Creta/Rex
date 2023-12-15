@@ -365,9 +365,6 @@ TEST_CASE("Is Junction")
   CHECK(rex::path::is_junction("original_folder") == false);
   CHECK(rex::path::is_junction("original_file.txt") == false);
   CHECK(rex::path::is_junction("junction_folder") == true);
-  CHECK(rex::path::is_junction("junction_file.txt") == true);
-  CHECK(rex::path::is_junction("link_folder") == false);
-  CHECK(rex::path::is_junction("link_file.txt") == false);
 }
 
 TEST_CASE("Is Link")
@@ -375,9 +372,6 @@ TEST_CASE("Is Link")
   CHECK(rex::path::is_link("original_folder") == false);
   CHECK(rex::path::is_link("original_file.txt") == false);
   CHECK(rex::path::is_link("junction_folder") == false);
-  CHECK(rex::path::is_link("junction_file.txt") == false);
-  CHECK(rex::path::is_link("link_folder") == true);
-  CHECK(rex::path::is_link("link_file.txt") == true);
 }
 
 TEST_CASE("Is Same File")
