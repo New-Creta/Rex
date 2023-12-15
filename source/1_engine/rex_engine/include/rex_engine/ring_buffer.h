@@ -19,6 +19,8 @@ namespace rex
         ~RingBuffer();
 
         void initialize(u32 cap);
+        void shutdown();
+
         bool put(const T& item);
 
         T* get();
@@ -53,10 +55,7 @@ namespace rex
     template <typename T>
     RingBuffer<T>::~RingBuffer()
     {
-        if (m_data != nullptr)
-        {
-            rex::memory_free(m_data);
-        }
+        shutdown();
     }
 
     //-------------------------------------------------------------------------
@@ -79,6 +78,17 @@ namespace rex
 
         m_data = (T*)rex::memory_alloc(sizeof(T) * m_capacity.load());
         rsl::memset(m_data, 0x0, sizeof(T) * m_capacity.load());
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename T>
+    void RingBuffer<T>::shutdown()
+    {
+        if (m_data != nullptr)
+        {
+            rex::memory_free(m_data);
+            m_data = nullptr;
+        }
     }
 
     //-------------------------------------------------------------------------
