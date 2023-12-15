@@ -50,7 +50,7 @@
 #if REX_SINGLE_THREADED
 #define add_cmd(cmd) exec_cmd(cmd)
 #else
-#define add_cmd(cmd) g_ctx.cmd_buffer.put(cmd)
+#define add_cmd(cmd) g_ctx.cmd_list.put(cmd)
 #endif
 
 namespace rex
@@ -76,14 +76,14 @@ namespace rex
 
     namespace renderer
     {
-        constexpr s64 cmd_allocator_size = rsl::memory_size(64_kb).size_in_bytes();
+        constexpr s64 cmd_allocator_size = rsl::memory_size(512_kb).size_in_bytes();
 
         struct Context
         {
             ResourceSlots slot_resources;
 
             rsl::stack_allocator cmd_allocator { cmd_allocator_size };
-            RingBuffer<RenderCommand*> cmd_buffer;
+            RingBuffer<RenderCommand*> cmd_list;
         };
 
         Context g_ctx;
@@ -91,6 +91,14 @@ namespace rex
         //-------------------------------------------------------------------------
         template <typename TCommandType, typename... Args>
         TCommandType* create_new_command(Args&&... args)
+        {
+            TCommandType* cmd = (TCommandType*)g_ctx.cmd_allocator.allocate(sizeof(TCommandType));
+            return new(cmd) TCommandType(rsl::forward<Args>(args)...);
+        }
+
+        //-------------------------------------------------------------------------
+        template <typename TCommandType, typename... Args>
+        TCommandType* create_new_command(Args&&... args, ResourceSlot slot)
         {
             TCommandType* cmd = (TCommandType*)g_ctx.cmd_allocator.allocate(sizeof(TCommandType));
             return new(cmd) TCommandType(rsl::forward<Args>(args)...);
@@ -130,6 +138,25 @@ namespace rex
 
                 return resource_slot;
             }
+
+            //-------------------------------------------------------------------------
+            bool flush(RingBuffer<RenderCommand*>* cmdList)
+            {
+                RenderCommand** cmd = cmdList->get();
+
+                while (cmd)
+                {
+                    if ((*cmd)->execute() == false)
+                    {
+                        REX_ERROR(LogRendererCore, "Failed to flush commands");
+                        return false;
+                    }
+
+                    cmd = g_ctx.cmd_list.get();
+                }
+
+                return true;
+            }
         }
 
         //-------------------------------------------------------------------------
@@ -138,7 +165,7 @@ namespace rex
             UNUSED_PARAM(userData);
 
             g_ctx.slot_resources.initialize(32);
-            g_ctx.cmd_buffer.initialize(maxCommands);
+            g_ctx.cmd_list.initialize(maxCommands);
 
             globals::g_default_targets_info.front_buffer_color = g_ctx.slot_resources.next_slot();
             globals::g_default_targets_info.back_buffer_color = g_ctx.slot_resources.next_slot();
@@ -153,6 +180,13 @@ namespace rex
         //-------------------------------------------------------------------------
         void shutdown()
         {
+            for (const auto& rs : g_ctx.slot_resources)
+            {
+                renderer::release_resource(rs);
+            }
+
+            renderer::flush();
+
             backend::shutdown();
         }
 
@@ -303,7 +337,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool update_constant_buffer(commands::UpdateConstantBufferCommandDesc&& updateConstantBufferParams, ResourceSlot constantBufferTarget)
+        bool update_constant_buffer(commands::UpdateConstantBufferCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget)
         {
             commands::UpdateConstantBuffer* cmd = create_new_command<commands::UpdateConstantBuffer>(rsl::move(updateConstantBufferParams), constantBufferTarget);
 
@@ -317,7 +351,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool release_resource(ResourceSlot resourceTarget)
+        bool release_resource(const ResourceSlot& resourceTarget)
         {
             commands::ReleaseResource* cmd = create_new_command<commands::ReleaseResource>(commands::ReleaseResourceCommandDesc {&g_ctx.slot_resources}, resourceTarget);
 
@@ -341,7 +375,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool clear(ResourceSlot clearStateTarget)
+        bool clear(const ResourceSlot& clearStateTarget)
         {
             commands::Clear* cmd = create_new_command<commands::Clear>(commands::ClearCommandDesc(), clearStateTarget);
 
@@ -381,7 +415,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_raster_state(ResourceSlot rasterStateTarget)
+        bool set_raster_state(const ResourceSlot& rasterStateTarget)
         {
             commands::SetRasterState* cmd = create_new_command<commands::SetRasterState>(commands::SetRasterStateCommandDesc {}, rasterStateTarget);
 
@@ -389,7 +423,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_render_targets(ResourceSlot* colorTargets, s32 numColorTargets, ResourceSlot depthTarget)
+        bool set_render_targets(const ResourceSlot* colorTargets, s32 numColorTargets, const ResourceSlot& depthTarget)
         {
             commands::SetRenderTargetCommandDesc set_render_target_command_desc;
             set_render_target_command_desc.num_color = numColorTargets;
@@ -402,7 +436,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_render_targets(ResourceSlot colorTarget, ResourceSlot depthTarget)
+        bool set_render_targets(const ResourceSlot& colorTarget, const ResourceSlot& depthTarget)
         {
             commands::SetRenderTargetCommandDesc set_render_target_command_desc;
             set_render_target_command_desc.num_color = colorTarget.is_valid() ? 1 : 0;
@@ -431,7 +465,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_input_layout(ResourceSlot inputLayoutTarget)
+        bool set_input_layout(const ResourceSlot& inputLayoutTarget)
         {
             commands::SetInputLayout* cmd = create_new_command<commands::SetInputLayout>(commands::SetInputLayoutCommandDesc {}, inputLayoutTarget);
 
@@ -439,16 +473,16 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_vertex_buffer(ResourceSlot vertexBufferTarget, s32 startSlot, s32 stride, s32 offset)
+        bool set_vertex_buffer(const ResourceSlot& vertexBufferTarget, s32 startSlot, s32 stride, s32 offset)
         {
-            ResourceSlot* vertex_buffer_target = &vertexBufferTarget;
+            const ResourceSlot* vertex_buffer_target = &vertexBufferTarget;
             const s32* stride_target = &stride;
             const s32* offset_target = &offset;
 
             return set_vertex_buffers(vertex_buffer_target, 1, startSlot, stride_target, offset_target);
         }
         //-------------------------------------------------------------------------
-        bool set_vertex_buffers(ResourceSlot* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
+        bool set_vertex_buffers(const ResourceSlot* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets)
         {
             commands::SetVertexBufferCommandDesc set_vertex_buffer_command_desc;
 
@@ -470,7 +504,7 @@ namespace rex
             return add_cmd(cmd);
         }
         //-------------------------------------------------------------------------
-        bool set_index_buffer(ResourceSlot indexBufferTarget, IndexBufferFormat format, s32 offset)
+        bool set_index_buffer(const ResourceSlot& indexBufferTarget, IndexBufferFormat format, s32 offset)
         {
             commands::SetIndexBuffer* cmd = create_new_command<commands::SetIndexBuffer>(commands::SetIndexBufferCommandDesc {format, offset}, indexBufferTarget);
 
@@ -478,7 +512,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_shader(ResourceSlot shaderTarget)
+        bool set_shader(const ResourceSlot& shaderTarget)
         {
             commands::SetShader* cmd = create_new_command<commands::SetShader>(commands::SetShaderCommandDesc {}, shaderTarget);
 
@@ -486,7 +520,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_pipeline_state_object(ResourceSlot psoTarget)
+        bool set_pipeline_state_object(const ResourceSlot& psoTarget)
         {
             commands::SetPipelineState* cmd = create_new_command<commands::SetPipelineState>(commands::SetPipelineStateCommandDesc {}, psoTarget);
 
@@ -494,7 +528,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_constant_buffer(ResourceSlot constantBufferTarget, s32 location)
+        bool set_constant_buffer(const ResourceSlot& constantBufferTarget, s32 location)
         {
             commands::SetConstantBuffer* cmd = create_new_command<commands::SetConstantBuffer>(commands::SetConstantBufferCommandDesc {location}, constantBufferTarget);
 
@@ -522,7 +556,20 @@ namespace rex
         {
             commands::EndFrame* cmd = create_new_command<commands::EndFrame>(commands::EndFrameCommandDesc {});
 
-            return add_cmd(cmd);
+            bool result = add_cmd(cmd);
+
+            if (result)
+            {
+                result = internal::flush(&g_ctx.cmd_list);
+
+                g_ctx.cmd_allocator.reset();
+
+                return result;
+            }
+
+            REX_ERROR(LogRendererCore, "Unable to EndFrame, commands are not flushed!");
+
+            return result;
         }
 
         //-------------------------------------------------------------------------
@@ -552,20 +599,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool flush()
         {
-            RenderCommand** cmd = g_ctx.cmd_buffer.get();
-
-            while (cmd)
-            {
-                if((*cmd)->execute() == false)
-                {
-                    REX_ERROR(LogRendererCore, "Failed to flush commands");
-                    return false;
-                }
-
-                cmd = g_ctx.cmd_buffer.get();
-            }
-
-            return true;
+            return internal::flush(&g_ctx.cmd_list);
         }
     } // namespace renderer
 } // namespace rex
