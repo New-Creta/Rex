@@ -205,37 +205,12 @@ namespace rex
 #if REX_DEBUG
           resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
 #else
-          (void)resource;
-          (void)name;
+          UNUSED_PARAM(resource);
+          UNUSED_PARAM(name);
 #endif
       }
 
     } // namespace directx
-
-    struct FrameContext
-    {
-      FrameContext(s32 maxFrameResources)
-          : frame_resources()
-          , curr_frame_resource(REX_INVALID_INDEX)
-          , curr_frame_resource_index(REX_INVALID_INDEX)
-      {
-        REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
-
-        frame_resources.reserve(maxFrameResources);
-      }
-
-      rsl::vector<ResourceSlot> frame_resources;
-
-      s32 curr_frame_resource;
-      s32 curr_frame_resource_index;
-
-      // Stores the active amount of frames in flight
-      s32 active_frames;
-    };
-
-    static const s32 s_num_frame_resources = 3;
-
-    FrameContext g_frame_ctx(s_num_frame_resources);
 
     //-------------------------------------------------------------------------
     const Info& info()
@@ -259,29 +234,42 @@ namespace rex
       return true;
     }
 
-    //-------------------------------------------------------------------------
-    s32 active_frame()
-    {
-      return g_frame_ctx.curr_frame_resource;
-    }
-    //-------------------------------------------------------------------------
-    s32 num_frames_in_flight()
-    {
-      return g_frame_ctx.frame_resources.capacity();
-    }
-
     namespace backend
     {
-      static const s32 s_swapchain_buffer_count = 2;
+      static constexpr s32 s_swapchain_buffer_count = 2;
 
-      static const s32 s_max_color_targets = 8;
-      static const s32 s_max_depth_targets = 1;
+      static constexpr s32 s_max_color_targets = 8;
+      static constexpr s32 s_max_depth_targets = 1;
 
-      static const s32 s_constant_buffer_min_allocation_size = 256;
+      static constexpr s32 s_constant_buffer_min_allocation_size = 256;
 
-      static const s32 s_rtv_descriptor_count = s_max_color_targets;
-      static const s32 s_dsv_descriptor_count = s_max_depth_targets;
-      static const s32 s_cbv_descriptor_count = 32;
+      static constexpr s32 s_rtv_descriptor_count = s_max_color_targets;
+      static constexpr s32 s_dsv_descriptor_count = s_max_depth_targets;
+      static constexpr s32 s_cbv_descriptor_count = 32;
+
+      static constexpr s32 s_num_frame_resources = 3;
+
+      struct FrameContext
+      {
+          FrameContext(s32 maxFrameResources)
+              : frame_resources()
+              , curr_frame_resource(REX_INVALID_INDEX)
+              , curr_frame_resource_index(REX_INVALID_INDEX)
+              , active_frames(0)
+          {
+              REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
+
+              frame_resources.reserve(maxFrameResources);
+          }
+
+          rsl::vector<ResourceSlot> frame_resources;
+
+          s32 curr_frame_resource;
+          s32 curr_frame_resource_index;
+
+          // Stores the active amount of frames in flight
+          s32 active_frames;
+      };
 
       struct DirectXContext
       {
@@ -324,6 +312,8 @@ namespace rex
 
         ResourceSlot swapchain_rt_buffer_slots[s_swapchain_buffer_count] = {ResourceSlot::make_invalid(), ResourceSlot::make_invalid()};    // swapchain render target buffer indices
         ResourceSlot swapchain_ds_buffer_slot = ResourceSlot::make_invalid();                                                               // swapchain depth stencil index
+
+        FrameContext frame_ctx = FrameContext(s_num_frame_resources);
       };
 
       DirectXContext g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
@@ -892,11 +882,11 @@ namespace rex
 
         if(maxFrameResources != s_num_frame_resources)
         {
-          g_frame_ctx = FrameContext(maxFrameResources);
+          g_ctx.frame_ctx = FrameContext(maxFrameResources);
         }
 
-        g_frame_ctx.curr_frame_resource_index = 0;
-        g_frame_ctx.curr_frame_resource       = REX_INVALID_INDEX;
+        g_ctx.frame_ctx.curr_frame_resource_index = 0;
+        g_ctx.frame_ctx.curr_frame_resource       = REX_INVALID_INDEX;
 
         s32 dxgi_factory_flags = 0;
 
@@ -1113,14 +1103,35 @@ namespace rex
         if(g_ctx.device != nullptr)
         {
 #if REX_DEBUG
-            wrl::com_ptr<ID3D12DebugDevice> debug_device;
-            g_ctx.device->QueryInterface(IID_PPV_ARGS(&debug_device));
-#endif
+            bool can_report_dxgi_live_objects = false;
+            bool can_report_dx12_live_objects = false;
 
-            g_frame_ctx.frame_resources.clear();
+            // DXGI
+            wrl::com_ptr<IDXGIDebug1> dxgi_debug;
+            if (FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
+            {
+                REX_WARN(LogDirectX, "Unable to Query DXGI Debug Interface");
+            }
+            else
+            {
+                can_report_dx12_live_objects = true;
+            }
+
+            // DX12
+            wrl::com_ptr<ID3D12DebugDevice> dx12_debug;
+            if (FAILED(g_ctx.device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
+            {
+                REX_WARN(LogDirectX, "Unable to Query DX12 Debug Interface");
+            }
+            else
+            {
+                can_report_dxgi_live_objects = true;
+            }
+#endif
+            g_ctx.frame_ctx.frame_resources.clear();
 
             backend::release_resource(g_ctx.active_depth_target);
-            for (s32 i = 0; i < s_max_color_targets; ++i)
+            for (s32 i = 0; i < g_ctx.active_color_targets; ++i)
             {
                 backend::release_resource(g_ctx.active_color_target[i]);
             }
@@ -1147,13 +1158,38 @@ namespace rex
             g_ctx.device.Reset();
 
 #if REX_DEBUG
-            if (FAILED(debug_device->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL)))
+            // DXGI - Live Objects
+            if (can_report_dxgi_live_objects)
             {
-                REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects");
-                return;
+                if (FAILED(dxgi_debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL))))
+                {
+                    REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects of DXGI");
+                    return;
+                }
+            }
+
+            // DX12 - Live Objects
+            if (can_report_dx12_live_objects)
+            {
+                if (FAILED(dx12_debug->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL)))
+                {
+                    REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects of DX12");
+                    return;
+                }
             }
 #endif
         }
+      }
+
+      //-------------------------------------------------------------------------
+      s32 active_frame()
+      {
+          return g_ctx.frame_ctx.curr_frame_resource;
+      }
+      //-------------------------------------------------------------------------
+      s32 num_frames_in_flight()
+      {
+          return g_ctx.frame_ctx.frame_resources.capacity();
       }
 
       //-------------------------------------------------------------------------
@@ -1370,10 +1406,10 @@ namespace rex
         g_ctx.resource_pool[resourceSlot.slot_id()] = rsl::make_unique<FrameResource>(cmd_list_alloc);
 
         // Activate the first frame resource
-        g_frame_ctx.frame_resources.push_back(resourceSlot);
-        if(g_frame_ctx.curr_frame_resource == REX_INVALID_INDEX)
+        g_ctx.frame_ctx.frame_resources.push_back(resourceSlot);
+        if(g_ctx.frame_ctx.curr_frame_resource == REX_INVALID_INDEX)
         {
-          g_frame_ctx.curr_frame_resource = resourceSlot.slot_id();
+          g_ctx.frame_ctx.curr_frame_resource = resourceSlot.slot_id();
         }
 
         return true;
@@ -1484,10 +1520,10 @@ namespace rex
       void wait_for_active_frame()
       {
         // Cycle through the circular frame resource array.
-        g_frame_ctx.curr_frame_resource_index = (g_frame_ctx.curr_frame_resource_index + 1) % g_frame_ctx.frame_resources.size();
-        g_frame_ctx.curr_frame_resource       = g_frame_ctx.frame_resources[g_frame_ctx.curr_frame_resource_index].slot_id();
+        g_ctx.frame_ctx.curr_frame_resource_index = (g_ctx.frame_ctx.curr_frame_resource_index + 1) % g_ctx.frame_ctx.frame_resources.size();
+        g_ctx.frame_ctx.curr_frame_resource       = g_ctx.frame_ctx.frame_resources[g_ctx.frame_ctx.curr_frame_resource_index].slot_id();
 
-        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
+        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_ctx.frame_ctx.curr_frame_resource);
         auto f   = fr.get();
 
         if(f->fence != 0 && g_ctx.fence->GetCompletedValue() < f->fence)
@@ -1594,18 +1630,6 @@ namespace rex
 
         // Wait until ready
         flush_command_queue();
-
-#if REX_DEBUG
-        wrl::com_ptr<ID3D12DebugDevice> debug_device;
-        g_ctx.device->QueryInterface(IID_PPV_ARGS(&debug_device));
-
-        // Call ReportLiveObjects to check for live objects
-        if (FAILED(debug_device->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL)))
-        {
-            REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects");
-            return false;
-        }
-#endif
 
         return true;
       }
@@ -1820,7 +1844,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool new_frame()
       {
-        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
+        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_ctx.frame_ctx.curr_frame_resource);
         auto f   = fr.get();
 
         // Reuse the memory assosiated with command recording.
@@ -1837,7 +1861,7 @@ namespace rex
         auto& pso = get_resource_from_pool_as<PipelineStateResource>(g_ctx.resource_pool, g_ctx.active_pipeline_state_object.slot_id());
         if(internal::reset_command_list(f->cmd_list_allocator.Get(), pso.get()) == false)
         {
-          REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_frame_ctx.curr_frame_resource_index);
+          REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_ctx.frame_ctx.curr_frame_resource_index);
           return false;
         }
 
@@ -1847,7 +1871,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool end_frame()
       {
-        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_frame_ctx.curr_frame_resource);
+        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, g_ctx.frame_ctx.curr_frame_resource);
         auto f   = fr.get();
 
         // Advance the fence value to mark commands up to this fence point.
