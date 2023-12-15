@@ -27,7 +27,7 @@ public class RexEngineUnitTest : TestProject
     base.SetupLibDependencies(conf, target);
 
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-    conf.AddPublicDependency<RexTest>(target, DependencySetting.Default);
+    conf.AddPublicDependency<RexUnitTest>(target, DependencySetting.Default);
   }
 
   protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
