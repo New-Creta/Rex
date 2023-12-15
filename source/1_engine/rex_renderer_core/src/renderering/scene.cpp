@@ -1,4 +1,4 @@
-#include "rex_directx/rendering/scene.h"
+#include "rex_renderer_core/rendering/scene.h"
 
 namespace rex
 {

@@ -1,13 +1,6 @@
-#include "rex_directx/directx_util.h"
-#include "rex_directx/utility/vertex.h"
-#include "rex_directx/wrl/wrl_types.h"
-#include "rex_directx/rendering/scene.h"
-#include "rex_directx/rendering/scene_renderer.h"
-#include "rex_directx/utility/math_helper.h"
-
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/resources/mesh.h"
-
+#include "rex_renderer_core/resources/vertex.h"
 #include "rex_renderer_core/commands/compile_shader_cmd.h"
 #include "rex_renderer_core/commands/create_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_clear_state_cmd.h"
@@ -18,6 +11,8 @@
 #include "rex_renderer_core/commands/create_pipeline_state_cmd.h"
 #include "rex_renderer_core/commands/link_shader_cmd.h"
 #include "rex_renderer_core/commands/update_constant_buffer_cmd.h"
+#include "rex_renderer_core/rendering/scene.h"
+#include "rex_renderer_core/rendering/scene_renderer.h"
 
 #include "rex_engine/core_application.h"
 #include "rex_engine/entrypoint.h"
@@ -37,8 +32,7 @@
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
 
-#include <DirectXMath.h>
-#include <DirectXColors.h>
+#include <glm/gtc/matrix_transform.hpp> 
 
 DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
@@ -46,23 +40,23 @@ namespace rex
 {
     struct ObjectConstants
     {
-        DirectX::XMFLOAT4X4 world = renderer::math_helper::Identity4x4();
+        glm::mat4 world = glm::mat4(1.0f);
     };
 
     struct PassConstants
     {
-        DirectX::XMFLOAT4X4 view = renderer::math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 inv_view = renderer::math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 proj = renderer::math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 inv_proj = renderer::math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 view_proj = renderer::math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 inv_view_proj = renderer::math_helper::Identity4x4();
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 inv_view = glm::mat4(1.0f);
+        glm::mat4 proj = glm::mat4(1.0f);
+        glm::mat4 inv_proj = glm::mat4(1.0f);
+        glm::mat4 view_proj = glm::mat4(1.0f);
+        glm::mat4 inv_view_proj = glm::mat4(1.0f);
 
-        DirectX::XMFLOAT3 eye_pos_w = { 0.0f, 0.0f, 0.0f };
+        glm::vec3 eye_pos_w = { 0.0f, 0.0f, 0.0f };
         f32 cb_padding_1 = 0.0f;
 
-        DirectX::XMFLOAT2 render_target_size = { 0.0f, 0.0f };
-        DirectX::XMFLOAT2 inv_render_target_size = { 0.0f, 0.0f };
+        glm::vec2 render_target_size = { 0.0f, 0.0f };
+        glm::vec2 inv_render_target_size = { 0.0f, 0.0f };
 
         f32 near_z = 0.0f;
         f32 far_z = 0.0f;
@@ -97,9 +91,9 @@ namespace rex
 
         bool is_wireframe = false;
 
-        DirectX::XMFLOAT3 eye_pos = { 0.0f, 0.0f, 0.0f };
-        DirectX::XMFLOAT4X4 view = renderer::math_helper::Identity4x4();
-        DirectX::XMFLOAT4X4 proj = renderer::math_helper::Identity4x4();
+        glm::vec3 eye_pos = { 0.0f, 0.0f, 0.0f };
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 proj = glm::mat4(1.0f);
     };
 
     ReginaContext g_regina_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
@@ -224,28 +218,28 @@ namespace rex
         auto total_vertex_count = box.vertices().size();
         auto total_index_count = box.indices().size();
 
-        rsl::vector<renderer::directx::VertexPosCol> box_vertices((rsl::Capacity)total_vertex_count);
+        rsl::vector<renderer::VertexPosCol> box_vertices((rsl::Capacity)total_vertex_count);
         for (const mesh_factory::Vertex& v : box.vertices())
         {
-            renderer::directx::VertexPosCol nv({ DirectX::XMFLOAT3(v.position.x, v.position.y, v.position.z), DirectX::XMFLOAT4(v.position.x, v.position.y, v.position.z, 1.0f)});
+            renderer::VertexPosCol nv({ v.position.x, v.position.y, v.position.z }, { v.position.x, v.position.y, v.position.z, 1.0f });
             box_vertices.push_back(nv);
         }
 
         rsl::vector<u16> box_indices((rsl::Capacity)total_index_count);
         box_indices.insert(box_indices.end(), rsl::begin(box.indices()), rsl::end(box.indices()));
 
-        const u32 vb_byte_size = total_vertex_count * sizeof(renderer::directx::VertexPosCol);
+        const u32 vb_byte_size = total_vertex_count * sizeof(renderer::VertexPosCol);
         const u32 ib_byte_size = total_index_count * sizeof(u16);
 
         g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>();
         g_regina_ctx.mesh_cube->name = rsl::medium_stack_string("box_geometry");
 
-        renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::directx::VertexPosCol>(box_vertices.data(), box_vertices.size());
+        renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(box_vertices.data(), box_vertices.size());
         g_regina_ctx.mesh_cube->vertex_buffer = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
         renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
         g_regina_ctx.mesh_cube->index_buffer = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
 
-        g_regina_ctx.mesh_cube->vertex_byte_stride = sizeof(renderer::directx::VertexPosCol);
+        g_regina_ctx.mesh_cube->vertex_byte_stride = sizeof(renderer::VertexPosCol);
         g_regina_ctx.mesh_cube->vertex_buffer_byte_size = vb_byte_size;
         g_regina_ctx.mesh_cube->index_format = renderer::IndexBufferFormat::R16_UINT;
         g_regina_ctx.mesh_cube->index_buffer_byte_size = ib_byte_size;
@@ -265,7 +259,9 @@ namespace rex
     {
         auto cube_r_item = renderer::RenderItem();
 
-        DirectX::XMStoreFloat4x4(&cube_r_item.world, DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f));
+        glm::mat4 scale = glm::scale(cube_r_item.world, glm::vec3(1.0f, 1.0f, 1.0f));
+
+        cube_r_item.world = scale;
         cube_r_item.constant_buffer_index = 0;
         cube_r_item.geometry = g_regina_ctx.mesh_cube.get();
         cube_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
@@ -371,17 +367,17 @@ namespace rex
     void update_view()
     {
         // Convert Spherical to Cartesian coordinates.
-        g_regina_ctx.eye_pos.x = 5.0f * sinf(DirectX::XM_PIDIV4) * cosf(1.5f * DirectX::XM_PI);
-        g_regina_ctx.eye_pos.y = 5.0f * sinf(DirectX::XM_PIDIV4) * sinf(1.5f * DirectX::XM_PI);
-        g_regina_ctx.eye_pos.z = 5.0f * cosf(DirectX::XM_PIDIV4);
+        g_regina_ctx.eye_pos.x = 5.0f * sinf(glm::quarter_pi<f32>()) * cosf(1.5f * glm::pi<f32>());
+        g_regina_ctx.eye_pos.y = 5.0f * sinf(glm::quarter_pi<f32>()) * sinf(1.5f * glm::pi<f32>());
+        g_regina_ctx.eye_pos.z = 5.0f * cosf(glm::quarter_pi<f32>());
 
         // Build the view matrix.
-        DirectX::XMVECTOR pos = DirectX::XMVectorSet(g_regina_ctx.eye_pos.x, g_regina_ctx.eye_pos.y, g_regina_ctx.eye_pos.z, 1.0f);
-        DirectX::XMVECTOR target = DirectX::XMVectorZero();
-        DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+        glm::vec3 pos = glm::vec3(g_regina_ctx.eye_pos.x, g_regina_ctx.eye_pos.y, g_regina_ctx.eye_pos.z);
+        glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-        DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(pos, target, up);
-        DirectX::XMStoreFloat4x4(&g_regina_ctx.view, view);
+        g_regina_ctx.view = glm::lookAt(pos, target, up);
+        g_regina_ctx.view = glm::transpose(g_regina_ctx.view); // DirectX backend ( so we have to transpose, expects row major matrices )
     }
     //-------------------------------------------------------------------------
     void update_object_constant_buffers()
@@ -394,23 +390,13 @@ namespace rex
             // This needs to be tracked per frame resource.
             if (ri.num_frames_dirty > 0)
             {
-                // Define the rotation angle (in radians) for each frame
-                f32 rotation_angle = 1.0f * globals::frame_info().delta_time().to_seconds(); // You can adjust this value for the desired rotation speed
+                f32 rotation_angle = 1.0f * globals::frame_info().delta_time().to_seconds();
 
-                // Create a rotation matrix using DirectXMath
-                DirectX::XMMATRIX rotation_matrix = DirectX::XMMatrixRotationZ(rotation_angle); // Change the axis and angle as needed
+                ri.world = glm::rotate(ri.world, rotation_angle, glm::vec3(0.0f, 0.0f, 1.0f));
 
-                // Convert the existing world matrix to XMMATRIX
-                DirectX::XMMATRIX world = DirectX::XMLoadFloat4x4(&ri.world);
-
-                // Multiply the current world matrix with the rotation matrix
-                DirectX::XMMATRIX new_world = DirectX::XMMatrixMultiply(world, rotation_matrix);
-
-                // Store the result back into the world matrix
-                DirectX::XMStoreFloat4x4(&ri.world, new_world);
-
+                // Assign the new world matrixz
                 ObjectConstants obj_constants;
-                DirectX::XMStoreFloat4x4(&obj_constants.world, XMMatrixTranspose(new_world));
+                obj_constants.world = glm::transpose(ri.world); // DirectX backend ( so we have to transpose, expects row major matrices )
 
                 renderer::commands::UpdateConstantBufferCommandDesc update_constant_buffer_command_desc;
                 update_constant_buffer_command_desc.element_index = ri.constant_buffer_index;
@@ -428,30 +414,28 @@ namespace rex
     {
         renderer::ResourceSlot curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
 
-        DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&g_regina_ctx.view);
-        DirectX::XMMATRIX proj = DirectX::XMLoadFloat4x4(&g_regina_ctx.proj);
-        DirectX::XMMATRIX view_proj = DirectX::XMMatrixMultiply(view, proj);
+        const glm::mat4& view = g_regina_ctx.view;
+        const glm::mat4& proj = g_regina_ctx.proj;
 
-        auto d_view = DirectX::XMMatrixDeterminant(view);
-        DirectX::XMMATRIX inv_view = DirectX::XMMatrixInverse(&d_view, view);
-        auto d_proj = DirectX::XMMatrixDeterminant(proj);
-        DirectX::XMMATRIX inv_proj = DirectX::XMMatrixInverse(&d_proj, proj);
-        auto d_view_proj = DirectX::XMMatrixDeterminant(view_proj);
-        DirectX::XMMATRIX inv_view_proj = DirectX::XMMatrixInverse(&d_view_proj, view_proj);
+        glm::mat4 view_proj = view * proj;
 
-        DirectX::XMStoreFloat4x4(&g_regina_ctx.pass_constants.view, DirectX::XMMatrixTranspose(view));
-        DirectX::XMStoreFloat4x4(&g_regina_ctx.pass_constants.inv_view, DirectX::XMMatrixTranspose(inv_view));
-        DirectX::XMStoreFloat4x4(&g_regina_ctx.pass_constants.proj, DirectX::XMMatrixTranspose(proj));
-        DirectX::XMStoreFloat4x4(&g_regina_ctx.pass_constants.inv_proj, DirectX::XMMatrixTranspose(inv_proj));
-        DirectX::XMStoreFloat4x4(&g_regina_ctx.pass_constants.view_proj, DirectX::XMMatrixTranspose(view_proj));
-        DirectX::XMStoreFloat4x4(&g_regina_ctx.pass_constants.inv_view_proj, DirectX::XMMatrixTranspose(inv_view_proj));
+        glm::mat4 inv_view = glm::inverse(view);
+        glm::mat4 inv_proj = glm::inverse(proj);
+        glm::mat4 inv_view_proj = glm::inverse(view_proj);
+
+        g_regina_ctx.pass_constants.view = view;
+        g_regina_ctx.pass_constants.inv_view = inv_view;
+        g_regina_ctx.pass_constants.proj = proj;
+        g_regina_ctx.pass_constants.inv_proj = inv_proj;
+        g_regina_ctx.pass_constants.view_proj = view_proj;
+        g_regina_ctx.pass_constants.inv_view_proj = inv_view_proj;
 
         f32 window_width = static_cast<f32>(globals::window_info().width);
         f32 window_height = static_cast<f32>(globals::window_info().height);
 
         g_regina_ctx.pass_constants.eye_pos_w = g_regina_ctx.eye_pos;
-        g_regina_ctx.pass_constants.render_target_size = DirectX::XMFLOAT2(window_width, window_height);
-        g_regina_ctx.pass_constants.inv_render_target_size = DirectX::XMFLOAT2(1.0f / window_width, 1.0f / window_height);
+        g_regina_ctx.pass_constants.render_target_size = glm::vec2(window_width, window_height);
+        g_regina_ctx.pass_constants.inv_render_target_size = glm::vec2(1.0f / window_width, 1.0f / window_height);
         g_regina_ctx.pass_constants.near_z = globals::default_depth_info().near_plane;
         g_regina_ctx.pass_constants.far_z = globals::default_depth_info().far_plane;
         g_regina_ctx.pass_constants.delta_time = globals::frame_info().delta_time().to_seconds();
@@ -481,9 +465,8 @@ namespace rex
         if (!build_pipeline_state_object()) return false;
 
         // The window resized, so update the aspect ratio and recompute the projection matrix.
-        f32 aspect_ratio = static_cast<f32>(globals::window_info().width) / static_cast<f32>(globals::window_info().height);
-        DirectX::XMMATRIX P = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, aspect_ratio, globals::default_depth_info().near_plane, globals::default_depth_info().far_plane);
-        DirectX::XMStoreFloat4x4(&g_regina_ctx.proj, P);
+        g_regina_ctx.proj = glm::perspectiveFov(0.25f * glm::pi<f32>(), static_cast<f32>(globals::window_info().width), static_cast<f32>(globals::window_info().height), globals::default_depth_info().near_plane, globals::default_depth_info().far_plane);
+        g_regina_ctx.proj = glm::transpose(g_regina_ctx.proj); // DirectX backend ( so we have to transpose, expects row major matrices )
 
         return true;
     }
@@ -544,21 +527,24 @@ namespace rex
     {
         REX_LOG(LogRegina, "shutting down Regina");
 
-        renderer::release_resource(g_regina_ctx.clear_state);
+        g_regina_ctx.clear_state = renderer::ResourceSlot::make_invalid();
 
-        renderer::release_resource(g_regina_ctx.shader_program);
-        renderer::release_resource(g_regina_ctx.input_layout);
-        renderer::release_resource(g_regina_ctx.pso);
+        g_regina_ctx.shader_program = renderer::ResourceSlot::make_invalid();
+        g_regina_ctx.input_layout = renderer::ResourceSlot::make_invalid();
+        g_regina_ctx.pso = renderer::ResourceSlot::make_invalid();
 
         for(auto& data : g_regina_ctx.frame_resource_data)
         {
-            renderer::release_resource(data.frame);
-            renderer::release_resource(data.object_constant_buffer);
-            renderer::release_resource(data.pass_constant_buffer);
+            data.frame = renderer::ResourceSlot::make_invalid();
+            data.object_constant_buffer = renderer::ResourceSlot::make_invalid();
+            data.pass_constant_buffer = renderer::ResourceSlot::make_invalid();
         }
 
-        renderer::release_resource(g_regina_ctx.solid_raster_state);
-        renderer::release_resource(g_regina_ctx.wire_raster_state);
+        g_regina_ctx.solid_raster_state = renderer::ResourceSlot::make_invalid();
+        g_regina_ctx.wire_raster_state = renderer::ResourceSlot::make_invalid();
+
+        g_regina_ctx.mesh_cube->vertex_buffer = renderer::ResourceSlot::make_invalid();
+        g_regina_ctx.mesh_cube->index_buffer = renderer::ResourceSlot::make_invalid();
 
         g_regina_ctx.mesh_cube.reset();
     }

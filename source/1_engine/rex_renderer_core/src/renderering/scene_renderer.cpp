@@ -1,5 +1,5 @@
-#include "rex_directx/rendering/scene_renderer.h"
-#include "rex_directx/rendering/scene.h"
+#include "rex_renderer_core/rendering/scene_renderer.h"
+#include "rex_renderer_core/rendering/scene.h"
 
 namespace rex
 {
