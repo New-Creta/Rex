@@ -2,11 +2,11 @@ using Sharpmake;
 using System.IO;
 
 [Generate]
-public class RexTest : TestProject
+public class RexUnitTest : TestProject
 {
-  public RexTest() : base()
+  public RexUnitTest() : base()
   {
-    Name = GenerateName("RexTest");
+    Name = GenerateName("RexUnitTest");
     GenerateTargets();
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
