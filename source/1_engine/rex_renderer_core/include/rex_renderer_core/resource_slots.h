@@ -34,9 +34,9 @@ namespace rex
             {
             public:
                 // Iterator traits
-                using iterator_category = std::forward_iterator_tag;
+                using iterator_category = rsl::forward_iterator_tag;
                 using value_type = ResourceSlot;
-                using difference_type = std::ptrdiff_t;
+                using difference_type = rsl::ptrdiff;
                 using pointer = ResourceSlot*;
                 using reference = ResourceSlot&;
 
@@ -96,8 +96,8 @@ namespace rex
 
             private:
                 rsl::atomic_flag* m_flags;
-                rsl::count_t m_capacity;
-                rsl::count_t m_current;
+                s32 m_capacity;
+                s32 m_current;
             };
 
             /**
@@ -109,9 +109,9 @@ namespace rex
             {
             public:
                 // Iterator traits
-                using iterator_category = std::forward_iterator_tag;
+                using iterator_category = rsl::forward_iterator_tag;
                 using value_type = const ResourceSlot;
-                using difference_type = std::ptrdiff_t;
+                using difference_type = rsl::ptrdiff;
                 using pointer = const ResourceSlot*;
                 using reference = const ResourceSlot&;
 
@@ -171,8 +171,8 @@ namespace rex
 
             private:
                 const rsl::atomic_flag* m_flags;
-                rsl::count_t m_capacity;
-                rsl::count_t m_current;
+                s32 m_capacity;
+                s32 m_current;
             };
 
         public:
@@ -199,6 +199,11 @@ namespace rex
              * @return `true` if the slot was successfully freed, `false` if the slot is not in use or out of range.
              */
             bool free_slot(s32 slot);
+
+            /**
+             * @brief Free a all allocated resource slots.
+             */
+            void free_slots();
 
             /**
              * @brief Returns an iterator pointing to the beginning of the allocated resource slots.

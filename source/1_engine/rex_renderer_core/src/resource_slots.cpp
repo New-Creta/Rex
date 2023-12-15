@@ -60,7 +60,23 @@ namespace rex
                 return false; // Slot is not in use or out of range.
             }
 
-            return m_flags[slot].test_and_set(rsl::memory_order_release); // Slot was successfully freed.
+            if (m_flags[slot].test_and_set(rsl::memory_order_release))
+            {
+                return true;
+            }
+
+            REX_ERROR(LogRendererCore, "Unable to test and set ResourceSlot");
+            return false; // Unable to remove slot
+        }
+
+        //-------------------------------------------------------------------------
+        void ResourceSlots::free_slots()
+        {
+            // Reset all atomic flags to indicate all slots are free
+            for (s32 i = 0; i < m_flag_capacity; ++i)
+            {
+                m_flags[i].clear();
+            }
         }
 
         //-------------------------------------------------------------------------

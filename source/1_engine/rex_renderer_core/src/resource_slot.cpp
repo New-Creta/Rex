@@ -14,13 +14,13 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot::ResourceSlot()
             :m_slot_id(REX_INVALID_INDEX)
-            ,m_ref_count(1)
+            ,m_ref_count(nullptr)
         {}
 
         //-------------------------------------------------------------------------
         ResourceSlot::ResourceSlot(s32 slotId)
             : m_slot_id(slotId)
-            , m_ref_count(1) 
+            , m_ref_count(new s32(1)) 
         {}
 
         //-------------------------------------------------------------------------
@@ -28,13 +28,13 @@ namespace rex
             :m_slot_id(other.m_slot_id)
             ,m_ref_count(other.m_ref_count)
         {
-            rsl::atomic_increment(m_ref_count);
+            rsl::atomic_increment(*m_ref_count);
         }
 
         //-------------------------------------------------------------------------
         ResourceSlot::ResourceSlot(ResourceSlot&& other) noexcept 
             : m_slot_id(rsl::exchange(other.m_slot_id, REX_INVALID_INDEX))
-            , m_ref_count(rsl::exchange(other.m_ref_count, 0))  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
+            , m_ref_count(rsl::exchange(other.m_ref_count, nullptr))  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
         {}
 
         //-------------------------------------------------------------------------
@@ -48,7 +48,7 @@ namespace rex
             m_slot_id = other.m_slot_id;
             m_ref_count = other.m_ref_count;
 
-            rsl::atomic_increment(m_ref_count);
+            rsl::atomic_increment(*m_ref_count);
 
             return *this;
         }
@@ -62,7 +62,7 @@ namespace rex
             }
             
             m_slot_id = rsl::exchange(other.m_slot_id, REX_INVALID_INDEX);
-            m_ref_count = rsl::exchange(other.m_ref_count, 0);  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
+            m_ref_count = rsl::exchange(other.m_ref_count, nullptr);  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
 
             return *this;
         }
@@ -70,12 +70,15 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot::~ResourceSlot()
         {
-            if (rsl::atomic_decrement(m_ref_count) <= 0)
+            // Only release valid ResourceSlots
+            if (is_valid())
             {
-                // Only release valid ResourceSlots
-                if (is_valid())
+                if (rsl::atomic_decrement(*m_ref_count) == 0)
                 {
                     renderer::release_resource(*this);
+
+                    delete m_ref_count;
+                    m_ref_count = nullptr;
                 }
             }
         }
@@ -84,7 +87,7 @@ namespace rex
         bool ResourceSlot::is_valid() const
         {
             // when the slot id is REX_INVALID_INDEX, something went wrong during the creation of this slot
-            return m_slot_id != REX_INVALID_INDEX;
+            return m_slot_id != REX_INVALID_INDEX && m_ref_count != nullptr;
         }
 
         //-------------------------------------------------------------------------

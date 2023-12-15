@@ -32,7 +32,7 @@ namespace rex
 
         private:
             s32 m_slot_id;
-            s32 m_ref_count;
+            s32* m_ref_count;
         };
 
     }
