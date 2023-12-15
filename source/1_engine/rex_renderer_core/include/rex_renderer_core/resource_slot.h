@@ -28,6 +28,7 @@ namespace rex
 
             bool is_valid() const;
 
+            s32 release();
             s32 slot_id() const;
 
         private:

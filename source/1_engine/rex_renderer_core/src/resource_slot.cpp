@@ -70,17 +70,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot::~ResourceSlot()
         {
-            // Only release valid ResourceSlots
-            if (is_valid())
-            {
-                if (rsl::atomic_decrement(*m_ref_count) == 0)
-                {
-                    renderer::release_resource(*this);
-
-                    delete m_ref_count;
-                    m_ref_count = nullptr;
-                }
-            }
+            release();
         }
 
         //-------------------------------------------------------------------------
@@ -88,6 +78,29 @@ namespace rex
         {
             // when the slot id is REX_INVALID_INDEX, something went wrong during the creation of this slot
             return m_slot_id != REX_INVALID_INDEX && m_ref_count != nullptr;
+        }
+
+        //-------------------------------------------------------------------------
+        s32 ResourceSlot::release()
+        {
+            s32 ref_count = REX_INVALID_INDEX;
+
+            // Only release valid ResourceSlots
+            if (is_valid())
+            {
+                if (rsl::atomic_decrement(*m_ref_count) == 0)
+                {
+                    // Cache ref count to return
+                    ref_count = *m_ref_count;
+
+                    renderer::release_resource(*this);
+
+                    delete m_ref_count;
+                    m_ref_count = nullptr;
+                }
+            }
+
+            return ref_count;
         }
 
         //-------------------------------------------------------------------------
