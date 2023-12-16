@@ -27,7 +27,7 @@ namespace rex
 
   ApplicationCreationParams create_regina_app_creation_params(PlatformCreationParams&& platformParams)
   {
-    ApplicationCreationParams app_params(rsl::move(platformParams));
+    ApplicationCreationParams app_params(&platformParams);
 
     app_params.gui_params.window_width  = 1280;
     app_params.gui_params.window_height = 720;
