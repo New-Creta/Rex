@@ -33,7 +33,7 @@ namespace rex
     {
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
-          : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
+          : m_platform_creation_params(*appCreationParams.platform_params)
           , m_gui_params(rsl::move(appCreationParams.gui_params))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)

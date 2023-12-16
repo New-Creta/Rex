@@ -28,6 +28,7 @@ public class ReginaAutoTest : TestProject
   {
     base.SetupLibDependencies(conf, target);
 
+    conf.AddPublicDependency<RexAutoTest>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     conf.AddPublicDependency<Regina>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }
 }
