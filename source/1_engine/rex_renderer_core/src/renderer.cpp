@@ -152,6 +152,8 @@ namespace rex
                         return false;
                     }
 
+                    (*cmd)->~RenderCommand();
+
                     cmd = g_ctx.cmd_list.get();
                 }
 
@@ -368,9 +370,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool release_resource(const ResourceSlot& resourceTarget)
         {
-            commands::ReleaseResource* cmd = create_new_command<commands::ReleaseResource>(commands::ReleaseResourceCommandDesc {&g_ctx.slot_resources}, resourceTarget);
-
-            return process_render_command(cmd);
+            return backend::release_resource(resourceTarget);
         }
 
         //-------------------------------------------------------------------------
