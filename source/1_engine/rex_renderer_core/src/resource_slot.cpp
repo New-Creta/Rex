@@ -88,15 +88,17 @@ namespace rex
             // Only release valid ResourceSlots
             if (is_valid())
             {
+                // Cache ref count to return
+                ref_count = *m_ref_count;
+
                 if (rsl::atomic_decrement(*m_ref_count) == 0)
                 {
-                    // Cache ref count to return
-                    ref_count = *m_ref_count;
-
                     renderer::release_resource(*this);
 
                     delete m_ref_count;
                     m_ref_count = nullptr;
+
+                    m_slot_id = REX_INVALID_INDEX;
                 }
             }
 
