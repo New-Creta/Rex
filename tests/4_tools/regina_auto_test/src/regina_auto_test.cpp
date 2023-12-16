@@ -1,6 +1,5 @@
 #include "rex_engine/entrypoint.h"
 #include "rex_engine/engine_params.h"
-#include "rex_windows/gui_application.h"
 
 #include "regina_auto_test/regina_boot_test.h"
 #include "rex_engine/cmdline.h"

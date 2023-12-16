@@ -8,6 +8,9 @@ namespace rex
   {
     int fuzzy_entry(fuzz_span input)
     {
+
+      int test_val = rex::fuzzy::make_fuzzy_object<int>(input);
+
       return 0;
     }
   }
