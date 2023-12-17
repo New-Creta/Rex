@@ -31,7 +31,7 @@ namespace rex
                 }
             }
 
-            REX_LOG(LogRendererCore, "No available resource slots, resizing resource slots: {} => {}", m_flag_capacity, m_flag_capacity * 2);
+            REX_WARN(LogRendererCore, "No available resource slots, resizing resource slots: {} => {}", m_flag_capacity, m_flag_capacity * 2);
 
             s32 current_flag_capacity = m_flag_capacity; // The capacity of the array will be changed after the next call.
 

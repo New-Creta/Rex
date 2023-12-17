@@ -70,14 +70,17 @@ namespace rex
 
     namespace renderer
     {
+        using CommandAllocator = rsl::stack_allocator;
+        using CommandList = RingBuffer<RenderCommand*>;
+
         constexpr s64 cmd_allocator_size = rsl::memory_size(8_kib).size_in_bytes();
 
         struct Context
         {
             ResourceSlots slot_resources;
 
-            rsl::stack_allocator cmd_allocator { cmd_allocator_size };
-            RingBuffer<RenderCommand*> cmd_list;
+            CommandAllocator cmd_allocator { cmd_allocator_size };
+            CommandList cmd_list;
         };
 
         Context g_ctx;
@@ -188,7 +191,6 @@ namespace rex
 
             flush();
 
-            g_ctx.cmd_allocator.reset();
             g_ctx.cmd_list.shutdown();
             g_ctx.slot_resources.free_slots();
 

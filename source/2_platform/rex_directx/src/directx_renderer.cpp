@@ -302,16 +302,16 @@ namespace rex
 
         ResourcePool<rsl::unique_ptr<IResource>> resource_pool;
 
-        s32 active_constant_buffers = 0;    // Amount of active constant buffers
-        s32 active_color_targets = 0;       // Amount of color targets to write to
+        s32 active_constant_buffers = 0;                                    // Amount of active constant buffers
+        s32 active_color_targets = 0;                                       // Amount of color targets to write to
 
-        ResourceSlot active_depth_target = ResourceSlot::make_invalid();            // Current depth buffer to write to
-        ResourceSlot active_color_target[s_max_color_targets];                      // Current color buffers to write to
-        ResourceSlot active_pipeline_state_object = ResourceSlot::make_invalid();   // Active pipeline state used for drawing
-        ResourceSlot active_shader_program = ResourceSlot::make_invalid();          // Active shader program
+        ResourceSlot active_depth_target;                                   // Current depth buffer to write to
+        ResourceSlot active_color_target[s_max_color_targets];              // Current color buffers to write to
+        ResourceSlot active_pipeline_state_object;                          // Active pipeline state used for drawing
+        ResourceSlot active_shader_program;                                 // Active shader program
 
-        ResourceSlot swapchain_rt_buffer_slots[s_swapchain_buffer_count] = {ResourceSlot::make_invalid(), ResourceSlot::make_invalid()};    // swapchain render target buffer indices
-        ResourceSlot swapchain_ds_buffer_slot = ResourceSlot::make_invalid();                                                               // swapchain depth stencil index
+        ResourceSlot swapchain_rt_buffer_slots[s_swapchain_buffer_count];   // swapchain render target buffer indices
+        ResourceSlot swapchain_ds_buffer_slot;                              // swapchain depth stencil index
 
         FrameContext frame_ctx = FrameContext(s_num_frame_resources);
       };
@@ -351,6 +351,20 @@ namespace rex
         {
           ID3D12CommandList* command_lists[] = {g_ctx.command_list.Get()};
           g_ctx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
+        }
+
+        //-------------------------------------------------------------------------
+        void release_resource_slot(ResourceSlot slot)
+        {
+            slot.release();
+        }
+        //-------------------------------------------------------------------------
+        void release_resource_slots(ResourceSlot* slots, s32 numSlots)
+        {
+            for (s32 i = 0; i < numSlots; ++i)
+            {
+                release_resource_slot(slots[i]);
+            }
         }
 
         //-------------------------------------------------------------------------
@@ -642,7 +656,7 @@ namespace rex
         bool create_rtvs_for_swapchain(s32 width, s32 height, const ResourceSlot& frontBufferSlot, const ResourceSlot& backBufferSlot)
         {
           // Release the previous resources we will be recreating.
-          for(int i = 0; i < s_swapchain_buffer_count; ++i)
+          for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
           {
             if(g_ctx.swapchain_rt_buffer_slots[i].is_valid())
             {
@@ -1128,27 +1142,20 @@ namespace rex
                 can_report_dxgi_live_objects = true;
             }
 #endif
-            g_ctx.frame_ctx.frame_resources.clear();
 
-            backend::release_resource(g_ctx.active_depth_target);
-            for (s32 i = 0; i < g_ctx.active_color_targets; ++i)
-            {
-                backend::release_resource(g_ctx.active_color_target[i]);
-            }
-            backend::release_resource(g_ctx.active_pipeline_state_object);
-            backend::release_resource(g_ctx.active_shader_program);
-
-            for (s32 i = 0; i < s_swapchain_buffer_count; ++i)
-            {
-                backend::release_resource(g_ctx.swapchain_rt_buffer_slots[i]);
-            }
-            backend::release_resource(g_ctx.swapchain_ds_buffer_slot);
+            internal::release_resource_slots(g_ctx.frame_ctx.frame_resources.data(), g_ctx.frame_ctx.frame_resources.size());
+            internal::release_resource_slot(g_ctx.active_depth_target);
+            internal::release_resource_slots(g_ctx.active_color_target, g_ctx.active_color_targets);
+            internal::release_resource_slot(g_ctx.active_pipeline_state_object);
+            internal::release_resource_slot(g_ctx.active_shader_program);
+            internal::release_resource_slots(g_ctx.swapchain_rt_buffer_slots, s_swapchain_buffer_count);
+            internal::release_resource_slot(g_ctx.swapchain_ds_buffer_slot);
 
             flush_command_queue();
 
+            g_ctx.resource_pool.clear();
             g_ctx.descriptor_heap_pool.clear();
             g_ctx.pipeline_state_objects.clear();
-            g_ctx.resource_pool.clear();
 
             g_ctx.swapchain.Reset();
             g_ctx.command_queue.Reset();

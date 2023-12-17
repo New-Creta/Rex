@@ -95,10 +95,10 @@ namespace rex
                 {
                     renderer::release_resource(*this);
 
+                    m_slot_id = REX_INVALID_INDEX;
+
                     delete m_ref_count;
                     m_ref_count = nullptr;
-
-                    m_slot_id = REX_INVALID_INDEX;
                 }
             }
 

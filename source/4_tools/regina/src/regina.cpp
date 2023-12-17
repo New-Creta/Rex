@@ -76,16 +76,16 @@ namespace rex
     {
         rsl::vector<FrameData> frame_resource_data;
 
-        rsl::unique_ptr<renderer::Mesh> mesh_cube = nullptr;
+        rsl::unique_ptr<renderer::Mesh> mesh_cube;
         rsl::unique_ptr<renderer::Scene> scene;
         rsl::unique_ptr<renderer::SceneRenderer> scene_renderer;
 
-        renderer::ResourceSlot clear_state = renderer::ResourceSlot::make_invalid();
-        renderer::ResourceSlot shader_program = renderer::ResourceSlot::make_invalid();
-        renderer::ResourceSlot input_layout = renderer::ResourceSlot::make_invalid();
-        renderer::ResourceSlot pso = renderer::ResourceSlot::make_invalid();
-        renderer::ResourceSlot solid_raster_state = renderer::ResourceSlot::make_invalid();
-        renderer::ResourceSlot wire_raster_state = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot clear_state;
+        renderer::ResourceSlot shader_program;
+        renderer::ResourceSlot input_layout;
+        renderer::ResourceSlot pso;
+        renderer::ResourceSlot solid_raster_state;
+        renderer::ResourceSlot wire_raster_state;
 
         PassConstants pass_constants;
 

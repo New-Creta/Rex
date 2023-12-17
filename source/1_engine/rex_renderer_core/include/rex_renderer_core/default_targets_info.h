@@ -8,8 +8,8 @@ namespace rex
 {
     struct DefaultTargetsInfo
     {
-        renderer::ResourceSlot front_buffer_color = renderer::ResourceSlot::make_invalid();
-        renderer::ResourceSlot back_buffer_color = renderer::ResourceSlot::make_invalid();
-        renderer::ResourceSlot depth_buffer = renderer::ResourceSlot::make_invalid();
+        renderer::ResourceSlot front_buffer_color;
+        renderer::ResourceSlot back_buffer_color;
+        renderer::ResourceSlot depth_buffer;
     };
 }
