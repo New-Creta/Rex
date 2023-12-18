@@ -9,6 +9,8 @@ namespace rex
     public:
         SpinLock();
 
+        bool try_lock();
+
         void lock();
         void unlock();
 
