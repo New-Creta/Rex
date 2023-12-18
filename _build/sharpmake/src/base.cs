@@ -335,8 +335,12 @@ public abstract class BasicCPPProject : Project
         break;
       case Optimization.FullOptWithPdb:
       case Optimization.FullOpt:
-        conf.Options.Add(Options.Vc.General.WholeProgramOptimization.LinkTime);
-
+        // disable lto to avoid asan odr issues.
+        // can't disable them with ASAN_OPTIONS=detect_odr_violation=0 due to unknown bug
+        if (conf.NinjaEnableAddressSanitizer)
+        {
+          conf.Options.Add(Options.Vc.General.WholeProgramOptimization.LinkTime);
+        }
         conf.Options.Add(Options.Vc.Compiler.Optimization.MaximizeSpeed);
         conf.Options.Add(Options.Vc.Compiler.Intrinsic.Enable);
         conf.Options.Add(Options.Vc.Compiler.RuntimeLibrary.MultiThreaded);
