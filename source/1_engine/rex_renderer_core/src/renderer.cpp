@@ -198,7 +198,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        s32 active_frame()
+        const ResourceSlot* active_frame()
         {
             return backend::active_frame();
         }
