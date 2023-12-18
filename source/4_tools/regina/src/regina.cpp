@@ -382,7 +382,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void update_object_constant_buffers()
     {
-        renderer::ResourceSlot curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
+        renderer::ResourceSlot curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame()->slot_id());
 
         for (auto& ri : (*g_regina_ctx.scene))
         {
@@ -412,7 +412,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void update_pass_constant_buffers()
     {
-        renderer::ResourceSlot curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
+        renderer::ResourceSlot curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame()->slot_id());
 
         const glm::mat4& view = g_regina_ctx.view;
         const glm::mat4& proj = g_regina_ctx.proj;
@@ -505,14 +505,14 @@ namespace rex
 
         renderer::set_shader(g_regina_ctx.shader_program);
 
-        renderer::ResourceSlot curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame());
+        renderer::ResourceSlot curr_pass_cb = get_active_pass_constant_buffer_for_frame(renderer::active_frame()->slot_id());
         renderer::set_constant_buffer(curr_pass_cb, 1);
 
         renderer::set_vertex_buffer(g_regina_ctx.mesh_cube->vertex_buffer, 0, g_regina_ctx.mesh_cube->vertex_byte_stride, 0);
         renderer::set_index_buffer(g_regina_ctx.mesh_cube->index_buffer, renderer::IndexBufferFormat::R16_UINT, 0);
         renderer::set_primitive_topology(renderer::PrimitiveTopology::TRIANGLELIST);
 
-        renderer::ResourceSlot curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame());
+        renderer::ResourceSlot curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame()->slot_id());
         renderer::set_constant_buffer(curr_object_cb, 0);
 
         renderer::renderer_draw_indexed_instanced(1, 0, g_regina_ctx.mesh_cube->draw_args[rsl::small_stack_string("box")].index_count, 0, 0);
