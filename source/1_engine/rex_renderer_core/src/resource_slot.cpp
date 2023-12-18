@@ -18,12 +18,6 @@ namespace rex
         {}
 
         //-------------------------------------------------------------------------
-        ResourceSlot::ResourceSlot(s32 slotId)
-            : m_slot_id(slotId)
-            , m_ref_count(new s32(1)) 
-        {}
-
-        //-------------------------------------------------------------------------
         ResourceSlot::ResourceSlot(const ResourceSlot& other)
             :m_slot_id(other.m_slot_id)
             ,m_ref_count(other.m_ref_count)
@@ -35,6 +29,18 @@ namespace rex
         ResourceSlot::ResourceSlot(ResourceSlot&& other) noexcept 
             : m_slot_id(rsl::exchange(other.m_slot_id, REX_INVALID_INDEX))
             , m_ref_count(rsl::exchange(other.m_ref_count, nullptr))  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
+        {}
+
+        //-------------------------------------------------------------------------
+        ResourceSlot::~ResourceSlot()
+        {
+            release();
+        }
+
+        //-------------------------------------------------------------------------
+        ResourceSlot::ResourceSlot(s32 slotId)
+            : m_slot_id(slotId)
+            , m_ref_count(new s32(1))
         {}
 
         //-------------------------------------------------------------------------
@@ -68,9 +74,27 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        ResourceSlot::~ResourceSlot()
+        bool ResourceSlot::operator==(const ResourceSlot & other) const
         {
-            release();
+            return this->m_slot_id == other.m_slot_id && this->m_ref_count == other.m_ref_count;
+        }
+
+        //-------------------------------------------------------------------------
+        bool ResourceSlot::operator!=(const ResourceSlot& other) const
+        {
+            return !(*this == other);
+        }
+
+        //-------------------------------------------------------------------------
+        bool ResourceSlot::operator==(s32 other) const
+        {
+            return this->m_slot_id == other;
+        }
+
+        //-------------------------------------------------------------------------
+        bool ResourceSlot::operator!=(s32 other) const
+        {
+            return !(*this == other);
         }
 
         //-------------------------------------------------------------------------

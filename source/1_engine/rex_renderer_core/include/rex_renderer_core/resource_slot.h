@@ -15,17 +15,24 @@ namespace rex
         public:
             static ResourceSlot make_invalid();
 
+        public:
             ResourceSlot();
-            explicit ResourceSlot(s32 value);
-
             ResourceSlot(const ResourceSlot& other);
             ResourceSlot(ResourceSlot&& other) noexcept;
+            ~ResourceSlot();
 
+            explicit ResourceSlot(s32 value);
+
+        public:
             ResourceSlot& operator=(const ResourceSlot& other);
             ResourceSlot& operator=(ResourceSlot&& other) noexcept;
 
-            ~ResourceSlot();
+            bool operator==(const ResourceSlot& other) const;
+            bool operator!=(const ResourceSlot& other) const;
+            bool operator==(s32 other) const;
+            bool operator!=(s32 other) const;
 
+        public:
             bool is_valid() const;
 
             s32 release();
@@ -38,3 +45,22 @@ namespace rex
 
     }
 }
+
+namespace rsl
+{
+    inline namespace v1
+    {
+        template <>
+        struct hash<rex::renderer::ResourceSlot>
+        {
+            rsl::hash_result operator()(const rex::renderer::ResourceSlot& resourceSlot) const
+            {
+                card64 seed = 0;
+
+                seed = internal::hash_combine(seed, resourceSlot.slot_id());
+
+                return static_cast<rsl::hash_result>(seed);
+            }
+        };
+    } // namespace v1
+} // namespace rsl
