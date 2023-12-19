@@ -34,11 +34,13 @@ namespace rex
 
         public:
             bool is_valid() const;
+            bool is_about_to_be_removed() const;
 
             s32 release();
             s32 slot_id() const;
 
         private:
+            bool m_about_to_be_removed;
             s32 m_slot_id;
             s32* m_ref_count;
         };
