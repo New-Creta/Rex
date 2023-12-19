@@ -17,6 +17,8 @@ import sys
 def main():
   regis.diagnostics.log_info(f"running post-checkout hook")
 
+  # according to https://git-scm.com/docs/githooks
+  # the 4th argument is to indicate branch or file checkout
   is_branch_checkout = sys.argv[3]
 
   if not is_branch_checkout:
