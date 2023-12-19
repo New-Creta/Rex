@@ -8,7 +8,7 @@
 #include "rex_std/ctype.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
-#include "rex_std_extra/utility/yes_no.h"
+#include "rex_std/bonus/utility/yes_no.h"
 
 // IWYU pragma: no_include <built-in>
 

@@ -6,8 +6,8 @@
 #include "rex_std/bonus/platform.h"
 #include "rex_std/ctype.h"
 #include "rex_std/format.h"
-#include "rex_std_extra/string.h"
-#include "rex_std_extra/time/win/win_time_functions.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/bonus/time/win/win_time_functions.h"
 
 // The current implementation of this namespace is Windows only
 

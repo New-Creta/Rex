@@ -23,7 +23,6 @@ public class RexOpenGL : PlatformProject
 
     conf.AddPublicDependency<GLAD>(target);
     conf.AddPublicDependency<GLM>(target);
-    conf.AddPublicDependency<RexStdExtra>(target);
     conf.AddPublicDependency<RexRendererCore>(target);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }

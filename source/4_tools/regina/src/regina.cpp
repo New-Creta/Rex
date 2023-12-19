@@ -3,7 +3,7 @@
 #include "rex_engine/engine_params.h"
 #include "rex_engine/entrypoint.h"
 #include "rex_std/string.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_windows/platform_creation_params.h"
 
 DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
@@ -48,7 +48,7 @@ namespace rex
 {
   ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams)
   {
-    return create_regina_app_creation_params(rsl::move(platformParams));
+    return regina::create_regina_app_creation_params(rsl::move(platformParams));
   }
 }
 #endif

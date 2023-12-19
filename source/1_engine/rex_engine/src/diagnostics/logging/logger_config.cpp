@@ -30,50 +30,16 @@ namespace rex
   {
     namespace helpers
     {
-      rsl::vector<rsl::string_view> split(rsl::string_view str, rsl::string_view delim)
-      {
-        rsl::vector<rsl::string_view> result;
-
-        count_t start = 0;
-        count_t end   = 0;
-        for(count_t i = 0; i < str.length(); ++i)
-        {
-          auto it = rsl::find(delim.cbegin(), delim.cend(), str[i]);
-          if(it != delim.cend())
-          {
-            end = i;
-
-            if(start == end)
-            {
-              ++start;
-              continue;
-            }
-
-            const rsl::string_view value = str.substr(start, end - start);
-            result.push_back(value);
-            start = end + 1;
-          }
-        }
-
-        if(start != end)
-        {
-          const rsl::string_view value = str.substr(start, end - start);
-          result.push_back(value);
-        }
-
-        return result;
-      }
-
       // return vector of key/value pairs from sequence of "K1=V1,K2=V2,.."
       // "a=AAA,b=BBB,c=CCC,.." => {("a","AAA"),("b","BBB"),("c", "CCC"),...}
       rsl::unordered_map<rsl::string_view, rsl::string_view> extract_key_vals(rsl::string_view str)
       {
         rsl::unordered_map<rsl::string_view, rsl::string_view> rv {};
-        const rsl::vector<rsl::string_view> key_value_pairs = split(str, ",");
+        const rsl::vector<rsl::string_view> key_value_pairs = rsl::split(str, ",");
 
         for(const rsl::string_view key_value_pair: key_value_pairs)
         {
-          rsl::vector<rsl::string_view> key_value = split(key_value_pair, "=");
+          rsl::vector<rsl::string_view> key_value = rsl::split(key_value_pair, "=");
 
           REX_ASSERT_X(key_value.size() == 2, "Invalid logger level found at {}", key_value_pair);
           rv[key_value[0]] = key_value[1];
