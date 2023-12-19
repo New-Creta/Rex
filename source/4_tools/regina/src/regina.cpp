@@ -539,6 +539,7 @@ namespace rex
             data.object_constant_buffer.release();
             data.pass_constant_buffer.release();
         }
+        g_regina_ctx.frame_resource_data.clear();
 
         g_regina_ctx.solid_raster_state.release();
         g_regina_ctx.wire_raster_state.release();
@@ -547,6 +548,8 @@ namespace rex
         g_regina_ctx.mesh_cube->index_buffer.release();
 
         g_regina_ctx.mesh_cube.reset();
+        g_regina_ctx.scene_renderer.reset();
+        g_regina_ctx.scene.reset();
     }
 
     //-------------------------------------------------------------------------
