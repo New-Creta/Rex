@@ -9,14 +9,17 @@
 #include <utility>
 // null, no cost dummy "mutex" and dummy "atomic" int
 
-namespace rexlog
+namespace rex
 {
-  namespace details
+  namespace log
   {
-    struct NullMutex
+    namespace details
     {
-      void lock() const {}
-      void unlock() const {}
-    };
-  } // namespace details
-} // namespace rexlog
+      struct NullMutex
+      {
+        void lock() const {}
+        void unlock() const {}
+      };
+    } // namespace details
+  }   // namespace log
+} // namespace rex

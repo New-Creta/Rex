@@ -2,8 +2,8 @@
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/engine_params.h"
 #include "rex_engine/entrypoint.h"
-#include "rex_std/string.h"
 #include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/string.h"
 #include "rex_windows/platform_creation_params.h"
 
 DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
@@ -41,7 +41,7 @@ namespace regina
 
     return app_params;
   }
-} // namespace rex
+} // namespace regina
 
 #ifndef REX_ENABLE_AUTO_TESTS
 namespace rex
@@ -50,5 +50,5 @@ namespace rex
   {
     return regina::create_regina_app_creation_params(rsl::move(platformParams));
   }
-}
+} // namespace rex
 #endif

@@ -3,12 +3,11 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/utility.h"
+#include "rex_std/iostream.h"
 #include "rex_windows/console_application.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
-
-#include "rex_std/iostream.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -41,7 +40,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, in
   {
     rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params));
 
-    if (app_params.create_window)
+    if(app_params.create_window)
     {
       // this doesn't initialize anything but simply prepares the application for initialization
       rex::win32::GuiApplication application(rsl::move(app_params));
@@ -58,7 +57,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, in
       result = application.run();
     }
   }
-  __except (report_crash(GetExceptionInformation()), EXCEPTION_CONTINUE_SEARCH)
+  __except(report_crash(GetExceptionInformation()), EXCEPTION_CONTINUE_SEARCH)
   {
     // Do nothing here as the code here doesn't get executed due to EXCEPTION_CONTINUE_SEARCH
     // handle crashing in the report_crash() function, then exit

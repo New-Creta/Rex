@@ -4,8 +4,8 @@
 #include "rex_directx/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/types.h"
-#include "rex_std/bonus/string.h"
 #include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/string.h"
 
 #include <cstdlib>
 #include <wrl/client.h>

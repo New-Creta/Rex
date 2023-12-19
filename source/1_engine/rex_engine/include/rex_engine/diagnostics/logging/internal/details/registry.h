@@ -15,65 +15,68 @@
 #include "rex_std/string.h"
 #include "rex_std/unordered_map.h"
 
-namespace rexlog
+namespace rex
 {
-  class Logger;
-
-  using LoggerObjectPtr    = rsl::shared_ptr<Logger>;
-  using LoggerObjectPtrMap = rex::DebugHashTable<rex::DebugString, LoggerObjectPtr>;
-
-  namespace details
+  namespace log
   {
-    class ThreadPool;
+    class Logger;
 
-    class Registry
+    using LoggerObjectPtr    = rsl::shared_ptr<Logger>;
+    using LoggerObjectPtrMap = rex::DebugHashTable<rex::DebugString, LoggerObjectPtr>;
+
+    namespace details
     {
-    public:
-      using LogLevels = rsl::unordered_map<rsl::string_view, level::LevelEnum>;
+      class ThreadPool;
 
-      static Registry& instance();
+      class Registry
+      {
+      public:
+        using LogLevels = rsl::unordered_map<rsl::string_view, level::LevelEnum>;
 
-      Registry(const Registry&)            = delete;
-      Registry& operator=(const Registry&) = delete;
+        static Registry& instance();
 
-    public:
-      void register_logger(LoggerObjectPtr newLogger);
-      void initialize_logger(LoggerObjectPtr newLogger);
+        Registry(const Registry&)            = delete;
+        Registry& operator=(const Registry&) = delete;
 
-      LoggerObjectPtr get(rsl::string_view loggerName);
-      level::LevelEnum get_global_level() const;
+      public:
+        void register_logger(LoggerObjectPtr newLogger);
+        void initialize_logger(LoggerObjectPtr newLogger);
 
-      void set_thread_pool(rsl::shared_ptr<ThreadPool> tp);
-      void set_formatter(PatternFormatter&& formatter);
-      void set_level(level::LevelEnum logLevel);
-      void set_levels(LogLevels levels, const level::LevelEnum* globalLevel);
+        LoggerObjectPtr get(rsl::string_view loggerName);
+        level::LevelEnum get_global_level() const;
 
-      void flush_on(level::LevelEnum logLevel);
-      void flush_all();
+        void set_thread_pool(rsl::shared_ptr<ThreadPool> tp);
+        void set_formatter(PatternFormatter&& formatter);
+        void set_level(level::LevelEnum logLevel);
+        void set_levels(LogLevels levels, const level::LevelEnum* globalLevel);
 
-      void shutdown();
+        void flush_on(level::LevelEnum logLevel);
+        void flush_all();
 
-      rsl::shared_ptr<ThreadPool> thread_pool();
-      rsl::recursive_mutex& thread_pool_mutex();
+        void shutdown();
 
-    private:
-      Registry();
-      ~Registry();
+        rsl::shared_ptr<ThreadPool> thread_pool();
+        rsl::recursive_mutex& thread_pool_mutex();
 
-      void register_logger_impl(LoggerObjectPtr newLogger);
+      private:
+        Registry();
+        ~Registry();
 
-      LoggerObjectPtrMap m_loggers;
-      LogLevels m_log_levels;
+        void register_logger_impl(LoggerObjectPtr newLogger);
 
-      rsl::mutex m_logger_map_mutex;
-      rsl::mutex m_flusher_mutex;
-      rsl::recursive_mutex m_tp_mutex;
+        LoggerObjectPtrMap m_loggers;
+        LogLevels m_log_levels;
 
-      PatternFormatter m_formatter;
-      rexlog::level::LevelEnum m_global_log_level;
-      level::LevelEnum m_flush_level;
-      rsl::shared_ptr<ThreadPool> m_tp;
-    };
+        rsl::mutex m_logger_map_mutex;
+        rsl::mutex m_flusher_mutex;
+        rsl::recursive_mutex m_tp_mutex;
 
-  } // namespace details
-} // namespace rexlog
+        PatternFormatter m_formatter;
+        rex::log::level::LevelEnum m_global_log_level;
+        level::LevelEnum m_flush_level;
+        rsl::shared_ptr<ThreadPool> m_tp;
+      };
+
+    } // namespace details
+  }   // namespace log
+} // namespace rex
