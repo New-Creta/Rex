@@ -245,15 +245,6 @@ public abstract class BasicCPPProject : Project
     bool generatingMakeFiles = true;
     if (generatingMakeFiles)
     {
-      // This would call duplicate symbols to be linked in though which is ideally avoided
-      // It's possible 1 static library depends on the other, but the best way to handle
-      // that dependency is to provide the 2 static libraries to the end executable or dll
-      // which then links them in accordingly
-
-      // This allows sharpmake to also build dependencies of the project
-      // if the current project is a static lib
-      //conf.ExportAdditionalLibrariesEvenForStaticLib = true;
-
       // rex python script at the root is the entry point and interface with the rex pipeline
       string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
       
