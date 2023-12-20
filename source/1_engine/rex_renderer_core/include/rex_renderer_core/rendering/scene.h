@@ -18,6 +18,8 @@ namespace rex
             void                add_render_item(RenderItem&& item);
             void                clear_render_items();
 
+            u32                 render_item_count() const;
+
             RenderItemIt        begin();
             ConstRenderItemIt   cbegin() const;
             RenderItemIt        end();

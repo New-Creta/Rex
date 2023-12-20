@@ -16,6 +16,12 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
+        u32 Scene::render_item_count() const
+        {
+            return m_render_items.size();
+        }
+
+        //-------------------------------------------------------------------------
         Scene::RenderItemIt Scene::begin()
         {
             return m_render_items.begin();
