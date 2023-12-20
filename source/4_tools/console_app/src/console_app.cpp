@@ -78,12 +78,6 @@ namespace rex
   {
     vfs::mount(MountingPoint::Logs, "logs");
 
-    //vfs::ReadRequest request = vfs::open_read_async("this_is_a_test_file.txt");
-
-    //request.wait();
-
-    //REX_LOG(LogConsoleApp, "{}", request.data());
-
     return true;
   }
   void update()
