@@ -1,10 +1,12 @@
-#include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/win/path.h"
 #include "rex_std_extra/string.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_engine/diagnostics/win/win_call.h"
 #include "rex_engine/numeric.h"
 #include "rex_std_extra/time/win/win_time_functions.h"
+
+#include "rex_engine/types.h"
 
 #include <random>
 #define NOMINMAX
@@ -21,19 +23,19 @@ namespace rex
     {
       // returns the position of where the extension of the path starts,
       // if there is any
-      card32 extension_start(rsl::string_view path)
+      s32 extension_start(rsl::string_view path)
       {
         return path.find_last_of('.');
       }
 
       // Fills a string with a number of random characters
       // This is useful for creating random filenames and directories
-      void fill_with_random_chars(rsl::string& str, card32 numCharsToFill)
+      void fill_with_random_chars(rsl::string& str, s32 numCharsToFill)
       {
         rsl::small_stack_string chars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
-        for (card32 i = 0; i < numCharsToFill; ++i)
+        for (s32 i = 0; i < numCharsToFill; ++i)
         {
-          card32 random_idx = std::rand() % chars.length();
+          s32 random_idx = std::rand() % chars.length();
           str += chars[random_idx];
         }
       }
@@ -138,8 +140,8 @@ namespace rex
       rsl::string_view file_name = filename(path);
 
       // get the position of the extension, if there is one
-      card32 extension_pos = internal::extension_start(file_name);
-      card32 count = extension_pos != -1
+      s32 extension_pos = internal::extension_start(file_name);
+      s32 count = extension_pos != -1
         ? extension_pos
         : file_name.length();
 
@@ -179,7 +181,7 @@ namespace rex
     rsl::string random_dir()
     {
       // create a directory name of 8 random characters
-      card32 num_dirname_chars = 8;
+      s32 num_dirname_chars = 8;
       rsl::string result;
       internal::fill_with_random_chars(result, num_dirname_chars);
 
@@ -188,8 +190,8 @@ namespace rex
     // Returns a random filename, but doesn't create it
     rsl::string random_filename()
     {
-      card32 num_stem_chars = 8;
-      card32 num_ext_chars = 3;
+      s32 num_stem_chars = 8;
+      s32 num_ext_chars = 3;
       rsl::string result;
 
       // create a stem of 8 random characters
@@ -223,7 +225,7 @@ namespace rex
       auto furthest_path_component_it = splitted.cbegin();
 
       // iterate over the other paths
-      for (card32 i = 1; i < paths.size(); ++i)
+      for (s32 i = 1; i < paths.size(); ++i)
       {
         rsl::string_view path = paths[i];
 
@@ -244,12 +246,12 @@ namespace rex
       }
 
       // store the index of the path component to figure out where the common path ends
-      card32 path_component_idx = rsl::distance(splitted.cbegin(), furthest_path_component_it);
+      s32 path_component_idx = rsl::distance(splitted.cbegin(), furthest_path_component_it);
 
       // count the path components, so we know where out substring should end
       rsl::string_view first_path = paths.front();
-      card32 pos = 0;
-      for (card32 i = 0; i < path_component_idx; ++i)
+      s32 pos = 0;
+      for (s32 i = 0; i < path_component_idx; ++i)
       {
         pos = first_path.find_first_of("/\\", pos);
         ++pos;
@@ -500,7 +502,7 @@ namespace rex
       SplitResult res{};
 
       // get the last slash position
-      card32 pos = path.find_last_of("/\\");
+      s32 pos = path.find_last_of("/\\");
 
       // fill in the values
       res.head = path.substr(0, pos);
@@ -517,13 +519,13 @@ namespace rex
       SplitResult res{};
 
       // get the last slash position
-      card32 slash_pos = path.find(":/");
-      card32 backslash_pos = path.find(":\\");
+      s32 slash_pos = path.find(":/");
+      s32 backslash_pos = path.find(":\\");
 
-      card32 used_pos = slash_pos != -1 && backslash_pos != -1
+      s32 used_pos = slash_pos != -1 && backslash_pos != -1
         ? rsl::min(slash_pos, backslash_pos) // if for any reason the path has the root tokens twice, return the first
         : rsl::max(slash_pos, backslash_pos); // in other case, where there's only one, use the one that's found
-      card32 to_find_length = 2;
+      s32 to_find_length = 2;
 
       // fill in the values
       res.head = path.substr(0, used_pos + to_find_length);
@@ -540,7 +542,7 @@ namespace rex
       SplitResult res{};
 
       // get the extension start position
-      card32 ext_start = internal::extension_start(path);
+      s32 ext_start = internal::extension_start(path);
 
       // fill in the values
       res.head = path.substr(0, ext_start);
