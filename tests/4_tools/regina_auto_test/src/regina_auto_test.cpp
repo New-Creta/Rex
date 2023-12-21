@@ -2,7 +2,7 @@
 #include "rex_engine/engine_params.h"
 #include "rex_windows/gui_application.h"
 
-#include "regina_test/regina_boot_test.h"
+#include "regina_auto_test/regina_boot_test.h"
 #include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 
@@ -35,7 +35,7 @@ namespace rex
 
   rsl::array g_auto_tests =
   {
-    AutoTest("Boot", regina_test::boot_test_entry)
+    AutoTest("Boot", regina_auto_test::boot_test_entry)
   };
 
   // back up function in case we fail to find an auto test
@@ -57,7 +57,7 @@ namespace rex
   {
     rsl::optional<rsl::string_view> cmdline = cmdline::get_argument("AutoTest");
 
-    REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline");
+    REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline. Commandline: {}", rex::cmdline::get());
 
     for (AutoTest& auto_test : g_auto_tests)
     {

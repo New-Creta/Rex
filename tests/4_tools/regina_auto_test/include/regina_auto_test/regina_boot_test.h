@@ -6,7 +6,7 @@ namespace rex
   struct ApplicationCreationParams;
 }
 
-namespace regina_test
+namespace regina_auto_test
 {
   bool initialize();
   void update();
