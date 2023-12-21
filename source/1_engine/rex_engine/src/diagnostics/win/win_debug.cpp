@@ -29,12 +29,13 @@ rsl::medium_stack_string rex::win::report_win_error(HResult hr, [[maybe_unused]]
 {
   const _com_error err(hr);
   rsl::medium_stack_string error_message(err.ErrorMessage());
-  REX_ERROR(LogEngine, "Windows Error");
+  REX_ERROR(LogEngine, "--- Windows Error ---");
   REX_ERROR(LogEngine, "Win API: {}", winFunc);
   REX_ERROR(LogEngine, "File: {}", file);
   REX_ERROR(LogEngine, "Function: {}", function);
   REX_ERROR(LogEngine, "On line: {}", lineNr);
   REX_ERROR(LogEngine, "Windows error: {}", error_message);
+  REX_ERROR(LogEngine, "---               ---");
 
   return error_message;
 }
