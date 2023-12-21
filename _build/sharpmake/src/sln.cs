@@ -45,7 +45,6 @@ namespace rex
       }
 
       conf.AddProject<Regina>(target);
-      //conf.AddProject<ConsoleApp>(target);
     }
 
     protected string GenerateName(string baseName)
