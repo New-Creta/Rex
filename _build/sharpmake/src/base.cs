@@ -133,7 +133,7 @@ public abstract class BasicCPPProject : Project
   {
     LoadToolPaths();
 
-    ClangToolsEnabled = !ProjectGen.Settings.NoClangTools;
+    ClangToolsEnabled = ProjectGen.Settings.ClangToolsEnabled;
   }
 
   // Legacy function and should be removed
