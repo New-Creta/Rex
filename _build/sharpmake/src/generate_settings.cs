@@ -331,7 +331,7 @@ namespace ProjectGen
   // 
   public class Settings
   {
-    static public bool NoClangTools = false;                      // Are clang tools enabled?
+    static public bool ClangToolsEnabled = false;                      // Are clang tools enabled?
     static public bool PerformAllClangTidyChecks = false;         // Perform all configured clang tidy checks, not just the warnings
     static public bool DisableClangTidyForThirdParty = true;      // Set to disable clang-tidy running on third party projects
     static public string IntermediateDir = "";                    // Set the directory name to be used under the build output directory for this generation
