@@ -3,14 +3,13 @@ using System.Linq;
 
 public class Utils
 {
-  public static int CurrentLine([System.Runtime.CompilerServices.CallerLineNumber] int lineNumber = 0)
-  {
-    return lineNumber;
-  }
+  // Get the current file that calls this function
   public static string CurrentFile([System.Runtime.CompilerServices.CallerFilePath] string fileName = "")
   {
     return fileName;
   }
+  // Looks for a directory or file in the parent directory recursively
+  // returns the directory where the directory or file is found
   public static string FindInParent(string startPath, string toFind)
   {
     string current_directory = startPath;

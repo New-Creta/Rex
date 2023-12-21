@@ -84,11 +84,11 @@ namespace rex
       RECT desktop_rect;
       GetClientRect(GetDesktopWindow(), &desktop_rect);
 
-      LONG screen_mid_x = (desktop_rect.right - desktop_rect.left) / 2;
-      LONG screen_mid_y = (desktop_rect.bottom - desktop_rect.top) / 2;
+      const LONG screen_mid_x = (desktop_rect.right - desktop_rect.left) / 2;
+      const LONG screen_mid_y = (desktop_rect.bottom - desktop_rect.top) / 2;
 
-      LONG half_x = (rc.right - rc.left) / 2;
-      LONG half_y = (rc.bottom - rc.top) / 2;
+      const LONG half_x = (rc.right - rc.left) / 2;
+      const LONG half_y = (rc.bottom - rc.top) / 2;
 
       // clang-format off
       m_hwnd = WIN_CALL(
