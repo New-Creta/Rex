@@ -6,44 +6,44 @@
 
 namespace rex
 {
-  namespace renderer
-  {
-    namespace commands
+    namespace renderer
     {
-      struct CreateConstantBufferCommandDesc
-      {
-        CreateConstantBufferCommandDesc()
-            :count(0)
-            ,buffer_size(0)
-            ,array_index(0)
-        {}
-
-        s32 count;
-        s32 buffer_size;
-        s32 array_index;
-      };
-
-      class CreateConstantBuffer : public RenderCommand
-      {
-      public:
-        CreateConstantBuffer(CreateConstantBufferCommandDesc&& desc, ResourceSlot slot)
-            : RenderCommand()
-            , m_desc(rsl::move(desc))
-            , m_resource_slot(slot)
+        namespace commands
         {
-        }
+            struct CreateConstantBufferViewCommandDesc
+            {
+                CreateConstantBufferViewCommandDesc()
+                    :frame_slot(nullptr)
+                    ,commited_resource()
+                    ,buffer_size(0)
+                {}
 
-        ~CreateConstantBuffer() override = default;
+                const ResourceSlot* frame_slot;
+                const ResourceSlot* commited_resource;
 
-        bool execute() override 
-        {
-          return backend::create_constant_buffer(m_desc, m_resource_slot);
-        }
+                s32 buffer_size;
+            };
 
-      private:
-        CreateConstantBufferCommandDesc m_desc;
-        ResourceSlot m_resource_slot;
-      };
-    } // namespace commands
-  }   // namespace renderer
+            class CreateConstantBufferView : public RenderCommand
+            {
+            public:
+                CreateConstantBufferView(CreateConstantBufferViewCommandDesc&& desc, ResourceSlot slot)
+                    : RenderCommand()
+                    , m_desc(rsl::move(desc))
+                    , m_resource_slot(slot)
+                {}
+
+                ~CreateConstantBufferView() override = default;
+
+                bool execute() override
+                {
+                    return backend::create_constant_buffer_view(m_desc, m_resource_slot);
+                }
+
+            private:
+                CreateConstantBufferViewCommandDesc m_desc;
+                ResourceSlot m_resource_slot;
+            };
+        } // namespace commands
+    }   // namespace renderer
 } // namespace rex

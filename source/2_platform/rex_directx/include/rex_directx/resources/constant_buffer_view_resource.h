@@ -1,8 +1,10 @@
 #pragma once
 
 #include "rex_renderer_core/resource.h"
+#include "rex_renderer_core/resource_slot.h"
 #include "rex_directx/directx_util.h"
 #include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/types.h"
 #include "rex_engine/memory/memory_allocation.h"
 
 namespace rex
@@ -11,59 +13,42 @@ namespace rex
     {
         namespace resources
         {
-            struct ConstantBuffer
+            struct ContantBufferView
             {
-                ConstantBuffer(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize, s32 bufferIndex)
-                    :uploader(uploader)
-                    ,mapped_data(nullptr)
-                    ,element_data_byte_size(elementDataByteSize)
-                    ,mapped_data_byte_size(mappedDataByteSize)
+                ContantBufferView(const ResourceSlot* commitedResource, s32 bufferByteSize, s32 bufferIndex)
+                    :commited_resource(commitedResource)
+                    ,buffer_byte_size(bufferByteSize)
                     ,buffer_index(bufferIndex)
-                {
+                {}
 
-                }
+                const ResourceSlot* commited_resource;
 
-                wrl::com_ptr<ID3D12Resource> uploader;
-
-                u8* mapped_data;
-                s32 mapped_data_byte_size;
-
-                s32 element_data_byte_size;
-
+                s32 buffer_byte_size;
                 s32 buffer_index;
             };
         }
 
-        class ConstantBufferResource : public BaseResource<resources::ConstantBuffer>
+        class ConstantBufferViewResource : public BaseResource<resources::ContantBufferView>
         {
         public:
-            RESOURCE_CLASS_TYPE(ConstantBufferResource);
+            RESOURCE_CLASS_TYPE(ConstantBufferViewResource);
 
-            ConstantBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize, s32 bufferIndex)
-                :m_constant_buffer(uploader, elementDataByteSize, mappedDataByteSize, bufferIndex)
+            ConstantBufferViewResource(const ResourceSlot* commitedResource, s32 bufferByteSize, s32 bufferIndex)
+                :m_commited_buffer_view(commitedResource, bufferByteSize, bufferIndex)
             {}
-            ~ConstantBufferResource() override
-            {
-                if (m_constant_buffer.uploader)
-                {
-                    m_constant_buffer.uploader->Unmap(0, nullptr);
-                }
+            ~ConstantBufferViewResource() override = default;
 
-                m_constant_buffer.mapped_data = nullptr;
-                m_constant_buffer.mapped_data_byte_size = 0;
-            }
-
-            resources::ConstantBuffer* get()
+            resources::ContantBufferView* get()
             {
-                return &m_constant_buffer;
+                return &m_commited_buffer_view;
             }
-            const resources::ConstantBuffer* get() const
+            const resources::ContantBufferView* get() const
             {
-                return &m_constant_buffer;
+                return &m_commited_buffer_view;
             }
 
         private:
-            resources::ConstantBuffer m_constant_buffer;
+            resources::ContantBufferView m_commited_buffer_view;
         };
     }
 }

@@ -9,6 +9,7 @@
 #include "rex_directx/log.h"
 #include "rex_directx/resources/buffer_resource.h"
 #include "rex_directx/resources/clear_state_resource.h"
+#include "rex_directx/resources/commited_buffer_resource.h"
 #include "rex_directx/resources/constant_buffer_view_resource.h"
 #include "rex_directx/resources/depth_stencil_target_resource.h"
 #include "rex_directx/resources/frame_resource.h"
@@ -37,6 +38,7 @@
 #include "rex_renderer_core/commands/create_raster_state_cmd.h"
 #include "rex_renderer_core/commands/create_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_frame_resource_cmd.h"
+#include "rex_renderer_core/commands/attach_commited_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/draw_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
@@ -61,7 +63,7 @@
 #include "rex_renderer_core/commands/set_shader_cmd.h"
 #include "rex_renderer_core/commands/set_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
-#include "rex_renderer_core/commands/update_constant_buffer_cmd.h"
+#include "rex_renderer_core/commands/update_commited_resource_cmd.h"
 #include "rex_renderer_core/cull_mode.h"
 #include "rex_renderer_core/fill_mode.h"
 #include "rex_renderer_core/gpu_description.h"
@@ -245,9 +247,23 @@ namespace rex
 
       static constexpr s32 s_rtv_descriptor_count = s_max_color_targets;
       static constexpr s32 s_dsv_descriptor_count = s_max_depth_targets;
-      static constexpr s32 s_cbv_descriptor_count = 32;
+      static constexpr s32 s_cbv_descriptor_count = 128;
 
       static constexpr s32 s_num_frame_resources = 3;
+
+      struct Frame
+      {
+          Frame(s32 idx, ResourceSlot s)
+              :index(idx)
+              ,slot(s)
+          {}
+
+          s32 index;
+          ResourceSlot slot;
+
+          rsl::vector<ResourceSlot> commited_resources;
+          rsl::unordered_map<const ResourceSlot*, s32> active_constant_buffers;
+      };
 
       struct FrameContext
       {
@@ -261,10 +277,10 @@ namespace rex
               frame_resources.reserve(maxFrameResources);
           }
 
-          rsl::vector<ResourceSlot> frame_resources;
+          rsl::vector<Frame>    frame_resources;
 
-          const ResourceSlot* curr_frame_resource;
-          s32 curr_frame_resource_index;
+          const ResourceSlot*   curr_frame_resource;
+          s32                   curr_frame_resource_index;
       };
 
       struct DirectXContext
@@ -298,8 +314,8 @@ namespace rex
 
         ResourcePool resource_pool;
 
-        s32 active_constant_buffers = 0;                                    // Amount of active constant buffers
         s32 active_color_targets = 0;                                       // Amount of color targets to write to
+        s32 active_constant_buffers = 0;                                    // Available constant buffers
 
         ResourceSlot active_depth_target;                                   // Current depth buffer to write to
         ResourceSlot active_color_target[s_max_color_targets];              // Current color buffers to write to
@@ -316,6 +332,55 @@ namespace rex
 
       namespace internal
       {
+        //-------------------------------------------------------------------------
+        count_t highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
+        {
+            auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
+                [](const GpuDescription& lhs, const GpuDescription& rhs)
+                {
+                    const size_t lhs_vram = lhs.dedicated_video_memory.size_in_bytes();
+                    const size_t rhs_vram = rhs.dedicated_video_memory.size_in_bytes();
+
+                    return rhs_vram > lhs_vram;
+                });
+
+            return it != gpus.cend() ? rsl::distance(gpus.cbegin(), it) : -1;
+        }
+
+        //-------------------------------------------------------------------------
+        Frame* get_frame(const ResourceSlot* slot)
+        {
+            auto it = rsl::find_if(rsl::begin(g_ctx.frame_ctx.frame_resources), rsl::end(g_ctx.frame_ctx.frame_resources),
+                [&slot](const Frame& f)
+                {
+                    return f.slot == *slot;
+                });
+
+            if (it != rsl::cend(g_ctx.frame_ctx.frame_resources))
+            {
+                return &(*it);
+            }
+
+            return nullptr;
+        }
+
+        //-------------------------------------------------------------------------
+        bool has_commited_resource_for_frame(const ResourceSlot* frameSlot, const ResourceSlot* commitedResourceSlot)
+        {
+            const Frame* frame = get_frame(frameSlot);
+            if (frame == nullptr)
+            {
+                REX_WARN(LogDirectX, "Unable to find frame with slot index: {}", frameSlot->slot_id());
+                return false;
+            }
+
+            return rsl::find_if(rsl::cbegin(frame->commited_resources), rsl::cend(frame->commited_resources),
+                [commitedResourceSlot](const ResourceSlot& crs)
+                {
+                    return *commitedResourceSlot == crs;
+                }) != rsl::cend(frame->commited_resources);
+        }
+
         //-------------------------------------------------------------------------
         bool reset_command_list(ID3D12CommandAllocator* commandAllocator, ID3D12PipelineState* pipelineState)
         {
@@ -354,12 +419,23 @@ namespace rex
         {
             slot.release();
         }
+        
         //-------------------------------------------------------------------------
         void release_resource_slots(ResourceSlot* slots, s32 numSlots)
         {
             for (s32 i = 0; i < numSlots; ++i)
             {
                 release_resource_slot(slots[i]);
+            }
+        }
+
+        //-------------------------------------------------------------------------
+        void release_frame_resources(Frame* frames, s32 numFrames)
+        {
+            for (s32 i = 0; i < numFrames; ++i)
+            {
+                release_resource_slots(frames[i].commited_resources.data(), frames[i].commited_resources.size());
+                release_resource_slot(frames[i].slot);
             }
         }
 
@@ -510,50 +586,68 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        rsl::unique_ptr<ConstantBufferResource> create_constant_buffer_view(s32 bufferCount, s32 bufferByteSize, s32 bufferIndex)
+        rsl::unique_ptr<CommitedBufferResource> create_commited_resource(s32 bufferCount, s32 bufferByteSize)
         {
-          s32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
+            s32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
 
-          wrl::com_ptr<ID3D12Resource> constant_buffer_uploader;
+            wrl::com_ptr<ID3D12Resource> constant_buffer_uploader;
 
-          CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
-          CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size * bufferCount);
+            CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
+            CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size * bufferCount);
 
-          if(FAILED(g_ctx.device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
-          {
-            REX_ERROR(LogDirectX, "Could not create commited resource ( constant buffer )");
-            return nullptr;
-          }
+            if (FAILED(g_ctx.device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
+            {
+                REX_ERROR(LogDirectX, "Could not create commited resource ( constant buffer )");
+                return nullptr;
+            }
 
-          directx::set_debug_name_for(constant_buffer_uploader.Get(), "Constant Buffer Uploader");
+            directx::set_debug_name_for(constant_buffer_uploader.Get(), "Constant Buffer Uploader");
 
-          rsl::unique_ptr<ConstantBufferResource> constant_buffer_resources = rsl::make_unique<ConstantBufferResource>(constant_buffer_uploader, obj_cb_byte_size, obj_cb_byte_size * bufferCount, bufferIndex);
+            rsl::unique_ptr<CommitedBufferResource> constant_buffer_resources = rsl::make_unique<CommitedBufferResource>(constant_buffer_uploader, obj_cb_byte_size, obj_cb_byte_size * bufferCount);
 
-          if(FAILED(constant_buffer_uploader->Map(0, nullptr, reinterpret_cast<void**>(&constant_buffer_resources->get()->mapped_data))))
-          {
-            REX_ERROR(LogDirectX, "Could not map data to commited resource ( constant buffer )");
-            return nullptr;
-          }
+            if (FAILED(constant_buffer_uploader->Map(0, nullptr, reinterpret_cast<void**>(&constant_buffer_resources->get()->mapped_data))))
+            {
+                REX_ERROR(LogDirectX, "Could not map data to commited resource ( constant buffer )");
+                return nullptr;
+            }
 
-          for(s32 i = 0; i < bufferCount; ++i)
-          {
-            D3D12_GPU_VIRTUAL_ADDRESS cb_address = constant_buffer_uploader->GetGPUVirtualAddress();
-            cb_address += i * obj_cb_byte_size;
+            REX_LOG(LogDirectX, "Create Commited Resource - buffer_count: {0}, buffer_byte_size: {1}, buffer_element_byte_size: {2}", bufferCount, obj_cb_byte_size * bufferCount, obj_cb_byte_size);
 
-            s32 heap_index                       = g_ctx.active_constant_buffers + i;
+            return constant_buffer_resources;
+        }
+
+        //-------------------------------------------------------------------------
+        rsl::unique_ptr<ConstantBufferViewResource> create_constant_buffer_view(const ResourceSlot* frameSlot, const ResourceSlot* commitedResourceSlot, s32 bufferByteSize)
+        {
+            Frame* frame = internal::get_frame(frameSlot);
+
+            REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", frameSlot->slot_id());
+            REX_ASSERT_X(internal::has_commited_resource_for_frame(frameSlot, commitedResourceSlot), "Unable to find commited resource for give frame: {}", frameSlot->slot_id());
+
+            auto& commited_buffer_resource = get_resource_from_pool_as<CommitedBufferResource>(g_ctx.resource_pool, *commitedResourceSlot);
+            auto  commited_resource = commited_buffer_resource.get();
+
+            s32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
+
+            D3D12_GPU_VIRTUAL_ADDRESS cb_address = commited_resource->uploader->GetGPUVirtualAddress();
+            cb_address += frame->active_constant_buffers[commitedResourceSlot] * obj_cb_byte_size;
+
+            s32 heap_index = g_ctx.active_constant_buffers;
             CD3DX12_CPU_DESCRIPTOR_HANDLE handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetCPUDescriptorHandleForHeapStart());
             handle.Offset(heap_index, g_ctx.cbv_srv_uav_desc_size);
 
             D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
             cbv_desc.BufferLocation = cb_address;
-            cbv_desc.SizeInBytes    = obj_cb_byte_size;
+            cbv_desc.SizeInBytes = obj_cb_byte_size;
 
             g_ctx.device->CreateConstantBufferView(&cbv_desc, handle);
-          }
 
-          g_ctx.active_constant_buffers += bufferCount;
+            rsl::unique_ptr<ConstantBufferViewResource> constant_buffer_resources = rsl::make_unique<ConstantBufferViewResource>(commitedResourceSlot, obj_cb_byte_size, g_ctx.active_constant_buffers);
 
-          return constant_buffer_resources;
+            ++frame->active_constant_buffers[commitedResourceSlot];
+            ++g_ctx.active_constant_buffers;
+
+            return constant_buffer_resources;
         }
 
         //-------------------------------------------------------------------------
@@ -802,12 +896,15 @@ namespace rex
             {
             case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
                 directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - RTV");
+                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", directx::heapdesc_type_to_string(heap_desc->Type), numRTV);
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
                 directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - DSV");
+                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", directx::heapdesc_type_to_string(heap_desc->Type), numDSV);
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
                 directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - CBV");
+                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", directx::heapdesc_type_to_string(heap_desc->Type), numCBV);
                 break;
             }
           }
@@ -815,20 +912,6 @@ namespace rex
           return true;
         }
 
-        //-------------------------------------------------------------------------
-        count_t highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
-        {
-          auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
-                                     [](const GpuDescription& lhs, const GpuDescription& rhs)
-                                     {
-                                       const size_t lhs_vram = lhs.dedicated_video_memory.size_in_bytes();
-                                       const size_t rhs_vram = rhs.dedicated_video_memory.size_in_bytes();
-
-                                       return rhs_vram > lhs_vram;
-                                     });
-
-          return it != gpus.cend() ? rsl::distance(gpus.cbegin(), it) : -1;
-        }
       } // namespace internal
 
       //-------------------------------------------------------------------------
@@ -1136,7 +1219,7 @@ namespace rex
             }
 #endif
 
-            internal::release_resource_slots(g_ctx.frame_ctx.frame_resources.data(), g_ctx.frame_ctx.frame_resources.size());
+            internal::release_frame_resources(g_ctx.frame_ctx.frame_resources.data(), g_ctx.frame_ctx.frame_resources.size());
             internal::release_resource_slot(g_ctx.active_depth_target);
             internal::release_resource_slots(g_ctx.active_color_target, g_ctx.active_color_targets);
             internal::release_resource_slot(g_ctx.active_pipeline_state_object);
@@ -1186,6 +1269,15 @@ namespace rex
       {
           return g_ctx.frame_ctx.curr_frame_resource;
       }
+
+      //-------------------------------------------------------------------------
+      const ResourceSlot* frame_at_index(s32 idx)
+      {
+          REX_ASSERT_X(idx < num_frames_in_flight(), "Frame index exceeds the number of available frames");
+
+          return &g_ctx.frame_ctx.frame_resources[idx].slot;
+      }
+      
       //-------------------------------------------------------------------------
       s32 num_frames_in_flight()
       {
@@ -1296,11 +1388,11 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool create_constant_buffer(const commands::CreateConstantBufferCommandDesc& cb, const ResourceSlot& resourceSlot)
+      bool create_constant_buffer_view(const commands::CreateConstantBufferViewCommandDesc& cb, const ResourceSlot& resourceSlot)
       {
         REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
-        rsl::unique_ptr<ConstantBufferResource> resource = internal::create_constant_buffer_view(cb.count, cb.buffer_size, cb.array_index);
+        rsl::unique_ptr<ConstantBufferViewResource> resource = internal::create_constant_buffer_view(cb.frame_slot, cb.commited_resource, cb.buffer_size);
 
         if(resource == nullptr)
         {
@@ -1397,13 +1489,38 @@ namespace rex
         g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<FrameResource>(cmd_list_alloc));
 
         // Activate the first frame resource
-        g_ctx.frame_ctx.frame_resources.push_back(resourceSlot);
+        g_ctx.frame_ctx.frame_resources.push_back(Frame(g_ctx.frame_ctx.frame_resources.size(), resourceSlot));
         if(g_ctx.frame_ctx.curr_frame_resource == nullptr)
         {
           g_ctx.frame_ctx.curr_frame_resource = &resourceSlot;
         }
 
         return true;
+      }
+
+      //-------------------------------------------------------------------------
+      bool attach_commited_resource_to_frame(const commands::AttachCommitedResourceToFrameCommandDesc& acrd, const ResourceSlot& resourceSlot)
+      {
+          REX_ASSERT_X(acrd.buffer_byte_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
+
+          rsl::unique_ptr<CommitedBufferResource> resource = internal::create_commited_resource(acrd.buffer_count, acrd.buffer_byte_size);
+
+          if (resource == nullptr)
+          {
+              REX_ERROR(LogDirectX, "Failed to create constant buffer");
+              return false;
+          }
+
+          auto frame = internal::get_frame(acrd.frame_slot);
+          
+          REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", acrd.frame_slot->slot_id());
+
+          frame->commited_resources.push_back(resourceSlot);
+          frame->active_constant_buffers.emplace(&resourceSlot, 0);
+
+          g_ctx.resource_pool.insert(resourceSlot, rsl::move(resource));
+
+          return true;
       }
 
       //-------------------------------------------------------------------------
@@ -1494,9 +1611,9 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void update_constant_buffer(const commands::UpdateConstantBufferCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot)
+      void update_commited_resource(const commands::UpdateCommitedResourceCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot)
       {
-        auto& cbr = get_resource_from_pool_as<ConstantBufferResource>(g_ctx.resource_pool, resourceSlot);
+        auto& cbr = get_resource_from_pool_as<CommitedBufferResource>(g_ctx.resource_pool, resourceSlot);
         auto cs   = cbr.get();
 
         memcpy(&cs->mapped_data[updateConstantBuffer.element_index * cs->element_data_byte_size], updateConstantBuffer.buffer_data.data(), updateConstantBuffer.buffer_data.size());
@@ -1507,7 +1624,7 @@ namespace rex
       {
         // Cycle through the circular frame resource array.
         g_ctx.frame_ctx.curr_frame_resource_index = (g_ctx.frame_ctx.curr_frame_resource_index + 1) % g_ctx.frame_ctx.frame_resources.size();
-        g_ctx.frame_ctx.curr_frame_resource       = &g_ctx.frame_ctx.frame_resources[g_ctx.frame_ctx.curr_frame_resource_index];
+        g_ctx.frame_ctx.curr_frame_resource       = &g_ctx.frame_ctx.frame_resources[g_ctx.frame_ctx.curr_frame_resource_index].slot;
 
         auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, *g_ctx.frame_ctx.curr_frame_resource);
         auto f   = fr.get();
@@ -1792,12 +1909,13 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool set_constant_buffer(const ResourceSlot& resourceSlot, s32 location)
+      bool set_constant_buffer_view(const ResourceSlot& resourceSlot, s32 location)
       {
-        auto& buffer_resource = get_resource_from_pool_as<ConstantBufferResource>(g_ctx.resource_pool, resourceSlot);
+        auto& buffer_resource = get_resource_from_pool_as<ConstantBufferViewResource>(g_ctx.resource_pool, resourceSlot);
 
         auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetGPUDescriptorHandleForHeapStart());
         cbv_handle.Offset(buffer_resource.get()->buffer_index, g_ctx.cbv_srv_uav_desc_size);
+
         g_ctx.command_list->SetGraphicsRootDescriptorTable(location, cbv_handle);
 
         return true;

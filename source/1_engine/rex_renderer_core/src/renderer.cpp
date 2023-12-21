@@ -15,6 +15,7 @@
 #include "rex_renderer_core/commands/create_raster_state_cmd.h"
 #include "rex_renderer_core/commands/create_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_frame_resource_cmd.h"
+#include "rex_renderer_core/commands/attach_commited_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/draw_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
@@ -39,7 +40,7 @@
 #include "rex_renderer_core/commands/set_shader_cmd.h"
 #include "rex_renderer_core/commands/set_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
-#include "rex_renderer_core/commands/update_constant_buffer_cmd.h"
+#include "rex_renderer_core/commands/update_commited_resource_cmd.h"
 
 #include "rex_engine/defines.h"
 #include "rex_engine/ring_buffer.h"
@@ -73,7 +74,7 @@ namespace rex
         using CommandAllocator = rsl::stack_allocator;
         using CommandList = RingBuffer<RenderCommand*>;
 
-        constexpr s64 cmd_allocator_size = rsl::memory_size(8_kib).size_in_bytes();
+        constexpr s64 cmd_allocator_size = rsl::memory_size(512_kib).size_in_bytes();
 
         struct Context
         {
@@ -127,11 +128,11 @@ namespace rex
             }
 
             //-------------------------------------------------------------------------
-            ResourceSlot create_constant_buffer(commands::CreateConstantBufferCommandDesc&& createBufferParams)
+            ResourceSlot create_constant_buffer_view(commands::CreateConstantBufferViewCommandDesc&& createBufferParams)
             {
                 ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
 
-                commands::CreateConstantBuffer* cmd = create_new_command<commands::CreateConstantBuffer>(rsl::move(createBufferParams), resource_slot);
+                commands::CreateConstantBufferView* cmd = create_new_command<commands::CreateConstantBufferView>(rsl::move(createBufferParams), resource_slot);
 
                 if (!process_render_command(cmd))
                 {
@@ -145,6 +146,9 @@ namespace rex
             //-------------------------------------------------------------------------
             bool flush(RingBuffer<RenderCommand*>* cmdList)
             {
+                // Cache executed commands to destroy after we flushed
+                rsl::vector<RenderCommand*> executed_commands;
+
                 RenderCommand** cmd = cmdList->get();
 
                 while (cmd)
@@ -155,9 +159,17 @@ namespace rex
                         return false;
                     }
 
-                    (*cmd)->~RenderCommand();
+                    executed_commands.push_back(*cmd);
 
                     cmd = g_ctx.cmd_list.get();
+                }
+
+                // Manually call the destructor of each command
+                // We will reset the stack allocator back to the beginning and override the existing memory
+                // This will not call any dtors while this happens
+                for (RenderCommand* executed_cmd : executed_commands)
+                {
+                    executed_cmd->~RenderCommand();
                 }
 
                 return true;
@@ -182,6 +194,7 @@ namespace rex
                 , globals::g_default_targets_info.back_buffer_color
                 , globals::g_default_targets_info.depth_buffer);
         }
+        
         //-------------------------------------------------------------------------
         void shutdown()
         {
@@ -201,6 +214,12 @@ namespace rex
         const ResourceSlot* active_frame()
         {
             return backend::active_frame();
+        }
+
+        //-------------------------------------------------------------------------
+        const ResourceSlot* frame_at_index(s32 idx)
+        {
+            return backend::frame_at_index(idx);
         }
 
         //-------------------------------------------------------------------------
@@ -270,9 +289,9 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        ResourceSlot create_constant_buffer(commands::CreateConstantBufferCommandDesc&& createBufferParams)
+        ResourceSlot create_constant_buffer_view(commands::CreateConstantBufferViewCommandDesc&& createBufferParams)
         {
-            return internal::create_constant_buffer(rsl::move(createBufferParams));
+            return internal::create_constant_buffer_view(rsl::move(createBufferParams));
         }
 
         //-------------------------------------------------------------------------
@@ -301,6 +320,22 @@ namespace rex
             if (!process_render_command(cmd))
             {
                 REX_ERROR(LogRendererCore, "Unable to add/exec create frame resource command");
+                return ResourceSlot::make_invalid();
+            }
+
+            return resource_slot;
+        }
+
+        //-------------------------------------------------------------------------
+        ResourceSlot attach_commited_resource_to_frame(commands::AttachCommitedResourceToFrameCommandDesc&& attachCommitedResourceParams)
+        {
+            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+
+            commands::AttachCommitedResourceToFrame* cmd = create_new_command<commands::AttachCommitedResourceToFrame>(rsl::move(attachCommitedResourceParams), resource_slot);
+
+            if (!process_render_command(cmd))
+            {
+                REX_ERROR(LogRendererCore, "Unable to add/exec attach commited resource to frame command");
                 return ResourceSlot::make_invalid();
             }
 
@@ -356,9 +391,9 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool update_constant_buffer(commands::UpdateConstantBufferCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget)
+        bool update_commited_resource(commands::UpdateCommitedResourceCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget)
         {
-            commands::UpdateConstantBuffer* cmd = create_new_command<commands::UpdateConstantBuffer>(rsl::move(updateConstantBufferParams), constantBufferTarget);
+            commands::UpdateCommitedResource* cmd = create_new_command<commands::UpdateCommitedResource>(rsl::move(updateConstantBufferParams), constantBufferTarget);
 
             return process_render_command(cmd);
         }
@@ -545,9 +580,9 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool set_constant_buffer(const ResourceSlot& constantBufferTarget, s32 location)
+        bool set_constant_buffer_view(const ResourceSlot& constantBufferTarget, s32 location)
         {
-            commands::SetConstantBuffer* cmd = create_new_command<commands::SetConstantBuffer>(commands::SetConstantBufferCommandDesc {location}, constantBufferTarget);
+            commands::SetConstantBufferView* cmd = create_new_command<commands::SetConstantBufferView>(commands::SetConstantBufferViewCommandDesc {location}, constantBufferTarget);
 
             return process_render_command(cmd);
         }

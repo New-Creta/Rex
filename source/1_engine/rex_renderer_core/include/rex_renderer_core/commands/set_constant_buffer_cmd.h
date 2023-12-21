@@ -5,43 +5,42 @@
 
 namespace rex
 {
-  namespace renderer
-  {
-    namespace commands
+    namespace renderer
     {
-      struct SetConstantBufferCommandDesc
-      {
-        SetConstantBufferCommandDesc()
-            :location(0)
-        {}
-
-        SetConstantBufferCommandDesc(s32 constantBufferLocation)
-            :location(constantBufferLocation)
-        {}
-
-        s32 location;
-      };
-      class SetConstantBuffer : public RenderCommand
-      {
-      public:
-        SetConstantBuffer(SetConstantBufferCommandDesc&& desc, ResourceSlot slot)
-            : RenderCommand()
-            , m_desc(rsl::move(desc))
-            , m_resource_slot(slot)
+        namespace commands
         {
-        }
+            struct SetConstantBufferViewCommandDesc
+            {
+                SetConstantBufferViewCommandDesc()
+                    :location(0)
+                {}
 
-        ~SetConstantBuffer() override = default;
+                SetConstantBufferViewCommandDesc(s32 constantBufferLocation)
+                    :location(constantBufferLocation)
+                {}
 
-        bool execute() override 
-        {
-          return backend::set_constant_buffer(m_resource_slot, m_desc.location);
-        }
+                s32 location;
+            };
+            class SetConstantBufferView : public RenderCommand
+            {
+            public:
+                SetConstantBufferView(SetConstantBufferViewCommandDesc&& desc, ResourceSlot slot)
+                    : RenderCommand()
+                    , m_desc(rsl::move(desc))
+                    , m_resource_slot(slot)
+                {}
 
-      private:
-        SetConstantBufferCommandDesc m_desc;
-        ResourceSlot m_resource_slot;
-      };
-    } // namespace commands
-  }   // namespace renderer
+                ~SetConstantBufferView() override = default;
+
+                bool execute() override
+                {
+                    return backend::set_constant_buffer_view(m_resource_slot, m_desc.location);
+                }
+
+            private:
+                SetConstantBufferViewCommandDesc m_desc;
+                ResourceSlot m_resource_slot;
+            };
+        } // namespace commands
+    }   // namespace renderer
 } // namespace rex
