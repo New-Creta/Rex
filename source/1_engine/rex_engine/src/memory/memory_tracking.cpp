@@ -146,7 +146,7 @@ namespace rex
 
   void MemoryTracker::track_dealloc(MemoryHeader* header)
   {
-    REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
+    //REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
 
     // Postpone lock after logging to initialize the logger first ( on first access ).
     // Logger requires the same mutex to be locked and we cannot lock the same mutex twice from the same thread.
