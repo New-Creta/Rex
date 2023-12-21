@@ -63,7 +63,7 @@ namespace rex
       {
         // all we have to do is split the command line based with spaces
         // there's no need to perform any heap allocation for that.
-        count_t start_pos = cmdLine.find_first_not_of(' ', 0); // it's possible, although unlikely, that we start with a space
+        card32 start_pos = cmdLine.find_first_not_of(' ', 0); // it's possible, although unlikely, that we start with a space
 
         // all executables should be called with at least 1 argument
         // the first argument should always be the path to the executable itself
@@ -71,7 +71,7 @@ namespace rex
 
         // the module we're launching is always the first argument on the commandline
         // we skip this
-        const count_t space_pos = cmdLine.find_first_of(' ', start_pos);
+        const card32 space_pos = cmdLine.find_first_of(' ', start_pos);
 
         // if we have no arguments, we just return
         // this is possible when running without a debugger
@@ -124,7 +124,7 @@ namespace rex
 
       void add_argument(rsl::string_view arg)
       {
-        const count_t equal_pos = arg.find('=');
+        const card32 equal_pos = arg.find('=');
         rsl::string_view key    = "";
         rsl::string_view value  = "";
 
