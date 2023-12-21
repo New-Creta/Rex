@@ -1,13 +1,3 @@
-# ============================================ 
-#
-# Author: Nick De Breuck
-# Twitter: @nick_debreuck
-# 
-# File: build.py
-# Copyright (c) Nick De Breuck 2023
-#
-# ============================================
-
 # This script acts as the interface to build the rex engine and its tools
 # it supports setting the compiler, configuration as well as the project to build.
 
