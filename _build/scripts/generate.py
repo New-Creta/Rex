@@ -30,6 +30,9 @@ if __name__ == "__main__":
 
   # call generation code to launch sharpmake
   settings_path = os.path.join(root, regis.util.settingsPathFromRoot)
+  
+  # Sharpmake expects to be run from the root directory
+  os.chdir(root)
   result = regis.generation.new_generation(settings_path, config, args.sharpmake_args)
 
   exit(result)
