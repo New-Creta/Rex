@@ -22,6 +22,8 @@ namespace rex
         void shutdown();
 
         bool put(const T& item);
+        bool will_wrap_on_next_put() const;
+        bool will_wrap_on_next_get() const;
 
         T* get();
         T* check();
@@ -32,7 +34,7 @@ namespace rex
         a_u32 m_get_pos;
         a_u32 m_put_pos;
 
-        rsl::atomic<size_t> m_capacity;
+        a_u64 m_capacity;
     };
 
     //-------------------------------------------------------------------------
@@ -120,12 +122,25 @@ namespace rex
     template <typename T>
     T* RingBuffer<T>::check()
     {
-
         u32 gp = m_get_pos;
         if (gp == m_put_pos)
         {
             return nullptr;
         }
         return &m_data[gp];
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename T>
+    bool RingBuffer<T>::will_wrap_on_next_put() const
+    {
+        return (m_put_pos + 1) % m_capacity == 0;
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename T>
+    bool RingBuffer<T>::will_wrap_on_next_get() const
+    {
+        return (m_get_pos + 1) % m_capacity == 0;
     }
 }
