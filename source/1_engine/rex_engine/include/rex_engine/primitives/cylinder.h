@@ -11,13 +11,13 @@ namespace rex
         namespace internal
         {
 			template<typename T>
-            void build_cylinder_top_cap(f32 bottomRadius, f32 topRadius, f32 height, u32 sliceCount, u32 stackCount, MeshData<T>& meshData)
+            void build_cylinder_top_cap(f32 topRadius, f32 height, T sliceCount, MeshData<T>& meshData)
             {
 				// 
 				// Build top cap.
 				//
 
-				u32 base_index = (u32)meshData.vertices().size();
+				T base_index = (T)meshData.vertices().size();
 
 				f32 y = 0.5f * height;
 				f32 d_theta = 2.0f * glm::pi<f32>() / sliceCount;
@@ -40,9 +40,9 @@ namespace rex
 				meshData.add_vertex(Vertex(0.0f, y, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
 
 				// Index of center vertex.
-				u32 center_index = (u32)meshData.vertices().size() - 1;
+				T center_index = (T)meshData.vertices().size() - 1;
 
-				for (u32 i = 0; i < sliceCount; ++i)
+				for (T i = 0; i < sliceCount; ++i)
 				{
 					meshData.add_index(center_index);
 					meshData.add_index(base_index + i + 1);
@@ -51,13 +51,13 @@ namespace rex
 			}
 
 			template<typename T>
-            void build_cylinder_bottom_cap(f32 bottomRadius, f32 topRadius, f32 height, u32 sliceCount, u32 stackCount, MeshData<T>& meshData)
+            void build_cylinder_bottom_cap(f32 bottomRadius, f32 height, T sliceCount, MeshData<T>& meshData)
             {
 				// 
 				// Build bottom cap.
 				//
 
-				u32 base_index = (u32)meshData.vertices().size();
+				T base_index = (T)meshData.vertices().size();
 				f32 y = -0.5f * height;
 
 				// vertices of ring
@@ -79,9 +79,9 @@ namespace rex
 				meshData.add_vertex(Vertex(0.0f, y, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
 
 				// Cache the index of center vertex.
-				u32 center_index = (u32)meshData.vertices().size() - 1;
+				T center_index = (T)meshData.vertices().size() - 1;
 
-				for (u32 i = 0; i < sliceCount; ++i)
+				for (T i = 0; i < sliceCount; ++i)
 				{
 					meshData.add_index(center_index);
 					meshData.add_index(base_index + i);
@@ -91,7 +91,7 @@ namespace rex
         }
 
 		template<typename T>
-		MeshData<T> create_cylinder(f32 bottomRadius, f32 topRadius, f32 height, u32 sliceCount, u32 stackCount)
+		MeshData<T> create_cylinder(f32 bottomRadius, f32 topRadius, f32 height, T sliceCount, T stackCount)
 		{
 			MeshData<T> mesh_data;
 
@@ -162,12 +162,12 @@ namespace rex
 
 			// Add one because we duplicate the first and last vertex per ring
 			// since the texture coordinates are different.
-			u32 ring_vertex_count = sliceCount + 1;
+			T ring_vertex_count = sliceCount + 1;
 
 			// Compute indices for each stack.
-			for (u32 i = 0; i < stackCount; ++i)
+			for (T i = 0; i < stackCount; ++i)
 			{
-				for (u32 j = 0; j < sliceCount; ++j)
+				for (T j = 0; j < sliceCount; ++j)
 				{
 					mesh_data.add_index(i * ring_vertex_count + j);
 					mesh_data.add_index((i + 1) * ring_vertex_count + j);
@@ -179,8 +179,8 @@ namespace rex
 				}
 			}
 
-			internal::build_cylinder_top_cap(bottomRadius, topRadius, height, sliceCount, stackCount, mesh_data);
-			internal::build_cylinder_bottom_cap(bottomRadius, topRadius, height, sliceCount, stackCount, mesh_data);
+			internal::build_cylinder_top_cap(topRadius, height, sliceCount, mesh_data);
+			internal::build_cylinder_bottom_cap(bottomRadius, height, sliceCount, mesh_data);
 
 			return mesh_data;
 		}

@@ -9,9 +9,9 @@ namespace rex
     namespace mesh_factory
     {
         template <typename T>
-        MeshData<T> create_sphere(f32 radius, u32 sliceCount, u32 stackCount)
+        MeshData<T> create_sphere(f32 radius, T sliceCount, T stackCount)
         {
-			MeshData mesh_data;
+			MeshData<T> mesh_data;
 
 			//
 			// Compute the vertices stating at the top pole and moving down the stacks.
@@ -29,12 +29,12 @@ namespace rex
 			f32 theta_step = 2.0f * glm::pi<f32>() / sliceCount;
 
 			// Compute vertices for each stack ring (do not count the poles as rings).
-			for (u32 i = 1; i <= stackCount - 1; ++i)
+			for (T i = 1; i <= stackCount - 1; ++i)
 			{
 				f32 phi = i * phi_step;
 
 				// Vertices of ring.
-				for (u32 j = 0; j <= sliceCount; ++j)
+				for (T j = 0; j <= sliceCount; ++j)
 				{
 					f32 theta = j * theta_step;
 
@@ -70,7 +70,7 @@ namespace rex
 			// and connects the top pole to the first ring.
 			//
 
-			for (u32 i = 1; i <= sliceCount; ++i)
+			for (T i = 1; i <= sliceCount; ++i)
 			{
 				mesh_data.add_index(0);
 				mesh_data.add_index(i + 1);
@@ -83,11 +83,11 @@ namespace rex
 
 			// Offset the indices to the index of the first vertex in the first ring.
 			// This is just skipping the top pole vertex.
-			u32 base_index = 1;
-			u32 ring_vertex_count = sliceCount + 1;
-			for (u32 i = 0; i < stackCount - 2; ++i)
+			T base_index = 1;
+			T ring_vertex_count = sliceCount + 1;
+			for (T i = 0; i < stackCount - 2; ++i)
 			{
-				for (u32 j = 0; j < sliceCount; ++j)
+				for (T j = 0; j < sliceCount; ++j)
 				{
 					mesh_data.add_index(base_index + i * ring_vertex_count + j);
 					mesh_data.add_index(base_index + i * ring_vertex_count + j + 1);
@@ -105,12 +105,12 @@ namespace rex
 			//
 
 			// South pole vertex was added last.
-			u32 south_pole_index = (u32)mesh_data.vertices().size() - 1;
+			T south_pole_index = (T)mesh_data.vertices().size() - 1;
 
 			// Offset the indices to the index of the first vertex in the last ring.
 			base_index = south_pole_index - ring_vertex_count;
 
-			for (u32 i = 0; i < sliceCount; ++i)
+			for (T i = 0; i < sliceCount; ++i)
 			{
 				mesh_data.add_index(south_pole_index);
 				mesh_data.add_index(base_index + i);
@@ -140,7 +140,7 @@ namespace rex
 				glm::vec3(Z, -X, 0.0f),  glm::vec3(-Z, -X, 0.0f)
 			};
 
-			u32 k[60] =
+			T k[60] =
 			{
 				1,4,0,  4,9,0,  4,5,9,  8,5,4,  1,8,4,
 				1,10,8, 10,3,8, 8,3,5,  3,2,5,  3,7,2,

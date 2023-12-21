@@ -7,7 +7,7 @@ namespace rex
     namespace mesh_factory
     {
 		template<typename T>
-		MeshData<T> create_grid(f32 width, f32 depth, u32 m, u32 n)
+		MeshData<T> create_grid(f32 width, f32 depth, T m, T n)
 		{
 			MeshData<T> mesh_data;
 
@@ -52,10 +52,10 @@ namespace rex
 			mesh_data.resize_indices(face_count * 3); // 3 indices per face
 
 			// Iterate over each quad and compute indices.
-			u32 k = 0;
-			for (u32 i = 0; i < m - 1; ++i)
+			T k = 0;
+			for (T i = 0; i < m - 1; ++i)
 			{
-				for (u32 j = 0; j < n - 1; ++j)
+				for (T j = 0; j < n - 1; ++j)
 				{
 					mesh_data.indices()[k] = i * n + j;
 					mesh_data.indices()[k + 1] = i * n + j + 1;
