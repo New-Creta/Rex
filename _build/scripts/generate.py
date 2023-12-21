@@ -1,13 +1,3 @@
-# ============================================ 
-#
-# Author: Nick De Breuck
-# Twitter: @nick_debreuck
-# 
-# File: generate.py
-# Copyright (c) Nick De Breuck 2023
-#
-# ============================================
-
 # This script acts as the interface into sharpmake generation code.
 # usually called by the _rex.py script that sits on the root.
 # in short, it loads the template sharpmake configure script
