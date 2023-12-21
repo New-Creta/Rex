@@ -61,9 +61,6 @@ public class BaseConfiguration
     // Disable warning as errors in debug so that we can add debug code
     // without the compiler warning about it.
     // We just need to make sure we delete it before it goes in to version control
-    // Because Rex Std is its own repository, also using sharpmake and in it
-    // The project definition comes from the repository there.
-    // Base config doesn't setup the solution folder, other than the thirdparty folder
     if (target.Config != Config.debug)
     {
       conf.Options.Add(Options.Vc.General.TreatWarningsAsErrors.Enable);
@@ -77,6 +74,9 @@ public class BaseConfiguration
     // But Rex Std is a BasicCPPProject, so we have to hack around it like this
     // Rex Std is a BasicCPPProject because it is a standalone repository
     // In which it's not a thirdparty project
+    // Because Rex Std is its own repository, also using sharpmake and in it
+    // The project definition comes from the repository there.
+    // Base config doesn't setup the solution folder, other than the thirdparty folder
     if (Utils.FindInParent(Project.SourceRootPath, "0_thirdparty") != "")
     {
       conf.SolutionFolder = "0_thirdparty";
