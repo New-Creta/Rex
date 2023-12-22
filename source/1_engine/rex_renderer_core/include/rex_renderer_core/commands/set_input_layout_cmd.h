@@ -16,7 +16,7 @@ namespace rex
       class SetInputLayout : public RenderCommand
       {
       public:
-        SetInputLayout(SetInputLayoutCommandDesc&& desc, ResourceSlot slot)
+        SetInputLayout(SetInputLayoutCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

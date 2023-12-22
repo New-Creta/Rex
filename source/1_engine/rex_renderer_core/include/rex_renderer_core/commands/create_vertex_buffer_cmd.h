@@ -11,7 +11,7 @@ namespace rex
       class CreateVertexBuffer : public CreateBuffer
       {
       public:
-        CreateVertexBuffer(CreateBufferCommandDesc&& desc, ResourceSlot slot)
+        CreateVertexBuffer(CreateBufferCommandDesc&& desc, const ResourceSlot& slot)
             :CreateBuffer(rsl::move(desc), slot)
         {}
 

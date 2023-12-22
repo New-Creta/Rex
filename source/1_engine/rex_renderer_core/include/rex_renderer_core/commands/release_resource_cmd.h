@@ -26,7 +26,7 @@ namespace rex
       class ReleaseResource : public RenderCommand
       {
       public:
-        ReleaseResource(ReleaseResourceCommandDesc&& desc, ResourceSlot slot)
+        ReleaseResource(ReleaseResourceCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

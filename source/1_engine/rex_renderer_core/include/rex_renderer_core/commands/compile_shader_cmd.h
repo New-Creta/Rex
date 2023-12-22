@@ -30,7 +30,7 @@ namespace rex
       class CompileShader : public RenderCommand
       {
       public:
-        CompileShader(CompileShaderCommandDesc&& desc, ResourceSlot slot)
+        CompileShader(CompileShaderCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

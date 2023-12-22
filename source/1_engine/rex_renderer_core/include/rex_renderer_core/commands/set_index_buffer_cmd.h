@@ -29,7 +29,7 @@ namespace rex
       class SetIndexBuffer : public RenderCommand
       {
       public:
-        SetIndexBuffer(SetIndexBufferCommandDesc&& desc, ResourceSlot slot)
+        SetIndexBuffer(SetIndexBufferCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

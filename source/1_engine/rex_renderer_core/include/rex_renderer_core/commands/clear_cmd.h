@@ -16,7 +16,7 @@ namespace rex
       class Clear : public RenderCommand
       {
       public:
-        Clear(ClearCommandDesc&& desc, ResourceSlot resourceSlot)
+        Clear(ClearCommandDesc&& desc, const ResourceSlot& resourceSlot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(resourceSlot)

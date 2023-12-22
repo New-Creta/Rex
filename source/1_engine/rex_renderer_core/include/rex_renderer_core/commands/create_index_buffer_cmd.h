@@ -11,7 +11,7 @@ namespace rex
       class CreateIndexBuffer : public CreateBuffer
       {
       public:
-        CreateIndexBuffer(CreateBufferCommandDesc&& desc, ResourceSlot slot)
+        CreateIndexBuffer(CreateBufferCommandDesc&& desc, const ResourceSlot& slot)
             :CreateBuffer(rsl::move(desc), slot)
         {}
 

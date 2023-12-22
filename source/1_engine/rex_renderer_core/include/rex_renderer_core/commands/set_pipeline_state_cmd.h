@@ -16,7 +16,7 @@ namespace rex
       class SetPipelineState : public RenderCommand
       {
       public:
-        SetPipelineState(SetPipelineStateCommandDesc&& desc, ResourceSlot slot)
+        SetPipelineState(SetPipelineStateCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

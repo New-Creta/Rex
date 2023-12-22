@@ -10,7 +10,7 @@ namespace rex
         {
             struct AttachCommitedResourceToFrameCommandDesc
             {
-                const ResourceSlot* frame_slot;
+                const ResourceSlot* frame_slot = nullptr;
 
                 s32 buffer_count;
                 s32 buffer_byte_size;
@@ -19,7 +19,7 @@ namespace rex
             class AttachCommitedResourceToFrame : public RenderCommand
             {
             public:
-                AttachCommitedResourceToFrame(AttachCommitedResourceToFrameCommandDesc&& desc, ResourceSlot slot)
+                AttachCommitedResourceToFrame(AttachCommitedResourceToFrameCommandDesc&& desc, const ResourceSlot& slot)
                     : RenderCommand()
                     , m_desc(rsl::move(desc))
                     , m_resource_slot(slot)

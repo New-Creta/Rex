@@ -16,7 +16,7 @@ namespace rex
       class SetShader : public RenderCommand
       {
       public:
-        SetShader(SetShaderCommandDesc&& desc, ResourceSlot slot)
+        SetShader(SetShaderCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

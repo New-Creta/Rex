@@ -102,7 +102,7 @@ namespace rex
 
         //-------------------------------------------------------------------------
         template <typename TCommandType, typename... Args>
-        TCommandType* create_new_command(Args&&... args, ResourceSlot slot)
+        TCommandType* create_new_command(Args&&... args, const ResourceSlot& slot)
         {
             TCommandType* cmd = (TCommandType*)g_ctx.cmd_allocator.allocate(sizeof(TCommandType));
             return new(cmd) TCommandType(rsl::forward<Args>(args)...);

@@ -18,7 +18,7 @@ namespace rex
             class CreateBuffer : public RenderCommand
             {
             public:
-                CreateBuffer(CreateBufferCommandDesc&& desc, ResourceSlot slot)
+                CreateBuffer(CreateBufferCommandDesc&& desc, const ResourceSlot& slot)
                     : RenderCommand()
                     , m_desc(rsl::move(desc))
                     , m_resource_slot(slot)

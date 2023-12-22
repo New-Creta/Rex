@@ -20,7 +20,7 @@ namespace rex
       class LinkShader : public RenderCommand
       {
       public:
-        LinkShader(LinkShaderCommandDesc&& desc, ResourceSlot slot)
+        LinkShader(LinkShaderCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

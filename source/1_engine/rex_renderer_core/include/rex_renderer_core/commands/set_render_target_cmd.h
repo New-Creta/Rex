@@ -16,7 +16,7 @@ namespace rex
         SetRenderTargetCommandDesc()
             :num_color(0)
             ,color()
-            ,depth(ResourceSlot::make_invalid())
+            ,depth()
         {}
 
         s32 num_color;

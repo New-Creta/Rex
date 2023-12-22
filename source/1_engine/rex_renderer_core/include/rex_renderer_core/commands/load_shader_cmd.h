@@ -27,7 +27,7 @@ namespace rex
       class LoadShader : public RenderCommand
       {
       public:
-        LoadShader(LoadShaderCommandDesc&& desc, ResourceSlot slot)
+        LoadShader(LoadShaderCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

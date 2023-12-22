@@ -27,7 +27,7 @@ namespace rex
             class CreateConstantBufferView : public RenderCommand
             {
             public:
-                CreateConstantBufferView(CreateConstantBufferViewCommandDesc&& desc, ResourceSlot slot)
+                CreateConstantBufferView(CreateConstantBufferViewCommandDesc&& desc, const ResourceSlot& slot)
                     : RenderCommand()
                     , m_desc(rsl::move(desc))
                     , m_resource_slot(slot)

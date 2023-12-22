@@ -24,7 +24,7 @@ namespace rex
       class UpdateCommitedResource : public RenderCommand
       {
       public:
-          UpdateCommitedResource(UpdateCommitedResourceCommandDesc&& desc, ResourceSlot slot)
+          UpdateCommitedResource(UpdateCommitedResourceCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)

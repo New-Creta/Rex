@@ -15,7 +15,7 @@ namespace rex
             class CreateFrameResource : public RenderCommand
             {
             public:
-              CreateFrameResource(CreateFrameResourceCommandDesc&& desc, ResourceSlot slot)
+              CreateFrameResource(CreateFrameResourceCommandDesc&& desc, const ResourceSlot& slot)
                   : RenderCommand()
                   , m_desc(rsl::move(desc))
                   , m_resource_slot(slot)
