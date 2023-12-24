@@ -1,15 +1,15 @@
-#include "rex_engine/defines.h"
+#include "rex_engine/engine/defines.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/entrypoint.h"
+#include "rex_engine/engine/entrypoint.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/iostream.h"
 #include "rex_std/bonus/utility/type_id.h"
 #include "rex_windows/console_application.h"
-#include "rex_engine/event_system.h"
+#include "rex_engine/event_system/event_system.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/memory/memory_header.h"
 #include "rex_windows/input/input.h"
-#include "rex_engine/diagnostics/win/win_stacktrace.h"
+#include "rex_engine/diagnostics/stacktrace.h"
 
 DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Log);
 

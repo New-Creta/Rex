@@ -1,4 +1,4 @@
-#include "rex_engine/diagnostics/win/win_message_box.h"
+#include "rex_engine/platform/win/diagnostics/win_message_box.h"
 
 #include "rex_std/bonus/string.h"
 

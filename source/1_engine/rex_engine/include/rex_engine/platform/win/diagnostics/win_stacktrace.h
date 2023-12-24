@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/platform.h" // IWYU pragma: keep
+#include "rex_engine/platform/platform.h" // IWYU pragma: keep
 #include "rex_std/array.h"
 #include "rex_std/bonus/functional.h"
 #include "rex_std/bonus/types.h"

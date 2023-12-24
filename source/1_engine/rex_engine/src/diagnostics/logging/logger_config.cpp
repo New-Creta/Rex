@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/logging/logger_config.h"
 
-#include "rex_engine/cmdline.h"
+#include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"

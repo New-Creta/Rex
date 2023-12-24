@@ -1,15 +1,15 @@
 #include "rex_windows/gui_application.h"
 
-#include "rex_engine/core_window.h"
+#include "rex_engine/app/core_window.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/engine_params.h"
-#include "rex_engine/event.h" // IWYU pragma: keep
-#include "rex_engine/event_system.h"
-#include "rex_engine/event_type.h"
+#include "rex_engine/engine/engine_params.h"
+#include "rex_engine/event_system/event.h" // IWYU pragma: keep
+#include "rex_engine/event_system/event_system.h"
+#include "rex_engine/event_system/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
 #include "rex_std/bonus/types.h"

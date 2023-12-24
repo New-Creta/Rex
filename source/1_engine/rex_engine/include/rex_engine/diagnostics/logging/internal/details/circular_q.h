@@ -3,9 +3,9 @@
 // circular q view of rsl::vector.
 #pragma once
 
-#include "rex_engine/debug_types.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 
 #include <cassert>
 

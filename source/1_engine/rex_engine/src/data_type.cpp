@@ -1,4 +1,4 @@
-#include "rex_engine/data_type.h"
+#include "rex_engine/engine/data_type.h"
 
 #include "glm/ext/matrix_float3x3.hpp"
 #include "glm/ext/matrix_float4x4.hpp"
@@ -13,8 +13,8 @@
 #include "glm/ext/vector_uint4.hpp"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/log.h"
-#include "rex_engine/types.h"
+#include "rex_engine/diagnostics/log.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/format.h"

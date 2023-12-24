@@ -1,6 +1,6 @@
-#include "rex_engine/diagnostics/win/hr_call.h"
+#include "rex_engine/platform/win/diagnostics/hr_call.h"
 
-#include "rex_engine/diagnostics/win/win_debug.h"
+#include "rex_engine/platform/win/diagnostics/win_debug.h"
 #include "rex_std/bonus/attributes.h"
 
 #define NOMINMAX

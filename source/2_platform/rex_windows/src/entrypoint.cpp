@@ -1,7 +1,7 @@
-#include "rex_engine/entrypoint.h"
+#include "rex_engine/engine/entrypoint.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_windows/console_application.h"
 #include "rex_windows/gui_application.h"

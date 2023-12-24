@@ -1,4 +1,4 @@
-#include "rex_engine/win/win_com_library.h"
+#include "rex_engine/platform/win/win_com_library.h"
 
 #include <coml2api.h>
 #include <objbase.h>

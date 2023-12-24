@@ -1,9 +1,9 @@
-#include "rex_engine/cmdline.h"
+#include "rex_engine/cmdline/cmdline.h"
 
-#include "rex_engine/cmd_args.h"
+#include "rex_engine/cmdline/cmd_args.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/log.h"
+#include "rex_engine/diagnostics/log.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility.h"

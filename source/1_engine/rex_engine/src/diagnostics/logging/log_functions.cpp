@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
-#include "rex_engine/debug_types.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 #include "rex_engine/diagnostics/logging/internal/logger_factory.h"

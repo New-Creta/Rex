@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/defines.h"
+#include "rex_engine/engine/defines.h"
 
 namespace rex
 {
