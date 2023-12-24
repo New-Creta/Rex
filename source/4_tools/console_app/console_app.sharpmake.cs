@@ -22,6 +22,13 @@ public class ConsoleApp : ToolsProject
     conf.Options.Add(Options.Vc.Linker.SubSystem.Console);
   }
 
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupOutputType(conf, target);
+
+    conf.Output = Configuration.OutputType.Exe;
+  }
+
   protected override void SetupPlatformRules(RexConfiguration conf, RexTarget target)
   {
     base.SetupPlatformRules(conf, target);

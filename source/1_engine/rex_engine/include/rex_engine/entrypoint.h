@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_std/bonus/types.h"
+#include "rex_engine/engine_params.h"
 
 namespace rex
 {

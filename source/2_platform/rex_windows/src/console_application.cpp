@@ -7,6 +7,7 @@
 #include "rex_engine/event_type.h"
 #include "rex_std/functional.h"
 #include "rex_windows/platform_creation_params.h"
+#include "rex_windows/input/input.h"
 
 #include <Windows.h>
 #include <consoleapi.h>
@@ -71,6 +72,8 @@ namespace rex
 
       void update()
       {
+        input::internal::update();
+
         m_on_update();
       }
 

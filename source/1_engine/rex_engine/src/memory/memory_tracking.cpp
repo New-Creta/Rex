@@ -22,7 +22,9 @@
 #include "rex_std/bonus/time/win/win_timepoint.h"
 #include "rex_std/bonus/utility/yes_no.h"
 
-#include <vcruntime_new.h>
+// there's about 0.8MB allocation overhead of Window's process runtime
+// So during tracking, we need make sure we subtract this memory usage
+// from the app's usage, as there's nothing we can do about it
 
 namespace rex
 {
