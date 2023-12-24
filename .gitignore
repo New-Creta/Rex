@@ -25,3 +25,4 @@ source/1_engine/rex_engine/include/rex_engine/cmd_args.h
 _docs/book/
 fuzzy.log.*
 crash-*
+source/1_engine/rex_engine/include/rex_engine/cmdline/cmd_args.h
