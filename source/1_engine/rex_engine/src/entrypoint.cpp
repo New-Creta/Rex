@@ -2,11 +2,11 @@
 
 #include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/logging/logger_config.h"
-#include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/types.h"
-#include "rex_engine/win/process.h"
-#include "rex_std/bonus/attributes.h"
+#include "rex_engine/filesystem/win/vfs.h"
+#include "rex_std/array.h"
+#include "rex_std/chrono.h"
 #include "rex_std/internal/exception/exit.h"
+#include "rex_std/string.h"
 #include "rex_std/thread.h"
 
 namespace rex
@@ -41,14 +41,6 @@ namespace rex
 
         // when the debugger is attached, skip this line
         rsl::exit(0);
-      }
-
-      // If the program was spawned without a debugger and we want to automatically attach one
-      if (cmdline::get_argument("AttachOnBoot"))
-      {
-        // https://stackoverflow.com/questions/1291580/what-is-this-command-in-c-sharp-c-windows-system32-vsjitdebugger-exe-p-ld
-        auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::win::current_process_id());
-        system(cmd.c_str());
       }
 
       diagnostics::init_log_levels();
