@@ -1,4 +1,4 @@
-#include "rex_engine/platform/win/filesystem/path.h"
+#include "rex_engine/platform/win/filesystem/win_path.h"
 
 #include "rex_engine/engine/numeric.h"
 #include "rex_engine/platform/win/win_com_library.h"
@@ -11,10 +11,10 @@
 
 // The current implementation of this namespace is Windows only
 
-#define NOMINMAX
-#include <Windows.h>
-#include <cstdlib>
-#include <processenv.h>
+//#define NOMINMAX
+//#include <Windows.h>
+//#include <cstdlib>
+//#include <processenv.h>
 
 namespace rex
 {
