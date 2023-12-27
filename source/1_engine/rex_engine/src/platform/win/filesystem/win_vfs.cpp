@@ -27,21 +27,6 @@ DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Log);
 
 // NOLINTBEGIN(modernize-use-nullptr)
 
-// Rex Engine - Virtual File System
-// Users can make simple request to read or write to a file
-// that run on the same thread
-// eg: vfs::read_file and vfs::write_to_file
-//
-// the vfs also supports async read requests
-// this is done by calling vfs::read_file_async
-// This will return a read request immediately
-// the user is meant to keep this read request
-// alive as it'll be signaled when reading has finished
-// After which the user can access its buffer
-// to process the data it just read
-
-
-
 namespace rex
 {
   namespace vfs
@@ -336,6 +321,8 @@ namespace rex
       // Start the worker threads, listening to file IO requests and processing them
       start_threads();
 
+      g_vfs_state_controller.change_state(VfsState::Running);
+
       REX_LOG(FileSystem, "FileSystem initialized");
     }
 
@@ -440,7 +427,8 @@ namespace rex
       // create the read request, which holds a link to the queued request
       queued_request->add_request_to_signal(&request);
 
-      g_read_requests.emplace(rsl::string(filepath), rsl::move(queued_request));
+      auto emplace_res = g_read_requests.emplace(rsl::string(filepath), rsl::move(queued_request));
+      g_read_requests_in_order.push_back(emplace_res.inserted_element->key);
 
       return request;
     }

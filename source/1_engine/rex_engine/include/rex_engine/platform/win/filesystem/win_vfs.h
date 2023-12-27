@@ -10,6 +10,31 @@
 
 namespace rex
 {
+  // Rex Engine - Virtual File System
+  // Users can make simple request to read or write to a file
+  // that run on the same thread
+  // eg: vfs::read_file and vfs::write_to_file
+  //
+  // the vfs also supports async read requests
+  // this is done by calling vfs::read_file_async
+  // This will return a read request immediately
+  // the user is meant to keep this read request
+  // alive as it'll be signaled when reading has finished
+  // After which the user can access its buffer
+  // to process the data it just read
+  // It works as follows:
+  // 
+  // rex::vfs::ReadRequest request = rex::vfs::read_file_async("path/to/file");
+  //
+  // Wait for the file to be processed
+  // request.wait();
+  //
+  // const rsl::byte* buffer = request.buffer();
+  // rsl::memory_size size = request.size();
+  //
+  // Do something with the data..
+
+
   namespace vfs
   {
     DEFINE_YES_NO_ENUM(AppendToFile);
