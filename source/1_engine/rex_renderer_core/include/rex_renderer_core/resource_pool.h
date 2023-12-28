@@ -2,13 +2,13 @@
 
 #include "rex_engine/types.h"
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_engine/threading/reentrant_lock.h"
 
 #include "rex_renderer_core/resource_slot.h"
 #include "rex_renderer_core/resource.h"
 
 #include <rex_std/memory.h>
 #include <rex_std/unordered_map.h>
+#include <rex_std/mutex.h>
 
 namespace rex
 {
@@ -19,24 +19,24 @@ namespace rex
         class ResourcePool
         {
         public:
-            void                initialize(s32 reservedCapacity);
-            void                clear();
+            void                    initialize(s32 reservedCapacity);
+            void                    clear();
 
-            void                insert(const ResourceSlot& slot, ResourcePtr&& resource);
-            void                remove(const ResourceSlot& slot);
+            void                    insert(const ResourceSlot& slot, ResourcePtr&& resource);
+            void                    remove(const ResourceSlot& slot);
 
-            bool                has_slot(const ResourceSlot& slot) const;
+            bool                    has_slot(const ResourceSlot& slot) const;
 
-            ResourcePtr&        at(const ResourceSlot& slot);
-            const ResourcePtr&  at(const ResourceSlot& slot) const;
+            ResourcePtr&            at(const ResourceSlot& slot);
+            const ResourcePtr&      at(const ResourceSlot& slot) const;
 
         private:
             using ResourceMap = rsl::unordered_map<ResourceSlot, ResourcePtr>;
 
-            void                validate_and_grow_if_necessary(const ResourceSlot& minCapacity);
+            void                    validate_and_grow_if_necessary(const ResourceSlot& minCapacity);
 
-            ResourceMap         m_resource_map;
-            ReentrantLock       m_lock;
+            ResourceMap             m_resource_map;
+            rsl::recursive_mutex    m_lock;
         };
 
         //-----------------------------------------------------------------------

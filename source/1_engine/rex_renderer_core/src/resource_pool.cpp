@@ -1,7 +1,5 @@
 #include "rex_renderer_core/resource_pool.h"
 
-#include "rex_engine/threading/scoped_lock.h"
-
 namespace rex
 {
     namespace renderer
@@ -15,7 +13,7 @@ namespace rex
         //-----------------------------------------------------------------------
         void ResourcePool::clear()
         {
-            ScopedLock sl(m_lock);
+            rsl::unique_lock sl(m_lock);
             m_resource_map.clear();
         }
 
@@ -24,7 +22,7 @@ namespace rex
         {
             validate_and_grow_if_necessary(slot);
 
-            ScopedLock sl(m_lock);
+            rsl::unique_lock sl(m_lock);
             m_resource_map[slot] = rsl::move(resource);
         }
 
@@ -33,7 +31,7 @@ namespace rex
         {
             REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
 
-            ScopedLock sl(m_lock);
+            rsl::unique_lock sl(m_lock);
             m_resource_map.erase(slot);
         }
 
@@ -69,7 +67,7 @@ namespace rex
             {
                 s32 new_cap = (min_capacity * 2) + 1; // Grow to accommodate the slot
 
-                ScopedLock sl(m_lock);
+                rsl::unique_lock sl(m_lock);
                 m_resource_map.reserve(new_cap);
             }
         }
