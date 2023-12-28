@@ -27,6 +27,90 @@ DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Log);
 
 // NOLINTBEGIN(modernize-use-nullptr)
 
+  // Rex Engine - Virtual File System
+  // Users can make simple request to read or write to a file
+  // that run on the same thread
+  // eg: vfs::read_file and vfs::write_to_file
+  //
+  // the vfs also supports async read requests
+  // this is done by calling vfs::read_file_async
+  // This will return a read request immediately
+  // the user is meant to keep this read request
+  // alive as it'll be signaled when reading has finished
+  // After which the user can access its buffer
+  // to process the data it just read
+  // It works as follows:
+  // 
+  // rex::vfs::ReadRequest request = rex::vfs::read_file_async("path/to/file");
+  //
+  // Do some other code here
+  // ..
+  // 
+  // 
+  // Wait for the file to be processed
+  // request.wait();
+  //
+  // const rsl::byte* buffer = request.buffer();
+  // rsl::memory_size size = request.size();
+  //
+  // Do something with the data..
+  //
+  // 
+  // 
+  // ASYNC VFS PIPELINE
+  // 
+  // 
+  // =====================================+=====================================================================================================================
+  //                                      |
+  //           USER CODE                  |                                                 INTERNAL CODE
+  //                                      |
+  // =====================================+=====================================================================================================================
+  //                                      |
+  // The following happens on the thread  |
+  // the request comes in from            |
+  //                                      |
+  // +-------------------------+          |            +----------------------+      +------------------------+      +-------------------------------+
+  // | User Requests File Read | ---------+----------> | Read Request Created | ---> | Queued Request Created | ---> | Queued Request Added To Queue |
+  // +-------------------------+          |            +----------------------+      +------------------------+      +-------------------------------+
+  //                                      |                                                                                         |
+  //                                      |                                                                                         |
+  // +----------------+                   |                                +-----------------------------+                          |
+  // | User Continues | <-----------------+------------------------------- | Return Read Request To User |   <----------------------+
+  // +----------------+                   |                                +-----------------------------+
+  //         |                            |       
+  //         |                            |                                               The following happens on the vfs thread
+  //         |                            |              +----------------------------------------------------------------------------------------------------+
+  //         |                            |              |                                                                                                    |
+  //         |                            |              |       +----------------------------------+      +--------------------------+      +-----------+    |
+  //         |                            |              |       | Queued Request Popped From Queue | ---> | Queued Request Processed | ---> | File Read |    |
+  //         v                            |              |       +----------------------------------+      +--------------------------+      +-----------+    |
+  // +-----------------+                  |              |                                                                                        |           |
+  // | Other User Code |                  |              |                                                                                        |           |              
+  // +-----------------+                  |              |                                                                                        |           |
+  //        |                             |              |                                                                                        |           |
+  //        |                             |              |                                                                                        |           |
+  //        |                             |              |                                                                                        |           |
+  //        v                             |              |                                                                                        |           |
+  // +-----------------------------+      |              |                                                                                        |           |
+  // | Waits for request to finish |      |              |                                                                                        |           |
+  // +-----------------------------+      |              |                                                                                        |           |
+  //        |                             |              |                                                                                        |           |
+  //        |                             |              |                                                                                        |           |
+  //        |                             |              |                                                                                        |           |
+  //        v                             |              |                                                                                        |           |
+  // +---------------------+              |              |                               +-----------------------+                                |           |
+  // | User Processes Data | <------------+--------------+-------------------------------| Read Request Signaled | <------------------------------+           |
+  // +---------------------+              |              |                               +-----------------------+                                            |
+  //                                      |              |                                                                                                    |
+  //                                      |              +----------------------------------------------------------------------------------------------------+
+  //                                    
+
+
+
+
+
+
+
 namespace rex
 {
   namespace vfs
