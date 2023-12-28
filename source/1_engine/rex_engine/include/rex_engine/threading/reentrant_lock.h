@@ -117,11 +117,13 @@ namespace rex
         // writes have been fully committed before unlock
         rsl::atomic_thread_fence(rsl::memory_order_release);
 
+#ifdef REX_DEBUG
         rsl::hash<rsl::thread::id> hasher;
         auto tid = hasher(rsl::this_thread::get_id());
         auto actual = m_atomic.load(rsl::memory_order_relaxed);
 
         REX_ASSERT_X(actual == tid, "This thread id is expected to be equal to the stored thread id when unlocking");
+#endif
 
         --m_ref_count;
         if (m_ref_count == 0)
