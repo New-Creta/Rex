@@ -13,32 +13,17 @@ namespace rex
     {
         struct Vertex
         {
-            Vertex()
-                :position()
-                ,normal()
-                ,tangent()
-                ,uv()
-            {}
-            Vertex(const glm::vec3& inPos, const glm::vec3& inNorm, const glm::vec3& inTang, const glm::vec2& inUV)
-                :position(inPos)
-                ,normal(inNorm)
-                ,tangent(inTang)
-                ,uv(inUV)
-            {}
-            Vertex(f32 xp, f32 yp, f32 zp, f32 xn, f32 yn, f32 zn, f32 xt, f32 yt, f32 zt, f32 xu, f32 yu)
-                :position(xp, yp, zp)
-                ,normal(xn, yn, zn)
-                ,tangent(xt, yt, zt)
-                ,uv(xu, yu)
-            {
-
-            }
+            Vertex();
+            Vertex(const glm::vec3& inPos, const glm::vec3& inNorm, const glm::vec3& inTang, const glm::vec2& inUV);
+            Vertex(f32 xp, f32 yp, f32 zp, f32 xn, f32 yn, f32 zn, f32 xt, f32 yt, f32 zt, f32 xu, f32 yu);
 
             glm::vec3 position;
             glm::vec3 normal;
             glm::vec3 tangent;
             glm::vec2 uv;
         };
+
+        Vertex mid_point(const Vertex& v0, const Vertex& v1);
 
         template<typename T>
         class MeshData
@@ -97,6 +82,7 @@ namespace rex
             for (u32 i = 0; i < numVertices; ++i)
                 m_vertices.push_back(vertices[i]);
         }
+
         //-----------------------------------------------------------------------
         template<typename T>
         void MeshData<T>::assign_indices(const MeshData<T>::index_type* indices, u32 numIndices)
@@ -112,6 +98,7 @@ namespace rex
         {
             m_vertices.push_back(v);
         }
+
         //-----------------------------------------------------------------------
         template<typename T>
         void MeshData<T>::add_index(MeshData<T>::index_type i)
@@ -125,6 +112,7 @@ namespace rex
         {
             m_vertices.emplace_back(pos, norm, tang, uv);
         }
+
         //-----------------------------------------------------------------------
         template<typename T>
         void MeshData<T>::emplace_index(MeshData<T>::index_type i)
@@ -156,6 +144,7 @@ namespace rex
         {
             m_vertices.reserve(num);
         }
+
         //-----------------------------------------------------------------------
         template<typename T>
         void MeshData<T>::reserve_indices(u32 num)
@@ -169,6 +158,7 @@ namespace rex
         {
             m_vertices.resize(num);
         }
+
         //-----------------------------------------------------------------------
         template<typename T>
         void MeshData<T>::resize_indices(u32 num)
@@ -182,6 +172,7 @@ namespace rex
         {
             return m_vertices;
         }
+
         //-----------------------------------------------------------------------
         template<typename T>
         const rsl::vector<typename MeshData<T>::index_type>& MeshData<T>::indices() const
@@ -189,27 +180,20 @@ namespace rex
             return m_indices;
         }
 
-        template<typename T>
-        Vertex mid_point(const Vertex& v0, const Vertex& v1)
-        {
-            // Compute the midpoints of all the attributes.  Vectors need to be normalized
-            // since linear interpolating can make them not unit length.  
-            Vertex v;
-
-            v.position = 0.5f * (v0.position + v1.position);
-            v.normal = glm::normalize(0.5f * (v0.normal + v1.normal));
-            v.tangent = glm::normalize(0.5f * (v0.tangent + v1.tangent));
-            v.uv = 0.5f * (v0.uv + v1.uv);
-
-            return v;
-        }
-
+        //-----------------------------------------------------------------------
+        /**
+         * @brief Subdivides each triangle in the mesh into four smaller triangles.
+         *
+         * @tparam T The type of data used for indices.
+         * @param meshData The mesh data containing vertices and indices to subdivide.
+         */
         template<typename T>
         void subdivide(MeshData<T>& meshData)
         {
             // Save a copy of the input geometry.
             MeshData<T> input_copy = meshData;
 
+            // Clear existing vertices and indices.
             meshData.resize_vertices(0);
             meshData.resize_indices(0);
 
@@ -223,9 +207,11 @@ namespace rex
         	// *-----*-----*
             // v0    m2     v2
 
+            // Loop through each triangle in the input mesh.
             s32 num_tris = input_copy.indices().size() / 3;
             for (s32 i = 0; i < num_tris; ++i)
             {
+                // Retrieve vertices of the current triangle.
                 const Vertex& v0 = input_copy.vertices()[input_copy.indices()[i * 3 + 0]];
                 const Vertex& v1 = input_copy.vertices()[input_copy.indices()[i * 3 + 1]];
                 const Vertex& v2 = input_copy.vertices()[input_copy.indices()[i * 3 + 2]];
@@ -234,14 +220,16 @@ namespace rex
                 // Generate the midpoints.
                 //
 
-                Vertex m0 = mid_point<T>(v0, v1);
-                Vertex m1 = mid_point<T>(v1, v2);
-                Vertex m2 = mid_point<T>(v0, v2);
+                // Calculate midpoints of triangle edges.
+                Vertex m0 = mid_point(v0, v1);
+                Vertex m1 = mid_point(v1, v2);
+                Vertex m2 = mid_point(v0, v2);
 
                 //
                 // Add new geometry.
                 //
 
+                // Add original vertices and midpoints to meshData.
                 meshData.add_vertex(v0); // 0
                 meshData.add_vertex(v1); // 1
                 meshData.add_vertex(v2); // 2
@@ -249,6 +237,7 @@ namespace rex
                 meshData.add_vertex(m1); // 4
                 meshData.add_vertex(m2); // 5
 
+                // Define indices for the new smaller triangles.
                 meshData.add_index((T)i * 6 + 0);
                 meshData.add_index((T)i * 6 + 3);
                 meshData.add_index((T)i * 6 + 5);
