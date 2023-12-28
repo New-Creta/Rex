@@ -635,7 +635,7 @@ namespace rex
             REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", frameSlot->slot_id());
             REX_ASSERT_X(internal::has_commited_resource_for_frame(frameSlot, commitedResourceSlot), "Unable to find commited resource for give frame: {}", frameSlot->slot_id());
 
-            auto& commited_buffer_resource = get_resource_from_pool_as<CommitedBufferResource>(g_ctx.resource_pool, *commitedResourceSlot);
+            auto& commited_buffer_resource = g_ctx.resource_pool.as<CommitedBufferResource>(*commitedResourceSlot);
             auto  commited_resource = commited_buffer_resource.get();
 
             s32 obj_cb_byte_size = rex::align(bufferByteSize, s_constant_buffer_min_allocation_size);
@@ -1431,13 +1431,13 @@ namespace rex
           return true;
         }
 
-        auto& input_layout_resource   = get_resource_from_pool_as<InputLayoutResource>(g_ctx.resource_pool, cps.input_layout);
-        auto& shader_program_resource = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, cps.shader_program);
+        auto& input_layout_resource   = g_ctx.resource_pool.as<InputLayoutResource>(cps.input_layout);
+        auto& shader_program_resource = g_ctx.resource_pool.as<ShaderProgramResource>(cps.shader_program);
 
         D3D12_RASTERIZER_DESC raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         if(cps.rasterizer_state.is_valid())
         {
-          auto& raster_state_resource = get_resource_from_pool_as<RasterStateResource>(g_ctx.resource_pool, cps.rasterizer_state);
+          auto& raster_state_resource = g_ctx.resource_pool.as<RasterStateResource>(cps.rasterizer_state);
           raster_state                = *raster_state_resource.get();
         }
         D3D12_BLEND_DESC blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -1569,8 +1569,8 @@ namespace rex
           return false;
         }
 
-        auto& vsr = get_resource_from_pool_as<VertexShaderResource>(g_ctx.resource_pool, ls.vertex_shader);
-        auto& psr = get_resource_from_pool_as<PixelShaderResource>(g_ctx.resource_pool, ls.pixel_shader);
+        auto& vsr = g_ctx.resource_pool.as<VertexShaderResource>(ls.vertex_shader);
+        auto& psr = g_ctx.resource_pool.as<PixelShaderResource>(ls.pixel_shader);
 
         g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<ShaderProgramResource>(root_sig, vsr.get()->vertex_shader, psr.get()->pixel_shader, ls.constants.data(), ls.constants.size()));
 
@@ -1624,7 +1624,7 @@ namespace rex
       //-------------------------------------------------------------------------
       void update_commited_resource(const commands::UpdateCommitedResourceCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot)
       {
-        auto& cbr = get_resource_from_pool_as<CommitedBufferResource>(g_ctx.resource_pool, resourceSlot);
+        auto& cbr = g_ctx.resource_pool.as<CommitedBufferResource>(resourceSlot);
         auto cs   = cbr.get();
 
         memcpy(&cs->mapped_data[updateConstantBuffer.element_index * cs->element_data_byte_size], updateConstantBuffer.buffer_data.data(), updateConstantBuffer.buffer_data.size());
@@ -1637,7 +1637,7 @@ namespace rex
         g_ctx.frame_ctx.curr_frame_resource_index = (g_ctx.frame_ctx.curr_frame_resource_index + 1) % g_ctx.frame_ctx.frame_resources.size();
         g_ctx.frame_ctx.curr_frame_resource       = &g_ctx.frame_ctx.frame_resources[g_ctx.frame_ctx.curr_frame_resource_index].slot;
 
-        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, *g_ctx.frame_ctx.curr_frame_resource);
+        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.curr_frame_resource);
         auto f   = fr.get();
 
         if(f->fence != 0 && g_ctx.fence->GetCompletedValue() < f->fence)
@@ -1659,7 +1659,7 @@ namespace rex
       //-------------------------------------------------------------------------
       void clear(const ResourceSlot& resourceSlot)
       {
-        auto& csr = get_resource_from_pool_as<ClearStateResource>(g_ctx.resource_pool, resourceSlot);
+        auto& csr = g_ctx.resource_pool.as<ClearStateResource>(resourceSlot);
 
         ClearBits flags = csr.get()->flags;
 
@@ -1670,7 +1670,7 @@ namespace rex
           for(s32 i = 0; i < g_ctx.active_color_targets; ++i)
           {
             auto& render_target_id = g_ctx.active_color_target[i];
-            auto& render_target    = get_resource_from_pool_as<RenderTargetResource>(g_ctx.resource_pool, render_target_id);
+            auto& render_target    = g_ctx.resource_pool.as<RenderTargetResource>(render_target_id);
 
             D3D12_CPU_DESCRIPTOR_HANDLE backbuffer_desc = internal::rendertarget_buffer_descriptor(render_target.get()->array_index);
 
@@ -1681,7 +1681,7 @@ namespace rex
         if(flags & ClearBits::CLEAR_DEPTH_BUFFER || flags & ClearBits::CLEAR_STENCIL_BUFFER)
         {
           auto& depth_stencil_target_id = g_ctx.active_depth_target;
-          auto& depth_stencil_target    = get_resource_from_pool_as<DepthStencilTargetResource>(g_ctx.resource_pool, depth_stencil_target_id);
+          auto& depth_stencil_target    = g_ctx.resource_pool.as<DepthStencilTargetResource>(depth_stencil_target_id);
 
           D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_desc = internal::depthstencil_buffer_descriptor(depth_stencil_target.get()->array_index);
 
@@ -1795,7 +1795,7 @@ namespace rex
 
           if(color_target.is_valid())
           {
-            auto& render_target = get_resource_from_pool_as<RenderTargetResource>(g_ctx.resource_pool, color_target);
+            auto& render_target = g_ctx.resource_pool.as<RenderTargetResource>(color_target);
 
             render_target_handles[i] = internal::rendertarget_buffer_descriptor(render_target.get()->array_index);
           }
@@ -1810,7 +1810,7 @@ namespace rex
         D3D12_CPU_DESCRIPTOR_HANDLE depth_stencil_handle = {};
         if(depthTarget.is_valid())
         {
-          auto& depth_stencil_target = get_resource_from_pool_as<DepthStencilTargetResource>(g_ctx.resource_pool, depthTarget);
+          auto& depth_stencil_target = g_ctx.resource_pool.as<DepthStencilTargetResource>(depthTarget);
 
           depth_stencil_handle = internal::depthstencil_buffer_descriptor(depth_stencil_target.get()->array_index);
         }
@@ -1869,7 +1869,7 @@ namespace rex
 
         for(s32 i = 0; i < numBuffers; ++i)
         {
-          auto& buffer_resource = get_resource_from_pool_as<BufferResource>(g_ctx.resource_pool, vertexBufferTargets[i]);
+          auto& buffer_resource = g_ctx.resource_pool.as<BufferResource>(vertexBufferTargets[i]);
 
           D3D12_VERTEX_BUFFER_VIEW view;
 
@@ -1891,7 +1891,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_index_buffer(const ResourceSlot& indexBufferTarget, IndexBufferFormat format, s32 offset)
       {
-        auto& buffer_resource = get_resource_from_pool_as<BufferResource>(g_ctx.resource_pool, indexBufferTarget);
+        auto& buffer_resource = g_ctx.resource_pool.as<BufferResource>(indexBufferTarget);
 
         D3D12_INDEX_BUFFER_VIEW ibv;
 
@@ -1912,7 +1912,7 @@ namespace rex
       {
         g_ctx.active_shader_program = resourceSlot;
 
-        auto& shader_program = get_resource_from_pool_as<ShaderProgramResource>(g_ctx.resource_pool, resourceSlot);
+        auto& shader_program = g_ctx.resource_pool.as<ShaderProgramResource>(resourceSlot);
 
         g_ctx.command_list->SetGraphicsRootSignature(shader_program.get()->root_signature.Get());
 
@@ -1922,7 +1922,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_constant_buffer_view(const ResourceSlot& resourceSlot, s32 location)
       {
-        auto& buffer_resource = get_resource_from_pool_as<ConstantBufferViewResource>(g_ctx.resource_pool, resourceSlot);
+        auto& buffer_resource = g_ctx.resource_pool.as<ConstantBufferViewResource>(resourceSlot);
 
         auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetGPUDescriptorHandleForHeapStart());
         cbv_handle.Offset(buffer_resource.get()->buffer_index, g_ctx.cbv_srv_uav_desc_size);
@@ -1959,7 +1959,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool new_frame()
       {
-        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, *g_ctx.frame_ctx.curr_frame_resource);
+        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.curr_frame_resource);
         auto f   = fr.get();
 
         // Reuse the memory assosiated with command recording.
@@ -1973,7 +1973,7 @@ namespace rex
 
         // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the
         // command list reuses memory.
-        auto& pso = get_resource_from_pool_as<PipelineStateResource>(g_ctx.resource_pool, g_ctx.active_pipeline_state_object);
+        auto& pso = g_ctx.resource_pool.as<PipelineStateResource>(g_ctx.active_pipeline_state_object);
         if(internal::reset_command_list(f->cmd_list_allocator.Get(), pso.get()) == false)
         {
           REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_ctx.frame_ctx.curr_frame_resource_index);
@@ -1986,7 +1986,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool end_frame()
       {
-        auto& fr = get_resource_from_pool_as<FrameResource>(g_ctx.resource_pool, *g_ctx.frame_ctx.curr_frame_resource);
+        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.curr_frame_resource);
         auto f   = fr.get();
 
         // Advance the fence value to mark commands up to this fence point.
@@ -2007,7 +2007,7 @@ namespace rex
         {
           const ResourceSlot& buffer_index = g_ctx.active_color_target[i];
 
-          auto& render_target = get_resource_from_pool_as<RenderTargetResource>(g_ctx.resource_pool, buffer_index);
+          auto& render_target = g_ctx.resource_pool.as<RenderTargetResource>(buffer_index);
 
           // Indicate a state transition on the resouce usage.
           D3D12_RESOURCE_BARRIER render_target_transition = CD3DX12_RESOURCE_BARRIER::Transition(render_target.get()->render_target.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
@@ -2028,7 +2028,7 @@ namespace rex
         {
           ResourceSlot buffer_slot = g_ctx.active_color_target[i];
 
-          auto& render_target = get_resource_from_pool_as<RenderTargetResource>(g_ctx.resource_pool, buffer_slot);
+          auto& render_target = g_ctx.resource_pool.as<RenderTargetResource>(buffer_slot);
 
           // Indicate a state transition on the resouce usage.
           D3D12_RESOURCE_BARRIER present_transition = CD3DX12_RESOURCE_BARRIER::Transition(render_target.get()->render_target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
