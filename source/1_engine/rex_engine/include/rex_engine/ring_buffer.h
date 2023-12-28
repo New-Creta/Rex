@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_std/memory.h"
+#include "rex_std_extra/utility/casting.h"
 
 namespace rex
 {
@@ -28,7 +29,7 @@ namespace rex
         T* check();
 
     private:
-        T* m_data = nullptr;
+        rsl::unique_array<T> m_data = nullptr;
 
         a_u32 m_get_pos;
         a_u32 m_put_pos;
@@ -63,9 +64,9 @@ namespace rex
     template <typename T>
     void RingBuffer<T>::initialize(u32 cap)
     {
-        if (m_data != nullptr)
+        if (m_data)
         {
-            free(m_data);
+            m_data.reset();
         }
 
         m_get_pos = 0;
@@ -77,18 +78,16 @@ namespace rex
             return;
         }
 
-        m_data = (T*)malloc(sizeof(T) * m_capacity.load());
-        rsl::memset(m_data, 0x0, sizeof(T) * m_capacity.load());
+        m_data = rsl::make_unique<T[]>(rsl::safe_numeric_cast<u32>(sizeof(T) * m_capacity.load()));
     }
 
     //-------------------------------------------------------------------------
     template <typename T>
     void RingBuffer<T>::shutdown()
     {
-        if (m_data != nullptr)
+        if (m_data)
         {
-            free(m_data);
-            m_data = nullptr;
+            m_data.reset();
         }
     }
 
