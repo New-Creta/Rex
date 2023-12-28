@@ -860,7 +860,7 @@ namespace rex
             return false;
           }
 
-          directx::set_debug_name_for(depth_stencil_buffer.Get(), "Render Target Buffer");
+          directx::set_debug_name_for(depth_stencil_buffer.Get(), "Depth Stencil Target Buffer");
 
           // Create descriptor to mip level 0 of entire resource using the
           // format of the resource
