@@ -272,25 +272,19 @@ namespace rex
         const u32 vb_byte_size = total_vertex_count * sizeof(renderer::VertexPosCol);
         const u32 ib_byte_size = total_index_count * sizeof(u16);
 
-        g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>();
-        g_regina_ctx.mesh_cube->name = rsl::medium_stack_string("box_geometry");
-
+        renderer::Mesh::VertexBufferDesc vbd;
         renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(box_vertices.data(), box_vertices.size());
-        g_regina_ctx.mesh_cube->vertex_buffer = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
+        vbd.slot = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
+        vbd.byte_size = vb_byte_size;
+        vbd.byte_stride = sizeof(renderer::VertexPosCol);
+        renderer::Mesh::IndexBufferDesc ibd;
         renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
-        g_regina_ctx.mesh_cube->index_buffer = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
+        ibd.slot = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
+        ibd.format = renderer::IndexBufferFormat::R16_UINT;
+        ibd.byte_size = ib_byte_size;
 
-        g_regina_ctx.mesh_cube->vertex_byte_stride = sizeof(renderer::VertexPosCol);
-        g_regina_ctx.mesh_cube->vertex_buffer_byte_size = vb_byte_size;
-        g_regina_ctx.mesh_cube->index_format = renderer::IndexBufferFormat::R16_UINT;
-        g_regina_ctx.mesh_cube->index_buffer_byte_size = ib_byte_size;
-
-        renderer::Submesh submesh;
-        submesh.index_count = total_index_count;
-        submesh.start_index_location = 0;
-        submesh.base_vertex_location = 0;
-
-        g_regina_ctx.mesh_cube->draw_args["box"_small] = submesh;
+        g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>("box_geometry"_med, vbd, ibd);
+        g_regina_ctx.mesh_cube->add_submesh("box"_small, total_index_count, 0, 0);
 
         return true;
     }
@@ -395,26 +389,25 @@ namespace rex
         const u32 vb_byte_size = total_vertex_count * sizeof(renderer::VertexPosCol);
         const u32 ib_byte_size = total_index_count * sizeof(u16);
 
-        auto geometry = rsl::make_unique<renderer::Mesh>();
-
-        geometry->name = "scene_geometry"_med;
-
+        renderer::Mesh::VertexBufferDesc vbd;
         renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(vertices.data(), vertices.size());
-        geometry->vertex_buffer = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
+        vbd.slot = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
+        vbd.byte_size = vb_byte_size;
+        vbd.byte_stride = sizeof(renderer::VertexPosCol);
+        renderer::Mesh::IndexBufferDesc ibd;
         renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(indices.data(), indices.size());
-        geometry->index_buffer = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
+        ibd.slot = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
+        ibd.format = renderer::IndexBufferFormat::R16_UINT;
+        ibd.byte_size = ib_byte_size;
 
-        geometry->vertex_byte_stride = sizeof(renderer::VertexPosCol);
-        geometry->vertex_buffer_byte_size = vb_byte_size;
-        geometry->index_format = renderer::IndexBufferFormat::R16_UINT;
-        geometry->index_buffer_byte_size = ib_byte_size;
+        auto geometry = rsl::make_unique<renderer::Mesh>("scene_geometry"_med, vbd, ibd);
 
-        geometry->draw_args["box"_small] = box_submesh;
-        geometry->draw_args["grid"_small] = grid_submesh;
-        geometry->draw_args["sphere"_small] = sphere_submesh;
-        geometry->draw_args["cylinder"_small] = cylinder_submesh;
+        geometry->add_submesh("box"_small, box_submesh);
+        geometry->add_submesh("grid"_small, grid_submesh);
+        geometry->add_submesh("sphere"_small, sphere_submesh);
+        geometry->add_submesh("cylinder"_small, cylinder_submesh);
 
-        g_regina_ctx.meshes[geometry->name] = rsl::move(geometry);
+        g_regina_ctx.meshes[geometry->name()] = rsl::move(geometry);
 
         return true;
     }
@@ -430,9 +423,9 @@ namespace rex
         cube_r_item.constant_buffer_index = 0;
         cube_r_item.geometry = g_regina_ctx.mesh_cube.get();
         cube_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
-        cube_r_item.index_count = cube_r_item.geometry->draw_args["box"_small].index_count;
-        cube_r_item.start_index_location = cube_r_item.geometry->draw_args["box"_small].start_index_location;
-        cube_r_item.base_vertex_location = cube_r_item.geometry->draw_args["box"_small].base_vertex_location;
+        cube_r_item.index_count = cube_r_item.geometry->submesh("box"_small)->index_count;
+        cube_r_item.start_index_location = cube_r_item.geometry->submesh("box"_small)->start_index_location;
+        cube_r_item.base_vertex_location = cube_r_item.geometry->submesh("box"_small)->base_vertex_location;
 
         // Dirty flag indicating the object data has changed and we need to update the constant buffer.
         // Because we have an object cbuffer for each FrameResource, we have to apply the
@@ -458,9 +451,9 @@ namespace rex
         box_r_item.constant_buffer_index = 0;
         box_r_item.geometry = g_regina_ctx.meshes["scene_geometry"_med].get();
         box_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
-        box_r_item.index_count = box_r_item.geometry->draw_args["box"_small].index_count;
-        box_r_item.start_index_location = box_r_item.geometry->draw_args["box"_small].start_index_location;
-        box_r_item.base_vertex_location = box_r_item.geometry->draw_args["box"_small].base_vertex_location;
+        box_r_item.index_count = box_r_item.geometry->submesh("box"_small)->index_count;
+        box_r_item.start_index_location = box_r_item.geometry->submesh("box"_small)->start_index_location;
+        box_r_item.base_vertex_location = box_r_item.geometry->submesh("box"_small)->base_vertex_location;
         box_r_item.num_frames_dirty = renderer::num_frames_in_flight();
         g_regina_ctx.scene->add_render_item(rsl::move(box_r_item));
 
@@ -469,9 +462,9 @@ namespace rex
         grid_r_item.constant_buffer_index = 1;
         grid_r_item.geometry = g_regina_ctx.meshes["scene_geometry"_med].get();
         grid_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
-        grid_r_item.index_count = grid_r_item.geometry->draw_args["grid"_small].index_count;
-        grid_r_item.start_index_location = grid_r_item.geometry->draw_args["grid"_small].start_index_location;
-        grid_r_item.base_vertex_location = grid_r_item.geometry->draw_args["grid"_small].base_vertex_location;
+        grid_r_item.index_count = grid_r_item.geometry->submesh("grid"_small)->index_count;
+        grid_r_item.start_index_location = grid_r_item.geometry->submesh("grid"_small)->start_index_location;
+        grid_r_item.base_vertex_location = grid_r_item.geometry->submesh("grid"_small)->base_vertex_location;
         grid_r_item.num_frames_dirty = renderer::num_frames_in_flight();
         g_regina_ctx.scene->add_render_item(rsl::move(grid_r_item));
 
@@ -492,36 +485,36 @@ namespace rex
             left_cyl_r_item.constant_buffer_index = obj_cb_index++;
             left_cyl_r_item.geometry = g_regina_ctx.meshes["scene_geometry"_med].get();
             left_cyl_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
-            left_cyl_r_item.index_count = left_cyl_r_item.geometry->draw_args["cylinder"_small].index_count;
-            left_cyl_r_item.start_index_location = left_cyl_r_item.geometry->draw_args["cylinder"_small].start_index_location;
-            left_cyl_r_item.base_vertex_location = left_cyl_r_item.geometry->draw_args["cylinder"_small].base_vertex_location;
+            left_cyl_r_item.index_count = left_cyl_r_item.geometry->submesh("cylinder"_small)->index_count;
+            left_cyl_r_item.start_index_location = left_cyl_r_item.geometry->submesh("cylinder"_small)->start_index_location;
+            left_cyl_r_item.base_vertex_location = left_cyl_r_item.geometry->submesh("cylinder"_small)->base_vertex_location;
             left_cyl_r_item.num_frames_dirty = renderer::num_frames_in_flight();
 
             right_cyl_r_item.world = left_cyl_world;
             right_cyl_r_item.constant_buffer_index = obj_cb_index++;
             right_cyl_r_item.geometry = g_regina_ctx.meshes["scene_geometry"_med].get();
             right_cyl_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
-            right_cyl_r_item.index_count = right_cyl_r_item.geometry->draw_args["cylinder"_small].index_count;
-            right_cyl_r_item.start_index_location = right_cyl_r_item.geometry->draw_args["cylinder"_small].start_index_location;
-            right_cyl_r_item.base_vertex_location = right_cyl_r_item.geometry->draw_args["cylinder"_small].base_vertex_location;
+            right_cyl_r_item.index_count = right_cyl_r_item.geometry->submesh("cylinder"_small)->index_count;
+            right_cyl_r_item.start_index_location = right_cyl_r_item.geometry->submesh("cylinder"_small)->start_index_location;
+            right_cyl_r_item.base_vertex_location = right_cyl_r_item.geometry->submesh("cylinder"_small)->base_vertex_location;
             right_cyl_r_item.num_frames_dirty = renderer::num_frames_in_flight();
 
             left_sphere_r_item.world = left_sphere_world;
             left_sphere_r_item.constant_buffer_index = obj_cb_index++;
             left_sphere_r_item.geometry = g_regina_ctx.meshes["scene_geometry"_med].get();
             left_sphere_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
-            left_sphere_r_item.index_count = left_sphere_r_item.geometry->draw_args["sphere"_small].index_count;
-            left_sphere_r_item.start_index_location = left_sphere_r_item.geometry->draw_args["sphere"_small].start_index_location;
-            left_sphere_r_item.base_vertex_location = left_sphere_r_item.geometry->draw_args["sphere"_small].base_vertex_location;
+            left_sphere_r_item.index_count = left_sphere_r_item.geometry->submesh("sphere"_small)->index_count;
+            left_sphere_r_item.start_index_location = left_sphere_r_item.geometry->submesh("sphere"_small)->start_index_location;
+            left_sphere_r_item.base_vertex_location = left_sphere_r_item.geometry->submesh("sphere"_small)->base_vertex_location;
             left_sphere_r_item.num_frames_dirty = renderer::num_frames_in_flight();
 
             right_sphere_r_item.world = right_sphere_world;
             right_sphere_r_item.constant_buffer_index = obj_cb_index++;
             right_sphere_r_item.geometry = g_regina_ctx.meshes["scene_geometry"_med].get();
             right_sphere_r_item.topology = renderer::PrimitiveTopology::TRIANGLELIST;
-            right_sphere_r_item.index_count = right_sphere_r_item.geometry->draw_args["sphere"_small].index_count;
-            right_sphere_r_item.start_index_location = right_sphere_r_item.geometry->draw_args["sphere"_small].start_index_location;
-            right_sphere_r_item.base_vertex_location = right_sphere_r_item.geometry->draw_args["sphere"_small].base_vertex_location;
+            right_sphere_r_item.index_count = right_sphere_r_item.geometry->submesh("sphere"_small)->index_count;
+            right_sphere_r_item.start_index_location = right_sphere_r_item.geometry->submesh("sphere"_small)->start_index_location;
+            right_sphere_r_item.base_vertex_location = right_sphere_r_item.geometry->submesh("sphere"_small)->base_vertex_location;
             right_sphere_r_item.num_frames_dirty = renderer::num_frames_in_flight();
 
             g_regina_ctx.scene->add_render_item(rsl::move(left_cyl_r_item));
@@ -782,8 +775,8 @@ namespace rex
 
         for (auto& ri : (*g_regina_ctx.scene))
         {
-            renderer::set_vertex_buffer(ri.geometry->vertex_buffer, 0, ri.geometry->vertex_byte_stride, 0);
-            renderer::set_index_buffer(ri.geometry->index_buffer, renderer::IndexBufferFormat::R16_UINT, 0);
+            renderer::set_vertex_buffer(ri.geometry->vertex_buffer_slot(), 0, ri.geometry->vertex_buffer_byte_stride(), 0);
+            renderer::set_index_buffer(ri.geometry->index_buffer_slot(), ri.geometry->index_buffer_format(), 0);
             renderer::set_primitive_topology(renderer::PrimitiveTopology::TRIANGLELIST);
 
             renderer::ResourceSlot curr_object_cb = get_active_object_constant_buffer_for_frame(renderer::active_frame()->slot_id(), ri.constant_buffer_index);
@@ -821,16 +814,11 @@ namespace rex
 
         if (g_regina_ctx.mesh_cube)
         {
-            g_regina_ctx.mesh_cube->vertex_buffer.release();
-            g_regina_ctx.mesh_cube->index_buffer.release();
+            g_regina_ctx.mesh_cube.reset();
         }
         else
         {
-            for (auto& pair : g_regina_ctx.meshes)
-            {
-                pair.value->vertex_buffer.release();
-                pair.value->index_buffer.release();
-            }
+            g_regina_ctx.meshes.clear();
         }
 
         g_regina_ctx.mesh_cube.reset();
