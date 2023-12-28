@@ -19,6 +19,12 @@ namespace rex
                 ,tangent()
                 ,uv()
             {}
+            Vertex(const glm::vec3& inPos, const glm::vec3& inNorm, const glm::vec3& inTang, const glm::vec2& inUV)
+                :position(inPos)
+                ,normal(inNorm)
+                ,tangent(inTang)
+                ,uv(inUV)
+            {}
             Vertex(f32 xp, f32 yp, f32 zp, f32 xn, f32 yn, f32 zn, f32 xt, f32 yt, f32 zt, f32 xu, f32 yu)
                 :position(xp, yp, zp)
                 ,normal(xn, yn, zn)
@@ -49,16 +55,20 @@ namespace rex
             void add_vertex(const Vertex& v);
             void add_index(index_type i);
 
-            void emplace_vertex(glm::vec3&& pos, glm::vec3&& norm, glm::vec3&& tang, glm::vec2 uv);
+            void emplace_vertex(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& tang, const glm::vec2& uv);
             void emplace_index(index_type i);
+
+            void insert_vertex(s32 idx, const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& tang, const glm::vec2& uv);
+            void insert_index(s32 idx, index_type i);
+
+            void reserve_vertices(u32 num);
+            void reserve_indices(u32 num);
 
             void resize_vertices(u32 num);
             void resize_indices(u32 num);
 
             const rsl::vector<Vertex>& vertices() const;
-            rsl::vector<Vertex>& vertices();
             const rsl::vector<index_type>& indices() const;
-            rsl::vector<index_type>& indices();
 
         private:
             rsl::vector<Vertex> m_vertices;
@@ -111,7 +121,7 @@ namespace rex
 
         //-----------------------------------------------------------------------
         template<typename T>
-        void MeshData<T>::emplace_vertex(glm::vec3&& pos, glm::vec3&& norm, glm::vec3&& tang, glm::vec2 uv)
+        void MeshData<T>::emplace_vertex(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& tang, const glm::vec2& uv)
         {
             m_vertices.emplace_back(pos, norm, tang, uv);
         }
@@ -120,6 +130,37 @@ namespace rex
         void MeshData<T>::emplace_index(MeshData<T>::index_type i)
         {
             m_indices.emplace_back(i);
+        }
+
+        //-----------------------------------------------------------------------
+        template<typename T>
+        void MeshData<T>::insert_vertex(s32 idx, const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& tang, const glm::vec2& uv)
+        {
+            auto it = m_vertices.begin();
+            rsl::advance(it, idx);
+            m_vertices.insert(it, Vertex{ pos, norm, tang, uv });
+        }
+
+        //-----------------------------------------------------------------------
+        template<typename T>
+        void MeshData<T>::insert_index(s32 idx, index_type i)
+        {
+            auto it = m_indices.begin();
+            rsl::advance(it, idx);
+            m_indices.insert(it, i);
+        }
+
+        //-----------------------------------------------------------------------
+        template<typename T>
+        void MeshData<T>::reserve_vertices(u32 num)
+        {
+            m_vertices.reserve(num);
+        }
+        //-----------------------------------------------------------------------
+        template<typename T>
+        void MeshData<T>::reserve_indices(u32 num)
+        {
+            m_indices.reserve(num);
         }
 
         //-----------------------------------------------------------------------
@@ -143,19 +184,7 @@ namespace rex
         }
         //-----------------------------------------------------------------------
         template<typename T>
-        rsl::vector<Vertex>& MeshData<T>::vertices()
-        {
-            return m_vertices;
-        }
-        //-----------------------------------------------------------------------
-        template<typename T>
         const rsl::vector<typename MeshData<T>::index_type>& MeshData<T>::indices() const
-        {
-            return m_indices;
-        }
-        //-----------------------------------------------------------------------
-        template<typename T>
-        rsl::vector<typename MeshData<T>::index_type>& MeshData<T>::indices()
         {
             return m_indices;
         }
@@ -197,9 +226,9 @@ namespace rex
             s32 num_tris = input_copy.indices().size() / 3;
             for (s32 i = 0; i < num_tris; ++i)
             {
-                Vertex v0 = input_copy.vertices()[input_copy.indices()[i * 3 + 0]];
-                Vertex v1 = input_copy.vertices()[input_copy.indices()[i * 3 + 1]];
-                Vertex v2 = input_copy.vertices()[input_copy.indices()[i * 3 + 2]];
+                const Vertex& v0 = input_copy.vertices()[input_copy.indices()[i * 3 + 0]];
+                const Vertex& v1 = input_copy.vertices()[input_copy.indices()[i * 3 + 1]];
+                const Vertex& v2 = input_copy.vertices()[input_copy.indices()[i * 3 + 2]];
 
                 //
                 // Generate the midpoints.

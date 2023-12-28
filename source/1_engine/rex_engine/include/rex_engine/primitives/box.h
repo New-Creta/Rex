@@ -2,6 +2,8 @@
 
 #include "rex_engine/primitives/mesh_factory.h"
 
+#include "rex_std/array.h"
+
 namespace rex
 {
     namespace mesh_factory
@@ -15,7 +17,7 @@ namespace rex
 			// Create the vertices.
 			//
 
-			Vertex v[24];
+			rsl::array<Vertex, 24> v;
 
 			f32 w2 = 0.5f * width;
 			f32 h2 = 0.5f * height;
@@ -57,13 +59,13 @@ namespace rex
 			v[22] = Vertex(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
 			v[23] = Vertex(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
 
-			mesh_data.assign_vertices(v, 24u);
+			mesh_data.assign_vertices(v.data(), v.size());
 
 			//
 			// Create the indices.
 			//
 
-			T i[36];
+			rsl::array<T, 36> i;
 
 			// Fill in the front face index data
 			i[0] = 0; i[1] = 1; i[2] = 2;
@@ -89,7 +91,7 @@ namespace rex
 			i[30] = 20; i[31] = 21; i[32] = 22;
 			i[33] = 20; i[34] = 22; i[35] = 23;
 
-			mesh_data.assign_indices(i, 36);
+			mesh_data.assign_indices(i.data(), i.size());
 
 			for (uint32 s = 0; s < subdivisions; ++s)
 			{
