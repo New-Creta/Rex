@@ -6,6 +6,7 @@
 
 #include "rex_std/vector.h"
 #include "rex_std/atomic.h"
+#include "rex_std/bonus/memory/unique_array.h"
 
 namespace rex
 {
@@ -251,7 +252,7 @@ namespace rex
 
         private:
             // An array of atomic flags to manage resource slot states.
-            rsl::atomic_flag* m_flags;
+            rsl::unique_array<rsl::atomic_flag> m_flags;
             rsl::count_t m_flag_capacity;
         };
     }

@@ -190,7 +190,7 @@ namespace rex
             // We will initialize the allocated resource to 128 to pool can always grow when it requires more slots
             //      we use a limited amount of resources now so 128 is definitly large enough
             //      we can always tweak this value later as pass it as an argument to the initialize of the renderer.
-            constexpr s32 initial_allocated_resource_slots = 128;
+            constexpr s32 initial_allocated_resource_slots = 16;
 
             g_ctx.slot_resources.initialize(initial_allocated_resource_slots);
             g_ctx.cmd_list.initialize(maxCommands);

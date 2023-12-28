@@ -3,6 +3,8 @@
 
 #include "rex_engine/diagnostics/assert.h"
 
+
+
 namespace rex
 {
     namespace renderer
@@ -10,8 +12,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlots::~ResourceSlots()
         {
-            delete[] m_flags;
-            m_flags = nullptr;
+            m_flags.reset();
         }
 
         //-------------------------------------------------------------------------
@@ -89,16 +90,15 @@ namespace rex
 
             REX_ASSERT_X(m_flag_capacity < num, "Shrinking the resource slots capacity is not supported");
 
-            if (m_flags != nullptr)
+            if (m_flags)
             {
-                delete[] m_flags;
-                m_flags = nullptr;
+                m_flags.reset();
             }
 
             s32 cur_cap = m_flag_capacity;
             s32 new_cap = num;
 
-            rsl::atomic_flag* new_m_flags = new rsl::atomic_flag[num];
+            rsl::unique_array<rsl::atomic_flag> new_m_flags = rsl::make_unique<rsl::atomic_flag[]>(num);
 
             for (s32 i = 0; i < cur_cap; ++i)
             {
@@ -109,7 +109,7 @@ namespace rex
                 new_m_flags[i].clear(); // Initialize new m_flags as clear (FREE)
             }
 
-            m_flags = new_m_flags;
+            m_flags = rsl::move(new_m_flags);
             m_flag_capacity = num;
         }
 
@@ -122,13 +122,13 @@ namespace rex
                 ++start;
             }
 
-            return Iterator(m_flags, m_flag_capacity, start);
+            return Iterator(m_flags.get(), m_flag_capacity, start);
         }
 
         //-------------------------------------------------------------------------
         ResourceSlots::Iterator ResourceSlots::end()
         {
-            return Iterator(m_flags, m_flag_capacity, m_flag_capacity);
+            return Iterator(m_flags.get(), m_flag_capacity, m_flag_capacity);
         }
 
         //-------------------------------------------------------------------------
@@ -139,13 +139,13 @@ namespace rex
             {
                 ++start;
             }
-            return ConstIterator(m_flags, m_flag_capacity, start);
+            return ConstIterator(m_flags.get(), m_flag_capacity, start);
         }
 
         //-------------------------------------------------------------------------
         ResourceSlots::ConstIterator ResourceSlots::cend() const
         {
-            return ConstIterator(m_flags, m_flag_capacity, m_flag_capacity);
+            return ConstIterator(m_flags.get(), m_flag_capacity, m_flag_capacity);
         }
     }
 }
