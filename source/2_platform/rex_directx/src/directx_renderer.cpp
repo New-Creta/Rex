@@ -24,7 +24,7 @@
 #include "rex_directx/wrl/wrl_types.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/memory/memory_alighment_helper.h"
+#include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/memory/memory_allocation.h"
 #include "rex_renderer_core/commands/begin_draw_cmd.h"
 #include "rex_renderer_core/commands/clear_cmd.h"
@@ -588,7 +588,7 @@ namespace rex
         //-------------------------------------------------------------------------
         rsl::unique_ptr<CommitedBufferResource> create_commited_resource(s32 bufferCount, s32 bufferByteSize)
         {
-            s32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
+            s32 obj_cb_byte_size = rex::align(bufferByteSize, s_constant_buffer_min_allocation_size);
 
             wrl::com_ptr<ID3D12Resource> constant_buffer_uploader;
 
@@ -627,7 +627,7 @@ namespace rex
             auto& commited_buffer_resource = get_resource_from_pool_as<CommitedBufferResource>(g_ctx.resource_pool, *commitedResourceSlot);
             auto  commited_resource = commited_buffer_resource.get();
 
-            s32 obj_cb_byte_size = rex::round_up_to_nearest_multiple_of(bufferByteSize, s_constant_buffer_min_allocation_size);
+            s32 obj_cb_byte_size = rex::align(bufferByteSize, s_constant_buffer_min_allocation_size);
 
             D3D12_GPU_VIRTUAL_ADDRESS cb_address = commited_resource->uploader->GetGPUVirtualAddress();
             cb_address += frame->active_constant_buffers[commitedResourceSlot] * obj_cb_byte_size;
