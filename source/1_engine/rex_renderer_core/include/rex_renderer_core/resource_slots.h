@@ -201,7 +201,7 @@ namespace rex
             bool free_slot(s32 slot);
 
             /**
-             * @brief Free a all allocated resource slots.
+             * @brief Free all allocated resource slots.
              */
             void free_slots();
 
