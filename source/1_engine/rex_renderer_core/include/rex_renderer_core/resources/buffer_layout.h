@@ -15,7 +15,7 @@ namespace rex
     {
       //-----------------------------------------------------------------------
       BufferElement(DataType::Value inType, s32 inComponentCount, ShouldNormalize inShouldNormalize = ShouldNormalize::no)
-          : type(rsl::move(inType))
+          : type(inType)
           , component_count(inComponentCount)
           , normalized(inShouldNormalize)
       {
@@ -23,6 +23,11 @@ namespace rex
 
       DataType type;
       s32 component_count;
+
+      /* If we're inputting integer data types (s32, byte) and we've set this to true,
+       * the integer data is normalized to 0 (or -1 for signed data) and 1 when converted
+       * to float. 
+       */
       bool normalized;
     };
 
