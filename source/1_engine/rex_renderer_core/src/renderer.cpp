@@ -122,7 +122,7 @@ namespace rex
             template<typename TCommandType>
             ResourceSlot create_buffer(commands::CreateBufferCommandDesc&& createBufferParams)
             {
-                ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+                ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
                 TCommandType* cmd = create_new_command<TCommandType>(rsl::move(createBufferParams), resource_slot);
 
@@ -138,7 +138,7 @@ namespace rex
             //-------------------------------------------------------------------------
             ResourceSlot create_constant_buffer_view(commands::CreateConstantBufferViewCommandDesc&& createBufferParams)
             {
-                ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+                ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
                 commands::CreateConstantBufferView* cmd = create_new_command<commands::CreateConstantBufferView>(rsl::move(createBufferParams), resource_slot);
 
@@ -195,9 +195,9 @@ namespace rex
             g_ctx.slot_resources.initialize(initial_allocated_resource_slots);
             g_ctx.cmd_list.initialize(maxCommands);
 
-            globals::g_default_targets_info.front_buffer_color = g_ctx.slot_resources.next_slot();
-            globals::g_default_targets_info.back_buffer_color = g_ctx.slot_resources.next_slot();
-            globals::g_default_targets_info.depth_buffer = g_ctx.slot_resources.next_slot();
+            globals::g_default_targets_info.front_buffer_color = g_ctx.slot_resources.alloc_slot();
+            globals::g_default_targets_info.back_buffer_color = g_ctx.slot_resources.alloc_slot();
+            globals::g_default_targets_info.depth_buffer = g_ctx.slot_resources.alloc_slot();
 
             return backend::initialize(userData
                 , maxFrameResources
@@ -242,7 +242,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_clear_state(commands::CreateClearStateCommandDesc&& desc)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::CreateClearState* cmd = create_new_command<commands::CreateClearState>(rsl::move(desc), resource_slot);
 
@@ -258,7 +258,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_raster_state(commands::CreateRasterStateCommandDesc&& desc)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::CreateRasterState* cmd = create_new_command<commands::CreateRasterState>(rsl::move(desc), resource_slot);
 
@@ -274,7 +274,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_input_layout(commands::CreateInputLayoutCommandDesc&& desc)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::CreateInputLayout* cmd = create_new_command<commands::CreateInputLayout>(rsl::move(desc), resource_slot);
 
@@ -308,7 +308,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_pipeline_state_object(commands::CreatePipelineStateCommandDesc&& createPipelineStateParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::CreatePipelineState* cmd = create_new_command<commands::CreatePipelineState>(rsl::move(createPipelineStateParams), resource_slot);
 
@@ -324,7 +324,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_frame_resource()
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::CreateFrameResource* cmd = create_new_command<commands::CreateFrameResource>(commands::CreateFrameResourceCommandDesc(), resource_slot);
 
@@ -340,7 +340,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot attach_commited_resource_to_frame(commands::AttachCommitedResourceToFrameCommandDesc&& attachCommitedResourceParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::AttachCommitedResourceToFrame* cmd = create_new_command<commands::AttachCommitedResourceToFrame>(rsl::move(attachCommitedResourceParams), resource_slot);
 
@@ -356,7 +356,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot load_shader(commands::LoadShaderCommandDesc&& loadShaderParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::LoadShader* cmd = create_new_command<commands::LoadShader>(rsl::move(loadShaderParams), resource_slot);
 
@@ -372,7 +372,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot link_shader(commands::LinkShaderCommandDesc&& linkShaderParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::LinkShader* cmd = create_new_command<commands::LinkShader>(rsl::move(linkShaderParams), resource_slot);
 
@@ -388,7 +388,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot compile_shader(commands::CompileShaderCommandDesc&& compileShaderParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.next_slot();
+            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
             commands::CompileShader* cmd = create_new_command<commands::CompileShader>(rsl::move(compileShaderParams), resource_slot);
 

@@ -191,7 +191,7 @@ namespace rex
              *
              * @return The index of the allocated resource slot.
              */
-            ResourceSlot next_slot();
+            ResourceSlot alloc_slot();
 
             /**
              * @brief Free a previously allocated resource slot.

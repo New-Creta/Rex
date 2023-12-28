@@ -22,7 +22,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        ResourceSlot ResourceSlots::next_slot()
+        ResourceSlot ResourceSlots::alloc_slot()
         {
             for (s32 i = 0; i < m_flag_capacity; ++i)
             {
