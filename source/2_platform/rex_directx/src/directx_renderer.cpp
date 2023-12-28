@@ -7,6 +7,7 @@
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/log.h"
+
 #include "rex_directx/resources/buffer_resource.h"
 #include "rex_directx/resources/clear_state_resource.h"
 #include "rex_directx/resources/commited_buffer_resource.h"
@@ -20,11 +21,15 @@
 #include "rex_directx/resources/render_target_resource.h"
 #include "rex_directx/resources/shader_program_resource.h"
 #include "rex_directx/resources/vertex_shader_resource.h"
+
 #include "rex_directx/utility/vertex.h"
+
 #include "rex_directx/wrl/wrl_types.h"
+
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/memory/pointer_math.h"
+
 #include "rex_renderer_core/commands/begin_draw_cmd.h"
 #include "rex_renderer_core/commands/clear_cmd.h"
 #include "rex_renderer_core/commands/compile_shader_cmd.h"
@@ -63,14 +68,21 @@
 #include "rex_renderer_core/commands/set_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
 #include "rex_renderer_core/commands/update_commited_resource_cmd.h"
+
+#include "rex_renderer_core/renderer_backend.h"
 #include "rex_renderer_core/cull_mode.h"
 #include "rex_renderer_core/fill_mode.h"
 #include "rex_renderer_core/gpu_description.h"
 #include "rex_renderer_core/index_buffer_format.h"
 #include "rex_renderer_core/input_layout_classification.h"
-#include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/resource_pool.h"
 #include "rex_renderer_core/vertex_buffer_format.h"
+#include "rex_renderer_core/shader_platform.h"
+#include "rex_renderer_core/viewport.h"
+#include "rex_renderer_core/scissor_rect.h"
+#include "rex_renderer_core/renderer_output_window_user_data.h"
+#include "rex_renderer_core/renderer_info.h"
+
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/memory.h"
@@ -1336,7 +1348,7 @@ namespace rex
 
         for(s32 i = 0; i < cil.input_layout.size(); ++i)
         {
-          input_element_descriptions[i].SemanticName         = cil.input_layout[i].semantic_name;
+          input_element_descriptions[i].SemanticName         = cil.input_layout[i].semantic_name.data();
           input_element_descriptions[i].SemanticIndex        = cil.input_layout[i].semantic_index;
           input_element_descriptions[i].Format               = directx::to_d3d12_vertex_format(cil.input_layout[i].format);
           input_element_descriptions[i].InputSlot            = cil.input_layout[i].input_slot;

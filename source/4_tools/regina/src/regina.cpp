@@ -14,6 +14,10 @@
 #include "rex_renderer_core/commands/attach_commited_resource_to_frame_cmd.h"
 #include "rex_renderer_core/rendering/scene.h"
 #include "rex_renderer_core/rendering/scene_renderer.h"
+#include "rex_renderer_core/default_depth_info.h"
+#include "rex_renderer_core/default_targets_info.h"
+#include "rex_renderer_core/viewport.h"
+#include "rex_renderer_core/scissor_rect.h"
 
 #include "rex_engine/core_application.h"
 #include "rex_engine/entrypoint.h"

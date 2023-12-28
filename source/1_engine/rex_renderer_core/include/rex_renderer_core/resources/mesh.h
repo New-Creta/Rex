@@ -3,6 +3,7 @@
 #include "rex_engine/types.h"
 
 #include "rex_renderer_core/renderer.h"
+#include "rex_renderer_core/resource_slot.h"
 #include "rex_renderer_core/index_buffer_format.h"
 
 #include "rex_std/unordered_map.h"

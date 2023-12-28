@@ -9,14 +9,19 @@
 #include "rex_engine/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
+
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
+#include "rex_renderer_core/renderer_output_window_user_data.h"
+#include "rex_renderer_core/renderer_info.h"
+
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std/ratio.h"
 #include "rex_std/thread.h"
+
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
