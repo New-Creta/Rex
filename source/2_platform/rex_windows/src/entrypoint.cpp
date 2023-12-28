@@ -23,7 +23,7 @@ s32 report_crash(LPEXCEPTION_POINTERS ExceptionInfo)
 }
 
 //-------------------------------------------------------------------------
-int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
+int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd)
 {
   rex::internal::pre_app_entry(lpCmdLine);
 
@@ -74,7 +74,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, in
 }
 
 //-------------------------------------------------------------------------
-INT APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)
+INT APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd)
 {
   return rex_entry(hInstance, hPrevInstance, lpCmdLine, nShowCmd);
 }
@@ -95,7 +95,7 @@ int main()
     show_window = SW_SHOWNORMAL;
   }
 
-  const int result = rex_entry(GetModuleHandle(nullptr), nullptr, GetCommandLine(), show_window);
+  const int result = rex_entry(GetModuleHandle(nullptr), nullptr, GetCommandLineW(), show_window);
 
   return result;
 }

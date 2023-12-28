@@ -89,11 +89,12 @@ namespace rex
     // search for REXLOG_LEVEL= in the args and use it to init the levels
     void init_log_levels()
     {
-      rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogLevel");
+      rsl::optional<rsl::wstring_view> log_level = cmdline::get_argument(L"LogLevel");
 
       if(log_level)
       {
-        helpers::load_levels(log_level.value());
+        rsl::string log_level_str = rsl::to_string(log_level.value());
+        helpers::load_levels(log_level_str);
       }
     }
   } // namespace diagnostics

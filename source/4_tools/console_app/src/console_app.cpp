@@ -82,7 +82,7 @@ namespace console_app
   {
     if (rex::input::is_key_pressed('P'))
     {
-      rex::mem_tracker().dump_stats_to_file("mem_stats.txt");
+      rex::mem_tracker().dump_stats_to_file(L"mem_stats.txt");
     }
   }
   void shutdown()

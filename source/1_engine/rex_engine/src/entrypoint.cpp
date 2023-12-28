@@ -13,13 +13,13 @@ namespace rex
 {
   namespace internal
   {
-    void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine)
+    void pre_app_entry(REX_MAYBE_UNUSED const tchar* cmdLine)
     {
-      cmdline::init(rsl::string_view(cmdLine));
+      cmdline::init(rsl::wstring_view(cmdLine));
 
       // if a user wants to know the arguments for the executable, we want to perform as minimal setup as possible.
       // we just initialize the commandline, print what's possible and exit the program
-      if(cmdline::get_argument("help"))
+      if(cmdline::get_argument(L"help"))
       {
         cmdline::print_args();
         rsl::exit(0);
@@ -29,7 +29,7 @@ namespace rex
       // so we can attach a debugger and continue from then on
       // we'll have a timer in place to break for 2 minutes, if no debugger is attached
       // we close down the program
-      if(cmdline::get_argument("BreakOnBoot"))
+      if(cmdline::get_argument(L"BreakOnBoot"))
       {
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
         auto i = 1s;

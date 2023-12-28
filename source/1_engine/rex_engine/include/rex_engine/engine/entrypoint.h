@@ -13,7 +13,7 @@ namespace rex
 
   namespace internal
   {
-    void pre_app_entry(const char8* cmdLine);
+    void pre_app_entry(const tchar* cmdLine);
     void post_app_shutdown();
   } // namespace internal
 } // namespace rex
