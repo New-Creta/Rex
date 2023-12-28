@@ -5,7 +5,6 @@
 #include "rex_directx/directx_util.h"
 #include "rex_directx/wrl/wrl_types.h"
 #include "rex_engine/types.h"
-#include "rex_engine/memory/memory_allocation.h"
 
 namespace rex
 {

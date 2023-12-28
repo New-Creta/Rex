@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_engine/types.h"
-#include "rex_engine/memory/memory_allocation.h"
 #include "rex_engine/diagnostics/assert.h"
 
 #include <rex_std/memory.h>
@@ -66,7 +65,7 @@ namespace rex
     {
         if (m_data != nullptr)
         {
-            rex::memory_free(m_data);
+            free(m_data);
         }
 
         m_get_pos = 0;
@@ -78,7 +77,7 @@ namespace rex
             return;
         }
 
-        m_data = (T*)rex::memory_alloc(sizeof(T) * m_capacity.load());
+        m_data = (T*)malloc(sizeof(T) * m_capacity.load());
         rsl::memset(m_data, 0x0, sizeof(T) * m_capacity.load());
     }
 
@@ -88,7 +87,7 @@ namespace rex
     {
         if (m_data != nullptr)
         {
-            rex::memory_free(m_data);
+            free(m_data);
             m_data = nullptr;
         }
     }
