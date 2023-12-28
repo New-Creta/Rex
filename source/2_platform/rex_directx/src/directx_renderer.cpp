@@ -268,7 +268,7 @@ namespace rex
       {
           FrameContext(s32 maxFrameResources)
               : frame_resources()
-              , curr_frame_resource(nullptr)
+              , curr_frame_resource(nullptr)             
               , curr_frame_resource_index(REX_INVALID_INDEX)
           {
               REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
@@ -1291,7 +1291,7 @@ namespace rex
         rcs.rgba    = cs.rgba;
         rcs.depth   = cs.depth;
         rcs.stencil = cs.stencil;
-        rcs.flags   = cs.flags.get_state();
+        rcs.flags   = cs.flags.state();
 
         g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<ClearStateResource>(rcs));
 
