@@ -269,7 +269,7 @@ namespace rex
           FrameContext(s32 maxFrameResources)
               : frame_resources()
               , curr_frame_resource(nullptr)             
-              , curr_frame_resource_index(REX_INVALID_INDEX)
+              , curr_frame_resource_index(-1)
           {
               REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
 

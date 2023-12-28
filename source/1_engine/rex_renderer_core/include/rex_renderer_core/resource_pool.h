@@ -44,7 +44,7 @@ namespace rex
         U& get_resource_from_pool_as(ResourcePool& pool, const ResourceSlot& slot)
         {
             REX_ASSERT_X(pool.has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
-            REX_ASSERT_X(slot != REX_INVALID_INDEX, "Invalid index given to retrieve resource from resource pool");
+            REX_ASSERT_X(slot != globals::g_invalid_slot_id, "Invalid index given to retrieve resource from resource pool");
             REX_ASSERT_X(U::static_type() == pool.at(slot)->type(), "Invalid type cast for given resource");
 
             return static_cast<U&>(*pool.at(slot));
@@ -54,7 +54,7 @@ namespace rex
         const U& get_resource_from_pool_as(const ResourcePool& pool, const ResourceSlot& slot)
         {
             REX_ASSERT_X(pool.has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
-            REX_ASSERT_X(slot != REX_INVALID_INDEX, "Invalid index given to retrieve resource from resource pool");
+            REX_ASSERT_X(slot != globals::g_invalid_slot_id, "Invalid index given to retrieve resource from resource pool");
             REX_ASSERT_X(U::static_type() == pool.at(slot)->type(), "Invalid type cast for given resource");
 
             return static_cast<const U&>(pool.at(slot));

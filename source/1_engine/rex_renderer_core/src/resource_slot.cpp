@@ -8,13 +8,13 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot ResourceSlot::make_invalid()
         {
-            return ResourceSlot(REX_INVALID_INDEX);
+            return ResourceSlot(globals::g_invalid_slot_id);
         }
 
         //-------------------------------------------------------------------------
         ResourceSlot::ResourceSlot()
             : m_about_to_be_removed(false)
-            , m_slot_id(REX_INVALID_INDEX)
+            , m_slot_id(globals::g_invalid_slot_id)
             , m_ref_count(nullptr)
         {}
 
@@ -30,7 +30,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot::ResourceSlot(ResourceSlot&& other) noexcept 
             : m_about_to_be_removed(rsl::exchange(other.m_about_to_be_removed, false))
-            , m_slot_id(rsl::exchange(other.m_slot_id, REX_INVALID_INDEX))
+            , m_slot_id(rsl::exchange(other.m_slot_id, globals::g_invalid_slot_id))
             , m_ref_count(rsl::exchange(other.m_ref_count, nullptr))  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
         {}
 
@@ -73,7 +73,7 @@ namespace rex
             }
             
             m_about_to_be_removed = rsl::exchange(other.m_about_to_be_removed, false);
-            m_slot_id = rsl::exchange(other.m_slot_id, REX_INVALID_INDEX);
+            m_slot_id = rsl::exchange(other.m_slot_id, globals::g_invalid_slot_id);
             m_ref_count = rsl::exchange(other.m_ref_count, nullptr);  // A moved ResourceSlot should leave the remaining ResourceSlot invalid
 
             return *this;
@@ -106,8 +106,8 @@ namespace rex
         //-------------------------------------------------------------------------
         bool ResourceSlot::is_valid() const
         {
-            // when the slot id is REX_INVALID_INDEX, something went wrong during the creation of this slot
-            return m_slot_id != REX_INVALID_INDEX && m_ref_count != nullptr;
+            // when the slot id is globals::g_invalid_slot_id, something went wrong during the creation of this slot
+            return m_slot_id != globals::g_invalid_slot_id && m_ref_count != nullptr;
         }
 
         //-------------------------------------------------------------------------
@@ -119,7 +119,7 @@ namespace rex
         //-------------------------------------------------------------------------
         s32 ResourceSlot::release()
         {
-            s32 ref_count = REX_INVALID_INDEX;
+            s32 ref_count = 0;
 
             // Only release valid ResourceSlots
             if (is_valid())
@@ -134,7 +134,7 @@ namespace rex
                     renderer::release_resource(*this);
 
                     m_about_to_be_removed = false;
-                    m_slot_id = REX_INVALID_INDEX;
+                    m_slot_id = globals::g_invalid_slot_id;
 
                     delete m_ref_count;
                     m_ref_count = nullptr;

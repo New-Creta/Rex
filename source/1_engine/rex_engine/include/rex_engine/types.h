@@ -2,6 +2,7 @@
 
 #include "rex_std/atomic.h"
 #include "rex_std/bonus/types.h"
+#include "rex_std/bonus/utility/strong_type.h"
 
 using s8      = int8;
 using u8      = uint8;
@@ -45,9 +46,10 @@ using a_s32  = rsl::atomic<s32>;
   #define rex_atomic_load(a) a.load() // NOLINT(readability-identifier-naming)
 #endif
 
-#define REX_INVALID_INDEX -1
-
-inline bool is_valid(s32 handle)
+namespace rex
 {
-    return handle != REX_INVALID_INDEX;
+    namespace globals
+    {
+        constexpr s32 g_invalid_slot_id = -1;
+    }
 }

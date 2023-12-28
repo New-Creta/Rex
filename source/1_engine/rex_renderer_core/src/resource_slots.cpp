@@ -48,7 +48,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool ResourceSlots::free_slot(s32 slot)
         {
-            if (slot == REX_INVALID_INDEX)
+            if (slot == globals::g_invalid_slot_id)
             {
                 REX_WARN(LogRendererCore, "Trying to release an invalid resource from ResourceSlots");
                 return true; // Slot is invalid
