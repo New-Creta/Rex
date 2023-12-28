@@ -13,16 +13,16 @@ namespace rex
   {
     namespace commands
     {
-      static rsl::tiny_stack_string s_vertex_entry_point   = "VS";
-      static rsl::tiny_stack_string s_pixel_entry_point    = "PS";
-      static rsl::tiny_stack_string s_geometry_entry_point = "GS";
-      static rsl::tiny_stack_string s_compute_entry_point  = "CS";
+      static rsl::string_view s_vertex_entry_point   = "VS";
+      static rsl::string_view s_pixel_entry_point    = "PS";
+      static rsl::string_view s_geometry_entry_point = "GS";
+      static rsl::string_view s_compute_entry_point  = "CS";
 
       struct CompileShaderCommandDesc
       {
         ShaderType shader_type;
+        rsl::string_view shader_entry_point;
         rsl::small_stack_string shader_name;
-        rsl::tiny_stack_string shader_entry_point;
         rsl::tiny_stack_string shader_feature_target;
         memory::Blob shader_code;
       };
@@ -37,10 +37,10 @@ namespace rex
         {
           switch(m_desc.shader_type)
           {
-            case ShaderType::VERTEX: m_desc.shader_entry_point = s_vertex_entry_point.data(); break;
-            case ShaderType::PIXEL: m_desc.shader_entry_point = s_pixel_entry_point.data(); break;
-            case ShaderType::GEOMETRY: m_desc.shader_entry_point = s_geometry_entry_point.data(); break;
-            case ShaderType::COMPUTE: m_desc.shader_entry_point = s_compute_entry_point.data(); break;
+            case ShaderType::VERTEX: m_desc.shader_entry_point = s_vertex_entry_point; break;
+            case ShaderType::PIXEL: m_desc.shader_entry_point = s_pixel_entry_point; break;
+            case ShaderType::GEOMETRY: m_desc.shader_entry_point = s_geometry_entry_point; break;
+            case ShaderType::COMPUTE: m_desc.shader_entry_point = s_compute_entry_point; break;
           }
         }
 

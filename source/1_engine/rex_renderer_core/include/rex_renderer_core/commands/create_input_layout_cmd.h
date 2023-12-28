@@ -4,6 +4,8 @@
 #include "rex_renderer_core/input_layout_classification.h"
 #include "rex_renderer_core/vertex_buffer_format.h"
 
+#include "rex_std/string_view.h"
+
 namespace rex
 {
   namespace renderer
@@ -12,7 +14,7 @@ namespace rex
     {
       struct InputLayoutDescription
       {
-        const char8* semantic_name;
+        rsl::string_view semantic_name;
         s32 semantic_index;
         VertexBufferFormat format;
         s32 input_slot;
