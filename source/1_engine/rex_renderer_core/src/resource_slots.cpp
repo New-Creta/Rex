@@ -3,8 +3,6 @@
 
 #include "rex_engine/diagnostics/assert.h"
 
-
-
 namespace rex
 {
     namespace renderer
@@ -38,12 +36,13 @@ namespace rex
 
             resize(m_flag_capacity * 2);
 
-            if (!m_flags[current_flag_capacity].test_and_set(rsl::memory_order_acquire))
-            {
-                return ResourceSlot(current_flag_capacity);
-            }
-
-            return ResourceSlot::make_invalid();
+#ifdef REX_DEBUG
+            bool result = m_flags[current_flag_capacity].test_and_set(rsl::memory_order_acquire);
+            REX_ASSERT_X(result == false, "Unable to allocated ResourceSlot at location: {}", current_flag_capacity);
+            return ResourceSlot(current_flag_capacity);
+#else
+            return ResourceSlot(m_flags[current_flag_capacity].test_and_set(rsl::memory_order_acquire));
+#endif
         }
 
         //-------------------------------------------------------------------------
@@ -83,6 +82,8 @@ namespace rex
         //-------------------------------------------------------------------------
         void ResourceSlots::resize(s32 num)
         {
+            REX_ASSERT_X(num > 0, "At least 1 slot should be allocated");
+
             if (num == m_flag_capacity)
             {
                 return; // No op
