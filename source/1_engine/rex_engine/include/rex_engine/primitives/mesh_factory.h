@@ -2,8 +2,8 @@
 
 #include "rex_engine/types.h"
 
-#include <rex_std/vector.h>
-#include <rex_std_extra/utility/casting.h>
+#include "rex_std/vector.h"
+#include "rex_std_extra/utility/casting.h"
 
 #include <glm/glm.hpp>
 

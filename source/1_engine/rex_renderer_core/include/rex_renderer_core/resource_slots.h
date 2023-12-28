@@ -4,8 +4,8 @@
 
 #include "rex_renderer_core/resource_slot.h"
 
-#include <rex_std/vector.h>
-#include <rex_std/atomic.h>
+#include "rex_std/vector.h"
+#include "rex_std/atomic.h"
 
 namespace rex
 {

@@ -6,9 +6,9 @@
 #include "rex_renderer_core/resource_slot.h"
 #include "rex_renderer_core/resource.h"
 
-#include <rex_std/memory.h>
-#include <rex_std/unordered_map.h>
-#include <rex_std/mutex.h>
+#include "rex_std/memory.h"
+#include "rex_std/unordered_map.h"
+#include "rex_std/mutex.h"
 
 namespace rex
 {

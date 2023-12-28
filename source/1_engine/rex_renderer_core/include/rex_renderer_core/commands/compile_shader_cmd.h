@@ -5,7 +5,7 @@
 
 #include "rex_engine/memory/blob.h"
 
-#include <rex_std/bonus/string/stack_string.h>
+#include "rex_std/string_view.h"
 
 namespace rex
 {

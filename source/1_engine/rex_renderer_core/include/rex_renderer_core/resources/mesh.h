@@ -5,8 +5,8 @@
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/index_buffer_format.h"
 
-#include <rex_std/unordered_map.h>
-#include <rex_std/bonus/string/stack_string.h>
+#include "rex_std/unordered_map.h"
+#include "rex_std/bonus/string/stack_string.h"
 
 namespace rex
 {

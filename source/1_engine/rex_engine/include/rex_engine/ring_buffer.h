@@ -3,7 +3,7 @@
 #include "rex_engine/types.h"
 #include "rex_engine/diagnostics/assert.h"
 
-#include <rex_std/memory.h>
+#include "rex_std/memory.h"
 
 namespace rex
 {

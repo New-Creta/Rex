@@ -1,6 +1,6 @@
 #pragma once
 
-#include <rex_std/atomic.h>
+#include "rex_std/atomic.h"
 
 namespace rex
 {

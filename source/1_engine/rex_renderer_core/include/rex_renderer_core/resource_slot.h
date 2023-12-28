@@ -3,8 +3,8 @@
 #include "rex_engine/types.h"
 #include "rex_engine/diagnostics/assert.h"
 
-#include <rex_std/atomic.h>
-#include <rex_std/functional.h>
+#include "rex_std/atomic.h"
+#include "rex_std/functional.h"
 
 namespace rex
 {

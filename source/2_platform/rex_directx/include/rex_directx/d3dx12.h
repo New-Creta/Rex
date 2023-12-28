@@ -18,8 +18,8 @@
 
 #include "d3d12.h"
 
-#include <rex_std/list.h>
-#include <rex_std/vector.h>
+#include "rex_std/list.h"
+#include "rex_std/vector.h"
 
 #if defined(__cplusplus)
 

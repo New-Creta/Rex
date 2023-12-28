@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/rendering/render_item.h"
 
-#include <rex_std/vector.h>
+#include "rex_std/vector.h"
 
 namespace rex
 {
