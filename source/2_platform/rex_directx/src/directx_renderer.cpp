@@ -96,7 +96,7 @@
 #include <cstddef>
 #include <d3d12.h>
 
-#ifdef REX_DEBUG
+#ifdef REX_ENABLE_DXGI_DEBUG_LAYER
   #include <dxgidebug.h>
 #endif
 
@@ -212,10 +212,11 @@ namespace rex
         return "D3D12_DESCRIPTOR_HEAP_TYPE_UNKNOWN";
       }
 
+      //-------------------------------------------------------------------------
       template<typename TResourceType, u32 TNameLength>
       void set_debug_name_for(TResourceType* resource, const char(&name)[TNameLength])
       {
-#if REX_DEBUG
+#ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
           resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
 #else
           UNUSED_PARAM(resource);
@@ -337,6 +338,9 @@ namespace rex
         ResourceSlot swapchain_ds_buffer_slot;                              // swapchain depth stencil index
 
         FrameContext frame_ctx = FrameContext(s_num_frame_resources);
+
+        bool dx12_debug_layer_enabled = false;
+        bool dxgi_debug_layer_enabled = false;
       };
 
       DirectXContext g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
@@ -961,17 +965,18 @@ namespace rex
       //-------------------------------------------------------------------------
       bool initialize(const OutputWindowUserData& userData, s32 maxFrameResources, const ResourceSlot& fbColorTargetSlot, const ResourceSlot& bbColorTargetSlot, const ResourceSlot& depthTargetSlot)
       {
-        // Diagnostic Layer
-#if defined(REX_DEBUG)
-        // Enable extra debuggin and send debug messages to the VC++ output window
+#ifdef REX_ENABLE_DX12_DEBUG_LAYER
+        // Enable extra debugging and send debug messages to the VC++ output window
         rex::wrl::com_ptr<ID3D12Debug> debug_controller;
-        if(FAILED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
+        if(SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
         {
-          REX_ERROR(LogDirectX, "Failed to create DX debug controller");
-          return false;
+            debug_controller->EnableDebugLayer();
+            g_ctx.dx12_debug_layer_enabled = true;
         }
-
-        debug_controller->EnableDebugLayer();
+        else
+        {
+            REX_WARN(LogDirectX, "Failed to create DX debug controller");
+        }
 #endif
 
         // Setup frame context
@@ -989,8 +994,10 @@ namespace rex
         g_ctx.frame_ctx.curr_frame_resource_index = 0;
         g_ctx.frame_ctx.curr_frame_resource       = nullptr;
 
+
         s32 dxgi_factory_flags = 0;
 
+#ifdef REX_ENABLE_DXGI_DEBUG_LAYER
         /*
          * Bug in the DXGI Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
          * There's a simple workaround which is to suppress D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE.
@@ -1007,19 +1014,28 @@ namespace rex
         {
           dxgi_factory_flags = DXGI_CREATE_FACTORY_DEBUG;
 
-#ifdef REX_DEBUG
-          dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
-          dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
-#endif
-          DXGI_INFO_QUEUE_MESSAGE_ID hide[] = {
+          dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE , globals::g_enable_dxgi_severity_message);
+          dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_INFO , globals::g_enable_dxgi_severity_info);
+          dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING , globals::g_enable_dxgi_severity_warning);
+          dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, globals::g_enable_dxgi_severity_error);
+          dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dxgi_severity_corruption);
+
+          DXGI_INFO_QUEUE_MESSAGE_ID dxgi_hide[] = {
               80 /* IDXGISwapChain::GetContainingOutput: The swapchain's adapter does not control the output on which the swapchain's window resides. */,
           };
-          DXGI_INFO_QUEUE_FILTER filter = {};
-          filter.DenyList.NumIDs        = static_cast<s32>(rsl::size(hide));
-          filter.DenyList.pIDList       = hide;
+          DXGI_INFO_QUEUE_FILTER dxgi_filter = {};
+          dxgi_filter.DenyList.NumIDs = static_cast<s32>(rsl::size(dxgi_hide));
+          dxgi_filter.DenyList.pIDList = dxgi_hide;
 
-          dxgi_info_queue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &filter);
+          dxgi_info_queue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &dxgi_filter);
+
+          g_ctx.dxgi_debug_layer_enabled = true;
         }
+        else
+        {
+            REX_WARN(LogDirectX, "Unable to get GXGI Debug Interface");
+        }
+#endif
 
         // Create dxgi factory
         dxgi::Factory factory = dxgi::Factory::create(dxgi_factory_flags);
@@ -1046,37 +1062,53 @@ namespace rex
 
         REX_LOG(LogDirectX, "D3D12 Device Created!");
 
-        /*
-         * Bug in the DXGI Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
-         * There's a simple workaround which is to suppress D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE.
-         * The bug itself will be fixed in a future Windows update.
-         *
-         * The Debug Layer has always had quirks when it comes to dealing with 'hybrid graphics' systems
-         * (i.e. laptops with both Intel Integrated and discrete GPUs)
-         *
-         * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
-         * https://github.com/walbourn/directx-vs-templates/commit/2b34dcf9ac764153699058cdc9d4dbc4e837224c
-         */
-        wrl::com_ptr<ID3D12InfoQueue> d3d_info_queue;
-        if(SUCCEEDED(g_ctx.device.As(&d3d_info_queue)))
+#ifdef REX_ENABLE_DX12_DEBUG_LAYER
+        // Device needs to exist before we can query this
+        rex::wrl::com_ptr<ID3D12InfoQueue> dx12_info_queue;
+        if (g_ctx.dx12_debug_layer_enabled && SUCCEEDED(g_ctx.device->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
         {
-#ifdef REX_DEBUG
-          d3d_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
-          d3d_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
-#endif
-          D3D12_MESSAGE_ID hide[] = {D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
-                                     D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
-                                     D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
-                                     D3D12_MESSAGE_ID_RESOURCE_BARRIER_BEFORE_AFTER_MISMATCH,
-                                     D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE,
-                                     D3D12_MESSAGE_ID_COMMAND_LIST_DRAW_VERTEX_BUFFER_NOT_SET,
-                                     D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE};
+            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
+            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info);
+            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, globals::g_enable_dx12_severity_warning);
+            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, globals::g_enable_dx12_severity_error);
+            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dx12_severity_corruption);
 
-          D3D12_INFO_QUEUE_FILTER filter = {};
-          filter.DenyList.NumIDs         = _countof(hide);
-          filter.DenyList.pIDList        = hide;
-          d3d_info_queue->AddStorageFilterEntries(&filter);
+            /*
+             * Bug in the DX12 Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
+             * There's a simple workaround which is to suppress D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE.
+             * The bug itself will be fixed in a future Windows update.
+             *
+             * The Debug Layer has always had quirks when it comes to dealing with 'hybrid graphics' systems
+             * (i.e. laptops with both Intel Integrated and discrete GPUs)
+             *
+             * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
+             * https://github.com/walbourn/directx-vs-templates/commit/2b34dcf9ac764153699058cdc9d4dbc4e837224c
+             */
+            D3D12_MESSAGE_ID dx12_hide[] = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
+                               D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
+                               D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
+                               D3D12_MESSAGE_ID_RESOURCE_BARRIER_BEFORE_AFTER_MISMATCH,
+                               D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE,
+                               D3D12_MESSAGE_ID_COMMAND_LIST_DRAW_VERTEX_BUFFER_NOT_SET,
+                               D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE };
+
+            D3D12_INFO_QUEUE_FILTER dx12_filter = {};
+            dx12_filter.DenyList.NumIDs = static_cast<s32>(rsl::size(dx12_hide));
+            dx12_filter.DenyList.pIDList = dx12_hide;
+            dx12_info_queue->AddStorageFilterEntries(&dx12_filter);
         }
+        else
+        {
+            if (g_ctx.dx12_debug_layer_enabled)
+            {
+                REX_WARN(LogDirectX, "Unable to get D3D12 Debug Interface");
+            }
+            else
+            {
+                REX_WARN(LogDirectX, "Unable to get D3D12 Debug Interface because the Debug Layer could not/was not enabled");
+            }
+        }
+#endif
 
         // Find shader model
         const D3D_SHADER_MODEL shader_model = query_shader_model_version(g_ctx.device.Get());
@@ -1203,30 +1235,36 @@ namespace rex
       {
         if(g_ctx.device != nullptr)
         {
-#if REX_DEBUG
-            bool can_report_dxgi_live_objects = false;
-            bool can_report_dx12_live_objects = false;
-
+#if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
             // DXGI
+            bool can_report_dxgi_live_objects = false;
             wrl::com_ptr<IDXGIDebug1> dxgi_debug;
-            if (FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
+            if (g_ctx.dxgi_debug_layer_enabled)
             {
-                REX_WARN(LogDirectX, "Unable to Query DXGI Debug Interface");
+                if (FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
+                {
+                    REX_WARN(LogDirectX, "Unable to Query DXGI Debug Interface");
+                }
+                else
+                {
+                    can_report_dxgi_live_objects = true;
+                }
             }
-            else
-            {
-                can_report_dx12_live_objects = true;
-            }
-
+#endif
+#if defined REX_ENABLE_DX12_DEBUG_LAYER && defined REX_ENABLE_DX12_LIVE_OBJECT_REPORT
             // DX12
+            bool can_report_dx12_live_objects = false;
             wrl::com_ptr<ID3D12DebugDevice> dx12_debug;
-            if (FAILED(g_ctx.device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
+            if (g_ctx.dx12_debug_layer_enabled)
             {
-                REX_WARN(LogDirectX, "Unable to Query DX12 Debug Interface");
-            }
-            else
-            {
-                can_report_dxgi_live_objects = true;
+                if (FAILED(g_ctx.device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
+                {
+                    REX_WARN(LogDirectX, "Unable to Query DX12 Debug Interface");
+                }
+                else
+                {
+                    can_report_dx12_live_objects = true;
+                }
             }
 #endif
 
@@ -1251,7 +1289,7 @@ namespace rex
             g_ctx.fence.Reset();
             g_ctx.device.Reset();
 
-#if REX_DEBUG
+#if defined REX_ENABLE_DX12_DEBUG_LAYER && defined REX_ENABLE_DX12_LIVE_OBJECT_REPORT
             // DXGI - Live Objects
             if (can_report_dxgi_live_objects)
             {
@@ -1261,7 +1299,8 @@ namespace rex
                     return;
                 }
             }
-
+#endif
+#if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
             // DX12 - Live Objects
             if (can_report_dx12_live_objects)
             {
@@ -1587,7 +1626,7 @@ namespace rex
       bool compile_shader(const commands::CompileShaderCommandDesc& cs, const ResourceSlot& resourceSlot)
       {
         s32 compile_flags = 0;
-#if defined(REX_DEBUG)
+#ifdef REX_ENABLE_DEBUG_SHADER_COMPILATION
         compile_flags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
