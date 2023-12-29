@@ -144,7 +144,7 @@ namespace rexlog
       }
 
       rsl::wbig_stack_string buf;
-      rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_format_args<rsl::buffer_context<tchar>>(rsl::forward<Args>(args)...));
+      rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_wformat_args(rsl::forward<Args>(args)...));
 
       // Convert the wide string to a short string
       rsl::wstring_view wide_view(buf.data(), buf.size());

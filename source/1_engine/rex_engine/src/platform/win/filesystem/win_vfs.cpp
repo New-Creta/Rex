@@ -426,12 +426,12 @@ namespace rex
       }
 
       REX_ASSERT_X(path::is_dir(g_root), "root of vfs is not a directory");
-      REX_LOG(FileSystem, "FileSystem root changed to: {}", rsl::to_string(g_root));
+      REX_LOG(FileSystem, L"FileSystem root changed to: {}", g_root);
     }
 
     void mount(MountingPoint root, rsl::wstring_view path)
     {
-      REX_ASSERT_X(!g_mounted_roots.contains(root), "root {} is already mapped. currently mapped to '{}'", rsl::enum_refl::enum_name(root), rsl::to_string(g_mounted_roots.at(root)));
+      REX_ASSERT_X(!g_mounted_roots.contains(root), L"root {} is already mapped. currently mapped to '{}'", rsl::to_wstring(rsl::enum_refl::enum_name(root)), g_mounted_roots.at(root));
       g_mounted_roots[root] = rsl::wstring(path);
 
       // make sure the mount exists
