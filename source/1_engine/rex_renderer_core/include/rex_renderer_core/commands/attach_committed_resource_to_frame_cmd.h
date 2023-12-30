@@ -10,8 +10,7 @@ namespace rex
         {
             struct AttachCommittedResourceToFrameCommandDesc
             {
-                const ResourceSlot* frame_slot = nullptr;
-
+                s32 frame_index = 0;
                 s32 buffer_count = 0;
                 s32 buffer_byte_size = 0;
             };

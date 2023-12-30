@@ -13,12 +13,12 @@ namespace rex
             struct CreateConstantBufferViewCommandDesc
             {
                 CreateConstantBufferViewCommandDesc()
-                    :frame_slot(nullptr)
+                    :frame_index(0)
                     ,committed_resource(nullptr)
                     ,buffer_size(0)
                 {}
 
-                const ResourceSlot* frame_slot;
+                s32 frame_index;
                 const ResourceSlot* committed_resource;
 
                 s32 buffer_size;

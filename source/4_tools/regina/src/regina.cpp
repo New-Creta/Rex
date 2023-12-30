@@ -547,14 +547,14 @@ namespace rex
         for (s32 frame = 0; frame < renderer::max_frames_in_flight(); ++frame)
         {
             renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants;
-            attach_object_constants.frame_slot = renderer::frame_at_index(frame);
+            attach_object_constants.frame_index = frame;
             attach_object_constants.buffer_count = num_render_items;
             attach_object_constants.buffer_byte_size = sizeof(ObjectConstants);
 
             g_regina_ctx.frame_resource_data[frame].object_committed_resource = renderer::attach_committed_resource_to_frame(rsl::move(attach_object_constants));
 
             renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_pass_constants;
-            attach_pass_constants.frame_slot = renderer::frame_at_index(frame);
+            attach_pass_constants.frame_index = frame;
             attach_pass_constants.buffer_count = 1;
             attach_pass_constants.buffer_byte_size = sizeof(PassConstants);
 
@@ -568,7 +568,7 @@ namespace rex
             {
                 renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc;
 
-                create_const_buffer_command_desc.frame_slot = renderer::frame_at_index(frame);
+                create_const_buffer_command_desc.frame_index = frame;
                 create_const_buffer_command_desc.committed_resource = &g_regina_ctx.frame_resource_data[frame].object_committed_resource;
                 create_const_buffer_command_desc.buffer_size = sizeof(ObjectConstants);
 
@@ -583,7 +583,7 @@ namespace rex
         {
             renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc;
 
-            create_const_buffer_command_desc.frame_slot = renderer::frame_at_index(frame);
+            create_const_buffer_command_desc.frame_index = frame;
             create_const_buffer_command_desc.committed_resource = &g_regina_ctx.frame_resource_data[frame].pass_committed_resource;
             create_const_buffer_command_desc.buffer_size = sizeof(PassConstants);
 
