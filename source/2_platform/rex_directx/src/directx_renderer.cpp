@@ -93,6 +93,8 @@
 #include "rex_std_extra/utility/casting.h"
 #include "rex_std_extra/utility/enum_reflection.h"
 
+#include <optional>
+
 #include <D3Dcompiler.h>
 #include <DirectXColors.h>
 #include <Windows.h>
@@ -235,6 +237,12 @@ namespace rex
           UNUSED_PARAM(name);
 #endif
       }
+
+      struct DefaultBuffer
+      {
+          wrl::com_ptr<ID3D12Resource> buffer;
+          wrl::com_ptr<ID3D12Resource> upload_buffer;
+      };
 
     } // namespace directx
 
@@ -544,18 +552,18 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        wrl::com_ptr<ID3D12Resource> create_default_buffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize, wrl::com_ptr<ID3D12Resource>& uploadBuffer)
+        std::optional<directx::DefaultBuffer> create_default_buffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize)
         {
-          wrl::com_ptr<ID3D12Resource> default_buffer;
+          directx::DefaultBuffer default_buffer;
 
           // Create the actual default buffer resource.
           CD3DX12_HEAP_PROPERTIES heap_properties_default(D3D12_HEAP_TYPE_DEFAULT);
           auto buffer_default = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
-          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_NONE, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.GetAddressOf()))))
+          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_NONE, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create committed resource for a default buffer.");
-            return nullptr;
+            return {};
           }
 
           // In order to copy CPU memory data into our default buffer, we need to create
@@ -563,10 +571,10 @@ namespace rex
           CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
           auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
-          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadBuffer.GetAddressOf()))))
+          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(default_buffer.upload_buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
-            return nullptr;
+            return {};
           }
 
           // Describe the data we want to copy into the default buffer.
@@ -578,10 +586,10 @@ namespace rex
           // Schedule to copy the data to the default buffer resource.
           // At a high level, the helper function UpdateSubresources will copy the CPU memory into the intermediate upload heap.
           // Then, using ID3D12CommandList::CopySubresourceRegion, the intermediate upload heap data will be copied to mBuffer.
-          auto transition_common_copydest = CD3DX12_RESOURCE_BARRIER::Transition(default_buffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
+          auto transition_common_copydest = CD3DX12_RESOURCE_BARRIER::Transition(default_buffer.buffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST);
           cmdList->ResourceBarrier(1, &transition_common_copydest);
-          UpdateSubresources<1>(cmdList, default_buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &sub_resource_data);
-          auto transition_copydest_generic_read = CD3DX12_RESOURCE_BARRIER::Transition(default_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
+          UpdateSubresources<1>(cmdList, default_buffer.buffer.Get(), default_buffer.upload_buffer.Get(), 0, 0, 1, &sub_resource_data);
+          auto transition_copydest_generic_read = CD3DX12_RESOURCE_BARRIER::Transition(default_buffer.buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
           cmdList->ResourceBarrier(1, &transition_copydest_generic_read);
 
           // Note: uploadbuffer has to be kept alive after the above function calls because
@@ -595,8 +603,6 @@ namespace rex
         rsl::unique_ptr<BufferResource> create_buffer(void* bufferData, s32 bufferByteSize)
         {
           wrl::com_ptr<ID3DBlob> buffer_cpu;
-          wrl::com_ptr<ID3D12Resource> buffer_gpu;
-          wrl::com_ptr<ID3D12Resource> buffer_uploader;
 
           if(DX_FAILED(D3DCreateBlob(bufferByteSize, &buffer_cpu)))
           {
@@ -605,17 +611,17 @@ namespace rex
           }
           CopyMemory(buffer_cpu->GetBufferPointer(), bufferData, bufferByteSize);
 
-          buffer_gpu = create_default_buffer(g_ctx.device.Get(), g_ctx.command_list.Get(), bufferData, bufferByteSize, buffer_uploader);
-          if(buffer_gpu == nullptr)
+          auto default_buffer = create_default_buffer(g_ctx.device.Get(), g_ctx.command_list.Get(), bufferData, bufferByteSize);
+          if(!default_buffer)
           {
             REX_ERROR(LogDirectX, "Could not create GPU buffer");
             return false;
           }
 
-          directx::set_debug_name_for(buffer_gpu.Get(), "Buffer GPU");
-          directx::set_debug_name_for(buffer_uploader.Get(), "Buffer Uploader");
+          directx::set_debug_name_for(default_buffer->buffer.Get(), "Buffer GPU");
+          directx::set_debug_name_for(default_buffer->upload_buffer.Get(), "Buffer Uploader");
 
-          return rsl::make_unique<BufferResource>(buffer_cpu, buffer_gpu, buffer_uploader, bufferByteSize);
+          return rsl::make_unique<BufferResource>(buffer_cpu, default_buffer->buffer, default_buffer->upload_buffer, bufferByteSize);
         }
 
         //-------------------------------------------------------------------------
