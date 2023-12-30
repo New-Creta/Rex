@@ -283,36 +283,246 @@ namespace rex
 
       static constexpr s32 s_num_frame_resources = 3;
 
-      struct Frame
+      //-------------------------------------------------------------------------`
+      void release_resource_slot(ResourceSlot slot)
       {
-          Frame(s32 idx, ResourceSlot s)
-              :index(idx)
-              ,slot(s)
-          {}
-
-          s32 index;
-          ResourceSlot slot;
-
-          rsl::vector<ResourceSlot> committed_resources;
-          rsl::unordered_map<const ResourceSlot*, s32> active_constant_buffers;
-      };
-
-      struct FrameContext
+          slot.release();
+      }
+      //-------------------------------------------------------------------------
+      void release_resource_slots(ResourceSlot* slots, s32 numSlots)
       {
-          FrameContext(s32 maxFrameResources)
-              : frame_resources()
-              , curr_frame_resource(nullptr)             
-              , curr_frame_resource_index(-1)
+          for(s32 i = 0; i < numSlots; ++i)
           {
-              REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
+            release_resource_slot(slots[i]);
+          }
+      }
 
-              frame_resources.reserve(maxFrameResources);
+      class Frame
+      {
+        public:
+          //-------------------------------------------------------------------------
+          Frame(s32 idx, ResourceSlot s)
+              : m_index(idx)
+              , m_slot(s)
+          {
           }
 
-          rsl::vector<Frame>    frame_resources;
+          //-------------------------------------------------------------------------
+          ~Frame()
+          {
+            clear();
+          }
 
-          const ResourceSlot*   curr_frame_resource;
-          s32                   curr_frame_resource_index;
+        public:
+          //-------------------------------------------------------------------------
+          bool operator==(const Frame& other) const
+          {
+            return m_index == other.m_index && m_slot == other.m_slot;
+          }
+          //-------------------------------------------------------------------------
+          bool operator!=(const Frame& other) const
+          {
+            return !(*this == other);
+          }
+
+        public:
+
+          //-------------------------------------------------------------------------
+          s32 index() const
+          {
+            return m_index;
+          }
+
+          //-------------------------------------------------------------------------
+          const ResourceSlot* slot() const
+          {
+            return &m_slot;
+          }
+
+          //-------------------------------------------------------------------------
+          void add_committed_resource(const ResourceSlot& slot)
+          {
+            auto it = rsl::find_if(rsl::cbegin(m_committed_resources), rsl::cend(m_committed_resources),
+                [&slot](const ResourceSlot& s)
+                {
+                    return slot == s;
+                });
+            
+            REX_ASSERT_X(it == rsl::cend(m_committed_resources), "Duplicate committed resource added to frame");
+
+            m_committed_resources.push_back(slot);
+          }
+
+          //-------------------------------------------------------------------------
+          bool has_committed_resource(const ResourceSlot& slot) const
+          {
+            return rsl::find_if(rsl::cbegin(m_committed_resources), rsl::cend(m_committed_resources), [&slot](const ResourceSlot& crs) { return slot == crs; }) != rsl::cend(m_committed_resources);
+          }
+
+          //-------------------------------------------------------------------------
+          void increment_amount_active_constant_buffer(const ResourceSlot* slot)
+          {
+            if(m_active_constant_buffers.find(slot) == rsl::cend(m_active_constant_buffers))
+            {
+              return;
+            }
+
+            ++m_active_constant_buffers[slot];
+          }
+
+          //-------------------------------------------------------------------------
+          s32 amount_active_constant_buffer(const ResourceSlot* slot)
+          {
+            if(m_active_constant_buffers.find(slot) == rsl::cend(m_active_constant_buffers))
+            {
+              m_active_constant_buffers.emplace(slot, 0);
+            }
+
+            return m_active_constant_buffers[slot];
+          }
+
+          //-------------------------------------------------------------------------
+          void clear()
+          {
+            if(m_committed_resources.empty() == false)
+            {
+              release_resource_slots(m_committed_resources.data(), m_committed_resources.size());
+            }
+
+            if(m_slot.is_valid())
+            {
+              release_resource_slot(m_slot);
+            }
+          }
+
+        private:
+          s32 m_index;
+          ResourceSlot m_slot;
+
+          rsl::vector<ResourceSlot> m_committed_resources;
+          rsl::unordered_map<const ResourceSlot*, s32> m_active_constant_buffers;
+      };
+
+      class FrameContext
+      {
+        public:
+          //-------------------------------------------------------------------------
+          FrameContext(s32 maxFrameResources)
+              : m_frame_resources()
+              , m_curr_frame_resource(nullptr)
+              , m_curr_frame_resource_index(-1)
+          {
+            REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
+
+            m_frame_resources.reserve(maxFrameResources);
+          }
+
+          //-------------------------------------------------------------------------
+          ~FrameContext()
+          {
+            clear();
+          }
+
+          //-------------------------------------------------------------------------
+          void initialize()
+          {
+            m_curr_frame_resource_index = 0;
+            m_curr_frame_resource       = nullptr;
+          }
+
+          //-------------------------------------------------------------------------
+          void add_frame(const Frame& f)
+          {
+            REX_ASSERT_X(rsl::find(rsl::cbegin(m_frame_resources), rsl::cend(m_frame_resources), f) == rsl::cend(m_frame_resources), "Duplicate frame resource found");
+
+            m_frame_resources.push_back(f);
+          }
+
+          //-------------------------------------------------------------------------
+          Frame* find_frame(const ResourceSlot* slot)
+          {
+            auto it = rsl::find_if(rsl::begin(m_frame_resources), rsl::end(m_frame_resources),
+                [&slot](const Frame& f)
+                {
+                    return *f.slot() == *slot;
+                });
+
+            return it != rsl::end(m_frame_resources) 
+                ? &(*it) 
+                : nullptr;
+          }
+
+          //-------------------------------------------------------------------------
+          Frame* find_frame(s32 idx)
+          {
+            REX_ASSERT_X(idx < m_frame_resources.size(), "Only {0} frame resources are allocated when trying to retrieve at idx: {1}", max_frame_resources_count(), idx);
+
+            return &m_frame_resources[idx];
+          }
+
+          //-------------------------------------------------------------------------
+          void next_frame()
+          {
+            REX_ASSERT_X(m_frame_resources.empty() == false, "No frame resources registered");
+
+            m_curr_frame_resource_index = (m_curr_frame_resource_index + 1) % m_frame_resources.size();
+            m_curr_frame_resource       = m_frame_resources[m_curr_frame_resource_index].slot();
+          }
+
+          //-------------------------------------------------------------------------
+          void set_current_frame(const ResourceSlot* slot)
+          {
+            m_curr_frame_resource = slot;
+          }
+
+          //-------------------------------------------------------------------------
+          void clear()
+          {
+            if(m_frame_resources.empty() == false)
+            {
+              for(Frame& f: m_frame_resources)
+              {
+                f.clear();
+              }
+
+              m_frame_resources.clear();
+            }
+          }
+
+          //-------------------------------------------------------------------------
+          s32 frame_resources_count() const
+          {
+            return m_frame_resources.size();
+          }
+
+          //-------------------------------------------------------------------------
+          s32 max_frame_resources_count() const
+          {
+            return m_frame_resources.capacity();
+          }
+
+          //-------------------------------------------------------------------------
+          const rsl::vector<Frame> frame_resources() const
+          {
+            return m_frame_resources;
+          }
+
+          //-------------------------------------------------------------------------
+          const ResourceSlot* current_frame_resource() const
+          {
+            return m_curr_frame_resource;
+          }
+
+          //-------------------------------------------------------------------------
+          s32 current_frame_resource_index() const
+          {
+            return m_curr_frame_resource_index;
+          }
+
+        private:
+          rsl::vector<Frame> m_frame_resources;
+          const ResourceSlot* m_curr_frame_resource;
+          s32 m_curr_frame_resource_index;
       };
 
       struct DirectXContext
@@ -383,37 +593,16 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        Frame* get_frame(const ResourceSlot* slot)
-        {
-            auto it = rsl::find_if(rsl::begin(g_ctx.frame_ctx.frame_resources), rsl::end(g_ctx.frame_ctx.frame_resources),
-                [&slot](const Frame& f)
-                {
-                    return f.slot == *slot;
-                });
-
-            if (it != rsl::cend(g_ctx.frame_ctx.frame_resources))
-            {
-                return &(*it);
-            }
-
-            return nullptr;
-        }
-
-        //-------------------------------------------------------------------------
         bool has_committed_resource_for_frame(const ResourceSlot* frameSlot, const ResourceSlot* committedResourceSlot)
         {
-            const Frame* frame = get_frame(frameSlot);
+            const Frame* frame = g_ctx.frame_ctx.find_frame(frameSlot);
             if (frame == nullptr)
             {
                 REX_WARN(LogDirectX, "Unable to find frame with slot index: {}", frameSlot->slot_id());
                 return false;
             }
 
-            return rsl::find_if(rsl::cbegin(frame->committed_resources), rsl::cend(frame->committed_resources),
-                [committedResourceSlot](const ResourceSlot& crs)
-                {
-                    return *committedResourceSlot == crs;
-                }) != rsl::cend(frame->committed_resources);
+            return frame->has_committed_resource(*committedResourceSlot);
         }
 
         //-------------------------------------------------------------------------
@@ -447,31 +636,6 @@ namespace rex
         {
           rsl::array<ID3D12CommandList*, 1> command_lists = { g_ctx.command_list.Get() };
           g_ctx.command_queue->ExecuteCommandLists(command_lists.size(), command_lists.data());
-        }
-
-        //-------------------------------------------------------------------------
-        void release_resource_slot(ResourceSlot slot)
-        {
-            slot.release();
-        }
-        
-        //-------------------------------------------------------------------------
-        void release_resource_slots(ResourceSlot* slots, s32 numSlots)
-        {
-            for (s32 i = 0; i < numSlots; ++i)
-            {
-                release_resource_slot(slots[i]);
-            }
-        }
-
-        //-------------------------------------------------------------------------
-        void release_frame_resources(Frame* frames, s32 numFrames)
-        {
-            for (s32 i = 0; i < numFrames; ++i)
-            {
-                release_resource_slots(frames[i].committed_resources.data(), frames[i].committed_resources.size());
-                release_resource_slot(frames[i].slot);
-            }
         }
 
         //-------------------------------------------------------------------------
@@ -658,7 +822,7 @@ namespace rex
         //-------------------------------------------------------------------------
         rsl::unique_ptr<ConstantBufferViewResource> create_constant_buffer_view(const ResourceSlot* frameSlot, const ResourceSlot* committedResourceSlot, s32 bufferByteSize)
         {
-            Frame* frame = internal::get_frame(frameSlot);
+            Frame* frame = g_ctx.frame_ctx.find_frame(frameSlot);
 
             REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", frameSlot->slot_id());
             REX_ASSERT_X(internal::has_committed_resource_for_frame(frameSlot, committedResourceSlot), "Unable to find committed resource for give frame: {}", frameSlot->slot_id());
@@ -669,7 +833,7 @@ namespace rex
             s32 obj_cb_byte_size = rex::align(bufferByteSize, s_constant_buffer_min_allocation_size);
 
             D3D12_GPU_VIRTUAL_ADDRESS cb_address = committed_resource->uploader->GetGPUVirtualAddress();
-            cb_address += frame->active_constant_buffers[committedResourceSlot] * obj_cb_byte_size;
+            cb_address += frame->amount_active_constant_buffer(committedResourceSlot) * obj_cb_byte_size;
 
             s32 heap_index = g_ctx.active_constant_buffers;
             CD3DX12_CPU_DESCRIPTOR_HANDLE handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetCPUDescriptorHandleForHeapStart());
@@ -683,7 +847,7 @@ namespace rex
 
             rsl::unique_ptr<ConstantBufferViewResource> constant_buffer_resources = rsl::make_unique<ConstantBufferViewResource>(committedResourceSlot, obj_cb_byte_size, g_ctx.active_constant_buffers);
 
-            ++frame->active_constant_buffers[committedResourceSlot];
+            frame->increment_amount_active_constant_buffer(committedResourceSlot);
             ++g_ctx.active_constant_buffers;
 
             return constant_buffer_resources;
@@ -1035,9 +1199,7 @@ namespace rex
           g_ctx.frame_ctx = FrameContext(maxFrameResources);
         }
 
-        g_ctx.frame_ctx.curr_frame_resource_index = 0;
-        g_ctx.frame_ctx.curr_frame_resource       = nullptr;
-
+        g_ctx.frame_ctx.initialize();
 
         s32 dxgi_factory_flags = 0;
 
@@ -1308,17 +1470,16 @@ namespace rex
                 }
             }
 #endif
-
-            internal::release_frame_resources(g_ctx.frame_ctx.frame_resources.data(), g_ctx.frame_ctx.frame_resources.size());
-            internal::release_resource_slot(g_ctx.active_depth_target);
-            internal::release_resource_slots(g_ctx.active_color_target, g_ctx.active_color_targets);
-            internal::release_resource_slot(g_ctx.active_pipeline_state_object);
-            internal::release_resource_slot(g_ctx.active_shader_program);
-            internal::release_resource_slots(g_ctx.swapchain_rt_buffer_slots, s_swapchain_buffer_count);
-            internal::release_resource_slot(g_ctx.swapchain_ds_buffer_slot);
+            release_resource_slot(g_ctx.active_depth_target);
+            release_resource_slots(g_ctx.active_color_target, g_ctx.active_color_targets);
+            release_resource_slot(g_ctx.active_pipeline_state_object);
+            release_resource_slot(g_ctx.active_shader_program);
+            release_resource_slots(g_ctx.swapchain_rt_buffer_slots, s_swapchain_buffer_count);
+            release_resource_slot(g_ctx.swapchain_ds_buffer_slot);
 
             flush_command_queue();
 
+            g_ctx.frame_ctx.clear();
             g_ctx.resource_pool.clear();
             g_ctx.descriptor_heap_pool.clear();
             g_ctx.pipeline_state_objects.clear();
@@ -1358,7 +1519,7 @@ namespace rex
       //-------------------------------------------------------------------------
       const ResourceSlot* active_frame()
       {
-          return g_ctx.frame_ctx.curr_frame_resource;
+          return g_ctx.frame_ctx.current_frame_resource();
       }
 
       //-------------------------------------------------------------------------
@@ -1366,13 +1527,13 @@ namespace rex
       {
           REX_ASSERT_X(idx < max_frames_in_flight(), "Frame index exceeds the number of available frames");
 
-          return &g_ctx.frame_ctx.frame_resources[idx].slot;
+          return g_ctx.frame_ctx.find_frame(idx)->slot();
       }
       
       //-------------------------------------------------------------------------
       s32 max_frames_in_flight()
       {
-          return g_ctx.frame_ctx.frame_resources.capacity();
+          return g_ctx.frame_ctx.max_frame_resources_count();
       }
 
       //-------------------------------------------------------------------------
@@ -1483,7 +1644,7 @@ namespace rex
       {
         REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
-        rsl::unique_ptr<ConstantBufferViewResource> resource = internal::create_constant_buffer_view(cb.frame_slot, cb.committed_resource, cb.buffer_size);
+        rsl::unique_ptr<ConstantBufferViewResource> resource = internal::create_constant_buffer_view(g_ctx.frame_ctx.find_frame(cb.frame_index)->slot(), cb.committed_resource, cb.buffer_size);
 
         if(resource == nullptr)
         {
@@ -1587,10 +1748,10 @@ namespace rex
         g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<FrameResource>(cmd_list_alloc));
 
         // Activate the first frame resource
-        g_ctx.frame_ctx.frame_resources.push_back(Frame(g_ctx.frame_ctx.frame_resources.size(), resourceSlot));
-        if(g_ctx.frame_ctx.curr_frame_resource == nullptr)
+        g_ctx.frame_ctx.add_frame(Frame(g_ctx.frame_ctx.frame_resources_count(), resourceSlot));
+        if(g_ctx.frame_ctx.current_frame_resource() == nullptr)
         {
-          g_ctx.frame_ctx.curr_frame_resource = &resourceSlot;
+          g_ctx.frame_ctx.set_current_frame(&resourceSlot);
         }
 
         return true;
@@ -1609,12 +1770,11 @@ namespace rex
               return false;
           }
 
-          auto frame = internal::get_frame(acrd.frame_slot);
+          auto frame = g_ctx.frame_ctx.find_frame(acrd.frame_index);
           
-          REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", acrd.frame_slot->slot_id());
+          REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", acrd.frame_index);
 
-          frame->committed_resources.push_back(resourceSlot);
-          frame->active_constant_buffers.emplace(&resourceSlot, 0);
+          frame->add_committed_resource(resourceSlot);
 
           g_ctx.resource_pool.insert(resourceSlot, rsl::move(resource));
 
@@ -1721,10 +1881,9 @@ namespace rex
       void wait_for_active_frame()
       {
         // Cycle through the circular frame resource array.
-        g_ctx.frame_ctx.curr_frame_resource_index = (g_ctx.frame_ctx.curr_frame_resource_index + 1) % g_ctx.frame_ctx.frame_resources.size();
-        g_ctx.frame_ctx.curr_frame_resource       = &g_ctx.frame_ctx.frame_resources[g_ctx.frame_ctx.curr_frame_resource_index].slot;
+        g_ctx.frame_ctx.next_frame();
 
-        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.curr_frame_resource);
+        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.current_frame_resource());
         auto f   = fr.get();
 
         if(f->fence != 0 && g_ctx.fence->GetCompletedValue() < f->fence)
@@ -2046,7 +2205,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool new_frame()
       {
-        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.curr_frame_resource);
+        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.current_frame_resource());
         auto f   = fr.get();
 
         // Reuse the memory assosiated with command recording.
@@ -2063,7 +2222,7 @@ namespace rex
         auto& pso = g_ctx.resource_pool.as<PipelineStateResource>(g_ctx.active_pipeline_state_object);
         if(internal::reset_command_list(f->cmd_list_allocator.Get(), pso.get()) == false)
         {
-          REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_ctx.frame_ctx.curr_frame_resource_index);
+          REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_ctx.frame_ctx.current_frame_resource_index());
           return false;
         }
 
@@ -2073,7 +2232,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool end_frame()
       {
-        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.curr_frame_resource);
+        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.current_frame_resource());
         auto f   = fr.get();
 
         // Advance the fence value to mark commands up to this fence point.
