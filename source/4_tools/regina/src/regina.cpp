@@ -668,9 +668,6 @@ namespace rex
 
                 renderer::ResourceSlot curr_object_cr = get_object_committed_resource_of_frame(renderer::active_frame());
                 renderer::update_committed_resource(rsl::move(update_constant_buffer_command_desc), curr_object_cr);
-
-                // Updating constant buffer of the cube so the frame should remain dirty
-                ri.num_frames_dirty = renderer::max_frames_in_flight();
             }
         }
     }
