@@ -11,7 +11,7 @@
 
 #include "rex_directx/resources/buffer_resource.h"
 #include "rex_directx/resources/clear_state_resource.h"
-#include "rex_directx/resources/commited_buffer_resource.h"
+#include "rex_directx/resources/committed_buffer_resource.h"
 #include "rex_directx/resources/constant_buffer_view_resource.h"
 #include "rex_directx/resources/depth_stencil_target_resource.h"
 #include "rex_directx/resources/frame_resource.h"
@@ -43,7 +43,7 @@
 #include "rex_renderer_core/commands/create_raster_state_cmd.h"
 #include "rex_renderer_core/commands/create_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_frame_resource_cmd.h"
-#include "rex_renderer_core/commands/attach_commited_resource_to_frame_cmd.h"
+#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/draw_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
@@ -68,7 +68,7 @@
 #include "rex_renderer_core/commands/set_shader_cmd.h"
 #include "rex_renderer_core/commands/set_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
-#include "rex_renderer_core/commands/update_commited_resource_cmd.h"
+#include "rex_renderer_core/commands/update_committed_resource_cmd.h"
 
 #include "rex_renderer_core/renderer_backend.h"
 #include "rex_renderer_core/cull_mode.h"
@@ -285,7 +285,7 @@ namespace rex
           s32 index;
           ResourceSlot slot;
 
-          rsl::vector<ResourceSlot> commited_resources;
+          rsl::vector<ResourceSlot> committed_resources;
           rsl::unordered_map<const ResourceSlot*, s32> active_constant_buffers;
       };
 
@@ -392,7 +392,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool has_commited_resource_for_frame(const ResourceSlot* frameSlot, const ResourceSlot* commitedResourceSlot)
+        bool has_committed_resource_for_frame(const ResourceSlot* frameSlot, const ResourceSlot* committedResourceSlot)
         {
             const Frame* frame = get_frame(frameSlot);
             if (frame == nullptr)
@@ -401,11 +401,11 @@ namespace rex
                 return false;
             }
 
-            return rsl::find_if(rsl::cbegin(frame->commited_resources), rsl::cend(frame->commited_resources),
-                [commitedResourceSlot](const ResourceSlot& crs)
+            return rsl::find_if(rsl::cbegin(frame->committed_resources), rsl::cend(frame->committed_resources),
+                [committedResourceSlot](const ResourceSlot& crs)
                 {
-                    return *commitedResourceSlot == crs;
-                }) != rsl::cend(frame->commited_resources);
+                    return *committedResourceSlot == crs;
+                }) != rsl::cend(frame->committed_resources);
         }
 
         //-------------------------------------------------------------------------
@@ -461,7 +461,7 @@ namespace rex
         {
             for (s32 i = 0; i < numFrames; ++i)
             {
-                release_resource_slots(frames[i].commited_resources.data(), frames[i].commited_resources.size());
+                release_resource_slots(frames[i].committed_resources.data(), frames[i].committed_resources.size());
                 release_resource_slot(frames[i].slot);
             }
         }
@@ -554,7 +554,7 @@ namespace rex
 
           if(DX_FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_NONE, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.GetAddressOf()))))
           {
-            REX_ERROR(LogDirectX, "Failed to create commited resource for a default buffer.");
+            REX_ERROR(LogDirectX, "Failed to create committed resource for a default buffer.");
             return nullptr;
           }
 
@@ -565,7 +565,7 @@ namespace rex
 
           if(DX_FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadBuffer.GetAddressOf()))))
           {
-            REX_ERROR(LogDirectX, "Failed to create commited resource for intermediate upload heap.");
+            REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
             return nullptr;
           }
 
@@ -619,7 +619,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        rsl::unique_ptr<CommitedBufferResource> create_commited_resource(s32 bufferCount, s32 bufferByteSize)
+        rsl::unique_ptr<CommittedBufferResource> create_committed_resource(s32 bufferCount, s32 bufferByteSize)
         {
             s32 obj_cb_byte_size = rex::align(bufferByteSize, s_constant_buffer_min_allocation_size);
 
@@ -630,40 +630,40 @@ namespace rex
 
             if(DX_FAILED(g_ctx.device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
             {
-                REX_ERROR(LogDirectX, "Could not create commited resource ( constant buffer )");
+                REX_ERROR(LogDirectX, "Could not create committed resource ( constant buffer )");
                 return nullptr;
             }
 
             directx::set_debug_name_for(constant_buffer_uploader.Get(), "Constant Buffer Uploader");
 
-            rsl::unique_ptr<CommitedBufferResource> constant_buffer_resources = rsl::make_unique<CommitedBufferResource>(constant_buffer_uploader, obj_cb_byte_size, obj_cb_byte_size * bufferCount);
+            rsl::unique_ptr<CommittedBufferResource> constant_buffer_resources = rsl::make_unique<CommittedBufferResource>(constant_buffer_uploader, obj_cb_byte_size, obj_cb_byte_size * bufferCount);
 
             if(DX_FAILED(constant_buffer_uploader->Map(0, nullptr, reinterpret_cast<void**>(&constant_buffer_resources->get()->mapped_data))))
             {
-                REX_ERROR(LogDirectX, "Could not map data to commited resource ( constant buffer )");
+                REX_ERROR(LogDirectX, "Could not map data to committed resource ( constant buffer )");
                 return nullptr;
             }
 
-            REX_LOG(LogDirectX, "Create Commited Resource - buffer_count: {0}, buffer_byte_size: {1}, buffer_element_byte_size: {2}", bufferCount, obj_cb_byte_size * bufferCount, obj_cb_byte_size);
+            REX_LOG(LogDirectX, "Create Committed Resource - buffer_count: {0}, buffer_byte_size: {1}, buffer_element_byte_size: {2}", bufferCount, obj_cb_byte_size * bufferCount, obj_cb_byte_size);
 
             return constant_buffer_resources;
         }
 
         //-------------------------------------------------------------------------
-        rsl::unique_ptr<ConstantBufferViewResource> create_constant_buffer_view(const ResourceSlot* frameSlot, const ResourceSlot* commitedResourceSlot, s32 bufferByteSize)
+        rsl::unique_ptr<ConstantBufferViewResource> create_constant_buffer_view(const ResourceSlot* frameSlot, const ResourceSlot* committedResourceSlot, s32 bufferByteSize)
         {
             Frame* frame = internal::get_frame(frameSlot);
 
             REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", frameSlot->slot_id());
-            REX_ASSERT_X(internal::has_commited_resource_for_frame(frameSlot, commitedResourceSlot), "Unable to find commited resource for give frame: {}", frameSlot->slot_id());
+            REX_ASSERT_X(internal::has_committed_resource_for_frame(frameSlot, committedResourceSlot), "Unable to find committed resource for give frame: {}", frameSlot->slot_id());
 
-            auto& commited_buffer_resource = g_ctx.resource_pool.as<CommitedBufferResource>(*commitedResourceSlot);
-            auto  commited_resource = commited_buffer_resource.get();
+            auto& committed_buffer_resource = g_ctx.resource_pool.as<CommittedBufferResource>(*committedResourceSlot);
+            auto  committed_resource = committed_buffer_resource.get();
 
             s32 obj_cb_byte_size = rex::align(bufferByteSize, s_constant_buffer_min_allocation_size);
 
-            D3D12_GPU_VIRTUAL_ADDRESS cb_address = commited_resource->uploader->GetGPUVirtualAddress();
-            cb_address += frame->active_constant_buffers[commitedResourceSlot] * obj_cb_byte_size;
+            D3D12_GPU_VIRTUAL_ADDRESS cb_address = committed_resource->uploader->GetGPUVirtualAddress();
+            cb_address += frame->active_constant_buffers[committedResourceSlot] * obj_cb_byte_size;
 
             s32 heap_index = g_ctx.active_constant_buffers;
             CD3DX12_CPU_DESCRIPTOR_HANDLE handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetCPUDescriptorHandleForHeapStart());
@@ -675,9 +675,9 @@ namespace rex
 
             g_ctx.device->CreateConstantBufferView(&cbv_desc, handle);
 
-            rsl::unique_ptr<ConstantBufferViewResource> constant_buffer_resources = rsl::make_unique<ConstantBufferViewResource>(commitedResourceSlot, obj_cb_byte_size, g_ctx.active_constant_buffers);
+            rsl::unique_ptr<ConstantBufferViewResource> constant_buffer_resources = rsl::make_unique<ConstantBufferViewResource>(committedResourceSlot, obj_cb_byte_size, g_ctx.active_constant_buffers);
 
-            ++frame->active_constant_buffers[commitedResourceSlot];
+            ++frame->active_constant_buffers[committedResourceSlot];
             ++g_ctx.active_constant_buffers;
 
             return constant_buffer_resources;
@@ -1477,7 +1477,7 @@ namespace rex
       {
         REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
-        rsl::unique_ptr<ConstantBufferViewResource> resource = internal::create_constant_buffer_view(cb.frame_slot, cb.commited_resource, cb.buffer_size);
+        rsl::unique_ptr<ConstantBufferViewResource> resource = internal::create_constant_buffer_view(cb.frame_slot, cb.committed_resource, cb.buffer_size);
 
         if(resource == nullptr)
         {
@@ -1591,11 +1591,11 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool attach_commited_resource_to_frame(const commands::AttachCommitedResourceToFrameCommandDesc& acrd, const ResourceSlot& resourceSlot)
+      bool attach_committed_resource_to_frame(const commands::AttachCommittedResourceToFrameCommandDesc& acrd, const ResourceSlot& resourceSlot)
       {
           REX_ASSERT_X(acrd.buffer_byte_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
-          rsl::unique_ptr<CommitedBufferResource> resource = internal::create_commited_resource(acrd.buffer_count, acrd.buffer_byte_size);
+          rsl::unique_ptr<CommittedBufferResource> resource = internal::create_committed_resource(acrd.buffer_count, acrd.buffer_byte_size);
 
           if (resource == nullptr)
           {
@@ -1607,7 +1607,7 @@ namespace rex
           
           REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", acrd.frame_slot->slot_id());
 
-          frame->commited_resources.push_back(resourceSlot);
+          frame->committed_resources.push_back(resourceSlot);
           frame->active_constant_buffers.emplace(&resourceSlot, 0);
 
           g_ctx.resource_pool.insert(resourceSlot, rsl::move(resource));
@@ -1703,9 +1703,9 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void update_commited_resource(const commands::UpdateCommitedResourceCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot)
+      void update_committed_resource(const commands::UpdateCommittedResourceCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot)
       {
-        auto& cbr = g_ctx.resource_pool.as<CommitedBufferResource>(resourceSlot);
+        auto& cbr = g_ctx.resource_pool.as<CommittedBufferResource>(resourceSlot);
         auto cs   = cbr.get();
 
         memcpy(&cs->mapped_data[updateConstantBuffer.element_index * cs->element_data_byte_size], updateConstantBuffer.buffer_data.data(), updateConstantBuffer.buffer_data.size());

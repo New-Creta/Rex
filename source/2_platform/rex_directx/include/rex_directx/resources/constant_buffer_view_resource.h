@@ -14,13 +14,13 @@ namespace rex
         {
             struct ContantBufferView
             {
-                ContantBufferView(const ResourceSlot* commitedResource, s32 bufferByteSize, s32 bufferIndex)
-                    :commited_resource(commitedResource)
+                ContantBufferView(const ResourceSlot* committedResource, s32 bufferByteSize, s32 bufferIndex)
+                    :committed_resource(committedResource)
                     ,buffer_byte_size(bufferByteSize)
                     ,buffer_index(bufferIndex)
                 {}
 
-                const ResourceSlot* commited_resource;
+                const ResourceSlot* committed_resource;
 
                 s32 buffer_byte_size;
                 s32 buffer_index;
@@ -32,22 +32,22 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(ConstantBufferViewResource);
 
-            ConstantBufferViewResource(const ResourceSlot* commitedResource, s32 bufferByteSize, s32 bufferIndex)
-                :m_commited_buffer_view(commitedResource, bufferByteSize, bufferIndex)
+            ConstantBufferViewResource(const ResourceSlot* committedResource, s32 bufferByteSize, s32 bufferIndex)
+                :m_committed_buffer_view(committedResource, bufferByteSize, bufferIndex)
             {}
             ~ConstantBufferViewResource() override = default;
 
             resources::ContantBufferView* get()
             {
-                return &m_commited_buffer_view;
+                return &m_committed_buffer_view;
             }
             const resources::ContantBufferView* get() const
             {
-                return &m_commited_buffer_view;
+                return &m_committed_buffer_view;
             }
 
         private:
-            resources::ContantBufferView m_commited_buffer_view;
+            resources::ContantBufferView m_committed_buffer_view;
         };
     }
 }

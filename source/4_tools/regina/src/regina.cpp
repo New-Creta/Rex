@@ -10,8 +10,8 @@
 #include "rex_renderer_core/commands/create_raster_state_cmd.h"
 #include "rex_renderer_core/commands/create_pipeline_state_cmd.h"
 #include "rex_renderer_core/commands/link_shader_cmd.h"
-#include "rex_renderer_core/commands/update_commited_resource_cmd.h"
-#include "rex_renderer_core/commands/attach_commited_resource_to_frame_cmd.h"
+#include "rex_renderer_core/commands/update_committed_resource_cmd.h"
+#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/rendering/scene.h"
 #include "rex_renderer_core/rendering/scene_renderer.h"
 #include "rex_renderer_core/default_depth_info.h"
@@ -78,8 +78,8 @@ namespace rex
     struct FrameData
     {
         renderer::ResourceSlot frame;
-        renderer::ResourceSlot object_commited_resource;
-        renderer::ResourceSlot pass_commited_resource;
+        renderer::ResourceSlot object_committed_resource;
+        renderer::ResourceSlot pass_committed_resource;
 
         rsl::vector<renderer::ResourceSlot> object_constant_buffer;
         renderer::ResourceSlot pass_constant_buffer;
@@ -123,7 +123,7 @@ namespace rex
             });
 
         return it != rsl::cend(g_regina_ctx.frame_resource_data)
-            ? it->object_commited_resource
+            ? it->object_committed_resource
             : renderer::ResourceSlot::make_invalid();
     }
     //-------------------------------------------------------------------------
@@ -136,7 +136,7 @@ namespace rex
             });
 
         return it != rsl::cend(g_regina_ctx.frame_resource_data)
-            ? it->pass_commited_resource
+            ? it->pass_committed_resource
             : renderer::ResourceSlot::make_invalid();
     }
     //-------------------------------------------------------------------------
@@ -546,19 +546,19 @@ namespace rex
 
         for (s32 frame = 0; frame < renderer::max_frames_in_flight(); ++frame)
         {
-            renderer::commands::AttachCommitedResourceToFrameCommandDesc attach_object_constants;
+            renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants;
             attach_object_constants.frame_slot = renderer::frame_at_index(frame);
             attach_object_constants.buffer_count = num_render_items;
             attach_object_constants.buffer_byte_size = sizeof(ObjectConstants);
 
-            g_regina_ctx.frame_resource_data[frame].object_commited_resource = renderer::attach_commited_resource_to_frame(rsl::move(attach_object_constants));
+            g_regina_ctx.frame_resource_data[frame].object_committed_resource = renderer::attach_committed_resource_to_frame(rsl::move(attach_object_constants));
 
-            renderer::commands::AttachCommitedResourceToFrameCommandDesc attach_pass_constants;
+            renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_pass_constants;
             attach_pass_constants.frame_slot = renderer::frame_at_index(frame);
             attach_pass_constants.buffer_count = 1;
             attach_pass_constants.buffer_byte_size = sizeof(PassConstants);
 
-            g_regina_ctx.frame_resource_data[frame].pass_commited_resource = renderer::attach_commited_resource_to_frame(rsl::move(attach_pass_constants));
+            g_regina_ctx.frame_resource_data[frame].pass_committed_resource = renderer::attach_committed_resource_to_frame(rsl::move(attach_pass_constants));
         }
 
         // Need a CBV descriptor for each object for each frame resource.
@@ -569,7 +569,7 @@ namespace rex
                 renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc;
 
                 create_const_buffer_command_desc.frame_slot = renderer::frame_at_index(frame);
-                create_const_buffer_command_desc.commited_resource = &g_regina_ctx.frame_resource_data[frame].object_commited_resource;
+                create_const_buffer_command_desc.committed_resource = &g_regina_ctx.frame_resource_data[frame].object_committed_resource;
                 create_const_buffer_command_desc.buffer_size = sizeof(ObjectConstants);
 
                 renderer::ResourceSlot object_constant_buffer = renderer::create_constant_buffer_view(rsl::move(create_const_buffer_command_desc));
@@ -584,7 +584,7 @@ namespace rex
             renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc;
 
             create_const_buffer_command_desc.frame_slot = renderer::frame_at_index(frame);
-            create_const_buffer_command_desc.commited_resource = &g_regina_ctx.frame_resource_data[frame].pass_commited_resource;
+            create_const_buffer_command_desc.committed_resource = &g_regina_ctx.frame_resource_data[frame].pass_committed_resource;
             create_const_buffer_command_desc.buffer_size = sizeof(PassConstants);
 
             renderer::ResourceSlot pass_constant_buffer = renderer::create_constant_buffer_view(rsl::move(create_const_buffer_command_desc));
@@ -662,12 +662,12 @@ namespace rex
                 ObjectConstants obj_constants;
                 obj_constants.world = glm::transpose(ri.world); // DirectX backend ( so we have to transpose, expects row major matrices )
 
-                renderer::commands::UpdateCommitedResourceCommandDesc update_constant_buffer_command_desc;
+                renderer::commands::UpdateCommittedResourceCommandDesc update_constant_buffer_command_desc;
                 update_constant_buffer_command_desc.element_index = ri.constant_buffer_index;
                 update_constant_buffer_command_desc.buffer_data = memory::make_blob((rsl::byte*)&obj_constants, rsl::memory_size(sizeof(ObjectConstants)));
 
                 renderer::ResourceSlot curr_object_cr = get_object_committed_resource_of_frame(renderer::active_frame());
-                renderer::update_commited_resource(rsl::move(update_constant_buffer_command_desc), curr_object_cr);
+                renderer::update_committed_resource(rsl::move(update_constant_buffer_command_desc), curr_object_cr);
 
                 // Updating constant buffer of the cube so the frame should remain dirty
                 ri.num_frames_dirty = renderer::max_frames_in_flight();
@@ -705,11 +705,11 @@ namespace rex
         g_regina_ctx.pass_constants.far_z = globals::default_depth_info().far_plane;
         g_regina_ctx.pass_constants.delta_time = globals::frame_info().delta_time().to_seconds();
 
-        renderer::commands::UpdateCommitedResourceCommandDesc update_constant_buffer_command_desc;
+        renderer::commands::UpdateCommittedResourceCommandDesc update_constant_buffer_command_desc;
         update_constant_buffer_command_desc.element_index = 0;
         update_constant_buffer_command_desc.buffer_data = memory::make_blob((rsl::byte*)&g_regina_ctx.pass_constants, rsl::memory_size(sizeof(PassConstants)));
 
-        renderer::update_commited_resource(rsl::move(update_constant_buffer_command_desc), curr_pass_cr);
+        renderer::update_committed_resource(rsl::move(update_constant_buffer_command_desc), curr_pass_cr);
     }
 
     //-------------------------------------------------------------------------

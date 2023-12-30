@@ -10,9 +10,9 @@ namespace rex
   {
     namespace commands
     {
-      struct UpdateCommitedResourceCommandDesc
+      struct UpdateCommittedResourceCommandDesc
       {
-          UpdateCommitedResourceCommandDesc()
+          UpdateCommittedResourceCommandDesc()
             :buffer_data()
             ,element_index(0)
         {}
@@ -21,27 +21,27 @@ namespace rex
         s32 element_index;
       };
 
-      class UpdateCommitedResource : public RenderCommand
+      class UpdateCommittedResource : public RenderCommand
       {
       public:
-          UpdateCommitedResource(UpdateCommitedResourceCommandDesc&& desc, const ResourceSlot& slot)
+          UpdateCommittedResource(UpdateCommittedResourceCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)
         {
         }
 
-        ~UpdateCommitedResource() override = default;
+        ~UpdateCommittedResource() override = default;
 
         bool execute() override 
         {
-          backend::update_commited_resource(m_desc, m_resource_slot);
+          backend::update_committed_resource(m_desc, m_resource_slot);
 
           return true;
         }
 
       private:
-        UpdateCommitedResourceCommandDesc m_desc;
+        UpdateCommittedResourceCommandDesc m_desc;
         ResourceSlot m_resource_slot;
       };
     } // namespace commands

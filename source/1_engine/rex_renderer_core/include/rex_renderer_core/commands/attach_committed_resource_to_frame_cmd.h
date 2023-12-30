@@ -8,7 +8,7 @@ namespace rex
     {
         namespace commands
         {
-            struct AttachCommitedResourceToFrameCommandDesc
+            struct AttachCommittedResourceToFrameCommandDesc
             {
                 const ResourceSlot* frame_slot = nullptr;
 
@@ -16,24 +16,24 @@ namespace rex
                 s32 buffer_byte_size;
             };
 
-            class AttachCommitedResourceToFrame : public RenderCommand
+            class AttachCommittedResourceToFrame : public RenderCommand
             {
             public:
-                AttachCommitedResourceToFrame(AttachCommitedResourceToFrameCommandDesc&& desc, const ResourceSlot& slot)
+                AttachCommittedResourceToFrame(AttachCommittedResourceToFrameCommandDesc&& desc, const ResourceSlot& slot)
                     : RenderCommand()
                     , m_desc(rsl::move(desc))
                     , m_resource_slot(slot)
                 {}
 
-                ~AttachCommitedResourceToFrame() override = default;
+                ~AttachCommittedResourceToFrame() override = default;
 
                 bool execute() override
                 {
-                    return backend::attach_commited_resource_to_frame(m_desc, m_resource_slot);
+                    return backend::attach_committed_resource_to_frame(m_desc, m_resource_slot);
                 }
 
             private:
-                AttachCommitedResourceToFrameCommandDesc m_desc;
+                AttachCommittedResourceToFrameCommandDesc m_desc;
                 ResourceSlot m_resource_slot;
             };
         }

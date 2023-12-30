@@ -23,7 +23,7 @@
 #include "rex_renderer_core/commands/create_raster_state_cmd.h"
 #include "rex_renderer_core/commands/create_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_frame_resource_cmd.h"
-#include "rex_renderer_core/commands/attach_commited_resource_to_frame_cmd.h"
+#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/draw_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
@@ -48,7 +48,7 @@
 #include "rex_renderer_core/commands/set_shader_cmd.h"
 #include "rex_renderer_core/commands/set_vertex_buffer_cmd.h"
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
-#include "rex_renderer_core/commands/update_commited_resource_cmd.h"
+#include "rex_renderer_core/commands/update_committed_resource_cmd.h"
 
 #include "rex_engine/defines.h"
 #include "rex_engine/ring_buffer.h"
@@ -338,15 +338,15 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        ResourceSlot attach_commited_resource_to_frame(commands::AttachCommitedResourceToFrameCommandDesc&& attachCommitedResourceParams)
+        ResourceSlot attach_committed_resource_to_frame(commands::AttachCommittedResourceToFrameCommandDesc&& attachCommittedResourceParams)
         {
             ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
 
-            commands::AttachCommitedResourceToFrame* cmd = create_new_command<commands::AttachCommitedResourceToFrame>(rsl::move(attachCommitedResourceParams), resource_slot);
+            commands::AttachCommittedResourceToFrame* cmd = create_new_command<commands::AttachCommittedResourceToFrame>(rsl::move(attachCommittedResourceParams), resource_slot);
 
             if (!process_render_command(cmd))
             {
-                REX_ERROR(LogRendererCore, "Unable to add/exec attach commited resource to frame command");
+                REX_ERROR(LogRendererCore, "Unable to add/exec attach committed resource to frame command");
                 return ResourceSlot::make_invalid();
             }
 
@@ -402,9 +402,9 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool update_commited_resource(commands::UpdateCommitedResourceCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget)
+        bool update_committed_resource(commands::UpdateCommittedResourceCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget)
         {
-            commands::UpdateCommitedResource* cmd = create_new_command<commands::UpdateCommitedResource>(rsl::move(updateConstantBufferParams), constantBufferTarget);
+            commands::UpdateCommittedResource* cmd = create_new_command<commands::UpdateCommittedResource>(rsl::move(updateConstantBufferParams), constantBufferTarget);
 
             return process_render_command(cmd);
         }

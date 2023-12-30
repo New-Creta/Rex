@@ -25,7 +25,7 @@ namespace rex
             struct CreateConstantBufferViewCommandDesc;
             struct CreatePipelineStateCommandDesc;
             struct CreateInputLayoutCommandDesc;
-            struct AttachCommitedResourceToFrameCommandDesc;
+            struct AttachCommittedResourceToFrameCommandDesc;
             struct BeginDrawCommandDesc;
             struct EndDrawCommandDesc;
             struct NewFrameCommandDesc;
@@ -39,7 +39,7 @@ namespace rex
             struct DrawIndexedInstancedCommandDesc;
             struct DrawInstanceCommandDesc;
             struct ReleaseResourceCommandDesc;
-            struct UpdateCommitedResourceCommandDesc;
+            struct UpdateCommittedResourceCommandDesc;
         }
 
         namespace backend
@@ -62,13 +62,13 @@ namespace rex
             bool                create_constant_buffer_view(const commands::CreateConstantBufferViewCommandDesc& cb, const ResourceSlot& resourceSlot);
             bool                create_pipeline_state_object(const commands::CreatePipelineStateCommandDesc& cps, const ResourceSlot& resourceSlot);
             bool                create_frame_resource(const ResourceSlot& resourceSlot);
-            bool                attach_commited_resource_to_frame(const commands::AttachCommitedResourceToFrameCommandDesc& acrd, const ResourceSlot& resourceSlot);
+            bool                attach_committed_resource_to_frame(const commands::AttachCommittedResourceToFrameCommandDesc& acrd, const ResourceSlot& resourceSlot);
 
             bool                load_shader(const commands::LoadShaderCommandDesc& ls, const ResourceSlot& resourceSlot);
             bool                link_shader(const commands::LinkShaderCommandDesc& ls, const ResourceSlot& resourceSlot);
             bool                compile_shader(const commands::CompileShaderCommandDesc& cs, const ResourceSlot& resourceSlot);
 
-            void                update_commited_resource(const commands::UpdateCommitedResourceCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot);
+            void                update_committed_resource(const commands::UpdateCommittedResourceCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot);
 
             void                wait_for_active_frame();
 

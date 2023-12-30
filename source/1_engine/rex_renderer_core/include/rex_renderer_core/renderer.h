@@ -39,7 +39,7 @@ namespace rex
             struct CreateConstantBufferViewCommandDesc;
             struct CreatePipelineStateCommandDesc;
             struct CreateInputLayoutCommandDesc;
-            struct AttachCommitedResourceToFrameCommandDesc;
+            struct AttachCommittedResourceToFrameCommandDesc;
             struct BeginDrawCommandDesc;
             struct EndDrawCommandDesc;
             struct NewFrameCommandDesc;
@@ -53,7 +53,7 @@ namespace rex
             struct DrawIndexedInstancedCommandDesc;
             struct DrawInstanceCommandDesc;
             struct ReleaseResourceCommandDesc;
-            struct UpdateCommitedResourceCommandDesc;
+            struct UpdateCommittedResourceCommandDesc;
         }
 
         bool                initialize(const OutputWindowUserData& userData, s32 maxCommands, s32 maxFrameResources);
@@ -79,13 +79,13 @@ namespace rex
         ResourceSlot        create_constant_buffer_view(commands::CreateConstantBufferViewCommandDesc&& createBufferParams);
         ResourceSlot        create_pipeline_state_object(commands::CreatePipelineStateCommandDesc&& createPipelineStateParams);
         ResourceSlot        create_frame_resource();
-        ResourceSlot        attach_commited_resource_to_frame(commands::AttachCommitedResourceToFrameCommandDesc&& attachCommitedResourceParams);
+        ResourceSlot        attach_committed_resource_to_frame(commands::AttachCommittedResourceToFrameCommandDesc&& attachCommittedResourceParams);
 
         ResourceSlot        load_shader(commands::LoadShaderCommandDesc&& loadShaderParams);
         ResourceSlot        link_shader(commands::LinkShaderCommandDesc&& linkShaderParams);
         ResourceSlot        compile_shader(commands::CompileShaderCommandDesc&& compileShaderParams);
 
-        bool                update_commited_resource(commands::UpdateCommitedResourceCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget);
+        bool                update_committed_resource(commands::UpdateCommittedResourceCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget);
 
         void                wait_for_active_frame();
 
