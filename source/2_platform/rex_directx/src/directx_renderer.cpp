@@ -214,10 +214,22 @@ namespace rex
 
       //-------------------------------------------------------------------------
       template<typename TResourceType, u32 TNameLength>
-      void set_debug_name_for(TResourceType* resource, const char(&name)[TNameLength])
+      void set_debug_name_for(TResourceType* resource, const char8(&name)[TNameLength])
       {
 #ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
           resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
+#else
+          UNUSED_PARAM(resource);
+          UNUSED_PARAM(name);
+#endif
+      }
+
+      //-------------------------------------------------------------------------
+      template <typename TResourceType>
+      void set_debug_name_for(TResourceType* resource, rsl::unique_array<char8> name)
+      {
+#ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
+          resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.count(), name.get());
 #else
           UNUSED_PARAM(resource);
           UNUSED_PARAM(name);
@@ -790,7 +802,9 @@ namespace rex
               return false;
             }
 
-            directx::set_debug_name_for(rtv_buffers[i].Get(), "Render Target Buffer");
+            rsl::unique_array<char8> render_target_buffer_name = rsl::make_unique<char8[]>(rsl::size("Render Target Buffer #") + 1);
+            sprintf_s(render_target_buffer_name.get(), render_target_buffer_name.count(), "Render Target Buffer %d", i);
+            directx::set_debug_name_for(rtv_buffers[i].Get(), rsl::move(render_target_buffer_name));
 
             // We need to define our own desc struct to enabled SRGB.
             // We can't initialize the swapchain with 'DXGI_FORMAT_R8G8B8A8_UNORM_SRGB'
@@ -913,16 +927,31 @@ namespace rex
             switch (heap_desc->Type)
             {
             case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
-                directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - RTV");
-                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
+                {
+                    s32 s = rsl::size("Descriptor Heap Element - RTV #") + (i >= 10 ? 2 : 1);  // When larger than 10 an extra character needs to be stored
+                    rsl::unique_array<char8> rtv_heap_buffer_name = rsl::make_unique<char8[]>(s);
+                    sprintf_s(rtv_heap_buffer_name.get(), rtv_heap_buffer_name.count(), "Descriptor Heap Element - RTV %d", i);
+                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::move(rtv_heap_buffer_name));
+                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
+                }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
-                directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - DSV");
-                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
+                {
+                    s32 s = rsl::size("Descriptor Heap Element - DSV #") + (i >= 10 ? 2 : 1); // When larger than 10 an extra character needs to be stored
+                    rsl::unique_array<char8> dsv_heap_buffer_name = rsl::make_unique<char8[]>(s);
+                    sprintf_s(dsv_heap_buffer_name.get(), dsv_heap_buffer_name.count(), "Descriptor Heap Element - DSV %d", i);
+                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::move(dsv_heap_buffer_name));
+                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
+                }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
-                directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - CBV");
-                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
+                {
+                    s32 s = rsl::size("Descriptor Heap Element - CBV #") + (i >= 10 ? 2 : 1);  // When larger than 10 an extra character needs to be stored
+                    rsl::unique_array<char8> cbv_heap_buffer_name = rsl::make_unique<char8[]>(s);
+                    sprintf_s(cbv_heap_buffer_name.get(), cbv_heap_buffer_name.count(), "Descriptor Heap Element - CBV %d", i);
+                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::move(cbv_heap_buffer_name));
+                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
+                }
                 break;
             }
           }
