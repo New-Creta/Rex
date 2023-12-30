@@ -614,6 +614,11 @@ namespace rex
     //-------------------------------------------------------------------------
     bool build_pipeline_state_object()
     {
+        // Pipeline state object has to be aware of the render targets
+        // This is because it needs to query the render target texture format
+        // If there are no render targets set no PSO can be created
+        renderer::set_render_targets(globals::default_targets_info().back_buffer_color, globals::default_targets_info().depth_buffer);
+
         renderer::commands::CreatePipelineStateCommandDesc create_pso_command_desc;
         create_pso_command_desc.input_layout = g_regina_ctx.input_layout;
         create_pso_command_desc.num_render_targets = 1;

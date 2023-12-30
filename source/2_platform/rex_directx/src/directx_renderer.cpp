@@ -78,6 +78,7 @@
 #include "rex_renderer_core/input_layout_classification.h"
 #include "rex_renderer_core/resource_pool.h"
 #include "rex_renderer_core/vertex_buffer_format.h"
+#include "rex_renderer_core/texture_format.h"
 #include "rex_renderer_core/shader_platform.h"
 #include "rex_renderer_core/viewport.h"
 #include "rex_renderer_core/scissor_rect.h"
@@ -173,6 +174,17 @@ namespace rex
         REX_ASSERT_X(false, "Unsupported index buffer format given");
         return DXGI_FORMAT_UNKNOWN;
       }
+      //-------------------------------------------------------------------------
+      DXGI_FORMAT to_dxd12_texture_format(TextureFormat format)
+      {
+        switch(format)
+        {
+          case TextureFormat::UNORM4_SRGB: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+        }
+        REX_ASSERT_X(false, "Unsupported vertex buffer format given");
+        return DXGI_FORMAT_UNKNOWN;
+      }
+
       //-------------------------------------------------------------------------
       D3D12_PRIMITIVE_TOPOLOGY to_d3d12_topology(PrimitiveTopology topology)
       {
@@ -767,6 +779,7 @@ namespace rex
             return false;
           }
 
+          TextureFormat render_target_format = TextureFormat::UNORM4_SRGB;
           wrl::com_ptr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count];
           CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
           for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
@@ -784,7 +797,7 @@ namespace rex
             // so we have to initialize the render targets with this format
             // and then pass that through to CreateRenderTargetView
             D3D12_RENDER_TARGET_VIEW_DESC rtv_desc;
-            rtv_desc.Format               = DXGI_FORMAT_R8G8B8A8_UNORM;
+            rtv_desc.Format               = directx::to_dxd12_texture_format(render_target_format);
             rtv_desc.Texture2D.MipSlice   = 0;
             rtv_desc.Texture2D.PlaneSlice = 0;
             rtv_desc.ViewDimension        = D3D12_RTV_DIMENSION_TEXTURE2D;
@@ -797,8 +810,8 @@ namespace rex
           // The 0 index of the swapchain at initialization is the backbuffer
           // The 1 index of the swapchain at initialization is the frontbuffer
 
-          g_ctx.resource_pool.insert(frontBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[1], 1));
-          g_ctx.resource_pool.insert(backBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[0], 0));
+          g_ctx.resource_pool.insert(frontBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[1], render_target_format, 1));
+          g_ctx.resource_pool.insert(backBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[0], render_target_format, 0));
 
           return true;
         }
@@ -1450,6 +1463,7 @@ namespace rex
       {
         REX_ASSERT_X(cps.input_layout.is_valid(), "Invalid input layout resource slot given");
         REX_ASSERT_X(cps.shader_program.is_valid(), "Invalid shader program resource slot given");
+        REX_ASSERT_X(g_ctx.active_color_targets != 0, "No render targets have been set, a PSO needs to know the format of the render target(s)");
 
         rsl::hash_result hash = rsl::hash<commands::CreatePipelineStateCommandDesc> {}(cps);
 
@@ -1494,8 +1508,14 @@ namespace rex
         pso_desc.DepthStencilState     = depth_stencil_state;
         pso_desc.SampleMask            = UINT_MAX;
         pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        pso_desc.NumRenderTargets      = 1;
-        pso_desc.RTVFormats[0]         = g_ctx.back_buffer_format;
+        pso_desc.NumRenderTargets      = g_ctx.active_color_targets;
+        for(s32 i = 0; i < g_ctx.active_color_targets; ++i)
+        {
+            auto& render_target_id = g_ctx.active_color_target[i];
+            auto& render_target    = g_ctx.resource_pool.as<RenderTargetResource>(render_target_id);
+
+            pso_desc.RTVFormats[i] = directx::to_dxd12_texture_format(render_target.get()->format);
+        }
         pso_desc.SampleDesc.Count      = g_ctx.msaa_state ? 4 : 1;
         pso_desc.SampleDesc.Quality    = g_ctx.msaa_state ? g_ctx.msaa_quality - 1 : 0;
         pso_desc.DSVFormat             = g_ctx.depth_stencil_format;
