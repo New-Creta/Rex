@@ -1,15 +1,3 @@
-// ============================================
-//
-// REX GAME ENGINE
-//
-// Author: Nick De Breuck
-// Twitter: @nick_debreuck
-//
-// File: hr_call.h
-// Copyright (c) Nick De Breuck 2023
-//
-// ============================================
-
 #pragma once
 
 #include "rex_std/bonus/string.h"
