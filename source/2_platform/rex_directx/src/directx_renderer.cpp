@@ -90,6 +90,7 @@
 #include "rex_std/vector.h"
 #include "rex_std_extra/memory/memory_size.h"
 #include "rex_std_extra/utility/casting.h"
+#include "rex_std_extra/utility/enum_reflection.h"
 
 #include <D3Dcompiler.h>
 #include <DirectXColors.h>
@@ -197,20 +198,6 @@ namespace rex
 
         REX_ASSERT_X(false, "Unsupported input layout classification given");
         return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-      }
-
-      //-------------------------------------------------------------------------
-      char8* heapdesc_type_to_string(D3D12_DESCRIPTOR_HEAP_TYPE type)
-      {
-        switch(type)
-        {
-          case D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV: return "D3D12_DESCRIPTOR_HEAP_TYPE_RTV";
-          case D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV: return "D3D12_DESCRIPTOR_HEAP_TYPE_DSV";
-          case D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV: return "D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV";
-        }
-
-        REX_ASSERT_X(false, "Unsupported descriptor heap type");
-        return "D3D12_DESCRIPTOR_HEAP_TYPE_UNKNOWN";
       }
 
       //-------------------------------------------------------------------------
@@ -906,7 +893,7 @@ namespace rex
 
             if(DX_FAILED(g_ctx.device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&g_ctx.descriptor_heap_pool[heap_desc->Type]))))
             {
-              REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", directx::heapdesc_type_to_string(heap_desc->Type));
+              REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", rsl::enum_refl::enum_name(heap_desc->Type));
               return false;
             }
 
@@ -914,15 +901,15 @@ namespace rex
             {
             case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
                 directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - RTV");
-                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", directx::heapdesc_type_to_string(heap_desc->Type), numRTV);
+                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
                 directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - DSV");
-                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", directx::heapdesc_type_to_string(heap_desc->Type), numDSV);
+                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
                 directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), "Descriptor Heap Element - CBV");
-                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", directx::heapdesc_type_to_string(heap_desc->Type), numCBV);
+                REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
                 break;
             }
           }
