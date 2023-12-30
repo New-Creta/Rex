@@ -139,6 +139,9 @@ namespace rex
             return false;
         }
 
+        // When the renderer is initialized we can show the window
+        m_window->show();
+
         return true;
       }
       void update()

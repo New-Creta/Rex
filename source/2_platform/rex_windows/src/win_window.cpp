@@ -50,6 +50,8 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::create(HInstance hInstance, s32 cmdShow, const WindowDescription& description)
     {
+        UNUSED_PARAM(cmdShow);
+
         if (!m_wnd_class.create(hInstance, default_win_procedure, description.title.data()))
         {
             REX_ERROR(LogWindows, "Failed to create window class");
@@ -119,9 +121,6 @@ namespace rex
             return false;
         }
 
-        ShowWindow(static_cast<HWND>(m_hwnd), cmdShow);
-        SetForegroundWindow(static_cast<HWND>(m_hwnd));
-
         return true;
     }
 
@@ -139,6 +138,7 @@ namespace rex
     void Window::show()
     {
       ShowWindow(static_cast<HWND>(m_hwnd), SW_SHOW);
+      SetForegroundWindow(static_cast<HWND>(m_hwnd));
     }
     //-----------------------------------------------------------------
     void Window::hide()
