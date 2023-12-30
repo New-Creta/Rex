@@ -2,6 +2,7 @@
 #include "rex_directx/directx_feature_level.h"
 #include "rex_directx/directx_feature_shader_model.h"
 #include "rex_directx/directx_util.h" // IWYU pragma: keep
+#include "rex_directx/directx_call.h"
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
@@ -401,7 +402,7 @@ namespace rex
         {
           REX_ASSERT_X(commandAllocator != nullptr, "Invalid frame resource to reset command list");
 
-          if(FAILED(g_ctx.command_list->Reset(commandAllocator, pipelineState)))
+          if(DX_FAILED(g_ctx.command_list->Reset(commandAllocator, pipelineState)))
           {
             REX_ERROR(LogDirectX, "Failed to reset command list");
             return false;
@@ -413,7 +414,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool close_command_list()
         {
-          if(FAILED(g_ctx.command_list->Close()))
+          if(DX_FAILED(g_ctx.command_list->Close()))
           {
             REX_ERROR(LogDirectX, "Failed to close command list");
             return false;
@@ -460,19 +461,19 @@ namespace rex
           D3D12_COMMAND_QUEUE_DESC queue_desc = {};
           queue_desc.Type                     = D3D12_COMMAND_LIST_TYPE_DIRECT;
           queue_desc.Flags                    = D3D12_COMMAND_QUEUE_FLAG_NONE;
-          if(FAILED(g_ctx.device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(g_ctx.command_queue.GetAddressOf()))))
+          if(DX_FAILED(g_ctx.device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(g_ctx.command_queue.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command queue");
             return false;
           }
 
-          if(FAILED(g_ctx.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(g_ctx.command_allocator.GetAddressOf()))))
+          if(DX_FAILED(g_ctx.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(g_ctx.command_allocator.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command allocator");
             return false;
           }
 
-          if(FAILED(g_ctx.device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_ctx.command_allocator.Get(), nullptr, IID_PPV_ARGS(g_ctx.command_list.GetAddressOf()))))
+          if(DX_FAILED(g_ctx.device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_ctx.command_allocator.Get(), nullptr, IID_PPV_ARGS(g_ctx.command_list.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command list");
             return false;
@@ -514,7 +515,7 @@ namespace rex
 
           // Note: swap chain uses queue to perform flush.
           rex::wrl::com_ptr<IDXGIFactory> dxgi_factory = factory->as<IDXGIFactory>();
-          if(FAILED(dxgi_factory->CreateSwapChain(g_ctx.command_queue.Get(), &sd, g_ctx.swapchain.GetAddressOf())))
+          if(DX_FAILED(dxgi_factory->CreateSwapChain(g_ctx.command_queue.Get(), &sd, g_ctx.swapchain.GetAddressOf())))
           {
             REX_ERROR(LogDirectX, "Failed to create swap chain");
             return false;
@@ -534,7 +535,7 @@ namespace rex
           CD3DX12_HEAP_PROPERTIES heap_properties_default(D3D12_HEAP_TYPE_DEFAULT);
           auto buffer_default = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
-          if(FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_NONE, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.GetAddressOf()))))
+          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_NONE, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create commited resource for a default buffer.");
             return nullptr;
@@ -545,7 +546,7 @@ namespace rex
           CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
           auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
-          if(FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadBuffer.GetAddressOf()))))
+          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadBuffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create commited resource for intermediate upload heap.");
             return nullptr;
@@ -580,7 +581,7 @@ namespace rex
           wrl::com_ptr<ID3D12Resource> buffer_gpu;
           wrl::com_ptr<ID3D12Resource> buffer_uploader;
 
-          if(FAILED(D3DCreateBlob(bufferByteSize, &buffer_cpu)))
+          if(DX_FAILED(D3DCreateBlob(bufferByteSize, &buffer_cpu)))
           {
             REX_ERROR(LogDirectX, "Could not create buffer blob");
             return nullptr;
@@ -610,7 +611,7 @@ namespace rex
             CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
             CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size * bufferCount);
 
-            if (FAILED(g_ctx.device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
+            if(DX_FAILED(g_ctx.device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
             {
                 REX_ERROR(LogDirectX, "Could not create commited resource ( constant buffer )");
                 return nullptr;
@@ -620,7 +621,7 @@ namespace rex
 
             rsl::unique_ptr<CommitedBufferResource> constant_buffer_resources = rsl::make_unique<CommitedBufferResource>(constant_buffer_uploader, obj_cb_byte_size, obj_cb_byte_size * bufferCount);
 
-            if (FAILED(constant_buffer_uploader->Map(0, nullptr, reinterpret_cast<void**>(&constant_buffer_resources->get()->mapped_data))))
+            if(DX_FAILED(constant_buffer_uploader->Map(0, nullptr, reinterpret_cast<void**>(&constant_buffer_resources->get()->mapped_data))))
             {
                 REX_ERROR(LogDirectX, "Could not map data to commited resource ( constant buffer )");
                 return nullptr;
@@ -727,14 +728,14 @@ namespace rex
             return nullptr;
           }
 
-          if(FAILED(hr))
+          if(DX_FAILED(hr))
           {
             REX_ERROR(LogDirectX, "Failed to serialize root signature");
             return nullptr;
           }
 
           wrl::com_ptr<ID3D12RootSignature> root_signature;
-          if(FAILED(g_ctx.device->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+          if(DX_FAILED(g_ctx.device->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
           {
             REX_ERROR(LogDirectX, "Failed to create root signature");
             return nullptr;
@@ -773,7 +774,7 @@ namespace rex
           g_ctx.swapchain_rt_buffer_slots[1] = backBufferSlot;
 
           // Resize the swap chain.
-          if(FAILED(g_ctx.swapchain->ResizeBuffers(s_swapchain_buffer_count, width, height, g_ctx.back_buffer_format, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
+          if(DX_FAILED(g_ctx.swapchain->ResizeBuffers(s_swapchain_buffer_count, width, height, g_ctx.back_buffer_format, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
           {
             REX_ERROR(LogDirectX, "Failed to resize swapchain buffers");
             return false;
@@ -783,7 +784,7 @@ namespace rex
           CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
           for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
           {
-            if(FAILED(g_ctx.swapchain->GetBuffer(i, IID_PPV_ARGS(rtv_buffers[i].GetAddressOf()))))
+            if(DX_FAILED(g_ctx.swapchain->GetBuffer(i, IID_PPV_ARGS(rtv_buffers[i].GetAddressOf()))))
             {
               REX_ERROR(LogDirectX, "Failed to retrieve swapchain buffer");
               return false;
@@ -854,7 +855,7 @@ namespace rex
           CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart());
 
           CD3DX12_HEAP_PROPERTIES heap_properties(D3D12_HEAP_TYPE_DEFAULT);
-          if(FAILED(g_ctx.device->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_NONE, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
+          if(DX_FAILED(g_ctx.device->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_NONE, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create depth stencil buffer");
             return false;
@@ -884,24 +885,26 @@ namespace rex
         //-------------------------------------------------------------------------
         bool create_descriptor_set_pools(s32 numRTV, s32 numDSV, s32 numCBV)
         {
-          D3D12_DESCRIPTOR_HEAP_DESC heap_descs[] = {{
-                                                         D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rsl::safe_numeric_cast<UINT>(numRTV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-                                                         0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-                                                     },
-                                                     {
-                                                         D3D12_DESCRIPTOR_HEAP_TYPE_DSV, rsl::safe_numeric_cast<UINT>(numDSV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-                                                         0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-                                                     },
-                                                     {
-                                                         D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, rsl::safe_numeric_cast<UINT>(numCBV), D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-                                                         0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-                                                     }};
+          rsl::array<D3D12_DESCRIPTOR_HEAP_DESC, 3> heap_descs;
 
-          for(s32 i = 0; i < _countof(heap_descs); ++i)
+          heap_descs[0] = {
+              D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rsl::safe_numeric_cast<UINT>(numRTV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+              0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+          };
+          heap_descs[1] = {
+              D3D12_DESCRIPTOR_HEAP_TYPE_DSV, rsl::safe_numeric_cast<UINT>(numDSV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+              0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+          };
+          heap_descs[2] = {
+              D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, rsl::safe_numeric_cast<UINT>(numCBV), D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+              0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+          };
+
+          for(s32 i = 0; i < heap_descs.size(); ++i)
           {
             auto heap_desc = &heap_descs[i];
 
-            if(FAILED(g_ctx.device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&g_ctx.descriptor_heap_pool[heap_desc->Type]))))
+            if(DX_FAILED(g_ctx.device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&g_ctx.descriptor_heap_pool[heap_desc->Type]))))
             {
               REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", directx::heapdesc_type_to_string(heap_desc->Type));
               return false;
@@ -938,7 +941,7 @@ namespace rex
         // Add an instruction to the command queue to set a new fence point. Because we
         // are on the GPU timeline, the new fence point won't be set until the GPU finishes
         // processing all the commands prior to this Signal().
-        if(FAILED(g_ctx.command_queue->Signal(g_ctx.fence.Get(), g_ctx.current_fence)))
+        if(DX_FAILED(g_ctx.command_queue->Signal(g_ctx.fence.Get(), g_ctx.current_fence)))
         {
           REX_ERROR(LogDirectX, "Failed to signal command queue with fence");
           return false;
@@ -949,7 +952,7 @@ namespace rex
           HANDLE event_handle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
 
           // Fire event when GPU hits current fence
-          if(FAILED(g_ctx.fence->SetEventOnCompletion(g_ctx.current_fence, event_handle)))
+          if(DX_FAILED(g_ctx.fence->SetEventOnCompletion(g_ctx.current_fence, event_handle)))
           {
             REX_ERROR(LogDirectX, "Failed to set completion event for fence");
             return false;
@@ -968,7 +971,7 @@ namespace rex
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // Enable extra debugging and send debug messages to the VC++ output window
         rex::wrl::com_ptr<ID3D12Debug> debug_controller;
-        if(SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
+        if(DX_SUCCESS(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
         {
             debug_controller->EnableDebugLayer();
             g_ctx.dx12_debug_layer_enabled = true;
@@ -1010,7 +1013,7 @@ namespace rex
          * https://github.com/walbourn/directx-vs-templates/commit/18e3eaa444e98ba75d37d506ab18df8db0b82441
          */
         wrl::com_ptr<IDXGIInfoQueue> dxgi_info_queue;
-        if(SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_info_queue.GetAddressOf()))))
+        if(DX_SUCCESS(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_info_queue.GetAddressOf()))))
         {
           dxgi_factory_flags = DXGI_CREATE_FACTORY_DEBUG;
 
@@ -1020,12 +1023,12 @@ namespace rex
           dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, globals::g_enable_dxgi_severity_error);
           dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dxgi_severity_corruption);
 
-          DXGI_INFO_QUEUE_MESSAGE_ID dxgi_hide[] = {
+          rsl::array<DXGI_INFO_QUEUE_MESSAGE_ID, 1> dxgi_hide = {
               80 /* IDXGISwapChain::GetContainingOutput: The swapchain's adapter does not control the output on which the swapchain's window resides. */,
           };
           DXGI_INFO_QUEUE_FILTER dxgi_filter = {};
-          dxgi_filter.DenyList.NumIDs = static_cast<s32>(rsl::size(dxgi_hide));
-          dxgi_filter.DenyList.pIDList = dxgi_hide;
+          dxgi_filter.DenyList.NumIDs = rsl::safe_numeric_cast<u32>(dxgi_hide.size());
+          dxgi_filter.DenyList.pIDList = dxgi_hide.data();
 
           dxgi_info_queue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &dxgi_filter);
 
@@ -1053,7 +1056,7 @@ namespace rex
         // Create device
         const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
 
-        if(FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx.device))))
+        if(DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx.device))))
         {
           REX_ERROR(LogDirectX, "Software adapter not supported");
           REX_ERROR(LogDirectX, "Failed to create DX12 Device");
@@ -1065,7 +1068,7 @@ namespace rex
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // Device needs to exist before we can query this
         rex::wrl::com_ptr<ID3D12InfoQueue> dx12_info_queue;
-        if (g_ctx.dx12_debug_layer_enabled && SUCCEEDED(g_ctx.device->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
+        if(g_ctx.dx12_debug_layer_enabled && DX_SUCCESS(g_ctx.device->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
         {
             dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
             dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info);
@@ -1084,7 +1087,7 @@ namespace rex
              * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
              * https://github.com/walbourn/directx-vs-templates/commit/2b34dcf9ac764153699058cdc9d4dbc4e837224c
              */
-            D3D12_MESSAGE_ID dx12_hide[] = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
+            rsl::array<D3D12_MESSAGE_ID, 7> dx12_hide = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
                                D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
                                D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
                                D3D12_MESSAGE_ID_RESOURCE_BARRIER_BEFORE_AFTER_MISMATCH,
@@ -1093,8 +1096,8 @@ namespace rex
                                D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE };
 
             D3D12_INFO_QUEUE_FILTER dx12_filter = {};
-            dx12_filter.DenyList.NumIDs = static_cast<s32>(rsl::size(dx12_hide));
-            dx12_filter.DenyList.pIDList = dx12_hide;
+            dx12_filter.DenyList.NumIDs = rsl::safe_numeric_cast<u32>(dx12_hide.size());
+            dx12_filter.DenyList.pIDList = dx12_hide.data();
             dx12_info_queue->AddStorageFilterEntries(&dx12_filter);
         }
         else
@@ -1113,13 +1116,13 @@ namespace rex
         // Find shader model
         const D3D_SHADER_MODEL shader_model = query_shader_model_version(g_ctx.device.Get());
 
-        directx::g_renderer_info.shader_version = rsl::string(shader_model_name(shader_model));
-        directx::g_renderer_info.api_version    = rsl::string(feature_level_name(feature_level));
+        directx::g_renderer_info.shader_version = shader_model_name(shader_model);
+        directx::g_renderer_info.api_version    = feature_level_name(feature_level);
         directx::g_renderer_info.adaptor        = selected_gpu->description().name;
         directx::g_renderer_info.vendor         = selected_gpu->description().vendor_name;
 
         // Create fence for CPU/GPU synchronization
-        if(FAILED(g_ctx.device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_ctx.fence))))
+        if(DX_FAILED(g_ctx.device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_ctx.fence))))
         {
           REX_ERROR(LogDirectX, "Failed to create DX fence, to synchronize CPU/GPU");
           return false;
@@ -1137,7 +1140,7 @@ namespace rex
         ms_quality_levels.SampleCount      = 4;
         ms_quality_levels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
         ms_quality_levels.NumQualityLevels = 0;
-        if(FAILED(g_ctx.device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &ms_quality_levels, sizeof(ms_quality_levels))))
+        if(DX_FAILED(g_ctx.device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &ms_quality_levels, sizeof(ms_quality_levels))))
         {
           REX_ERROR(LogDirectX, "Given multisample quality level is not supported by this hardware");
           return false;
@@ -1241,7 +1244,7 @@ namespace rex
             wrl::com_ptr<IDXGIDebug1> dxgi_debug;
             if (g_ctx.dxgi_debug_layer_enabled)
             {
-                if (FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
+                if(DX_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
                 {
                     REX_WARN(LogDirectX, "Unable to Query DXGI Debug Interface");
                 }
@@ -1257,7 +1260,7 @@ namespace rex
             wrl::com_ptr<ID3D12DebugDevice> dx12_debug;
             if (g_ctx.dx12_debug_layer_enabled)
             {
-                if (FAILED(g_ctx.device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
+                if(DX_FAILED(g_ctx.device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
                 {
                     REX_WARN(LogDirectX, "Unable to Query DX12 Debug Interface");
                 }
@@ -1293,7 +1296,7 @@ namespace rex
             // DXGI - Live Objects
             if (can_report_dxgi_live_objects)
             {
-                if (FAILED(dxgi_debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL))))
+                if(DX_FAILED(dxgi_debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL))))
                 {
                     REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects of DXGI");
                     return;
@@ -1304,7 +1307,7 @@ namespace rex
             // DX12 - Live Objects
             if (can_report_dx12_live_objects)
             {
-                if (FAILED(dx12_debug->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL)))
+                if(DX_FAILED(dx12_debug->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL)))
                 {
                     REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects of DX12");
                     return;
@@ -1510,7 +1513,7 @@ namespace rex
         pso_desc.SampleDesc.Quality    = g_ctx.msaa_state ? g_ctx.msaa_quality - 1 : 0;
         pso_desc.DSVFormat             = g_ctx.depth_stencil_format;
 
-        if(FAILED(g_ctx.device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx.pipeline_state_objects[hash]))))
+        if(DX_FAILED(g_ctx.device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx.pipeline_state_objects[hash]))))
         {
           REX_ERROR(LogDirectX, "Failed to create pipeline state object");
           return false;
@@ -1528,7 +1531,7 @@ namespace rex
       {
         wrl::com_ptr<ID3D12CommandAllocator> cmd_list_alloc;
 
-        if(FAILED(g_ctx.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_list_alloc.GetAddressOf()))))
+        if(DX_FAILED(g_ctx.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_list_alloc.GetAddressOf()))))
         {
           REX_ERROR(LogDirectX, "Failed to create command list allocator for frame resource");
           return false;
@@ -1577,7 +1580,7 @@ namespace rex
       bool load_shader(const commands::LoadShaderCommandDesc& ls, const ResourceSlot& resourceSlot)
       {
         wrl::com_ptr<ID3DBlob> byte_code;
-        if(FAILED(D3DCreateBlob(ls.shader_byte_code.size(), byte_code.GetAddressOf())))
+          if(DX_FAILED(D3DCreateBlob(ls.shader_byte_code.size(), byte_code.GetAddressOf())))
         {
           REX_ERROR(LogDirectX, "Failed to load shader");
           return false;
@@ -1643,7 +1646,7 @@ namespace rex
           return false;
         }
 
-        if(FAILED(hr))
+        if(DX_FAILED(hr))
         {
           REX_ERROR(LogDirectX, "Failed to compile shader");
           return false;
@@ -1684,7 +1687,7 @@ namespace rex
           HANDLE event_handle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
 
           // Fire event when GPU hits current fence
-          if(FAILED(g_ctx.fence->SetEventOnCompletion(f->fence, event_handle)))
+          if(DX_FAILED(g_ctx.fence->SetEventOnCompletion(f->fence, event_handle)))
           {
             REX_ERROR(LogDirectX, "Failed to set completion event for fence");
             return;
@@ -1756,7 +1759,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool prepare_user_initialization()
       {
-        if(FAILED(g_ctx.command_allocator->Reset()))
+        if(DX_FAILED(g_ctx.command_allocator->Reset()))
         {
           REX_ERROR(LogDirectX, "Failed to reset command allocator");
           return false;
@@ -2004,7 +2007,7 @@ namespace rex
         // Reuse the memory assosiated with command recording.
         // We can only reset when the associated command lists have finished
         // execution on the GPU.
-        if(FAILED(f->cmd_list_allocator->Reset()))
+        if(DX_FAILED(f->cmd_list_allocator->Reset()))
         {
           REX_ERROR(LogDirectX, "Failed to reset command allocator");
           return false;
@@ -2091,7 +2094,7 @@ namespace rex
         internal::exec_command_list();
 
         // Swap the back and front buffers
-        if(FAILED(g_ctx.swapchain->Present(0, 0)))
+        if(DX_FAILED(g_ctx.swapchain->Present(0, 0)))
         {
           REX_ERROR(LogDirectX, "Failed to present swapchain");
           return false;
