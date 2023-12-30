@@ -437,8 +437,8 @@ namespace rex
         //-------------------------------------------------------------------------
         void exec_command_list()
         {
-          ID3D12CommandList* command_lists[] = {g_ctx.command_list.Get()};
-          g_ctx.command_queue->ExecuteCommandLists(_countof(command_lists), command_lists);
+          rsl::array<ID3D12CommandList*, 1> command_lists = { g_ctx.command_list.Get() };
+          g_ctx.command_queue->ExecuteCommandLists(command_lists.size(), command_lists.data());
         }
 
         //-------------------------------------------------------------------------
@@ -478,17 +478,23 @@ namespace rex
             return false;
           }
 
+          directx::set_debug_name_for(g_ctx.command_queue.Get(), "Global Command Queue");
+
           if(DX_FAILED(g_ctx.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(g_ctx.command_allocator.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command allocator");
             return false;
           }
 
+          directx::set_debug_name_for(g_ctx.command_allocator.Get(), "Global Command Allocator");
+
           if(DX_FAILED(g_ctx.device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_ctx.command_allocator.Get(), nullptr, IID_PPV_ARGS(g_ctx.command_list.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command list");
             return false;
           }
+
+          directx::set_debug_name_for(g_ctx.command_list.Get(), "Global Command List");
 
           // Start off in a closed state. This is because the first time we
           // refer to the command list we will Reset it, and it needs to be closed
@@ -1157,6 +1163,8 @@ namespace rex
           return false;
         }
 
+        directx::set_debug_name_for(g_ctx.fence.Get(), "Global Fence");
+
         // Descriptor sizes vary across GPU so we need to query this information
         g_ctx.rtv_desc_size         = g_ctx.device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
         g_ctx.dsv_desc_size         = g_ctx.device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
@@ -1253,11 +1261,6 @@ namespace rex
 
         // Cull pixels drawn outside of the backbuffer ( such as UI elements )
         g_ctx.scissor_rect = {0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height)};
-
-        directx::set_debug_name_for(g_ctx.command_allocator.Get(), "Global Command Allocator");
-        directx::set_debug_name_for(g_ctx.command_list.Get(), "Global Command List");
-        directx::set_debug_name_for(g_ctx.command_queue.Get(), "Global Command Queue");
-        directx::set_debug_name_for(g_ctx.fence.Get(), "Global Fence");
 
         return true;
       }
