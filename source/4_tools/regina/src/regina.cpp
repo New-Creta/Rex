@@ -114,12 +114,12 @@ namespace rex
     ReginaContext g_regina_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
     //-------------------------------------------------------------------------
-    renderer::ResourceSlot get_active_object_commited_resource_for_frame(s32 frame)
+    renderer::ResourceSlot get_object_committed_resource_of_frame(const renderer::ResourceSlot* frame)
     {
         auto it = rsl::find_if(rsl::cbegin(g_regina_ctx.frame_resource_data), rsl::cend(g_regina_ctx.frame_resource_data),
             [frame](const FrameData& data)
             {
-                return frame == data.frame.slot_id();
+                return *frame == data.frame;
             });
 
         return it != rsl::cend(g_regina_ctx.frame_resource_data)
@@ -127,12 +127,12 @@ namespace rex
             : renderer::ResourceSlot::make_invalid();
     }
     //-------------------------------------------------------------------------
-    renderer::ResourceSlot get_active_pass_commited_resource_for_frame(s32 frame)
+    renderer::ResourceSlot get_pass_committed_resource_of_frame(const renderer::ResourceSlot* frame)
     {
         auto it = rsl::find_if(rsl::cbegin(g_regina_ctx.frame_resource_data), rsl::cend(g_regina_ctx.frame_resource_data),
             [frame](const FrameData& data)
             {
-                return frame == data.frame.slot_id();
+                return *frame == data.frame;
             });
 
         return it != rsl::cend(g_regina_ctx.frame_resource_data)
@@ -174,12 +174,12 @@ namespace rex
         switch (shaderType)
         {
         case renderer::ShaderType::VERTEX:
-            compile_shader_command_desc.shader_entry_point = rsl::tiny_stack_string("VS");
-            compile_shader_command_desc.shader_feature_target = rsl::tiny_stack_string("vs_5_1");
+            compile_shader_command_desc.shader_entry_point = "VS"_tiny;
+            compile_shader_command_desc.shader_feature_target = "vs_5_1"_tiny;
             break;
         case renderer::ShaderType::PIXEL:
-            compile_shader_command_desc.shader_entry_point = rsl::tiny_stack_string("PS");
-            compile_shader_command_desc.shader_feature_target = rsl::tiny_stack_string("ps_5_1");
+            compile_shader_command_desc.shader_entry_point    = "PS"_tiny;
+            compile_shader_command_desc.shader_feature_target = "ps_5_1"_tiny;
             break;
         }
 
@@ -196,7 +196,7 @@ namespace rex
     {
         renderer::commands::CreateBufferCommandDesc create_buffer_command_desc;
 
-        create_buffer_command_desc.buffer_data = memory::make_blob((rsl::byte*)&data[0], rsl::memory_size(sizeof(T) * num));
+        create_buffer_command_desc.buffer_data = memory::make_blob<T>(data, num);
 
         return create_buffer_command_desc;
     }
@@ -206,7 +206,7 @@ namespace rex
     {
         renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc;
 
-        create_clear_state_command_desc.rgba = { 0.690196097f, 0.768627524f, 0.870588303f, 1.f };
+        create_clear_state_command_desc.rgba = { 0.690196097f, 0.768627524f, 0.870588303f, 1.f }; // LightSteelBlue
         create_clear_state_command_desc.depth = 1.0f;
         create_clear_state_command_desc.stencil = 0x00;
 
@@ -226,8 +226,8 @@ namespace rex
     bool build_shader_and_input_layout()
     {
         // Shader
-        renderer::commands::CompileShaderCommandDesc vs_compile_command_desc = create_compile_shader_parameters(rsl::small_stack_string("standardVS"), renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
-        renderer::commands::CompileShaderCommandDesc ps_compile_command_desc = create_compile_shader_parameters(rsl::small_stack_string("opaquePS"), renderer::ShaderType::PIXEL, "Shaders\\color.hlsl");
+        renderer::commands::CompileShaderCommandDesc vs_compile_command_desc = create_compile_shader_parameters("standardVS"_small, renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
+        renderer::commands::CompileShaderCommandDesc ps_compile_command_desc = create_compile_shader_parameters("opaquePS"_small, renderer::ShaderType::PIXEL, "Shaders\\color.hlsl");
 
         renderer::commands::LinkShaderCommandDesc link_shader_command_desc;
         link_shader_command_desc.vertex_shader = renderer::compile_shader(rsl::move(vs_compile_command_desc));
@@ -666,7 +666,7 @@ namespace rex
                 update_constant_buffer_command_desc.element_index = ri.constant_buffer_index;
                 update_constant_buffer_command_desc.buffer_data = memory::make_blob((rsl::byte*)&obj_constants, rsl::memory_size(sizeof(ObjectConstants)));
 
-                renderer::ResourceSlot curr_object_cr = get_active_object_commited_resource_for_frame(renderer::active_frame()->slot_id());
+                renderer::ResourceSlot curr_object_cr = get_object_committed_resource_of_frame(renderer::active_frame());
                 renderer::update_commited_resource(rsl::move(update_constant_buffer_command_desc), curr_object_cr);
 
                 // Updating constant buffer of the cube so the frame should remain dirty
@@ -677,7 +677,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void update_pass_constant_buffers()
     {
-        renderer::ResourceSlot curr_pass_cr = get_active_pass_commited_resource_for_frame(renderer::active_frame()->slot_id());
+        renderer::ResourceSlot curr_pass_cr = get_pass_committed_resource_of_frame(renderer::active_frame());
 
         const glm::mat4& view = g_regina_ctx.view;
         const glm::mat4& proj = g_regina_ctx.proj;
@@ -720,19 +720,29 @@ namespace rex
         g_regina_ctx.scene = rsl::make_unique<renderer::Scene>();
         g_regina_ctx.scene_renderer = rsl::make_unique<renderer::SceneRenderer>(g_regina_ctx.scene.get());
 
-        if (!build_clear_state()) return false;
-        if (!build_shader_and_input_layout()) return false;
+        if (!build_clear_state())
+            return false;
+        if (!build_shader_and_input_layout()) 
+            return false;
 #if RENDER_SCENE
-        if (!build_scene_geometry()) return false;
-        if (!build_scene_render_items()) return false;
+        if (!build_scene_geometry()) 
+            return false;
+        if (!build_scene_render_items()) 
+            return false;
 #else
-        if (!build_cube_geometry()) return false;
-        if (!build_cube_render_items()) return false;
+        if (!build_cube_geometry()) 
+            return false;
+        if (!build_cube_render_items()) 
+            return false;
 #endif
-        if (!build_frame_resources()) return false;
-        if (!build_constant_buffers()) return false;
-        if (!build_raster_state()) return false;
-        if (!build_pipeline_state_object()) return false;
+        if (!build_frame_resources()) 
+            return false;
+        if (!build_constant_buffers()) 
+            return false;
+        if (!build_raster_state()) 
+            return false;
+        if (!build_pipeline_state_object()) 
+            return false;
 
         // The window resized, so update the aspect ratio and recompute the projection matrix.
         g_regina_ctx.proj = glm::perspectiveFov(0.25f * glm::pi<f32>(), static_cast<f32>(globals::window_info().width), static_cast<f32>(globals::window_info().height), globals::default_depth_info().near_plane, globals::default_depth_info().far_plane);
