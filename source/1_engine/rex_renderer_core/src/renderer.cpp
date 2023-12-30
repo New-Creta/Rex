@@ -209,13 +209,12 @@ namespace rex
         //-------------------------------------------------------------------------
         void shutdown()
         {
+            flush();
+
             globals::g_default_targets_info.back_buffer_color.release();
             globals::g_default_targets_info.front_buffer_color.release();
             globals::g_default_targets_info.depth_buffer.release();
 
-            flush();
-
-            g_ctx.cmd_list.shutdown();
             g_ctx.slot_resources.free_slots();
 
             backend::shutdown();
