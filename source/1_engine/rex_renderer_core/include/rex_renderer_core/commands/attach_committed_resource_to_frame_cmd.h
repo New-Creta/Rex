@@ -12,8 +12,8 @@ namespace rex
             {
                 const ResourceSlot* frame_slot = nullptr;
 
-                s32 buffer_count;
-                s32 buffer_byte_size;
+                s32 buffer_count = 0;
+                s32 buffer_byte_size = 0;
             };
 
             class AttachCommittedResourceToFrame : public RenderCommand

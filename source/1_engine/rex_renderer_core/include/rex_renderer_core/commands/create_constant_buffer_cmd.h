@@ -14,7 +14,7 @@ namespace rex
             {
                 CreateConstantBufferViewCommandDesc()
                     :frame_slot(nullptr)
-                    ,committed_resource()
+                    ,committed_resource(nullptr)
                     ,buffer_size(0)
                 {}
 
