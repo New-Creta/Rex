@@ -69,7 +69,7 @@ namespace rex
         // public-api will buffer all commands for dispatch on dedicated thread
         const ResourceSlot* active_frame();
         const ResourceSlot* frame_at_index(s32 idx);
-        s32                 num_frames_in_flight();
+        s32                 max_frames_in_flight();
 
         ResourceSlot        create_clear_state(commands::CreateClearStateCommandDesc&& clearStateParams);
         ResourceSlot        create_raster_state(commands::CreateRasterStateCommandDesc&& rasterStateParams);

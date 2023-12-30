@@ -1358,13 +1358,13 @@ namespace rex
       //-------------------------------------------------------------------------
       const ResourceSlot* frame_at_index(s32 idx)
       {
-          REX_ASSERT_X(idx < num_frames_in_flight(), "Frame index exceeds the number of available frames");
+          REX_ASSERT_X(idx < max_frames_in_flight(), "Frame index exceeds the number of available frames");
 
           return &g_ctx.frame_ctx.frame_resources[idx].slot;
       }
       
       //-------------------------------------------------------------------------
-      s32 num_frames_in_flight()
+      s32 max_frames_in_flight()
       {
           return g_ctx.frame_ctx.frame_resources.capacity();
       }

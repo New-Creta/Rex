@@ -52,7 +52,7 @@ namespace rex
             // Platform specific implementation, implements these function
             const ResourceSlot* active_frame();
             const ResourceSlot* frame_at_index(s32 idx);
-            s32                 num_frames_in_flight();
+            s32                 max_frames_in_flight();
 
             bool                create_clear_state(const commands::CreateClearStateCommandDesc& cs, const ResourceSlot& resourceSlot);
             bool                create_raster_state(const commands::CreateRasterStateCommandDesc& rs, const ResourceSlot& resourceSlot);

@@ -234,9 +234,9 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        s32 num_frames_in_flight()
+        s32 max_frames_in_flight()
         {
-            return backend::num_frames_in_flight();
+            return backend::max_frames_in_flight();
         }
 
         //-------------------------------------------------------------------------

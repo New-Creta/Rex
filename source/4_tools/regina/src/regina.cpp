@@ -433,7 +433,7 @@ namespace rex
         // 
         // Thus, when we modify object data we should set NumFramesDirty = gNumFrameResources 
         // so that each frame resource gets the update.
-        cube_r_item.num_frames_dirty = renderer::num_frames_in_flight();
+        cube_r_item.num_frames_dirty = renderer::max_frames_in_flight();
 
         g_regina_ctx.scene->add_render_item(rsl::move(cube_r_item));
 
@@ -454,7 +454,7 @@ namespace rex
         box_r_item.index_count = box_r_item.geometry->submesh("box"_small)->index_count;
         box_r_item.start_index_location = box_r_item.geometry->submesh("box"_small)->start_index_location;
         box_r_item.base_vertex_location = box_r_item.geometry->submesh("box"_small)->base_vertex_location;
-        box_r_item.num_frames_dirty = renderer::num_frames_in_flight();
+        box_r_item.num_frames_dirty = renderer::max_frames_in_flight();
         g_regina_ctx.scene->add_render_item(rsl::move(box_r_item));
 
         auto grid_r_item = renderer::RenderItem();
@@ -465,7 +465,7 @@ namespace rex
         grid_r_item.index_count = grid_r_item.geometry->submesh("grid"_small)->index_count;
         grid_r_item.start_index_location = grid_r_item.geometry->submesh("grid"_small)->start_index_location;
         grid_r_item.base_vertex_location = grid_r_item.geometry->submesh("grid"_small)->base_vertex_location;
-        grid_r_item.num_frames_dirty = renderer::num_frames_in_flight();
+        grid_r_item.num_frames_dirty = renderer::max_frames_in_flight();
         g_regina_ctx.scene->add_render_item(rsl::move(grid_r_item));
 
         u32 obj_cb_index = 2;
@@ -488,7 +488,7 @@ namespace rex
             left_cyl_r_item.index_count = left_cyl_r_item.geometry->submesh("cylinder"_small)->index_count;
             left_cyl_r_item.start_index_location = left_cyl_r_item.geometry->submesh("cylinder"_small)->start_index_location;
             left_cyl_r_item.base_vertex_location = left_cyl_r_item.geometry->submesh("cylinder"_small)->base_vertex_location;
-            left_cyl_r_item.num_frames_dirty = renderer::num_frames_in_flight();
+            left_cyl_r_item.num_frames_dirty = renderer::max_frames_in_flight();
 
             right_cyl_r_item.world = left_cyl_world;
             right_cyl_r_item.constant_buffer_index = obj_cb_index++;
@@ -497,7 +497,7 @@ namespace rex
             right_cyl_r_item.index_count = right_cyl_r_item.geometry->submesh("cylinder"_small)->index_count;
             right_cyl_r_item.start_index_location = right_cyl_r_item.geometry->submesh("cylinder"_small)->start_index_location;
             right_cyl_r_item.base_vertex_location = right_cyl_r_item.geometry->submesh("cylinder"_small)->base_vertex_location;
-            right_cyl_r_item.num_frames_dirty = renderer::num_frames_in_flight();
+            right_cyl_r_item.num_frames_dirty = renderer::max_frames_in_flight();
 
             left_sphere_r_item.world = left_sphere_world;
             left_sphere_r_item.constant_buffer_index = obj_cb_index++;
@@ -506,7 +506,7 @@ namespace rex
             left_sphere_r_item.index_count = left_sphere_r_item.geometry->submesh("sphere"_small)->index_count;
             left_sphere_r_item.start_index_location = left_sphere_r_item.geometry->submesh("sphere"_small)->start_index_location;
             left_sphere_r_item.base_vertex_location = left_sphere_r_item.geometry->submesh("sphere"_small)->base_vertex_location;
-            left_sphere_r_item.num_frames_dirty = renderer::num_frames_in_flight();
+            left_sphere_r_item.num_frames_dirty = renderer::max_frames_in_flight();
 
             right_sphere_r_item.world = right_sphere_world;
             right_sphere_r_item.constant_buffer_index = obj_cb_index++;
@@ -515,7 +515,7 @@ namespace rex
             right_sphere_r_item.index_count = right_sphere_r_item.geometry->submesh("sphere"_small)->index_count;
             right_sphere_r_item.start_index_location = right_sphere_r_item.geometry->submesh("sphere"_small)->start_index_location;
             right_sphere_r_item.base_vertex_location = right_sphere_r_item.geometry->submesh("sphere"_small)->base_vertex_location;
-            right_sphere_r_item.num_frames_dirty = renderer::num_frames_in_flight();
+            right_sphere_r_item.num_frames_dirty = renderer::max_frames_in_flight();
 
             g_regina_ctx.scene->add_render_item(rsl::move(left_cyl_r_item));
             g_regina_ctx.scene->add_render_item(rsl::move(right_cyl_r_item));
@@ -529,7 +529,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool build_frame_resources()
     {
-        for (int i = 0; i < renderer::num_frames_in_flight(); ++i)
+        for (int i = 0; i < renderer::max_frames_in_flight(); ++i)
         {
             renderer::ResourceSlot frame = renderer::create_frame_resource();
 
@@ -544,7 +544,7 @@ namespace rex
     {
         s32 num_render_items = g_regina_ctx.scene->render_item_count();
 
-        for (s32 frame = 0; frame < renderer::num_frames_in_flight(); ++frame)
+        for (s32 frame = 0; frame < renderer::max_frames_in_flight(); ++frame)
         {
             renderer::commands::AttachCommitedResourceToFrameCommandDesc attach_object_constants;
             attach_object_constants.frame_slot = renderer::frame_at_index(frame);
@@ -562,7 +562,7 @@ namespace rex
         }
 
         // Need a CBV descriptor for each object for each frame resource.
-        for (s32 frame = 0; frame < renderer::num_frames_in_flight(); ++frame)
+        for (s32 frame = 0; frame < renderer::max_frames_in_flight(); ++frame)
         {
             for (s32 i = 0; i < num_render_items; ++i)
             {
@@ -579,7 +579,7 @@ namespace rex
         }
 
         // Last three descriptors are the pass CBVs for each frame resource.
-        for (s32 frame = 0; frame < renderer::num_frames_in_flight(); ++frame)
+        for (s32 frame = 0; frame < renderer::max_frames_in_flight(); ++frame)
         {
             renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc;
 
@@ -670,7 +670,7 @@ namespace rex
                 renderer::update_commited_resource(rsl::move(update_constant_buffer_command_desc), curr_object_cr);
 
                 // Updating constant buffer of the cube so the frame should remain dirty
-                ri.num_frames_dirty = renderer::num_frames_in_flight();
+                ri.num_frames_dirty = renderer::max_frames_in_flight();
             }
         }
     }
