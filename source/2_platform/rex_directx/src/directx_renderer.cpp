@@ -822,32 +822,47 @@ namespace rex
         //-------------------------------------------------------------------------
         rsl::unique_ptr<ConstantBufferViewResource> create_constant_buffer_view(const ResourceSlot* frameSlot, const ResourceSlot* committedResourceSlot, s32 bufferByteSize)
         {
+            // Find the frame for the given frame slot
             Frame* frame = g_ctx.frame_ctx.find_frame(frameSlot);
 
+            // Ensure the frame was found for the given slot
             REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", frameSlot->slot_id());
+            // Ensure the committed resource is part of this frame
             REX_ASSERT_X(internal::has_committed_resource_for_frame(frameSlot, committedResourceSlot), "Unable to find committed resource for give frame: {}", frameSlot->slot_id());
 
+            // Retrieve the committed resource
             auto& committed_buffer_resource = g_ctx.resource_pool.as<CommittedBufferResource>(*committedResourceSlot);
             auto  committed_resource = committed_buffer_resource.get();
 
+            // Align buffer size to meet DX12 requirements (multiples of 256)
             s32 obj_cb_byte_size = rex::align(bufferByteSize, s_constant_buffer_min_allocation_size);
 
+            // Calculate GPU memory block starting address
             D3D12_GPU_VIRTUAL_ADDRESS cb_address = committed_resource->uploader->GetGPUVirtualAddress();
             cb_address += frame->amount_active_constant_buffer(committedResourceSlot) * obj_cb_byte_size;
 
+            // Calculate CPU memory block starting handle
             s32 heap_index = g_ctx.active_constant_buffers;
             CD3DX12_CPU_DESCRIPTOR_HANDLE handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetCPUDescriptorHandleForHeapStart());
             handle.Offset(heap_index, g_ctx.cbv_srv_uav_desc_size);
 
+            // Create a new constant buffer view given the offsetted GPU address and the size of the constant buffer in bytes
             D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
             cbv_desc.BufferLocation = cb_address;
             cbv_desc.SizeInBytes = obj_cb_byte_size;
 
             g_ctx.device->CreateConstantBufferView(&cbv_desc, handle);
 
+            // Create an internal Constant Buffer View Resource and track it in the resource pool
+            // Pass the committed resource, data size, and CBV heap index
             rsl::unique_ptr<ConstantBufferViewResource> constant_buffer_resources = rsl::make_unique<ConstantBufferViewResource>(committedResourceSlot, obj_cb_byte_size, g_ctx.active_constant_buffers);
 
+            // Increment the amount of active constant buffer resources for this frame
             frame->increment_amount_active_constant_buffer(committedResourceSlot);
+
+            // A large heap of constant buffers was allocated at the start of this application
+            // Each new constant buffer view requires a different offset in the CBV heap.
+            // Increment the count of active constant buffers to keep track of the offset within this heap
             ++g_ctx.active_constant_buffers;
 
             return constant_buffer_resources;
