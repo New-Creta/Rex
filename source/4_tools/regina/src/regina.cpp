@@ -85,12 +85,22 @@ namespace rex
     {}
 
     //-------------------------------------------------------------------------
+    FrameData(const FrameData& other) = delete;
+    //-------------------------------------------------------------------------
+    FrameData(FrameData&& other) noexcept = default;
+
+    //-------------------------------------------------------------------------
     ~FrameData()
     {
       m_frame_slot.release();
       m_object_constant_buffer_slots.clear();
       m_pass_constant_buffer_slot.release();
     }
+
+    //-------------------------------------------------------------------------
+    FrameData& operator=(const FrameData& other) = delete;
+    //-------------------------------------------------------------------------
+    FrameData& operator=(FrameData&& other) noexcept = default;
 
     //-------------------------------------------------------------------------
     void set_object_committed_resource_slot(s32 frameIndex, s32 numItems, s32 bufferByteSize)
