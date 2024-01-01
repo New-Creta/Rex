@@ -27,6 +27,9 @@ namespace rex
 
             bool                    has_slot(const ResourceSlot& slot) const;
 
+            template<typename U>
+            bool                    is(const ResourceSlot& slot) const;
+
             ResourcePtr&            at(const ResourceSlot& slot);
             const ResourcePtr&      at(const ResourceSlot& slot) const;
 
@@ -46,11 +49,18 @@ namespace rex
 
         //-----------------------------------------------------------------------
         template<typename U>
+        bool ResourcePool::is(const ResourceSlot& slot) const
+        {
+            return U::static_type() == at(slot)->type();
+        }
+
+        //-----------------------------------------------------------------------
+        template<typename U>
         U& ResourcePool::as(const ResourceSlot& slot)
         {
             REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
             REX_ASSERT_X(slot != globals::g_invalid_slot_id, "Invalid index given to retrieve resource from resource pool");
-            REX_ASSERT_X(U::static_type() == at(slot)->type(), "Invalid type cast for given resource");
+            REX_ASSERT_X(is<U>(slot), "Invalid type cast for given resource");
 
             return static_cast<U&>(*at(slot));
         }
@@ -60,7 +70,7 @@ namespace rex
         {
             REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
             REX_ASSERT_X(slot != globals::g_invalid_slot_id, "Invalid index given to retrieve resource from resource pool");
-            REX_ASSERT_X(U::static_type() == at(slot)->type(), "Invalid type cast for given resource");
+            REX_ASSERT_X(is<U>(slot), "Invalid type cast for given resource");
 
             return static_cast<const U&>(*at(slot));
         }
