@@ -1965,6 +1965,11 @@ namespace rex
 
         if (resourceSlot.is_about_to_be_removed() == false && g_ctx.resource_pool.has_slot(resourceSlot))
         {
+            if (g_ctx.resource_pool.is<ConstantBufferViewResource>(resourceSlot))
+            {
+                --g_ctx.active_constant_buffers;
+            }
+
             g_ctx.resource_pool.remove(resourceSlot);
         }
         else
