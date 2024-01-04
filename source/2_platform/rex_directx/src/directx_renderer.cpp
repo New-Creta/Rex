@@ -92,6 +92,7 @@
 #include "rex_std_extra/memory/memory_size.h"
 #include "rex_std_extra/utility/casting.h"
 #include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_std/bonus/platform/windows/handle.h"
 
 #include <optional>
 
@@ -133,7 +134,7 @@ namespace rex
           case FillMode::WIREFRAME: return D3D12_FILL_MODE_WIREFRAME;
         }
 
-        REX_ASSERT_X(false, "Unsupported fill mode given");
+        REX_ASSERT("Unsupported fill mode given");
         return D3D12_FILL_MODE_SOLID;
       }
       //-------------------------------------------------------------------------
@@ -146,7 +147,7 @@ namespace rex
           case CullMode::BACK: return D3D12_CULL_MODE_BACK;
         }
 
-        REX_ASSERT_X(false, "Unsupported cull mode given");
+        REX_ASSERT("Unsupported cull mode given");
         return D3D12_CULL_MODE_NONE;
       }
       //-------------------------------------------------------------------------
@@ -162,7 +163,7 @@ namespace rex
           case VertexBufferFormat::UNORM2: return DXGI_FORMAT_R8G8_UNORM;
           case VertexBufferFormat::UNORM4: return DXGI_FORMAT_R8G8B8A8_UNORM;
         }
-        REX_ASSERT_X(false, "Unsupported vertex buffer format given");
+        REX_ASSERT("Unsupported vertex buffer format given");
         return DXGI_FORMAT_UNKNOWN;
       }
       //-------------------------------------------------------------------------
@@ -173,7 +174,7 @@ namespace rex
           case IndexBufferFormat::R16_UINT: return DXGI_FORMAT_R16_UINT;
           case IndexBufferFormat::R32_UINT: return DXGI_FORMAT_R32_UINT;
         }
-        REX_ASSERT_X(false, "Unsupported index buffer format given");
+        REX_ASSERT("Unsupported index buffer format given");
         return DXGI_FORMAT_UNKNOWN;
       }
       //-------------------------------------------------------------------------
@@ -183,7 +184,7 @@ namespace rex
         {
           case TextureFormat::UNORM4_SRGB: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
         }
-        REX_ASSERT_X(false, "Unsupported vertex buffer format given");
+        REX_ASSERT("Unsupported vertex buffer format given");
         return DXGI_FORMAT_UNKNOWN;
       }
 
@@ -198,7 +199,7 @@ namespace rex
           case PrimitiveTopology::TRIANGLELIST: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
           case PrimitiveTopology::TRIANGLESTRIP: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
         }
-        REX_ASSERT_X(false, "Unsupported primitive topology given");
+        REX_ASSERT("Unsupported primitive topology given");
         return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
       }
       //-------------------------------------------------------------------------
@@ -210,28 +211,16 @@ namespace rex
           case InputLayoutClassification::PER_INSTANCE_DATA: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
         }
 
-        REX_ASSERT_X(false, "Unsupported input layout classification given");
+        REX_ASSERT("Unsupported input layout classification given");
         return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
       }
 
       //-------------------------------------------------------------------------
-      template<typename TResourceType, u32 TNameLength>
-      void set_debug_name_for(TResourceType* resource, const char8(&name)[TNameLength])
+      template<typename TResourceType>
+      void set_debug_name_for(TResourceType* resource, rsl::string_view name)
       {
 #ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
-          resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
-#else
-          UNUSED_PARAM(resource);
-          UNUSED_PARAM(name);
-#endif
-      }
-
-      //-------------------------------------------------------------------------
-      template <typename TResourceType>
-      void set_debug_name_for(TResourceType* resource, rsl::unique_array<char8> name)
-      {
-#ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
-          resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.count(), name.get());
+          resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length(), name.data());
 #else
           UNUSED_PARAM(resource);
           UNUSED_PARAM(name);
@@ -284,7 +273,7 @@ namespace rex
       static constexpr s32 s_num_frame_resources = 3;
 
       //-------------------------------------------------------------------------`
-      void release_resource_slot(ResourceSlot slot)
+      void release_resource_slot(ResourceSlot& slot)
       {
           slot.release();
       }
@@ -305,12 +294,6 @@ namespace rex
               : m_index(idx)
               , m_slot(s)
           {
-          }
-
-          //-------------------------------------------------------------------------
-          ~Frame()
-          {
-            clear();
           }
 
         public:
@@ -341,14 +324,8 @@ namespace rex
 
           //-------------------------------------------------------------------------
           void add_committed_resource(const ResourceSlot& slot)
-          {
-            auto it = rsl::find_if(rsl::cbegin(m_committed_resources), rsl::cend(m_committed_resources),
-                [&slot](const ResourceSlot& s)
-                {
-                    return slot == s;
-                });
-            
-            REX_ASSERT_X(it == rsl::cend(m_committed_resources), "Duplicate committed resource added to frame");
+          {          
+            REX_ASSERT_X(!has_committed_resource(slot), "Duplicate committed resource added to frame");
 
             m_committed_resources.push_back(slot);
           }
@@ -360,7 +337,7 @@ namespace rex
           }
 
           //-------------------------------------------------------------------------
-          void increment_amount_active_constant_buffer(const ResourceSlot* slot)
+          void increment_amount_active_constant_buffer(const ResourceSlot& slot)
           {
             if(m_active_constant_buffers.find(slot) == rsl::cend(m_active_constant_buffers))
             {
@@ -371,7 +348,7 @@ namespace rex
           }
 
           //-------------------------------------------------------------------------
-          s32 amount_active_constant_buffer(const ResourceSlot* slot)
+          s32 amount_active_constant_buffer(const ResourceSlot& slot)
           {
             if(m_active_constant_buffers.find(slot) == rsl::cend(m_active_constant_buffers))
             {
@@ -384,15 +361,7 @@ namespace rex
           //-------------------------------------------------------------------------
           void clear()
           {
-            if(m_committed_resources.empty() == false)
-            {
-              release_resource_slots(m_committed_resources.data(), m_committed_resources.size());
-            }
-
-            if(m_slot.is_valid())
-            {
-              release_resource_slot(m_slot);
-            }
+            m_committed_resources.clear();
           }
 
         private:
@@ -400,7 +369,7 @@ namespace rex
           ResourceSlot m_slot;
 
           rsl::vector<ResourceSlot> m_committed_resources;
-          rsl::unordered_map<const ResourceSlot*, s32> m_active_constant_buffers;
+          rsl::unordered_map<ResourceSlot, s32> m_active_constant_buffers;
       };
 
       class FrameContext
@@ -415,12 +384,6 @@ namespace rex
             REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
 
             m_frame_resources.reserve(maxFrameResources);
-          }
-
-          //-------------------------------------------------------------------------
-          ~FrameContext()
-          {
-            clear();
           }
 
           //-------------------------------------------------------------------------
@@ -455,6 +418,7 @@ namespace rex
           //-------------------------------------------------------------------------
           Frame* find_frame(s32 idx)
           {
+            REX_ASSERT_X(idx >= 0, "Invalid frame idx given: {}", idx);
             REX_ASSERT_X(idx < m_frame_resources.size(), "Only {0} frame resources are allocated when trying to retrieve at idx: {1}", max_frame_resources_count(), idx);
 
             return &m_frame_resources[idx];
@@ -478,15 +442,7 @@ namespace rex
           //-------------------------------------------------------------------------
           void clear()
           {
-            if(m_frame_resources.empty() == false)
-            {
-              for(Frame& f: m_frame_resources)
-              {
-                f.clear();
-              }
-
-              m_frame_resources.clear();
-            }
+            m_frame_resources.clear();
           }
 
           //-------------------------------------------------------------------------
@@ -502,7 +458,7 @@ namespace rex
           }
 
           //-------------------------------------------------------------------------
-          const rsl::vector<Frame> frame_resources() const
+          const rsl::vector<Frame>& frame_resources() const
           {
             return m_frame_resources;
           }
@@ -593,7 +549,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        bool has_committed_resource_for_frame(const ResourceSlot* frameSlot, const ResourceSlot* committedResourceSlot)
+        bool has_committed_resource_for_frame(const ResourceSlot* frameSlot, const ResourceSlot& committedResourceSlot)
         {
             const Frame* frame = g_ctx.frame_ctx.find_frame(frameSlot);
             if (frame == nullptr)
@@ -602,7 +558,7 @@ namespace rex
                 return false;
             }
 
-            return frame->has_committed_resource(*committedResourceSlot);
+            return frame->has_committed_resource(committedResourceSlot);
         }
 
         //-------------------------------------------------------------------------
@@ -820,7 +776,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        rsl::unique_ptr<ConstantBufferViewResource> create_constant_buffer_view(const ResourceSlot* frameSlot, const ResourceSlot* committedResourceSlot, s32 bufferByteSize)
+        rsl::unique_ptr<ConstantBufferViewResource> create_constant_buffer_view(const ResourceSlot* frameSlot, const ResourceSlot& committedResourceSlot, s32 bufferByteSize)
         {
             // Find the frame for the given frame slot
             Frame* frame = g_ctx.frame_ctx.find_frame(frameSlot);
@@ -831,7 +787,7 @@ namespace rex
             REX_ASSERT_X(internal::has_committed_resource_for_frame(frameSlot, committedResourceSlot), "Unable to find committed resource for give frame: {}", frameSlot->slot_id());
 
             // Retrieve the committed resource
-            auto& committed_buffer_resource = g_ctx.resource_pool.as<CommittedBufferResource>(*committedResourceSlot);
+            auto& committed_buffer_resource = g_ctx.resource_pool.as<CommittedBufferResource>(committedResourceSlot);
             auto  committed_resource = committed_buffer_resource.get();
 
             // Align buffer size to meet DX12 requirements (multiples of 256)
@@ -993,9 +949,7 @@ namespace rex
               return false;
             }
 
-            rsl::unique_array<char8> render_target_buffer_name = rsl::make_unique<char8[]>(rsl::size("Render Target Buffer #") + 1);
-            sprintf_s(render_target_buffer_name.get(), render_target_buffer_name.count(), "Render Target Buffer %d", i);
-            directx::set_debug_name_for(rtv_buffers[i].Get(), rsl::move(render_target_buffer_name));
+            directx::set_debug_name_for(rtv_buffers[i].Get(), rsl::format("Render Target Buffer {}", i));
 
             // We need to define our own desc struct to enabled SRGB.
             // We can't initialize the swapchain with 'DXGI_FORMAT_R8G8B8A8_UNORM_SRGB'
@@ -1119,32 +1073,45 @@ namespace rex
             {
             case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
                 {
-                    s32 s = rsl::size("Descriptor Heap Element - RTV #") + (i >= 10 ? 2 : 1);  // When larger than 10 an extra character needs to be stored
-                    rsl::unique_array<char8> rtv_heap_buffer_name = rsl::make_unique<char8[]>(s);
-                    sprintf_s(rtv_heap_buffer_name.get(), rtv_heap_buffer_name.count(), "Descriptor Heap Element - RTV %d", i);
-                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::move(rtv_heap_buffer_name));
+                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - RTV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
                 }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
                 {
-                    s32 s = rsl::size("Descriptor Heap Element - DSV #") + (i >= 10 ? 2 : 1); // When larger than 10 an extra character needs to be stored
-                    rsl::unique_array<char8> dsv_heap_buffer_name = rsl::make_unique<char8[]>(s);
-                    sprintf_s(dsv_heap_buffer_name.get(), dsv_heap_buffer_name.count(), "Descriptor Heap Element - DSV %d", i);
-                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::move(dsv_heap_buffer_name));
+                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - DSV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
                 }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
                 {
-                    s32 s = rsl::size("Descriptor Heap Element - CBV #") + (i >= 10 ? 2 : 1);  // When larger than 10 an extra character needs to be stored
-                    rsl::unique_array<char8> cbv_heap_buffer_name = rsl::make_unique<char8[]>(s);
-                    sprintf_s(cbv_heap_buffer_name.get(), cbv_heap_buffer_name.count(), "Descriptor Heap Element - CBV %d", i);
-                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::move(cbv_heap_buffer_name));
+                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - CBV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
                 }
                 break;
             }
+          }
+
+          return true;
+        }
+
+        //-------------------------------------------------------------------------
+        bool wait_for_fence(ID3D12Fence* fence, u64 fenceVal)
+        {
+          if (fence->GetCompletedValue() < fenceVal)
+          {
+            rsl::win::handle event_handle(CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS));
+
+            // Fire event when GPU hits current fence
+            if (DX_FAILED(fence->SetEventOnCompletion(fenceVal, event_handle.get())))
+            {
+              REX_ERROR(LogDirectX, "Failed to set completion event for fence");
+              return false;
+            }
+
+            constexpr DWORD milliSecondsTimeOut = 1000; // 1 second
+            auto res = WaitForSingleObject(event_handle.get(), milliSecondsTimeOut);
+            REX_ASSERT_X(res == WAIT_OBJECT_0, "Failed to wait for fence with error: {}", res);
           }
 
           return true;
@@ -1167,26 +1134,11 @@ namespace rex
           return false;
         }
 
-        if(g_ctx.fence->GetCompletedValue() < g_ctx.current_fence)
-        {
-          HANDLE event_handle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
-
-          // Fire event when GPU hits current fence
-          if(DX_FAILED(g_ctx.fence->SetEventOnCompletion(g_ctx.current_fence, event_handle)))
-          {
-            REX_ERROR(LogDirectX, "Failed to set completion event for fence");
-            return false;
-          }
-
-          WaitForSingleObject(event_handle, INFINITE);
-          CloseHandle(event_handle);
-        }
-
-        return true;
+        return internal::wait_for_fence(g_ctx.fence.Get(), g_ctx.current_fence);
       }
 
       //-------------------------------------------------------------------------
-      bool initialize(const OutputWindowUserData& userData, s32 maxFrameResources, const ResourceSlot& fbColorTargetSlot, const ResourceSlot& bbColorTargetSlot, const ResourceSlot& depthTargetSlot)
+      bool initialize(const OutputWindowUserData& userData, s32 maxFramesInflight, const ResourceSlot& fbColorTargetSlot, const ResourceSlot& bbColorTargetSlot, const ResourceSlot& depthTargetSlot)
       {
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // Enable extra debugging and send debug messages to the VC++ output window
@@ -1203,15 +1155,15 @@ namespace rex
 #endif
 
         // Setup frame context
-        if(maxFrameResources <= 0)
+        if(maxFramesInflight <= 0)
         {
           REX_ERROR(LogDirectX, "Unable to initialize renderer when no frame resources are allocated.");
           return false;
         }
 
-        if(maxFrameResources != s_num_frame_resources)
+        if(maxFramesInflight != s_num_frame_resources)
         {
-          g_ctx.frame_ctx = FrameContext(maxFrameResources);
+          g_ctx.frame_ctx = FrameContext(maxFramesInflight);
         }
 
         g_ctx.frame_ctx.initialize();
@@ -1477,7 +1429,7 @@ namespace rex
             {
                 if(DX_FAILED(g_ctx.device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
                 {
-                    REX_WARN(LogDirectX, "Unable to Query DX12 Debug Interface");
+                    REX_WARN(LogDirectX, "Unable to Query DX12 Debug Device");
                 }
                 else
                 {
@@ -1506,7 +1458,7 @@ namespace rex
             g_ctx.fence.Reset();
             g_ctx.device.Reset();
 
-#if defined REX_ENABLE_DX12_DEBUG_LAYER && defined REX_ENABLE_DX12_LIVE_OBJECT_REPORT
+#if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
             // DXGI - Live Objects
             if (can_report_dxgi_live_objects)
             {
@@ -1517,7 +1469,7 @@ namespace rex
                 }
             }
 #endif
-#if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
+#if defined REX_ENABLE_DX12_DEBUG_LAYER && defined REX_ENABLE_DX12_LIVE_OBJECT_REPORT
             // DX12 - Live Objects
             if (can_report_dx12_live_objects)
             {
@@ -1901,19 +1853,9 @@ namespace rex
         auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.current_frame_resource());
         auto f   = fr.get();
 
-        if(f->fence != 0 && g_ctx.fence->GetCompletedValue() < f->fence)
+        if(f->fence != 0)
         {
-          HANDLE event_handle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
-
-          // Fire event when GPU hits current fence
-          if(DX_FAILED(g_ctx.fence->SetEventOnCompletion(f->fence, event_handle)))
-          {
-            REX_ERROR(LogDirectX, "Failed to set completion event for fence");
-            return;
-          }
-
-          WaitForSingleObject(event_handle, INFINITE);
-          CloseHandle(event_handle);
+          internal::wait_for_fence(g_ctx.fence.Get(), f->fence);
         }
       }
 
@@ -2020,13 +1962,13 @@ namespace rex
       //-------------------------------------------------------------------------
       void draw(s32 /*vertexCount*/, s32 /*startVertex*/)
       {
-        REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
+        REX_ASSERT("renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
       }
 
       //-------------------------------------------------------------------------
       void draw_indexed(s32 /*indexCount*/, s32 /*startIndex*/, s32 /*baseVertex*/)
       {
-        REX_ASSERT_X(false, "renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
+        REX_ASSERT("renderer::draw is unsupported when using DX12, use renderer::draw_indexed_instanced or renderer::draw_instanced");
       }
 
       //-------------------------------------------------------------------------

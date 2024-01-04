@@ -72,7 +72,7 @@ namespace rex
             if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory())
                 return Factory(rsl::move(factory), 0);
 
-            REX_ASSERT_X(false, "Couldn't create dxgi factory!");
+            REX_ASSERT("Couldn't create dxgi factory!");
             return Factory();
         }
 

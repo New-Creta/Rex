@@ -27,7 +27,7 @@ namespace rex
       {
         ConstantType type;
 
-        char8* name;
+        rsl::string_view name;
         s32 location;
       };
 

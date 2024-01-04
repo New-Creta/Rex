@@ -17,18 +17,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(InputLayoutResource);
 
             InputLayoutResource(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements)
-                :m_input_elements(elements)
+                : BaseResource(&m_input_elements)
+                ,m_input_elements(elements)
             {}
             ~InputLayoutResource() override = default;
-
-            rsl::vector<D3D12_INPUT_ELEMENT_DESC>* get()
-            {
-                return &m_input_elements;
-            }
-            const rsl::vector<D3D12_INPUT_ELEMENT_DESC>* get() const
-            {
-                return &m_input_elements;
-            }
 
         private:
             rsl::vector<D3D12_INPUT_ELEMENT_DESC> m_input_elements;

@@ -57,11 +57,7 @@ namespace rsl
         {
             rsl::hash_result operator()(const rex::renderer::ResourceSlot& resourceSlot) const
             {
-                card64 seed = 0;
-
-                seed = internal::hash_combine(seed, resourceSlot.slot_id());
-
-                return static_cast<rsl::hash_result>(seed);
+              return resourceSlot.slot_id();
             }
         };
     } // namespace v1

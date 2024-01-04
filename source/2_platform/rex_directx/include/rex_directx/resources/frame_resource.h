@@ -25,18 +25,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(FrameResource);
 
             FrameResource(const wrl::com_ptr<ID3D12CommandAllocator>& allocator)
-                :m_frame({allocator, 0})
+                : BaseResource(&m_frame)
+                ,m_frame({allocator, 0})
             {}
             ~FrameResource() override = default;
-
-            resources::Frame* get()
-            {
-                return &m_frame;
-            }
-            const resources::Frame* get() const
-            {
-                return &m_frame;
-            }
 
         private:
             resources::Frame m_frame;

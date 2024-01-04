@@ -15,18 +15,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(RasterStateResource);
 
             RasterStateResource(const D3D12_RASTERIZER_DESC& rs)
-                :m_raster_state(rs)
+                : BaseResource(&m_raster_state)
+                ,m_raster_state(rs)
             {}
             ~RasterStateResource() override = default;
-
-            D3D12_RASTERIZER_DESC* get()
-            {
-                return &m_raster_state;
-            }
-            const D3D12_RASTERIZER_DESC* get() const
-            {
-                return &m_raster_state;
-            }
 
         private:
             D3D12_RASTERIZER_DESC m_raster_state;

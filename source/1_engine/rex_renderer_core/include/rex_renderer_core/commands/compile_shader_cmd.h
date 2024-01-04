@@ -13,11 +13,6 @@ namespace rex
   {
     namespace commands
     {
-      static rsl::string_view s_vertex_entry_point   = "VS";
-      static rsl::string_view s_pixel_entry_point    = "PS";
-      static rsl::string_view s_geometry_entry_point = "GS";
-      static rsl::string_view s_compute_entry_point  = "CS";
-
       struct CompileShaderCommandDesc
       {
         ShaderType shader_type = ShaderType::NONE;
@@ -35,13 +30,6 @@ namespace rex
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)
         {
-          switch(m_desc.shader_type)
-          {
-            case ShaderType::VERTEX: m_desc.shader_entry_point = s_vertex_entry_point; break;
-            case ShaderType::PIXEL: m_desc.shader_entry_point = s_pixel_entry_point; break;
-            case ShaderType::GEOMETRY: m_desc.shader_entry_point = s_geometry_entry_point; break;
-            case ShaderType::COMPUTE: m_desc.shader_entry_point = s_compute_entry_point; break;
-          }
         }
 
         ~CompileShader() override = default;

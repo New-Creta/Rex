@@ -14,12 +14,12 @@ namespace rex
             {
                 CreateConstantBufferViewCommandDesc()
                     :frame_index(0)
-                    ,committed_resource(nullptr)
+                    ,committed_resource()
                     ,buffer_size(0)
                 {}
 
                 s32 frame_index;
-                const ResourceSlot* committed_resource;
+                ResourceSlot committed_resource;
 
                 s32 buffer_size;
             };

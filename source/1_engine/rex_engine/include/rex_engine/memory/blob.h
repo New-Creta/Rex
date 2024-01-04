@@ -66,7 +66,7 @@ namespace rex
     template<typename T>
     Blob make_blob(const T* data, int32 num)
     {
-      return make_blob((rsl::byte*)&data[0], rsl::memory_size(sizeof(T) * num));
+      return make_blob(reinterpret_cast<const rsl::byte*>(data), rsl::memory_size(sizeof(T) * num));
     }
 
     //-------------------------------------------------------------------------

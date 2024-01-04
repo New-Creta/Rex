@@ -84,17 +84,17 @@ namespace rex
             };
 
         public:
-            Mesh(const rsl::medium_stack_string& name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd);
+            Mesh(rsl::string_view name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd);
             ~Mesh();
 
         public:
-            void add_submesh(const rsl::small_stack_string& name, const Submesh& subMesh);
-            void add_submesh(const rsl::small_stack_string& name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation);
+            void add_submesh(rsl::string_view name, const Submesh& subMesh);
+            void add_submesh(rsl::string_view name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation);
 
-            const Submesh* submesh(const rsl::small_stack_string& name) const;
+            const Submesh* submesh(rsl::string_view name) const;
 
         public:
-            const rsl::medium_stack_string& name() const;
+            rsl::string_view name() const;
 
             const ResourceSlot& vertex_buffer_slot() const;
             s32 vertex_buffer_byte_stride() const;

@@ -16,85 +16,67 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace directx
     {
-        namespace directx
-        {
 
-        }
     }
+  }
 }
 
 #ifdef REX_DEBUG
-#   define REX_ENABLE_DEBUG_SHADER_COMPILATION
-#   define REX_ENABLE_DEBUG_RESOURCE_NAMES
-
-#   define REX_ENABLE_DX12_DEBUG_LAYER
-#   define REX_ENABLE_DX12_LIVE_OBJECT_REPORT
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_MESSAGE
-#   ifdef REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_MESSAGE
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_message = false; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_message = false; } }
-#   endif
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_INFO
-#   ifdef REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_INFO
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_info = false; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_info = false; } }
-#   endif
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_WARNING
-#   ifdef REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_WARNING
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_warning = false; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_warning = false; } }
-#   endif
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_ERROR
-#   ifdef REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_ERROR
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_error = true; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_error = false; } }
-#   endif
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_CORRUPTION
-#   ifdef REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_CORRUPTION
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_corruption = true; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_corruption = false; } }
-#   endif
-
-#   define REX_ENABLE_DXGI_DEBUG_LAYER
-#   define REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_MESSAGE
-#   ifdef REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_MESSAGE
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_message = false; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dx12_severity_message = false; } }
-#   endif
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_INFO
-#   ifdef REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_INFO
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_info = false; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_info = false; } }
-#   endif
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING
-#   ifdef REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_warning = false; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_warning = false; } }
-#   endif
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR
-#   ifdef REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_error = true; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_error = false; } }
-#   endif
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION
-#   ifdef REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_corruption = true; } }
-#else
-namespace rex { namespace globals { constexpr bool g_enable_dxgi_severity_corruption = false; } }
-#   endif
+#   define REX_ENABLE_DEBUG_SHADER_COMPILATION 1
+#   define REX_ENABLE_DEBUG_RESOURCE_NAMES 1
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_INFO 1
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_WARNING 1
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_ERROR 1
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_CORRUPTION 1
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_MESSAGE 1
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_INFO 1
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING 1
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR 1
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION 1
+#   define REX_ENABLE_DXGI_DEBUG_LAYER 1
+#   define REX_ENABLE_DXGI_LIVE_OBJECT_REPORT 1
+#   define REX_ENABLE_DX12_DEBUG_LAYER 1
+#   define REX_ENABLE_DX12_LIVE_OBJECT_REPORT 1
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_MESSAGE 1
+# else
+#   define REX_ENABLE_DEBUG_SHADER_COMPILATION 0
+#   define REX_ENABLE_DEBUG_RESOURCE_NAMES 0
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_INFO 0
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_WARNING 0
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_ERROR 0
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_CORRUPTION 0
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_MESSAGE 0
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_INFO 0
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING 0
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR 0
+#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION 0
+#   define REX_ENABLE_DXGI_DEBUG_LAYER 0
+#   define REX_ENABLE_DXGI_LIVE_OBJECT_REPORT 0
+#   define REX_ENABLE_DX12_DEBUG_LAYER 0
+#   define REX_ENABLE_DX12_LIVE_OBJECT_REPORT 0
+#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_MESSAGE 0
 #endif
+
+namespace rex 
+{ 
+  namespace globals 
+  { 
+    constexpr bool g_enable_dx12_severity_message     = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_MESSAGE; 
+    constexpr bool g_enable_dx12_severity_info        = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_INFO;
+    constexpr bool g_enable_dx12_severity_warning     = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_WARNING;
+    constexpr bool g_enable_dx12_severity_error       = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_ERROR;
+    constexpr bool g_enable_dx12_severity_corruption  = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_CORRUPTION;
+    constexpr bool g_enable_dxgi_severity_message     = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_MESSAGE;
+    constexpr bool g_enable_dxgi_severity_info        = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_INFO;
+    constexpr bool g_enable_dxgi_severity_warning     = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING;
+    constexpr bool g_enable_dxgi_severity_error       = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR;
+    constexpr bool g_enable_dxgi_severity_corruption  = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION;
+  } 
+}
 
 // clang-format on
 // NOLINTEND(llvm-include-order)

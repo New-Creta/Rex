@@ -6,7 +6,7 @@ namespace rex
     namespace renderer
     {
         //-------------------------------------------------------------------------
-        Mesh::Mesh(const rsl::medium_stack_string& name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd)
+        Mesh::Mesh(rsl::string_view name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd)
             :m_name(name)
             ,m_vbd(vbd)
             ,m_ibd(ibd)
@@ -20,11 +20,11 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void Mesh::add_submesh(const rsl::small_stack_string& name, const Submesh& subMesh)
+        void Mesh::add_submesh(rsl::string_view name, const Submesh& subMesh)
         {
             if (m_submesh_map.find(name) != rsl::cend(m_submesh_map))
             {
-                REX_ERROR(LogRendererCore, "Submesh with name ({}) alread added as a draw argument", name.data());
+                REX_ERROR(LogRendererCore, "Submesh with name ({}) already added as a draw argument", name.data());
                 return;
             }
 
@@ -32,15 +32,17 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        void Mesh::add_submesh(const rsl::small_stack_string& name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation)
+        void Mesh::add_submesh(rsl::string_view name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation)
         {
             add_submesh(name, { indexCount, startIndexLocation, baseVertexLocation });
         }
 
         //-------------------------------------------------------------------------
-        const Submesh* Mesh::submesh(const rsl::small_stack_string& name) const
+        const Submesh* Mesh::submesh(rsl::string_view name) const
         {
-            if (m_submesh_map.find(name) == rsl::cend(m_submesh_map))
+          // temporarily convert to med stack string as rsl doesn't have an overload for the comparison yet
+          // this is fixed in rsl 1.1.69
+            if (m_submesh_map.find(rsl::medium_stack_string(name)) == rsl::cend(m_submesh_map))
             {
                 REX_ERROR(LogRendererCore, "Submesh with name ({}) not found as a draw argument", name.data());
                 return nullptr;
@@ -50,7 +52,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        const rsl::medium_stack_string& Mesh::name() const
+        rsl::string_view Mesh::name() const
         {
             return m_name;
         }

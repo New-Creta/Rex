@@ -26,5 +26,23 @@ public class RexDirectX : PlatformProject
     conf.AddPublicDependency<RexStdExtra>(target);
     conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+
+    switch (target.Config)
+    {
+      case Config.debug:
+      case Config.debug_opt:
+      case Config.tests:
+      case Config.coverage:
+      case Config.address_sanitizer:
+      case Config.undefined_behavior_sanitizer:
+      case Config.fuzzy:
+        conf.add_public_define("REX_ENABLE_DX_CALL");
+        break;
+      case Config.assert:
+      case Config.release:
+        break;
+      default:
+        break;
+    }
   }
 }

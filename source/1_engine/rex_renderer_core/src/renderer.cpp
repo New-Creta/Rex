@@ -187,8 +187,8 @@ namespace rex
         //-------------------------------------------------------------------------
         bool initialize(const OutputWindowUserData& userData, s32 maxCommands, s32 maxFrameResources)
         {
-            // We will initialize the allocated resource to 128 to pool can always grow when it requires more slots
-            //      we use a limited amount of resources now so 128 is definitly large enough
+            // We will initialize the allocated resource to 16 to pool can always grow when it requires more slots
+            //      we use a limited amount of resources now so 16 is definitly large enough
             //      we can always tweak this value later as pass it as an argument to the initialize of the renderer.
             constexpr s32 initial_allocated_resource_slots = 16;
 
