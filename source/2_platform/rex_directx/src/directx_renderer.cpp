@@ -89,9 +89,9 @@
 #include "rex_std/bonus/string.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
-#include "rex_std_extra/memory/memory_size.h"
-#include "rex_std_extra/utility/casting.h"
-#include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/utility/casting.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_std/bonus/platform/windows/handle.h"
 
 #include <optional>
@@ -672,7 +672,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        std::optional<directx::DefaultBuffer> create_default_buffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize)
+        rsl::optional<directx::DefaultBuffer> create_default_buffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize)
         {
           directx::DefaultBuffer default_buffer;
 

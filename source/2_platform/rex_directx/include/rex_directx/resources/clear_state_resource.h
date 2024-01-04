@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/resource.h"
 #include "rex_renderer_core/clear_bits.h"
-#include "rex_std_extra/math/color.h"
+#include "rex_std/bonus/math/color.h"
 #include "rex_engine/types.h"
 
 namespace rex

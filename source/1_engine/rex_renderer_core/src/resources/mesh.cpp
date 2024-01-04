@@ -22,16 +22,13 @@ namespace rex
         //-------------------------------------------------------------------------
         void Mesh::add_submesh(rsl::string_view name, const Submesh& subMesh)
         {
-          // temporarily convert to med stack string as rsl doesn't have an overload for the comparison yet
-          // this is fixed in rsl 1.1.69
-          rsl::medium_stack_string name_str(name);
-          if (m_submesh_map.find(name_str) != rsl::cend(m_submesh_map))
+          if (m_submesh_map.find(name) != rsl::cend(m_submesh_map))
             {
                 REX_ERROR(LogRendererCore, "Submesh with name ({}) already added as a draw argument", name.data());
                 return;
             }
 
-            m_submesh_map.emplace(name_str, subMesh);
+            m_submesh_map.emplace(name, subMesh);
         }
 
         //-------------------------------------------------------------------------
@@ -43,16 +40,13 @@ namespace rex
         //-------------------------------------------------------------------------
         const Submesh* Mesh::submesh(rsl::string_view name) const
         {
-          // temporarily convert to med stack string as rsl doesn't have an overload for the comparison yet
-          // this is fixed in rsl 1.1.69
-          rsl::medium_stack_string name_str(name);
-            if (m_submesh_map.find(name_str) == rsl::cend(m_submesh_map))
+            if (m_submesh_map.find(name) == rsl::cend(m_submesh_map))
             {
                 REX_ERROR(LogRendererCore, "Submesh with name ({}) not found as a draw argument", name.data());
                 return nullptr;
             }
 
-            return &m_submesh_map.at(name_str);
+            return &m_submesh_map.at(name);
         }
 
         //-------------------------------------------------------------------------

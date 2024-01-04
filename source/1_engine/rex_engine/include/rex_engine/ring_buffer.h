@@ -4,7 +4,7 @@
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_std/memory.h"
-#include "rex_std_extra/utility/casting.h"
+#include "rex_std/bonus/utility/casting.h"
 
 namespace rex
 {

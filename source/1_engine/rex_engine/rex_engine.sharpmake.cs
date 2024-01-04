@@ -26,7 +26,7 @@ public class RexEngine : EngineProject
   {
     base.SetupLibDependencies(conf, target);
 
-    conf.AddPublicDependency<RexStdExtra>(target, DependencySetting.Default);
+    conf.AddPublicDependency<RexStd>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
 
     if (ProjectGen.Settings.UnitTestsEnabled)

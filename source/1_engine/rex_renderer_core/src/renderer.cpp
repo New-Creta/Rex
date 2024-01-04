@@ -53,8 +53,8 @@
 #include "rex_engine/defines.h"
 #include "rex_engine/ring_buffer.h"
 
-#include "rex_std_extra/utility/enum_reflection.h"
-#include "rex_std_extra/memory/stack_allocator.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
+#include "rex_std/bonus/memory/stack_allocator.h"
 
 namespace rex
 {

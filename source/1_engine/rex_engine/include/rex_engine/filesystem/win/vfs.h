@@ -8,8 +8,8 @@
 #include "rex_std/memory.h"
 #include "rex_std/string_view.h"
 #include "rex_std/type_traits.h"
-#include "rex_std_extra/utility/type_id.h"
-#include "rex_std_extra/utility/yes_no.h"
+#include "rex_std/bonus/utility/type_id.h"
+#include "rex_std/bonus/utility/yes_no.h"
 
 namespace rex
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_std_extra/utility/type_id.h"
+#include "rex_std/bonus/utility/type_id.h"
 
 #define RESOURCE_CLASS_TYPE(resourceType)  static size_t           static_type()                { return rsl::type_id<resourceType>().hash_code(); }    \
 								                  size_t           type() const override        { return static_type(); }                       \

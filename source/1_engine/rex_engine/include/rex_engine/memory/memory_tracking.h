@@ -9,9 +9,9 @@
 #include "rex_std/bonus/defines.h"
 #include "rex_std/mutex.h"
 #include "rex_std/vector.h"
-#include "rex_std_extra/memory/memory_size.h"
-#include "rex_std_extra/utility/enum_reflection.h"
-#include "rex_std_extra/utility/high_water_mark.h"
+#include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
+#include "rex_std/bonus/utility/high_water_mark.h"
 
 namespace rex
 {

@@ -32,7 +32,7 @@
 #include "rex_renderer_core/scissor_rect.h"
 #include "rex_renderer_core/viewport.h"
 #include "rex_std/string.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
 
