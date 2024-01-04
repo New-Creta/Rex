@@ -74,7 +74,7 @@ namespace rex
      */
     constexpr explicit operator bool() const
     {
-      return is_none() == false;  // NOLINT(readability-simplify-boolean-expr)
+      return is_none() == false; // NOLINT(readability-simplify-boolean-expr)
     }
 
     //-------------------------------------------------------------------------

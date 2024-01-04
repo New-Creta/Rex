@@ -1,15 +1,9 @@
 using Sharpmake;
 using System.IO;
-using System.Text.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 [Generate]
 public class RexEngine : EngineProject
 {
-  private string MemoryTagsHeaderFile;
-
   public RexEngine() : base()
   {
     // The name of the project in Visual Studio. The default is the name of
@@ -28,25 +22,30 @@ public class RexEngine : EngineProject
     //SourceFilesExcludeRegex.Add("win/*");
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
-
-    conf.Output = Configuration.OutputType.Lib;
+    base.SetupLibDependencies(conf, target);
 
     conf.AddPublicDependency<RexStdExtra>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
 
-    if (GenerateSettings.GenerateUnitTests)
+    if (ProjectGen.Settings.UnitTestsEnabled)
     {
       conf.AddPublicDependency<RexStdTest>(target, DependencySetting.Default);
     }
+  }
+
+  protected override void SetupConfigRules(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigRules(conf, target);
 
     switch (target.Config)
     {
       case Config.debug:
       case Config.debug_opt:
         conf.add_public_define("REX_ENABLE_MEM_TRACKING");
+        conf.add_public_define("REX_ENABLE_HR_CALL");
+        conf.add_public_define("REX_ENABLE_WIN_CALL");
         goto case Config.address_sanitizer;
       case Config.address_sanitizer:
       case Config.undefined_behavior_sanitizer:
@@ -54,7 +53,11 @@ public class RexEngine : EngineProject
         conf.add_public_define("REX_DEBUG");
         break;
     }
+  }
 
+  protected override void SetupPlatformRules(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupPlatformRules(conf, target);
 
     switch (conf.Platform)
     {
@@ -67,7 +70,7 @@ public class RexEngine : EngineProject
         conf.add_public_define("REX_PLATFORM_X64");
         conf.add_public_define("REX_PLATFORM_WINDOWS");
         conf.SourceFilesBuildExcludeRegex.Add("unix/*"); // exclude unix files
-                break;
+        break;
       case Platform.linux:
         conf.add_public_define("REX_PLATFORM_LINUX");
         conf.SourceFilesBuildExcludeRegex.Add("win/*"); // exclude windows files
@@ -75,26 +78,26 @@ public class RexEngine : EngineProject
       default:
         break;
     }
+  }
 
-    switch (GenerateSettings.GraphicsAPI)
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigSettings(conf, target);
+
+    switch (ProjectGen.Settings.GraphicsAPI)
     {
-        case GenerationTypes.GraphicsAPI.OpenGL:
-            conf.add_public_define("REX_API_OPENGL");
-            break;
-        case GenerationTypes.GraphicsAPI.DirectX12:
-            conf.add_public_define("REX_API_DIRECTX12");
+      case ProjectGen.GraphicsAPI.OpenGL:
+        conf.add_public_define("REX_API_OPENGL");
+        break;
+      case ProjectGen.GraphicsAPI.DirectX12:
+        conf.add_public_define("REX_API_DIRECTX12");
             conf.add_public_define("GLM_FORCE_DEPTH_ZERO_TO_ONE");
             conf.add_public_define("GLM_FORCE_LEFT_HANDED");
-            break;
-        default:
-            break;
+        break;
+      default:
+        break;
     }
 
     conf.add_public_define("REXLOG_COMPILED_LIB");
-  }
-
-  public override void AfterConfigure()
-  {
-    base.AfterConfigure();
   }
 }

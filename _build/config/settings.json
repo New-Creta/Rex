@@ -9,5 +9,7 @@
   "source_folder": "source",
   "coverage_folder": "tests/coverage",
   "asan_folder": "tests/coverage",
-  "ubsan_folder": "tests/ubsan"
+  "ubsan_folder": "tests/ubsan",
+  "clang_tools_project_extension": ".project",
+  "build_projects_filename" : "build_projects.json"
 }

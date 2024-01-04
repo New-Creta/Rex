@@ -43,14 +43,14 @@ namespace rex
       template <typename T>
       const T* data_as() const;
 
-    private:
-      friend class BlobWriter;
-      friend class BlobReader;
-
       template <typename T>
       T& read(const rsl::memory_size& offset = 0_bytes);
       template <typename T>
       const T& read(const rsl::memory_size& offset = 0_bytes) const;
+
+    private:
+      friend class BlobWriter;
+      friend class BlobReader;
 
       rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset);
       const rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
@@ -73,7 +73,8 @@ namespace rex
     template <typename T>
     T& Blob::read(const rsl::memory_size& offset /*= 0*/)
     {
-      return *(T*)m_data.get() + offset;
+      T* data = reinterpret_cast<T*>(m_data.get() + offset);
+      return *data;
     }
 
     //-------------------------------------------------------------------------

@@ -15,11 +15,9 @@ public class Regina : ToolsProject
     SourceRootPath = ThisFileFolder;
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
-
-    if (GenerateSettings.EnableAutoTests)
+    if (ProjectGen.Settings.AutoTestsEnabled)
     {
       conf.Output = Configuration.OutputType.Lib;
       conf.add_public_define("REX_ENABLE_AUTO_TESTS");
@@ -28,14 +26,11 @@ public class Regina : ToolsProject
     {
       conf.Output = Configuration.OutputType.Exe;
     }
+  }
 
-    string ThisFileFolder = Path.GetFileName(Path.GetDirectoryName(Utils.CurrentFile()));
-    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);
-    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
-    {
-      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
-    }
+  protected override void SetupPlatformRules(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupPlatformRules(conf, target);
 
     switch (target.Platform)
     {
@@ -45,6 +40,7 @@ public class Regina : ToolsProject
 
         if (target.Config == Config.release)
         {
+          conf.add_public_define("REX_WINDOWS_GUI_APP");
           conf.Options.Add(Options.Vc.Linker.SubSystem.Windows);
         }
         else

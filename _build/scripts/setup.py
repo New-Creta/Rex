@@ -1,10 +1,27 @@
+# This is the internal setup script used by Rex Engine.
+# This script is meant to be called by _rex.py,
+# which sits in the root directory of the engine
+# and is not supposed be called directly by the user.
+#
+# This script's is responsible for preparing current working directory
+# for Rex Engine development.
+# This includes but is not limited to:
+# - Installing tools (eg. Compilers, Linkers, ..)
+# - Installing libraries (eg. Windows SDK, ..)
+# - Installing externals (eg. rexstd, glm, ..)
+# - Initializing supported IDEs (Eg. VS Code)
+#
+# It's possible the functionality of this script might change in the future
+# Time of writing - [06/Oct/2023] - Nick DB
+
 import os
 import argparse
+import sys
 import regis.util
 import regis.rex_json
 import regis.required_tools
 import regis.required_libs
-import regis.install_externals
+import regis.required_externals
 import regis.diagnostics
 import regis.task_raii_printing
 import regis.git_hooks
@@ -14,13 +31,11 @@ root_path = regis.util.find_root()
 settings = regis.rex_json.load_file(os.path.join(root_path, regis.util.settingsPathFromRoot))
 intermediate_dir = os.path.join(root_path, settings["intermediate_folder"])
 
-vscode_dir = os.path.join(root_path, ".vscode")
-vscode_build_dir = os.path.join(root_path, "_build", "vscode")
-
 misc_folders = settings["misc_folders"]
 misc_extensions = settings["misc_extensions"]
 
-def __clean_intermediate():
+def _exec_clean():
+  """Remove all the files in the intermediate directory"""
   regis.diagnostics.log_info(f"cleaning intermediates")
   
   try:
@@ -28,10 +43,15 @@ def __clean_intermediate():
     if os.path.exists(intermediate_dir):
       shutil.rmtree(intermediate_dir)
 
+    # There are a few misc folders other than our own intermediate directory
+    # that need to get cleaned (eg. .vscode folder)
     for misc_folder in misc_folders:
       if os.path.exists(misc_folder):
         shutil.rmtree(misc_folder)
 
+    # There are also a few files generated in the root
+    # that need to get removed when performing a clean setup
+    # eg. the visual studio solution of the engine.
     files = os.listdir()
     for file in files:
       if os.path.isfile(file):
@@ -41,11 +61,26 @@ def __clean_intermediate():
   except Exception as ex:
     regis.diagnostics.log_err(f'Failed to clean intermediates: {ex}')
     exit(0)
+  
+def _exec_query():
+  """Query what still needs to get installed."""
 
-def run(shouldClean):
-  if shouldClean:
-    task = regis.task_raii_printing.TaskRaiiPrint("cleaning.")
-    __clean_intermediate()
+  regis.diagnostics.log_no_color('--------------------------------')
+  regis.required_tools.query()
+
+  regis.diagnostics.log_no_color('--------------------------------')
+  regis.required_libs.query()
+  
+  regis.diagnostics.log_no_color('--------------------------------')
+  regis.required_externals.query()
+  
+  regis.diagnostics.log_no_color('--------------------------------')
+
+def _exec_run():
+  """Run the actual setup"""
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
 
   task = regis.task_raii_printing.TaskRaiiPrint("running setup")
 
@@ -65,20 +100,25 @@ def run(shouldClean):
   # we (Rex developers) decided that we need these libraries and we can decide to remove them at any point.
   # libraries like Windows SDK, C++ standard library is always required for development, where as libraries like ImGui
   # are not required and can always be replaced if a better library comes along.
-  regis.install_externals.run()
-
-  # This setup is optional, but for users using VSCode as an IDE we copy over a "tasks.json" file
-  # this file will help in running the different scripts to generate/build/test rex
-  if not os.path.exists(vscode_dir):
-    os.mkdir(vscode_dir)
-  shutil.copyfile(os.path.join(vscode_build_dir, "tasks.json"), os.path.join(vscode_dir, "tasks.json"))  
+  regis.required_externals.run()
       
   # Lastly, install the git hooks
   regis.git_hooks.run(os.path.join(root_path, "_build", "scripts", "git", "hooks"))
-  
+
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  parser.add_argument("-query", help="Don't display any options and just run the script", action="store_true")
   parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
   args, unknown = parser.parse_known_args()
 
-  run(args.clean)
+  if args.query:
+    _exec_query()
+    exit(0)
+
+  if args.clean:
+    _exec_clean()
+
+  _exec_run()  
+
+  exit(0)
+

@@ -1,0 +1,67 @@
+{
+  "clang-tidy-regex": {
+    "Description": "Add this regex to clang-tidy to filter which files it should process",
+    "Value": ""
+  },
+  "perform-all-clang-tidy-checks": {
+    "Description": "Enable this to enable the second pass of clang-tidy checks.",
+    "Value": false
+  },
+  "no-clang-tools": {
+    "Description": "Disable all clang tools.",
+    "Value": false
+  },
+  "intermediate-dir": {
+    "Description": "Specify the folder name in the build intermediate folder. This intermediate folder sits directly under the build intermediate folder (.rex/build)",
+    "Value": ""
+  },
+  "enable-unit-tests": {
+    "Description": "Enable generation of unit test projects",
+    "Value": false
+  },
+  "enable-code-coverage": {
+    "Description": "Enable code coverage when the code gets build. This is only supported for Clang compiler",
+    "Value": false
+  },
+  "enable-address-sanitizer": {
+    "Description": "Enable address sanitizer when code gets build. This is only supported for Clang compiler",
+    "Value": false
+  },
+  "enable-ub-sanitizer": {
+    "Description": "Enable undefined behavior sanitizer when code gets build. This is only supported for Clang compiler",
+    "Value": false
+  },
+  "enable-fuzzy-testing": {
+    "Description": "Enable generation of fuzzy test projects",
+    "Value": false
+  },
+  "enable-auto-tests": {
+    "Description": "Enable generation of auto test projects",
+    "Value": false
+  },
+  "graphics-api": {
+    "Description": "Specify the graphics API to use. DX12 is the default.",
+    "Value": "DX12",
+    "Options": [
+      "DX12",
+      "OpenGL"
+    ]
+  },
+  "IDE": {
+    "Description": "Select which IDE to use. Visual Studio is the default.",
+    "Value": "VisualStudio",
+    "Options": [
+      "VisualStudio",
+      "VSCode",
+      "None"
+    ]
+  },
+  "disable-clang-tidy-for-thirdparty": {
+    "Description": "Disable clang-tidy usage on third-party projects",
+    "Value": true
+  },
+  "disable-unity-builds": {
+    "Description": "Disable unity builds (aka jumbo builds, combi builds)",
+    "Value": true
+  }
+}

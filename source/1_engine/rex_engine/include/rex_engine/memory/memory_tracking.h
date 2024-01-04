@@ -31,6 +31,12 @@ namespace rex
     using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;
 
     MemoryTracker();
+    MemoryTracker(const MemoryTracker&) = delete;
+    MemoryTracker(MemoryTracker&&) = delete;
+    ~MemoryTracker();
+
+    MemoryTracker& operator=(const MemoryTracker&) = delete;
+    MemoryTracker& operator=(MemoryTracker&&) = delete;
 
     void initialize(rsl::memory_size maxMemUsage);
 
@@ -56,6 +62,7 @@ namespace rex
     MemoryStats m_mem_stats_on_startup;    // stats queried from the OS at init time
     rsl::mutex m_mem_tracking_mutex;
     UsagePerTag m_usage_per_tag;
+    bool m_is_active;
   };
 
   MemoryTracker& mem_tracker();
