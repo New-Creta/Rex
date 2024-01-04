@@ -30,7 +30,6 @@ public class RexDirectX : PlatformProject
     {
       case Config.debug:
       case Config.debug_opt:
-      case Config.tests:
       case Config.coverage:
       case Config.address_sanitizer:
       case Config.undefined_behavior_sanitizer:

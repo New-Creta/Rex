@@ -1,4 +1,4 @@
-#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/win/vfs.h"
 
 #include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"

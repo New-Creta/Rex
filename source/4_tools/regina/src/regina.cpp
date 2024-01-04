@@ -2,7 +2,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/entrypoint.h"
-#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/win/vfs.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/primitives/box.h"
