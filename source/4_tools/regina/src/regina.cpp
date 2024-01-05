@@ -352,13 +352,15 @@ namespace rex
     const u32 ib_byte_size = total_index_count * sizeof(u16);
 
     renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(box_vertices.data(), box_vertices.size());
-    renderer::Mesh::VertexBufferDesc vbd                                     = {renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc))};
-    vbd.byte_size                                                            = vb_byte_size;
-    vbd.byte_stride                                                          = sizeof(renderer::VertexPosCol);
+    renderer::Mesh::VertexBufferDesc vbd(
+      renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)),
+      sizeof(renderer::VertexPosCol),
+      vb_byte_size);
+
     renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
-    renderer::Mesh::IndexBufferDesc ibd                                      = {renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc))};
-    ibd.format                                                               = renderer::IndexBufferFormat::R16_UINT;
-    ibd.byte_size                                                            = ib_byte_size;
+    renderer::Mesh::IndexBufferDesc ibd(renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)),
+    renderer::IndexBufferFormat::R16_UINT,
+    ib_byte_size);
 
     g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>("box_geometry"_med, vbd, ibd);
     g_regina_ctx.mesh_cube->add_submesh("box"_small, total_index_count, 0, 0);
@@ -470,16 +472,17 @@ namespace rex
     const u32 vb_byte_size = total_vertex_count * sizeof(renderer::VertexPosCol);
     const u32 ib_byte_size = total_index_count * sizeof(u16);
 
-    renderer::Mesh::VertexBufferDesc vbd;
     renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(vertices.data(), vertices.size());
-    vbd.slot                                                                 = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
-    vbd.byte_size                                                            = vb_byte_size;
-    vbd.byte_stride                                                          = sizeof(renderer::VertexPosCol);
-    renderer::Mesh::IndexBufferDesc ibd;
+    renderer::Mesh::VertexBufferDesc vbd(
+      renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)), 
+      sizeof(renderer::VertexPosCol), 
+      vb_byte_size);
+
     renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(indices.data(), indices.size());
-    ibd.slot                                                                 = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
-    ibd.format                                                               = renderer::IndexBufferFormat::R16_UINT;
-    ibd.byte_size                                                            = ib_byte_size;
+    renderer::Mesh::IndexBufferDesc ibd(
+      renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)), 
+      renderer::IndexBufferFormat::R16_UINT, 
+      ib_byte_size);
 
     auto geometry = rsl::make_unique<renderer::Mesh>("scene_geometry"_med, vbd, ibd);
 

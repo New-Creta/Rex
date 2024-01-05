@@ -13,13 +13,6 @@ namespace rex
         {}
 
         //-------------------------------------------------------------------------
-        Mesh::~Mesh()
-        {
-            m_vbd.slot.release();
-            m_ibd.slot.release();
-        }
-
-        //-------------------------------------------------------------------------
         void Mesh::add_submesh(rsl::string_view name, const Submesh& subMesh)
         {
           if (m_submesh_map.find(name) != rsl::cend(m_submesh_map))
