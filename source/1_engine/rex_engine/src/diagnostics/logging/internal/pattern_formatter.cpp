@@ -54,13 +54,13 @@ namespace rexlog
         default: side = details::PaddingInfo::PadSide::Left; break;
       }
 
-      if(it == end || !rsl::is_digit(static_cast<unsigned char>(*it)))
+      if(it == end || !rsl::is_digit(static_cast<char>(*it)))
       {
         return PaddingInfo {}; // no padding if no digit found here
       }
 
       auto width = static_cast<s32>(*it) - '0';
-      for(++it; it != end && rsl::is_digit(static_cast<unsigned char>(*it)); ++it)
+      for(++it; it != end && rsl::is_digit(static_cast<char>(*it)); ++it)
       {
         auto digit = static_cast<s32>(*it) - '0';
         width      = width * 10 + digit;

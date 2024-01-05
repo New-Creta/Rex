@@ -26,10 +26,10 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      DXCall::DXCall(HResult error, HResult errorSuccess, rsl::string_view file, rsl::string_view function, card32 lineNr)
+      DXCall::DXCall(HResult error, rsl::string_view file, rsl::string_view function, card32 lineNr)
           : m_error(error)
       {
-        if(m_error != errorSuccess || FAILED(m_error))
+        if(FAILED(m_error))
         {
           m_error_message  = report_hr_error(m_error, file, function, lineNr);
         }

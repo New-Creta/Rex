@@ -16,7 +16,7 @@ namespace rex
          * @class ResourceSlots
          * @brief Manages resource slots within the engine.
          *
-         * This class is meant to manage the various slots of resources that could exist within the engine.
+         * This class is meant to allocate and free the various slots of resources that could exist within the engine.
          * It provides a mechanism to allocate and free slots for a variaty of resources.
          *
          * Resources are not directly exposed to the user of the API; instead, the user interacts with resource
@@ -177,14 +177,8 @@ namespace rex
             };
 
         public:
+            ResourceSlots(s32 num);
             ~ResourceSlots();
-
-            /**
-             * @brief Initialize the ResourceSlots class with an initial capacity
-             *
-             * @param num The initial number of resource slots to manage.
-             */
-            void initialize(s32 num);
 
             /**
              * @brief Allocate the next available resource slot.

@@ -66,8 +66,14 @@ namespace rex
         public:
             struct VertexBufferDesc
             {
+                VertexBufferDesc(const ResourceSlot& inSlot, s32 byteStride, s32 byteSize)
+                  : slot(inSlot)
+                  , byte_stride(byteStride)
+                  , byte_size(byteSize)
+                {}
+
                 // Resource handles to the vertex buffer of this geometry
-                ResourceSlot        slot;
+                const ResourceSlot  slot;
 
                 // Data about the allocated buffer.
                 s32                 byte_stride;
@@ -75,8 +81,14 @@ namespace rex
             };
             struct IndexBufferDesc
             {
+                IndexBufferDesc(const ResourceSlot& inSlot, IndexBufferFormat format, s32 byteSize)
+                    : slot(inSlot)
+                    , format(format)
+                    , byte_size(byteSize)
+                {}
+
                 // Resource handles to the index buffer of this geometry
-                ResourceSlot        slot;
+                const ResourceSlot  slot;
 
                 // Data about the allocated buffers.
                 IndexBufferFormat   format;
@@ -84,17 +96,16 @@ namespace rex
             };
 
         public:
-            Mesh(const rsl::medium_stack_string& name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd);
-            ~Mesh();
+            Mesh(rsl::string_view name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd);
 
         public:
-            void add_submesh(const rsl::small_stack_string& name, const Submesh& subMesh);
-            void add_submesh(const rsl::small_stack_string& name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation);
+            void add_submesh(rsl::string_view name, const Submesh& subMesh);
+            void add_submesh(rsl::string_view name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation);
 
-            const Submesh* submesh(const rsl::small_stack_string& name) const;
+            const Submesh* submesh(rsl::string_view name) const;
 
         public:
-            const rsl::medium_stack_string& name() const;
+            rsl::string_view name() const;
 
             const ResourceSlot& vertex_buffer_slot() const;
             s32 vertex_buffer_byte_stride() const;

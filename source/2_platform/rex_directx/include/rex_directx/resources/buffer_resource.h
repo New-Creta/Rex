@@ -27,18 +27,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(BufferResource);
 
             BufferResource(const wrl::com_ptr<ID3DBlob>& cpuBuffer, const wrl::com_ptr<ID3D12Resource>& gpuBuffer, const wrl::com_ptr<ID3D12Resource>& uploader, u32 sizeInBytes)
-                :m_buffer_resource({ cpuBuffer , gpuBuffer, uploader, sizeInBytes })
+                :BaseResource(&m_buffer_resource)
+                ,m_buffer_resource({ cpuBuffer , gpuBuffer, uploader, sizeInBytes })
             {}
             ~BufferResource() override = default;
-
-            resources::Buffer* get()
-            {
-                return &m_buffer_resource;
-            }
-            const resources::Buffer* get() const
-            {
-                return &m_buffer_resource;
-            }
 
         private:
             resources::Buffer m_buffer_resource;

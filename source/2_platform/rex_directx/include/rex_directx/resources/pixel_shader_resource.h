@@ -22,18 +22,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(PixelShaderResource);
 
             PixelShaderResource(const wrl::com_ptr<ID3DBlob>& ps)
-                :m_pixel_shader({ ps })
+              : BaseResource(&m_pixel_shader)
+                ,m_pixel_shader({ ps })
             {}
             ~PixelShaderResource() override = default;
-
-            resources::PixelShader* get()
-            {
-                return &m_pixel_shader;
-            }
-            const resources::PixelShader* get() const
-            {
-                return &m_pixel_shader;
-            }
 
         private:
             resources::PixelShader m_pixel_shader;

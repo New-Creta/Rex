@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/resource.h"
 #include "rex_renderer_core/clear_bits.h"
-#include "rex_std_extra/math/color.h"
+#include "rex_std/bonus/math/color.h"
 #include "rex_engine/types.h"
 
 namespace rex
@@ -26,18 +26,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(ClearStateResource);
 
             ClearStateResource(const resources::ClearState& cs)
-                :m_clear_state(cs)
+                :BaseResource(&m_clear_state)
+                ,m_clear_state(cs)
             {}
             ~ClearStateResource() override = default;
-
-            resources::ClearState* get()
-            {
-                return &m_clear_state;
-            }
-            const resources::ClearState* get() const
-            {
-                return &m_clear_state;
-            }
 
         private:
             resources::ClearState m_clear_state;

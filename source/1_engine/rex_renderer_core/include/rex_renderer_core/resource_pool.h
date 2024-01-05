@@ -41,7 +41,7 @@ namespace rex
         private:
             using ResourceMap = rsl::unordered_map<ResourceSlot, ResourcePtr>;
 
-            void                    validate_and_grow_if_necessary(const ResourceSlot& minCapacity);
+            void                    validate_and_grow_if_necessary(s32 minCapacity);
 
             ResourceMap             m_resource_map;
             rsl::recursive_mutex    m_lock;

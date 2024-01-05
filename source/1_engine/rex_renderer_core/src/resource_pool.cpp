@@ -20,7 +20,10 @@ namespace rex
         //-----------------------------------------------------------------------
         void ResourcePool::insert(const ResourceSlot& slot, ResourcePtr&& resource)
         {
-            validate_and_grow_if_necessary(slot);
+          // The slots are all in numerical order ( see ResourceSlots.cpp )
+          // This means if there is a slot ID incoming with a larger value as the currently allocated buckets within the hashmap
+          // We have to grow rehash and allocate a larger number of buckets
+            validate_and_grow_if_necessary(slot.slot_id()); 
 
             rsl::unique_lock sl(m_lock);
             m_resource_map[slot] = rsl::move(resource);
@@ -56,16 +59,11 @@ namespace rex
         }
 
         //-----------------------------------------------------------------------
-        void ResourcePool::validate_and_grow_if_necessary(const ResourceSlot& slot)
+        void ResourcePool::validate_and_grow_if_necessary(s32 minCapacity)
         {
-            // The slots are all in numerical order ( see ResourceSlots.cpp )
-            // This means if there is a slot ID incoming with a larger value as the currently allocated buckets within the hashmap
-            // We have to grow rehash and allocate a larger number of buckets
-            s32 min_capacity = slot.slot_id();
-
-            if (min_capacity >= m_resource_map.size())
+            if (minCapacity >= m_resource_map.size())
             {
-                s32 new_cap = (min_capacity * 2) + 1; // Grow to accommodate the slot
+                s32 new_cap = (minCapacity * 2) + 1; // Grow to accommodate the slot
 
                 rsl::unique_lock sl(m_lock);
                 m_resource_map.reserve(new_cap);

@@ -1,6 +1,8 @@
 #pragma once
 
-#define RESOURCE_CLASS_TYPE(resourceType)  static size_t           static_type()                { return typeid(resourceType).hash_code(); }    \
+#include "rex_std/bonus/utility/type_id.h"
+
+#define RESOURCE_CLASS_TYPE(resourceType)  static size_t           static_type()                { return rsl::type_id<resourceType>().hash_code(); }    \
 								                  size_t           type() const override        { return static_type(); }                       \
 
 namespace rex
@@ -20,11 +22,23 @@ namespace rex
         class BaseResource : public IResource
         {
         public:
-            BaseResource() = default;
+          BaseResource(T* resource)
+            : m_resource(resource)
+          {}
+
             ~BaseResource() override = default;
 
-            virtual T* get() = 0;
-            virtual const T* get() const = 0;
+            T* get()
+            {
+              return m_resource;
+            }
+            const T* get() const
+            {
+              return m_resource;
+            }
+
+        private:
+          T* m_resource;
         };
     }
 }

@@ -6,7 +6,7 @@
 #include "rex_engine/types.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/string.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/bonus/memory/memory_size.h"
 
 #include <cstdlib>
 #include <wrl/client.h>

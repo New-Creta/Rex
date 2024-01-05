@@ -25,18 +25,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(RenderTargetResource);
 
             RenderTargetResource(const wrl::com_ptr<ID3D12Resource>& rt, TextureFormat format, s32 arrayIndex)
-                : m_render_target({rt, format, arrayIndex})
+              : BaseResource(&m_render_target)
+                , m_render_target({rt, format, arrayIndex})
             {}
             ~RenderTargetResource() override = default;
-
-            resources::RenderTarget* get()
-            {
-                return &m_render_target;
-            }
-            const resources::RenderTarget* get() const
-            {
-                return &m_render_target;
-            }
 
         private:
             resources::RenderTarget m_render_target;

@@ -8,15 +8,18 @@ namespace rex
     namespace renderer
     {
         //-------------------------------------------------------------------------
-        ResourceSlots::~ResourceSlots()
+        ResourceSlots::ResourceSlots(s32 num)
+          : m_flag_capacity(0)
         {
-            m_flags.reset();
+          resize(num);
         }
 
         //-------------------------------------------------------------------------
-        void ResourceSlots::initialize(s32 num)
+        ResourceSlots::~ResourceSlots()
         {
-            resize(num);
+          free_slots();
+
+          m_flags.reset();
         }
 
         //-------------------------------------------------------------------------
@@ -91,26 +94,20 @@ namespace rex
 
             REX_ASSERT_X(m_flag_capacity < num, "Shrinking the resource slots capacity is not supported");
 
-            if (m_flags)
-            {
-                m_flags.reset();
-            }
-
             s32 cur_cap = m_flag_capacity;
             s32 new_cap = num;
 
-            rsl::unique_array<rsl::atomic_flag> new_m_flags = rsl::make_unique<rsl::atomic_flag[]>(num);
+            m_flags = rsl::make_unique<rsl::atomic_flag[]>(num);
 
             for (s32 i = 0; i < cur_cap; ++i)
             {
-                new_m_flags[i].test_and_set(rsl::memory_order_acquire);
+                m_flags[i].test_and_set(rsl::memory_order_acquire);
             }
             for (s32 i = cur_cap; i < new_cap; ++i)
             {
-                new_m_flags[i].clear(); // Initialize new m_flags as clear (FREE)
+                m_flags[i].clear(); // Initialize new m_flags as clear (FREE)
             }
 
-            m_flags = rsl::move(new_m_flags);
             m_flag_capacity = num;
         }
 

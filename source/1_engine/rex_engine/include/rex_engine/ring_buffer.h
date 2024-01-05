@@ -4,7 +4,7 @@
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_std/memory.h"
-#include "rex_std_extra/utility/casting.h"
+#include "rex_std/bonus/utility/casting.h"
 
 namespace rex
 {
@@ -18,7 +18,6 @@ namespace rex
 
         ~RingBuffer();
 
-        void initialize(u32 cap);
         void shutdown();
 
         bool put(const T& item);
@@ -27,6 +26,9 @@ namespace rex
 
         T* get();
         T* check();
+
+    private:
+        void initialize(u32 cap);
 
     private:
         rsl::unique_array<T> m_data = nullptr;

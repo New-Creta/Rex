@@ -2,7 +2,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/entrypoint.h"
-#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/win/vfs.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/primitives/box.h"
@@ -31,8 +31,11 @@
 #include "rex_renderer_core/resources/vertex.h"
 #include "rex_renderer_core/scissor_rect.h"
 #include "rex_renderer_core/viewport.h"
+
 #include "rex_std/string.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/math/color.h"
+
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
 
@@ -105,7 +108,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void set_object_committed_resource_slot(s32 frameIndex, s32 numItems, s32 bufferByteSize)
     {
-      renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants;
+      renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants{};
       attach_object_constants.frame_index      = frameIndex;
       attach_object_constants.buffer_count     = numItems;
       attach_object_constants.buffer_byte_size = bufferByteSize;
@@ -116,7 +119,7 @@ namespace rex
     //-------------------------------------------------------------------------
     void set_pass_committed_resource_slot(s32 frameIndex, s32 numItems, s32 bufferByteSize)
     {
-      renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants;
+      renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants{};
       attach_object_constants.frame_index      = frameIndex;
       attach_object_constants.buffer_count     = numItems;
       attach_object_constants.buffer_byte_size = bufferByteSize;
@@ -125,9 +128,9 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void add_object_constant_buffer_slot(s32 frameIndex, const renderer::ResourceSlot* committedResourceSlot, s32 bufferSize) 
+    void add_object_constant_buffer_slot(s32 frameIndex, const renderer::ResourceSlot& committedResourceSlot, s32 bufferSize) 
     {
-      renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc;
+      renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc{};
 
       create_const_buffer_command_desc.frame_index        = frameIndex;
       create_const_buffer_command_desc.committed_resource = committedResourceSlot;
@@ -139,9 +142,9 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void set_pass_constant_buffer_slot(s32 frameIndex, const renderer::ResourceSlot* committedResourceSlot, s32 bufferSize)
+    void set_pass_constant_buffer_slot(s32 frameIndex, const renderer::ResourceSlot& committedResourceSlot, s32 bufferSize)
     {
-      renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc;
+      renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc{};
 
       create_const_buffer_command_desc.frame_index        = frameIndex;
       create_const_buffer_command_desc.committed_resource = committedResourceSlot;
@@ -251,17 +254,17 @@ namespace rex
   //-------------------------------------------------------------------------
   renderer::commands::CompileShaderCommandDesc create_compile_shader_parameters(const rsl::small_stack_string& shaderName, renderer::ShaderType shaderType, rsl::string_view filePath)
   {
-    renderer::commands::CompileShaderCommandDesc compile_shader_command_desc;
+    renderer::commands::CompileShaderCommandDesc compile_shader_command_desc{};
 
     switch(shaderType)
     {
       case renderer::ShaderType::VERTEX:
-        compile_shader_command_desc.shader_entry_point    = "VS"_tiny;
-        compile_shader_command_desc.shader_feature_target = "vs_5_1"_tiny;
+        compile_shader_command_desc.shader_entry_point    = "VS";
+        compile_shader_command_desc.shader_feature_target = "vs_5_1";
         break;
       case renderer::ShaderType::PIXEL:
-        compile_shader_command_desc.shader_entry_point    = "PS"_tiny;
-        compile_shader_command_desc.shader_feature_target = "ps_5_1"_tiny;
+        compile_shader_command_desc.shader_entry_point    = "PS";
+        compile_shader_command_desc.shader_feature_target = "ps_5_1";
         break;
     }
 
@@ -276,7 +279,7 @@ namespace rex
   template <typename T>
   renderer::commands::CreateBufferCommandDesc create_buffer_parameters(T* data, s32 num)
   {
-    renderer::commands::CreateBufferCommandDesc create_buffer_command_desc;
+    renderer::commands::CreateBufferCommandDesc create_buffer_command_desc{};
 
     create_buffer_command_desc.buffer_data = memory::make_blob<T>(data, num);
 
@@ -286,9 +289,9 @@ namespace rex
   //-------------------------------------------------------------------------
   bool build_clear_state()
   {
-    renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc;
+    renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc{};
 
-    create_clear_state_command_desc.rgba    = {0.690196097f, 0.768627524f, 0.870588303f, 1.f}; // LightSteelBlue
+    create_clear_state_command_desc.rgba    = rsl::colors::LightSteelBlue;
     create_clear_state_command_desc.depth   = 1.0f;
     create_clear_state_command_desc.stencil = 0x00;
 
@@ -330,7 +333,7 @@ namespace rex
   //-------------------------------------------------------------------------
   bool build_cube_geometry()
   {
-    auto box = mesh_factory::create_box<u16>(1.5f, 0.5f, 1.5f, 0);
+    auto box = mesh_factory::create_box(1.5f, 0.5f, 1.5f, 0);
 
     auto total_vertex_count = box.vertices().size();
     auto total_index_count  = box.indices().size();
@@ -348,16 +351,16 @@ namespace rex
     const u32 vb_byte_size = total_vertex_count * sizeof(renderer::VertexPosCol);
     const u32 ib_byte_size = total_index_count * sizeof(u16);
 
-    renderer::Mesh::VertexBufferDesc vbd;
     renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(box_vertices.data(), box_vertices.size());
-    vbd.slot                                                                 = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
-    vbd.byte_size                                                            = vb_byte_size;
-    vbd.byte_stride                                                          = sizeof(renderer::VertexPosCol);
-    renderer::Mesh::IndexBufferDesc ibd;
+    renderer::Mesh::VertexBufferDesc vbd(
+      renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)),
+      sizeof(renderer::VertexPosCol),
+      vb_byte_size);
+
     renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
-    ibd.slot                                                                 = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
-    ibd.format                                                               = renderer::IndexBufferFormat::R16_UINT;
-    ibd.byte_size                                                            = ib_byte_size;
+    renderer::Mesh::IndexBufferDesc ibd(renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)),
+    renderer::IndexBufferFormat::R16_UINT,
+    ib_byte_size);
 
     g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>("box_geometry"_med, vbd, ibd);
     g_regina_ctx.mesh_cube->add_submesh("box"_small, total_index_count, 0, 0);
@@ -368,10 +371,10 @@ namespace rex
   //-------------------------------------------------------------------------
   bool build_scene_geometry()
   {
-    auto box      = mesh_factory::create_box<u16>(1.5f, 0.5f, 1.5f, 0);
-    auto grid     = mesh_factory::create_grid<u16>(20.0f, 30.0f, 60, 40);
-    auto sphere   = mesh_factory::create_sphere<u16>(0.5f, 20, 20);
-    auto cylinder = mesh_factory::create_cylinder<u16>(0.5f, 0.3f, 3.0f, 20, 20);
+    auto box      = mesh_factory::create_box(1.5f, 0.5f, 1.5f, 0);
+    auto grid     = mesh_factory::create_grid(20.0f, 30.0f, 60, 40);
+    auto sphere   = mesh_factory::create_sphere(0.5f, 20, 20);
+    auto cylinder = mesh_factory::create_cylinder(0.5f, 0.3f, 3.0f, 20, 20);
 
     //
     // We are concatenating all the geometry into one big vertex/index buffer.  So
@@ -427,7 +430,8 @@ namespace rex
     for(s32 i = 0; i < box.vertices().size(); ++i, ++k)
     {
       glm::vec3 position = box.vertices()[i].position;
-      glm::vec4 color    = {1.000000000f, 0.270588249f, 0.000000000f, 1.000000000f}; // Orange Red
+      auto c             = rsl::colors::OrangeRed;
+      glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
 
       vertices[k] = renderer::VertexPosCol(position, color);
     }
@@ -435,7 +439,8 @@ namespace rex
     for(s32 i = 0; i < grid.vertices().size(); ++i, ++k)
     {
       glm::vec3 position = grid.vertices()[i].position;
-      glm::vec4 color    = {0.133333340f, 0.545098066f, 0.133333340f, 1.000000000f}; // Forest Green
+      auto c             = rsl::colors::ForestGreen;
+      glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
 
       vertices[k] = renderer::VertexPosCol(position, color);
     }
@@ -443,7 +448,8 @@ namespace rex
     for(s32 i = 0; i < sphere.vertices().size(); ++i, ++k)
     {
       glm::vec3 position = sphere.vertices()[i].position;
-      glm::vec4 color    = {0.862745166f, 0.078431375f, 0.235294133f, 1.000000000f}; // Crimson
+      auto c             = rsl::colors::Crimson;
+      glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
 
       vertices[k] = renderer::VertexPosCol(position, color);
     }
@@ -451,7 +457,8 @@ namespace rex
     for(s32 i = 0; i < cylinder.vertices().size(); ++i, ++k)
     {
       glm::vec3 position = cylinder.vertices()[i].position;
-      glm::vec4 color    = {0.274509817f, 0.509803951f, 0.705882370f, 1.000000000f}; // Steel Blue
+      auto c             = rsl::colors::SteelBlue;
+      glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
 
       vertices[k] = renderer::VertexPosCol(position, color);
     }
@@ -465,16 +472,17 @@ namespace rex
     const u32 vb_byte_size = total_vertex_count * sizeof(renderer::VertexPosCol);
     const u32 ib_byte_size = total_index_count * sizeof(u16);
 
-    renderer::Mesh::VertexBufferDesc vbd;
     renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(vertices.data(), vertices.size());
-    vbd.slot                                                                 = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
-    vbd.byte_size                                                            = vb_byte_size;
-    vbd.byte_stride                                                          = sizeof(renderer::VertexPosCol);
-    renderer::Mesh::IndexBufferDesc ibd;
+    renderer::Mesh::VertexBufferDesc vbd(
+      renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)), 
+      sizeof(renderer::VertexPosCol), 
+      vb_byte_size);
+
     renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(indices.data(), indices.size());
-    ibd.slot                                                                 = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
-    ibd.format                                                               = renderer::IndexBufferFormat::R16_UINT;
-    ibd.byte_size                                                            = ib_byte_size;
+    renderer::Mesh::IndexBufferDesc ibd(
+      renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)), 
+      renderer::IndexBufferFormat::R16_UINT, 
+      ib_byte_size);
 
     auto geometry = rsl::make_unique<renderer::Mesh>("scene_geometry"_med, vbd, ibd);
 
@@ -637,14 +645,14 @@ namespace rex
     {
       for(s32 i = 0; i < num_render_items; ++i)
       {
-        g_regina_ctx.frame_resource_data[frame].add_object_constant_buffer_slot(frame, &g_regina_ctx.frame_resource_data[frame].object_committed_resource_slot(), sizeof(ObjectConstants));
+        g_regina_ctx.frame_resource_data[frame].add_object_constant_buffer_slot(frame, g_regina_ctx.frame_resource_data[frame].object_committed_resource_slot(), sizeof(ObjectConstants));
       }
     }
 
     // Last three descriptors are the pass CBVs for each frame resource.
     for(s32 frame = 0; frame < renderer::max_frames_in_flight(); ++frame)
     {
-      g_regina_ctx.frame_resource_data[frame].set_pass_constant_buffer_slot(frame, &g_regina_ctx.frame_resource_data[frame].pass_committed_resource_slot(), sizeof(PassConstants));
+      g_regina_ctx.frame_resource_data[frame].set_pass_constant_buffer_slot(frame, g_regina_ctx.frame_resource_data[frame].pass_committed_resource_slot(), sizeof(PassConstants));
     }
 
     return true;
@@ -765,40 +773,49 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  bool initialize()
+  bool init_gfx()
   {
-    REX_LOG(LogRegina, "Initializing Regina");
-
-    g_regina_ctx.scene          = rsl::make_unique<renderer::Scene>();
+    g_regina_ctx.scene = rsl::make_unique<renderer::Scene>();
     g_regina_ctx.scene_renderer = rsl::make_unique<renderer::SceneRenderer>(g_regina_ctx.scene.get());
 
-    if(!build_clear_state())
+    if (!build_clear_state())
       return false;
-    if(!build_shader_and_input_layout())
+    if (!build_shader_and_input_layout())
       return false;
 #if RENDER_SCENE
-    if(!build_scene_geometry())
+    if (!build_scene_geometry())
       return false;
-    if(!build_scene_render_items())
+    if (!build_scene_render_items())
       return false;
 #else
-    if(!build_cube_geometry())
+    if (!build_cube_geometry())
       return false;
-    if(!build_cube_render_items())
+    if (!build_cube_render_items())
       return false;
 #endif
-    if(!build_frame_resources())
+    if (!build_frame_resources())
       return false;
-    if(!build_constant_buffers())
+    if (!build_constant_buffers())
       return false;
-    if(!build_raster_state())
+    if (!build_raster_state())
       return false;
-    if(!build_pipeline_state_object())
+    if (!build_pipeline_state_object())
       return false;
 
     // The window resized, so update the aspect ratio and recompute the projection matrix.
     g_regina_ctx.proj = glm::perspectiveFov(0.25f * glm::pi<f32>(), static_cast<f32>(globals::window_info().width), static_cast<f32>(globals::window_info().height), globals::default_depth_info().near_plane, globals::default_depth_info().far_plane);
     g_regina_ctx.proj = glm::transpose(g_regina_ctx.proj); // DirectX backend ( so we have to transpose, expects row major matrices )
+
+    return true;
+  }
+
+  //-------------------------------------------------------------------------
+  bool initialize()
+  {
+    REX_LOG(LogRegina, "Initializing Regina");
+
+    if (!init_gfx())
+      return false;
 
     return true;
   }
@@ -901,8 +918,7 @@ namespace rex
     app_params.engine_params.app_update_func   = update;
     app_params.engine_params.app_draw_func     = draw;
     app_params.engine_params.app_shutdown_func = shutdown;
-
-    app_params.create_window = true;
+    app_params.create_window                   = true;
 
     return app_params;
   }

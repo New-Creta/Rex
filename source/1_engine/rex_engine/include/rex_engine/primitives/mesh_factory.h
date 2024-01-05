@@ -3,7 +3,7 @@
 #include "rex_engine/types.h"
 
 #include "rex_std/vector.h"
-#include "rex_std_extra/utility/casting.h"
+#include "rex_std/bonus/utility/casting.h"
 
 #include <glm/glm.hpp>
 
@@ -46,11 +46,11 @@ namespace rex
             void insert_vertex(s32 idx, const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& tang, const glm::vec2& uv);
             void insert_index(s32 idx, index_type i);
 
-            void reserve_vertices(u32 num);
-            void reserve_indices(u32 num);
+            void reserve_vertices(s32 num);
+            void reserve_indices(s32 num);
 
-            void resize_vertices(u32 num);
-            void resize_indices(u32 num);
+            void resize_vertices(s32 num);
+            void resize_indices(s32 num);
 
             const rsl::vector<Vertex>& vertices() const;
             const rsl::vector<index_type>& indices() const;
@@ -78,18 +78,14 @@ namespace rex
         template<typename T>
         void MeshData<T>::assign_vertices(const Vertex* vertices, u32 numVertices)
         {
-            //m_vertices.assign(&vertices[0], &vertices[numVertices]);
-            for (u32 i = 0; i < numVertices; ++i)
-                m_vertices.push_back(vertices[i]);
+            m_vertices.assign(&vertices[0], &vertices[numVertices]);
         }
 
         //-----------------------------------------------------------------------
         template<typename T>
         void MeshData<T>::assign_indices(const MeshData<T>::index_type* indices, u32 numIndices)
         {
-            //m_indices.assign(&indices[0], &indices[numIndices]);
-            for (u32 i = 0; i < numIndices; ++i)
-                m_indices.push_back(indices[i]);
+            m_indices.assign(&indices[0], &indices[numIndices]);
         }
 
         //-----------------------------------------------------------------------
@@ -140,28 +136,28 @@ namespace rex
 
         //-----------------------------------------------------------------------
         template<typename T>
-        void MeshData<T>::reserve_vertices(u32 num)
+        void MeshData<T>::reserve_vertices(s32 num)
         {
             m_vertices.reserve(num);
         }
 
         //-----------------------------------------------------------------------
         template<typename T>
-        void MeshData<T>::reserve_indices(u32 num)
+        void MeshData<T>::reserve_indices(s32 num)
         {
             m_indices.reserve(num);
         }
 
         //-----------------------------------------------------------------------
         template<typename T>
-        void MeshData<T>::resize_vertices(u32 num)
+        void MeshData<T>::resize_vertices(s32 num)
         {
             m_vertices.resize(num);
         }
 
         //-----------------------------------------------------------------------
         template<typename T>
-        void MeshData<T>::resize_indices(u32 num)
+        void MeshData<T>::resize_indices(s32 num)
         {
             m_indices.resize(num);
         }
@@ -188,14 +184,14 @@ namespace rex
          * @param meshData The mesh data containing vertices and indices to subdivide.
          */
         template<typename T>
-        void subdivide(MeshData<T>& meshData)
+        MeshData<T> subdivide(const MeshData<T>& meshData)
         {
             // Save a copy of the input geometry.
-            MeshData<T> input_copy = meshData;
+            MeshData<T> res;
 
             // Clear existing vertices and indices.
-            meshData.resize_vertices(0);
-            meshData.resize_indices(0);
+            res.reserve_vertices(meshData.vertices().size());
+            res.resize_indices(meshData.indices().size());
 
             //       v1
             //       *
@@ -208,13 +204,13 @@ namespace rex
             // v0    m2     v2
 
             // Loop through each triangle in the input mesh.
-            s32 num_tris = input_copy.indices().size() / 3;
+            s32 num_tris = meshData.indices().size() / 3;
             for (s32 i = 0; i < num_tris; ++i)
             {
                 // Retrieve vertices of the current triangle.
-                const Vertex& v0 = input_copy.vertices()[input_copy.indices()[i * 3 + 0]];
-                const Vertex& v1 = input_copy.vertices()[input_copy.indices()[i * 3 + 1]];
-                const Vertex& v2 = input_copy.vertices()[input_copy.indices()[i * 3 + 2]];
+                const Vertex& v0 = meshData.vertices()[meshData.indices()[i * 3 + 0]];
+                const Vertex& v1 = meshData.vertices()[meshData.indices()[i * 3 + 1]];
+                const Vertex& v2 = meshData.vertices()[meshData.indices()[i * 3 + 2]];
 
                 //
                 // Generate the midpoints.
@@ -230,30 +226,32 @@ namespace rex
                 //
 
                 // Add original vertices and midpoints to meshData.
-                meshData.add_vertex(v0); // 0
-                meshData.add_vertex(v1); // 1
-                meshData.add_vertex(v2); // 2
-                meshData.add_vertex(m0); // 3
-                meshData.add_vertex(m1); // 4
-                meshData.add_vertex(m2); // 5
+                res.add_vertex(v0); // 0
+                res.add_vertex(v1); // 1
+                res.add_vertex(v2); // 2
+                res.add_vertex(m0); // 3
+                res.add_vertex(m1); // 4
+                res.add_vertex(m2); // 5
 
                 // Define indices for the new smaller triangles.
-                meshData.add_index((T)i * 6 + 0);
-                meshData.add_index((T)i * 6 + 3);
-                meshData.add_index((T)i * 6 + 5);
+                res.add_index((T)i * 6 + 0);
+                res.add_index((T)i * 6 + 3);
+                res.add_index((T)i * 6 + 5);
 
-                meshData.add_index((T)i * 6 + 3);
-                meshData.add_index((T)i * 6 + 4);
-                meshData.add_index((T)i * 6 + 5);
+                res.add_index((T)i * 6 + 3);
+                res.add_index((T)i * 6 + 4);
+                res.add_index((T)i * 6 + 5);
 
-                meshData.add_index((T)i * 6 + 5);
-                meshData.add_index((T)i * 6 + 4);
-                meshData.add_index((T)i * 6 + 2);
+                res.add_index((T)i * 6 + 5);
+                res.add_index((T)i * 6 + 4);
+                res.add_index((T)i * 6 + 2);
 
-                meshData.add_index((T)i * 6 + 3);
-                meshData.add_index((T)i * 6 + 1);
-                meshData.add_index((T)i * 6 + 4);
+                res.add_index((T)i * 6 + 3);
+                res.add_index((T)i * 6 + 1);
+                res.add_index((T)i * 6 + 4);
             }
+
+            return res;
         }
     }
 }

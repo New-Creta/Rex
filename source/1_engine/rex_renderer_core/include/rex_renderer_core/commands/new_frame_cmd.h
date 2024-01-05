@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/commands/render_cmd.h"
 
-#include "rex_std_extra/memory/stack_allocator.h"
+#include "rex_std/bonus/memory/stack_allocator.h"
 
 namespace rex
 {

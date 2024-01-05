@@ -22,18 +22,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(VertexShaderResource);
 
             VertexShaderResource(const wrl::com_ptr<ID3DBlob>& vs)
-                :m_vertex_shader({ vs })
+              : BaseResource(&m_vertex_shader)
+                ,m_vertex_shader({ vs })
             {}
             ~VertexShaderResource() override = default;
-
-            resources::VertexShader* get()
-            {
-                return &m_vertex_shader;
-            }
-            const resources::VertexShader* get() const
-            {
-                return &m_vertex_shader;
-            }
 
         private:
             resources::VertexShader m_vertex_shader;

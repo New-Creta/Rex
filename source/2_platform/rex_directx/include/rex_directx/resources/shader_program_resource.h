@@ -29,18 +29,10 @@ namespace rex
             RESOURCE_CLASS_TYPE(ShaderProgramResource);
 
             ShaderProgramResource(const wrl::com_ptr<ID3D12RootSignature>& rootSig, const wrl::com_ptr<ID3DBlob>& vs, const wrl::com_ptr<ID3DBlob>& ps, const commands::ConstantLayoutDescription* constants, s32 numConstants)
-                :m_shader_program({ rootSig, vs, ps, constants, numConstants })
+              : BaseResource(&m_shader_program)
+                ,m_shader_program({ rootSig, vs, ps, constants, numConstants })
             {}
             ~ShaderProgramResource() override = default;
-
-            resources::ShaderProgram* get()
-            {
-                return &m_shader_program;
-            }
-            const resources::ShaderProgram* get() const
-            {
-                return &m_shader_program;
-            }
 
         private:
             resources::ShaderProgram m_shader_program;

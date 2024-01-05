@@ -37,7 +37,8 @@ namespace rex
             RESOURCE_CLASS_TYPE(CommittedBufferResource);
 
             CommittedBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
-                :m_committed_buffer(uploader, elementDataByteSize, mappedDataByteSize)
+                : BaseResource(&m_committed_buffer)
+                , m_committed_buffer(uploader, elementDataByteSize, mappedDataByteSize)
             {}
             ~CommittedBufferResource() override
             {
@@ -48,15 +49,6 @@ namespace rex
 
                 m_committed_buffer.mapped_data = nullptr;
                 m_committed_buffer.mapped_data_byte_size = 0;
-            }
-
-            resources::CommittedBuffer* get()
-            {
-                return &m_committed_buffer;
-            }
-            const resources::CommittedBuffer* get() const
-            {
-                return &m_committed_buffer;
             }
 
         private:

@@ -1,377 +1,185 @@
 using System.IO;
-using System.Linq;
 using Sharpmake;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text;
 
 [module: Sharpmake.Reference("System.Text.Json.dll")]
 [module: Sharpmake.Reference("System.Memory.dll")]
 
-// The sharpmake project that generates the solution
-// It makes life a lot easier if this is directly in the solution.
-[Generate]
-public class SharpmakeProject : CSharpProject
-{
-  public SharpmakeProject() : base(typeof(RexTarget), typeof(RexConfiguration))
-  {
-    SourceFilesExtensions.Clear();
-    SourceFilesExtensions.Add(".sharpmake.cs");
-    SourceRootPath = Globals.Root;
-
-    // manually add the sharpmake root files
-    var RootSharpmakeFiles = Directory.GetFiles(Path.Combine(Globals.SharpmakeRoot, "src"));
-    foreach (var File in RootSharpmakeFiles)
-    {
-      SourceFiles.Add(File);
-    }
-
-    RexTarget vsTarget = new RexTarget(Platform.win64, DevEnv.vs2019, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC);
-
-    // Specify the targets for which we want to generate a configuration for.
-    AddTargets(vsTarget);
-  }
-
-  [Configure()]
-  public virtual void Configure(RexConfiguration conf, RexTarget target)
-  {
-    conf.ProjectPath = Path.Combine(Globals.BuildFolder, target.DevEnv.ToString(), Name);
-    conf.IntermediatePath = Path.Combine(conf.ProjectPath, "intermediate", conf.Name, target.Compiler.ToString());
-    conf.TargetPath = Path.Combine(conf.ProjectPath, "bin", conf.Name);
-    conf.Output = Configuration.OutputType.DotNetClassLibrary;
-    conf.StartWorkingDirectory = Globals.SharpmakeRoot;
-
-    string sharpmakeAppPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-    string sharpmakeDllPath = Path.Combine(Path.GetDirectoryName(sharpmakeAppPath), "sharpmake.dll");
-
-    conf.ReferencesByPath.Add(sharpmakeDllPath);
-    conf.ReferencesByName.AddRange(new Strings("System",
-                                               "System.Core",
-                                               "System.Memory"
-                                               ));
-
-    conf.ReferencesByNuGetPackage.Add("System.Text.Json", "5.0.2"); // same version sharpmake uses
-
-    conf.CsprojUserFile = new Configuration.CsprojUserFileSettings();
-    conf.CsprojUserFile.StartAction = Configuration.CsprojUserFileSettings.StartActionSetting.Program;
-
-    string quote = "\'"; // Use single quote that is cross platform safe
-    List<string> sharpmake_sources = new List<string>();
-    foreach (string sourceFile in SourceFiles)
-    {
-      string file = sourceFile.Replace('\\', '/');
-      sharpmake_sources.Add($"{quote}{file}{quote}");
-    }
-
-    foreach (string file in Directory.EnumerateFiles(SourceRootPath, "*.*", SearchOption.AllDirectories))
-    {
-      if (file.EndsWith(".sharpmake.cs"))
-      {
-        string fileWithSlashes = file.Replace('\\', '/');
-        sharpmake_sources.Add($"{quote}{fileWithSlashes}{quote}");
-      }
-    }
-
-    string sourcesArg = @"/sources(";
-    foreach (string file in sharpmake_sources)
-    {
-      sourcesArg += file;
-      sourcesArg += ", ";
-    }
-    sourcesArg = sourcesArg.Substring(0, sourcesArg.Length - 2); // remove ", ";
-    sourcesArg += ")";
-
-    conf.CsprojUserFile.StartArguments = $@"{sourcesArg} /diagnostics";
-    conf.CsprojUserFile.StartProgram = sharpmakeAppPath;
-    conf.CsprojUserFile.WorkingDirectory = Directory.GetCurrentDirectory();
-  }
-}
-
-// Represents the solution that will be generated and that will contain the
-// project with the sample code.
-[Generate]
-public class MainSolution : Solution
-{
-  public MainSolution() : base(typeof(RexTarget))
-  {
-    // The name of the solution.
-    Name = GenerateName("rex");
-    GenerateTargets();
-  }
-
-  // Configure for all 4 generated targets. Note that the type of the
-  // configuration object is of type Solution.Configuration this time.
-  // (Instead of Project.Configuration.)
-  [Configure]
-  public void Configure(Configuration conf, RexTarget target)
-  {
-    // Puts the generated solution in the root folder.
-    conf.SolutionPath = Globals.Root;
-
-    if (target.DevEnv == DevEnv.vs2019)
-    {
-      conf.AddProject<SharpmakeProject>(target);
-    }
-
-    if (GenerateSettings.GenerateUnitTests)
-    {
-      conf.AddProject<RexStdTest>(target);
-    }
-
-    if (GenerateSettings.GenerateFuzzyTests)
-    {
-      conf.AddProject<RexStdFuzzy>(target);
-    }
-
-    if (GenerateSettings.EnableAutoTests)
-    {
-      conf.AddProject<ReginaTest>(target);
-    }
-
-    else if (GenerateSettings.EnableDefaultGeneration)
-    {
-      conf.AddProject<Regina>(target);
-    }
-  }
-
-  protected string GenerateName(string baseName)
-  {
-    return baseName;
-  }
-
-  protected void GenerateTargets()
-  {
-    if (GenerateSettings.EnableVisualStudio)
-    {
-      AddTargets(RexTarget.GetAllDefaultTargets());
-    }
-    else if (GenerateSettings.CoverageEnabled)
-    {
-      AddTargets(RexTarget.GetCoverageTarget());
-    }
-    else if (GenerateSettings.AddressSanitizerEnabled)
-    {
-      AddTargets(RexTarget.GetAsanTarget());
-    }
-    else if (GenerateSettings.UndefinedBehaviorSanitizerEnabled)
-    {
-      AddTargets(RexTarget.GetUBsanTarget());
-    }
-    else if (GenerateSettings.GenerateFuzzyTests)
-    {
-      AddTargets(RexTarget.GetFuzzyTarget());
-    }
-    else
-    {
-      AddTargets(RexTarget.GetNinjaOnlyTarget());
-    }
-  }
-}
-
 namespace rex
 {
+  // The commandline arguments possible to give to sharpmake
+  // Each argument must be prefixed with '/' and it's value must between brackets (eg. /configFile("data/config.json"))
+  // The default config file is found in data/default_config.json of where this script is located.
   public class CmdLineArguments
   {
-    [Sharpmake.CommandLine.Option("clangTidyRegex", "Add this regex to clang-tidy to filter which files it should process")]
-    public void CommandLineClangTiyRegex(string clangTidyRegex)
+    [Sharpmake.CommandLine.Option("configFile", "Path to the config file meant to be read by Sharpmake.")]
+    public void CommandLineConfigFile(string configFileDir)
     {
-      GenerateSettings.ClangTidyRegex = clangTidyRegex;
-    }
-
-    [Sharpmake.CommandLine.Option("enableSecondPass")]
-    public void CommandLinePerformAllChecks()
-    {
-      GenerateSettings.EnableSecondPass = true;
-    }
-
-    [Sharpmake.CommandLine.Option("intermediateDir")]
-    public void CommandLineIntermediateDir(string intermediateDir)
-    {
-      GenerateSettings.IntermediateDir = intermediateDir;
-    }
-
-    [Sharpmake.CommandLine.Option("generateUnitTests")]
-    public void CommandLineGenerateUnitTests()
-    {
-      GenerateSettings.GenerateUnitTests = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableCodeCoverage")]
-    public void CommandLineEnableCodeCoverage()
-    {
-      GenerateSettings.CoverageEnabled = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableAsan")]
-    public void CommandLineEnableAsan()
-    {
-      GenerateSettings.AddressSanitizerEnabled = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableUBsan")]
-    public void CommandLineEnableUBsan()
-    {
-      GenerateSettings.UndefinedBehaviorSanitizerEnabled = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableFuzzyTests")]
-    public void CommandLineEnableFuzzyTests()
-    {
-      GenerateSettings.GenerateFuzzyTests = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableVisualStudio")]
-    public void CommandLineEnableVisualStudio()
-    {
-      GenerateSettings.EnableVisualStudio = true;
-    }
-
-    [Sharpmake.CommandLine.Option("noClangTools")]
-    public void CommandLineDisableClangTools()
-    {
-      GenerateSettings.NoClangTools = true;
-    }
-
-    [Sharpmake.CommandLine.Option("disableDefaultGeneration")]
-    public void CommandLineDisableDefaultGeneration()
-    {
-      GenerateSettings.EnableDefaultGeneration = false;
-    }
-
-    [Sharpmake.CommandLine.Option("GraphicsAPI")]
-    public void CommandLineGraphicsAPI(string graphicsAPI)
-    {
-        string lower_graphics_api = graphicsAPI.ToLower();
-        if(lower_graphics_api == "directx12")
-            {
-                GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.DirectX12;
-            }
-        else if(lower_graphics_api == "opengl")
-            {
-                GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
-            }
-        else
-            {
-                Console.WriteLine("[WARNING] Invalid graphics API (directx12 | opengl), reverting to default for this platform.");
-            }
-    }
-
-    [Sharpmake.CommandLine.Option("disableClangTidyForThirdParty")]
-    public void CommandLineDisableClangTidyForThirdParty()
-    {
-      GenerateSettings.DisableClangTidyForThirdParty = true;
-    }
-
-    [Sharpmake.CommandLine.Option("enableAutoTests")]
-    public void CommandLineEnableAutoTests()
-    {
-      GenerateSettings.EnableAutoTests = true;
+      ProjectGen.Settings.ConfigFileDir = configFileDir;
     }
   }
 }
 
+// The Rex pipeline is build on Ninja.
+// Vanilla Sharpmake doesn't support ninja, so we've added support for it.
+// Sharpmake is mainly developed for Visual Studio, which we also support.
+// However we don't use MSBuild for building projects through Visual Studio.
+// The visual studio projects are build on top of the ninja files, generated by Sharpmake.
+// Visual Studio only acts as an editor and debugger, it's not part of the toolchain.
+//
+//
+// -- Visual Studio Project --
+//            |
+//            v
+// -- Rex Python Script -- 
+//            |
+//            v
+//       -- Ninja --
+//            |
+//            v
+//      -- Binaries --
+//
 public static class Main
 {
+  // This is the entry point called from the Sharpmake executable
   [Sharpmake.Main]
   public static void SharpmakeMain(Arguments arguments)
   {
+    // First parse the commandline arguments that are passed in to sharpmake.
     rex.CmdLineArguments Arguments = new rex.CmdLineArguments();
     CommandLine.ExecuteOnObject(Arguments);
 
+    // Initialize the globals, they get used all over the place
+    // so best to initialize them as early as possible
     Globals.Init();
 
-    InitializeGenerationSettings();
+    // Load the config file so we can load the generate settings afterwards
+    Dictionary<string, ConfigSetting> config = LoadConfigFile();
+
+    // Initialize the generation settings and sharpmake.
+    InitializeGenerationSettings(config);
     InitializeSharpmake();
 
-    arguments.Generate<MainSolution>();
+    // Specify the solution that needs to get generate.
+    // We only have one, so pass in the solution of the Rex Engine
+    arguments.Generate<rex.MainSolution>();
 
+    // Add the post generation events.
+    // Our scripts need to be setup before can run those steps
+    // That's why we do it post generation.
     Builder.Instance.EventPostGeneration += PostGenerationEvent;
   }
 
+  // Load the specified config file from disk
+  // Returns a dictionary to each item in the config file.
+  private static Dictionary<string, ConfigSetting> LoadConfigFile()
+  {
+    string json = File.ReadAllText(ProjectGen.Settings.ConfigFileDir);
+    return JsonSerializer.Deserialize<Dictionary<string, ConfigSetting>>(json);
+  }
+
+  // Perform post generation steps here.
+  // You can assume that the generation of all projects in the solution are done.
+  // Therefore you can use the dependency graph
   private static void PostGenerationEvent(List<Project> projects, List<Solution> solutions)
   {
     GenerateCompilerDatabases();
     CodeGeneration.Generate();
   }
 
+  // Compiler database are not generated through Sharpmake directly.
+  // We have the option to do so, but we chose to use Ninja to generate them
+  // This way we only need to maintain our ninja files and we get the copmiler dbs for free
   private static void GenerateCompilerDatabases()
   {
     Console.WriteLine("Generating compiler databases");
-    foreach (System.Diagnostics.Process proc in GenerateSettings.GenerateCompilerDBProcesses)
+
+    System.Diagnostics.ProcessStartInfo start_info = new System.Diagnostics.ProcessStartInfo();
+    start_info.FileName = "cmd.exe";
+    start_info.RedirectStandardOutput = true;
+    start_info.RedirectStandardError = true;
+    start_info.UseShellExecute = false;
+
+    foreach (ProjectGen.GenerateCompilerDBCommand cmd in ProjectGen.Settings.GenerateCompilerDBCommands)
     {
-      proc.Start();
-      proc.WaitForExit();
+      // An example command would be: cmd.exe /C ninja.exe -f my_ninja_file.ninja compdb_rex_debug_clang --quiet > compiler_commands.json
+      start_info.Arguments = $"/C {KitsRootPaths.GetNinjaPath()} -f {cmd.NinjaFile} {cmd.CompilerDBBuildCommand} --quiet > {cmd.OutputPath}";
+
+      System.Diagnostics.Process process = new System.Diagnostics.Process();
+      process.StartInfo = start_info;
+
+      process.Start();
+      process.WaitForExit();
     }
   }
 
+  // Pass in the paths to the toolchain tools to sharpmake and specify the windows target version
   private static void InitializeSharpmake()
   {
-    InitializeNinja();
+    InitializeToolChain();
 
     // Initialize Visual Studio settings
     KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
   }
 
-  private static void InitializeGraphicsAPI()
+  // Initialize the graphics API based on the config
+  // If no Graphics API is specified, we base it on the OS this script is running on
+  private static void InitializeGraphicsAPI(Dictionary<string, ConfigSetting> config)
   {
-      if (GenerateSettings.GraphicsAPI == GenerationTypes.GraphicsAPI.Unknown)
+    if (!Enum.TryParse(config["graphics-api"].Value.GetString(), ignoreCase: true, out ProjectGen.Settings.GraphicsAPI))
+    {
+      OperatingSystem os = Environment.OSVersion;
+      switch (os.Platform)
       {
-          OperatingSystem os = Environment.OSVersion;
-          switch (os.Platform)
-          {
-              case PlatformID.Win32NT:
-              case PlatformID.Xbox:
-                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.DirectX12;
-                  break;
-              case PlatformID.Unix:
-              case PlatformID.MacOSX:
-                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
-                  break;
-              default:
-                  Console.WriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
-                  GenerateSettings.GraphicsAPI = GenerationTypes.GraphicsAPI.OpenGL;
-                  break;
-          }
+        case PlatformID.Win32NT:
+        case PlatformID.Xbox:
+          ProjectGen.Settings.GraphicsAPI = ProjectGen.GraphicsAPI.DirectX12;
+          break;
+        case PlatformID.Unix:
+        case PlatformID.MacOSX:
+          ProjectGen.Settings.GraphicsAPI = ProjectGen.GraphicsAPI.OpenGL;
+          break;
+        default:
+          Console.WriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
+          ProjectGen.Settings.GraphicsAPI = ProjectGen.GraphicsAPI.OpenGL;
+          break;
       }
-
-      Console.WriteLine($"Using Graphics API: {GenerateSettings.GraphicsAPI}");
-  }
-
-  private static void InitializePlatform()
-  {
-      if (GenerateSettings.Platform == GenerationTypes.Platform.Unknown)
-      {
-          OperatingSystem os = Environment.OSVersion;
-          switch (os.Platform)
-          {
-              case PlatformID.Win32NT:
-                  GenerateSettings.Platform = GenerationTypes.Platform.Windows;
-                  break;
-              case PlatformID.Unix:
-                  GenerateSettings.Platform = GenerationTypes.Platform.Unix;
-                  break;
-              default:
-                  throw new Error($"Unable to determine Platform.");
-          }
-      }
-
-      Console.WriteLine($"Using Platform: {GenerateSettings.Platform}");
-  }
-
-  private static void InitializeGenerationSettings()
-  {
-        InitializeGraphicsAPI();
     }
 
-  private static void InitializeNinja()
+    Console.WriteLine($"Using Graphics API: {ProjectGen.Settings.GraphicsAPI}");
+  }
+
+  // Initialize the generation settings based on the config that's loaded from disk
+  private static void InitializeGenerationSettings(Dictionary<string, ConfigSetting> config)
+  {
+    InitializeGraphicsAPI(config);
+
+    ProjectGen.Settings.ClangTidyRegex = config["clang-tidy-regex"].Value.GetString();
+    ProjectGen.Settings.PerformAllClangTidyChecks = config["perform-all-clang-tidy-checks"].Value.GetBoolean();
+    ProjectGen.Settings.ClangToolsEnabled = config["no-clang-tools"].Value.GetBoolean() == false;
+    ProjectGen.Settings.IntermediateDir = config["intermediate-dir"].Value.GetString();
+    ProjectGen.Settings.UnitTestsEnabled = config["enable-unit-tests"].Value.GetBoolean();
+    ProjectGen.Settings.CoverageEnabled = config["enable-code-coverage"].Value.GetBoolean();
+    ProjectGen.Settings.AsanEnabled = config["enable-address-sanitizer"].Value.GetBoolean();
+    ProjectGen.Settings.UbsanEnabled = config["enable-ub-sanitizer"].Value.GetBoolean();
+    ProjectGen.Settings.FuzzyTestingEnabled = config["enable-fuzzy-testing"].Value.GetBoolean();
+    ProjectGen.Settings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
+    Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE);
+    ProjectGen.Settings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
+    ProjectGen.Settings.UnityBuildsDisabled = config["disable-unity-builds"].Value.GetBoolean();
+  }
+
+  // Pass the toolchain paths over to sharpmake so it can use it for generation.
+  private static void InitializeToolChain()
   {
     string tools_json_path = Path.Combine(Globals.ToolsRoot, "tool_paths.json");
     string json_blob = File.ReadAllText(tools_json_path);
     Dictionary<string, string> paths = JsonSerializer.Deserialize<Dictionary<string, string>>(json_blob);
 
     KitsRootPaths.SetCompilerPaths(Compiler.MSVC, paths["msvc_compiler_path"], paths["msvc_linker_path"], paths["msvc_archiver_path"], "");
-    KitsRootPaths.SetCompilerPaths(Compiler.Clang, paths["clang_compiler_path"], paths["clang_linker_path"], paths["clang_archiver_path"], paths["clang_ranlib_path"]);
+    KitsRootPaths.SetCompilerPaths(Compiler.Clang, paths["clang++_compiler_path"], paths["clang_linker_path"], paths["clang_archiver_path"], paths["clang_ranlib_path"], paths["clang_compiler_path"]);
     KitsRootPaths.SetNinjaPath(paths["ninja_path"]);
   }
 }

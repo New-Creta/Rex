@@ -18,7 +18,7 @@ namespace rex
     return mem_as_bytes;
   }
 
-  // Exampple: 
+  // Example: 
   // 
   // round up to nearest multiple of 256.
   // We do this by adding 255 and then masking off

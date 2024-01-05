@@ -9,7 +9,7 @@
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include "rex_std/memory.h"
-#include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
 
 namespace rexlog
 {
