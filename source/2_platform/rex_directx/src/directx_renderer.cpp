@@ -17,6 +17,7 @@
 #include "rex_directx/resources/frame_resource.h"
 #include "rex_directx/resources/input_layout_resource.h"
 #include "rex_directx/resources/pipeline_state_resource.h"
+#include "rex_directx/resources/pipeline_state_object_hasher.h"
 #include "rex_directx/resources/pixel_shader_resource.h"
 #include "rex_directx/resources/raster_state_resource.h"
 #include "rex_directx/resources/render_target_resource.h"
@@ -89,9 +90,9 @@
 #include "rex_std/bonus/string.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
-#include "rex_std_extra/memory/memory_size.h"
-#include "rex_std_extra/utility/casting.h"
-#include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/utility/casting.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_std/bonus/platform/windows/handle.h"
 
 #include <optional>
@@ -529,7 +530,7 @@ namespace rex
         bool dxgi_debug_layer_enabled = false;
       };
 
-      DirectXContext g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+      rsl::unique_ptr<DirectXContext> g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
       namespace internal
       {
@@ -551,7 +552,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool has_committed_resource_for_frame(const ResourceSlot* frameSlot, const ResourceSlot& committedResourceSlot)
         {
-            const Frame* frame = g_ctx.frame_ctx.find_frame(frameSlot);
+            const Frame* frame = g_ctx->frame_ctx.find_frame(frameSlot);
             if (frame == nullptr)
             {
                 REX_WARN(LogDirectX, "Unable to find frame with slot index: {}", frameSlot->slot_id());
@@ -566,7 +567,7 @@ namespace rex
         {
           REX_ASSERT_X(commandAllocator != nullptr, "Invalid frame resource to reset command list");
 
-          if(DX_FAILED(g_ctx.command_list->Reset(commandAllocator, pipelineState)))
+          if(DX_FAILED(g_ctx->command_list->Reset(commandAllocator, pipelineState)))
           {
             REX_ERROR(LogDirectX, "Failed to reset command list");
             return false;
@@ -578,7 +579,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool close_command_list()
         {
-          if(DX_FAILED(g_ctx.command_list->Close()))
+          if(DX_FAILED(g_ctx->command_list->Close()))
           {
             REX_ERROR(LogDirectX, "Failed to close command list");
             return false;
@@ -590,8 +591,8 @@ namespace rex
         //-------------------------------------------------------------------------
         void exec_command_list()
         {
-          rsl::array<ID3D12CommandList*, 1> command_lists = { g_ctx.command_list.Get() };
-          g_ctx.command_queue->ExecuteCommandLists(command_lists.size(), command_lists.data());
+          rsl::array<ID3D12CommandList*, 1> command_lists = { g_ctx->command_list.Get() };
+          g_ctx->command_queue->ExecuteCommandLists(command_lists.size(), command_lists.data());
         }
 
         //-------------------------------------------------------------------------
@@ -600,29 +601,29 @@ namespace rex
           D3D12_COMMAND_QUEUE_DESC queue_desc = {};
           queue_desc.Type                     = D3D12_COMMAND_LIST_TYPE_DIRECT;
           queue_desc.Flags                    = D3D12_COMMAND_QUEUE_FLAG_NONE;
-          if(DX_FAILED(g_ctx.device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(g_ctx.command_queue.GetAddressOf()))))
+          if(DX_FAILED(g_ctx->device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(g_ctx->command_queue.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command queue");
             return false;
           }
 
-          directx::set_debug_name_for(g_ctx.command_queue.Get(), "Global Command Queue");
+          directx::set_debug_name_for(g_ctx->command_queue.Get(), "Global Command Queue");
 
-          if(DX_FAILED(g_ctx.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(g_ctx.command_allocator.GetAddressOf()))))
+          if(DX_FAILED(g_ctx->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(g_ctx->command_allocator.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command allocator");
             return false;
           }
 
-          directx::set_debug_name_for(g_ctx.command_allocator.Get(), "Global Command Allocator");
+          directx::set_debug_name_for(g_ctx->command_allocator.Get(), "Global Command Allocator");
 
-          if(DX_FAILED(g_ctx.device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_ctx.command_allocator.Get(), nullptr, IID_PPV_ARGS(g_ctx.command_list.GetAddressOf()))))
+          if(DX_FAILED(g_ctx->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_ctx->command_allocator.Get(), nullptr, IID_PPV_ARGS(g_ctx->command_list.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command list");
             return false;
           }
 
-          directx::set_debug_name_for(g_ctx.command_list.Get(), "Global Command List");
+          directx::set_debug_name_for(g_ctx->command_list.Get(), "Global Command List");
 
           // Start off in a closed state. This is because the first time we
           // refer to the command list we will Reset it, and it needs to be closed
@@ -639,18 +640,18 @@ namespace rex
         //-------------------------------------------------------------------------
         bool create_swapchain_object(dxgi::Factory* factory, const OutputWindowUserData& userData)
         {
-          g_ctx.swapchain.Reset();
+          g_ctx->swapchain.Reset();
 
           DXGI_SWAP_CHAIN_DESC sd;
           sd.BufferDesc.Width                   = userData.window_width;
           sd.BufferDesc.Height                  = userData.window_height;
           sd.BufferDesc.RefreshRate.Numerator   = userData.refresh_rate;
           sd.BufferDesc.RefreshRate.Denominator = 1;
-          sd.BufferDesc.Format                  = g_ctx.back_buffer_format;
+          sd.BufferDesc.Format                  = g_ctx->back_buffer_format;
           sd.BufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
           sd.BufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
-          sd.SampleDesc.Count                   = g_ctx.msaa_state ? 4 : 1;
-          sd.SampleDesc.Quality                 = g_ctx.msaa_state ? g_ctx.msaa_quality - 1 : 0;
+          sd.SampleDesc.Count                   = g_ctx->msaa_state ? 4 : 1;
+          sd.SampleDesc.Quality                 = g_ctx->msaa_state ? g_ctx->msaa_quality - 1 : 0;
           sd.BufferUsage                        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
           sd.BufferCount                        = s_swapchain_buffer_count;
           sd.OutputWindow                       = (HWND)userData.primary_display_handle;
@@ -660,19 +661,19 @@ namespace rex
 
           // Note: swap chain uses queue to perform flush.
           rex::wrl::com_ptr<IDXGIFactory> dxgi_factory = factory->as<IDXGIFactory>();
-          if(DX_FAILED(dxgi_factory->CreateSwapChain(g_ctx.command_queue.Get(), &sd, g_ctx.swapchain.GetAddressOf())))
+          if(DX_FAILED(dxgi_factory->CreateSwapChain(g_ctx->command_queue.Get(), &sd, g_ctx->swapchain.GetAddressOf())))
           {
             REX_ERROR(LogDirectX, "Failed to create swap chain");
             return false;
           }
 
-          directx::set_debug_name_for(g_ctx.swapchain.Get(), "SwapChain");
+          directx::set_debug_name_for(g_ctx->swapchain.Get(), "SwapChain");
 
           return true;
         }
 
         //-------------------------------------------------------------------------
-        std::optional<directx::DefaultBuffer> create_default_buffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize)
+        rsl::optional<directx::DefaultBuffer> create_default_buffer(ID3D12Device* device, ID3D12GraphicsCommandList* cmdList, const void* initData, UINT64 byteSize)
         {
           directx::DefaultBuffer default_buffer;
 
@@ -731,7 +732,7 @@ namespace rex
           }
           CopyMemory(buffer_cpu->GetBufferPointer(), bufferData, bufferByteSize);
 
-          auto default_buffer = create_default_buffer(g_ctx.device.Get(), g_ctx.command_list.Get(), bufferData, bufferByteSize);
+          auto default_buffer = create_default_buffer(g_ctx->device.Get(), g_ctx->command_list.Get(), bufferData, bufferByteSize);
           if(!default_buffer)
           {
             REX_ERROR(LogDirectX, "Could not create GPU buffer");
@@ -754,7 +755,7 @@ namespace rex
             CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
             CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size * bufferCount);
 
-            if(DX_FAILED(g_ctx.device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
+            if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
             {
                 REX_ERROR(LogDirectX, "Could not create committed resource ( constant buffer )");
                 return nullptr;
@@ -779,7 +780,7 @@ namespace rex
         rsl::unique_ptr<ConstantBufferViewResource> create_constant_buffer_view(const ResourceSlot* frameSlot, const ResourceSlot& committedResourceSlot, s32 bufferByteSize)
         {
             // Find the frame for the given frame slot
-            Frame* frame = g_ctx.frame_ctx.find_frame(frameSlot);
+            Frame* frame = g_ctx->frame_ctx.find_frame(frameSlot);
 
             // Ensure the frame was found for the given slot
             REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", frameSlot->slot_id());
@@ -787,7 +788,7 @@ namespace rex
             REX_ASSERT_X(internal::has_committed_resource_for_frame(frameSlot, committedResourceSlot), "Unable to find committed resource for give frame: {}", frameSlot->slot_id());
 
             // Retrieve the committed resource
-            auto& committed_buffer_resource = g_ctx.resource_pool.as<CommittedBufferResource>(committedResourceSlot);
+            auto& committed_buffer_resource = g_ctx->resource_pool.as<CommittedBufferResource>(committedResourceSlot);
             auto  committed_resource = committed_buffer_resource.get();
 
             // Align buffer size to meet DX12 requirements (multiples of 256)
@@ -798,20 +799,20 @@ namespace rex
             cb_address += frame->amount_active_constant_buffer(committedResourceSlot) * obj_cb_byte_size;
 
             // Calculate CPU memory block starting handle
-            s32 heap_index = g_ctx.active_constant_buffers;
-            CD3DX12_CPU_DESCRIPTOR_HANDLE handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetCPUDescriptorHandleForHeapStart());
-            handle.Offset(heap_index, g_ctx.cbv_srv_uav_desc_size);
+            s32 heap_index = g_ctx->active_constant_buffers;
+            CD3DX12_CPU_DESCRIPTOR_HANDLE handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetCPUDescriptorHandleForHeapStart());
+            handle.Offset(heap_index, g_ctx->cbv_srv_uav_desc_size);
 
             // Create a new constant buffer view given the offsetted GPU address and the size of the constant buffer in bytes
             D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
             cbv_desc.BufferLocation = cb_address;
             cbv_desc.SizeInBytes = obj_cb_byte_size;
 
-            g_ctx.device->CreateConstantBufferView(&cbv_desc, handle);
+            g_ctx->device->CreateConstantBufferView(&cbv_desc, handle);
 
             // Create an internal Constant Buffer View Resource and track it in the resource pool
             // Pass the committed resource, data size, and CBV heap index
-            rsl::unique_ptr<ConstantBufferViewResource> constant_buffer_resources = rsl::make_unique<ConstantBufferViewResource>(committedResourceSlot, obj_cb_byte_size, g_ctx.active_constant_buffers);
+            rsl::unique_ptr<ConstantBufferViewResource> constant_buffer_resources = rsl::make_unique<ConstantBufferViewResource>(committedResourceSlot, obj_cb_byte_size, g_ctx->active_constant_buffers);
 
             // Increment the amount of active constant buffer resources for this frame
             frame->increment_amount_active_constant_buffer(committedResourceSlot);
@@ -819,7 +820,7 @@ namespace rex
             // A large heap of constant buffers was allocated at the start of this application
             // Each new constant buffer view requires a different offset in the CBV heap.
             // Increment the count of active constant buffers to keep track of the offset within this heap
-            ++g_ctx.active_constant_buffers;
+            ++g_ctx->active_constant_buffers;
 
             return constant_buffer_resources;
         }
@@ -893,7 +894,7 @@ namespace rex
           }
 
           wrl::com_ptr<ID3D12RootSignature> root_signature;
-          if(DX_FAILED(g_ctx.device->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+          if(DX_FAILED(g_ctx->device->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
           {
             REX_ERROR(LogDirectX, "Failed to create root signature");
             return nullptr;
@@ -907,13 +908,13 @@ namespace rex
         //-------------------------------------------------------------------------
         D3D12_CPU_DESCRIPTOR_HANDLE rendertarget_buffer_descriptor(s32 idx)
         {
-          return CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart(), idx, g_ctx.rtv_desc_size);
+          return CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart(), idx, g_ctx->rtv_desc_size);
         }
 
         //-------------------------------------------------------------------------
         D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_buffer_descriptor(s32 idx)
         {
-          return CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart(), idx, g_ctx.dsv_desc_size);
+          return CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart(), idx, g_ctx->dsv_desc_size);
         }
 
         //-------------------------------------------------------------------------
@@ -922,17 +923,17 @@ namespace rex
           // Release the previous resources we will be recreating.
           for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
           {
-            if(g_ctx.swapchain_rt_buffer_slots[i].is_valid())
+            if(g_ctx->swapchain_rt_buffer_slots[i].is_valid())
             {
-              backend::release_resource(g_ctx.swapchain_rt_buffer_slots[i]);
+              backend::release_resource(g_ctx->swapchain_rt_buffer_slots[i]);
             }
           }
 
-          g_ctx.swapchain_rt_buffer_slots[0] = frontBufferSlot;
-          g_ctx.swapchain_rt_buffer_slots[1] = backBufferSlot;
+          g_ctx->swapchain_rt_buffer_slots[0] = frontBufferSlot;
+          g_ctx->swapchain_rt_buffer_slots[1] = backBufferSlot;
 
           // Resize the swap chain.
-          if(DX_FAILED(g_ctx.swapchain->ResizeBuffers(s_swapchain_buffer_count, width, height, g_ctx.back_buffer_format, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
+          if(DX_FAILED(g_ctx->swapchain->ResizeBuffers(s_swapchain_buffer_count, width, height, g_ctx->back_buffer_format, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
           {
             REX_ERROR(LogDirectX, "Failed to resize swapchain buffers");
             return false;
@@ -940,10 +941,10 @@ namespace rex
 
           TextureFormat render_target_format = TextureFormat::UNORM4_SRGB;
           wrl::com_ptr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count];
-          CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
+          CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
           for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
           {
-            if(DX_FAILED(g_ctx.swapchain->GetBuffer(i, IID_PPV_ARGS(rtv_buffers[i].GetAddressOf()))))
+            if(DX_FAILED(g_ctx->swapchain->GetBuffer(i, IID_PPV_ARGS(rtv_buffers[i].GetAddressOf()))))
             {
               REX_ERROR(LogDirectX, "Failed to retrieve swapchain buffer");
               return false;
@@ -960,17 +961,17 @@ namespace rex
             rtv_desc.Texture2D.MipSlice   = 0;
             rtv_desc.Texture2D.PlaneSlice = 0;
             rtv_desc.ViewDimension        = D3D12_RTV_DIMENSION_TEXTURE2D;
-            g_ctx.device->CreateRenderTargetView(rtv_buffers[i].Get(), &rtv_desc, rtv_handle);
+            g_ctx->device->CreateRenderTargetView(rtv_buffers[i].Get(), &rtv_desc, rtv_handle);
 
-            rtv_handle.Offset(1, g_ctx.rtv_desc_size);
+            rtv_handle.Offset(1, g_ctx->rtv_desc_size);
           }
 
           // The array index of both these buffers is important here!
           // The 0 index of the swapchain at initialization is the backbuffer
           // The 1 index of the swapchain at initialization is the frontbuffer
 
-          g_ctx.resource_pool.insert(frontBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[1], render_target_format, 1));
-          g_ctx.resource_pool.insert(backBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[0], render_target_format, 0));
+          g_ctx->resource_pool.insert(frontBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[1], render_target_format, 1));
+          g_ctx->resource_pool.insert(backBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[0], render_target_format, 0));
 
           return true;
         }
@@ -978,12 +979,12 @@ namespace rex
         //-------------------------------------------------------------------------
         bool create_dsv_for_swapchain(s32 width, s32 height, const ResourceSlot& depthStencilTargetSlot)
         {
-          if(g_ctx.swapchain_ds_buffer_slot.is_valid())
+          if(g_ctx->swapchain_ds_buffer_slot.is_valid())
           {
-            backend::release_resource(g_ctx.swapchain_ds_buffer_slot);
+            backend::release_resource(g_ctx->swapchain_ds_buffer_slot);
           }
 
-          g_ctx.swapchain_ds_buffer_slot = depthStencilTargetSlot;
+          g_ctx->swapchain_ds_buffer_slot = depthStencilTargetSlot;
 
           D3D12_RESOURCE_DESC resource_tex2d_desc = {};
           resource_tex2d_desc.Dimension           = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -1000,21 +1001,21 @@ namespace rex
           // we need to create the depth buffer resource with a typeless format.
           resource_tex2d_desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 
-          resource_tex2d_desc.SampleDesc.Count   = g_ctx.msaa_state ? 4 : 1;
-          resource_tex2d_desc.SampleDesc.Quality = g_ctx.msaa_state ? g_ctx.msaa_quality - 1 : 0;
+          resource_tex2d_desc.SampleDesc.Count   = g_ctx->msaa_state ? 4 : 1;
+          resource_tex2d_desc.SampleDesc.Quality = g_ctx->msaa_state ? g_ctx->msaa_quality - 1 : 0;
           resource_tex2d_desc.Layout             = D3D12_TEXTURE_LAYOUT_UNKNOWN;
           resource_tex2d_desc.Flags              = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
           D3D12_CLEAR_VALUE optimized_clear_value    = {};
-          optimized_clear_value.Format               = g_ctx.depth_stencil_format;
+          optimized_clear_value.Format               = g_ctx->depth_stencil_format;
           optimized_clear_value.DepthStencil.Depth   = 1.0f;
           optimized_clear_value.DepthStencil.Stencil = 0;
 
           wrl::com_ptr<ID3D12Resource> depth_stencil_buffer;
-          CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart());
+          CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart());
 
           CD3DX12_HEAP_PROPERTIES heap_properties(D3D12_HEAP_TYPE_DEFAULT);
-          if(DX_FAILED(g_ctx.device->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_NONE, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
+          if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_NONE, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create depth stencil buffer");
             return false;
@@ -1027,16 +1028,16 @@ namespace rex
           D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc;
           dsv_desc.Flags              = D3D12_DSV_FLAG_NONE;
           dsv_desc.ViewDimension      = D3D12_DSV_DIMENSION_TEXTURE2D;
-          dsv_desc.Format             = g_ctx.depth_stencil_format;
+          dsv_desc.Format             = g_ctx->depth_stencil_format;
           dsv_desc.Texture2D.MipSlice = 0;
 
-          g_ctx.device->CreateDepthStencilView(depth_stencil_buffer.Get(), &dsv_desc, dsv_handle);
+          g_ctx->device->CreateDepthStencilView(depth_stencil_buffer.Get(), &dsv_desc, dsv_handle);
 
           // Transition the resouce from it's inital state to be used as a depth buffer
           CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(depth_stencil_buffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-          g_ctx.command_list->ResourceBarrier(1, &depth_write_transition);
+          g_ctx->command_list->ResourceBarrier(1, &depth_write_transition);
 
-          g_ctx.resource_pool.insert(depthStencilTargetSlot, rsl::make_unique<DepthStencilTargetResource>(depth_stencil_buffer, 0));
+          g_ctx->resource_pool.insert(depthStencilTargetSlot, rsl::make_unique<DepthStencilTargetResource>(depth_stencil_buffer, 0));
 
           return true;
         }
@@ -1063,7 +1064,7 @@ namespace rex
           {
             auto heap_desc = &heap_descs[i];
 
-            if(DX_FAILED(g_ctx.device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&g_ctx.descriptor_heap_pool[heap_desc->Type]))))
+            if(DX_FAILED(g_ctx->device->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&g_ctx->descriptor_heap_pool[heap_desc->Type]))))
             {
               REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", rsl::enum_refl::enum_name(heap_desc->Type));
               return false;
@@ -1073,19 +1074,19 @@ namespace rex
             {
             case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
                 {
-                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - RTV {}", i));
+                    directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - RTV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
                 }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
                 {
-                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - DSV {}", i));
+                    directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - DSV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
                 }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
                 {
-                    directx::set_debug_name_for(g_ctx.descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - CBV {}", i));
+                    directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - CBV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
                 }
                 break;
@@ -1123,30 +1124,32 @@ namespace rex
       bool flush_command_queue()
       {
         // Advance the fence value to mark commands up to this fence point.
-        g_ctx.current_fence++;
+        g_ctx->current_fence++;
 
         // Add an instruction to the command queue to set a new fence point. Because we
         // are on the GPU timeline, the new fence point won't be set until the GPU finishes
         // processing all the commands prior to this Signal().
-        if(DX_FAILED(g_ctx.command_queue->Signal(g_ctx.fence.Get(), g_ctx.current_fence)))
+        if(DX_FAILED(g_ctx->command_queue->Signal(g_ctx->fence.Get(), g_ctx->current_fence)))
         {
           REX_ERROR(LogDirectX, "Failed to signal command queue with fence");
           return false;
         }
 
-        return internal::wait_for_fence(g_ctx.fence.Get(), g_ctx.current_fence);
+        return internal::wait_for_fence(g_ctx->fence.Get(), g_ctx->current_fence);
       }
 
       //-------------------------------------------------------------------------
       bool initialize(const OutputWindowUserData& userData, s32 maxFramesInflight, const ResourceSlot& fbColorTargetSlot, const ResourceSlot& bbColorTargetSlot, const ResourceSlot& depthTargetSlot)
       {
+        g_ctx = rsl::make_unique<DirectXContext>();
+
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // Enable extra debugging and send debug messages to the VC++ output window
         rex::wrl::com_ptr<ID3D12Debug> debug_controller;
         if(DX_SUCCESS(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
         {
             debug_controller->EnableDebugLayer();
-            g_ctx.dx12_debug_layer_enabled = true;
+            g_ctx->dx12_debug_layer_enabled = true;
         }
         else
         {
@@ -1163,10 +1166,10 @@ namespace rex
 
         if(maxFramesInflight != s_num_frame_resources)
         {
-          g_ctx.frame_ctx = FrameContext(maxFramesInflight);
+          g_ctx->frame_ctx = FrameContext(maxFramesInflight);
         }
 
-        g_ctx.frame_ctx.initialize();
+        g_ctx->frame_ctx.initialize();
 
         s32 dxgi_factory_flags = 0;
 
@@ -1202,7 +1205,7 @@ namespace rex
 
           dxgi_info_queue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &dxgi_filter);
 
-          g_ctx.dxgi_debug_layer_enabled = true;
+          g_ctx->dxgi_debug_layer_enabled = true;
         }
         else
         {
@@ -1226,7 +1229,7 @@ namespace rex
         // Create device
         const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
 
-        if(DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx.device))))
+        if(DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&g_ctx->device))))
         {
           REX_ERROR(LogDirectX, "Software adapter not supported");
           REX_ERROR(LogDirectX, "Failed to create DX12 Device");
@@ -1238,7 +1241,7 @@ namespace rex
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // Device needs to exist before we can query this
         rex::wrl::com_ptr<ID3D12InfoQueue> dx12_info_queue;
-        if(g_ctx.dx12_debug_layer_enabled && DX_SUCCESS(g_ctx.device->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
+        if(g_ctx->dx12_debug_layer_enabled && DX_SUCCESS(g_ctx->device->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
         {
             dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
             dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info);
@@ -1272,7 +1275,7 @@ namespace rex
         }
         else
         {
-            if (g_ctx.dx12_debug_layer_enabled)
+            if (g_ctx->dx12_debug_layer_enabled)
             {
                 REX_WARN(LogDirectX, "Unable to get D3D12 Debug Interface");
             }
@@ -1284,7 +1287,7 @@ namespace rex
 #endif
 
         // Find shader model
-        const D3D_SHADER_MODEL shader_model = query_shader_model_version(g_ctx.device.Get());
+        const D3D_SHADER_MODEL shader_model = query_shader_model_version(g_ctx->device.Get());
 
         directx::g_renderer_info.shader_version = shader_model_name(shader_model);
         directx::g_renderer_info.api_version    = feature_level_name(feature_level);
@@ -1292,35 +1295,35 @@ namespace rex
         directx::g_renderer_info.vendor         = selected_gpu->description().vendor_name;
 
         // Create fence for CPU/GPU synchronization
-        if(DX_FAILED(g_ctx.device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_ctx.fence))))
+        if(DX_FAILED(g_ctx->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_ctx->fence))))
         {
           REX_ERROR(LogDirectX, "Failed to create DX fence, to synchronize CPU/GPU");
           return false;
         }
 
-        directx::set_debug_name_for(g_ctx.fence.Get(), "Global Fence");
+        directx::set_debug_name_for(g_ctx->fence.Get(), "Global Fence");
 
         // Descriptor sizes vary across GPU so we need to query this information
-        g_ctx.rtv_desc_size         = g_ctx.device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-        g_ctx.dsv_desc_size         = g_ctx.device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-        g_ctx.cbv_srv_uav_desc_size = g_ctx.device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        g_ctx->rtv_desc_size         = g_ctx->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        g_ctx->dsv_desc_size         = g_ctx->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+        g_ctx->cbv_srv_uav_desc_size = g_ctx->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
         // 4x MSAA is supported on all DX11 hardware, since we only support DX12 devices we are guaranteed that 4x MSAA is supported.
         // However, we do have to check the supported quality level.
         D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS ms_quality_levels;
-        ms_quality_levels.Format           = g_ctx.back_buffer_format;
+        ms_quality_levels.Format           = g_ctx->back_buffer_format;
         ms_quality_levels.SampleCount      = 4;
         ms_quality_levels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
         ms_quality_levels.NumQualityLevels = 0;
-        if(DX_FAILED(g_ctx.device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &ms_quality_levels, sizeof(ms_quality_levels))))
+        if(DX_FAILED(g_ctx->device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &ms_quality_levels, sizeof(ms_quality_levels))))
         {
           REX_ERROR(LogDirectX, "Given multisample quality level is not supported by this hardware");
           return false;
         }
 
-        g_ctx.msaa_quality = ms_quality_levels.NumQualityLevels;
+        g_ctx->msaa_quality = ms_quality_levels.NumQualityLevels;
 
-        REX_ASSERT_X(g_ctx.msaa_quality > 0, "Unexcpected MSAA quality level");
+        REX_ASSERT_X(g_ctx->msaa_quality > 0, "Unexcpected MSAA quality level");
 
         // Create command queue, command allocator and command list objects
         if(internal::create_command_objects() == false)
@@ -1352,7 +1355,7 @@ namespace rex
         // Reuse the memory assosiated with command recording.
         // We can only reset when the associated command lists have finished
         // execution on the GPU.
-        if(!internal::reset_command_list(g_ctx.command_allocator.Get(), nullptr))
+        if(!internal::reset_command_list(g_ctx->command_allocator.Get(), nullptr))
         {
           REX_ERROR(LogDirectX, "Failed to reset command list");
           return false;
@@ -1387,15 +1390,15 @@ namespace rex
 
         // Create viewport to render our image in
         // A viewport always needs to reset whenever a command list is reset
-        g_ctx.screen_viewport.TopLeftX = 0.0f;
-        g_ctx.screen_viewport.TopLeftY = 0.0f;
-        g_ctx.screen_viewport.Width    = static_cast<f32>(userData.window_width);
-        g_ctx.screen_viewport.Height   = static_cast<f32>(userData.window_height);
-        g_ctx.screen_viewport.MinDepth = 0.0f;
-        g_ctx.screen_viewport.MaxDepth = 1.0f;
+        g_ctx->screen_viewport.TopLeftX = 0.0f;
+        g_ctx->screen_viewport.TopLeftY = 0.0f;
+        g_ctx->screen_viewport.Width    = static_cast<f32>(userData.window_width);
+        g_ctx->screen_viewport.Height   = static_cast<f32>(userData.window_height);
+        g_ctx->screen_viewport.MinDepth = 0.0f;
+        g_ctx->screen_viewport.MaxDepth = 1.0f;
 
         // Cull pixels drawn outside of the backbuffer ( such as UI elements )
-        g_ctx.scissor_rect = {0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height)};
+        g_ctx->scissor_rect = {0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height)};
 
         return true;
       }
@@ -1403,13 +1406,13 @@ namespace rex
       //-------------------------------------------------------------------------
       void shutdown()
       {
-        if(g_ctx.device != nullptr)
+        if(g_ctx->device != nullptr)
         {
 #if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
             // DXGI
             bool can_report_dxgi_live_objects = false;
             wrl::com_ptr<IDXGIDebug1> dxgi_debug;
-            if (g_ctx.dxgi_debug_layer_enabled)
+            if (g_ctx->dxgi_debug_layer_enabled)
             {
                 if(DX_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
                 {
@@ -1425,9 +1428,9 @@ namespace rex
             // DX12
             bool can_report_dx12_live_objects = false;
             wrl::com_ptr<ID3D12DebugDevice> dx12_debug;
-            if (g_ctx.dx12_debug_layer_enabled)
+            if (g_ctx->dx12_debug_layer_enabled)
             {
-                if(DX_FAILED(g_ctx.device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
+                if(DX_FAILED(g_ctx->device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
                 {
                     REX_WARN(LogDirectX, "Unable to Query DX12 Debug Device");
                 }
@@ -1437,26 +1440,15 @@ namespace rex
                 }
             }
 #endif
-            release_resource_slot(g_ctx.active_depth_target);
-            release_resource_slots(g_ctx.active_color_target, g_ctx.active_color_targets);
-            release_resource_slot(g_ctx.active_pipeline_state_object);
-            release_resource_slot(g_ctx.active_shader_program);
-            release_resource_slots(g_ctx.swapchain_rt_buffer_slots, s_swapchain_buffer_count);
-            release_resource_slot(g_ctx.swapchain_ds_buffer_slot);
 
             flush_command_queue();
 
-            g_ctx.frame_ctx.clear();
-            g_ctx.resource_pool.clear();
-            g_ctx.descriptor_heap_pool.clear();
-            g_ctx.pipeline_state_objects.clear();
+            // Frame ctx does custom deletion so we manually clear it
+            g_ctx->frame_ctx.clear();
+            // Resource pool does custom deletion so we manually clear it 
+            g_ctx->resource_pool.clear();
 
-            g_ctx.swapchain.Reset();
-            g_ctx.command_queue.Reset();
-            g_ctx.command_list.Reset();
-            g_ctx.command_allocator.Reset();
-            g_ctx.fence.Reset();
-            g_ctx.device.Reset();
+            g_ctx.reset();
 
 #if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
             // DXGI - Live Objects
@@ -1486,7 +1478,7 @@ namespace rex
       //-------------------------------------------------------------------------
       const ResourceSlot* active_frame()
       {
-          return g_ctx.frame_ctx.current_frame_resource();
+          return g_ctx->frame_ctx.current_frame_resource();
       }
 
       //-------------------------------------------------------------------------
@@ -1494,13 +1486,13 @@ namespace rex
       {
           REX_ASSERT_X(idx < max_frames_in_flight(), "Frame index exceeds the number of available frames");
 
-          return g_ctx.frame_ctx.find_frame(idx)->slot();
+          return g_ctx->frame_ctx.find_frame(idx)->slot();
       }
       
       //-------------------------------------------------------------------------
       s32 max_frames_in_flight()
       {
-          return g_ctx.frame_ctx.max_frame_resources_count();
+          return g_ctx->frame_ctx.max_frame_resources_count();
       }
 
       //-------------------------------------------------------------------------
@@ -1513,7 +1505,7 @@ namespace rex
         rcs.stencil = cs.stencil;
         rcs.flags   = cs.flags.state();
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<ClearStateResource>(rcs));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<ClearStateResource>(rcs));
 
         return true;
       }
@@ -1544,7 +1536,7 @@ namespace rex
         d3d_rs.MultisampleEnable     = rs.multisample;
         d3d_rs.AntialiasedLineEnable = rs.aa_lines;
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<RasterStateResource>(d3d_rs));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<RasterStateResource>(d3d_rs));
 
         return true;
       }
@@ -1565,7 +1557,7 @@ namespace rex
           input_element_descriptions[i].InstanceDataStepRate = cil.input_layout[i].instance_data_step_rate;
         }
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<InputLayoutResource>(input_element_descriptions));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<InputLayoutResource>(input_element_descriptions));
 
         return true;
       }
@@ -1583,7 +1575,7 @@ namespace rex
           return false;
         }
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::move(resource));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::move(resource));
 
         return true;
       }
@@ -1601,7 +1593,7 @@ namespace rex
           return false;
         }
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::move(resource));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::move(resource));
 
         return true;
       }
@@ -1611,7 +1603,7 @@ namespace rex
       {
         REX_ASSERT_X(cb.buffer_size != 0, "Trying to create an empty constant buffer"); // cb.data is allowed to be NULL when creating a constant buffer
 
-        rsl::unique_ptr<ConstantBufferViewResource> resource = internal::create_constant_buffer_view(g_ctx.frame_ctx.find_frame(cb.frame_index)->slot(), cb.committed_resource, cb.buffer_size);
+        rsl::unique_ptr<ConstantBufferViewResource> resource = internal::create_constant_buffer_view(g_ctx->frame_ctx.find_frame(cb.frame_index)->slot(), cb.committed_resource, cb.buffer_size);
 
         if(resource == nullptr)
         {
@@ -1619,7 +1611,7 @@ namespace rex
           return false;
         }
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::move(resource));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::move(resource));
 
         return true;
       }
@@ -1629,25 +1621,16 @@ namespace rex
       {
         REX_ASSERT_X(cps.input_layout.is_valid(), "Invalid input layout resource slot given");
         REX_ASSERT_X(cps.shader_program.is_valid(), "Invalid shader program resource slot given");
-        REX_ASSERT_X(g_ctx.active_color_targets != 0, "No render targets have been set, a PSO needs to know the format of the render target(s)");
+        REX_ASSERT_X(g_ctx->active_color_targets != 0, "No render targets have been set, a PSO needs to know the format of the render target(s)");
 
-        rsl::hash_result hash = rsl::hash<commands::CreatePipelineStateCommandDesc> {}(cps);
-
-        if(g_ctx.pipeline_state_objects.find(hash) != g_ctx.pipeline_state_objects.cend())
-        {
-          g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx.pipeline_state_objects.at(hash)));
-
-          return true;
-        }
-
-        auto& input_layout_resource   = g_ctx.resource_pool.as<InputLayoutResource>(cps.input_layout);
-        auto& shader_program_resource = g_ctx.resource_pool.as<ShaderProgramResource>(cps.shader_program);
+        auto& input_layout_resource = g_ctx->resource_pool.as<InputLayoutResource>(cps.input_layout);
+        auto& shader_program_resource = g_ctx->resource_pool.as<ShaderProgramResource>(cps.shader_program);
+        auto& raster_state_resource = g_ctx->resource_pool.as<RasterStateResource>(cps.rasterizer_state);
 
         D3D12_RASTERIZER_DESC raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         if(cps.rasterizer_state.is_valid())
         {
-          auto& raster_state_resource = g_ctx.resource_pool.as<RasterStateResource>(cps.rasterizer_state);
-          raster_state                = *raster_state_resource.get();
+          raster_state = *raster_state_resource.get();
         }
         D3D12_BLEND_DESC blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         if(cps.blend_state.is_valid())
@@ -1662,6 +1645,20 @@ namespace rex
           // Create a Depth Stencil State Resource
         }
 
+        PipelineStateObjectHashData hash_data;
+        hash_data.input_layout_resource = &input_layout_resource;
+        hash_data.shader_program_resource = &shader_program_resource;
+        hash_data.raster_state_resource = &raster_state_resource;
+
+        rsl::hash_result hash = create_pso_hash(hash_data);
+
+        if(g_ctx->pipeline_state_objects.find(hash) != g_ctx->pipeline_state_objects.cend())
+        {
+          g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx->pipeline_state_objects.at(hash)));
+
+          return true;
+        }
+
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc;
         ZeroMemory(&pso_desc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 
@@ -1674,27 +1671,27 @@ namespace rex
         pso_desc.DepthStencilState     = depth_stencil_state;
         pso_desc.SampleMask            = UINT_MAX;
         pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        pso_desc.NumRenderTargets      = g_ctx.active_color_targets;
-        for(s32 i = 0; i < g_ctx.active_color_targets; ++i)
+        pso_desc.NumRenderTargets      = g_ctx->active_color_targets;
+        for(s32 i = 0; i < g_ctx->active_color_targets; ++i)
         {
-            auto& render_target_id = g_ctx.active_color_target[i];
-            auto& render_target    = g_ctx.resource_pool.as<RenderTargetResource>(render_target_id);
+            auto& render_target_id = g_ctx->active_color_target[i];
+            auto& render_target    = g_ctx->resource_pool.as<RenderTargetResource>(render_target_id);
 
             pso_desc.RTVFormats[i] = directx::to_dxd12_texture_format(render_target.get()->format);
         }
-        pso_desc.SampleDesc.Count      = g_ctx.msaa_state ? 4 : 1;
-        pso_desc.SampleDesc.Quality    = g_ctx.msaa_state ? g_ctx.msaa_quality - 1 : 0;
-        pso_desc.DSVFormat             = g_ctx.depth_stencil_format;
+        pso_desc.SampleDesc.Count      = g_ctx->msaa_state ? 4 : 1;
+        pso_desc.SampleDesc.Quality    = g_ctx->msaa_state ? g_ctx->msaa_quality - 1 : 0;
+        pso_desc.DSVFormat             = g_ctx->depth_stencil_format;
 
-        if(DX_FAILED(g_ctx.device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx.pipeline_state_objects[hash]))))
+        if(DX_FAILED(g_ctx->device->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx->pipeline_state_objects[hash]))))
         {
           REX_ERROR(LogDirectX, "Failed to create pipeline state object");
           return false;
         }
 
-        directx::set_debug_name_for(g_ctx.pipeline_state_objects[hash].Get(), "Pipeline State Object");
+        directx::set_debug_name_for(g_ctx->pipeline_state_objects[hash].Get(), "Pipeline State Object");
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx.pipeline_state_objects.at(hash)));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx->pipeline_state_objects.at(hash)));
 
         return true;
       }
@@ -1704,7 +1701,7 @@ namespace rex
       {
         wrl::com_ptr<ID3D12CommandAllocator> cmd_list_alloc;
 
-        if(DX_FAILED(g_ctx.device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_list_alloc.GetAddressOf()))))
+        if(DX_FAILED(g_ctx->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_list_alloc.GetAddressOf()))))
         {
           REX_ERROR(LogDirectX, "Failed to create command list allocator for frame resource");
           return false;
@@ -1712,13 +1709,13 @@ namespace rex
 
         directx::set_debug_name_for(cmd_list_alloc.Get(), "Frame Command Allocator");
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<FrameResource>(cmd_list_alloc));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<FrameResource>(cmd_list_alloc));
 
         // Activate the first frame resource
-        g_ctx.frame_ctx.add_frame(Frame(g_ctx.frame_ctx.frame_resources_count(), resourceSlot));
-        if(g_ctx.frame_ctx.current_frame_resource() == nullptr)
+        g_ctx->frame_ctx.add_frame(Frame(g_ctx->frame_ctx.frame_resources_count(), resourceSlot));
+        if(g_ctx->frame_ctx.current_frame_resource() == nullptr)
         {
-          g_ctx.frame_ctx.set_current_frame(&resourceSlot);
+          g_ctx->frame_ctx.set_current_frame(&resourceSlot);
         }
 
         return true;
@@ -1737,13 +1734,13 @@ namespace rex
               return false;
           }
 
-          auto frame = g_ctx.frame_ctx.find_frame(acrd.frame_index);
+          auto frame = g_ctx->frame_ctx.find_frame(acrd.frame_index);
           
           REX_ASSERT_X(frame != nullptr, "Failed to find frame for slot: {}", acrd.frame_index);
 
           frame->add_committed_resource(resourceSlot);
 
-          g_ctx.resource_pool.insert(resourceSlot, rsl::move(resource));
+          g_ctx->resource_pool.insert(resourceSlot, rsl::move(resource));
 
           return true;
       }
@@ -1763,8 +1760,8 @@ namespace rex
 
         switch(ls.shader_type)
         {
-          case ShaderType::VERTEX: g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<VertexShaderResource>(byte_code)); break;
-          case ShaderType::PIXEL: g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<PixelShaderResource>(byte_code)); break;
+          case ShaderType::VERTEX: g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<VertexShaderResource>(byte_code)); break;
+          case ShaderType::PIXEL: g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PixelShaderResource>(byte_code)); break;
 
           default: REX_ERROR(LogDirectX, "Unsupported Shader Type was given"); return false;
         }
@@ -1783,10 +1780,10 @@ namespace rex
           return false;
         }
 
-        auto& vsr = g_ctx.resource_pool.as<VertexShaderResource>(ls.vertex_shader);
-        auto& psr = g_ctx.resource_pool.as<PixelShaderResource>(ls.pixel_shader);
+        auto& vsr = g_ctx->resource_pool.as<VertexShaderResource>(ls.vertex_shader);
+        auto& psr = g_ctx->resource_pool.as<PixelShaderResource>(ls.pixel_shader);
 
-        g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<ShaderProgramResource>(root_sig, vsr.get()->vertex_shader, psr.get()->pixel_shader, ls.constants.data(), ls.constants.size()));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<ShaderProgramResource>(root_sig, vsr.get()->vertex_shader, psr.get()->pixel_shader, ls.constants.data(), ls.constants.size()));
 
         // More than one instance of the function matches the arugment list
         // So we have to add the namespace here
@@ -1826,8 +1823,8 @@ namespace rex
 
         switch(cs.shader_type)
         {
-          case ShaderType::VERTEX: g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<VertexShaderResource>(byte_code)); break;
-          case ShaderType::PIXEL: g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<PixelShaderResource>(byte_code)); break;
+          case ShaderType::VERTEX: g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<VertexShaderResource>(byte_code)); break;
+          case ShaderType::PIXEL: g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PixelShaderResource>(byte_code)); break;
 
           default: REX_ERROR(LogDirectX, "Unsupported Shader Type was given"); return false;
         }
@@ -1838,7 +1835,7 @@ namespace rex
       //-------------------------------------------------------------------------
       void update_committed_resource(const commands::UpdateCommittedResourceCommandDesc& updateConstantBuffer, const ResourceSlot& resourceSlot)
       {
-        auto& cbr = g_ctx.resource_pool.as<CommittedBufferResource>(resourceSlot);
+        auto& cbr = g_ctx->resource_pool.as<CommittedBufferResource>(resourceSlot);
         auto cs   = cbr.get();
 
         memcpy(&cs->mapped_data[updateConstantBuffer.element_index * cs->element_data_byte_size], updateConstantBuffer.buffer_data.data(), updateConstantBuffer.buffer_data.size());
@@ -1848,21 +1845,21 @@ namespace rex
       void wait_for_active_frame()
       {
         // Cycle through the circular frame resource array.
-        g_ctx.frame_ctx.next_frame();
+        g_ctx->frame_ctx.next_frame();
 
-        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.current_frame_resource());
+        auto& fr = g_ctx->resource_pool.as<FrameResource>(*g_ctx->frame_ctx.current_frame_resource());
         auto f   = fr.get();
 
         if(f->fence != 0)
         {
-          internal::wait_for_fence(g_ctx.fence.Get(), f->fence);
+          internal::wait_for_fence(g_ctx->fence.Get(), f->fence);
         }
       }
 
       //-------------------------------------------------------------------------
       void clear(const ResourceSlot& resourceSlot)
       {
-        auto& csr = g_ctx.resource_pool.as<ClearStateResource>(resourceSlot);
+        auto& csr = g_ctx->resource_pool.as<ClearStateResource>(resourceSlot);
 
         ClearBits flags = csr.get()->flags;
 
@@ -1870,21 +1867,21 @@ namespace rex
 
         if(flags & ClearBits::CLEAR_COLOR_BUFFER)
         {
-          for(s32 i = 0; i < g_ctx.active_color_targets; ++i)
+          for(s32 i = 0; i < g_ctx->active_color_targets; ++i)
           {
-            auto& render_target_id = g_ctx.active_color_target[i];
-            auto& render_target    = g_ctx.resource_pool.as<RenderTargetResource>(render_target_id);
+            auto& render_target_id = g_ctx->active_color_target[i];
+            auto& render_target    = g_ctx->resource_pool.as<RenderTargetResource>(render_target_id);
 
             D3D12_CPU_DESCRIPTOR_HANDLE backbuffer_desc = internal::rendertarget_buffer_descriptor(render_target.get()->array_index);
 
-            g_ctx.command_list->ClearRenderTargetView(backbuffer_desc, csr.get()->rgba.getData(), 0, nullptr);
+            g_ctx->command_list->ClearRenderTargetView(backbuffer_desc, csr.get()->rgba.getData(), 0, nullptr);
           }
         }
 
         if(flags & ClearBits::CLEAR_DEPTH_BUFFER || flags & ClearBits::CLEAR_STENCIL_BUFFER)
         {
-          auto& depth_stencil_target_id = g_ctx.active_depth_target;
-          auto& depth_stencil_target    = g_ctx.resource_pool.as<DepthStencilTargetResource>(depth_stencil_target_id);
+          auto& depth_stencil_target_id = g_ctx->active_depth_target;
+          auto& depth_stencil_target    = g_ctx->resource_pool.as<DepthStencilTargetResource>(depth_stencil_target_id);
 
           D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_desc = internal::depthstencil_buffer_descriptor(depth_stencil_target.get()->array_index);
 
@@ -1892,7 +1889,7 @@ namespace rex
           depth_stencil_clear_flags |= flags & ClearBits::CLEAR_DEPTH_BUFFER ? D3D12_CLEAR_FLAG_DEPTH : 0;
           depth_stencil_clear_flags |= flags & ClearBits::CLEAR_STENCIL_BUFFER ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
-          g_ctx.command_list->ClearDepthStencilView(depthstencil_desc, (D3D12_CLEAR_FLAGS)depth_stencil_clear_flags, csr.get()->depth, csr.get()->stencil, 0, nullptr);
+          g_ctx->command_list->ClearDepthStencilView(depthstencil_desc, (D3D12_CLEAR_FLAGS)depth_stencil_clear_flags, csr.get()->depth, csr.get()->stencil, 0, nullptr);
         }
       }
 
@@ -1905,14 +1902,14 @@ namespace rex
             return true;
         }
 
-        if (resourceSlot.is_about_to_be_removed() == false && g_ctx.resource_pool.has_slot(resourceSlot))
+        if (resourceSlot.is_about_to_be_removed() == false && g_ctx->resource_pool.has_slot(resourceSlot))
         {
-            if (g_ctx.resource_pool.is<ConstantBufferViewResource>(resourceSlot))
+            if (g_ctx->resource_pool.is<ConstantBufferViewResource>(resourceSlot))
             {
-                --g_ctx.active_constant_buffers;
+                --g_ctx->active_constant_buffers;
             }
 
-            g_ctx.resource_pool.remove(resourceSlot);
+            g_ctx->resource_pool.remove(resourceSlot);
         }
         else
         {
@@ -1925,13 +1922,13 @@ namespace rex
       //-------------------------------------------------------------------------
       bool prepare_user_initialization()
       {
-        if(DX_FAILED(g_ctx.command_allocator->Reset()))
+        if(DX_FAILED(g_ctx->command_allocator->Reset()))
         {
           REX_ERROR(LogDirectX, "Failed to reset command allocator");
           return false;
         }
 
-        if(internal::reset_command_list(g_ctx.command_allocator.Get(), nullptr) == false)
+        if(internal::reset_command_list(g_ctx->command_allocator.Get(), nullptr) == false)
         {
           REX_ERROR(LogDirectX, "Failed to reset command list");
           return false;
@@ -1974,24 +1971,24 @@ namespace rex
       //-------------------------------------------------------------------------
       void draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex)
       {
-        REX_ASSERT_X(g_ctx.active_shader_program.is_valid(), "Call renderer::set_shader before issuing a draw command");
+        REX_ASSERT_X(g_ctx->active_shader_program.is_valid(), "Call renderer::set_shader before issuing a draw command");
 
-        g_ctx.command_list->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstance);
+        g_ctx->command_list->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertex, startInstance);
       }
 
       //-------------------------------------------------------------------------
       void draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance)
       {
-        REX_ASSERT_X(g_ctx.active_shader_program.is_valid(), "Call renderer::set_shader before issuing a draw command");
+        REX_ASSERT_X(g_ctx->active_shader_program.is_valid(), "Call renderer::set_shader before issuing a draw command");
 
-        g_ctx.command_list->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
+        g_ctx->command_list->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
       }
 
       //-------------------------------------------------------------------------
       bool set_render_targets(const ResourceSlot* const colorTargets, s32 numColorTargets, const ResourceSlot& depthTarget)
       {
-        g_ctx.active_depth_target  = depthTarget;
-        g_ctx.active_color_targets = numColorTargets;
+        g_ctx->active_depth_target  = depthTarget;
+        g_ctx->active_color_targets = numColorTargets;
 
         s32 num_views = numColorTargets;
         CD3DX12_CPU_DESCRIPTOR_HANDLE render_target_handles[s_max_color_targets];
@@ -1999,17 +1996,17 @@ namespace rex
         for(s32 i = 0; i < numColorTargets; ++i)
         {
           const ResourceSlot& color_target = colorTargets[i];
-          g_ctx.active_color_target[i] = color_target;
+          g_ctx->active_color_target[i] = color_target;
 
           if(color_target.is_valid())
           {
-            auto& render_target = g_ctx.resource_pool.as<RenderTargetResource>(color_target);
+            auto& render_target = g_ctx->resource_pool.as<RenderTargetResource>(color_target);
 
             render_target_handles[i] = internal::rendertarget_buffer_descriptor(render_target.get()->array_index);
           }
           else
           {
-            g_ctx.active_color_target[i] = ResourceSlot(0);
+            g_ctx->active_color_target[i] = ResourceSlot(0);
 
             render_target_handles[i] = internal::rendertarget_buffer_descriptor(0);
           }
@@ -2018,18 +2015,18 @@ namespace rex
         D3D12_CPU_DESCRIPTOR_HANDLE depth_stencil_handle = {};
         if(depthTarget.is_valid())
         {
-          auto& depth_stencil_target = g_ctx.resource_pool.as<DepthStencilTargetResource>(depthTarget);
+          auto& depth_stencil_target = g_ctx->resource_pool.as<DepthStencilTargetResource>(depthTarget);
 
           depth_stencil_handle = internal::depthstencil_buffer_descriptor(depth_stencil_target.get()->array_index);
         }
         else
         {
-          g_ctx.active_depth_target = ResourceSlot(0);
+          g_ctx->active_depth_target = ResourceSlot(0);
 
           depth_stencil_handle = internal::depthstencil_buffer_descriptor(0);
         }
 
-        g_ctx.command_list->OMSetRenderTargets(num_views, render_target_handles, true, &depth_stencil_handle);
+        g_ctx->command_list->OMSetRenderTargets(num_views, render_target_handles, true, &depth_stencil_handle);
 
         return true;
       }
@@ -2045,14 +2042,14 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_viewport(const Viewport& viewport)
       {
-        g_ctx.screen_viewport.TopLeftX = viewport.top_left_x;
-        g_ctx.screen_viewport.TopLeftY = viewport.top_left_y;
-        g_ctx.screen_viewport.Width    = viewport.width;
-        g_ctx.screen_viewport.Height   = viewport.height;
-        g_ctx.screen_viewport.MinDepth = viewport.min_depth;
-        g_ctx.screen_viewport.MaxDepth = viewport.max_depth;
+        g_ctx->screen_viewport.TopLeftX = viewport.top_left_x;
+        g_ctx->screen_viewport.TopLeftY = viewport.top_left_y;
+        g_ctx->screen_viewport.Width    = viewport.width;
+        g_ctx->screen_viewport.Height   = viewport.height;
+        g_ctx->screen_viewport.MinDepth = viewport.min_depth;
+        g_ctx->screen_viewport.MaxDepth = viewport.max_depth;
 
-        g_ctx.command_list->RSSetViewports(1, &g_ctx.screen_viewport);
+        g_ctx->command_list->RSSetViewports(1, &g_ctx->screen_viewport);
 
         return true;
       }
@@ -2060,12 +2057,12 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_scissor_rect(const ScissorRect& rect)
       {
-        g_ctx.scissor_rect.top    = (LONG)rect.top;
-        g_ctx.scissor_rect.left   = (LONG)rect.left;
-        g_ctx.scissor_rect.bottom = (LONG)rect.bottom;
-        g_ctx.scissor_rect.right  = (LONG)rect.right;
+        g_ctx->scissor_rect.top    = (LONG)rect.top;
+        g_ctx->scissor_rect.left   = (LONG)rect.left;
+        g_ctx->scissor_rect.bottom = (LONG)rect.bottom;
+        g_ctx->scissor_rect.right  = (LONG)rect.right;
 
-        g_ctx.command_list->RSSetScissorRects(1, &g_ctx.scissor_rect);
+        g_ctx->command_list->RSSetScissorRects(1, &g_ctx->scissor_rect);
 
         return true;
       }
@@ -2077,7 +2074,7 @@ namespace rex
 
         for(s32 i = 0; i < numBuffers; ++i)
         {
-          auto& buffer_resource = g_ctx.resource_pool.as<BufferResource>(vertexBufferTargets[i]);
+          auto& buffer_resource = g_ctx->resource_pool.as<BufferResource>(vertexBufferTargets[i]);
 
           D3D12_VERTEX_BUFFER_VIEW view;
 
@@ -2091,7 +2088,7 @@ namespace rex
           views.push_back(view);
         }
 
-        g_ctx.command_list->IASetVertexBuffers(startSlot, numBuffers, views.data());
+        g_ctx->command_list->IASetVertexBuffers(startSlot, numBuffers, views.data());
 
         return true;
       }
@@ -2099,7 +2096,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_index_buffer(const ResourceSlot& indexBufferTarget, IndexBufferFormat format, s32 offset)
       {
-        auto& buffer_resource = g_ctx.resource_pool.as<BufferResource>(indexBufferTarget);
+        auto& buffer_resource = g_ctx->resource_pool.as<BufferResource>(indexBufferTarget);
 
         D3D12_INDEX_BUFFER_VIEW ibv;
 
@@ -2110,7 +2107,7 @@ namespace rex
         ibv.Format         = directx::to_d3d12_index_format(format);
         ibv.SizeInBytes    = buffer_resource.get()->size_in_bytes;
 
-        g_ctx.command_list->IASetIndexBuffer(&ibv);
+        g_ctx->command_list->IASetIndexBuffer(&ibv);
 
         return true;
       }
@@ -2118,11 +2115,11 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_shader(const ResourceSlot& resourceSlot)
       {
-        g_ctx.active_shader_program = resourceSlot;
+        g_ctx->active_shader_program = resourceSlot;
 
-        auto& shader_program = g_ctx.resource_pool.as<ShaderProgramResource>(resourceSlot);
+        auto& shader_program = g_ctx->resource_pool.as<ShaderProgramResource>(resourceSlot);
 
-        g_ctx.command_list->SetGraphicsRootSignature(shader_program.get()->root_signature.Get());
+        g_ctx->command_list->SetGraphicsRootSignature(shader_program.get()->root_signature.Get());
 
         return true;
       }
@@ -2130,12 +2127,12 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_constant_buffer_view(const ResourceSlot& resourceSlot, s32 location)
       {
-        auto& buffer_resource = g_ctx.resource_pool.as<ConstantBufferViewResource>(resourceSlot);
+        auto& buffer_resource = g_ctx->resource_pool.as<ConstantBufferViewResource>(resourceSlot);
 
-        auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetGPUDescriptorHandleForHeapStart());
-        cbv_handle.Offset(buffer_resource.get()->buffer_index, g_ctx.cbv_srv_uav_desc_size);
+        auto cbv_handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetGPUDescriptorHandleForHeapStart());
+        cbv_handle.Offset(buffer_resource.get()->buffer_index, g_ctx->cbv_srv_uav_desc_size);
 
-        g_ctx.command_list->SetGraphicsRootDescriptorTable(location, cbv_handle);
+        g_ctx->command_list->SetGraphicsRootDescriptorTable(location, cbv_handle);
 
         return true;
       }
@@ -2143,7 +2140,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_primitive_topology(PrimitiveTopology topology)
       {
-        g_ctx.command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
+        g_ctx->command_list->IASetPrimitiveTopology(directx::to_d3d12_topology(topology));
 
         return true;
       }
@@ -2151,7 +2148,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool set_pipeline_state_object(const ResourceSlot& resourceSlot)
       {
-        g_ctx.active_pipeline_state_object = resourceSlot;
+        g_ctx->active_pipeline_state_object = resourceSlot;
 
         return true;
       }
@@ -2167,7 +2164,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool new_frame()
       {
-        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.current_frame_resource());
+        auto& fr = g_ctx->resource_pool.as<FrameResource>(*g_ctx->frame_ctx.current_frame_resource());
         auto f   = fr.get();
 
         // Reuse the memory assosiated with command recording.
@@ -2181,10 +2178,10 @@ namespace rex
 
         // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the
         // command list reuses memory.
-        auto& pso = g_ctx.resource_pool.as<PipelineStateResource>(g_ctx.active_pipeline_state_object);
+        auto& pso = g_ctx->resource_pool.as<PipelineStateResource>(g_ctx->active_pipeline_state_object);
         if(internal::reset_command_list(f->cmd_list_allocator.Get(), pso.get()) == false)
         {
-          REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_ctx.frame_ctx.current_frame_resource_index());
+          REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_ctx->frame_ctx.current_frame_resource_index());
           return false;
         }
 
@@ -2194,16 +2191,16 @@ namespace rex
       //-------------------------------------------------------------------------
       bool end_frame()
       {
-        auto& fr = g_ctx.resource_pool.as<FrameResource>(*g_ctx.frame_ctx.current_frame_resource());
+        auto& fr = g_ctx->resource_pool.as<FrameResource>(*g_ctx->frame_ctx.current_frame_resource());
         auto f   = fr.get();
 
         // Advance the fence value to mark commands up to this fence point.
-        f->fence = ++g_ctx.current_fence;
+        f->fence = ++g_ctx->current_fence;
 
         // Add an instruction to the command queue to set a new fence point.
         // Because we are on the GPU timeline, the new fence point won't be
         // set until the GPU finishes processing all the commands prior to this Signal().
-        g_ctx.command_queue->Signal(g_ctx.fence.Get(), g_ctx.current_fence);
+        g_ctx->command_queue->Signal(g_ctx->fence.Get(), g_ctx->current_fence);
 
         return true;
       }
@@ -2211,20 +2208,20 @@ namespace rex
       //-------------------------------------------------------------------------
       bool begin_draw()
       {
-        for(s32 i = 0; i < g_ctx.active_color_targets; ++i)
+        for(s32 i = 0; i < g_ctx->active_color_targets; ++i)
         {
-          const ResourceSlot& buffer_index = g_ctx.active_color_target[i];
+          const ResourceSlot& buffer_index = g_ctx->active_color_target[i];
 
-          auto& render_target = g_ctx.resource_pool.as<RenderTargetResource>(buffer_index);
+          auto& render_target = g_ctx->resource_pool.as<RenderTargetResource>(buffer_index);
 
           // Indicate a state transition on the resouce usage.
           D3D12_RESOURCE_BARRIER render_target_transition = CD3DX12_RESOURCE_BARRIER::Transition(render_target.get()->render_target.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-          g_ctx.command_list->ResourceBarrier(1, &render_target_transition);
+          g_ctx->command_list->ResourceBarrier(1, &render_target_transition);
         }
 
-        ID3D12DescriptorHeap* desc_heap    = g_ctx.descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].Get();
+        ID3D12DescriptorHeap* desc_heap    = g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].Get();
         ID3D12DescriptorHeap* desc_heaps[] = {desc_heap};
-        g_ctx.command_list->SetDescriptorHeaps(_countof(desc_heaps), desc_heaps);
+        g_ctx->command_list->SetDescriptorHeaps(_countof(desc_heaps), desc_heaps);
 
         return true;
       }
@@ -2232,15 +2229,15 @@ namespace rex
       //-------------------------------------------------------------------------
       bool end_draw()
       {
-        for(s32 i = 0; i < g_ctx.active_color_targets; ++i)
+        for(s32 i = 0; i < g_ctx->active_color_targets; ++i)
         {
-          ResourceSlot buffer_slot = g_ctx.active_color_target[i];
+          ResourceSlot buffer_slot = g_ctx->active_color_target[i];
 
-          auto& render_target = g_ctx.resource_pool.as<RenderTargetResource>(buffer_slot);
+          auto& render_target = g_ctx->resource_pool.as<RenderTargetResource>(buffer_slot);
 
           // Indicate a state transition on the resouce usage.
           D3D12_RESOURCE_BARRIER present_transition = CD3DX12_RESOURCE_BARRIER::Transition(render_target.get()->render_target.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-          g_ctx.command_list->ResourceBarrier(1, &present_transition);
+          g_ctx->command_list->ResourceBarrier(1, &present_transition);
         }
 
         return true;
@@ -2260,7 +2257,7 @@ namespace rex
         internal::exec_command_list();
 
         // Swap the back and front buffers
-        if(DX_FAILED(g_ctx.swapchain->Present(0, 0)))
+        if(DX_FAILED(g_ctx->swapchain->Present(0, 0)))
         {
           REX_ERROR(LogDirectX, "Failed to present swapchain");
           return false;

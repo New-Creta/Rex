@@ -6,7 +6,7 @@
 #include "rex_engine/log.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
-#include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 

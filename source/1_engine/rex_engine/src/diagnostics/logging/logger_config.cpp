@@ -71,11 +71,11 @@ namespace rex
       rsl::unordered_map<rsl::string_view, rsl::string_view> extract_key_vals(rsl::string_view str)
       {
         rsl::unordered_map<rsl::string_view, rsl::string_view> rv {};
-        const rsl::vector<rsl::string_view> key_value_pairs = split(str, ",");
+        const rsl::vector<rsl::string_view> key_value_pairs = rsl::split(str, ",");
 
         for(const rsl::string_view key_value_pair: key_value_pairs)
         {
-          rsl::vector<rsl::string_view> key_value = split(key_value_pair, "=");
+          rsl::vector<rsl::string_view> key_value = rsl::split(key_value_pair, "=");
 
           REX_ASSERT_X(key_value.size() == 2, "Invalid logger level found at {}", key_value_pair);
           rv[key_value[0]] = key_value[1];

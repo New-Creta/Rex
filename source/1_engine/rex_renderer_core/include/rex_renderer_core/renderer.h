@@ -2,7 +2,7 @@
 
 #include "rex_engine/types.h"
 
-#include "rex_std_extra/utility/yes_no.h"
+#include "rex_std/bonus/utility/yes_no.h"
 
 namespace rex
 {

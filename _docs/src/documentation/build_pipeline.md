@@ -3,39 +3,42 @@
 ## Introduction
 Rex's entire building pipeline, going from setting up the initial setup to the actual build process, generation and testing is written in python. This is done to allow quick iteration which would be more of hassle in C# or C++.
 
-The build pipeline scripts is only supposed to launch multiple intermediate steps and not do much work on its own.
+Every system in the pipeline has the same interface which is the _rex.py python script, sitting at the root of the project. This script will call into various script that are stored internally. These reason for this is to keep the root of the project as minimalistic as possible.
+Each script that the root script calls is only supposed to launch multiple intermediate steps and not do much work on its own.
 
-All build scripts have a `-clean` command which pretends the script is run for the very first time. This just deletes the output folders
+Most build scripts have a `-clean` command which pretends the script is run for the very first time. This just deletes the output folders before running the script.
+
+The intermediate directory for everything related to rex is the `.rex` folder sitting in the root of the project. This acts similar to `.git`, `.vs` and `.vscode` which are intermediate folders of other programs.
+This is done so that it's very easy to start the project from scratch, just delete the `.rex` folder and you're developing again as if it was the very first time.
 
 ## Setup
 
 ### Root script
-To setup Rex Engine after an initial clone from [github](https://github.com/New-Creta/Rex) run [`_setup.py`](../../../_setup.py)
+To setup Rex Engine after an initial clone from [github](https://github.com/New-Creta/Rex) run [`_rex.py setup`](../../../_rex_.py)
 
-This setup script will install `rexpy` on your machine, after which it'll call the actual setup script located in [`build/scripts/setup.py`](../../../build/scripts/setup.py) which will continue setting up your machine for rex engine development.
+This setup script will install `rexpy` aka `regis` on your machine, after which it'll call the actual setup script located in [`_build/scripts/setup.py`](../../../build/scripts/setup.py) which will continue setting up your machine for rex engine development.
 
 ### Setup script
 
 This is the actual setup script that goes through the full setup pipeline
-[`_setup.py`](../../../_setup.py) will read some configuration files, looking for dependencies needed for by Rex Engine based on your platform (only Windows is support at time of writing)
+[`setup.py`](../../../_builds/scripts/setup.py) will read some configuration files, looking for dependencies needed for by Rex Engine based on your platform (only Windows is support at time of writing)
+These dependencies are found in the various config json files located in `_build/config`.
 
-it knows which dependencies and how to install them based on the json files located in `build/config`
-
-All installations will add a version file to the dependency that's installed to cache which one you downloaded. This is to avoid redownloading already installed dependencies and massively speeds up setup times.
+All installations will add a version file to the dependency that's installed to cache which one you downloaded. This is to avoid redownloading already installed dependencies, which allows us to use an incremental setup.
 
 there are 4 json files located in this folder
-### [**settings.json**](../../../build/config/settings.json)
-This is data file containing settings for various stages in the build pipeline. it holds information how the intermediate folder is called, build folder, source folder, ...
+### [**settings.json**](../../../_build/config/settings.json)
+This is data file containing settings for various stages in the build pipeline and is not just used by the setup process. it holds information how the intermediate folder is called, build folder, source folder, ...
 
-This is done so that we don't hardcode these paths in various different tools. By keeping them in this file and using a well known format (json format) it's very easy to access this data.
+This is done so that we don't hardcode these paths in various different tools. By keeping them in this file and using a well known format (json format) it's very easy to access this data, in any tool (using any language).
 
-### [**required_libs.json**](../../../build/config/required_libs.json)
+### [**required_libs.json**](../../../_build/config/required_libs.json)
 This is a data file containing information which libraries are required to develop rex on your platform. eg
 
 If these dependencies aren't found, it'll download these over the network and cache their install paths. (eg. Windows -> Windows SDK).
 
-### [**required_tools.json**](../../../build/config/required_tools.json)
-Similar to [`required_libs.json`](../../../build/config/required_libs.json) this file contains information which tools are required to develop rex on your platform.
+### [**required_tools.json**](../../../_build/config/required_tools.json)
+Similar to [`required_libs.json`](../../../_build/config/required_libs.json) this file contains information which tools are required to develop rex on your platform.
 
 Some examples for these tools are:
 - compiler
@@ -46,7 +49,7 @@ Some examples for these tools are:
 
 More on these tools later.
 
-### [**required_externals.json**](../../../build/config/required_externals.json)
+### [**required_externals.json**](../../../_build/config/required_externals.json)
 For those familiar with Git, this file acts as a description file for the submodules of Rex. 
 
 The reason why they're not stored in a submodule file using Git functionality to clone these dependencies is because it's much faster to store these dependencies in a repository somewhere and manually track which version is needed by your branch.
@@ -56,10 +59,10 @@ Some Examples (Windows):
 ```sh
 # Will do an initial setup.
 # Updating non-cached paths and cached paths that no longer exist
-py _setup.py
+py _rex.py setup
 
 # Same as initial setup but will clean intermediates first
-py _setup.py -clean
+py _rex.py setup -clean
 ```
 
 ## Generation

@@ -1,6 +1,6 @@
 #include "rex_renderer_core/resources/vertex.h"
 
-#include "rex_std_extra/utility/type_id.h"
+#include "rex_std/bonus/utility/type_id.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
 

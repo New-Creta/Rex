@@ -66,8 +66,14 @@ namespace rex
         public:
             struct VertexBufferDesc
             {
+                VertexBufferDesc(const ResourceSlot& inSlot, s32 byteStride, s32 byteSize)
+                  : slot(inSlot)
+                  , byte_stride(byteStride)
+                  , byte_size(byteSize)
+                {}
+
                 // Resource handles to the vertex buffer of this geometry
-                ResourceSlot        slot;
+                const ResourceSlot  slot;
 
                 // Data about the allocated buffer.
                 s32                 byte_stride;
@@ -75,8 +81,14 @@ namespace rex
             };
             struct IndexBufferDesc
             {
+                IndexBufferDesc(const ResourceSlot& inSlot, IndexBufferFormat format, s32 byteSize)
+                    : slot(inSlot)
+                    , format(format)
+                    , byte_size(byteSize)
+                {}
+
                 // Resource handles to the index buffer of this geometry
-                ResourceSlot        slot;
+                const ResourceSlot  slot;
 
                 // Data about the allocated buffers.
                 IndexBufferFormat   format;
@@ -85,7 +97,6 @@ namespace rex
 
         public:
             Mesh(rsl::string_view name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd);
-            ~Mesh();
 
         public:
             void add_submesh(rsl::string_view name, const Submesh& subMesh);

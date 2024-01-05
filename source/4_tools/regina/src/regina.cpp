@@ -2,7 +2,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/entrypoint.h"
-#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/win/vfs.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/primitives/box.h"
@@ -31,8 +31,11 @@
 #include "rex_renderer_core/resources/vertex.h"
 #include "rex_renderer_core/scissor_rect.h"
 #include "rex_renderer_core/viewport.h"
+
 #include "rex_std/string.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/math/color.h"
+
 #include "rex_windows/gui_application.h"
 #include "rex_windows/platform_creation_params.h"
 
@@ -288,7 +291,7 @@ namespace rex
   {
     renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc{};
 
-    create_clear_state_command_desc.rgba    = {0.690196097f, 0.768627524f, 0.870588303f, 1.f}; // LightSteelBlue
+    create_clear_state_command_desc.rgba    = rsl::colors::LightSteelBlue;
     create_clear_state_command_desc.depth   = 1.0f;
     create_clear_state_command_desc.stencil = 0x00;
 
@@ -348,16 +351,16 @@ namespace rex
     const u32 vb_byte_size = total_vertex_count * sizeof(renderer::VertexPosCol);
     const u32 ib_byte_size = total_index_count * sizeof(u16);
 
-    renderer::Mesh::VertexBufferDesc vbd;
     renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(box_vertices.data(), box_vertices.size());
-    vbd.slot                                                                 = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
-    vbd.byte_size                                                            = vb_byte_size;
-    vbd.byte_stride                                                          = sizeof(renderer::VertexPosCol);
-    renderer::Mesh::IndexBufferDesc ibd;
+    renderer::Mesh::VertexBufferDesc vbd(
+      renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)),
+      sizeof(renderer::VertexPosCol),
+      vb_byte_size);
+
     renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
-    ibd.slot                                                                 = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
-    ibd.format                                                               = renderer::IndexBufferFormat::R16_UINT;
-    ibd.byte_size                                                            = ib_byte_size;
+    renderer::Mesh::IndexBufferDesc ibd(renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)),
+    renderer::IndexBufferFormat::R16_UINT,
+    ib_byte_size);
 
     g_regina_ctx.mesh_cube = rsl::make_unique<renderer::Mesh>("box_geometry"_med, vbd, ibd);
     g_regina_ctx.mesh_cube->add_submesh("box"_small, total_index_count, 0, 0);
@@ -427,7 +430,8 @@ namespace rex
     for(s32 i = 0; i < box.vertices().size(); ++i, ++k)
     {
       glm::vec3 position = box.vertices()[i].position;
-      glm::vec4 color    = {1.000000000f, 0.270588249f, 0.000000000f, 1.000000000f}; // Orange Red
+      auto c             = rsl::colors::OrangeRed;
+      glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
 
       vertices[k] = renderer::VertexPosCol(position, color);
     }
@@ -435,7 +439,8 @@ namespace rex
     for(s32 i = 0; i < grid.vertices().size(); ++i, ++k)
     {
       glm::vec3 position = grid.vertices()[i].position;
-      glm::vec4 color    = {0.133333340f, 0.545098066f, 0.133333340f, 1.000000000f}; // Forest Green
+      auto c             = rsl::colors::ForestGreen;
+      glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
 
       vertices[k] = renderer::VertexPosCol(position, color);
     }
@@ -443,7 +448,8 @@ namespace rex
     for(s32 i = 0; i < sphere.vertices().size(); ++i, ++k)
     {
       glm::vec3 position = sphere.vertices()[i].position;
-      glm::vec4 color    = {0.862745166f, 0.078431375f, 0.235294133f, 1.000000000f}; // Crimson
+      auto c             = rsl::colors::Crimson;
+      glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
 
       vertices[k] = renderer::VertexPosCol(position, color);
     }
@@ -451,7 +457,8 @@ namespace rex
     for(s32 i = 0; i < cylinder.vertices().size(); ++i, ++k)
     {
       glm::vec3 position = cylinder.vertices()[i].position;
-      glm::vec4 color    = {0.274509817f, 0.509803951f, 0.705882370f, 1.000000000f}; // Steel Blue
+      auto c             = rsl::colors::SteelBlue;
+      glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
 
       vertices[k] = renderer::VertexPosCol(position, color);
     }
@@ -465,16 +472,17 @@ namespace rex
     const u32 vb_byte_size = total_vertex_count * sizeof(renderer::VertexPosCol);
     const u32 ib_byte_size = total_index_count * sizeof(u16);
 
-    renderer::Mesh::VertexBufferDesc vbd;
     renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<renderer::VertexPosCol>(vertices.data(), vertices.size());
-    vbd.slot                                                                 = renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc));
-    vbd.byte_size                                                            = vb_byte_size;
-    vbd.byte_stride                                                          = sizeof(renderer::VertexPosCol);
-    renderer::Mesh::IndexBufferDesc ibd;
+    renderer::Mesh::VertexBufferDesc vbd(
+      renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)), 
+      sizeof(renderer::VertexPosCol), 
+      vb_byte_size);
+
     renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(indices.data(), indices.size());
-    ibd.slot                                                                 = renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc));
-    ibd.format                                                               = renderer::IndexBufferFormat::R16_UINT;
-    ibd.byte_size                                                            = ib_byte_size;
+    renderer::Mesh::IndexBufferDesc ibd(
+      renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)), 
+      renderer::IndexBufferFormat::R16_UINT, 
+      ib_byte_size);
 
     auto geometry = rsl::make_unique<renderer::Mesh>("scene_geometry"_med, vbd, ibd);
 
@@ -910,8 +918,7 @@ namespace rex
     app_params.engine_params.app_update_func   = update;
     app_params.engine_params.app_draw_func     = draw;
     app_params.engine_params.app_shutdown_func = shutdown;
-
-    app_params.create_window = true;
+    app_params.create_window                   = true;
 
     return app_params;
   }

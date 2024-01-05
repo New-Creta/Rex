@@ -8,15 +8,18 @@ namespace rex
     namespace renderer
     {
         //-------------------------------------------------------------------------
-        ResourceSlots::~ResourceSlots()
+        ResourceSlots::ResourceSlots(s32 num)
+          : m_flag_capacity(0)
         {
-            m_flags.reset();
+          resize(num);
         }
 
         //-------------------------------------------------------------------------
-        void ResourceSlots::initialize(s32 num)
+        ResourceSlots::~ResourceSlots()
         {
-            resize(num);
+          free_slots();
+
+          m_flags.reset();
         }
 
         //-------------------------------------------------------------------------

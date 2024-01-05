@@ -3,7 +3,7 @@
 #include "rex_engine/types.h"
 
 #include "rex_std/vector.h"
-#include "rex_std_extra/utility/casting.h"
+#include "rex_std/bonus/utility/casting.h"
 
 #include <glm/glm.hpp>
 
@@ -78,18 +78,14 @@ namespace rex
         template<typename T>
         void MeshData<T>::assign_vertices(const Vertex* vertices, u32 numVertices)
         {
-            //m_vertices.assign(&vertices[0], &vertices[numVertices]);
-            for (u32 i = 0; i < numVertices; ++i)
-                m_vertices.push_back(vertices[i]);
+            m_vertices.assign(&vertices[0], &vertices[numVertices]);
         }
 
         //-----------------------------------------------------------------------
         template<typename T>
         void MeshData<T>::assign_indices(const MeshData<T>::index_type* indices, u32 numIndices)
         {
-            //m_indices.assign(&indices[0], &indices[numIndices]);
-            for (u32 i = 0; i < numIndices; ++i)
-                m_indices.push_back(indices[i]);
+            m_indices.assign(&indices[0], &indices[numIndices]);
         }
 
         //-----------------------------------------------------------------------
