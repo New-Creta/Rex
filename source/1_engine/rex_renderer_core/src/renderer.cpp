@@ -629,7 +629,7 @@ namespace rex
                 {
                     result = internal::flush(g_ctx->cmd_list.get());
 
-                    g_ctx->cmd_allocator.reset();
+                    g_ctx->cmd_allocator->reset();
                 }
 
                 return result;
