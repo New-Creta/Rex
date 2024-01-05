@@ -66,8 +66,14 @@ namespace rex
         public:
             struct VertexBufferDesc
             {
+                VertexBufferDesc(const ResourceSlot& inSlot)
+                  : slot(inSlot)
+                  , byte_stride(0)
+                  , byte_size(0)
+                {}
+
                 // Resource handles to the vertex buffer of this geometry
-                ResourceSlot        slot;
+                const ResourceSlot  slot;
 
                 // Data about the allocated buffer.
                 s32                 byte_stride;
@@ -75,8 +81,14 @@ namespace rex
             };
             struct IndexBufferDesc
             {
+                IndexBufferDesc(const ResourceSlot& inSlot)
+                    : slot(inSlot)
+                    , format(IndexBufferFormat::NONE)
+                    , byte_size(0)
+                {}
+
                 // Resource handles to the index buffer of this geometry
-                ResourceSlot        slot;
+                const ResourceSlot  slot;
 
                 // Data about the allocated buffers.
                 IndexBufferFormat   format;
