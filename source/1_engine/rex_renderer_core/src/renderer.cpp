@@ -86,25 +86,24 @@ namespace rex
 
         struct Context
         {
-            ResourceSlots slot_resources;
-
-            CommandAllocator cmd_allocator { cmd_allocator_size };
-            CommandList cmd_list;
+            rsl::unique_ptr<ResourceSlots> slot_resources;
+            rsl::unique_ptr<CommandAllocator> cmd_allocator;
+            rsl::unique_ptr<CommandList> cmd_list;
         };
 
-        Context g_ctx;
+        rsl::unique_ptr<Context> g_ctx;
 
 #if REX_SINGLE_THREADED
         bool process_render_command(renderer::RenderCommand* cmd) { return cmd->execute(); };
 #else
-        bool process_render_command(renderer::RenderCommand* cmd) { return g_ctx.cmd_list.put(cmd); };
+        bool process_render_command(renderer::RenderCommand* cmd) { return g_ctx->cmd_list->put(cmd); };
 #endif
 
         //-------------------------------------------------------------------------
         template <typename TCommandType, typename... Args>
         TCommandType* create_new_command(Args&&... args)
         {
-            TCommandType* cmd = (TCommandType*)g_ctx.cmd_allocator.allocate(sizeof(TCommandType));
+            TCommandType* cmd = (TCommandType*)g_ctx->cmd_allocator->allocate(sizeof(TCommandType));
             return new(cmd) TCommandType(rsl::forward<Args>(args)...);
         }
 
@@ -112,7 +111,7 @@ namespace rex
         template <typename TCommandType, typename... Args>
         TCommandType* create_new_command(Args&&... args, const ResourceSlot& slot)
         {
-            TCommandType* cmd = (TCommandType*)g_ctx.cmd_allocator.allocate(sizeof(TCommandType));
+            TCommandType* cmd = (TCommandType*)g_ctx->cmd_allocator->allocate(sizeof(TCommandType));
             return new(cmd) TCommandType(rsl::forward<Args>(args)...);
         }
 
@@ -122,7 +121,7 @@ namespace rex
             template<typename TCommandType>
             ResourceSlot create_buffer(commands::CreateBufferCommandDesc&& createBufferParams)
             {
-                ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+                ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
                 TCommandType* cmd = create_new_command<TCommandType>(rsl::move(createBufferParams), resource_slot);
 
@@ -138,7 +137,7 @@ namespace rex
             //-------------------------------------------------------------------------
             ResourceSlot create_constant_buffer_view(commands::CreateConstantBufferViewCommandDesc&& createBufferParams)
             {
-                ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+                ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
                 commands::CreateConstantBufferView* cmd = create_new_command<commands::CreateConstantBufferView>(rsl::move(createBufferParams), resource_slot);
 
@@ -169,7 +168,7 @@ namespace rex
 
                     executed_commands.push_back(*cmd);
 
-                    cmd = g_ctx.cmd_list.get();
+                    cmd = g_ctx->cmd_list->get();
                 }
 
                 // Manually call the destructor of each command
@@ -187,17 +186,20 @@ namespace rex
         //-------------------------------------------------------------------------
         bool initialize(const OutputWindowUserData& userData, s32 maxCommands, s32 maxFrameResources)
         {
+            g_ctx = rsl::make_unique<Context>();
+
             // We will initialize the allocated resource to 16 to pool can always grow when it requires more slots
             //      we use a limited amount of resources now so 16 is definitly large enough
             //      we can always tweak this value later as pass it as an argument to the initialize of the renderer.
             constexpr s32 initial_allocated_resource_slots = 16;
 
-            g_ctx.slot_resources.initialize(initial_allocated_resource_slots);
-            g_ctx.cmd_list.initialize(maxCommands);
+            g_ctx->slot_resources = rsl::make_unique<ResourceSlots>(initial_allocated_resource_slots);
+            g_ctx->cmd_allocator = rsl::make_unique<CommandAllocator>(cmd_allocator_size);
+            g_ctx->cmd_list= rsl::make_unique<CommandList>(maxCommands);
 
-            globals::g_default_targets_info.front_buffer_color = g_ctx.slot_resources.alloc_slot();
-            globals::g_default_targets_info.back_buffer_color = g_ctx.slot_resources.alloc_slot();
-            globals::g_default_targets_info.depth_buffer = g_ctx.slot_resources.alloc_slot();
+            globals::g_default_targets_info.front_buffer_color = g_ctx->slot_resources->alloc_slot();
+            globals::g_default_targets_info.back_buffer_color = g_ctx->slot_resources->alloc_slot();
+            globals::g_default_targets_info.depth_buffer = g_ctx->slot_resources->alloc_slot();
 
             return backend::initialize(userData
                 , maxFrameResources
@@ -211,11 +213,12 @@ namespace rex
         {
             flush();
 
+            // These are tracked separetly, so we have to release them manually
             globals::g_default_targets_info.back_buffer_color.release();
             globals::g_default_targets_info.front_buffer_color.release();
             globals::g_default_targets_info.depth_buffer.release();
 
-            g_ctx.slot_resources.free_slots();
+            g_ctx.reset();
 
             backend::shutdown();
         }
@@ -241,7 +244,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_clear_state(commands::CreateClearStateCommandDesc&& desc)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::CreateClearState* cmd = create_new_command<commands::CreateClearState>(rsl::move(desc), resource_slot);
 
@@ -257,7 +260,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_raster_state(commands::CreateRasterStateCommandDesc&& desc)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::CreateRasterState* cmd = create_new_command<commands::CreateRasterState>(rsl::move(desc), resource_slot);
 
@@ -273,7 +276,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_input_layout(commands::CreateInputLayoutCommandDesc&& desc)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::CreateInputLayout* cmd = create_new_command<commands::CreateInputLayout>(rsl::move(desc), resource_slot);
 
@@ -307,7 +310,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_pipeline_state_object(commands::CreatePipelineStateCommandDesc&& createPipelineStateParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::CreatePipelineState* cmd = create_new_command<commands::CreatePipelineState>(rsl::move(createPipelineStateParams), resource_slot);
 
@@ -323,7 +326,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot create_frame_resource()
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::CreateFrameResource* cmd = create_new_command<commands::CreateFrameResource>(commands::CreateFrameResourceCommandDesc(), resource_slot);
 
@@ -339,7 +342,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot attach_committed_resource_to_frame(commands::AttachCommittedResourceToFrameCommandDesc&& attachCommittedResourceParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::AttachCommittedResourceToFrame* cmd = create_new_command<commands::AttachCommittedResourceToFrame>(rsl::move(attachCommittedResourceParams), resource_slot);
 
@@ -355,7 +358,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot load_shader(commands::LoadShaderCommandDesc&& loadShaderParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::LoadShader* cmd = create_new_command<commands::LoadShader>(rsl::move(loadShaderParams), resource_slot);
 
@@ -371,7 +374,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot link_shader(commands::LinkShaderCommandDesc&& linkShaderParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::LinkShader* cmd = create_new_command<commands::LinkShader>(rsl::move(linkShaderParams), resource_slot);
 
@@ -387,7 +390,7 @@ namespace rex
         //-------------------------------------------------------------------------
         ResourceSlot compile_shader(commands::CompileShaderCommandDesc&& compileShaderParams)
         {
-            ResourceSlot resource_slot = g_ctx.slot_resources.alloc_slot();
+            ResourceSlot resource_slot = g_ctx->slot_resources->alloc_slot();
 
             commands::CompileShader* cmd = create_new_command<commands::CompileShader>(rsl::move(compileShaderParams), resource_slot);
 
@@ -624,9 +627,9 @@ namespace rex
             {
                 if (flush)
                 {
-                    result = internal::flush(&g_ctx.cmd_list);
+                    result = internal::flush(g_ctx->cmd_list.get());
 
-                    g_ctx.cmd_allocator.reset();
+                    g_ctx->cmd_allocator.reset();
                 }
 
                 return result;
@@ -664,7 +667,7 @@ namespace rex
         //-------------------------------------------------------------------------
         bool flush()
         {
-            return internal::flush(&g_ctx.cmd_list);
+            return internal::flush(g_ctx->cmd_list.get());
         }
     } // namespace renderer
 } // namespace rex
