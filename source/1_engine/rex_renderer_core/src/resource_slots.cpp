@@ -9,6 +9,7 @@ namespace rex
     {
         //-------------------------------------------------------------------------
         ResourceSlots::ResourceSlots(s32 num)
+          : m_flag_capacity(0)
         {
           resize(num);
         }
