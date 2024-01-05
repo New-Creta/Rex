@@ -17,6 +17,7 @@
 #include "rex_directx/resources/frame_resource.h"
 #include "rex_directx/resources/input_layout_resource.h"
 #include "rex_directx/resources/pipeline_state_resource.h"
+#include "rex_directx/resources/pipeline_state_object_hasher.h"
 #include "rex_directx/resources/pixel_shader_resource.h"
 #include "rex_directx/resources/raster_state_resource.h"
 #include "rex_directx/resources/render_target_resource.h"
@@ -1631,23 +1632,14 @@ namespace rex
         REX_ASSERT_X(cps.shader_program.is_valid(), "Invalid shader program resource slot given");
         REX_ASSERT_X(g_ctx.active_color_targets != 0, "No render targets have been set, a PSO needs to know the format of the render target(s)");
 
-        rsl::hash_result hash = rsl::hash<commands::CreatePipelineStateCommandDesc> {}(cps);
-
-        if(g_ctx.pipeline_state_objects.find(hash) != g_ctx.pipeline_state_objects.cend())
-        {
-          g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx.pipeline_state_objects.at(hash)));
-
-          return true;
-        }
-
-        auto& input_layout_resource   = g_ctx.resource_pool.as<InputLayoutResource>(cps.input_layout);
+        auto& input_layout_resource = g_ctx.resource_pool.as<InputLayoutResource>(cps.input_layout);
         auto& shader_program_resource = g_ctx.resource_pool.as<ShaderProgramResource>(cps.shader_program);
+        auto& raster_state_resource = g_ctx.resource_pool.as<RasterStateResource>(cps.rasterizer_state);
 
         D3D12_RASTERIZER_DESC raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         if(cps.rasterizer_state.is_valid())
         {
-          auto& raster_state_resource = g_ctx.resource_pool.as<RasterStateResource>(cps.rasterizer_state);
-          raster_state                = *raster_state_resource.get();
+          raster_state = *raster_state_resource.get();
         }
         D3D12_BLEND_DESC blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         if(cps.blend_state.is_valid())
@@ -1660,6 +1652,20 @@ namespace rex
         {
           // TODO:
           // Create a Depth Stencil State Resource
+        }
+
+        PipelineStateObjectHashData hash_data;
+        hash_data.input_layout_resource = &input_layout_resource;
+        hash_data.shader_program_resource = &shader_program_resource;
+        hash_data.raster_state_resource = &raster_state_resource;
+
+        rsl::hash_result hash = create_pso_hash(hash_data);
+
+        if(g_ctx.pipeline_state_objects.find(hash) != g_ctx.pipeline_state_objects.cend())
+        {
+          g_ctx.resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx.pipeline_state_objects.at(hash)));
+
+          return true;
         }
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc;
