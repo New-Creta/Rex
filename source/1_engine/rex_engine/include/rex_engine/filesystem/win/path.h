@@ -165,16 +165,16 @@ namespace rex
     // Normalizes the path, removing redundant dots for current and parent directories
     // Converts forward slashes to backward slashes
     rsl::string norm_path(rsl::string_view path);
-    // Returns a relative path to path, starting from the start directory
-    rsl::string rel_path(rsl::string_view path, rsl::string_view start = cwd());
+    // Returns a relative path to target, starting from the start directory
+    rsl::string rel_path(rsl::string_view target, rsl::string_view start = cwd());
     // Returns the latest access time of the file or directory at the given path
-    card64 get_access_time(rsl::string_view path);
+    card64 access_time(rsl::string_view path);
     // Returns the modification time of the file or directory at the given path
-    card64 get_modification_time(rsl::string_view path);
+    card64 modification_time(rsl::string_view path);
     // Returns the creation time of the file or directory at the given path
-    card64 get_creation_time(rsl::string_view path);
+    card64 creation_time(rsl::string_view path);
     // Returns the creation time of the file or directory at the given path
-    card64 get_file_size(rsl::string_view path);
+    card64 file_size(rsl::string_view path);
     // Returns if the given path has an extension
     bool has_extension(rsl::string_view path);
     // Returns if the path exists

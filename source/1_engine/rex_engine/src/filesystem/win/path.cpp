@@ -87,7 +87,7 @@ namespace rex
         Symlink,
       };
 
-      ReparseTag get_reparse_tag(rsl::string_view path)
+      ReparseTag reparse_tag(rsl::string_view path)
       {
         WIN32_FIND_DATA findFileData;
         HANDLE hFind = FindFirstFileA(path.data(), &findFileData);
@@ -389,10 +389,10 @@ namespace rex
       // join everything back together and return the result
       return rsl::join(norm_splitted, rsl::string_view(&g_seperation_char, 1)).as_string();
     }
-    // Returns a relative path to path, starting from the start directory
-    rsl::string rel_path(rsl::string_view path, rsl::string_view start)
+    // Returns a relative path to target, starting from the start directory
+    rsl::string rel_path(rsl::string_view target, rsl::string_view start)
     {
-      rsl::string norm_path  = path::norm_path(path);
+      rsl::string norm_path  = path::norm_path(target);
       rsl::string norm_start = path::norm_path(start);
 
       if(norm_path.empty() && norm_start.empty())
@@ -422,7 +422,7 @@ namespace rex
       return path::join(result, rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char, 1)).as_string());
     }
     // Returns the latest access time of the file or directory at the given path
-    card64 get_access_time(rsl::string_view path)
+    card64 access_time(rsl::string_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -437,7 +437,7 @@ namespace rex
       return rsl::win::to_integer(access_time);
     }
     // Returns the modification time of the file or directory at the given path
-    card64 get_modification_time(rsl::string_view path)
+    card64 modification_time(rsl::string_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -452,7 +452,7 @@ namespace rex
       return rsl::win::to_integer(modification_time);
     }
     // Returns the creation time of the file or directory at the given path
-    card64 get_creation_time(rsl::string_view path)
+    card64 creation_time(rsl::string_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -467,7 +467,7 @@ namespace rex
       return rsl::win::to_integer(creation_time);
     }
     // Returns the creation time of the file or directory at the given path
-    card64 get_file_size(rsl::string_view path)
+    card64 file_size(rsl::string_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -591,13 +591,13 @@ namespace rex
     // Returns true if the given path points to a junction
     bool is_junction(rsl::string_view path)
     {
-      internal::ReparseTag tag = internal::get_reparse_tag(path);
+      internal::ReparseTag tag = internal::reparse_tag(path);
       return tag == internal::ReparseTag::Junction;
     }
     // Returns true if the given path points to a symlink
     bool is_link(rsl::string_view path)
     {
-      internal::ReparseTag tag = internal::get_reparse_tag(path);
+      internal::ReparseTag tag = internal::reparse_tag(path);
       return tag == internal::ReparseTag::Symlink;
     }
     // Returns true if 2 paths point to the same file
