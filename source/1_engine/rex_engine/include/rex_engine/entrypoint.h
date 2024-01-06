@@ -7,7 +7,6 @@ namespace rex
   struct PlatformCreationParams;
   struct ApplicationCreationParams;
 
-
   extern ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams);
 
   namespace internal
