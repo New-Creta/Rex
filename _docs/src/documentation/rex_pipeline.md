@@ -158,6 +158,18 @@ As mentioned above, the build script takes in the project, configuration and com
 
 After each build the `build_projects.json` file in the intermediate build folder is updated. This json file acts as a cache for the launch script so it knows what it can launch.
 
+### Build Types
+We have a few different kind of build types aka configurations, some are only supported with Clang as they are sanitizers.
+The different builds types are
+
+- Debug: No optimizations enabled. All debug information is available.
+- Debug Opt: Optimized version of Debug build.
+- Release: All optimizations enabled, no debug information is available.
+- Coverage: Only enabled for Clang. Enables code coverage reports
+- [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html): Only enabled for Clang. Used to detect out of bounds reads/writes. Double frees, use after free.
+- [Undefined Behavior Sanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html): Only enabled for Clang. Used to detect undefined behavior at runtime.
+- [Fuzzy](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html): Only enabled for Clang. Used for fuzzing projects
+
 ### Post Build
 the sharpmake scripts for all rex related projects launch the [`post_build.py`](../../../source/post_build.py) script found at the source root.
 
