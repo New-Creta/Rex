@@ -4,6 +4,8 @@
 #include "rex_engine/diagnostics/logging/logger_config.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/types.h"
+#include "rex_engine/diagnostics/debug.h"
+#include "rex_engine/win/process.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
@@ -32,14 +34,30 @@ namespace rex
       {
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
         auto i = 1s;
-        while(i < 10min)
+        while(!is_debugger_attached() && i < 10min)
         {
           rsl::this_thread::sleep_for(1s);
           ++i;
         }
 
-        // when the debugger is attached, skip this line
-        rsl::exit(0);
+        if (!is_debugger_attached())
+        {
+          // when the debugger is attached, skip this line
+          rsl::exit(0);
+        }
+        else
+        {
+          // If we detect that a debugger is attached, we'll break here, allowing the user to step over
+          DEBUG_BREAK();
+        }
+      }
+
+      // If the program was spawned without a debugger and we want to automatically attach one
+      if (cmdline::get_argument("AttachOnBoot"))
+      {
+        // https://stackoverflow.com/questions/1291580/what-is-this-command-in-c-sharp-c-windows-system32-vsjitdebugger-exe-p-ld
+        auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::win::current_process_id());
+        system(cmd.c_str());
       }
 
       diagnostics::init_log_levels();
