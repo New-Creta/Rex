@@ -25,4 +25,27 @@ public class Utils
 
     return current_directory;
   }
+
+  // Simple helper function to create a directory name that's unique per configuration
+  public static string PerConfigFolderFormat(RexConfiguration conf)
+  {
+    return Path.Combine(conf.Target.GetFragment<Sharpmake.Compiler>().ToString(), conf.Target.ProjectConfigurationName);
+  }
+  // Simple helper function to get the path of the compiler db
+  public static string GetCompilerDBOutputPath(RexConfiguration config)
+  {
+    return Path.Combine(GetCompilerDBOutputFolder(config), "compile_commands.json");
+  }
+
+  // Simple helper function to get the directory the compiler db will go to.
+  public static string GetCompilerDBOutputFolder(RexConfiguration config)
+  {
+    return Path.Combine(GetClangToolsOutputFolder(config), PerConfigFolderFormat(config));
+  }
+
+  // Simple helper function to get the directory clang tools intermediate files get stored
+  public static string GetClangToolsOutputFolder(RexConfiguration config)
+  {
+    return Path.Combine(config.ProjectPath, "clang_tools");
+  }
 }

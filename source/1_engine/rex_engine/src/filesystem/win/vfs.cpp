@@ -1,4 +1,4 @@
-#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/win/vfs.h"
 
 #include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
@@ -14,8 +14,8 @@
 #include "rex_std/mutex.h"
 #include "rex_std/semaphore.h"
 #include "rex_std/thread.h"
-#include "rex_std_extra/memory.h"
-#include "rex_std_extra/utility.h"
+#include "rex_std/bonus/memory.h"
+#include "rex_std/bonus/utility.h"
 
 #include <Windows.h>
 

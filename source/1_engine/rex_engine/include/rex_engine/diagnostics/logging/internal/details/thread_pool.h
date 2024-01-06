@@ -29,8 +29,8 @@ namespace rexlog
 
     struct AsyncMsgLogFunctions
     {
-      using LogFunction   = std::function<void(const details::LogMsg&)>;
-      using FlushFunction = std::function<void()>;
+      using LogFunction   = rsl::function<void(const details::LogMsg&)>;
+      using FlushFunction = rsl::function<void()>;
 
       LogFunction log_fn;
       FlushFunction flush_fn;

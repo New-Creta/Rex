@@ -1,0 +1,39 @@
+#pragma once
+
+#include "rex_renderer_core/resource.h"
+#include "rex_directx/directx_util.h"
+#include "rex_directx/wrl/wrl_types.h"
+
+namespace rex
+{
+    namespace renderer
+    {
+        namespace resources
+        {
+            struct Buffer
+            {
+                wrl::com_ptr<ID3DBlob> cpu_buffer;
+                wrl::com_ptr<ID3D12Resource> gpu_buffer;
+
+                wrl::com_ptr<ID3D12Resource> uploader;
+
+                u32 size_in_bytes;
+            };
+        }
+
+        class BufferResource : public BaseResource<resources::Buffer>
+        {
+        public:
+            RESOURCE_CLASS_TYPE(BufferResource);
+
+            BufferResource(const wrl::com_ptr<ID3DBlob>& cpuBuffer, const wrl::com_ptr<ID3D12Resource>& gpuBuffer, const wrl::com_ptr<ID3D12Resource>& uploader, u32 sizeInBytes)
+                :BaseResource(&m_buffer_resource)
+                ,m_buffer_resource({ cpuBuffer , gpuBuffer, uploader, sizeInBytes })
+            {}
+            ~BufferResource() override = default;
+
+        private:
+            resources::Buffer m_buffer_resource;
+        };
+    }
+}

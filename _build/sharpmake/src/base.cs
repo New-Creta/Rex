@@ -867,16 +867,16 @@ public class ToolsProject : BasicCPPProject
 
   protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
   {
-    base.SetupConfigSettings(conf, target);
-
-    string ThisFileFolder = Path.GetFileName(Path.GetDirectoryName(Utils.CurrentFile()));
-    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", ThisFileFolder);
-
-    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
-    {
-      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
-    }
+      base.SetupConfigSettings(conf, target);
+  
+      string ThisFileFolder = Path.GetFileName(Path.GetDirectoryName(Utils.CurrentFile()));
+      conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
+      conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
+  
+      if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
+      {
+          Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
+      }
   }
 
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
@@ -888,6 +888,16 @@ public class ToolsProject : BasicCPPProject
 // All projects sitting in the tests directory should inherit from this
 public class TestProject : BasicCPPProject
 {
+  // The type of this project
+  protected ProjectGen.TestProjectType ProjectType { get; set; }
+  // Sharpmake runs multithreaded, so for thread safety, we need to put a lock around accessing the project settings array
+  static private object LockToTestProjectSettings = new object();
+
+  public TestProject() : base()
+  {
+    ProjectType = ProjectGen.TestProjectType.Undefined;
+  }
+
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     conf.SolutionFolder = "5_tests";
@@ -898,18 +908,44 @@ public class TestProject : BasicCPPProject
     switch (target.Config)
     {
       case Config.address_sanitizer:
-      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
+        conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
         break;
       case Config.undefined_behavior_sanitizer:
-      conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
+        conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
         break;
       default:
         break;
     }
   }
 
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigSettings(conf, target);
+
+    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
+
+    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
+    {
+      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
+    }
+  }
+
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
   {
     conf.Output = Configuration.OutputType.Exe;
+  }
+
+  protected override void PostInvokeConfiguration()
+  {
+    base.PostInvokeConfiguration();
+
+    if (ProjectType != ProjectGen.TestProjectType.Undefined)
+    {
+      lock (LockToTestProjectSettings)
+      {
+        ProjectGen.Settings.TestProjectsFile.AddProject(ProjectType, this);
+      }
+    }
   }
 }

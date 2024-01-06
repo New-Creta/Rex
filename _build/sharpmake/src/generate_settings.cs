@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 // These are the classes used for automatic code generation
 namespace CodeGen
@@ -37,13 +39,13 @@ namespace CodeGen
         return Filepath;
       }
     }
-    protected Dictionary<string, List<string>> ProjectToContent 
-    { 
-      get 
-      { 
-        return ProjectToContentMap; 
-      } 
-    } 
+    protected Dictionary<string, List<string>> ProjectToContent
+    {
+      get
+      {
+        return ProjectToContentMap;
+      }
+    }
 
     public TypeToGenerate(string filepath)
     {
@@ -213,6 +215,119 @@ namespace ProjectGen
     }
   }
 
+  // Indicate what kind of test project this is
+  // This is used in the test_projects.json file
+  // And can then be used by CI
+  public enum TestProjectType
+  {
+    UnitTest,
+    AutoTest,
+    Fuzzy,
+    Undefined
+  }
+
+  public class TestProjectsFile
+  {
+    // Custom converter that we use to write the configurations
+    public class ToJsonConverter : JsonConverter<Dictionary<TestProjectType, List<TestProjectSettings>>>
+    {
+      public override void Write(Utf8JsonWriter writer, Dictionary<TestProjectType, List<TestProjectSettings>> value, JsonSerializerOptions options)
+      {
+        // Configs are structured per compiler, per config
+        writer.WriteStartObject(); // Write the opening brace
+
+        foreach (var kvp in value)
+        {
+          TestProjectType type = kvp.Key;
+          WriteProjectSettings(writer, options, type, kvp.Value);
+        }
+
+        writer.WriteEndObject(); // Write the closing brace
+      }
+
+      public override Dictionary<TestProjectType, List<TestProjectSettings>> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+      {
+        // Implement the Read method if needed
+        throw new NotImplementedException();
+      }
+
+      private void WriteProjectSettings(Utf8JsonWriter writer, JsonSerializerOptions options, TestProjectType type, List<TestProjectSettings> settings)
+      {
+        writer.WritePropertyName(type.ToString()); // write test project type
+
+        writer.WriteStartObject();  // Write the opening brace
+
+        foreach (var setting in settings)
+        {
+          writer.WritePropertyName(setting.Name); // write project name
+          JsonSerializer.Serialize(writer, setting, options); // write test project settings
+        }
+
+        writer.WriteEndObject(); // Write the closing brace
+      }
+    }
+
+    public class TestProjectSettings
+    {
+      public string Name { get; }
+      public string Root { get; }
+      public string WorkingDir { get; }
+      public List<string> TargetPaths { get; } = new List<string>();
+      public List<string> CompilerDBPaths { get; } = new List<string>();
+
+      public TestProjectSettings(Project project)
+      {
+        Name = project.Name;
+        Root = project.SourceRootPath;
+        WorkingDir = project.Configurations[0].VcxprojUserFile?.LocalDebuggerWorkingDirectory;
+
+        foreach (Project.Configuration conf in project.Configurations)
+        {
+          var configTasks = PlatformRegistry.Get<Project.Configuration.IConfigurationTasks>(conf.Platform);
+
+          if (conf.Compiler != DevEnv.ninja)
+          {
+            continue;
+          }
+
+          // Making sure our prefix and extension are filled in or we get an error when resolving
+          if (conf.TargetFilePlatformPrefix == null)
+            conf.TargetFilePlatformPrefix = configTasks.GetOutputFileNamePrefix(conf.Output);
+          if (conf.TargetFileFullExtension == null)
+            conf.TargetFileFullExtension = configTasks.GetDefaultOutputFullExtension(conf.Output);
+
+          Resolver resolver = new Resolver();
+          resolver.SetParameter("conf", conf);
+          resolver.SetParameter("project", this);
+          string fullTargetPath = resolver.Resolve(System.IO.Path.Combine(conf.TargetPath, conf.TargetFileFullNameWithExtension));
+
+          TargetPaths.Add(fullTargetPath);
+          CompilerDBPaths.Add(Utils.GetCompilerDBOutputPath((RexConfiguration)conf));
+        }
+
+      }
+    }
+
+    [JsonConverter(typeof(TestProjectsFile.ToJsonConverter))]
+    public Dictionary<TestProjectType, List<TestProjectSettings>> TypeSettings { get; set; } = new Dictionary<TestProjectType, List<TestProjectSettings>>();
+
+    public TestProjectsFile()
+    {
+      // Nothing to implement
+    }
+
+    public void AddProject(TestProjectType type, Project project)
+    {
+      if (!TypeSettings.ContainsKey(type))
+      {
+        TypeSettings.Add(type, new List<TestProjectSettings>());
+      }
+
+      TypeSettings[type].Add(new TestProjectSettings(project));
+    }
+  }
+
+
   // 
   public class Settings
   {
@@ -237,5 +352,7 @@ namespace ProjectGen
     static public bool UnityBuildsDisabled = false;               // Disable unity builds (aka jumbo builds or combi builds)
 
     static public List<GenerateCompilerDBCommand> GenerateCompilerDBCommands = new List<GenerateCompilerDBCommand>(); // List of command wrappers to generate compiler dbs for.
+
+    static public TestProjectsFile TestProjectsFile = new TestProjectsFile();
   }
 }
