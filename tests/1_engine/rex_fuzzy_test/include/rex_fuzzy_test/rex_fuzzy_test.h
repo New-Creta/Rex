@@ -30,6 +30,14 @@ namespace rex
 
     // This is the entry point for projects using fuzzy testing
     // This acts the same way as app_entry in Rex engine
-    extern int fuzzy_entry(fuzz_span input);
+    // 
+    // This is made const reference so users have to copy it
+    // They can create objects from the copied version while
+    // the original one is left untouched
+    // making the it easier to write multiple test
+    // each creating their own objects starting from the beginning
+    // of the input and the first test doesn't affect the input
+    // to be passed in to the second
+    extern int fuzzy_entry(const fuzz_span& input);
   }
 }

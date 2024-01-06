@@ -338,12 +338,6 @@ public abstract class BasicCPPProject : Project
         break;
       case Optimization.FullOptWithPdb:
       case Optimization.FullOpt:
-        // disable lto to avoid asan odr issues.
-        // can't disable them with ASAN_OPTIONS=detect_odr_violation=0 due to unknown bug
-        if (conf.NinjaEnableAddressSanitizer)
-        {
-          conf.Options.Add(Options.Vc.General.WholeProgramOptimization.LinkTime);
-        }
         conf.Options.Add(Options.Vc.Compiler.Optimization.MaximizeSpeed);
         conf.Options.Add(Options.Vc.Compiler.Intrinsic.Enable);
         conf.Options.Add(Options.Vc.Compiler.RuntimeLibrary.MultiThreaded);
@@ -360,6 +354,19 @@ public abstract class BasicCPPProject : Project
         conf.Options.Add(Options.Vc.Linker.EnableCOMDATFolding.RemoveRedundantCOMDATs);
         conf.Options.Add(Options.Vc.Linker.Reference.EliminateUnreferencedData);
         break;
+    }
+
+    // disable lto to avoid asan odr issues.
+    // can't disable them with ASAN_OPTIONS=detect_odr_violation=0 due to unknown bug
+    if (conf.NinjaEnableAddressSanitizer)
+    {
+      conf.Options.Add(Options.Vc.General.WholeProgramOptimization.Disable);
+      conf.Options.Add(Options.Vc.Compiler.Optimization.Disable);
+    }
+
+    if (conf.NinjaEnableUndefinedBehaviorSanitizer)
+    {
+      conf.Options.Add(Options.Vc.Compiler.Optimization.Disable);
     }
 
     // Setup the difference between optimized builds vs shipping builds

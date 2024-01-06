@@ -6,10 +6,11 @@ namespace rex
 {
   namespace fuzzy
   {
-    int fuzzy_entry(fuzz_span input)
+    int fuzzy_entry(const fuzz_span& input)
     {
-
-      int test_val = rex::fuzzy::make_fuzzy_object<int>(input);
+      // Example code
+      fuzz_span my_test_input = input;
+      int test_val = make_fuzzy_object<int>(my_test_input);
 
       return 0;
     }

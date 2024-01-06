@@ -3,7 +3,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_std/string.h"
-#include "rex_std_extra/time/time_digits.h"
+#include "rex_std/bonus/time/time_digits.h"
 
 // Some fmt helpers to efficiently format and pad ints and strings
 namespace rexlog
