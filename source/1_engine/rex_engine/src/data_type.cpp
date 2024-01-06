@@ -18,7 +18,7 @@
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/format.h"
-#include "rex_std_extra/utility/type_id.h"
+#include "rex_std/bonus/utility/type_id.h"
 
 #include <cstddef>
 

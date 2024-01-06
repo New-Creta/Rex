@@ -5,8 +5,8 @@
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
-#include "rex_std_extra/memory/memory_size.h"
-#include "rex_std_extra/utility/yes_no.h"
+#include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/utility/yes_no.h"
 
 namespace rex
 {
