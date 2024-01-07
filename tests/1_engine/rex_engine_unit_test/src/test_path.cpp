@@ -421,25 +421,25 @@ TEST_CASE("Split")
     CHECK(result.tail == "..");
 }
 
-TEST_CASE("Split Drive")
+TEST_CASE("Split Origin")
 {
-    auto result = rex::path::split_drive("C:\\Windows\\System32\\file.dll");
+    auto result = rex::path::split_origin("C:\\Windows\\System32\\file.dll");
     CHECK(result.head == "C:");
     CHECK(result.tail == "Windows\\System32\\file.dll");
 
-    result = rex::path::split_drive("\\Windows\\System32\\file.dll");
+    result = rex::path::split_origin("\\Windows\\System32\\file.dll");
     CHECK(result.head == "");
     CHECK(result.tail == "\\Windows\\System32\\file.dll");
 
-    result = rex::path::split_drive("/path/to/file.txt");
+    result = rex::path::split_origin("/path/to/file.txt");
     CHECK(result.head == "");
     CHECK(result.tail == "/path/to/file.txt");
 
-    result = rex::path::split_drive("");
+    result = rex::path::split_origin("");
     CHECK(result.head == "");
     CHECK(result.tail == "");
 
-    result = rex::path::split_drive("./relative/path");
+    result = rex::path::split_origin("./relative/path");
     CHECK(result.head == "");
     CHECK(result.tail == "./relative/path");
 }
