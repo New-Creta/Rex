@@ -10,7 +10,7 @@
 #include "rex_engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std/thread.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/bonus/memory/memory_size.h"
 
 //
 // Memory tracking strategy
