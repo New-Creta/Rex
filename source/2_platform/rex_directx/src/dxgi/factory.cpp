@@ -11,9 +11,9 @@ namespace
 {
     //-------------------------------------------------------------------------
     template <typename DXGIFactoryInterface>
-    rex::wrl::com_ptr<DXGIFactoryInterface> create_dxgi_factory(s32 flags)
+    rex::wrl::ComPtr<DXGIFactoryInterface> create_dxgi_factory(s32 flags)
     {
-        rex::wrl::com_ptr<DXGIFactoryInterface> dxgi_factory = nullptr;
+        rex::wrl::ComPtr<DXGIFactoryInterface> dxgi_factory = nullptr;
 
         const HRESULT hr = CreateDXGIFactory2(flags, IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
         if (hr != S_OK)
@@ -24,9 +24,9 @@ namespace
 
     //-------------------------------------------------------------------------
     template <typename DXGIFactoryInterface>
-    rex::wrl::com_ptr<DXGIFactoryInterface> create_dxgi_factory()
+    rex::wrl::ComPtr<DXGIFactoryInterface> create_dxgi_factory()
     {
-        rex::wrl::com_ptr<DXGIFactoryInterface> dxgi_factory = nullptr;
+        rex::wrl::ComPtr<DXGIFactoryInterface> dxgi_factory = nullptr;
 
         const HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
         if (hr != S_OK)
@@ -36,9 +36,9 @@ namespace
     }
 
     //-------------------------------------------------------------------------
-    rex::wrl::com_ptr<IDXGIFactory> create_dxgi_factory()
+    rex::wrl::ComPtr<IDXGIFactory> create_dxgi_factory()
     {
-        rex::wrl::com_ptr<IDXGIFactory> dxgi_factory = nullptr;
+        rex::wrl::ComPtr<IDXGIFactory> dxgi_factory = nullptr;
 
         const HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
         if (hr != S_OK)
@@ -55,21 +55,21 @@ namespace rex
         //-------------------------------------------------------------------------
         Factory Factory::create(s32 flags)
         {
-            if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory7>(flags))
+            if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory7>(flags))
                 return Factory(rsl::move(factory), 7);
-            if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory6>(flags))
+            if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory6>(flags))
                 return Factory(rsl::move(factory), 6);
-            if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory5>(flags))
+            if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory5>(flags))
                 return Factory(rsl::move(factory), 5);
-            if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory4>(flags))
+            if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory4>(flags))
                 return Factory(rsl::move(factory), 4);
-            if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory3>(flags))
+            if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory3>(flags))
                 return Factory(rsl::move(factory), 3);
-            if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory2>(flags))
+            if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory2>(flags))
                 return Factory(rsl::move(factory), 2);
-            if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory1>())
+            if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory1>())
                 return Factory(rsl::move(factory), 1);
-            if (wrl::com_ptr<IDXGIFactory> factory = create_dxgi_factory())
+            if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory())
                 return Factory(rsl::move(factory), 0);
 
             REX_ASSERT("Couldn't create dxgi factory!");
@@ -80,7 +80,7 @@ namespace rex
             : ComObject(nullptr, 0)
         {}
         //-------------------------------------------------------------------------
-        Factory::Factory(wrl::com_ptr<IDXGIFactory>&& object, u32 version)
+        Factory::Factory(wrl::ComPtr<IDXGIFactory>&& object, u32 version)
             : ComObject(rsl::move(object), version)
         {}
     } // namespace dxgi

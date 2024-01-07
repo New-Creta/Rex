@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 
 namespace rex
 {
@@ -12,10 +12,10 @@ namespace rex
         {
             struct Buffer
             {
-                wrl::com_ptr<ID3DBlob> cpu_buffer;
-                wrl::com_ptr<ID3D12Resource> gpu_buffer;
+                wrl::ComPtr<ID3DBlob> cpu_buffer;
+                wrl::ComPtr<ID3D12Resource> gpu_buffer;
 
-                wrl::com_ptr<ID3D12Resource> uploader;
+                wrl::ComPtr<ID3D12Resource> uploader;
 
                 u32 size_in_bytes;
             };
@@ -26,7 +26,7 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(BufferResource);
 
-            BufferResource(const wrl::com_ptr<ID3DBlob>& cpuBuffer, const wrl::com_ptr<ID3D12Resource>& gpuBuffer, const wrl::com_ptr<ID3D12Resource>& uploader, u32 sizeInBytes)
+            BufferResource(const wrl::ComPtr<ID3DBlob>& cpuBuffer, const wrl::ComPtr<ID3D12Resource>& gpuBuffer, const wrl::ComPtr<ID3D12Resource>& uploader, u32 sizeInBytes)
                 :BaseResource(&m_buffer_resource)
                 ,m_buffer_resource({ cpuBuffer , gpuBuffer, uploader, sizeInBytes })
             {}

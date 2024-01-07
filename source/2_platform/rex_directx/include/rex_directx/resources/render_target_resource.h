@@ -13,7 +13,7 @@ namespace rex
         {
             struct RenderTarget
             {
-                wrl::com_ptr<ID3D12Resource> render_target;
+                wrl::ComPtr<ID3D12Resource> render_target;
                 TextureFormat format;
                 s32 array_index;
             };
@@ -24,7 +24,7 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(RenderTargetResource);
 
-            RenderTargetResource(const wrl::com_ptr<ID3D12Resource>& rt, TextureFormat format, s32 arrayIndex)
+            RenderTargetResource(const wrl::ComPtr<ID3D12Resource>& rt, TextureFormat format, s32 arrayIndex)
               : BaseResource(&m_render_target)
                 , m_render_target({rt, format, arrayIndex})
             {}

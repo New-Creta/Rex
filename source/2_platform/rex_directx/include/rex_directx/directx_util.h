@@ -3,7 +3,7 @@
 // NOLINTBEGIN(llvm-include-order)
 // clang-format off
 
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 
 #include <d3d12.h>
 #include <d3d11on12.h>

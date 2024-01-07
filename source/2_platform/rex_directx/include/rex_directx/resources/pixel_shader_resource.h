@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 
 namespace rex
 {
@@ -12,7 +12,7 @@ namespace rex
         {
             struct PixelShader
             {
-                wrl::com_ptr<ID3DBlob> pixel_shader;
+                wrl::ComPtr<ID3DBlob> pixel_shader;
             };
         }
 
@@ -21,7 +21,7 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(PixelShaderResource);
 
-            PixelShaderResource(const wrl::com_ptr<ID3DBlob>& ps)
+            PixelShaderResource(const wrl::ComPtr<ID3DBlob>& ps)
               : BaseResource(&m_pixel_shader)
                 ,m_pixel_shader({ ps })
             {}

@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 #include "rex_engine/types.h"
 
 namespace rex
@@ -13,7 +13,7 @@ namespace rex
         {
             struct Frame
             {
-                wrl::com_ptr<ID3D12CommandAllocator> cmd_list_allocator;
+                wrl::ComPtr<ID3D12CommandAllocator> cmd_list_allocator;
 
                 u64 fence;
             };
@@ -24,7 +24,7 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(FrameResource);
 
-            FrameResource(const wrl::com_ptr<ID3D12CommandAllocator>& allocator)
+            FrameResource(const wrl::ComPtr<ID3D12CommandAllocator>& allocator)
                 : BaseResource(&m_frame)
                 ,m_frame({allocator, 0})
             {}

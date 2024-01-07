@@ -2,7 +2,7 @@
 
 #include "rex_engine/types.h"
 #include "rex_directx/dxgi/comobject.h"
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 #include "rex_renderer_core/gpu_description.h"
 #include "rex_std/bonus/types.h"
 
@@ -15,7 +15,7 @@ namespace rex
     class Adapter : public dxgi::ComObject<IDXGIAdapter> // NOLINT(fuchsia-multiple-inheritance)
     {
     public:
-      Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, u32 version);
+      Adapter(wrl::ComPtr<IDXGIAdapter>&& adapter, u32 version);
 
       const GpuDescription& description() const;
 

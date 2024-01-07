@@ -2,7 +2,7 @@
 
 #include "rex_engine/types.h"
 #include "rex_directx/dxgi/comobject.h"
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 
 struct IDXGIFactory;
 
@@ -16,7 +16,7 @@ namespace rex
       static Factory create(s32 flags);
 
       Factory();
-      Factory(wrl::com_ptr<IDXGIFactory>&& object, u32 version);
+      Factory(wrl::ComPtr<IDXGIFactory>&& object, u32 version);
     };
   } // namespace dxgi
 } // namespace rex

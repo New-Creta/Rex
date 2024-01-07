@@ -3,7 +3,7 @@
 #include "rex_renderer_core/resource.h"
 #include "rex_renderer_core/resource_slot.h"
 #include "rex_directx/directx_util.h"
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 #include "rex_engine/types.h"
 
 namespace rex

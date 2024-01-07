@@ -85,14 +85,14 @@ namespace
   }
 
   //-------------------------------------------------------------------------
-  rex::GpuDescription get_description(const rex::wrl::com_ptr<IDXGIAdapter>& adapter)
+  rex::GpuDescription get_description(const rex::wrl::ComPtr<IDXGIAdapter>& adapter)
   {
     rex::GpuDescription desc;
 
     // MSDN says that you shouldn't use dxgi 1.0 and dxgi 1.1
     // in the same application.
     // so if the version is 1 or higher, we use dxgi 1.1
-    rex::wrl::com_ptr<IDXGIAdapter1> adapter_1;
+    rex::wrl::ComPtr<IDXGIAdapter1> adapter_1;
     adapter.As<IDXGIAdapter1>(&adapter_1);
     if(adapter_1)
     {
@@ -116,9 +116,9 @@ namespace rex
   namespace dxgi
   {
     //-------------------------------------------------------------------------
-    Adapter::Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, u32 version)
+    Adapter::Adapter(wrl::ComPtr<IDXGIAdapter>&& adapter, u32 version)
         : ComObject(rsl::move(adapter), version)
-        , m_description(::get_description(com_ptr()))
+        , m_description(::get_description(ComPtr()))
     {
     }
 
