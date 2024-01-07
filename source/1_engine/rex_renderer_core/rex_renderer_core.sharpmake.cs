@@ -19,7 +19,7 @@ public class RexRendererCore : EngineProject
   {
     base.SetupLibDependencies(conf, target);
 
-    conf.AddPublicDependency<RexStdExtra>(target);
+    conf.AddPublicDependency<RexStd>(target);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }
 }

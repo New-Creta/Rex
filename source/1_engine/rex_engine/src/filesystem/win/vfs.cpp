@@ -1,25 +1,23 @@
-#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/win/vfs.h"
 
 #include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/diagnostics/win/win_call.h"
-#include "rex_std/bonus/atomic/atomic.h"
-#include "rex_std/bonus/hashtable.h"
-#include "rex_std/bonus/memory.h"
-#include "rex_std/bonus/platform.h"
+#include "rex_engine/memory/untracked_allocator.h"
+#include "rex_engine/string/stringid.h"
+#include "rex_std/atomic.h"
+#include "rex_std/bonus/platform/windows/handle.h"
 #include "rex_std/bonus/string.h"
-#include "rex_std/ctype.h"
+#include "rex_std/chrono.h"
+#include "rex_std/memory.h"
 #include "rex_std/mutex.h"
+#include "rex_std/semaphore.h"
 #include "rex_std/thread.h"
-#include "rex_std/unordered_map.h"
-#include "rex_std/vector.h"
-#include "rex_std_extra/utility/enum_reflection.h"
+#include "rex_std/bonus/memory.h"
+#include "rex_std/bonus/utility.h"
 
 #include <Windows.h>
-#include <processenv.h>
-#include <stddef.h>
 
 DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Log);
 
@@ -365,14 +363,14 @@ namespace rex
       rsl::medium_stack_string path = create_full_path(filepath);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(path.data(),               // Path to file
-                                                               GENERIC_READ,              // General read and write access
-                                                               FILE_SHARE_READ,           // Other processes can also read the file
-                                                               NULL,                      // No SECURITY_ATTRIBUTES
-                                                               OPEN_EXISTING,             // Open the file, only if it exists
-                                                               FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
-                                                               NULL                       // No template file
-                                                               ),
-                                                    ERROR_ALREADY_EXISTS));
+                                                         GENERIC_READ,              // General read and write access
+                                                         FILE_SHARE_READ,           // Other processes can also read the file
+                                                         NULL,                      // No SECURITY_ATTRIBUTES
+                                                         OPEN_EXISTING,             // Open the file, only if it exists
+                                                         FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
+                                                         NULL                       // No template file
+                                                         ),
+                                              ERROR_ALREADY_EXISTS));
 
       // prepare a buffer to receive the file content
       const card32 file_size              = static_cast<card32>(GetFileSize(handle.get(), nullptr));
@@ -424,14 +422,14 @@ namespace rex
       rsl::medium_stack_string fullpath = create_full_path(filepath);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(fullpath.data(),           // Path to file
-                                                               GENERIC_WRITE,             // General read and write access
-                                                               FILE_SHARE_READ,           // Other processes can also read the file
-                                                               NULL,                      // No SECURITY_ATTRIBUTES
-                                                               OPEN_ALWAYS,               // Create a new file, error when it already exists
-                                                               FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
-                                                               NULL                       // No template file
-                                                               ),
-                                                    ERROR_ALREADY_EXISTS));
+                                                         GENERIC_WRITE,             // General read and write access
+                                                         FILE_SHARE_READ,           // Other processes can also read the file
+                                                         NULL,                      // No SECURITY_ATTRIBUTES
+                                                         OPEN_ALWAYS,               // Create a new file, error when it already exists
+                                                         FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
+                                                         NULL                       // No template file
+                                                         ),
+                                              ERROR_ALREADY_EXISTS));
 
       const DWORD move_method = shouldAppend ? FILE_END : FILE_BEGIN;
 

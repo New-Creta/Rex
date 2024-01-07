@@ -5,7 +5,8 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/string.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/string.h"
+#include "rex_std/bonus/memory/memory_size.h"
 
 #include <cstdlib>
 #include <wrl/client.h>
@@ -115,7 +116,7 @@ namespace rex
   namespace dxgi
   {
     //-------------------------------------------------------------------------
-    Adapter::Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, uint32 version)
+    Adapter::Adapter(wrl::com_ptr<IDXGIAdapter>&& adapter, u32 version)
         : ComObject(rsl::move(adapter), version)
         , m_description(::get_description(com_ptr()))
     {
