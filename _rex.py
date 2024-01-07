@@ -55,7 +55,7 @@ def _run_script(scriptPath : str, args : list[str]):
   script_args.append(scriptPath)
   script_args.extend(args)
   proc = subprocess.Popen(args=script_args)
-  proc.communicate()
+  proc.wait()
 
 def _exec_version():
   """Load the engine version and display it"""
