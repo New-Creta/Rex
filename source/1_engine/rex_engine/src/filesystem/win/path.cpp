@@ -1,4 +1,4 @@
-#include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/win/path.h"
 
 #include "rex_engine/numeric.h"
 #include "rex_engine/win/win_com_library.h"
@@ -6,8 +6,8 @@
 #include "rex_std/bonus/platform.h"
 #include "rex_std/ctype.h"
 #include "rex_std/format.h"
-#include "rex_std_extra/string.h"
-#include "rex_std_extra/time/win/win_time_functions.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/bonus/time/win/win_time_functions.h"
 
 // The current implementation of this namespace is Windows only
 
@@ -636,7 +636,7 @@ namespace rex
     // Splits the path into a head and a tail
     // the head is either the mount point or an empty string
     // the tail is everything else
-    SplitResult split_drive(rsl::string_view path)
+    SplitResult split_origin(rsl::string_view path)
     {
       SplitResult res {};
 
@@ -706,7 +706,7 @@ namespace rex
     SplitRootResult split_root(rsl::string_view path)
     {
       // use a split drive result
-      SplitResult splitted_drive = split_drive(path);
+      SplitResult splitted_drive = split_origin(path);
       SplitRootResult res {};
 
       // fill in the values

@@ -18,8 +18,10 @@ build/sharpmake/bin/
 build/sharpmake/obj/
 
 source/0_thirdparty
-*.nsln
 source/1_engine/rex_engine/include/rex_engine/memory/memory_tags.h
 source/1_engine/rex_engine/include/rex_engine/filesystem/mounting_point.h
 source/1_engine/rex_engine/include/rex_engine/cmd_args.h
+
 _docs/book/
+*.nsln
+*.unrealvs
