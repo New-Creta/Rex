@@ -14,104 +14,107 @@
 
 #include <functional>
 
-namespace rexlog
+namespace rex
 {
-
-  namespace details
+  namespace log
   {
-    class LogMsg;
 
-    using async_logger_ptr = rsl::shared_ptr<rexlog::AsyncLogger>;
-
-    enum class AsyncMsgType
+    namespace details
     {
-      Log,
-      Flush,
-      Terminate
-    };
+      class LogMsg;
 
-    struct AsyncMsgLogFunctions
-    {
-      using LogFunction   = std::function<void(const details::LogMsg&)>;
-      using FlushFunction = std::function<void()>;
+      using async_logger_ptr = rsl::shared_ptr<rex::log::AsyncLogger>;
 
-      LogFunction log_fn;
-      FlushFunction flush_fn;
-    };
-
-    // Async msg to move to/from the queue movable only
-    // This should never be copied
-    struct AsyncMsg : LogMsgBuffer
-    {
-      AsyncMsgType msg_type {AsyncMsgType::Log};
-      AsyncMsgLogFunctions logger_fns;
-
-      AsyncMsg()           = default;
-      ~AsyncMsg() override = default;
-
-      AsyncMsg(const AsyncMsg&)            = delete;
-      AsyncMsg(AsyncMsg&&)                 = default;
-      AsyncMsg& operator=(const AsyncMsg&) = delete;
-      AsyncMsg& operator=(AsyncMsg&&)      = default;
-
-      AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType, const details::LogMsg& m)
-          : LogMsgBuffer {m}
-          , msg_type {theType}
-          , logger_fns {rsl::move(fns)}
+      enum class AsyncMsgType
       {
-      }
+        Log,
+        Flush,
+        Terminate
+      };
 
-      AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType)
-          : LogMsgBuffer {}
-          , msg_type {theType}
-          , logger_fns {rsl::move(fns)}
+      struct AsyncMsgLogFunctions
       {
-      }
+        using LogFunction   = std::function<void(const details::LogMsg&)>;
+        using FlushFunction = std::function<void()>;
 
-      explicit AsyncMsg(AsyncMsgType theType)
-          : AsyncMsg {{}, theType}
+        LogFunction log_fn;
+        FlushFunction flush_fn;
+      };
+
+      // Async msg to move to/from the queue movable only
+      // This should never be copied
+      struct AsyncMsg : LogMsgBuffer
       {
-      }
-    };
+        AsyncMsgType msg_type {AsyncMsgType::Log};
+        AsyncMsgLogFunctions logger_fns;
 
-    class ThreadPool
-    {
-    public:
-      using item_type = AsyncMsg;
-      using q_type    = details::MpmcBlockingQueue<item_type>;
+        AsyncMsg()           = default;
+        ~AsyncMsg() override = default;
 
-      ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
-      ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart);
-      ThreadPool(s32 qMaxItems, s32 threadsN);
+        AsyncMsg(const AsyncMsg&)            = delete;
+        AsyncMsg(AsyncMsg&&)                 = default;
+        AsyncMsg& operator=(const AsyncMsg&) = delete;
+        AsyncMsg& operator=(AsyncMsg&&)      = default;
 
-      // message all threads to terminate gracefully and join them
-      ~ThreadPool();
+        AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType, const details::LogMsg& m)
+            : LogMsgBuffer {m}
+            , msg_type {theType}
+            , logger_fns {rsl::move(fns)}
+        {
+        }
 
-      ThreadPool(const ThreadPool&)            = delete;
-      ThreadPool(ThreadPool&&)                 = delete;
-      ThreadPool& operator=(const ThreadPool&) = delete;
-      ThreadPool& operator=(ThreadPool&&)      = delete;
+        AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType)
+            : LogMsgBuffer {}
+            , msg_type {theType}
+            , logger_fns {rsl::move(fns)}
+        {
+        }
 
-      void post_log(AsyncMsgLogFunctions&& loggerFns, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
-      void post_flush(AsyncMsgLogFunctions&& loggerFns, AsyncOverflowPolicy overflowPolicy);
-      s32 overrun_counter();
-      void reset_overrun_counter();
-      s32 queue_size();
+        explicit AsyncMsg(AsyncMsgType theType)
+            : AsyncMsg {{}, theType}
+        {
+        }
+      };
 
-    private:
-      void post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy);
-      void worker_loop_impl();
+      class ThreadPool
+      {
+      public:
+        using item_type = AsyncMsg;
+        using q_type    = details::MpmcBlockingQueue<item_type>;
 
-      // process next message in the queue
-      // return true if this thread should still be active
-      // while no terminate msg was received
-      bool process_next_msg_impl();
+        ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
+        ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart);
+        ThreadPool(s32 qMaxItems, s32 threadsN);
 
-    private:
-      q_type m_q;
+        // message all threads to terminate gracefully and join them
+        ~ThreadPool();
 
-      rex::DebugVector<rsl::thread> m_threads;
-    };
+        ThreadPool(const ThreadPool&)            = delete;
+        ThreadPool(ThreadPool&&)                 = delete;
+        ThreadPool& operator=(const ThreadPool&) = delete;
+        ThreadPool& operator=(ThreadPool&&)      = delete;
 
-  } // namespace details
-} // namespace rexlog
+        void post_log(AsyncMsgLogFunctions&& loggerFns, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
+        void post_flush(AsyncMsgLogFunctions&& loggerFns, AsyncOverflowPolicy overflowPolicy);
+        s32 overrun_counter();
+        void reset_overrun_counter();
+        s32 queue_size();
+
+      private:
+        void post_async_msg_impl(AsyncMsg&& newMsg, AsyncOverflowPolicy overflowPolicy);
+        void worker_loop_impl();
+
+        // process next message in the queue
+        // return true if this thread should still be active
+        // while no terminate msg was received
+        bool process_next_msg_impl();
+
+      private:
+        q_type m_q;
+
+        rex::DebugVector<rsl::thread> m_threads;
+      };
+
+    } // namespace details
+  }   // namespace log
+} // namespace rex

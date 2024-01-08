@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_std/bonus/memory.h"
-#include "rex_std/bonus/types.h"
 #include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {

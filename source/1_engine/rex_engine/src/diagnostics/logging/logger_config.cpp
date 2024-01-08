@@ -56,17 +56,17 @@ namespace rex
         }
 
         auto key_vals = extract_key_vals(input);
-        rexlog::details::Registry::LogLevels levels;
-        rexlog::level::LevelEnum global_level = rexlog::level::LevelEnum::Info;
-        bool global_level_found               = false;
+        rex::log::details::Registry::LogLevels levels;
+        rex::log::level::LevelEnum global_level = rex::log::level::LevelEnum::Info;
+        bool global_level_found                 = false;
 
         for(auto& name_level: key_vals)
         {
           const auto& logger_name = name_level.key;
           auto level_name         = name_level.value;
-          auto level              = rexlog::level::from_str(level_name);
+          auto level              = rex::log::level::from_str(level_name);
           // ignore unrecognized level names
-          if(level == rexlog::level::LevelEnum::Off && level_name != "off")
+          if(level == rex::log::level::LevelEnum::Off && level_name != "off")
           {
             continue;
           }
@@ -81,7 +81,7 @@ namespace rex
           }
         }
 
-        rexlog::details::Registry::instance().set_levels(rsl::move(levels), global_level_found ? &global_level : nullptr);
+        rex::log::details::Registry::instance().set_levels(rsl::move(levels), global_level_found ? &global_level : nullptr);
       }
 
     } // namespace helpers

@@ -10,10 +10,10 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_renderer_core/gpu_description.h"
 #include "rex_renderer_core/renderer.h"
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/vector.h"
-#include "rex_std/bonus/memory/memory_size.h"
 
 #include <Windows.h>
 #include <cstddef>
