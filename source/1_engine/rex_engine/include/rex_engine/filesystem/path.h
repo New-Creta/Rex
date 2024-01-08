@@ -178,9 +178,13 @@ namespace rex
     // the head is everything leading up to that
     SplitResult split(rsl::string_view path);
     // Splits the path into a head and a tail
+    // the head is either the mount point or an empty string
+    // the tail is everything else
+    SplitResult split_origin(rsl::string_view path);
     // the head is the directory and the stem
     // the tail is the extension
     SplitResult split_ext(rsl::string_view path);
+
     struct SplitRootResult
     {
       rsl::string_view drive;
@@ -188,7 +192,9 @@ namespace rex
       rsl::string_view tail;
     };
 
+    // *************************************************************************
     // These functions are required to be implemented by platform specific code
+    // *************************************************************************
 
     // Returns the current working directory
     rsl::string cwd();
@@ -229,11 +235,6 @@ namespace rex
 
     // Returns true if the given path points to a symlink
     bool is_link(rsl::string_view path);
-
-    // Splits the path into a head and a tail
-    // the head is either the mount point or an empty string
-    // the tail is everything else
-    SplitResult split_drive(rsl::string_view path);
 
     // Split the path into 3 components
     // drive - root - tail

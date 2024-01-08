@@ -5,6 +5,7 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/memory/blob_writer.h"
 #include "rex_std/memory.h"
+#include "rex_std/bonus/memory/stack_allocator.h"
 
 namespace rex
 {
@@ -75,7 +76,7 @@ namespace rex
     Blob& Blob::operator=(Blob&& other) noexcept
     {
       // Guard self assignment
-      REX_ASSERT_X(this == &other, "can't move to yourself");
+      REX_ASSERT_X(this != &other, "can't move to yourself");
 
       m_data = rsl::exchange(other.m_data, nullptr);
 

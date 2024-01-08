@@ -86,6 +86,8 @@ public class RexEngine : EngineProject
         break;
       case ProjectGen.GraphicsAPI.DirectX12:
         conf.add_public_define("REX_API_DIRECTX12");
+            conf.add_public_define("GLM_FORCE_DEPTH_ZERO_TO_ONE");
+            conf.add_public_define("GLM_FORCE_LEFT_HANDED");
         break;
       default:
         break;

@@ -9,51 +9,54 @@
 #include <d3d12.h>
 #include <stddef.h>
 
-namespace rex::win
+namespace rex
 {
-  class ComLibrary
+  namespace win
   {
-  public:
-    ComLibrary();
-    ~ComLibrary();
-
-    ComLibrary(const ComLibrary&) = delete;
-    ComLibrary(ComLibrary&&)      = delete;
-
-    ComLibrary& operator=(const ComLibrary&) = delete;
-    ComLibrary& operator=(ComLibrary&&)      = delete;
-
-    bool is_initialized() const;
-
-    template <typename ComObject>
-    ComPtr<ComObject> create_com_object()
+    class ComLibrary
     {
-      ComPtr<ComObject> com_object;
-      HR_CALL(CoCreateInstance(__uuidof(ComObject), NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
-      return com_object;
-    }
+    public:
+      ComLibrary();
+      ~ComLibrary();
 
-    template <typename ComObject>
-    ComPtr<ComObject> create_com_object(IID id)
-    {
-      ComPtr<ComObject> com_object;
-      HR_CALL(CoCreateInstance(id, NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
-      return com_object;
-    }
+      ComLibrary(const ComLibrary&) = delete;
+      ComLibrary(ComLibrary&&)      = delete;
 
-    rsl::string read_link(rsl::string_view filepath);
+      ComLibrary& operator=(const ComLibrary&) = delete;
+      ComLibrary& operator=(ComLibrary&&)      = delete;
 
-  private:
-    bool init_lib();
-    void uninit_lib();
+      bool is_initialized() const;
 
-    void inc_ref();
-    void dec_ref();
+      template <typename ComObject>
+      wrl::ComPtr<ComObject> create_com_object()
+      {
+        ComPtr<ComObject> com_object;
+        HR_CALL(CoCreateInstance(__uuidof(ComObject), NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
+        return com_object;
+      }
 
-  private:
-    static thread_local card32 s_init_succeeded_count;
-  };
+      template <typename ComObject>
+      wrl::ComPtr<ComObject> create_com_object(IID id)
+      {
+        ComPtr<ComObject> com_object;
+        HR_CALL(CoCreateInstance(id, NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
+        return com_object;
+      }
 
-  bool init_com_library();
-  ComLibrary& com_library();
-} // namespace rex::win
+      rsl::string read_link(rsl::string_view filepath);
+
+    private:
+      bool init_lib();
+      void uninit_lib();
+
+      void inc_ref();
+      void dec_ref();
+
+    private:
+      static thread_local card32 s_init_succeeded_count;
+    };
+
+    bool init_com_library();
+    ComLibrary& com_library();
+  }
+} // namespace rex

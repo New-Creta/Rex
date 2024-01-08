@@ -7,8 +7,8 @@
     "Description": "Enable this to enable the second pass of clang-tidy checks.",
     "Value": false
   },
-  "no-clang-tools": {
-    "Description": "Disable all clang tools.",
+  "enable-clang-tools": {
+    "Description": "Enable all clang tools.",
     "Value": false
   },
   "intermediate-dir": {
