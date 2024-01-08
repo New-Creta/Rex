@@ -1,12 +1,24 @@
 #include "rex_windows/console_application.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/logging/log_verbosity.h"
+#include "rex_engine/engine_params.h"
 #include "rex_engine/event_system.h"
+#include "rex_engine/event_type.h"
+#include "rex_std/functional.h"
+#include "rex_windows/platform_creation_params.h"
 
 #include <Windows.h>
+#include <consoleapi.h>
+#include <consoleapi3.h>
 
 namespace rex
 {
+  namespace event_system
+  {
+    struct Event;
+  } // namespace event_system
+
   namespace win32
   {
     DEFINE_LOG_CATEGORY(LogWinConsoleApp, rex::LogVerbosity::Log);

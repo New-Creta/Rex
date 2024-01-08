@@ -4,8 +4,13 @@
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padder.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padding_info.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/types.h"
+#include "rex_std/ctype.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
+#include "rex_std/bonus/utility/yes_no.h"
+
+// IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(readability-identifier-naming)
 // NOLINTBEGIN(misc-definitions-in-headers)

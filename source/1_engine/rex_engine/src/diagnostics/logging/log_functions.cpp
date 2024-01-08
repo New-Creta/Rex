@@ -7,14 +7,18 @@
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
-#include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/global_allocator.h"
-#include "rex_engine/memory/untracked_allocator.h"
-#include "rex_engine/types.h"
 #include "rex_std/bonus/hashtable.h"
-#include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/vector.h"
+
+namespace rexlog
+{
+  namespace sinks
+  {
+    class AbstractSink;
+  } // namespace sinks
+} // namespace rexlog
 
 namespace rex
 {

@@ -39,13 +39,13 @@ namespace CodeGen
         return Filepath;
       }
     }
-    protected Dictionary<string, List<string>> ProjectToContent
-    {
-      get
-      {
-        return ProjectToContentMap;
-      }
-    }
+    protected Dictionary<string, List<string>> ProjectToContent 
+    { 
+      get 
+      { 
+        return ProjectToContentMap; 
+      } 
+    } 
 
     public TypeToGenerate(string filepath)
     {
@@ -195,7 +195,8 @@ namespace ProjectGen
   public enum IDE
   {
     None,
-    VisualStudio,
+    VisualStudio19,
+    VisualStudio22,
     VSCode
   }
 
@@ -226,6 +227,10 @@ namespace ProjectGen
     Undefined
   }
 
+  // This is the class representing the json file holding all the test projects
+  // They get added during configuration stage
+  // in the post generation step, the json file listing these projects gets generated
+  // and written to disk
   public class TestProjectsFile
   {
     // Custom converter that we use to write the configurations
@@ -326,12 +331,12 @@ namespace ProjectGen
       TypeSettings[type].Add(new TestProjectSettings(project));
     }
   }
-
+    
 
   // 
   public class Settings
   {
-    static public bool ClangToolsEnabled = false;                      // Are clang tools enabled?
+    static public bool ClangToolsEnabled = false;                 // Are clang tools enabled?
     static public bool PerformAllClangTidyChecks = false;         // Perform all configured clang tidy checks, not just the warnings
     static public bool DisableClangTidyForThirdParty = true;      // Set to disable clang-tidy running on third party projects
     static public string IntermediateDir = "";                    // Set the directory name to be used under the build output directory for this generation
@@ -345,14 +350,14 @@ namespace ProjectGen
     static public bool FuzzyTestingEnabled = false;               // Generate solution for fuzzy testing
     static public bool AutoTestsEnabled = false;                  // Generate solution for auto testing
 
-    static public IDE IDE = IDE.VisualStudio;                     // Choose the IDE this sharpmake instance is generating for
+    static public IDE IDE = IDE.VisualStudio19;                     // Choose the IDE this sharpmake instance is generating for
 
     static public string ClangTidyRegex = "";                     // Regex of files to run clang-tidy on
     static public GraphicsAPI GraphicsAPI = GraphicsAPI.Unknown;  // The graphics API to be used by the engine
     static public bool UnityBuildsDisabled = false;               // Disable unity builds (aka jumbo builds or combi builds)
 
     static public List<GenerateCompilerDBCommand> GenerateCompilerDBCommands = new List<GenerateCompilerDBCommand>(); // List of command wrappers to generate compiler dbs for.
-
+    
     static public TestProjectsFile TestProjectsFile = new TestProjectsFile();
   }
 }

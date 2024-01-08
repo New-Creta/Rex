@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 #include "rex_engine/types.h"
 
 namespace rex
@@ -13,7 +13,7 @@ namespace rex
         {
             struct CommittedBuffer
             {
-                CommittedBuffer(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
+                CommittedBuffer(const wrl::ComPtr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
                     :uploader(uploader)
                     ,mapped_data(nullptr)
                     ,element_data_byte_size(elementDataByteSize)
@@ -22,7 +22,7 @@ namespace rex
 
                 }
 
-                wrl::com_ptr<ID3D12Resource> uploader;
+                wrl::ComPtr<ID3D12Resource> uploader;
 
                 u8* mapped_data;
                 s32 mapped_data_byte_size;
@@ -36,7 +36,7 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(CommittedBufferResource);
 
-            CommittedBufferResource(const wrl::com_ptr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
+            CommittedBufferResource(const wrl::ComPtr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
                 : BaseResource(&m_committed_buffer)
                 , m_committed_buffer(uploader, elementDataByteSize, mappedDataByteSize)
             {}

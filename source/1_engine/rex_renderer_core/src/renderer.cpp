@@ -82,7 +82,7 @@ namespace rex
         using CommandAllocator = rsl::stack_allocator;
         using CommandList = RingBuffer<RenderCommand*>;
 
-        constexpr s32 cmd_allocator_size = rsl::memory_size(512_kib).size_in_bytes();
+        constexpr s32 cmd_allocator_size = static_cast<s32>(rsl::memory_size(512_kib).size_in_bytes());
 
         struct Context
         {

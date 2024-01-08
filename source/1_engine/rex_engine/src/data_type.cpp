@@ -15,6 +15,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/log.h"
 #include "rex_engine/types.h"
+#include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/format.h"
 #include "rex_std/bonus/utility/type_id.h"

@@ -14,9 +14,8 @@
 import os
 import argparse
 import sys
-import pkg_resources
 import subprocess
-import pip
+import importlib.metadata
 
 # Check if we have regis installed.
 # If not, we limit the amount of user input possibilities later on.
@@ -26,7 +25,7 @@ try:
 except:
   rexpy_installed = False
 
-required_rexpy_version = "0.1.61"
+required_rexpy_version = "0.1.69"
 
 # all scripts are located in ~/_build/scripts path.
 # to make it easier to call these scripts wherever we need them
@@ -80,7 +79,7 @@ def _correct_regis_installed():
   if not rexpy_installed:
     return False
   
-  if not pkg_resources.get_distribution("regis").version == required_rexpy_version:
+  if not importlib.metadata.distribution("regis").version == required_rexpy_version:
     return False
   
   return True

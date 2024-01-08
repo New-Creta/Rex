@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 
 namespace rexlog

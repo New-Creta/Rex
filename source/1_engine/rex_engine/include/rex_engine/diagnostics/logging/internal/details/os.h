@@ -2,11 +2,13 @@
 
 #pragma once
 
-#include "rex_engine/defines.h"
+#include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
-#include "rex_engine/filesystem/filesystem_constants.h"
+#include "rex_std/bonus/string.h"
 
+#include <corecrt_wtime.h>
 #include <ctime> // time_t
+#include <stdio.h>
 
 namespace rexlog
 {

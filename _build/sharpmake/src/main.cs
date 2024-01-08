@@ -87,6 +87,7 @@ public static class Main
   {
     GenerateCompilerDatabases();
     CodeGeneration.Generate();
+    GenerateTestProjectsJsonFile();
   }
 
   // Compiler database are not generated through Sharpmake directly.
@@ -115,13 +116,38 @@ public static class Main
     }
   }
 
+  // To make it simple for CI and other automated tests
+  // We write out a json file which stores the different kind of projects
+  private static void GenerateTestProjectsJsonFile()
+  {
+    var options = new JsonSerializerOptions
+    {
+      WriteIndented = true, // Makes it a bit more human friendly
+    };
+
+    // Write the text to disk in json format
+    string jsonBlob = JsonSerializer.Serialize(ProjectGen.Settings.TestProjectsFile, options);
+
+    string testProjectsPath = Path.Combine(Globals.Root, Globals.BuildFolder, "test_projects.json");
+
+    Console.WriteLine($"Generating {testProjectsPath}");
+
+    File.WriteAllText(testProjectsPath, jsonBlob);
+  }
+
   // Pass in the paths to the toolchain tools to sharpmake and specify the windows target version
   private static void InitializeSharpmake()
   {
     InitializeToolChain();
 
-    // Initialize Visual Studio settings
-    KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
+    // Initialize Platform Settings.
+
+    // It's possible Visual Studio isn't installed on this machine
+    // If it's not, then we can't set the root for Visual Studio
+    if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
+    {
+      KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
+    }
   }
 
   // Initialize the graphics API based on the config
@@ -158,7 +184,7 @@ public static class Main
 
     ProjectGen.Settings.ClangTidyRegex = config["clang-tidy-regex"].Value.GetString();
     ProjectGen.Settings.PerformAllClangTidyChecks = config["perform-all-clang-tidy-checks"].Value.GetBoolean();
-    ProjectGen.Settings.ClangToolsEnabled = config["no-clang-tools"].Value.GetBoolean() == false;
+    ProjectGen.Settings.ClangToolsEnabled = config["enable-clang-tools"].Value.GetBoolean();
     ProjectGen.Settings.IntermediateDir = config["intermediate-dir"].Value.GetString();
     ProjectGen.Settings.UnitTestsEnabled = config["enable-unit-tests"].Value.GetBoolean();
     ProjectGen.Settings.CoverageEnabled = config["enable-code-coverage"].Value.GetBoolean();

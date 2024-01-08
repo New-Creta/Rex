@@ -69,8 +69,17 @@ public class RexTarget : ITarget
 
     switch (ProjectGen.Settings.IDE)
     {
-      case ProjectGen.IDE.VisualStudio:
-        targets.AddRange(CreateTargetsForDevEnv(DevEnv.vs2019));
+      case ProjectGen.IDE.VisualStudio19:
+      case ProjectGen.IDE.VisualStudio22:
+        DevEnv devenv = IdeToEnv(ProjectGen.Settings.IDE);
+        if (Util.GetVisualStudioInstallationsFromQuery(devenv).Count > 0)
+        { 
+          targets.AddRange(CreateTargetsForDevEnv(devenv));
+        }
+        else
+        {
+          System.Console.WriteLine($"Visual Studio IDE {devenv} specified, but it's not installed");
+        }
         break;
       case ProjectGen.IDE.VSCode:
         targets.AddRange(CreateTargetsForDevEnv(DevEnv.vscode));
@@ -92,25 +101,59 @@ public class RexTarget : ITarget
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.coverage, Compiler.Clang));
     }
-    else if (ProjectGen.Settings.AsanEnabled)
+    if (ProjectGen.Settings.AsanEnabled)
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.address_sanitizer, Compiler.Clang));
     }
-    else if (ProjectGen.Settings.UbsanEnabled)
+    if (ProjectGen.Settings.UbsanEnabled)
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.undefined_behavior_sanitizer, Compiler.Clang));
     }
-    else if (ProjectGen.Settings.FuzzyTestingEnabled)
+    if (ProjectGen.Settings.FuzzyTestingEnabled)
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.fuzzy, Compiler.Clang));
     }
-    else
-    {
-      targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
-    }
+    
+    targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
 
     return targets;
   }
 
+  private static DevEnv IdeToEnv(ProjectGen.IDE ide)
+  {
+    switch (ide)
+    {
+      case ProjectGen.IDE.VisualStudio19: return DevEnv.vs2019;
+      case ProjectGen.IDE.VisualStudio22: return DevEnv.vs2022;
+      case ProjectGen.IDE.VSCode: return DevEnv.vscode;
+      default:
+        return DevEnv.ninja;
+    }
+  }
+
+  private static List<RexTarget> CreateVSTarget()
+  {
+    List<RexTarget> targets = new List<RexTarget>();
+
+    switch (ProjectGen.Settings.IDE)
+    {
+      case ProjectGen.IDE.VisualStudio19:
+        break;
+      case ProjectGen.IDE.VisualStudio22:
+        break;
+      default:
+        break;
+    }
+    if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
+    {
+      targets.AddRange(CreateTargetsForDevEnv(DevEnv.vs2019));
+    }
+    else
+    {
+      System.Console.WriteLine("Visual Studio IDE specified, but it's not installed");
+    }
+
+    return targets;
+  }
 }
 

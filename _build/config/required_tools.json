@@ -110,7 +110,7 @@
     "config_name": "sharpmake_path",
     "archive_name": "Sharpmake",
     "num_zip_files": 1,
-    "version" : "sharpmake-0.21.1-r0.19"
+    "version" : "sharpmake-0.21.1-r0.20"
   },
   "llvm_profdata" : 
   {
@@ -148,5 +148,14 @@
     "archive_name": "lcov",
     "num_zip_files": 1,
     "version" : "lcov-1.0.0"
+  },
+  "perl" :
+  {
+    "stem": "perl",
+    "path": "perl/perl/bin",
+    "config_name": "perl_path",
+    "archive_name": "perl",
+    "num_zip_files": 3,
+    "version" : "perl-5.38.0"
   }
 }

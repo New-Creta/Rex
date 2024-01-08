@@ -1,5 +1,10 @@
 #include "rex_engine/diagnostics/logging/internal/async_logger.h"
 
+#include <functional>
+#include <stdio.h>
+
+// IWYU pragma: no_include <built-in>
+
 #include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 #include "rex_engine/memory/global_allocator.h"

@@ -7,8 +7,8 @@
     "Description": "Enable this to enable the second pass of clang-tidy checks.",
     "Value": false
   },
-  "no-clang-tools": {
-    "Description": "Disable all clang tools.",
+  "enable-clang-tools": {
+    "Description": "Enable all clang tools.",
     "Value": false
   },
   "intermediate-dir": {
@@ -49,7 +49,7 @@
   },
   "IDE": {
     "Description": "Select which IDE to use. Visual Studio is the default.",
-    "Value": "VisualStudio",
+    "Value": "None",
     "Options": [
       "VisualStudio",
       "VSCode",

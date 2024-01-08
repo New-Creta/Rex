@@ -1,11 +1,11 @@
 #include "rex_engine/diagnostics/win/win_stacktrace.h"
 
-#include "rex_engine/diagnostics/win/win_call.h"
-
 // NOLINTBEGIN(llvm-include-order)
 // clang-format off
 #include <Windows.h> // this needs to be included before DbgHelp.h
 #include <DbgHelp.h>
+
+#include "rex_engine/diagnostics/win/win_call.h"
 // clang-format on
 // NOLINTEND(llvm-include-order)
 

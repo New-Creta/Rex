@@ -17,22 +17,36 @@ if __name__ == "__main__":
 
   # initialize the argument parser by loading the arguments from the config file
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-  parser.add_argument('-clean', action="store_true", help='Clean the intermediates before generation')
   parser.add_argument('-sharpmake_arg', dest="sharpmake_args", default=[], action="append", help='Argument to be passed to sharpmake directly')
-  parser.add_argument('-no_config', default=False, action="store_true", help='Don\'t generate a config but use the config of what\'t previously generated')
+  parser.add_argument('-no_default_config', default=False, action="store_true", help='Don\'t start from the default config, but from what\'t previously configured')
   regis.generation.add_config_arguments_to_parser(parser)
 
   # parse the arguments passed to this script
   args, unknown = parser.parse_known_args()
-  config = None
-  if not args.no_config:
-    config = regis.generation.create_config(args)
+
+  # if we're not allowed to use the default config, we need to mask of to only the args passed in
+  disallow_default_config = args.no_default_config
+  sharpmake_args = args.sharpmake_args
+  if disallow_default_config:
+    args_vars = vars(args)
+    nothing = object()
+    mask = argparse.Namespace(**{arg: nothing for arg in args_vars})
+    masked_namespace = parser.parse_args(namespace=mask)
+    masked_args = {
+        arg: value
+        for arg, value in vars(masked_namespace).items()
+        if value is not nothing
+    }
+    args = argparse.Namespace(**masked_args)
+
+  config = regis.generation.create_config(args, useDefault=not disallow_default_config)
 
   # call generation code to launch sharpmake
   settings_path = os.path.join(root, regis.util.settingsPathFromRoot)
-  
+  settings = regis.rex_json.load_file(settings_path)
+
   # Sharpmake expects to be run from the root directory
-  os.chdir(root)
-  result = regis.generation.new_generation(settings_path, config, args.sharpmake_args)
+  with regis.util.temp_cwd(root):
+    result = regis.generation.new_generation(settings, config, sharpmake_args)
 
   exit(result)

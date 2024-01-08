@@ -12,7 +12,7 @@ namespace rex
         {
             struct DepthStencilTarget
             {
-                wrl::com_ptr<ID3D12Resource> render_target;
+                wrl::ComPtr<ID3D12Resource> render_target;
                 s32 array_index;
             };
         } // namespace resources
@@ -22,7 +22,7 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(DepthStencilTargetResource);
 
-            DepthStencilTargetResource(const wrl::com_ptr<ID3D12Resource>& dst, s32 arrayIndex)
+            DepthStencilTargetResource(const wrl::ComPtr<ID3D12Resource>& dst, s32 arrayIndex)
                 : BaseResource(&m_depth_stencil_target)
                 , m_depth_stencil_target({ dst, arrayIndex })
             {}

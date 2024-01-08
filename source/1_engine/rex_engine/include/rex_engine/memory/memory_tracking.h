@@ -6,7 +6,9 @@
 #include "rex_engine/memory/untracked_allocator.h"
 #include "rex_engine/types.h"
 #include "rex_std/array.h"
+#include "rex_std/bonus/attributes.h"
 #include "rex_std/bonus/defines.h"
+#include "rex_std/bonus/types.h"
 #include "rex_std/mutex.h"
 #include "rex_std/vector.h"
 #include "rex_std/bonus/memory/memory_size.h"
@@ -32,11 +34,11 @@ namespace rex
 
     MemoryTracker();
     MemoryTracker(const MemoryTracker&) = delete;
-    MemoryTracker(MemoryTracker&&) = delete;
+    MemoryTracker(MemoryTracker&&)      = delete;
     ~MemoryTracker();
 
     MemoryTracker& operator=(const MemoryTracker&) = delete;
-    MemoryTracker& operator=(MemoryTracker&&) = delete;
+    MemoryTracker& operator=(MemoryTracker&&)      = delete;
 
     void initialize(rsl::memory_size maxMemUsage);
 

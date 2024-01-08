@@ -1,8 +1,8 @@
 #!/usr/bin/env python                                                                    
 
-import imp
+import importlib.util
 try:
-    imp.find_module('regis')
+    importlib.util.find_spec('regis')
 except ImportError:
     print(f"*** REGIS IS NOT FOUND AS A MODULE. ***")
     print(f"*** THIS IS POSSIBLE WHEN DOING THE VERY FIRST CHECKOUT ***")

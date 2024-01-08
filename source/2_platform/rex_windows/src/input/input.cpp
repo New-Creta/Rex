@@ -1,9 +1,9 @@
 #include "rex_windows/input/input.h"
 
 #include "rex_engine/diagnostics/win/win_call.h"
-#include "rex_std/algorithm.h"
 #include "rex_std/assert.h"
-#include "rex_std/vector.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/bonus/types.h"
 
 #define NOMINMAX
 #include <Windows.h>

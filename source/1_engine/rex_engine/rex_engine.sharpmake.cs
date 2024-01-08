@@ -28,11 +28,6 @@ public class RexEngine : EngineProject
 
     conf.AddPublicDependency<RexStd>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
-
-    if (ProjectGen.Settings.UnitTestsEnabled)
-    {
-      conf.AddPublicDependency<RexStdTest>(target, DependencySetting.Default);
-    }
   }
 
   protected override void SetupConfigRules(RexConfiguration conf, RexTarget target)

@@ -26,7 +26,7 @@
 
 #include "rex_directx/utility/vertex.h"
 
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/win/win_com_ptr.h"
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
@@ -230,8 +230,8 @@ namespace rex
 
       struct DefaultBuffer
       {
-          wrl::com_ptr<ID3D12Resource> buffer;
-          wrl::com_ptr<ID3D12Resource> upload_buffer;
+          wrl::ComPtr<ID3D12Resource> buffer;
+          wrl::ComPtr<ID3D12Resource> upload_buffer;
       };
 
     } // namespace directx
@@ -484,8 +484,8 @@ namespace rex
 
       struct DirectXContext
       {
-        wrl::com_ptr<ID3D12Device> device = nullptr;
-        wrl::com_ptr<ID3D12Fence> fence   = nullptr;
+        wrl::ComPtr<ID3D12Device> device = nullptr;
+        wrl::ComPtr<ID3D12Fence> fence   = nullptr;
 
         u64 current_fence;
 
@@ -499,14 +499,14 @@ namespace rex
         bool msaa_state  = false;
         s32 msaa_quality = 0;
 
-        wrl::com_ptr<ID3D12CommandQueue> command_queue         = nullptr;
-        wrl::com_ptr<ID3D12GraphicsCommandList> command_list   = nullptr;
-        wrl::com_ptr<ID3D12CommandAllocator> command_allocator = nullptr;
+        wrl::ComPtr<ID3D12CommandQueue> command_queue         = nullptr;
+        wrl::ComPtr<ID3D12GraphicsCommandList> command_list   = nullptr;
+        wrl::ComPtr<ID3D12CommandAllocator> command_allocator = nullptr;
 
-        wrl::com_ptr<IDXGISwapChain> swapchain = nullptr;
+        wrl::ComPtr<IDXGISwapChain> swapchain = nullptr;
 
-        rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, wrl::com_ptr<ID3D12DescriptorHeap>> descriptor_heap_pool;
-        rsl::unordered_map<rsl::hash_result, wrl::com_ptr<ID3D12PipelineState>> pipeline_state_objects;
+        rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, wrl::ComPtr<ID3D12DescriptorHeap>> descriptor_heap_pool;
+        rsl::unordered_map<rsl::hash_result, wrl::ComPtr<ID3D12PipelineState>> pipeline_state_objects;
 
         D3D12_VIEWPORT screen_viewport = {};
         RECT scissor_rect              = {};
@@ -660,7 +660,7 @@ namespace rex
           sd.Flags                              = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
           // Note: swap chain uses queue to perform flush.
-          rex::wrl::com_ptr<IDXGIFactory> dxgi_factory = factory->as<IDXGIFactory>();
+          rex::wrl::ComPtr<IDXGIFactory> dxgi_factory = factory->as<IDXGIFactory>();
           if(DX_FAILED(dxgi_factory->CreateSwapChain(g_ctx->command_queue.Get(), &sd, g_ctx->swapchain.GetAddressOf())))
           {
             REX_ERROR(LogDirectX, "Failed to create swap chain");
@@ -723,7 +723,7 @@ namespace rex
         //-------------------------------------------------------------------------
         rsl::unique_ptr<BufferResource> create_buffer(void* bufferData, s32 bufferByteSize)
         {
-          wrl::com_ptr<ID3DBlob> buffer_cpu;
+          wrl::ComPtr<ID3DBlob> buffer_cpu;
 
           if(DX_FAILED(D3DCreateBlob(bufferByteSize, &buffer_cpu)))
           {
@@ -750,7 +750,7 @@ namespace rex
         {
             s32 obj_cb_byte_size = rex::align(bufferByteSize, s_constant_buffer_min_allocation_size);
 
-            wrl::com_ptr<ID3D12Resource> constant_buffer_uploader;
+            wrl::ComPtr<ID3D12Resource> constant_buffer_uploader;
 
             CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
             CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size * bufferCount);
@@ -842,7 +842,7 @@ namespace rex
         }
 
         //-------------------------------------------------------------------------
-        wrl::com_ptr<ID3D12RootSignature> create_shader_root_signature(const commands::ConstantLayoutDescription* constants, s32 numConstants)
+        wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const commands::ConstantLayoutDescription* constants, s32 numConstants)
         {
           auto descriptor_ranges_create_funcs = get_descriptor_ranges_create_func();
           auto descriptor_ranges_map          = rsl::unordered_map<commands::ConstantType, rsl::vector<CD3DX12_DESCRIPTOR_RANGE>>();
@@ -877,8 +877,8 @@ namespace rex
           CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(root_parameters.size(), root_parameters.data(), 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
           // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
-          wrl::com_ptr<ID3DBlob> serialized_root_sig = nullptr;
-          wrl::com_ptr<ID3DBlob> error_blob          = nullptr;
+          wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
+          wrl::ComPtr<ID3DBlob> error_blob          = nullptr;
 
           HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
           if(error_blob != nullptr)
@@ -893,7 +893,7 @@ namespace rex
             return nullptr;
           }
 
-          wrl::com_ptr<ID3D12RootSignature> root_signature;
+          wrl::ComPtr<ID3D12RootSignature> root_signature;
           if(DX_FAILED(g_ctx->device->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
           {
             REX_ERROR(LogDirectX, "Failed to create root signature");
@@ -940,7 +940,7 @@ namespace rex
           }
 
           TextureFormat render_target_format = TextureFormat::UNORM4_SRGB;
-          wrl::com_ptr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count];
+          wrl::ComPtr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count];
           CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
           for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
           {
@@ -1011,7 +1011,7 @@ namespace rex
           optimized_clear_value.DepthStencil.Depth   = 1.0f;
           optimized_clear_value.DepthStencil.Stencil = 0;
 
-          wrl::com_ptr<ID3D12Resource> depth_stencil_buffer;
+          wrl::ComPtr<ID3D12Resource> depth_stencil_buffer;
           CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart());
 
           CD3DX12_HEAP_PROPERTIES heap_properties(D3D12_HEAP_TYPE_DEFAULT);
@@ -1145,7 +1145,7 @@ namespace rex
 
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // Enable extra debugging and send debug messages to the VC++ output window
-        rex::wrl::com_ptr<ID3D12Debug> debug_controller;
+        rex::wrl::ComPtr<ID3D12Debug> debug_controller;
         if(DX_SUCCESS(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
         {
             debug_controller->EnableDebugLayer();
@@ -1185,7 +1185,7 @@ namespace rex
          * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
          * https://github.com/walbourn/directx-vs-templates/commit/18e3eaa444e98ba75d37d506ab18df8db0b82441
          */
-        wrl::com_ptr<IDXGIInfoQueue> dxgi_info_queue;
+        wrl::ComPtr<IDXGIInfoQueue> dxgi_info_queue;
         if(DX_SUCCESS(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_info_queue.GetAddressOf()))))
         {
           dxgi_factory_flags = DXGI_CREATE_FACTORY_DEBUG;
@@ -1240,7 +1240,7 @@ namespace rex
 
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // Device needs to exist before we can query this
-        rex::wrl::com_ptr<ID3D12InfoQueue> dx12_info_queue;
+        rex::wrl::ComPtr<ID3D12InfoQueue> dx12_info_queue;
         if(g_ctx->dx12_debug_layer_enabled && DX_SUCCESS(g_ctx->device->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
         {
             dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
@@ -1411,7 +1411,7 @@ namespace rex
 #if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
             // DXGI
             bool can_report_dxgi_live_objects = false;
-            wrl::com_ptr<IDXGIDebug1> dxgi_debug;
+            wrl::ComPtr<IDXGIDebug1> dxgi_debug;
             if (g_ctx->dxgi_debug_layer_enabled)
             {
                 if(DX_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
@@ -1427,7 +1427,7 @@ namespace rex
 #if defined REX_ENABLE_DX12_DEBUG_LAYER && defined REX_ENABLE_DX12_LIVE_OBJECT_REPORT
             // DX12
             bool can_report_dx12_live_objects = false;
-            wrl::com_ptr<ID3D12DebugDevice> dx12_debug;
+            wrl::ComPtr<ID3D12DebugDevice> dx12_debug;
             if (g_ctx->dx12_debug_layer_enabled)
             {
                 if(DX_FAILED(g_ctx->device->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
@@ -1699,7 +1699,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool create_frame_resource(const ResourceSlot& resourceSlot)
       {
-        wrl::com_ptr<ID3D12CommandAllocator> cmd_list_alloc;
+        wrl::ComPtr<ID3D12CommandAllocator> cmd_list_alloc;
 
         if(DX_FAILED(g_ctx->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_list_alloc.GetAddressOf()))))
         {
@@ -1748,7 +1748,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool load_shader(const commands::LoadShaderCommandDesc& ls, const ResourceSlot& resourceSlot)
       {
-        wrl::com_ptr<ID3DBlob> byte_code;
+        wrl::ComPtr<ID3DBlob> byte_code;
           if(DX_FAILED(D3DCreateBlob(ls.shader_byte_code.size(), byte_code.GetAddressOf())))
         {
           REX_ERROR(LogDirectX, "Failed to load shader");
@@ -1804,8 +1804,8 @@ namespace rex
 
         HRESULT hr = S_OK;
 
-        wrl::com_ptr<ID3DBlob> byte_code = nullptr;
-        wrl::com_ptr<ID3DBlob> errors    = nullptr;
+        wrl::ComPtr<ID3DBlob> byte_code = nullptr;
+        wrl::ComPtr<ID3DBlob> errors    = nullptr;
 
         hr = D3DCompile2(cs.shader_code.data(), cs.shader_code.size(), cs.shader_name.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, cs.shader_entry_point.data(), cs.shader_feature_target.data(), compile_flags, 0, 0, 0, 0, &byte_code, &errors);
 

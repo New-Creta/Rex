@@ -3,22 +3,23 @@
 #pragma once
 
 #include "rex_engine/constants.h"
+#include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/flag_formatter.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
-#include "rex_engine/types.h"
-#include "rex_std/bonus/string/stack_string.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/chrono.h"
 #include "rex_std/memory.h"
-#include "rex_std/string_view.h"
-#include "rex_std/vector.h"
+
+#include <corecrt_wtime.h>
 
 namespace rexlog
 {
-  struct LogMsg;
 
   namespace details
   {
     struct PaddingInfo;
+    class LogMsg;
   } // namespace details
 
   class PatternFormatter

@@ -1,18 +1,16 @@
 #include "rex_engine/diagnostics/logging/logger_config.h"
 
 #include "rex_engine/cmdline.h"
+#include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/memory/global_allocator.h"
-#include "rex_std/algorithm.h"
-#include "rex_std/ctype.h"
+#include "rex_std/bonus/hashtable.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/bonus/utility.h"
 #include "rex_std/internal/utility/pair.h"
-#include "rex_std/sstream.h"
-#include "rex_std/string.h"
-#include "rex_std/utility.h"
-
-#include <algorithm>
+#include "rex_std/unordered_map.h"
+#include "rex_std/vector.h"
 
 //
 // Init log levels using each argv entry that starts with "REXLOG_LEVEL="

@@ -1,6 +1,11 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 
-#include "rex_std/format.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/cstring.h"
+
+#include <stdio.h>
+
+// IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 
