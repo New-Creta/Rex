@@ -2,7 +2,7 @@
 
 #include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/logging/logger_config.h"
-#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/win/vfs.h"
 #include "rex_engine/types.h"
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/win/process.h"

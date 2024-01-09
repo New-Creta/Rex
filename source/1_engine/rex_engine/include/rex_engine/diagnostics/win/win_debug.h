@@ -1,15 +1,3 @@
-// ============================================
-//
-// REX GAME ENGINE
-//
-// Author: Nick De Breuck
-// Twitter: @nick_debreuck
-//
-// File: win_debug.h
-// Copyright (c) Nick De Breuck 2023
-//
-// ============================================
-
 #pragma once
 
 #include "rex_engine/diagnostics/win/win_types.h"

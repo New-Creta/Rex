@@ -1,3 +1,5 @@
+#include "rex_engine/types.h"
+
 namespace rex
 {
   struct ApplicationCreationParams;
@@ -8,6 +10,7 @@ namespace regina
 {
   bool initialize();
   void update();
+  void draw();
   void shutdown();
 
   // we put the generation of the app creation params into a separate function

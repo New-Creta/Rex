@@ -93,7 +93,7 @@ A unity build allows the build system to merge source files together, creating 1
 
 These intermediate files are then passed on to the compiler which improves compilation times a lot as the compiler doesn't have to open as many files and can parse more files in 1 go.
 
-Note: Files modified on disk, different from their repo equivalent are excluded from unity files to improve compilation. They also have optimizations disabled so it's easier to debug them.
+Note: Files modified on disk, are excluded from unity files to improve compilation. They also have optimizations disabled so it's easier to debug them.
 
 ### Generation Script
 The generate script itself is just a wrapper around a sharpmake call.
@@ -112,12 +112,15 @@ This config file is parsed by the python script and it'll create commandline arg
 
 There's only 1 extra commandline argument supported by the generate script which is `-sharpmake_args`. This is to allow a user to pass in arguments that are supported by the native sharpmake executable
 
-We support Visual Studio and Visual Studio Code as IDEs. These just act as text editors as they're in turn call into the build pipeline and build the ninja files which are always generated.
+We support Visual Studio and Visual Studio Code as IDEs. These just act as text editors as they in turn call into the build pipeline and build the ninja files which are always generated.
 
 Some Examples (Windows):
 ```sh
 # Default generation. generate files for engine and editor
 py _rex.py generate
+
+# List all the possible configuration settings, no generation gets performed.
+py _rex.py generate -h
 
 # Default generation + unit tests
 py _rex.py generate -enable-unit-tests 
@@ -133,7 +136,7 @@ py _rex.py generate -sharpmake_args /multithreaded(false)
 ```
 
 ### Code Generation
-The generation step also allows you to auto generate code. The settings for code generation for a particular project are located in the `config` folder and follow the same folder structure as their source root directory.
+The generation step also generates code. The settings for code generation for a particular project are located in the `config` folder and follow the same folder structure as their source root directory. These settings indicate what gets generated and where it gets generated.
 
 Sharpmake supports enum and array generation.
 
@@ -165,7 +168,7 @@ The different builds types are
 - Debug: No optimizations enabled. All debug information is available.
 - Debug Opt: Optimized version of Debug build.
 - Release: All optimizations enabled, no debug information is available.
-- Coverage: Only enabled for Clang. Enables code coverage reports
+- Coverage: Only enabled for Clang. Enables code coverage reports. Detects which code gets run at runtime, the reports get generate in the intermediate folder of your project
 - [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html): Only enabled for Clang. Used to detect out of bounds reads/writes. Double frees, use after free.
 - [Undefined Behavior Sanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html): Only enabled for Clang. Used to detect undefined behavior at runtime.
 - [Fuzzy](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html): Only enabled for Clang. Used for fuzzing projects
@@ -200,7 +203,7 @@ flag: `-clang_tidy`
 
 A static analyser directly hooked into the compiler to scan for possible design problems, readability issues or bugs. None of the checks in here will auto fix themselves and all warnings are treated as error.
 ### Unit tests
-flag: `-unity_tests`
+flag: `-unit_tests`
 
 Every big framework should have its own unit tests so of course rex has it own as well. We use catch2 for our unit tests, these unit tests can be added to the visual studio solution by passing in `-generate_unittests` to [`_generate.py`](../../../_generate.py)
 ### Coverage
