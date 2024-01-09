@@ -2,7 +2,7 @@
 
 #include "rex_std/bonus/types.h"
 #include "rex_std/memory.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_std/bonus/memory/memory_size.h"
 
 namespace rex
 {
@@ -43,14 +43,14 @@ namespace rex
       template <typename T>
       const T* data_as() const;
 
-    private:
-      friend class BlobWriter;
-      friend class BlobReader;
-
       template <typename T>
       T& read(const rsl::memory_size& offset = 0_bytes);
       template <typename T>
       const T& read(const rsl::memory_size& offset = 0_bytes) const;
+
+    private:
+      friend class BlobWriter;
+      friend class BlobReader;
 
       rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset);
       const rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
@@ -62,12 +62,19 @@ namespace rex
 
     //-------------------------------------------------------------------------
     Blob make_blob(const rsl::byte* inData, const rsl::memory_size& inSize);
+    //-------------------------------------------------------------------------
+    template<typename T>
+    Blob make_blob(const T* data, int32 num)
+    {
+      return make_blob(reinterpret_cast<const rsl::byte*>(data), rsl::memory_size(sizeof(T) * num));
+    }
 
     //-------------------------------------------------------------------------
     template <typename T>
     T& Blob::read(const rsl::memory_size& offset /*= 0*/)
     {
-      return *(T*)m_data.get() + offset;
+      T* data = reinterpret_cast<T*>(m_data.get() + offset);
+      return *data;
     }
 
     //-------------------------------------------------------------------------

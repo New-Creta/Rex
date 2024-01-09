@@ -3,6 +3,10 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/functional.h"
+
+#include <stdio.h>
 
 namespace rexlog
 {

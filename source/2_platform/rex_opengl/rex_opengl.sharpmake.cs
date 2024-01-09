@@ -15,16 +15,15 @@ public class RexOpenGL : PlatformProject
     SourceRootPath = ThisFileFolder;
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
+    base.SetupLibDependencies(conf, target);
 
-    conf.Output = Configuration.OutputType.Lib;
     conf.LibraryFiles.Add("opengl32.lib");
 
     conf.AddPublicDependency<GLAD>(target);
     conf.AddPublicDependency<GLM>(target);
-    conf.AddPublicDependency<RexStdExtra>(target);
+    conf.AddPublicDependency<RexStd>(target);
     conf.AddPublicDependency<RexRendererCore>(target);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }

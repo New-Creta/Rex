@@ -4,18 +4,18 @@
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/string/stringentry.h"
+#include "rex_engine/string/stringid.h"
 #include "rex_std/bonus/functional.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/cstring.h"
-#include "rex_std/internal/utility/pair.h"
 #include "rex_std/unordered_map.h"
 
 namespace rex
 {
   namespace string_pool
   {
-    using EntryMap = rsl::unordered_map<StringEntryID, StringEntry>;
+    using EntryMap = rsl::unordered_map<StringID, StringEntry>;
 
     //-------------------------------------------------------------------------
     EntryMap load_entry_map()
@@ -24,7 +24,7 @@ namespace rex
 
       EntryMap map;
 
-      StringEntryID entry_id(StringEntryID::create_invalid());
+      StringID entry_id;
       StringEntry entry("Invalid StringID");
 
       map.emplace(rsl::move(entry_id), rsl::move(entry));
@@ -40,11 +40,11 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    StringEntryID store(rsl::hash_result hash, rsl::string_view newCharacters)
+    StringID store(rsl::hash_result hash, rsl::string_view newCharacters)
     {
       REX_MEM_TAG_SCOPE(MemoryTag::StringPool);
 
-      StringEntryID entry_id = StringEntryID(hash);
+      StringID entry_id = StringID(hash);
 
       StringEntry entry(newCharacters);
       auto it = get_entries().find(entry_id);
@@ -66,7 +66,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    rsl::string_view resolve(const StringEntryID& entryID)
+    rsl::string_view resolve(const StringID& entryID)
     {
       const StringEntry& entry = find(entryID);
 
@@ -76,12 +76,12 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    const StringEntry& find(const StringEntryID& entryID)
+    const StringEntry& find(const StringID& entryID)
     {
       auto it = get_entries().find(entryID);
       if(it == rsl::cend(get_entries()))
       {
-        it = get_entries().find(StringEntryID::create_invalid());
+        it = get_entries().find(StringID::create_invalid());
 
         REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
       }
@@ -90,7 +90,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    StringEntryID make_and_store(rsl::string_view characters)
+    StringID make_and_store(rsl::string_view characters)
     {
       return store(rsl::hash<rsl::string_view> {}(characters), characters);
     }

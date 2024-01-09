@@ -1,7 +1,10 @@
+#include "rex_engine/types.h"
+
 namespace rex
 {
   bool initialize();
   void update();
+  void draw();
   void shutdown();
 
   // we put the generation of the app creation params into a separate function

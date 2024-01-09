@@ -1,7 +1,6 @@
 #include "rex_engine/entrypoint.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/diagnostics/verify.h"
 #include "rex_engine/types.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_windows/console_application.h"
@@ -11,11 +10,7 @@
 
 #define NOMINMAX
 #include <Windows.h>
-#include <cstdlib>
-#include <iostream>
-#include <shellapi.h>
-
-#pragma warning(disable : 4702)
+#include <processenv.h>
 
 //-------------------------------------------------------------------------
 int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nShowCmd)

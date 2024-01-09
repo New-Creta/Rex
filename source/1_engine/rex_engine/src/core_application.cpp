@@ -11,7 +11,6 @@
 
 namespace rex
 {
-  class CommandLineArguments;
 
   namespace globals
   {

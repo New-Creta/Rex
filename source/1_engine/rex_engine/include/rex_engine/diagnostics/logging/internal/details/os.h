@@ -2,9 +2,13 @@
 
 #pragma once
 
+#include "rex_engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_std/bonus/string.h"
 
+#include <corecrt_wtime.h>
 #include <ctime> // time_t
+#include <stdio.h>
 
 namespace rexlog
 {
@@ -19,27 +23,6 @@ namespace rexlog
 
       tm gmtime(const time_t& timeTt) noexcept;
       tm gmtime() noexcept;
-
-      // eol definition
-#if !defined(REXLOG_EOL)
-  #ifdef _WIN32
-    #define REXLOG_EOL "\r\n"
-  #else
-    #define REXLOG_EOL "\n"
-  #endif
-#endif
-      inline constexpr rsl::string_view g_default_eol = REXLOG_EOL;
-
-      // folder separator
-#if !defined(REXLOG_FOLDER_SEPS)
-  #ifdef _WIN32
-    #define REXLOG_FOLDER_SEPS "\\/"
-  #else
-    #define REXLOG_FOLDER_SEPS "/"
-  #endif
-#endif
-      inline constexpr rsl::string_view g_folder_seps          = REXLOG_FOLDER_SEPS;
-      inline constexpr rsl::string_view g_folder_seps_filename = REXLOG_FOLDER_SEPS;
 
       // fopen_s on non windows for writing
       bool fopen_s(FILE** fp, rsl::string_view filename, const filename_t& mode);

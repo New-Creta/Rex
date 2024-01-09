@@ -4,12 +4,14 @@
 #include "rex_engine/diagnostics/logging/internal/logger.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/memory/global_allocator.h"
-#include "rex_engine/types.h"
-#include "rex_std/chrono.h"
-#include "rex_std/functional.h"
+#include "rex_std/bonus/hashtable.h"
+#include "rex_std/bonus/utility.h"
 #include "rex_std/memory.h"
 #include "rex_std/string.h"
-#include "rex_std/unordered_map.h"
+
+#include <stdio.h>
+
+// IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

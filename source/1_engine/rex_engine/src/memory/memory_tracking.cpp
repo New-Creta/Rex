@@ -4,14 +4,14 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/stacktrace.h"
-#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/win/vfs.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/log.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/memory/memory_header.h"
 #include "rex_engine/memory/win/win_mem_stats.h"
 #include "rex_std/bonus/types.h"
-#include "rex_std_extra/time/timepoint.h"
+#include "rex_std/bonus/time/timepoint.h"
 
 namespace rex
 {
@@ -96,7 +96,13 @@ namespace rex
   MemoryTracker::MemoryTracker()
       : m_mem_usage(0)
       , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
+      , m_is_active(true)
   {
+  }
+
+  MemoryTracker::~MemoryTracker()
+  {
+    m_is_active = false;
   }
 
   void MemoryTracker::initialize(rsl::memory_size maxMemUsage)
@@ -146,7 +152,13 @@ namespace rex
 
   void MemoryTracker::track_dealloc(MemoryHeader* header)
   {
-    REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
+    // This is possible if static data gets deleted after the memory tracker is already destructed
+    if(!m_is_active)
+    {
+      return;
+    }
+
+    // REX_WARN_X(LogEngine, header->frame_index() != globals::frame_info().index(), "Memory freed in the same frame it's allocated (please use single frame allocator for this)");
 
     // Postpone lock after logging to initialize the logger first ( on first access ).
     // Logger requires the same mutex to be locked and we cannot lock the same mutex twice from the same thread.

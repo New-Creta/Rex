@@ -1,11 +1,13 @@
 #include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
-#include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/types.h"
+#include "rex_std/bonus/types.h"
 
 #include <cassert>
-#include <utility>
+#include <stdio.h>
+
+// IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

@@ -32,8 +32,16 @@
     "num_zip_files": 4,
     "version" : "msvc-14.29.30133"  
   },
-  "clang_compiler" : {
+  "clang++_compiler" : {
     "stem": "clang++",
+    "path": "LLVM/bin",
+    "config_name": "clang++_compiler_path",
+    "archive_name": "LLVM",
+    "num_zip_files": 8,
+    "version" : "llvm-15.0.0"    
+  },
+  "clang_compiler" : {
+    "stem": "clang",
     "path": "LLVM/bin",
     "config_name": "clang_compiler_path",
     "archive_name": "LLVM",
@@ -102,7 +110,7 @@
     "config_name": "sharpmake_path",
     "archive_name": "Sharpmake",
     "num_zip_files": 1,
-    "version" : "sharpmake-0.21.1-r0.8"  
+    "version" : "sharpmake-0.21.1-r0.20"
   },
   "llvm_profdata" : 
   {
@@ -140,5 +148,14 @@
     "archive_name": "lcov",
     "num_zip_files": 1,
     "version" : "lcov-1.0.0"
+  },
+  "perl" :
+  {
+    "stem": "perl",
+    "path": "perl/perl/bin",
+    "config_name": "perl_path",
+    "archive_name": "perl",
+    "num_zip_files": 3,
+    "version" : "perl-5.38.0"
   }
 }

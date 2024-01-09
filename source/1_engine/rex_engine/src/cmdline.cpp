@@ -4,7 +4,12 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/log.h"
+#include "rex_std/bonus/hashtable.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/bonus/utility.h"
 #include "rex_std/cstring.h"
+#include "rex_std/format.h"
+#include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
 
 namespace rex
@@ -23,7 +28,7 @@ namespace rex
       explicit Processor(rsl::string_view cmdLine)
       {
         // verify the auto generated command line arguments
-        REX_ASSERT_X(verify_args(g_command_line_args.data(), g_command_line_args.size()), "You have ambuguous command line arguments");
+        REX_ASSERT_X(verify_args(g_command_line_args.data(), g_command_line_args.size()), "You have ambiguous command line arguments");
 
         if(cmdLine.empty())
         {
@@ -58,7 +63,7 @@ namespace rex
       {
         // all we have to do is split the command line based with spaces
         // there's no need to perform any heap allocation for that.
-        count_t start_pos = cmdLine.find_first_not_of(' ', 0); // it's possible, although unlikely, that we start with a space
+        card32 start_pos = cmdLine.find_first_not_of(' ', 0); // it's possible, although unlikely, that we start with a space
 
         // all executables should be called with at least 1 argument
         // the first argument should always be the path to the executable itself
@@ -66,7 +71,7 @@ namespace rex
 
         // the module we're launching is always the first argument on the commandline
         // we skip this
-        count_t space_pos = cmdLine.find_first_of(' ', start_pos);
+        const card32 space_pos = cmdLine.find_first_of(' ', start_pos);
 
         // if we have no arguments, we just return
         // this is possible when running without a debugger
@@ -78,14 +83,23 @@ namespace rex
         // skip all additional spaces
         start_pos = cmdLine.find_first_not_of(' ', space_pos);
 
-        // get the new space pos
-        space_pos = cmdLine.find_first_of(' ', start_pos);
+        // Here the actual command line parsing begins
+        // It gets a bit tricky but here are some examples of command lines we all support
+        // 1. -something -else
+        // 2. -something=1 -else
+        // 3. -something="path/to/something" -else
+        // 4. -something="this has spaces" -else
+        // So command line arguments are always split between a key and a possible value
+        // Arguments always start with a '-', which is the start token of every key.
+        // A key argument ends at the next space or '=' token, whichever comes first.
+        // A value argument starts after the '=' sign, or the '"" that comes after the '=' token
+        // a value arguments ends at the first space or at '"' if it started with one.
+        REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
 
         const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
-        while(start_pos != -1 && space_pos != -1)
+        while(start_pos != -1)
         {
-          const count_t length                 = space_pos - start_pos;
-          const rsl::string_view full_argument = cmdLine.substr(start_pos, length);
+          const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
           if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
              false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
@@ -93,13 +107,12 @@ namespace rex
             add_argument(argument);
           }
 
-          start_pos = cmdLine.find_first_not_of(' ', space_pos); // skip all additional spaces
-          space_pos = cmdLine.find_first_of(' ', start_pos);
+          start_pos = cmdLine.find_first_not_of(" \"", start_pos + full_argument.length()); // skip all additional spaces
         }
 
         if(start_pos != -1)
         {
-          const rsl::string_view full_argument = cmdLine.substr(start_pos);
+          const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
           if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
              false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
@@ -111,7 +124,7 @@ namespace rex
 
       void add_argument(rsl::string_view arg)
       {
-        const count_t equal_pos = arg.find('=');
+        const card32 equal_pos = arg.find('=');
         rsl::string_view key    = "";
         rsl::string_view value  = "";
 
@@ -120,6 +133,12 @@ namespace rex
         {
           key   = arg.substr(0, equal_pos);
           value = arg.substr(equal_pos + 1);
+
+          // Remove the quote at the beginning if it starts with one
+          if(value.starts_with('"'))
+          {
+            value = value.substr(1);
+          }
         }
         // if the argument is of type -EnableSomething
         else
@@ -128,19 +147,19 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return rsl::strincmp(key.data(), cmdArg.name.data(), cmdArg.name.length()) == 0; });
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return rsl::strincmp(key.data(), cmdArg.name.data(), key.length()) == 0; });
 
         if(cmd_it == g_command_line_args.cend())
         {
-          REX_WARN(LogEngine, "Command {} passed in but it's not recognised as a valid command so will be ignored", arg);
+          REX_WARN(LogEngine, "Command '{}' passed in but it's not recognised as a valid command so will be ignored", key);
           return;
         }
 
-        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return rsl::strincmp(key.data(), activeArg.argument.data(), activeArg.argument.length()) == 0; });
+        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return rsl::strincmp(key.data(), activeArg.argument.data(), key.length()) == 0; });
 
         if(active_it != m_arguments.cend())
         {
-          REX_WARN(LogEngine, "Command {} was already passed in. passing the same argument multiple times is not supported. will be skipped", key);
+          REX_WARN(LogEngine, "Command '{}' was already passed in. passing the same argument multiple times is not supported. will be skipped", key);
           return;
         }
 
@@ -162,7 +181,7 @@ namespace rex
             const Argument& rhs_arg = args[j];
             if(rsl::strincmp(lhs_arg.name.data(), rhs_arg.name.data(), lhs_arg.name.length()) == 0)
             {
-              REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity", lhs_arg.name);
+              REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity by changing the code_generation file resulting in this ambiguity", lhs_arg.name);
               return false;
             }
           }
@@ -171,14 +190,30 @@ namespace rex
         return true;
       }
 
+      rsl::string_view find_next_full_argument(rsl::string_view cmdLine, count_t startPos) // NOLINT(readability-convert-member-functions-to-static)
+      {
+        const count_t space_pos = cmdLine.find_first_of(' ', startPos);
+        count_t comma_pos       = cmdLine.find_first_of('"', startPos);
+        count_t pos_to_use      = space_pos;
+        if(comma_pos < space_pos && comma_pos != -1)
+        {
+          comma_pos  = cmdLine.find_first_of('"', comma_pos + 1);
+          pos_to_use = comma_pos;
+        }
+
+        return pos_to_use != -1 ? cmdLine.substr(startPos, pos_to_use - startPos) : cmdLine.substr(startPos);
+      }
+
     private:
       rsl::vector<ActiveArgument> m_arguments;
     };
 
     rsl::unique_ptr<cmdline::Processor> g_cmd_line_args; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    rsl::string_view g_cmd_line;                         // Saved as string_view, save as string if it's causing lifetime issues. // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
     void init(rsl::string_view cmdLine)
     {
+      g_cmd_line      = cmdLine;
       g_cmd_line_args = rsl::make_unique<cmdline::Processor>(cmdLine);
     }
 
@@ -216,6 +251,11 @@ namespace rex
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
     {
       return g_cmd_line_args->get_argument(arg);
+    }
+
+    rsl::string_view get()
+    {
+      return g_cmd_line;
     }
 
   } // namespace cmdline

@@ -3,6 +3,8 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 
+#include "rex_engine/filesystem/filesystem_constants.h"
+
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -17,44 +19,44 @@
 
 #ifdef _WIN32
 
-  #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
+#include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 
-  #include <Windows.h>
-  #include <fileapi.h> // for FlushFileBuffers
-  #include <io.h>      // for _get_osfhandle, _isatty, _fileno
-  #include <process.h> // for _get_pid
+#include <Windows.h>
+#include <fileapi.h> // for FlushFileBuffers
+#include <io.h>      // for _get_osfhandle, _isatty, _fileno
+#include <process.h> // for _get_pid
 
-  #ifdef __MINGW32__
-    #include <share.h>
-  #endif
+#ifdef __MINGW32__
+#include <share.h>
+#endif
 
-  #include <direct.h> // for _mkdir/_wmkdir
+#include <direct.h> // for _mkdir/_wmkdir
 
 #else // unix
 
-  #include <fcntl.h>
-  #include <unistd.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-  #ifdef __linux__
-    #include <sys/syscall.h> //Use gettid() syscall under linux to get thread id
+#ifdef __linux__
+#include <sys/syscall.h> //Use gettid() syscall under linux to get thread id
 
-  #elif defined(_AIX)
-    #include <pthread.h> // for pthread_getthrds_np
+#elif defined(_AIX)
+#include <pthread.h> // for pthread_getthrds_np
 
-  #elif defined(__DragonFly__) || defined(__FreeBSD__)
-    #include <pthread_np.h> // for pthread_getthreadid_np
+#elif defined(__DragonFly__) || defined(__FreeBSD__)
+#include <pthread_np.h> // for pthread_getthreadid_np
 
-  #elif defined(__NetBSD__)
-    #include <lwp.h> // for _lwp_self
+#elif defined(__NetBSD__)
+#include <lwp.h> // for _lwp_self
 
-  #elif defined(__sun)
-    #include <thread.h> // for thr_self
-  #endif
+#elif defined(__sun)
+#include <thread.h> // for thr_self
+#endif
 
 #endif // unix
 
 #ifndef __has_feature        // Clang - feature checking macros.
-  #define __has_feature(x) 0 // Compatibility with non-clang compilers.
+#define __has_feature(x) 0 // Compatibility with non-clang compilers.
 #endif
 
 // NOLINTBEGIN(misc-definitions-in-headers)
@@ -72,7 +74,7 @@ namespace rexlog
       tm localtime(const time_t& time) noexcept
       {
 #ifdef _WIN32
-        tm tm {};
+        tm tm{};
         REX_MAYBE_UNUSED const errno_t res = ::localtime_s(&tm, &time);
         REX_ASSERT_X(res == 0, "failed to convert to local time");
 #else
@@ -91,7 +93,7 @@ namespace rexlog
       tm gmtime(const time_t& timeTt) noexcept
       {
 #ifdef _WIN32
-        tm tm {};
+        tm tm{};
         REX_MAYBE_UNUSED const errno_t res = ::gmtime_s(&tm, &timeTt);
         REX_ASSERT_X(res == 0, "failed to convert to gm");
 #else
@@ -111,9 +113,9 @@ namespace rexlog
       bool fopen_s(FILE** fp, rsl::string_view filename, const filename_t& mode)
       {
 #ifdef _WIN32
-        *fp = ::_fsopen((filename.data()), mode.c_str(), _SH_DENYNO);
+        * fp = ::_fsopen((filename.data()), mode.c_str(), _SH_DENYNO);
 #else
-        *fp = ::fopen((filename.c_str()), mode.c_str());
+        * fp = ::fopen((filename.c_str()), mode.c_str());
 #endif
         return *fp == nullptr;
       }
@@ -137,80 +139,80 @@ namespace rexlog
 
 #ifdef _MSC_VER
       // avoid warning about unreachable statement at the end of filesize()
-  #pragma warning(push)
-  #pragma warning(disable : 4702)
+#pragma warning(push)
+#pragma warning(disable : 4702)
 #endif
 
       // Return file size according to open FILE* object
       size_t filesize(FILE* f)
       {
-        if(f == nullptr)
+        if (f == nullptr)
         {
           printf("Failed getting file size. fd is null");
         }
 #if defined(_WIN32) && !defined(__CYGWIN__)
         const int fd = ::_fileno(f);
-  #if defined(_WIN64) // 64 bits
+#if defined(_WIN64) // 64 bits
         const __int64 ret = ::_filelengthi64(fd);
-        if(ret >= 0)
+        if (ret >= 0)
         {
           return static_cast<size_t>(ret);
         }
 
-  #else // windows 32 bits
+#else // windows 32 bits
         long ret = ::_filelength(fd);
-        if(ret >= 0)
+        if (ret >= 0)
         {
           return static_cast<size_t>(ret);
         }
-  #endif
+#endif
 
 #else // unix
-      // OpenBSD and AIX doesn't compile with :: before the fileno(..)
-  #if defined(__OpenBSD__) || defined(_AIX)
+        // OpenBSD and AIX doesn't compile with :: before the fileno(..)
+#if defined(__OpenBSD__) || defined(_AIX)
         int fd = fileno(f);
-  #else
+#else
         int fd = ::fileno(f);
-  #endif
+#endif
         // 64 bits(but not in osx, linux/musl or cygwin, where fstat64 is deprecated)
-  #if((defined(__linux__) && defined(__GLIBC__)) || defined(__sun) || defined(_AIX)) && (defined(__LP64__) || defined(_LP64))
+#if((defined(__linux__) && defined(__GLIBC__)) || defined(__sun) || defined(_AIX)) && (defined(__LP64__) || defined(_LP64))
         struct stat64 st;
-        if(::fstat64(fd, &st) == 0)
+        if (::fstat64(fd, &st) == 0)
         {
           return static_cast<size_t>(st.st_size);
         }
-  #else // other unix or linux 32 bits or cygwin
+#else // other unix or linux 32 bits or cygwin
         struct stat st;
-        if(::fstat(fd, &st) == 0)
+        if (::fstat(fd, &st) == 0)
         {
           return static_cast<size_t>(st.st_size);
         }
-  #endif
+#endif
 #endif
         printf("Failed getting file size from fd: %d", errno);
         return 0; // will not be reached.
       }
 
 #ifdef _MSC_VER
-  #pragma warning(pop)
+#pragma warning(pop)
 #endif
 
       // Return utc offset in minutes or throw rexlog_ex on failure
       int utc_minutes_offset(const tm& tm)
       {
 #ifdef _WIN32
-  #if _WIN32_WINNT < _WIN32_WINNT_WS08
+#if _WIN32_WINNT < _WIN32_WINNT_WS08
         TIME_ZONE_INFORMATION tzinfo;
         auto rv = ::GetTimeZoneInformation(&tzinfo);
-  #else
+#else
         DYNAMIC_TIME_ZONE_INFORMATION tzinfo;
         auto rv = ::GetDynamicTimeZoneInformation(&tzinfo);
-  #endif
-        if(rv == TIME_ZONE_ID_INVALID)
+#endif
+        if (rv == TIME_ZONE_ID_INVALID)
           printf("Failed getting timezone info: %d", errno);
 
         int offset = -tzinfo.Bias;
-        if(tm.tm_isdst != 0)
+        if (tm.tm_isdst != 0)
         {
           offset -= tzinfo.DaylightBias;
         }
@@ -221,39 +223,39 @@ namespace rexlog
         return offset;
 #else
 
-  #if defined(sun) || defined(__sun) || defined(_AIX) || (defined(__NEWLIB__) && !defined(__TM_GMtOFF)) || (!defined(_BSD_SOURCE) && !defined(_GNU_SOURCE))
+#if defined(sun) || defined(__sun) || defined(_AIX) || (defined(__NEWLIB__) && !defined(__TM_GMtOFF)) || (!defined(_BSD_SOURCE) && !defined(_GNU_SOURCE))
         // 'tm_gmtoff' field is BSD extension and it's missing on SunOS/Solaris
         struct helper
         {
           static long int calculate_gmt_offset(const tm& localtm = details::os::localtime(), const tm& gmtm = details::os::gmtime())
           {
             int local_year = localtm.tm_year + (1900 - 1);
-            int gmt_year   = gmtm.tm_year + (1900 - 1);
+            int gmt_year = gmtm.tm_year + (1900 - 1);
 
             long int days = (
-                // difference in day of year
-                localtm.tm_yday -
-                gmtm.tm_yday
+              // difference in day of year
+              localtm.tm_yday -
+              gmtm.tm_yday
 
-                // + intervening leap days
-                + ((local_year >> 2) - (gmt_year >> 2)) - (local_year / 100 - gmt_year / 100) +
-                ((local_year / 100 >> 2) - (gmt_year / 100 >> 2))
+              // + intervening leap days
+              + ((local_year >> 2) - (gmt_year >> 2)) - (local_year / 100 - gmt_year / 100) +
+              ((local_year / 100 >> 2) - (gmt_year / 100 >> 2))
 
-                // + difference in years * 365 */
-                + static_cast<long int>(local_year - gmt_year) * 365);
+              // + difference in years * 365 */
+              + static_cast<long int>(local_year - gmt_year) * 365);
 
             long int hours = (24 * days) + (localtm.tm_hour - gmtm.tm_hour);
-            long int mins  = (60 * hours) + (localtm.tm_min - gmtm.tm_min);
-            long int secs  = (60 * mins) + (localtm.tm_sec - gmtm.tm_sec);
+            long int mins = (60 * hours) + (localtm.tm_min - gmtm.tm_min);
+            long int secs = (60 * mins) + (localtm.tm_sec - gmtm.tm_sec);
 
             return secs;
           }
         };
 
         auto offset_seconds = helper::calculate_gmt_offset(tm);
-  #else
+#else
         auto offset_seconds = tm.tm_gmtoff;
-  #endif
+#endif
 
         return static_cast<int>(offset_seconds / 60);
 #endif
@@ -267,16 +269,16 @@ namespace rexlog
 #ifdef _WIN32
         return static_cast<size_t>(::GetCurrentThreadId());
 #elif defined(__linux__)
-  #if defined(__ANDROID__) && defined(__ANDROID_API__) && (__ANDROID_API__ < 21)
-    #define SYS_gettid __NR_gettid
-  #endif
+#if defined(__ANDROID__) && defined(__ANDROID_API__) && (__ANDROID_API__ < 21)
+#define SYS_gettid __NR_gettid
+#endif
         return static_cast<size_t>(::syscall(SYS_gettid));
 #elif defined(_AIX)
         struct __pthrdsinfo buf;
         int reg_size = 0;
         pthread_t pt = pthread_self();
-        int retval   = pthread_getthrds_np(&pt, PTHRDSINFO_QUERY_TID, &buf, sizeof(buf), NULL, &reg_size);
-        int tid      = (!retval) ? buf.__pi_tid : 0;
+        int retval = pthread_getthrds_np(&pt, PTHRDSINFO_QUERY_TID, &buf, sizeof(buf), NULL, &reg_size);
+        int tid = (!retval) ? buf.__pi_tid : 0;
         return static_cast<size_t>(tid);
 #elif defined(__DragonFly__) || defined(__FreeBSD__)
         return static_cast<size_t>(::pthread_getthreadid_np());
@@ -341,12 +343,12 @@ namespace rexlog
       // return true on success or if the directory already exists
       bool create_dir(const filename_t& path)
       {
-        if(path_exists(path))
+        if (path_exists(path))
         {
           return true;
         }
 
-        if(path.empty())
+        if (path.empty())
         {
           return false;
         }
@@ -354,21 +356,21 @@ namespace rexlog
         s32 search_offset = 0;
         do
         {
-          auto token_pos = path.find_first_of(g_folder_seps_filename, static_cast<count_t>(search_offset));
+          auto token_pos = path.find_first_of(rex::g_folder_seps_filename, static_cast<count_t>(search_offset));
           // treat the entire path as a folder if no folder separator not found
-          if(token_pos == filename_t::npos())
+          if (token_pos == filename_t::npos())
           {
             token_pos = path.size();
           }
 
           auto subdir = path.substr(0, token_pos);
 
-          if(!subdir.empty() && !path_exists(filename_t(subdir)) && !mkdir_impl(filename_t(subdir)))
+          if (!subdir.empty() && !path_exists(filename_t(subdir)) && !mkdir_impl(filename_t(subdir)))
           {
             return false; // return error if failed creating dir
           }
           search_offset = token_pos + 1;
-        } while(static_cast<count_t>(search_offset) < path.size());
+        } while (static_cast<count_t>(search_offset) < path.size());
 
         return true;
       }
@@ -380,8 +382,8 @@ namespace rexlog
       // "abc///" => "abc//"
       filename_t dir_name(rsl::string_view path)
       {
-        auto pos = path.find_last_of(g_folder_seps_filename);
-        return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t {};
+        auto pos = path.find_last_of(rex::g_folder_seps_filename);
+        return pos != filename_t::npos() ? filename_t(path.substr(0, pos)) : filename_t{};
       }
 
       // Do fsync by FILE handlerpointer

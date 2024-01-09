@@ -1,5 +1,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/formatting/flag_formatter.h"
 
+// IWYU pragma: no_include <built-in>
+
 #include "rex_engine/diagnostics/logging/internal/details/fmt_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padder.h"
 

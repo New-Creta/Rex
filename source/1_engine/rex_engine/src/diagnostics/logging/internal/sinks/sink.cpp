@@ -1,6 +1,9 @@
 #include "rex_engine/diagnostics/logging/internal/sinks/sink.h"
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_std/bonus/atomic/atomic.h"
+
+// IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 

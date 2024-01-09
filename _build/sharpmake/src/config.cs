@@ -1,5 +1,12 @@
 using Sharpmake;
+using System.Collections.Generic;
 
+// This file describes the classes used to configuring projects.
+// A configuration is often tied to optimisation levels
+// That's why the optimisation level is described here as well.
+
+// For documentation about each configuraton
+// Please read _docs/books/build_pipeline.html
 [Fragment, System.Flags]
 public enum Config
 {
@@ -7,13 +14,14 @@ public enum Config
   debug = (1 << 1),
   debug_opt = (1 << 2),
   release = (1 << 3),
-  tests = (1 << 4),
-  coverage = (1 << 5),
-  address_sanitizer = (1 << 6),
-  undefined_behavior_sanitizer = (1 << 7),
+  coverage = (1 << 4),
+  address_sanitizer = (1 << 5),
+  undefined_behavior_sanitizer = (1 << 6),
   fuzzy = (1 << 8)
 }
 
+// High level different kind of optimizations we support
+// Compiler and Linker options are set based on these values
 [Fragment, System.Flags]
 public enum Optimization
 {
@@ -22,160 +30,51 @@ public enum Optimization
   FullOpt = (1 << 2)
 }
 
+// The RexConfiguration class is what's used to set configuration options
+// These can be optimisation level, include paths, dependencies, ..
 public class RexConfiguration : Sharpmake.Project.Configuration
 {
-  public bool GenerateCompilerDB { get; set; }
-
-  public RexConfiguration()
-  {
-    GenerateCompilerDB = true;
-  }
-
+  // Enables exceptions for this configuration
   public void enable_exceptions()
   {
+    Options.Remove(Sharpmake.Options.Vc.Compiler.Exceptions.Disable);
     Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
+
+    // Requirement for MSVC
+    Defines.Remove("_HAS_EXCEPTIONS=0");
     Defines.Add("_HAS_EXCEPTIONS=1");
   }
 
+  // Disables exceptions for this configuration
   public void disable_exceptions()
   {
+    Options.Remove(Sharpmake.Options.Vc.Compiler.Exceptions.Enable);
     Options.Add(Sharpmake.Options.Vc.Compiler.Exceptions.Disable);
+
+    // Requirement for MSVC
+    Defines.Remove("_HAS_EXCEPTIONS=1");
     Defines.Add("_HAS_EXCEPTIONS=0");
   }
 
-  public void use_general_options()
-  {
-    //Options.Add(Sharpmake.Options.Vc.General.JumboBuild.Enable);
-    Options.Add(Sharpmake.Options.Vc.General.CharacterSet.MultiByte);
-    Options.Add(Sharpmake.Options.Vc.General.PlatformToolset.v142);
-    //Options.Add(Sharpmake.Options.Vc.General.VCToolsVersion.v14_21_27702);
-    Options.Add(Sharpmake.Options.Vc.General.WarningLevel.Level4);
-    Options.Add(Sharpmake.Options.Vc.General.TreatWarningsAsErrors.Enable);
-  }
-
-  public void use_compiler_options()
-  {
-    Options.Add(Sharpmake.Options.Vc.Compiler.SupportJustMyCode.No); // this adds a call to __CheckForDebuggerJustMyCode into every function that slows down runtime significantly
-    Options.Add(Sharpmake.Options.Vc.Compiler.CppLanguageStandard.CPP17);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RTTI.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeChecks.Default);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FloatingPointModel.Fast);
-    Options.Add(Sharpmake.Options.Vc.Compiler.MultiProcessorCompilation.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.StringPooling.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.BufferSecurityCheck.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FunctionLevelLinking.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FloatingPointExceptions.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.OpenMP.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.JumboBuild.Enable);
-  }
-
-  public void use_linker_options()
-  {
-    Options.Add(Sharpmake.Options.Vc.Linker.LargeAddress.SupportLargerThan2Gb);
-    Options.Add(Sharpmake.Options.Vc.Linker.GenerateMapFile.Disable);
-    Options.Add(Sharpmake.Options.Vc.Linker.GenerateManifest.Disable);
-    Options.Add(Sharpmake.Options.Vc.Linker.TreatLinkerWarningAsErrors.Enable);
-  }
-
-  public void enable_optimization()
-  {
-    Options.Add(Sharpmake.Options.Vc.General.WholeProgramOptimization.LinkTime);
-
-    Options.Add(Sharpmake.Options.Vc.Compiler.Optimization.MaximizeSpeed);
-    Options.Add(Sharpmake.Options.Vc.Compiler.Intrinsic.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeLibrary.MultiThreaded);
-    Options.Add(Sharpmake.Options.Vc.Compiler.Inline.AnySuitable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FiberSafe.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeChecks.Default);
-
-    Options.Add(Sharpmake.Options.Vc.Compiler.MinimalRebuild.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FavorSizeOrSpeed.FastCode);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FunctionLevelLinking.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.OmitFramePointers.Enable);
-
-    Options.Add(Sharpmake.Options.Vc.Linker.LinkTimeCodeGeneration.UseLinkTimeCodeGeneration);
-    Options.Add(Sharpmake.Options.Vc.Linker.EnableCOMDATFolding.RemoveRedundantCOMDATs);
-    Options.Add(Sharpmake.Options.Vc.Linker.Reference.EliminateUnreferencedData);
-    //Options.Add(Sharpmake.Options.Vc.Linker.Incremental.Enable);
-  }
-
-  public void disable_optimization()
-  {
-    Defines.Add("USING_DEBUG_RUNTIME_LIBS");
-
-    Options.Add(Sharpmake.Options.Vc.Compiler.Optimization.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.Intrinsic.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeLibrary.MultiThreadedDebug);
-    Options.Add(Sharpmake.Options.Vc.Compiler.Inline.Default);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FiberSafe.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.RuntimeChecks.Both);
-    Options.Add(Sharpmake.Options.Vc.Compiler.MinimalRebuild.Enable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FavorSizeOrSpeed.Neither);
-    Options.Add(Sharpmake.Options.Vc.Compiler.OmitFramePointers.Disable);
-    Options.Add(Sharpmake.Options.Vc.Compiler.FunctionLevelLinking.Enable);
-
-    Options.Add(Sharpmake.Options.Vc.Linker.LinkTimeCodeGeneration.Default);
-    Options.Add(Sharpmake.Options.Vc.Linker.EnableCOMDATFolding.DoNotRemoveRedundantCOMDATs);
-    Options.Add(Sharpmake.Options.Vc.Linker.CreateHotPatchableImage.Enable);
-    Options.Add(Sharpmake.Options.Vc.Linker.Incremental.Enable);
-    Options.Add(Sharpmake.Options.Vc.Linker.GenerateDebugInformation.Enable);
-  }
-
+  // Adds a define to this configuration which is propagated
+  // to other projects that have a dependency on this project
+  // and use this configuration for it as well.
   public void add_public_define(string define)
   {
     Defines.Add(define);
     ExportDefines.Add(define);
   }
-
-  public void set_precomp_header(string projectFolderName, string preCompHeaderName)
-  {
-    PrecompHeader = projectFolderName + @"/" + preCompHeaderName + @".h";
-    PrecompSource = preCompHeaderName + @".cpp";
-  }
-
-  public bool is_config_for_testing()
-  {
-    RexTarget rex_target = Target as RexTarget;
-    switch (rex_target.Config)
-    {
-      case Config.tests:
-      case Config.coverage:
-      case Config.address_sanitizer:
-      case Config.undefined_behavior_sanitizer:
-      case Config.fuzzy:
-        return true;
-
-      case Config.assert:
-      case Config.debug:
-      case Config.debug_opt:
-      case Config.release:
-      default:
-        return false;
-    }
-  }
 }
 
-public class ConfigManager
+// Every entry in the config file that's passed in to a call into sharpmake
+// is deserialized into this structure.
+// This is then used to initialize the generation settings
+public class ConfigSetting
 {
-  public static Config get_all_configs()
-  {
-    return Config.assert | Config.debug | Config.debug_opt | Config.release | Config.tests;
-  }
-
-  public static Optimization get_optimization_for_config(Config config)
-  {
-    switch (config)
-    {
-      case Config.assert: return Optimization.FullOptWithPdb;
-      case Config.debug: return Optimization.NoOpt;
-      case Config.coverage: return Optimization.NoOpt;
-      case Config.debug_opt: return Optimization.FullOptWithPdb;
-      case Config.address_sanitizer: return Optimization.FullOptWithPdb;
-      case Config.undefined_behavior_sanitizer: return Optimization.FullOptWithPdb;
-      case Config.fuzzy: return Optimization.FullOptWithPdb;
-      case Config.release: return Optimization.FullOpt;
-      case Config.tests: return Optimization.NoOpt;
-    }
-    return Optimization.FullOpt;
-  }
+  // A description of the config setting
+  public string Description { get; set; }
+  // The value of this setting (can be bool, int, array, string)
+  public System.Text.Json.JsonElement Value { get; set; }
+  // optional list of possible values. This is useful if the entry is supposed to be parsed to an enum.
+  public string[] Options { get; set; }
 }

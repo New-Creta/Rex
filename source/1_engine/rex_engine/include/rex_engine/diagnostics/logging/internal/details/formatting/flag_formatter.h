@@ -1,9 +1,21 @@
 #pragma once
 
+#include "rex_engine/debug_types.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/internal/details/fmt_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padding_info.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
-#include "rex_std/array.h"
+#include "rex_engine/filesystem/filesystem_constants.h"
+#include "rex_engine/types.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/chrono.h"
+#include "rex_std/cstring.h"
+#include "rex_std/source_location.h"
+
+#include <corecrt_wtime.h>
+#include <stdint.h>
 
 namespace rexlog
 {
@@ -767,9 +779,9 @@ namespace rexlog
       {
         // if the size is 2 (1 character + null terminator) we can use the more efficient strrchr
         // the branch will be elided by optimizations
-        if(sizeof(os::g_folder_seps) == 2)
+        if(sizeof(rex::g_folder_seps) == 2)
         {
-          const char* rv = rsl::strrchr(filename, os::g_folder_seps[0]);
+          const char* rv = rsl::strrchr(filename, rex::g_folder_seps[0]);
           return rv != nullptr ? rv + 1 : filename;
         }
         else
@@ -777,7 +789,7 @@ namespace rexlog
           const rsl::reverse_iterator<const char*> begin(filename + rsl::strlen(filename));
           const rsl::reverse_iterator<const char*> end(filename);
 
-          const auto it = begin + rsl::find_first_of(begin, rsl::strlen(filename), os::g_folder_seps.data(), os::g_folder_seps.size());
+          const auto it = begin + rsl::find_first_of(begin, rsl::strlen(filename), rex::g_folder_seps.data(), rex::g_folder_seps.size());
           return it != end ? it.base() : filename;
         }
       }

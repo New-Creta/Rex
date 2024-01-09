@@ -1,25 +1,18 @@
 #include "rex_engine/diagnostics/win/hr_call.h"
 
-#include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/log.h"
+#include "rex_engine/diagnostics/win/win_debug.h"
 #include "rex_std/bonus/attributes.h"
 
 #define NOMINMAX
 #include <Windows.h>
-#include <comdef.h>
 
-rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED rsl::string_view file, REX_MAYBE_UNUSED rsl::string_view function, REX_MAYBE_UNUSED card32 lineNr)
-    : m_has_failed(FAILED(hr))
+rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED rsl::string_view winFunc, REX_MAYBE_UNUSED rsl::string_view file, REX_MAYBE_UNUSED rsl::string_view function, REX_MAYBE_UNUSED card32 lineNr)
+    : m_hresult(hr)
+    , m_has_failed(FAILED(hr))
 {
   if(has_failed())
   {
-    const _com_error err(hr);
-    m_error_message = err.ErrorMessage();
-    REX_ERROR(LogEngine, "WINDOWS ERROR");
-    REX_ERROR(LogEngine, "File: ", file);
-    REX_ERROR(LogEngine, "Function: ", function);
-    REX_ERROR(LogEngine, "On line: ", lineNr);
-    REX_ERROR(LogEngine, "DirectX error: ", m_error_message);
+    m_error_message = report_win_error(hr, winFunc, file, function, lineNr);
   }
 }
 
@@ -30,6 +23,11 @@ bool rex::win::HrCall::has_failed() const
 bool rex::win::HrCall::has_succeeded() const
 {
   return m_has_failed;
+}
+
+rex::win::HResult rex::win::HrCall::result() const
+{
+  return m_hresult;
 }
 
 rsl::string_view rex::win::HrCall::error_message() const

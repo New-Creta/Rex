@@ -1,15 +1,13 @@
 #pragma once
 
-#include "rex_engine/string/stringentry.h"
-#include "rex_engine/string/stringpool.h"
+#include <cstddef>
+
 #include "rex_engine/types.h"
 #include "rex_std/bonus/functional.h"
+#include "rex_std/format.h"
 #include "rex_std/internal/format/core.h"
-#include "rex_std/memory.h"
 #include "rex_std/ostream.h"
-#include "rex_std/string.h"
-
-#include <cstddef>
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {
@@ -30,18 +28,27 @@ namespace rex
   public:
     //-------------------------------------------------------------------------
     /**
-     * Create an empty StringID.
+     * Create an invalid StringID.
+     */
+    static constexpr StringID create_invalid()
+    {
+      return StringID(s_none_state_hash_val);
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Create an none StringID.
      */
     constexpr StringID()
-        : m_comparison_hash(StringEntryID::create_invalid())
+        : m_comparison_hash(create_invalid())
     {
     }
 
     //-------------------------------------------------------------------------
     /**
-     * Create a runtime generated StringEntryID.
+     * Create a runtime generated StringID.
      */
-    constexpr explicit StringID(StringEntryID entryID)
+    constexpr explicit StringID(rsl::hash_result entryID)
         : m_comparison_hash(entryID)
     {
     }
@@ -51,17 +58,36 @@ namespace rex
      * Create an StringID with characters.
      */
     constexpr explicit StringID(rsl::string_view stringView)
-        : m_comparison_hash(StringEntryID(rsl::hash<rsl::string_view> {}(stringView)))
+        : m_comparison_hash(rsl::hash<rsl::string_view> {}(stringView))
     {
     }
 
     //-------------------------------------------------------------------------
     /**
-     * Retrieve the hashed value
+     * Retrieve the hashed value as u32
      */
     constexpr operator u32() const // NOLINT(google-explicit-constructor)
     {
       return static_cast<u32>(m_comparison_hash);
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * Is the hash value valid
+     */
+    constexpr explicit operator bool() const
+    {
+      return is_none() == false; // NOLINT(readability-simplify-boolean-expr)
+    }
+
+    //-------------------------------------------------------------------------
+    constexpr bool operator<(const StringID& rhs) const
+    {
+      return m_comparison_hash < rhs.m_comparison_hash;
+    }
+    //-------------------------------------------------------------------------
+    constexpr bool operator>(const StringID& rhs) const
+    {
+      return rhs.m_comparison_hash < m_comparison_hash;
     }
 
     //-------------------------------------------------------------------------
@@ -76,21 +102,10 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    constexpr bool operator==(const StringEntryID& entryID) const
-    {
-      return m_comparison_hash == static_cast<uint32>(entryID);
-    }
-    //-------------------------------------------------------------------------
-    constexpr bool operator!=(const StringEntryID& entryID) const
-    {
-      return m_comparison_hash != static_cast<uint32>(entryID);
-    }
-
-    //-------------------------------------------------------------------------
     /** True for StringID() and StringID("Invalid StringID") */
     constexpr bool is_none() const
     {
-      return m_comparison_hash == StringEntryID::create_invalid();
+      return m_comparison_hash == s_none_state_hash_val;
     }
 
     //-------------------------------------------------------------------------
@@ -103,8 +118,11 @@ namespace rex
     }
 
   private:
+    /** Hash for invalid StringID into string pool */
+    static constexpr u32 s_none_state_hash_val = 0;
+
     /** Hash into the StringID hash table */
-    StringEntryID m_comparison_hash;
+    rsl::hash_result m_comparison_hash;
   };
 
   StringID store_sid(rsl::string_view characters);
