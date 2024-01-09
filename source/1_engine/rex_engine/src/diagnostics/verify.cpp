@@ -10,31 +10,11 @@ namespace rex
   DEFINE_LOG_CATEGORY(LogVerify, LogVerbosity::Error);
 
   //-------------------------------------------------------------------------
-  void rex_verify(const rsl::fmt_stack_string& msg)
+  void rex_verify(rsl::string_view condition, rsl::string_view msg)
   {
-    thread_local static bool is_processing_assert = false;
-    if(!is_processing_assert)
-    {
-      is_processing_assert = true;
-
-      REX_ERROR(LogVerify, "Verification Raised: {}", msg);
-
-      REX_ERROR(LogVerify, "----------------");
-
-      const ResolvedCallstack callstack(current_callstack());
-
-      for(count_t i = 0; i < callstack.size(); ++i)
-      {
-        REX_ERROR(LogVerify, "{}", callstack[i]);
-      }
-
-      tinyfd_messageBox("Verification Failed", "The application has encountered an invalid state.", "ok", "error", 0);
-    }
-    else
-    {
-      // if this is hit, an verify occurred while processing another one.
-      // to avoid circular dependency, we break here if there's a debugger attached
-      DEBUG_BREAK();
-    }
+    REX_ERROR(LogVerify, "Verification Failed: {}", condition);
+    REX_ERROR(LogVerify, msg);
+    
+    tinyfd_messageBox("Verification Failed", msg.data(), "ok", "error", 0);
   }
 } // namespace rex
