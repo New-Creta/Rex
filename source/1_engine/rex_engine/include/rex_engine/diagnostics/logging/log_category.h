@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_std/string.h"
 #include "rex_std/bonus/utility/yes_no.h"
+#include "rex_std/string.h"
 
 namespace rex
 {

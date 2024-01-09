@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/functional.h"
 #include "rex_std/limits.h"
-#include "rex_std/bonus/memory/memory_size.h"
 
 namespace rex
 {
@@ -40,10 +40,10 @@ namespace rex
   {
   public:
     explicit ApplicationCreationParams(PlatformCreationParams* platformParams)
-      : engine_params()
-      , platform_params(platformParams)
-      , gui_params()
-      , create_window(false)
+        : engine_params()
+        , platform_params(platformParams)
+        , gui_params()
+        , create_window(false)
     {
     }
 
