@@ -1,206 +1,203 @@
 #include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 
-#include "rex_engine/debug_types.h"
+#include <errno.h>
+
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/filesystem/filesystem_constants.h"
 #include "rex_engine/memory/global_allocator.h"
-#include "rex_engine/types.h"
-
-#include <errno.h>
+#include "rex_engine/engine/debug_types.h"
+#include "rex_engine/engine/types.h"
 
 // IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(misc-definitions-in-headers)
 
-namespace rex
+namespace rexlog
 {
-  namespace log
+  namespace details
   {
-    namespace details
+
+    FileHelper::FileHelper(const FileEventHandlers& eventHandlers)
+        : m_event_handlers(eventHandlers)
     {
+    }
 
-      FileHelper::FileHelper(const FileEventHandlers& eventHandlers)
-          : m_event_handlers(eventHandlers)
+    FileHelper::~FileHelper()
+    {
+      close();
+    }
+
+    void FileHelper::open(rsl::string_view fname, bool truncate)
+    {
+      close();
+      m_filename = filename_t(fname);
+
+      const auto* mode       = "ab";
+      const auto* trunc_mode = "wb";
+
+      if(m_event_handlers.before_open)
       {
+        m_event_handlers.before_open(m_filename);
       }
-
-      FileHelper::~FileHelper()
+      for(int tries = 0; tries < s_open_tries; ++tries)
       {
-        close();
-      }
-
-      void FileHelper::open(rsl::string_view fname, bool truncate)
-      {
-        close();
-        m_filename = filename_t(fname);
-
-        const auto* mode       = "ab";
-        const auto* trunc_mode = "wb";
-
-        if(m_event_handlers.before_open)
+        // create containing folder if not exists already.
+        os::create_dir(os::dir_name(fname));
+        if(truncate)
         {
-          m_event_handlers.before_open(m_filename);
+          // Truncate by opening-and-closing a tmp file in "wb" mode, always
+          // opening the actual log-we-write-to in "ab" mode, since that
+          // interacts more politely with eternal processes that might
+          // rotate/truncate the file underneath us.
+          FILE* tmp = nullptr;
+          if(os::fopen_s(&tmp, fname, filename_t(trunc_mode)))
+          {
+            continue;
+          }
+          REX_ASSERT_X(fclose(tmp), "failed to close tmp file");
         }
-        for(int tries = 0; tries < s_open_tries; ++tries)
+        if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
         {
-          // create containing folder if not exists already.
-          os::create_dir(os::dir_name(fname));
-          if(truncate)
+          if(m_event_handlers.after_open)
           {
-            // Truncate by opening-and-closing a tmp file in "wb" mode, always
-            // opening the actual log-we-write-to in "ab" mode, since that
-            // interacts more politely with eternal processes that might
-            // rotate/truncate the file underneath us.
-            FILE* tmp = nullptr;
-            if(os::fopen_s(&tmp, fname, filename_t(trunc_mode)))
-            {
-              continue;
-            }
-            REX_ASSERT_X(fclose(tmp), "failed to close tmp file");
+            m_event_handlers.after_open(m_filename, m_fd);
           }
-          if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
-          {
-            if(m_event_handlers.after_open)
-            {
-              m_event_handlers.after_open(m_filename, m_fd);
-            }
-            return;
-          }
-
-          details::os::sleep_for_millis(s_open_interval);
+          return;
         }
 
+        details::os::sleep_for_millis(s_open_interval);
+      }
+
+      rex::DebugString err(rex::global_debug_allocator());
+      err += "Failed opening file ";
+      err += os::filename_to_str(m_filename);
+      err += " for writing";
+      err += " %d";
+      printf("%s, %d", err.data(), errno);
+    }
+
+    void FileHelper::reopen(bool truncate)
+    {
+      if(m_filename.empty())
+      {
+        printf("Failed re opening file - was not opened before");
+      }
+      this->open(m_filename, truncate);
+    }
+
+    void FileHelper::flush()
+    {
+      if(fflush(m_fd) != 0)
+      {
         rex::DebugString err(rex::global_debug_allocator());
-        err += "Failed opening file ";
+        err += "Failed flush to file ";
         err += os::filename_to_str(m_filename);
-        err += " for writing";
         err += " %d";
         printf("%s, %d", err.data(), errno);
       }
+    }
 
-      void FileHelper::reopen(bool truncate)
+    void FileHelper::sync()
+    {
+      if(!os::fsync(m_fd))
       {
-        if(m_filename.empty())
-        {
-          printf("Failed re opening file - was not opened before");
-        }
-        this->open(m_filename, truncate);
+        rex::DebugString err(rex::global_debug_allocator());
+        err += "Failed to fsync file ";
+        err += os::filename_to_str(m_filename);
+        err += " %d";
+        printf("%s, %d", err.data(), errno);
       }
+    }
 
-      void FileHelper::flush()
+    void FileHelper::close()
+    {
+      if(m_fd != nullptr)
       {
-        if(fflush(m_fd) != 0)
+        if(m_event_handlers.before_close)
         {
-          rex::DebugString err(rex::global_debug_allocator());
-          err += "Failed flush to file ";
-          err += os::filename_to_str(m_filename);
-          err += " %d";
-          printf("%s, %d", err.data(), errno);
-        }
-      }
-
-      void FileHelper::sync()
-      {
-        if(!os::fsync(m_fd))
-        {
-          rex::DebugString err(rex::global_debug_allocator());
-          err += "Failed to fsync file ";
-          err += os::filename_to_str(m_filename);
-          err += " %d";
-          printf("%s, %d", err.data(), errno);
-        }
-      }
-
-      void FileHelper::close()
-      {
-        if(m_fd != nullptr)
-        {
-          if(m_event_handlers.before_close)
-          {
-            m_event_handlers.before_close(m_filename, m_fd);
-          }
-
-          REX_ASSERT_X(fclose(m_fd), "failed to close fd file");
-          m_fd = nullptr;
-
-          if(m_event_handlers.after_close)
-          {
-            m_event_handlers.after_close(m_filename);
-          }
-        }
-      }
-
-      void FileHelper::write(const memory_buf_t& buf)
-      {
-        const s32 msg_size = buf.size();
-        const auto* data   = buf.data();
-        if(fwrite(data, 1, msg_size, m_fd) != msg_size)
-        {
-          rex::DebugString err(rex::global_debug_allocator());
-          err += "Failed writing to file ";
-          err += os::filename_to_str(m_filename);
-          err += " %d";
-          printf("%s, %d", err.data(), errno);
-        }
-      }
-
-      size_t FileHelper::size() const
-      {
-        if(m_fd == nullptr)
-        {
-          rex::DebugString err(rex::global_debug_allocator());
-          err += "Cannot use size() on closed file ";
-          err += os::filename_to_str(m_filename);
-          printf("%s", err.data());
-        }
-        return os::filesize(m_fd);
-      }
-
-      rsl::string_view FileHelper::filename() const
-      {
-        return m_filename;
-      }
-
-      //
-      // return file path and its extension:
-      //
-      // "mylog.txt" => ("mylog", ".txt")
-      // "mylog" => ("mylog", "")
-      // "mylog." => ("mylog.", "")
-      // "/dir1/dir2/mylog.txt" => ("/dir1/dir2/mylog", ".txt")
-      //
-      // the starting dot in filenames is ignored (hidden files):
-      //
-      // ".mylog" => (".mylog". "")
-      // "my_folder/.mylog" => ("my_folder/.mylog", "")
-      // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
-
-      FilenameWithExtension FileHelper::split_by_extension(rsl::string_view fname)
-      {
-        auto ext_index = fname.rfind('.');
-
-        // no valid extension found - return whole path and empty string as
-        // extension
-        if(ext_index == filename_t::npos() || ext_index == 0 || ext_index == fname.size() - 1)
-        {
-          return FilenameWithExtension {fname, rsl::tiny_stack_string()};
+          m_event_handlers.before_close(m_filename, m_fd);
         }
 
-        // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
-        auto folder_index = fname.find_last_of(rex::g_folder_seps_filename);
-        if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
-        {
-          return FilenameWithExtension {fname, rsl::tiny_stack_string()};
-        }
+        REX_ASSERT_X(fclose(m_fd), "failed to close fd file");
+        m_fd = nullptr;
 
-        // finally - return a valid base and extension tuple
-        return FilenameWithExtension {rsl::small_stack_string(fname.substr(0, ext_index)), rsl::tiny_stack_string(fname.substr(ext_index))};
+        if(m_event_handlers.after_close)
+        {
+          m_event_handlers.after_close(m_filename);
+        }
+      }
+    }
+
+    void FileHelper::write(const memory_buf_t& buf)
+    {
+      const s32 msg_size = buf.size();
+      const auto* data   = buf.data();
+      if(fwrite(data, 1, msg_size, m_fd) != msg_size)
+      {
+        rex::DebugString err(rex::global_debug_allocator());
+        err += "Failed writing to file ";
+        err += os::filename_to_str(m_filename);
+        err += " %d";
+        printf("%s, %d", err.data(), errno);
+      }
+    }
+
+    size_t FileHelper::size() const
+    {
+      if(m_fd == nullptr)
+      {
+        rex::DebugString err(rex::global_debug_allocator());
+        err += "Cannot use size() on closed file ";
+        err += os::filename_to_str(m_filename);
+        printf("%s", err.data());
+      }
+      return os::filesize(m_fd);
+    }
+
+    rsl::string_view FileHelper::filename() const
+    {
+      return m_filename;
+    }
+
+    //
+    // return file path and its extension:
+    //
+    // "mylog.txt" => ("mylog", ".txt")
+    // "mylog" => ("mylog", "")
+    // "mylog." => ("mylog.", "")
+    // "/dir1/dir2/mylog.txt" => ("/dir1/dir2/mylog", ".txt")
+    //
+    // the starting dot in filenames is ignored (hidden files):
+    //
+    // ".mylog" => (".mylog". "")
+    // "my_folder/.mylog" => ("my_folder/.mylog", "")
+    // "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
+
+    FilenameWithExtension FileHelper::split_by_extension(rsl::string_view fname)
+    {
+      auto ext_index = fname.rfind('.');
+
+      // no valid extension found - return whole path and empty string as
+      // extension
+      if(ext_index == filename_t::npos() || ext_index == 0 || ext_index == fname.size() - 1)
+      {
+        return FilenameWithExtension {fname, rsl::tiny_stack_string()};
       }
 
-    } // namespace details
-  }   // namespace log
-} // namespace rex
+      // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
+      auto folder_index = fname.find_last_of(rex::g_folder_seps_filename);
+      if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
+      {
+        return FilenameWithExtension {fname, rsl::tiny_stack_string()};
+      }
+
+      // finally - return a valid base and extension tuple
+      return FilenameWithExtension {rsl::small_stack_string(fname.substr(0, ext_index)), rsl::tiny_stack_string(fname.substr(ext_index))};
+    }
+
+  } // namespace details
+} // namespace rexlog
 
 // NOLINTEND(misc-definitions-in-headers)

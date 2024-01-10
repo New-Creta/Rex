@@ -27,3 +27,4 @@ fuzzy.log.*
 crash-*
 *.nsln
 *.unrealvs
+source/1_engine/rex_engine/include/rex_engine/cmdline/cmd_args.h

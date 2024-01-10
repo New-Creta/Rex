@@ -4,7 +4,7 @@
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/memory/untracked_allocator.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/array.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/bonus/defines.h"

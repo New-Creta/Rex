@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/core_application.h"
+#include "rex_engine/app/core_application.h"
 #include "rex_std/format.h"
 
 namespace rex

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/diagnostics/win/win_stacktrace.h"
+#include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/types.h"

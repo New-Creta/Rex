@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/bonus/attributes.h"
 
 void operator delete(void* ptr) noexcept;           // NOLINT(misc-new-delete-overloads, readability-inconsistent-declaration-parameter-name, readability-redundant-declaration)

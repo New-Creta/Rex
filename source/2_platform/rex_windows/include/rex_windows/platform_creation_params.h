@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/engine_params.h"
+#include "rex_engine/engine/engine_params.h"
 #include "rex_engine/string/stringid.h"
 #include "rex_windows/win_types.h"
 

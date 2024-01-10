@@ -1,9 +1,9 @@
-#include "rex_engine/cmdline.h"
+#include "rex_engine/cmdline/cmdline.h"
 
-#include "rex_engine/cmd_args.h"
+#include "rex_engine/cmdline/cmd_args.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/log.h"
+#include "rex_engine/diagnostics/log.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility.h"
@@ -16,8 +16,27 @@ namespace rex
 {
   namespace cmdline
   {
+    namespace internal
+    {
+      StringID create_string_id_for_arg(rsl::string_view arg)
+      {
+        return StringID(rsl::medium_stack_string(arg).to_lower());
+      }
+    }
+
+    Argument::Argument(rsl::string_view name, rsl::string_view desc, rsl::string_view module)
+      : name_id(internal::create_string_id_for_arg(name))
+      , name(name)
+      , desc(desc)
+      , module(module)
+    {
+      
+
+    }
+
     struct ActiveArgument
     {
+      StringID argument_id;
       rsl::string_view argument;
       rsl::string_view value;
     };
@@ -41,15 +60,11 @@ namespace rex
 
       rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
       {
-        for(const ActiveArgument& active_arg: m_arguments)
-        {
-          // early optimization that strincmp can't do
-          if(arg.length() != active_arg.argument.length())
-          {
-            continue;
-          }
+        StringID arg_id = internal::create_string_id_for_arg(arg);
 
-          if(rsl::strincmp(arg.data(), active_arg.argument.data(), arg.length()) == 0)
+        for(const ActiveArgument& active_arg : m_arguments)
+        {
+          if (arg_id == active_arg.argument_id)
           {
             return active_arg.value;
           }
@@ -147,7 +162,8 @@ namespace rex
           value = "1"; // this is so we can easily convert to bool/int
         }
 
-        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key](const Argument& cmdArg) { return rsl::strincmp(key.data(), cmdArg.name.data(), key.length()) == 0; });
+        StringID key_id = internal::create_string_id_for_arg(key);
+        auto cmd_it = rsl::find_if(g_command_line_args.cbegin(), g_command_line_args.cend(), [key_id](const Argument& cmdArg) { return key_id == cmdArg.name_id; });
 
         if(cmd_it == g_command_line_args.cend())
         {
@@ -163,7 +179,7 @@ namespace rex
           return;
         }
 
-        m_arguments.push_back({key, value});
+        m_arguments.push_back({key_id, key, value});
       }
 
       bool verify_args(const Argument* args, count_t argCount) // NOLINT(readability-convert-member-functions-to-static)
@@ -179,7 +195,7 @@ namespace rex
             }
 
             const Argument& rhs_arg = args[j];
-            if(rsl::strincmp(lhs_arg.name.data(), rhs_arg.name.data(), lhs_arg.name.length()) == 0)
+            if (lhs_arg.name_id == rhs_arg.name_id)
             {
               REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity by changing the code_generation file resulting in this ambiguity", lhs_arg.name);
               return false;

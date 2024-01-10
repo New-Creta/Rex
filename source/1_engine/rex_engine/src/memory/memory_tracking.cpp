@@ -1,28 +1,30 @@
 #include "rex_engine/memory/memory_tracking.h"
 
-#include "rex_engine/core_application.h"
-#include "rex_engine/debug_types.h"
+#include "rex_engine/app/core_application.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_engine/diagnostics/win/win_stacktrace.h"
+#include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/filesystem/mounting_point.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/memory/memory_header.h"
-#include "rex_engine/memory/win/win_mem_stats.h"
+#include "rex_engine/memory/memory_stats.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/string.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/bonus/utility.h"
+#include "rex_std/thread.h"
 #include "rex_std/bonus/time/date.h"
 #include "rex_std/bonus/time/time.h"
 #include "rex_std/bonus/time/timepoint.h"
 #include "rex_std/bonus/time/win/win_timepoint.h"
-#include "rex_std/bonus/types.h"
-#include "rex_std/bonus/utility.h"
 #include "rex_std/bonus/utility/yes_no.h"
-#include "rex_std/thread.h"
 
-#include <vcruntime_new.h>
+// there's about 0.8MB allocation overhead of Window's process runtime
+// So during tracking, we need make sure we subtract this memory usage
+// from the app's usage, as there's nothing we can do about it
 
 namespace rex
 {
