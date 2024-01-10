@@ -7,7 +7,7 @@
 #include "rex_engine/event_system/event_type.h"
 #include "rex_std/functional.h"
 #include "rex_windows/platform_creation_params.h"
-#include "rex_windows/input/input.h"
+#include "rex_windows/input/internal/input.h"
 
 #include <Windows.h>
 #include <consoleapi.h>
@@ -64,6 +64,7 @@ namespace rex
       bool initialize()
       {
         SetConsoleCtrlHandler(handler_routine, true); // NOLINT(readability-implicit-bool-conversion)
+        input::internal::set_global_input_handler(m_input);
 
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
 
@@ -72,7 +73,7 @@ namespace rex
 
       void update()
       {
-        input::internal::update();
+        m_input.update();
 
         m_on_update();
       }
@@ -95,6 +96,8 @@ namespace rex
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;
       rsl::function<void()> m_on_shutdown;
+
+      input::internal::Input m_input;
     };
 
     ConsoleApplication::ConsoleApplication(ApplicationCreationParams&& appParams)
