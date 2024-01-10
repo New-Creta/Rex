@@ -316,33 +316,35 @@ namespace rex
     {
       while (g_vfs_state_controller.has_state(VfsState::Running))
       {
-        rsl::unique_lock lock(g_read_request_mutex);
-        if (!g_read_requests.empty())
         {
-          // get the queued request and remvoe it from the queue,
-          // but remove in the reverse order that they got added
-          rsl::string_view filepath = g_read_requests_in_order.front();
-          g_read_requests_in_order.erase(g_read_requests_in_order.cbegin());
-          rsl::unique_ptr<QueuedRequest> request = rsl::move(g_read_requests[filepath]);
-          g_read_requests.erase(filepath);
+          rsl::unique_lock lock(g_read_request_mutex);
+          if (!g_read_requests.empty())
+          {
+            // get the queued request and remvoe it from the queue,
+            // but remove in the reverse order that they got added
+            rsl::string_view filepath = g_read_requests_in_order.front();
+            g_read_requests_in_order.erase(g_read_requests_in_order.cbegin());
+            rsl::unique_ptr<QueuedRequest> request = rsl::move(g_read_requests[filepath]);
+            g_read_requests.erase(filepath);
 
-          // we don't need access to the queue anymore, we can unlock its access mutex
-          lock.unlock();
+            // we don't need access to the queue anymore, we can unlock its access mutex
+            lock.unlock();
 
-          // read the actual file we requested
-          memory::Blob buffer = read_file(request->filepath());
+            // read the actual file we requested
+            memory::Blob buffer = read_file(request->filepath());
 
-          // signal all read requests that this file has now been read
-          // it's possible multiple read requests want to access the same file
-          // if such requests come in while there's already a request for this file
-          // they get added to the original queued request and they now all get notified
-          request->signal_requests(buffer.data(), buffer.size());
+            // signal all read requests that this file has now been read
+            // it's possible multiple read requests want to access the same file
+            // if such requests come in while there's already a request for this file
+            // they get added to the original queued request and they now all get notified
+            request->signal_requests(buffer.data(), buffer.size());
 
-          // add the closed task to the queue, making sure it stays alive until all requests have finished processing the data
-          // This moves ownership of the buffer to the new request in the new queue
-          // We do this so that we don't have lock any thread while waiting for the requests to complete
-          const rsl::unique_lock closed_req_lock(g_closed_request_mutex);
-          g_closed_requests.push_back(rsl::move(request));
+            // add the closed task to the queue, making sure it stays alive until all requests have finished processing the data
+            // This moves ownership of the buffer to the new request in the new queue
+            // We do this so that we don't have lock any thread while waiting for the requests to complete
+            const rsl::unique_lock closed_req_lock(g_closed_request_mutex);
+            g_closed_requests.push_back(rsl::move(request));
+          }
         }
 
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
@@ -618,16 +620,6 @@ namespace rex
       {
         return rsl::string(path);
       }
-
-      const auto comparer = rsl::equal_to<rsl::string>();
-      using K1 = rsl::string;
-      using K2 = rsl::string_view;
-      using Key = rsl::string;
-
-      K1 k1;
-      K2 k2;
-
-      const bool b = comparer(k1, k2);
 
       return path::join(g_root, path);
     }

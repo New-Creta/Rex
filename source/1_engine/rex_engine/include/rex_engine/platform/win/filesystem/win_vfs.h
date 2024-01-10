@@ -19,13 +19,13 @@
 // rex::memory::Blob content = rex::vfs::read_file("path/to/file");
 ///  
 /// File Writing:
-// int x = 0;
-// rex::vfs::write_to_file("path/to/file.txt", &x, sizeof(x);
+// int data_to_write = 0;
+// rex::vfs::write_to_file("path/to/file.txt", &data_to_write, sizeof(x);
 ///
 /// ASYNC FILE IO
 /// 
 /// We only support async file reading, as async file writing
-/// Doesn't make much sense for the moment
+/// doesn't make much sense for the moment
 /// 
 // rex::vfs::ReadRequest read_request = rex::vfs::read_file_async("path/to/file");
 /// 
