@@ -127,7 +127,7 @@ namespace rex
     class QueuedRequest
     {
     public:
-      explicit QueuedRequest(rsl::string_view filepath)
+      explicit QueuedRequest(rsl::wstring_view filepath)
           : m_filepath(filepath)
           , m_requests()
           , m_requests_access_mtx()
@@ -175,19 +175,19 @@ namespace rex
         return m_requests.empty();
       }
 
-      rsl::string_view filepath() const
+      rsl::wstring_view filepath() const
       {
         return m_filepath;
       }
 
     private:
-      rsl::medium_stack_string m_filepath;
+      rsl::wmedium_stack_string m_filepath;
       rsl::vector<ReadRequest*> m_requests;
       rsl::mutex m_requests_access_mtx;
       rsl::atomic<bool> m_is_done;
     };
 
-    ReadRequest::ReadRequest(rsl::string_view filepath, QueuedRequest* queuedRequest)
+    ReadRequest::ReadRequest(rsl::wstring_view filepath, QueuedRequest* queuedRequest)
         : m_filepath(filepath)
         , m_queued_request(queuedRequest)
         , m_is_done(false)
@@ -207,7 +207,7 @@ namespace rex
     }
 
     ReadRequest::ReadRequest(ReadRequest&& other)
-        : m_filepath(rsl::exchange(other.m_filepath, ""))
+        : m_filepath(rsl::exchange(other.m_filepath, L""))
         , m_queued_request(rsl::exchange(other.m_queued_request, nullptr))
         , m_is_done(rsl::exchange(other.m_is_done, false))
         , m_buffer(rsl::exchange(other.m_buffer, nullptr))
@@ -244,7 +244,7 @@ namespace rex
     {
       REX_ASSERT_X(this != &other, "moving a read request to itself");
 
-      m_filepath       = rsl::exchange(other.m_filepath, "");
+      m_filepath       = rsl::exchange(other.m_filepath, L"");
       m_queued_request = rsl::exchange(other.m_queued_request, nullptr);
       m_is_done        = rsl::exchange(other.m_is_done, false);
       m_buffer         = rsl::exchange(other.m_buffer, nullptr);
@@ -281,7 +281,7 @@ namespace rex
       return m_size;
     }
 
-    rsl::string_view ReadRequest::filepath() const
+    rsl::wstring_view ReadRequest::filepath() const
     {
       return m_filepath;
     }
@@ -289,7 +289,7 @@ namespace rex
     // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
 
     // This the root where all relative paths will start from
-    rsl::medium_stack_string g_root;
+    rsl::wmedium_stack_string g_root;
 
     // This controls the state of the vfs
     StateController<VfsState> g_vfs_state_controller(VfsState::NotInitialized);
@@ -299,12 +299,12 @@ namespace rex
     rsl::mutex g_closed_request_mutex;
 
     // queues the vfs uses for its async operations
-    rsl::vector<rsl::string_view> g_read_requests_in_order;
-    rsl::unordered_map<rsl::string, rsl::unique_ptr<QueuedRequest>> g_read_requests;
+    rsl::vector<rsl::wstring_view> g_read_requests_in_order;
+    rsl::unordered_map<rsl::wstring, rsl::unique_ptr<QueuedRequest>> g_read_requests;
     rsl::vector<rsl::unique_ptr<QueuedRequest>> g_closed_requests;
 
     // mounted roots
-    rsl::unordered_map<MountingPoint, rsl::string> g_mounted_roots;
+    rsl::unordered_map<MountingPoint, rsl::wstring> g_mounted_roots;
 
     // threads used by the vfs to perform the async operations
     rsl::thread g_reading_thread;
@@ -316,35 +316,33 @@ namespace rex
     {
       while (g_vfs_state_controller.has_state(VfsState::Running))
       {
+        rsl::unique_lock lock(g_read_request_mutex);
+        if (!g_read_requests.empty())
         {
-          rsl::unique_lock lock(g_read_request_mutex);
-          if (!g_read_requests.empty())
-          {
-            // get the queued request and remvoe it from the queue,
-            // but remove in the reverse order that they got added
-            rsl::string_view filepath = g_read_requests_in_order.front();
-            g_read_requests_in_order.erase(g_read_requests_in_order.cbegin());
-            rsl::unique_ptr<QueuedRequest> request = rsl::move(g_read_requests[filepath]);
-            g_read_requests.erase(filepath);
+          // get the queued request and remvoe it from the queue,
+          // but remove in the reverse order that they got added
+          rsl::wstring_view filepath = g_read_requests_in_order.front();
+          g_read_requests_in_order.erase(g_read_requests_in_order.cbegin());
+          rsl::unique_ptr<QueuedRequest> request = rsl::move(g_read_requests[filepath]);
+          g_read_requests.erase(filepath);
 
-            // we don't need access to the queue anymore, we can unlock its access mutex
-            lock.unlock();
+          // we don't need access to the queue anymore, we can unlock its access mutex
+          lock.unlock();
 
-            // read the actual file we requested
-            memory::Blob buffer = read_file(request->filepath());
+          // read the actual file we requested
+          memory::Blob buffer = read_file(request->filepath());
 
-            // signal all read requests that this file has now been read
-            // it's possible multiple read requests want to access the same file
-            // if such requests come in while there's already a request for this file
-            // they get added to the original queued request and they now all get notified
-            request->signal_requests(buffer.data(), buffer.size());
+          // signal all read requests that this file has now been read
+          // it's possible multiple read requests want to access the same file
+          // if such requests come in while there's already a request for this file
+          // they get added to the original queued request and they now all get notified
+          request->signal_requests(buffer.data(), buffer.size());
 
-            // add the closed task to the queue, making sure it stays alive until all requests have finished processing the data
-            // This moves ownership of the buffer to the new request in the new queue
-            // We do this so that we don't have lock any thread while waiting for the requests to complete
-            const rsl::unique_lock closed_req_lock(g_closed_request_mutex);
-            g_closed_requests.push_back(rsl::move(request));
-          }
+          // add the closed task to the queue, making sure it stays alive until all requests have finished processing the data
+          // This moves ownership of the buffer to the new request in the new queue
+          // We do this so that we don't have lock any thread while waiting for the requests to complete
+          const rsl::unique_lock closed_req_lock(g_closed_request_mutex);
+          g_closed_requests.push_back(rsl::move(request));
         }
 
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
@@ -396,13 +394,13 @@ namespace rex
       g_closing_thread = rsl::thread(wait_for_read_requests);
     }
 
-    void init(rsl::string_view root)
+    void init(rsl::wstring_view root)
     {
       g_vfs_state_controller.change_state(VfsState::Initializing);
 
       // Setting the root directory has the effect that all data will be read relative from this directory
       // This has the same effect as if you would put the working directory to this path
-      set_root(cmdline::get_argument("Root").value_or(root));
+      set_root(cmdline::get_argument(L"Root").value_or(root));
 
       // Start the worker threads, listening to file IO requests and processing them
       start_threads();
@@ -412,7 +410,7 @@ namespace rex
       REX_LOG(FileSystem, "FileSystem initialized");
     }
 
-    void set_root(rsl::string_view root)
+    void set_root(rsl::wstring_view root)
     {
       if(root.empty())
       {
@@ -428,13 +426,13 @@ namespace rex
       }
 
       REX_ASSERT_X(path::is_dir(g_root), "root of vfs is not a directory");
-      REX_LOG(FileSystem, "FileSystem root changed to: {}", g_root);
+      REX_LOG(FileSystem, L"FileSystem root changed to: {}", g_root);
     }
 
-    void mount(MountingPoint root, rsl::string_view path)
+    void mount(MountingPoint root, rsl::wstring_view path)
     {
-      REX_ASSERT_X(!g_mounted_roots.contains(root), "root {} is already mapped. currently mapped to '{}'", rsl::enum_refl::enum_name(root), g_mounted_roots.at(root));
-      g_mounted_roots[root] = rsl::string(path);
+      REX_ASSERT_X(!g_mounted_roots.contains(root), L"root {} is already mapped. currently mapped to '{}'", rsl::to_wstring(rsl::enum_refl::enum_name(root)), g_mounted_roots.at(root));
+      g_mounted_roots[root] = rsl::wstring(path);
 
       // make sure the mount exists
       create_dir(path);
@@ -450,18 +448,18 @@ namespace rex
       g_vfs_state_controller.change_state(VfsState::ShutDown);
     }
 
-    memory::Blob read_file(MountingPoint root, rsl::string_view filepath)
+    memory::Blob read_file(MountingPoint root, rsl::wstring_view filepath)
     {
       filepath = path::remove_quotes(filepath);
-      rsl::string path = path::join(g_mounted_roots.at(root), filepath);
+      rsl::wstring path = path::join(g_mounted_roots.at(root), filepath);
       return read_file(path);
     }
 
-    memory::Blob read_file(rsl::string_view filepath)
+    memory::Blob read_file(rsl::wstring_view filepath)
     {
-      rsl::string path = create_full_path(filepath);
+      rsl::wstring path = create_full_path(filepath);
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(path.data(),               // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileW(path.data(),               // Path to file
                                                                GENERIC_READ,              // General read and write access
                                                                FILE_SHARE_READ,           // Other processes can also read the file
                                                                NULL,                      // No SECURITY_ATTRIBUTES
@@ -484,14 +482,14 @@ namespace rex
       return memory::Blob(rsl::move(buffer));
     }
 
-    ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath)
+    ReadRequest read_file_async(MountingPoint root, rsl::wstring_view filepath)
     {
       filepath = path::remove_quotes(filepath);
-      rsl::medium_stack_string path = path::join(g_mounted_roots.at(root), filepath);
+      rsl::wmedium_stack_string path = path::join(g_mounted_roots.at(root), filepath);
       return read_file_async(path);
     }
 
-    ReadRequest read_file_async(rsl::string_view filepath)
+    ReadRequest read_file_async(rsl::wstring_view filepath)
     {
       const rsl::unique_lock lock(g_read_request_mutex);
 
@@ -513,25 +511,25 @@ namespace rex
       // create the read request, which holds a link to the queued request
       queued_request->add_request_to_signal(&request);
 
-      auto emplace_res = g_read_requests.emplace(rsl::string(filepath), rsl::move(queued_request));
+      auto emplace_res = g_read_requests.emplace(rsl::wstring(filepath), rsl::move(queued_request));
       g_read_requests_in_order.push_back(emplace_res.inserted_element->key);
 
       return request;
     }
 
-    bool save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    bool save_to_file(MountingPoint root, rsl::wstring_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
       filepath = path::remove_quotes(filepath);
 
-      rsl::medium_stack_string path = path::join(g_mounted_roots.at(root), filepath);
+      rsl::wstring path = path::join(g_mounted_roots.at(root), filepath);
       return save_to_file(path, data, size, shouldAppend);
     }
 
-    bool save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    bool save_to_file(rsl::wstring_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
-      rsl::string fullpath = create_full_path(filepath);
+      rsl::wstring fullpath = create_full_path(filepath);
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFile(fullpath.data(),           // Path to file
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileW(fullpath.data(),           // Path to file
                                                                GENERIC_WRITE,             // General read and write access
                                                                FILE_SHARE_READ,           // Other processes can also read the file
                                                                NULL,                      // No SECURITY_ATTRIBUTES
@@ -551,57 +549,57 @@ namespace rex
       return WIN_SUCCESS(WriteFile(handle.get(), data, static_cast<DWORD>(size), &bytes_written, NULL));
     }
 
-    bool save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    bool save_to_file(MountingPoint root, rsl::wstring_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
       filepath = path::remove_quotes(filepath);
 
-      rsl::medium_stack_string path = path::join(g_mounted_roots.at(root), filepath);
+      rsl::wstring path = path::join(g_mounted_roots.at(root), filepath);
       return save_to_file(path, blob.data(), blob.size(), shouldAppend);
     }
 
-    bool save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    bool save_to_file(rsl::wstring_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
       return save_to_file(filepath, blob.data(), blob.size(), shouldAppend);
     }
 
-    bool create_dir(MountingPoint root, rsl::string_view path)
+    bool create_dir(MountingPoint root, rsl::wstring_view path)
     {
       path = path::remove_quotes(path);
 
-      rsl::medium_stack_string filepath = path::join(g_mounted_roots.at(root), path);
+      rsl::wstring filepath = path::join(g_mounted_roots.at(root), path);
       return create_dir(filepath);
     }
 
-    bool create_dir(rsl::string_view path)
+    bool create_dir(rsl::wstring_view path)
     {
-      rsl::medium_stack_string fullpath = create_full_path(path);
-      return WIN_SUCCESS_IGNORE(CreateDirectory(fullpath.data(), NULL), ERROR_ALREADY_EXISTS);
+      rsl::wstring fullpath = create_full_path(path);
+      return WIN_SUCCESS_IGNORE(CreateDirectoryW(fullpath.data(), NULL), ERROR_ALREADY_EXISTS);
     }
 
-    bool exists(MountingPoint root, rsl::string_view path)
+    bool exists(MountingPoint root, rsl::wstring_view path)
     {
       path = path::remove_quotes(path);
 
-      rsl::string filepath = path::join(g_mounted_roots.at(root), path);
+      rsl::wstring filepath = path::join(g_mounted_roots.at(root), path);
       return path::exists(filepath);
     }
 
-    bool is_dir(MountingPoint root, rsl::string_view path)
+    bool is_dir(MountingPoint root, rsl::wstring_view path)
     {
       path = path::remove_quotes(path);
 
-      rsl::string filepath = path::join(g_mounted_roots.at(root), path);
+      rsl::wstring filepath = path::join(g_mounted_roots.at(root), path);
       return path::is_dir(filepath);
     }
-    bool is_file(MountingPoint root, rsl::string_view path)
+    bool is_file(MountingPoint root, rsl::wstring_view path)
     {
       path = path::remove_quotes(path);
 
-      rsl::string filepath = path::join(g_mounted_roots.at(root), path);
+      rsl::wstring filepath = path::join(g_mounted_roots.at(root), path);
       return path::is_file(filepath);
     }
 
-    rsl::string create_full_path(MountingPoint root, rsl::string_view path)
+    rsl::wstring create_full_path(MountingPoint root, rsl::wstring_view path)
     {
       REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");
       REX_ASSERT_X(!path::is_absolute(path), "Passed an absolute path into a function that doesn't allow absolute paths");
@@ -610,7 +608,7 @@ namespace rex
 
       return path::join(g_mounted_roots.at(root), path);
     }
-    rsl::string create_full_path(rsl::string_view path)
+    rsl::wstring create_full_path(rsl::wstring_view path)
     {
       REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");
 
@@ -618,8 +616,18 @@ namespace rex
 
       if(path::is_absolute(path))
       {
-        return rsl::string(path);
+        return rsl::wstring(path);
       }
+
+      const auto comparer = rsl::equal_to<rsl::wstring>();
+      using K1 = rsl::wstring;
+      using K2 = rsl::wstring_view;
+      using Key = rsl::wstring;
+
+      K1 k1;
+      K2 k2;
+
+      const bool b = comparer(k1, k2);
 
       return path::join(g_root, path);
     }

@@ -50,7 +50,7 @@ namespace rex
 
     MemoryTag current_tag() const;
 
-    void dump_stats_to_file(rsl::string_view filepath);
+    void dump_stats_to_file(rsl::wstring_view filepath);
 
     REX_NO_DISCARD MemoryUsageStats current_stats();      // deliberate copy as we don't want to have any race conditions when accessing
     REX_NO_DISCARD MemoryUsageStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing

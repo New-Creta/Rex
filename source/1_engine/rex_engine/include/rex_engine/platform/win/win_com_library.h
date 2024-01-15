@@ -9,54 +9,51 @@
 #include <d3d12.h>
 #include <stddef.h>
 
-namespace rex
+namespace rex::win
 {
-  namespace win
+  class ComLibrary
   {
-    class ComLibrary
+  public:
+    ComLibrary();
+    ~ComLibrary();
+
+    ComLibrary(const ComLibrary&) = delete;
+    ComLibrary(ComLibrary&&)      = delete;
+
+    ComLibrary& operator=(const ComLibrary&) = delete;
+    ComLibrary& operator=(ComLibrary&&)      = delete;
+
+    bool is_initialized() const;
+
+    template <typename ComObject>
+    ComPtr<ComObject> create_com_object()
     {
-    public:
-      ComLibrary();
-      ~ComLibrary();
+      ComPtr<ComObject> com_object;
+      HR_CALL(CoCreateInstance(__uuidof(ComObject), NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
+      return com_object;
+    }
 
-      ComLibrary(const ComLibrary&) = delete;
-      ComLibrary(ComLibrary&&)      = delete;
+    template <typename ComObject>
+    ComPtr<ComObject> create_com_object(IID id)
+    {
+      ComPtr<ComObject> com_object;
+      HR_CALL(CoCreateInstance(id, NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
+      return com_object;
+    }
 
-      ComLibrary& operator=(const ComLibrary&) = delete;
-      ComLibrary& operator=(ComLibrary&&)      = delete;
+    rsl::wstring read_link(rsl::wstring_view filepath);
 
-      bool is_initialized() const;
+  private:
+    bool init_lib();
+    void uninit_lib();
 
-      template <typename ComObject>
-      wrl::ComPtr<ComObject> create_com_object()
-      {
-        ComPtr<ComObject> com_object;
-        HR_CALL(CoCreateInstance(__uuidof(ComObject), NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
-        return com_object;
-      }
+    void inc_ref();
+    void dec_ref();
 
-      template <typename ComObject>
-      wrl::ComPtr<ComObject> create_com_object(IID id)
-      {
-        ComPtr<ComObject> com_object;
-        HR_CALL(CoCreateInstance(id, NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
-        return com_object;
-      }
+  private:
+    static thread_local card32 s_init_succeeded_count;
+  };
 
-      rsl::string read_link(rsl::string_view filepath);
-
-    private:
-      bool init_lib();
-      void uninit_lib();
-
-      void inc_ref();
-      void dec_ref();
-
-    private:
-      static thread_local card32 s_init_succeeded_count;
-    };
-
-    bool init_com_library();
-    ComLibrary& com_library();
-  }
-} // namespace rex
+  bool init_com_library();
+  ComLibrary& com_library();
+} // namespace rex::win

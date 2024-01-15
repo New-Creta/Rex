@@ -151,6 +151,16 @@ namespace rex
       return os;
     }
 
+    rsl::wostream& operator<<(rsl::wostream& os, const ResolvedCallstack& callstack)
+    {
+      for (count_t i = 0; i < callstack.size(); ++i)
+      {
+        os << callstack[i] << L"\n";
+      }
+
+      return os;
+    }
+
     CallStack current_callstack()
     {
       // skip 2 stacks, the stackframe of current_callstack and the one of load_stack_pointers

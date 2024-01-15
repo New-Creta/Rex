@@ -8,6 +8,7 @@
 namespace rex
 {
   void rex_assert(const rsl::fmt_stack_string& msg);
+  void rex_assert(const rsl::wide_fmt_stack_string& msg);
   void push_assert_context(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc);
   void pop_assert_context();
 

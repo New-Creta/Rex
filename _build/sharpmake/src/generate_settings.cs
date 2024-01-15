@@ -167,7 +167,7 @@ namespace CodeGen
 
         foreach (string val in project_vals.Value)
         {
-          sb.AppendLine($"    {ElementType}{{ {val}, \"{project_vals.Key}\" }},");
+          sb.AppendLine($"    {ElementType}{{ {val}, L\"{project_vals.Key}\" }},");
         }
         sb.AppendLine(" ");
       }
