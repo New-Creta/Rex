@@ -133,7 +133,8 @@ namespace rex
       return res;
     }
 
-    // removes leading and trailing quotes from a path
+    // removes leading and trailing quotes from a path,
+    // if the path begins and ends with a quote
     rsl::string_view remove_quotes(rsl::string_view path);
     // Changes the extension of a path string_view
     // If extension argument is empty, the extension is removed

@@ -24,8 +24,8 @@
 ///
 /// ASYNC FILE IO
 /// 
-/// We only support async file reading, as async file writing
-/// doesn't make much sense for the moment
+/// We only support async file reading, not async file writing
+/// Async file writing doesn't make much sense, that's why we don't support it
 /// 
 // rex::vfs::ReadRequest read_request = rex::vfs::read_file_async("path/to/file");
 /// 
