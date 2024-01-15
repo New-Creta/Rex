@@ -116,7 +116,7 @@ We support Visual Studio and Visual Studio Code as IDEs. These just act as text 
 
 Some Examples (Windows):
 ```sh
-# Default generation. generate files for engine and editor
+# Default generation. generate files for engine and editor (~/_build/sharpmake/data/default_config.json)
 py _rex.py generate
 
 # List all the possible configuration settings, no generation gets performed.
@@ -173,11 +173,6 @@ The different builds types are
 - [Undefined Behavior Sanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html): Only enabled for Clang. Used to detect undefined behavior at runtime.
 - [Fuzzy](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html): Only enabled for Clang. Used for fuzzing projects
 
-### Post Build
-the sharpmake scripts for all rex related projects launch the [`post_build.py`](../../../source/post_build.py) script found at the source root.
-
-This script launches clang-tidy and clang-format if clang tools are enabled. Because clang-tidy is run using clang, the post build is only enabled when compiling with clang
-
 Some Examples:
 ```sh
 # Builds regina project and its dependencies in debug mode using msvc compiler
@@ -186,6 +181,14 @@ py _rex.py build -project=regina -config=debug -compiler=msvc
 # Cleans all regina and its depedencies' intermediate files and then performs a build afterwards
 py _rex.py build -project=regina -config=debug -compiler=msvc -clean
 ```
+
+### Post Build
+the sharpmake scripts for all rex related projects launch the [`post_build.py`](../../../source/post_build.py) script found at the source root.
+This is for internal use only.
+
+This script launches clang-tidy and clang-format if clang tools are enabled. Because clang-tidy is run using clang, the post build is only enabled when compiling with clang
+
+After which it launches a script called `post_build_by_user.py`, if it's found at the root of your project's source code, which the user can write to write their own post build events
 
 ## Testing
 Rex Engine supports many different kind of tests for optimal testing which can all be fired from the root script
