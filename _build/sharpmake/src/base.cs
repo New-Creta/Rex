@@ -424,7 +424,6 @@ public abstract class BasicCPPProject : Project
   {
     switch (target.Config)
     {
-      case Config.assert:
       case Config.debug:
       case Config.debug_opt:
         conf.add_public_define("REX_ENABLE_ASSERTS");

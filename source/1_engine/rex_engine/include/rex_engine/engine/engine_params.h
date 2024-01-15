@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/functional.h"
 #include "rex_std/limits.h"
-#include "rex_std/bonus/memory/memory_size.h"
 
 namespace rex
 {
@@ -24,23 +24,26 @@ namespace rex
   // We need to define these params here so that we can use everywhere
   struct GuiParams
   {
-    s32 window_width = 1280;
-    s32 window_height = 720;
+    s32 window_width              = 1280;
+    s32 window_height             = 720;
     rsl::string_view window_title = "Application";
+    bool fullscreen               = false;
 
-    s32 max_render_commands = 1 << 16;
-    s32 max_fps = 60;
+    s32 max_render_commands       = rsl::numeric_limits<s16>::max(); // value taken out of thin air, has no special meaning.
+    s32 max_frames_in_flight      = 3;
+    s32 max_fps                   = 60;
   };
+
 
   struct PlatformCreationParams;
   struct ApplicationCreationParams
   {
   public:
     explicit ApplicationCreationParams(PlatformCreationParams* platformParams)
-      : engine_params()
-      , platform_params(platformParams)
-      , gui_params()
-      , create_window(false)
+        : engine_params()
+        , platform_params(platformParams)
+        , gui_params()
+        , create_window(false)
     {
     }
 

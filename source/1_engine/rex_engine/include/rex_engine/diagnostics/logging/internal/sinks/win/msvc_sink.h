@@ -10,46 +10,49 @@
 extern "C" __declspec(dllimport) void __stdcall OutputDebugStringA(const char* lpOutputString);
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 
-namespace rexlog
+namespace rex
 {
-  namespace sinks
+  namespace log
   {
-    /*
-     * MSVC sink (logging using OutputDebugStringA)
-     */
-    template <typename Mutex>
-    class MSVCSink : public BaseSink<Mutex>
+    namespace sinks
     {
-    public:
-      MSVCSink() = default;
-      MSVCSink(bool check_debugger_present)
-          : check_debugger_present_ {check_debugger_present} {};
-
-    protected:
-      void sink_it_impl(const details::LogMsg& msg) override
+      /*
+       * MSVC sink (logging using OutputDebugStringA)
+       */
+      template <typename Mutex>
+      class MSVCSink : public BaseSink<Mutex>
       {
-        if(check_debugger_present_ && !IsDebuggerPresent())
+      public:
+        MSVCSink() = default;
+        MSVCSink(bool check_debugger_present)
+            : check_debugger_present_ {check_debugger_present} {};
+
+      protected:
+        void sink_it_impl(const details::LogMsg& msg) override
         {
-          return;
+          if(check_debugger_present_ && !IsDebuggerPresent())
+          {
+            return;
+          }
+          memory_buf_t formatted;
+          BaseSink<Mutex>::m_formatter->format(msg, formatted);
+          formatted.push_back('\0'); // add a null terminator for OutputDebugString
+          OutputDebugStringA(formatted.data());
         }
-        memory_buf_t formatted;
-        BaseSink<Mutex>::m_formatter->format(msg, formatted);
-        formatted.push_back('\0'); // add a null terminator for OutputDebugString
-        OutputDebugStringA(formatted.data());
-      }
 
-      void flush_it_impl() override {}
+        void flush_it_impl() override {}
 
-      bool check_debugger_present_ = true;
-    };
+        bool check_debugger_present_ = true;
+      };
 
-    using MSVCSinkMt = MSVCSink<rsl::mutex>;
-    using MSVCSinkSt = MSVCSink<details::NullMutex>;
+      using MSVCSinkMt = MSVCSink<rsl::mutex>;
+      using MSVCSinkSt = MSVCSink<details::NullMutex>;
 
-    using WinDebugSinkMt = MSVCSinkMt;
-    using WinDebugSinkSt = MSVCSinkSt;
+      using WinDebugSinkMt = MSVCSinkMt;
+      using WinDebugSinkSt = MSVCSinkSt;
 
-  } // namespace sinks
-} // namespace rexlog
+    } // namespace sinks
+  }   // namespace log
+} // namespace rex
 
 #endif

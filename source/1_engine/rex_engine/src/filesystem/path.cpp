@@ -39,8 +39,8 @@ namespace rex
       {
         // because it's possible to have a path like this
         // ./relative/path/file.txt
-        // we can need to scan for the first dot 
-        // after the first slash
+        // we need to scan for the first dot 
+        // after the last slash
         auto pos = path.find_last_of("/\\");
         auto filename = pos != path.npos()
           ? path.substr(pos + 1)
