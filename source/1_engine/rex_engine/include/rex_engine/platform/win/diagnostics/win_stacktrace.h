@@ -30,6 +30,7 @@ namespace rex
     };
 
     rsl::ostream& operator<<(rsl::ostream& os, const ResolvedCallstack& callstack);
+    rsl::wostream& operator<<(rsl::wostream& os, const ResolvedCallstack& callstack);
 
     CallStack current_callstack();
   } // namespace win

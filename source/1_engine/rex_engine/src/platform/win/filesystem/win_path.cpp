@@ -6,7 +6,7 @@
 #include "rex_engine/platform/win/win_com_library.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
-#include "rex_std/ctype.h"
+#include "rex_std/wctype.h"
 #include "rex_std/format.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/time/win/win_time_functions.h"
@@ -17,6 +17,8 @@
 #include <Windows.h>
 #include <cstdlib>
 #include <processenv.h>
+
+#include <string>
 
 namespace rex
 {
@@ -31,10 +33,10 @@ namespace rex
         Symlink,
       };
 
-      ReparseTag get_reparse_tag(rsl::string_view path)
+      ReparseTag get_reparse_tag(rsl::wstring_view path)
       {
-        WIN32_FIND_DATA findFileData;
-        HANDLE hFind = FindFirstFileA(path.data(), &findFileData);
+        WIN32_FIND_DATAW findFileData;
+        HANDLE hFind = FindFirstFileW(path.data(), &findFileData);
 
         if (hFind == INVALID_HANDLE_VALUE)
         {
@@ -58,33 +60,43 @@ namespace rex
         return ReparseTag::None;
       }
 
-      rsl::win::handle open_file_for_attribs(rsl::string_view path)
+      rsl::win::handle open_file_for_attribs(rsl::wstring_view path)
       {
-        rsl::win::handle file(CreateFileA(path.data(), FILE_READ_ATTRIBUTES, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0));
+        rsl::win::handle file(CreateFileW(path.data(), FILE_READ_ATTRIBUTES, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0));
 
         return file;
       }
     } // namespace internal
 
     // Returns the current working directory
-    rsl::string cwd()
+    rsl::wstring cwd()
     {
-      rsl::medium_stack_string current_dir;
-      GetCurrentDirectoryA(current_dir.max_size(), current_dir.data());
+      rsl::medium_stack_string md1;
+      rsl::string s1 = rsl::string(md1);
+
+      rsl::wmedium_stack_string md2;
+      rsl::wstring s2 = rsl::wstring(md2);
+
+
+
+
+
+      rsl::wmedium_stack_string current_dir;
+      GetCurrentDirectoryW(current_dir.max_size(), current_dir.data());
       current_dir.reset_null_termination_offset();
-      return rsl::string(current_dir).replace("\\", "/");
+      return rsl::wstring(current_dir).replace(L"\\", L"/");
     }
     // Returns the path of the current user's temp folder
-    rsl::string temp_path()
+    rsl::wstring temp_path()
     {
-      rsl::big_stack_string str;
-      GetTempPathA(str.max_size(), str.data());
+      rsl::wbig_stack_string str;
+      GetTempPathW(str.max_size(), str.data());
       str.reset_null_termination_offset();
-      return rsl::string(str);
+      return rsl::wstring(str);
     }
     // For symlinks, returns the path the link points to
     // Otherwise returns the input
-    rsl::string real_path(rsl::string_view path)
+    rsl::wstring real_path(rsl::wstring_view path)
     {
       // It's a bit tricky to get the real path as there are multiple ways 
       // of linking to a the same file (.lnk files, symlinks, hardlinks, junctions)
@@ -92,22 +104,22 @@ namespace rex
       // If the path doesn't exist, just return its input
       if (!rex::path::exists(path))
       {
-        return rsl::string(path);
+        return rsl::wstring(path);
       }
 
       // If the path is a .lnk file, we can read its link
-      if (rex::path::extension(path).ends_with(".lnk"))
+      if (rex::path::extension(path).ends_with(L".lnk"))
       {
-        rsl::string res = rex::win::com_library().read_link(path);
-        res.replace("\\", "/");
+        rsl::wstring res = rex::win::com_library().read_link(path);
+        res.replace(L"\\", L"/");
         return res;
       }
 
       // For any other case, we'll try GetFullPathName
       // this can return an empty path in rare cases
       // If it does, just return the input
-      rsl::big_stack_string stack_res;
-      GetFullPathNameA(path.data(), path.length(), stack_res.data(), NULL);
+      rsl::wbig_stack_string stack_res;
+      GetFullPathNameW(path.data(), path.length(), stack_res.data(), NULL);
       stack_res.reset_null_termination_offset();
 
       if (stack_res.empty())
@@ -115,12 +127,12 @@ namespace rex
         return rex::path::norm_path(path);
       }
 
-      rsl::string res(stack_res);
-      res.replace("\\", "/");
+      rsl::wstring res(stack_res);
+      res.replace(L"\\", L"/");
       return res;
     }
     // Returns the latest access time of the file or directory at the given path
-    card64 get_access_time(rsl::string_view path)
+    card64 get_access_time(rsl::wstring_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -135,7 +147,7 @@ namespace rex
       return rsl::win::to_integer(access_time);
     }
     // Returns the modification time of the file or directory at the given path
-    card64 get_modification_time(rsl::string_view path)
+    card64 get_modification_time(rsl::wstring_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -150,7 +162,7 @@ namespace rex
       return rsl::win::to_integer(modification_time);
     }
     // Returns the creation time of the file or directory at the given path
-    card64 get_creation_time(rsl::string_view path)
+    card64 get_creation_time(rsl::wstring_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -165,7 +177,7 @@ namespace rex
       return rsl::win::to_integer(creation_time);
     }
     // Returns the creation time of the file or directory at the given path
-    card64 get_file_size(rsl::string_view path)
+    card64 get_file_size(rsl::wstring_view path)
     {
       rsl::win::handle file = internal::open_file_for_attribs(path);
 
@@ -180,13 +192,13 @@ namespace rex
       return rex::merge_int32_to_int64(high_word, low_word);
     }
     // Returns if the path exists
-    bool exists(rsl::string_view path)
+    bool exists(rsl::wstring_view path)
     {
-      DWORD attribs = GetFileAttributesA(path.data());
+      DWORD attribs = GetFileAttributesW(path.data());
       return attribs != INVALID_FILE_ATTRIBUTES;
     }
     // Returns if the given path is an absolute path
-    bool is_absolute(rsl::string_view path)
+    bool is_absolute(rsl::wstring_view path)
     {
       // absolute paths
       // C:\foo - yes
@@ -217,9 +229,9 @@ namespace rex
       return true;
     }
     // Returns true if the given path points to a file
-    bool is_file(rsl::string_view path)
+    bool is_file(rsl::wstring_view path)
     {
-      DWORD attribs = GetFileAttributesA(path.data());
+      DWORD attribs = GetFileAttributesW(path.data());
 
       if (attribs == INVALID_FILE_ATTRIBUTES)
       {
@@ -234,9 +246,9 @@ namespace rex
       return true;
     }
     // Returns true if the given path points to a directory
-    bool is_dir(rsl::string_view path)
+    bool is_dir(rsl::wstring_view path)
     {
-      DWORD attribs = GetFileAttributesA(path.data());
+      DWORD attribs = GetFileAttributesW(path.data());
 
       if (attribs == INVALID_FILE_ATTRIBUTES)
       {
@@ -251,21 +263,21 @@ namespace rex
       return false;
     }
     // Returns true if the given path points to a junction
-    bool is_junction(rsl::string_view path)
+    bool is_junction(rsl::wstring_view path)
     {
       internal::ReparseTag tag = internal::get_reparse_tag(path);
       return tag == internal::ReparseTag::Junction;
     }
     // Returns true if the given path points to a symlink
-    bool is_link(rsl::string_view path)
+    bool is_link(rsl::wstring_view path)
     {
       internal::ReparseTag tag = internal::get_reparse_tag(path);
       return tag == internal::ReparseTag::Symlink;
     }
     // Splits the path into a head and a tail
-    // the head is either the mount point or an empty string
+    // the head is either the mount point or an empty wstring
     // the tail is everything else
-    SplitResult split_drive(rsl::string_view path)
+    SplitResult split_drive(rsl::wstring_view path)
     {
       SplitResult res{};
 
@@ -275,17 +287,19 @@ namespace rex
       }
 
       // get the last slash position
-      card32 slash_pos = path.find(":/");
-      card32 backslash_pos = path.find(":\\");
+      card32 slash_pos = path.find(L":/");
+      card32 backslash_pos = path.find(L":\\");
 
-      card32 used_pos = slash_pos != -1 && backslash_pos != -1 ? (rsl::min)(slash_pos, backslash_pos)  // if for any reason the path has the root tokens twice, return the first
+      card32 used_pos = slash_pos != -1 && backslash_pos != -1 
+        ? (rsl::min)(slash_pos, backslash_pos)  // if for any reason the path has the root tokens twice, return the first
         : (rsl::max)(slash_pos, backslash_pos); // in other case, where there's only one, use the one that's found
-// pos will point to where ':' is found
-// the head should be "<drive letter>:"
-// the tail should be everything afterwards, excluding the
-// slash seperator of the drive
 
-// fill in the values
+      // pos will point to where ':' is found
+      // the head should be "<drive letter>:"
+      // the tail should be everything afterwards, excluding the
+      // slash seperator of the drive
+      
+      // fill in the values
       if (used_pos != path.npos())
       {
         res.head = path.substr(0, used_pos + 1);
@@ -302,13 +316,13 @@ namespace rex
     // Split the path into 3 components
     // drive - root - tail
     // drive: mounting point
-    // root: string of separators after the drive
+    // root: wstring of separators after the drive
     // tail: everything after the root
     // eg: c:/Users/Sam (Windows)
     // drive: C:
     // root: /
     // tail: Users/Sam
-    SplitRootResult split_root(rsl::string_view path)
+    SplitRootResult split_root(rsl::wstring_view path)
     {
       // use a split drive result
       SplitResult splitted_drive = split_drive(path);

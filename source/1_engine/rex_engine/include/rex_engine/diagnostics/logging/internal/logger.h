@@ -96,6 +96,19 @@ namespace rexlog
       log(rsl::source_location {}, lvl, fmt, rsl::forward<Args>(args)...);
     }
     //-------------------------------------------------------------------------
+    template <typename... Args>
+    void log(rsl::source_location loc, level::LevelEnum lvl, rsl::basic_format_string<tchar, rsl::type_identity_t<Args>...> fmt, Args&&... args)
+    {
+      log_impl(loc, lvl, details::to_string_view(fmt), rsl::forward<Args>(args)...);
+    }
+    //-------------------------------------------------------------------------
+    template <typename... Args>
+    void log(level::LevelEnum lvl, rsl::basic_format_string<tchar, rsl::type_identity_t<Args>...> fmt, Args&&... args)
+    {
+      log(rsl::source_location{}, lvl, fmt, rsl::forward<Args>(args)...);
+    }
+
+    //-------------------------------------------------------------------------
     template <typename T>
     void log(level::LevelEnum lvl, const T& msg)
     {
@@ -109,7 +122,7 @@ namespace rexlog
     void log_impl(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view fmt, Args&&... args)
     {
       const bool log_enabled = should_log(lvl);
-      if(!log_enabled)
+      if (!log_enabled)
       {
         return;
       }
@@ -118,6 +131,26 @@ namespace rexlog
       rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_format_args(rsl::forward<Args>(args)...));
 
       const details::LogMsg log_msg(loc, m_name, lvl, rsl::string_view(buf.data(), buf.size()));
+      log_it_impl(log_msg, log_enabled);
+    }
+
+    template <typename... Args>
+    void log_impl(rsl::source_location loc, level::LevelEnum lvl, rsl::wstring_view fmt, Args&&... args)
+    {
+      const bool log_enabled = should_log(lvl);
+      if(!log_enabled)
+      {
+        return;
+      }
+
+      rsl::wbig_stack_string buf;
+      rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_wformat_args(rsl::forward<Args>(args)...));
+
+      // Convert the wide string to a short string
+      rsl::wstring_view wide_view(buf.data(), buf.size());
+      rsl::string ascii_str = rsl::to_string(wide_view);
+
+      const details::LogMsg log_msg(loc, m_name, lvl, ascii_str);
       log_it_impl(log_msg, log_enabled);
     }
 

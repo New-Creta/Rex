@@ -41,7 +41,7 @@ namespace rex::win
       return com_object;
     }
 
-    rsl::string read_link(rsl::string_view filepath);
+    rsl::wstring read_link(rsl::wstring_view filepath);
 
   private:
     bool init_lib();
