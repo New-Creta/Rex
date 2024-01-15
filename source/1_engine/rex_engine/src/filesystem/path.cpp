@@ -81,6 +81,16 @@ namespace rex
       return g_seperation_char;
     }
 
+    // removes leading and trailing quotes from a path
+    rsl::string_view remove_quotes(rsl::string_view path)
+    {
+      if (path.starts_with("\"") && path.ends_with("\""))
+      {
+        path = path.substr(1, path.length() - 2);
+      }
+
+      return path;
+    }
     // Changes the extension of a path string_view
     // If extension argument is empty, the extension is removed
     // if the path doesn't have an extension, the extension specified gets appended

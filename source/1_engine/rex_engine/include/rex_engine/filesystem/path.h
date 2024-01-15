@@ -149,23 +149,48 @@ namespace rex
     rsl::string abs_path(rsl::string_view path);
     // Retruns the root directory path of the given path
     rsl::string_view path_root(rsl::string_view path);
+    // Returns the current working directory
+    rsl::string cwd();
     // Returns a random directory, but doesn't create it
     rsl::string random_dir();
     // Returns a random filename, but doesn't create it
     rsl::string random_filename();
+    // Returns the path of the current user's temp folder
+    rsl::string temp_path();
     // Returns the longest common sub-path of each pathname in the sequence
     rsl::string_view common_path(const rsl::vector<rsl::string_view>& paths);
+    // For symlinks, returns the path the link points to
+    // Otherwise returns the input
+    rsl::string real_path(rsl::string_view path);
     // Normalizes the path, removing redundant dots for current and parent directories
     // Converts forward slashes to backward slashes
     rsl::string norm_path(rsl::string_view path);
-    // Returns a relative path to path, starting from the current working directory
-    rsl::string rel_path(rsl::string_view path);
-    // Returns a relative path to path, starting from the start directory
-    rsl::string rel_path(rsl::string_view path, rsl::string_view start);
+    // Returns a relative path to target, starting from the start directory
+    rsl::string rel_path(rsl::string_view target, rsl::string_view start = cwd());
+    // Returns the latest access time of the file or directory at the given path
+    card64 access_time(rsl::string_view path);
+    // Returns the modification time of the file or directory at the given path
+    card64 modification_time(rsl::string_view path);
+    // Returns the creation time of the file or directory at the given path
+    card64 creation_time(rsl::string_view path);
+    // Returns the creation time of the file or directory at the given path
+    card64 file_size(rsl::string_view path);
     // Returns if the given path has an extension
     bool has_extension(rsl::string_view path);
+    // Returns if the path exists
+    bool exists(rsl::string_view path);
+    // Returns if the given path is an absolute path
+    bool is_absolute(rsl::string_view path);
     // Returns if the given path is a relative path
     bool is_relative(rsl::string_view path);
+    // Returns true if the given path points to a file
+    bool is_file(rsl::string_view path);
+    // Returns true if the given path points to a directory
+    bool is_dir(rsl::string_view path);
+    // Returns true if the given path points to a junction
+    bool is_junction(rsl::string_view path);
+    // Returns true if the given path points to a symlink
+    bool is_link(rsl::string_view path);
     // Returns true if 2 paths point to the same file or directory
     bool same_path(rsl::string_view path1, rsl::string_view path2);
     struct SplitResult
@@ -181,61 +206,16 @@ namespace rex
     // the head is either the mount point or an empty string
     // the tail is everything else
     SplitResult split_origin(rsl::string_view path);
+    // Splits the path into a head and a tail
     // the head is the directory and the stem
     // the tail is the extension
     SplitResult split_ext(rsl::string_view path);
-
     struct SplitRootResult
     {
       rsl::string_view drive;
       rsl::string_view root;
       rsl::string_view tail;
     };
-
-    // *************************************************************************
-    // These functions are required to be implemented by platform specific code
-    // *************************************************************************
-
-    // Returns the current working directory
-    rsl::string cwd();
-
-    // Returns the path of the current user's temp folder
-    rsl::string temp_path();
-
-    // For symlinks, returns the path the link points to
-    // Otherwise returns the input
-    rsl::string real_path(rsl::string_view path);
-
-    // Returns the latest access time of the file or directory at the given path
-    card64 get_access_time(rsl::string_view path);
-
-    // Returns the modification time of the file or directory at the given path
-    card64 get_modification_time(rsl::string_view path);
-
-    // Returns the creation time of the file or directory at the given path
-    card64 get_creation_time(rsl::string_view path);
-
-    // Returns the creation time of the file or directory at the given path
-    card64 get_file_size(rsl::string_view path);
-
-    // Returns if the path exists
-    bool exists(rsl::string_view path);
-
-    // Returns if the given path is an absolute path
-    bool is_absolute(rsl::string_view path);
-
-    // Returns true if the given path points to a file
-    bool is_file(rsl::string_view path);
-
-    // Returns true if the given path points to a directory
-    bool is_dir(rsl::string_view path);
-
-    // Returns true if the given path points to a junction
-    bool is_junction(rsl::string_view path);
-
-    // Returns true if the given path points to a symlink
-    bool is_link(rsl::string_view path);
-
     // Split the path into 3 components
     // drive - root - tail
     // drive: mounting point
@@ -248,7 +228,3 @@ namespace rex
     SplitRootResult split_root(rsl::string_view path);
   } // namespace path
 } // namespace rex
-
-#ifdef REX_PLATFORM_WINDOWS
-#include "rex_engine/platform/win/filesystem/win_path.h"
-#endif
