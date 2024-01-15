@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/core_application.h"
-#include "rex_engine/types.h"
+#include "rex_engine/app/core_application.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 #include "rex_windows/platform_creation_params.h"

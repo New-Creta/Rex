@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
-#include "rex_engine/win/win_com_ptr.h"
+#include "rex_engine/platform/win/win_com_ptr.h"
 
 namespace rex
 {

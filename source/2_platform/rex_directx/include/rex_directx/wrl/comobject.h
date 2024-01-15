@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/win/win_com_ptr.h"
+#include "rex_engine/platform/win/win_com_ptr.h"
 #include "rex_std/type_traits.h"
 
 #include <wrl.h>

@@ -1,12 +1,12 @@
 #include "rex_windows/gui_application.h"
 
-#include "rex_engine/core_window.h"
+#include "rex_engine/app/core_window.h"
 #include "rex_engine/windowinfo.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/event.h" // IWYU pragma: keep
-#include "rex_engine/event_system.h"
-#include "rex_engine/event_type.h"
+#include "rex_engine/event_system/event.h" // IWYU pragma: keep
+#include "rex_engine/event_system/event_system.h"
+#include "rex_engine/event_system/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 
@@ -47,7 +47,7 @@ namespace rex
     {
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
-          : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
+          : m_platform_creation_params(*appCreationParams.platform_params)
           , m_gui_params(rsl::move(appCreationParams.gui_params))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)

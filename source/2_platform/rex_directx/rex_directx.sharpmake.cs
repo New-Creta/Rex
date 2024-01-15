@@ -36,7 +36,6 @@ public class RexDirectX : PlatformProject
       case Config.fuzzy:
         conf.add_public_define("REX_ENABLE_DX_CALL");
         break;
-      case Config.assert:
       case Config.release:
         break;
       default:

@@ -26,7 +26,7 @@
 
 #include "rex_directx/utility/vertex.h"
 
-#include "rex_engine/win/win_com_ptr.h"
+#include "rex_engine/platform/win/win_com_ptr.h"
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
