@@ -2,7 +2,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/details/fmt_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padding_info.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/bonus/string.h"
 
 namespace rexlog

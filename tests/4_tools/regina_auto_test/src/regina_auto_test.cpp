@@ -1,65 +1,32 @@
 #include "rex_engine/entrypoint.h"
 #include "rex_engine/engine_params.h"
-#include "rex_windows/gui_application.h"
 
 #include "regina_auto_test/regina_boot_test.h"
 #include "rex_engine/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 
-namespace rex
+#include "rex_windows/platform_creation_params.h"
+
+#include "rex_auto_test/auto_test.h"
+
+namespace regina
 {
-  class AutoTest
-  {
-  public:
-    using auto_test_entry = rex::ApplicationCreationParams(*)(rex::PlatformCreationParams&&);
-
-    AutoTest(rsl::string_view cmdline, auto_test_entry entryFunc)
-      : m_cmd_line(cmdline)
-      , m_entry_func(entryFunc)
-    {}
-
-    bool is_enabled(rsl::string_view cmdline)
-    {
-      return rsl::strincmp(cmdline.data(), m_cmd_line.data(), cmdline.length()) == 0;
-    }
-
-    ApplicationCreationParams launch(rex::PlatformCreationParams&& platformParams)
-    {
-      return m_entry_func(rsl::move(platformParams));
-    }
-
-  private:
-    rsl::string_view m_cmd_line;
-    auto_test_entry m_entry_func;
-  };
-
   rsl::array g_auto_tests =
   {
-    AutoTest("Boot", regina_auto_test::boot_test_entry)
+    rex::auto_test::AutoTest("Boot", regina_auto_test::boot_test_entry)
   };
 
-  // back up function in case we fail to find an auto test
-  bool bad_init()
-  {
-    return false;
-  }
+} // namespace regina
 
-  rex::ApplicationCreationParams invalid_app_params(rex::PlatformCreationParams&& platformParams)
-  {
-    rex::ApplicationCreationParams app_params(rsl::move(platformParams));
-
-    app_params.engine_params.app_init_func = rex::bad_init;
-
-    return app_params;
-  }
-
+namespace rex
+{
   rex::ApplicationCreationParams app_entry(rex::PlatformCreationParams&& platformParams)
   {
-    rsl::optional<rsl::string_view> cmdline = cmdline::get_argument("AutoTest");
+    rsl::optional<rsl::string_view> cmdline = rex::cmdline::get_argument("AutoTest");
 
     REX_ASSERT_X(cmdline.has_value(), "Auto test fired but no auto test specified on the commandline. Commandline: {}", rex::cmdline::get());
 
-    for (AutoTest& auto_test : g_auto_tests)
+    for (rex::auto_test::AutoTest& auto_test : regina::g_auto_tests)
     {
       if (auto_test.is_enabled(cmdline.value()))
       {
@@ -68,7 +35,7 @@ namespace rex
     }
 
     REX_ASSERT("No auto test found for {}", cmdline.value());
-      
-    return invalid_app_params(rsl::move(platformParams));
+
+    return rex::auto_test::invalid_app_params(rsl::move(platformParams));
   }
-} // namespace rex
+}

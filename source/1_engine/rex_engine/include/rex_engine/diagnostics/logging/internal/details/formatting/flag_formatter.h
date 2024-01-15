@@ -1,13 +1,13 @@
 #pragma once
 
-#include "rex_engine/debug_types.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/fmt_helper.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padding_info.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/filesystem/filesystem_constants.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/chrono.h"

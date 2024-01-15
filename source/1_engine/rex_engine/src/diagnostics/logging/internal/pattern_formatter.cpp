@@ -4,7 +4,7 @@
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padder.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padding_info.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/ctype.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"

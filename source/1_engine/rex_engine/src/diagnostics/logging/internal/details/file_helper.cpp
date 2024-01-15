@@ -7,8 +7,8 @@
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/filesystem/filesystem_constants.h"
 #include "rex_engine/memory/global_allocator.h"
-#include "rex_engine/debug_types.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/debug_types.h"
+#include "rex_engine/engine/types.h"
 
 // IWYU pragma: no_include <built-in>
 

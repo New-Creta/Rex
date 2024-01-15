@@ -2,11 +2,12 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_engine/engine_params.h"
-#include "rex_engine/event_system.h"
-#include "rex_engine/event_type.h"
+#include "rex_engine/engine/engine_params.h"
+#include "rex_engine/event_system/event_system.h"
+#include "rex_engine/event_system/event_type.h"
 #include "rex_std/functional.h"
 #include "rex_windows/platform_creation_params.h"
+#include "rex_windows/input/input.h"
 
 #include <Windows.h>
 #include <consoleapi.h>
@@ -45,7 +46,7 @@ namespace rex
     {
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
-          : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
+          : m_platform_creation_params(*appCreationParams.platform_params)
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
       {
@@ -71,6 +72,8 @@ namespace rex
 
       void update()
       {
+        input::internal::update();
+
         m_on_update();
       }
 
