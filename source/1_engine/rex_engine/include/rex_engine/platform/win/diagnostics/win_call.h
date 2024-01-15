@@ -1,15 +1,3 @@
-// ============================================
-//
-// REX GAME ENGINE
-//
-// Author: Nick De Breuck
-// Twitter: @nick_debreuck
-//
-// File: win_logging.h
-// Copyright (c) Nick De Breuck 2023
-//
-// ============================================
-
 #pragma once
 
 #include "rex_engine/platform/win/diagnostics/win_error.h" // IWYU pragma: keep
@@ -68,6 +56,13 @@ namespace rex
 
   // Same as the above but the user is able to provide an error value to be ignored.
   // This is usefull as some Win API functions can succeed while still returning an error code
+
+  // These two macros do exactly the same thing as WIN_CALL the only difference is that it will check if it was successfull or not.
+  // if (WIN_FAILED(...))
+  // {
+  //     // Do some additional logic here
+  // }
+  
   #define WIN_CALL_IGNORE(function, errorSuccess)    rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, errorSuccess, #function, __FILE__, __FUNCTION__, __LINE__)
   #define WIN_SUCCESS_IGNORE(function, errorSuccess) rex::win::WinCall(function, rex::win::ErrorSuccess(errorSuccess), #function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
   #define WIN_FAILED_IGNORE(function, errorSuccess)  rex::win::WinCall(function, rex::win::ErrorSuccess(errorSuccess), #function, __FILE__, __FUNCTION__, __LINE__).has_failed()

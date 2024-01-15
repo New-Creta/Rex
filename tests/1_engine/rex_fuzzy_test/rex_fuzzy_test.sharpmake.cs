@@ -15,16 +15,6 @@ public class RexFuzzyTest : TestProject
     ProjectType = ProjectGen.TestProjectType.Undefined;
   }
 
-  public override void GenerateTargets()
-  {
-    AddTargets(new RexTarget(Platform.win64, DevEnv.ninja, Config.fuzzy, Compiler.Clang));
-
-    if (ProjectGen.Settings.IDE == ProjectGen.IDE.VisualStudio && Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
-    {
-      AddTargets(new RexTarget(Platform.win64, DevEnv.vs2019, Config.fuzzy, Compiler.Clang));
-    }
-  }
-
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
     base.SetupSolutionFolder(conf, target);
