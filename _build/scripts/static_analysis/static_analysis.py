@@ -51,7 +51,6 @@ def scan_clang_tidy_ignore(sourceRoots : list[str], excludeFolders : list[str]):
     ignored_warnings = {}
 
     for found_match in found_matches:
-        # regis.diagnostics.log_debug(f'{found_match.filepath}({found_match.line_nr}): {found_match.line}')
         ignore_text = found_match.line[found_match.start_pos:]
         start = ignore_text.find('(')+1
         end = ignore_text.find(')')

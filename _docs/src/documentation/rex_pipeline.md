@@ -93,7 +93,7 @@ A unity build allows the build system to merge source files together, creating 1
 
 These intermediate files are then passed on to the compiler which improves compilation times a lot as the compiler doesn't have to open as many files and can parse more files in 1 go.
 
-Note: Files modified on disk, different from their repo equivalent are excluded from unity files to improve compilation. They also have optimizations disabled so it's easier to debug them.
+Note: Files modified on disk, are excluded from unity files to improve compilation. They also have optimizations disabled so it's easier to debug them.
 
 ### Generation Script
 The generate script itself is just a wrapper around a sharpmake call.
@@ -112,12 +112,15 @@ This config file is parsed by the python script and it'll create commandline arg
 
 There's only 1 extra commandline argument supported by the generate script which is `-sharpmake_args`. This is to allow a user to pass in arguments that are supported by the native sharpmake executable
 
-We support Visual Studio and Visual Studio Code as IDEs. These just act as text editors as they're in turn call into the build pipeline and build the ninja files which are always generated.
+We support Visual Studio and Visual Studio Code as IDEs. These just act as text editors as they in turn call into the build pipeline and build the ninja files which are always generated.
 
 Some Examples (Windows):
 ```sh
-# Default generation. generate files for engine and editor
+# Default generation. generate files for engine and editor (~/_build/sharpmake/data/default_config.json)
 py _rex.py generate
+
+# List all the possible configuration settings, no generation gets performed.
+py _rex.py generate -h
 
 # Default generation + unit tests
 py _rex.py generate -enable-unit-tests 
@@ -133,7 +136,7 @@ py _rex.py generate -sharpmake_args /multithreaded(false)
 ```
 
 ### Code Generation
-The generation step also allows you to auto generate code. The settings for code generation for a particular project are located in the `config` folder and follow the same folder structure as their source root directory.
+The generation step also generates code. The settings for code generation for a particular project are located in the `config` folder and follow the same folder structure as their source root directory. These settings indicate what gets generated and where it gets generated.
 
 Sharpmake supports enum and array generation.
 
@@ -158,10 +161,17 @@ As mentioned above, the build script takes in the project, configuration and com
 
 After each build the `build_projects.json` file in the intermediate build folder is updated. This json file acts as a cache for the launch script so it knows what it can launch.
 
-### Post Build
-the sharpmake scripts for all rex related projects launch the [`post_build.py`](../../../source/post_build.py) script found at the source root.
+### Build Types
+We have a few different kind of build types aka configurations, some are only supported with Clang as they are sanitizers.
+The different builds types are
 
-This script launches clang-tidy and clang-format if clang tools are enabled. Because clang-tidy is run using clang, the post build is only enabled when compiling with clang
+- Debug: No optimizations enabled. All debug information is available.
+- Debug Opt: Optimized version of Debug build.
+- Release: All optimizations enabled, no debug information is available.
+- Coverage: Only enabled for Clang. Enables code coverage reports. Detects which code gets run at runtime, the reports get generate in the intermediate folder of your project
+- [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html): Only enabled for Clang. Used to detect out of bounds reads/writes. Double frees, use after free.
+- [Undefined Behavior Sanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html): Only enabled for Clang. Used to detect undefined behavior at runtime.
+- [Fuzzy](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html): Only enabled for Clang. Used for fuzzing projects
 
 Some Examples:
 ```sh
@@ -171,6 +181,14 @@ py _rex.py build -project=regina -config=debug -compiler=msvc
 # Cleans all regina and its depedencies' intermediate files and then performs a build afterwards
 py _rex.py build -project=regina -config=debug -compiler=msvc -clean
 ```
+
+### Post Build
+the sharpmake scripts for all rex related projects launch the [`post_build.py`](../../../source/post_build.py) script found at the source root.
+This is for internal use only.
+
+This script launches clang-tidy and clang-format if clang tools are enabled. Because clang-tidy is run using clang, the post build is only enabled when compiling with clang
+
+After which it launches a script called `post_build_by_user.py`, if it's found at the root of your project's source code, which the user can write to write their own post build events
 
 ## Testing
 Rex Engine supports many different kind of tests for optimal testing which can all be fired from the root script
@@ -188,7 +206,7 @@ flag: `-clang_tidy`
 
 A static analyser directly hooked into the compiler to scan for possible design problems, readability issues or bugs. None of the checks in here will auto fix themselves and all warnings are treated as error.
 ### Unit tests
-flag: `-unity_tests`
+flag: `-unit_tests`
 
 Every big framework should have its own unit tests so of course rex has it own as well. We use catch2 for our unit tests, these unit tests can be added to the visual studio solution by passing in `-generate_unittests` to [`_generate.py`](../../../_generate.py)
 ### Coverage

@@ -10,57 +10,60 @@
 #include <mutex>
 #include <string>
 
-namespace rexlog
+namespace rex
 {
-  namespace sinks
+  namespace log
   {
-    /*
-     * Trivial file sink with single file as target
-     */
-    template <typename Mutex>
-    class BasicFileSink final : public BaseSink<Mutex>
+    namespace sinks
     {
-    public:
-      explicit BasicFileSink(rsl::string_view filename, bool truncate = false, const FileEventHandlers& eventHandlers = {});
-      rsl::string_view filename() const;
+      /*
+       * Trivial file sink with single file as target
+       */
+      template <typename Mutex>
+      class BasicFileSink final : public BaseSink<Mutex>
+      {
+      public:
+        explicit BasicFileSink(rsl::string_view filename, bool truncate = false, const FileEventHandlers& eventHandlers = {});
+        rsl::string_view filename() const;
 
-    protected:
-      void sink_it_impl(const details::LogMsg& msg) override;
-      void flush_it_impl() override;
+      protected:
+        void sink_it_impl(const details::LogMsg& msg) override;
+        void flush_it_impl() override;
 
-    private:
-      details::FileHelper m_file_helper;
-    };
+      private:
+        details::FileHelper m_file_helper;
+      };
 
-    template <typename Mutex>
-    BasicFileSink<Mutex>::BasicFileSink(rsl::string_view filename, bool truncate, const FileEventHandlers& eventHandlers)
-        : m_file_helper {eventHandlers}
-    {
-      m_file_helper.open(filename, truncate);
-    }
+      template <typename Mutex>
+      BasicFileSink<Mutex>::BasicFileSink(rsl::string_view filename, bool truncate, const FileEventHandlers& eventHandlers)
+          : m_file_helper {eventHandlers}
+      {
+        m_file_helper.open(filename, truncate);
+      }
 
-    template <typename Mutex>
-    rsl::string_view BasicFileSink<Mutex>::filename() const
-    {
-      return m_file_helper.filename();
-    }
+      template <typename Mutex>
+      rsl::string_view BasicFileSink<Mutex>::filename() const
+      {
+        return m_file_helper.filename();
+      }
 
-    template <typename Mutex>
-    void BasicFileSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
-    {
-      memory_buf_t formatted;
-      BaseSink<Mutex>::formatter()->format(msg, formatted);
-      m_file_helper.write(formatted);
-    }
+      template <typename Mutex>
+      void BasicFileSink<Mutex>::sink_it_impl(const details::LogMsg& msg)
+      {
+        memory_buf_t formatted;
+        BaseSink<Mutex>::formatter()->format(msg, formatted);
+        m_file_helper.write(formatted);
+      }
 
-    template <typename Mutex>
-    void BasicFileSink<Mutex>::flush_it_impl()
-    {
-      m_file_helper.flush();
-    }
+      template <typename Mutex>
+      void BasicFileSink<Mutex>::flush_it_impl()
+      {
+        m_file_helper.flush();
+      }
 
-    using basic_file_sink_mt = BasicFileSink<rsl::mutex>;
-    using basic_file_sink_st = BasicFileSink<details::NullMutex>;
+      using basic_file_sink_mt = BasicFileSink<rsl::mutex>;
+      using basic_file_sink_st = BasicFileSink<details::NullMutex>;
 
-  } // namespace sinks
-} // namespace rexlog
+    } // namespace sinks
+  }   // namespace log
+} // namespace rex

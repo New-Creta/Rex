@@ -184,7 +184,7 @@ public static class Main
 
     ProjectGen.Settings.ClangTidyRegex = config["clang-tidy-regex"].Value.GetString();
     ProjectGen.Settings.PerformAllClangTidyChecks = config["perform-all-clang-tidy-checks"].Value.GetBoolean();
-    ProjectGen.Settings.ClangToolsEnabled = config["no-clang-tools"].Value.GetBoolean() == false;
+    ProjectGen.Settings.ClangToolsEnabled = config["enable-clang-tools"].Value.GetBoolean();
     ProjectGen.Settings.IntermediateDir = config["intermediate-dir"].Value.GetString();
     ProjectGen.Settings.UnitTestsEnabled = config["enable-unit-tests"].Value.GetBoolean();
     ProjectGen.Settings.CoverageEnabled = config["enable-code-coverage"].Value.GetBoolean();
