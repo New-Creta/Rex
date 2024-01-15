@@ -133,6 +133,7 @@ namespace rex
         {
           case FillMode::SOLID: return D3D12_FILL_MODE_SOLID;
           case FillMode::WIREFRAME: return D3D12_FILL_MODE_WIREFRAME;
+          default: break;
         }
 
         REX_ASSERT("Unsupported fill mode given");
@@ -146,6 +147,7 @@ namespace rex
           case CullMode::NONE: return D3D12_CULL_MODE_NONE;
           case CullMode::FRONT: return D3D12_CULL_MODE_FRONT;
           case CullMode::BACK: return D3D12_CULL_MODE_BACK;
+          default: break;
         }
 
         REX_ASSERT("Unsupported cull mode given");
@@ -163,6 +165,7 @@ namespace rex
           case VertexBufferFormat::UNORM1: return DXGI_FORMAT_R8_UNORM;
           case VertexBufferFormat::UNORM2: return DXGI_FORMAT_R8G8_UNORM;
           case VertexBufferFormat::UNORM4: return DXGI_FORMAT_R8G8B8A8_UNORM;
+          default: break;
         }
         REX_ASSERT("Unsupported vertex buffer format given");
         return DXGI_FORMAT_UNKNOWN;
@@ -174,6 +177,7 @@ namespace rex
         {
           case IndexBufferFormat::R16_UINT: return DXGI_FORMAT_R16_UINT;
           case IndexBufferFormat::R32_UINT: return DXGI_FORMAT_R32_UINT;
+          default: break;
         }
         REX_ASSERT("Unsupported index buffer format given");
         return DXGI_FORMAT_UNKNOWN;
@@ -184,6 +188,7 @@ namespace rex
         switch(format)
         {
           case TextureFormat::UNORM4_SRGB: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+          default: break;
         }
         REX_ASSERT("Unsupported vertex buffer format given");
         return DXGI_FORMAT_UNKNOWN;
@@ -199,6 +204,7 @@ namespace rex
           case PrimitiveTopology::POINTLIST: return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
           case PrimitiveTopology::TRIANGLELIST: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
           case PrimitiveTopology::TRIANGLESTRIP: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+          default: break;
         }
         REX_ASSERT("Unsupported primitive topology given");
         return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
@@ -210,6 +216,7 @@ namespace rex
         {
           case InputLayoutClassification::PER_VERTEX_DATA: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
           case InputLayoutClassification::PER_INSTANCE_DATA: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+          default: break;
         }
 
         REX_ASSERT("Unsupported input layout classification given");
@@ -736,7 +743,7 @@ namespace rex
           if(!default_buffer)
           {
             REX_ERROR(LogDirectX, "Could not create GPU buffer");
-            return false;
+            return nullptr;
           }
 
           directx::set_debug_name_for(default_buffer->buffer.Get(), "Buffer GPU");
@@ -1090,6 +1097,8 @@ namespace rex
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
                 }
                 break;
+            default:
+              REX_ASSERT("Unknown Descriptor Heap Type");
             }
           }
 
@@ -1101,7 +1110,7 @@ namespace rex
         {
           if (fence->GetCompletedValue() < fenceVal)
           {
-            rsl::win::handle event_handle(CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS));
+            rsl::win::handle event_handle(CreateEventEx(nullptr, nullptr, false, EVENT_ALL_ACCESS));
 
             // Fire event when GPU hits current fence
             if (DX_FAILED(fence->SetEventOnCompletion(fenceVal, event_handle.get())))

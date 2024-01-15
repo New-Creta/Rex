@@ -282,6 +282,13 @@ public abstract class BasicCPPProject : Project
     conf.Options.Add(Options.Vc.Linker.GenerateMapFile.Disable);
     conf.Options.Add(Options.Vc.Linker.GenerateManifest.Disable);
     conf.Options.Add(Options.Vc.Linker.TreatLinkerWarningAsErrors.Enable);
+
+    // This allows SSE for CRC when using Clang
+    if (target.Compiler == Compiler.Clang)
+    {
+      conf.AdditionalCompilerOptions.Add("-msse4.2");
+    }
+
   }
 
   // Setup the output type of this project
