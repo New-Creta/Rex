@@ -26,7 +26,7 @@ namespace rex::win
     bool is_initialized() const;
 
     template <typename ComObject>
-    ComPtr<ComObject> create_com_object()
+    wrl::ComPtr<ComObject> create_com_object()
     {
       ComPtr<ComObject> com_object;
       HR_CALL(CoCreateInstance(__uuidof(ComObject), NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));
@@ -34,7 +34,7 @@ namespace rex::win
     }
 
     template <typename ComObject>
-    ComPtr<ComObject> create_com_object(IID id)
+    wrl::ComPtr<ComObject> create_com_object(IID id)
     {
       ComPtr<ComObject> com_object;
       HR_CALL(CoCreateInstance(id, NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.get_address_of())));

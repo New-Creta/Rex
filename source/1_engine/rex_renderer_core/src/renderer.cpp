@@ -50,7 +50,7 @@
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
 #include "rex_renderer_core/commands/update_committed_resource_cmd.h"
 
-#include "rex_engine/defines.h"
+#include "rex_engine/engine/defines.h"
 #include "rex_engine/ring_buffer.h"
 
 #include "rex_std/bonus/utility/enum_reflection.h"

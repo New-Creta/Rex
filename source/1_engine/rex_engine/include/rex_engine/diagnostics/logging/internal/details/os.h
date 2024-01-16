@@ -46,7 +46,7 @@ namespace rex
         size_t thread_id() noexcept;
 
         // This is avoid msvc issue in sleep_for that happens if the clock changes.
-        // See https://github.com/gabime/rexlog/issues/609
+        // See https://github.com/gabime/rex::log/issues/609
         void sleep_for_millis(unsigned int milliseconds) noexcept;
 
         rex::DebugString filename_to_str(const filename_t& filename);

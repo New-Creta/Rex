@@ -1,8 +1,8 @@
-#include "rex_engine/core_application.h"
+#include "rex_engine/app/core_application.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_engine/entrypoint.h"
-#include "rex_engine/filesystem/win/vfs.h"
+#include "rex_engine/engine/entrypoint.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/primitives/box.h"
@@ -268,7 +268,8 @@ namespace rex
         break;
     }
 
-    compile_shader_command_desc.shader_code = vfs::open_read(filePath);
+    rsl::wstring wide_file_path(filePath.cbegin(), filePath.cend());
+    compile_shader_command_desc.shader_code = vfs::read_file(wide_file_path);
     compile_shader_command_desc.shader_name = shaderName;
     compile_shader_command_desc.shader_type = shaderType;
 
@@ -907,7 +908,7 @@ namespace rex
   //-------------------------------------------------------------------------
   ApplicationCreationParams create_regina_app_creation_params(PlatformCreationParams&& platformParams)
   {
-    ApplicationCreationParams app_params(rsl::move(platformParams));
+    ApplicationCreationParams app_params(&platformParams);
 
     app_params.gui_params.window_width  = 1280;
     app_params.gui_params.window_height = 720;

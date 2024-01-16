@@ -14,5 +14,6 @@ namespace rex
     void subscribe(EventType type, const EventFunction& function);
 
     void fire_event(const Event& evt);
+    void fire_event(EventType evt);
   } // namespace event_system
 } // namespace rex

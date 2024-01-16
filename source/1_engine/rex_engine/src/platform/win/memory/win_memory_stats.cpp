@@ -1,4 +1,4 @@
-#include "rex_engine/platform/win/memory/memory_stats.h"
+#include "rex_engine/platform/win/memory/win_memory_stats.h"
 
 // NOLINTBEGIN(llvm-include-order)
 // clang-format off

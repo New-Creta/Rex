@@ -172,6 +172,10 @@ public abstract class BasicCPPProject : Project
     // These are private and are not virtualized to be configurable derived projects
     SetupProjectPaths(conf, target);
 
+    // This is private and controlled by this project.
+    // derived project should not change the behavior of this
+    SetupTestingFlags(conf, target);
+
     // This is expected to be overriden by derived projects as it's abstract
     SetupOutputType(conf, target);
 
@@ -187,17 +191,13 @@ public abstract class BasicCPPProject : Project
     SetupCompilerRules(conf, target);
     SetupConfigRules(conf, target);
     SetupPostBuildEvents(conf, target);
-
-    // This is private and controlled by this project.
-    // derived project should not change the behavior of this
-    SetupTestingFlags(conf, target);
   }
 
   #region CppProjectFunctions
 
   // Specify the targets for this project, meant to be called by every project inherited from this class.
   // The targets for this project are based on the generation settings that are setup by the config file passed in to sharpmake.
-  public virtual void GenerateTargets()
+  public void GenerateTargets()
   {
     AddTargets(RexTarget.CreateTargets().ToArray());
   }
@@ -205,17 +205,17 @@ public abstract class BasicCPPProject : Project
   // Library paths, library files and other sharpmake project dependencies are set here.
   protected virtual void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    // To make sure we use the exact same includes, regardless of the compiler
+    // To make sure we use the exact same libs, regardless of the compiler
     // We add them here. Clang can figure them out on its own, but it can possibly
     // use updated lib files which could break compilation.
     // This would also cause inconsistency between compilers
     List<string> libPaths = new List<string>();
-      libPaths.AddRange(ToolPaths["windows_sdk_lib"].ToList());
-      libPaths.AddRange(ToolPaths["msvc_libs"].ToList());
-      foreach (var path in libPaths)
-      {
-        conf.LibraryPaths.Add(path);
-      }
+    libPaths.AddRange(ToolPaths["windows_sdk_lib"].ToList());
+    libPaths.AddRange(ToolPaths["msvc_libs"].ToList());
+    foreach (var path in libPaths)
+    {
+      conf.LibraryPaths.Add(path);
+    }
 
     // Add the dependency to the regenerate project for all C++ projects.
     if (target.DevEnv == DevEnv.vs2019)
@@ -282,6 +282,13 @@ public abstract class BasicCPPProject : Project
     conf.Options.Add(Options.Vc.Linker.GenerateMapFile.Disable);
     conf.Options.Add(Options.Vc.Linker.GenerateManifest.Disable);
     conf.Options.Add(Options.Vc.Linker.TreatLinkerWarningAsErrors.Enable);
+
+    // This allows SSE for CRC when using Clang
+    if (target.Compiler == Compiler.Clang)
+    {
+      conf.AdditionalCompilerOptions.Add("-msse4.2");
+    }
+
   }
 
   // Setup the output type of this project
@@ -297,6 +304,8 @@ public abstract class BasicCPPProject : Project
     // We add them here. Clang can figure them out on its own, but it can possibly
     // use updated include files which could break compilation.
     // This would also cause inconsistency between compilers
+    if (target.Compiler == Compiler.MSVC)
+    {
       List<string> includePaths = new List<string>();
       includePaths.AddRange(ToolPaths["windows_sdk_includes"].ToList());
       includePaths.AddRange(ToolPaths["msvc_includes"].ToList());
@@ -304,6 +313,7 @@ public abstract class BasicCPPProject : Project
       {
         conf.IncludeSystemPaths.Add(path);
       }
+    }
 
     // We always add the include folder of the project to its include paths
     conf.IncludePaths.Add($@"{SourceRootPath}\include");

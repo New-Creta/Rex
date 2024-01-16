@@ -485,7 +485,7 @@ namespace rex
     ReadRequest read_file_async(MountingPoint root, rsl::wstring_view filepath)
     {
       filepath = path::remove_quotes(filepath);
-      rsl::wmedium_stack_string path = path::join(g_mounted_roots.at(root), filepath);
+      rsl::wmedium_stack_string path = rsl::wstring_view(path::join(g_mounted_roots.at(root), filepath));
       return read_file_async(path);
     }
 

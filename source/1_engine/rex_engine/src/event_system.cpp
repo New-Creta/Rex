@@ -47,6 +47,12 @@ namespace rex
         delegate(evt);
       }
     }
+
+    void fire_event(EventType evt)
+    {
+      Event event{ evt };
+      fire_event(event);
+    }
   } // namespace event_system
 } // namespace rex
 
