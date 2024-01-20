@@ -280,7 +280,7 @@ public abstract class BasicCPPProject : Project
     // Linker options
     conf.Options.Add(Options.Vc.Linker.LargeAddress.SupportLargerThan2Gb);
     conf.Options.Add(Options.Vc.Linker.GenerateMapFile.Disable);
-    conf.Options.Add(Options.Vc.Linker.GenerateManifest.Enable);
+    conf.Options.Add(Options.Vc.Linker.GenerateManifest.Disable);
     conf.Options.Add(Options.Vc.Linker.TreatLinkerWarningAsErrors.Enable);
 
     // This allows SSE for CRC when using Clang
@@ -289,6 +289,10 @@ public abstract class BasicCPPProject : Project
       conf.AdditionalCompilerOptions.Add("-msse4.2");
     }
 
+    if (conf.Output == Configuration.OutputType.Exe)
+    {
+      conf.Options.Add(Options.Vc.Linker.GenerateManifest.Enable);
+    }
   }
 
   // Setup the output type of this project
@@ -408,7 +412,10 @@ public abstract class BasicCPPProject : Project
         // https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
         // Enabling utf8 for Window's ANSI functions allows us to use utf8 strings directly
         // without converting them to UCS-2 (Window's default code page)
-        conf.AdditionalManifestFiles.Add(Path.Combine(Globals.Root, "_build", "config", "win", "utf8.manifest"));
+        if (conf.Output == Configuration.OutputType.Exe)
+        {
+          conf.AdditionalManifestFiles.Add(Path.Combine(Globals.Root, "_build", "config", "win", "utf8.manifest"));
+        }
         break;
       default:
         break;
