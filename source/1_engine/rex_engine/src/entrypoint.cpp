@@ -1,9 +1,10 @@
 #include "rex_engine/engine/entrypoint.h"
-
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/logging/logger_config.h"
+#include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/memory/memory_stats.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
@@ -12,8 +13,18 @@ namespace rex
 {
   namespace internal
   {
+    void log_mem_usage_at_start()
+    {
+      output_debug_string("Memory usage at start of entry point");
+      log_mem_usage();
+    }
+
     void pre_app_entry(REX_MAYBE_UNUSED const tchar* cmdLine)
     {
+      // Log the current memory usaged when we reached the entry point
+      internal::log_mem_usage_at_start();
+
+      // Initialize the commandline so it can be used throughout the code
       cmdline::init(rsl::wstring_view(cmdLine));
 
       // if a user wants to know the arguments for the executable, we want to perform as minimal setup as possible.

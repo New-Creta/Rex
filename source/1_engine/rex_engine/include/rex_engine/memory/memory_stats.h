@@ -30,6 +30,10 @@ namespace rex
     // so don't assume that a high page fault count is bad
     card32 num_page_faults {};
   };
+
+  MemoryStats query_memory_stats();
+
+  void log_mem_usage();
 } // namespace rex
 
 #ifdef REX_PLATFORM_WINDOWS

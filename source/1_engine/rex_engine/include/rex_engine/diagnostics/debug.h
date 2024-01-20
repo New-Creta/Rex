@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_std/bonus/types.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {
@@ -10,6 +11,8 @@ namespace rex
   void exit_process(int32 exitCode);
 
   void exit_confirm(int32 exitCode);
+
+  void output_debug_string(rsl::string_view str);
 }
 
 #ifdef REX_PLATFORM_WINDOWS
