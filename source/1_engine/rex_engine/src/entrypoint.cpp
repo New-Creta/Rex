@@ -1,7 +1,9 @@
 #include "rex_engine/engine/entrypoint.h"
 
 #include "rex_engine/cmdline/cmdline.h"
+#include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/diagnostics/logging/logger_config.h"
+#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/attributes.h"
@@ -30,16 +32,24 @@ namespace rex
       // we close down the program
       if(cmdline::get_argument(L"BreakOnBoot"))
       {
+        REX_LOG(LogEngine, "Waiting for debugger to get attached..");
+
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
         auto i = 1s;
-        while(i < 10min)
+        while(i < 10min && !rex::is_debugger_attached())
         {
           rsl::this_thread::sleep_for(1s);
           ++i;
         }
 
-        // when the debugger is attached, skip this line
-        rsl::exit(0);
+        if (!rex::is_debugger_attached())
+        {
+          rsl::exit(0);
+        }
+        else
+        {
+          DEBUG_BREAK();
+        }
       }
 
       diagnostics::init_log_levels();
