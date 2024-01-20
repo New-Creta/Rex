@@ -1,4 +1,4 @@
-#include "rex_engine/platform/win/process.h"
+#include "rex_engine/platform/win/system/win_process.h"
 
 #include <Windows.h>
 
@@ -10,9 +10,9 @@ namespace rex
     {
       return GetCurrentProcess();
     }
-    DWord current_process_id()
+    u32 current_process_id()
     {
-      return GetProcessId(current_process());
+      return static_cast<u32>(GetProcessId(current_process()));
     }
   }
 }

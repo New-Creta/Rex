@@ -6,6 +6,7 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/system/process.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
@@ -50,6 +51,14 @@ namespace rex
         {
           DEBUG_BREAK();
         }
+      }
+
+      // If the program was spawned without a debugger and we want to automatically attach one
+      if (cmdline::get_argument(L"AttachOnBoot"))
+      {
+        // https://stackoverflow.com/questions/1291580/what-is-this-command-in-c-sharp-c-windows-system32-vsjitdebugger-exe-p-ld
+        auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::current_process_id());
+        system(cmd.c_str());
       }
 
       diagnostics::init_log_levels();
