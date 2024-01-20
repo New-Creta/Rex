@@ -1,8 +1,8 @@
-#include "rex_engine/entrypoint.h"
-#include "rex_engine/engine_params.h"
+#include "rex_engine/engine/entrypoint.h"
+#include "rex_engine/engine/engine_params.h"
 
 #include "regina_auto_test/regina_boot_test.h"
-#include "rex_engine/cmdline.h"
+#include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_windows/platform_creation_params.h"

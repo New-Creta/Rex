@@ -1,4 +1,4 @@
-#include "rex_windows/gui_application.h"
+﻿#include "rex_windows/gui_application.h"
 
 #include "rex_engine/app/core_window.h"
 #include "rex_engine/windowinfo.h"

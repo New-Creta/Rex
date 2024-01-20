@@ -53,7 +53,7 @@ namespace rex
     class ReadRequest
     {
     public:
-      ReadRequest(rsl::wstring_view filepath, QueuedRequest* queuedRequest);
+      ReadRequest(rsl::string_view filepath, QueuedRequest* queuedRequest);
       ReadRequest(const ReadRequest& other);
       ReadRequest(ReadRequest&& other);
 
@@ -68,36 +68,36 @@ namespace rex
       const rsl::byte* data() const;
       rsl::memory_size count() const;
 
-      rsl::wstring_view filepath() const;
+      rsl::string_view filepath() const;
 
     private:
-      rsl::wstring_view m_filepath;
+      rsl::string_view m_filepath;
       QueuedRequest* m_queued_request;
       bool m_is_done;
       const rsl::byte* m_buffer;
       rsl::memory_size m_size;
     };
 
-    void init(rsl::wstring_view root = L"");
-    void set_root(rsl::wstring_view root);
-    void mount(MountingPoint root, rsl::wstring_view path);
+    void init(rsl::string_view root = "");
+    void set_root(rsl::string_view root);
+    void mount(MountingPoint root, rsl::string_view path);
     void shutdown();
 
-    REX_NO_DISCARD memory::Blob read_file(rsl::wstring_view filepath);
-    REX_NO_DISCARD memory::Blob read_file(MountingPoint root, rsl::wstring_view filepath);
-    REX_NO_DISCARD ReadRequest read_file_async(rsl::wstring_view filepath);
-    REX_NO_DISCARD ReadRequest read_file_async(MountingPoint root, rsl::wstring_view filepath);
-    bool save_to_file(rsl::wstring_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
-    bool save_to_file(MountingPoint root, rsl::wstring_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
-    bool save_to_file(rsl::wstring_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
-    bool save_to_file(MountingPoint root, rsl::wstring_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
-    bool create_dir(rsl::wstring_view path);
-    bool create_dir(MountingPoint root, rsl::wstring_view path);
+    REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
+    REX_NO_DISCARD memory::Blob read_file(MountingPoint root, rsl::string_view filepath);
+    REX_NO_DISCARD ReadRequest read_file_async(rsl::string_view filepath);
+    REX_NO_DISCARD ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath);
+    bool save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
+    bool save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
+    bool save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
+    bool save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
+    bool create_dir(rsl::string_view path);
+    bool create_dir(MountingPoint root, rsl::string_view path);
 
-    bool exists(MountingPoint root, rsl::wstring_view path);
-    bool is_dir(MountingPoint root, rsl::wstring_view path);
-    bool is_file(MountingPoint root, rsl::wstring_view path);
-    rsl::wstring create_full_path(rsl::wstring_view path);
-    rsl::wstring create_full_path(MountingPoint root, rsl::wstring_view path);
+    bool exists(MountingPoint root, rsl::string_view path);
+    bool is_dir(MountingPoint root, rsl::string_view path);
+    bool is_file(MountingPoint root, rsl::string_view path);
+    rsl::string create_full_path(rsl::string_view path);
+    rsl::string create_full_path(MountingPoint root, rsl::string_view path);
   } // namespace vfs
 } // namespace rex
