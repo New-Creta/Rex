@@ -1,5 +1,5 @@
 #ifdef REX_API_OPENGL
-  #include "rex_engine/types.h"
+  #include "rex_engine/engine/types.h"
   #include "rex_renderer_core/context.h"
   #include "rex_windows/log.h"
 

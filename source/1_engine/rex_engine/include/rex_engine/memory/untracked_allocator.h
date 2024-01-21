@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rex_std/bonus/attributes.h"
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/utility.h"
-#include "rex_std_extra/memory/memory_size.h"
 
 // IWYU pragma: no_include <new>
 

@@ -15,16 +15,31 @@ public class RexDirectX : PlatformProject
     SourceRootPath = ThisFileFolder;
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
+    base.SetupLibDependencies(conf, target);
 
-    conf.Output = Configuration.OutputType.Lib;
     conf.LibraryFiles.Add("d3d12.lib");
     conf.LibraryFiles.Add("dxgi.lib");
 
-    conf.AddPublicDependency<RexStdExtra>(target);
+    conf.AddPublicDependency<RexStd>(target);
     conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+
+    switch (target.Config)
+    {
+      case Config.debug:
+      case Config.debug_opt:
+      case Config.coverage:
+      case Config.address_sanitizer:
+      case Config.undefined_behavior_sanitizer:
+      case Config.fuzzy:
+        conf.add_public_define("REX_ENABLE_DX_CALL");
+        break;
+      case Config.release:
+        break;
+      default:
+        break;
+    }
   }
 }

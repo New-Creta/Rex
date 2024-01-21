@@ -15,11 +15,9 @@ public class RexApplicationCore : AppLibrariesProject
     SourceRootPath = ThisFileFolder;
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
-
-    conf.Output = Configuration.OutputType.Lib;
+    base.SetupLibDependencies(conf, target);
 
     conf.AddPublicDependency<RexWindows>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }

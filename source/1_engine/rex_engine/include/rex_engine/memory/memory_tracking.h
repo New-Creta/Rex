@@ -4,14 +4,16 @@
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/memory/untracked_allocator.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/array.h"
+#include "rex_std/bonus/attributes.h"
 #include "rex_std/bonus/defines.h"
+#include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
+#include "rex_std/bonus/utility/high_water_mark.h"
 #include "rex_std/mutex.h"
 #include "rex_std/vector.h"
-#include "rex_std_extra/memory/memory_size.h"
-#include "rex_std_extra/utility/enum_reflection.h"
-#include "rex_std_extra/utility/high_water_mark.h"
 
 namespace rex
 {
@@ -31,6 +33,12 @@ namespace rex
     using UsagePerTag = rsl::array<rsl::high_water_mark<s64>, rsl::enum_refl::enum_count<MemoryTag>()>;
 
     MemoryTracker();
+    MemoryTracker(const MemoryTracker&) = delete;
+    MemoryTracker(MemoryTracker&&)      = delete;
+    ~MemoryTracker();
+
+    MemoryTracker& operator=(const MemoryTracker&) = delete;
+    MemoryTracker& operator=(MemoryTracker&&)      = delete;
 
     void initialize(rsl::memory_size maxMemUsage);
 
@@ -42,7 +50,7 @@ namespace rex
 
     MemoryTag current_tag() const;
 
-    void dump_stats_to_file(rsl::string_view filepath);
+    void dump_stats_to_file(rsl::wstring_view filepath);
 
     REX_NO_DISCARD MemoryUsageStats current_stats();      // deliberate copy as we don't want to have any race conditions when accessing
     REX_NO_DISCARD MemoryUsageStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
@@ -56,6 +64,7 @@ namespace rex
     MemoryStats m_mem_stats_on_startup;    // stats queried from the OS at init time
     rsl::mutex m_mem_tracking_mutex;
     UsagePerTag m_usage_per_tag;
+    bool m_is_active;
   };
 
   MemoryTracker& mem_tracker();

@@ -1,21 +1,27 @@
 #include "rex_windows/gui_application.h"
 
-#include "rex_engine/core_window.h"
+#include "rex_engine/app/core_window.h"
+#include "rex_engine/windowinfo.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/event.h" // IWYU pragma: keep
-#include "rex_engine/event_system.h"
-#include "rex_engine/event_type.h"
+#include "rex_engine/event_system/event.h" // IWYU pragma: keep
+#include "rex_engine/event_system/event_system.h"
+#include "rex_engine/event_system/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
+
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
+#include "rex_renderer_core/renderer_output_window_user_data.h"
+#include "rex_renderer_core/renderer_info.h"
+
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std/ratio.h"
 #include "rex_std/thread.h"
+
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
@@ -25,13 +31,23 @@
 
 namespace rex
 {
+  namespace globals
+  {
+    WindowInfo g_window_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)S
+
+    //-------------------------------------------------------------------------
+    const WindowInfo& window_info()
+    {
+      return g_window_info;
+    }
+  } // namespace globals
   namespace win32
   {
     class GuiApplication::Internal
     {
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
-          : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
+          : m_platform_creation_params(*appCreationParams.platform_params)
           , m_gui_params(rsl::move(appCreationParams.gui_params))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
@@ -41,6 +57,8 @@ namespace rex
         m_on_initialize = m_engine_params.app_init_func ? m_engine_params.app_init_func : [&]() { return true; };
 
         m_on_update = m_engine_params.app_update_func ? m_engine_params.app_update_func : [&]() {};
+
+        m_on_draw = m_engine_params.app_draw_func ? m_engine_params.app_draw_func : [&]() {};
 
         m_on_shutdown = m_engine_params.app_shutdown_func ? m_engine_params.app_shutdown_func : [&]() {};
       }
@@ -55,6 +73,10 @@ namespace rex
         {
           return false;
         }
+
+        globals::g_window_info.width = m_window->width();
+        globals::g_window_info.height = m_window->height();
+
         subscribe_window_events();
 
         // graphics context initialization
@@ -64,15 +86,63 @@ namespace rex
         }
 
         // renderer initialization
-        if(renderer::initialize(nullptr, m_gui_params.max_render_commands) == false) // NOLINT(readability-simplify-boolean-expr)
+
+        renderer::OutputWindowUserData user_data;
+        user_data.primary_display_handle = m_window->primary_display_handle();
+        user_data.refresh_rate = m_gui_params.max_fps;
+        user_data.window_width = m_window->width();
+        user_data.window_height = m_window->height();
+        user_data.windowed = m_gui_params.fullscreen == false;
+
+        if(renderer::initialize(user_data, m_gui_params.max_render_commands, m_gui_params.max_frames_in_flight) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
 
         display_renderer_info();
 
+        // if the client calls render commands some preparation is required before 
+        // we can actually execute those commands.
+        // 
+        // this function does this preparation.
+        // 
+        // eg: on DX12 we require to reset and allow the command list to record commands
+        if (!renderer::prepare_user_initialization())
+        {
+            REX_ERROR(LogWindows, "Unable to start drawing frame");
+            return false;
+        }
+
         // call client code so it can get initialized
-        return m_on_initialize();
+        bool result = m_on_initialize();
+        
+        if (!result)
+        {
+            return result;
+        }
+
+        // if the client had called render commands some closing up has to be done before
+        // we can actually execute these commands.
+        //
+        // this function does the close
+        //
+        // eg: on DX12 we require to close the command list and execute them
+        if (!renderer::finish_user_initialization())
+        {
+            REX_ERROR(LogWindows, "Unable to end draw on current frame");
+            return false;
+        }
+
+        if (!renderer::flush())
+        {
+            REX_ERROR(LogWindows, "Unable to flush all commands");
+            return false;
+        }
+
+        // When the renderer is initialized we can show the window
+        m_window->show();
+
+        return true;
       }
       void update()
       {
@@ -86,9 +156,11 @@ namespace rex
         // don't render when the application is paused
         if(!m_app_instance->is_paused())
         {
-          // update the graphics code
-          renderer::backend::clear();
-          renderer::backend::present();
+          // TODO: this call eventually has to go.
+          // we will query the scenegraph and pull geometry from the scene instead of letting the user
+          // execute draw commands manually. However, for the setup of this framework we will
+          // provide this API to be able to execute draw commands properly
+          m_on_draw();
         }
 
         // update the timing stats
@@ -125,13 +197,7 @@ namespace rex
 
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose,
-                                [this](const event_system::Event& /*evt*/)
-                                {
-                                  rex::event_system::Event ev {};
-                                  ev.type = rex::event_system::EventType::QuitApp;
-                                  rex::event_system::fire_event(ev);
-                                });
+        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { event_system::fire_event(event_system::EventType::QuitApp); });
         event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
         event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
         event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });
@@ -144,7 +210,7 @@ namespace rex
 
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
       {
-        RendererInfo info = renderer::info();
+        renderer::Info info = renderer::info();
         REX_LOG(LogWindows, "Renderer Info - API Version: {}", info.api_version);
         REX_LOG(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
         REX_LOG(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);
@@ -268,6 +334,7 @@ namespace rex
 
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;
+      rsl::function<void()> m_on_draw;
       rsl::function<void()> m_on_shutdown;
 
       PlatformCreationParams m_platform_creation_params;

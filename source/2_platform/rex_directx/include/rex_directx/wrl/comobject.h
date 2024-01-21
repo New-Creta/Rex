@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/platform/win/win_com_ptr.h"
 #include "rex_std/type_traits.h"
 
 #include <wrl.h>
@@ -11,9 +11,9 @@ namespace rex
   {
     //-------------------------------------------------------------------------
     template <typename To, typename From>
-    wrl::com_ptr<To> convert_to(const wrl::com_ptr<From>& ptr)
+    wrl::ComPtr<To> convert_to(const wrl::ComPtr<From>& ptr)
     {
-      wrl::com_ptr<To> pointer;
+      wrl::ComPtr<To> pointer;
       ptr.template As<To>(&pointer);
       return pointer;
     }
@@ -23,16 +23,16 @@ namespace rex
     {
     public:
       ComObject();
-      explicit ComObject(wrl::com_ptr<T>&& object);
+      explicit ComObject(wrl::ComPtr<T>&& object);
 
       /**
        * Retrieve the underlying com ptr
        */
-      T* com_ptr();
+      T* ComPtr();
       /**
        * Retrieve the underlying com ptr
        */
-      const T* com_ptr() const;
+      const T* ComPtr() const;
 
       /**
           In order to pass along " const " objects to DirectX we are able to remove the " const " with this function.
@@ -50,13 +50,13 @@ namespace rex
        * Retrieve this com object as a different type
        */
       template <typename To>
-      wrl::com_ptr<To> as();
+      wrl::ComPtr<To> as();
 
       /**
        * Retrieve this com object as a different type
        */
       template <typename To>
-      const wrl::com_ptr<const To> as() const;
+      const wrl::ComPtr<const To> as() const;
 
       /**
        * Check if this com object is valid
@@ -64,7 +64,7 @@ namespace rex
       explicit operator bool() const;
 
     private:
-      wrl::com_ptr<T> m_pointer;
+      wrl::ComPtr<T> m_pointer;
     };
 
     //-------------------------------------------------------------------------
@@ -75,20 +75,20 @@ namespace rex
     }
     //-------------------------------------------------------------------------
     template <typename T>
-    ComObject<T>::ComObject(rex::wrl::com_ptr<T>&& object)
+    ComObject<T>::ComObject(rex::wrl::ComPtr<T>&& object)
         : m_pointer(rsl::move(object))
     {
     }
 
     //-------------------------------------------------------------------------
     template <typename T>
-    T* ComObject<T>::com_ptr()
+    T* ComObject<T>::ComPtr()
     {
       return m_pointer.Get();
     }
     //-------------------------------------------------------------------------
     template <typename T>
-    const T* ComObject<T>::com_ptr() const
+    const T* ComObject<T>::ComPtr() const
     {
       return m_pointer.Get();
     }
@@ -111,7 +111,7 @@ namespace rex
     //-------------------------------------------------------------------------
     template <typename T>
     template <typename To>
-    wrl::com_ptr<To> ComObject<T>::as()
+    wrl::ComPtr<To> ComObject<T>::as()
     {
       // T needs to be non-const
       // so we need to case away the const
@@ -121,7 +121,7 @@ namespace rex
     //-------------------------------------------------------------------------
     template <typename T>
     template <typename To>
-    const wrl::com_ptr<const To> ComObject<T>::as() const // NOLINT(readability-const-return-type)
+    const wrl::ComPtr<const To> ComObject<T>::as() const // NOLINT(readability-const-return-type)
     {
       // T needs to be non-const
       // so we need to case away the const
