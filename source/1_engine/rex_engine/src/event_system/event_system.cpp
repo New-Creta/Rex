@@ -38,7 +38,7 @@ namespace rex
           m_next->push_back(evt);
         }
 
-        void fire()
+        void process()
         {
           for(auto& evt: *m_current)
           {
@@ -55,9 +55,7 @@ namespace rex
 
         void present()
         {
-          rsl::vector<Event>* temp = m_current;
-          m_current                = m_next;
-          m_next                   = temp;
+          rsl::swap(m_current, m_next);
         }
 
       private:
@@ -100,17 +98,21 @@ namespace rex
       event_queue().enqueue(evt);
     }
 
-    void fire_events()
-    {
-      event_queue().fire();
-      event_queue().present();
-    }
-
-    void fire_event(EventType evt)
+    void enqueue_event(EventType evt)
     {
       Event event{ evt };
-      fire_event(event);
+      enqueue_event(event);
     }
+
+    void process_events()
+    {
+      // Swap the buffers first so next becomes current and vice versa
+      event_queue().present();
+
+      // Then process all the events that are now in the queue
+      event_queue().process();
+    }
+
   } // namespace event_system
 } // namespace rex
 
