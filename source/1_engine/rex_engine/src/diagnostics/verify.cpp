@@ -2,7 +2,6 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_engine/diagnostics/win/win_stacktrace.h"
 #include "tinyfiledialogs.h"
 
 namespace rex
@@ -16,5 +15,13 @@ namespace rex
     REX_ERROR(LogVerify, msg);
     
     tinyfd_messageBox("Verification Failed", msg.data(), "ok", "error", 0);
+
+    DEBUG_BREAK();
+  }
+
+  //-------------------------------------------------------------------------
+  void rex_verify(rsl::string_view msg)
+  {
+    rex_verify("forced verify", msg);
   }
 } // namespace rex
