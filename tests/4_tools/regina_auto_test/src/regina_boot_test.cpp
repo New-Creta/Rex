@@ -7,7 +7,7 @@ namespace regina_auto_test
 {
   bool initialize()
   {
-    return rex::initialize();
+    return regina::initialize();
   }
   void update()
   {
@@ -17,12 +17,12 @@ namespace regina_auto_test
   }
   void shutdown()
   {
-    rex::shutdown();
+    regina::shutdown();
   }
 
   rex::ApplicationCreationParams boot_test_entry(rex::PlatformCreationParams&& platformParams)
   {
-    rex::ApplicationCreationParams app_params = create_regina_app_creation_params(rsl::move(platformParams));
+    rex::ApplicationCreationParams app_params = regina::create_regina_app_creation_params(rsl::move(platformParams));
 
     app_params.gui_params.window_title = "Regina Test";
 

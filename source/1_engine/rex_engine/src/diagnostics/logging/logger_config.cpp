@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/logging/logger_config.h"
 
-#include "rex_engine/cmdline.h"
+#include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
@@ -30,40 +30,6 @@ namespace rex
   {
     namespace helpers
     {
-      rsl::vector<rsl::string_view> split(rsl::string_view str, rsl::string_view delim)
-      {
-        rsl::vector<rsl::string_view> result;
-
-        count_t start = 0;
-        count_t end   = 0;
-        for(count_t i = 0; i < str.length(); ++i)
-        {
-          auto it = rsl::find(delim.cbegin(), delim.cend(), str[i]);
-          if(it != delim.cend())
-          {
-            end = i;
-
-            if(start == end)
-            {
-              ++start;
-              continue;
-            }
-
-            const rsl::string_view value = str.substr(start, end - start);
-            result.push_back(value);
-            start = end + 1;
-          }
-        }
-
-        if(start != end)
-        {
-          const rsl::string_view value = str.substr(start, end - start);
-          result.push_back(value);
-        }
-
-        return result;
-      }
-
       // return vector of key/value pairs from sequence of "K1=V1,K2=V2,.."
       // "a=AAA,b=BBB,c=CCC,.." => {("a","AAA"),("b","BBB"),("c", "CCC"),...}
       rsl::unordered_map<rsl::string_view, rsl::string_view> extract_key_vals(rsl::string_view str)
@@ -90,17 +56,17 @@ namespace rex
         }
 
         auto key_vals = extract_key_vals(input);
-        rexlog::details::Registry::LogLevels levels;
-        rexlog::level::LevelEnum global_level = rexlog::level::LevelEnum::Info;
-        bool global_level_found               = false;
+        rex::log::details::Registry::LogLevels levels;
+        rex::log::level::LevelEnum global_level = rex::log::level::LevelEnum::Info;
+        bool global_level_found                 = false;
 
         for(auto& name_level: key_vals)
         {
           const auto& logger_name = name_level.key;
           auto level_name         = name_level.value;
-          auto level              = rexlog::level::from_str(level_name);
+          auto level              = rex::log::level::from_str(level_name);
           // ignore unrecognized level names
-          if(level == rexlog::level::LevelEnum::Off && level_name != "off")
+          if(level == rex::log::level::LevelEnum::Off && level_name != "off")
           {
             continue;
           }
@@ -115,7 +81,7 @@ namespace rex
           }
         }
 
-        rexlog::details::Registry::instance().set_levels(rsl::move(levels), global_level_found ? &global_level : nullptr);
+        rex::log::details::Registry::instance().set_levels(rsl::move(levels), global_level_found ? &global_level : nullptr);
       }
 
     } // namespace helpers
@@ -123,11 +89,12 @@ namespace rex
     // search for REXLOG_LEVEL= in the args and use it to init the levels
     void init_log_levels()
     {
-      rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogLevel");
+      rsl::optional<rsl::wstring_view> log_level = cmdline::get_argument(L"LogLevel");
 
       if(log_level)
       {
-        helpers::load_levels(log_level.value());
+        rsl::string log_level_str = rsl::to_string(log_level.value());
+        helpers::load_levels(log_level_str);
       }
     }
   } // namespace diagnostics

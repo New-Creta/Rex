@@ -2,26 +2,29 @@
 
 // IWYU pragma: no_include <built-in>
 
-namespace rexlog
+namespace rex
 {
-  namespace details
+  namespace log
   {
-    PaddingInfo::PaddingInfo()
-        : width(0)
-        , side(PadSide::Left)
-        , truncate(Truncate::no)
-        , enabled(Enabled::no)
+    namespace details
     {
-      // Nothing to implement
-    }
+      PaddingInfo::PaddingInfo()
+          : width(0)
+          , side(PadSide::Left)
+          , truncate(Truncate::no)
+          , enabled(Enabled::no)
+      {
+        // Nothing to implement
+      }
 
-    PaddingInfo::PaddingInfo(s32 width, PaddingInfo::PadSide side, Truncate truncate)
-        : width(width)
-        , side(side)
-        , truncate(truncate)
-        , enabled(Enabled::yes)
-    {
-      // Nothing to implement
-    }
-  } // namespace details
-} // namespace rexlog
+      PaddingInfo::PaddingInfo(s32 width, PaddingInfo::PadSide side, Truncate truncate)
+          : width(width)
+          , side(side)
+          , truncate(truncate)
+          , enabled(Enabled::yes)
+      {
+        // Nothing to implement
+      }
+    } // namespace details
+  }   // namespace log
+} // namespace rex

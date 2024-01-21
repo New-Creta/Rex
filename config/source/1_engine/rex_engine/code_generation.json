@@ -23,14 +23,15 @@
     "Name": "g_command_line_args",
     "ElementType": "cmdline::Argument",
     "Includes": [
-      "rex_engine/cmdline.h"
+      "rex_engine/cmdline/cmdline.h"
     ],
-    "Filepath": "1_engine/rex_engine/include/rex_engine/cmd_args.h",
+    "Filepath": "1_engine/rex_engine/include/rex_engine/cmdline/cmd_args.h",
     "Content": [
-      "\"Root\", \"The directory to initialize the vfs with. this is similar as setting the working root directory\"",
-      "\"Help\", \"This will list all command line arguments for the executable\"",
-      "\"LogLevel\", \"Specify log level per logger (eg. -LogLevel=Engine=trace,Renderer=info)\"",
-      "\"BreakOnBoot\", \"Break on boot so you can attach a debugger\""
+      "L\"Root\", L\"The directory to initialize the vfs with. this is similar as setting the working root directory\"",
+      "L\"Help\", L\"This will list all command line arguments for the executable\"",
+      "L\"LogLevel\", L\"Specify log level per logger (eg. -LogLevel=Engine=trace,Renderer=info)\"",
+      "L\"BreakOnBoot\", L\"Break on boot so you can attach a debugger\"",
+      "L\"AttachOnBoot\", L\"Attach the debugger on boot\""
     ]
   }
 }

@@ -1,11 +1,11 @@
 #include "rex_engine/diagnostics/assert.h"
 
-#include "rex_engine/debug_types.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_engine/diagnostics/win/win_stacktrace.h"
+#include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_std/bonus/types.h"
-#include "rex_engine/defines.h"
+#include "rex_engine/engine/defines.h"
 
 namespace rex
 {
@@ -20,7 +20,7 @@ namespace rex
   void rex_assert(const rsl::fmt_stack_string& msg)
   {
     thread_local static bool is_processing_assert = false;
-    if(!is_processing_assert)
+    if (!is_processing_assert)
     {
       is_processing_assert = true;
       REX_ERROR(LogAssert, "Assert Raised: {}", msg);
@@ -28,7 +28,7 @@ namespace rex
       REX_ERROR(LogAssert, "Assert contexts:");
       REX_ERROR(LogAssert, "----------------");
 
-      for(const AssertContext& context: contexts())
+      for (const AssertContext& context : contexts())
       {
         REX_ERROR(LogAssert, "{}", context.msg());
         REX_ERROR(LogAssert, "[traceback] {}", rsl::to_string(context.source_location()));
@@ -38,9 +38,43 @@ namespace rex
 
       const ResolvedCallstack callstack(current_callstack());
 
-      for(count_t i = 0; i < callstack.size(); ++i)
+      for (count_t i = 0; i < callstack.size(); ++i)
       {
         REX_ERROR(LogAssert, "{}", callstack[i]);
+      }
+    }
+    else
+    {
+      // if this is hit, an assert occurred while processing another one.
+      // to avoid circular dependency, we break here if there's a debugger attached
+      DEBUG_BREAK();
+    }
+  }
+
+  void rex_assert(const rsl::wide_fmt_stack_string& msg)
+  {
+    thread_local static bool is_processing_assert = false;
+    if (!is_processing_assert)
+    {
+      is_processing_assert = true;
+      REX_ERROR(LogAssert, L"Assert Raised: {}", msg);
+
+      REX_ERROR(LogAssert, L"Assert contexts:");
+      REX_ERROR(LogAssert, L"----------------");
+
+      for (const AssertContext& context : contexts())
+      {
+        REX_ERROR(LogAssert, L"{}", rsl::to_wstring(context.msg()));
+        REX_ERROR(LogAssert, L"[traceback] {}", rsl::to_wstring(context.source_location()));
+      }
+
+      REX_ERROR(LogAssert, L"----------------");
+
+      const ResolvedCallstack callstack(current_callstack());
+
+      for (count_t i = 0; i < callstack.size(); ++i)
+      {
+        REX_ERROR(LogAssert, L"{}", callstack[i]);
       }
     }
     else

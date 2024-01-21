@@ -3,11 +3,12 @@
 #include "rex_std/bonus/defines.h"
 #include "rex_std/format.h"
 #include "rex_std/source_location.h"
-#include "rex_engine/defines.h"
+#include "rex_engine/engine/defines.h"
 
 namespace rex
 {
   void rex_assert(const rsl::fmt_stack_string& msg);
+  void rex_assert(const rsl::wide_fmt_stack_string& msg);
   void push_assert_context(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc);
   void pop_assert_context();
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/defines.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/defines.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {

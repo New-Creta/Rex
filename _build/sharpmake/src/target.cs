@@ -47,7 +47,6 @@ public class RexTarget : ITarget
     {
       switch (Config)
       {
-        case Config.assert: return Optimization.FullOptWithPdb;
         case Config.debug: return Optimization.NoOpt;
         case Config.coverage: return Optimization.NoOpt;
         case Config.debug_opt: return Optimization.FullOptWithPdb;

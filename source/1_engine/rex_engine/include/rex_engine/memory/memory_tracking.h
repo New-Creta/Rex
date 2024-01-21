@@ -4,16 +4,16 @@
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/memory/untracked_allocator.h"
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/array.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/bonus/defines.h"
-#include "rex_std/bonus/types.h"
-#include "rex_std/mutex.h"
-#include "rex_std/vector.h"
 #include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_std/bonus/utility/high_water_mark.h"
+#include "rex_std/mutex.h"
+#include "rex_std/vector.h"
 
 namespace rex
 {
@@ -50,7 +50,7 @@ namespace rex
 
     MemoryTag current_tag() const;
 
-    void dump_stats_to_file(rsl::string_view filepath);
+    void dump_stats_to_file(rsl::wstring_view filepath);
 
     REX_NO_DISCARD MemoryUsageStats current_stats();      // deliberate copy as we don't want to have any race conditions when accessing
     REX_NO_DISCARD MemoryUsageStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
