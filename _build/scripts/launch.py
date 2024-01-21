@@ -124,7 +124,7 @@ if __name__ == "__main__":
     exe_args.extend(args.exe_args)
     proc = subprocess.Popen(exe_args)
 
-    proc.communicate()
+    proc.wait()
     result = proc.returncode
 
   sys.exit(result)

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <cstddef>
-
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 #include "rex_std/bonus/functional.h"
+#include "rex_std/bonus/types.h"
 #include "rex_std/format.h"
 #include "rex_std/internal/format/core.h"
 #include "rex_std/ostream.h"
-#include "rex_std/bonus/types.h"
+
+#include <cstddef>
 
 namespace rex
 {
@@ -59,6 +59,15 @@ namespace rex
      */
     constexpr explicit StringID(rsl::string_view stringView)
         : m_comparison_hash(rsl::hash<rsl::string_view> {}(stringView))
+    {
+    }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Create an StringID with characters.
+     */
+    constexpr explicit StringID(rsl::wstring_view stringView)
+      : m_comparison_hash(rsl::hash<rsl::wstring_view> {}(stringView))
     {
     }
 

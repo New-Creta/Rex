@@ -1,5 +1,3 @@
-#pragma once
-
 #include "rex_engine/primitives/mesh_factory.h"
 
 namespace rex

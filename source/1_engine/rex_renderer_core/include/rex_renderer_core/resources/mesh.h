@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/types.h"
+#include "rex_engine/engine/types.h"
 
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/resource_slot.h"

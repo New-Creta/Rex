@@ -12,15 +12,21 @@ except ImportError:
 import os
 import regis.util
 import regis.diagnostics
+import sys
 
 def main():
   regis.diagnostics.log_info(f"running post-checkout hook")
 
-  root = regis.util.find_root()
-  if os.system(f"py {os.path.join(root, '_rex.py')} setup") == 0:
-    os.system(f"py {os.path.join(root, '_rex.py')} generate")
-  else:
-    regis.diagnostics.log_err("setup failed.")
+  # according to https://git-scm.com/docs/githooks
+  # the 4th argument is to indicate branch or file checkout
+  is_branch_checkout = sys.argv[3]
+
+  if not is_branch_checkout:
+    root = regis.util.find_root()
+    if os.system(f"py {os.path.join(root, '_rex.py')} setup") == 0:
+      os.system(f"py {os.path.join(root, '_rex.py')} generate")
+    else:
+      regis.diagnostics.log_err("setup failed.")
      
 if __name__ == "__main__":
   main()

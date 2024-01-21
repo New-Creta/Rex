@@ -2,11 +2,12 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_engine/engine_params.h"
-#include "rex_engine/event_system.h"
-#include "rex_engine/event_type.h"
+#include "rex_engine/engine/engine_params.h"
+#include "rex_engine/event_system/event_system.h"
+#include "rex_engine/event_system/event_type.h"
 #include "rex_std/functional.h"
 #include "rex_windows/platform_creation_params.h"
+#include "rex_windows/input/internal/input.h"
 
 #include <Windows.h>
 #include <consoleapi.h>
@@ -45,7 +46,7 @@ namespace rex
     {
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
-          : m_platform_creation_params(rsl::move(appCreationParams.platform_params))
+          : m_platform_creation_params(*appCreationParams.platform_params)
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
       {
@@ -63,6 +64,7 @@ namespace rex
       bool initialize()
       {
         SetConsoleCtrlHandler(handler_routine, true); // NOLINT(readability-implicit-bool-conversion)
+        input::internal::set_global_input_handler(m_input);
 
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
 
@@ -71,6 +73,8 @@ namespace rex
 
       void update()
       {
+        m_input.update();
+
         m_on_update();
       }
 
@@ -92,6 +96,8 @@ namespace rex
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;
       rsl::function<void()> m_on_shutdown;
+
+      input::internal::Input m_input;
     };
 
     ConsoleApplication::ConsoleApplication(ApplicationCreationParams&& appParams)

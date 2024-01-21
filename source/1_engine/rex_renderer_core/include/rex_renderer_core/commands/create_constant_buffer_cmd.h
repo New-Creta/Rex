@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/defines.h"
-#include "rex_engine/state_controller.h"
+#include "rex_engine/engine/defines.h"
+#include "rex_engine/engine/state_controller.h"
 #include "rex_renderer_core/commands/render_cmd.h"
 
 namespace rex
