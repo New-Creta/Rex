@@ -2,33 +2,37 @@
 
 #pragma once
 
+#include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 
-namespace rexlog
+namespace rex
 {
-  namespace details
+  namespace log
   {
-    // Extend LogMsg with internal buffer to store its payload.
-    // This is needed since LogMsg holds string_views that points to stack data.
-
-    class LogMsgBuffer : public LogMsg
+    namespace details
     {
-    public:
-      LogMsgBuffer() = default;
-      LogMsgBuffer(const LogMsgBuffer& other);
-      LogMsgBuffer(LogMsgBuffer&& other) noexcept;
+      // Extend LogMsg with internal buffer to store its payload.
+      // This is needed since LogMsg holds string_views that points to stack data.
 
-      ~LogMsgBuffer() override = default;
+      class LogMsgBuffer : public LogMsg
+      {
+      public:
+        LogMsgBuffer() = default;
+        LogMsgBuffer(const LogMsgBuffer& other);
+        LogMsgBuffer(LogMsgBuffer&& other) noexcept;
 
-      explicit LogMsgBuffer(const LogMsg& origMsg);
+        ~LogMsgBuffer() override = default;
 
-      LogMsgBuffer& operator=(const LogMsgBuffer& other);
-      LogMsgBuffer& operator=(LogMsgBuffer&& other) noexcept;
+        explicit LogMsgBuffer(const LogMsg& origMsg);
 
-    private:
-      void update_string_views();
+        LogMsgBuffer& operator=(const LogMsgBuffer& other);
+        LogMsgBuffer& operator=(LogMsgBuffer&& other) noexcept;
 
-      memory_buf_t m_buffer;
-    };
-  } // namespace details
-} // namespace rexlog
+      private:
+        void update_string_views();
+
+        memory_buf_t m_buffer;
+      };
+    } // namespace details
+  }   // namespace log
+} // namespace rex

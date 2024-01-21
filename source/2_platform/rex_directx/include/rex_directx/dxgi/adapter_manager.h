@@ -2,16 +2,13 @@
 
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_renderer_core/gpu_scorer.h"
-#include "rex_std/memory.h"
 #include "rex_std/vector.h"
 
 namespace rex
 {
   namespace dxgi
   {
-    class GraphicalInfrastructure;
     class Factory;
-    class Adapter;
 
     using AdapterVec = rsl::vector<Adapter>;
 

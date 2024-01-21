@@ -4,45 +4,52 @@
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padder.h"
 #include "rex_engine/diagnostics/logging/internal/details/formatting/padding_info.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/engine/types.h"
+#include "rex_std/ctype.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
+#include "rex_std/bonus/utility/yes_no.h"
+
+// IWYU pragma: no_include <built-in>
 
 // NOLINTBEGIN(readability-identifier-naming)
 // NOLINTBEGIN(misc-definitions-in-headers)
 
-namespace rexlog
+namespace rex
 {
-  namespace details
+  namespace log
   {
-    //-------------------------------------------------------------------------
-    tm get_time_impl(PatternTimeType timeType, const details::LogMsg& msg)
+    namespace details
     {
-      if(timeType == PatternTimeType::Local)
+      //-------------------------------------------------------------------------
+      tm get_time_impl(PatternTimeType timeType, const details::LogMsg& msg)
       {
-        return details::os::localtime(log_clock::to_time_t(msg.time()));
+        if (timeType == PatternTimeType::Local)
+        {
+          return details::os::localtime(log_clock::to_time_t(msg.time()));
+        }
+
+        return details::os::gmtime(log_clock::to_time_t(msg.time()));
       }
 
-      return details::os::gmtime(log_clock::to_time_t(msg.time()));
-    }
-
-    //-------------------------------------------------------------------------
-    // Extract given pad spec (e.g. %8X, %=8X, %-8!X, %8!X, %=8!X, %-8!X, %+8!X)
-    // Advance the given it pass the end of the padding spec found (if any)
-    // Return padding.
-    details::PaddingInfo handle_padspec_impl(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end)
-    {
-      using details::PaddingInfo;
-      using details::ScopedPadder;
-
-      const s32 max_width = 64;
-      if(it == end)
+      //-------------------------------------------------------------------------
+      // Extract given pad spec (e.g. %8X, %=8X, %-8!X, %8!X, %=8!X, %-8!X, %+8!X)
+      // Advance the given it pass the end of the padding spec found (if any)
+      // Return padding.
+      details::PaddingInfo handle_padspec_impl(rex::DebugString::const_iterator& it, rex::DebugString::const_iterator end)
       {
-        return PaddingInfo {};
-      }
+        using details::PaddingInfo;
+        using details::ScopedPadder;
 
-      PaddingInfo::PadSide side = PaddingInfo::PadSide::Center;
-      switch(*it)
-      {
+        const s32 max_width = 64;
+        if (it == end)
+        {
+          return PaddingInfo{};
+        }
+
+        PaddingInfo::PadSide side = PaddingInfo::PadSide::Center;
+        switch (*it)
+        {
         case '-':
           side = PaddingInfo::PadSide::Right;
           ++it;
@@ -52,115 +59,115 @@ namespace rexlog
           ++it;
           break;
         default: side = details::PaddingInfo::PadSide::Left; break;
+        }
+
+        if (it == end || !rsl::is_digit(static_cast<char>(*it)))
+        {
+          return PaddingInfo{}; // no padding if no digit found here
+        }
+
+        auto width = static_cast<s32>(*it) - '0';
+        for (++it; it != end && rsl::is_digit(static_cast<char>(*it)); ++it)
+        {
+          auto digit = static_cast<s32>(*it) - '0';
+          width = width * 10 + digit;
+        }
+
+        // search for the optional truncate marker '!'
+        bool truncate = false;
+        if (it != end && *it == '!')
+        {
+          truncate = true;
+          ++it;
+        }
+        else
+        {
+          truncate = false;
+        }
+        return details::PaddingInfo{ rsl::min<s32>(width, max_width), side, truncate ? Truncate::yes : Truncate::no };
       }
 
-      if(it == end || !rsl::is_digit(static_cast<unsigned char>(*it)))
-      {
-        return PaddingInfo {}; // no padding if no digit found here
-      }
+    } // namespace details
 
-      auto width = static_cast<s32>(*it) - '0';
-      for(++it; it != end && rsl::is_digit(static_cast<unsigned char>(*it)); ++it)
-      {
-        auto digit = static_cast<s32>(*it) - '0';
-        width      = width * 10 + digit;
-      }
-
-      // search for the optional truncate marker '!'
-      bool truncate = false;
-      if(it != end && *it == '!')
-      {
-        truncate = true;
-        ++it;
-      }
-      else
-      {
-        truncate = false;
-      }
-      return details::PaddingInfo {rsl::min<s32>(width, max_width), side, truncate ? Truncate::yes : Truncate::no};
-    }
-
-  } // namespace details
-
-  //-------------------------------------------------------------------------
-  PatternFormatter::PatternFormatter(rsl::string_view pattern, PatternTimeType timeType, rsl::string_view eol)
+    //-------------------------------------------------------------------------
+    PatternFormatter::PatternFormatter(rsl::string_view pattern, PatternTimeType timeType, rsl::string_view eol)
       : m_pattern(rsl::small_stack_string(pattern))
       , m_eol(rsl::tiny_stack_string(eol))
       , m_pattern_time_type(timeType)
       , m_need_localtime(false)
       , m_cached_tm({})
       , m_last_log_secs(0)
-  {
-    rsl::memset(&m_cached_tm, 0, sizeof(m_cached_tm));
-    compile_pattern_impl(m_pattern);
-  }
+    {
+      rsl::memset(&m_cached_tm, 0, sizeof(m_cached_tm));
+      compile_pattern_impl(m_pattern);
+    }
 
-  //-------------------------------------------------------------------------
-  // use by default full formatter for if pattern is not given
-  PatternFormatter::PatternFormatter(PatternTimeType timeType, rsl::string_view eol)
+    //-------------------------------------------------------------------------
+    // use by default full formatter for if pattern is not given
+    PatternFormatter::PatternFormatter(PatternTimeType timeType, rsl::string_view eol)
       : m_pattern(s_default_pattern)
       , m_eol(rsl::tiny_stack_string(eol))
       , m_pattern_time_type(timeType)
       , m_need_localtime(true)
       , m_cached_tm({})
       , m_last_log_secs(0)
-  {
-    rsl::memset(&m_cached_tm, 0, sizeof(m_cached_tm));
-    m_formatters.push_back(rsl::make_unique<details::FullFormatter>(details::PaddingInfo {}));
-  }
-
-  //-------------------------------------------------------------------------
-  void PatternFormatter::format(const details::LogMsg& msg, rsl::big_stack_string& dest)
-  {
-    if(m_need_localtime)
     {
-      const auto secs = rsl::chrono::duration_cast<rsl::chrono::seconds>(msg.time().time_since_epoch());
-      if(secs != m_last_log_secs)
+      rsl::memset(&m_cached_tm, 0, sizeof(m_cached_tm));
+      m_formatters.push_back(rsl::make_unique<details::FullFormatter>(details::PaddingInfo{}));
+    }
+
+    //-------------------------------------------------------------------------
+    void PatternFormatter::format(const details::LogMsg& msg, rsl::big_stack_string& dest)
+    {
+      if (m_need_localtime)
       {
-        m_cached_tm     = details::get_time_impl(m_pattern_time_type, msg);
-        m_last_log_secs = secs;
+        const auto secs = rsl::chrono::duration_cast<rsl::chrono::seconds>(msg.time().time_since_epoch());
+        if (secs != m_last_log_secs)
+        {
+          m_cached_tm = details::get_time_impl(m_pattern_time_type, msg);
+          m_last_log_secs = secs;
+        }
       }
+
+      for (auto& f : m_formatters)
+      {
+        f->format(msg, m_cached_tm, dest);
+      }
+
+      details::fmt_helper::append_string_view(m_eol, dest);
     }
 
-    for(auto& f: m_formatters)
+    //-------------------------------------------------------------------------
+    void PatternFormatter::set_pattern(rsl::string_view pattern)
     {
-      f->format(msg, m_cached_tm, dest);
+      m_pattern = rsl::small_stack_string(pattern);
+      m_need_localtime = false;
+      compile_pattern_impl(m_pattern);
     }
 
-    details::fmt_helper::append_string_view(m_eol, dest);
-  }
-
-  //-------------------------------------------------------------------------
-  void PatternFormatter::set_pattern(rsl::string_view pattern)
-  {
-    m_pattern        = rsl::small_stack_string(pattern);
-    m_need_localtime = false;
-    compile_pattern_impl(m_pattern);
-  }
-
-  //-------------------------------------------------------------------------
-  void PatternFormatter::need_localtime(bool need)
-  {
-    m_need_localtime = need;
-  }
-
-  //-------------------------------------------------------------------------
-  PatternFormatter PatternFormatter::clone() const
-  {
-    auto cloned = PatternFormatter(m_pattern, m_pattern_time_type, m_eol);
-
-    cloned.need_localtime(m_need_localtime);
-
-    return cloned;
-  }
-
-  //-------------------------------------------------------------------------
-  template <typename Padder>
-  void PatternFormatter::handle_flag_impl(char flag, details::PaddingInfo padding)
-  {
-    // process built-in flags
-    switch(flag)
+    //-------------------------------------------------------------------------
+    void PatternFormatter::need_localtime(bool need)
     {
+      m_need_localtime = need;
+    }
+
+    //-------------------------------------------------------------------------
+    PatternFormatter PatternFormatter::clone() const
+    {
+      auto cloned = PatternFormatter(m_pattern, m_pattern_time_type, m_eol);
+
+      cloned.need_localtime(m_need_localtime);
+
+      return cloned;
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename Padder>
+    void PatternFormatter::handle_flag_impl(char flag, details::PaddingInfo padding)
+    {
+      // process built-in flags
+      switch (flag)
+      {
       case('+'): // default formatter
         m_formatters.push_back(rsl::make_unique<details::FullFormatter>(padding));
         m_need_localtime = true;
@@ -355,7 +362,7 @@ namespace rexlog
       default: // Unknown flag appears as is
         auto unknown_flag = rsl::make_unique<details::AggregateFormatter>();
 
-        if(!padding.truncate)
+        if (!padding.truncate)
         {
           unknown_flag->add_ch('%');
           unknown_flag->add_ch(flag);
@@ -373,58 +380,59 @@ namespace rexlog
         }
 
         break;
+      }
     }
-  }
 
-  //-------------------------------------------------------------------------
-  void PatternFormatter::compile_pattern_impl(rsl::string_view pattern)
-  {
-    auto end = pattern.end();
-    rsl::unique_ptr<details::AggregateFormatter> user_chars;
-    m_formatters.clear();
-    for(auto it = pattern.begin(); it != end; ++it)
+    //-------------------------------------------------------------------------
+    void PatternFormatter::compile_pattern_impl(rsl::string_view pattern)
     {
-      if(*it == '%')
+      auto end = pattern.end();
+      rsl::unique_ptr<details::AggregateFormatter> user_chars;
+      m_formatters.clear();
+      for (auto it = pattern.begin(); it != end; ++it)
       {
-        if(user_chars) // append user chars found so far
+        if (*it == '%')
         {
-          m_formatters.push_back(rsl::move(user_chars));
-        }
-
-        ++it;
-        auto padding = details::handle_padspec_impl(it, end);
-
-        if(it != end)
-        {
-          if(padding.enabled)
+          if (user_chars) // append user chars found so far
           {
-            handle_flag_impl<details::ScopedPadder>(*it, padding);
+            m_formatters.push_back(rsl::move(user_chars));
+          }
+
+          ++it;
+          auto padding = details::handle_padspec_impl(it, end);
+
+          if (it != end)
+          {
+            if (padding.enabled)
+            {
+              handle_flag_impl<details::ScopedPadder>(*it, padding);
+            }
+            else
+            {
+              handle_flag_impl<details::NullScopedPadder>(*it, padding);
+            }
           }
           else
           {
-            handle_flag_impl<details::NullScopedPadder>(*it, padding);
+            break;
           }
         }
-        else
+        else // chars not following the % sign should be displayed as is
         {
-          break;
+          if (!user_chars)
+          {
+            user_chars = rsl::make_unique<details::AggregateFormatter>();
+          }
+          user_chars->add_ch(*it);
         }
       }
-      else // chars not following the % sign should be displayed as is
+      if (user_chars) // append raw chars found so far
       {
-        if(!user_chars)
-        {
-          user_chars = rsl::make_unique<details::AggregateFormatter>();
-        }
-        user_chars->add_ch(*it);
+        m_formatters.push_back(rsl::move(user_chars));
       }
     }
-    if(user_chars) // append raw chars found so far
-    {
-      m_formatters.push_back(rsl::move(user_chars));
-    }
-  }
-} // namespace rexlog
+  } // namespace rexlog
+}
 
 // NOLINTEND(misc-definitions-in-headers)
 // NOLINTEND(readability-identifier-naming)

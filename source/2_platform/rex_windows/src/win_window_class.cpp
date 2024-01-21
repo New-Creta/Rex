@@ -1,7 +1,7 @@
 #include "rex_windows/win_window_class.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/diagnostics/win/win_call.h"
+#include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/memory.h"
 #include "rex_windows/log.h"
 

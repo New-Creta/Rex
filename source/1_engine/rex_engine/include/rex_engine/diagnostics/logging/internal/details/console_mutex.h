@@ -5,28 +5,31 @@
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_std/mutex.h"
 
-namespace rexlog
+namespace rex
 {
-  namespace details
+  namespace log
   {
-    struct ConsoleMutex
+    namespace details
     {
-      using mutex_t = rsl::mutex;
-      static mutex_t& mutex()
+      struct ConsoleMutex
       {
-        static mutex_t s_mutex;
-        return s_mutex;
-      }
-    };
+        using mutex_t = rsl::mutex;
+        static mutex_t& mutex()
+        {
+          static mutex_t s_mutex;
+          return s_mutex;
+        }
+      };
 
-    struct ConsoleNullMutex
-    {
-      using mutex_t = NullMutex;
-      static mutex_t& mutex()
+      struct ConsoleNullMutex
       {
-        static mutex_t s_mutex;
-        return s_mutex;
-      }
-    };
-  } // namespace details
-} // namespace rexlog
+        using mutex_t = NullMutex;
+        static mutex_t& mutex()
+        {
+          static mutex_t s_mutex;
+          return s_mutex;
+        }
+      };
+    } // namespace details
+  }   // namespace log
+} // namespace rex

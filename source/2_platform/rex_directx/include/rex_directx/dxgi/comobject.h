@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_directx/wrl/comobject.h"
-#include "rex_directx/wrl/wrl_types.h"
+#include "rex_engine/platform/win/win_com_ptr.h"
 
 namespace rex
 {
@@ -11,7 +11,7 @@ namespace rex
     class ComObject : public wrl::ComObject<T>
     {
     public:
-      ComObject(wrl::com_ptr<T>&& object, uint32 version);
+      ComObject(wrl::ComPtr<T>&& object, uint32 version);
       ComObject(T* pointer, uint32 version);
 
       uint32 version() const;
@@ -22,7 +22,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     template <typename T>
-    ComObject<T>::ComObject(wrl::com_ptr<T>&& object, uint32 version)
+    ComObject<T>::ComObject(wrl::ComPtr<T>&& object, uint32 version)
         : wrl::ComObject<T>(rsl::move(object))
         , m_version(version)
     {

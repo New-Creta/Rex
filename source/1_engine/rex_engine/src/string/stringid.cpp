@@ -1,10 +1,8 @@
 #include "rex_engine/string/stringid.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/log.h"
-#include "rex_engine/string/stringentry.h"
+#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/string/stringpool.h"
-#include "rex_std/bonus/types.h"
 
 namespace rex
 {

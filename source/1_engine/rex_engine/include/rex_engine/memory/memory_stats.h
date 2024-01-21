@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/types.h"
-#include "rex_std_extra/memory/memory_size.h"
+#include "rex_engine/engine/types.h"
+#include "rex_std/bonus/memory/memory_size.h"
 
 namespace rex
 {
@@ -33,5 +33,5 @@ namespace rex
 } // namespace rex
 
 #ifdef REX_PLATFORM_WINDOWS
-  #include "rex_engine/memory/win/win_mem_stats.h"
+  #include "rex_engine/platform/win/memory/win_memory_stats.h"
 #endif
