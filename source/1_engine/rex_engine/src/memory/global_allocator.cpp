@@ -16,7 +16,7 @@ namespace rex
     void log_mem_usage_before_tracking()
     {
       // Store result in static bool so we only log once
-      static bool _ = log_mem_usage_before_tracking_impl();
+      static bool is_initialized = log_mem_usage_before_tracking_impl();
     }
 
     template <typename T>
