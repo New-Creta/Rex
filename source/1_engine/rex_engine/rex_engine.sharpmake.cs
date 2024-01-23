@@ -34,6 +34,47 @@ public class RexEngine : EngineProject
   {
     base.SetupConfigRules(conf, target);
 
+    // Defines indicating which config is used
+    switch (target.Config)
+    {
+      case Config.debug:
+        conf.add_public_define("REX_BUILD_DEBUG");
+        break;
+      case Config.debug_opt:
+        conf.add_public_define("REX_BUILD_DEBUG_OPT");
+        break;
+      case Config.release:
+        conf.add_public_define("REX_BUILD_RELEASE");
+        break;
+      case Config.coverage:
+        conf.add_public_define("REX_BUILD_COVERAGE");
+        break;
+      case Config.address_sanitizer:
+        conf.add_public_define("REX_BUILD_ASAN");
+        break;
+      case Config.undefined_behavior_sanitizer:
+        conf.add_public_define("REX_BUILD_UBSAN");
+        break;
+      case Config.fuzzy:
+        conf.add_public_define("REX_BUILD_FUZZY");
+        break;
+      default:
+        break;
+    }
+
+    // Defines indicating which optimization is used
+    switch (target.Optimization)
+    {
+      case Optimization.NoOpt:
+        conf.add_public_define("REX_DISABLE_OPTIMIZATION");
+        break;
+      case Optimization.FullOptWithPdb:
+      case Optimization.FullOpt:
+        conf.add_public_define("REX_ENABLE_OPTIMIZATION");
+        break;
+    }
+
+    // Defines added based on config
     switch (target.Config)
     {
       case Config.debug:
@@ -45,7 +86,6 @@ public class RexEngine : EngineProject
       case Config.address_sanitizer:
       case Config.undefined_behavior_sanitizer:
       case Config.fuzzy:
-        conf.add_public_define("REX_DEBUG");
         break;
     }
   }

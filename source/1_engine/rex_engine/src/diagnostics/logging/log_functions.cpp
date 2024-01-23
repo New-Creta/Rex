@@ -12,6 +12,11 @@
 #include "rex_std/bonus/utility.h"
 #include "rex_std/vector.h"
 
+
+#if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
+#define REX_ENABLE_COLOR_SINK
+#endif
+
 namespace rex
 {
   namespace log
@@ -78,7 +83,7 @@ namespace rex
 
     rex::DebugVector<rsl::shared_ptr<rex::log::sinks::AbstractSink>> sinks;
 
-#if REX_DEBUG
+#ifdef REX_ENABLE_COLOR_SINK
     // Only push rexout color sink when we are in debug mode
     sinks.push_back(rsl::allocate_shared<rex::log::sinks::StdoutColorSinkMt>(rex::global_debug_allocator()));
 #endif
