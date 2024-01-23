@@ -10,3 +10,6 @@ namespace rex
   // this is a forced verify that'll always trigger
   void rex_verify(rsl::string_view msg);
 } // namespace rex
+
+#define REX_VERIFY_X(cnd, msg) rex::rex_verify(condition, msg)
+#define REX_VERIFY(msg) rex::rex_verify(msg)
