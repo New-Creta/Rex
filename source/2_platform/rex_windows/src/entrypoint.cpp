@@ -20,7 +20,6 @@ s32 report_crash(LPEXCEPTION_POINTERS ExceptionInfo)
   (void)ExceptionInfo;
   return EXCEPTION_EXECUTE_HANDLER;
 }
-
 //-------------------------------------------------------------------------
 int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, int nShowCmd)
 {

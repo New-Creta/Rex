@@ -3,6 +3,10 @@
 
 #include "rex_engine/diagnostics/assert.h"
 
+#if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
+#define REX_ENABLE_RESOURCE_SLOT_DEBUGGING
+#endif
+
 namespace rex
 {
     namespace renderer
@@ -39,7 +43,7 @@ namespace rex
 
             resize(m_flag_capacity * 2);
 
-#ifdef REX_DEBUG
+#ifdef REX_ENABLE_RESOURCE_SLOT_DEBUGGING
             bool result = m_flags[current_flag_capacity].test_and_set(rsl::memory_order_acquire);
             REX_ASSERT_X(result == false, "Unable to allocated ResourceSlot at location: {}", current_flag_capacity);
             return ResourceSlot(current_flag_capacity);
