@@ -25,6 +25,12 @@ void rex::exit_confirm(int32 exitCode)
   }
 }
 
+void rex::output_debug_string(rsl::string_view str)
+{
+  OutputDebugStringA(str.data());
+  OutputDebugStringA("\n");
+}
+
 rsl::medium_stack_string rex::win::report_win_error(HResult hr, [[maybe_unused]] rsl::string_view winFunc, [[maybe_unused]] const rsl::string_view file, [[maybe_unused]] const rsl::string_view function, [[maybe_unused]] card32 lineNr)
 {
   const _com_error err(hr);

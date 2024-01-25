@@ -3,6 +3,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/engine/engine_params.h"
 #include "rex_engine/frameinfo/frameinfo.h"
+#include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/bonus/utility.h"
@@ -46,6 +47,10 @@ namespace rex
       REX_ERROR(LogEngine, "Application initialization failed");
       return EXIT_FAILURE;
     }
+
+    // Log memory usage after initialization has finished
+    output_debug_string("Memory usage at after initialization");
+    log_mem_usage();
 
     // calls into gui application update code
     // then calls into the client update code provided by the EngineParams before

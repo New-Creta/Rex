@@ -1,4 +1,4 @@
-﻿#include "rex_engine/engine/entrypoint.h"
+#include "rex_engine/engine/entrypoint.h"
 
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/debug.h"

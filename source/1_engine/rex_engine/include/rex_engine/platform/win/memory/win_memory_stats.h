@@ -4,8 +4,5 @@ namespace rex
 {
   struct MemoryStats;
 
-  namespace win
-  {
-    MemoryStats query_memory_stats();
-  } // namespace win
+  MemoryStats query_memory_stats();
 } // namespace rex
