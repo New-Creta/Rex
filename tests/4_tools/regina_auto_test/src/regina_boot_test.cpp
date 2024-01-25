@@ -1,6 +1,6 @@
 #include "regina_auto_test/regina_boot_test.h"
 #include "regina/regina.h"
-#include "rex_engine/event_system.h"
+#include "rex_engine/event_system/event_system.h"
 #include "rex_windows/platform_creation_params.h"
 
 namespace regina_auto_test
@@ -11,9 +11,7 @@ namespace regina_auto_test
   }
   void update()
   {
-    rex::event_system::Event ev{};
-    ev.type = rex::event_system::EventType::QuitApp;
-    rex::event_system::fire_event(ev);
+    rex::event_system::fire_event(rex::event_system::EventType::QuitApp);
   }
   void shutdown()
   {

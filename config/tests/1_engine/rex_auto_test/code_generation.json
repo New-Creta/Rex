@@ -1,7 +1,7 @@
 {
     "CommandLineArgs": {
         "Content": [  
-            "L\"AutoTest\", L\"Specify the autotest to run\""
+            "\"AutoTest\", \"Specify the autotest to run\""
           ]
         
       }

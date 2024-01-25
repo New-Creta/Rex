@@ -1,6 +1,6 @@
 #include "rex_auto_test/auto_test.h"
 
-#include "rex_engine/engine_params.h"
+#include "rex_engine/engine/engine_params.h"
 
 namespace rex
 {
