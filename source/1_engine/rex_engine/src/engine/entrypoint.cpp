@@ -54,7 +54,7 @@ namespace rex
       }
 
       // If the program was spawned without a debugger and we want to automatically attach one
-      if (cmdline::get_argument(L"AttachOnBoot"))
+      if (cmdline::get_argument("AttachOnBoot"))
       {
         // https://stackoverflow.com/questions/1291580/what-is-this-command-in-c-sharp-c-windows-system32-vsjitdebugger-exe-p-ld
         auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::current_process_id());
