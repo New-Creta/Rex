@@ -289,6 +289,10 @@ public abstract class BasicCPPProject : Project
       conf.AdditionalCompilerOptions.Add("-msse4.2");
     }
 
+    if (conf.Output == Configuration.OutputType.Exe)
+    {
+      conf.Options.Add(Options.Vc.Linker.GenerateManifest.Enable);
+    }
   }
 
   // Setup the output type of this project
@@ -402,6 +406,16 @@ public abstract class BasicCPPProject : Project
       case Platform.win32:
       case Platform.win64:
         conf.add_public_define("REX_PLATFORM_WINDOWS");
+
+        // This manifest enables utf8 for win API -A functions
+        // Please see this link for more details
+        // https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page
+        // Enabling utf8 for Window's ANSI functions allows us to use utf8 strings directly
+        // without converting them to UCS-2 (Window's default code page)
+        if (conf.Output == Configuration.OutputType.Exe)
+        {
+          conf.AdditionalManifestFiles.Add(Path.Combine(Globals.Root, "_build", "config", "win", "utf8.manifest"));
+        }
         break;
       default:
         break;

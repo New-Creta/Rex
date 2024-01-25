@@ -51,40 +51,6 @@ namespace rex
     }
   }
 
-  void rex_assert(const rsl::wide_fmt_stack_string& msg)
-  {
-    thread_local static bool is_processing_assert = false;
-    if (!is_processing_assert)
-    {
-      is_processing_assert = true;
-      REX_ERROR(LogAssert, L"Assert Raised: {}", msg);
-
-      REX_ERROR(LogAssert, L"Assert contexts:");
-      REX_ERROR(LogAssert, L"----------------");
-
-      for (const AssertContext& context : contexts())
-      {
-        REX_ERROR(LogAssert, L"{}", rsl::to_wstring(context.msg()));
-        REX_ERROR(LogAssert, L"[traceback] {}", rsl::to_wstring(context.source_location()));
-      }
-
-      REX_ERROR(LogAssert, L"----------------");
-
-      const ResolvedCallstack callstack(current_callstack());
-
-      for (count_t i = 0; i < callstack.size(); ++i)
-      {
-        REX_ERROR(LogAssert, L"{}", callstack[i]);
-      }
-    }
-    else
-    {
-      // if this is hit, an assert occurred while processing another one.
-      // to avoid circular dependency, we break here if there's a debugger attached
-      DEBUG_BREAK();
-    }
-  }
-
   void push_assert_context(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc)
   {
     contexts().emplace_back(msg, sourceLoc);

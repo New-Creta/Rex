@@ -13,12 +13,12 @@ namespace rex
 {
   namespace path
   {
-    constexpr tchar g_seperation_char = '/';
+    constexpr char8 g_seperation_char = '/';
 
     namespace internal
     {
-      // concat the arg to the wstring in filepath format
-      void join_impl(rsl::wstring& str, rsl::wstring_view arg)
+      // concat the arg to the string in filepath format
+      void join_impl(rsl::string& str, rsl::string_view arg)
       {
         if (arg.empty())
         {
@@ -35,24 +35,24 @@ namespace rex
 
       // returns the position of where the extension of the path starts,
       // if there is any
-      card32 extension_start(rsl::wstring_view path)
+      card32 extension_start(rsl::string_view path)
       {
         // because it's possible to have a path like this
         // ./relative/path/file.txt
         // we can need to scan for the first dot 
         // after the first slash
-        auto pos = path.find_last_of(L"/\\");
+        auto pos = path.find_last_of("/\\");
         auto filename = pos != path.npos()
           ? path.substr(pos + 1)
           : path;
 
         // current dir and parent dir "filenames" don't have extensions
-        if (filename == L"." || filename == L"..")
+        if (filename == "." || filename == "..")
         {
           return path.npos();
         }
 
-        auto ext_start = filename.find_first_of(L'.');
+        auto ext_start = filename.find_first_of('.');
 
         // make sure we convert the pos in the filename back to the pos
         // of the total input path
@@ -61,9 +61,9 @@ namespace rex
           : path.npos();
       }
 
-      // Fills a wstring with a number of random characters
+      // Fills a string with a number of random characters
       // This is useful for creating random filenames and directories
-      void fill_with_random_chars(rsl::wstring& str, card32 numCharsToFill)
+      void fill_with_random_chars(rsl::string& str, card32 numCharsToFill)
       {
         rsl::small_stack_string chars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
         for (card32 i = 0; i < numCharsToFill; ++i)
@@ -82,24 +82,24 @@ namespace rex
     }
 
     // removes leading and trailing quotes from a path
-    rsl::wstring_view remove_quotes(rsl::wstring_view path)
+    rsl::string_view remove_quotes(rsl::string_view path)
     {
-      if (path.starts_with(L"\"") && path.ends_with(L"\""))
+      if (path.starts_with("\"") && path.ends_with("\""))
       {
         path = path.substr(1, path.length() - 2);
       }
 
       return path;
     }
-    // Changes the extension of a path wstring_view
+    // Changes the extension of a path string_view
     // If extension argument is empty, the extension is removed
     // if the path doesn't have an extension, the extension specified gets appended
-    rsl::wstring change_extension(rsl::wstring_view path, rsl::wstring_view extension)
+    rsl::string change_extension(rsl::string_view path, rsl::string_view extension)
     {
       SplitResult split_res = split_ext(path);
 
       // use the extension split to store the path without the extension
-      rsl::wstring res(split_res.head);
+      rsl::string res(split_res.head);
 
       // Add a dot if the provided one doesn't have one
       if (!extension.empty() && !extension.starts_with('.'))
@@ -113,28 +113,28 @@ namespace rex
       return res;
     }
     // Returns the directory path of the given path
-    rsl::wstring_view dir_name(rsl::wstring_view path)
+    rsl::string_view dir_name(rsl::string_view path)
     {
       SplitResult split_res = split(path);
       return split_res.head;
     }
     // Returns the extension of the given path
-    rsl::wstring_view extension(rsl::wstring_view path)
+    rsl::string_view extension(rsl::string_view path)
     {
       SplitResult split_res = split_ext(path);
       return split_res.tail;
     }
     // Returns the filename of the given path
-    rsl::wstring_view filename(rsl::wstring_view path)
+    rsl::string_view filename(rsl::string_view path)
     {
       SplitResult split_res = split(path);
       return split_res.tail;
     }
     // Returns the filename of the given path without its extension
-    rsl::wstring_view stem(rsl::wstring_view path)
+    rsl::string_view stem(rsl::string_view path)
     {
       // get the filename of the path
-      rsl::wstring_view file_name = filename(path);
+      rsl::string_view file_name = filename(path);
 
       // get the position of the extension, if there is one
       card32 extension_pos = internal::extension_start(file_name);
@@ -144,23 +144,23 @@ namespace rex
       return file_name.substr(0, count);
     }
     // Returns the root directory path of the given path
-    rsl::wstring_view path_root(rsl::wstring_view path)
+    rsl::string_view path_root(rsl::string_view path)
     {
       // if the path is an absolute path, return the path root
       if (is_absolute(path))
       {
-        return path.substr(0, path.find_first_of(L"/\\"));
+        return path.substr(0, path.find_first_of("/\\"));
       }
 
       // otherwise return an empty path
-      return L"";
+      return "";
     }
     // Returns a random directory, but doesn't create it
-    rsl::wstring random_dir()
+    rsl::string random_dir()
     {
       // create a directory name of 8 random characters
       card32 num_dirname_chars = 8;
-      rsl::wstring result;
+      rsl::string result;
 
       do
       {
@@ -175,11 +175,11 @@ namespace rex
       return result;
     }
     // Returns a random filename, but doesn't create it
-    rsl::wstring random_filename()
+    rsl::string random_filename()
     {
       card32 num_stem_chars = 8;
       card32 num_ext_chars = 3;
-      rsl::wstring result;
+      rsl::string result;
 
       do
       {
@@ -199,25 +199,25 @@ namespace rex
     }
 
     // Returns the longest common sub-path of each pathname in the sequence
-    rsl::wstring_view common_path(const rsl::vector<rsl::wstring_view>& paths)
+    rsl::string_view common_path(const rsl::vector<rsl::string_view>& paths)
     {
       // if no paths are given, just return an empty path
       if (paths.empty())
       {
-        return L"";
+        return "";
       }
 
       // split the first path into different path components
-      rsl::vector<rsl::wstring_view> splitted = rsl::split(paths.front(), L"/\\");
+      rsl::vector<rsl::string_view> splitted = rsl::split(paths.front(), "/\\");
       auto furthest_path_component_it = splitted.cbegin();
 
       // iterate over the other paths
       for (card32 i = 1; i < paths.size(); ++i)
       {
-        rsl::wstring_view path = paths[i];
+        rsl::string_view path = paths[i];
 
         // split the path into different path components
-        rsl::vector<rsl::wstring_view> splitted_path = rsl::split(path, L"/\\");
+        rsl::vector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
 
         // find the first mismatch with the first path in the list
         auto res = rsl::mismatch(splitted.cbegin(), splitted.cend(), splitted_path.cbegin(), splitted_path.cend());
@@ -225,7 +225,7 @@ namespace rex
         // if none are equal, return an empty path
         if (res.lhs_it == splitted.cbegin())
         {
-          return L"";
+          return "";
         }
 
         // otherwise store the max iterator where the mismatch occurred on a previous run
@@ -236,11 +236,11 @@ namespace rex
       card32 path_component_idx = rsl::distance(splitted.cbegin(), furthest_path_component_it);
 
       // count the path components, so we know where out substring should end
-      rsl::wstring_view first_path = paths.front();
+      rsl::string_view first_path = paths.front();
       card32 pos = 0;
       for (card32 i = 0; i < path_component_idx; ++i)
       {
-        pos = first_path.find_first_of(L"/\\", pos);
+        pos = first_path.find_first_of("/\\", pos);
         ++pos;
       }
 
@@ -250,17 +250,17 @@ namespace rex
 
     // Normalizes the path, removing redundant dots for current and parent directories
     // Converts forward slashes to backward slashes
-    rsl::wstring norm_path(rsl::wstring_view path)
+    rsl::string norm_path(rsl::string_view path)
     {
-      rsl::vector<rsl::wstring_view> splitted_path = rsl::split(path, L"/\\");
-      rsl::vector<rsl::wstring_view> norm_splitted(rsl::Capacity(splitted_path.size()));
-      rsl::wstring res;
+      rsl::vector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
+      rsl::vector<rsl::string_view> norm_splitted(rsl::Capacity(splitted_path.size()));
+      rsl::string res;
 
       // loop over each path component in the given path
-      for (rsl::wstring_view path_comp : splitted_path)
+      for (rsl::string_view path_comp : splitted_path)
       {
         // if the "current dir" token is found, we skip it
-        if (path_comp == L".")
+        if (path_comp == ".")
         {
           continue;
         }
@@ -269,9 +269,9 @@ namespace rex
         // unless that's the parent dir token.
         // if the parent dir is found, it means there are no known parents anymore
         // then we add the parent dir to the normalized path components
-        if (path_comp == L"..")
+        if (path_comp == "..")
         {
-          if (!norm_splitted.empty() && norm_splitted.back() != L"..")
+          if (!norm_splitted.empty() && norm_splitted.back() != "..")
           {
             norm_splitted.pop_back();
             continue;
@@ -283,26 +283,26 @@ namespace rex
       }
 
       // join everything back together and return the result
-      return rsl::join(norm_splitted, rsl::wstring_view(&g_seperation_char, 1)).as_string();
+      return rsl::join(norm_splitted, rsl::string_view(&g_seperation_char, 1)).as_string();
     }
     // Returns a relative path to path, starting from the current working directory
-    rsl::wstring rel_path(rsl::wstring_view path)
+    rsl::string rel_path(rsl::string_view path)
     {
       return rel_path(path, cwd());
     }
     // Returns a relative path to path, starting from the start directory
-    rsl::wstring rel_path(rsl::wstring_view path, rsl::wstring_view start)
+    rsl::string rel_path(rsl::string_view path, rsl::string_view start)
     {
-      rsl::wstring norm_path = path::norm_path(path);
-      rsl::wstring norm_start = path::norm_path(start);
+      rsl::string norm_path = path::norm_path(path);
+      rsl::string norm_start = path::norm_path(start);
 
       if (norm_path.empty() && norm_start.empty())
       {
-        return rsl::wstring(L"");
+        return rsl::string("");
       }
 
-      rsl::vector<rsl::wstring_view> splitted_path = rsl::split(norm_path, rsl::wstring_view(&g_seperation_char, 1));
-      rsl::vector<rsl::wstring_view> splitted_start = rsl::split(norm_start, rsl::wstring_view(&g_seperation_char, 1));
+      rsl::vector<rsl::string_view> splitted_path = rsl::split(norm_path, rsl::string_view(&g_seperation_char, 1));
+      rsl::vector<rsl::string_view> splitted_start = rsl::split(norm_start, rsl::string_view(&g_seperation_char, 1));
 
       auto res = rsl::mismatch(splitted_path.cbegin(), splitted_path.cend(), splitted_start.cbegin(), splitted_start.cend());
 
@@ -310,50 +310,50 @@ namespace rex
       // Check how many "parent dir" tokens we need to add
       // Eg. target: "dir", start: "path"
       // result: "../dir"
-      rsl::wstring result;
+      rsl::string result;
       if (res.lhs_it == splitted_path.cbegin())
       {
         card32 num_parent_dir_tokens = splitted_start.size();
         for (card32 i = 0; i < num_parent_dir_tokens; ++i)
         {
-          result = path::join(result, L"..");
+          result = path::join(result, "..");
         }
       }
 
-      return path::join(result, rsl::join(res.lhs_it, splitted_path.cend(), rsl::wstring_view(&g_seperation_char, 1)).as_string());
+      return path::join(result, rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char, 1)).as_string());
     }
 
     // Returns if the given path has an extension
-    bool has_extension(rsl::wstring_view path)
+    bool has_extension(rsl::string_view path)
     {
-      if (path == L".")
+      if (path == ".")
       {
         return false;
       }
 
-      if (path == L"..")
+      if (path == "..")
       {
         return false;
       }
 
       auto start = internal::extension_start(path);
-      return start != rsl::wstring_view::npos() && start != path.size() - 1;
+      return start != rsl::string_view::npos() && start != path.size() - 1;
     }
 
     // Returns if the given path is a relative path
-    bool is_relative(rsl::wstring_view path)
+    bool is_relative(rsl::string_view path)
     {
       if (path.empty())
       {
         return false;
       }
 
-      if (path == L".")
+      if (path == ".")
       {
         return false;
       }
 
-      if (path == L"..")
+      if (path == "..")
       {
         return false;
       }
@@ -362,23 +362,23 @@ namespace rex
     }
 
     // Returns true if 2 paths point to the same file
-    bool same_path(rsl::wstring_view path1, rsl::wstring_view path2)
+    bool same_path(rsl::string_view path1, rsl::string_view path2)
     {
       // simply convert the files into their actual files on disk
-      // then do a wstring wise comparison
-      rsl::wstring real_path1 = real_path(path1);
-      rsl::wstring real_path2 = real_path(path2);
+      // then do a string wise comparison
+      rsl::string real_path1 = real_path(path1);
+      rsl::string real_path2 = real_path(path2);
       return real_path1 == real_path2;
     }
     // Splits the path into a head and a tail
     // the tail is the last pathname component
     // the head is everything leading up to that
-    SplitResult split(rsl::wstring_view path)
+    SplitResult split(rsl::string_view path)
     {
       SplitResult res{};
 
       // get the last slash position
-      card32 pos = path.find_last_of(L"/\\");
+      card32 pos = path.find_last_of("/\\");
 
       // fill in the values
       if (pos != path.npos())
@@ -397,7 +397,7 @@ namespace rex
     // Splits the path into a head and a tail
     // the head is the directory and the stem
     // the tail is the extension
-    SplitResult split_ext(rsl::wstring_view path)
+    SplitResult split_ext(rsl::string_view path)
     {
       SplitResult res{};
 

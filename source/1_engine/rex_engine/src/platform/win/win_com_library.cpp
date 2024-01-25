@@ -39,7 +39,7 @@ bool rex::win::ComLibrary::is_initialized() const
   return s_init_succeeded_count > 0;
 }
 
-rsl::wstring rex::win::ComLibrary::read_link(rsl::wstring_view filepath)
+rsl::string rex::win::ComLibrary::read_link(rsl::string_view filepath)
 {
   IShellLinkW* psl;
   HRESULT hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl);
@@ -68,7 +68,7 @@ rsl::wstring rex::win::ComLibrary::read_link(rsl::wstring_view filepath)
     psl->Release();
   }
 
-  return rsl::wstring(res);
+  return rsl::to_string(res);
 }
 
 bool rex::win::ComLibrary::init_lib()

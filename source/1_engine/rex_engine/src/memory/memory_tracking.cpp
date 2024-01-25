@@ -209,7 +209,7 @@ namespace rex
     return thread_local_memory_tag_stack()[thread_local_mem_tag_index()];
   }
 
-  void MemoryTracker::dump_stats_to_file(rsl::wstring_view filepath)
+  void MemoryTracker::dump_stats_to_file(rsl::string_view filepath)
   {
     MemoryUsageStats stats = current_stats();
 
@@ -249,11 +249,11 @@ namespace rex
     const rsl::string_view content = ss.view();
 
     const rsl::time_point time_point = rsl::current_timepoint();
-    rex::DebugWString dated_filepath;
-    dated_filepath += rsl::to_wstring(time_point.date().to_string_without_weekday());
-    dated_filepath += L"_";
-    dated_filepath += rsl::to_wstring(time_point.time().to_string());
-    dated_filepath += L"_";
+    rex::DebugString dated_filepath;
+    dated_filepath += time_point.date().to_string_without_weekday();
+    dated_filepath += "_";
+    dated_filepath += time_point.time().to_string();
+    dated_filepath += "_";
     dated_filepath += filepath;
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), ':', '_');
     rsl::replace(dated_filepath.begin(), dated_filepath.end(), '/', '_');
