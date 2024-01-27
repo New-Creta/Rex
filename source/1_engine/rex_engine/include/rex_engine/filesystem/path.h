@@ -25,7 +25,7 @@ namespace rex
       }
     } // namespace internal
     // returns the seperation char for paths
-    tchar seperation_char();
+    char8 seperation_char();
 
     // returns an array of invalid characters for filenames
     constexpr auto invalid_file_name_chars()

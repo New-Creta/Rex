@@ -76,7 +76,7 @@ namespace rex
     } // namespace internal
 
     // returns the seperation char for paths
-    tchar seperation_char()
+    char8 seperation_char()
     {
       return g_seperation_char;
     }
