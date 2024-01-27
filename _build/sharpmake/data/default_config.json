@@ -51,7 +51,8 @@
     "Description": "Select which IDE to use. Visual Studio is the default.",
     "Value": "None",
     "Options": [
-      "VisualStudio",
+      "VisualStudio19",
+      "VisualStudio22",
       "VSCode",
       "None"
     ]
