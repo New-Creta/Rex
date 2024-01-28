@@ -8,12 +8,25 @@
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
 
+#include "rex_engine/diagnostics/file_dialogs.h"
+
 namespace rex
 {
   namespace internal
   {
     void pre_app_entry(REX_MAYBE_UNUSED const tchar* cmdLine)
     {
+      unsigned char lRgbColor[3];
+      rex::dialog::tinyfd_colorChooser("choose a nice color", "#FF0077", lRgbColor, lRgbColor);
+      rex::dialog::tinyfd_inputBox("Input Box", "This is an input box", rex::dialog::InputType::Default);
+      rex::dialog::tinyfd_messageBox("Message box", "This is a msg box", rex::dialog::DialogType::Ok, rex::dialog::IconType::Info, rex::dialog::DefaultButton::Yes);
+      rex::dialog::tinyfd_notifyPopup("Notify popup", "This is a notify popup", rex::dialog::IconType::Info);
+      const char* filter[] = { "*.txt", "*.jpg" };
+      rex::dialog::tinyfd_openFileDialog("Notify popup", "This is a notify popup", 1, filter, nullptr, true);
+      rex::dialog::tinyfd_saveFileDialog("Notify popup", "This is a notify popup", 1, filter, nullptr);
+      rex::dialog::tinyfd_selectFolderDialog("Notify popup", "D:\\");
+
+
       cmdline::init(rsl::wstring_view(cmdLine));
 
       // if a user wants to know the arguments for the executable, we want to perform as minimal setup as possible.
