@@ -430,7 +430,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
     }
 
 
-    char const* tinyfd_getGlobalChar(char const* aCharVariableName) /* to be called from C# (you don't need this in C or C++) */
+    char const* getGlobalChar(char const* aCharVariableName) /* to be called from C# (you don't need this in C or C++) */
     {
       if (!aCharVariableName || !strlen(aCharVariableName)) return NULL;
       else if (!strcmp(aCharVariableName, "tinyfd_version")) return tinyfd_version;
@@ -440,7 +440,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
     }
 
 
-    int tinyfd_getGlobalInt(char const* aIntVariableName) /* to be called from C# (you don't need this in C or C++) */
+    int getGlobalInt(char const* aIntVariableName) /* to be called from C# (you don't need this in C or C++) */
     {
       if (!aIntVariableName || !strlen(aIntVariableName)) return -1;
       else if (!strcmp(aIntVariableName, "tinyfd_verbose")) return tinyfd_verbose;
@@ -455,7 +455,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
     }
 
 
-    int tinyfd_setGlobalInt(char const* aIntVariableName, int aValue) /* to be called from C# (you don't need this in C or C++) */
+    int setGlobalInt(char const* aIntVariableName, int aValue) /* to be called from C# (you don't need this in C or C++) */
     {
       if (!aIntVariableName || !strlen(aIntVariableName)) return -1;
       else if (!strcmp(aIntVariableName, "tinyfd_verbose")) { tinyfd_verbose = aValue; return tinyfd_verbose; }
@@ -584,7 +584,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
     }
 
 
-    wchar_t* tinyfd_mbcsTo16(char const* aMbcsString)
+    wchar_t* mbcsTo16(char const* aMbcsString)
     {
       static wchar_t* lMbcsString = NULL;
       int lSize;
@@ -602,7 +602,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
     }
 
 
-    wchar_t* tinyfd_utf8to16(char const* aUtf8string)
+    wchar_t* utf8to16(char const* aUtf8string)
     {
       static wchar_t* lUtf16string = NULL;
       int lSize;
@@ -621,12 +621,12 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
       {
         /* let's try mbcs anyway */
         lUtf16string = NULL;
-        return tinyfd_mbcsTo16(aUtf8string);
+        return mbcsTo16(aUtf8string);
       }
     }
 
 
-    char* tinyfd_utf16toMbcs(wchar_t const* aUtf16string)
+    char* utf16toMbcs(wchar_t const* aUtf16string)
     {
       static char* lMbcsString = NULL;
       int lSize;
@@ -644,15 +644,15 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
     }
 
 
-    char* tinyfd_utf8toMbcs(char const* aUtf8string)
+    char* utf8toMbcs(char const* aUtf8string)
     {
       wchar_t const* lUtf16string;
-      lUtf16string = tinyfd_utf8to16(aUtf8string);
-      return tinyfd_utf16toMbcs(lUtf16string);
+      lUtf16string = utf8to16(aUtf8string);
+      return utf16toMbcs(lUtf16string);
     }
 
 
-    char* tinyfd_utf16to8(wchar_t const* aUtf16string)
+    char* utf16to8(wchar_t const* aUtf16string)
     {
       static char* lUtf8string = NULL;
       int lSize;
@@ -670,15 +670,15 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
     }
 
 
-    char* tinyfd_mbcsTo8(char const* aMbcsString)
+    char* mbcsTo8(char const* aMbcsString)
     {
       wchar_t const* lUtf16string;
-      lUtf16string = tinyfd_mbcsTo16(aMbcsString);
-      return tinyfd_utf16to8(lUtf16string);
+      lUtf16string = mbcsTo16(aMbcsString);
+      return utf16to8(lUtf16string);
     }
 
 
-    void tinyfd_beep(void)
+    void beep(void)
     {
       if (windowsVersion() > 5) Beep(440, 300);
       else MessageBeep(MB_OK);
@@ -845,7 +845,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 
       if (tinyfd_winUtf8)
       {
-        lTmpWChar = tinyfd_utf8to16(aDirPath);
+        lTmpWChar = utf8to16(aDirPath);
 #if defined(__MINGW32_MAJOR_VERSION) && !defined(__MINGW64__) && (__MINGW32_MAJOR_VERSION <= 3)
         lStatRet = _wstat(lTmpWChar, &lInfo);
 #else
@@ -889,7 +889,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 
       if (tinyfd_winUtf8)
       {
-        lTmpWChar = tinyfd_utf8to16(aFilePathAndName);
+        lTmpWChar = utf8to16(aFilePathAndName);
 #if defined(__MINGW32_MAJOR_VERSION) && !defined(__MINGW64__) && (__MINGW32_MAJOR_VERSION <= 3)
         lStatRet = _wstat(lTmpWChar, &lInfo);
 #else
@@ -1062,7 +1062,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
     }
 
 
-    int tinyfd_messageBoxW(
+    int messageBoxW(
       wchar_t const* aTitle, /* NULL or "" */
       wchar_t const* aMessage, /* NULL or ""  may contain \n and \t */
       DialogType aDialogType, /* "ok" "okcancel" "yesno" "yesnocancel" */
@@ -1074,8 +1074,8 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 
       if (aTitle && !wcscmp(aTitle, L"tinyfd_query")) { strcpy(tinyfd_response, "windows_wchar"); return 1; }
 
-      if (quoteDetectedW(aTitle)) return tinyfd_messageBoxW(L"INVALID TITLE WITH QUOTES", aMessage, aDialogType, aIconType, aDefaultButton);
-      if (quoteDetectedW(aMessage)) return tinyfd_messageBoxW(aTitle, L"INVALID MESSAGE WITH QUOTES", aDialogType, aIconType, aDefaultButton);
+      if (quoteDetectedW(aTitle)) return messageBoxW(L"INVALID TITLE WITH QUOTES", aMessage, aDialogType, aIconType, aDefaultButton);
+      if (quoteDetectedW(aMessage)) return messageBoxW(aTitle, L"INVALID MESSAGE WITH QUOTES", aDialogType, aIconType, aDefaultButton);
 
       if (aIconType == IconType::Warning)
       {
@@ -1151,7 +1151,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 
 
     /* return has only meaning for tinyfd_query */
-    int tinyfd_notifyPopupW(
+    int notifyPopupW(
       wchar_t const* aTitle, /* NULL or L"" */
       wchar_t const* aMessage, /* NULL or L"" may contain \n \t */
       IconType aIconType) /* L"info" L"warning" L"error" */
@@ -1163,8 +1163,8 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 
       if (aTitle && !wcscmp(aTitle, L"tinyfd_query")) { strcpy(tinyfd_response, "windows_wchar"); return 1; }
 
-      if (quoteDetectedW(aTitle)) return tinyfd_notifyPopupW(L"INVALID TITLE WITH QUOTES", aMessage, aIconType);
-      if (quoteDetectedW(aMessage)) return tinyfd_notifyPopupW(aTitle, L"INVALID MESSAGE WITH QUOTES", aIconType);
+      if (quoteDetectedW(aTitle)) return notifyPopupW(L"INVALID TITLE WITH QUOTES", aMessage, aIconType);
+      if (quoteDetectedW(aMessage)) return notifyPopupW(aTitle, L"INVALID MESSAGE WITH QUOTES", aIconType);
 
       lTitleLen = aTitle ? wcslen(aTitle) : 0;
       lMessageLen = aMessage ? wcslen(aMessage) : 0;
@@ -1223,7 +1223,7 @@ Show-BalloonTip");
     }
 
 
-    wchar_t* tinyfd_inputBoxW(
+    wchar_t* inputBoxW(
       wchar_t const* aTitle, /* NULL or L"" */
       wchar_t const* aMessage, /* NULL or L"" (\n and \t have no effect) */
       wchar_t const* aDefaultInput) /* L"" , if NULL it's a passwordBox */
@@ -1239,9 +1239,9 @@ Show-BalloonTip");
 
       if (aTitle && !wcscmp(aTitle, L"tinyfd_query")) { strcpy(tinyfd_response, "windows_wchar"); return (wchar_t*)1; }
 
-      if (quoteDetectedW(aTitle)) return tinyfd_inputBoxW(L"INVALID TITLE WITH QUOTES", aMessage, aDefaultInput);
-      if (quoteDetectedW(aMessage)) return tinyfd_inputBoxW(aTitle, L"INVALID MESSAGE WITH QUOTES", aDefaultInput);
-      if (quoteDetectedW(aDefaultInput)) return tinyfd_inputBoxW(aTitle, aMessage, L"INVALID DEFAULT_INPUT WITH QUOTES");
+      if (quoteDetectedW(aTitle)) return inputBoxW(L"INVALID TITLE WITH QUOTES", aMessage, aDefaultInput);
+      if (quoteDetectedW(aMessage)) return inputBoxW(aTitle, L"INVALID MESSAGE WITH QUOTES", aDefaultInput);
+      if (quoteDetectedW(aDefaultInput)) return inputBoxW(aTitle, aMessage, L"INVALID DEFAULT_INPUT WITH QUOTES");
 
       lTitleLen = aTitle ? wcslen(aTitle) : 0;
       lMessageLen = aMessage ? wcslen(aMessage) : 0;
@@ -1500,7 +1500,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
     }
 
 
-    wchar_t* tinyfd_saveFileDialogW(
+    wchar_t* saveFileDialogW(
       wchar_t const* aTitle, /* NULL or "" */
       wchar_t const* aDefaultPathAndFile, /* NULL or "" */
       int aNumOfFilterPatterns, /* 0 */
@@ -1520,12 +1520,12 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle && !wcscmp(aTitle, L"tinyfd_query")) { strcpy(tinyfd_response, "windows_wchar"); return (wchar_t*)1; }
 
-      if (quoteDetectedW(aTitle)) return tinyfd_saveFileDialogW(L"INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
-      if (quoteDetectedW(aDefaultPathAndFile)) return tinyfd_saveFileDialogW(aTitle, L"INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
-      if (quoteDetectedW(aSingleFilterDescription)) return tinyfd_saveFileDialogW(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, L"INVALID FILTER_DESCRIPTION WITH QUOTES");
+      if (quoteDetectedW(aTitle)) return saveFileDialogW(L"INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
+      if (quoteDetectedW(aDefaultPathAndFile)) return saveFileDialogW(aTitle, L"INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
+      if (quoteDetectedW(aSingleFilterDescription)) return saveFileDialogW(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, L"INVALID FILTER_DESCRIPTION WITH QUOTES");
       for (i = 0; i < aNumOfFilterPatterns; i++)
       {
-        if (quoteDetectedW(aFilterPatterns[i])) return tinyfd_saveFileDialogW(L"INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL);
+        if (quoteDetectedW(aFilterPatterns[i])) return saveFileDialogW(L"INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL);
       }
 
       lHResult = CoInitializeEx(NULL, 0);
@@ -1602,7 +1602,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
     }
 
 
-    wchar_t* tinyfd_openFileDialogW(
+    wchar_t* openFileDialogW(
       wchar_t const* aTitle, /* NULL or "" */
       wchar_t const* aDefaultPathAndFile, /* NULL or "" */
       int aNumOfFilterPatterns, /* 0 */
@@ -1629,12 +1629,12 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle && !wcscmp(aTitle, L"tinyfd_query")) { strcpy(tinyfd_response, "windows_wchar"); return (wchar_t*)1; }
 
-      if (quoteDetectedW(aTitle)) return tinyfd_openFileDialogW(L"INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
-      if (quoteDetectedW(aDefaultPathAndFile)) return tinyfd_openFileDialogW(aTitle, L"INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
-      if (quoteDetectedW(aSingleFilterDescription)) return tinyfd_openFileDialogW(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, L"INVALID FILTER_DESCRIPTION WITH QUOTES", aAllowMultipleSelects);
+      if (quoteDetectedW(aTitle)) return openFileDialogW(L"INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
+      if (quoteDetectedW(aDefaultPathAndFile)) return openFileDialogW(aTitle, L"INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
+      if (quoteDetectedW(aSingleFilterDescription)) return openFileDialogW(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, L"INVALID FILTER_DESCRIPTION WITH QUOTES", aAllowMultipleSelects);
       for (i = 0; i < aNumOfFilterPatterns; i++)
       {
-        if (quoteDetectedW(aFilterPatterns[i])) return tinyfd_openFileDialogW(L"INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL, aAllowMultipleSelects);
+        if (quoteDetectedW(aFilterPatterns[i])) return openFileDialogW(L"INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL, aAllowMultipleSelects);
       }
 
       if (aAllowMultipleSelects)
@@ -1793,7 +1793,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
       return 0;
     }
 
-    wchar_t* tinyfd_selectFolderDialogW(
+    wchar_t* selectFolderDialogW(
       wchar_t const* aTitle, /* NULL or "" */
       wchar_t const* aDefaultPath) /* NULL or "" */
     {
@@ -1806,8 +1806,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle && !wcscmp(aTitle, L"tinyfd_query")) { strcpy(tinyfd_response, "windows_wchar"); return (wchar_t*)1; }
 
-      if (quoteDetectedW(aTitle)) return tinyfd_selectFolderDialogW(L"INVALID TITLE WITH QUOTES", aDefaultPath);
-      if (quoteDetectedW(aDefaultPath)) return tinyfd_selectFolderDialogW(aTitle, L"INVALID DEFAULT_PATH WITH QUOTES");
+      if (quoteDetectedW(aTitle)) return selectFolderDialogW(L"INVALID TITLE WITH QUOTES", aDefaultPath);
+      if (quoteDetectedW(aDefaultPath)) return selectFolderDialogW(aTitle, L"INVALID DEFAULT_PATH WITH QUOTES");
 
       lHResult = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
@@ -1842,7 +1842,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
     }
 
 
-    wchar_t* tinyfd_colorChooserW(
+    wchar_t* colorChooserW(
       wchar_t const* aTitle, /* NULL or "" */
       wchar_t const* aDefaultHexRGB, /* NULL or "#FF0000"*/
       unsigned char const aDefaultRGB[3], /* { 0 , 255 , 255 } */
@@ -1858,8 +1858,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle && !wcscmp(aTitle, L"tinyfd_query")) { strcpy(tinyfd_response, "windows_wchar"); return (wchar_t*)1; }
 
-      if (quoteDetectedW(aTitle)) return tinyfd_colorChooserW(L"INVALID TITLE WITH QUOTES", aDefaultHexRGB, aDefaultRGB, aoResultRGB);
-      if (quoteDetectedW(aDefaultHexRGB)) return tinyfd_colorChooserW(aTitle, L"INVALID DEFAULT_HEX_RGB WITH QUOTES", aDefaultRGB, aoResultRGB);
+      if (quoteDetectedW(aTitle)) return colorChooserW(L"INVALID TITLE WITH QUOTES", aDefaultHexRGB, aDefaultRGB, aoResultRGB);
+      if (quoteDetectedW(aDefaultHexRGB)) return colorChooserW(aTitle, L"INVALID DEFAULT_HEX_RGB WITH QUOTES", aDefaultRGB, aoResultRGB);
 
       lHResult = CoInitializeEx(NULL, 0);
 
@@ -1921,19 +1921,19 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aTitle);
-        else lTmpWChar = tinyfd_mbcsTo16(aTitle);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aTitle);
+        else lTmpWChar = mbcsTo16(aTitle);
         wcscpy(lTitle, lTmpWChar);
       }
       if (aMessage)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aMessage);
-        else lTmpWChar = tinyfd_mbcsTo16(aMessage);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aMessage);
+        else lTmpWChar = mbcsTo16(aMessage);
         lMessage = (wchar_t*)malloc((wcslen(lTmpWChar) + 1) * sizeof(wchar_t));
         if (lMessage) wcscpy(lMessage, lTmpWChar);
       }
 
-      lIntRetVal = tinyfd_messageBoxW(lTitle, lMessage, aDialogType, aIconType, aDefaultButton);
+      lIntRetVal = messageBoxW(lTitle, lMessage, aDialogType, aIconType, aDefaultButton);
 
       free(lMessage);
 
@@ -1952,19 +1952,19 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aTitle);
-        else lTmpWChar = tinyfd_mbcsTo16(aTitle);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aTitle);
+        else lTmpWChar = mbcsTo16(aTitle);
         wcscpy(lTitle, lTmpWChar);
       }
       if (aMessage)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aMessage);
-        else lTmpWChar = tinyfd_mbcsTo16(aMessage);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aMessage);
+        else lTmpWChar = mbcsTo16(aMessage);
         lMessage = (wchar_t*)malloc((wcslen(lTmpWChar) + 1) * sizeof(wchar_t));
         if (lMessage) wcscpy(lMessage, lTmpWChar);
       }
 
-      tinyfd_notifyPopupW(lTitle, lMessage, aIconType);
+      notifyPopupW(lTitle, lMessage, aIconType);
 
       free(lMessage);
 
@@ -1986,26 +1986,26 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aTitle);
-        else lTmpWChar = tinyfd_mbcsTo16(aTitle);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aTitle);
+        else lTmpWChar = mbcsTo16(aTitle);
         wcscpy(lTitle, lTmpWChar);
       }
       if (aMessage)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aMessage);
-        else lTmpWChar = tinyfd_mbcsTo16(aMessage);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aMessage);
+        else lTmpWChar = mbcsTo16(aMessage);
         lMessage = (wchar_t*)malloc((wcslen(lTmpWChar) + 1) * sizeof(wchar_t));
         if (lMessage) wcscpy(lMessage, lTmpWChar);
       }
       if (aDefaultInput != InputType::Password)
       {
         auto enum_name = rsl::enum_refl::enum_name(aDefaultInput);
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(enum_name.data());
-        else lTmpWChar = tinyfd_mbcsTo16(enum_name.data());
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(enum_name.data());
+        else lTmpWChar = mbcsTo16(enum_name.data());
         wcscpy(lDefaultInput, lTmpWChar);
-        lTmpWChar = tinyfd_inputBoxW(lTitle, lMessage, lDefaultInput);
+        lTmpWChar = inputBoxW(lTitle, lMessage, lDefaultInput);
       }
-      else lTmpWChar = tinyfd_inputBoxW(lTitle, lMessage, NULL);
+      else lTmpWChar = inputBoxW(lTitle, lMessage, NULL);
 
       free(lMessage);
 
@@ -2015,8 +2015,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
         return 0;
       }
 
-      if (tinyfd_winUtf8) lTmpChar = tinyfd_utf16to8(lTmpWChar);
-      else lTmpChar = tinyfd_utf16toMbcs(lTmpWChar);
+      if (tinyfd_winUtf8) lTmpChar = utf16to8(lTmpWChar);
+      else lTmpChar = utf16toMbcs(lTmpWChar);
 
       strcpy(aoBuff, lTmpChar);
 
@@ -2043,32 +2043,32 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
       lFilterPatterns = (wchar_t**)malloc(aNumOfFilterPatterns * sizeof(wchar_t*));
       for (i = 0; i < aNumOfFilterPatterns; i++)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aFilterPatterns[i]);
-        else lTmpWChar = tinyfd_mbcsTo16(aFilterPatterns[i]);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aFilterPatterns[i]);
+        else lTmpWChar = mbcsTo16(aFilterPatterns[i]);
         lFilterPatterns[i] = (wchar_t*)malloc((wcslen(lTmpWChar) + 1) * sizeof(wchar_t*));
         if (lFilterPatterns[i]) wcscpy(lFilterPatterns[i], lTmpWChar);
       }
 
       if (aTitle)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aTitle);
-        else lTmpWChar = tinyfd_mbcsTo16(aTitle);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aTitle);
+        else lTmpWChar = mbcsTo16(aTitle);
         wcscpy(lTitle, lTmpWChar);
       }
       if (aDefaultPathAndFile)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aDefaultPathAndFile);
-        else lTmpWChar = tinyfd_mbcsTo16(aDefaultPathAndFile);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aDefaultPathAndFile);
+        else lTmpWChar = mbcsTo16(aDefaultPathAndFile);
         wcscpy(lDefaultPathAndFile, lTmpWChar);
       }
       if (aSingleFilterDescription)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aSingleFilterDescription);
-        else lTmpWChar = tinyfd_mbcsTo16(aSingleFilterDescription);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aSingleFilterDescription);
+        else lTmpWChar = mbcsTo16(aSingleFilterDescription);
         wcscpy(lSingleFilterDescription, lTmpWChar);
       }
 
-      lTmpWChar = tinyfd_saveFileDialogW(
+      lTmpWChar = saveFileDialogW(
         lTitle,
         lDefaultPathAndFile,
         aNumOfFilterPatterns,
@@ -2086,11 +2086,11 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
         return NULL;
       }
 
-      if (tinyfd_winUtf8) lTmpChar = tinyfd_utf16to8(lTmpWChar);
-      else lTmpChar = tinyfd_utf16toMbcs(lTmpWChar);
+      if (tinyfd_winUtf8) lTmpChar = utf16to8(lTmpWChar);
+      else lTmpChar = utf16toMbcs(lTmpWChar);
       strcpy(aoBuff, lTmpChar);
-      if (tinyfd_winUtf8) (void)tinyfd_utf16to8(NULL);
-      else (void)tinyfd_utf16toMbcs(NULL);
+      if (tinyfd_winUtf8) (void)utf16to8(NULL);
+      else (void)utf16toMbcs(NULL);
 
       return aoBuff;
     }
@@ -2115,32 +2115,32 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
       lFilterPatterns = (wchar_t**)malloc(aNumOfFilterPatterns * sizeof(wchar_t*));
       for (i = 0; i < aNumOfFilterPatterns; i++)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aFilterPatterns[i]);
-        else lTmpWChar = tinyfd_mbcsTo16(aFilterPatterns[i]);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aFilterPatterns[i]);
+        else lTmpWChar = mbcsTo16(aFilterPatterns[i]);
         lFilterPatterns[i] = (wchar_t*)malloc((wcslen(lTmpWChar) + 1) * sizeof(wchar_t*));
         if (lFilterPatterns[i]) wcscpy(lFilterPatterns[i], lTmpWChar);
       }
 
       if (aTitle)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aTitle);
-        else lTmpWChar = tinyfd_mbcsTo16(aTitle);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aTitle);
+        else lTmpWChar = mbcsTo16(aTitle);
         wcscpy(lTitle, lTmpWChar);
       }
       if (aDefaultPathAndFile)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aDefaultPathAndFile);
-        else lTmpWChar = tinyfd_mbcsTo16(aDefaultPathAndFile);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aDefaultPathAndFile);
+        else lTmpWChar = mbcsTo16(aDefaultPathAndFile);
         wcscpy(lDefaultPathAndFile, lTmpWChar);
       }
       if (aSingleFilterDescription)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aSingleFilterDescription);
-        else lTmpWChar = tinyfd_mbcsTo16(aSingleFilterDescription);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aSingleFilterDescription);
+        else lTmpWChar = mbcsTo16(aSingleFilterDescription);
         wcscpy(lSingleFilterDescription, lTmpWChar);
       }
 
-      lTmpWChar = tinyfd_openFileDialogW(
+      lTmpWChar = openFileDialogW(
         lTitle,
         lDefaultPathAndFile,
         aNumOfFilterPatterns,
@@ -2156,9 +2156,9 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (!lTmpWChar) return NULL;
 
-      if (tinyfd_winUtf8) lTmpChar = tinyfd_utf16to8(lTmpWChar);
-      else lTmpChar = tinyfd_utf16toMbcs(lTmpWChar);
-      (void)tinyfd_openFileDialogW(NULL, NULL, 0, NULL, NULL, -1);
+      if (tinyfd_winUtf8) lTmpChar = utf16to8(lTmpWChar);
+      else lTmpChar = utf16toMbcs(lTmpWChar);
+      (void)openFileDialogW(NULL, NULL, 0, NULL, NULL, -1);
 
       return lTmpChar;
     }
@@ -2176,18 +2176,18 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aTitle);
-        else lTmpWChar = tinyfd_mbcsTo16(aTitle);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aTitle);
+        else lTmpWChar = mbcsTo16(aTitle);
         wcscpy(lTitle, lTmpWChar);
       }
       if (aDefaultPath)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aDefaultPath);
-        else lTmpWChar = tinyfd_mbcsTo16(aDefaultPath);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aDefaultPath);
+        else lTmpWChar = mbcsTo16(aDefaultPath);
         wcscpy(lDefaultPath, lTmpWChar);
       }
 
-      lTmpWChar = tinyfd_selectFolderDialogW(
+      lTmpWChar = selectFolderDialogW(
         lTitle,
         lDefaultPath);
 
@@ -2196,8 +2196,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
         return NULL;
       }
 
-      if (tinyfd_winUtf8) lTmpChar = tinyfd_utf16to8(lTmpWChar);
-      else lTmpChar = tinyfd_utf16toMbcs(lTmpWChar);
+      if (tinyfd_winUtf8) lTmpChar = utf16to8(lTmpWChar);
+      else lTmpChar = utf16toMbcs(lTmpWChar);
       strcpy(aoBuff, lTmpChar);
 
       return aoBuff;
@@ -2219,18 +2219,18 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (aTitle)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aTitle);
-        else lTmpWChar = tinyfd_mbcsTo16(aTitle);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aTitle);
+        else lTmpWChar = mbcsTo16(aTitle);
         wcscpy(lTitle, lTmpWChar);
       }
       if (aDefaultHexRGB)
       {
-        if (tinyfd_winUtf8) lTmpWChar = tinyfd_utf8to16(aDefaultHexRGB);
-        else lTmpWChar = tinyfd_mbcsTo16(aDefaultHexRGB);
+        if (tinyfd_winUtf8) lTmpWChar = utf8to16(aDefaultHexRGB);
+        else lTmpWChar = mbcsTo16(aDefaultHexRGB);
         wcscpy(lDefaultHexRGB, lTmpWChar);
       }
 
-      lTmpWChar = tinyfd_colorChooserW(
+      lTmpWChar = colorChooserW(
         lTitle,
         lDefaultHexRGB,
         aDefaultRGB,
@@ -2241,8 +2241,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
         return NULL;
       }
 
-      if (tinyfd_winUtf8) lTmpChar = tinyfd_utf16to8(lTmpWChar);
-      else lTmpChar = tinyfd_utf16toMbcs(lTmpWChar);
+      if (tinyfd_winUtf8) lTmpChar = utf16to8(lTmpWChar);
+      else lTmpChar = utf16toMbcs(lTmpWChar);
       strcpy(lResultHexRGB, lTmpChar);
 
       return lResultHexRGB;
@@ -2689,12 +2689,12 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
       wchar_t* lTmpWChar;
 
       lConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-      lTmpWChar = tinyfd_utf8to16(aUtf8String);
+      lTmpWChar = utf8to16(aUtf8String);
       (void)WriteConsoleW(lConsoleHandle, lTmpWChar, (DWORD)wcslen(lTmpWChar), &lNum, NULL);
     }
 
 
-    int tinyfd_messageBox(
+    int messageBox(
       char const* aTitle, /* NULL or "" */
       char const* aMessage, /* NULL or ""  may contain \n and \t */
       DialogType aDialogType, /* "ok" "okcancel" "yesno" "yesnocancel" */
@@ -2705,8 +2705,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
       UINT lOriginalCP = 0;
       UINT lOriginalOutputCP = 0;
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_messageBox("INVALID TITLE WITH QUOTES", aMessage, aDialogType, aIconType, aDefaultButton);
-      if (tfd_quoteDetected(aMessage)) return tinyfd_messageBox(aTitle, "INVALID MESSAGE WITH QUOTES", aDialogType, aIconType, aDefaultButton);
+      if (tfd_quoteDetected(aTitle)) return messageBox("INVALID TITLE WITH QUOTES", aMessage, aDialogType, aIconType, aDefaultButton);
+      if (tfd_quoteDetected(aMessage)) return messageBox(aTitle, "INVALID MESSAGE WITH QUOTES", aDialogType, aIconType, aDefaultButton);
 
       if ((!tinyfd_forceConsole || !(GetConsoleWindow() || dialogPresent()))
         && (!getenv("SSH_CLIENT") || getenvDISPLAY()))
@@ -2815,13 +2815,13 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
 
     /* return has only meaning for tinyfd_query */
-    int tinyfd_notifyPopup(
+    int notifyPopup(
       char const* aTitle, /* NULL or "" */
       char const* aMessage, /* NULL or "" may contain \n \t */
       IconType aIconType) /* "info" "warning" "error" */
     {
-      if (tfd_quoteDetected(aTitle)) return tinyfd_notifyPopup("INVALID TITLE WITH QUOTES", aMessage, aIconType);
-      if (tfd_quoteDetected(aMessage)) return tinyfd_notifyPopup(aTitle, "INVALID MESSAGE WITH QUOTES", aIconType);
+      if (tfd_quoteDetected(aTitle)) return notifyPopup("INVALID TITLE WITH QUOTES", aMessage, aIconType);
+      if (tfd_quoteDetected(aMessage)) return notifyPopup(aTitle, "INVALID MESSAGE WITH QUOTES", aIconType);
 
       if (powershellPresent() && (!tinyfd_forceConsole || !(
         GetConsoleWindow() ||
@@ -2832,12 +2832,12 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
         return notifyWinGui(aTitle, aMessage, aIconType);
       }
       else
-        return tinyfd_messageBox(aTitle, aMessage, DialogType::Ok, aIconType, DefaultButton::Cancel);
+        return messageBox(aTitle, aMessage, DialogType::Ok, aIconType, DefaultButton::Cancel);
     }
 
 
     /* returns NULL on cancel */
-    char* tinyfd_inputBox(
+    char* inputBox(
       char const* aTitle, /* NULL or "" */
       char const* aMessage, /* NULL or "" (\n and \t have no effect) */
       InputType aDefaultInput) /* "" , if NULL it's a passwordBox */
@@ -2858,8 +2858,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       if (!aTitle && !aMessage) return lBuff; /* now I can fill lBuff from outside */
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_inputBox("INVALID TITLE WITH QUOTES", aMessage, aDefaultInput);
-      if (tfd_quoteDetected(aMessage)) return tinyfd_inputBox(aTitle, "INVALID MESSAGE WITH QUOTES", aDefaultInput);
+      if (tfd_quoteDetected(aTitle)) return inputBox("INVALID TITLE WITH QUOTES", aMessage, aDefaultInput);
+      if (tfd_quoteDetected(aMessage)) return inputBox(aTitle, "INVALID MESSAGE WITH QUOTES", aDefaultInput);
 
       mode = 0;
       hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -2931,7 +2931,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
           lBuffW[lNum] = '\0';
           if (lBuffW[wcslen(lBuffW) - 1] == '\n') lBuffW[wcslen(lBuffW) - 1] = '\0';
           if (lBuffW[wcslen(lBuffW) - 1] == '\r') lBuffW[wcslen(lBuffW) - 1] = '\0';
-          lTmpChar = tinyfd_utf16to8(lBuffW);
+          lTmpChar = utf16to8(lBuffW);
           if (lTmpChar)
           {
             strcpy(lBuff, lTmpChar);
@@ -2974,7 +2974,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
     }
 
 
-    char* tinyfd_saveFileDialog(
+    char* saveFileDialog(
       char const* aTitle, /* NULL or "" */
       char const* aDefaultPathAndFile, /* NULL or "" */
       int aNumOfFilterPatterns, /* 0 */
@@ -2990,12 +2990,12 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
       lBuff[0] = '\0';
 
       if (!aFilterPatterns) aNumOfFilterPatterns = 0;
-      if (tfd_quoteDetected(aTitle)) return tinyfd_saveFileDialog("INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
-      if (tfd_quoteDetected(aDefaultPathAndFile)) return tinyfd_saveFileDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
-      if (tfd_quoteDetected(aSingleFilterDescription)) return tinyfd_saveFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, "INVALID FILTER_DESCRIPTION WITH QUOTES");
+      if (tfd_quoteDetected(aTitle)) return saveFileDialog("INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
+      if (tfd_quoteDetected(aDefaultPathAndFile)) return saveFileDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
+      if (tfd_quoteDetected(aSingleFilterDescription)) return saveFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, "INVALID FILTER_DESCRIPTION WITH QUOTES");
       for (i = 0; i < aNumOfFilterPatterns; i++)
       {
-        if (tfd_quoteDetected(aFilterPatterns[i])) return tinyfd_saveFileDialog("INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL);
+        if (tfd_quoteDetected(aFilterPatterns[i])) return saveFileDialog("INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL);
       }
 
 
@@ -3017,9 +3017,9 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
         strcpy(lBuff, "Save file in ");
         strcat(lBuff, getCurDir());
 
-        lPointerInputBox = tinyfd_inputBox(NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
         if (lPointerInputBox) strcpy(lString, lPointerInputBox); /* preserve the current content of tinyfd_inputBox */
-        p = tinyfd_inputBox(aTitle, lBuff, InputType::Default);
+        p = inputBox(aTitle, lBuff, InputType::Default);
         if (p) strcpy(lBuff, p); else lBuff[0] = '\0';
         if (lPointerInputBox) strcpy(lPointerInputBox, lString); /* restore its previous content to tinyfd_inputBox */
         p = lBuff;
@@ -3044,7 +3044,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
 
     /* in case of multiple files, the separator is | */
-    char* tinyfd_openFileDialog(
+    char* openFileDialog(
       char const* aTitle, /* NULL or "" */
       char const* aDefaultPathAndFile, /* NULL or "" */
       int aNumOfFilterPatterns, /* 0 */
@@ -3059,12 +3059,12 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
       int i;
 
       if (!aFilterPatterns) aNumOfFilterPatterns = 0;
-      if (tfd_quoteDetected(aTitle)) return tinyfd_openFileDialog("INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
-      if (tfd_quoteDetected(aDefaultPathAndFile)) return tinyfd_openFileDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
-      if (tfd_quoteDetected(aSingleFilterDescription)) return tinyfd_openFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, "INVALID FILTER_DESCRIPTION WITH QUOTES", aAllowMultipleSelects);
+      if (tfd_quoteDetected(aTitle)) return openFileDialog("INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
+      if (tfd_quoteDetected(aDefaultPathAndFile)) return openFileDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
+      if (tfd_quoteDetected(aSingleFilterDescription)) return openFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, "INVALID FILTER_DESCRIPTION WITH QUOTES", aAllowMultipleSelects);
       for (i = 0; i < aNumOfFilterPatterns; i++)
       {
-        if (tfd_quoteDetected(aFilterPatterns[i])) return tinyfd_openFileDialog("INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL, aAllowMultipleSelects);
+        if (tfd_quoteDetected(aFilterPatterns[i])) return openFileDialog("INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL, aAllowMultipleSelects);
       }
 
       if ((!tinyfd_forceConsole || !(GetConsoleWindow() || dialogPresent()))
@@ -3084,9 +3084,9 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
         if (aTitle && !strcmp(aTitle, "tinyfd_query")) { strcpy(tinyfd_response, "basicinput"); return (char*)0; }
         strcpy(lBuff, "Open file from ");
         strcat(lBuff, getCurDir());
-        lPointerInputBox = tinyfd_inputBox(NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
         if (lPointerInputBox) strcpy(lString, lPointerInputBox); /* preserve the current content of tinyfd_inputBox */
-        p = tinyfd_inputBox(aTitle, lBuff, InputType::Default);
+        p = inputBox(aTitle, lBuff, InputType::Default);
         if (p) strcpy(lBuff, p); else lBuff[0] = '\0';
         if (lPointerInputBox) strcpy(lPointerInputBox, lString); /* restore its previous content to tinyfd_inputBox */
         p = lBuff;
@@ -3109,7 +3109,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
     }
 
 
-    char* tinyfd_selectFolderDialog(
+    char* selectFolderDialog(
       char const* aTitle, /* NULL or "" */
       char const* aDefaultPath) /* NULL or "" */
     {
@@ -3118,8 +3118,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
       char* lPointerInputBox;
       char lString[MAX_PATH_OR_CMD];
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_selectFolderDialog("INVALID TITLE WITH QUOTES", aDefaultPath);
-      if (tfd_quoteDetected(aDefaultPath)) return tinyfd_selectFolderDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES");
+      if (tfd_quoteDetected(aTitle)) return selectFolderDialog("INVALID TITLE WITH QUOTES", aDefaultPath);
+      if (tfd_quoteDetected(aDefaultPath)) return selectFolderDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES");
 
       if ((!tinyfd_forceConsole || !(GetConsoleWindow() || dialogPresent()))
         && (!getenv("SSH_CLIENT") || getenvDISPLAY()))
@@ -3138,9 +3138,9 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
           if (aTitle && !strcmp(aTitle, "tinyfd_query")) { strcpy(tinyfd_response, "basicinput"); return (char*)0; }
           strcpy(lBuff, "Select folder from ");
           strcat(lBuff, getCurDir());
-          lPointerInputBox = tinyfd_inputBox(NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+          lPointerInputBox = inputBox(NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
           if (lPointerInputBox) strcpy(lString, lPointerInputBox); /* preserve the current content of tinyfd_inputBox */
-          p = tinyfd_inputBox(aTitle, lBuff, InputType::Default);
+          p = inputBox(aTitle, lBuff, InputType::Default);
           if (p) strcpy(lBuff, p); else lBuff[0] = '\0';
           if (lPointerInputBox) strcpy(lPointerInputBox, lString); /* restore its previous content to tinyfd_inputBox */
           p = lBuff;
@@ -3159,7 +3159,7 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
     /* returns NULL on cancel */
     /* returns the hexcolor as a string "#FF0000" */
     /* aoResultRGB also contains the result */
-    char* tinyfd_colorChooser(
+    char* colorChooser(
       char const* aTitle, /* NULL or "" */
       char const* aDefaultHexRGB, /* NULL or "" or "#FF0000"*/
       unsigned char const aDefaultRGB[3], /* { 0 , 255 , 255 } */
@@ -3173,8 +3173,8 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
 
       lDefaultHexRGB[0] = '\0';
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_colorChooser("INVALID TITLE WITH QUOTES", aDefaultHexRGB, aDefaultRGB, aoResultRGB);
-      if (tfd_quoteDetected(aDefaultHexRGB)) return tinyfd_colorChooser(aTitle, "INVALID DEFAULT_HEX_RGB WITH QUOTES", aDefaultRGB, aoResultRGB);
+      if (tfd_quoteDetected(aTitle)) return colorChooser("INVALID TITLE WITH QUOTES", aDefaultHexRGB, aDefaultRGB, aoResultRGB);
+      if (tfd_quoteDetected(aDefaultHexRGB)) return colorChooser(aTitle, "INVALID DEFAULT_HEX_RGB WITH QUOTES", aDefaultRGB, aoResultRGB);
 
       if ((!tinyfd_forceConsole || !(GetConsoleWindow() || dialogPresent()))
         && (!getenv("SSH_CLIENT") || getenvDISPLAY()))
@@ -3207,9 +3207,9 @@ name = 'txt_input' value = '' style = 'float:left;width:100%' ><BR>\n\
         RGB2Hex(aDefaultRGB, lDefaultHexRGB);
       }
 
-      lPointerInputBox = tinyfd_inputBox(NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+      lPointerInputBox = inputBox(NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
       if (lPointerInputBox) strcpy(lString, lPointerInputBox); /* preserve the current content of tinyfd_inputBox */
-      p = tinyfd_inputBox(aTitle, "Enter hex rgb color (i.e. #f5ca20)", InputType::Default);
+      p = inputBox(aTitle, "Enter hex rgb color (i.e. #f5ca20)", InputType::Default);
 
       if (!p || (strlen(p) != 7) || (p[0] != '#'))
       {
@@ -4258,8 +4258,8 @@ notify=dbus.Interface(notif,'org.freedesktop.Notifications');\nexcept:\n\tprint(
 
       lBuff[0] = '\0';
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_messageBox("INVALID TITLE WITH QUOTES", aMessage, aDialogType, aIconType, aDefaultButton);
-      if (tfd_quoteDetected(aMessage)) return tinyfd_messageBox(aTitle, "INVALID MESSAGE WITH QUOTES", aDialogType, aIconType, aDefaultButton);
+      if (tfd_quoteDetected(aTitle)) return messageBox("INVALID TITLE WITH QUOTES", aMessage, aDialogType, aIconType, aDefaultButton);
+      if (tfd_quoteDetected(aMessage)) return messageBox(aTitle, "INVALID MESSAGE WITH QUOTES", aDialogType, aIconType, aDefaultButton);
 
       lTitleLen = aTitle ? strlen(aTitle) : 0;
       lMessageLen = aMessage ? strlen(aMessage) : 0;
@@ -5236,12 +5236,12 @@ my \\$notificationsObject = \\$notificationsService->get_object('/org/freedeskto
       size_t lTitleLen;
       size_t lMessageLen;
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_notifyPopup("INVALID TITLE WITH QUOTES", aMessage, aIconType);
-      if (tfd_quoteDetected(aMessage)) return tinyfd_notifyPopup(aTitle, "INVALID MESSAGE WITH QUOTES", aIconType);
+      if (tfd_quoteDetected(aTitle)) return notifyPopup("INVALID TITLE WITH QUOTES", aMessage, aIconType);
+      if (tfd_quoteDetected(aMessage)) return notifyPopup(aTitle, "INVALID MESSAGE WITH QUOTES", aIconType);
 
       if (getenv("SSH_TTY") && !dunstifyPresent() && !dunstPresent())
       {
-        return tinyfd_messageBox(aTitle, aMessage, "ok", aIconType, 0);
+        return messageBox(aTitle, aMessage, "ok", aIconType, 0);
       }
 
       lTitleLen = aTitle ? strlen(aTitle) : 0;
@@ -5431,7 +5431,7 @@ my \\$notificationsObject = \\$notificationsService->get_object('/org/freedeskto
       else
       {
         if (lDialogString) free(lDialogString);
-        return tinyfd_messageBox(aTitle, aMessage, "ok", aIconType, 0);
+        return messageBox(aTitle, aMessage, "ok", aIconType, 0);
       }
 
       if (tinyfd_verbose) printf("lDialogString: %s\n", lDialogString);
@@ -5473,9 +5473,9 @@ my \\$notificationsObject = \\$notificationsService->get_object('/org/freedeskto
 
       lBuff[0] = '\0';
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_inputBox("INVALID TITLE WITH QUOTES", aMessage, aDefaultInput);
-      if (tfd_quoteDetected(aMessage)) return tinyfd_inputBox(aTitle, "INVALID MESSAGE WITH QUOTES", aDefaultInput);
-      if (tfd_quoteDetected(aDefaultInput)) return tinyfd_inputBox(aTitle, aMessage, "INVALID DEFAULT_INPUT WITH QUOTES");
+      if (tfd_quoteDetected(aTitle)) return inputBox("INVALID TITLE WITH QUOTES", aMessage, aDefaultInput);
+      if (tfd_quoteDetected(aMessage)) return inputBox(aTitle, "INVALID MESSAGE WITH QUOTES", aDefaultInput);
+      if (tfd_quoteDetected(aDefaultInput)) return inputBox(aTitle, aMessage, "INVALID DEFAULT_INPUT WITH QUOTES");
 
       lTitleLen = aTitle ? strlen(aTitle) : 0;
       lMessageLen = aMessage ? strlen(aMessage) : 0;
@@ -6054,12 +6054,12 @@ frontmost of process \\\"Python\\\" to true' ''');");
       lBuff[0] = '\0';
 
       if (!aFilterPatterns) aNumOfFilterPatterns = 0;
-      if (tfd_quoteDetected(aTitle)) return tinyfd_saveFileDialog("INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
-      if (tfd_quoteDetected(aDefaultPathAndFile)) return tinyfd_saveFileDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
-      if (tfd_quoteDetected(aSingleFilterDescription)) return tinyfd_saveFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, "INVALID FILTER_DESCRIPTION WITH QUOTES");
+      if (tfd_quoteDetected(aTitle)) return saveFileDialog("INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
+      if (tfd_quoteDetected(aDefaultPathAndFile)) return saveFileDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription);
+      if (tfd_quoteDetected(aSingleFilterDescription)) return saveFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, "INVALID FILTER_DESCRIPTION WITH QUOTES");
       for (i = 0; i < aNumOfFilterPatterns; i++)
       {
-        if (tfd_quoteDetected(aFilterPatterns[i])) return tinyfd_saveFileDialog("INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL);
+        if (tfd_quoteDetected(aFilterPatterns[i])) return saveFileDialog("INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL);
       }
 
       if (osascriptPresent())
@@ -6428,12 +6428,12 @@ frontmost of process \\\"Python\\\" to true' ''');");
       }
       else
       {
-        if (aTitle && !strcmp(aTitle, "tinyfd_query")) { return tinyfd_inputBox(aTitle, NULL, NULL); }
+        if (aTitle && !strcmp(aTitle, "tinyfd_query")) { return inputBox(aTitle, NULL, NULL); }
         strcpy(lBuff, "Save file in ");
         strcat(lBuff, getCurDir());
-        lPointerInputBox = tinyfd_inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
         if (lPointerInputBox) strcpy(lString, lPointerInputBox); /* preserve the current content of tinyfd_inputBox */
-        p = tinyfd_inputBox(aTitle, lBuff, "");
+        p = inputBox(aTitle, lBuff, "");
         if (p) strcpy(lBuff, p); else lBuff[0] = '\0';
         if (lPointerInputBox) strcpy(lPointerInputBox, lString); /* restore its previous content to tinyfd_inputBox */
         p = lBuff;
@@ -6505,12 +6505,12 @@ frontmost of process \\\"Python\\\" to true' ''');");
       static char* lBuff = NULL;
 
       if (!aFilterPatterns) aNumOfFilterPatterns = 0;
-      if (tfd_quoteDetected(aTitle)) return tinyfd_openFileDialog("INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
-      if (tfd_quoteDetected(aDefaultPathAndFile)) return tinyfd_openFileDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
-      if (tfd_quoteDetected(aSingleFilterDescription)) return tinyfd_openFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, "INVALID FILTER_DESCRIPTION WITH QUOTES", aAllowMultipleSelects);
+      if (tfd_quoteDetected(aTitle)) return openFileDialog("INVALID TITLE WITH QUOTES", aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
+      if (tfd_quoteDetected(aDefaultPathAndFile)) return openFileDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES", aNumOfFilterPatterns, aFilterPatterns, aSingleFilterDescription, aAllowMultipleSelects);
+      if (tfd_quoteDetected(aSingleFilterDescription)) return openFileDialog(aTitle, aDefaultPathAndFile, aNumOfFilterPatterns, aFilterPatterns, "INVALID FILTER_DESCRIPTION WITH QUOTES", aAllowMultipleSelects);
       for (i = 0; i < aNumOfFilterPatterns; i++)
       {
-        if (tfd_quoteDetected(aFilterPatterns[i])) return tinyfd_openFileDialog("INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL, aAllowMultipleSelects);
+        if (tfd_quoteDetected(aFilterPatterns[i])) return openFileDialog("INVALID FILTER_PATTERN WITH QUOTES", aDefaultPathAndFile, 0, NULL, NULL, aAllowMultipleSelects);
       }
 
       free(lBuff);
@@ -6965,12 +6965,12 @@ frontmost of process \\\"Python\\\" to true' ''');");
       }
       else
       {
-        if (aTitle && !strcmp(aTitle, "tinyfd_query")) { return tinyfd_inputBox(aTitle, NULL, NULL); }
+        if (aTitle && !strcmp(aTitle, "tinyfd_query")) { return inputBox(aTitle, NULL, NULL); }
         strcpy(lBuff, "Open file from ");
         strcat(lBuff, getCurDir());
-        lPointerInputBox = tinyfd_inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
         if (lPointerInputBox) strcpy(lDialogString, lPointerInputBox); /* preserve the current content of tinyfd_inputBox */
-        p = tinyfd_inputBox(aTitle, lBuff, "");
+        p = inputBox(aTitle, lBuff, "");
         if (p) strcpy(lBuff, p); else lBuff[0] = '\0';
         if (lPointerInputBox) strcpy(lPointerInputBox, lDialogString); /* restore its previous content to tinyfd_inputBox */
         if (!fileExists(lBuff))
@@ -7054,8 +7054,8 @@ frontmost of process \\\"Python\\\" to true' ''');");
       int lWasXterm = 0;
       lBuff[0] = '\0';
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_selectFolderDialog("INVALID TITLE WITH QUOTES", aDefaultPath);
-      if (tfd_quoteDetected(aDefaultPath)) return tinyfd_selectFolderDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES");
+      if (tfd_quoteDetected(aTitle)) return selectFolderDialog("INVALID TITLE WITH QUOTES", aDefaultPath);
+      if (tfd_quoteDetected(aDefaultPath)) return selectFolderDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES");
 
       if (osascriptPresent())
       {
@@ -7303,12 +7303,12 @@ frontmost of process \\\"Python\\\" to true' ''');");
       }
       else
       {
-        if (aTitle && !strcmp(aTitle, "tinyfd_query")) { return tinyfd_inputBox(aTitle, NULL, NULL); }
+        if (aTitle && !strcmp(aTitle, "tinyfd_query")) { return inputBox(aTitle, NULL, NULL); }
         strcpy(lBuff, "Select folder from ");
         strcat(lBuff, getCurDir());
-        lPointerInputBox = tinyfd_inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
         if (lPointerInputBox) strcpy(lDialogString, lPointerInputBox); /* preserve the current content of tinyfd_inputBox */
-        p = tinyfd_inputBox(aTitle, lBuff, "");
+        p = inputBox(aTitle, lBuff, "");
         if (p) strcpy(lBuff, p); else lBuff[0] = '\0';
         if (lPointerInputBox) strcpy(lPointerInputBox, lDialogString); /* restore its previous content to tinyfd_inputBox */
         p = lBuff;
@@ -7370,8 +7370,8 @@ frontmost of process \\\"Python\\\" to true' ''');");
       int lWasXdialog = 0;
       lBuff[0] = '\0';
 
-      if (tfd_quoteDetected(aTitle)) return tinyfd_colorChooser("INVALID TITLE WITH QUOTES", aDefaultHexRGB, aDefaultRGB, aoResultRGB);
-      if (tfd_quoteDetected(aDefaultHexRGB)) return tinyfd_colorChooser(aTitle, "INVALID DEFAULT_HEX_RGB WITH QUOTES", aDefaultRGB, aoResultRGB);
+      if (tfd_quoteDetected(aTitle)) return colorChooser("INVALID TITLE WITH QUOTES", aDefaultHexRGB, aDefaultRGB, aoResultRGB);
+      if (tfd_quoteDetected(aDefaultHexRGB)) return colorChooser(aTitle, "INVALID DEFAULT_HEX_RGB WITH QUOTES", aDefaultRGB, aoResultRGB);
 
       if (aDefaultHexRGB && (strlen(aDefaultHexRGB) == 7))
       {
@@ -7568,10 +7568,10 @@ frontmost of process \\\"Python\\\" to true' ''');");
       }
       else
       {
-        if (aTitle && !strcmp(aTitle, "tinyfd_query")) { return tinyfd_inputBox(aTitle, NULL, NULL); }
-        lPointerInputBox = tinyfd_inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        if (aTitle && !strcmp(aTitle, "tinyfd_query")) { return inputBox(aTitle, NULL, NULL); }
+        lPointerInputBox = inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
         if (lPointerInputBox) strcpy(lDialogString, lPointerInputBox); /* preserve the current content of tinyfd_inputBox */
-        p = tinyfd_inputBox(aTitle, "Enter hex rgb color (i.e. #f5ca20)", lDefaultHexRGB);
+        p = inputBox(aTitle, "Enter hex rgb color (i.e. #f5ca20)", lDefaultHexRGB);
 
         if (!p || (strlen(p) != 7) || (p[0] != '#'))
         {
@@ -7689,7 +7689,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
   tinyfd_verbose = argc - 1;
   tinyfd_silent = 1;
 
-  lWillBeGraphicMode = tinyfd_inputBox("tinyfd_query", NULL, NULL);
+  lWillBeGraphicMode = inputBox("tinyfd_query", NULL, NULL);
 
   strcpy(lBuffer, "v");
   strcat(lBuffer, tinyfd_version);
@@ -7716,14 +7716,14 @@ frontmost of process \\\"Python\\\" to true' ''');");
                   "yesno", "question", 1);
   }
 
-  lTmp = tinyfd_inputBox(
+  lTmp = inputBox(
           "a password box", "your password will be revealed", NULL);
 
   if (!lTmp) return 1;
 
   strcpy(lString, lTmp);
 
-  lTheSaveFileName = tinyfd_saveFileDialog(
+  lTheSaveFileName = saveFileDialog(
           "let us save this password",
           "passwordFile.txt",
           2,
@@ -7755,7 +7755,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
   fputs(lString, lIn);
   fclose(lIn);
 
-  lTheOpenFileName = tinyfd_openFileDialog(
+  lTheOpenFileName = openFileDialog(
           "let us read the password back",
           "",
           2,
@@ -7793,7 +7793,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
   tinyfd_messageBox("your password is",
           lBuffer, "ok", "info", 1);
 
-  lTheSelectFolderName = tinyfd_selectFolderDialog(
+  lTheSelectFolderName = selectFolderDialog(
           "let us just select a directory", NULL);
 
   if (!lTheSelectFolderName)
@@ -7810,7 +7810,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
   tinyfd_messageBox("The selected folder is",
           lTheSelectFolderName, "ok", "info", 1);
 
-  lTheHexColor = tinyfd_colorChooser(
+  lTheHexColor = colorChooser(
           "choose a nice color",
           "#FF0077",
           lRgbColor,

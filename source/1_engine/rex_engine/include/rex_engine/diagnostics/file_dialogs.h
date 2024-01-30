@@ -73,21 +73,21 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 		/* for MBCS change this to 0, in tinyfiledialogs.c or in your code */
 
 		/* Here are some functions to help you convert between UTF-16 UTF-8 MBSC */
-		char* tinyfd_utf8toMbcs(char const* aUtf8string);
-		char* tinyfd_utf16toMbcs(wchar_t const* aUtf16string);
-		wchar_t* tinyfd_mbcsTo16(char const* aMbcsString);
-		char* tinyfd_mbcsTo8(char const* aMbcsString);
-		wchar_t* tinyfd_utf8to16(char const* aUtf8string);
-		char* tinyfd_utf16to8(wchar_t const* aUtf16string);
+		char* utf8toMbcs(char const* aUtf8string);
+		char* utf16toMbcs(wchar_t const* aUtf16string);
+		wchar_t* mbcsTo16(char const* aMbcsString);
+		char* mbcsTo8(char const* aMbcsString);
+		wchar_t* utf8to16(char const* aUtf8string);
+		char* utf16to8(wchar_t const* aUtf16string);
 #endif
 		/******************************************************************************************************/
 		/******************************************************************************************************/
 		/******************************************************************************************************/
 
 		/************* 3 funtions for C# (you don't need this in C or C++) : */
-		char const* tinyfd_getGlobalChar(char const* aCharVariableName); /* returns NULL on error */
-		int tinyfd_getGlobalInt(char const* aIntVariableName); /* returns -1 on error */
-		int tinyfd_setGlobalInt(char const* aIntVariableName, int aValue); /* returns -1 on error */
+		char const* getGlobalChar(char const* aCharVariableName); /* returns NULL on error */
+		int getGlobalInt(char const* aIntVariableName); /* returns -1 on error */
+		int setGlobalInt(char const* aIntVariableName, int aValue); /* returns -1 on error */
 		/* aCharVariableName: "tinyfd_version" "tinyfd_needs" "tinyfd_response"
 			 aIntVariableName : "tinyfd_verbose" "tinyfd_silent" "tinyfd_allowCursesDialogs"
 									"tinyfd_forceConsole" "tinyfd_assumeGraphicDisplay" "tinyfd_winUtf8"
@@ -127,7 +127,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 		for console mode:
 			dialog whiptail basicinput no_solution */
 
-		void tinyfd_beep(void);
+		void beep(void);
 
 		enum class IconType
 		{
@@ -158,13 +158,13 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 			No
 		};
 
-		int tinyfd_notifyPopup(
+		int notifyPopup(
 			char const* aTitle, /* NULL or "" */
 			char const* aMessage, /* NULL or "" may contain \n \t */
 			IconType aIconType); /* "info" "warning" "error" */
 				/* return has only meaning for tinyfd_query */
 
-		int tinyfd_messageBox(
+		int messageBox(
 			char const* aTitle, /* NULL or "" */
 			char const* aMessage, /* NULL or "" may contain \n \t */
 			DialogType aDialogType, /* "ok" "okcancel" "yesno" "yesnocancel" */
@@ -172,13 +172,13 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 			DefaultButton aDefaultButton);
 		/* 0 for cancel/no , 1 for ok/yes , 2 for no in yesnocancel */
 
-		char* tinyfd_inputBox(
+		char* inputBox(
 			char const* aTitle, /* NULL or "" */
 			char const* aMessage, /* NULL or "" (\n and \t have no effect) */
 			InputType aInputType = InputType::Password);  /* NULL = passwordBox, "" = inputbox */
 				/* returns NULL on cancel */
 
-		char* tinyfd_saveFileDialog(
+		char* saveFileDialog(
 			char const* aTitle, /* NULL or "" */
 			char const* aDefaultPathAndFile, /* NULL or "" */
 			int aNumOfFilterPatterns, /* 0  (1 in the following example) */
@@ -186,7 +186,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 			char const* aSingleFilterDescription); /* NULL or "text files" */
 				/* returns NULL on cancel */
 
-		char* tinyfd_openFileDialog(
+		char* openFileDialog(
 			char const* aTitle, /* NULL or "" */
 			char const* aDefaultPathAndFile, /* NULL or "" */
 			int aNumOfFilterPatterns, /* 0 (2 in the following example) */
@@ -196,12 +196,12 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 				/* in case of multiple files, the separator is | */
 				/* returns NULL on cancel */
 
-		char* tinyfd_selectFolderDialog(
+		char* selectFolderDialog(
 			char const* aTitle, /* NULL or "" */
 			char const* aDefaultPath); /* NULL or "" */
 				/* returns NULL on cancel */
 
-		char* tinyfd_colorChooser(
+		char* colorChooser(
 			char const* aTitle, /* NULL or "" */
 			char const* aDefaultHexRGB, /* NULL or "" or "#FF0000" */
 			unsigned char const aDefaultRGB[3], /* unsigned char lDefaultRGB[3] = { 0 , 128 , 255 }; */
@@ -217,13 +217,13 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 #ifdef _WIN32
 
 /* windows only - utf-16 version */
-		int tinyfd_notifyPopupW(
+		int notifyPopupW(
 			wchar_t const* aTitle, /* NULL or L"" */
 			wchar_t const* aMessage, /* NULL or L"" may contain \n \t */
 			IconType aIconType); /* L"info" L"warning" L"error" */
 
 		/* windows only - utf-16 version */
-		int tinyfd_messageBoxW(
+		int messageBoxW(
 			wchar_t const* aTitle, /* NULL or L"" */
 			wchar_t const* aMessage, /* NULL or L"" may contain \n \t */
 			DialogType aDialogType, /* L"ok" L"okcancel" L"yesno" */
@@ -232,13 +232,13 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 				/* returns 0 for cancel/no , 1 for ok/yes */
 
 		/* windows only - utf-16 version */
-		wchar_t* tinyfd_inputBoxW(
+		wchar_t* inputBoxW(
 			wchar_t const* aTitle, /* NULL or L"" */
 			wchar_t const* aMessage, /* NULL or L"" (\n nor \t not respected) */
 			InputType aDefaultInput); /* NULL passwordBox, L"" inputbox */
 
 		/* windows only - utf-16 version */
-		wchar_t* tinyfd_saveFileDialogW(
+		wchar_t* saveFileDialogW(
 			wchar_t const* aTitle, /* NULL or L"" */
 			wchar_t const* aDefaultPathAndFile, /* NULL or L"" */
 			int aNumOfFilterPatterns, /* 0 (1 in the following example) */
@@ -247,7 +247,7 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 				/* returns NULL on cancel */
 
 		/* windows only - utf-16 version */
-		wchar_t* tinyfd_openFileDialogW(
+		wchar_t* openFileDialogW(
 			wchar_t const* aTitle, /* NULL or L"" */
 			wchar_t const* aDefaultPathAndFile, /* NULL or L"" */
 			int aNumOfFilterPatterns, /* 0 (2 in the following example) */
@@ -258,13 +258,13 @@ Make sure your code is really prepared for UTF-8 (on windows, functions like fop
 				/* returns NULL on cancel */
 
 		/* windows only - utf-16 version */
-		wchar_t* tinyfd_selectFolderDialogW(
+		wchar_t* selectFolderDialogW(
 			wchar_t const* aTitle, /* NULL or L"" */
 			wchar_t const* aDefaultPath); /* NULL or L"" */
 				/* returns NULL on cancel */
 
 		/* windows only - utf-16 version */
-		wchar_t* tinyfd_colorChooserW(
+		wchar_t* colorChooserW(
 			wchar_t const* aTitle, /* NULL or L"" */
 			wchar_t const* aDefaultHexRGB, /* NULL or L"#FF0000" */
 			unsigned char const aDefaultRGB[3], /* unsigned char lDefaultRGB[3] = { 0 , 128 , 255 }; */
