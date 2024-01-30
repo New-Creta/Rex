@@ -70,9 +70,7 @@ Thanks for contributions, bug corrections & thorough testing to:
 #ifdef __BORLANDC__
 #define _getch getch
 #endif
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0500
-#endif
+
 #include <windows.h>
 #include <commdlg.h>
 #include <shlobj.h>
