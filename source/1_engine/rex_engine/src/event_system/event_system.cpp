@@ -14,18 +14,73 @@ namespace rex
 {
   namespace event_system
   {
-    rsl::unordered_map<EventType, rsl::vector<EventFunction>>& delegates_map()
+    namespace internal
     {
-      static rsl::unordered_map<EventType, rsl::vector<EventFunction>> delegates_map;
-      return delegates_map;
+      class EventQueue
+      {
+      public:
+        EventQueue()
+            :m_subscriptions()
+            ,m_front()
+            ,m_back()
+            ,m_current(&m_front)
+            ,m_next(&m_back)
+        {
+        }
+
+        void subscribe(EventType type, const EventFunction& function)
+        {
+          m_subscriptions[type].push_back(function);
+        }
+
+        void enqueue(const Event& evt)
+        {
+          m_next->push_back(evt);
+        }
+
+        void process()
+        {
+          for(auto& evt: *m_current)
+          {
+            const rsl::vector<EventFunction>& delegates = m_subscriptions[evt.type];
+
+            for(const EventFunction& delegate: delegates)
+            {
+              delegate(evt);
+            }
+          }
+
+          m_current->clear();
+        }
+
+        void present()
+        {
+          rsl::swap(m_current, m_next);
+        }
+
+      private:
+        rsl::unordered_map<EventType, rsl::vector<EventFunction>> m_subscriptions;
+
+        rsl::vector<Event> m_front;
+        rsl::vector<Event> m_back;
+
+        rsl::vector<Event>* m_current;
+        rsl::vector<Event>* m_next;
+      };
+    } // namespace internal
+
+    internal::EventQueue& event_queue()
+    {
+      static internal::EventQueue queue;
+      return queue;
     }
 
     void subscribe(EventType type, const EventFunction& function)
     {
-      delegates_map()[type].push_back(function);
+      event_queue().subscribe(type, function);
     }
 
-    void fire_event(const Event& evt)
+    void enqueue_event(const Event& evt)
     {
       switch(evt.type)
       {
@@ -40,19 +95,24 @@ namespace rex
         case EventType::WindowRestored: REX_LOG(LogEngine, "Firing event: Event Type: {0} - Window Size: [{1}, {2}]", rsl::enum_refl::enum_name(evt.type), evt.data.window_resize.window_width, evt.data.window_resize.window_height); break;
       }
 
-      const rsl::vector<EventFunction>& delegates = delegates_map()[evt.type];
-
-      for(const EventFunction& delegate: delegates)
-      {
-        delegate(evt);
-      }
+      event_queue().enqueue(evt);
     }
 
-    void fire_event(EventType evt)
+    void enqueue_event(EventType evt)
     {
       Event event{ evt };
-      fire_event(event);
+      enqueue_event(event);
     }
+
+    void process_events()
+    {
+      // Swap the buffers first so next becomes current and vice versa
+      event_queue().present();
+
+      // Then process all the events that are now in the queue
+      event_queue().process();
+    }
+
   } // namespace event_system
 } // namespace rex
 

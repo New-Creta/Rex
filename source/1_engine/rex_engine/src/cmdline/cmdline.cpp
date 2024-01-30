@@ -18,13 +18,13 @@ namespace rex
   {
     namespace internal
     {
-      StringID create_string_id_for_arg(rsl::wstring_view arg)
+      StringID create_string_id_for_arg(rsl::string_view arg)
       {
-        return StringID(rsl::wmedium_stack_string(arg).to_lower());
+        return StringID(rsl::medium_stack_string(arg).to_lower());
       }
     }
 
-    Argument::Argument(rsl::wstring_view name, rsl::wstring_view desc, rsl::wstring_view module)
+    Argument::Argument(rsl::string_view name, rsl::string_view desc, rsl::string_view module)
       : name_id(internal::create_string_id_for_arg(name))
       , name(name)
       , desc(desc)
@@ -37,14 +37,14 @@ namespace rex
     struct ActiveArgument
     {
       StringID argument_id;
-      rsl::wstring_view argument;
-      rsl::wstring_view value;
+      rsl::string_view argument;
+      rsl::string_view value;
     };
 
     class Processor
     {
     public:
-      explicit Processor(rsl::wstring_view cmdLine)
+      explicit Processor(rsl::string_view cmdLine)
       {
         // verify the auto generated command line arguments
         REX_ASSERT_X(verify_args(g_command_line_args.data(), g_command_line_args.size()), "You have ambiguous command line arguments");
@@ -55,10 +55,10 @@ namespace rex
           return;
         }
 
-        parse_cmd_line(rsl::wstring_view(cmdLine));
+        parse_cmd_line(rsl::string_view(cmdLine));
       }
 
-      rsl::optional<rsl::wstring_view> get_argument(rsl::wstring_view arg)
+      rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
       {
         StringID arg_id = internal::create_string_id_for_arg(arg);
 
@@ -74,7 +74,7 @@ namespace rex
       }
 
     private:
-      void parse_cmd_line(rsl::wstring_view cmdLine)
+      void parse_cmd_line(rsl::string_view cmdLine)
       {
         // all we have to do is split the command line based with spaces
         // there's no need to perform any heap allocation for that.
@@ -109,39 +109,39 @@ namespace rex
         // A key argument ends at the next space or '=' token, whichever comes first.
         // A value argument starts after the '=' sign, or the '"" that comes after the '=' token
         // a value arguments ends at the first space or at '"' if it started with one.
-        REX_LOG(LogEngine, L"CmdLine: {}", cmdLine);
+        REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
 
-        const rsl::wstring_view arg_prefix = L"-"; // all arguments should start with a '-'
+        const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         while(start_pos != -1)
         {
-          const rsl::wstring_view full_argument = find_next_full_argument(cmdLine, start_pos);
-          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), L"argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
+          const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
+          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
              false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
-            const rsl::wstring_view argument = full_argument.substr(arg_prefix.size());
+            const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
           }
 
-          start_pos = cmdLine.find_first_not_of(L" \"", start_pos + full_argument.length()); // skip all additional spaces
+          start_pos = cmdLine.find_first_not_of(" \"", start_pos + full_argument.length()); // skip all additional spaces
         }
 
         if(start_pos != -1)
         {
-          const rsl::wstring_view full_argument = find_next_full_argument(cmdLine, start_pos);
-          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), L"argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
+          const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
+          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
              false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
-            const rsl::wstring_view argument = full_argument.substr(arg_prefix.size());
+            const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
           }
         }
       }
 
-      void add_argument(rsl::wstring_view arg)
+      void add_argument(rsl::string_view arg)
       {
         const card32 equal_pos = arg.find('=');
-        rsl::wstring_view key    = L"";
-        rsl::wstring_view value  = L"";
+        rsl::string_view key    = "";
+        rsl::string_view value  = "";
 
         // if the argument is of type -MyArg=Something
         if(equal_pos != -1)
@@ -159,7 +159,7 @@ namespace rex
         else
         {
           key   = arg;
-          value = L"1"; // this is so we can easily convert to bool/int
+          value = "1"; // this is so we can easily convert to bool/int
         }
 
         StringID key_id = internal::create_string_id_for_arg(key);
@@ -167,7 +167,7 @@ namespace rex
 
         if(cmd_it == g_command_line_args.cend())
         {
-          REX_WARN(LogEngine, L"Command '{}' passed in but it's not recognised as a valid command so will be ignored", key);
+          REX_WARN(LogEngine, "Command '{}' passed in but it's not recognised as a valid command so will be ignored", key);
           return;
         }
 
@@ -175,7 +175,7 @@ namespace rex
 
         if(active_it != m_arguments.cend())
         {
-          REX_WARN(LogEngine, L"Command '{}' was already passed in. passing the same argument multiple times is not supported. will be skipped", key);
+          REX_WARN(LogEngine, "Command '{}' was already passed in. passing the same argument multiple times is not supported. will be skipped", key);
           return;
         }
 
@@ -197,7 +197,7 @@ namespace rex
             const Argument& rhs_arg = args[j];
             if (lhs_arg.name_id == rhs_arg.name_id)
             {
-              REX_ERROR(LogEngine, L"This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity by changing the code_generation file resulting in this ambiguity", lhs_arg.name);
+              REX_ERROR(LogEngine, "This executable already has an argument for {} specified in 'g_command_line_args', please resolve the ambiguity by changing the code_generation file resulting in this ambiguity", lhs_arg.name);
               return false;
             }
           }
@@ -206,7 +206,7 @@ namespace rex
         return true;
       }
 
-      rsl::wstring_view find_next_full_argument(rsl::wstring_view cmdLine, count_t startPos) // NOLINT(readability-convert-member-functions-to-static)
+      rsl::string_view find_next_full_argument(rsl::string_view cmdLine, count_t startPos) // NOLINT(readability-convert-member-functions-to-static)
       {
         const count_t space_pos = cmdLine.find_first_of(' ', startPos);
         count_t comma_pos       = cmdLine.find_first_of('"', startPos);
@@ -225,9 +225,9 @@ namespace rex
     };
 
     rsl::unique_ptr<cmdline::Processor> g_cmd_line_args; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    rsl::wstring_view g_cmd_line;                         // Saved as wstring_view, save as string if it's causing lifetime issues. // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+    rsl::string_view g_cmd_line;                         // Saved as string_view, save as string if it's causing lifetime issues. // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
-    void init(rsl::wstring_view cmdLine)
+    void init(rsl::string_view cmdLine)
     {
       g_cmd_line      = cmdLine;
       g_cmd_line_args = rsl::make_unique<cmdline::Processor>(cmdLine);
@@ -237,7 +237,7 @@ namespace rex
     {
       REX_LOG(LogEngine, "Listing Command line arguments");
 
-      rsl::unordered_map<rsl::wstring_view, rsl::vector<Argument>> project_to_arguments;
+      rsl::unordered_map<rsl::string_view, rsl::vector<Argument>> project_to_arguments;
 
       for(const Argument& cmd: g_command_line_args)
       {
@@ -247,12 +247,12 @@ namespace rex
       for(auto& [project, cmds]: project_to_arguments)
       {
         REX_LOG(LogEngine, "");
-        REX_LOG(LogEngine, L"Commandline Arguments For {}", project);
+        REX_LOG(LogEngine, "Commandline Arguments For {}", project);
         REX_LOG(LogEngine, "------------------------------");
 
         for(const Argument& cmd: cmds)
         {
-          REX_LOG(LogEngine, L"\"{}\" - {}", cmd.name, cmd.desc);
+          REX_LOG(LogEngine, "\"{}\" - {}", cmd.name, cmd.desc);
         }
       }
     }
@@ -264,12 +264,12 @@ namespace rex
       g_cmd_line_args.reset();
     }
 
-    rsl::optional<rsl::wstring_view> get_argument(rsl::wstring_view arg)
+    rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
     {
       return g_cmd_line_args->get_argument(arg);
     }
 
-    rsl::wstring_view get()
+    rsl::string_view get()
     {
       return g_cmd_line;
     }

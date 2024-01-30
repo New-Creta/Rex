@@ -64,15 +64,6 @@ namespace rex
 
     //-------------------------------------------------------------------------
     /**
-     * Create an StringID with characters.
-     */
-    constexpr explicit StringID(rsl::wstring_view stringView)
-      : m_comparison_hash(rsl::hash<rsl::wstring_view> {}(stringView))
-    {
-    }
-
-    //-------------------------------------------------------------------------
-    /**
      * Retrieve the hashed value as u32
      */
     constexpr operator u32() const // NOLINT(google-explicit-constructor)

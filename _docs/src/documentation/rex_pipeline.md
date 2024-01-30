@@ -129,7 +129,7 @@ py _rex.py generate -enable-unit-tests
 py _rex.py generate -enable-unit-tests -enable-code-coverage 
 
 # Default generation + unit tests + code coverage + Visual Studio sln and projects
-py _rex.py generate -enable-unit-tests -enable-code-coverage -IDE VisualStudio
+py _rex.py generate -enable-unit-tests -enable-code-coverage -IDE VisualStudio19
 
 # Default generation, but single threaded
 py _rex.py generate -sharpmake_args /multithreaded(false)

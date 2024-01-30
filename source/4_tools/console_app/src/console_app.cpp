@@ -74,7 +74,7 @@ namespace console_app_example
 
   bool initialize()
   {
-    rex::vfs::mount(rex::MountingPoint::Logs, L"logs");
+    rex::vfs::mount(rex::MountingPoint::Logs, "logs");
 
     return true;
   }
@@ -82,7 +82,7 @@ namespace console_app_example
   {
     if (rex::input::is_key_pressed('P'))
     {
-      rex::mem_tracker().dump_stats_to_file(L"mem_stats.txt");
+      rex::mem_tracker().dump_stats_to_file("mem_stats.txt");
     }
   }
   void shutdown()

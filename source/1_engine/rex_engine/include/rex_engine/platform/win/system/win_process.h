@@ -4,11 +4,10 @@
 
 #include "rex_std/bonus/platform/windows/handle.h"
 
+#include "rex_engine/engine/types.h"
+
 namespace rex
 {
-  namespace win
-  {
-    rsl::win::handle_t current_process();
-    DWord current_process_id();
-  }
+  rsl::win::handle_t current_process();
+  u32 current_process_id();
 }
