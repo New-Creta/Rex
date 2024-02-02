@@ -299,7 +299,7 @@ namespace rex
         : m_nid()
       {
         m_nid.cbSize = sizeof(NOTIFYICONDATA);
-        m_nid.hWnd = nullptr; // Can be null
+        m_nid.hWnd = GetForegroundWindow();
         m_nid.uID = new_baloon_tip_id(); // This can be a random number, as long as there aren't any 2 track icons active with the same
         m_nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO;
         m_nid.uCallbackMessage = WM_TRAYICON;
@@ -308,7 +308,7 @@ namespace rex
 
         // Balloon tip settings
         m_nid.uTimeout = 10000; // 10 seconds
-        m_nid.dwInfoFlags = NIIF_ERROR; // This is the bigger icon shown in the BaloonTip
+        m_nid.dwInfoFlags = info_flags(iconType); // This is the bigger icon shown in the BaloonTip
         memcpy(m_nid.szInfoTitle, title.data(), title.length());
         memcpy(m_nid.szInfo, msg.data(), msg.length());
 
