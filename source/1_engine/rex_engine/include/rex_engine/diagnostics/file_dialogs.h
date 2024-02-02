@@ -64,6 +64,7 @@ namespace rex
 {
 	namespace dialog
 	{
+		// Plays a beep noise
 		void beep(void);
 
 		enum class IconType
@@ -96,50 +97,28 @@ namespace rex
 			No
 		};
 
-		int notifyPopup(
-			rsl::string_view aTitle, /* NULL or "" */
-			rsl::string_view aMessage, /* NULL or "" may contain \n \t */
-			rsl::string_view aTip, /* NULL or "" may contain \n \t */
-			IconType aIconType); /* "info" "warning" "error" */
-				/* return has only meaning for tinyfd_query */
+		// spawns a native pop up window with a title, message and tooltip
+    int popup(rsl::string_view title, rsl::string_view msg, rsl::string_view tip, IconType iconType);
 
-		int messageBox(
-			rsl::string_view aTitle, /* NULL or "" */
-			rsl::string_view aMessage, /* NULL or "" may contain \n \t */
-			DialogType aDialogType, /* "ok" "okcancel" "yesno" "yesnocancel" */
-			IconType aIconType, /* "info" "warning" "error" "question" */
-			DefaultButton aDefaultButton);
-		/* 0 for cancel/no , 1 for ok/yes , 2 for no in yesnocancel */
+		// spawns a messagebox to the user
+    int msg_box(rsl::string_view title, rsl::string_view msg, DialogType aDialogType, IconType aIconType, DefaultButton defaultButton);
 
-		rsl::medium_stack_string saveFileDialog(
-			rsl::string_view aTitle, /* NULL or "" */
-			rsl::string_view aDefaultPathAndFile, /* NULL or "" */
-			rsl::initializer_list<rsl::string_view> aFilterPatterns, /* NULL or char const * lFilterPatterns[1]={"*.txt"} */
-			rsl::string_view aSingleFilterDescription); /* NULL or "text files" */
-				/* returns NULL on cancel */
+		// create a dialog where the user can select a file to save to. filter is a semicolon seperated list of filters to use
+		rsl::medium_stack_string save_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
 
-		rsl::vector<rsl::string> openFileDialog(
-			rsl::string_view aTitle, /* NULL or "" */
-			rsl::string_view aDefaultPathAndFile, /* NULL or "" */
-			rsl::initializer_list<rsl::string_view> aFilterPatterns, /* NULL or char const * lFilterPatterns[2]={"*.png","*.jpg"}; */
-			rsl::string_view aSingleFilterDescription, /* NULL or "image files" */
-			bool aAllowMultipleSelects); /* 0 or 1 */
-				/* in case of multiple files, the separator is | */
-				/* returns NULL on cancel */
+		// create a dialog where the user can select a file to open. filter is a semicolon seperated list of filters to use
+		// allows for multi selection of files
+		rsl::vector<rsl::string> open_file_dialog_multiselect(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
 
-		rsl::big_stack_string selectFolderDialog(
-			rsl::string_view aTitle, /* NULL or "" */
-			rsl::string_view aDefaultPath); /* NULL or "" */
-				/* returns NULL on cancel */
+		// create a dialog where the user can select a file to open. filter is a semicolon seperated list of filters to use
+		// doesn't allow for multi selection of files
+		rsl::medium_stack_string open_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
 
-		rsl::Rgb colorChooser(
-			rsl::string_view aTitle, /* NULL or "" */
-			rsl::Rgb aDefaultRGB); /* unsigned char lDefaultRGB[3] = { 0 , 128 , 255 }; */
-				/* aDefaultRGB is used only if aDefaultHexRGB is absent */
-				/* aDefaultRGB and aoResultRGB can be the same array */
-				/* returns NULL on cancel */
-				/* returns the hexcolor as a string "#FF0000" */
-				/* aoResultRGB also contains the result */
+		// create a dialog where the user can select a folder to open
+    rsl::big_stack_string open_folder_dialog(rsl::string_view title, rsl::string_view defaultPath);
+
+		// creates a dialog where the user can select a color
+    rsl::Rgb color_chooser(rsl::string_view title, rsl::Rgb defaultRgb);
 	}
 
 }
@@ -189,7 +168,7 @@ namespace rex
   with a textinputbox. If nothing is found, it switches to basic console input,
   it opens a console if needed (requires xterm + bash).
 - for curses dialogs you must set tinyfd_allowCursesDialogs=1
-- You can query the type of dialog that will be used (pass "tinyfd_query" as aTitle)
+- You can query the type of dialog that will be used (pass "tinyfd_query" as title)
 - String memory is preallocated statically for all the returned values.
 - File and path names are tested before return, they should be valid.
 - tinyfd_forceConsole=1; at run time, forces dialogs into console mode.
