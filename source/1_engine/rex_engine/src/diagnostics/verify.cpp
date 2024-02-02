@@ -15,7 +15,7 @@ namespace rex
     REX_ERROR(LogVerify, "Verification Failed: {}", condition);
     REX_ERROR(LogVerify, msg);
     
-    rex::dialog::messageBox("Verification failed", msg, dialog::DialogType::Ok, dialog::IconType::Error, dialog::DefaultButton::Ok);
+    rex::dialog::msg_box("Verification failed", msg, dialog::DialogType::Ok, dialog::IconType::Error, dialog::DefaultButton::Ok);
 
     DEBUG_BREAK();
   }
