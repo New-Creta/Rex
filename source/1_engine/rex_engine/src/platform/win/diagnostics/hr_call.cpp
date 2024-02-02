@@ -22,7 +22,7 @@ bool rex::win::HrCall::has_failed() const
 }
 bool rex::win::HrCall::has_succeeded() const
 {
-  return m_has_failed;
+  return !has_failed();
 }
 
 rex::win::HResult rex::win::HrCall::result() const
