@@ -91,6 +91,10 @@ Thanks for contributions, bug corrections & thorough testing to:
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/engine/types.h"
 
+#ifdef REX_PLATFORM_WINDOWS
+#include "rex_engine/platform/win/win_com_library.h"
+#endif
+
 namespace rex
 {
   namespace dialog
@@ -104,82 +108,6 @@ namespace rex
 
       return path;
     }
-
-    void ensure_final_slash(rsl::string& str)
-    {
-      if (!str.ends_with('/') && !str.ends_with('\\'))
-      {
-        str += '/';
-      }
-    }
-
-    // 0xFFFFFF -> 255, 255, 255 basically string to int for each color channel
-    void hex_to_rgb(char const aHexRGB[8], unsigned char aoResultRGB[3])
-    {
-      char lColorChannel[8];
-      if (aoResultRGB)
-      {
-        if (aHexRGB)
-        {
-          strcpy(lColorChannel, aHexRGB);
-          aoResultRGB[2] = (unsigned char)strtoul(lColorChannel + 5, NULL, 16);
-          lColorChannel[5] = '\0';
-          aoResultRGB[1] = (unsigned char)strtoul(lColorChannel + 3, NULL, 16);
-          lColorChannel[3] = '\0';
-          aoResultRGB[0] = (unsigned char)strtoul(lColorChannel + 1, NULL, 16);
-          /* printf("%d %d %d\n", aoResultRGB[0], aoResultRGB[1], aoResultRGB[2]); */
-        }
-        else
-        {
-          aoResultRGB[0] = 0;
-          aoResultRGB[1] = 0;
-          aoResultRGB[2] = 0;
-        }
-      }
-    }
-
-    // 255, 255, 255 -> 0xFFFFFF, int to string
-    void rgb_to_hex(unsigned char const aRGB[3], char aoResultHexRGB[8])
-    {
-      if (aoResultHexRGB)
-      {
-        if (aRGB)
-        {
-#if (defined(__cplusplus ) && __cplusplus >= 201103L) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || defined(__clang__)
-          sprintf(aoResultHexRGB, "#%02hhx%02hhx%02hhx", aRGB[0], aRGB[1], aRGB[2]);
-#else
-          sprintf(aoResultHexRGB, "#%02hx%02hx%02hx", aRGB[0], aRGB[1], aRGB[2]);
-#endif
-          /*printf("aoResultHexRGB %s\n", aoResultHexRGB);*/
-        }
-        else
-        {
-          aoResultHexRGB[0] = 0;
-          aoResultHexRGB[1] = 0;
-          aoResultHexRGB[2] = 0;
-        }
-      }
-    }
-
-    // Open a file, replace all bytes with a default value and close it again
-    static void wipefile(char const* aFilename, char defaultVal = 'A')
-    {
-      struct stat st {};
-
-      if (stat(aFilename, &st) == 0)
-      {
-        FILE* lIn;
-        if ((lIn = fopen(aFilename, "w")))
-        {
-          for (int i = 0; i < st.st_size; i++)
-          {
-            fputc(defaultVal, lIn);
-          }
-          fclose(lIn);
-        }
-      }
-    }
-
 
     bool quotes_detected(rsl::string_view path)
     {
@@ -196,502 +124,10 @@ namespace rex
       return false;
     }
 
-#ifdef _WIN32
-    // Check Powershell is present on this Windows machine
-    static int powershellPresent(void)
-    { /*only on vista and above (or installed on xp)*/
-      static int lPowershellPresent = -1;
-      char lBuff[MAX_PATH];
-      FILE* lIn;
-      char const* lString = "powershell.exe";
-
-      if (lPowershellPresent < 0)
-      {
-        if (!(lIn = _popen("where powershell.exe", "r")))
-        {
-          lPowershellPresent = 0;
-          return 0;
-        }
-        while (fgets(lBuff, sizeof(lBuff), lIn) != NULL)
-        {
-        }
-        _pclose(lIn);
-        if (lBuff[strlen(lBuff) - 1] == '\n')
-        {
-          lBuff[strlen(lBuff) - 1] = '\0';
-        }
-        if (strcmp(lBuff + strlen(lBuff) - strlen(lString), lString))
-        {
-          lPowershellPresent = 0;
-        }
-        else
-        {
-          lPowershellPresent = 1;
-        }
-      }
-      return lPowershellPresent;
-    }
-
-    // Detect the Windows version
-    static int windowsVersion(void)
-    {
-#if !defined(__MINGW32__) || defined(__MINGW64_VERSION_MAJOR)
-      typedef LONG NTSTATUS;
-      typedef NTSTATUS(WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
-      HMODULE hMod;
-      RtlGetVersionPtr lFxPtr;
-      RTL_OSVERSIONINFOW lRovi = { 0 };
-
-      hMod = GetModuleHandleW(L"ntdll.dll");
-      if (hMod) {
-        lFxPtr = (RtlGetVersionPtr)GetProcAddress(hMod, "RtlGetVersion");
-        if (lFxPtr)
-        {
-          lRovi.dwOSVersionInfoSize = sizeof(lRovi);
-          if (!lFxPtr(&lRovi))
-          {
-            return lRovi.dwMajorVersion;
-          }
-        }
-      }
-#endif
-      if (powershellPresent()) return 6; /*minimum is vista or installed on xp*/
-      return 0;
-    }
-
-
-    static void replaceChr(char* aString, char aOldChr, char aNewChr)
-    {
-      char* p;
-
-      if (!aString) return;
-      if (aOldChr == aNewChr) return;
-
-      p = aString;
-      while ((p = strchr(p, aOldChr)))
-      {
-        *p = aNewChr;
-        p++;
-      }
-      return;
-    }
-
-
-#if !defined(WC_ERR_INVALID_CHARS)
-    /* undefined prior to Vista, so not yet in MINGW header file */
-#define WC_ERR_INVALID_CHARS 0x00000000 /* 0x00000080 for MINGW maybe ? */
-#endif
-
-    static int sizeUtf16From8(char const* aUtf8string)
-    {
-      return MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-        aUtf8string, -1, NULL, 0);
-    }
-
-
-    static int sizeUtf16FromMbcs(char const* aMbcsString)
-    {
-      return MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS,
-        aMbcsString, -1, NULL, 0);
-    }
-
-
-    static int sizeUtf8(wchar_t const* aUtf16string)
-    {
-      return WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS,
-        aUtf16string, -1, NULL, 0, NULL, NULL);
-    }
-
-
-    static int sizeMbcs(wchar_t const* aMbcsString)
-    {
-      int lRes = WideCharToMultiByte(CP_ACP, 0,
-        aMbcsString, -1, NULL, 0, NULL, NULL);
-      /* DWORD licic = GetLastError(); */
-      return lRes;
-    }
-
-
-    wchar_t* mbcsTo16(char const* aMbcsString)
-    {
-      static wchar_t* lMbcsString = NULL;
-      int lSize;
-
-      free(lMbcsString);
-      if (!aMbcsString) { lMbcsString = NULL; return NULL; }
-      lSize = sizeUtf16FromMbcs(aMbcsString);
-      if (lSize)
-      {
-        lMbcsString = (wchar_t*)malloc(lSize * sizeof(wchar_t));
-        lSize = MultiByteToWideChar(CP_ACP, 0, aMbcsString, -1, lMbcsString, lSize);
-      }
-      else wcscpy(lMbcsString, L"");
-      return lMbcsString;
-    }
-
-
-    wchar_t* utf8to16(char const* aUtf8string)
-    {
-      static wchar_t* lUtf16string = NULL;
-      int lSize;
-
-      free(lUtf16string);
-      if (!aUtf8string) { lUtf16string = NULL; return NULL; }
-      lSize = sizeUtf16From8(aUtf8string);
-      if (lSize)
-      {
-        lUtf16string = (wchar_t*)malloc(lSize * sizeof(wchar_t));
-        lSize = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-          aUtf8string, -1, lUtf16string, lSize);
-        return lUtf16string;
-      }
-      else
-      {
-        /* let's try mbcs anyway */
-        lUtf16string = NULL;
-        return mbcsTo16(aUtf8string);
-      }
-    }
-
-
-    char* utf16toMbcs(wchar_t const* aUtf16string)
-    {
-      static char* lMbcsString = NULL;
-      int lSize;
-
-      free(lMbcsString);
-      if (!aUtf16string) { lMbcsString = NULL; return NULL; }
-      lSize = sizeMbcs(aUtf16string);
-      if (lSize)
-      {
-        lMbcsString = (char*)malloc(lSize);
-        lSize = WideCharToMultiByte(CP_ACP, 0, aUtf16string, -1, lMbcsString, lSize, NULL, NULL);
-      }
-      else strcpy(lMbcsString, "");
-      return lMbcsString;
-    }
-
-
-    char* utf8toMbcs(char const* aUtf8string)
-    {
-      wchar_t const* lUtf16string;
-      lUtf16string = utf8to16(aUtf8string);
-      return utf16toMbcs(lUtf16string);
-    }
-
-
-    char* utf16to8(wchar_t const* aUtf16string)
-    {
-      static char* lUtf8string = NULL;
-      int lSize;
-
-      free(lUtf8string);
-      if (!aUtf16string) { lUtf8string = NULL; return NULL; }
-      lSize = sizeUtf8(aUtf16string);
-      if (lSize)
-      {
-        lUtf8string = (char*)malloc(lSize);
-        lSize = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, aUtf16string, -1, lUtf8string, lSize, NULL, NULL);
-      }
-      else strcpy(lUtf8string, "");
-      return lUtf8string;
-    }
-
-
-    char* mbcsTo8(char const* aMbcsString)
-    {
-      wchar_t const* lUtf16string;
-      lUtf16string = mbcsTo16(aMbcsString);
-      return utf16to8(lUtf16string);
-    }
-
-
     void beep(void)
     {
-      if (windowsVersion() > 5) Beep(440, 300);
-      else MessageBeep(MB_OK);
+      Beep(440, 300);
     }
-
-
-//    static void wipefileW(wchar_t const* aFilename)
-//    {
-//      int i;
-//      FILE* lIn;
-//#if defined(__MINGW32_MAJOR_VERSION) && !defined(__MINGW64__) && (__MINGW32_MAJOR_VERSION <= 3)
-//      struct _stat st;
-//      if (_wstat(aFilename, &st) == 0)
-//#else
-//      struct __stat64 st;
-//      if (_wstat64(aFilename, &st) == 0)
-//#endif
-//      {
-//        if ((lIn = _wfopen(aFilename, L"w")))
-//        {
-//          for (i = 0; i < st.st_size; i++)
-//          {
-//            fputc('A', lIn);
-//          }
-//          fclose(lIn);
-//        }
-//      }
-//    }
-//
-//
-//    static wchar_t* getPathWithoutFinalSlashW(
-//      wchar_t* aoDestination, /* make sure it is allocated, use _MAX_PATH */
-//      wchar_t const* aSource) /* aoDestination and aSource can be the same */
-//    {
-//      wchar_t const* lTmp;
-//      if (aSource)
-//      {
-//        lTmp = wcsrchr(aSource, L'/');
-//        if (!lTmp)
-//        {
-//          lTmp = wcsrchr(aSource, L'\\');
-//        }
-//        if (lTmp)
-//        {
-//          wcsncpy(aoDestination, aSource, lTmp - aSource);
-//          aoDestination[lTmp - aSource] = L'\0';
-//        }
-//        else
-//        {
-//          *aoDestination = L'\0';
-//        }
-//      }
-//      else
-//      {
-//        *aoDestination = L'\0';
-//      }
-//      return aoDestination;
-//    }
-//
-//
-//    static wchar_t* getLastNameW(
-//      wchar_t* aoDestination, /* make sure it is allocated */
-//      wchar_t const* aSource)
-//    {
-//      /* copy the last name after '/' or '\' */
-//      wchar_t const* lTmp;
-//      if (aSource)
-//      {
-//        lTmp = wcsrchr(aSource, L'/');
-//        if (!lTmp)
-//        {
-//          lTmp = wcsrchr(aSource, L'\\');
-//        }
-//        if (lTmp)
-//        {
-//          wcscpy(aoDestination, lTmp + 1);
-//        }
-//        else
-//        {
-//          wcscpy(aoDestination, aSource);
-//        }
-//      }
-//      else
-//      {
-//        *aoDestination = L'\0';
-//      }
-//      return aoDestination;
-//    }
-//
-//
-//    static void hex_to_rgbW(wchar_t const aHexRGB[8], unsigned char aoResultRGB[3])
-//    {
-//      wchar_t lColorChannel[8];
-//      if (aoResultRGB)
-//      {
-//        if (aHexRGB)
-//        {
-//          wcscpy(lColorChannel, aHexRGB);
-//          aoResultRGB[2] = (unsigned char)wcstoul(lColorChannel + 5, NULL, 16);
-//          lColorChannel[5] = '\0';
-//          aoResultRGB[1] = (unsigned char)wcstoul(lColorChannel + 3, NULL, 16);
-//          lColorChannel[3] = '\0';
-//          aoResultRGB[0] = (unsigned char)wcstoul(lColorChannel + 1, NULL, 16);
-//          /* printf("%d %d %d\n", aoResultRGB[0], aoResultRGB[1], aoResultRGB[2]); */
-//        }
-//        else
-//        {
-//          aoResultRGB[0] = 0;
-//          aoResultRGB[1] = 0;
-//          aoResultRGB[2] = 0;
-//        }
-//      }
-//    }
-//
-//
-//    static void rgb_to_hexW(unsigned char const aRGB[3], wchar_t aoResultHexRGB[8])
-//    {
-//#if (defined(__cplusplus ) && __cplusplus >= 201103L) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || defined(__clang__)
-//      wchar_t const* const lPrintFormat = L"#%02hhx%02hhx%02hhx";
-//#else
-//      wchar_t const* const lPrintFormat = L"#%02hx%02hx%02hx";
-//#endif
-//
-//      if (aoResultHexRGB)
-//      {
-//        if (aRGB)
-//        {
-//          /* wprintf(L"aoResultHexRGB %s\n", aoResultHexRGB); */
-//#if !defined(__BORLANDC__) && !defined(__TINYC__) && !(defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
-//          swprintf(aoResultHexRGB, 8, lPrintFormat, aRGB[0], aRGB[1], aRGB[2]);
-//#else
-//          swprintf(aoResultHexRGB, lPrintFormat, aRGB[0], aRGB[1], aRGB[2]);
-//#endif
-//
-//        }
-//        else
-//        {
-//          aoResultHexRGB[0] = 0;
-//          aoResultHexRGB[1] = 0;
-//          aoResultHexRGB[2] = 0;
-//        }
-//      }
-//    }
-//
-//
-//    static int dirExists(char const* aDirPath)
-//    {
-//#if defined(__MINGW32_MAJOR_VERSION) && !defined(__MINGW64__) && (__MINGW32_MAJOR_VERSION <= 3)
-//      struct _stat lInfo;
-//#else
-//      struct __stat64 lInfo;
-//#endif
-//      wchar_t* lTmpWChar;
-//      int lStatRet;
-//      size_t lDirLen;
-//
-//      if (!aDirPath)
-//        return 0;
-//      lDirLen = strlen(aDirPath);
-//      if (!lDirLen)
-//        return 1;
-//      if ((lDirLen == 2) && (aDirPath[1] == ':'))
-//        return 1;
-//
-//      if (tinyfd_winUtf8)
-//      {
-//        lTmpWChar = utf8to16(aDirPath);
-//#if defined(__MINGW32_MAJOR_VERSION) && !defined(__MINGW64__) && (__MINGW32_MAJOR_VERSION <= 3)
-//        lStatRet = _wstat(lTmpWChar, &lInfo);
-//#else
-//        lStatRet = _wstat64(lTmpWChar, &lInfo);
-//#endif
-//        if (lStatRet != 0)
-//          return 0;
-//        else if (lInfo.st_mode & S_IFDIR)
-//          return 1;
-//        else
-//          return 0;
-//      }
-//#if defined(__MINGW32_MAJOR_VERSION) && !defined(__MINGW64__) && (__MINGW32_MAJOR_VERSION <= 3)
-//      else if (_stat(aDirPath, &lInfo) != 0)
-//#else
-//      else if (_stat64(aDirPath, &lInfo) != 0)
-//#endif
-//        return 0;
-//      else if (lInfo.st_mode & S_IFDIR)
-//        return 1;
-//      else
-//        return 0;
-//    }
-//
-//
-//    static int fileExists(char const* aFilePathAndName)
-//    {
-//#if defined(__MINGW32_MAJOR_VERSION) && !defined(__MINGW64__) && (__MINGW32_MAJOR_VERSION <= 3)
-//      struct _stat lInfo;
-//#else
-//      struct __stat64 lInfo;
-//#endif
-//      wchar_t* lTmpWChar;
-//      int lStatRet;
-//      FILE* lIn;
-//
-//      if (!aFilePathAndName || !strlen(aFilePathAndName))
-//      {
-//        return 0;
-//      }
-//
-//      if (tinyfd_winUtf8)
-//      {
-//        lTmpWChar = utf8to16(aFilePathAndName);
-//#if defined(__MINGW32_MAJOR_VERSION) && !defined(__MINGW64__) && (__MINGW32_MAJOR_VERSION <= 3)
-//        lStatRet = _wstat(lTmpWChar, &lInfo);
-//#else
-//        lStatRet = _wstat64(lTmpWChar, &lInfo);
-//#endif
-//
-//        if (lStatRet != 0)
-//          return 0;
-//        else if (lInfo.st_mode & _S_IFREG)
-//          return 1;
-//        else
-//          return 0;
-//      }
-//      else
-//      {
-//        lIn = fopen(aFilePathAndName, "r");
-//        if (!lIn)
-//        {
-//          return 0;
-//        }
-//        fclose(lIn);
-//        return 1;
-//      }
-//    }
-//
-//    static void replaceWchar(wchar_t* aString,
-//      wchar_t aOldChr,
-//      wchar_t aNewChr)
-//    {
-//      wchar_t* p;
-//
-//      if (!aString)
-//      {
-//        return;
-//      }
-//
-//      if (aOldChr == aNewChr)
-//      {
-//        return;
-//      }
-//
-//      p = aString;
-//      while ((p = wcsrchr(p, aOldChr)))
-//      {
-//        *p = aNewChr;
-//#ifdef TINYFD_NOCCSUNICODE
-//        p++;
-//#endif
-//        p++;
-//      }
-//      return;
-//    }
-//
-//
-    //static int quotes_detected(wchar_t const* aString)
-    //{
-    //  wchar_t const* p;
-//
-    //  if (!aString) return 0;
-//
-    //  p = aString;
-    //  while ((p = wcsrchr(p, L'\'')))
-    //  {
-    //    return 1;
-    //  }
-//
-    //  p = aString;
-    //  while ((p = wcsrchr(p, L'\"')))
-    //  {
-    //    return 1;
-    //  }
-//
-    //  return 0;
-    //}
 
 #endif /* _WIN32 */
 
@@ -923,8 +359,6 @@ namespace rex
         }
       }
 
-      CoInitializeEx(NULL, 0);
-
       rsl::string lFilterPatterns;
       if (aDefaultPathAndFile.size() > 0)
       {
@@ -982,8 +416,6 @@ namespace rex
         result.reset_null_termination_offset();
       }
 
-      CoUninitialize();
-
       return result;
     }
 
@@ -1019,8 +451,6 @@ namespace rex
         ? 32 // a value taken out of thin air
         : 1;
       rsl::vector<char> buffer(rsl::Size(max_num_selectable_files * MAX_PATH + 1));
-
-      HRESULT lHResult = CoInitializeEx(NULL, 0);
 
       auto lDirname = path_without_final_slash(aDefaultPathAndFile);
 
@@ -1085,39 +515,7 @@ namespace rex
         }
       }
 
-      if (lHResult == S_OK || lHResult == S_FALSE)
-      {
-        CoUninitialize();
-      }
-
       return selected_files;
-    }
-
-
-    BOOL CALLBACK BrowseCallbackProc_enum(HWND hWndChild, LPARAM lParam)
-    {
-      rsl::big_stack_string class_name;
-      GetClassNameA(hWndChild, class_name.data(), class_name.max_size());
-      if (class_name == "SysTreeView32")
-      {
-        HTREEITEM hNode = TreeView_GetSelection(hWndChild);
-        TreeView_EnsureVisible(hWndChild, hNode);
-        return FALSE;
-      }
-      return TRUE;
-    }
-
-    int CALLBACK BrowseCallbackProcW(HWND hwnd, UINT uMsg, LPARAM lp, LPARAM pData)
-    {
-      switch (uMsg) 
-      {
-      case BFFM_INITIALIZED:
-        SendMessage(hwnd, BFFM_SETSELECTIONW, TRUE, (LPARAM)pData);
-        break;
-      case BFFM_SELCHANGED:
-        EnumChildWindows(hwnd, BrowseCallbackProc_enum, 0);
-      }
-      return 0;
     }
 
     rsl::big_stack_string selectFolderDialog(
@@ -1133,39 +531,37 @@ namespace rex
         return selectFolderDialog(aTitle, "INVALID DEFAULT_PATH WITH QUOTES"); 
       }
 
-      HRESULT lHResult = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+      auto file_open_dialog = rex::win::com_library().create_com_object<IFileOpenDialog>(CLSID_FileOpenDialog);
+      FILEOPENDIALOGOPTIONS options{};
+      
+      options |= FOS_PICKFOLDERS;
+      file_open_dialog->SetOptions(options);
 
-      rsl::big_stack_string buff;
+      HWND parent_handle = nullptr;
+      HRESULT hr = file_open_dialog->Show(parent_handle);
 
-      BROWSEINFOA bInfo;
-      bInfo.hwndOwner = GetForegroundWindow();
-      bInfo.pidlRoot = NULL;
-      bInfo.pszDisplayName = buff.data();
-      bInfo.lpszTitle = aTitle.data();
-      if (lHResult == S_OK || lHResult == S_FALSE)
-      {
-        bInfo.ulFlags = BIF_USENEWUI;
-      }
-      bInfo.lpfn = BrowseCallbackProcW;
-      bInfo.lParam = (LPARAM)aDefaultPath.data();
-      bInfo.iImage = -1;
+      constexpr HRESULT cancelled_hr = HRESULT_FROM_WIN32(ERROR_CANCELLED);
 
-      LPITEMIDLIST lpItem = SHBrowseForFolderA(&bInfo);
-      if (!lpItem)
+      rsl::big_stack_string result;
+      if (FAILED(hr))
       {
-        buff = "";
-      }
-      else
-      {
-        SHGetPathFromIDListA(lpItem, buff.data());
-        buff.reset_null_termination_offset();
+        if (hr != cancelled_hr)
+        {
+          HR_CALL(hr);
+        }
+
+        return result;
       }
 
-      if (lHResult == S_OK || lHResult == S_FALSE)
-      {
-        CoUninitialize();
-      }
-      return buff;
+      rex::wrl::ComPtr<IShellItem> item;
+      HR_CALL(file_open_dialog->GetResult(item.GetAddressOf()));
+
+      PWSTR psz_file_path;
+      HR_CALL(item->GetDisplayName(SIGDN_FILESYSPATH, &psz_file_path));
+      WideCharToMultiByte(CP_UTF8, 0, psz_file_path, -1, result.data(), result.max_size(), '\0', NULL);
+      CoTaskMemFree(psz_file_path);
+
+      return result;
     }
 
     rsl::Rgb colorChooser(
@@ -1178,7 +574,7 @@ namespace rex
         return colorChooser("INVALID TITLE WITH QUOTES", defaultRgb);
       }
 
-      HRESULT lHResult = CoInitializeEx(NULL, 0);
+      //HRESULT lHResult = CoInitializeEx(NULL, 0);
       
       // This isn't used, but we need it to call the color picker
       COLORREF crCustColors[16];
@@ -1207,10 +603,10 @@ namespace rex
       res.green = GetGValue(cc.rgbResult);
       res.blue = GetBValue(cc.rgbResult);
 
-      if (lHResult == S_OK || lHResult == S_FALSE)
-      {
-        CoUninitialize();
-      }
+      //if (lHResult == S_OK || lHResult == S_FALSE)
+      //{
+      //  CoUninitialize();
+      //}
 
       return res;
     }

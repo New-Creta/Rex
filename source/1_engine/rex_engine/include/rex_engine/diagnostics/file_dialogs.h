@@ -92,6 +92,7 @@ namespace rex
 		{
 			Cancel,
 			Yes,
+			Ok = Yes,
 			No
 		};
 
