@@ -2,7 +2,8 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "tinyfiledialogs.h"
+#include "rex_engine/diagnostics/file_dialogs.h"
+
 
 namespace rex
 {
@@ -14,7 +15,7 @@ namespace rex
     REX_ERROR(LogVerify, "Verification Failed: {}", condition);
     REX_ERROR(LogVerify, msg);
     
-    tinyfd_messageBox("Verification Failed", msg.data(), "ok", "error", 0);
+    rex::dialog::messageBox("Verification failed", msg, dialog::DialogType::Ok, dialog::IconType::Error, dialog::DefaultButton::Ok);
 
     DEBUG_BREAK();
   }
