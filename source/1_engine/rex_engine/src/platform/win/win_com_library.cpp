@@ -34,7 +34,7 @@ rex::win::ComLibrary::~ComLibrary()
   dec_ref();
 }
 
-bool rex::win::ComLibrary::is_initialized()
+bool rex::win::ComLibrary::is_initialized() const
 {
   return s_init_succeeded_count > 0;
 }
