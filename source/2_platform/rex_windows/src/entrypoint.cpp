@@ -14,10 +14,10 @@
 #include <processenv.h>
 
 //-------------------------------------------------------------------------
-s32 report_crash(LPEXCEPTION_POINTERS ExceptionInfo)
+s32 report_crash(LPEXCEPTION_POINTERS exceptionInfo)
 {
   rsl::cout << "We crashed!\n";
-  (void)ExceptionInfo;
+  (void)exceptionInfo;
   return EXCEPTION_EXECUTE_HANDLER;
 }
 //-------------------------------------------------------------------------

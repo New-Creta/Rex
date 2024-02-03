@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/ostream.h"
 #include "rex_std/string.h"
-#include "rex_std/bonus/memory/memory_size.h"
 
 namespace rex
 {

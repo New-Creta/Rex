@@ -15,7 +15,7 @@ namespace rex
       class EndDraw : public RenderCommand
       {
       public:
-        EndDraw(EndDrawCommandDesc&& desc)
+        explicit EndDraw(EndDrawCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {
@@ -23,7 +23,7 @@ namespace rex
 
         ~EndDraw() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::end_draw();
         }

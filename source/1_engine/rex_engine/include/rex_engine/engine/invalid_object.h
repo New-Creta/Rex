@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/memory/pointer_math.h"
 #include "rex_std/array.h"
 
 namespace rex

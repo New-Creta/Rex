@@ -9,6 +9,8 @@
 //
 //*********************************************************
 
+//NOLINTBEGIN
+
 #pragma warning(push)
 #pragma warning(disable : 4324)
 #pragma warning(disable : 4238)
@@ -3223,3 +3225,5 @@ private:
 #endif //__D3DX12_H__
 
 #pragma warning(pop)
+
+//NOLINTEND

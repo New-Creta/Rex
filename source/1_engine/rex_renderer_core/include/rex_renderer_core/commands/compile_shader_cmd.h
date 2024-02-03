@@ -1,10 +1,8 @@
 #pragma once
 
+#include "rex_engine/memory/blob.h"
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/shader_type.h"
-
-#include "rex_engine/memory/blob.h"
-
 #include "rex_std/string_view.h"
 
 namespace rex
@@ -15,7 +13,7 @@ namespace rex
     {
       struct CompileShaderCommandDesc
       {
-        ShaderType shader_type = ShaderType::NONE;
+        ShaderType shader_type = ShaderType::None;
         rsl::string_view shader_entry_point;
         rsl::small_stack_string shader_name;
         rsl::tiny_stack_string shader_feature_target;

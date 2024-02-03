@@ -12,24 +12,25 @@ namespace rex
       struct SetVertexBufferCommandDesc
       {
         SetVertexBufferCommandDesc()
-            :buffer_index(0)
-            ,start_slot(0)
-            ,vertex_buffer_targets()
-            ,strides()
-            ,offsets()
-        {}
+            : buffer_index(0)
+            , start_slot(0)
+            , vertex_buffer_targets()
+            , strides()
+            , offsets()
+        {
+        }
 
         s32 buffer_index;
         s32 start_slot;
-        rsl::vector<ResourceSlot> vertex_buffer_targets;
-        rsl::vector<s32> strides;
-        rsl::vector<s32> offsets;
+        rsl::vector<ResourceSlot> vertex_buffer_targets {};
+        rsl::vector<s32> strides {};
+        rsl::vector<s32> offsets {};
       };
 
       class SetVertexBuffer : public RenderCommand
       {
       public:
-        SetVertexBuffer(SetVertexBufferCommandDesc&& desc)
+        explicit SetVertexBuffer(SetVertexBufferCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

@@ -12,15 +12,15 @@ namespace rex
     {
       enum class ConstantType
       {
-        SAMPLER_2D = 0,
-        SAMPLER_3D,
-        SAMPLER_CUBE,
-        SAMPLER_2DMS,
-        SAMPLER_2D_ARRAY,
-        SAMPLER_2D_DEPTH,
-        SAMPLER_2D_DEPTH_ARRAY,
-        CBUFFER,
-        CONSTANT
+        Sampler2D = 0,
+        Sampler3D,
+        SamplerCube,
+        Sampler2Dms,
+        Sampler2DArray,
+        Sampler2DDepth,
+        Sampler2DDepthArray,
+        CBuffer,
+        Constant
       };
 
       struct ConstantLayoutDescription

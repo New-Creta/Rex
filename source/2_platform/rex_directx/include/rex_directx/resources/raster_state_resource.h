@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
+#include "rex_renderer_core/resource.h"
 
 #include "rex_engine/engine/types.h"
 
@@ -14,7 +14,7 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(RasterStateResource);
 
-            RasterStateResource(const D3D12_RASTERIZER_DESC& rs)
+            explicit RasterStateResource(const D3D12_RASTERIZER_DESC& rs)
                 : BaseResource(&m_raster_state)
                 ,m_raster_state(rs)
             {}
@@ -23,5 +23,5 @@ namespace rex
         private:
             D3D12_RASTERIZER_DESC m_raster_state;
         };
-    }
-}
+    } // namespace renderer
+} // namespace rex

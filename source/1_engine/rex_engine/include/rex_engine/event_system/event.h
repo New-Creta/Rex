@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/event_system/event_type.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/event_system/event_type.h"
 
 namespace rex
 {

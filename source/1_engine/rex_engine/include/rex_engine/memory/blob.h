@@ -1,8 +1,8 @@
 #pragma once
 
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/memory.h"
-#include "rex_std/bonus/memory/memory_size.h"
 
 namespace rex
 {
@@ -63,7 +63,7 @@ namespace rex
     //-------------------------------------------------------------------------
     Blob make_blob(const rsl::byte* inData, const rsl::memory_size& inSize);
     //-------------------------------------------------------------------------
-    template<typename T>
+    template <typename T>
     Blob make_blob(const T* data, int32 num)
     {
       return make_blob(reinterpret_cast<const rsl::byte*>(data), rsl::memory_size(sizeof(T) * num));

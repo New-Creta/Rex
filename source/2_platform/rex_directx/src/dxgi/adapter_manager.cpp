@@ -3,8 +3,8 @@
 #include "rex_directx/dxgi/adapter.h" // IWYU pragma: keep
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/dxgi/util.h"
-#include "rex_engine/platform/win/win_com_ptr.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/platform/win/win_com_ptr.h"
 #include "rex_renderer_core/gpu_description.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
@@ -85,8 +85,6 @@ namespace rex
         m_selected_adapter = &m_adapters[selected_adapter_idx];
       }
     }
-    //-------------------------------------------------------------------------
-    AdapterManager::~AdapterManager() = default;
 
     //-------------------------------------------------------------------------
     bool AdapterManager::load_adapters(Factory* factory)

@@ -3,44 +3,41 @@
 #include "rex_engine/filesystem/mounting_point.h"
 #include "rex_engine/memory/blob.h"
 #include "rex_std/bonus/attributes.h"
+#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
-#include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/utility/yes_no.h"
-
 
 /// Rex VFS system supports syncronous and async file IO
 /// We want to go for very simplistic design API at the moment
 /// we may want to change this in the future if it's needed
 ///
 /// SYNCRONOUS FILE IO
-/// 
+///
 /// File Reading:
 // rex::memory::Blob content = rex::vfs::read_file("path/to/file");
-///  
+///
 /// File Writing:
 // int x = 0;
 // rex::vfs::write_to_file("path/to/file.txt", &x, sizeof(x);
 ///
 /// ASYNC FILE IO
-/// 
+///
 /// We only support async file reading, as async file writing
 /// Doesn't make much sense for the moment
-/// 
+///
 // rex::vfs::ReadRequest read_request = rex::vfs::read_file_async("path/to/file");
-/// 
+///
 /// Do some code ..
-/// 
+///
 /// Wait for the request to finish reading its data
 // read_request.wait();
-/// 
+///
 // const rsl::byte* content = read_request.buffer();
 // rsl::memory_size size = read_request.size();
 ///
 /// Do something with the content
 /// ..
-
-
 
 namespace rex
 {

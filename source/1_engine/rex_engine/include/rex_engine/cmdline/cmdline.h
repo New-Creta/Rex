@@ -1,14 +1,12 @@
 #pragma once
 
-#include "rex_std/bonus/string.h"
-
 #include "rex_engine/string/stringid.h"
+#include "rex_std/bonus/string.h"
 
 namespace rex
 {
   namespace cmdline
   {
-
 
     struct Argument
     {

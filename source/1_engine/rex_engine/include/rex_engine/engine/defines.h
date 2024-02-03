@@ -35,7 +35,6 @@
   // BIT TWIDDLING
   #define BIT(x) (1 << x)
 
-
   //-------------------------------------------------------------------------
   // Func signature
   #if defined REX_COMPILER_CLANG

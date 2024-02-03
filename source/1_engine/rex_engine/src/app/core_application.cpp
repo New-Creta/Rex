@@ -1,10 +1,10 @@
 #include "rex_engine/app/core_application.h"
 
+#include "rex_engine/diagnostics/debug.h"
+#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/engine/engine_params.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_engine/diagnostics/debug.h"
-#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/bonus/utility.h"
 

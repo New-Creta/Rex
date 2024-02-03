@@ -54,7 +54,7 @@ namespace rex
         }
       } // namespace internal
     } // namespace directx
-  } // namespace win
+  } // namespace renderer
 } // namespace rex
 
 #ifdef REX_ENABLE_DX_CALL

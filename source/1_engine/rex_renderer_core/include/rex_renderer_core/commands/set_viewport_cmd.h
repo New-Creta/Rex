@@ -17,7 +17,7 @@ namespace rex
       class SetViewport : public RenderCommand
       {
       public:
-        SetViewport(SetViewportCommandDesc&& desc)
+        explicit SetViewport(SetViewportCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {
@@ -25,7 +25,7 @@ namespace rex
 
         ~SetViewport() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::set_viewport(m_desc.viewport);
         }

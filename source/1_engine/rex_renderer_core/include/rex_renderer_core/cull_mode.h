@@ -1,14 +1,14 @@
-#pragma once 
+#pragma once
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class CullMode
     {
-        enum class CullMode
-        {
-            NONE,
-            FRONT,
-            BACK
-        };
-    }
-}
+      None,
+      FRONT,
+      BACK
+    };
+  } // namespace renderer
+} // namespace rex

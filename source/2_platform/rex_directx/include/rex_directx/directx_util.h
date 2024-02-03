@@ -14,16 +14,13 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-namespace rex
-{
-  namespace renderer
-  {
-    namespace directx
-    {
 
-    }
-  }
-}
+  
+    
+
+    
+  
+
 
 #if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
 #define REX_ENABLE_GFX_DEBUGGING
@@ -79,8 +76,8 @@ namespace rex
     constexpr bool g_enable_dxgi_severity_warning     = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING;
     constexpr bool g_enable_dxgi_severity_error       = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR;
     constexpr bool g_enable_dxgi_severity_corruption  = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION;
-  } 
-}
+  } // namespace globals 
+} // namespace rex
 
 // clang-format on
 // NOLINTEND(llvm-include-order)

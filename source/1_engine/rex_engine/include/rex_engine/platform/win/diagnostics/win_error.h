@@ -9,5 +9,5 @@ namespace rex
       // This is meant to get extended in the future
       Success
     };
-  }
+  } // namespace win
 } // namespace rex

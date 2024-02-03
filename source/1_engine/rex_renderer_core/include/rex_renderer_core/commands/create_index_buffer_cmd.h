@@ -12,8 +12,9 @@ namespace rex
       {
       public:
         CreateIndexBuffer(CreateBufferCommandDesc&& desc, const ResourceSlot& slot)
-            :CreateBuffer(rsl::move(desc), slot)
-        {}
+            : CreateBuffer(rsl::move(desc), slot)
+        {
+        }
 
         bool execute() override
         {

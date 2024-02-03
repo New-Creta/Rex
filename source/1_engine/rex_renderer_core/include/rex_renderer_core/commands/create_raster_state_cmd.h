@@ -13,17 +13,18 @@ namespace rex
       struct CreateRasterStateCommandDesc
       {
         CreateRasterStateCommandDesc()
-            :fill_mode(FillMode::SOLID)
-            ,cull_mode(CullMode::BACK)
-            ,front_ccw(0)
-            ,depth_bias(0)
-            ,depth_bias_clamp(0.0f)
-            ,sloped_scale_depth_bias(0.0f)
-            ,depth_clip_enable(1)
-            ,multisample(0)
-            ,aa_lines(0)
-            ,forced_sample_count(0)
-        {}
+            : fill_mode(FillMode::SOLID)
+            , cull_mode(CullMode::BACK)
+            , front_ccw(0)
+            , depth_bias(0)
+            , depth_bias_clamp(0.0f)
+            , sloped_scale_depth_bias(0.0f)
+            , depth_clip_enable(1)
+            , multisample(0)
+            , aa_lines(0)
+            , forced_sample_count(0)
+        {
+        }
 
         FillMode fill_mode;
         CullMode cull_mode;
@@ -49,7 +50,7 @@ namespace rex
 
         ~CreateRasterState() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::create_raster_state(m_desc, m_resource_slot);
         }
