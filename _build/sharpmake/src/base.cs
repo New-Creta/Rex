@@ -628,10 +628,7 @@ public abstract class BasicCPPProject : Project
   // and passes it over to code generation system for processing
   private void ReadCodeGenerationConfigFile()
   {
-    // the generation path always follows the same relative path from {root}/config
-    // as it does from {root} to the source code
-    string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.Root), SourceRootPath);
-    string code_generation_config_path = Path.Combine(Globals.Root, "config", relative_source_path, "code_generation.json");
+    string code_generation_config_path = Path.Combine(SourceRootPath, "config", "code_generation.json");
 
     // Not every project has a code generation config file
     // if one doesn't exists, we early out here
