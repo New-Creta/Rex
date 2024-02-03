@@ -96,6 +96,11 @@ namespace rex
   {
     m_app_state.change_state(ApplicationState::Initializing);
 
+    // load the settings of the engine as early as possible
+    // however it does have a few dependencies that need to be set up first
+    // - commandline needs to be initialized
+    // - vfs needs to be initialized
+
     globals::g_frame_info.update();
     return platform_init();
   }
