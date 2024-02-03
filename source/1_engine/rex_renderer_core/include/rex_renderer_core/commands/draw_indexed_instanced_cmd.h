@@ -36,7 +36,7 @@ namespace rex
       class DrawIndexedInstanced : public RenderCommand
       {
       public:
-        DrawIndexedInstanced(DrawIndexedInstancedCommandDesc&& desc)
+        explicit DrawIndexedInstanced(DrawIndexedInstancedCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

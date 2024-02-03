@@ -15,7 +15,7 @@ namespace rex
             class EndFrame : public RenderCommand
             {
             public:
-              EndFrame(EndFrameCommandDesc&& desc)
+              explicit EndFrame(EndFrameCommandDesc&& desc)
                   : RenderCommand()
                   , m_desc(rsl::move(desc))
               {

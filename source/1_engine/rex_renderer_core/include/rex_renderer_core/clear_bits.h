@@ -10,10 +10,10 @@ namespace rex
         //-------------------------------------------------------------------------
         enum class ClearBits
         {
-            NONE = BIT(0),
-            CLEAR_COLOR_BUFFER = BIT(1),
-            CLEAR_DEPTH_BUFFER = BIT(2),
-            CLEAR_STENCIL_BUFFER = BIT(3),
+            None = BIT(0),
+            ClearColorBuffer = BIT(1),
+            ClearDepthBuffer = BIT(2),
+            ClearStencilBuffer = BIT(3),
         };
 
         //-------------------------------------------------------------------------

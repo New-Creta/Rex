@@ -42,23 +42,23 @@ namespace rex
         // we can need to scan for the first dot 
         // after the first slash
         auto pos = path.find_last_of("/\\");
-        auto filename = pos != path.npos()
+        auto filename = pos != path.npos() // NOLINT(readability-static-accessed-through-instance)
           ? path.substr(pos + 1)
           : path;
 
         // current dir and parent dir "filenames" don't have extensions
         if (filename == "." || filename == "..")
         {
-          return path.npos();
+          return path.npos(); // NOLINT(readability-static-accessed-through-instance)
         }
 
         auto ext_start = filename.find_first_of('.');
 
         // make sure we convert the pos in the filename back to the pos
         // of the total input path
-        return ext_start != filename.npos()
+        return ext_start != filename.npos() // NOLINT(readability-static-accessed-through-instance)
           ? static_cast<card32>(&filename[ext_start] - path.data())
-          : path.npos();
+          : path.npos(); // NOLINT(readability-static-accessed-through-instance)
       }
 
       // Fills a string with a number of random characters
@@ -68,7 +68,7 @@ namespace rex
         rsl::small_stack_string chars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
         for (card32 i = 0; i < numCharsToFill; ++i)
         {
-          card32 random_idx = std::rand() % chars.length();
+          const card32 random_idx = std::rand() % chars.length(); // NOLINT(cert-msc50-cpp, concurrency-mt-unsafe)
           str += chars[random_idx];
         }
       }
@@ -96,7 +96,7 @@ namespace rex
     // if the path doesn't have an extension, the extension specified gets appended
     rsl::string change_extension(rsl::string_view path, rsl::string_view extension)
     {
-      SplitResult split_res = split_ext(path);
+      const SplitResult split_res = split_ext(path);
 
       // use the extension split to store the path without the extension
       rsl::string res(split_res.head);
@@ -115,30 +115,30 @@ namespace rex
     // Returns the directory path of the given path
     rsl::string_view dir_name(rsl::string_view path)
     {
-      SplitResult split_res = split(path);
+      const SplitResult split_res = split(path);
       return split_res.head;
     }
     // Returns the extension of the given path
     rsl::string_view extension(rsl::string_view path)
     {
-      SplitResult split_res = split_ext(path);
+      const SplitResult split_res = split_ext(path);
       return split_res.tail;
     }
     // Returns the filename of the given path
     rsl::string_view filename(rsl::string_view path)
     {
-      SplitResult split_res = split(path);
+      const SplitResult split_res = split(path);
       return split_res.tail;
     }
     // Returns the filename of the given path without its extension
     rsl::string_view stem(rsl::string_view path)
     {
       // get the filename of the path
-      rsl::string_view file_name = filename(path);
+      const rsl::string_view file_name = filename(path);
 
       // get the position of the extension, if there is one
-      card32 extension_pos = internal::extension_start(file_name);
-      card32 count = extension_pos != -1 ? extension_pos : file_name.length();
+      const card32 extension_pos = internal::extension_start(file_name);
+      const card32 count = extension_pos != -1 ? extension_pos : file_name.length();
 
       // return the substring of the filename, without the extension
       return file_name.substr(0, count);
@@ -159,7 +159,7 @@ namespace rex
     rsl::string random_dir()
     {
       // create a directory name of 8 random characters
-      card32 num_dirname_chars = 8;
+      const card32 num_dirname_chars = 8;
       rsl::string result;
 
       do
@@ -177,8 +177,8 @@ namespace rex
     // Returns a random filename, but doesn't create it
     rsl::string random_filename()
     {
-      card32 num_stem_chars = 8;
-      card32 num_ext_chars = 3;
+      const card32 num_stem_chars = 8;
+      const card32 num_ext_chars = 3;
       rsl::string result;
 
       do
@@ -208,21 +208,21 @@ namespace rex
       }
 
       // split the first path into different path components
-      rsl::vector<rsl::string_view> splitted = rsl::split(paths.front(), "/\\");
+      const rsl::vector<rsl::string_view> splitted = rsl::split(paths.front(), "/\\");
       auto furthest_path_component_it = splitted.cbegin();
 
       // iterate over the other paths
       for (card32 i = 1; i < paths.size(); ++i)
       {
-        rsl::string_view path = paths[i];
+        const rsl::string_view path = paths[i];
 
         // split the path into different path components
-        rsl::vector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
+        const rsl::vector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
 
         // find the first mismatch with the first path in the list
         auto res = rsl::mismatch(splitted.cbegin(), splitted.cend(), splitted_path.cbegin(), splitted_path.cend());
 
-        // if none are equal, return an empty path
+        // if None are equal, return an empty path
         if (res.lhs_it == splitted.cbegin())
         {
           return "";
@@ -233,10 +233,10 @@ namespace rex
       }
 
       // store the index of the path component to figure out where the common path ends
-      card32 path_component_idx = rsl::distance(splitted.cbegin(), furthest_path_component_it);
+      const card32 path_component_idx = rsl::distance(splitted.cbegin(), furthest_path_component_it);
 
       // count the path components, so we know where out substring should end
-      rsl::string_view first_path = paths.front();
+      const rsl::string_view first_path = paths.front();
       card32 pos = 0;
       for (card32 i = 0; i < path_component_idx; ++i)
       {
@@ -252,12 +252,11 @@ namespace rex
     // Converts forward slashes to backward slashes
     rsl::string norm_path(rsl::string_view path)
     {
-      rsl::vector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
+      const rsl::vector<rsl::string_view> splitted_path = rsl::split(path, "/\\");
       rsl::vector<rsl::string_view> norm_splitted(rsl::Capacity(splitted_path.size()));
-      rsl::string res;
 
       // loop over each path component in the given path
-      for (rsl::string_view path_comp : splitted_path)
+      for (const rsl::string_view path_comp : splitted_path)
       {
         // if the "current dir" token is found, we skip it
         if (path_comp == ".")
@@ -293,16 +292,16 @@ namespace rex
     // Returns a relative path to path, starting from the start directory
     rsl::string rel_path(rsl::string_view path, rsl::string_view start)
     {
-      rsl::string norm_path = path::norm_path(path);
-      rsl::string norm_start = path::norm_path(start);
+      const rsl::string norm_path = path::norm_path(path);
+      const rsl::string norm_start = path::norm_path(start);
 
       if (norm_path.empty() && norm_start.empty())
       {
         return rsl::string("");
       }
 
-      rsl::vector<rsl::string_view> splitted_path = rsl::split(norm_path, rsl::string_view(&g_seperation_char, 1));
-      rsl::vector<rsl::string_view> splitted_start = rsl::split(norm_start, rsl::string_view(&g_seperation_char, 1));
+      const rsl::vector<rsl::string_view> splitted_path = rsl::split(norm_path, rsl::string_view(&g_seperation_char, 1));
+      const rsl::vector<rsl::string_view> splitted_start = rsl::split(norm_start, rsl::string_view(&g_seperation_char, 1));
 
       auto res = rsl::mismatch(splitted_path.cbegin(), splitted_path.cend(), splitted_start.cbegin(), splitted_start.cend());
 
@@ -313,7 +312,7 @@ namespace rex
       rsl::string result;
       if (res.lhs_it == splitted_path.cbegin())
       {
-        card32 num_parent_dir_tokens = splitted_start.size();
+        const card32 num_parent_dir_tokens = splitted_start.size();
         for (card32 i = 0; i < num_parent_dir_tokens; ++i)
         {
           result = path::join(result, "..");
@@ -366,8 +365,8 @@ namespace rex
     {
       // simply convert the files into their actual files on disk
       // then do a string wise comparison
-      rsl::string real_path1 = real_path(path1);
-      rsl::string real_path2 = real_path(path2);
+      const rsl::string real_path1 = real_path(path1);
+      const rsl::string real_path2 = real_path(path2);
       return real_path1 == real_path2;
     }
     // Splits the path into a head and a tail
@@ -378,10 +377,10 @@ namespace rex
       SplitResult res{};
 
       // get the last slash position
-      card32 pos = path.find_last_of("/\\");
+      const card32 pos = path.find_last_of("/\\");
 
       // fill in the values
-      if (pos != path.npos())
+      if (pos != path.npos()) // NOLINT(readability-static-accessed-through-instance)
       {
         res.head = path.substr(0, pos);
         res.tail = path.substr(pos + 1);
@@ -402,10 +401,10 @@ namespace rex
       SplitResult res{};
 
       // get the extension start position
-      card32 ext_start = internal::extension_start(path);
+      const card32 ext_start = internal::extension_start(path);
 
       // fill in the values
-      if (ext_start != path.npos())
+      if (ext_start != path.npos()) // NOLINT(readability-static-accessed-through-instance)
       {
         res.head = path.substr(0, ext_start);
         res.tail = path.substr(ext_start);

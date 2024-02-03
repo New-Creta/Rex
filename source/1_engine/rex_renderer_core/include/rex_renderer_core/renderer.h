@@ -71,21 +71,21 @@ namespace rex
         const ResourceSlot* frame_at_index(s32 idx);
         s32                 max_frames_in_flight();
 
-        ResourceSlot        create_clear_state(commands::CreateClearStateCommandDesc&& clearStateParams);
-        ResourceSlot        create_raster_state(commands::CreateRasterStateCommandDesc&& rasterStateParams);
-        ResourceSlot        create_input_layout(commands::CreateInputLayoutCommandDesc&& createInputLayoutParams);
-        ResourceSlot        create_vertex_buffer(commands::CreateBufferCommandDesc&& createBufferParams);
-        ResourceSlot        create_index_buffer(commands::CreateBufferCommandDesc&& createBufferParams);
-        ResourceSlot        create_constant_buffer_view(commands::CreateConstantBufferViewCommandDesc&& createBufferParams);
-        ResourceSlot        create_pipeline_state_object(commands::CreatePipelineStateCommandDesc&& createPipelineStateParams);
+        ResourceSlot        create_clear_state(commands::CreateClearStateCommandDesc&& desc);
+        ResourceSlot        create_raster_state(commands::CreateRasterStateCommandDesc&& desc);
+        ResourceSlot        create_input_layout(commands::CreateInputLayoutCommandDesc&& desc);
+        ResourceSlot        create_vertex_buffer(commands::CreateBufferCommandDesc&& desc);
+        ResourceSlot        create_index_buffer(commands::CreateBufferCommandDesc&& desc);
+        ResourceSlot        create_constant_buffer_view(commands::CreateConstantBufferViewCommandDesc&& desc);
+        ResourceSlot        create_pipeline_state_object(commands::CreatePipelineStateCommandDesc&& desc);
         ResourceSlot        create_frame_resource();
-        ResourceSlot        attach_committed_resource_to_frame(commands::AttachCommittedResourceToFrameCommandDesc&& attachCommittedResourceParams);
+        ResourceSlot        attach_committed_resource_to_frame(commands::AttachCommittedResourceToFrameCommandDesc&& desc);
 
-        ResourceSlot        load_shader(commands::LoadShaderCommandDesc&& loadShaderParams);
-        ResourceSlot        link_shader(commands::LinkShaderCommandDesc&& linkShaderParams);
-        ResourceSlot        compile_shader(commands::CompileShaderCommandDesc&& compileShaderParams);
+        ResourceSlot        load_shader(commands::LoadShaderCommandDesc&& desc);
+        ResourceSlot        link_shader(commands::LinkShaderCommandDesc&& desc);
+        ResourceSlot        compile_shader(commands::CompileShaderCommandDesc&& desc);
 
-        bool                update_committed_resource(commands::UpdateCommittedResourceCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget);
+        bool                update_committed_resource(commands::UpdateCommittedResourceCommandDesc&& desc, const ResourceSlot& constantBufferTarget);
 
         void                wait_for_active_frame();
 

@@ -298,9 +298,9 @@ namespace regina
     create_clear_state_command_desc.stencil = 0x00;
 
     rex::StateController<rex::renderer::ClearBits> clear_flags;
-    clear_flags.add_state(rex::renderer::ClearBits::CLEAR_COLOR_BUFFER);
-    clear_flags.add_state(rex::renderer::ClearBits::CLEAR_DEPTH_BUFFER);
-    clear_flags.add_state(rex::renderer::ClearBits::CLEAR_STENCIL_BUFFER);
+    clear_flags.add_state(rex::renderer::ClearBits::ClearColorBuffer);
+    clear_flags.add_state(rex::renderer::ClearBits::ClearDepthBuffer);
+    clear_flags.add_state(rex::renderer::ClearBits::ClearStencilBuffer);
 
     create_clear_state_command_desc.flags = clear_flags;
 
@@ -319,14 +319,14 @@ namespace regina
     rex::renderer::commands::LinkShaderCommandDesc link_shader_command_desc;
     link_shader_command_desc.vertex_shader = rex::renderer::compile_shader(rsl::move(vs_compile_command_desc));
     link_shader_command_desc.pixel_shader = rex::renderer::compile_shader(rsl::move(ps_compile_command_desc));
-    link_shader_command_desc.constants = { rex::renderer::commands::ConstantLayoutDescription {rex::renderer::commands::ConstantType::CBUFFER, "ObjectConstants", 0},
-                                              rex::renderer::commands::ConstantLayoutDescription {rex::renderer::commands::ConstantType::CBUFFER, "PassConstants", 1} };
+    link_shader_command_desc.constants = { rex::renderer::commands::ConstantLayoutDescription {rex::renderer::commands::ConstantType::CBuffer, "ObjectConstants", 0},
+                                              rex::renderer::commands::ConstantLayoutDescription {rex::renderer::commands::ConstantType::CBuffer, "PassConstants", 1} };
     g_regina_ctx.shader_program = rex::renderer::link_shader(rsl::move(link_shader_command_desc));
 
     // Input Layout
     rex::renderer::commands::CreateInputLayoutCommandDesc input_layout_command_desc;
-    input_layout_command_desc.input_layout = { rex::renderer::commands::InputLayoutDescription {"POSITION", 0, rex::renderer::VertexBufferFormat::FLOAT3, 0, 0, rex::renderer::InputLayoutClassification::PER_VERTEX_DATA, 0},
-                                              rex::renderer::commands::InputLayoutDescription {"COLOR", 0, rex::renderer::VertexBufferFormat::FLOAT4, 0, 12, rex::renderer::InputLayoutClassification::PER_VERTEX_DATA, 0} };
+    input_layout_command_desc.input_layout = { rex::renderer::commands::InputLayoutDescription {"POSITION", 0, rex::renderer::VertexBufferFormat::FLOAT3, 0, 0, rex::renderer::InputLayoutClassification::PerVertexData, 0},
+                                              rex::renderer::commands::InputLayoutDescription {"COLOR", 0, rex::renderer::VertexBufferFormat::FLOAT4, 0, 12, rex::renderer::InputLayoutClassification::PerVertexData, 0} };
     g_regina_ctx.input_layout = rex::renderer::create_input_layout(rsl::move(input_layout_command_desc));
 
     return true;
@@ -361,7 +361,7 @@ namespace regina
 
     rex::renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
     rex::renderer::Mesh::IndexBufferDesc ibd(rex::renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)),
-      rex::renderer::IndexBufferFormat::R16_UINT,
+      rex::renderer::IndexBufferFormat::R16Uint,
       ib_byte_size);
 
     g_regina_ctx.mesh_cube = rsl::make_unique<rex::renderer::Mesh>("box_geometry"_med, vbd, ibd);
@@ -483,7 +483,7 @@ namespace regina
     rex::renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(indices.data(), indices.size());
     rex::renderer::Mesh::IndexBufferDesc ibd(
       rex::renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)),
-      rex::renderer::IndexBufferFormat::R16_UINT,
+      rex::renderer::IndexBufferFormat::R16Uint,
       ib_byte_size);
 
     auto geometry = rsl::make_unique<rex::renderer::Mesh>("scene_geometry"_med, vbd, ibd);
@@ -514,7 +514,7 @@ namespace regina
     cube_r_item.base_vertex_location = cube_r_item.geometry->submesh("box"_small)->base_vertex_location;
 
     // Dirty flag indicating the object data has changed and we need to update the constant buffer.
-    // Because we have an object cbuffer for each FrameResource, we have to apply the
+    // Because we have an object CBuffer for each FrameResource, we have to apply the
     // update to each FrameResource.
     //
     // Thus, when we modify object data we should set NumFramesDirty = gNumFrameResources
@@ -562,10 +562,10 @@ namespace regina
       auto left_sphere_r_item = rex::renderer::RenderItem();
       auto right_sphere_r_item = rex::renderer::RenderItem();
 
-      glm::mat4 left_cyl_world = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 1.5f, -10.0f + i * 5.0f));
-      glm::mat4 right_cyl_world = glm::translate(glm::mat4(1.0f), glm::vec3(+5.0f, 1.5f, -10.0f + i * 5.0f));
-      glm::mat4 left_sphere_world = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 3.5f, -10.0f + i * 5.0f));
-      glm::mat4 right_sphere_world = glm::translate(glm::mat4(1.0f), glm::vec3(+5.0f, 3.5f, -10.0f + i * 5.0f));
+      const glm::mat4 left_cyl_world = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 1.5f, -10.0f + i * 5.0f));
+      const glm::mat4 right_cyl_world = glm::translate(glm::mat4(1.0f), glm::vec3(+5.0f, 1.5f, -10.0f + i * 5.0f));
+      const glm::mat4 left_sphere_world = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 3.5f, -10.0f + i * 5.0f));
+      const glm::mat4 right_sphere_world = glm::translate(glm::mat4(1.0f), glm::vec3(+5.0f, 3.5f, -10.0f + i * 5.0f));
 
       left_cyl_r_item.world = right_cyl_world;
       left_cyl_r_item.constant_buffer_index = obj_cb_index++;
@@ -719,7 +719,7 @@ namespace regina
   {
     for (auto& ri : (*g_regina_ctx.scene))
     {
-      // Only update the cbuffer data if the constants have changed.
+      // Only update the CBuffer data if the constants have changed.
       // This needs to be tracked per frame resource.
       if (ri.num_frames_dirty > 0)
       {

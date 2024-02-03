@@ -27,7 +27,7 @@ namespace rex
       class Draw : public RenderCommand
       {
       public:
-        Draw(DrawCommandDesc&& desc)
+        explicit Draw(DrawCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

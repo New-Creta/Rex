@@ -15,7 +15,7 @@ namespace rex
       template <typename PathLikeType, typename... Args>
       void join_impl(rsl::string& str, PathLikeType&& arg)
       {
-        join_impl(str, rsl::string_view(rsl::forward<PathLikeType>(arg)));
+        join_impl(str, rsl::string_view(rsl::forward<PathLikeType>(arg))); // NOLINT(google-readability-casting)
       }
       template <typename PathLikeType, typename... Args>
       void join_impl(rsl::string& str, PathLikeType&& firstArg, Args&&... args)

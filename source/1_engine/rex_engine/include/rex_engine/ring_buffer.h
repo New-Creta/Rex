@@ -16,7 +16,13 @@ namespace rex
         RingBuffer();
         RingBuffer(u32 cap);
 
+        RingBuffer(const RingBuffer&) = delete;
+        RingBuffer(RingBuffer&&) = delete;
+
         ~RingBuffer();
+
+        RingBuffer& operator=(const RingBuffer&) = delete;
+        RingBuffer& operator=(RingBuffer&&) = delete;
 
         void shutdown();
 

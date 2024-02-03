@@ -37,9 +37,9 @@ namespace rex
         case DataType::Value::Vec2:
         case DataType::Value::Vec3:
         case DataType::Value::Vec4: return GL_FLOAT;
-        case DataType::Value::Sampler2D: return GL_SAMPLER_2D;
-        case DataType::Value::Sampler3D: return GL_SAMPLER_3D;
-        case DataType::Value::SamplerCube: return GL_SAMPLER_CUBE;
+        case DataType::Value::Sampler2D: return GL_Sampler2D;
+        case DataType::Value::Sampler3D: return GL_Sampler3D;
+        case DataType::Value::SamplerCube: return GL_SamplerCube;
 
         case DataType::Value::String:
         case DataType::Value::None: break;

@@ -82,7 +82,7 @@ namespace rex
         using CommandAllocator = rsl::stack_allocator;
         using CommandList = RingBuffer<RenderCommand*>;
 
-        constexpr s32 cmd_allocator_size = static_cast<s32>(rsl::memory_size(512_kib).size_in_bytes());
+        constexpr s32 cmd_allocator_size = rsl::memory_size(512_kib).size_in_bytes();
 
         struct Context
         {
@@ -91,7 +91,7 @@ namespace rex
             rsl::unique_ptr<CommandList> cmd_list;
         };
 
-        rsl::unique_ptr<Context> g_ctx;
+        rsl::unique_ptr<Context> g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
 #if REX_SINGLE_THREADED
         bool process_render_command(renderer::RenderCommand* cmd) { return cmd->execute(); };
@@ -103,7 +103,7 @@ namespace rex
         template <typename TCommandType, typename... Args>
         TCommandType* create_new_command(Args&&... args)
         {
-            TCommandType* cmd = (TCommandType*)g_ctx->cmd_allocator->allocate(sizeof(TCommandType));
+            TCommandType* cmd = static_cast<TCommandType*>(g_ctx->cmd_allocator->allocate(sizeof(TCommandType)));
             return new(cmd) TCommandType(rsl::forward<Args>(args)...);
         }
 
@@ -111,7 +111,7 @@ namespace rex
         template <typename TCommandType, typename... Args>
         TCommandType* create_new_command(Args&&... args, const ResourceSlot& slot)
         {
-            TCommandType* cmd = (TCommandType*)g_ctx->cmd_allocator->allocate(sizeof(TCommandType));
+            TCommandType* cmd = static_cast<TCommandType*>(g_ctx->cmd_allocator->allocate(sizeof(TCommandType)));
             return new(cmd) TCommandType(rsl::forward<Args>(args)...);
         }
 
@@ -160,7 +160,7 @@ namespace rex
 
                 while (cmd)
                 {
-                    if ((*cmd)->execute() == false)
+                    if ((*cmd)->execute() == false) // NOLINT(readability-simplify-boolean-expr)
                     {
                         REX_ERROR(LogRendererCore, "Failed to flush commands");
                         return false;
@@ -492,7 +492,10 @@ namespace rex
         {
             commands::SetRenderTargetCommandDesc set_render_target_command_desc;
             set_render_target_command_desc.num_color = numColorTargets;
-            memcpy(&set_render_target_command_desc.color, colorTargets, numColorTargets * sizeof(ResourceSlot));
+            for (s32 i = 0; i < numColorTargets; ++i)
+            {
+                set_render_target_command_desc.color[i] = colorTargets[i];
+            }
             set_render_target_command_desc.depth = depthTarget;
 
             commands::SetRenderTarget* cmd = create_new_command<commands::SetRenderTarget>(rsl::move(set_render_target_command_desc));
@@ -553,9 +556,9 @@ namespace rex
 
             set_vertex_buffer_command_desc.start_slot = startSlot;
 
-            set_vertex_buffer_command_desc.vertex_buffer_targets = rsl::vector<ResourceSlot>((rsl::Size)numBuffers);
-            set_vertex_buffer_command_desc.strides = rsl::vector<s32>((rsl::Size)numBuffers);
-            set_vertex_buffer_command_desc.offsets = rsl::vector<s32>((rsl::Size)numBuffers);
+            set_vertex_buffer_command_desc.vertex_buffer_targets = rsl::vector<ResourceSlot>(rsl::Size(numBuffers));
+            set_vertex_buffer_command_desc.strides = rsl::vector<s32>(rsl::Size(numBuffers));
+            set_vertex_buffer_command_desc.offsets = rsl::vector<s32>(rsl::Size(numBuffers));
 
             for (s32 i = 0; i < numBuffers; ++i)
             {

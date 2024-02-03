@@ -6,7 +6,7 @@ namespace rex
     {
         enum class VertexBufferFormat
         {
-            NONE = 0,
+            None = 0,
             FLOAT1,
             FLOAT2,
             FLOAT3,

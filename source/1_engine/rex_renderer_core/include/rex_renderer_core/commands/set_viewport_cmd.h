@@ -17,7 +17,7 @@ namespace rex
       class SetViewport : public RenderCommand
       {
       public:
-        SetViewport(SetViewportCommandDesc&& desc)
+        explicit SetViewport(SetViewportCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

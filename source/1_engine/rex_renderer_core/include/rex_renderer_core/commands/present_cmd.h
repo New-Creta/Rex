@@ -29,18 +29,15 @@ namespace rex
             {
             public:
                 //-------------------------------------------------------------------------
-                Present(PresentCommandDesc&& desc)
+                explicit Present(PresentCommandDesc&& desc)
                     : RenderCommand()
                     , m_desc(rsl::move(desc))
                 {}
-                //-------------------------------------------------------------------------
-                ~Present()
-                {}
 
                 //-------------------------------------------------------------------------
-                bool execute()
+                bool execute() override
                 {
-                    bool result = backend::present();
+                    const bool result = backend::present();
 
                     rsl::swap(*m_desc.front_buffer_color, *m_desc.back_buffer_color);
 

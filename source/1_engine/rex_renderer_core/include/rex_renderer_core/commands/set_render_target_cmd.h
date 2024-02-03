@@ -27,7 +27,7 @@ namespace rex
       class SetRenderTarget : public RenderCommand
       {
       public:
-        SetRenderTarget(SetRenderTargetCommandDesc&& desc)
+        explicit SetRenderTarget(SetRenderTargetCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

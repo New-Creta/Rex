@@ -15,7 +15,7 @@ namespace rex
     {
       struct CompileShaderCommandDesc
       {
-        ShaderType shader_type = ShaderType::NONE;
+        ShaderType shader_type = ShaderType::None;
         rsl::string_view shader_entry_point;
         rsl::small_stack_string shader_name;
         rsl::tiny_stack_string shader_feature_target;

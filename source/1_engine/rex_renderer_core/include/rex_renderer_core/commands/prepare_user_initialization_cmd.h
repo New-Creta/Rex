@@ -15,7 +15,7 @@ namespace rex
             class PrepareUserInitialization : public RenderCommand
             {
             public:
-              PrepareUserInitialization(PrepareUserInitializationCommandDesc&& desc)
+              explicit PrepareUserInitialization(PrepareUserInitializationCommandDesc&& desc)
                   : RenderCommand()
                   , m_desc(rsl::move(desc))
               {

@@ -16,7 +16,7 @@ namespace rex
               :slots(nullptr)
           {}
 
-          ReleaseResourceCommandDesc(ResourceSlots* resourceSlots)
+          explicit ReleaseResourceCommandDesc(ResourceSlots* resourceSlots)
               :slots(resourceSlots)
           {}
 

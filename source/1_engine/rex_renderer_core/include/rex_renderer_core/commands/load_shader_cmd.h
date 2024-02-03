@@ -14,7 +14,7 @@ namespace rex
       struct LoadShaderCommandDesc
       {
         LoadShaderCommandDesc()
-            :shader_type(ShaderType::NONE)
+            :shader_type(ShaderType::None)
             ,shader_byte_code()
             ,constant_buffer_count(0)
         {}

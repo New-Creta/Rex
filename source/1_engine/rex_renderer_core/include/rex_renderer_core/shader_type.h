@@ -6,7 +6,7 @@ namespace rex
     {
         enum class ShaderType
         {
-            NONE = 0,
+            None = 0,
             VERTEX,
             PIXEL,
             GEOMETRY,

@@ -17,7 +17,7 @@ namespace rex
       class SetScissorRect : public RenderCommand
       {
       public:
-        SetScissorRect(SetScissorRectCommandDesc&& desc)
+        explicit SetScissorRect(SetScissorRectCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

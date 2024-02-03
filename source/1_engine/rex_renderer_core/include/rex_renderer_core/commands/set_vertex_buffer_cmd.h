@@ -29,7 +29,7 @@ namespace rex
       class SetVertexBuffer : public RenderCommand
       {
       public:
-        SetVertexBuffer(SetVertexBufferCommandDesc&& desc)
+        explicit SetVertexBuffer(SetVertexBufferCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

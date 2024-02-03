@@ -13,7 +13,7 @@ namespace rex
       struct SetIndexBufferCommandDesc
       {
         SetIndexBufferCommandDesc()
-            :format(IndexBufferFormat::NONE)
+            :format(IndexBufferFormat::None)
             ,offset(0)
         {}
 

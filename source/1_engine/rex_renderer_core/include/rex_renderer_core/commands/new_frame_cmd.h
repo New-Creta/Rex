@@ -17,7 +17,7 @@ namespace rex
             class NewFrame : public RenderCommand
             {
             public:
-              NewFrame(NewFrameCommandDesc&& desc)
+              explicit NewFrame(NewFrameCommandDesc&& desc)
                   : RenderCommand()
                   , m_desc(rsl::move(desc))
               {

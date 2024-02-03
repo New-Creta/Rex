@@ -144,14 +144,14 @@ namespace rex
       {
         switch(mode)
         {
-          case CullMode::NONE: return D3D12_CULL_MODE_NONE;
+          case CullMode::None: return D3D12_CULL_MODE_None;
           case CullMode::FRONT: return D3D12_CULL_MODE_FRONT;
           case CullMode::BACK: return D3D12_CULL_MODE_BACK;
           default: break;
         }
 
         REX_ASSERT("Unsupported cull mode given");
-        return D3D12_CULL_MODE_NONE;
+        return D3D12_CULL_MODE_None;
       }
       //-------------------------------------------------------------------------
       DXGI_FORMAT to_d3d12_vertex_format(VertexBufferFormat format)
@@ -175,8 +175,8 @@ namespace rex
       {
         switch(format)
         {
-          case IndexBufferFormat::R16_UINT: return DXGI_FORMAT_R16_UINT;
-          case IndexBufferFormat::R32_UINT: return DXGI_FORMAT_R32_UINT;
+          case IndexBufferFormat::R16Uint: return DXGI_FORMAT_R16_UINT;
+          case IndexBufferFormat::R32Uint: return DXGI_FORMAT_R32_UINT;
           default: break;
         }
         REX_ASSERT("Unsupported index buffer format given");
@@ -214,8 +214,8 @@ namespace rex
       {
         switch(classification)
         {
-          case InputLayoutClassification::PER_VERTEX_DATA: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-          case InputLayoutClassification::PER_INSTANCE_DATA: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+          case InputLayoutClassification::PerVertexData: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+          case InputLayoutClassification::PerInstanceData: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
           default: break;
         }
 
@@ -607,7 +607,7 @@ namespace rex
         {
           D3D12_COMMAND_QUEUE_DESC queue_desc = {};
           queue_desc.Type                     = D3D12_COMMAND_LIST_TYPE_DIRECT;
-          queue_desc.Flags                    = D3D12_COMMAND_QUEUE_FLAG_NONE;
+          queue_desc.Flags                    = D3D12_COMMAND_QUEUE_FLAG_None;
           if(DX_FAILED(g_ctx->device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(g_ctx->command_queue.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command queue");
@@ -688,7 +688,7 @@ namespace rex
           CD3DX12_HEAP_PROPERTIES heap_properties_default(D3D12_HEAP_TYPE_DEFAULT);
           auto buffer_default = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
-          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_NONE, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.buffer.GetAddressOf()))))
+          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_None, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create committed resource for a default buffer.");
             return {};
@@ -699,7 +699,7 @@ namespace rex
           CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
           auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
-          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(default_buffer.upload_buffer.GetAddressOf()))))
+          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_None, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(default_buffer.upload_buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
             return {};
@@ -762,7 +762,7 @@ namespace rex
             CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
             CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size * bufferCount);
 
-            if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
+            if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_None, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
             {
                 REX_ERROR(LogDirectX, "Could not create committed resource ( constant buffer )");
                 return nullptr;
@@ -845,7 +845,7 @@ namespace rex
         //-------------------------------------------------------------------------
         rsl::unordered_map<commands::ConstantType, rsl::function<CD3DX12_DESCRIPTOR_RANGE(const commands::ConstantLayoutDescription&)>> get_descriptor_ranges_create_func()
         {
-          return {{commands::ConstantType::CBUFFER, create_constant_buffer_descriptor_range}};
+          return {{commands::ConstantType::CBuffer, create_constant_buffer_descriptor_range}};
         }
 
         //-------------------------------------------------------------------------
@@ -1022,7 +1022,7 @@ namespace rex
           CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart());
 
           CD3DX12_HEAP_PROPERTIES heap_properties(D3D12_HEAP_TYPE_DEFAULT);
-          if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_NONE, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
+          if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_None, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create depth stencil buffer");
             return false;
@@ -1033,7 +1033,7 @@ namespace rex
           // Create descriptor to mip level 0 of entire resource using the
           // format of the resource
           D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc;
-          dsv_desc.Flags              = D3D12_DSV_FLAG_NONE;
+          dsv_desc.Flags              = D3D12_DSV_FLAG_None;
           dsv_desc.ViewDimension      = D3D12_DSV_DIMENSION_TEXTURE2D;
           dsv_desc.Format             = g_ctx->depth_stencil_format;
           dsv_desc.Texture2D.MipSlice = 0;
@@ -1055,11 +1055,11 @@ namespace rex
           rsl::array<D3D12_DESCRIPTOR_HEAP_DESC, 3> heap_descs;
 
           heap_descs[0] = {
-              D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rsl::safe_numeric_cast<UINT>(numRTV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+              D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rsl::safe_numeric_cast<UINT>(numRTV), D3D12_DESCRIPTOR_HEAP_FLAG_None,
               0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
           };
           heap_descs[1] = {
-              D3D12_DESCRIPTOR_HEAP_TYPE_DSV, rsl::safe_numeric_cast<UINT>(numDSV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+              D3D12_DESCRIPTOR_HEAP_TYPE_DSV, rsl::safe_numeric_cast<UINT>(numDSV), D3D12_DESCRIPTOR_HEAP_FLAG_None,
               0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
           };
           heap_descs[2] = {
@@ -1120,7 +1120,7 @@ namespace rex
             }
 
             constexpr DWORD milliSecondsTimeOut = 1000; // 1 second
-            auto res = WaitForSingleObject(event_handle.get(), milliSecondsTimeOut);
+            REX_MAYBE_UNUSED auto res = WaitForSingleObject(event_handle.get(), milliSecondsTimeOut);
             REX_ASSERT_X(res == WAIT_OBJECT_0, "Failed to wait for fence with error: {}", res);
           }
 
@@ -1304,7 +1304,7 @@ namespace rex
         directx::g_renderer_info.vendor         = selected_gpu->description().vendor_name;
 
         // Create fence for CPU/GPU synchronization
-        if(DX_FAILED(g_ctx->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_ctx->fence))))
+        if(DX_FAILED(g_ctx->device->CreateFence(0, D3D12_FENCE_FLAG_None, IID_PPV_ARGS(&g_ctx->fence))))
         {
           REX_ERROR(LogDirectX, "Failed to create DX fence, to synchronize CPU/GPU");
           return false;
@@ -1322,7 +1322,7 @@ namespace rex
         D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS ms_quality_levels;
         ms_quality_levels.Format           = g_ctx->back_buffer_format;
         ms_quality_levels.SampleCount      = 4;
-        ms_quality_levels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+        ms_quality_levels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_None;
         ms_quality_levels.NumQualityLevels = 0;
         if(DX_FAILED(g_ctx->device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &ms_quality_levels, sizeof(ms_quality_levels))))
         {
@@ -1872,9 +1872,9 @@ namespace rex
 
         ClearBits flags = csr.get()->flags;
 
-        REX_ASSERT_X(flags != ClearBits::NONE, "No clear flags given but renderer::backend::clear was called.");
+        REX_ASSERT_X(flags != ClearBits::None, "No clear flags given but renderer::backend::clear was called.");
 
-        if(flags & ClearBits::CLEAR_COLOR_BUFFER)
+        if(flags & ClearBits::ClearColorBuffer)
         {
           for(s32 i = 0; i < g_ctx->active_color_targets; ++i)
           {
@@ -1887,7 +1887,7 @@ namespace rex
           }
         }
 
-        if(flags & ClearBits::CLEAR_DEPTH_BUFFER || flags & ClearBits::CLEAR_STENCIL_BUFFER)
+        if(flags & ClearBits::ClearDepthBuffer || flags & ClearBits::ClearStencilBuffer)
         {
           auto& depth_stencil_target_id = g_ctx->active_depth_target;
           auto& depth_stencil_target    = g_ctx->resource_pool.as<DepthStencilTargetResource>(depth_stencil_target_id);
@@ -1895,8 +1895,8 @@ namespace rex
           D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_desc = internal::depthstencil_buffer_descriptor(depth_stencil_target.get()->array_index);
 
           s32 depth_stencil_clear_flags = 0;
-          depth_stencil_clear_flags |= flags & ClearBits::CLEAR_DEPTH_BUFFER ? D3D12_CLEAR_FLAG_DEPTH : 0;
-          depth_stencil_clear_flags |= flags & ClearBits::CLEAR_STENCIL_BUFFER ? D3D12_CLEAR_FLAG_STENCIL : 0;
+          depth_stencil_clear_flags |= flags & ClearBits::ClearDepthBuffer ? D3D12_CLEAR_FLAG_DEPTH : 0;
+          depth_stencil_clear_flags |= flags & ClearBits::ClearStencilBuffer ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
           g_ctx->command_list->ClearDepthStencilView(depthstencil_desc, (D3D12_CLEAR_FLAGS)depth_stencil_clear_flags, csr.get()->depth, csr.get()->stencil, 0, nullptr);
         }

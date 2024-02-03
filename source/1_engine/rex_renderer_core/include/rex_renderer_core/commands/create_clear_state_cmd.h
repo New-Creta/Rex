@@ -19,9 +19,9 @@ namespace rex
             ,stencil(0x00)
             ,flags()
         {
-            flags.add_state(renderer::ClearBits::CLEAR_COLOR_BUFFER);
-            flags.add_state(renderer::ClearBits::CLEAR_DEPTH_BUFFER);
-            flags.add_state(renderer::ClearBits::CLEAR_STENCIL_BUFFER);
+            flags.add_state(renderer::ClearBits::ClearColorBuffer);
+            flags.add_state(renderer::ClearBits::ClearDepthBuffer);
+            flags.add_state(renderer::ClearBits::ClearStencilBuffer);
         }
 
         rsl::Color4f rgba;

@@ -15,7 +15,7 @@ namespace rex
             class FinishUserInitialization : public RenderCommand
             {
             public:
-              FinishUserInitialization(FinishUserInitializationCommandDesc&& desc)
+              explicit FinishUserInitialization(FinishUserInitializationCommandDesc&& desc)
                   : RenderCommand()
                   , m_desc(rsl::move(desc))
               {

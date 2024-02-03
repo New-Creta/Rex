@@ -37,7 +37,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     /**
-     * Create an none StringID.
+     * Create an None StringID.
      */
     constexpr StringID()
         : m_comparison_hash(create_invalid())

@@ -6,7 +6,7 @@ namespace rex
     {
         enum class CullMode
         {
-            NONE,
+            None,
             FRONT,
             BACK
         };

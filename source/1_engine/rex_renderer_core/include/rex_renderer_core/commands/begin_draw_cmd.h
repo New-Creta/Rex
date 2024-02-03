@@ -16,7 +16,7 @@ namespace rex
       class BeginDraw : public RenderCommand
       {
       public:
-        BeginDraw(BeginDrawCommandDesc&& desc)
+        explicit BeginDraw(BeginDrawCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

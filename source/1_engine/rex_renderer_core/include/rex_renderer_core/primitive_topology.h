@@ -6,7 +6,7 @@ namespace rex
     {
         enum class PrimitiveTopology
         {
-            NONE = 0,
+            None = 0,
             POINTLIST,
             LINELIST,
             LINESTRIP,
