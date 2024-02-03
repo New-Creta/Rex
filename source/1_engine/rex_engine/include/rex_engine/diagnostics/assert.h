@@ -7,6 +7,7 @@
 
 namespace rex
 {
+  // I wonder if these functions are better called "rex_alert"
   void rex_assert(const rsl::fmt_stack_string& msg);
   void rex_assert(const rsl::wide_fmt_stack_string& msg);
   void push_assert_context(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc);
