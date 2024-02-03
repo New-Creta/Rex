@@ -14,10 +14,11 @@ namespace rex
       struct SetRenderTargetCommandDesc
       {
         SetRenderTargetCommandDesc()
-            :num_color(0)
-            ,color()
-            ,depth()
-        {}
+            : num_color(0)
+            , color()
+            , depth()
+        {
+        }
 
         s32 num_color;
         rsl::array<ResourceSlot, s_max_color_targets> color;

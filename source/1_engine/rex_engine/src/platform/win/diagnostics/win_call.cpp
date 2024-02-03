@@ -1,8 +1,8 @@
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 
-#include "rex_engine/platform/win/diagnostics/win_debug.h"
-#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/log.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/platform/win/diagnostics/win_debug.h"
 
 #define NOMINMAX
 #include <Windows.h>

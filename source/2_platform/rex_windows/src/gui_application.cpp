@@ -1,7 +1,6 @@
 ﻿#include "rex_windows/gui_application.h"
 
 #include "rex_engine/app/core_window.h"
-#include "rex_engine/windowinfo.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/event_system/event.h" // IWYU pragma: keep
@@ -9,19 +8,17 @@
 #include "rex_engine/event_system/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
-
+#include "rex_engine/windowinfo.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
-#include "rex_renderer_core/renderer_output_window_user_data.h"
 #include "rex_renderer_core/renderer_info.h"
-
+#include "rex_renderer_core/renderer_output_window_user_data.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std/ratio.h"
 #include "rex_std/thread.h"
-
 #include "rex_windows/log.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/win_window.h"
@@ -74,7 +71,7 @@ namespace rex
           return false;
         }
 
-        globals::g_window_info.width = m_window->width();
+        globals::g_window_info.width  = m_window->width();
         globals::g_window_info.height = m_window->height();
 
         subscribe_window_events();
@@ -87,12 +84,12 @@ namespace rex
 
         // renderer initialization
 
-        renderer::OutputWindowUserData user_data;
+        renderer::OutputWindowUserData user_data {};
         user_data.primary_display_handle = m_window->primary_display_handle();
-        user_data.refresh_rate = m_gui_params.max_fps;
-        user_data.window_width = m_window->width();
-        user_data.window_height = m_window->height();
-        user_data.windowed = m_gui_params.fullscreen == false;
+        user_data.refresh_rate           = m_gui_params.max_fps;
+        user_data.window_width           = m_window->width();
+        user_data.window_height          = m_window->height();
+        user_data.windowed               = !m_gui_params.fullscreen;
 
         if(renderer::initialize(user_data, m_gui_params.max_render_commands, m_gui_params.max_frames_in_flight) == false) // NOLINT(readability-simplify-boolean-expr)
         {
@@ -101,24 +98,24 @@ namespace rex
 
         display_renderer_info();
 
-        // if the client calls render commands some preparation is required before 
+        // if the client calls render commands some preparation is required before
         // we can actually execute those commands.
-        // 
+        //
         // this function does this preparation.
-        // 
+        //
         // eg: on DX12 we require to reset and allow the command list to record commands
-        if (!renderer::prepare_user_initialization())
+        if(!renderer::prepare_user_initialization())
         {
-            REX_ERROR(LogWindows, "Unable to start drawing frame");
-            return false;
+          REX_ERROR(LogWindows, "Unable to start drawing frame");
+          return false;
         }
 
         // call client code so it can get initialized
-        bool result = m_on_initialize();
-        
-        if (!result)
+        const bool result = m_on_initialize();
+
+        if(!result)
         {
-            return result;
+          return result;
         }
 
         // if the client had called render commands some closing up has to be done before
@@ -127,16 +124,16 @@ namespace rex
         // this function does the close
         //
         // eg: on DX12 we require to close the command list and execute them
-        if (!renderer::finish_user_initialization())
+        if(!renderer::finish_user_initialization())
         {
-            REX_ERROR(LogWindows, "Unable to end draw on current frame");
-            return false;
+          REX_ERROR(LogWindows, "Unable to end draw on current frame");
+          return false;
         }
 
-        if (!renderer::flush())
+        if(!renderer::flush())
         {
-            REX_ERROR(LogWindows, "Unable to flush all commands");
-            return false;
+          REX_ERROR(LogWindows, "Unable to flush all commands");
+          return false;
         }
 
         // When the renderer is initialized we can show the window

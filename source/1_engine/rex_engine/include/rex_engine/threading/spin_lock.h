@@ -4,17 +4,17 @@
 
 namespace rex
 {
-    class SpinLock
-    {
-    public:
-        SpinLock();
+  class SpinLock
+  {
+  public:
+    SpinLock();
 
-        bool try_lock();
+    bool try_lock();
 
-        void lock();
-        void unlock();
+    void lock();
+    void unlock();
 
-    private:
-        rsl::atomic_flag m_flag;
-    };
-}
+  private:
+    rsl::atomic_flag m_flag;
+  };
+} // namespace rex

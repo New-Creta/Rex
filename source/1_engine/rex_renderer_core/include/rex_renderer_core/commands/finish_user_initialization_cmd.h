@@ -4,33 +4,33 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace commands
     {
-        namespace commands
+      struct FinishUserInitializationCommandDesc
+      {
+      };
+
+      class FinishUserInitialization : public RenderCommand
+      {
+      public:
+        explicit FinishUserInitialization(FinishUserInitializationCommandDesc&& desc)
+            : RenderCommand()
+            , m_desc(rsl::move(desc))
         {
-            struct FinishUserInitializationCommandDesc
-            {
-            };
-
-            class FinishUserInitialization : public RenderCommand
-            {
-            public:
-              explicit FinishUserInitialization(FinishUserInitializationCommandDesc&& desc)
-                  : RenderCommand()
-                  , m_desc(rsl::move(desc))
-              {
-              }
-
-              ~FinishUserInitialization() override = default;
-
-              bool execute() override
-              {
-                return backend::finish_user_initialization();
-              }
-
-            private:
-              FinishUserInitializationCommandDesc m_desc;
-            };
         }
-    }
-}
+
+        ~FinishUserInitialization() override = default;
+
+        bool execute() override
+        {
+          return backend::finish_user_initialization();
+        }
+
+      private:
+        FinishUserInitializationCommandDesc m_desc;
+      };
+    } // namespace commands
+  }   // namespace renderer
+} // namespace rex

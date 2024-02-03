@@ -29,7 +29,7 @@ namespace rex
         Truncate truncate;
         Enabled enabled;
       };
-    }
+    } // namespace details
 
-  } // namespace details
-} // namespace rex::log
+  } // namespace log
+} // namespace rex

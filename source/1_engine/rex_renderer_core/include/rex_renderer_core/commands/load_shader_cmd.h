@@ -1,9 +1,8 @@
 #pragma once
 
+#include "rex_engine/memory/blob.h"
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/shader_type.h"
-
-#include "rex_engine/memory/blob.h"
 
 namespace rex
 {
@@ -14,10 +13,11 @@ namespace rex
       struct LoadShaderCommandDesc
       {
         LoadShaderCommandDesc()
-            :shader_type(ShaderType::None)
-            ,shader_byte_code()
-            ,constant_buffer_count(0)
-        {}
+            : shader_type(ShaderType::None)
+            , shader_byte_code()
+            , constant_buffer_count(0)
+        {
+        }
 
         ShaderType shader_type;
         memory::Blob shader_byte_code;
@@ -32,7 +32,6 @@ namespace rex
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)
         {
-
         }
 
         ~LoadShader() override = default;

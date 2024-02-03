@@ -7,14 +7,16 @@ namespace rex
   namespace memory
   {
     BlobView::BlobView()
-      : m_data(nullptr)
-      , m_size(0)
-    {}
+        : m_data(nullptr)
+        , m_size(0)
+    {
+    }
 
     BlobView::BlobView(const Blob& blob)
-      : m_data(blob.data())
-      , m_size(blob.size())
-    {}
+        : m_data(blob.data())
+        , m_size(blob.size())
+    {
+    }
 
     const rsl::byte* BlobView::data() const
     {
@@ -25,5 +27,5 @@ namespace rex
     {
       return m_size;
     }
-  }
-}
+  } // namespace memory
+} // namespace rex

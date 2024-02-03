@@ -6,8 +6,8 @@
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/event_system/event_type.h"
 #include "rex_std/functional.h"
-#include "rex_windows/platform_creation_params.h"
 #include "rex_windows/input/internal/input.h"
+#include "rex_windows/platform_creation_params.h"
 
 #include <Windows.h>
 #include <consoleapi.h>

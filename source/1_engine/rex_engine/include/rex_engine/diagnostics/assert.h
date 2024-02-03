@@ -1,9 +1,9 @@
 #pragma once
 
+#include "rex_engine/engine/defines.h"
 #include "rex_std/bonus/defines.h"
 #include "rex_std/format.h"
 #include "rex_std/source_location.h"
-#include "rex_engine/engine/defines.h"
 
 namespace rex
 {

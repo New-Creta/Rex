@@ -2,8 +2,8 @@
 
 #include "rex_engine/engine/data_type.h"
 #include "rex_engine/engine/types.h"
-#include "rex_std/vector.h"
 #include "rex_std/bonus/utility/yes_no.h"
+#include "rex_std/vector.h"
 
 DEFINE_YES_NO_ENUM(ShouldNormalize); // NOLINT(google-explicit-constructor,-warnings-as-errors)
 
@@ -26,7 +26,7 @@ namespace rex
 
       /* If we're inputting integer data types (s32, byte) and we've set this to true,
        * the integer data is normalized to 0 (or -1 for signed data) and 1 when converted
-       * to float. 
+       * to float.
        */
       bool normalized;
     };

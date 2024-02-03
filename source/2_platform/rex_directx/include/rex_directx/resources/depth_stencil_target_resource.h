@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_directx/directx_util.h"
-#include "rex_renderer_core/resource.h"
 #include "rex_engine/engine/types.h"
+#include "rex_renderer_core/resource.h"
 
 namespace rex
 {
@@ -12,8 +12,8 @@ namespace rex
         {
             struct DepthStencilTarget
             {
-                wrl::ComPtr<ID3D12Resource> render_target;
-                s32 array_index;
+                wrl::ComPtr<ID3D12Resource> render_target{};
+                s32 array_index{};
             };
         } // namespace resources
 

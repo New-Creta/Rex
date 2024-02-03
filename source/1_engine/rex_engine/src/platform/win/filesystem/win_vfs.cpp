@@ -1,23 +1,23 @@
 #include "rex_engine/platform/win/filesystem/win_vfs.h"
 
 #include "rex_engine/cmdline/cmdline.h"
-#include "rex_engine/engine/state_controller.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
+#include "rex_engine/engine/state_controller.h"
+#include "rex_engine/filesystem/path.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/atomic/atomic.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/memory.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_std/ctype.h"
 #include "rex_std/mutex.h"
 #include "rex_std/thread.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
-#include "rex_std/bonus/utility/enum_reflection.h"
-#include "rex_engine/filesystem/path.h"
 
 #include <Windows.h>
 #include <processenv.h>
@@ -27,89 +27,83 @@ DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Log);
 
 // NOLINTBEGIN(modernize-use-nullptr)
 
-  // Rex Engine - Virtual File System
-  // Users can make simple request to read or write to a file
-  // that run on the same thread
-  // eg: vfs::read_file and vfs::write_to_file
-  //
-  // the vfs also supports async read requests
-  // this is done by calling vfs::read_file_async
-  // This will return a read request immediately
-  // the user is meant to keep this read request
-  // alive as it'll be signaled when reading has finished
-  // After which the user can access its buffer
-  // to process the data it just read
-  // It works as follows:
-  // 
-  // rex::vfs::ReadRequest request = rex::vfs::read_file_async("path/to/file");
-  //
-  // Do some other code here
-  // ..
-  // 
-  // 
-  // Wait for the file to be processed
-  // request.wait();
-  //
-  // const rsl::byte* buffer = request.buffer();
-  // rsl::memory_size size = request.size();
-  //
-  // Do something with the data..
-  //
-  // 
-  // 
-  // ASYNC VFS PIPELINE
-  // 
-  // 
-  // =====================================+=====================================================================================================================
-  //                                      |
-  //           USER CODE                  |                                                 INTERNAL CODE
-  //                                      |
-  // =====================================+=====================================================================================================================
-  //                                      |
-  // The following happens on the thread  |
-  // the request comes in from            |
-  //                                      |
-  // +-------------------------+          |            +----------------------+      +------------------------+      +-------------------------------+
-  // | User Requests File Read | ---------+----------> | Read Request Created | ---> | Queued Request Created | ---> | Queued Request Added To Queue |
-  // +-------------------------+          |            +----------------------+      +------------------------+      +-------------------------------+
-  //                                      |                                                                                         |
-  //                                      |                                                                                         |
-  // +----------------+                   |                                +-----------------------------+                          |
-  // | User Continues | <-----------------+------------------------------- | Return Read Request To User |   <----------------------+
-  // +----------------+                   |                                +-----------------------------+
-  //         |                            |       
-  //         |                            |                                               The following happens on the vfs thread
-  //         |                            |              +----------------------------------------------------------------------------------------------------+
-  //         |                            |              |                                                                                                    |
-  //         |                            |              |       +----------------------------------+      +--------------------------+      +-----------+    |
-  //         |                            |              |       | Queued Request Popped From Queue | ---> | Queued Request Processed | ---> | File Read |    |
-  //         v                            |              |       +----------------------------------+      +--------------------------+      +-----------+    |
-  // +-----------------+                  |              |                                                                                        |           |
-  // | Other User Code |                  |              |                                                                                        |           |              
-  // +-----------------+                  |              |                                                                                        |           |
-  //        |                             |              |                                                                                        |           |
-  //        |                             |              |                                                                                        |           |
-  //        |                             |              |                                                                                        |           |
-  //        v                             |              |                                                                                        |           |
-  // +-----------------------------+      |              |                                                                                        |           |
-  // | Waits for request to finish |      |              |                                                                                        |           |
-  // +-----------------------------+      |              |                                                                                        |           |
-  //        |                             |              |                                                                                        |           |
-  //        |                             |              |                                                                                        |           |
-  //        |                             |              |                                                                                        |           |
-  //        v                             |              |                                                                                        |           |
-  // +---------------------+              |              |                               +-----------------------+                                |           |
-  // | User Processes Data | <------------+--------------+-------------------------------| Read Request Signaled | <------------------------------+           |
-  // +---------------------+              |              |                               +-----------------------+                                            |
-  //                                      |              |                                                                                                    |
-  //                                      |              +----------------------------------------------------------------------------------------------------+
-  //                                    
-
-
-
-
-
-
+// Rex Engine - Virtual File System
+// Users can make simple request to read or write to a file
+// that run on the same thread
+// eg: vfs::read_file and vfs::write_to_file
+//
+// the vfs also supports async read requests
+// this is done by calling vfs::read_file_async
+// This will return a read request immediately
+// the user is meant to keep this read request
+// alive as it'll be signaled when reading has finished
+// After which the user can access its buffer
+// to process the data it just read
+// It works as follows:
+//
+// rex::vfs::ReadRequest request = rex::vfs::read_file_async("path/to/file");
+//
+// Do some other code here
+// ..
+//
+//
+// Wait for the file to be processed
+// request.wait();
+//
+// const rsl::byte* buffer = request.buffer();
+// rsl::memory_size size = request.size();
+//
+// Do something with the data..
+//
+//
+//
+// ASYNC VFS PIPELINE
+//
+//
+// =====================================+=====================================================================================================================
+//                                      |
+//           USER CODE                  |                                                 INTERNAL CODE
+//                                      |
+// =====================================+=====================================================================================================================
+//                                      |
+// The following happens on the thread  |
+// the request comes in from            |
+//                                      |
+// +-------------------------+          |            +----------------------+      +------------------------+      +-------------------------------+
+// | User Requests File Read | ---------+----------> | Read Request Created | ---> | Queued Request Created | ---> | Queued Request Added To Queue |
+// +-------------------------+          |            +----------------------+      +------------------------+      +-------------------------------+
+//                                      |                                                                                         |
+//                                      |                                                                                         |
+// +----------------+                   |                                +-----------------------------+                          |
+// | User Continues | <-----------------+------------------------------- | Return Read Request To User |   <----------------------+
+// +----------------+                   |                                +-----------------------------+
+//         |                            |
+//         |                            |                                               The following happens on the vfs thread
+//         |                            |              +----------------------------------------------------------------------------------------------------+
+//         |                            |              |                                                                                                    |
+//         |                            |              |       +----------------------------------+      +--------------------------+      +-----------+    |
+//         |                            |              |       | Queued Request Popped From Queue | ---> | Queued Request Processed | ---> | File Read |    |
+//         v                            |              |       +----------------------------------+      +--------------------------+      +-----------+    |
+// +-----------------+                  |              |                                                                                        |           |
+// | Other User Code |                  |              |                                                                                        |           |
+// +-----------------+                  |              |                                                                                        |           |
+//        |                             |              |                                                                                        |           |
+//        |                             |              |                                                                                        |           |
+//        |                             |              |                                                                                        |           |
+//        v                             |              |                                                                                        |           |
+// +-----------------------------+      |              |                                                                                        |           |
+// | Waits for request to finish |      |              |                                                                                        |           |
+// +-----------------------------+      |              |                                                                                        |           |
+//        |                             |              |                                                                                        |           |
+//        |                             |              |                                                                                        |           |
+//        |                             |              |                                                                                        |           |
+//        v                             |              |                                                                                        |           |
+// +---------------------+              |              |                               +-----------------------+                                |           |
+// | User Processes Data | <------------+--------------+-------------------------------| Read Request Signaled | <------------------------------+           |
+// +---------------------+              |              |                               +-----------------------+                                            |
+//                                      |              |                                                                                                    |
+//                                      |              +----------------------------------------------------------------------------------------------------+
+//
 
 namespace rex
 {
@@ -164,7 +158,7 @@ namespace rex
       {
         const rsl::unique_lock lock(m_requests_access_mtx);
 
-        for(ReadRequest* read_request : m_requests)
+        for(ReadRequest* read_request: m_requests)
         {
           read_request->signal(buffer, size);
         }
@@ -293,7 +287,7 @@ namespace rex
 
     // This controls the state of the vfs
     StateController<VfsState> g_vfs_state_controller(VfsState::NotInitialized);
-    
+
     // mutices for the asyncronous operation of the vfs
     rsl::mutex g_read_request_mutex;
     rsl::mutex g_closed_request_mutex;
@@ -314,10 +308,10 @@ namespace rex
 
     void process_read_requests()
     {
-      while (g_vfs_state_controller.has_state(VfsState::Running))
+      while(g_vfs_state_controller.has_state(VfsState::Running))
       {
         rsl::unique_lock lock(g_read_request_mutex);
-        if (!g_read_requests.empty())
+        if(!g_read_requests.empty())
         {
           // get the queued request and remvoe it from the queue,
           // but remove in the reverse order that they got added
@@ -352,15 +346,15 @@ namespace rex
 
     void wait_for_read_requests()
     {
-      while (g_vfs_state_controller.has_state(VfsState::Running))
+      while(g_vfs_state_controller.has_state(VfsState::Running))
       {
         const rsl::unique_lock lock(g_closed_request_mutex);
-        if (!g_closed_requests.empty())
+        if(!g_closed_requests.empty())
         {
           // Go over all the queued request and check if their read requests are all done
-          for (rsl::unique_ptr<QueuedRequest>& request : g_closed_requests)
+          for(rsl::unique_ptr<QueuedRequest>& request: g_closed_requests)
           {
-            if (request->all_requests_finished())
+            if(request->all_requests_finished())
             {
               request.reset();
             }
@@ -450,8 +444,8 @@ namespace rex
 
     memory::Blob read_file(MountingPoint root, rsl::string_view filepath)
     {
-      filepath = path::remove_quotes(filepath);
-      rsl::string path = path::join(g_mounted_roots.at(root), filepath);
+      filepath               = path::remove_quotes(filepath);
+      const rsl::string path = path::join(g_mounted_roots.at(root), filepath);
       return read_file(path);
     }
 
@@ -460,13 +454,13 @@ namespace rex
       rsl::string path = create_full_path(filepath);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(path.data(),               // Path to file
-                                                               GENERIC_READ,              // General read and write access
-                                                               FILE_SHARE_READ,           // Other processes can also read the file
-                                                               NULL,                      // No SECURITY_ATTRIBUTES
-                                                               OPEN_EXISTING,             // Open the file, only if it exists
-                                                               FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
-                                                               NULL                       // No template file
-                                                               ),
+                                                                GENERIC_READ,              // General read and write access
+                                                                FILE_SHARE_READ,           // Other processes can also read the file
+                                                                NULL,                      // No SECURITY_ATTRIBUTES
+                                                                OPEN_EXISTING,             // Open the file, only if it exists
+                                                                FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
+                                                                NULL                       // No template file
+                                                                ),
                                                     ERROR_ALREADY_EXISTS));
 
       // prepare a buffer to receive the file content
@@ -484,8 +478,8 @@ namespace rex
 
     ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath)
     {
-      filepath = path::remove_quotes(filepath);
-      rsl::medium_stack_string path = rsl::string_view(path::join(g_mounted_roots.at(root), filepath));
+      filepath                            = path::remove_quotes(filepath);
+      const rsl::medium_stack_string path = rsl::string_view(path::join(g_mounted_roots.at(root), filepath));
       return read_file_async(path);
     }
 
@@ -497,7 +491,7 @@ namespace rex
       auto it = g_read_requests.find(filepath);
 
       // If we already have a request for this file, add a new request to signal to the queued request
-      if (it != g_read_requests.end())
+      if(it != g_read_requests.end())
       {
         ReadRequest request(filepath, it->value.get());
         it->value->add_request_to_signal(&request);
@@ -521,7 +515,7 @@ namespace rex
     {
       filepath = path::remove_quotes(filepath);
 
-      rsl::string path = path::join(g_mounted_roots.at(root), filepath);
+      const rsl::string path = path::join(g_mounted_roots.at(root), filepath);
       return save_to_file(path, data, size, shouldAppend);
     }
 
@@ -530,13 +524,13 @@ namespace rex
       rsl::string fullpath = create_full_path(filepath);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(fullpath.data(),           // Path to file
-                                                               GENERIC_WRITE,             // General read and write access
-                                                               FILE_SHARE_READ,           // Other processes can also read the file
-                                                               NULL,                      // No SECURITY_ATTRIBUTES
-                                                               OPEN_ALWAYS,               // Create a new file, error when it already exists
-                                                               FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
-                                                               NULL                       // No template file
-                                                               ),
+                                                                GENERIC_WRITE,             // General read and write access
+                                                                FILE_SHARE_READ,           // Other processes can also read the file
+                                                                NULL,                      // No SECURITY_ATTRIBUTES
+                                                                OPEN_ALWAYS,               // Create a new file, error when it already exists
+                                                                FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
+                                                                NULL                       // No template file
+                                                                ),
                                                     ERROR_ALREADY_EXISTS));
 
       const DWORD move_method = shouldAppend ? FILE_END : FILE_BEGIN;
@@ -553,7 +547,7 @@ namespace rex
     {
       filepath = path::remove_quotes(filepath);
 
-      rsl::string path = path::join(g_mounted_roots.at(root), filepath);
+      const rsl::string path = path::join(g_mounted_roots.at(root), filepath);
       return save_to_file(path, blob.data(), blob.size(), shouldAppend);
     }
 
@@ -566,7 +560,7 @@ namespace rex
     {
       path = path::remove_quotes(path);
 
-      rsl::string filepath = path::join(g_mounted_roots.at(root), path);
+      const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
       return create_dir(filepath);
     }
 
@@ -580,7 +574,7 @@ namespace rex
     {
       path = path::remove_quotes(path);
 
-      rsl::string filepath = path::join(g_mounted_roots.at(root), path);
+      const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
       return path::exists(filepath);
     }
 
@@ -588,14 +582,14 @@ namespace rex
     {
       path = path::remove_quotes(path);
 
-      rsl::string filepath = path::join(g_mounted_roots.at(root), path);
+      const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
       return path::is_dir(filepath);
     }
     bool is_file(MountingPoint root, rsl::string_view path)
     {
       path = path::remove_quotes(path);
 
-      rsl::string filepath = path::join(g_mounted_roots.at(root), path);
+      const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
       return path::is_file(filepath);
     }
 
@@ -620,12 +614,12 @@ namespace rex
       }
 
       const auto comparer = rsl::equal_to<rsl::string>();
-      using K1 = rsl::string;
-      using K2 = rsl::string_view;
-      using Key = rsl::string;
+      using K1            = rsl::string;
+      using K2            = rsl::string_view;
+      using Key           = rsl::string;
 
-      K1 k1;
-      K2 k2;
+      K1 const k1;
+      K2 const k2;
 
       const bool b = comparer(k1, k2);
 

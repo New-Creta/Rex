@@ -1,9 +1,8 @@
 #pragma once
 
+#include "rex_engine/engine/types.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/limits.h"
-
-#include "rex_engine/engine/types.h"
 
 namespace rex
 {

@@ -23,7 +23,7 @@ namespace rex
 
         ~EndDraw() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::end_draw();
         }

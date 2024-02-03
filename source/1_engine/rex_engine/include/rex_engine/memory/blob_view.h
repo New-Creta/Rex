@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_std/memory.h"
 #include "rex_std/bonus/memory.h"
+#include "rex_std/memory.h"
 
 namespace rex
 {
@@ -19,7 +19,7 @@ namespace rex
     {
     public:
       BlobView();
-      BlobView(const Blob& blob);
+      explicit BlobView(const Blob& blob);
 
       const rsl::byte* data() const;
       rsl::memory_size size() const;
@@ -34,5 +34,5 @@ namespace rex
       const rsl::byte* m_data;
       rsl::memory_size m_size;
     };
-  }
-}
+  } // namespace memory
+} // namespace rex

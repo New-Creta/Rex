@@ -2,16 +2,16 @@
 
 #include "rex_engine/app/core_application.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/memory/memory_header.h"
 #include "rex_engine/memory/memory_stats.h"
-#include "rex_std/bonus/types.h"
 #include "rex_std/bonus/time/timepoint.h"
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {

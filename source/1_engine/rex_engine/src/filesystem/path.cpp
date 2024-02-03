@@ -3,9 +3,9 @@
 #include "rex_engine/engine/numeric.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
+#include "rex_std/bonus/string.h"
 #include "rex_std/ctype.h"
 #include "rex_std/format.h"
-#include "rex_std/bonus/string.h"
 
 // The current implementation of this namespace is Windows only
 
@@ -20,14 +20,14 @@ namespace rex
       // concat the arg to the string in filepath format
       void join_impl(rsl::string& str, rsl::string_view arg)
       {
-        if (arg.empty())
+        if(arg.empty())
         {
           return;
         }
 
         str += arg;
 
-        if (!str.ends_with(seperation_char()))
+        if(!str.ends_with(seperation_char()))
         {
           str += seperation_char();
         }
@@ -39,15 +39,15 @@ namespace rex
       {
         // because it's possible to have a path like this
         // ./relative/path/file.txt
-        // we can need to scan for the first dot 
+        // we can need to scan for the first dot
         // after the first slash
-        auto pos = path.find_last_of("/\\");
+        auto pos      = path.find_last_of("/\\");
         auto filename = pos != path.npos() // NOLINT(readability-static-accessed-through-instance)
-          ? path.substr(pos + 1)
-          : path;
+                            ? path.substr(pos + 1)
+                            : path;
 
         // current dir and parent dir "filenames" don't have extensions
-        if (filename == "." || filename == "..")
+        if(filename == "." || filename == "..")
         {
           return path.npos(); // NOLINT(readability-static-accessed-through-instance)
         }
@@ -57,8 +57,8 @@ namespace rex
         // make sure we convert the pos in the filename back to the pos
         // of the total input path
         return ext_start != filename.npos() // NOLINT(readability-static-accessed-through-instance)
-          ? static_cast<card32>(&filename[ext_start] - path.data())
-          : path.npos(); // NOLINT(readability-static-accessed-through-instance)
+                   ? static_cast<card32>(&filename[ext_start] - path.data())
+                   : path.npos(); // NOLINT(readability-static-accessed-through-instance)
       }
 
       // Fills a string with a number of random characters
@@ -66,7 +66,7 @@ namespace rex
       void fill_with_random_chars(rsl::string& str, card32 numCharsToFill)
       {
         rsl::small_stack_string chars("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
-        for (card32 i = 0; i < numCharsToFill; ++i)
+        for(card32 i = 0; i < numCharsToFill; ++i)
         {
           const card32 random_idx = std::rand() % chars.length(); // NOLINT(cert-msc50-cpp, concurrency-mt-unsafe)
           str += chars[random_idx];
@@ -84,7 +84,7 @@ namespace rex
     // removes leading and trailing quotes from a path
     rsl::string_view remove_quotes(rsl::string_view path)
     {
-      if (path.starts_with("\"") && path.ends_with("\""))
+      if(path.starts_with("\"") && path.ends_with("\""))
       {
         path = path.substr(1, path.length() - 2);
       }
@@ -102,7 +102,7 @@ namespace rex
       rsl::string res(split_res.head);
 
       // Add a dot if the provided one doesn't have one
-      if (!extension.empty() && !extension.starts_with('.'))
+      if(!extension.empty() && !extension.starts_with('.'))
       {
         res += '.';
       }
@@ -138,7 +138,7 @@ namespace rex
 
       // get the position of the extension, if there is one
       const card32 extension_pos = internal::extension_start(file_name);
-      const card32 count = extension_pos != -1 ? extension_pos : file_name.length();
+      const card32 count         = extension_pos != -1 ? extension_pos : file_name.length();
 
       // return the substring of the filename, without the extension
       return file_name.substr(0, count);
@@ -147,7 +147,7 @@ namespace rex
     rsl::string_view path_root(rsl::string_view path)
     {
       // if the path is an absolute path, return the path root
-      if (is_absolute(path))
+      if(is_absolute(path))
       {
         return path.substr(0, path.find_first_of("/\\"));
       }
@@ -170,7 +170,7 @@ namespace rex
         // create a stem of 8 random characters
         internal::fill_with_random_chars(result, num_dirname_chars);
 
-      } while (path::exists(result));
+      } while(path::exists(result));
 
       return result;
     }
@@ -178,7 +178,7 @@ namespace rex
     rsl::string random_filename()
     {
       const card32 num_stem_chars = 8;
-      const card32 num_ext_chars = 3;
+      const card32 num_ext_chars  = 3;
       rsl::string result;
 
       do
@@ -193,7 +193,7 @@ namespace rex
         // create an extension of 3 random characters
         internal::fill_with_random_chars(result, num_ext_chars);
 
-      } while (path::exists(result));
+      } while(path::exists(result));
 
       return result;
     }
@@ -202,17 +202,17 @@ namespace rex
     rsl::string_view common_path(const rsl::vector<rsl::string_view>& paths)
     {
       // if no paths are given, just return an empty path
-      if (paths.empty())
+      if(paths.empty())
       {
         return "";
       }
 
       // split the first path into different path components
       const rsl::vector<rsl::string_view> splitted = rsl::split(paths.front(), "/\\");
-      auto furthest_path_component_it = splitted.cbegin();
+      auto furthest_path_component_it              = splitted.cbegin();
 
       // iterate over the other paths
-      for (card32 i = 1; i < paths.size(); ++i)
+      for(card32 i = 1; i < paths.size(); ++i)
       {
         const rsl::string_view path = paths[i];
 
@@ -223,7 +223,7 @@ namespace rex
         auto res = rsl::mismatch(splitted.cbegin(), splitted.cend(), splitted_path.cbegin(), splitted_path.cend());
 
         // if None are equal, return an empty path
-        if (res.lhs_it == splitted.cbegin())
+        if(res.lhs_it == splitted.cbegin())
         {
           return "";
         }
@@ -237,8 +237,8 @@ namespace rex
 
       // count the path components, so we know where out substring should end
       const rsl::string_view first_path = paths.front();
-      card32 pos = 0;
-      for (card32 i = 0; i < path_component_idx; ++i)
+      card32 pos                        = 0;
+      for(card32 i = 0; i < path_component_idx; ++i)
       {
         pos = first_path.find_first_of("/\\", pos);
         ++pos;
@@ -256,10 +256,10 @@ namespace rex
       rsl::vector<rsl::string_view> norm_splitted(rsl::Capacity(splitted_path.size()));
 
       // loop over each path component in the given path
-      for (const rsl::string_view path_comp : splitted_path)
+      for(const rsl::string_view path_comp: splitted_path)
       {
         // if the "current dir" token is found, we skip it
-        if (path_comp == ".")
+        if(path_comp == ".")
         {
           continue;
         }
@@ -268,9 +268,9 @@ namespace rex
         // unless that's the parent dir token.
         // if the parent dir is found, it means there are no known parents anymore
         // then we add the parent dir to the normalized path components
-        if (path_comp == "..")
+        if(path_comp == "..")
         {
-          if (!norm_splitted.empty() && norm_splitted.back() != "..")
+          if(!norm_splitted.empty() && norm_splitted.back() != "..")
           {
             norm_splitted.pop_back();
             continue;
@@ -292,15 +292,15 @@ namespace rex
     // Returns a relative path to path, starting from the start directory
     rsl::string rel_path(rsl::string_view path, rsl::string_view start)
     {
-      const rsl::string norm_path = path::norm_path(path);
+      const rsl::string norm_path  = path::norm_path(path);
       const rsl::string norm_start = path::norm_path(start);
 
-      if (norm_path.empty() && norm_start.empty())
+      if(norm_path.empty() && norm_start.empty())
       {
         return rsl::string("");
       }
 
-      const rsl::vector<rsl::string_view> splitted_path = rsl::split(norm_path, rsl::string_view(&g_seperation_char, 1));
+      const rsl::vector<rsl::string_view> splitted_path  = rsl::split(norm_path, rsl::string_view(&g_seperation_char, 1));
       const rsl::vector<rsl::string_view> splitted_start = rsl::split(norm_start, rsl::string_view(&g_seperation_char, 1));
 
       auto res = rsl::mismatch(splitted_path.cbegin(), splitted_path.cend(), splitted_start.cbegin(), splitted_start.cend());
@@ -310,10 +310,10 @@ namespace rex
       // Eg. target: "dir", start: "path"
       // result: "../dir"
       rsl::string result;
-      if (res.lhs_it == splitted_path.cbegin())
+      if(res.lhs_it == splitted_path.cbegin())
       {
         const card32 num_parent_dir_tokens = splitted_start.size();
-        for (card32 i = 0; i < num_parent_dir_tokens; ++i)
+        for(card32 i = 0; i < num_parent_dir_tokens; ++i)
         {
           result = path::join(result, "..");
         }
@@ -325,12 +325,12 @@ namespace rex
     // Returns if the given path has an extension
     bool has_extension(rsl::string_view path)
     {
-      if (path == ".")
+      if(path == ".")
       {
         return false;
       }
 
-      if (path == "..")
+      if(path == "..")
       {
         return false;
       }
@@ -342,17 +342,17 @@ namespace rex
     // Returns if the given path is a relative path
     bool is_relative(rsl::string_view path)
     {
-      if (path.empty())
+      if(path.empty())
       {
         return false;
       }
 
-      if (path == ".")
+      if(path == ".")
       {
         return false;
       }
 
-      if (path == "..")
+      if(path == "..")
       {
         return false;
       }
@@ -374,13 +374,13 @@ namespace rex
     // the head is everything leading up to that
     SplitResult split(rsl::string_view path)
     {
-      SplitResult res{};
+      SplitResult res {};
 
       // get the last slash position
       const card32 pos = path.find_last_of("/\\");
 
       // fill in the values
-      if (pos != path.npos()) // NOLINT(readability-static-accessed-through-instance)
+      if(pos != path.npos()) // NOLINT(readability-static-accessed-through-instance)
       {
         res.head = path.substr(0, pos);
         res.tail = path.substr(pos + 1);
@@ -398,13 +398,13 @@ namespace rex
     // the tail is the extension
     SplitResult split_ext(rsl::string_view path)
     {
-      SplitResult res{};
+      SplitResult res {};
 
       // get the extension start position
       const card32 ext_start = internal::extension_start(path);
 
       // fill in the values
-      if (ext_start != path.npos()) // NOLINT(readability-static-accessed-through-instance)
+      if(ext_start != path.npos()) // NOLINT(readability-static-accessed-through-instance)
       {
         res.head = path.substr(0, ext_start);
         res.tail = path.substr(ext_start);

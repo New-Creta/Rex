@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
+#include "rex_renderer_core/resource.h"
 
 #include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
 
@@ -14,14 +14,14 @@ namespace rex
         {
             struct ShaderProgram
             {
-                wrl::ComPtr<ID3D12RootSignature> root_signature;
-                wrl::ComPtr<ID3DBlob> vertex_shader;
-                wrl::ComPtr<ID3DBlob> pixel_shader;
+                wrl::ComPtr<ID3D12RootSignature> root_signature{};
+                wrl::ComPtr<ID3DBlob> vertex_shader{};
+                wrl::ComPtr<ID3DBlob> pixel_shader{};
 
-                const commands::ConstantLayoutDescription* constants;
-                s32 num_constants;
+                const commands::ConstantLayoutDescription* constants{};
+                s32 num_constants{};
             };
-        }
+        } // namespace resources
 
         class ShaderProgramResource : public BaseResource<resources::ShaderProgram>
         {
@@ -37,5 +37,5 @@ namespace rex
         private:
             resources::ShaderProgram m_shader_program;
         };
-    }
-}
+    } // namespace renderer
+} // namespace rex

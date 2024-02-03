@@ -25,6 +25,6 @@ namespace rex
 
             XMVertexPosCol convert_to_dx(const VertexPosCol& v);
             XMVertexPosNormTex convert_to_dx(const VertexPosNormTex& v);
-        }
-    }
-}
+        } // namespace directx
+    } // namespace renderer
+} // namespace rex

@@ -12,15 +12,17 @@ namespace rex
     {
       struct ReleaseResourceCommandDesc
       {
-          ReleaseResourceCommandDesc()
-              :slots(nullptr)
-          {}
+        ReleaseResourceCommandDesc()
+            : slots(nullptr)
+        {
+        }
 
-          explicit ReleaseResourceCommandDesc(ResourceSlots* resourceSlots)
-              :slots(resourceSlots)
-          {}
+        explicit ReleaseResourceCommandDesc(ResourceSlots* resourceSlots)
+            : slots(resourceSlots)
+        {
+        }
 
-          ResourceSlots* slots;
+        ResourceSlots* slots;
       };
 
       class ReleaseResource : public RenderCommand

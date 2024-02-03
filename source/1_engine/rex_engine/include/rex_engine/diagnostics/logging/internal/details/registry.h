@@ -7,9 +7,9 @@
 // If user requests a non existing Logger, nullptr will be returned
 // This class is thread safe
 
-#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 #include "rex_std/string.h"

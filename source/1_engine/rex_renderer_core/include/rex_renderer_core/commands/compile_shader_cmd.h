@@ -1,10 +1,8 @@
 #pragma once
 
+#include "rex_engine/memory/blob.h"
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/shader_type.h"
-
-#include "rex_engine/memory/blob.h"
-
 #include "rex_std/string_view.h"
 
 namespace rex

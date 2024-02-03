@@ -25,7 +25,7 @@ namespace rex
 
         ~SetInputLayout() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::set_input_layout(m_resource_slot);
         }

@@ -1,13 +1,13 @@
-#pragma once 
+#pragma once
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class FillMode
     {
-        enum class FillMode
-        {
-            SOLID,
-            WIREFRAME
-        };
-    }
-}
+      SOLID,
+      WIREFRAME
+    };
+  } // namespace renderer
+} // namespace rex

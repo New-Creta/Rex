@@ -2,15 +2,15 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class ShaderType
     {
-        enum class ShaderType
-        {
-            None = 0,
-            VERTEX,
-            PIXEL,
-            GEOMETRY,
-            COMPUTE
-        };
-    }
-}
+      None = 0,
+      VERTEX,
+      PIXEL,
+      GEOMETRY,
+      COMPUTE
+    };
+  } // namespace renderer
+} // namespace rex

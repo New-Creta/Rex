@@ -13,7 +13,7 @@ namespace rex
   {
     REX_ERROR(LogVerify, "Verification Failed: {}", condition);
     REX_ERROR(LogVerify, msg);
-    
+
     tinyfd_messageBox("Verification Failed", msg.data(), "ok", "error", 0);
 
     DEBUG_BREAK();

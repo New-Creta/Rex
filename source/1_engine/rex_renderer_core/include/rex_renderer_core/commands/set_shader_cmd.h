@@ -25,7 +25,7 @@ namespace rex
 
         ~SetShader() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::set_shader(m_resource_slot);
         }

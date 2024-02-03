@@ -2,17 +2,17 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    class Scene;
+
+    class SceneRenderer
     {
-        class Scene;
+    public:
+      explicit SceneRenderer(const Scene* scene);
 
-        class SceneRenderer
-        {
-        public:
-            explicit SceneRenderer(const Scene* scene);
-
-        private:
-            const Scene* m_scene;
-        };
-    }
-}
+    private:
+      const Scene* m_scene;
+    };
+  } // namespace renderer
+} // namespace rex

@@ -1,8 +1,8 @@
 #include "rex_directx/d3dx12.h"
+#include "rex_directx/directx_call.h"
 #include "rex_directx/directx_feature_level.h"
 #include "rex_directx/directx_feature_shader_model.h"
 #include "rex_directx/directx_util.h" // IWYU pragma: keep
-#include "rex_directx/directx_call.h"
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
@@ -16,8 +16,8 @@
 #include "rex_directx/resources/depth_stencil_target_resource.h"
 #include "rex_directx/resources/frame_resource.h"
 #include "rex_directx/resources/input_layout_resource.h"
-#include "rex_directx/resources/pipeline_state_resource.h"
 #include "rex_directx/resources/pipeline_state_object_hasher.h"
+#include "rex_directx/resources/pipeline_state_resource.h"
 #include "rex_directx/resources/pixel_shader_resource.h"
 #include "rex_directx/resources/raster_state_resource.h"
 #include "rex_directx/resources/render_target_resource.h"
@@ -32,31 +32,31 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/memory/pointer_math.h"
 
+#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/begin_draw_cmd.h"
 #include "rex_renderer_core/commands/clear_cmd.h"
 #include "rex_renderer_core/commands/compile_shader_cmd.h"
 #include "rex_renderer_core/commands/create_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_clear_state_cmd.h"
 #include "rex_renderer_core/commands/create_constant_buffer_cmd.h"
+#include "rex_renderer_core/commands/create_frame_resource_cmd.h"
 #include "rex_renderer_core/commands/create_index_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_input_layout_cmd.h"
 #include "rex_renderer_core/commands/create_pipeline_state_cmd.h"
 #include "rex_renderer_core/commands/create_raster_state_cmd.h"
 #include "rex_renderer_core/commands/create_vertex_buffer_cmd.h"
-#include "rex_renderer_core/commands/create_frame_resource_cmd.h"
-#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/draw_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
 #include "rex_renderer_core/commands/draw_instanced_cmd.h"
 #include "rex_renderer_core/commands/end_draw_cmd.h"
+#include "rex_renderer_core/commands/end_frame_cmd.h"
+#include "rex_renderer_core/commands/finish_user_initialization_cmd.h"
 #include "rex_renderer_core/commands/link_shader_cmd.h"
 #include "rex_renderer_core/commands/load_shader_cmd.h"
 #include "rex_renderer_core/commands/new_frame_cmd.h"
-#include "rex_renderer_core/commands/end_frame_cmd.h"
-#include "rex_renderer_core/commands/present_cmd.h"
 #include "rex_renderer_core/commands/prepare_user_initialization_cmd.h"
-#include "rex_renderer_core/commands/finish_user_initialization_cmd.h"
+#include "rex_renderer_core/commands/present_cmd.h"
 #include "rex_renderer_core/commands/release_resource_cmd.h"
 #include "rex_renderer_core/commands/set_constant_buffer_cmd.h"
 #include "rex_renderer_core/commands/set_index_buffer_cmd.h"
@@ -71,29 +71,29 @@
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
 #include "rex_renderer_core/commands/update_committed_resource_cmd.h"
 
-#include "rex_renderer_core/renderer_backend.h"
 #include "rex_renderer_core/cull_mode.h"
 #include "rex_renderer_core/fill_mode.h"
 #include "rex_renderer_core/gpu_description.h"
 #include "rex_renderer_core/index_buffer_format.h"
 #include "rex_renderer_core/input_layout_classification.h"
-#include "rex_renderer_core/resource_pool.h"
-#include "rex_renderer_core/vertex_buffer_format.h"
-#include "rex_renderer_core/texture_format.h"
-#include "rex_renderer_core/shader_platform.h"
-#include "rex_renderer_core/viewport.h"
-#include "rex_renderer_core/scissor_rect.h"
-#include "rex_renderer_core/renderer_output_window_user_data.h"
+#include "rex_renderer_core/renderer_backend.h"
 #include "rex_renderer_core/renderer_info.h"
+#include "rex_renderer_core/renderer_output_window_user_data.h"
+#include "rex_renderer_core/resource_pool.h"
+#include "rex_renderer_core/scissor_rect.h"
+#include "rex_renderer_core/shader_platform.h"
+#include "rex_renderer_core/texture_format.h"
+#include "rex_renderer_core/vertex_buffer_format.h"
+#include "rex_renderer_core/viewport.h"
 
 #include "rex_std/algorithm.h"
-#include "rex_std/bonus/string.h"
-#include "rex_std/memory.h"
-#include "rex_std/vector.h"
 #include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/platform/windows/handle.h"
+#include "rex_std/bonus/string.h"
 #include "rex_std/bonus/utility/casting.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
-#include "rex_std/bonus/platform/windows/handle.h"
+#include "rex_std/memory.h"
+#include "rex_std/vector.h"
 
 #include <optional>
 
@@ -144,14 +144,14 @@ namespace rex
       {
         switch(mode)
         {
-          case CullMode::None: return D3D12_CULL_MODE_None;
+          case CullMode::None: return D3D12_CULL_MODE_NONE;
           case CullMode::FRONT: return D3D12_CULL_MODE_FRONT;
           case CullMode::BACK: return D3D12_CULL_MODE_BACK;
           default: break;
         }
 
         REX_ASSERT("Unsupported cull mode given");
-        return D3D12_CULL_MODE_None;
+        return D3D12_CULL_MODE_NONE;
       }
       //-------------------------------------------------------------------------
       DXGI_FORMAT to_d3d12_vertex_format(VertexBufferFormat format)
@@ -187,7 +187,7 @@ namespace rex
       {
         switch(format)
         {
-          case TextureFormat::UNORM4_SRGB: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+          case TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
           default: break;
         }
         REX_ASSERT("Unsupported vertex buffer format given");
@@ -607,7 +607,7 @@ namespace rex
         {
           D3D12_COMMAND_QUEUE_DESC queue_desc = {};
           queue_desc.Type                     = D3D12_COMMAND_LIST_TYPE_DIRECT;
-          queue_desc.Flags                    = D3D12_COMMAND_QUEUE_FLAG_None;
+          queue_desc.Flags                    = D3D12_COMMAND_QUEUE_FLAG_NONE;
           if(DX_FAILED(g_ctx->device->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(g_ctx->command_queue.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create command queue");
@@ -688,7 +688,7 @@ namespace rex
           CD3DX12_HEAP_PROPERTIES heap_properties_default(D3D12_HEAP_TYPE_DEFAULT);
           auto buffer_default = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
-          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_None, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.buffer.GetAddressOf()))))
+          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_default, D3D12_HEAP_FLAG_NONE, &buffer_default, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(default_buffer.buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create committed resource for a default buffer.");
             return {};
@@ -699,7 +699,7 @@ namespace rex
           CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
           auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(byteSize);
 
-          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_None, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(default_buffer.upload_buffer.GetAddressOf()))))
+          if(DX_FAILED(device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(default_buffer.upload_buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
             return {};
@@ -762,7 +762,7 @@ namespace rex
             CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
             CD3DX12_RESOURCE_DESC buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(obj_cb_byte_size * bufferCount);
 
-            if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_None, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
+            if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constant_buffer_uploader))))
             {
                 REX_ERROR(LogDirectX, "Could not create committed resource ( constant buffer )");
                 return nullptr;
@@ -946,7 +946,7 @@ namespace rex
             return false;
           }
 
-          TextureFormat render_target_format = TextureFormat::UNORM4_SRGB;
+          TextureFormat render_target_format = TextureFormat::Unorm4Srgb;
           wrl::ComPtr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count];
           CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
           for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
@@ -1022,7 +1022,7 @@ namespace rex
           CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart());
 
           CD3DX12_HEAP_PROPERTIES heap_properties(D3D12_HEAP_TYPE_DEFAULT);
-          if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_None, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
+          if(DX_FAILED(g_ctx->device->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_NONE, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
           {
             REX_ERROR(LogDirectX, "Failed to create depth stencil buffer");
             return false;
@@ -1033,7 +1033,7 @@ namespace rex
           // Create descriptor to mip level 0 of entire resource using the
           // format of the resource
           D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc;
-          dsv_desc.Flags              = D3D12_DSV_FLAG_None;
+          dsv_desc.Flags              = D3D12_DSV_FLAG_NONE;
           dsv_desc.ViewDimension      = D3D12_DSV_DIMENSION_TEXTURE2D;
           dsv_desc.Format             = g_ctx->depth_stencil_format;
           dsv_desc.Texture2D.MipSlice = 0;
@@ -1055,11 +1055,11 @@ namespace rex
           rsl::array<D3D12_DESCRIPTOR_HEAP_DESC, 3> heap_descs;
 
           heap_descs[0] = {
-              D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rsl::safe_numeric_cast<UINT>(numRTV), D3D12_DESCRIPTOR_HEAP_FLAG_None,
+              D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rsl::safe_numeric_cast<UINT>(numRTV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
               0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
           };
           heap_descs[1] = {
-              D3D12_DESCRIPTOR_HEAP_TYPE_DSV, rsl::safe_numeric_cast<UINT>(numDSV), D3D12_DESCRIPTOR_HEAP_FLAG_None,
+              D3D12_DESCRIPTOR_HEAP_TYPE_DSV, rsl::safe_numeric_cast<UINT>(numDSV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
               0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
           };
           heap_descs[2] = {
@@ -1304,7 +1304,7 @@ namespace rex
         directx::g_renderer_info.vendor         = selected_gpu->description().vendor_name;
 
         // Create fence for CPU/GPU synchronization
-        if(DX_FAILED(g_ctx->device->CreateFence(0, D3D12_FENCE_FLAG_None, IID_PPV_ARGS(&g_ctx->fence))))
+        if(DX_FAILED(g_ctx->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_ctx->fence))))
         {
           REX_ERROR(LogDirectX, "Failed to create DX fence, to synchronize CPU/GPU");
           return false;
@@ -1322,7 +1322,7 @@ namespace rex
         D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS ms_quality_levels;
         ms_quality_levels.Format           = g_ctx->back_buffer_format;
         ms_quality_levels.SampleCount      = 4;
-        ms_quality_levels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_None;
+        ms_quality_levels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
         ms_quality_levels.NumQualityLevels = 0;
         if(DX_FAILED(g_ctx->device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &ms_quality_levels, sizeof(ms_quality_levels))))
         {

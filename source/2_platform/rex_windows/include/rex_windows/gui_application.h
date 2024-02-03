@@ -13,7 +13,7 @@ namespace rex
   namespace globals
   {
     const WindowInfo& window_info();
-  }
+  } // namespace globals
   namespace win32
   {
     class GuiApplication : public CoreApplication

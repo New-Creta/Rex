@@ -2,12 +2,12 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class ShaderPlatform
     {
-        enum class ShaderPlatform
-        {
-            GLSL,
-            HLSL
-        };
-    }
-}
+      GLSL,
+      HLSL
+    };
+  } // namespace renderer
+} // namespace rex

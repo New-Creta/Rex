@@ -25,7 +25,7 @@ namespace rex
 
         ~SetScissorRect() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::set_scissor_rect(m_desc.scissor_rect);
         }

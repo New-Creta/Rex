@@ -25,7 +25,7 @@ namespace rex
 
         ~SetViewport() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::set_viewport(m_desc.viewport);
         }
