@@ -15,7 +15,8 @@
     "ClassName": "MountingPoint",
     "Filepath": "1_engine/rex_engine/include/rex_engine/filesystem/mounting_point.h",
     "Content": [
-      "Logs"
+      "Logs",
+      "Settings"
     ]
   },
   "CommandLineArgs": {

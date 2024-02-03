@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/engine/engine_params.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/bonus/utility.h"
@@ -100,6 +101,7 @@ namespace rex
     // however it does have a few dependencies that need to be set up first
     // - commandline needs to be initialized
     // - vfs needs to be initialized
+    load_settings();
 
     globals::g_frame_info.update();
     return platform_init();
@@ -136,6 +138,12 @@ namespace rex
         m_app_state.change_state(ApplicationState::ShuttingDown);
       }
     }
+  }
+
+  //--------------------------------------------------------------------------------------------
+  void CoreApplication::load_settings()
+  {
+    vfs::mount(MountingPoint::Settings, "settings");
   }
 
 } // namespace rex
