@@ -182,7 +182,7 @@ public abstract class BasicCPPProject : Project
     baseConfig.Configure(conf, target);
 
     // These are private and are not virtualized to be configurable derived projects
-    SetupProjectPaths(conf, target);
+    SetupProjectSettings(conf, target);
 
     // This is private and controlled by this project.
     // derived project should not change the behavior of this
@@ -718,7 +718,7 @@ public abstract class BasicCPPProject : Project
   }
 
   // Setup the target path and pdb locations
-  private void SetupProjectPaths(RexConfiguration conf, RexTarget target)
+  private void SetupProjectSettings(RexConfiguration conf, RexTarget target)
   {
     // Because we use ninja files we store binaries and intermediates with the ninja files
     // we hardcode "ninja" as that's the name of the devenv when ninja is selected
@@ -728,6 +728,9 @@ public abstract class BasicCPPProject : Project
     conf.UseRelativePdbPath = false;
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
     conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
+
+    // Add the name of the project as a define
+    conf.Defines.Add($"REX_PROJECT_NAME=\"{Name}\"");
   }
 }
 

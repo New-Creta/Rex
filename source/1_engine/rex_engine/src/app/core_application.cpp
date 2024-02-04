@@ -143,7 +143,10 @@ namespace rex
   //--------------------------------------------------------------------------------------------
   void CoreApplication::load_settings()
   {
-    vfs::mount(MountingPoint::Settings, "settings");
+    // Load the engine settings.
+    // They can always be overridden in a project
+    // but the engine loads the default settings
+
   }
 
 } // namespace rex

@@ -285,6 +285,11 @@ namespace rex
     // This the root where all relative paths will start from
     rsl::medium_stack_string g_root;
 
+    // This is the root dir of all engine data
+    // this data is shared between all projects
+    // that use rex as their game engine
+    rsl::medium_stack_string g_engine_data_root;
+
     // This controls the state of the vfs
     StateController<VfsState> g_vfs_state_controller(VfsState::NotInitialized);
 
@@ -395,6 +400,13 @@ namespace rex
       // Setting the root directory has the effect that all data will be read relative from this directory
       // This has the same effect as if you would put the working directory to this path
       set_root(cmdline::get_argument("Root").value_or(root));
+
+      // Engine data root is always in the following path
+      // ~/data/RexEngine
+      // This might change in the future, but at the moment
+      // the best way to get this path is to start from our given root
+      // WE DON'T WANT THIS, FIND A BETTER WAY TO TRACK THIS
+      g_engine_data_root = path::abs_path(path::join("..", "RexEngine"));
 
       // Start the worker threads, listening to file IO requests and processing them
       start_threads();
