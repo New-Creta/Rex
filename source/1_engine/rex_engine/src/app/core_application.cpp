@@ -5,8 +5,10 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/engine/engine_params.h"
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/path.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/memory/memory_tracking.h"
+#include "rex_engine/settings/settings.h"
 #include "rex_std/bonus/utility.h"
 
 #include <cstdlib>
@@ -97,6 +99,11 @@ namespace rex
   {
     m_app_state.change_state(ApplicationState::Initializing);
 
+    // Loads the mounts of the engine
+    // this will make it easier to access files under these paths
+    // in the future
+    mount_paths();
+
     // load the settings of the engine as early as possible
     // however it does have a few dependencies that need to be set up first
     // - commandline needs to be initialized
@@ -141,12 +148,25 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
+  void CoreApplication::mount_paths()
+  {
+    vfs::mount(MountingPoint::EngineSettings, path::join(vfs::engine_root(), "settings"));
+  }
+
+  //--------------------------------------------------------------------------------------------
   void CoreApplication::load_settings()
   {
     // Load the engine settings.
     // They can always be overridden in a project
     // but the engine loads the default settings
 
+    // get the default settings of the engine and load them into memory
+    rsl::vector<rsl::string> files = path::list_files(vfs::mount_path(MountingPoint::EngineSettings));
+
+    for (rsl::string_view file : files)
+    {
+      settings::load(file);
+    }
   }
 
 } // namespace rex
