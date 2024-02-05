@@ -57,6 +57,7 @@ namespace rex
         continue;
       }
 
+      // anything else is an error
       REX_ERROR(LogIniProcessor, "Invalid line: \"{}\"", line);
       error = Error("Invalid line found");
     }

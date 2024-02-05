@@ -82,7 +82,7 @@ namespace rex
 
       REX_ERROR_X(Settings, error, "Invalid settings found in \"{}\"", path);
 
-      // Loop over the procssed settings and add them to the global map
+      // Loop over the processed settings and add them to the global map
       for (const IniHeaderWithItems& header_with_items : ini_processor.items())
       {
         for (const rsl::key_value<rsl::string_view, rsl::string_view>& item : header_with_items.items())

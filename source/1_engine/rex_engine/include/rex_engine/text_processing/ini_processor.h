@@ -8,6 +8,8 @@
 
 namespace rex
 {
+  // This holds a header (with or without a name)
+  // and its internal items which are just key - value pairs
   class IniHeaderWithItems
   {
   public:
@@ -21,6 +23,9 @@ namespace rex
     rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>> m_items;
   };
 
+  // A processor taking in data, but doesn't own it
+  // It just parses the data and returns a result.
+  // The parsed data can be accessed using the getter.
   class IniProcessor
   {
   public:
