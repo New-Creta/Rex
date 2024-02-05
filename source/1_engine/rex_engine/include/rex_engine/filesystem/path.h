@@ -232,6 +232,15 @@ namespace rex
     // Returns true if the given path points to a symlink
     bool is_link(rsl::string_view path);
 
+    // Returns a list of all files and directories in path
+    rsl::vector<rsl::string> list_entries(rsl::string_view path);
+
+    // Returns a list of all directories in path
+    rsl::vector<rsl::string> list_dirs(rsl::string_view path);
+
+    // Returns a list of all files in path
+    rsl::vector<rsl::string> list_files(rsl::string_view path);
+
     // Splits the path into a head and a tail
     // the head is either the mount point or an empty string
     // the tail is everything else

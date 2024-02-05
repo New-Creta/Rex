@@ -143,6 +143,20 @@ namespace rex
       // return the substring of the filename, without the extension
       return file_name.substr(0, count);
     }
+    // Returns the absolute path for the given path
+    rsl::string abs_path(rsl::string_view path)
+    {
+      // If the path is already absolute, just return it
+      if (is_absolute(path))
+      {
+        return rsl::string(path);
+      }
+
+      // Get the current working directory and prepend it to the path
+      rsl::string current_dir = path::cwd();
+      rsl::string res = path::join(current_dir, path);
+      return res.replace("\\", "/");
+    }
     // Returns the root directory path of the given path
     rsl::string_view path_root(rsl::string_view path)
     {

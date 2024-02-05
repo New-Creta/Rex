@@ -335,5 +335,92 @@ namespace rex
       // return the result
       return res;
     }
+
+    // Returns a list of all files and directories in path
+    rsl::vector<rsl::string> list_entries(rsl::string_view path)
+    {
+      WIN32_FIND_DATAA ffd;
+      rsl::big_stack_string dir_search(path);
+      dir_search += "\\*";
+      HANDLE hFind = FindFirstFileA(path.data(), &ffd);
+
+      if (hFind == INVALID_HANDLE_VALUE)
+      {
+        FindClose(hFind);
+        return {};
+      }
+
+      rsl::vector<rsl::string> result;
+      do
+      {
+        rsl::string_view name = ffd.cFileName;
+        result.push_back(path::join(path, name));
+      } while (FindNextFile(hFind, &ffd) != 0);
+
+      return result;
+    }
+
+    // Returns a list of all directories in path
+    rsl::vector<rsl::string> list_dirs(rsl::string_view path)
+    {
+      WIN32_FIND_DATAA ffd;
+      rsl::big_stack_string dir_search(path);
+      dir_search += "\\*";
+      HANDLE hFind = FindFirstFileA(path.data(), &ffd);
+
+      if (hFind == INVALID_HANDLE_VALUE)
+      {
+        FindClose(hFind);
+        return {};
+      }
+
+      rsl::vector<rsl::string> result;
+      do
+      {
+        rsl::string_view name = ffd.cFileName;
+        rsl::string full_filename = path::join(path, name);
+        if (path::is_dir(full_filename))
+        {
+          result.push_back(rsl::move(full_filename));
+        }
+      } while (FindNextFile(hFind, &ffd) != 0);
+
+      return result;
+    }
+
+    // Returns a list of all files in path
+    rsl::vector<rsl::string> list_files(rsl::string_view path)
+    {
+      WIN32_FIND_DATAA ffd{};
+      rsl::big_stack_string dir_search(path);
+      dir_search += "\\*";
+      HANDLE hFind = FindFirstFileA(dir_search.data(), &ffd);
+
+      if (hFind == INVALID_HANDLE_VALUE)
+      {
+        FindClose(hFind);
+        return {};
+      }
+
+      rsl::vector<rsl::string> result;
+      do
+      {
+        s32 length = rsl::strlen(ffd.cFileName);
+        rsl::string_view name(ffd.cFileName, length);
+        rsl::string full_filename = path::join(path, name);
+        if (path::is_file(full_filename))
+        {
+          result.push_back(rsl::move(full_filename));
+        }
+      } while (FindNextFileA(hFind, &ffd) != 0);
+
+      // FindNextfile sets the error to ERROR_NO_MORE_FILES
+      // if there are no more files found
+      // We reset it here to avoid any confusion
+      SetLastError(ERROR_SUCCESS);
+
+      return result;
+    }
+
   } // namespace path
 } // namespace rex
