@@ -31,7 +31,6 @@ namespace rex
   CoreApplication::CoreApplication(const EngineParams& engineParams)
       : m_app_state(ApplicationState::Created)
   {
-    mem_tracker().initialize(engineParams.max_memory);
   }
   //-------------------------------------------------------------------------
   CoreApplication::~CoreApplication() = default;
@@ -111,7 +110,17 @@ namespace rex
     load_settings();
 
     globals::g_frame_info.update();
-    return platform_init();
+    bool res = platform_init();
+
+    // Some settings get overriden in the editor and the project
+    // so we can only use those settings after they've been loaded.
+    // the max allowed memory usage is one of those examples
+
+    // Settings are loaded now, we can initialize all the sub systems with settings loaded from them
+    rsl::memory_size max_mem_budget = rsl::memory_size(rsl::stoi(settings::get("max_memory_mib")).value());
+    mem_tracker().initialize(max_mem_budget);
+
+    return res;
   }
   //--------------------------------------------------------------------------------------------
   void CoreApplication::update()

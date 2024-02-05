@@ -97,7 +97,6 @@ namespace rex
   {
     ApplicationCreationParams app_params(&platformParams);
 
-    app_params.engine_params.max_memory        = 256_kb;
     app_params.engine_params.app_init_func     = console_app_example::initialize;
     app_params.engine_params.app_update_func   = console_app_example::update;
     app_params.engine_params.app_shutdown_func = console_app_example::shutdown;

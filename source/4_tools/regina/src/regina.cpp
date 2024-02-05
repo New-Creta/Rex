@@ -900,7 +900,6 @@ namespace regina
     app_params.gui_params.window_height = 720;
     app_params.gui_params.window_title  = "Regina";
 
-    app_params.engine_params.max_memory        = 256_kb;
     app_params.engine_params.app_init_func     = initialize;
     app_params.engine_params.app_update_func   = update;
     app_params.engine_params.app_draw_func     = draw;

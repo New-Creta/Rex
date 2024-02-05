@@ -60,7 +60,7 @@ namespace rex
     REX_NO_DISCARD MemoryUsageStats get_stats_for_frame(card32 idx);
 
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
-    s64 m_max_mem_usage;                   // maximum allowed memory usage
+    s64 m_max_mem_budget;                   // maximum allowed memory usage
     MemoryStats m_mem_stats_on_startup;    // stats queried from the OS at init time
     rsl::mutex m_mem_tracking_mutex;
     UsagePerTag m_usage_per_tag;
