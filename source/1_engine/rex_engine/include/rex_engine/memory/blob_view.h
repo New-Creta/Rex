@@ -27,7 +27,7 @@ namespace rex
       template <typename T>
       const T* data_as() const
       {
-        return static_cast<T*>(data());
+        return reinterpret_cast<T*>(data());
       }
 
     private:
