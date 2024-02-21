@@ -7,6 +7,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/system/process.h"
+#include "rex_engine/threading/thread.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
@@ -61,7 +62,15 @@ namespace rex
         system(cmd.c_str());
       }
 
+      // Initialize the log levels as early as possible
+      // They don't have dependencies (other than the commandline)
+      // and are pretty much required by everything else
       diagnostics::init_log_levels();
+
+      // Initialize the filesystem as this can be needed by the entry point of the entrypoint of the client
+      // However it is recommended that all initialziation code is moved into the client's init function.
+      // If we decide to limit this more aggresively, we can move this initialization to the initialize function
+      // of the engine.
       vfs::init();
     }
 
