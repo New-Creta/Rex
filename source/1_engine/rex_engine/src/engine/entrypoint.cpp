@@ -7,7 +7,6 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/system/process.h"
-#include "rex_engine/threading/thread.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
