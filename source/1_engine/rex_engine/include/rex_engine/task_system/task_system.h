@@ -23,11 +23,11 @@ namespace rex
       {
         return [moved_callable = rsl::move(callable)]()
         {
-          rsl::unique_array<char> res_buffer;
+          rsl::unique_array<rsl::byte> res_buffer;
 
           if constexpr(!rsl::is_same_v<void, ReturnType>)
           {
-            res_buffer = rsl::make_unique<char[]>(sizeof(ReturnType)); // NOLINT(modernize-avoid-c-arrays)
+            res_buffer = rsl::make_unique<rsl::byte[]>(sizeof(ReturnType)); // NOLINT(modernize-avoid-c-arrays)
             auto res   = moved_callable();
             memcpy(res_buffer.get(), rsl::addressof(res), sizeof(res));
           }
@@ -52,7 +52,7 @@ namespace rex
   // as well as the task own the job to be run.
   // When both go out of scope, the job is destroyed.
   template <typename Callable>
-  auto run_async(Callable callable)
+  auto run_async(Callable&& callable)
   {
     // the callable needs to get wrapped as the thread pool only supports 1 interface callable
     // So we wrap the user's callable and call the user's callable from the wrapped one
