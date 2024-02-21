@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_engine/threading/thread_event.h"
-
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
 
@@ -18,7 +17,7 @@ namespace rex
     class Job
     {
     public:
-      Job(job_callable callable);
+      explicit Job(job_callable&& callable);
 
       // Run the callable that's internally stored
       void run();
@@ -38,6 +37,6 @@ namespace rex
       rsl::unique_array<char> m_result_buffer;
       job_callable m_callable;
       Event m_finished_event;
-    };    
-  }
-}
+    };
+  } // namespace task_system
+} // namespace rex

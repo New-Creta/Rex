@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_std/memory.h"
 #include "rex_engine/task_system/job.h"
+#include "rex_std/memory.h"
 
 namespace rex
 {
@@ -16,9 +16,10 @@ namespace rex
     class Task
     {
     public:
-      Task(rsl::shared_ptr<Job>&& job)
-        : m_job(rsl::move(job))
-      {}
+      explicit Task(rsl::shared_ptr<Job>&& job)
+          : m_job(rsl::move(job))
+      {
+      }
 
       // This is a blocking function.
       // It'll wait for the job (which is running on another thread) to finish
@@ -47,9 +48,10 @@ namespace rex
     class Task<void>
     {
     public:
-      Task(rsl::shared_ptr<Job>&& job)
-        : m_job(rsl::move(job))
-      {}
+      explicit Task(rsl::shared_ptr<Job>&& job)
+          : m_job(rsl::move(job))
+      {
+      }
 
       // This is a blocking function.
       // It'll wait for the job (which is running on another thread) to finish
@@ -61,5 +63,5 @@ namespace rex
     private:
       rsl::shared_ptr<Job> m_job;
     };
-  }
-}
+  } // namespace task_system
+} // namespace rex

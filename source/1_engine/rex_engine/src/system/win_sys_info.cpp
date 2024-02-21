@@ -2,7 +2,6 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
-
 #include "rex_std/memory.h"
 
 #include <Windows.h>
@@ -14,9 +13,9 @@ namespace rex
     s32 number_physical_cores()
     {
       static s32 core_count = 0;
-      
+
       // We only want to check this once
-      if (core_count == 0)
+      if(core_count == 0)
       {
         // Get only physical cores
         DWORD buffer_size = 0;
@@ -25,18 +24,18 @@ namespace rex
         WIN_CALL_IGNORE(GetLogicalProcessorInformation(nullptr, &buffer_size), ERROR_INSUFFICIENT_BUFFER);
 
         // Allocate the buffer to hold the processor info.
-        rsl::unique_array<char> buffer = rsl::make_unique<char[]>(buffer_size);
-        PSYSTEM_LOGICAL_PROCESSOR_INFORMATION slpi_buffer = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION>(buffer.get());
+        rsl::unique_array<char> buffer                    = rsl::make_unique<char[]>(buffer_size); // NOLINT(modernize-avoid-c-arrays)
+        PSYSTEM_LOGICAL_PROCESSOR_INFORMATION slpi_buffer = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION>(buffer.get()); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
         // Get the actual information.
         WIN_CALL(GetLogicalProcessorInformation(slpi_buffer, &buffer_size));
 
         // Count physical cores
-        const int32 info_count = (int32)(buffer_size / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION));
-        for (int32 idx = 0; idx < info_count; ++idx)
+        const int32 info_count = static_cast<int32>(buffer_size / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION));
+        for(int32 idx = 0; idx < info_count; ++idx)
         {
-          SYSTEM_LOGICAL_PROCESSOR_INFORMATION* Info = &slpi_buffer[idx];
-          if (Info->Relationship == RelationProcessorCore)
+          SYSTEM_LOGICAL_PROCESSOR_INFORMATION* info = &slpi_buffer[idx];
+          if(info->Relationship == RelationProcessorCore)
           {
             ++core_count;
           }
@@ -51,14 +50,14 @@ namespace rex
       static s32 core_count = 0;
 
       // We only want to check this once
-      if (core_count == 0)
+      if(core_count == 0)
       {
-        SYSTEM_INFO sys_info{};
+        SYSTEM_INFO sys_info {};
         GetSystemInfo(&sys_info);
         core_count = static_cast<s32>(sys_info.dwNumberOfProcessors);
       }
 
       return core_count;
     }
-  }
-}
+  } // namespace sys_info
+} // namespace rex

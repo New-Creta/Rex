@@ -9,7 +9,7 @@ namespace rex
     namespace internal
     {
       class Thread;
-    }
+    } // namespace internal
 
     // A handle that wraps a thread
     // Users are not meant to have direct access to a thread
@@ -19,13 +19,13 @@ namespace rex
     public:
       using thread_work_func = rsl::function<int(void*)>;
 
-      ThreadHandle(internal::Thread* thread);
+      explicit ThreadHandle(internal::Thread* thread);
       ThreadHandle(const ThreadHandle&) = delete;
-      ThreadHandle(ThreadHandle&&);
+      ThreadHandle(ThreadHandle&& other);
       ~ThreadHandle();
 
       ThreadHandle& operator=(const ThreadHandle&) = delete;
-      ThreadHandle& operator=(ThreadHandle&&);
+      ThreadHandle& operator=(ThreadHandle&& other);
 
       void run(thread_work_func&& func, void* arg = nullptr);
 
@@ -41,5 +41,5 @@ namespace rex
 
     // This is a blocking func as there isn't always an idle thread available
     ThreadHandle acquire_idle_thread();
-  }
-}
+  } // namespace thread_pool
+} // namespace rex

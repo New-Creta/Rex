@@ -1,15 +1,13 @@
 #pragma once
 
-#include "rex_std/memory.h"
-#include "rex_std/functional.h"
-#include "rex_std/type_traits.h"
-#include "rex_engine/threading/thread_event.h"
-
 #include "rex_engine/task_system/job.h"
 #include "rex_engine/task_system/task.h"
-
-#include "rex_std/thread.h"
+#include "rex_engine/threading/thread_event.h"
 #include "rex_std/chrono.h"
+#include "rex_std/functional.h"
+#include "rex_std/memory.h"
+#include "rex_std/thread.h"
+#include "rex_std/type_traits.h"
 
 namespace rex
 {
@@ -23,14 +21,14 @@ namespace rex
       template <typename ReturnType, typename Callable>
       auto create_callable(Callable&& callable)
       {
-        return[moved_callable = rsl::move(callable)]()
+        return [moved_callable = rsl::move(callable)]()
         {
           rsl::unique_array<char> res_buffer;
 
-          if constexpr (!rsl::is_same_v<void, ReturnType>)
+          if constexpr(!rsl::is_same_v<void, ReturnType>)
           {
-            res_buffer = rsl::make_unique<char[]>(sizeof(ReturnType));
-            auto res = moved_callable();
+            res_buffer = rsl::make_unique<char[]>(sizeof(ReturnType)); // NOLINT(modernize-avoid-c-arrays)
+            auto res   = moved_callable();
             memcpy(res_buffer.get(), rsl::addressof(res), sizeof(res));
           }
           else
@@ -41,13 +39,13 @@ namespace rex
           return res_buffer;
         };
       }
-    }
+    } // namespace internal
 
     // If there's a idle thread available, execute the job immediately
     // If not, assign the thread to the queue and it'll be executed
     // when all previous jobs are processed
     rsl::shared_ptr<Job> add_job_to_queue(rsl::shared_ptr<Job> job);
-  }
+  } // namespace task_system
 
   // Create a job to run async and wrap it in a task that's returned to the user
   // Both the thread the job runs (or the queue if there isn't an idle thread available)
@@ -60,15 +58,15 @@ namespace rex
     // So we wrap the user's callable and call the user's callable from the wrapped one
     using return_type = rsl::invoke_result_t<Callable>;
     auto job_callable = task_system::internal::create_callable<return_type>(rsl::move(callable));
-    
+
     // Create a new job which wraps the callable
-    rsl::shared_ptr<task_system::Job> new_job = rsl::make_shared<task_system::Job>(job_callable);
+    rsl::shared_ptr<task_system::Job> new_job = rsl::make_shared<task_system::Job>(rsl::move(job_callable));
 
     // Add the job to the queue to be scheduled for execution
     task_system::add_job_to_queue(new_job);
 
     // Return the task to the user so they can wait for the task's completion if needed
-    task_system::Task<return_type> task(rsl::move(new_job));
+    const task_system::Task<return_type> task(rsl::move(new_job));
     return task;
   }
-}
+} // namespace rex

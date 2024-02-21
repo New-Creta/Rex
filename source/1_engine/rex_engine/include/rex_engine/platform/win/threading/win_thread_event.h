@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_std/bonus/platform.h"
-
 #include "rex_std/string_view.h"
 
 namespace rex
@@ -13,7 +12,7 @@ namespace rex
   class Event
   {
   public:
-    Event(rsl::string_view name = "");
+    explicit Event(rsl::string_view name = "");
 
     // Destroy this event
     // Useful in case it's held by a thread and needs to get manually destroyed
@@ -32,4 +31,4 @@ namespace rex
   private:
     rsl::win::handle m_handle;
   };
-}
+} // namespace rex

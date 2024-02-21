@@ -6,14 +6,14 @@ namespace rex
 {
   Event::Event(rsl::string_view name)
   {
-    // create an auto-reset event object ad let the system automatically reset 
+    // create an auto-reset event object ad let the system automatically reset
     // the event state to non signaled after a single waiting thread has been release
-    const bool manual_reset = false; 
+    const bool manual_reset = false;
 
     // Start the event non signaled so the user needs to signal it themselves
     const bool start_signaled = false;
 
-    m_handle = rsl::win::handle(CreateEventA(NULL, manual_reset, start_signaled, name.data()));
+    m_handle = rsl::win::handle(CreateEventExA(nullptr, name.data(), 0, EVENT_ALL_ACCESS));
   }
 
   void Event::destroy()
@@ -35,4 +35,4 @@ namespace rex
   {
     WaitForSingleObject(m_handle.get(), INFINITE);
   }
-}
+} // namespace rex

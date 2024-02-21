@@ -4,9 +4,9 @@ namespace rex
 {
   namespace task_system
   {
-    Job::Job(job_callable callable)
-      : m_callable(callable)
-      , m_finished_event("")
+    Job::Job(job_callable&& callable)
+        : m_callable(rsl::move(callable))
+        , m_finished_event("")
     {
     }
 
@@ -23,5 +23,5 @@ namespace rex
     {
       m_finished_event.wait_for_me();
     }
-  }
-}
+  } // namespace task_system
+} // namespace rex
