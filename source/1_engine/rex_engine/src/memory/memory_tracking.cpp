@@ -129,6 +129,7 @@ namespace rex
 
     // track the callstack, if we this callstack allocated memory before
     // add to the callstack the size of the memory we just allocated
+    const rsl::unique_lock lock(m_mem_tracking_mutex);
     auto& alloc_info = allocation_info_table();
     auto it          = alloc_info.find(callstack);
     if(it == alloc_info.end())
@@ -142,7 +143,6 @@ namespace rex
 
     rex::MemoryHeader* header = new(dbg_header_addr) MemoryHeader(tag, mem, rsl::memory_size(size), thread_id, frame_idx, callstack);
 
-    const rsl::unique_lock lock(m_mem_tracking_mutex);
     m_mem_usage += header->size().size_in_bytes();
     m_usage_per_tag[rsl::enum_refl::enum_integer(header->tag())] += header->size().size_in_bytes();
     allocation_headers().push_back(header);
