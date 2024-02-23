@@ -133,6 +133,11 @@ namespace rex
       return res;
     }
 
+    // returns true if it's a valid path, returns false otherwise
+    bool is_valid_path(rsl::string_view path);
+    // returns true if it's a valid filename, returns false otherwise
+    bool is_valid_filename(rsl::string_view filename);
+
     // removes leading and trailing quotes from a path
     rsl::string_view remove_quotes(rsl::string_view path);
     // Changes the extension of a path string_view

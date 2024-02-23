@@ -81,6 +81,19 @@ namespace rex
       return g_seperation_char;
     }
 
+    // returns true if it's a valid path, returns false otherwise
+    bool is_valid_path(rsl::string_view path)
+    {
+      rsl::string_view invalid_chars(invalid_path_chars().data(), invalid_path_chars().size());
+      return path.find_first_of(invalid_chars) != path.npos();
+    }
+    // returns true if it's a valid filename, returns false otherwise
+    bool is_valid_filename(rsl::string_view filename)
+    {
+      rsl::string_view invalid_chars(invalid_file_name_chars().data(), invalid_file_name_chars().size());
+      return filename.find_first_of(invalid_chars) != filename.npos();
+    }
+
     // removes leading and trailing quotes from a path
     rsl::string_view remove_quotes(rsl::string_view path)
     {
