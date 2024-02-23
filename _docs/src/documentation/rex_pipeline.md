@@ -188,7 +188,7 @@ This is for internal use only.
 
 This script launches clang-tidy and clang-format if clang tools are enabled. Because clang-tidy is run using clang, the post build is only enabled when compiling with clang
 
-After which it launches a script called `post_build_by_user.py`, if it's found at the root of your project's source code, which the user can write to write their own post build events
+After which it launches a script with the same name but located at the source root of the project. This is to allow project specific post build scripts to run.
 
 ## Testing
 Rex Engine supports many different kind of tests for optimal testing which can all be fired from the root script
