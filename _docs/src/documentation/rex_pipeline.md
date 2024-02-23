@@ -108,7 +108,7 @@ all these files are then passed on to sharpmake and executed.
 Because the generation script is a wrapper around a sharpmake call, the script itself doesn't own the commandline arguments, these are owned by Sharpmake.
 We needed a way to let sharpmake communicate with the python script and back so that we don't have to maintain the same list of commandlines twice, once in sharpmake and once in the python script. We've achieved this by creating a `default_config.json` file that lives next to the sharpmake build sources
 
-This config file is parsed by the python script and it'll create commandline argument for them. the script will create a `config.json` file in the intermediate build folder which is passed to sharpmake. It'll read the config file and use it to initialize the generation pipeline.
+The first time the generation is called through the root script, the default config file is read and used to create the arguments for the generation. If a previous generation already occurred however, the settings for this configuration is used, but you can default back to the default settings by using `-use_default_config` commandline argument. The script will always create a `config.json` file in the intermediate build folder which is passed to sharpmake. Sharpmake will read this config file and use it to initialize the generation pipeline.
 
 There's only 1 extra commandline argument supported by the generate script which is `-sharpmake_args`. This is to allow a user to pass in arguments that are supported by the native sharpmake executable
 
@@ -116,22 +116,25 @@ We support Visual Studio and Visual Studio Code as IDEs. These just act as text 
 
 Some Examples (Windows):
 ```sh
-# Default generation. generate files for engine and editor (~/_build/sharpmake/data/default_config.json)
+# Default generation (using previous settings if found).
 py _rex.py generate
 
 # List all the possible configuration settings, no generation gets performed.
 py _rex.py generate -h
 
-# Default generation + unit tests
+# Default generation (using previous settings if found) but add unit tests
 py _rex.py generate -enable-unit-tests 
 
-# Default generation + unit tests + code coverage
+# Default generation (using previous settings if found) but add unit tests and code coverage
 py _rex.py generate -enable-unit-tests -enable-code-coverage 
 
-# Default generation + unit tests + code coverage + Visual Studio sln and projects
+# Default generation (using previous settings if found) but add unit tests, code coverage and a Visual Studio 19 solution
 py _rex.py generate -enable-unit-tests -enable-code-coverage -IDE VisualStudio19
 
-# Default generation, but single threaded
+# Default generation using the default settings
+py _rex.py generate -use_default_config
+
+# Default generation (using previous settings if found) but single threaded
 py _rex.py generate -sharpmake_args /multithreaded(false)
 ```
 
@@ -152,6 +155,12 @@ for `Arrays` the following needs to be specified
 - `Name` - This is the name of the variable that'll hold the content of the array
 - `ElementType` - This is the type the array will hold
 - `Includes` - This is the files that need to be included at the top of the file
+
+### Debugging Generation
+When adding a Visual Studio solution, a C# project is added automatically holding the sharpmake scripts used for the generation. 
+If you select this project as your startup project and run it like you would run any other project, you can debug the sharpmake scripts.
+
+This allows you to step through the generation process with breakpoints, inspect variables, ..
 
 ## Building
 Building through Visual Studio and Visual Studio Code works the same as you would otherwise. We leverage the IDE's ability to run commandlines as build steps.
