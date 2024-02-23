@@ -118,7 +118,7 @@ namespace rex
 
       // Creates a WinComHandle.
       // Makes sure the win com lib is initialized before creating the handle
-      WinComLibHandle create_handle()
+      WinComLibHandle create_lib_handle()
       {
         // Just access it, that'll initialize it.
         internal::com_library().inc_ref();
