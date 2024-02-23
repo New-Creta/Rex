@@ -1,8 +1,8 @@
 #include "rex_directx/d3dx12.h"
+#include "rex_directx/directx_call.h"
 #include "rex_directx/directx_feature_level.h"
 #include "rex_directx/directx_feature_shader_model.h"
 #include "rex_directx/directx_util.h" // IWYU pragma: keep
-#include "rex_directx/directx_call.h"
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
@@ -16,8 +16,8 @@
 #include "rex_directx/resources/depth_stencil_target_resource.h"
 #include "rex_directx/resources/frame_resource.h"
 #include "rex_directx/resources/input_layout_resource.h"
-#include "rex_directx/resources/pipeline_state_resource.h"
 #include "rex_directx/resources/pipeline_state_object_hasher.h"
+#include "rex_directx/resources/pipeline_state_resource.h"
 #include "rex_directx/resources/pixel_shader_resource.h"
 #include "rex_directx/resources/raster_state_resource.h"
 #include "rex_directx/resources/render_target_resource.h"
@@ -32,31 +32,31 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/memory/pointer_math.h"
 
+#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/begin_draw_cmd.h"
 #include "rex_renderer_core/commands/clear_cmd.h"
 #include "rex_renderer_core/commands/compile_shader_cmd.h"
 #include "rex_renderer_core/commands/create_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_clear_state_cmd.h"
 #include "rex_renderer_core/commands/create_constant_buffer_cmd.h"
+#include "rex_renderer_core/commands/create_frame_resource_cmd.h"
 #include "rex_renderer_core/commands/create_index_buffer_cmd.h"
 #include "rex_renderer_core/commands/create_input_layout_cmd.h"
 #include "rex_renderer_core/commands/create_pipeline_state_cmd.h"
 #include "rex_renderer_core/commands/create_raster_state_cmd.h"
 #include "rex_renderer_core/commands/create_vertex_buffer_cmd.h"
-#include "rex_renderer_core/commands/create_frame_resource_cmd.h"
-#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/draw_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_cmd.h"
 #include "rex_renderer_core/commands/draw_indexed_instanced_cmd.h"
 #include "rex_renderer_core/commands/draw_instanced_cmd.h"
 #include "rex_renderer_core/commands/end_draw_cmd.h"
+#include "rex_renderer_core/commands/end_frame_cmd.h"
+#include "rex_renderer_core/commands/finish_user_initialization_cmd.h"
 #include "rex_renderer_core/commands/link_shader_cmd.h"
 #include "rex_renderer_core/commands/load_shader_cmd.h"
 #include "rex_renderer_core/commands/new_frame_cmd.h"
-#include "rex_renderer_core/commands/end_frame_cmd.h"
-#include "rex_renderer_core/commands/present_cmd.h"
 #include "rex_renderer_core/commands/prepare_user_initialization_cmd.h"
-#include "rex_renderer_core/commands/finish_user_initialization_cmd.h"
+#include "rex_renderer_core/commands/present_cmd.h"
 #include "rex_renderer_core/commands/release_resource_cmd.h"
 #include "rex_renderer_core/commands/set_constant_buffer_cmd.h"
 #include "rex_renderer_core/commands/set_index_buffer_cmd.h"
@@ -71,29 +71,29 @@
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
 #include "rex_renderer_core/commands/update_committed_resource_cmd.h"
 
-#include "rex_renderer_core/renderer_backend.h"
 #include "rex_renderer_core/cull_mode.h"
 #include "rex_renderer_core/fill_mode.h"
 #include "rex_renderer_core/gpu_description.h"
 #include "rex_renderer_core/index_buffer_format.h"
 #include "rex_renderer_core/input_layout_classification.h"
-#include "rex_renderer_core/resource_pool.h"
-#include "rex_renderer_core/vertex_buffer_format.h"
-#include "rex_renderer_core/texture_format.h"
-#include "rex_renderer_core/shader_platform.h"
-#include "rex_renderer_core/viewport.h"
-#include "rex_renderer_core/scissor_rect.h"
-#include "rex_renderer_core/renderer_output_window_user_data.h"
+#include "rex_renderer_core/renderer_backend.h"
 #include "rex_renderer_core/renderer_info.h"
+#include "rex_renderer_core/renderer_output_window_user_data.h"
+#include "rex_renderer_core/resource_pool.h"
+#include "rex_renderer_core/scissor_rect.h"
+#include "rex_renderer_core/shader_platform.h"
+#include "rex_renderer_core/texture_format.h"
+#include "rex_renderer_core/vertex_buffer_format.h"
+#include "rex_renderer_core/viewport.h"
 
 #include "rex_std/algorithm.h"
-#include "rex_std/bonus/string.h"
-#include "rex_std/memory.h"
-#include "rex_std/vector.h"
 #include "rex_std/bonus/memory/memory_size.h"
+#include "rex_std/bonus/platform/windows/handle.h"
+#include "rex_std/bonus/string.h"
 #include "rex_std/bonus/utility/casting.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
-#include "rex_std/bonus/platform/windows/handle.h"
+#include "rex_std/memory.h"
+#include "rex_std/vector.h"
 
 #include <optional>
 
@@ -144,7 +144,7 @@ namespace rex
       {
         switch(mode)
         {
-          case CullMode::NONE: return D3D12_CULL_MODE_NONE;
+          case CullMode::None: return D3D12_CULL_MODE_NONE;
           case CullMode::FRONT: return D3D12_CULL_MODE_FRONT;
           case CullMode::BACK: return D3D12_CULL_MODE_BACK;
           default: break;
@@ -175,8 +175,8 @@ namespace rex
       {
         switch(format)
         {
-          case IndexBufferFormat::R16_UINT: return DXGI_FORMAT_R16_UINT;
-          case IndexBufferFormat::R32_UINT: return DXGI_FORMAT_R32_UINT;
+          case IndexBufferFormat::R16Uint: return DXGI_FORMAT_R16_UINT;
+          case IndexBufferFormat::R32Uint: return DXGI_FORMAT_R32_UINT;
           default: break;
         }
         REX_ASSERT("Unsupported index buffer format given");
@@ -187,7 +187,7 @@ namespace rex
       {
         switch(format)
         {
-          case TextureFormat::UNORM4_SRGB: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+          case TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
           default: break;
         }
         REX_ASSERT("Unsupported vertex buffer format given");
@@ -214,8 +214,8 @@ namespace rex
       {
         switch(classification)
         {
-          case InputLayoutClassification::PER_VERTEX_DATA: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-          case InputLayoutClassification::PER_INSTANCE_DATA: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+          case InputLayoutClassification::PerVertexData: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+          case InputLayoutClassification::PerInstanceData: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
           default: break;
         }
 
@@ -845,7 +845,7 @@ namespace rex
         //-------------------------------------------------------------------------
         rsl::unordered_map<commands::ConstantType, rsl::function<CD3DX12_DESCRIPTOR_RANGE(const commands::ConstantLayoutDescription&)>> get_descriptor_ranges_create_func()
         {
-          return {{commands::ConstantType::CBUFFER, create_constant_buffer_descriptor_range}};
+          return {{commands::ConstantType::CBuffer, create_constant_buffer_descriptor_range}};
         }
 
         //-------------------------------------------------------------------------
@@ -946,7 +946,7 @@ namespace rex
             return false;
           }
 
-          TextureFormat render_target_format = TextureFormat::UNORM4_SRGB;
+          TextureFormat render_target_format = TextureFormat::Unorm4Srgb;
           wrl::ComPtr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count];
           CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
           for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
@@ -1120,7 +1120,7 @@ namespace rex
             }
 
             constexpr DWORD milliSecondsTimeOut = 1000; // 1 second
-            auto res = WaitForSingleObject(event_handle.get(), milliSecondsTimeOut);
+            REX_MAYBE_UNUSED auto res = WaitForSingleObject(event_handle.get(), milliSecondsTimeOut);
             REX_ASSERT_X(res == WAIT_OBJECT_0, "Failed to wait for fence with error: {}", res);
           }
 
@@ -1872,9 +1872,9 @@ namespace rex
 
         ClearBits flags = csr.get()->flags;
 
-        REX_ASSERT_X(flags != ClearBits::NONE, "No clear flags given but renderer::backend::clear was called.");
+        REX_ASSERT_X(flags != ClearBits::None, "No clear flags given but renderer::backend::clear was called.");
 
-        if(flags & ClearBits::CLEAR_COLOR_BUFFER)
+        if(flags & ClearBits::ClearColorBuffer)
         {
           for(s32 i = 0; i < g_ctx->active_color_targets; ++i)
           {
@@ -1887,7 +1887,7 @@ namespace rex
           }
         }
 
-        if(flags & ClearBits::CLEAR_DEPTH_BUFFER || flags & ClearBits::CLEAR_STENCIL_BUFFER)
+        if(flags & ClearBits::ClearDepthBuffer || flags & ClearBits::ClearStencilBuffer)
         {
           auto& depth_stencil_target_id = g_ctx->active_depth_target;
           auto& depth_stencil_target    = g_ctx->resource_pool.as<DepthStencilTargetResource>(depth_stencil_target_id);
@@ -1895,8 +1895,8 @@ namespace rex
           D3D12_CPU_DESCRIPTOR_HANDLE depthstencil_desc = internal::depthstencil_buffer_descriptor(depth_stencil_target.get()->array_index);
 
           s32 depth_stencil_clear_flags = 0;
-          depth_stencil_clear_flags |= flags & ClearBits::CLEAR_DEPTH_BUFFER ? D3D12_CLEAR_FLAG_DEPTH : 0;
-          depth_stencil_clear_flags |= flags & ClearBits::CLEAR_STENCIL_BUFFER ? D3D12_CLEAR_FLAG_STENCIL : 0;
+          depth_stencil_clear_flags |= flags & ClearBits::ClearDepthBuffer ? D3D12_CLEAR_FLAG_DEPTH : 0;
+          depth_stencil_clear_flags |= flags & ClearBits::ClearStencilBuffer ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
           g_ctx->command_list->ClearDepthStencilView(depthstencil_desc, (D3D12_CLEAR_FLAGS)depth_stencil_clear_flags, csr.get()->depth, csr.get()->stencil, 0, nullptr);
         }

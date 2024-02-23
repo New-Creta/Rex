@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/async_logger.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg_buffer.h"
 #include "rex_engine/diagnostics/logging/internal/details/mpmc_blocking_q.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/engine/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/memory.h"
@@ -33,7 +33,7 @@ namespace rex
 
       struct AsyncMsgLogFunctions
       {
-        using LogFunction = rsl::function<void(const details::LogMsg&)>;
+        using LogFunction   = rsl::function<void(const details::LogMsg&)>;
         using FlushFunction = rsl::function<void()>;
 
         LogFunction log_fn;
@@ -44,33 +44,33 @@ namespace rex
       // This should never be copied
       struct AsyncMsg : LogMsgBuffer
       {
-        AsyncMsgType msg_type{ AsyncMsgType::Log };
+        AsyncMsgType msg_type {AsyncMsgType::Log};
         AsyncMsgLogFunctions logger_fns;
 
-        AsyncMsg() = default;
+        AsyncMsg()           = default;
         ~AsyncMsg() override = default;
 
-        AsyncMsg(const AsyncMsg&) = delete;
-        AsyncMsg(AsyncMsg&&) = default;
+        AsyncMsg(const AsyncMsg&)            = delete;
+        AsyncMsg(AsyncMsg&&)                 = default;
         AsyncMsg& operator=(const AsyncMsg&) = delete;
-        AsyncMsg& operator=(AsyncMsg&&) = default;
+        AsyncMsg& operator=(AsyncMsg&&)      = default;
 
         AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType, const details::LogMsg& m)
-          : LogMsgBuffer{ m }
-          , msg_type{ theType }
-          , logger_fns{ rsl::move(fns) }
+            : LogMsgBuffer {m}
+            , msg_type {theType}
+            , logger_fns {rsl::move(fns)}
         {
         }
 
         AsyncMsg(AsyncMsgLogFunctions&& fns, AsyncMsgType theType)
-          : LogMsgBuffer{}
-          , msg_type{ theType }
-          , logger_fns{ rsl::move(fns) }
+            : LogMsgBuffer {}
+            , msg_type {theType}
+            , logger_fns {rsl::move(fns)}
         {
         }
 
         explicit AsyncMsg(AsyncMsgType theType)
-          : AsyncMsg{ {}, theType }
+            : AsyncMsg {{}, theType}
         {
         }
       };
@@ -79,7 +79,7 @@ namespace rex
       {
       public:
         using item_type = AsyncMsg;
-        using q_type = details::MpmcBlockingQueue<item_type>;
+        using q_type    = details::MpmcBlockingQueue<item_type>;
 
         ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart, const rsl::function<void()>& onThreadStop);
         ThreadPool(s32 qMaxItems, s32 threadsN, const rsl::function<void()>& onThreadStart);
@@ -88,10 +88,10 @@ namespace rex
         // message all threads to terminate gracefully and join them
         ~ThreadPool();
 
-        ThreadPool(const ThreadPool&) = delete;
-        ThreadPool(ThreadPool&&) = delete;
+        ThreadPool(const ThreadPool&)            = delete;
+        ThreadPool(ThreadPool&&)                 = delete;
         ThreadPool& operator=(const ThreadPool&) = delete;
-        ThreadPool& operator=(ThreadPool&&) = delete;
+        ThreadPool& operator=(ThreadPool&&)      = delete;
 
         void post_log(AsyncMsgLogFunctions&& loggerFns, const details::LogMsg& msg, AsyncOverflowPolicy overflowPolicy);
         void post_flush(AsyncMsgLogFunctions&& loggerFns, AsyncOverflowPolicy overflowPolicy);
@@ -115,5 +115,5 @@ namespace rex
       };
 
     } // namespace details
-  }
-} // namespace rex::log
+  }   // namespace log
+} // namespace rex

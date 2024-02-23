@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
+#include "rex_renderer_core/resource.h"
 
 namespace rex
 {
@@ -12,14 +12,14 @@ namespace rex
         {
             struct Buffer
             {
-                wrl::ComPtr<ID3DBlob> cpu_buffer;
-                wrl::ComPtr<ID3D12Resource> gpu_buffer;
+                wrl::ComPtr<ID3DBlob> cpu_buffer{};
+                wrl::ComPtr<ID3D12Resource> gpu_buffer{};
 
-                wrl::ComPtr<ID3D12Resource> uploader;
+                wrl::ComPtr<ID3D12Resource> uploader{};
 
-                u32 size_in_bytes;
+                u32 size_in_bytes{};
             };
-        }
+        } // namespace resources
 
         class BufferResource : public BaseResource<resources::Buffer>
         {
@@ -35,5 +35,5 @@ namespace rex
         private:
             resources::Buffer m_buffer_resource;
         };
-    }
-}
+    } // namespace renderer
+} // namespace rex

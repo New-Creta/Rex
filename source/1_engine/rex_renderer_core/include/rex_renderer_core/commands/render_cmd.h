@@ -11,7 +11,7 @@ namespace rex
     class RenderCommand
     {
     public:
-      RenderCommand();      
+      RenderCommand();
       RenderCommand(const RenderCommand& other);
       RenderCommand(RenderCommand&& other);
       virtual ~RenderCommand();

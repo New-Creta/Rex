@@ -2,16 +2,16 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class PrimitiveTopology
     {
-        enum class PrimitiveTopology
-        {
-            NONE = 0,
-            POINTLIST,
-            LINELIST,
-            LINESTRIP,
-            TRIANGLELIST,
-            TRIANGLESTRIP
-        };
-    }
-}
+      None = 0,
+      POINTLIST,
+      LINELIST,
+      LINESTRIP,
+      TRIANGLELIST,
+      TRIANGLESTRIP
+    };
+  } // namespace renderer
+} // namespace rex

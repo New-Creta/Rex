@@ -25,9 +25,9 @@ namespace rex
 
         ~SetPipelineState() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
-          return backend::set_pipeline_state_object(m_resource_slot);  
+          return backend::set_pipeline_state_object(m_resource_slot);
         }
 
       private:

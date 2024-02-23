@@ -2,13 +2,13 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class IndexBufferFormat
     {
-        enum class IndexBufferFormat
-        {
-            NONE = 0,
-            R16_UINT,
-            R32_UINT
-        };
-    }
-}
+      None = 0,
+      R16Uint,
+      R32Uint
+    };
+  } // namespace renderer
+} // namespace rex

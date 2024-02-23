@@ -4,17 +4,17 @@
 
 namespace rex
 {
-    namespace mesh_factory
+  namespace mesh_factory
+  {
+    template <typename T>
+    MeshData<T> create_quad(f32 x, f32 y, f32 w, f32 h, f32 depth)
     {
-		template<typename T>
-		MeshData<T> create_quad(f32 x, f32 y, f32 w, f32 h, f32 depth)
-		{
-			MeshData<T> mesh_data;
+      MeshData<T> mesh_data;
 
-			mesh_data.resize_vertices(4);
-			mesh_data.resize_indices(6);
+      mesh_data.resize_vertices(4);
+      mesh_data.resize_indices(6);
 
-			// Position coordinates specified in NDC space.
+      // Position coordinates specified in NDC space.
 			mesh_data.vertices()[0] = Vertex(
 				x, y - h, depth,
 				0.0f, 0.0f, -1.0f,
@@ -39,15 +39,15 @@ namespace rex
 				1.0f, 0.0f, 0.0f,
 				1.0f, 1.0f);
 
-			mesh_data.indices()[0] = 0;
-			mesh_data.indices()[1] = 1;
-			mesh_data.indices()[2] = 2;
+      mesh_data.indices()[0] = 0;
+      mesh_data.indices()[1] = 1;
+      mesh_data.indices()[2] = 2;
 
-			mesh_data.indices()[3] = 0;
-			mesh_data.indices()[4] = 2;
-			mesh_data.indices()[5] = 3;
+      mesh_data.indices()[3] = 0;
+      mesh_data.indices()[4] = 2;
+      mesh_data.indices()[5] = 3;
 
-			return mesh_data;
-		}
+      return mesh_data;
     }
-}
+  } // namespace mesh_factory
+} // namespace rex

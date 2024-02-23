@@ -2,12 +2,12 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class TextureFormat
     {
-        enum class TextureFormat
-        {
-            NONE = 0,
-            UNORM4_SRGB,
-        };
-    } // namespace renderer
+      None = 0,
+      Unorm4Srgb,
+    };
+  } // namespace renderer
 } // namespace rex

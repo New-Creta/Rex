@@ -2,18 +2,18 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class VertexBufferFormat
     {
-        enum class VertexBufferFormat
-        {
-            NONE = 0,
-            FLOAT1,
-            FLOAT2,
-            FLOAT3,
-            FLOAT4,
-            UNORM4,
-            UNORM2,
-            UNORM1
-        };
-    }
-}
+      None = 0,
+      FLOAT1,
+      FLOAT2,
+      FLOAT3,
+      FLOAT4,
+      UNORM4,
+      UNORM2,
+      UNORM1
+    };
+  } // namespace renderer
+} // namespace rex

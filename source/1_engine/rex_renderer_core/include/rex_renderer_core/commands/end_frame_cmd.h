@@ -4,33 +4,33 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace commands
     {
-        namespace commands
+      struct EndFrameCommandDesc
+      {
+      };
+
+      class EndFrame : public RenderCommand
+      {
+      public:
+        explicit EndFrame(EndFrameCommandDesc&& desc)
+            : RenderCommand()
+            , m_desc(rsl::move(desc))
         {
-            struct EndFrameCommandDesc
-            {
-            };
-
-            class EndFrame : public RenderCommand
-            {
-            public:
-              EndFrame(EndFrameCommandDesc&& desc)
-                  : RenderCommand()
-                  , m_desc(rsl::move(desc))
-              {
-              }
-
-              ~EndFrame() override = default;
-
-              bool execute() override
-              {
-                return backend::end_frame();
-              }
-
-            private:
-              EndFrameCommandDesc m_desc;
-            };
         }
-    }
-}
+
+        ~EndFrame() override = default;
+
+        bool execute() override
+        {
+          return backend::end_frame();
+        }
+
+      private:
+        EndFrameCommandDesc m_desc;
+      };
+    } // namespace commands
+  }   // namespace renderer
+} // namespace rex

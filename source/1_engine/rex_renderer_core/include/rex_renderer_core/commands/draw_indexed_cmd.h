@@ -14,13 +14,15 @@ namespace rex
             : index_count(0)
             , start_index(0)
             , base_vertex(0)
-        {}
+        {
+        }
 
         DrawIndexedCommandDesc(s32 indexCount, s32 startIndex, s32 baseVertex)
             : index_count(indexCount)
             , start_index(startIndex)
             , base_vertex(baseVertex)
-        {}
+        {
+        }
 
         s32 index_count;
         s32 start_index;
@@ -30,7 +32,7 @@ namespace rex
       class DrawIndexed : public RenderCommand
       {
       public:
-        DrawIndexed(DrawIndexedCommandDesc&& desc)
+        explicit DrawIndexed(DrawIndexedCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {

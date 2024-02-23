@@ -1,9 +1,9 @@
 #pragma once
 
-#include "rex_renderer_core/resource.h"
-#include "rex_renderer_core/clear_bits.h"
-#include "rex_std/bonus/math/color.h"
 #include "rex_engine/engine/types.h"
+#include "rex_renderer_core/clear_bits.h"
+#include "rex_renderer_core/resource.h"
+#include "rex_std/bonus/math/color.h"
 
 namespace rex
 {
@@ -14,18 +14,18 @@ namespace rex
             struct ClearState
             {
                 rsl::Color4f rgba;
-                f32 depth;
-                u8 stencil;
+                f32 depth{};
+                u8 stencil{};
                 ClearBits flags;
             };
-        }
+        } // namespace resources
 
         class ClearStateResource : public BaseResource<resources::ClearState>
         {
         public:
             RESOURCE_CLASS_TYPE(ClearStateResource);
 
-            ClearStateResource(const resources::ClearState& cs)
+            explicit ClearStateResource(const resources::ClearState& cs)
                 :BaseResource(&m_clear_state)
                 ,m_clear_state(cs)
             {}
@@ -34,5 +34,5 @@ namespace rex
         private:
             resources::ClearState m_clear_state;
         };
-    }
-}
+    } // namespace renderer
+} // namespace rex

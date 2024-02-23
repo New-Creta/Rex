@@ -38,7 +38,7 @@ namespace
     //-------------------------------------------------------------------------
     rex::wrl::ComPtr<IDXGIFactory> create_dxgi_factory()
     {
-        rex::wrl::ComPtr<IDXGIFactory> dxgi_factory = nullptr;
+        rex::wrl::ComPtr<IDXGIFactory> dxgi_factory;
 
         const HRESULT hr = CreateDXGIFactory(IID_PPV_ARGS(dxgi_factory.GetAddressOf()));
         if (hr != S_OK)
@@ -77,8 +77,9 @@ namespace rex
         }
 
         Factory::Factory()
-            : ComObject(nullptr, 0)
+          : ComObject(nullptr, 0)
         {}
+
         //-------------------------------------------------------------------------
         Factory::Factory(wrl::ComPtr<IDXGIFactory>&& object, u32 version)
             : ComObject(rsl::move(object), version)

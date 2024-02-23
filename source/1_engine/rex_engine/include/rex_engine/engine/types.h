@@ -48,8 +48,8 @@ using a_s32  = rsl::atomic<s32>;
 
 namespace rex
 {
-    namespace globals
-    {
-        constexpr s32 g_invalid_slot_id = -1;
-    }
-}
+  namespace globals
+  {
+    constexpr s32 g_invalid_slot_id = -1;
+  } // namespace globals
+} // namespace rex

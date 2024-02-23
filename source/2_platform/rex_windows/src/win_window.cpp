@@ -50,46 +50,46 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::create(HInstance hInstance, s32 cmdShow, const WindowDescription& description)
     {
-        UNUSED_PARAM(cmdShow);
+      UNUSED_PARAM(cmdShow);
 
-        if (!m_wnd_class.create(hInstance, default_win_procedure, description.title.data()))
-        {
-            REX_ERROR(LogWindows, "Failed to create window class");
-            return false;
-        }
+      if(!m_wnd_class.create(hInstance, default_win_procedure, description.title.data()))
+      {
+        REX_ERROR(LogWindows, "Failed to create window class");
+        return false;
+      }
 
-        m_min_width = description.min_width;
-        m_min_height = description.min_height;
+      m_min_width  = description.min_width;
+      m_min_height = description.min_height;
 
-        WindowViewport viewport = description.viewport;
+      WindowViewport viewport = description.viewport;
 
-        const s32 x = viewport.x;
-        const s32 y = viewport.y;
-        const s32 width = viewport.width;
-        const s32 height = viewport.height;
+      const s32 x      = viewport.x;
+      const s32 y      = viewport.y;
+      const s32 width  = viewport.width;
+      const s32 height = viewport.height;
 
-        REX_ASSERT_X(width < (1 << 16), "Window width exceeded the maximum resolution");
-        REX_ASSERT_X(height < (1 << 16), "Window height exceeded the maximum resolution");
+      REX_ASSERT_X(width < (1 << 16), "Window width exceeded the maximum resolution");
+      REX_ASSERT_X(height < (1 << 16), "Window height exceeded the maximum resolution");
 
-        if (width < m_min_width)
-        {
-            viewport.width = m_min_width;
-        }
-        if (height < m_min_height)
-        {
-            viewport.height = m_min_height;
-        }
+      if(width < m_min_width)
+      {
+        viewport.width = m_min_width;
+      }
+      if(height < m_min_height)
+      {
+        viewport.height = m_min_height;
+      }
 
-        RECT rc = { 0, 0, static_cast<LONG>(width), static_cast<LONG>(height) };
-        if (WIN_FAILED(AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE)))
-        {
-            REX_ERROR(LogWindows, "Failed to adjust the window rect");
-            return false;
-        }
+      RECT rc = {0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
+      if(WIN_FAILED(AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE)))
+      {
+        REX_ERROR(LogWindows, "Failed to adjust the window rect");
+        return false;
+      }
 
-        // We use SystemMetrics here instead of retrieving the ClientRect of the DesktopWindow.
-        // We might not be able to access the DesktopWindow on this device due to security issues but we are able to retrieve the width and the height of the monitor using SystemMetrics
-        RECT desktop_rect = { 0, 0, GetSystemMetrics(SM_CXSCREEN) , GetSystemMetrics(SM_CYSCREEN) };
+      // We use SystemMetrics here instead of retrieving the ClientRect of the DesktopWindow.
+      // We might not be able to access the DesktopWindow on this device due to security issues but we are able to retrieve the width and the height of the monitor using SystemMetrics
+      const RECT desktop_rect = {0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)};
 
       const LONG screen_mid_x = (desktop_rect.right - desktop_rect.left) / 2;
       const LONG screen_mid_y = (desktop_rect.bottom - desktop_rect.top) / 2;
@@ -97,7 +97,7 @@ namespace rex
       const LONG half_x = (rc.right - rc.left) / 2;
       const LONG half_y = (rc.bottom - rc.top) / 2;
 
-        // clang-format off
+      // clang-format off
         m_hwnd = WIN_CALL(
             static_cast<HWND>(CreateWindowA(description.title.data(),
                 description.title.data(),
@@ -113,15 +113,15 @@ namespace rex
                 nullptr,
                 static_cast<HINSTANCE>(hInstance),
                 &m_event_handler)));
-        // clang-format on
+      // clang-format on
 
-        if (m_hwnd == nullptr)
-        {
-            REX_ERROR(LogWindows, "Window creation failed");
-            return false;
-        }
+      if(m_hwnd == nullptr)
+      {
+        REX_ERROR(LogWindows, "Window creation failed");
+        return false;
+      }
 
-        return true;
+      return true;
     }
 
     //-------------------------------------------------------------------------

@@ -3,7 +3,6 @@
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/input_layout_classification.h"
 #include "rex_renderer_core/vertex_buffer_format.h"
-
 #include "rex_std/string_view.h"
 
 namespace rex
@@ -25,7 +24,7 @@ namespace rex
 
       struct CreateInputLayoutCommandDesc
       {
-        rsl::vector<InputLayoutDescription> input_layout;
+        rsl::vector<InputLayoutDescription> input_layout {};
       };
 
       class CreateInputLayout : public RenderCommand

@@ -1,17 +1,16 @@
 #include "rex_renderer_core/rendering/scene_renderer.h"
+
 #include "rex_renderer_core/rendering/scene.h"
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    //-------------------------------------------------------------------------
+    SceneRenderer::SceneRenderer(const Scene* scene)
+        : m_scene(scene)
     {
-        //-------------------------------------------------------------------------
-        SceneRenderer::SceneRenderer(const Scene* scene)
-            :m_scene(scene)
-        {
-
-        }
-
-
     }
-}
+
+  } // namespace renderer
+} // namespace rex

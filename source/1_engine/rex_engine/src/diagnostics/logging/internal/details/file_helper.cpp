@@ -1,14 +1,14 @@
 #include "rex_engine/diagnostics/logging/internal/details/file_helper.h"
 
-#include <errno.h>
-
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
-#include "rex_engine/filesystem/filesystem_constants.h"
-#include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/engine/debug_types.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/filesystem/filesystem_constants.h"
+#include "rex_engine/memory/global_allocator.h"
+
+#include <errno.h>
 
 // IWYU pragma: no_include <built-in>
 
@@ -22,7 +22,7 @@ namespace rex
     {
 
       FileHelper::FileHelper(const FileEventHandlers& eventHandlers)
-        : m_event_handlers(eventHandlers)
+          : m_event_handlers(eventHandlers)
       {
       }
 
@@ -36,33 +36,33 @@ namespace rex
         close();
         m_filename = filename_t(fname);
 
-        const auto* mode = "ab";
+        const auto* mode       = "ab";
         const auto* trunc_mode = "wb";
 
-        if (m_event_handlers.before_open)
+        if(m_event_handlers.before_open)
         {
           m_event_handlers.before_open(m_filename);
         }
-        for (int tries = 0; tries < s_open_tries; ++tries)
+        for(int tries = 0; tries < s_open_tries; ++tries)
         {
           // create containing folder if not exists already.
           os::create_dir(os::dir_name(fname));
-          if (truncate)
+          if(truncate)
           {
             // Truncate by opening-and-closing a tmp file in "wb" mode, always
             // opening the actual log-we-write-to in "ab" mode, since that
             // interacts more politely with eternal processes that might
             // rotate/truncate the file underneath us.
             FILE* tmp = nullptr;
-            if (os::fopen_s(&tmp, fname, filename_t(trunc_mode)))
+            if(os::fopen_s(&tmp, fname, filename_t(trunc_mode)))
             {
               continue;
             }
             REX_ASSERT_X(fclose(tmp), "failed to close tmp file");
           }
-          if (!os::fopen_s(&m_fd, fname, filename_t(mode)))
+          if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
           {
-            if (m_event_handlers.after_open)
+            if(m_event_handlers.after_open)
             {
               m_event_handlers.after_open(m_filename, m_fd);
             }
@@ -82,7 +82,7 @@ namespace rex
 
       void FileHelper::reopen(bool truncate)
       {
-        if (m_filename.empty())
+        if(m_filename.empty())
         {
           printf("Failed re opening file - was not opened before");
         }
@@ -91,7 +91,7 @@ namespace rex
 
       void FileHelper::flush()
       {
-        if (fflush(m_fd) != 0)
+        if(fflush(m_fd) != 0)
         {
           rex::DebugString err(rex::global_debug_allocator());
           err += "Failed flush to file ";
@@ -103,7 +103,7 @@ namespace rex
 
       void FileHelper::sync()
       {
-        if (!os::fsync(m_fd))
+        if(!os::fsync(m_fd))
         {
           rex::DebugString err(rex::global_debug_allocator());
           err += "Failed to fsync file ";
@@ -115,9 +115,9 @@ namespace rex
 
       void FileHelper::close()
       {
-        if (m_fd != nullptr)
+        if(m_fd != nullptr)
         {
-          if (m_event_handlers.before_close)
+          if(m_event_handlers.before_close)
           {
             m_event_handlers.before_close(m_filename, m_fd);
           }
@@ -125,7 +125,7 @@ namespace rex
           REX_ASSERT_X(fclose(m_fd), "failed to close fd file");
           m_fd = nullptr;
 
-          if (m_event_handlers.after_close)
+          if(m_event_handlers.after_close)
           {
             m_event_handlers.after_close(m_filename);
           }
@@ -135,8 +135,8 @@ namespace rex
       void FileHelper::write(const memory_buf_t& buf)
       {
         const s32 msg_size = buf.size();
-        const auto* data = buf.data();
-        if (fwrite(data, 1, msg_size, m_fd) != msg_size)
+        const auto* data   = buf.data();
+        if(fwrite(data, 1, msg_size, m_fd) != msg_size)
         {
           rex::DebugString err(rex::global_debug_allocator());
           err += "Failed writing to file ";
@@ -148,7 +148,7 @@ namespace rex
 
       size_t FileHelper::size() const
       {
-        if (m_fd == nullptr)
+        if(m_fd == nullptr)
         {
           rex::DebugString err(rex::global_debug_allocator());
           err += "Cannot use size() on closed file ";
@@ -183,24 +183,24 @@ namespace rex
 
         // no valid extension found - return whole path and empty string as
         // extension
-        if (ext_index == filename_t::npos() || ext_index == 0 || ext_index == fname.size() - 1)
+        if(ext_index == filename_t::npos() || ext_index == 0 || ext_index == fname.size() - 1)
         {
-          return FilenameWithExtension{ fname, rsl::tiny_stack_string() };
+          return FilenameWithExtension {fname, rsl::tiny_stack_string()};
         }
 
         // treat cases like "/etc/rc.d/somelogfile or "/abc/.hiddenfile"
         auto folder_index = fname.find_last_of(rex::g_folder_seps_filename);
-        if (folder_index != filename_t::npos() && folder_index >= ext_index - 1)
+        if(folder_index != filename_t::npos() && folder_index >= ext_index - 1)
         {
-          return FilenameWithExtension{ fname, rsl::tiny_stack_string() };
+          return FilenameWithExtension {fname, rsl::tiny_stack_string()};
         }
 
         // finally - return a valid base and extension tuple
-        return FilenameWithExtension{ rsl::small_stack_string(fname.substr(0, ext_index)), rsl::tiny_stack_string(fname.substr(ext_index)) };
+        return FilenameWithExtension {rsl::small_stack_string(fname.substr(0, ext_index)), rsl::tiny_stack_string(fname.substr(ext_index))};
       }
 
     } // namespace details
-  }
-} // namespace rex::log
+  }   // namespace log
+} // namespace rex
 
 // NOLINTEND(misc-definitions-in-headers)

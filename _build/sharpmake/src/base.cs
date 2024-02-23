@@ -109,9 +109,19 @@ public class RegenerateProjects : Project
     string rexpyPath = Path.Combine(Globals.Root, "_rex.py");
 
     // The custom build steps just perform a generation step
+    string IdeCommandLineOption = "VisualStudio19";
+    switch (ProjectGen.Settings.IDE)
+    {
+      case ProjectGen.IDE.VisualStudio19: IdeCommandLineOption = "VisualStudio19"; break;
+      case ProjectGen.IDE.VisualStudio22: IdeCommandLineOption = "VisualStudio22"; break;
+      case ProjectGen.IDE.VSCode: IdeCommandLineOption = "VSCode"; break;
+      default:
+        break;
+    }
+
     conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
-    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -no_default_config -IDE VisualStudio"; // Use what's previously generated
-    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -IDE VisualStudio"; // Perform a generation from scratch
+    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -no_default_config -IDE {IdeCommandLineOption}"; // Use what's previously generated
+    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -IDE {IdeCommandLineOption}"; // Perform a generation from scratch
     conf.CustomBuildSettings.CleanCommand = "";
     conf.CustomBuildSettings.OutputFile = "";
   }
@@ -134,6 +144,8 @@ public abstract class BasicCPPProject : Project
     LoadToolPaths();
 
     ClangToolsEnabled = ProjectGen.Settings.ClangToolsEnabled;
+
+    ResourceFilesExtensions.Add(".json");
   }
 
   // Legacy function and should be removed
@@ -616,10 +628,7 @@ public abstract class BasicCPPProject : Project
   // and passes it over to code generation system for processing
   private void ReadCodeGenerationConfigFile()
   {
-    // the generation path always follows the same relative path from {root}/config
-    // as it does from {root} to the source code
-    string relative_source_path = Util.PathGetRelative(Path.Combine(Globals.Root), SourceRootPath);
-    string code_generation_config_path = Path.Combine(Globals.Root, "config", relative_source_path, "code_generation.json");
+    string code_generation_config_path = Path.Combine(SourceRootPath, "config", "code_generation.json");
 
     // Not every project has a code generation config file
     // if one doesn't exists, we early out here

@@ -28,11 +28,11 @@ namespace rex
       /**
        * Retrieve the underlying com ptr
        */
-      T* ComPtr();
+      T* com_ptr();
       /**
        * Retrieve the underlying com ptr
        */
-      const T* ComPtr() const;
+      const T* com_ptr() const;
 
       /**
           In order to pass along " const " objects to DirectX we are able to remove the " const " with this function.
@@ -82,13 +82,13 @@ namespace rex
 
     //-------------------------------------------------------------------------
     template <typename T>
-    T* ComObject<T>::ComPtr()
+    T* ComObject<T>::com_ptr()
     {
       return m_pointer.Get();
     }
     //-------------------------------------------------------------------------
     template <typename T>
-    const T* ComObject<T>::ComPtr() const
+    const T* ComObject<T>::com_ptr() const
     {
       return m_pointer.Get();
     }

@@ -4,14 +4,14 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    struct Info
     {
-        struct Info
-        {
-            rsl::small_stack_string api_version;
-            rsl::small_stack_string shader_version;
-            rsl::small_stack_string adaptor;
-            rsl::small_stack_string vendor;
-        };
-    }
-}
+      rsl::small_stack_string api_version;
+      rsl::small_stack_string shader_version;
+      rsl::small_stack_string adaptor;
+      rsl::small_stack_string vendor;
+    };
+  } // namespace renderer
+} // namespace rex

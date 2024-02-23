@@ -10,36 +10,33 @@ import regis.generation
 import regis.rex_json
 import regis.util
 import regis.diagnostics
-import shutil
+import sys
 
 if __name__ == "__main__":
   root = regis.util.find_root()
 
   # initialize the argument parser by loading the arguments from the config file
-  parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  parser = argparse.ArgumentParser(add_help=False, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('-sharpmake_arg', dest="sharpmake_args", default=[], action="append", help='Argument to be passed to sharpmake directly')
-  parser.add_argument('-no_default_config', default=False, action="store_true", help='Don\'t start from the default config, but from what\'t previously configured')
-  regis.generation.add_config_arguments_to_parser(parser)
+  parser.add_argument('-use_default_config', default=False, action="store_true", help='Use the default config as a initial settings')
+  parser.add_argument('-h', '--help', action='store_true', dest='show_help', help='Show this help message and exit')
+
+  # Do a first pass on the argument so we know if we should load the default config or not
+  args, unknown = parser.parse_known_args()
+
+  # Load the arguments from either the default config or the previous config
+  regis.generation.add_config_arguments_to_parser(parser, args.use_default_config)
 
   # parse the arguments passed to this script
   args, unknown = parser.parse_known_args()
 
-  # if we're not allowed to use the default config, we need to mask of to only the args passed in
-  disallow_default_config = args.no_default_config
-  sharpmake_args = args.sharpmake_args
-  if disallow_default_config:
-    args_vars = vars(args)
-    nothing = object()
-    mask = argparse.Namespace(**{arg: nothing for arg in args_vars})
-    masked_namespace = parser.parse_args(namespace=mask)
-    masked_args = {
-        arg: value
-        for arg, value in vars(masked_namespace).items()
-        if value is not nothing
-    }
-    args = argparse.Namespace(**masked_args)
+  # Now you can check if the help was requested
+  if args.show_help:
+    parser.print_help()
+    exit()
 
-  config = regis.generation.create_config(args, useDefault=not disallow_default_config)
+  # Create the config dict
+  config = regis.generation.create_config(args, args.use_default_config)
 
   # call generation code to launch sharpmake
   settings_path = os.path.join(root, regis.util.settingsPathFromRoot)
@@ -47,6 +44,6 @@ if __name__ == "__main__":
 
   # Sharpmake expects to be run from the root directory
   with regis.util.temp_cwd(root):
-    result = regis.generation.new_generation(settings, config, sharpmake_args)
+    result = regis.generation.new_generation(settings, config, args.sharpmake_args)
 
   exit(result)

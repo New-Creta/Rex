@@ -1,39 +1,45 @@
 #pragma once
 
-#include "rex_renderer_core/commands/render_cmd.h"
-
 #include "rex_engine/memory/blob.h"
+#include "rex_renderer_core/commands/render_cmd.h"
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace commands
     {
-        namespace commands
+      struct CreateBufferCommandDesc
+      {
+        memory::Blob buffer_data;
+      };
+
+      class CreateBuffer : public RenderCommand
+      {
+      public:
+        CreateBuffer(CreateBufferCommandDesc&& desc, const ResourceSlot& slot)
+            : RenderCommand()
+            , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
-            struct CreateBufferCommandDesc
-            {
-                memory::Blob buffer_data;
-            };
+        }
 
-            class CreateBuffer : public RenderCommand
-            {
-            public:
-                CreateBuffer(CreateBufferCommandDesc&& desc, const ResourceSlot& slot)
-                    : RenderCommand()
-                    , m_desc(rsl::move(desc))
-                    , m_resource_slot(slot)
-                {}
+        ~CreateBuffer() override = default;
 
-                ~CreateBuffer() override = default;
+      protected:
+        const CreateBufferCommandDesc& description() const
+        {
+          return m_desc;
+        }
+        const ResourceSlot& resource_slot() const
+        {
+          return m_resource_slot;
+        }
 
-            protected:
-                const CreateBufferCommandDesc& description() const { return m_desc; }
-                const ResourceSlot& resource_slot() const { return m_resource_slot; }
-
-            private:
-                CreateBufferCommandDesc m_desc;
-                ResourceSlot m_resource_slot;
-            };
-        } // namespace commands
-    }   // namespace renderer
+      private:
+        CreateBufferCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
+      };
+    } // namespace commands
+  }   // namespace renderer
 } // namespace rex

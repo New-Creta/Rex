@@ -4,7 +4,6 @@
 #include "rex_std/assert.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
-
 #include "rex_windows/input/internal/input.h"
 
 #define NOMINMAX

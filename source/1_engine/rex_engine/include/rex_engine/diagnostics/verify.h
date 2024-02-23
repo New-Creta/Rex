@@ -12,4 +12,4 @@ namespace rex
 } // namespace rex
 
 #define REX_VERIFY_X(cnd, msg) rex::rex_verify(condition, msg)
-#define REX_VERIFY(msg) rex::rex_verify(msg)
+#define REX_VERIFY(msg)        rex::rex_verify(msg)

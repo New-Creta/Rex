@@ -6,7 +6,7 @@ namespace rex
 {
   void log_mem_usage()
   {
-    MemoryStats stats = query_memory_stats();
+    const MemoryStats stats = query_memory_stats();
 
     // Physical memory
     rsl::medium_stack_string msg;
@@ -23,4 +23,4 @@ namespace rex
     msg += " bytes.";
     output_debug_string(msg);
   }
-}
+} // namespace rex

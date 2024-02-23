@@ -4,35 +4,35 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    namespace commands
     {
-        namespace commands
+      struct CreateFrameResourceCommandDesc
+      {
+      };
+
+      class CreateFrameResource : public RenderCommand
+      {
+      public:
+        CreateFrameResource(CreateFrameResourceCommandDesc&& desc, const ResourceSlot& slot)
+            : RenderCommand()
+            , m_desc(rsl::move(desc))
+            , m_resource_slot(slot)
         {
-            struct CreateFrameResourceCommandDesc
-            {    
-            };
-
-            class CreateFrameResource : public RenderCommand
-            {
-            public:
-              CreateFrameResource(CreateFrameResourceCommandDesc&& desc, const ResourceSlot& slot)
-                  : RenderCommand()
-                  , m_desc(rsl::move(desc))
-                  , m_resource_slot(slot)
-              {
-              }
-
-              ~CreateFrameResource() override = default;
-
-              bool execute() override
-              {
-                return backend::create_frame_resource(m_resource_slot);
-              }
-
-            private:
-              CreateFrameResourceCommandDesc m_desc;
-              ResourceSlot m_resource_slot;
-            };
         }
-    }
-}
+
+        ~CreateFrameResource() override = default;
+
+        bool execute() override
+        {
+          return backend::create_frame_resource(m_resource_slot);
+        }
+
+      private:
+        CreateFrameResourceCommandDesc m_desc;
+        ResourceSlot m_resource_slot;
+      };
+    } // namespace commands
+  }   // namespace renderer
+} // namespace rex

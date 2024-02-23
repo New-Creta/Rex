@@ -1,7 +1,7 @@
 #include "rex_engine/memory/global_allocator.h"
 
-#include "rex_engine/memory/memory_stats.h"
 #include "rex_engine/diagnostics/debug.h"
+#include "rex_engine/memory/memory_stats.h"
 
 namespace rex
 {
@@ -16,7 +16,7 @@ namespace rex
     void log_mem_usage_before_tracking()
     {
       // Store result in static bool so we only log once
-      static bool is_initialized = log_mem_usage_before_tracking_impl();
+      static const bool s_is_initialized = log_mem_usage_before_tracking_impl();
     }
 
     template <typename T>
@@ -24,13 +24,13 @@ namespace rex
     {
       log_mem_usage_before_tracking();
 
-      static UntrackedAllocator untracked_alloc{};
+      static UntrackedAllocator untracked_alloc {};
       static T alloc(untracked_alloc);
 
       return alloc;
     }
 
-  }
+  } // namespace internal
 
   GlobalAllocator& global_allocator()
   {

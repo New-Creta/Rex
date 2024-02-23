@@ -1,20 +1,19 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
-#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
 #include "rex_engine/diagnostics/logging/internal/logger_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/vector.h"
 
-
 #if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
-#define REX_ENABLE_COLOR_SINK
+  #define REX_ENABLE_COLOR_SINK
 #endif
 
 namespace rex

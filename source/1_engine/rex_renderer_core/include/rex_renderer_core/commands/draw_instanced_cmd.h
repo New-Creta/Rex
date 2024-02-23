@@ -15,14 +15,16 @@ namespace rex
             , start_instance(0)
             , vertex_count(0)
             , start_vertex(0)
-        {}
+        {
+        }
 
         DrawInstanceCommandDesc(s32 instanceCount, s32 startInstance, s32 vertexCount, s32 startVertex)
             : instance_count(instanceCount)
             , start_instance(startInstance)
             , vertex_count(vertexCount)
             , start_vertex(startVertex)
-        {}
+        {
+        }
 
         s32 instance_count;
         s32 start_instance;
@@ -33,7 +35,7 @@ namespace rex
       class DrawInstanced : public RenderCommand
       {
       public:
-        DrawInstanced(DrawInstanceCommandDesc&& desc)
+        explicit DrawInstanced(DrawInstanceCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {
@@ -41,11 +43,11 @@ namespace rex
 
         ~DrawInstanced() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
-            backend::draw_instanced(m_desc.vertex_count, m_desc.instance_count, m_desc.start_vertex, m_desc.start_instance);
+          backend::draw_instanced(m_desc.vertex_count, m_desc.instance_count, m_desc.start_vertex, m_desc.start_instance);
 
-            return true;
+          return true;
         }
 
       private:

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "rex_renderer_core/commands/render_cmd.h"
-
 #include "rex_engine/memory/blob.h"
+#include "rex_renderer_core/commands/render_cmd.h"
 
 namespace rex
 {
@@ -12,10 +11,11 @@ namespace rex
     {
       struct UpdateCommittedResourceCommandDesc
       {
-          UpdateCommittedResourceCommandDesc()
-            :buffer_data()
-            ,element_index(0)
-        {}
+        UpdateCommittedResourceCommandDesc()
+            : buffer_data()
+            , element_index(0)
+        {
+        }
 
         memory::Blob buffer_data;
         s32 element_index;
@@ -24,7 +24,7 @@ namespace rex
       class UpdateCommittedResource : public RenderCommand
       {
       public:
-          UpdateCommittedResource(UpdateCommittedResourceCommandDesc&& desc, const ResourceSlot& slot)
+        UpdateCommittedResource(UpdateCommittedResourceCommandDesc&& desc, const ResourceSlot& slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
             , m_resource_slot(slot)
@@ -33,7 +33,7 @@ namespace rex
 
         ~UpdateCommittedResource() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           backend::update_committed_resource(m_desc, m_resource_slot);
 

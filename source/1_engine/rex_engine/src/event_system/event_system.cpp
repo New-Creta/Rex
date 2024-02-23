@@ -1,12 +1,12 @@
 #include "rex_engine/event_system/event_system.h"
 
+#include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/event_system/event.h"
 #include "rex_engine/event_system/event_type.h"
-#include "rex_engine/diagnostics/log.h"
+#include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
-#include "rex_std/bonus/utility/enum_reflection.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
@@ -20,11 +20,11 @@ namespace rex
       {
       public:
         EventQueue()
-            :m_subscriptions()
-            ,m_front()
-            ,m_back()
-            ,m_current(&m_front)
-            ,m_next(&m_back)
+            : m_subscriptions()
+            , m_front()
+            , m_back()
+            , m_current(&m_front)
+            , m_next(&m_back)
         {
         }
 
@@ -100,7 +100,7 @@ namespace rex
 
     void enqueue_event(EventType evt)
     {
-      Event event{ evt };
+      const Event event {evt};
       enqueue_event(event);
     }
 

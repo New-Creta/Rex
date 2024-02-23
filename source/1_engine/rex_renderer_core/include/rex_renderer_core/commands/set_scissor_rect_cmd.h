@@ -17,7 +17,7 @@ namespace rex
       class SetScissorRect : public RenderCommand
       {
       public:
-        SetScissorRect(SetScissorRectCommandDesc&& desc)
+        explicit SetScissorRect(SetScissorRectCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {
@@ -25,7 +25,7 @@ namespace rex
 
         ~SetScissorRect() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::set_scissor_rect(m_desc.scissor_rect);
         }

@@ -3,6 +3,8 @@
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/resource_slot.h"
 
+#include <utility>
+
 namespace rex
 {
   namespace renderer
@@ -18,7 +20,8 @@ namespace rex
             , blend_state(ResourceSlot::make_invalid())
             , depth_stencil_state(ResourceSlot::make_invalid())
             , num_render_targets(0)
-        {}
+        {
+        }
 
         ResourceSlot input_layout;
         ResourceSlot shader_program;
@@ -34,7 +37,7 @@ namespace rex
         CreatePipelineState(CreatePipelineStateCommandDesc&& desc, ResourceSlot slot)
             : RenderCommand()
             , m_desc(rsl::move(desc))
-            , m_resource_slot(slot)
+            , m_resource_slot(std::move(std::move(slot)))
         {
         }
 

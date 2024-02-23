@@ -25,7 +25,7 @@ namespace rex
 
         ~SetRasterState() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
           return backend::set_raster_state(m_resource_slot);
         }

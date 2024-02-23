@@ -14,8 +14,8 @@ namespace rex
     RenderCommand::~RenderCommand() = default;
 
     //-------------------------------------------------------------------------
-    RenderCommand& RenderCommand::operator=(const RenderCommand& other) = default;
+    RenderCommand& RenderCommand::operator=(const RenderCommand& /*other*/) = default;
     //-------------------------------------------------------------------------
-    RenderCommand& RenderCommand::operator=(RenderCommand&& other) = default;
+    RenderCommand& RenderCommand::operator=(RenderCommand&& /*other*/) = default;
   } // namespace renderer
 } // namespace rex

@@ -16,7 +16,7 @@ namespace rex
       class BeginDraw : public RenderCommand
       {
       public:
-        BeginDraw(BeginDrawCommandDesc&& desc)
+        explicit BeginDraw(BeginDrawCommandDesc&& desc)
             : RenderCommand()
             , m_desc(rsl::move(desc))
         {
@@ -24,13 +24,13 @@ namespace rex
 
         ~BeginDraw() override = default;
 
-        bool execute() override 
+        bool execute() override
         {
-          return backend::begin_draw();  
+          return backend::begin_draw();
         }
 
       private:
-          BeginDrawCommandDesc m_desc;
+        BeginDrawCommandDesc m_desc;
       };
     } // namespace commands
   }   // namespace renderer

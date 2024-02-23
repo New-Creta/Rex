@@ -153,7 +153,7 @@ namespace rex
 
     rsl::wostream& operator<<(rsl::wostream& os, const ResolvedCallstack& callstack)
     {
-      for (count_t i = 0; i < callstack.size(); ++i)
+      for(count_t i = 0; i < callstack.size(); ++i)
       {
         os << callstack[i] << L"\n";
       }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/atomic/atomic.h"

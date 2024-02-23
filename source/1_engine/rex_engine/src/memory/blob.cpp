@@ -1,11 +1,11 @@
 #include "rex_engine/memory/blob.h"
 
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/log.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/memory/blob_writer.h"
-#include "rex_std/memory.h"
 #include "rex_std/bonus/memory/stack_allocator.h"
+#include "rex_std/memory.h"
 
 namespace rex
 {

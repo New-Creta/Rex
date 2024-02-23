@@ -13,8 +13,8 @@ namespace rex
   void exit_confirm(int32 exitCode);
 
   void output_debug_string(rsl::string_view str);
-}
+} // namespace rex
 
 #ifdef REX_PLATFORM_WINDOWS
-#include "rex_engine/platform/win/diagnostics/win_debug.h"
+  #include "rex_engine/platform/win/diagnostics/win_debug.h"
 #endif

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "rex_directx/directx_util.h"
+#include "rex_engine/engine/types.h"
 #include "rex_renderer_core/resource.h"
 #include "rex_renderer_core/texture_format.h"
-#include "rex_engine/engine/types.h"
 
 namespace rex
 {
@@ -13,9 +13,9 @@ namespace rex
         {
             struct RenderTarget
             {
-                wrl::ComPtr<ID3D12Resource> render_target;
+                wrl::ComPtr<ID3D12Resource> render_target{};
                 TextureFormat format;
-                s32 array_index;
+                s32 array_index{};
             };
         } // namespace resources
 

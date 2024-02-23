@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
+#include "rex_renderer_core/resource.h"
 
 namespace rex
 {
@@ -13,14 +13,14 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(PipelineStateResource);
 
-            PipelineStateResource(const wrl::ComPtr<ID3D12PipelineState>& pso)
+            explicit PipelineStateResource(const wrl::ComPtr<ID3D12PipelineState>& pso)
               : BaseResource(pso.Get())
                 ,m_pipeline_state(pso)
             {}
             ~PipelineStateResource() override = default;
 
         private:
-            wrl::ComPtr<ID3D12PipelineState> m_pipeline_state;
+            wrl::ComPtr<ID3D12PipelineState> m_pipeline_state{};
         };
-    }
-}
+    } // namespace renderer
+} // namespace rex

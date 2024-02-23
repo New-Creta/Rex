@@ -13,10 +13,10 @@
 // The use of private formatter per sink provides the opportunity to cache some
 // formatted data, and support for different format per sink.
 
-#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
+#include "rex_engine/engine/debug_types.h"
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/format.h"
@@ -39,8 +39,8 @@ namespace rex
       //-------------------------------------------------------------------------
       template <typename It>
       Logger(rsl::string_view name, It begin, It end)
-        : m_name(rex::DebugString(name))
-        , m_sinks(begin, end)
+          : m_name(rex::DebugString(name))
+          , m_sinks(begin, end)
       {
       }
 
@@ -95,7 +95,7 @@ namespace rex
       template <typename... Args>
       void log(level::LevelEnum lvl, format_string_t<Args...> fmt, Args&&... args)
       {
-        log(rsl::source_location{}, lvl, fmt, rsl::forward<Args>(args)...);
+        log(rsl::source_location {}, lvl, fmt, rsl::forward<Args>(args)...);
       }
       //-------------------------------------------------------------------------
       template <typename... Args>
@@ -107,14 +107,14 @@ namespace rex
       template <typename... Args>
       void log(level::LevelEnum lvl, rsl::basic_format_string<tchar, rsl::type_identity_t<Args>...> fmt, Args&&... args)
       {
-        log(rsl::source_location{}, lvl, fmt, rsl::forward<Args>(args)...);
+        log(rsl::source_location {}, lvl, fmt, rsl::forward<Args>(args)...);
       }
 
       //-------------------------------------------------------------------------
       template <typename T>
       void log(level::LevelEnum lvl, const T& msg)
       {
-        log(rsl::source_location{}, lvl, msg);
+        log(rsl::source_location {}, lvl, msg);
       }
 
     protected:
@@ -124,7 +124,7 @@ namespace rex
       void log_impl(rsl::source_location loc, level::LevelEnum lvl, rsl::string_view fmt, Args&&... args)
       {
         const bool log_enabled = should_log(lvl);
-        if (!log_enabled)
+        if(!log_enabled)
         {
           return;
         }
@@ -140,7 +140,7 @@ namespace rex
       void log_impl(rsl::source_location loc, level::LevelEnum lvl, rsl::wstring_view fmt, Args&&... args)
       {
         const bool log_enabled = should_log(lvl);
-        if (!log_enabled)
+        if(!log_enabled)
         {
           return;
         }
@@ -168,10 +168,10 @@ namespace rex
     private:
       rex::DebugString m_name;
       Sinks m_sinks;
-      rex::log::level_t m_level{ static_cast<s32>(level::LevelEnum::Info) };
-      rex::log::level_t m_flush_level{ static_cast<s32>(level::LevelEnum::Off) };
+      rex::log::level_t m_level {static_cast<s32>(level::LevelEnum::Info)};
+      rex::log::level_t m_flush_level {static_cast<s32>(level::LevelEnum::Off)};
     };
 
     void swap(Logger& a, Logger& b);
-  }
-} // namespace rex::log
+  } // namespace log
+} // namespace rex

@@ -2,13 +2,13 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    enum class InputLayoutClassification
     {
-        enum class InputLayoutClassification
-        {
-            NONE = 0,
-            PER_VERTEX_DATA,
-            PER_INSTANCE_DATA
-        };
-    }
-}
+      None = 0,
+      PerVertexData,
+      PerInstanceData
+    };
+  } // namespace renderer
+} // namespace rex

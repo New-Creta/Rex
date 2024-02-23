@@ -45,24 +45,24 @@ bool rex::win::ComLibrary::is_initialized() const
 
 rsl::string rex::win::ComLibrary::read_link(rsl::string_view filepath)
 {
-  IShellLinkW* psl;
-  HRESULT hres = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl);
+  IShellLinkW* psl = nullptr;
+  HRESULT hres     = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&psl));
   rsl::wbig_stack_string res;
 
   if(SUCCEEDED(hres))
   {
-    IPersistFile* ppf;
-    hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
+    IPersistFile* ppf = nullptr;
+    hres              = psl->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID*>(&ppf));
 
     if(SUCCEEDED(hres))
     {
       // Replace "path_to_your_shortcut.lnk" with the actual path to your shortcut file
-      rsl::wstring wide_filepath(filepath.cbegin(), filepath.cend());
+      const rsl::wstring wide_filepath(filepath.cbegin(), filepath.cend());
       hres = ppf->Load(wide_filepath.c_str(), STGM_READ);
 
       if(SUCCEEDED(hres))
       {
-        hres = psl->GetPath(res.data(), res.max_size(), NULL, SLGP_UNCPRIORITY);
+        hres = psl->GetPath(res.data(), rsl::wbig_stack_string::max_size(), nullptr, SLGP_UNCPRIORITY);
         res.reset_null_termination_offset();
       }
 
@@ -77,7 +77,7 @@ rsl::string rex::win::ComLibrary::read_link(rsl::string_view filepath)
 
 bool rex::win::ComLibrary::init_lib()
 {
-  return HR_SUCCESS(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));
+  return HR_SUCCESS(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));
 }
 void rex::win::ComLibrary::uninit_lib()
 {

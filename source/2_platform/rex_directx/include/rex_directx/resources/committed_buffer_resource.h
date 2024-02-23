@@ -1,9 +1,9 @@
 #pragma once
 
-#include "rex_renderer_core/resource.h"
 #include "rex_directx/directx_util.h"
-#include "rex_engine/platform/win/win_com_ptr.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/platform/win/win_com_ptr.h"
+#include "rex_renderer_core/resource.h"
 
 namespace rex
 {
@@ -22,14 +22,14 @@ namespace rex
 
                 }
 
-                wrl::ComPtr<ID3D12Resource> uploader;
+                wrl::ComPtr<ID3D12Resource> uploader{};
 
                 u8* mapped_data;
                 s32 mapped_data_byte_size;
 
                 s32 element_data_byte_size;
             };
-        }
+        } // namespace resources
 
         class CommittedBufferResource : public BaseResource<resources::CommittedBuffer>
         {
@@ -54,5 +54,5 @@ namespace rex
         private:
             resources::CommittedBuffer m_committed_buffer;
         };
-    }
-}
+    } // namespace renderer
+} // namespace rex

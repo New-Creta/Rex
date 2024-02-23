@@ -4,18 +4,18 @@
 
 namespace rex
 {
-    namespace renderer
+  namespace renderer
+  {
+    struct OutputWindowUserData
     {
-        struct OutputWindowUserData
-        {
-            void* primary_display_handle;
+      void* primary_display_handle;
 
-            s32 window_width;
-            s32 window_height;
+      s32 window_width;
+      s32 window_height;
 
-            s32 refresh_rate;
+      s32 refresh_rate;
 
-            bool windowed;
-        };
-    }
-}
+      bool windowed;
+    };
+  } // namespace renderer
+} // namespace rex

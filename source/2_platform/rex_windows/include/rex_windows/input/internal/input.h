@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_std/bonus/types.h"
 #include "rex_std/array.h"
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {
@@ -29,17 +29,16 @@ namespace rex
         uint8 poll();
 
       private:
-        card32 m_current_input_idx = 1;
+        card32 m_current_input_idx               = 1;
         rsl::array<bool, 256> m_keys_even_frames = {};
-        rsl::array<bool, 256> m_keys_odd_frames = {};
-        rsl::array<bool, 256>* m_prev_keys = &m_keys_even_frames;
-        rsl::array<bool, 256>* m_current_keys = &m_keys_odd_frames;
-
+        rsl::array<bool, 256> m_keys_odd_frames  = {};
+        rsl::array<bool, 256>* m_prev_keys       = &m_keys_even_frames;
+        rsl::array<bool, 256>* m_current_keys    = &m_keys_odd_frames;
       };
 
       // The global input handler. Allows user to query global input state (eg. input::is_key_down)
       void set_global_input_handler(const Input& input);
       const Input* global_input_handler();
-    }
-  }
-}
+    } // namespace internal
+  }   // namespace input
+} // namespace rex
