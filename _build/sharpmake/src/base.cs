@@ -888,7 +888,7 @@ public class ToolsProject : BasicCPPProject
     base.SetupConfigSettings(conf, target);
 
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data");
 
     if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
     {

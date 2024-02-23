@@ -95,7 +95,7 @@ namespace rex
 
   MemoryTracker::MemoryTracker()
       : m_mem_usage(0)
-      , m_max_mem_usage((rsl::numeric_limits<s64>::max)())
+      , m_max_mem_budget((rsl::numeric_limits<s64>::max)())
       , m_is_active(true)
   {
   }
@@ -113,7 +113,7 @@ namespace rex
     // That's why we track the initial memory usage before the initialization
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
-    m_max_mem_usage        = rsl::high_water_mark<s64>(static_cast<s64>(maxMemUsage));
+    m_max_mem_budget        = static_cast<s64>(maxMemUsage);
     m_mem_stats_on_startup = query_memory_stats();
   }
 
