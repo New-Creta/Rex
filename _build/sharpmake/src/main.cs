@@ -192,7 +192,10 @@ public static class Main
     ProjectGen.Settings.UbsanEnabled = config["enable-ub-sanitizer"].Value.GetBoolean();
     ProjectGen.Settings.FuzzyTestingEnabled = config["enable-fuzzy-testing"].Value.GetBoolean();
     ProjectGen.Settings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
-    Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE);
+    if (!Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE))
+    {
+      Console.WriteLine($"Error: Invalid IDE passed in. Passed in \"{config["IDE"].Value.GetString()}\"");
+    }
     ProjectGen.Settings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
     ProjectGen.Settings.UnityBuildsDisabled = config["disable-unity-builds"].Value.GetBoolean();
   }
