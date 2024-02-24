@@ -34,7 +34,7 @@ namespace rex
 
     rsl::string_view current_header;
     rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>> items;
-    Error error = Error::no_error();
+    rex::Error error = Error::no_error();
     
     for (rsl::string_view line : lines)
     {
