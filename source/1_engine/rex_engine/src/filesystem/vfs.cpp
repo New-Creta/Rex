@@ -615,9 +615,9 @@ namespace rex
     {
       rsl::vector<rsl::string> result;
 
+      rsl::string full_path = vfs::create_full_path(path);
 
-
-      return result;
+      return path::list_files(full_path);
     }
   }
 }

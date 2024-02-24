@@ -27,9 +27,9 @@ namespace rex
   {
   }
 
-  Error IniProcessor::process()
+  rex::Error IniProcessor::process()
   {
-    rsl::string_view content(m_data.data_as<const char>(), m_data.size());
+    rsl::string_view content(m_data.data_as<const char>(), static_cast<s32>(m_data.size()));
     rsl::vector<rsl::string_view> lines = rsl::split(content, rex::endline());
 
     rsl::string_view current_header;
