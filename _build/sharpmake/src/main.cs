@@ -144,9 +144,9 @@ public static class Main
 
     // It's possible Visual Studio isn't installed on this machine
     // If it's not, then we can't set the root for Visual Studio
-    if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
+    if (Util.GetVisualStudioInstallationsFromQuery(ProjectGen.Settings.IDE.ToDevEnv()).Count > 0)
     {
-      KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
+      KitsRootPaths.SetUseKitsRootForDevEnv(ProjectGen.Settings.IDE.ToDevEnv(), KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
     }
   }
 
@@ -209,6 +209,6 @@ public static class Main
 
     KitsRootPaths.SetCompilerPaths(Compiler.MSVC, paths["msvc_compiler_path"], paths["msvc_linker_path"], paths["msvc_archiver_path"], "");
     KitsRootPaths.SetCompilerPaths(Compiler.Clang, paths["clang++_compiler_path"], paths["clang_linker_path"], paths["clang_archiver_path"], paths["clang_ranlib_path"], paths["clang_compiler_path"]);
-    KitsRootPaths.SetNinjaPath(paths["ninja_path"]);
+    KitsRootPaths.SetNinjaPath(paths["ninja_path"], ProjectGen.Settings.IDE.ToDevEnv());
   }
 }

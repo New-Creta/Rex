@@ -361,3 +361,23 @@ namespace ProjectGen
     static public TestProjectsFile TestProjectsFile = new TestProjectsFile();
   }
 }
+
+public static class Extensions
+{
+  public static DevEnv ToDevEnv(this ProjectGen.IDE ide)
+  {
+    switch (ide)
+    {
+      case ProjectGen.IDE.VisualStudio19:
+        return DevEnv.vs2019;
+        break;
+      case ProjectGen.IDE.VisualStudio22:
+        return DevEnv.vs2022;
+        break;
+      case ProjectGen.IDE.VSCode:
+        break;
+    }
+    return DevEnv.VisualStudio;
+
+  }
+}
