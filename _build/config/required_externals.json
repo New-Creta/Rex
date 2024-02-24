@@ -2,7 +2,7 @@
   "rex_std": {
     "name": "rex_std",
     "url": "https://github.com/RisingLiberty/RexStl/",
-    "tag": "v1.1.71",
+    "tag": "v1.1.73",
     "storage": "~/source/0_thirdparty"
   },
   "rex_glad": {
