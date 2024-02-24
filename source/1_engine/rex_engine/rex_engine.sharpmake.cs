@@ -134,6 +134,5 @@ public class RexEngine : EngineProject
     }
 
     conf.add_public_define("REXLOG_COMPILED_LIB");
-    conf.AddPublicDependency<TinyFileDialogs>(target);
   }
 }
