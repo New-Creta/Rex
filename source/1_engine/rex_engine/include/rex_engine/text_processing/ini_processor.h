@@ -31,7 +31,7 @@ namespace rex
   public:
     IniProcessor(memory::BlobView data);
     
-    Error process();
+    rex::Error process();
 
     const rsl::vector<IniHeaderWithItems>& items() const;
 

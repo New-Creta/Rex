@@ -29,15 +29,18 @@ namespace rex
 
   rex::Error IniProcessor::process()
   {
-    rsl::string_view content(m_data.data_as<const char>(), static_cast<s32>(m_data.size()));
+    rsl::string_view content(m_data.data_as<const char>(), static_cast<s32>(m_data.size()) - 1); // -1 to remove trailing null
     rsl::vector<rsl::string_view> lines = rsl::split(content, rex::endline());
 
     rsl::string_view current_header;
     rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>> items;
-    rex::Error error = Error::no_error();
+    rex::Error error = rex::Error::no_error();
     
     for (rsl::string_view line : lines)
     {
+      // Make sure we remove all leading and trailing whitespaces
+      line = rex::strip(line);
+
       // Headers are surrounded with '[' and ']'
       if (line.starts_with('[') && line.ends_with(']'))
       {
@@ -59,7 +62,7 @@ namespace rex
 
       // anything else is an error
       REX_ERROR(LogIniProcessor, "Invalid line: \"{}\"", line);
-      error = Error("Invalid line found");
+      error = rex::Error("Invalid line found");
     }
 
     add_new_header_with_items(current_header, rsl::move(items));

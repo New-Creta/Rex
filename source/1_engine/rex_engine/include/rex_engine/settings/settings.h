@@ -8,6 +8,9 @@ namespace rex
 {
   namespace settings
   {
+    // Check if a certain setting exists
+    bool has_setting(rsl::string_view name);
+
     // Get the value of a setting as a string
     rsl::string_view get(rsl::string_view name);
 

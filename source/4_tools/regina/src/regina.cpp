@@ -311,8 +311,8 @@ namespace regina
   bool build_shader_and_input_layout()
   {
     // Shader
-    rex::renderer::commands::CompileShaderCommandDesc vs_compile_command_desc = create_compile_shader_parameters("standardVS"_small, rex::renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
-    rex::renderer::commands::CompileShaderCommandDesc ps_compile_command_desc = create_compile_shader_parameters("opaquePS"_small, rex::renderer::ShaderType::PIXEL, "Shaders\\color.hlsl");
+    rex::renderer::commands::CompileShaderCommandDesc vs_compile_command_desc = create_compile_shader_parameters("standardVS"_small, rex::renderer::ShaderType::VERTEX, "regina\\Shaders\\color.hlsl");
+    rex::renderer::commands::CompileShaderCommandDesc ps_compile_command_desc = create_compile_shader_parameters("opaquePS"_small, rex::renderer::ShaderType::PIXEL, "regina\\Shaders\\color.hlsl");
 
     rex::renderer::commands::LinkShaderCommandDesc link_shader_command_desc;
     link_shader_command_desc.vertex_shader = rex::renderer::compile_shader(rsl::move(vs_compile_command_desc));
