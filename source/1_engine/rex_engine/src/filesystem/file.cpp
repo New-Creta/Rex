@@ -1,0 +1,6 @@
+#include "rex_engine/filesystem/file.h"
+
+namespace rex
+{
+
+}
