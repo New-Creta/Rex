@@ -160,7 +160,7 @@ namespace rex
     // Splits the path into a head and a tail
     // the head is either the mount point or an empty string
     // the tail is everything else
-    SplitResult split_drive(rsl::string_view path)
+    SplitResult split_origin(rsl::string_view path)
     {
       SplitResult res {};
 
@@ -207,15 +207,15 @@ namespace rex
     SplitRootResult split_root(rsl::string_view path)
     {
       // use a split drive result
-      const SplitResult splitted_drive = split_drive(path);
+      const SplitResult splitted_origin = split_origin(path);
       SplitRootResult res {};
 
       // fill in the values
-      if(!splitted_drive.head.empty())
+      if(!splitted_origin.head.empty())
       {
-        res.drive = splitted_drive.head.substr(0, 2); // split the drive letter and the colon
-        res.root  = splitted_drive.head.substr(2, 1);
-        res.tail  = splitted_drive.tail;
+        res.drive = splitted_origin.head.substr(0, 2); // split the drive letter and the colon
+        res.root  = splitted_origin.head.substr(2, 1);
+        res.tail  = splitted_origin.tail;
       }
       else if(path.starts_with('/') || path.starts_with('\\'))
       {

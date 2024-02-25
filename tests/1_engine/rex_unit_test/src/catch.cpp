@@ -1,7 +1,7 @@
 // NOLINTBEGIN
 
 #define CATCH_CONFIG_MAIN
-#include "rex_test/catch2/catch.hpp"
+#include "rex_unit_test/catch2/catch.hpp"
 
 #define REX_CATCH_REGISTER_REPORTER(name, reporterType)                                                                                                                                                                                                \
         CATCH_INTERNAL_START_WARNINGS_SUPPRESSION                                                                                                                                                                                                        \

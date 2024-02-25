@@ -18,6 +18,7 @@ public class RexUnitTest : TestProject
     base.SetupLibDependencies(conf, target);
 
     conf.AddPublicDependency<RexStd>(target, DependencySetting.Default);
+    conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default);
   }
 
   protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
