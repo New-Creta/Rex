@@ -144,9 +144,9 @@ public static class Main
 
     // It's possible Visual Studio isn't installed on this machine
     // If it's not, then we can't set the root for Visual Studio
-    if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
+    if (Util.GetVisualStudioInstallationsFromQuery(ProjectGen.Settings.IDE.ToDevEnv()).Count > 0)
     {
-      KitsRootPaths.SetUseKitsRootForDevEnv(DevEnv.vs2019, KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
+      KitsRootPaths.SetUseKitsRootForDevEnv(ProjectGen.Settings.IDE.ToDevEnv(), KitsRootEnum.KitsRoot10, Options.Vc.General.WindowsTargetPlatformVersion.v10_0_19041_0);
     }
   }
 
@@ -192,7 +192,10 @@ public static class Main
     ProjectGen.Settings.UbsanEnabled = config["enable-ub-sanitizer"].Value.GetBoolean();
     ProjectGen.Settings.FuzzyTestingEnabled = config["enable-fuzzy-testing"].Value.GetBoolean();
     ProjectGen.Settings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
-    Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE);
+    if (!Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE))
+    {
+      Console.WriteLine($"Error: Invalid IDE passed in. Passed in \"{config["IDE"].Value.GetString()}\"");
+    }
     ProjectGen.Settings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
     ProjectGen.Settings.UnityBuildsDisabled = config["disable-unity-builds"].Value.GetBoolean();
   }
@@ -206,6 +209,6 @@ public static class Main
 
     KitsRootPaths.SetCompilerPaths(Compiler.MSVC, paths["msvc_compiler_path"], paths["msvc_linker_path"], paths["msvc_archiver_path"], "");
     KitsRootPaths.SetCompilerPaths(Compiler.Clang, paths["clang++_compiler_path"], paths["clang_linker_path"], paths["clang_archiver_path"], paths["clang_ranlib_path"], paths["clang_compiler_path"]);
-    KitsRootPaths.SetNinjaPath(paths["ninja_path"]);
+    KitsRootPaths.SetNinjaPath(paths["ninja_path"], ProjectGen.Settings.IDE.ToDevEnv());
   }
 }

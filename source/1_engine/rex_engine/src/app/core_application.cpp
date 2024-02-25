@@ -28,7 +28,7 @@ namespace rex
   } // namespace globals
 
   //-------------------------------------------------------------------------
-  CoreApplication::CoreApplication(const EngineParams& engineParams)
+  CoreApplication::CoreApplication(const EngineParams& /*engineParams*/)
       : m_app_state(ApplicationState::Created)
   {
   }

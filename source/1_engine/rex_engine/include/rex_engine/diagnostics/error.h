@@ -7,7 +7,7 @@ namespace rex
 {
   // An error class can be used as an return value from a function to indicate an error
   // Use Error::no_error to return an object that indicates no error has ocurred
-  // Otherwise invoce the constructor to set an error message and an error code
+  // Otherwise invoke the constructor to set an error message and an error code
   // Anything code other than 0 is treated as an error
   class Error
   {

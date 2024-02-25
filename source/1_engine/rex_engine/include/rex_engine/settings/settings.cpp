@@ -49,6 +49,12 @@ namespace rex
       }
     }
 
+    // Check if a certain setting exists
+    bool has_setting(rsl::string_view name)
+    {
+      return internal::all_settings().contains(name);
+    }
+
     // gets a setting from the global map
     rsl::string_view get(rsl::string_view name)
     {
@@ -80,7 +86,7 @@ namespace rex
       IniProcessor ini_processor = IniProcessor(memory::BlobView(settings_blob));
       Error error = ini_processor.process();
 
-      REX_ERROR_X(Settings, error, "Invalid settings found in \"{}\"", path);
+      REX_ERROR_X(Settings, !error, "Invalid settings found in \"{}\"", path);
 
       // Loop over the processed settings and add them to the global map
       for (const IniHeaderWithItems& header_with_items : ini_processor.items())
