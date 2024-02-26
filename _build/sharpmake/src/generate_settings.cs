@@ -374,10 +374,8 @@ public static class Extensions
       case ProjectGen.IDE.VisualStudio22:
         return DevEnv.vs2022;
         break;
-      case ProjectGen.IDE.VSCode:
-        break;
     }
-    return DevEnv.VisualStudio;
+    return DevEnv.vs2019;
 
   }
 }
