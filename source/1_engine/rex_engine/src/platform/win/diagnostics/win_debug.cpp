@@ -3,6 +3,10 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/platform/win/diagnostics/win_message_box.h"
+#include "rex_engine/system/process.h"
+
+#include "rex_std/thread.h"
+#include "rex_std/format.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -45,3 +49,32 @@ rsl::medium_stack_string rex::win::report_win_error(HResult hr, [[maybe_unused]]
 
   return error_message;
 }
+
+bool rex::wait_for_debugger(rsl::chrono::minutes minutesToWait)
+{
+  REX_LOG(LogEngine, "Waiting for debugger to get attached..");
+
+  using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
+  auto i = 1s;
+  while (i < minutesToWait && !rex::is_debugger_attached())
+  {
+    rsl::this_thread::sleep_for(1s);
+    ++i;
+  }
+
+  if (is_debugger_attached())
+  {
+    DEBUG_BREAK();
+    return true;
+  }
+
+  return false;
+}
+
+void rex::attach_debugger()
+{
+  // https://stackoverflow.com/questions/1291580/what-is-this-command-in-c-sharp-c-windows-system32-vsjitdebugger-exe-p-ld
+  auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::current_process_id());
+  system(cmd.c_str());
+}
+
