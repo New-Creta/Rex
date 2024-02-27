@@ -34,8 +34,8 @@
 #include "rex_std/bonus/math/color.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/string.h"
-#include "rex_windows/gui_application.h"
-#include "rex_windows/platform_creation_params.h"
+#include "rex_windows/app/gui_application.h"
+#include "rex_windows/engine/platform_creation_params.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -803,6 +803,9 @@ namespace regina
   bool initialize()
   {
     REX_LOG(LogRegina, "Initializing Regina");
+
+    int x = 0;
+    int y = 1 / x;
 
     return init_gfx();
   }

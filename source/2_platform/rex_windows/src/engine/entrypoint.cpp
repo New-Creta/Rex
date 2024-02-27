@@ -4,22 +4,16 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/iostream.h"
-#include "rex_windows/console_application.h"
-#include "rex_windows/gui_application.h"
-#include "rex_windows/log.h"
-#include "rex_windows/platform_creation_params.h"
+#include "rex_windows/app/console_application.h"
+#include "rex_windows/app/gui_application.h"
+#include "rex_windows/diagnostics/log.h"
+#include "rex_windows/engine/platform_creation_params.h"
+#include "rex_windows/crash_handler/win_crash_handler.h"
 
 #define NOMINMAX
 #include <Windows.h>
 #include <processenv.h>
 
-//-------------------------------------------------------------------------
-s32 report_crash(LPEXCEPTION_POINTERS exceptionInfo)
-{
-  rsl::cout << "We crashed!\n";
-  (void)exceptionInfo;
-  return EXCEPTION_EXECUTE_HANDLER;
-}
 //-------------------------------------------------------------------------
 int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, int nShowCmd)
 {
@@ -42,7 +36,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, in
     if(app_params.create_window)
     {
       // this doesn't initialize anything but simply prepares the application for initialization
-      rex::win32::GuiApplication application(rsl::move(app_params));
+      rex::win::GuiApplication application(rsl::move(app_params));
 
       // this initializes, runs the loop and performs the shutdown
       result = application.run();
@@ -50,13 +44,13 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, in
     else
     {
       // this doesn't initialize anything but simply prepares the application for initialization
-      rex::win32::ConsoleApplication application(rsl::move(app_params));
+      rex::win::ConsoleApplication application(rsl::move(app_params));
 
       // this initializes, runs the loop and performs the shutdown
       result = application.run();
     }
   }
-  __except(report_crash(GetExceptionInformation()), EXCEPTION_CONTINUE_SEARCH)
+  __except(rex::win::report_crash(GetExceptionInformation()), EXCEPTION_CONTINUE_SEARCH)
   {
     // Do nothing here as the code here doesn't get executed due to EXCEPTION_CONTINUE_SEARCH
     // handle crashing in the report_crash() function, then exit

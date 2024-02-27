@@ -1,13 +1,13 @@
 #pragma once
 
 #include "rex_std/bonus/types.h"
-#include "rex_windows/win_types.h"
+#include "rex_windows/engine/win_types.h"
 
 namespace rex
 {
   class IWindow;
 
-  namespace win32
+  namespace win
   {
     class EventHandler
     {
@@ -19,5 +19,5 @@ namespace rex
     private:
       IWindow* m_wnd;
     };
-  } // namespace win32
+  } // namespace win
 } // namespace rex
