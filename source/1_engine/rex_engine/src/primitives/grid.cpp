@@ -8,6 +8,11 @@ namespace rex
     {
       MeshData16 mesh_data;
 
+      if (width == 0.0f && depth == 0.0f)
+      {
+        return mesh_data;
+      }
+
       const u32 vertex_count = m * n;
       const u32 face_count   = (m - 1) * (n - 1) * 2;
 
