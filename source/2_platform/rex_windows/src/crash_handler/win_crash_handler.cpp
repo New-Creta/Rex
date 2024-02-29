@@ -104,7 +104,9 @@ namespace rex
       }
       else
       {
-        create_dump(path::join(vfs::session_data_root(), "crash.dmp"), exception_info);
+        rsl::string crash_dump_path = path::join(vfs::session_data_root(), "crash.dmp");
+        create_dump(crash_dump_path, exception_info);
+        REX_ERROR(CrashHandlingLog, "Created crash dump at: {}", crash_dump_path);
       }
 
       return EXCEPTION_EXECUTE_HANDLER;
