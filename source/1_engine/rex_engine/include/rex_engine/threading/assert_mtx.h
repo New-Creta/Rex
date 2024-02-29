@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rex_std/atomic.h"
-
 namespace rex
 {
   // A fake mutex that doesn't actually lock
@@ -18,6 +16,9 @@ namespace rex
     void unlock();
 
   private:
-    rsl::atomic<bool> m_is_locked;
+    // This doesn't need to be an atomic
+    // A volatile is good enough
+    // see Game Engine Architecture Third Edition (page 326)
+    volatile bool m_is_locked;
   };
 }
