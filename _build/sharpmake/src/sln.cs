@@ -33,6 +33,7 @@ namespace rex
       {
         conf.AddProject<RexStdTest>(target);
         conf.AddProject<RexEngineUnitTest>(target);
+        conf.AddProject<RexRendererUnitTest>(target);
       }
 
       if (target.Config == Config.fuzzy)
