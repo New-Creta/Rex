@@ -1,4 +1,4 @@
-#include "rex_test/rex_catch2.h"
+#include "rex_unit_test/rex_catch2.h"
 
 #include "rex_engine/filesystem/path.h"
 #include "rex_std/chrono.h"

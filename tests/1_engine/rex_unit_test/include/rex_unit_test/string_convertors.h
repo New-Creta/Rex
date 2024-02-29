@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_test/catch2/catch.hpp"
+#include "rex_unit_test/catch2/catch.hpp"
 
 #include "rex_std/string.h"
 #include "rex_std/string_view.h"

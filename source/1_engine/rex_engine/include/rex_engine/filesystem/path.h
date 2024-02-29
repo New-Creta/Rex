@@ -260,7 +260,7 @@ namespace rex
     // drive: C:
     // root: /
     // tail: Users/Sam
-    SplitRootResult split_root(rsl::string_view path);
+    SplitRootResult split_origin(rsl::string_view path);
   } // namespace path
 } // namespace rex
 

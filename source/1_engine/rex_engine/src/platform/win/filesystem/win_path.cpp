@@ -309,7 +309,7 @@ namespace rex
     // drive: C:
     // root: /
     // tail: Users/Sam
-    SplitRootResult split_root(rsl::string_view path)
+    SplitRootResult split_origin(rsl::string_view path)
     {
       // use a split drive result
       const SplitResult splitted_drive = split_drive(path);
