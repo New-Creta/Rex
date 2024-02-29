@@ -13,6 +13,7 @@
 #include "rex_std/bonus/memory.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
+#include "rex_std/bonus/time/timepoint.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_std/ctype.h"
 #include "rex_std/mutex.h"
@@ -159,6 +160,39 @@ namespace rex
     {
       static rsl::string editor_root = path::join(vfs::root(), "regina");
       return editor_root;
+    }
+
+    rsl::string_view project_root()
+    {
+      static rsl::string project_root = path::join(vfs::root(), "project_name");
+      return project_root;
+    }
+
+    rsl::string current_timepoint_str()
+    {
+      rsl::time_point current_time = rsl::current_timepoint();
+      rsl::string timepoint_str(rsl::format("{}_{}", current_time.date().to_string_without_weekday(), current_time.time().to_string()));
+      timepoint_str.replace("/", "_");
+      timepoint_str.replace(":", "_");
+      return timepoint_str;
+    }
+
+    rsl::string_view sessions_root()
+    {
+      static rsl::string sessions_root = path::join(vfs::root(), "_sessions");
+      return sessions_root;
+    }
+
+    rsl::string_view project_sessions_root()
+    {
+      static rsl::string project_sessions_root = path::join(sessions_root(), "project_name");
+      return project_sessions_root;
+    }
+
+    rsl::string_view session_data_root()
+    {
+      static rsl::string session_data_root = path::join(project_sessions_root(), current_timepoint_str());
+      return session_data_root;
     }
 
     class QueuedRequest
@@ -425,7 +459,12 @@ namespace rex
 
       g_vfs_state_controller.change_state(VfsState::Running);
 
+      // Create the current session root so data generated during this session
+      // has somewhere to put itself
+      create_dirs(session_data_root());
+
       REX_LOG(FileSystem, "FileSystem initialized");
+      REX_LOG(FileSystem, "Session Directory: {}", session_data_root());
     }
 
     void set_root(rsl::string_view root)
