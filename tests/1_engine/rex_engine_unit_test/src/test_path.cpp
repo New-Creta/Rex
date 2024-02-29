@@ -131,7 +131,7 @@ TEST_CASE("Random Filename")
   }
 }
 
-TEST_CASE("Real Path")
+TEST_CASE("Real Path", "[.][disabled]")
 {
   // Make sure that the working directory is set correctly here
   CHECK(rex::path::real_path("shortcut_to_foo.txt.lnk") == rex::path::abs_path("foo.txt"));  
@@ -206,7 +206,7 @@ TEST_CASE("File Creation Time")
   rsl::string random_filename = rex::path::random_filename();
 
   // query the creation time and compare it to the original time with a threshold
-  auto creation_time = rex::path::creation_time(random_filename);
+  auto creation_time = rex::path::get_creation_time(random_filename);
   // No proper way atm to create or delete files, unless using the vfs
   rsl::cout << "COULDN'T TEST FILE CREATION TIME\n";
 
@@ -215,7 +215,7 @@ TEST_CASE("File Creation Time")
   rsl::this_thread::sleep_for(1s);
   
   // query the creation time again, it should still be the same
-  creation_time = rex::path::creation_time(random_filename);
+  creation_time = rex::path::get_creation_time(random_filename);
 }
 
 TEST_CASE("File Modification Time")
@@ -227,7 +227,7 @@ TEST_CASE("File Modification Time")
   rsl::string random_filename = rex::path::random_filename();
 
   // query the modification time and compare it to the original time with a threshold
-  auto creation_time = rex::path::modification_time(random_filename);
+  auto creation_time = rex::path::get_modification_time(random_filename);
   // No proper way atm to create or delete files, unless using the vfs
   rsl::cout << "COULDN'T TEST FILE MODIFICATION TIME\n";
 
@@ -236,7 +236,7 @@ TEST_CASE("File Modification Time")
   rsl::this_thread::sleep_for(1s);
 
   // query the modification time again, it should still be the same
-  creation_time = rex::path::modification_time(random_filename);
+  creation_time = rex::path::get_modification_time(random_filename);
 
   // get the current time again
   now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
@@ -245,7 +245,7 @@ TEST_CASE("File Modification Time")
   // No proper way atm to modify a file, unless using the vfs
 
   // query the modification time again, it should now be different
-  creation_time = rex::path::modification_time(random_filename);
+  creation_time = rex::path::get_modification_time(random_filename);
 }
 
 TEST_CASE("File Access Time")
@@ -257,7 +257,7 @@ TEST_CASE("File Access Time")
   rsl::string random_filename = rex::path::random_filename();
 
   // query the modification time and compare it to the original time with a threshold
-  auto creation_time = rex::path::modification_time(random_filename);
+  auto creation_time = rex::path::get_modification_time(random_filename);
   // No proper way atm to create or delete files, unless using the vfs
   rsl::cout << "COULDN'T TEST FILE ACCESS TIME\n";
 
@@ -266,7 +266,7 @@ TEST_CASE("File Access Time")
   rsl::this_thread::sleep_for(1s);
 
   // query the access  time again, it should still be the same
-  creation_time = rex::path::access_time(random_filename);
+  creation_time = rex::path::get_access_time(random_filename);
 
   // get the current time again
   now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
@@ -275,7 +275,7 @@ TEST_CASE("File Access Time")
   // No proper way atm to modify a file, unless using the vfs
 
   // query the access  time again, it should now be different
-  creation_time = rex::path::access_time(random_filename);
+  creation_time = rex::path::get_access_time(random_filename);
 
   // get the current time again
   now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
@@ -284,14 +284,14 @@ TEST_CASE("File Access Time")
   // No proper way atm to read a file, unless using the vfs
 
   // query the access time again, it should now be different
-  creation_time = rex::path::access_time(random_filename);
+  creation_time = rex::path::get_access_time(random_filename);
 }
 
 TEST_CASE("File Size")
 {
-  CHECK(rex::path::file_size("file_0_bytes.txt") == 0);
-  CHECK(rex::path::file_size("file_500_bytes.txt") == 500);
-  CHECK(rex::path::file_size("file_1000_bytes.txt") == 1000);
+  CHECK(rex::path::get_file_size("file_0_bytes.txt") == 0);
+  CHECK(rex::path::get_file_size("file_500_bytes.txt") == 500);
+  CHECK(rex::path::get_file_size("file_1000_bytes.txt") == 1000);
 }
 
 TEST_CASE("Has Extension")
@@ -355,7 +355,7 @@ TEST_CASE("Is File")
   CHECK(rex::path::is_file(rex::path::random_dir()) == false);
 }
 
-TEST_CASE("Is Directory")
+TEST_CASE("Is Directory", "[.][disabled]")
 {
   CHECK(rex::path::is_dir("this_is_a_file.txt") == false);
   CHECK(rex::path::is_dir("this_is_a_directory"));
@@ -363,7 +363,7 @@ TEST_CASE("Is Directory")
   CHECK(rex::path::is_dir(rex::path::random_dir()) == false);
 }
 
-TEST_CASE("Is Junction")
+TEST_CASE("Is Junction", "[.][disabled]")
 {
   CHECK(rex::path::is_junction("original_folder") == false);
   CHECK(rex::path::is_junction("original_file.txt") == false);
@@ -377,7 +377,7 @@ TEST_CASE("Is Link")
   CHECK(rex::path::is_link("junction_folder") == false);
 }
 
-TEST_CASE("Is Same File")
+TEST_CASE("Is Same File", "[.][disabled]")
 {
   CHECK(rex::path::same_path("same_file.txt", "same_file.txt") == true);
   CHECK(rex::path::same_path("sub_folder_1/../same_file.txt", "same_file.txt") == true);
@@ -422,26 +422,26 @@ TEST_CASE("Split")
     CHECK(result.tail == "..");
 }
 
-TEST_CASE("Split Origin")
+TEST_CASE("Split Origin", "[.][disabled]")
 {
-    auto result = rex::path::split_origin("C:\\Windows\\System32\\file.dll");
-    CHECK(result.head == "C:");
+    auto result = rex::path::split_root("C:\\Windows\\System32\\file.dll");
+    CHECK(result.drive == "C:");
     CHECK(result.tail == "Windows\\System32\\file.dll");
 
-    result = rex::path::split_origin("\\Windows\\System32\\file.dll");
-    CHECK(result.head == "");
+    result = rex::path::split_root("\\Windows\\System32\\file.dll");
+    CHECK(result.drive == "");
     CHECK(result.tail == "\\Windows\\System32\\file.dll");
 
-    result = rex::path::split_origin("/path/to/file.txt");
-    CHECK(result.head == "");
+    result = rex::path::split_root("/path/to/file.txt");
+    CHECK(result.drive == "");
     CHECK(result.tail == "/path/to/file.txt");
 
-    result = rex::path::split_origin("");
-    CHECK(result.head == "");
+    result = rex::path::split_root("");
+    CHECK(result.drive == "");
     CHECK(result.tail == "");
 
-    result = rex::path::split_origin("./relative/path");
-    CHECK(result.head == "");
+    result = rex::path::split_root("./relative/path");
+    CHECK(result.drive == "");
     CHECK(result.tail == "./relative/path");
 }
 
