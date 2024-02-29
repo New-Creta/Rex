@@ -69,5 +69,11 @@ namespace rex
         m_resource_map.reserve(new_cap);
       }
     }
+
+    //-----------------------------------------------------------------------
+    rsl::count_t ResourcePool::size() const
+    {
+      return m_resource_map.size();
+    }
   } // namespace renderer
 } // namespace rex

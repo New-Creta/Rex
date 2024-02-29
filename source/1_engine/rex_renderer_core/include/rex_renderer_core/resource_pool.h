@@ -36,6 +36,8 @@ namespace rex
       template <typename U>
       const U& as(const ResourceSlot& slot) const;
 
+      rsl::count_t size() const;
+
     private:
       using ResourceMap = rsl::unordered_map<ResourceSlot, ResourcePtr>;
 
