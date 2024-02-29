@@ -29,6 +29,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, in
   // We're wrapping executing in __try - __except block so that we can capture crashes
   // This allows us to perform particular logic when we encounter a crash.
   // Especially for when running tests, this can be very useful
+  // See: https://learn.microsoft.com/en-us/cpp/cpp/try-except-statement?view=msvc-170
   __try
   {
     rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params));
