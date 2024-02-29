@@ -804,9 +804,6 @@ namespace regina
   {
     REX_LOG(LogRegina, "Initializing Regina");
 
-    int x = 0;
-    int y = 1 / x;
-
     return init_gfx();
   }
   //-------------------------------------------------------------------------
