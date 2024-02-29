@@ -206,7 +206,7 @@ TEST_CASE("File Creation Time")
   rsl::string random_filename = rex::path::random_filename();
 
   // query the creation time and compare it to the original time with a threshold
-  auto creation_time = rex::path::creation_time(random_filename);
+  auto creation_time = rex::path::get_creation_time(random_filename);
   // No proper way atm to create or delete files, unless using the vfs
   rsl::cout << "COULDN'T TEST FILE CREATION TIME\n";
 
@@ -215,7 +215,7 @@ TEST_CASE("File Creation Time")
   rsl::this_thread::sleep_for(1s);
   
   // query the creation time again, it should still be the same
-  creation_time = rex::path::creation_time(random_filename);
+  creation_time = rex::path::get_creation_time(random_filename);
 }
 
 TEST_CASE("File Modification Time")
@@ -227,7 +227,7 @@ TEST_CASE("File Modification Time")
   rsl::string random_filename = rex::path::random_filename();
 
   // query the modification time and compare it to the original time with a threshold
-  auto creation_time = rex::path::modification_time(random_filename);
+  auto creation_time = rex::path::get_modification_time(random_filename);
   // No proper way atm to create or delete files, unless using the vfs
   rsl::cout << "COULDN'T TEST FILE MODIFICATION TIME\n";
 
@@ -236,7 +236,7 @@ TEST_CASE("File Modification Time")
   rsl::this_thread::sleep_for(1s);
 
   // query the modification time again, it should still be the same
-  creation_time = rex::path::modification_time(random_filename);
+  creation_time = rex::path::get_modification_time(random_filename);
 
   // get the current time again
   now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
@@ -245,7 +245,7 @@ TEST_CASE("File Modification Time")
   // No proper way atm to modify a file, unless using the vfs
 
   // query the modification time again, it should now be different
-  creation_time = rex::path::modification_time(random_filename);
+  creation_time = rex::path::get_modification_time(random_filename);
 }
 
 TEST_CASE("File Access Time")
@@ -257,7 +257,7 @@ TEST_CASE("File Access Time")
   rsl::string random_filename = rex::path::random_filename();
 
   // query the modification time and compare it to the original time with a threshold
-  auto creation_time = rex::path::modification_time(random_filename);
+  auto creation_time = rex::path::get_modification_time(random_filename);
   // No proper way atm to create or delete files, unless using the vfs
   rsl::cout << "COULDN'T TEST FILE ACCESS TIME\n";
 
@@ -266,7 +266,7 @@ TEST_CASE("File Access Time")
   rsl::this_thread::sleep_for(1s);
 
   // query the access  time again, it should still be the same
-  creation_time = rex::path::access_time(random_filename);
+  creation_time = rex::path::get_access_time(random_filename);
 
   // get the current time again
   now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
@@ -275,7 +275,7 @@ TEST_CASE("File Access Time")
   // No proper way atm to modify a file, unless using the vfs
 
   // query the access  time again, it should now be different
-  creation_time = rex::path::access_time(random_filename);
+  creation_time = rex::path::get_access_time(random_filename);
 
   // get the current time again
   now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
@@ -284,14 +284,14 @@ TEST_CASE("File Access Time")
   // No proper way atm to read a file, unless using the vfs
 
   // query the access time again, it should now be different
-  creation_time = rex::path::access_time(random_filename);
+  creation_time = rex::path::get_access_time(random_filename);
 }
 
 TEST_CASE("File Size")
 {
-  CHECK(rex::path::file_size("file_0_bytes.txt") == 0);
-  CHECK(rex::path::file_size("file_500_bytes.txt") == 500);
-  CHECK(rex::path::file_size("file_1000_bytes.txt") == 1000);
+  CHECK(rex::path::get_file_size("file_0_bytes.txt") == 0);
+  CHECK(rex::path::get_file_size("file_500_bytes.txt") == 500);
+  CHECK(rex::path::get_file_size("file_1000_bytes.txt") == 1000);
 }
 
 TEST_CASE("Has Extension")

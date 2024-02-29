@@ -249,7 +249,7 @@ namespace rex
     // Splits the path into a head and a tail
     // the head is either the mount point or an empty string
     // the tail is everything else
-    SplitResult split_drive(rsl::string_view path);
+    SplitResult split_origin(rsl::string_view path);
 
     // Split the path into 3 components
     // drive - root - tail
@@ -260,7 +260,7 @@ namespace rex
     // drive: C:
     // root: /
     // tail: Users/Sam
-    SplitRootResult split_origin(rsl::string_view path);
+    SplitRootResult split_root(rsl::string_view path);
   } // namespace path
 } // namespace rex
 
