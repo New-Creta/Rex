@@ -51,7 +51,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, in
       result = application.run();
     }
   }
-  __except(rex::win::report_crash(GetExceptionInformation()), EXCEPTION_CONTINUE_SEARCH)
+  __except(rex::win::report_crash_from_main_thread(GetExceptionInformation()), EXCEPTION_CONTINUE_SEARCH)
   {
     // Do nothing here as the code here doesn't get executed due to EXCEPTION_CONTINUE_SEARCH
     // handle crashing in the report_crash() function, then exit

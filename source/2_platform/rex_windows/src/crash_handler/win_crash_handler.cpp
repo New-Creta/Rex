@@ -74,7 +74,7 @@ namespace rex
       file_handle.close();
     }
 
-    s32 report_crash(void* exceptionInfo)
+    s32 report_crash(void* exceptionInfo, s32 numFramesToSkip)
     {
       rsl::unique_lock lock(crash_assert_mtx());
 
@@ -83,8 +83,7 @@ namespace rex
       DWORD exc_code = exception_info->ExceptionRecord->ExceptionCode;
 
       // This code is 7 frames after the actual crash, coming from a structured exception handling block
-      const s32 frames_to_skip = 7;
-      auto stack = rsl::stacktrace::current(frames_to_skip);
+      auto stack = rsl::stacktrace::current(numFramesToSkip);
 
       // We cannot allocate heap memory as we have possibly run out of memory
       // Therefore we cannot use any logging and need to perform all operations on the stack
@@ -109,6 +108,17 @@ namespace rex
       }
 
       return EXCEPTION_EXECUTE_HANDLER;
+    }
+
+    s32 report_crash_from_main_thread(void* exceptionInfo)
+    {
+      const s32 num_frames_to_skip = 8;
+      return report_crash(exceptionInfo, num_frames_to_skip);
+    }
+    s32 report_crash_from_thread(void* exceptionInfo)
+    {
+      const s32 num_frames_to_skip = 7;
+      return report_crash(exceptionInfo, num_frames_to_skip);
     }
   }
 }
