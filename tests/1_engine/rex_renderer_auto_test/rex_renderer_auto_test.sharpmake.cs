@@ -29,6 +29,7 @@ public class RexRendererAutoTest : TestProject
     base.SetupLibDependencies(conf, target);
 
     conf.AddPublicDependency<RexAutoTest>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-    conf.AddPublicDependency<Regina>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+    conf.AddPublicDependency<RexScenegraph>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+    conf.AddPublicDependency<RexWindows>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }
 }

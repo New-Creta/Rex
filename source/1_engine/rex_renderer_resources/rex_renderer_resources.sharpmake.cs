@@ -2,13 +2,13 @@ using Sharpmake;
 using System.IO;
 
 [Generate]
-public class RexRendererCore : EngineProject
+public class RexRendererResources : EngineProject
 {
-  public RexRendererCore() : base()
+  public RexRendererResources() : base()
   {
     // The name of the project in Visual Studio. The default is the name of
     // the class, but you usually want to override that.
-    Name = "RexRendererCore";
+    Name = "RexRendererResources";
     GenerateTargets();
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
@@ -21,6 +21,5 @@ public class RexRendererCore : EngineProject
 
     conf.AddPublicDependency<RexStd>(target);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
-    conf.AddPublicDependency<RexRendererResources>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
   }
 }

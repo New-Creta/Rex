@@ -2,11 +2,11 @@ using Sharpmake;
 using System.IO;
 
 [Generate]
-public class RexRendererUnitTest : TestProject
+public class RexRendererResourcesUnitTest : TestProject
 {
-  public RexRendererUnitTest() : base()
+  public RexRendererResourcesUnitTest() : base()
   {
-    Name = GenerateName("RexRendererUnitTest");
+    Name = GenerateName("RexRendererResourcesUnitTest");
     GenerateTargets();
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
@@ -26,7 +26,7 @@ public class RexRendererUnitTest : TestProject
   {
     base.SetupLibDependencies(conf, target);
 
-    conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+    conf.AddPublicDependency<RexRendererResources>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     conf.AddPublicDependency<RexUnitTest>(target, DependencySetting.Default);
   }
 

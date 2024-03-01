@@ -36,6 +36,7 @@ public class Regina : ToolsProject
     {
       case Platform.win32:
       case Platform.win64:
+        conf.AddPublicDependency<RexScenegraph>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
         conf.AddPublicDependency<RexWindows>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
 
         if (target.Config == Config.release)

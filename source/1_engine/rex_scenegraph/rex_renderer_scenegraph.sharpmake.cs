@@ -2,13 +2,13 @@ using Sharpmake;
 using System.IO;
 
 [Generate]
-public class RexRendererCore : EngineProject
+public class RexScenegraph : EngineProject
 {
-  public RexRendererCore() : base()
+  public RexScenegraph() : base()
   {
     // The name of the project in Visual Studio. The default is the name of
     // the class, but you usually want to override that.
-    Name = "RexRendererCore";
+    Name = "RexScenegraph";
     GenerateTargets();
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
