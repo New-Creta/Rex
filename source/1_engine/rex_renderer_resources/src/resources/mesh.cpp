@@ -1,6 +1,6 @@
-#include "rex_renderer_core/resources/mesh.h"
+#include "rex_renderer_resources/resources/mesh.h"
 
-#include "rex_renderer_core/log.h"
+#include "rex_renderer_resources/log.h"
 
 namespace rex
 {
@@ -19,7 +19,7 @@ namespace rex
     {
       if(m_submesh_map.find(name) != rsl::cend(m_submesh_map))
       {
-        REX_ERROR(LogRendererCore, "Submesh with name ({}) already added as a draw argument", name.data());
+        REX_ERROR(LogRendererResources, "Submesh with name ({}) already added as a draw argument", name.data());
         return;
       }
 
@@ -37,7 +37,7 @@ namespace rex
     {
       if(m_submesh_map.find(name) == rsl::cend(m_submesh_map))
       {
-        REX_ERROR(LogRendererCore, "Submesh with name ({}) not found as a draw argument", name.data());
+        REX_ERROR(LogRendererResources, "Submesh with name ({}) not found as a draw argument", name.data());
         return nullptr;
       }
 

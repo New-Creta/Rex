@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/resource_slot.h"
+#include "rex_renderer_resources/resource_slot.h"
 #include "rex_std/atomic.h"
 #include "rex_std/bonus/memory/unique_array.h"
 #include "rex_std/vector.h"
@@ -48,10 +48,11 @@ namespace rex
          * @param capacity The capacity of the flags array.
          * @param current The current index of the iterator.
          */
-        Iterator(rsl::atomic_flag* flags, rsl::count_t capacity, rsl::count_t current)
+        Iterator(rsl::atomic_flag* flags, rsl::count_t capacity, rsl::count_t current, rsl::function<bool(const ResourceSlot&)>* rendererReleaseFn)
             : m_flags(flags)
             , m_capacity(capacity)
             , m_current(current)
+            , m_renderer_release_fn(rendererReleaseFn)
         {
         }
 
@@ -80,7 +81,7 @@ namespace rex
          */
         ResourceSlot operator*() const
         {
-          return ResourceSlot(m_current);
+          return ResourceSlot(m_current, m_renderer_release_fn);
         }
 
         /**
@@ -100,6 +101,7 @@ namespace rex
         rsl::atomic_flag* m_flags;
         s32 m_capacity;
         s32 m_current;
+        rsl::function<bool(const ResourceSlot&)>* m_renderer_release_fn;
       };
 
       /**
@@ -126,10 +128,11 @@ namespace rex
          * @param capacity The capacity of the flags array.
          * @param current The current index of the iterator.
          */
-        ConstIterator(const rsl::atomic_flag* flags, rsl::count_t capacity, rsl::count_t current)
+        ConstIterator(const rsl::atomic_flag* flags, rsl::count_t capacity, rsl::count_t current, const rsl::function<bool(const ResourceSlot&)>* rendererReleaseFn)
             : m_flags(flags)
             , m_capacity(capacity)
             , m_current(current)
+            , m_renderer_release_fn(rendererReleaseFn)
         {
         }
 
@@ -158,7 +161,7 @@ namespace rex
          */
         ResourceSlot operator*() const
         {
-          return ResourceSlot(m_current);
+          return ResourceSlot(m_current, m_renderer_release_fn);
         }
 
         /**
@@ -178,10 +181,11 @@ namespace rex
         const rsl::atomic_flag* m_flags;
         s32 m_capacity;
         s32 m_current;
+        const rsl::function<bool(const ResourceSlot&)>* m_renderer_release_fn;
       };
 
     public:
-      explicit ResourceSlots(s32 num);
+      explicit ResourceSlots(s32 num, const rsl::function<bool(const ResourceSlot&)>& rendererReleaseFn);
       ~ResourceSlots();
 
       /**
@@ -252,6 +256,7 @@ namespace rex
       // An array of atomic flags to manage resource slot states.
       rsl::unique_array<rsl::atomic_flag> m_flags;
       rsl::count_t m_flag_capacity;
+      rsl::function<bool(const ResourceSlot&)> m_renderer_release_fn;
     };
   } // namespace renderer
 } // namespace rex

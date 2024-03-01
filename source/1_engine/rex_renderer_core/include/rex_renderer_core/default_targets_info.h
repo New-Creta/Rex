@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/resource_slot.h"
+#include "rex_renderer_resources/resource_slot.h"
 
 namespace rex
 {

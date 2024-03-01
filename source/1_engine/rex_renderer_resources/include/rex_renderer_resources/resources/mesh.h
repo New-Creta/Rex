@@ -1,9 +1,8 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/index_buffer_format.h"
-#include "rex_renderer_core/renderer.h"
-#include "rex_renderer_core/resource_slot.h"
+#include "rex_renderer_resources/index_buffer_format.h"
+#include "rex_renderer_resources/resource_slot.h"
 #include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/unordered_map.h"
 

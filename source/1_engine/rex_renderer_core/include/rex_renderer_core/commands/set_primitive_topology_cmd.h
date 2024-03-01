@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_renderer_core/commands/render_cmd.h"
-#include "rex_renderer_core/primitive_topology.h"
+#include "rex_renderer_resources/primitive_topology.h"
 
 namespace rex
 {

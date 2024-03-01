@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_renderer_core/resources/vertex.h"
+#include "rex_renderer_resources/resources/vertex.h"
 
 #include <DirectXMath.h>
 

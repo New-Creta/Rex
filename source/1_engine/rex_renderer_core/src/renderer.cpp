@@ -43,14 +43,14 @@
 #include "rex_renderer_core/commands/update_committed_resource_cmd.h"
 #include "rex_renderer_core/default_depth_info.h"
 #include "rex_renderer_core/default_targets_info.h"
-#include "rex_renderer_core/index_buffer_format.h"
-#include "rex_renderer_core/log.h"
-#include "rex_renderer_core/primitive_topology.h"
-#include "rex_renderer_core/renderer_backend.h"
-#include "rex_renderer_core/resource_slots.h"
-#include "rex_renderer_core/scissor_rect.h"
 #include "rex_renderer_core/shader_platform.h"
 #include "rex_renderer_core/shader_type.h"
+#include "rex_renderer_resources/primitive_topology.h"
+#include "rex_renderer_resources/index_buffer_format.h"
+#include "rex_renderer_resources/resource_slots.h"
+#include "rex_renderer_core/log.h"
+#include "rex_renderer_core/renderer_backend.h"
+#include "rex_renderer_core/scissor_rect.h"
 #include "rex_renderer_core/viewport.h"
 #include "rex_std/bonus/memory/stack_allocator.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
@@ -198,7 +198,7 @@ namespace rex
       //      we can always tweak this value later as pass it as an argument to the initialize of the renderer.
       constexpr s32 initial_allocated_resource_slots = 16;
 
-      g_ctx->slot_resources = rsl::make_unique<ResourceSlots>(initial_allocated_resource_slots);
+      g_ctx->slot_resources = rsl::make_unique<ResourceSlots>(initial_allocated_resource_slots, [](const ResourceSlot& slot) { return renderer::release_resource(slot); });
       g_ctx->cmd_allocator  = rsl::make_unique<CommandAllocator>(cmd_allocator_size);
       g_ctx->cmd_list       = rsl::make_unique<CommandList>(maxCommands);
 

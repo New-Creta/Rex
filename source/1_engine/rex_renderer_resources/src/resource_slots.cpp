@@ -1,7 +1,7 @@
-#include "rex_renderer_core/resource_slots.h"
+#include "rex_renderer_resources/resource_slots.h"
 
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_renderer_core/log.h"
+#include "rex_renderer_resources/log.h"
 
 #if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
   #define REX_ENABLE_RESOURCE_SLOT_DEBUGGING
@@ -12,8 +12,9 @@ namespace rex
   namespace renderer
   {
     //-------------------------------------------------------------------------
-    ResourceSlots::ResourceSlots(s32 num)
+    ResourceSlots::ResourceSlots(s32 num, const rsl::function<bool(const ResourceSlot&)>& rendererReleaseFn)
         : m_flag_capacity(0)
+        , m_renderer_release_fn(rendererReleaseFn)
     {
       resize(num);
     }
@@ -33,11 +34,11 @@ namespace rex
       {
         if(!m_flags[i].test_and_set(rsl::memory_order_acquire))
         {
-          return ResourceSlot(i);
+          return ResourceSlot(i, &m_renderer_release_fn);
         }
       }
 
-      REX_WARN(LogRendererCore, "No available resource slots, resizing resource slots: {} => {}", m_flag_capacity, m_flag_capacity * 2);
+      REX_WARN(LogRendererResources, "No available resource slots, resizing resource slots: {} => {}", m_flag_capacity, m_flag_capacity * 2);
 
       const s32 current_flag_capacity = m_flag_capacity; // The capacity of the array will be changed after the next call.
 
@@ -46,9 +47,9 @@ namespace rex
 #ifdef REX_ENABLE_RESOURCE_SLOT_DEBUGGING
       const bool result = m_flags[current_flag_capacity].test_and_set(rsl::memory_order_acquire);
       REX_ASSERT_X(result == false, "Unable to allocated ResourceSlot at location: {}", current_flag_capacity);
-      return ResourceSlot(current_flag_capacity);
+      return ResourceSlot(current_flag_capacity, &m_renderer_release_fn);
 #else
-      return ResourceSlot(static_cast<s32>(m_flags[current_flag_capacity].test_and_set(rsl::memory_order_acquire)));
+      return ResourceSlot(static_cast<s32>(m_flags[current_flag_capacity].test_and_set(rsl::memory_order_acquire)), &m_renderer_release_fn);
 #endif
     }
 
@@ -57,13 +58,13 @@ namespace rex
     {
       if(slot == globals::g_invalid_slot_id)
       {
-        REX_WARN(LogRendererCore, "Trying to release an invalid resource from ResourceSlots");
+        REX_WARN(LogRendererResources, "Trying to release an invalid resource from ResourceSlots");
         return true; // Slot is invalid
       }
 
       if(slot >= m_flag_capacity)
       {
-        REX_ERROR(LogRendererCore, "Trying to release a slot that is out of range of the allocated ResourceSlots");
+        REX_ERROR(LogRendererResources, "Trying to release a slot that is out of range of the allocated ResourceSlots");
         return false; // Slot is not in use or out of range.
       }
 
@@ -72,7 +73,7 @@ namespace rex
         return true;
       }
 
-      REX_ERROR(LogRendererCore, "Unable to test and set ResourceSlot");
+      REX_ERROR(LogRendererResources, "Unable to test and set ResourceSlot");
       return false; // Unable to remove slot
     }
 
@@ -124,13 +125,13 @@ namespace rex
         ++start;
       }
 
-      return Iterator(m_flags.get(), m_flag_capacity, start);
+      return Iterator(m_flags.get(), m_flag_capacity, start, &m_renderer_release_fn);
     }
 
     //-------------------------------------------------------------------------
     ResourceSlots::Iterator ResourceSlots::end()
     {
-      return Iterator(m_flags.get(), m_flag_capacity, m_flag_capacity);
+      return Iterator(m_flags.get(), m_flag_capacity, m_flag_capacity, &m_renderer_release_fn);
     }
 
     //-------------------------------------------------------------------------
@@ -141,13 +142,13 @@ namespace rex
       {
         ++start;
       }
-      return ConstIterator(m_flags.get(), m_flag_capacity, start);
+      return ConstIterator(m_flags.get(), m_flag_capacity, start, &m_renderer_release_fn);
     }
 
     //-------------------------------------------------------------------------
     ResourceSlots::ConstIterator ResourceSlots::cend() const
     {
-      return ConstIterator(m_flags.get(), m_flag_capacity, m_flag_capacity);
+      return ConstIterator(m_flags.get(), m_flag_capacity, m_flag_capacity, &m_renderer_release_fn);
     }
   } // namespace renderer
 } // namespace rex

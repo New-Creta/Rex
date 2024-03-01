@@ -1,4 +1,4 @@
-#include "rex_renderer_core/resource_pool.h"
+#include "rex_renderer_resources/resource_pool.h"
 
 namespace rex
 {

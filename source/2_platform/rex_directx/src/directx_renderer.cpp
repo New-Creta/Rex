@@ -74,12 +74,12 @@
 #include "rex_renderer_core/cull_mode.h"
 #include "rex_renderer_core/fill_mode.h"
 #include "rex_renderer_core/gpu_description.h"
-#include "rex_renderer_core/index_buffer_format.h"
+#include "rex_renderer_resources/index_buffer_format.h"
+#include "rex_renderer_resources/resource_pool.h"
 #include "rex_renderer_core/input_layout_classification.h"
 #include "rex_renderer_core/renderer_backend.h"
 #include "rex_renderer_core/renderer_info.h"
 #include "rex_renderer_core/renderer_output_window_user_data.h"
-#include "rex_renderer_core/resource_pool.h"
 #include "rex_renderer_core/scissor_rect.h"
 #include "rex_renderer_core/shader_platform.h"
 #include "rex_renderer_core/texture_format.h"
@@ -2015,7 +2015,7 @@ namespace rex
           }
           else
           {
-            g_ctx->active_color_target[i] = ResourceSlot(0);
+            g_ctx->active_color_target[i] = ResourceSlot::make_invalid();
 
             render_target_handles[i] = internal::rendertarget_buffer_descriptor(0);
           }
@@ -2030,7 +2030,7 @@ namespace rex
         }
         else
         {
-          g_ctx->active_depth_target = ResourceSlot(0);
+          g_ctx->active_depth_target = ResourceSlot::make_invalid();
 
           depth_stencil_handle = internal::depthstencil_buffer_descriptor(0);
         }

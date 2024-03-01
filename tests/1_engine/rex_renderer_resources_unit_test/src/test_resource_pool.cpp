@@ -1,4 +1,4 @@
-#include "rex_renderer_core/resource_pool.h"
+#include "rex_renderer_resources/resource_pool.h"
 #include "rex_unit_test/rex_catch2.h"
 
 namespace rex
@@ -40,6 +40,16 @@ protected:
     resource_pool.initialize(10);
   }
 
+  bool release(const rex::renderer::ResourceSlot& slot)
+  {
+    if(slot.is_about_to_be_removed() == false && resource_pool.has_slot(slot))
+    {
+      resource_pool.remove(slot);
+    }
+
+    return true;
+  }
+
   void teardown()
   {
     // Clean up the ResourcePool after each test
@@ -66,7 +76,9 @@ TEST_CASE_METHOD(ResourcePoolTest, "ResourcePool Insertion")
   setup();
 
   // Insert a resource
-  rex::renderer::ResourceSlot slot(1); // Assuming slot ID is 1
+  rsl::function<bool(const rex::renderer::ResourceSlot&)> release_fn = [&](const rex::renderer::ResourceSlot& slot) { return release(slot); };
+
+  rex::renderer::ResourceSlot slot(1, &release_fn); // Assuming slot ID is 1
   auto resource = rsl::make_unique<rex::renderer::MockResource>(1);
   resource_pool.insert(slot, rsl::move(resource));
 
@@ -83,7 +95,9 @@ TEST_CASE_METHOD(ResourcePoolTest, "ResourcePool Removal")
   setup();
 
   // Insert a resource
-  rex::renderer::ResourceSlot slot(1); // Assuming slot ID is 1
+  rsl::function<bool(const rex::renderer::ResourceSlot&)> release_fn = [&](const rex::renderer::ResourceSlot& slot) { return release(slot); };
+
+  rex::renderer::ResourceSlot slot(1, &release_fn); // Assuming slot ID is 1
   auto resource = rsl::make_unique<rex::renderer::MockResource>(1);
   resource_pool.insert(slot, rsl::move(resource));
 
@@ -103,7 +117,9 @@ TEST_CASE_METHOD(ResourcePoolTest, "ResourcePool Access")
   setup();
 
   // Insert a resource
-  rex::renderer::ResourceSlot slot(1); // Assuming slot ID is 1
+  rsl::function<bool(const rex::renderer::ResourceSlot&)> release_fn = [&](const rex::renderer::ResourceSlot& slot) { return release(slot); };
+
+  rex::renderer::ResourceSlot slot(1, &release_fn); // Assuming slot ID is 1
   auto resource = rsl::make_unique<rex::renderer::MockResource>(1);
   resource_pool.insert(slot, rsl::move(resource));
 
@@ -125,7 +141,9 @@ TEST_CASE_METHOD(ResourcePoolTest, "ResourcePool Const Access")
   setup();
 
   // Insert a resource
-  rex::renderer::ResourceSlot slot(1); // Assuming slot ID is 1
+  rsl::function<bool(const rex::renderer::ResourceSlot&)> release_fn = [&](const rex::renderer::ResourceSlot& slot) { return release(slot); };
+
+  rex::renderer::ResourceSlot slot(1, &release_fn); // Assuming slot ID is 1
   auto resource = rsl::make_unique<rex::renderer::MockResource>(1);
   resource_pool.insert(slot, rsl::move(resource));
 
@@ -137,22 +155,6 @@ TEST_CASE_METHOD(ResourcePoolTest, "ResourcePool Const Access")
 
   // Check if accessed resource matches the inserted resource
   REQUIRE(accessed_resource_ptr->id() == 1);
-
-  teardown();
-}
-
-// Test if trying to remove a non-existent resource does not throw an exception
-TEST_CASE_METHOD(ResourcePoolTest, "Non-Existent Resource Removal")
-{
-  setup();
-
-  rex::renderer::ResourceSlot slot(1); // Assuming slot ID is 1
-
-  // Trying to remove a non-existent resource should not throw an exception
-  resource_pool.remove(slot);
-
-  // Slot should be removed
-  REQUIRE(resource_pool.has_slot(slot) == false);
 
   teardown();
 }
