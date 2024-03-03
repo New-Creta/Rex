@@ -25,6 +25,9 @@ namespace rex
   // Removes trailing characters that match any character in the view
   rsl::string_view rstrip(rsl::string_view input, rsl::string_view characters);
 
+  // Add quotes around a string
+  rsl::string quoted(rsl::string_view input);
+
   // Removes all spaces from a string
   // we're taking a string by ref
   // to reuse the memory

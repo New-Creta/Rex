@@ -191,6 +191,8 @@ public static class Main
     ProjectGen.Settings.AsanEnabled = config["enable-address-sanitizer"].Value.GetBoolean();
     ProjectGen.Settings.UbsanEnabled = config["enable-ub-sanitizer"].Value.GetBoolean();
     ProjectGen.Settings.FuzzyTestingEnabled = config["enable-fuzzy-testing"].Value.GetBoolean();
+    ProjectGen.Settings.EnableDefaultGeneration = config["disable-default-generation"].Value.GetBoolean() == false;
+    ProjectGen.Settings.EnableDefaultConfigs = config["disable-default-configs"].Value.GetBoolean() == false;
     ProjectGen.Settings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
     if (!Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE))
     {

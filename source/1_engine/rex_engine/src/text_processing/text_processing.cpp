@@ -81,6 +81,19 @@ namespace rex
     return rsl::string_view(input.cbegin(), last_not_whitespace);
   }
 
+  // Add quotes around a string
+  rsl::string quoted(rsl::string_view input)
+  {
+    rsl::string res;
+    res.reserve(input.size() + 2);
+
+    res += "\"";
+    res += input;
+    res += "\"";
+
+    return res;
+  }
+
   // Removes all spaces from a string
   // we're taking a string by ref
   // to reuse the memory

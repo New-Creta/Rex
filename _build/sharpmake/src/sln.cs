@@ -35,7 +35,7 @@ namespace rex
         conf.AddProject<RexEngineUnitTest>(target);
       }
 
-      if (target.Config == Config.fuzzy)
+      if (ProjectGen.Settings.FuzzyTestingEnabled)
       {
         conf.AddProject<RexStdFuzzy>(target);
         conf.AddProject<RexEngineFuzzyTest>(target);
@@ -46,8 +46,11 @@ namespace rex
         conf.AddProject<ReginaAutoTest>(target);
       }
 
-      conf.AddProject<Regina>(target);
-      conf.AddProject<ConsoleApp>(target);
+      if (ProjectGen.Settings.EnableDefaultGeneration)
+      {
+        conf.AddProject<Regina>(target);
+        conf.AddProject<ConsoleApp>(target);
+      }
     }
 
     protected string GenerateName(string baseName)

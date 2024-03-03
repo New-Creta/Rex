@@ -453,18 +453,9 @@ namespace rex
       file_open_dialog->SetOptions(options);
 
       HWND parent_handle = nullptr;
-      HRESULT hr = file_open_dialog->Show(parent_handle);
-
-      constexpr HRESULT cancelled_hr = HRESULT_FROM_WIN32(ERROR_CANCELLED);
-
       rsl::big_stack_string result;
-      if (FAILED(hr))
+      if (HR_FAILED_IGNORE(file_open_dialog->Show(parent_handle), HRESULT_FROM_WIN32(ERROR_CANCELLED)))
       {
-        if (hr != cancelled_hr)
-        {
-          HR_CALL(hr);
-        }
-
         return result;
       }
 
@@ -473,7 +464,7 @@ namespace rex
 
       PWSTR psz_file_path;
       HR_CALL(item->GetDisplayName(SIGDN_FILESYSPATH, &psz_file_path));
-      WideCharToMultiByte(CP_UTF8, 0, psz_file_path, -1, result.data(), result.max_size(), '\0', NULL);
+      WideCharToMultiByte(CP_UTF8, 0, psz_file_path, -1, result.data(), result.max_size(), "\0", NULL);
       CoTaskMemFree(psz_file_path);
 
       return result;

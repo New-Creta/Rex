@@ -272,12 +272,34 @@ namespace ProjectGen
       }
     }
 
+    public enum RunnableType
+    {
+      Default,
+      Coverage,
+      Asan,
+      Ubsan
+    }
+
+    public class Runnable
+    {
+      public string Program { get; }
+
+      [JsonConverter(typeof(JsonStringEnumConverter))]
+      public RunnableType RunnableType { get; }
+
+      public Runnable(string program, RunnableType runnableType)
+      {
+        Program = program;
+        RunnableType = runnableType;
+      }
+    }
+
     public class TestProjectSettings
     {
       public string Name { get; }
       public string Root { get; }
       public string WorkingDir { get; }
-      public List<string> TargetPaths { get; } = new List<string>();
+      public List<Runnable> TargetRunnables { get; } = new List<Runnable>();
       public List<string> CompilerDBPaths { get; } = new List<string>();
 
       public TestProjectSettings(Project project)
@@ -305,11 +327,33 @@ namespace ProjectGen
           resolver.SetParameter("conf", conf);
           resolver.SetParameter("project", this);
           string fullTargetPath = resolver.Resolve(System.IO.Path.Combine(conf.TargetPath, conf.TargetFileFullNameWithExtension));
+          RunnableType runnableType = RunnableTypeForConfig(conf);
 
-          TargetPaths.Add(fullTargetPath);
+          TargetRunnables.Add(new Runnable(fullTargetPath, runnableType));
           CompilerDBPaths.Add(Utils.GetCompilerDBOutputPath((RexConfiguration)conf));
         }
 
+      }
+
+      private RunnableType RunnableTypeForConfig(Project.Configuration conf)
+      {
+        RexTarget target = conf.Target as RexTarget;
+        switch (target.Config)
+        {
+          case Config.debug:
+          case Config.debug_opt:
+          case Config.release:
+            return RunnableType.Default;
+
+          case Config.address_sanitizer:
+            return RunnableType.Asan;
+          case Config.undefined_behavior_sanitizer:
+            return RunnableType.Ubsan;
+          case Config.coverage:
+            return RunnableType.Coverage;
+        }
+
+        return RunnableType.Default;
       }
     }
 
@@ -343,6 +387,8 @@ namespace ProjectGen
     static public string ConfigFileDir = "";                      // Filepath of the config file passed in to this instance of sharpmake
 
     // Flags for various different tests
+    static public bool EnableDefaultGeneration = false;           // Enable the default projects (eg. apps without tests)
+    static public bool EnableDefaultConfigs = false;           // Enable the default configuration (eg. debug, debug_opt, release)
     static public bool UnitTestsEnabled = false;                  // Enable generation of unit test projects
     static public bool CoverageEnabled = false;                   // Generate solution to test code coverage
     static public bool AsanEnabled = false;                       // Enable address sanitizer configuration
