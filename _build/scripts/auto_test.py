@@ -25,7 +25,7 @@ if __name__ == "__main__":
   start = time.perf_counter()
 
   auto_test_timeout_secs = args.auto_test_timeout
-  regis.test.run_auto_tests(["debug", "debug_opt", "release"], ["msvc","clang"], args.projects, int(auto_test_timeout_secs), args.clean, args.build_single_threaded, args.enable_asan, args.enable_ubsan, args.enable_coverage)
+  regis.test.run_auto_tests(args.projects, int(auto_test_timeout_secs), args.clean, args.build_single_threaded, args.enable_asan, args.enable_ubsan, args.enable_coverage)
 
   regis.diagnostics.log_no_color("")
   regis.diagnostics.log_info("Summary Report")
