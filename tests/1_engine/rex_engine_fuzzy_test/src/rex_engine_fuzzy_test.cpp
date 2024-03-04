@@ -6,7 +6,7 @@ namespace rex
 {
   namespace fuzzy
   {
-    int fuzzy_entry(fuzz_span input)
+    int fuzzy_entry(fuzz_span )
     {
       return 0;
     }
