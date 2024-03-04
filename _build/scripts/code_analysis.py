@@ -11,6 +11,8 @@ settings = regis.rex_json.load_file(os.path.join(root_path, regis.util.settingsP
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  parser.add_argument("-iwyu", help="Run include-what-you-use on the codebase", action="store_true")
+  parser.add_argument("-clang-tidy", help="Run clang-tidy on the codebase", action="store_true")
   parser.add_argument("-clean", help="clean run, as if run for the first time", action="store_true")
   parser.add_argument("-build_single_threaded", help="build tests in single threaded mode", action="store_true")
   parser.add_argument("-only_errors_and_warnings", help="filter lines to only display warnings and errors", action="store_true")
@@ -22,12 +24,10 @@ if __name__ == "__main__":
 
   start = time.perf_counter()
 
-  if args.all or args.iwyu:
+  if args.iwyu:
     regis.test.test_include_what_you_use(args.clean, args.build_single_threaded, args.auto_fix)
-  if args.all or args.clang_tidy:
+  if args.clang_tidy:
     regis.test.test_clang_tidy(".*", args.clean, args.build_single_threaded, args.only_errors_and_warnings, args.auto_fix)
-  if args.all or args.coverage:
-    regis.test.test_code_coverage(args.projects, args.clean, args.build_single_threaded)
 
   regis.diagnostics.log_no_color("")
   regis.diagnostics.log_info("Summary Report")
