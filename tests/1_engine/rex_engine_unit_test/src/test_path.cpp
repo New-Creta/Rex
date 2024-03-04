@@ -8,24 +8,8 @@
 #include <Windows.h>
 #include <ShlObj.h>
 
-#include <random>
-#include <iostream>
-
 TEST_CASE("Path Joining")
 {
-#ifdef REX_COMPILER_MSVC
-#if __has_feature(address_sanitizer)
-  std::cout << "asan enabled\n";
-#else
-  std::cout << "asan disabled\n";
-#endif
-#endif
-
-  int arr[10]{};
-  int x = std::rand() + 10;
-  std::cout << x << "\n";
-  arr[x] = 2;
-
   REX_CHECK(rex::path::join("D:", "foo", "bar") == "D:/foo/bar");
   REX_CHECK(rex::path::join("foo", "bar") == "foo/bar");
   REX_CHECK(rex::path::join("foo", "bar.txt") == "foo/bar.txt");
