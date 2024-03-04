@@ -16,7 +16,6 @@ public enum Config
   coverage = (1 << 3),
   address_sanitizer = (1 << 4),
   undefined_behavior_sanitizer = (1 << 5),
-  fuzzy = (1 << 6)
 }
 
 // High level different kind of optimizations we support

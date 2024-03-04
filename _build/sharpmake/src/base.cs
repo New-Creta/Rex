@@ -469,7 +469,6 @@ public abstract class BasicCPPProject : Project
       case Config.coverage:
       case Config.address_sanitizer:
       case Config.undefined_behavior_sanitizer:
-      case Config.fuzzy:
         ClangToolsEnabled = false;
         break;
     }
@@ -538,26 +537,24 @@ public abstract class BasicCPPProject : Project
   // Set testing flags based on configuration specified by the user when calling Sharpmake.
   private void SetupTestingFlags(RexConfiguration conf, RexTarget target)
   {
-    switch (target.Config)
+    if (ProjectGen.Settings.CoverageEnabled)
     {
-      case Config.coverage:
-        conf.NinjaGenerateCodeCoverage = true;
-        break;
-      case Config.address_sanitizer:
-        conf.NinjaEnableAddressSanitizer = true;
-        break;
-      case Config.undefined_behavior_sanitizer:
-        conf.NinjaEnableUndefinedBehaviorSanitizer = true;
-        break;
-      // To have the best kind of testing for fuzzy testing
-      // We enable both asan and ubsan when fuzzy config is specified
-      case Config.fuzzy:
-        conf.NinjaEnableAddressSanitizer = true;
-        conf.NinjaEnableUndefinedBehaviorSanitizer = true;
-        conf.NinjaEnableFuzzyTesting = true;
-        break;
-      default:
-        break;
+      conf.NinjaGenerateCodeCoverage = true;
+    }
+
+    if (ProjectGen.Settings.AsanEnabled)
+    {
+      conf.NinjaEnableAddressSanitizer = true;
+    }
+
+    if (ProjectGen.Settings.UbsanEnabled)
+    {
+      conf.NinjaEnableUndefinedBehaviorSanitizer = true;
+    }
+
+    if (ProjectGen.Settings.FuzzyTestingEnabled)
+    {
+      conf.NinjaEnableFuzzyTesting = true;
     }
   }
 
@@ -924,11 +921,14 @@ public class TestProject : BasicCPPProject
   {
     switch (target.Config)
     {
+      case Config.coverage:
+        conf.add_public_define("REX_DISABLE_CATCH"); // we don't need to check catch.
+        break;
       case Config.address_sanitizer:
-        conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
+        conf.add_public_define("REX_DISABLE_CATCH"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
         break;
       case Config.undefined_behavior_sanitizer:
-        conf.add_public_define("CATCH_CONFIG_DISABLE"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
+        conf.add_public_define("REX_DISABLE_CATCH"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
         break;
       default:
         break;
@@ -940,7 +940,7 @@ public class TestProject : BasicCPPProject
     base.SetupConfigSettings(conf, target);
 
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data");
 
     if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
     {
