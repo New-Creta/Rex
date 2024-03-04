@@ -551,6 +551,11 @@ public abstract class BasicCPPProject : Project
     {
       conf.NinjaEnableUndefinedBehaviorSanitizer = true;
     }
+
+    if (ProjectGen.Settings.FuzzyTestingEnabled)
+    {
+      conf.NinjaEnableFuzzyTesting = true;
+    }
   }
 
   // Delete the clang tools output folder if there is one.
@@ -935,7 +940,7 @@ public class TestProject : BasicCPPProject
     base.SetupConfigSettings(conf, target);
 
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data");
 
     if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
     {

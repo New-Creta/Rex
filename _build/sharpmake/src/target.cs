@@ -107,6 +107,11 @@ public class RexTarget : ITarget
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.undefined_behavior_sanitizer, Compiler.Clang));
     }
+    if (ProjectGen.Settings.FuzzyTestingEnabled)
+    {
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.Clang));
+    }
+
     if (ProjectGen.Settings.EnableDefaultConfigs)
     {
       targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
