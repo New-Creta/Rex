@@ -38,7 +38,7 @@
     "config_name": "clang++_compiler_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"    
+    "version" : "llvm-15.0.1"    
   },
   "clang_compiler" : {
     "stem": "clang",
@@ -46,7 +46,7 @@
     "config_name": "clang_compiler_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"    
+    "version" : "llvm-15.0.1"    
   },
   "clang_linker" : {
     "stem": "clang++",
@@ -54,7 +54,7 @@
     "config_name": "clang_linker_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"  
+    "version" : "llvm-15.0.1"  
   },
   "clang_archiver" : {
     "stem": "llvm-ar",
@@ -62,7 +62,7 @@
     "config_name": "clang_archiver_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"  
+    "version" : "llvm-15.0.1"  
   },
   "clang_ranlib" : {
     "stem": "llvm-ranlib",
@@ -70,7 +70,7 @@
     "config_name": "clang_ranlib_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"  
+    "version" : "llvm-15.0.1"  
   },
   "clang_tidy" : {
     "stem": "clang-tidy",
@@ -78,7 +78,7 @@
     "config_name": "clang_tidy_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"
+    "version" : "llvm-15.0.1"
   },
   "clang_format" : {
     "stem": "clang-format",
@@ -86,7 +86,7 @@
     "config_name": "clang_format_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"
+    "version" : "llvm-15.0.1"
   },
   "clang_apply_replacements" : {
     "stem": "clang-apply-replacements",
@@ -94,7 +94,7 @@
     "config_name": "clang_apply_replacements_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"
+    "version" : "llvm-15.0.1"
   },
   "ninja" : {
     "stem": "ninja",
@@ -119,7 +119,7 @@
     "config_name": "llvm_profdata_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"
+    "version" : "llvm-15.0.1"
   },
   "llvm_cov" : 
   {
@@ -128,7 +128,7 @@
     "config_name": "llvm_cov_path",
     "archive_name": "LLVM",
     "num_zip_files": 8,
-    "version" : "llvm-15.0.0"
+    "version" : "llvm-15.0.1"
   },
   "include_what_you_use" :
   {
