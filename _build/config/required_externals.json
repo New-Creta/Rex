@@ -2,7 +2,7 @@
   "rex_std": {
     "name": "rex_std",
     "url": "https://github.com/RisingLiberty/RexStl/",
-    "tag": "v1.1.71",
+    "tag": "v1.1.74",
     "storage": "~/source/0_thirdparty"
   },
   "rex_glad": {
@@ -16,11 +16,5 @@
     "url": "https://gitlab.com/rex-externals/rex-glm/",
     "tag": "v1.1.0",
     "storage": "~/source/0_thirdparty"
-  },
-  "rex_tiny_file_dialogs": {
-    "name": "rex_tiny_file_dialogs",
-    "url": "https://gitlab.com/rex-externals/rex-tiny-file-dialogs/",
-    "tag": "v1.1.0",
-    "storage": "~/source/0_thirdparty"
-}
+  }
 }

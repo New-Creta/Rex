@@ -11,7 +11,7 @@ namespace regina_auto_test
   }
   void update()
   {
-    rex::event_system::fire_event(rex::event_system::EventType::QuitApp);
+    rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
   }
   void shutdown()
   {

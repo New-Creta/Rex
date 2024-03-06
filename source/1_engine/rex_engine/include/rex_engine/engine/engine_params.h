@@ -13,9 +13,6 @@ namespace rex
     using update_func   = rsl::function<void()>;
     using shutdown_func = rsl::function<void()>;
 
-    // how much memory is the entire app allowed to use.
-    // by default, there's no limit on this.
-    rsl::memory_size max_memory     = rsl::memory_size((rsl::numeric_limits<s64>::max)());
     init_func app_init_func         = nullptr;
     update_func app_update_func     = nullptr;
     update_func app_draw_func       = nullptr;

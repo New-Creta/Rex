@@ -51,6 +51,9 @@ namespace rex
     void mark_for_destroy();
     void loop();
 
+    void mount_paths();
+    void load_settings();
+
   private:
     StateController<ApplicationState> m_app_state;
   };

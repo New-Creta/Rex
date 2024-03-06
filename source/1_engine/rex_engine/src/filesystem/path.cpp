@@ -81,6 +81,19 @@ namespace rex
       return g_seperation_char;
     }
 
+    // returns true if it's a valid path, returns false otherwise
+    bool is_valid_path(rsl::string_view path)
+    {
+      rsl::string_view invalid_chars(invalid_path_chars().data(), invalid_path_chars().size());
+      return path.find_first_of(invalid_chars) != path.npos();
+    }
+    // returns true if it's a valid filename, returns false otherwise
+    bool is_valid_filename(rsl::string_view filename)
+    {
+      rsl::string_view invalid_chars(invalid_file_name_chars().data(), invalid_file_name_chars().size());
+      return filename.find_first_of(invalid_chars) != filename.npos();
+    }
+
     // removes leading and trailing quotes from a path
     rsl::string_view remove_quotes(rsl::string_view path)
     {
@@ -142,6 +155,20 @@ namespace rex
 
       // return the substring of the filename, without the extension
       return file_name.substr(0, count);
+    }
+    // Returns the absolute path for the given path
+    rsl::string abs_path(rsl::string_view path)
+    {
+      // If the path is already absolute, just return it
+      if (is_absolute(path))
+      {
+        return rsl::string(path);
+      }
+
+      // Get the current working directory and prepend it to the path
+      rsl::string current_dir = path::cwd();
+      rsl::string res = path::join(current_dir, path);
+      return res.replace("\\", "/");
     }
     // Returns the root directory path of the given path
     rsl::string_view path_root(rsl::string_view path)

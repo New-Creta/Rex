@@ -311,8 +311,8 @@ namespace regina
   bool build_shader_and_input_layout()
   {
     // Shader
-    rex::renderer::commands::CompileShaderCommandDesc vs_compile_command_desc = create_compile_shader_parameters("standardVS"_small, rex::renderer::ShaderType::VERTEX, "Shaders\\color.hlsl");
-    rex::renderer::commands::CompileShaderCommandDesc ps_compile_command_desc = create_compile_shader_parameters("opaquePS"_small, rex::renderer::ShaderType::PIXEL, "Shaders\\color.hlsl");
+    rex::renderer::commands::CompileShaderCommandDesc vs_compile_command_desc = create_compile_shader_parameters("standardVS"_small, rex::renderer::ShaderType::VERTEX, "regina\\Shaders\\color.hlsl");
+    rex::renderer::commands::CompileShaderCommandDesc ps_compile_command_desc = create_compile_shader_parameters("opaquePS"_small, rex::renderer::ShaderType::PIXEL, "regina\\Shaders\\color.hlsl");
 
     rex::renderer::commands::LinkShaderCommandDesc link_shader_command_desc;
     link_shader_command_desc.vertex_shader = rex::renderer::compile_shader(rsl::move(vs_compile_command_desc));
@@ -900,7 +900,6 @@ namespace regina
     app_params.gui_params.window_height = 720;
     app_params.gui_params.window_title  = "Regina";
 
-    app_params.engine_params.max_memory        = 256_kb;
     app_params.engine_params.app_init_func     = initialize;
     app_params.engine_params.app_update_func   = update;
     app_params.engine_params.app_draw_func     = draw;
