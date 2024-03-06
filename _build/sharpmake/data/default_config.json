@@ -35,6 +35,14 @@
     "Description": "Enable generation of fuzzy test projects",
     "Value": false
   },
+  "disable-default-generation": {
+    "Description": "Disable default projects from being generation",
+    "Value": false
+  },
+  "disable-default-configs": {
+    "Description": "Disable default configs from being generation",
+    "Value": false
+  },
   "enable-auto-tests": {
     "Description": "Enable generation of auto test projects",
     "Value": false

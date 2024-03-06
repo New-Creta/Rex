@@ -38,6 +38,6 @@ namespace rex
     // each creating their own objects starting from the beginning
     // of the input and the first test doesn't affect the input
     // to be passed in to the second
-    extern int fuzzy_entry(const fuzz_span& input);  
+    extern int fuzzy_entry(fuzz_span input);  
   }
 }

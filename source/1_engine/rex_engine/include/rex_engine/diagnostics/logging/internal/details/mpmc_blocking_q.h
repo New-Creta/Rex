@@ -9,7 +9,8 @@
 // dequeue_for(..) - will block until the queue is not empty or timeout have
 // passed.
 
-#include "rex_engine/diagnostics/logging/internal/details/circular_q.h"
+#include "rex_std/bonus/circular_q.h"
+//#include "rex_engine/diagnostics/logging/internal/details/circular_q.h"
 #include "rex_std/condition_variable.h"
 #include "rex_std/mutex.h"
 
@@ -102,7 +103,7 @@ namespace rex
         rsl::mutex m_queue_mutex;
         rsl::condition_variable m_push_cv;
         rsl::condition_variable m_pop_cv;
-        rex::log::details::CircularQ<T> m_q;
+        rsl::circular_q<T> m_q;
       };
     } // namespace details
   }   // namespace log

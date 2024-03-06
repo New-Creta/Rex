@@ -52,7 +52,6 @@ public class RexTarget : ITarget
         case Config.debug_opt: return Optimization.FullOptWithPdb;
         case Config.address_sanitizer: return Optimization.FullOptWithPdb;
         case Config.undefined_behavior_sanitizer: return Optimization.FullOptWithPdb;
-        case Config.fuzzy: return Optimization.FullOptWithPdb;
         case Config.release: return Optimization.FullOpt;
       }
       return Optimization.FullOpt;
@@ -110,11 +109,13 @@ public class RexTarget : ITarget
     }
     if (ProjectGen.Settings.FuzzyTestingEnabled)
     {
-      targets.Add(new RexTarget(Platform.win64, devEnv, Config.fuzzy, Compiler.Clang));
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.Clang));
     }
-    
-    targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
 
+    if (ProjectGen.Settings.EnableDefaultConfigs)
+    {
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.debug | Config.debug_opt | Config.release, Compiler.MSVC | Compiler.Clang));
+    }
     return targets;
   }
 

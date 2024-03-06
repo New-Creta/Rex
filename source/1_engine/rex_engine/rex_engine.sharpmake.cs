@@ -55,9 +55,6 @@ public class RexEngine : EngineProject
       case Config.undefined_behavior_sanitizer:
         conf.add_public_define("REX_BUILD_UBSAN");
         break;
-      case Config.fuzzy:
-        conf.add_public_define("REX_BUILD_FUZZY");
-        break;
       default:
         break;
     }
@@ -85,8 +82,13 @@ public class RexEngine : EngineProject
         goto case Config.address_sanitizer;
       case Config.address_sanitizer:
       case Config.undefined_behavior_sanitizer:
-      case Config.fuzzy:
         break;
+    }
+
+    // Set the fuzzy define if we're generating fuzzy tests
+    if (ProjectGen.Settings.FuzzyTestingEnabled)
+    {
+      conf.add_public_define("REX_BUILD_FUZZY");
     }
   }
 

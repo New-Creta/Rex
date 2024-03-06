@@ -6,8 +6,9 @@
 #define NOMINMAX
 #include <Windows.h>
 
-rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED rsl::string_view winFunc, REX_MAYBE_UNUSED rsl::string_view file, REX_MAYBE_UNUSED rsl::string_view function, REX_MAYBE_UNUSED card32 lineNr)
+rex::win::HrCall::HrCall(HResult hr, HResult ignoreSuccess, REX_MAYBE_UNUSED rsl::string_view winFunc, REX_MAYBE_UNUSED rsl::string_view file, REX_MAYBE_UNUSED rsl::string_view function, REX_MAYBE_UNUSED card32 lineNr)
     : m_hresult(hr)
+    , m_hresult_to_ignore(ignoreSuccess)
     , m_has_failed(FAILED(hr))
 {
   if(has_failed())
@@ -18,7 +19,7 @@ rex::win::HrCall::HrCall(HResult hr, REX_MAYBE_UNUSED rsl::string_view winFunc, 
 
 bool rex::win::HrCall::has_failed() const
 {
-  return m_has_failed;
+  return m_hresult != m_hresult_to_ignore && m_has_failed;
 }
 bool rex::win::HrCall::has_succeeded() const
 {
