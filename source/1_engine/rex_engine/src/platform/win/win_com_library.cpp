@@ -17,21 +17,20 @@ namespace rex
     {
       DEFINE_LOG_CATEGORY(WinComLibrary, rex::LogVerbosity::Log);
 
-
       namespace internal
       {
         class ComLibrary
         {
         public:
           // Initialize the library on first try
-          ComLibrary() = default;
+          ComLibrary()  = default;
           ~ComLibrary() = default;
 
           ComLibrary(const ComLibrary&) = delete;
-          ComLibrary(ComLibrary&&) = delete;
+          ComLibrary(ComLibrary&&)      = delete;
 
           ComLibrary& operator=(const ComLibrary&) = delete;
-          ComLibrary& operator=(ComLibrary&&) = delete;
+          ComLibrary& operator=(ComLibrary&&)      = delete;
 
           // Return if the library is initialized
           bool is_initialized() const
@@ -43,20 +42,20 @@ namespace rex
           rsl::string read_link(rsl::string_view filepath)
           {
             IShellLinkW* psl = nullptr;
-            HRESULT hres = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&psl));
+            HRESULT hres     = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&psl));
             rsl::wbig_stack_string res;
 
-            if (SUCCEEDED(hres))
+            if(SUCCEEDED(hres))
             {
               IPersistFile* ppf = nullptr;
-              hres = psl->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID*>(&ppf));
+              hres              = psl->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID*>(&ppf));
 
-              if (SUCCEEDED(hres))
+              if(SUCCEEDED(hres))
               {
                 const rsl::wstring wide_filepath(filepath.cbegin(), filepath.cend());
                 hres = ppf->Load(wide_filepath.c_str(), STGM_READ);
 
-                if (SUCCEEDED(hres))
+                if(SUCCEEDED(hres))
                 {
                   hres = psl->GetPath(res.data(), rsl::wbig_stack_string::max_size(), nullptr, SLGP_UNCPRIORITY);
                   res.reset_null_termination_offset();
@@ -74,7 +73,7 @@ namespace rex
           // Increase the amount of reference the com lib has on this thread
           void inc_ref()
           {
-            if (!is_initialized())
+            if(!is_initialized())
             {
               init_lib();
             }
@@ -84,7 +83,7 @@ namespace rex
           void dec_ref()
           {
             s_ref_count--;
-            if (s_ref_count == 0)
+            if(s_ref_count == 0)
             {
               shutdown();
             }
@@ -107,7 +106,7 @@ namespace rex
           thread_local static s32 s_ref_count;
         };
 
-        s32 ComLibrary::s_ref_count = 0;
+        thread_local s32 ComLibrary::s_ref_count = 0;
 
         // Return the global com library object
         ComLibrary& com_library()
@@ -115,7 +114,7 @@ namespace rex
           static thread_local ComLibrary com_lib;
           return com_lib;
         }
-      }
+      } // namespace internal
 
       // Creates a WinComHandle.
       // Makes sure the win com lib is initialized before creating the handle
@@ -138,10 +137,10 @@ namespace rex
       }
 
       // Destroy the win com library
-      WinComLibHandle::~WinComLibHandle() 
+      WinComLibHandle::~WinComLibHandle()
       {
         internal::com_library().dec_ref();
       }
-    }
-  }
-}
+    } // namespace com_lib
+  }   // namespace win
+} // namespace rex

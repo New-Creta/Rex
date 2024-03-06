@@ -98,7 +98,7 @@ namespace rex
       // If the path is a .lnk file, we can read its link
       if(rex::path::extension(path).ends_with(".lnk"))
       {
-        rsl::string res = rex::win::com_library().read_link(path);
+        rsl::string res = rex::win::com_lib::read_link(path);
         res.replace("\\", "/");
         return res;
       }
@@ -344,7 +344,7 @@ namespace rex
       dir_search += "\\*";
       HANDLE hFind = FindFirstFileA(path.data(), &ffd);
 
-      if (hFind == INVALID_HANDLE_VALUE)
+      if(hFind == INVALID_HANDLE_VALUE)
       {
         FindClose(hFind);
         return {};
@@ -355,7 +355,7 @@ namespace rex
       {
         rsl::string_view name = ffd.cFileName;
         result.push_back(path::join(path, name));
-      } while (FindNextFile(hFind, &ffd) != 0);
+      } while(FindNextFile(hFind, &ffd) != 0);
 
       return result;
     }
@@ -368,7 +368,7 @@ namespace rex
       dir_search += "\\*";
       HANDLE hFind = FindFirstFileA(path.data(), &ffd);
 
-      if (hFind == INVALID_HANDLE_VALUE)
+      if(hFind == INVALID_HANDLE_VALUE)
       {
         FindClose(hFind);
         return {};
@@ -377,13 +377,13 @@ namespace rex
       rsl::vector<rsl::string> result;
       do
       {
-        rsl::string_view name = ffd.cFileName;
+        rsl::string_view name     = ffd.cFileName;
         rsl::string full_filename = path::join(path, name);
-        if (path::is_dir(full_filename))
+        if(path::is_dir(full_filename))
         {
           result.push_back(rsl::move(full_filename));
         }
-      } while (FindNextFile(hFind, &ffd) != 0);
+      } while(FindNextFile(hFind, &ffd) != 0);
 
       return result;
     }
@@ -391,12 +391,12 @@ namespace rex
     // Returns a list of all files in path
     rsl::vector<rsl::string> list_files(rsl::string_view path)
     {
-      WIN32_FIND_DATAA ffd{};
+      WIN32_FIND_DATAA ffd {};
       rsl::big_stack_string dir_search(path);
       dir_search += "\\*";
       HANDLE hFind = FindFirstFileA(dir_search.data(), &ffd);
 
-      if (hFind == INVALID_HANDLE_VALUE)
+      if(hFind == INVALID_HANDLE_VALUE)
       {
         FindClose(hFind);
         return {};
@@ -408,11 +408,11 @@ namespace rex
         s32 length = rsl::strlen(ffd.cFileName);
         rsl::string_view name(ffd.cFileName, length);
         rsl::string full_filename = path::join(path, name);
-        if (path::is_file(full_filename))
+        if(path::is_file(full_filename))
         {
           result.push_back(rsl::move(full_filename));
         }
-      } while (FindNextFileA(hFind, &ffd) != 0);
+      } while(FindNextFileA(hFind, &ffd) != 0);
 
       // FindNextfile sets the error to ERROR_NO_MORE_FILES
       // if there are no more files found
