@@ -50,8 +50,7 @@ public class RexTarget : ITarget
         case Config.debug: return Optimization.NoOpt;
         case Config.coverage: return Optimization.NoOpt;
         case Config.debug_opt: return Optimization.FullOptWithPdb;
-        case Config.address_sanitizer: return Optimization.FullOptWithPdb;
-        case Config.undefined_behavior_sanitizer: return Optimization.FullOptWithPdb;
+        case Config.sanitization: return Optimization.FullOptWithPdb;
         case Config.release: return Optimization.FullOpt;
       }
       return Optimization.FullOpt;
@@ -97,15 +96,15 @@ public class RexTarget : ITarget
     // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
     if (ProjectGen.Settings.CoverageEnabled)
     {
-      targets.Add(new RexTarget(Platform.win64, devEnv, Config.coverage, Compiler.Clang));
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.sanitization, Compiler.Clang));
     }
     if (ProjectGen.Settings.AsanEnabled)
     {
-      targets.Add(new RexTarget(Platform.win64, devEnv, Config.address_sanitizer, Compiler.Clang));
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.sanitization, Compiler.Clang));
     }
     if (ProjectGen.Settings.UbsanEnabled)
     {
-      targets.Add(new RexTarget(Platform.win64, devEnv, Config.undefined_behavior_sanitizer, Compiler.Clang));
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.sanitization, Compiler.Clang));
     }
     if (ProjectGen.Settings.FuzzyTestingEnabled)
     {

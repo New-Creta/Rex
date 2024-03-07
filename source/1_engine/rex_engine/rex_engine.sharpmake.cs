@@ -49,11 +49,8 @@ public class RexEngine : EngineProject
       case Config.coverage:
         conf.add_public_define("REX_BUILD_COVERAGE");
         break;
-      case Config.address_sanitizer:
-        conf.add_public_define("REX_BUILD_ASAN");
-        break;
-      case Config.undefined_behavior_sanitizer:
-        conf.add_public_define("REX_BUILD_UBSAN");
+      case Config.sanitization:
+        conf.add_public_define("REX_BUILD_SANITIZATION");
         break;
       default:
         break;
@@ -79,9 +76,8 @@ public class RexEngine : EngineProject
         conf.add_public_define("REX_ENABLE_MEM_TRACKING");
         conf.add_public_define("REX_ENABLE_HR_CALL");
         conf.add_public_define("REX_ENABLE_WIN_CALL");
-        goto case Config.address_sanitizer;
-      case Config.address_sanitizer:
-      case Config.undefined_behavior_sanitizer:
+        goto case Config.sanitization;
+      case Config.sanitization:
         break;
     }
 
