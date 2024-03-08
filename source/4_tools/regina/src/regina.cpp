@@ -46,6 +46,7 @@ DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
 namespace regina
 {
+#pragma region Graphics
   struct ObjectConstants
   {
     glm::mat4 world = glm::mat4(1.0f);
@@ -798,6 +799,7 @@ namespace regina
 
     return true;
   }
+#pragma endregion
 
   //-------------------------------------------------------------------------
   bool initialize()

@@ -1,7 +1,7 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
-#include "rex_engine/diagnostics/logging/internal/details/thread_pool.h"
+#include "rex_engine/diagnostics/logging/internal/details/diag_thread_pool.h"
 #include "rex_engine/diagnostics/logging/internal/logger_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
