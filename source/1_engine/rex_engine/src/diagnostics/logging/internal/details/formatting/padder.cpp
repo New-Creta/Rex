@@ -14,7 +14,7 @@ namespace rex
       // Scoped Padder
       ///////////////////////////////////////////////////////////////////////
       //-------------------------------------------------------------------------
-      ScopedPadder::ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo, rsl::big_stack_string& dest)
+      ScopedPadder::ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo, rsl::string& dest)
           : m_padinfo(&padinfo)
           , m_dest(&dest)
           , m_remaining_pag(static_cast<long>(padinfo.width) - static_cast<long>(wrappedSize))
@@ -63,7 +63,7 @@ namespace rex
       // Null Scoped Padder
       ///////////////////////////////////////////////////////////////////////
       //-------------------------------------------------------------------------
-      NullScopedPadder::NullScopedPadder(s32 /*wrappedSize*/, const PaddingInfo& /*padinfo*/, rsl::big_stack_string& /*dest*/) {}
+      NullScopedPadder::NullScopedPadder(s32 /*wrappedSize*/, const PaddingInfo& /*padinfo*/, rsl::string& /*dest*/) {}
     } // namespace details
   }   // namespace log
 } // namespace rex

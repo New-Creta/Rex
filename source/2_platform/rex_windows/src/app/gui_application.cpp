@@ -1,4 +1,4 @@
-﻿#include "rex_windows/gui_application.h"
+﻿#include "rex_windows/app/gui_application.h"
 
 #include "rex_engine/app/core_window.h"
 #include "rex_engine/diagnostics/assert.h"
@@ -19,9 +19,9 @@
 #include "rex_std/memory.h"
 #include "rex_std/ratio.h"
 #include "rex_std/thread.h"
-#include "rex_windows/log.h"
-#include "rex_windows/platform_creation_params.h"
-#include "rex_windows/win_window.h"
+#include "rex_windows/diagnostics/log.h"
+#include "rex_windows/engine/platform_creation_params.h"
+#include "rex_windows/app/win_window.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -38,7 +38,7 @@ namespace rex
       return g_window_info;
     }
   } // namespace globals
-  namespace win32
+  namespace win
   {
     class GuiApplication::Internal
     {
@@ -366,7 +366,7 @@ namespace rex
       m_internal_ptr->shutdown();
     }
 
-  } // namespace win32
+  } // namespace win
 } // namespace rex
 
 // NOLINTEND(modernize-use-nullptr)
