@@ -6,6 +6,7 @@
 #include "rex_engine/engine/engine_params.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/directory.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_engine/settings/settings.h"
@@ -170,7 +171,7 @@ namespace rex
     // but the engine loads the default settings
 
     // get the default settings of the engine and load them into memory
-    rsl::vector<rsl::string> files = path::list_files(vfs::mount_path(MountingPoint::EngineSettings));
+    rsl::vector<rsl::string> files = directory::list_files(vfs::mount_path(MountingPoint::EngineSettings));
 
     for (rsl::string_view file : files)
     {

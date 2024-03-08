@@ -219,32 +219,14 @@ namespace rex
     // Returns the creation time of the file or directory at the given path
     card64 get_file_size(rsl::string_view path);
 
-    // Returns if the path exists
-    bool exists(rsl::string_view path);
-
     // Returns if the given path is an absolute path
     bool is_absolute(rsl::string_view path);
-
-    // Returns true if the given path points to a file
-    bool is_file(rsl::string_view path);
-
-    // Returns true if the given path points to a directory
-    bool is_dir(rsl::string_view path);
 
     // Returns true if the given path points to a junction
     bool is_junction(rsl::string_view path);
 
     // Returns true if the given path points to a symlink
     bool is_link(rsl::string_view path);
-
-    // Returns a list of all files and directories in path
-    rsl::vector<rsl::string> list_entries(rsl::string_view path);
-
-    // Returns a list of all directories in path
-    rsl::vector<rsl::string> list_dirs(rsl::string_view path);
-
-    // Returns a list of all files in path
-    rsl::vector<rsl::string> list_files(rsl::string_view path);
 
     // Splits the path into a head and a tail
     // the head is either the mount point or an empty string

@@ -1,6 +1,8 @@
 #include "rex_engine/filesystem/vfs.h"
 
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/directory.h"
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
@@ -482,7 +484,7 @@ namespace rex
         g_root = path::join(path::cwd(), root);
       }
 
-      REX_ASSERT_X(path::is_dir(g_root), "root of vfs is not a directory");
+      REX_ASSERT_X(directory::exists(g_root), "root of vfs is not a directory");
       REX_LOG(FileSystem, "FileSystem root changed to: {}", g_root);
     }
 
@@ -581,7 +583,7 @@ namespace rex
       path = path::remove_quotes(path);
 
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
-      return path::exists(filepath);
+      return directory::exists(filepath);
     }
 
     bool is_dir(MountingPoint root, rsl::string_view path)
@@ -589,14 +591,14 @@ namespace rex
       path = path::remove_quotes(path);
 
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
-      return path::is_dir(filepath);
+      return directory::exists(filepath);
     }
     bool is_file(MountingPoint root, rsl::string_view path)
     {
       path = path::remove_quotes(path);
 
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
-      return path::is_file(filepath);
+      return file::exists(filepath);
     }
 
     rsl::string create_full_path(MountingPoint root, rsl::string_view path)
@@ -610,8 +612,6 @@ namespace rex
     }
     rsl::string create_full_path(rsl::string_view path)
     {
-      REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");
-
       path = path::remove_quotes(path);
 
       if (path::is_absolute(path))
@@ -619,16 +619,7 @@ namespace rex
         return rsl::string(path);
       }
 
-      const auto comparer = rsl::equal_to<rsl::string>();
-      using K1 = rsl::string;
-      using K2 = rsl::string_view;
-      using Key = rsl::string;
-
-      K1 const k1;
-      K2 const k2;
-
-      const bool b = comparer(k1, k2);
-
+      REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");
       return path::join(g_root, path);
     }
 
@@ -656,7 +647,7 @@ namespace rex
 
       rsl::string full_path = vfs::create_full_path(path);
 
-      return path::list_files(full_path);
+      return directory::list_files(full_path);
     }
   }
 }
