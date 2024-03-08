@@ -80,8 +80,6 @@ namespace rex
 
       LPEXCEPTION_POINTERS exception_info = static_cast<LPEXCEPTION_POINTERS>(exceptionInfo);
 
-      DWORD exc_code = exception_info->ExceptionRecord->ExceptionCode;
-
       // This code is 7 frames after the actual crash, coming from a structured exception handling block
       auto stack = rsl::stacktrace::current(numFramesToSkip);
 
