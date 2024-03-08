@@ -93,7 +93,7 @@ namespace rex
       // If the path is a .lnk file, we can read its link
       if(rex::path::extension(path).ends_with(".lnk"))
       {
-        rsl::string res = rex::win::com_library().read_link(path);
+        rsl::string res = rex::win::com_lib::read_link(path);
         res.replace("\\", "/");
         return res;
       }

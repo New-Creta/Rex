@@ -8,6 +8,7 @@
 #include "rex_engine/event_system/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
+#include "rex_engine/platform/win/win_com_library.h"
 #include "rex_engine/windowinfo.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
@@ -63,6 +64,11 @@ namespace rex
       bool initialize()
       {
         REX_ASSERT_CONTEXT_SCOPE("Application initialization");
+
+        // initialize the com lib
+        // Doing this very early on so other system can use the com lib
+        // for their initialization if needed
+        m_win_com_lib_handle = win::com_lib::create_lib_handle();
 
         // window initialization
         m_window = create_window();
@@ -340,6 +346,7 @@ namespace rex
       GuiParams m_gui_params;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
+      win::com_lib::WinComLibHandle m_win_com_lib_handle;
     };
 
     //-------------------------------------------------------------------------
