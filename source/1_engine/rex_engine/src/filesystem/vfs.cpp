@@ -1,6 +1,8 @@
 #include "rex_engine/filesystem/vfs.h"
 
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/directory.h"
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
@@ -13,6 +15,7 @@
 #include "rex_std/bonus/memory.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
+#include "rex_std/bonus/time/timepoint.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_std/ctype.h"
 #include "rex_std/mutex.h"
@@ -159,6 +162,39 @@ namespace rex
     {
       static rsl::string editor_root = path::join(vfs::root(), "regina");
       return editor_root;
+    }
+
+    rsl::string_view project_root()
+    {
+      static rsl::string project_root = path::join(vfs::root(), "project_name");
+      return project_root;
+    }
+
+    rsl::string current_timepoint_str()
+    {
+      rsl::time_point current_time = rsl::current_timepoint();
+      rsl::string timepoint_str(rsl::format("{}_{}", current_time.date().to_string_without_weekday(), current_time.time().to_string()));
+      timepoint_str.replace("/", "_");
+      timepoint_str.replace(":", "_");
+      return timepoint_str;
+    }
+
+    rsl::string_view sessions_root()
+    {
+      static rsl::string sessions_root = path::join(vfs::root(), "_sessions");
+      return sessions_root;
+    }
+
+    rsl::string_view project_sessions_root()
+    {
+      static rsl::string project_sessions_root = path::join(sessions_root(), "project_name");
+      return project_sessions_root;
+    }
+
+    rsl::string_view session_data_root()
+    {
+      static rsl::string session_data_root = path::join(project_sessions_root(), current_timepoint_str());
+      return session_data_root;
     }
 
     class QueuedRequest
@@ -425,7 +461,12 @@ namespace rex
 
       g_vfs_state_controller.change_state(VfsState::Running);
 
+      // Create the current session root so data generated during this session
+      // has somewhere to put itself
+      create_dirs(session_data_root());
+
       REX_LOG(FileSystem, "FileSystem initialized");
+      REX_LOG(FileSystem, "Session Directory: {}", session_data_root());
     }
 
     void set_root(rsl::string_view root)
@@ -443,7 +484,7 @@ namespace rex
         g_root = path::join(path::cwd(), root);
       }
 
-      REX_ASSERT_X(path::is_dir(g_root), "root of vfs is not a directory");
+      REX_ASSERT_X(directory::exists(g_root), "root of vfs is not a directory");
       REX_LOG(FileSystem, "FileSystem root changed to: {}", g_root);
     }
 
@@ -542,7 +583,7 @@ namespace rex
       path = path::remove_quotes(path);
 
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
-      return path::exists(filepath);
+      return directory::exists(filepath);
     }
 
     bool is_dir(MountingPoint root, rsl::string_view path)
@@ -550,14 +591,14 @@ namespace rex
       path = path::remove_quotes(path);
 
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
-      return path::is_dir(filepath);
+      return directory::exists(filepath);
     }
     bool is_file(MountingPoint root, rsl::string_view path)
     {
       path = path::remove_quotes(path);
 
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
-      return path::is_file(filepath);
+      return file::exists(filepath);
     }
 
     rsl::string create_full_path(MountingPoint root, rsl::string_view path)
@@ -571,8 +612,6 @@ namespace rex
     }
     rsl::string create_full_path(rsl::string_view path)
     {
-      REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");
-
       path = path::remove_quotes(path);
 
       if (path::is_absolute(path))
@@ -580,16 +619,7 @@ namespace rex
         return rsl::string(path);
       }
 
-      const auto comparer = rsl::equal_to<rsl::string>();
-      using K1 = rsl::string;
-      using K2 = rsl::string_view;
-      using Key = rsl::string;
-
-      K1 const k1;
-      K2 const k2;
-
-      const bool b = comparer(k1, k2);
-
+      REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");
       return path::join(g_root, path);
     }
 
@@ -617,7 +647,7 @@ namespace rex
 
       rsl::string full_path = vfs::create_full_path(path);
 
-      return path::list_files(full_path);
+      return directory::list_files(full_path);
     }
   }
 }

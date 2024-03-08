@@ -7,7 +7,7 @@ namespace rex
 {
   struct ApplicationCreationParams;
 
-  namespace win32
+  namespace win
   {
     class ConsoleApplication : public CoreApplication
     {
@@ -30,5 +30,5 @@ namespace rex
 
       rsl::unique_ptr<Internal> m_internal;
     };
-  } // namespace win32
+  } // namespace win
 } // namespace rex

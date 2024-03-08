@@ -90,6 +90,24 @@ namespace rex
       return WIN_SUCCESS_IGNORE(CreateDirectoryA(fullpath.data(), NULL), ERROR_ALREADY_EXISTS);
     }
 
+    bool create_dirs(rsl::string_view path)
+    {
+      rsl::string fullpath = create_full_path(path);
+      rsl::vector<rsl::string_view> splitted_paths = rsl::split(fullpath, "/\\");
+
+      rsl::string full_path;
+      full_path.reserve(fullpath.size());
+
+      for (rsl::string_view sub_path : splitted_paths)
+      {
+        full_path += sub_path;
+        WIN_SUCCESS_IGNORE(CreateDirectoryA(full_path.data(), NULL), ERROR_ALREADY_EXISTS);
+        full_path += g_folder_seps;
+      }
+
+      return true;
+    }
+
   } // namespace vfs
 } // namespace rex
 

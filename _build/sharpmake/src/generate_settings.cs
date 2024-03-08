@@ -277,7 +277,8 @@ namespace ProjectGen
       Default,
       Coverage,
       Asan,
-      Ubsan
+      Ubsan,
+      Sanitizer
     }
 
     public class Runnable
@@ -345,10 +346,8 @@ namespace ProjectGen
           case Config.release:
             return RunnableType.Default;
 
-          case Config.address_sanitizer:
-            return RunnableType.Asan;
-          case Config.undefined_behavior_sanitizer:
-            return RunnableType.Ubsan;
+          case Config.sanitization:
+            return RunnableType.Sanitizer;
           case Config.coverage:
             return RunnableType.Coverage;
         }
@@ -416,10 +415,8 @@ public static class Extensions
     {
       case ProjectGen.IDE.VisualStudio19:
         return DevEnv.vs2019;
-        break;
       case ProjectGen.IDE.VisualStudio22:
         return DevEnv.vs2022;
-        break;
     }
     return DevEnv.vs2019;
 

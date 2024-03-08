@@ -117,7 +117,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void PatternFormatter::format(const details::LogMsg& msg, rsl::big_stack_string& dest)
+    void PatternFormatter::format(const details::LogMsg& msg, rsl::string& dest)
     {
       if(m_need_localtime)
       {

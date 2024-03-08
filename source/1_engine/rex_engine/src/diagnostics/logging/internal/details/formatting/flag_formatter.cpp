@@ -63,7 +63,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void CharacterFormatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, rsl::big_stack_string& dest)
+      void CharacterFormatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, rsl::string& dest)
       {
         dest.push_back(m_character);
       }
@@ -78,7 +78,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void AggregateFormatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, rsl::big_stack_string& dest)
+      void AggregateFormatter::format(const details::LogMsg& /*unused*/, const tm& /*unused*/, rsl::string& dest)
       {
         fmt_helper::append_string_view(m_string, dest);
       }
@@ -94,7 +94,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void ColorStartFormatter::format(const details::LogMsg& msg, const tm& /*unused*/, rsl::big_stack_string& dest)
+      void ColorStartFormatter::format(const details::LogMsg& msg, const tm& /*unused*/, rsl::string& dest)
       {
         msg.m_color_range_start = dest.size();
       }
@@ -110,7 +110,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void ColorStopFormatter::format(const details::LogMsg& msg, const tm& /*unused*/, rsl::big_stack_string& dest)
+      void ColorStopFormatter::format(const details::LogMsg& msg, const tm& /*unused*/, rsl::string& dest)
       {
         msg.m_color_range_end = dest.size();
       }
@@ -126,7 +126,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      void FullFormatter::format(const details::LogMsg& msg, const tm& tmTime, rsl::big_stack_string& dest)
+      void FullFormatter::format(const details::LogMsg& msg, const tm& tmTime, rsl::string& dest)
       {
         // cache the date/time part for the next second.
         auto duration = msg.time().time_since_epoch();

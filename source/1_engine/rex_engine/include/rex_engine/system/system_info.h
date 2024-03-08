@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rex_engine/engine/types.h"
+
 namespace rex
 {
   enum class PlatformType
@@ -55,4 +57,20 @@ namespace rex
   };
 
   const SystemInfo& system_info();
+
+  // ******************************************************
+  // PLATFORM SPECIFIC IMPLEMENTATION
+  // ******************************************************
+  namespace sys_info
+  {
+    // Returns the number of physical cores on the system
+    s32 number_physical_cores();
+
+    // Returns the number of logical processors
+    s32 number_logical_processors();
+  }
 } // namespace rex
+
+#ifdef REX_PLATFORM_WINDOWS
+#include "rex_engine/platform/win/system/win_sys_info.h"
+#endif

@@ -53,6 +53,18 @@ namespace rex
     // Returns the root directory of the editor files
     rsl::string_view editor_root();
 
+    // Returns the root directory of the current project
+    rsl::string_view project_root();
+
+    // Returns the root for all sessions data
+    rsl::string_view sessions_root();
+
+    // Returns the root for all sessions data of this project
+    rsl::string_view project_sessions_root();
+
+    // Returns the root for all files outputed during this session run (eg. logs)
+    rsl::string_view session_data_root();
+
     DEFINE_YES_NO_ENUM(AppendToFile);
 
     class QueuedRequest;
@@ -97,6 +109,7 @@ namespace rex
     bool save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
     bool save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
     bool create_dir(MountingPoint root, rsl::string_view path);
+    bool create_dirs(rsl::string_view path);
 
     bool exists(MountingPoint root, rsl::string_view path);
     bool is_dir(MountingPoint root, rsl::string_view path);

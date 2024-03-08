@@ -18,7 +18,7 @@ if __name__ == "__main__":
   # initialize the argument parser by loading the arguments from the config file
   parser = argparse.ArgumentParser(add_help=False, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   parser.add_argument('-sharpmake_arg', dest="sharpmake_args", default=[], action="append", help='Argument to be passed to sharpmake directly')
-  parser.add_argument('-use_default_config', default=False, action="store_true", help='Use the default config as a initial settings')
+  parser.add_argument('-use-default-config', default=False, action="store_true", help='Use the default config as a initial settings')
   parser.add_argument('-h', '--help', action='store_true', dest='show_help', help='Show this help message and exit')
 
   # Do a first pass on the argument so we know if we should load the default config or not

@@ -2,11 +2,11 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_std/memory.h"
-#include "rex_windows/win_types.h"
+#include "rex_windows/engine/win_types.h"
 
 namespace rex
 {
-  namespace win32
+  namespace win
   {
     class WindowClass
     {
@@ -30,5 +30,5 @@ namespace rex
       struct Internal;
       rsl::unique_ptr<Internal> m_internal_ptr;
     };
-  } // namespace win32
+  } // namespace win
 } // namespace rex

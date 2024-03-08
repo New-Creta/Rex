@@ -202,59 +202,75 @@ After which it launches a script with the same name but located at the source ro
 ## Testing
 Rex Engine supports many different kind of tests for optimal testing which can all be fired from the root script
 
-To run all tests, pass in `-all` to `_rex.py test`
+The tests are split into 4 different categories.
 
-The following tests are supported for Rex Engine
+### Code Analysis
+Code analysis testing has to do with any testing that can be done by inspecting the code without actually running it.
 
-### include-what-you-use
+We currently support 2 different kind of code analysis testing
+
+any code analyis job is starting by specifying `code-analysis` in the root script.
+
+#### include-what-you-use
 flag: `-iwyu`
 
 A tool providing directly hooked into the compiler to scan for includes that aren't needed and could be replaced with a forward declaration or removed all together.
-### clang-tidy
+
+#### clang-tidy
 flag: `-clang_tidy`
 
 A static analyser directly hooked into the compiler to scan for possible design problems, readability issues or bugs. None of the checks in here will auto fix themselves and all warnings are treated as error.
-### Unit tests
-flag: `-unit_tests`
 
-Every big framework should have its own unit tests so of course rex has it own as well. We use catch2 for our unit tests, these unit tests can be added to the visual studio solution by passing in `-generate_unittests` to [`_generate.py`](../../../_generate.py)
-### Coverage
-flag: `-coverage`
+### Runtime Flags
+All runtime testing supports different flags for specifying additional runtime checks.
+
+#### Address Sanitizer
+flag: `-enable-asan`
+
+Address sanitizer is a flag added to the compiler to add extra code with memory access instructions. This is useful to track down memory issues you might not even know you have. With this flag, unit tests will be run with asan enabled, tracking down if you have any memory bugs in your code.
+#### Undefined Behavior Sanitizer
+flag: `-enable-ubsan`
+
+Undefined behavior sanitizer is a similar flag as address sanitizer but instead looking for memory bugs, it looks for undefined behavior in your code. with this flag, unit tests will be run with ubsan enabled, tracking down if you have any undefined behavior in your code. 
+#### Code Coverage
+flag: `-enable-coverage`
 
 Code coverage is a good way to verify all your code is executed and you don't have any deadcode anywhere in your codebase. With a big framework it becomes tricky to spot which code is still active and which code can be removed, code coverage is implemented to resolve and quickly find dead code in your code base.
 With this flag, unit tests will run with coverage enabled. A coverage html report is auto generated after each run allowing you to inspect which code has been executed and which code hasn't.
-### Address Sanitizer
-flag: `-asan`
 
-Address sanitizer is a flag added to the compiler to add extra code with memory access instructions. This is useful to track down memory issues you might not even know you have. With this flag, unit tests will be run with asan enabled, tracking down if you have any memory bugs in your code.
-### Undefined Behavior Sanitizer
-flag: `-ubsan`
+### Unit Tests
+Unit tests are for testing if API, either used correctly or incorrectly, returning an expected result. All tests need to be deterministic as an expected result is always checked with the actual reset.
 
-Undefined behavior sanitizer is a similar flag as address sanitizer but instead looking for memory bugs, it looks for undefined behavior in your code. with this flag, unit tests will be run with ubsan enabled, tracking down if you have any undefined behavior in your code. 
-### Fuzzy Testing
-flag: `-fuzzy`
+Unit tests are run by using `unit-test` in the root script.
 
-Fuzzy Testing is a special kind of testing where the program will pass in a new buffer with random length and random data to your program over and over again. It's up to you to then cast this data into some result and run it on your code, checking if you're can handle random (and wrong input). it's highly recommended to enable this with asan and ubsan enabled as well, checking if you're code doesn't run into any memory or undefined issues.
+Unit tests can also be added to the visual studio solution (or any supported IDE) by using `-enable-unit-tests` in the `generate` command.
+
+### Auto Tests
+Auto tests are for testing the runtime of a process. The goal of an auto test is not to expect a result, although this is possible, but it's main purpose is to make sure all systems can happily work together without crashing the game and ideally without causing any bugs.
+
+Auto tests are run by using `auto-test` in the root script.
+
+### Fuzzy Tests
+Fuzzy Testing is a special kind of testing where the program will generate a new buffer with random length and random data to your entry point over and over again. It's up to you to then cast this data into some result and run it on your code, checking if you're can handle random (and wrong input). it's highly recommended to enable this with asan and ubsan enabled as well, checking if you're code doesn't run into any memory or undefined issues.
 With this flag enabled, you'll run the fuzzy tests for the Rex Engine.
+
+Fuzzy tests are run by using `fuzzy-test` in the root script
 
 Some Examples:
 ```sh
-# This will run all the test of Rex Engine
-py _rex.py test -all
+# This will run include-what-you-use on the codebase
+py _rex.py code-analysis -iwyu
 
-# This will run include-what-you-use on the Rex codebase
-py _rex.py test -iwyu
+# This will run clang-tidy on the codebase
+py _rex.py code-analysis -clang-tidy
 
-# This will run include-what-you-use and clang-tidy on the Rex codebase
-py _rex.py test -iwyu -clang_tidy
+# This will run unit tests with asan enabled
+py _rex.py unit-test -enable-asan
 
-# This will run the unit tests of the Rex codebase
-py _rex.py test -unit_tests
+# This will run the auto tests with asan and ubsan enabled
+py _rex.py auto-test -enable-asan -enable-ubsan
 
-# This will run address sanitizer and undefined behavior on the unit tests of Rex codebase
-py _rex.py test -asan -ubsan
-
-# This will run the fuzzy tests and unit tests of the Rex codebase
-py _rex.py test -fuzzy -unit_tests
+# This will run fuzzy tests
+py _rex.py fuzzy-test
 
 ```

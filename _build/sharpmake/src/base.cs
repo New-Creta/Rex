@@ -120,8 +120,8 @@ public class RegenerateProjects : Project
     }
 
     conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
-    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -no_default_config -IDE {IdeCommandLineOption}"; // Use what's previously generated
-    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -IDE {IdeCommandLineOption}"; // Perform a generation from scratch
+    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -IDE {IdeCommandLineOption}"; // Use what's previously generated
+    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -use_default_config -IDE {IdeCommandLineOption}"; // Perform a generation from scratch
     conf.CustomBuildSettings.CleanCommand = "";
     conf.CustomBuildSettings.OutputFile = "";
   }
@@ -467,8 +467,7 @@ public abstract class BasicCPPProject : Project
       case Config.release:
         break;
       case Config.coverage:
-      case Config.address_sanitizer:
-      case Config.undefined_behavior_sanitizer:
+      case Config.sanitization:
         ClangToolsEnabled = false;
         break;
     }
@@ -924,10 +923,7 @@ public class TestProject : BasicCPPProject
       case Config.coverage:
         conf.add_public_define("REX_DISABLE_CATCH"); // we don't need to check catch.
         break;
-      case Config.address_sanitizer:
-        conf.add_public_define("REX_DISABLE_CATCH"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
-        break;
-      case Config.undefined_behavior_sanitizer:
+      case Config.sanitization:
         conf.add_public_define("REX_DISABLE_CATCH"); // we don't need to check catch, it massively increase link time (47min at time of writing -> 5min when disabled)
         break;
       default:

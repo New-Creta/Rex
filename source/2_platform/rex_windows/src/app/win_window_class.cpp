@@ -1,16 +1,16 @@
-#include "rex_windows/win_window_class.h"
+#include "rex_windows/app/win_window_class.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/memory.h"
-#include "rex_windows/log.h"
+#include "rex_windows/diagnostics/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
 
 namespace rex
 {
-  namespace win32
+  namespace win
   {
     struct WindowClass::Internal
     {
@@ -113,5 +113,5 @@ namespace rex
     {
       return m_internal_ptr->hinstance;
     }
-  } // namespace win32
+  } // namespace win
 } // namespace rex

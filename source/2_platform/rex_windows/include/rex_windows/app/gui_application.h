@@ -4,7 +4,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
-#include "rex_windows/platform_creation_params.h"
+#include "rex_windows/engine/platform_creation_params.h"
 
 namespace rex
 {
@@ -14,7 +14,7 @@ namespace rex
   {
     const WindowInfo& window_info();
   } // namespace globals
-  namespace win32
+  namespace win
   {
     class GuiApplication : public CoreApplication
     {
@@ -36,5 +36,5 @@ namespace rex
       class Internal;
       rsl::unique_ptr<Internal> m_internal_ptr;
     };
-  } // namespace win32
+  } // namespace win
 } // namespace rex

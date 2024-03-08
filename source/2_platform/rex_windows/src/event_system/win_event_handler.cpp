@@ -1,4 +1,4 @@
-#include "rex_windows/win_event_handler.h"
+#include "rex_windows/event_system/win_event_handler.h"
 
 #include "rex_engine/app/core_window.h"
 #include "rex_engine/diagnostics/assert.h"
@@ -8,7 +8,7 @@
 #include "rex_engine/event_system/event_type.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/utility.h"
-#include "rex_windows/log.h"
+#include "rex_windows/diagnostics/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -17,7 +17,7 @@
 
 namespace rex
 {
-  namespace win32
+  namespace win
   {
     //-------------------------------------------------------------------------
     EventHandler::EventHandler(IWindow* wnd)
@@ -113,7 +113,7 @@ namespace rex
       return DefWindowProc(static_cast<HWND>(hwnd), msg, wparam, lparam);
     }
 
-  } // namespace win32
+  } // namespace win
 } // namespace rex
 
 // NOLINTEND(cppcoreguidelines-pro-type-union-access)
