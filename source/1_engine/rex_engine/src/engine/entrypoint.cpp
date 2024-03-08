@@ -62,6 +62,17 @@ namespace rex
       }
 
       diagnostics::init_log_levels();
+
+      // Log early on if any sanitization is enabled
+      // This is useful to have in the log file to make sure that correct
+      // sanitization is enabled when testing
+#ifdef REX_ASAN
+      REX_LOG(LogEngine, "Address Sanitizer Enabled");
+#endif
+#ifdef REX_UBSAN
+      REX_LOG(LogEngine, "Undefined Behavior Enabled");
+#endif
+
       vfs::init();
     }
 

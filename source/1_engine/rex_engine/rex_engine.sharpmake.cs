@@ -131,6 +131,16 @@ public class RexEngine : EngineProject
         break;
     }
 
+    if (ProjectGen.Settings.AsanEnabled)
+    {
+      conf.add_public_define("REX_ASAN");
+    }
+
+    if (ProjectGen.Settings.UbsanEnabled)
+    {
+      conf.add_public_define("REX_UBSAN");
+    }
+
     conf.add_public_define("REXLOG_COMPILED_LIB");
   }
 }

@@ -50,7 +50,7 @@ public class RexTarget : ITarget
         case Config.debug: return Optimization.NoOpt;
         case Config.coverage: return Optimization.NoOpt;
         case Config.debug_opt: return Optimization.FullOptWithPdb;
-        case Config.sanitization: return Optimization.FullOptWithPdb;
+        case Config.sanitization: return Optimization.NoOpt;
         case Config.release: return Optimization.FullOpt;
       }
       return Optimization.FullOpt;
