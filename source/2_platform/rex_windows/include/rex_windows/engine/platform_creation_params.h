@@ -2,7 +2,7 @@
 
 #include "rex_engine/engine/engine_params.h"
 #include "rex_engine/string/stringid.h"
-#include "rex_windows/win_types.h"
+#include "rex_windows/engine/win_types.h"
 
 namespace rex
 {
@@ -11,8 +11,8 @@ namespace rex
 
   struct PlatformCreationParams
   {
-    rex::win32::HInstance instance;
-    rex::win32::HInstance prev_instance;
+    rex::win::HInstance instance;
+    rex::win::HInstance prev_instance;
     s32 show_cmd;
   };
 

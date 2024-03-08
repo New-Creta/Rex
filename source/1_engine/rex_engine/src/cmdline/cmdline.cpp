@@ -74,27 +74,15 @@ namespace rex
     private:
       void parse_cmd_line(rsl::string_view cmdLine)
       {
-        // all we have to do is split the command line based with spaces
-        // there's no need to perform any heap allocation for that.
-        card32 start_pos = cmdLine.find_first_not_of(' ', 0); // it's possible, although unlikely, that we start with a space
+        // skip all text that doesn't start until we find the first arg prefix
+        const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
+        card32 start_pos = cmdLine.find(arg_prefix);
+        cmdLine = cmdLine.substr(start_pos);
 
-        // all executables should be called with at least 1 argument
-        // the first argument should always be the path to the executable itself
-        REX_ASSERT_X(start_pos != -1, "No arguments given to your exe, there should always be at least 1 arg.");
-
-        // the module we're launching is always the first argument on the commandline
-        // we skip this
-        const card32 space_pos = cmdLine.find_first_of(' ', start_pos);
-
-        // if we have no arguments, we just return
-        // this is possible when running without a debugger
-        if(space_pos == -1)
+        if (cmdLine.empty())
         {
           return;
         }
-
-        // skip all additional spaces
-        start_pos = cmdLine.find_first_not_of(' ', space_pos);
 
         // Here the actual command line parsing begins
         // It gets a bit tricky but here are some examples of command lines we all support
@@ -109,7 +97,6 @@ namespace rex
         // a value arguments ends at the first space or at '"' if it started with one.
         REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
 
-        const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         while(start_pos != -1)
         {
           const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);

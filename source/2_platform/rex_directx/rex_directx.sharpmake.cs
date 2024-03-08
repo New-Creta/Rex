@@ -31,9 +31,7 @@ public class RexDirectX : PlatformProject
       case Config.debug:
       case Config.debug_opt:
       case Config.coverage:
-      case Config.address_sanitizer:
-      case Config.undefined_behavior_sanitizer:
-      case Config.fuzzy:
+      case Config.sanitization:
         conf.add_public_define("REX_ENABLE_DX_CALL");
         break;
       case Config.release:

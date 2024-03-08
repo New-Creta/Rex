@@ -67,11 +67,12 @@ public class RexEngineUnitTests : TestProject
 }
 ```
 
+Lastly, make sure you add it to the solution in `sln.cs` by using `conf.AddProject<RexEngineUnitTests>(target);`
 That's all you need to setup a unit test project, all that's left is to add your first source file with a unit test.
-For every source file that needs to refernce catch2, add an include to `rex_test/rex_catch2.h`
+For every source file that needs to reference catch2, add an include to `rex_unit_test/rex_catch2.h`
 
 ```cpp
-#include "rex_test/rex_catch2.h"
+#include "rex_unit_test/rex_catch2.h"
 
 TEST_CASE("My Test Case")
 {

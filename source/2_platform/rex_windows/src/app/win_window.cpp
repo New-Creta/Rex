@@ -1,11 +1,11 @@
-#include "rex_windows/win_window.h"
+#include "rex_windows/app/win_window.h"
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/string.h"
-#include "rex_windows/log.h"
+#include "rex_windows/diagnostics/log.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -13,7 +13,7 @@
 
 namespace rex
 {
-  namespace win32
+  namespace win
   {
     //-----------------------------------------------------------------
     LResult __stdcall default_win_procedure(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam)
@@ -265,5 +265,5 @@ namespace rex
       m_window_state.add_state(WindowState::Destroyed);
       return true;
     }
-  } // namespace win32
+  } // namespace win
 } // namespace rex

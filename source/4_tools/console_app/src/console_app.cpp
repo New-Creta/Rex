@@ -4,7 +4,7 @@
 #include "rex_engine/memory/memory_tracking.h"
 #include "rex_std/iostream.h"
 #include "rex_std/bonus/utility/type_id.h"
-#include "rex_windows/console_application.h"
+#include "rex_windows/app/console_application.h"
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/memory/memory_header.h"
@@ -97,7 +97,6 @@ namespace rex
   {
     ApplicationCreationParams app_params(&platformParams);
 
-    app_params.engine_params.max_memory        = 256_kb;
     app_params.engine_params.app_init_func     = console_app_example::initialize;
     app_params.engine_params.app_update_func   = console_app_example::update;
     app_params.engine_params.app_shutdown_func = console_app_example::shutdown;

@@ -13,10 +13,8 @@ public enum Config
   debug = (1 << 0),
   debug_opt = (1 << 1),
   release = (1 << 2),
-  coverage = (1 << 3),
-  address_sanitizer = (1 << 4),
-  undefined_behavior_sanitizer = (1 << 5),
-  fuzzy = (1 << 6)
+  sanitization = (1 << 3),
+  coverage = (1 << 4),
 }
 
 // High level different kind of optimizations we support

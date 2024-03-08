@@ -25,7 +25,7 @@ try:
 except:
   rexpy_installed = False
 
-required_rexpy_version = "0.1.70"
+required_rexpy_version = "0.1.78"
 
 # all scripts are located in ~/_build/scripts path.
 # to make it easier to call these scripts wherever we need them
@@ -36,7 +36,10 @@ setup_script_path = os.path.join(scripts_path, 'setup.py')
 generate_script_path = os.path.join(scripts_path, 'generate.py')
 build_script_path = os.path.join(scripts_path, 'build.py')
 launch_script_path = os.path.join(scripts_path, 'launch.py')
-test_script_path = os.path.join(scripts_path, 'test.py')
+unit_test_script_path = os.path.join(scripts_path, 'unit_test.py')
+auto_test_script_path = os.path.join(scripts_path, 'auto_test.py')
+fuzzy_test_script_path = os.path.join(scripts_path, 'fuzzy_test.py')
+code_analysis_script_path = os.path.join(scripts_path, 'code_analysis.py')
 
 def _run_script(scriptPath : str, args : list[str]):
   """Run the script if it exists. Warn if it doesn't."""
@@ -112,9 +115,24 @@ def _exec_launch(argsToPassOn : str):
   _run_script(launch_script_path, argsToPassOn)
   return
 
-def _exec_test(argsToPassOn : str):
-  """Execute the internal test script"""
-  _run_script(test_script_path, argsToPassOn)
+def _exec_unit_tests(argsToPassOn : str):
+  """Execute the internal unit test script"""
+  _run_script(unit_test_script_path, argsToPassOn)
+  return
+
+def _exec_auto_tests(argsToPassOn : str):
+  """Execute the internal auto test script"""
+  _run_script(auto_test_script_path, argsToPassOn)
+  return
+
+def _exec_fuzzy_tests(argsToPassOn : str):
+  """Execute the internal fuzzy test script"""
+  _run_script(fuzzy_test_script_path, argsToPassOn)
+  return
+
+def _exec_code_analysis(argsToPassOn : str):
+  """Execute the internal code analysis script"""
+  _run_script(code_analysis_script_path, argsToPassOn)
   return
 
 def main():
@@ -131,7 +149,10 @@ def main():
     command_subparser.add_parser("generate", help="Generate the solution of rex engine", add_help=False)
     command_subparser.add_parser("build", help="Build the rex engine", add_help=False)
     command_subparser.add_parser("launch", help="Launch a previous build project with the engine.", add_help=False)
-    command_subparser.add_parser("test", help="Run a test on the engine.", add_help=False)
+    command_subparser.add_parser("unit-test", help="Run unit tests on the engine and projects.", add_help=False)
+    command_subparser.add_parser("auto-test", help="Run auto tests on the engine and projects.", add_help=False)
+    command_subparser.add_parser("fuzzy-test", help="Run fuzzy tests on the engine and projects.", add_help=False)
+    command_subparser.add_parser("code-analysis", help="Run code analysis on the engine and projects.", add_help=False)
 
   args, unknown_args = parser.parse_known_args()
 
@@ -160,8 +181,17 @@ def main():
     if args.command == 'launch':
       _exec_launch(unknown_args)
 
-    if args.command == 'test':
-      _exec_test(unknown_args)
+    if args.command == 'unit-test':
+      _exec_unit_tests(unknown_args)
+
+    if args.command == 'auto-test':
+      _exec_auto_tests(unknown_args)
+
+    if args.command == 'fuzzy-test':
+      _exec_fuzzy_tests(unknown_args)
+
+    if args.command == 'code-analysis':
+      _exec_code_analysis(unknown_args)
 
   exit(0)
 

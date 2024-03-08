@@ -49,14 +49,8 @@ public class RexEngine : EngineProject
       case Config.coverage:
         conf.add_public_define("REX_BUILD_COVERAGE");
         break;
-      case Config.address_sanitizer:
-        conf.add_public_define("REX_BUILD_ASAN");
-        break;
-      case Config.undefined_behavior_sanitizer:
-        conf.add_public_define("REX_BUILD_UBSAN");
-        break;
-      case Config.fuzzy:
-        conf.add_public_define("REX_BUILD_FUZZY");
+      case Config.sanitization:
+        conf.add_public_define("REX_BUILD_SANITIZATION");
         break;
       default:
         break;
@@ -82,11 +76,15 @@ public class RexEngine : EngineProject
         conf.add_public_define("REX_ENABLE_MEM_TRACKING");
         conf.add_public_define("REX_ENABLE_HR_CALL");
         conf.add_public_define("REX_ENABLE_WIN_CALL");
-        goto case Config.address_sanitizer;
-      case Config.address_sanitizer:
-      case Config.undefined_behavior_sanitizer:
-      case Config.fuzzy:
+        goto case Config.sanitization;
+      case Config.sanitization:
         break;
+    }
+
+    // Set the fuzzy define if we're generating fuzzy tests
+    if (ProjectGen.Settings.FuzzyTestingEnabled)
+    {
+      conf.add_public_define("REX_BUILD_FUZZY");
     }
   }
 
@@ -134,6 +132,5 @@ public class RexEngine : EngineProject
     }
 
     conf.add_public_define("REXLOG_COMPILED_LIB");
-    conf.AddPublicDependency<TinyFileDialogs>(target);
   }
 }

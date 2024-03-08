@@ -108,7 +108,7 @@ all these files are then passed on to sharpmake and executed.
 Because the generation script is a wrapper around a sharpmake call, the script itself doesn't own the commandline arguments, these are owned by Sharpmake.
 We needed a way to let sharpmake communicate with the python script and back so that we don't have to maintain the same list of commandlines twice, once in sharpmake and once in the python script. We've achieved this by creating a `default_config.json` file that lives next to the sharpmake build sources
 
-This config file is parsed by the python script and it'll create commandline argument for them. the script will create a `config.json` file in the intermediate build folder which is passed to sharpmake. It'll read the config file and use it to initialize the generation pipeline.
+The first time the generation is called through the root script, the default config file is read and used to create the arguments for the generation. If a previous generation already occurred however, the settings for this configuration is used, but you can default back to the default settings by using `-use_default_config` commandline argument. The script will always create a `config.json` file in the intermediate build folder which is passed to sharpmake. Sharpmake will read this config file and use it to initialize the generation pipeline.
 
 There's only 1 extra commandline argument supported by the generate script which is `-sharpmake_args`. This is to allow a user to pass in arguments that are supported by the native sharpmake executable
 
@@ -116,22 +116,25 @@ We support Visual Studio and Visual Studio Code as IDEs. These just act as text 
 
 Some Examples (Windows):
 ```sh
-# Default generation. generate files for engine and editor (~/_build/sharpmake/data/default_config.json)
+# Default generation (using previous settings if found).
 py _rex.py generate
 
 # List all the possible configuration settings, no generation gets performed.
 py _rex.py generate -h
 
-# Default generation + unit tests
+# Default generation (using previous settings if found) but add unit tests
 py _rex.py generate -enable-unit-tests 
 
-# Default generation + unit tests + code coverage
+# Default generation (using previous settings if found) but add unit tests and code coverage
 py _rex.py generate -enable-unit-tests -enable-code-coverage 
 
-# Default generation + unit tests + code coverage + Visual Studio sln and projects
+# Default generation (using previous settings if found) but add unit tests, code coverage and a Visual Studio 19 solution
 py _rex.py generate -enable-unit-tests -enable-code-coverage -IDE VisualStudio19
 
-# Default generation, but single threaded
+# Default generation using the default settings
+py _rex.py generate -use_default_config
+
+# Default generation (using previous settings if found) but single threaded
 py _rex.py generate -sharpmake_args /multithreaded(false)
 ```
 
@@ -152,6 +155,12 @@ for `Arrays` the following needs to be specified
 - `Name` - This is the name of the variable that'll hold the content of the array
 - `ElementType` - This is the type the array will hold
 - `Includes` - This is the files that need to be included at the top of the file
+
+### Debugging Generation
+When adding a Visual Studio solution, a C# project is added automatically holding the sharpmake scripts used for the generation. 
+If you select this project as your startup project and run it like you would run any other project, you can debug the sharpmake scripts.
+
+This allows you to step through the generation process with breakpoints, inspect variables, ..
 
 ## Building
 Building through Visual Studio and Visual Studio Code works the same as you would otherwise. We leverage the IDE's ability to run commandlines as build steps.
@@ -188,64 +197,80 @@ This is for internal use only.
 
 This script launches clang-tidy and clang-format if clang tools are enabled. Because clang-tidy is run using clang, the post build is only enabled when compiling with clang
 
-After which it launches a script called `post_build_by_user.py`, if it's found at the root of your project's source code, which the user can write to write their own post build events
+After which it launches a script with the same name but located at the source root of the project. This is to allow project specific post build scripts to run.
 
 ## Testing
 Rex Engine supports many different kind of tests for optimal testing which can all be fired from the root script
 
-To run all tests, pass in `-all` to `_rex.py test`
+The tests are split into 4 different categories.
 
-The following tests are supported for Rex Engine
+### Code Analysis
+Code analysis testing has to do with any testing that can be done by inspecting the code without actually running it.
 
-### include-what-you-use
+We currently support 2 different kind of code analysis testing
+
+any code analyis job is starting by specifying `code-analysis` in the root script.
+
+#### include-what-you-use
 flag: `-iwyu`
 
 A tool providing directly hooked into the compiler to scan for includes that aren't needed and could be replaced with a forward declaration or removed all together.
-### clang-tidy
+
+#### clang-tidy
 flag: `-clang_tidy`
 
 A static analyser directly hooked into the compiler to scan for possible design problems, readability issues or bugs. None of the checks in here will auto fix themselves and all warnings are treated as error.
-### Unit tests
-flag: `-unit_tests`
 
-Every big framework should have its own unit tests so of course rex has it own as well. We use catch2 for our unit tests, these unit tests can be added to the visual studio solution by passing in `-generate_unittests` to [`_generate.py`](../../../_generate.py)
-### Coverage
-flag: `-coverage`
+### Runtime Flags
+All runtime testing supports different flags for specifying additional runtime checks.
+
+#### Address Sanitizer
+flag: `-enable-asan`
+
+Address sanitizer is a flag added to the compiler to add extra code with memory access instructions. This is useful to track down memory issues you might not even know you have. With this flag, unit tests will be run with asan enabled, tracking down if you have any memory bugs in your code.
+#### Undefined Behavior Sanitizer
+flag: `-enable-ubsan`
+
+Undefined behavior sanitizer is a similar flag as address sanitizer but instead looking for memory bugs, it looks for undefined behavior in your code. with this flag, unit tests will be run with ubsan enabled, tracking down if you have any undefined behavior in your code. 
+#### Code Coverage
+flag: `-enable-coverage`
 
 Code coverage is a good way to verify all your code is executed and you don't have any deadcode anywhere in your codebase. With a big framework it becomes tricky to spot which code is still active and which code can be removed, code coverage is implemented to resolve and quickly find dead code in your code base.
 With this flag, unit tests will run with coverage enabled. A coverage html report is auto generated after each run allowing you to inspect which code has been executed and which code hasn't.
-### Address Sanitizer
-flag: `-asan`
 
-Address sanitizer is a flag added to the compiler to add extra code with memory access instructions. This is useful to track down memory issues you might not even know you have. With this flag, unit tests will be run with asan enabled, tracking down if you have any memory bugs in your code.
-### Undefined Behavior Sanitizer
-flag: `-ubsan`
+### Unit Tests
+Unit tests are for testing if API, either used correctly or incorrectly, returning an expected result. All tests need to be deterministic as an expected result is always checked with the actual reset.
 
-Undefined behavior sanitizer is a similar flag as address sanitizer but instead looking for memory bugs, it looks for undefined behavior in your code. with this flag, unit tests will be run with ubsan enabled, tracking down if you have any undefined behavior in your code. 
-### Fuzzy Testing
-flag: `-fuzzy`
+Unit tests are run by using `unit-test` in the root script.
 
-Fuzzy Testing is a special kind of testing where the program will pass in a new buffer with random length and random data to your program over and over again. It's up to you to then cast this data into some result and run it on your code, checking if you're can handle random (and wrong input). it's highly recommended to enable this with asan and ubsan enabled as well, checking if you're code doesn't run into any memory or undefined issues.
+Unit tests can also be added to the visual studio solution (or any supported IDE) by using `-enable-unit-tests` in the `generate` command.
+
+### Auto Tests
+Auto tests are for testing the runtime of a process. The goal of an auto test is not to expect a result, although this is possible, but it's main purpose is to make sure all systems can happily work together without crashing the game and ideally without causing any bugs.
+
+Auto tests are run by using `auto-test` in the root script.
+
+### Fuzzy Tests
+Fuzzy Testing is a special kind of testing where the program will generate a new buffer with random length and random data to your entry point over and over again. It's up to you to then cast this data into some result and run it on your code, checking if you're can handle random (and wrong input). it's highly recommended to enable this with asan and ubsan enabled as well, checking if you're code doesn't run into any memory or undefined issues.
 With this flag enabled, you'll run the fuzzy tests for the Rex Engine.
+
+Fuzzy tests are run by using `fuzzy-test` in the root script
 
 Some Examples:
 ```sh
-# This will run all the test of Rex Engine
-py _rex.py test -all
+# This will run include-what-you-use on the codebase
+py _rex.py code-analysis -iwyu
 
-# This will run include-what-you-use on the Rex codebase
-py _rex.py test -iwyu
+# This will run clang-tidy on the codebase
+py _rex.py code-analysis -clang-tidy
 
-# This will run include-what-you-use and clang-tidy on the Rex codebase
-py _rex.py test -iwyu -clang_tidy
+# This will run unit tests with asan enabled
+py _rex.py unit-test -enable-asan
 
-# This will run the unit tests of the Rex codebase
-py _rex.py test -unit_tests
+# This will run the auto tests with asan and ubsan enabled
+py _rex.py auto-test -enable-asan -enable-ubsan
 
-# This will run address sanitizer and undefined behavior on the unit tests of Rex codebase
-py _rex.py test -asan -ubsan
-
-# This will run the fuzzy tests and unit tests of the Rex codebase
-py _rex.py test -fuzzy -unit_tests
+# This will run fuzzy tests
+py _rex.py fuzzy-test
 
 ```

@@ -133,6 +133,11 @@ namespace rex
       return res;
     }
 
+    // returns true if it's a valid path, returns false otherwise
+    bool is_valid_path(rsl::string_view path);
+    // returns true if it's a valid filename, returns false otherwise
+    bool is_valid_filename(rsl::string_view filename);
+
     // removes leading and trailing quotes from a path
     rsl::string_view remove_quotes(rsl::string_view path);
     // Changes the extension of a path string_view
@@ -214,17 +219,8 @@ namespace rex
     // Returns the creation time of the file or directory at the given path
     card64 get_file_size(rsl::string_view path);
 
-    // Returns if the path exists
-    bool exists(rsl::string_view path);
-
     // Returns if the given path is an absolute path
     bool is_absolute(rsl::string_view path);
-
-    // Returns true if the given path points to a file
-    bool is_file(rsl::string_view path);
-
-    // Returns true if the given path points to a directory
-    bool is_dir(rsl::string_view path);
 
     // Returns true if the given path points to a junction
     bool is_junction(rsl::string_view path);
@@ -235,7 +231,7 @@ namespace rex
     // Splits the path into a head and a tail
     // the head is either the mount point or an empty string
     // the tail is everything else
-    SplitResult split_drive(rsl::string_view path);
+    SplitResult split_origin(rsl::string_view path);
 
     // Split the path into 3 components
     // drive - root - tail

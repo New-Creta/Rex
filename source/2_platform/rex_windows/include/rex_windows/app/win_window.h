@@ -3,13 +3,13 @@
 #include "rex_engine/app/core_window.h"
 #include "rex_engine/engine/state_controller.h"
 #include "rex_engine/engine/types.h"
-#include "rex_windows/win_event_handler.h"
-#include "rex_windows/win_types.h"
-#include "rex_windows/win_window_class.h"
+#include "rex_windows/event_system/win_event_handler.h"
+#include "rex_windows/engine/win_types.h"
+#include "rex_windows/app/win_window_class.h"
 
 namespace rex
 {
-  namespace win32
+  namespace win
   {
     class Window : public IWindow
     {
@@ -54,5 +54,5 @@ namespace rex
       s32 m_min_height;
       StateController<WindowState> m_window_state;
     };
-  } // namespace win32
+  } // namespace win
 } // namespace rex

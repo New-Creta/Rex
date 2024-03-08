@@ -1,6 +1,8 @@
 import regis.run_clang_tools
 import regis.diagnostics
 import argparse
+import os
+import sys
 
 def run(projectName, compdb, srcroot, useClangTools, allChecks, clangTidyRegex):
   if (useClangTools):
@@ -41,6 +43,14 @@ if __name__ == "__main__":
 
  # execute the script
   run(project_name, compdb, srcroot, use_clang_tools, perform_all_checks, clang_tidy_regex)
+
+ # user hook
+  project_post_build_script = os.path.join(srcroot, 'post_build.py')
+  if os.path.isfile(project_post_build_script):
+    arguments = ' '.join(sys.argv[1:]) # skip the first arguments as that's the path to this script
+    logger.info(f'running project post build "{project_post_build_script}"')
+    logger.info(f'with args: {arguments}')
+    os.system(f'py {project_post_build_script} {arguments}')
 
  # print. We're done.
   logger.info("Done.")

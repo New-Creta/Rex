@@ -17,6 +17,10 @@ rex::win::ComLibrary::ComLibrary()
     {
       inc_ref();
     }
+    else
+    {
+      HR_CALL(HRESULT_FROM_WIN32(GetLastError()));
+    }
   }
   else
   {

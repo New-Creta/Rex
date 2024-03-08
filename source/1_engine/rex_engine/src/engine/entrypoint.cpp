@@ -6,7 +6,6 @@
 #include "rex_engine/diagnostics/logging/logger_config.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/system/process.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/internal/exception/exit.h"
 #include "rex_std/thread.h"
@@ -33,32 +32,16 @@ namespace rex
       // we close down the program
       if(cmdline::get_argument("BreakOnBoot"))
       {
-        REX_LOG(LogEngine, "Waiting for debugger to get attached..");
-
-        using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
-        auto i = 1s;
-        while(i < 10min && !rex::is_debugger_attached())
+        if (!wait_for_debugger())
         {
-          rsl::this_thread::sleep_for(1s);
-          ++i;
-        }
-
-        if(!rex::is_debugger_attached())
-        {
-          rsl::exit(0);
-        }
-        else
-        {
-          DEBUG_BREAK();
+          rsl::exit(1); // exit if debugger didn't get attached
         }
       }
 
       // If the program was spawned without a debugger and we want to automatically attach one
       if(cmdline::get_argument("AttachOnBoot"))
       {
-        // https://stackoverflow.com/questions/1291580/what-is-this-command-in-c-sharp-c-windows-system32-vsjitdebugger-exe-p-ld
-        auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::current_process_id());
-        system(cmd.c_str());
+        attach_debugger();
       }
 
       // Initialize the log levels as early as possible

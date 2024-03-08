@@ -2,6 +2,8 @@
 
 #include "rex_engine/engine/numeric.h"
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/directory.h"
+#include "rex_engine/filesystem/file.h"
 #include "rex_engine/platform/win/win_com_library.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
@@ -57,13 +59,6 @@ namespace rex
 
         return ReparseTag::None;
       }
-
-      rsl::win::handle open_file_for_attribs(rsl::string_view path)
-      {
-        rsl::win::handle file(CreateFileA(path.data(), FILE_READ_ATTRIBUTES, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
-
-        return file;
-      }
     } // namespace internal
 
     // Returns the current working directory
@@ -90,7 +85,7 @@ namespace rex
       // of linking to a the same file (.lnk files, symlinks, hardlinks, junctions)
 
       // If the path doesn't exist, just return its input
-      if(!rex::path::exists(path))
+      if(!file::exists(path) && !directory::exists(path))
       {
         return rsl::string(path);
       }
@@ -118,72 +113,6 @@ namespace rex
       rsl::string res(stack_res);
       res.replace("\\", "/");
       return res;
-    }
-    // Returns the latest access time of the file or directory at the given path
-    card64 get_access_time(rsl::string_view path)
-    {
-      rsl::win::handle const file = internal::open_file_for_attribs(path);
-
-      // When we have an invalid handle, we return 0
-      if(!file.is_valid())
-      {
-        return 0;
-      }
-
-      FILETIME access_time {};
-      GetFileTime(file.get(), nullptr, &access_time, nullptr);
-      return rsl::win::to_integer(access_time);
-    }
-    // Returns the modification time of the file or directory at the given path
-    card64 get_modification_time(rsl::string_view path)
-    {
-      rsl::win::handle const file = internal::open_file_for_attribs(path);
-
-      // When we have an invalid handle, we return 0
-      if(!file.is_valid())
-      {
-        return 0;
-      }
-
-      FILETIME modification_time {};
-      GetFileTime(file.get(), nullptr, nullptr, &modification_time);
-      return rsl::win::to_integer(modification_time);
-    }
-    // Returns the creation time of the file or directory at the given path
-    card64 get_creation_time(rsl::string_view path)
-    {
-      rsl::win::handle const file = internal::open_file_for_attribs(path);
-
-      // When we have an invalid handle, we return 0
-      if(!file.is_valid())
-      {
-        return 0;
-      }
-
-      FILETIME creation_time {};
-      GetFileTime(file.get(), &creation_time, nullptr, nullptr);
-      return rsl::win::to_integer(creation_time);
-    }
-    // Returns the creation time of the file or directory at the given path
-    card64 get_file_size(rsl::string_view path)
-    {
-      rsl::win::handle const file = internal::open_file_for_attribs(path);
-
-      // When we have an invalid handle, we simply return the input
-      if(!file.is_valid())
-      {
-        return -1;
-      }
-
-      DWORD high_word      = 0;
-      DWORD const low_word = GetFileSize(file.get(), &high_word);
-      return rex::merge_int32_to_int64(high_word, low_word);
-    }
-    // Returns if the path exists
-    bool exists(rsl::string_view path)
-    {
-      DWORD const attribs = GetFileAttributesA(path.data());
-      return attribs != INVALID_FILE_ATTRIBUTES;
     }
     // Returns if the given path is an absolute path
     bool is_absolute(rsl::string_view path)
@@ -216,40 +145,6 @@ namespace rex
 
       return true;
     }
-    // Returns true if the given path points to a file
-    bool is_file(rsl::string_view path)
-    {
-      DWORD const attribs = GetFileAttributesA(path.data());
-
-      if(attribs == INVALID_FILE_ATTRIBUTES)
-      {
-        return false;
-      }
-
-      if((attribs & FILE_ATTRIBUTE_DIRECTORY) != 0u)
-      {
-        return false;
-      }
-
-      return true;
-    }
-    // Returns true if the given path points to a directory
-    bool is_dir(rsl::string_view path)
-    {
-      DWORD const attribs = GetFileAttributesA(path.data());
-
-      if(attribs == INVALID_FILE_ATTRIBUTES)
-      {
-        return false;
-      }
-
-      if((attribs & FILE_ATTRIBUTE_DIRECTORY) != 0u)
-      {
-        return true;
-      }
-
-      return false;
-    }
     // Returns true if the given path points to a junction
     bool is_junction(rsl::string_view path)
     {
@@ -265,7 +160,7 @@ namespace rex
     // Splits the path into a head and a tail
     // the head is either the mount point or an empty string
     // the tail is everything else
-    SplitResult split_drive(rsl::string_view path)
+    SplitResult split_origin(rsl::string_view path)
     {
       SplitResult res {};
 
@@ -312,15 +207,15 @@ namespace rex
     SplitRootResult split_root(rsl::string_view path)
     {
       // use a split drive result
-      const SplitResult splitted_drive = split_drive(path);
+      const SplitResult splitted_origin = split_origin(path);
       SplitRootResult res {};
 
       // fill in the values
-      if(!splitted_drive.head.empty())
+      if(!splitted_origin.head.empty())
       {
-        res.drive = splitted_drive.head.substr(0, 2); // split the drive letter and the colon
-        res.root  = splitted_drive.head.substr(2, 1);
-        res.tail  = splitted_drive.tail;
+        res.drive = splitted_origin.head.substr(0, 2); // split the drive letter and the colon
+        res.root  = splitted_origin.head.substr(2, 1);
+        res.tail  = splitted_origin.tail;
       }
       else if(path.starts_with('/') || path.starts_with('\\'))
       {
@@ -335,5 +230,6 @@ namespace rex
       // return the result
       return res;
     }
+
   } // namespace path
 } // namespace rex

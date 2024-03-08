@@ -39,5 +39,5 @@ extern "C" int LLVMFuzzerTestOneInput(const char* data, size_t size)
 {
   rsl::cout << rsl::format("Iteration: {}", rex::fuzzy::g_fuzzy_testing_info.new_iteration()) << "\n";
 
-  return rex::fuzzy::fuzzy_entry(rex::fuzzy::fuzz_span(data, size));
+  return rex::fuzzy::fuzzy_entry(rex::fuzzy::fuzz_span(data, static_cast<card32>(size)));
 }
