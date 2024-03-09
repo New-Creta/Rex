@@ -23,23 +23,23 @@ namespace rex
             , m_callable([](void*) { return 0; })
             , m_arg(nullptr)
             , m_thread(
-                  [this]()
-                  {
-                    while(!m_should_join)
-                    {
-                      // If code locks here, that usually means something is still holding
-                      // a reference to a thread handle, blocking the thread from being brought back
-                      // to the thread pool
-                      m_event.wait_for_me();
-                      m_event.reset();
+              wrap_thread_entry([this]()
+              {
+                while (!m_should_join)
+                {
+                  // If code locks here, that usually means something is still holding
+                  // a reference to a thread handle, blocking the thread from being brought back
+                  // to the thread pool
+                  m_event.wait_for_me();
+                  m_event.reset();
 
-                      // Call the callable and reset it afterwards
-                      m_callable(m_arg);
-                      m_callable = [](void*) { return 0; };
-                    }
-                  })
-        {
-        }
+                  // Call the callable and reset it afterwards
+                  m_callable(m_arg);
+                  m_callable = [](void*) { return 0; };
+                }
+              })
+            )
+        {}
 
         Thread(const Thread&) = delete;
         Thread(Thread&&)      = delete;
@@ -171,7 +171,7 @@ namespace rex
       return *this;
     }
 
-    void ThreadHandle::run(thread_work_func&& func, void* arg)
+    void ThreadHandle::run(internal::thread_work_func&& func, void* arg)
     {
       m_thread->run(rsl::move(func), arg);
     }

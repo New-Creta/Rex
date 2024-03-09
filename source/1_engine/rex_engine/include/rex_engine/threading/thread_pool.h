@@ -9,6 +9,10 @@ namespace rex
     namespace internal
     {
       class Thread;
+
+      using thread_work_func = rsl::function<int(void*)>;
+
+      rsl::function<void()> wrap_thread_entry(rsl::function<void()>&& func);
     } // namespace internal
 
     // A handle that wraps a thread
@@ -17,7 +21,6 @@ namespace rex
     class ThreadHandle
     {
     public:
-      using thread_work_func = rsl::function<int(void*)>;
 
       explicit ThreadHandle(internal::Thread* thread);
       ThreadHandle(const ThreadHandle&) = delete;
@@ -27,7 +30,7 @@ namespace rex
       ThreadHandle& operator=(const ThreadHandle&) = delete;
       ThreadHandle& operator=(ThreadHandle&& other);
 
-      void run(thread_work_func&& func, void* arg = nullptr);
+      void run(internal::thread_work_func&& func, void* arg = nullptr);
 
     private:
       void return_me_to_thread_pool();
@@ -43,3 +46,7 @@ namespace rex
     ThreadHandle acquire_idle_thread();
   } // namespace thread_pool
 } // namespace rex
+
+#ifdef REX_PLATFORM_WINDOWS
+#include "rex_engine/platform/win/threading/win_thread.h"
+#endif

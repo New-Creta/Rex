@@ -8,7 +8,7 @@ namespace rex
 {
   namespace task_system
   {
-    using job_callable = rsl::function<rsl::unique_array<char>()>;
+    using job_callable = rsl::function<rsl::unique_array<rsl::byte>()>;
 
     // A job is a wrapper around a callable
     // It can possibly return a result which is the return type of the callable
@@ -34,7 +34,7 @@ namespace rex
       }
 
     private:
-      rsl::unique_array<char> m_result_buffer;
+      rsl::unique_array<rsl::byte> m_result_buffer;
       job_callable m_callable;
       Event m_finished_event;
     };
