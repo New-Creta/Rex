@@ -12,7 +12,7 @@ namespace rex
         , m_callable([](void*) { return 0; })
         , m_arg(nullptr)
         , m_thread(
-          wrap_thread_entry([this]()
+          crash_guard_thread_entry([this]()
             {
               while (!m_should_join)
               {

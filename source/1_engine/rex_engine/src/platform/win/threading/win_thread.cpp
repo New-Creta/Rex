@@ -10,7 +10,7 @@ namespace rex
   {
     namespace internal
     {
-      rsl::function<void()> wrap_thread_entry(rsl::function<void()>&& callable)
+      rsl::function<void()> crash_guard_thread_entry(rsl::function<void()>&& callable)
       {
         auto wrapped_callable = [func = rsl::move(callable)]()
         {

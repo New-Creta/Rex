@@ -21,6 +21,7 @@ namespace rex
 
         ~Thread();
 
+        // Run the callable on another thread
         void run(rsl::function<int(void*)>&& callable, void* arg = nullptr);
 
       private:
@@ -33,7 +34,10 @@ namespace rex
 
       using thread_work_func = rsl::function<int(void*)>;
 
-      rsl::function<void()> wrap_thread_entry(rsl::function<void()>&& func);
+      // Function implemented by the platform
+      // It wraps a thread entry so that any crash gets captured
+      // and crash analysis can be performed on a worker thread
+      rsl::function<void()> crash_guard_thread_entry(rsl::function<void()>&& func);
     }
   }
 }
