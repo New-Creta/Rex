@@ -91,7 +91,7 @@ namespace rex
       class JobThread
       {
       public:
-        explicit JobThread(thread_pool::ThreadHandle thread)
+        explicit JobThread(threading::ThreadHandle thread)
             : m_thread_handle(rsl::move(thread))
             , m_job(nullptr)
             , m_wait_for_start_event()
@@ -115,7 +115,7 @@ namespace rex
               {
                 // When this thread starts, take away the ownership of the thread handle and the job and let it be managed by this callable
                 // this allows the thread that runs this callable to be automatically be added to the thread pool again after it finished executing
-                const thread_pool::ThreadHandle thread_handle = rsl::move(m_thread_handle);
+                const threading::ThreadHandle thread_handle = rsl::move(m_thread_handle);
                 rsl::shared_ptr<Job> job                = rsl::move(m_job);
 
                 // signal that this job thread has started
@@ -144,14 +144,14 @@ namespace rex
         }
 
       private:
-        thread_pool::ThreadHandle m_thread_handle;
+        threading::ThreadHandle m_thread_handle;
         rsl::shared_ptr<Job> m_job;
         Event m_wait_for_start_event;
       };
 
       // Use the given thread and assign a job to it
       // Then start the job
-      void kick_off_job(thread_pool::ThreadHandle threadHandle, rsl::shared_ptr<Job> job)
+      void kick_off_job(threading::ThreadHandle threadHandle, rsl::shared_ptr<Job> job)
       {
         JobThread job_thread(rsl::move(threadHandle));
         job_thread.start_job(rsl::move(job));
@@ -165,9 +165,9 @@ namespace rex
     // when all previous jobs are processed
     rsl::shared_ptr<Job> add_job_to_queue(rsl::shared_ptr<Job> job)
     {
-      if(thread_pool::has_any_idle_thread())
+      if(threading::has_any_idle_thread())
       {
-        thread_pool::ThreadHandle thread_handle = thread_pool::acquire_idle_thread();
+        threading::ThreadHandle thread_handle = threading::acquire_idle_thread();
         internal::kick_off_job(rsl::move(thread_handle), rsl::move(job));
       }
       else

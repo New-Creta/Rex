@@ -4,7 +4,7 @@
 
 namespace rex
 {
-  namespace thread_pool
+  namespace threading
   {
     namespace internal
     {
