@@ -1,4 +1,4 @@
-#include "rex_windows/console_application.h"
+#include "rex_windows/app/console_application.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
@@ -7,7 +7,7 @@
 #include "rex_engine/event_system/event_type.h"
 #include "rex_std/functional.h"
 #include "rex_windows/input/internal/input.h"
-#include "rex_windows/platform_creation_params.h"
+#include "rex_windows/engine/platform_creation_params.h"
 
 #include <Windows.h>
 #include <consoleapi.h>
@@ -20,7 +20,7 @@ namespace rex
     struct Event;
   } // namespace event_system
 
-  namespace win32
+  namespace win
   {
     DEFINE_LOG_CATEGORY(LogWinConsoleApp, rex::LogVerbosity::Log);
 
@@ -54,11 +54,11 @@ namespace rex
 
         // we're always assigning something to the pointers here to avoid branch checking every update
         // I've profiled this and always having a function wins here.
-        m_on_initialize = m_engine_params.app_init_func ? m_engine_params.app_init_func : [&]() { return true; };
+        m_on_initialize = m_engine_params.app_init_func ? rsl::move(m_engine_params.app_init_func) : [&]() { return true; };
 
-        m_on_update = m_engine_params.app_update_func ? m_engine_params.app_update_func : [&]() {};
+        m_on_update = m_engine_params.app_update_func ? rsl::move(m_engine_params.app_update_func) : [&]() {};
 
-        m_on_shutdown = m_engine_params.app_shutdown_func ? m_engine_params.app_shutdown_func : [&]() {};
+        m_on_shutdown = m_engine_params.app_shutdown_func ? rsl::move(m_engine_params.app_shutdown_func) : [&]() {};
       }
 
       bool initialize()
@@ -121,5 +121,5 @@ namespace rex
     {
       m_internal->shutdown();
     }
-  } // namespace win32
+  } // namespace win
 } // namespace rex

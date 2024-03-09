@@ -1,5 +1,8 @@
 #include "rex_engine/filesystem/path.h"
 
+#include "rex_engine/filesystem/directory.h"
+#include "rex_engine/filesystem/file.h"
+
 #include "rex_engine/engine/numeric.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
@@ -197,7 +200,7 @@ namespace rex
         // create a stem of 8 random characters
         internal::fill_with_random_chars(result, num_dirname_chars);
 
-      } while(path::exists(result));
+      } while(directory::exists(result));
 
       return result;
     }
@@ -220,7 +223,7 @@ namespace rex
         // create an extension of 3 random characters
         internal::fill_with_random_chars(result, num_ext_chars);
 
-      } while(path::exists(result));
+      } while(file::exists(result));
 
       return result;
     }

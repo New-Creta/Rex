@@ -120,8 +120,8 @@ public class RegenerateProjects : Project
     }
 
     conf.CustomBuildSettings = new Configuration.NMakeBuildSettings();
-    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -no_default_config -IDE {IdeCommandLineOption}"; // Use what's previously generated
-    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -IDE {IdeCommandLineOption}"; // Perform a generation from scratch
+    conf.CustomBuildSettings.BuildCommand = $"py {rexpyPath} generate -IDE {IdeCommandLineOption}"; // Use what's previously generated
+    conf.CustomBuildSettings.RebuildCommand = $"py {rexpyPath} generate -use_default_config -IDE {IdeCommandLineOption}"; // Perform a generation from scratch
     conf.CustomBuildSettings.CleanCommand = "";
     conf.CustomBuildSettings.OutputFile = "";
   }

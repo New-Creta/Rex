@@ -1,4 +1,4 @@
-﻿#include "rex_windows/gui_application.h"
+﻿#include "rex_windows/app/gui_application.h"
 
 #include "rex_engine/app/core_window.h"
 #include "rex_engine/diagnostics/assert.h"
@@ -8,6 +8,7 @@
 #include "rex_engine/event_system/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
+#include "rex_engine/platform/win/win_com_library.h"
 #include "rex_engine/windowinfo.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
@@ -19,9 +20,9 @@
 #include "rex_std/memory.h"
 #include "rex_std/ratio.h"
 #include "rex_std/thread.h"
-#include "rex_windows/log.h"
-#include "rex_windows/platform_creation_params.h"
-#include "rex_windows/win_window.h"
+#include "rex_windows/diagnostics/log.h"
+#include "rex_windows/engine/platform_creation_params.h"
+#include "rex_windows/app/win_window.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -38,7 +39,7 @@ namespace rex
       return g_window_info;
     }
   } // namespace globals
-  namespace win32
+  namespace win
   {
     class GuiApplication::Internal
     {
@@ -51,18 +52,23 @@ namespace rex
       {
         // we're always assigning something to the pointers here to avoid branch checking every update
         // I've profiled this and always having a function wins here.
-        m_on_initialize = m_engine_params.app_init_func ? m_engine_params.app_init_func : [&]() { return true; };
+        m_on_initialize = m_engine_params.app_init_func ? rsl::move(m_engine_params.app_init_func) : [&]() { return true; };
 
-        m_on_update = m_engine_params.app_update_func ? m_engine_params.app_update_func : [&]() {};
+        m_on_update = m_engine_params.app_update_func ? rsl::move(m_engine_params.app_update_func) : [&]() {};
 
-        m_on_draw = m_engine_params.app_draw_func ? m_engine_params.app_draw_func : [&]() {};
+        m_on_draw = m_engine_params.app_draw_func ? rsl::move(m_engine_params.app_draw_func) : [&]() {};
 
-        m_on_shutdown = m_engine_params.app_shutdown_func ? m_engine_params.app_shutdown_func : [&]() {};
+        m_on_shutdown = m_engine_params.app_shutdown_func ? rsl::move(m_engine_params.app_shutdown_func) : [&]() {};
       }
 
       bool initialize()
       {
         REX_ASSERT_CONTEXT_SCOPE("Application initialization");
+
+        // initialize the com lib
+        // Doing this very early on so other system can use the com lib
+        // for their initialization if needed
+        m_win_com_lib_handle = win::com_lib::create_lib_handle();
 
         // window initialization
         m_window = create_window();
@@ -340,6 +346,7 @@ namespace rex
       GuiParams m_gui_params;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
+      win::com_lib::WinComLibHandle m_win_com_lib_handle;
     };
 
     //-------------------------------------------------------------------------
@@ -366,7 +373,7 @@ namespace rex
       m_internal_ptr->shutdown();
     }
 
-  } // namespace win32
+  } // namespace win
 } // namespace rex
 
 // NOLINTEND(modernize-use-nullptr)

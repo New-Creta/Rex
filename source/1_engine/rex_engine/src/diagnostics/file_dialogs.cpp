@@ -446,7 +446,7 @@ namespace rex
         return open_folder_dialog(title, "INVALID DEFAULT_PATH WITH QUOTES"); 
       }
 
-      auto file_open_dialog = rex::win::com_library().create_com_object<IFileOpenDialog>(CLSID_FileOpenDialog);
+      auto file_open_dialog = rex::win::com_lib::create_com_object<IFileOpenDialog>(CLSID_FileOpenDialog);
       FILEOPENDIALOGOPTIONS options{};
       
       options |= FOS_PICKFOLDERS;

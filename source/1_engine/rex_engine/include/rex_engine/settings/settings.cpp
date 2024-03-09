@@ -1,7 +1,7 @@
 #include "rex_engine/settings/settings.h"
 
 #include "rex_engine/diagnostics/log.h"
-#include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/text_processing/ini_processor.h"
 #include "rex_engine/text_processing/text_processing.h"
@@ -73,7 +73,7 @@ namespace rex
     void load(rsl::string_view path)
     {
       // of course if the path doesn't exist, we exit early
-      if (!path::is_file(path))
+      if (!file::exists(path))
       {
         return;
       }

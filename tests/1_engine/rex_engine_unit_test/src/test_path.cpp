@@ -1,6 +1,8 @@
 #include "rex_unit_test/rex_catch2.h"
 
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/directory.h"
 #include "rex_std/chrono.h"
 #include "rex_std/thread.h"
 #include "rex_std/iostream.h"
@@ -119,7 +121,7 @@ TEST_CASE("Random Dir")
 {
   for (int i = 0; i < 1000; ++i)
   {
-    REX_CHECK(!rex::path::exists(rex::path::random_dir()));
+    REX_CHECK(!rex::file::exists(rex::path::random_dir()));
   }
 }
 
@@ -127,7 +129,7 @@ TEST_CASE("Random Filename")
 {
   for (int i = 0; i < 1000; ++i)
   {
-    REX_CHECK(!rex::path::exists(rex::path::random_filename()));
+    REX_CHECK(!rex::file::exists(rex::path::random_filename()));
   }
 }
 
@@ -197,103 +199,6 @@ TEST_CASE("Relative Path")
   REX_CHECK(rex::path::rel_path("C:\\path\\to\\..\\dir", "C:\\path") == rex::path::join("dir"));
 }
 
-TEST_CASE("File Creation Time")
-{
-  // get the current time
-  auto now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
-  
-  // create a file that doesn't exist yet
-  rsl::string random_filename = rex::path::random_filename();
-
-  // query the creation time and compare it to the original time with a threshold
-  auto creation_time = rex::path::get_creation_time(random_filename);
-  // No proper way atm to create or delete files, unless using the vfs
-  rsl::cout << "COULDN'T TEST FILE CREATION TIME\n";
-
-  // wait 1 tail
-  using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(1s);
-  
-  // query the creation time again, it should still be the same
-  creation_time = rex::path::get_creation_time(random_filename);
-}
-
-TEST_CASE("File Modification Time")
-{
-  // get the current time
-  auto now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
-
-  // create a file that doesn't exist yet
-  rsl::string random_filename = rex::path::random_filename();
-
-  // query the modification time and compare it to the original time with a threshold
-  auto creation_time = rex::path::get_modification_time(random_filename);
-  // No proper way atm to create or delete files, unless using the vfs
-  rsl::cout << "COULDN'T TEST FILE MODIFICATION TIME\n";
-
-  // wait 1 tail
-  using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(1s);
-
-  // query the modification time again, it should still be the same
-  creation_time = rex::path::get_modification_time(random_filename);
-
-  // get the current time again
-  now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
-
-  // Modify the file
-  // No proper way atm to modify a file, unless using the vfs
-
-  // query the modification time again, it should now be different
-  creation_time = rex::path::get_modification_time(random_filename);
-}
-
-TEST_CASE("File Access Time")
-{
-  // get the current time
-  auto now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
-
-  // create a file that doesn't exist yet
-  rsl::string random_filename = rex::path::random_filename();
-
-  // query the modification time and compare it to the original time with a threshold
-  auto creation_time = rex::path::get_modification_time(random_filename);
-  // No proper way atm to create or delete files, unless using the vfs
-  rsl::cout << "COULDN'T TEST FILE ACCESS TIME\n";
-
-  // wait 1 tail
-  using namespace rsl::chrono_literals;
-  rsl::this_thread::sleep_for(1s);
-
-  // query the access  time again, it should still be the same
-  creation_time = rex::path::get_access_time(random_filename);
-
-  // get the current time again
-  now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
-
-  // Modify the file
-  // No proper way atm to modify a file, unless using the vfs
-
-  // query the access  time again, it should now be different
-  creation_time = rex::path::get_access_time(random_filename);
-
-  // get the current time again
-  now = rsl::chrono::high_resolution_clock::now().time_since_epoch();
-
-  // Read the file
-  // No proper way atm to read a file, unless using the vfs
-
-  // query the access time again, it should now be different
-  creation_time = rex::path::get_access_time(random_filename);
-}
-
-TEST_CASE("File Size")
-{
-  REX_CHECK(rex::path::get_file_size("file_0_bytes.txt") == 0);
-  REX_CHECK(rex::path::get_file_size("file_500_bytes.txt") == 500);
-  REX_CHECK(rex::path::get_file_size("file_1000_bytes.txt") == 1000);
-}
-
 TEST_CASE("Has Extension")
 {
   REX_CHECK(rex::path::has_extension("file.txt") == true);
@@ -309,12 +214,6 @@ TEST_CASE("Has Extension")
   REX_CHECK(rex::path::has_extension("") == false);  // Empty string
   REX_CHECK(rex::path::has_extension(".") == false);  // Only a dot, not a valid extension
   REX_CHECK(rex::path::has_extension("..") == false); // Double dots, not a valid extension
-}
-
-TEST_CASE("Path Exists")
-{
-  REX_CHECK(rex::path::exists("file_that_definitely_exists.txt"));
-  REX_CHECK(rex::path::exists(rex::path::random_filename()) == false);
 }
 
 TEST_CASE("Is Absolute")
@@ -345,22 +244,6 @@ TEST_CASE("Is Relative")
     REX_CHECK(rex::path::is_relative("") == false);  // Empty string
     REX_CHECK(rex::path::is_relative(".") == false);  // Current directory
     REX_CHECK(rex::path::is_relative("..") == false); // Parent directory
-}
-
-TEST_CASE("Is File")
-{
-  REX_CHECK(rex::path::is_file("this_is_a_file.txt"));
-  REX_CHECK(rex::path::is_file("this_is_a_directory") == false);
-  REX_CHECK(rex::path::is_file(rex::path::random_filename()) == false);
-  REX_CHECK(rex::path::is_file(rex::path::random_dir()) == false);
-}
-
-TEST_CASE("Is Directory")
-{
-  REX_CHECK(rex::path::is_dir("this_is_a_file.txt") == false);
-  REX_CHECK(rex::path::is_dir("this_is_a_directory"));
-  REX_CHECK(rex::path::is_dir(rex::path::random_filename()) == false);
-  REX_CHECK(rex::path::is_dir(rex::path::random_dir()) == false);
 }
 
 TEST_CASE("Is Junction")

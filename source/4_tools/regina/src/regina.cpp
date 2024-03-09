@@ -34,8 +34,8 @@
 #include "rex_std/bonus/math/color.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/string.h"
-#include "rex_windows/gui_application.h"
-#include "rex_windows/platform_creation_params.h"
+#include "rex_windows/app/gui_application.h"
+#include "rex_windows/engine/platform_creation_params.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -46,6 +46,7 @@ DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
 namespace regina
 {
+#pragma region Graphics
   struct ObjectConstants
   {
     glm::mat4 world = glm::mat4(1.0f);
@@ -798,6 +799,7 @@ namespace regina
 
     return true;
   }
+#pragma endregion
 
   //-------------------------------------------------------------------------
   bool initialize()
