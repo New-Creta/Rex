@@ -7,6 +7,7 @@
 #include "rex_std/bonus/utility/enum_reflection.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
+#include "rex_std/mutex.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
@@ -35,6 +36,7 @@ namespace rex
 
         void enqueue(const Event& evt)
         {
+          rsl::unique_lock lock(m_enqueue_mtx);
           m_next->push_back(evt);
         }
 
@@ -55,6 +57,7 @@ namespace rex
 
         void present()
         {
+          rsl::unique_lock lock(m_enqueue_mtx);
           rsl::swap(m_current, m_next);
         }
 
@@ -66,6 +69,8 @@ namespace rex
 
         rsl::vector<Event>* m_current;
         rsl::vector<Event>* m_next;
+
+        rsl::mutex m_enqueue_mtx;
       };
     } // namespace internal
 
