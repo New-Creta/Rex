@@ -75,7 +75,7 @@ public class RexTarget : ITarget
         }
         else
         {
-          System.Console.WriteLine($"Visual Studio IDE {devenv} specified, but it's not installed");
+          Builder.Instance.LogWriteLine($"Visual Studio IDE {devenv} specified, but it's not installed");
         }
         break;
       case ProjectGen.IDE.VSCode:
@@ -149,7 +149,7 @@ public class RexTarget : ITarget
     }
     else
     {
-      System.Console.WriteLine("Visual Studio IDE specified, but it's not installed");
+      Builder.Instance.LogWriteLine("Visual Studio IDE specified, but it's not installed");
     }
 
     return targets;

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text.Json;
+using Sharpmake;
 
 [module: Sharpmake.Reference("System.Text.Json.dll")]
 
@@ -113,6 +114,6 @@ public class Globals
     thirdparty_root = Path.Combine(source_root, "0_thirdparty");
     sharpmake_root = Path.Combine(root, "_build", "sharpmake");
 
-    System.Console.WriteLine($"Root path:{root}");
+    Builder.Instance.LogWriteLine($"Root path:{root}");
   }
 }

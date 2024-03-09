@@ -95,7 +95,7 @@ public static class Main
   // This way we only need to maintain our ninja files and we get the copmiler dbs for free
   private static void GenerateCompilerDatabases()
   {
-    Console.WriteLine("Generating compiler databases");
+    Builder.Instance.LogWriteLine("Generating compiler databases");
 
     System.Diagnostics.ProcessStartInfo start_info = new System.Diagnostics.ProcessStartInfo();
     start_info.FileName = "cmd.exe";
@@ -130,7 +130,7 @@ public static class Main
 
     string testProjectsPath = Path.Combine(Globals.Root, Globals.BuildFolder, "test_projects.json");
 
-    Console.WriteLine($"Generating {testProjectsPath}");
+    Builder.Instance.LogWriteLine($"Generating {testProjectsPath}");
 
     File.WriteAllText(testProjectsPath, jsonBlob);
   }
@@ -168,13 +168,13 @@ public static class Main
           ProjectGen.Settings.GraphicsAPI = ProjectGen.GraphicsAPI.OpenGL;
           break;
         default:
-          Console.WriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
+          Builder.Instance.LogWriteLine("[WARNING] Could not determine OS, reverting graphics API to OpenGL");
           ProjectGen.Settings.GraphicsAPI = ProjectGen.GraphicsAPI.OpenGL;
           break;
       }
     }
 
-    Console.WriteLine($"Using Graphics API: {ProjectGen.Settings.GraphicsAPI}");
+    Builder.Instance.LogWriteLine($"Using Graphics API: {ProjectGen.Settings.GraphicsAPI}");
   }
 
   // Initialize the generation settings based on the config that's loaded from disk
@@ -196,7 +196,7 @@ public static class Main
     ProjectGen.Settings.AutoTestsEnabled = config["enable-auto-tests"].Value.GetBoolean();
     if (!Enum.TryParse(config["IDE"].Value.GetString(), ignoreCase:true, out ProjectGen.Settings.IDE))
     {
-      Console.WriteLine($"Error: Invalid IDE passed in. Passed in \"{config["IDE"].Value.GetString()}\"");
+      Builder.Instance.LogWriteLine($"Error: Invalid IDE passed in. Passed in \"{config["IDE"].Value.GetString()}\"");
     }
     ProjectGen.Settings.DisableClangTidyForThirdParty = config["disable-clang-tidy-for-thirdparty"].Value.GetBoolean();
     ProjectGen.Settings.UnityBuildsDisabled = config["disable-unity-builds"].Value.GetBoolean();
