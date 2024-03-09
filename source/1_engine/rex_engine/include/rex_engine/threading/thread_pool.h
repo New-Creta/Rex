@@ -2,44 +2,48 @@
 
 #include "rex_std/functional.h"
 
+#include "rex_engine/threading/thread.h"
+#include "rex_engine/threading/thread_handle.h"
+
+#include "rex_std/vector.h"
+#include "rex_std/mutex.h"
+
 namespace rex
 {
-  namespace thread_pool
+  namespace threading
   {
     namespace internal
     {
-      class Thread;
-    } // namespace internal
+      class ThreadPool
+      {
+      public:
+        ThreadPool();
 
-    // A handle that wraps a thread
-    // Users are not meant to have direct access to a thread
-    // Instead we return handles to threads that return the thread to the thread pool
-    class ThreadHandle
-    {
-    public:
-      using thread_work_func = rsl::function<int(void*)>;
+        // Query if we have any idle threads available
+        // An idle thread is a thread that's not executing a job at the moment.
+        bool has_idle_threads();
 
-      explicit ThreadHandle(internal::Thread* thread);
-      ThreadHandle(const ThreadHandle&) = delete;
-      ThreadHandle(ThreadHandle&& other);
-      ~ThreadHandle();
+        // Check if we have an idle thread
+        // if so return it.
+        Thread* acquire_idle_thread();
 
-      ThreadHandle& operator=(const ThreadHandle&) = delete;
-      ThreadHandle& operator=(ThreadHandle&& other);
+        // Return a thread back to the pool
+        void return_thread(Thread* thread);
 
-      void run(thread_work_func&& func, void* arg = nullptr);
+        // Destroy all threads. Used at shutdown of the engine
+        void destroy_threads();
 
-    private:
-      void return_me_to_thread_pool();
-
-    private:
-      internal::Thread* m_thread;
-    };
+      private:
+        rsl::vector<rsl::unique_ptr<Thread>> m_threads; // Holds and owns all the threads used by the thread pool
+        rsl::vector<Thread*> m_idle_threads;            // Holds but doesn't own all the idle threads
+        rsl::mutex m_threads_access_mtx;                // Mutex that's used to access the thread pool
+      };
+    }
 
     // This checks if we have any threads in the thread pool that are idle and ready for use
     bool has_any_idle_thread();
 
     // This is a blocking func as there isn't always an idle thread available
     ThreadHandle acquire_idle_thread();
-  } // namespace thread_pool
+  } // namespace threading
 } // namespace rex
