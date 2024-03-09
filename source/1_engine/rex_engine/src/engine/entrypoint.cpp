@@ -50,14 +50,8 @@ namespace rex
       diagnostics::init_log_levels();
 
       // Log early on if any sanitization is enabled
-      // This is useful to have in the log file to make sure that correct
-      // sanitization is enabled when testing
-#ifdef REX_ASAN
-      REX_LOG(LogEngine, "Address Sanitizer Enabled");
-#endif
-#ifdef REX_UBSAN
-      REX_LOG(LogEngine, "Undefined Behavior Enabled");
-#endif
+      // This is useful to have in the log file to make sure that correct sanitization is enabled when testing
+      log_sanitization();
 
       // Initialize the filesystem as this can be needed by the entry point of the entrypoint of the client
       // However it is recommended that all initialziation code is moved into the client's init function.
