@@ -51,6 +51,10 @@ if __name__ == "__main__":
     logger.info(f'running project post build "{project_post_build_script}"')
     logger.info(f'with args: {arguments}')
     os.system(f'py {project_post_build_script} {arguments}')
+  else:
+    logger.info('not running user defined post build events')
+    logger.info('as there is no "post_build.py" found at source root.')
+    logger.info(f'source root: {srcroot}')
 
  # print. We're done.
   logger.info("Done.")
