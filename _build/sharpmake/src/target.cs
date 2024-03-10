@@ -129,30 +129,5 @@ public class RexTarget : ITarget
         return DevEnv.ninja;
     }
   }
-
-  private static List<RexTarget> CreateVSTarget()
-  {
-    List<RexTarget> targets = new List<RexTarget>();
-
-    switch (ProjectGen.Settings.IDE)
-    {
-      case ProjectGen.IDE.VisualStudio19:
-        break;
-      case ProjectGen.IDE.VisualStudio22:
-        break;
-      default:
-        break;
-    }
-    if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
-    {
-      targets.AddRange(CreateTargetsForDevEnv(DevEnv.vs2019));
-    }
-    else
-    {
-      Builder.Instance.LogWriteLine("Visual Studio IDE specified, but it's not installed");
-    }
-
-    return targets;
-  }
 }
 
