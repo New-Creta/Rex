@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/primitive_topology.h"
+#include "rex_renderer_core/rendering/primitive_topology.h"
 #include "rex_renderer_core/resources/mesh.h"
 
 #include <glm/glm.hpp>

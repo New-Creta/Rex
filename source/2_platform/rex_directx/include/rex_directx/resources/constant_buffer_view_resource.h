@@ -3,11 +3,11 @@
 #include <utility>
 
 
-#include "rex_directx/directx_util.h"
+#include "rex_directx/utility/directx_util.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
-#include "rex_renderer_core/resource.h"
-#include "rex_renderer_core/resource_slot.h"
+#include "rex_renderer_core/resource_management/resource.h"
+#include "rex_renderer_core/resource_management/resource_slot.h"
 
 namespace rex
 {

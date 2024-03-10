@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/resource_slot.h"
+#include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_std/atomic.h"
 #include "rex_std/bonus/memory/unique_array.h"
 #include "rex_std/vector.h"

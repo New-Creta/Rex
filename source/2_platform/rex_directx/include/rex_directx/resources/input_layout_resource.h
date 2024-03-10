@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_directx/directx_util.h"
-#include "rex_renderer_core/resource.h"
+#include "rex_directx/utility/directx_util.h"
+#include "rex_renderer_core/resource_management/resource.h"
 
 #include "rex_engine/engine/types.h"
 

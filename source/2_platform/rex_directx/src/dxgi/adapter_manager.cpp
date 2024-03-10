@@ -5,7 +5,7 @@
 #include "rex_directx/dxgi/util.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
-#include "rex_renderer_core/gpu_description.h"
+#include "rex_renderer_core/system/gpu_description.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 

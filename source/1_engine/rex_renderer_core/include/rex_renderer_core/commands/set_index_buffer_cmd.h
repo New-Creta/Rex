@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_renderer_core/commands/render_cmd.h"
-#include "rex_renderer_core/index_buffer_format.h"
-#include "rex_renderer_core/resource_slot.h"
+#include "rex_renderer_core/rendering/index_buffer_format.h"
+#include "rex_renderer_core/resource_management/resource_slot.h"
 
 namespace rex
 {

@@ -3,7 +3,7 @@
 #include "rex_directx/dxgi/comobject.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
-#include "rex_renderer_core/gpu_description.h"
+#include "rex_renderer_core/system/gpu_description.h"
 #include "rex_std/bonus/types.h"
 
 struct IDXGIAdapter;

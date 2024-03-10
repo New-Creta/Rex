@@ -47,6 +47,12 @@ namespace rex
                                                                 ),
                                                     ERROR_ALREADY_EXISTS));
 
+      if (!handle.is_valid())
+      {
+        REX_ERROR(FileSystem, "Failed to open file {}", path);
+        return {};
+      }
+
       // prepare a buffer to receive the file content
       const card32 file_size              = static_cast<card32>(GetFileSize(handle.get(), nullptr));
       rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_size + 1); // NOLINT(modernize-avoid-c-arrays)

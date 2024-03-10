@@ -77,8 +77,16 @@ namespace rex
         // skip all text that doesn't start until we find the first arg prefix
         const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
         card32 start_pos = cmdLine.find(arg_prefix);
-        cmdLine = cmdLine.substr(start_pos);
+        if (start_pos == -1)
+        {
+          cmdLine = "";
+        }
+        else
+        {
+          cmdLine = cmdLine.substr(start_pos);
+        }
 
+        REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
         if (cmdLine.empty())
         {
           return;
@@ -95,7 +103,6 @@ namespace rex
         // A key argument ends at the next space or '=' token, whichever comes first.
         // A value argument starts after the '=' sign, or the '"" that comes after the '=' token
         // a value arguments ends at the first space or at '"' if it started with one.
-        REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
 
         while(start_pos != -1)
         {

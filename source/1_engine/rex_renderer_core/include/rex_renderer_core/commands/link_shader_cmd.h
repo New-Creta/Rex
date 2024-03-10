@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
 #include "rex_renderer_core/commands/render_cmd.h"
-#include "rex_renderer_core/resource_slot.h"
+#include "rex_renderer_core/resource_management/resource_slot.h"
 
 namespace rex
 {

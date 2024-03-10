@@ -38,6 +38,8 @@ namespace rex
         rsl::vector<Thread*> m_idle_threads;            // Holds but doesn't own all the idle threads
         rsl::mutex m_threads_access_mtx;                // Mutex that's used to access the thread pool
       };
+
+      ThreadPool& global_thread_pool();
     }
 
     // This checks if we have any threads in the thread pool that are idle and ready for use

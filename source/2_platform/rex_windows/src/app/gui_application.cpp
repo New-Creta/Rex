@@ -9,11 +9,13 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/platform/win/win_com_library.h"
-#include "rex_engine/windowinfo.h"
+#include "rex_engine/app/windowinfo.h"
 #include "rex_renderer_core/context.h"
-#include "rex_renderer_core/renderer.h"
-#include "rex_renderer_core/renderer_info.h"
-#include "rex_renderer_core/renderer_output_window_user_data.h"
+#include "rex_renderer_core/rendering/default_depth_info.h"
+#include "rex_renderer_core/rendering/default_targets_info.h"
+#include "rex_renderer_core/rendering/renderer.h"
+#include "rex_renderer_core/rendering/renderer_info.h"
+#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
@@ -65,107 +67,54 @@ namespace rex
       {
         REX_ASSERT_CONTEXT_SCOPE("Application initialization");
 
-        // initialize the com lib
-        // Doing this very early on so other system can use the com lib
-        // for their initialization if needed
-        m_win_com_lib_handle = win::com_lib::create_lib_handle();
+        bool result = pre_user_init();
 
-        // window initialization
-        m_window = create_window();
-        if(m_window == nullptr)
+        if (!result)
         {
-          return false;
-        }
-
-        globals::g_window_info.width  = m_window->width();
-        globals::g_window_info.height = m_window->height();
-
-        subscribe_window_events();
-
-        // graphics context initialization
-        if(context::create(m_window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
-        {
-          return false;
-        }
-
-        // renderer initialization
-
-        renderer::OutputWindowUserData user_data {};
-        user_data.primary_display_handle = m_window->primary_display_handle();
-        user_data.refresh_rate           = m_gui_params.max_fps;
-        user_data.window_width           = m_window->width();
-        user_data.window_height          = m_window->height();
-        user_data.windowed               = !m_gui_params.fullscreen;
-
-        if(renderer::initialize(user_data, m_gui_params.max_render_commands, m_gui_params.max_frames_in_flight) == false) // NOLINT(readability-simplify-boolean-expr)
-        {
-          return false;
-        }
-
-        display_renderer_info();
-
-        // if the client calls render commands some preparation is required before
-        // we can actually execute those commands.
-        //
-        // this function does this preparation.
-        //
-        // eg: on DX12 we require to reset and allow the command list to record commands
-        if(!renderer::prepare_user_initialization())
-        {
-          REX_ERROR(LogWindows, "Unable to start drawing frame");
-          return false;
-        }
-
-        // call client code so it can get initialized
-        const bool result = m_on_initialize();
-
-        if(!result)
-        {
+          REX_ERROR(LogWindows, "Pre user initialization failed. exiting");
           return result;
         }
 
-        // if the client had called render commands some closing up has to be done before
-        // we can actually execute these commands.
-        //
-        // this function does the close
-        //
-        // eg: on DX12 we require to close the command list and execute them
-        if(!renderer::finish_user_initialization())
+        // call client code so it can get initialized
+        result = m_on_initialize();
+
+        if(!result)
         {
-          REX_ERROR(LogWindows, "Unable to end draw on current frame");
-          return false;
+          REX_ERROR(LogWindows, "User initialization failed. exiting.");
+          return result;
         }
 
-        if(!renderer::flush())
+        result = post_user_init();
+        if (!result)
         {
-          REX_ERROR(LogWindows, "Unable to flush all commands");
-          return false;
+          REX_ERROR(LogWindows, "Post user initialization failed. exiting.");
+          return result;
         }
 
-        // When the renderer is initialized we can show the window
-        m_window->show();
-
-        return true;
+        return result;
       }
       void update()
       {
         REX_ASSERT_CONTEXT_SCOPE("Application update");
 
-        // update the window (this pulls input as well)
-        m_window->update();
-
-        event_system::process_events();
+        pre_user_update();
 
         m_on_update();
+
+        post_user_update();
 
         // don't render when the application is paused
         if(!m_app_instance->is_paused())
         {
+          pre_user_draw();
+
           // TODO: this call eventually has to go.
           // we will query the scenegraph and pull geometry from the scene instead of letting the user
           // execute draw commands manually. However, for the setup of this framework we will
           // provide this API to be able to execute draw commands properly
           m_on_draw();
+
+          post_user_draw();
         }
 
         // update the timing stats
@@ -183,36 +132,6 @@ namespace rex
       }
 
     private:
-      rsl::unique_ptr<Window> create_window()
-      {
-        auto wnd = rsl::make_unique<Window>();
-
-        WindowDescription wnd_description;
-        wnd_description.title    = m_gui_params.window_title;
-        wnd_description.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
-
-        if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
-        {
-          return wnd;
-        }
-
-        REX_ERROR(LogWindows, "Window was not created returning nullptr");
-        return nullptr;
-      }
-
-      void subscribe_window_events()
-      {
-        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { event_system::enqueue_event(event_system::EventType::QuitApp); });
-        event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
-        event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
-        event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });
-        event_system::subscribe(event_system::EventType::WindowStopWindowResize, [this](const event_system::Event& evt) { on_stop_resize(evt); });
-        event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { on_minimize(); });
-        event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { on_maximize(evt); });
-        event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { on_restore(evt); });
-        event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
-      }
-
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
       {
         renderer::Info info = renderer::info();
@@ -239,12 +158,12 @@ namespace rex
         }
       }
 
+      // Window resizing
       void on_start_resize()
       {
         m_app_instance->pause();
         m_window->start_resize();
       }
-
       void on_stop_resize(const event_system::Event& evt)
       {
         m_app_instance->resume();
@@ -254,13 +173,11 @@ namespace rex
 
         resize(evt);
       }
-
       void on_minimize()
       {
         m_app_instance->pause();
         m_window->minimize();
       }
-
       void on_maximize(const event_system::Event& evt)
       {
         m_app_instance->resume();
@@ -270,7 +187,6 @@ namespace rex
 
         resize(evt);
       }
-
       void on_restore(const event_system::Event& evt)
       {
         REX_ASSERT_X(evt.type == event_system::EventType::WindowRestored, "Event has to be of type \"WindowRestored\"");
@@ -306,7 +222,6 @@ namespace rex
           REX_WARN(LogWindows, "API call such as SetWindowPos or mSwapChain->SetFullscreenState will also invoke a resize event.");
         }
       }
-
       void resize(const event_system::Event& /*evt*/)
       {
         // Resize window ( although we might want to capture this within the window itself ... )
@@ -329,6 +244,149 @@ namespace rex
         //
         // Update screen viewport
         // Update scissor rect
+      }
+
+      // Initialization
+      bool pre_user_init()
+      {
+        // initialize the com lib
+        // Doing this very early on so other system can use the com lib
+        // for their initialization if needed
+        m_win_com_lib_handle = win::com_lib::create_lib_handle();
+
+        // window initialization
+        m_window = create_window();
+        if (m_window == nullptr)
+        {
+          return false;
+        }
+
+        globals::g_window_info.width = m_window->width();
+        globals::g_window_info.height = m_window->height();
+
+        subscribe_window_events();
+
+        // graphics context initialization
+        if (context::create(m_window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
+        {
+          return false;
+        }
+
+        // renderer initialization
+
+        renderer::OutputWindowUserData user_data{};
+        user_data.primary_display_handle = m_window->primary_display_handle();
+        user_data.refresh_rate = m_gui_params.max_fps;
+        user_data.window_width = m_window->width();
+        user_data.window_height = m_window->height();
+        user_data.windowed = !m_gui_params.fullscreen;
+
+        if (renderer::initialize(user_data, m_gui_params.max_render_commands, m_gui_params.max_frames_in_flight) == false) // NOLINT(readability-simplify-boolean-expr)
+        {
+          return false;
+        }
+
+        display_renderer_info();
+
+        // if the client calls render commands some preparation is required before
+        // we can actually execute those commands.
+        //
+        // this function does this preparation.
+        //
+        // eg: on DX12 we require to reset and allow the command list to record commands
+        if (!renderer::prepare_user_initialization())
+        {
+          REX_ERROR(LogWindows, "Unable to start drawing frame");
+          return false;
+        }
+
+        return true;
+      }
+      bool post_user_init()
+      {
+        // if the client had called render commands some closing up has to be done before
+        // we can actually execute these commands.
+        //
+        // this function does the close
+        //
+        // eg: on DX12 we require to close the command list and execute them
+        if (!renderer::finish_user_initialization())
+        {
+          REX_ERROR(LogWindows, "Unable to end draw on current frame");
+          return false;
+        }
+
+        if (!renderer::flush())
+        {
+          REX_ERROR(LogWindows, "Unable to flush all commands");
+          return false;
+        }
+
+        // When the renderer is initialized we can show the window
+        m_window->show();
+
+        return true;
+      }
+      rsl::unique_ptr<Window> create_window()
+      {
+        auto wnd = rsl::make_unique<Window>();
+
+        WindowDescription wnd_description;
+        wnd_description.title = m_gui_params.window_title;
+        wnd_description.viewport = { 0, 0, m_gui_params.window_width, m_gui_params.window_height };
+
+        if (wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
+        {
+          return wnd;
+        }
+
+        REX_ERROR(LogWindows, "Window was not created returning nullptr");
+        return nullptr;
+      }
+      void subscribe_window_events()
+      {
+        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { event_system::enqueue_event(event_system::EventType::QuitApp); });
+        event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
+        event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
+        event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });
+        event_system::subscribe(event_system::EventType::WindowStopWindowResize, [this](const event_system::Event& evt) { on_stop_resize(evt); });
+        event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { on_minimize(); });
+        event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { on_maximize(evt); });
+        event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { on_restore(evt); });
+        event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
+      }
+
+      // Updating
+      void pre_user_update()
+      {
+        // update the window (this pulls input as well)
+        m_window->update();
+
+        event_system::process_events();
+      }
+      void post_user_update()
+      {
+        // Nothing to implement
+      }
+
+      // Drawing
+      void pre_user_draw()
+      {
+        // Nothing to implement
+
+        rex::renderer::new_frame();
+
+        rex::renderer::set_render_targets(rex::globals::default_targets_info().back_buffer_color, rex::globals::default_targets_info().depth_buffer);
+        rex::renderer::begin_draw();
+
+      }
+      void post_user_draw()
+      {
+        // Nothing to implement
+
+        rex::renderer::end_draw();
+        rex::renderer::present();
+        rex::renderer::end_frame();
       }
 
     private:

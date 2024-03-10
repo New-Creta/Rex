@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_renderer_core/commands/render_cmd.h"
-#include "rex_renderer_core/cull_mode.h"
-#include "rex_renderer_core/fill_mode.h"
+#include "rex_renderer_core/rendering/cull_mode.h"
+#include "rex_renderer_core/rendering/fill_mode.h"
 
 namespace rex
 {

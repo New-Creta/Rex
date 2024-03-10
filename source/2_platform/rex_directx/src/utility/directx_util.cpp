@@ -1,6 +1,6 @@
-#include "rex_directx/directx_util.h"
+#include "rex_directx/utility/directx_util.h"
 #include "rex_directx/d3dx12.h"
-#include "rex_directx/log.h"
+#include "rex_directx/diagnostics/log.h"
 
 namespace rex
 {

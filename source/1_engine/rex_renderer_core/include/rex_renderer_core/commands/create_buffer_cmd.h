@@ -14,6 +14,16 @@ namespace rex
         memory::Blob buffer_data;
       };
 
+      template <typename T>
+      rex::renderer::commands::CreateBufferCommandDesc create_buffer_parameters(T* data, s32 num)
+      {
+        rex::renderer::commands::CreateBufferCommandDesc create_buffer_command_desc{};
+
+        create_buffer_command_desc.buffer_data = rex::memory::make_blob<T>(data, num);
+
+        return create_buffer_command_desc;
+      }
+
       class CreateBuffer : public RenderCommand
       {
       public:

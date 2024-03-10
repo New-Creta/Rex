@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/clear_bits.h"
-#include "rex_renderer_core/resource.h"
+#include "rex_renderer_core/rendering/clear_bits.h"
+#include "rex_renderer_core/resource_management/resource.h"
 #include "rex_std/bonus/math/color.h"
 
 namespace rex

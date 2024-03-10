@@ -1,7 +1,7 @@
-#include "rex_renderer_core/resource_slots.h"
+#include "rex_renderer_core/resource_management/resource_slots.h"
 
 #include "rex_engine/diagnostics/assert.h"
-#include "rex_renderer_core/log.h"
+#include "rex_renderer_core/diagnostics/log.h"
 
 #if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
   #define REX_ENABLE_RESOURCE_SLOT_DEBUGGING

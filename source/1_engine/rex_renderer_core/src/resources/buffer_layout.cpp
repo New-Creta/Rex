@@ -1,6 +1,6 @@
 #include "rex_renderer_core/resources/buffer_layout.h"
 
-#include "rex_renderer_core/log.h"
+#include "rex_renderer_core/diagnostics/log.h"
 
 namespace rex
 {

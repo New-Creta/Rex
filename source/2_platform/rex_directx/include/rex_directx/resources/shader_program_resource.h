@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_directx/directx_util.h"
+#include "rex_directx/utility/directx_util.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
-#include "rex_renderer_core/resource.h"
+#include "rex_renderer_core/resource_management/resource.h"
 
 #include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
 

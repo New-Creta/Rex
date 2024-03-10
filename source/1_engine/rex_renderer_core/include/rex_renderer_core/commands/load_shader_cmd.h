@@ -2,7 +2,7 @@
 
 #include "rex_engine/memory/blob.h"
 #include "rex_renderer_core/commands/render_cmd.h"
-#include "rex_renderer_core/shader_type.h"
+#include "rex_renderer_core/shaders/shader_type.h"
 
 namespace rex
 {

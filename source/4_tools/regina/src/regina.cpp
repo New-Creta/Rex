@@ -1,4 +1,5 @@
 #include "rex_engine/app/core_application.h"
+#include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/engine/entrypoint.h"
@@ -10,7 +11,7 @@
 #include "rex_engine/primitives/grid.h"
 #include "rex_engine/primitives/mesh_factory.h"
 #include "rex_engine/primitives/sphere.h"
-#include "rex_engine/windowinfo.h"
+#include "rex_engine/app/windowinfo.h"
 #include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/compile_shader_cmd.h"
 #include "rex_renderer_core/commands/create_buffer_cmd.h"
@@ -22,15 +23,15 @@
 #include "rex_renderer_core/commands/create_raster_state_cmd.h"
 #include "rex_renderer_core/commands/link_shader_cmd.h"
 #include "rex_renderer_core/commands/update_committed_resource_cmd.h"
-#include "rex_renderer_core/default_depth_info.h"
-#include "rex_renderer_core/default_targets_info.h"
-#include "rex_renderer_core/renderer.h"
+#include "rex_renderer_core/rendering/default_depth_info.h"
+#include "rex_renderer_core/rendering/default_targets_info.h"
+#include "rex_renderer_core/rendering/renderer.h"
 #include "rex_renderer_core/rendering/scene.h"
 #include "rex_renderer_core/rendering/scene_renderer.h"
 #include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/resources/vertex.h"
-#include "rex_renderer_core/scissor_rect.h"
-#include "rex_renderer_core/viewport.h"
+#include "rex_renderer_core/rendering/scissor_rect.h"
+#include "rex_renderer_core/rendering/viewport.h"
 #include "rex_std/bonus/math/color.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/string.h"
@@ -39,10 +40,10 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
+#include "regina/sample_scene.h"
+#include "regina/cube_scene.h"
 
-#define RENDER_WIREFRAME 0
-#define RENDER_SCENE     1
+DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
 
 namespace regina
 {
@@ -198,9 +199,6 @@ namespace regina
   {
     rsl::vector<FrameData> frame_resource_data;
 
-    rsl::unordered_map<rsl::medium_stack_string, rsl::unique_ptr<rex::renderer::Mesh>> meshes;
-
-    rsl::unique_ptr<rex::renderer::Mesh> mesh_cube;
     rsl::unique_ptr<rex::renderer::Scene> scene;
     rsl::unique_ptr<rex::renderer::SceneRenderer> scene_renderer;
 
@@ -277,17 +275,6 @@ namespace regina
   }
 
   //-------------------------------------------------------------------------
-  template <typename T>
-  rex::renderer::commands::CreateBufferCommandDesc create_buffer_parameters(T* data, s32 num)
-  {
-    rex::renderer::commands::CreateBufferCommandDesc create_buffer_command_desc {};
-
-    create_buffer_command_desc.buffer_data = rex::memory::make_blob<T>(data, num);
-
-    return create_buffer_command_desc;
-  }
-
-  //-------------------------------------------------------------------------
   bool build_clear_state()
   {
     rex::renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc {};
@@ -327,275 +314,6 @@ namespace regina
     input_layout_command_desc.input_layout = {rex::renderer::commands::InputLayoutDescription {"POSITION", 0, rex::renderer::VertexBufferFormat::FLOAT3, 0, 0, rex::renderer::InputLayoutClassification::PerVertexData, 0},
                                               rex::renderer::commands::InputLayoutDescription {"COLOR", 0, rex::renderer::VertexBufferFormat::FLOAT4, 0, 12, rex::renderer::InputLayoutClassification::PerVertexData, 0}};
     g_regina_ctx.input_layout              = rex::renderer::create_input_layout(rsl::move(input_layout_command_desc));
-
-    return true;
-  }
-
-  //-------------------------------------------------------------------------
-  bool build_cube_geometry()
-  {
-    auto box = rex::mesh_factory::create_box(1.5f, 0.5f, 1.5f, 0);
-
-    auto total_vertex_count = box.vertices().size();
-    auto total_index_count  = box.indices().size();
-
-    rsl::vector<rex::renderer::VertexPosCol> box_vertices((rsl::Capacity(total_vertex_count)));
-    for(const rex::mesh_factory::Vertex& v: box.vertices())
-    {
-      rex::renderer::VertexPosCol const nv({v.position.x, v.position.y, v.position.z}, {v.position.x, v.position.y, v.position.z, 1.0f});
-      box_vertices.push_back(nv);
-    }
-
-    rsl::vector<u16> box_indices((rsl::Capacity(total_index_count)));
-    box_indices.insert(box_indices.end(), rsl::begin(box.indices()), rsl::end(box.indices()));
-
-    const u32 vb_byte_size = total_vertex_count * sizeof(rex::renderer::VertexPosCol);
-    const u32 ib_byte_size = total_index_count * sizeof(u16);
-
-    rex::renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<rex::renderer::VertexPosCol>(box_vertices.data(), box_vertices.size());
-    rex::renderer::Mesh::VertexBufferDesc vbd(rex::renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)), sizeof(rex::renderer::VertexPosCol), vb_byte_size);
-
-    rex::renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
-    rex::renderer::Mesh::IndexBufferDesc ibd(rex::renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)), rex::renderer::IndexBufferFormat::R16Uint, ib_byte_size);
-
-    g_regina_ctx.mesh_cube = rsl::make_unique<rex::renderer::Mesh>("box_geometry"_med, vbd, ibd);
-    g_regina_ctx.mesh_cube->add_submesh("box"_small, total_index_count, 0, 0);
-
-    return true;
-  }
-
-  //-------------------------------------------------------------------------
-  bool build_scene_geometry()
-  {
-    auto box      = rex::mesh_factory::create_box(1.5f, 0.5f, 1.5f, 0);
-    auto grid     = rex::mesh_factory::create_grid(20.0f, 30.0f, 60, 40);
-    auto sphere   = rex::mesh_factory::create_sphere(0.5f, 20, 20);
-    auto cylinder = rex::mesh_factory::create_cylinder(0.5f, 0.3f, 3.0f, 20, 20);
-
-    //
-    // We are concatenating all the geometry into one big vertex/index buffer.  So
-    // define the regions in the buffer each submesh covers.
-    //
-
-    // Cache the vertex offsets to each object in the concatenated vertex buffer.
-    const u32 box_vertex_offset      = 0;
-    const u32 grid_vertex_offset     = box.vertices().size();
-    const u32 sphere_verte_x_offset  = grid_vertex_offset + grid.vertices().size();
-    const u32 cylinder_vertex_offset = sphere_verte_x_offset + sphere.vertices().size();
-
-    // Cache the starting index for each object in the concatenated index buffer.
-    const u32 box_index_offset      = 0;
-    const u32 grid_index_offset     = box.indices().size();
-    const u32 sphere_index_offset   = grid_index_offset + grid.indices().size();
-    const u32 cylinder_index_offset = sphere_index_offset + sphere.indices().size();
-
-    // Define the SubmeshGeometry that cover different
-    // regions of the vertex/index buffers.
-
-    rex::renderer::Submesh box_submesh;
-    box_submesh.index_count          = box.indices().size();
-    box_submesh.start_index_location = box_index_offset;
-    box_submesh.base_vertex_location = box_vertex_offset;
-
-    rex::renderer::Submesh grid_submesh;
-    grid_submesh.index_count          = grid.indices().size();
-    grid_submesh.start_index_location = grid_index_offset;
-    grid_submesh.base_vertex_location = grid_vertex_offset;
-
-    rex::renderer::Submesh sphere_submesh;
-    sphere_submesh.index_count          = sphere.indices().size();
-    sphere_submesh.start_index_location = sphere_index_offset;
-    sphere_submesh.base_vertex_location = sphere_verte_x_offset;
-
-    rex::renderer::Submesh cylinder_submesh;
-    cylinder_submesh.index_count          = cylinder.indices().size();
-    cylinder_submesh.start_index_location = cylinder_index_offset;
-    cylinder_submesh.base_vertex_location = cylinder_vertex_offset;
-
-    //
-    // Extract the vertex elements we are interested in and pack the
-    // vertices of all the meshes into one vertex buffer.
-    //
-
-    auto total_vertex_count = box.vertices().size() + grid.vertices().size() + sphere.vertices().size() + cylinder.vertices().size();
-    auto total_index_count  = box.indices().size() + grid.indices().size() + sphere.indices().size() + cylinder.indices().size();
-
-    rsl::vector<rex::renderer::VertexPosCol> vertices((rsl::Size(total_vertex_count)));
-
-    u32 k = 0;
-    for(s32 i = 0; i < box.vertices().size(); ++i, ++k)
-    {
-      const glm::vec3 position = box.vertices()[i].position;
-      auto c                   = rsl::colors::OrangeRed;
-      const glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
-
-      vertices[k] = rex::renderer::VertexPosCol(position, color);
-    }
-
-    for(s32 i = 0; i < grid.vertices().size(); ++i, ++k)
-    {
-      const glm::vec3 position = grid.vertices()[i].position;
-      auto c                   = rsl::colors::ForestGreen;
-      const glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
-
-      vertices[k] = rex::renderer::VertexPosCol(position, color);
-    }
-
-    for(s32 i = 0; i < sphere.vertices().size(); ++i, ++k)
-    {
-      const glm::vec3 position = sphere.vertices()[i].position;
-      auto c                   = rsl::colors::Crimson;
-      const glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
-
-      vertices[k] = rex::renderer::VertexPosCol(position, color);
-    }
-
-    for(s32 i = 0; i < cylinder.vertices().size(); ++i, ++k)
-    {
-      const glm::vec3 position = cylinder.vertices()[i].position;
-      auto c                   = rsl::colors::SteelBlue;
-      const glm::vec4 color    = {c.red, c.green, c.blue, c.alpha};
-
-      vertices[k] = rex::renderer::VertexPosCol(position, color);
-    }
-
-    rsl::vector<u16> indices;
-    indices.insert(indices.end(), rsl::begin(box.indices()), rsl::end(box.indices()));
-    indices.insert(indices.end(), rsl::begin(grid.indices()), rsl::end(grid.indices()));
-    indices.insert(indices.end(), rsl::begin(sphere.indices()), rsl::end(sphere.indices()));
-    indices.insert(indices.end(), rsl::begin(cylinder.indices()), rsl::end(cylinder.indices()));
-
-    const u32 vb_byte_size = total_vertex_count * sizeof(rex::renderer::VertexPosCol);
-    const u32 ib_byte_size = total_index_count * sizeof(u16);
-
-    rex::renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = create_buffer_parameters<rex::renderer::VertexPosCol>(vertices.data(), vertices.size());
-    rex::renderer::Mesh::VertexBufferDesc vbd(rex::renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)), sizeof(rex::renderer::VertexPosCol), vb_byte_size);
-
-    rex::renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = create_buffer_parameters<u16>(indices.data(), indices.size());
-    rex::renderer::Mesh::IndexBufferDesc ibd(rex::renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)), rex::renderer::IndexBufferFormat::R16Uint, ib_byte_size);
-
-    auto geometry = rsl::make_unique<rex::renderer::Mesh>("scene_geometry"_med, vbd, ibd);
-
-    geometry->add_submesh("box"_small, box_submesh);
-    geometry->add_submesh("grid"_small, grid_submesh);
-    geometry->add_submesh("sphere"_small, sphere_submesh);
-    geometry->add_submesh("cylinder"_small, cylinder_submesh);
-
-    g_regina_ctx.meshes[geometry->name()] = rsl::move(geometry);
-
-    return true;
-  }
-
-  //-------------------------------------------------------------------------
-  bool build_cube_render_items()
-  {
-    auto cube_r_item = rex::renderer::RenderItem();
-
-    const glm::mat4 scale = glm::scale(cube_r_item.world, glm::vec3(2.0f, 2.0f, 2.0f));
-
-    cube_r_item.world                 = scale;
-    cube_r_item.constant_buffer_index = 0;
-    cube_r_item.geometry              = g_regina_ctx.mesh_cube.get();
-    cube_r_item.topology              = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-    cube_r_item.index_count           = cube_r_item.geometry->submesh("box"_small)->index_count;
-    cube_r_item.start_index_location  = cube_r_item.geometry->submesh("box"_small)->start_index_location;
-    cube_r_item.base_vertex_location  = cube_r_item.geometry->submesh("box"_small)->base_vertex_location;
-
-    // Dirty flag indicating the object data has changed and we need to update the constant buffer.
-    // Because we have an object CBuffer for each FrameResource, we have to apply the
-    // update to each FrameResource.
-    //
-    // Thus, when we modify object data we should set NumFramesDirty = gNumFrameResources
-    // so that each frame resource gets the update.
-    cube_r_item.num_frames_dirty = rex::renderer::max_frames_in_flight();
-
-    g_regina_ctx.scene->add_render_item(rsl::move(cube_r_item));
-
-    return true;
-  }
-
-  //-------------------------------------------------------------------------
-  bool build_scene_render_items()
-  {
-    const glm::mat4 box_trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.5f, 0.0f));
-    const glm::mat4 box_scale = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
-
-    auto box_r_item                  = rex::renderer::RenderItem();
-    box_r_item.world                 = box_trans * box_scale;
-    box_r_item.constant_buffer_index = 0;
-    box_r_item.geometry              = g_regina_ctx.meshes["scene_geometry"_med].get();
-    box_r_item.topology              = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-    box_r_item.index_count           = box_r_item.geometry->submesh("box"_small)->index_count;
-    box_r_item.start_index_location  = box_r_item.geometry->submesh("box"_small)->start_index_location;
-    box_r_item.base_vertex_location  = box_r_item.geometry->submesh("box"_small)->base_vertex_location;
-    box_r_item.num_frames_dirty      = rex::renderer::max_frames_in_flight();
-    g_regina_ctx.scene->add_render_item(rsl::move(box_r_item));
-
-    auto grid_r_item                  = rex::renderer::RenderItem();
-    grid_r_item.world                 = glm::mat4(1.0f);
-    grid_r_item.constant_buffer_index = 1;
-    grid_r_item.geometry              = g_regina_ctx.meshes["scene_geometry"_med].get();
-    grid_r_item.topology              = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-    grid_r_item.index_count           = grid_r_item.geometry->submesh("grid"_small)->index_count;
-    grid_r_item.start_index_location  = grid_r_item.geometry->submesh("grid"_small)->start_index_location;
-    grid_r_item.base_vertex_location  = grid_r_item.geometry->submesh("grid"_small)->base_vertex_location;
-    grid_r_item.num_frames_dirty      = rex::renderer::max_frames_in_flight();
-    g_regina_ctx.scene->add_render_item(rsl::move(grid_r_item));
-
-    u32 obj_cb_index = 2;
-    for(int i = 0; i < 5; ++i)
-    {
-      auto left_cyl_r_item     = rex::renderer::RenderItem();
-      auto right_cyl_r_item    = rex::renderer::RenderItem();
-      auto left_sphere_r_item  = rex::renderer::RenderItem();
-      auto right_sphere_r_item = rex::renderer::RenderItem();
-
-      const glm::mat4 left_cyl_world     = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 1.5f, -10.0f + i * 5.0f));
-      const glm::mat4 right_cyl_world    = glm::translate(glm::mat4(1.0f), glm::vec3(+5.0f, 1.5f, -10.0f + i * 5.0f));
-      const glm::mat4 left_sphere_world  = glm::translate(glm::mat4(1.0f), glm::vec3(-5.0f, 3.5f, -10.0f + i * 5.0f));
-      const glm::mat4 right_sphere_world = glm::translate(glm::mat4(1.0f), glm::vec3(+5.0f, 3.5f, -10.0f + i * 5.0f));
-
-      left_cyl_r_item.world                 = right_cyl_world;
-      left_cyl_r_item.constant_buffer_index = obj_cb_index++;
-      left_cyl_r_item.geometry              = g_regina_ctx.meshes["scene_geometry"_med].get();
-      left_cyl_r_item.topology              = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-      left_cyl_r_item.index_count           = left_cyl_r_item.geometry->submesh("cylinder"_small)->index_count;
-      left_cyl_r_item.start_index_location  = left_cyl_r_item.geometry->submesh("cylinder"_small)->start_index_location;
-      left_cyl_r_item.base_vertex_location  = left_cyl_r_item.geometry->submesh("cylinder"_small)->base_vertex_location;
-      left_cyl_r_item.num_frames_dirty      = rex::renderer::max_frames_in_flight();
-
-      right_cyl_r_item.world                 = left_cyl_world;
-      right_cyl_r_item.constant_buffer_index = obj_cb_index++;
-      right_cyl_r_item.geometry              = g_regina_ctx.meshes["scene_geometry"_med].get();
-      right_cyl_r_item.topology              = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-      right_cyl_r_item.index_count           = right_cyl_r_item.geometry->submesh("cylinder"_small)->index_count;
-      right_cyl_r_item.start_index_location  = right_cyl_r_item.geometry->submesh("cylinder"_small)->start_index_location;
-      right_cyl_r_item.base_vertex_location  = right_cyl_r_item.geometry->submesh("cylinder"_small)->base_vertex_location;
-      right_cyl_r_item.num_frames_dirty      = rex::renderer::max_frames_in_flight();
-
-      left_sphere_r_item.world                 = left_sphere_world;
-      left_sphere_r_item.constant_buffer_index = obj_cb_index++;
-      left_sphere_r_item.geometry              = g_regina_ctx.meshes["scene_geometry"_med].get();
-      left_sphere_r_item.topology              = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-      left_sphere_r_item.index_count           = left_sphere_r_item.geometry->submesh("sphere"_small)->index_count;
-      left_sphere_r_item.start_index_location  = left_sphere_r_item.geometry->submesh("sphere"_small)->start_index_location;
-      left_sphere_r_item.base_vertex_location  = left_sphere_r_item.geometry->submesh("sphere"_small)->base_vertex_location;
-      left_sphere_r_item.num_frames_dirty      = rex::renderer::max_frames_in_flight();
-
-      right_sphere_r_item.world                 = right_sphere_world;
-      right_sphere_r_item.constant_buffer_index = obj_cb_index++;
-      right_sphere_r_item.geometry              = g_regina_ctx.meshes["scene_geometry"_med].get();
-      right_sphere_r_item.topology              = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-      right_sphere_r_item.index_count           = right_sphere_r_item.geometry->submesh("sphere"_small)->index_count;
-      right_sphere_r_item.start_index_location  = right_sphere_r_item.geometry->submesh("sphere"_small)->start_index_location;
-      right_sphere_r_item.base_vertex_location  = right_sphere_r_item.geometry->submesh("sphere"_small)->base_vertex_location;
-      right_sphere_r_item.num_frames_dirty      = rex::renderer::max_frames_in_flight();
-
-      g_regina_ctx.scene->add_render_item(rsl::move(left_cyl_r_item));
-      g_regina_ctx.scene->add_render_item(rsl::move(right_cyl_r_item));
-      g_regina_ctx.scene->add_render_item(rsl::move(left_sphere_r_item));
-      g_regina_ctx.scene->add_render_item(rsl::move(right_sphere_r_item));
-    }
 
     return true;
   }
@@ -765,24 +483,21 @@ namespace regina
   //-------------------------------------------------------------------------
   bool init_gfx()
   {
-    g_regina_ctx.scene          = rsl::make_unique<rex::renderer::Scene>();
+    if (rex::cmdline::get_argument("UseCubeScene"))
+    {
+      g_regina_ctx.scene = rsl::make_unique<regina::CubeScene>();
+    }
+    else
+    {
+      g_regina_ctx.scene = rsl::make_unique<regina::SampleScene>();
+    }
     g_regina_ctx.scene_renderer = rsl::make_unique<rex::renderer::SceneRenderer>(g_regina_ctx.scene.get());
 
     if(!build_clear_state())
       return false;
     if(!build_shader_and_input_layout())
       return false;
-#if RENDER_SCENE
-    if(!build_scene_geometry())
-      return false;
-    if(!build_scene_render_items())
-      return false;
-#else
-    if(!build_cube_geometry())
-      return false;
-    if(!build_cube_render_items())
-      return false;
-#endif
+
     if(!build_frame_resources())
       return false;
     if(!build_constant_buffers())
@@ -793,9 +508,16 @@ namespace regina
       return false;
 
     // The window resized, so update the aspect ratio and recompute the projection matrix.
-    g_regina_ctx.proj = glm::perspectiveFov(0.25f * glm::pi<f32>(), static_cast<f32>(rex::globals::window_info().width), static_cast<f32>(rex::globals::window_info().height), rex::globals::default_depth_info().near_plane,
-                                            rex::globals::default_depth_info().far_plane);
+    const auto fov = 0.25f * glm::pi<f32>();
+    const auto width = static_cast<f32>(rex::globals::window_info().width);
+    const auto height = static_cast<f32>(rex::globals::window_info().height);
+    const auto near_plane = rex::globals::default_depth_info().near_plane;
+    const auto far_plane = rex::globals::default_depth_info().far_plane;
+    g_regina_ctx.proj = glm::perspectiveFov(fov, width, height, near_plane, far_plane);
     g_regina_ctx.proj = glm::transpose(g_regina_ctx.proj); // DirectX backend ( so we have to transpose, expects row major matrices )
+
+    rex::renderer::set_pipeline_state_object(g_regina_ctx.pso);
+    rex::renderer::set_raster_state(g_regina_ctx.solid_raster_state);
 
     return true;
   }
@@ -825,19 +547,11 @@ namespace regina
     const rex::Viewport vp    = {0.0f, 0.0f, static_cast<f32>(rex::globals::window_info().width), static_cast<f32>(rex::globals::window_info().height), 0.0f, 1.0f};
     const rex::ScissorRect sr = {vp.top_left_x, vp.top_left_y, vp.width, vp.height};
 
-    rex::renderer::set_pipeline_state_object(g_regina_ctx.pso);
-    rex::renderer::set_raster_state(g_regina_ctx.solid_raster_state);
-
-    rex::renderer::new_frame();
-
     update_object_constant_buffers();
     update_pass_constant_buffers();
 
-    rex::renderer::set_render_targets(rex::globals::default_targets_info().back_buffer_color, rex::globals::default_targets_info().depth_buffer);
     rex::renderer::set_viewport(vp);
     rex::renderer::set_scissor_rect(sr);
-
-    rex::renderer::begin_draw();
 
     rex::renderer::clear(g_regina_ctx.clear_state);
 
@@ -857,11 +571,6 @@ namespace regina
 
       rex::renderer::renderer_draw_indexed_instanced(1, 0, ri.index_count, ri.start_index_location, ri.base_vertex_location);
     }
-
-    rex::renderer::end_draw();
-
-    rex::renderer::present();
-    rex::renderer::end_frame();
   }
   //-------------------------------------------------------------------------
   void shutdown()
@@ -879,16 +588,6 @@ namespace regina
     g_regina_ctx.solid_raster_state.release();
     g_regina_ctx.wire_raster_state.release();
 
-    if(g_regina_ctx.mesh_cube)
-    {
-      g_regina_ctx.mesh_cube.reset();
-    }
-    else
-    {
-      g_regina_ctx.meshes.clear();
-    }
-
-    g_regina_ctx.mesh_cube.reset();
     g_regina_ctx.scene_renderer.reset();
     g_regina_ctx.scene.reset();
   }

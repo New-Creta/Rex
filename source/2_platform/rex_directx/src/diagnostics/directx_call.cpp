@@ -1,7 +1,7 @@
-#include "rex_directx/directx_call.h"
+#include "rex_directx/diagnostics/directx_call.h"
 
-#include "rex_directx/directx_util.h"
-#include "rex_directx/log.h"
+#include "rex_directx/utility/directx_util.h"
+#include "rex_directx/diagnostics/log.h"
 
 #include <comdef.h>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_renderer_core/commands/render_cmd.h"
-#include "rex_renderer_core/scissor_rect.h"
+#include "rex_renderer_core/rendering/scissor_rect.h"
 
 namespace rex
 {
