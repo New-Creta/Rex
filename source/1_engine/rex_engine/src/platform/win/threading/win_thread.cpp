@@ -2,6 +2,8 @@
 
 #include "rex_engine/platform/win/crash_reporter/win_crash_handler.h"
 
+#include "rex_std/functional.h"
+
 #include <Windows.h>
 
 namespace rex
