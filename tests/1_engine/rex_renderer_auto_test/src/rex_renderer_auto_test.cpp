@@ -1,7 +1,8 @@
 #include "rex_engine/engine/entrypoint.h"
 #include "rex_engine/engine/engine_params.h"
 
-#include "regina_auto_test/regina_boot_test.h"
+#include "rex_renderer_auto_test/rex_renderer_directx_initialize_test.h"
+#include "rex_renderer_auto_test/rex_renderer_directx_build_clear_state_test.h"
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 
@@ -11,10 +12,8 @@
 
 namespace regina
 {
-  rsl::array g_auto_tests =
-  {
-    rex::auto_test::AutoTest("Initialize DirectX 12", regina_auto_test::boot_test_entry)
-  };
+  rsl::array g_auto_tests =  { rex::auto_test::AutoTest("DX12_Initialize", rex_renderer_directx_initialize_test::boot_test_entry),
+                               rex::auto_test::AutoTest("DX12_ClearScreen", rex_renderer_directx_build_clear_state_test::boot_test_entry)};
 
 } // namespace regina
 

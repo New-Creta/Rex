@@ -1,9 +1,17 @@
 #include "rex_renderer_auto_test/rex_renderer_directx_initialize_test.h"
 #include "rex_engine/event_system/event_system.h"
 #include "rex_windows/platform_creation_params.h"
+#include "rex_renderer_core/renderer.h"
 
 namespace rex_renderer_directx_initialize_test
 {
+  struct TestContext
+  {
+    s32 frame_counter = 0;
+  };
+
+  TestContext g_test_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+
   //-------------------------------------------------------------------------
   bool initialize()
   {
@@ -15,7 +23,12 @@ namespace rex_renderer_directx_initialize_test
   //-------------------------------------------------------------------------
   void update()
   {
-    // Nothing to implement
+    ++g_test_ctx.frame_counter;
+
+    if(g_test_ctx.frame_counter > rex::renderer::max_frames_in_flight())
+    {
+      rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
+    }
   }
 
     //-------------------------------------------------------------------------

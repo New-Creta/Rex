@@ -1,6 +1,7 @@
 #include "rex_renderer_auto_test/rex_renderer_directx_initialize_test.h"
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/memory/blob.h"
+#include "rex_engine/windowinfo.h"
 #include "rex_windows/platform_creation_params.h"
 #include "rex_windows/gui_application.h"
 #include "rex_renderer_core/renderer.h"
@@ -20,11 +21,15 @@ namespace rex_renderer_directx_build_clear_state_test
 { 
   struct TestContext
   {
+    rsl::vector<rex::renderer::ResourceSlot> frames;
+
     rex::renderer::ResourceSlot clear_state;
     rex::renderer::ResourceSlot shader_program;
     rex::renderer::ResourceSlot input_layout;
     rex::renderer::ResourceSlot pso;
     rex::renderer::ResourceSlot solid_raster_state;
+
+    s32 frame_counter = 0;
   };
 
   TestContext g_test_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
@@ -45,7 +50,7 @@ namespace rex_renderer_directx_build_clear_state_test
     VertexOut VS(VertexIn vin)                                          \n\
     {                                                                   \n\
         VertexOut vout;                                                 \n\
-        vout.PosH = vin.PosL;                                           \n\
+        vout.PosH = float4(vin.PosL, 1.0f);                             \n\
         vout.Color = vin.Color;                                         \n\
         return vout;                                                    \n\
     }                                                                   \n\
@@ -73,9 +78,8 @@ namespace rex_renderer_directx_build_clear_state_test
       default: break;
     }
 
-    rex::memory::Blob shader_code;
-    shader_code.allocate((rsl::memory_size)g_color_shader.size());
-    shader_code.zero_initialize();
+    compile_shader_command_desc.shader_code.allocate((rsl::memory_size)g_color_shader.size());
+    compile_shader_command_desc.shader_code.zero_initialize();
 
     rex::memory::Blob::copy(g_color_shader.data(), (rsl::memory_size)g_color_shader.size(), compile_shader_command_desc.shader_code);
 
@@ -90,7 +94,7 @@ namespace rex_renderer_directx_build_clear_state_test
   {
     rex::renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc {};
 
-    create_clear_state_command_desc.rgba    = rsl::colors::LightSteelBlue;
+    create_clear_state_command_desc.rgba    = rsl::colors::Red;
     create_clear_state_command_desc.depth   = 1.0f;
     create_clear_state_command_desc.stencil = 0x00;
 
@@ -123,6 +127,19 @@ namespace rex_renderer_directx_build_clear_state_test
     input_layout_command_desc.input_layout = {rex::renderer::commands::InputLayoutDescription {"POSITION", 0, rex::renderer::VertexBufferFormat::FLOAT3, 0, 0, rex::renderer::InputLayoutClassification::PerVertexData, 0},
                                               rex::renderer::commands::InputLayoutDescription {"COLOR", 0, rex::renderer::VertexBufferFormat::FLOAT4, 0, 12, rex::renderer::InputLayoutClassification::PerVertexData, 0}};
     g_test_ctx.input_layout                = rex::renderer::create_input_layout(rsl::move(input_layout_command_desc));
+
+    return true;
+  }
+
+    //-------------------------------------------------------------------------
+  bool build_frame_resources()
+  {
+    for(int i = 0; i < rex::renderer::max_frames_in_flight(); ++i)
+    {
+      rex::renderer::ResourceSlot frame_slot = rex::renderer::create_frame_resource();
+
+      g_test_ctx.frames.emplace_back(frame_slot);
+    }
 
     return true;
   }
@@ -165,7 +182,10 @@ namespace rex_renderer_directx_build_clear_state_test
   {
     if(!build_clear_state())
       return false;
-
+    if(!build_shader_and_input_layout())
+      return false;
+    if(!build_frame_resources())
+      return false;
     if(!build_raster_state())
       return false;
     if(!build_pipeline_state_object())
@@ -177,7 +197,12 @@ namespace rex_renderer_directx_build_clear_state_test
   //-------------------------------------------------------------------------
   void update()
   {
-    // Nothing to implement
+    ++g_test_ctx.frame_counter;
+    
+    if(g_test_ctx.frame_counter > rex::renderer::max_frames_in_flight())
+    {
+      rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
+    }
   }
 
   //-------------------------------------------------------------------------
