@@ -77,6 +77,9 @@
 #include "rex_renderer_core/index_buffer_format.h"
 #include "rex_renderer_core/input_layout_classification.h"
 #include "rex_renderer_core/renderer_backend.h"
+#include "rex_renderer_core/default_depth_info.h"
+#include "rex_renderer_core/default_targets_info.h"
+#include "rex_renderer_core/renderer_globals.h"
 #include "rex_renderer_core/renderer_info.h"
 #include "rex_renderer_core/renderer_output_window_user_data.h"
 #include "rex_renderer_core/resource_pool.h"
@@ -1128,6 +1131,79 @@ namespace rex
         }
 
       } // namespace internal
+
+      //-------------------------------------------------------------------------
+      ID3D12Device* device()
+      {
+        return g_ctx->device.Get();
+      }
+
+      //-------------------------------------------------------------------------
+      ID3D12GraphicsCommandList* command_list()
+      {
+        return g_ctx->command_list.Get();
+      }
+
+      //-------------------------------------------------------------------------
+      ID3D12CommandQueue* command_queue()
+      {
+        return g_ctx->command_queue.Get();
+      }
+
+      //-------------------------------------------------------------------------
+      DXGI_FORMAT rtv_format()
+      {
+        return g_ctx->back_buffer_format;
+      }
+
+      //-------------------------------------------------------------------------
+      ID3D12DescriptorHeap* cbv_srv_heap()
+      {
+        return g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].Get();
+      }
+
+      //-------------------------------------------------------------------------
+      D3D12_CPU_DESCRIPTOR_HANDLE cbv_srv_uav_cpu_desc_handle_for_heap_start()
+      {
+        return g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetCPUDescriptorHandleForHeapStart();
+      }
+
+      //-------------------------------------------------------------------------
+      D3D12_GPU_DESCRIPTOR_HANDLE cbv_srv_uav_gpu_desc_handle_for_heap_start()
+      {
+        return g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV]->GetGPUDescriptorHandleForHeapStart();
+      }
+
+      //-------------------------------------------------------------------------
+      ID3D12Fence* fence()
+      {
+        return g_ctx->fence.Get();
+      }
+
+      //-------------------------------------------------------------------------
+      ID3D12Resource* back_buffer() 
+      {
+        auto& render_target = g_ctx->resource_pool.as<RenderTargetResource>(rex::globals::default_targets_info().back_buffer_color);
+
+        return render_target.get()->render_target.Get();
+      }
+
+      //-------------------------------------------------------------------------
+      ID3D12CommandAllocator* frame_command_allocator()
+      {
+        auto& fr = g_ctx->resource_pool.as<FrameResource>(*g_ctx->frame_ctx.current_frame_resource());
+        auto f   = fr.get();
+
+        return f->cmd_list_allocator.Get();
+      }
+
+      //-------------------------------------------------------------------------
+      D3D12_CPU_DESCRIPTOR_HANDLE back_buffer_cpu_desc_handle_for_heap_start()
+      {
+        auto& render_target = g_ctx->resource_pool.as<RenderTargetResource>(rex::globals::default_targets_info().back_buffer_color);
+
+        return internal::rendertarget_buffer_descriptor(render_target.get()->array_index);
+      }
 
       //-------------------------------------------------------------------------
       bool flush_command_queue()

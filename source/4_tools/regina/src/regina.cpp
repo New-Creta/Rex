@@ -863,6 +863,13 @@ namespace regina
     rex::renderer::present();
     rex::renderer::end_frame();
   }
+
+  //-------------------------------------------------------------------------
+  void on_imgui()
+  {
+
+  }
+
   //-------------------------------------------------------------------------
   void shutdown()
   {
@@ -898,15 +905,17 @@ namespace regina
   {
     rex::ApplicationCreationParams app_params(&platformParams);
 
-    app_params.gui_params.window_width  = 1280;
-    app_params.gui_params.window_height = 720;
-    app_params.gui_params.window_title  = "Regina";
+    app_params.gui_params.window_width              = 1280;
+    app_params.gui_params.window_height             = 720;
+    app_params.gui_params.window_title              = "Regina";
 
-    app_params.engine_params.app_init_func     = initialize;
-    app_params.engine_params.app_update_func   = update;
-    app_params.engine_params.app_draw_func     = draw;
-    app_params.engine_params.app_shutdown_func = shutdown;
-    app_params.create_window                   = true;
+    app_params.engine_params.app_init_func          = initialize;
+    app_params.engine_params.app_update_func        = update;
+    app_params.engine_params.app_draw_func          = draw;
+    app_params.engine_params.app_draw_imgui_func    = on_imgui;
+    app_params.engine_params.app_shutdown_func      = shutdown;
+    app_params.create_window                        = true;
+    app_params.create_imgui                         = true;
 
     return app_params;
   }

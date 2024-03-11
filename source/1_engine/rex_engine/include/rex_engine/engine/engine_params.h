@@ -11,11 +11,13 @@ namespace rex
   {
     using init_func     = rsl::function<bool()>;
     using update_func   = rsl::function<void()>;
+    using draw_func   = rsl::function<void()>;
     using shutdown_func = rsl::function<void()>;
 
     init_func app_init_func         = nullptr;
     update_func app_update_func     = nullptr;
-    update_func app_draw_func       = nullptr;
+    draw_func app_draw_func         = nullptr;
+    draw_func app_draw_imgui_func   = nullptr;
     shutdown_func app_shutdown_func = nullptr;
   };
 
@@ -41,6 +43,7 @@ namespace rex
         , platform_params(platformParams)
         , gui_params()
         , create_window(false)
+        , create_imgui(false)
     {
     }
 
@@ -49,5 +52,6 @@ namespace rex
     PlatformCreationParams* platform_params;
     GuiParams gui_params;
     bool create_window;
+    bool create_imgui;
   };
 } // namespace rex

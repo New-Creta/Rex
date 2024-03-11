@@ -12,6 +12,7 @@
 #include "rex_engine/windowinfo.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
+#include "rex_renderer_core/renderer_imgui.h"
 #include "rex_renderer_core/renderer_info.h"
 #include "rex_renderer_core/renderer_output_window_user_data.h"
 #include "rex_std/bonus/types.h"
@@ -20,9 +21,10 @@
 #include "rex_std/memory.h"
 #include "rex_std/ratio.h"
 #include "rex_std/thread.h"
+#include "rex_windows/app/win_window.h"
 #include "rex_windows/diagnostics/log.h"
 #include "rex_windows/engine/platform_creation_params.h"
-#include "rex_windows/app/win_window.h"
+#include "rex_windows/imgui/imgui_impl_win32.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -39,6 +41,43 @@ namespace rex
       return g_window_info;
     }
   } // namespace globals
+
+  namespace imgui
+  {
+    void initialize_imgui_context()
+    {
+      // Setup Dear ImGui context
+      IMGUI_CHECKVERSION();
+      ImGui::CreateContext();
+      ImGuiIO& io = ImGui::GetIO();
+      (void)io;
+      io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+      io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+      io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+      io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+      // io.ConfigViewportsNoAutoMerge = true;
+      // io.ConfigViewportsNoTaskBarIcon = true;
+
+      // Setup Dear ImGui style
+      ImGui::StyleColorsDark();
+      // ImGui::StyleColorsLight();
+
+      // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+      ImGuiStyle& style = ImGui::GetStyle();
+      if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+      {
+        style.WindowRounding              = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+      }
+    }
+
+    void destroy_imgui_context()
+    {
+      ImGui::DestroyContext();
+    }
+
+  } // namespace imgui
+
   namespace win
   {
     class GuiApplication::Internal
@@ -49,16 +88,15 @@ namespace rex
           , m_gui_params(rsl::move(appCreationParams.gui_params))
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
+          , m_init_imgui(appCreationParams.create_imgui)
       {
         // we're always assigning something to the pointers here to avoid branch checking every update
         // I've profiled this and always having a function wins here.
         m_on_initialize = m_engine_params.app_init_func ? rsl::move(m_engine_params.app_init_func) : [&]() { return true; };
-
-        m_on_update = m_engine_params.app_update_func ? rsl::move(m_engine_params.app_update_func) : [&]() {};
-
-        m_on_draw = m_engine_params.app_draw_func ? rsl::move(m_engine_params.app_draw_func) : [&]() {};
-
-        m_on_shutdown = m_engine_params.app_shutdown_func ? rsl::move(m_engine_params.app_shutdown_func) : [&]() {};
+        m_on_update     = m_engine_params.app_update_func ? rsl::move(m_engine_params.app_update_func) : [&]() {};
+        m_on_draw       = m_engine_params.app_draw_func ? rsl::move(m_engine_params.app_draw_func) : [&]() {};
+        m_on_draw_imgui = m_engine_params.app_draw_imgui_func ? rsl::move(m_engine_params.app_draw_imgui_func) : [&]() {};
+        m_on_shutdown   = m_engine_params.app_shutdown_func ? rsl::move(m_engine_params.app_shutdown_func) : [&]() {};
       }
 
       bool initialize()
@@ -103,6 +141,18 @@ namespace rex
         }
 
         display_renderer_info();
+
+        if(m_init_imgui)
+        {
+          imgui::initialize_imgui_context();
+
+          ImGui_ImplWin32_Init(m_window->primary_display_handle());
+
+          if(renderer::imgui::initialize() == false)
+          {
+            return false;
+          }
+        }
 
         // if the client calls render commands some preparation is required before
         // we can actually execute those commands.
@@ -166,6 +216,18 @@ namespace rex
           // execute draw commands manually. However, for the setup of this framework we will
           // provide this API to be able to execute draw commands properly
           m_on_draw();
+
+          if(m_init_imgui)
+          {
+            renderer::imgui::begin();
+            ImGui_ImplWin32_NewFrame();
+            ImGui::NewFrame();
+
+            m_on_draw_imgui();
+
+            renderer::imgui::render();
+            renderer::imgui::end();
+          }
         }
 
         // update the timing stats
@@ -177,6 +239,14 @@ namespace rex
       void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {
         REX_ASSERT_CONTEXT_SCOPE("Application shutdown");
+
+        if (m_init_imgui)
+        {
+          renderer::imgui::shutdown();
+
+          ImGui_ImplWin32_Shutdown();
+          imgui::destroy_imgui_context();
+        }
 
         m_on_shutdown();
         renderer::shutdown();
@@ -340,6 +410,7 @@ namespace rex
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;
       rsl::function<void()> m_on_draw;
+      rsl::function<void()> m_on_draw_imgui;
       rsl::function<void()> m_on_shutdown;
 
       PlatformCreationParams m_platform_creation_params;
@@ -347,6 +418,7 @@ namespace rex
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
       win::com_lib::WinComLibHandle m_win_com_lib_handle;
+      bool m_init_imgui;
     };
 
     //-------------------------------------------------------------------------

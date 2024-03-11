@@ -52,6 +52,7 @@
 #include "rex_renderer_core/shader_platform.h"
 #include "rex_renderer_core/shader_type.h"
 #include "rex_renderer_core/viewport.h"
+#include "rex_renderer_core/renderer_globals.h"
 #include "rex_std/bonus/memory/stack_allocator.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
 

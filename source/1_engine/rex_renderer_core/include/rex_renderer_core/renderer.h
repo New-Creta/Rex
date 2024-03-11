@@ -2,6 +2,7 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/utility/yes_no.h"
+#include "rex_renderer_core/renderer_globals.h"
 
 namespace rex
 {
@@ -9,12 +10,6 @@ namespace rex
   struct ScissorRect;
   struct DefaultTargetsInfo;
   struct DefaultDepthInfo;
-
-  namespace globals
-  {
-    const DefaultTargetsInfo& default_targets_info();
-    const DefaultDepthInfo& default_depth_info();
-  } // namespace globals
 
   namespace renderer
   {
