@@ -202,7 +202,6 @@ namespace regina
     rsl::unique_ptr<rex::renderer::Scene> scene;
     rsl::unique_ptr<rex::renderer::SceneRenderer> scene_renderer;
 
-    rex::renderer::ResourceSlot clear_state;
     rex::renderer::ResourceSlot shader_program;
     rex::renderer::ResourceSlot input_layout;
     rex::renderer::ResourceSlot pso;
@@ -272,27 +271,6 @@ namespace regina
     compile_shader_command_desc.shader_type = shaderType;
 
     return compile_shader_command_desc;
-  }
-
-  //-------------------------------------------------------------------------
-  bool build_clear_state()
-  {
-    rex::renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc {};
-
-    create_clear_state_command_desc.rgba    = rsl::colors::LightSteelBlue;
-    create_clear_state_command_desc.depth   = 1.0f;
-    create_clear_state_command_desc.stencil = 0x00;
-
-    rex::StateController<rex::renderer::ClearBits> clear_flags;
-    clear_flags.add_state(rex::renderer::ClearBits::ClearColorBuffer);
-    clear_flags.add_state(rex::renderer::ClearBits::ClearDepthBuffer);
-    clear_flags.add_state(rex::renderer::ClearBits::ClearStencilBuffer);
-
-    create_clear_state_command_desc.flags = clear_flags;
-
-    g_regina_ctx.clear_state = rex::renderer::create_clear_state(rsl::move(create_clear_state_command_desc));
-
-    return true;
   }
 
   //-------------------------------------------------------------------------
@@ -394,11 +372,16 @@ namespace regina
     create_pso_command_desc.input_layout       = g_regina_ctx.input_layout;
     create_pso_command_desc.num_render_targets = 1;
     create_pso_command_desc.shader_program     = g_regina_ctx.shader_program;
-#if RENDER_WIREFRAME
-    create_pso_command_desc.rasterizer_state = g_regina_ctx.wire_raster_state;
-#else
-    create_pso_command_desc.rasterizer_state = g_regina_ctx.solid_raster_state;
-#endif
+
+    if (rex::cmdline::get_argument("UseCubeScene"))
+    {
+      create_pso_command_desc.rasterizer_state = g_regina_ctx.wire_raster_state;
+    }
+    else
+    {
+      create_pso_command_desc.rasterizer_state = g_regina_ctx.solid_raster_state;
+    }
+
     g_regina_ctx.pso = rex::renderer::create_pipeline_state_object(rsl::move(create_pso_command_desc));
 
     return true;
@@ -493,8 +476,6 @@ namespace regina
     }
     g_regina_ctx.scene_renderer = rsl::make_unique<rex::renderer::SceneRenderer>(g_regina_ctx.scene.get());
 
-    if(!build_clear_state())
-      return false;
     if(!build_shader_and_input_layout())
       return false;
 
@@ -553,8 +534,6 @@ namespace regina
     rex::renderer::set_viewport(vp);
     rex::renderer::set_scissor_rect(sr);
 
-    rex::renderer::clear(g_regina_ctx.clear_state);
-
     rex::renderer::set_shader(g_regina_ctx.shader_program);
 
     rex::renderer::ResourceSlot const curr_pass_cb = get_active_pass_constant_buffer_for_frame(rex::renderer::active_frame()->slot_id());
@@ -576,8 +555,6 @@ namespace regina
   void shutdown()
   {
     REX_LOG(LogRegina, "shutting down Regina");
-
-    g_regina_ctx.clear_state.release();
 
     g_regina_ctx.shader_program.release();
     g_regina_ctx.input_layout.release();

@@ -72,6 +72,8 @@
 #include "rex_renderer_core/commands/set_viewport_cmd.h"
 #include "rex_renderer_core/commands/update_committed_resource_cmd.h"
 
+#include "rex_renderer_core/rendering/renderer.h"
+#include "rex_renderer_core/rendering/renderer_backend.h"
 #include "rex_renderer_core/rendering/cull_mode.h"
 #include "rex_renderer_core/rendering/fill_mode.h"
 #include "rex_renderer_core/system/gpu_description.h"
@@ -531,6 +533,8 @@ namespace rex
 
         ResourceSlot swapchain_rt_buffer_slots[s_swapchain_buffer_count];   // swapchain render target buffer indices
         ResourceSlot swapchain_ds_buffer_slot;                              // swapchain depth stencil index
+
+        ResourceSlot clear_state;
 
         FrameContext frame_ctx = FrameContext(s_num_frame_resources);
 
@@ -1329,6 +1333,26 @@ namespace rex
           return ms_quality_levels.NumQualityLevels;
         }
 
+        bool build_clear_state(DirectXContext* ctx)
+        {
+          rex::renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc{};
+
+          create_clear_state_command_desc.rgba = rsl::colors::LightSteelBlue;
+          create_clear_state_command_desc.depth = 1.0f;
+          create_clear_state_command_desc.stencil = 0x00;
+
+          rex::StateController<rex::renderer::ClearBits> clear_flags;
+          clear_flags.add_state(rex::renderer::ClearBits::ClearColorBuffer);
+          clear_flags.add_state(rex::renderer::ClearBits::ClearDepthBuffer);
+          clear_flags.add_state(rex::renderer::ClearBits::ClearStencilBuffer);
+
+          create_clear_state_command_desc.flags = clear_flags;
+
+          ctx->clear_state = rex::renderer::create_clear_state(rsl::move(create_clear_state_command_desc));
+
+          return true;
+        }
+
       } // namespace internal
 
       //-------------------------------------------------------------------------
@@ -1391,6 +1415,13 @@ namespace rex
         // Init Multi sampling
         g_ctx->msaa_quality = internal::init_multi_sampling(g_ctx->device.get(), g_ctx->back_buffer_format);
         REX_ASSERT_X(g_ctx->msaa_quality > 0, "Unexcpected MSAA quality level");
+
+        // Init the clear state
+        if (internal::build_clear_state(g_ctx.get()) == false)
+        {
+          REX_ERROR(LogDirectX, "Failed to create the clear state");
+          return false;
+        }
 
         // Create command queue, command allocator and command list objects
         if(internal::create_command_objects() == false)
@@ -2285,6 +2316,8 @@ namespace rex
           D3D12_RESOURCE_BARRIER render_target_transition = CD3DX12_RESOURCE_BARRIER::Transition(render_target.get()->render_target.Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
           g_ctx->command_list->ResourceBarrier(1, &render_target_transition);
         }
+
+        backend::clear(g_ctx->clear_state);
 
         ID3D12DescriptorHeap* desc_heap    = g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].Get();
         ID3D12DescriptorHeap* desc_heaps[] = {desc_heap};
