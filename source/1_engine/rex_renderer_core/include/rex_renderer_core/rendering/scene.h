@@ -7,6 +7,8 @@ namespace rex
 {
   namespace renderer
   {
+    class SceneRenderer;
+
     class Scene
     {
     public:
@@ -17,12 +19,11 @@ namespace rex
       void add_render_item(RenderItem&& item);
       void clear_render_items();
 
+      virtual void render(SceneRenderer* renderer);
       u32 render_item_count() const;
 
-      RenderItemIt begin();
-      ConstRenderItemIt cbegin() const;
-      RenderItemIt end();
-      ConstRenderItemIt cend() const;
+    protected:
+      const RenderItems& render_items() const;
 
     private:
       RenderItems m_render_items;

@@ -9,10 +9,7 @@ namespace rex
     class SceneRenderer
     {
     public:
-      explicit SceneRenderer(const Scene* scene);
-
-    private:
-      const Scene* m_scene;
+      void render(Scene* scene);
     };
   } // namespace renderer
 } // namespace rex

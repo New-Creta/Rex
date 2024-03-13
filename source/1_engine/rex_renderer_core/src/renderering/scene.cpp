@@ -1,5 +1,7 @@
 #include "rex_renderer_core/rendering/scene.h"
 
+#include "rex_renderer_core/rendering/scene_renderer.h"
+
 namespace rex
 {
   namespace renderer
@@ -15,31 +17,21 @@ namespace rex
       m_render_items.clear();
     }
 
+    void Scene::render(rex::renderer::SceneRenderer* renderer)
+    {
+      // Nothing to implement
+    }
+
     //-------------------------------------------------------------------------
     u32 Scene::render_item_count() const
     {
       return m_render_items.size();
     }
 
-    //-------------------------------------------------------------------------
-    Scene::RenderItemIt Scene::begin()
+    const Scene::RenderItems& Scene::render_items() const
     {
-      return m_render_items.begin();
+      return m_render_items;
     }
-    //-------------------------------------------------------------------------
-    Scene::ConstRenderItemIt Scene::cbegin() const
-    {
-      return m_render_items.cbegin();
-    }
-    //-------------------------------------------------------------------------
-    Scene::RenderItemIt Scene::end()
-    {
-      return m_render_items.end();
-    }
-    //-------------------------------------------------------------------------
-    Scene::ConstRenderItemIt Scene::cend() const
-    {
-      return m_render_items.cend();
-    }
+
   } // namespace renderer
 } // namespace rex

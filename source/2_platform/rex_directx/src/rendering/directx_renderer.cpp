@@ -2306,6 +2306,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool begin_draw()
       {
+        // Loop over all active color targets and transition them to the render target state
         for(s32 i = 0; i < g_ctx->active_color_targets; ++i)
         {
           const ResourceSlot& buffer_index = g_ctx->active_color_target[i];
@@ -2317,8 +2318,10 @@ namespace rex
           g_ctx->command_list->ResourceBarrier(1, &render_target_transition);
         }
 
+        // Clear all of them
         backend::clear(g_ctx->clear_state);
 
+        // Set the descriptor heap
         ID3D12DescriptorHeap* desc_heap    = g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV].Get();
         ID3D12DescriptorHeap* desc_heaps[] = {desc_heap};
         g_ctx->command_list->SetDescriptorHeaps(_countof(desc_heaps), desc_heaps);

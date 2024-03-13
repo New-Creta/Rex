@@ -20,6 +20,8 @@ namespace rex
         memory::Blob shader_code;
       };
 
+      rex::renderer::commands::CompileShaderCommandDesc create_compile_shader_parameters(const rsl::small_stack_string& shaderName, rex::renderer::ShaderType shaderType, rsl::string_view filePath);
+
       class CompileShader : public RenderCommand
       {
       public:

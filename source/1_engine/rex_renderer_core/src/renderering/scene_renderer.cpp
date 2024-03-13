@@ -7,9 +7,9 @@ namespace rex
   namespace renderer
   {
     //-------------------------------------------------------------------------
-    SceneRenderer::SceneRenderer(const Scene* scene)
-        : m_scene(scene)
+    void SceneRenderer::render(Scene* scene)
     {
+      scene->render(this);
     }
 
   } // namespace renderer
