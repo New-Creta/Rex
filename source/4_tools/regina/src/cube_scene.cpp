@@ -13,6 +13,16 @@ namespace regina
   {
     build_geometry();
     build_render_items();
+
+    build_shader("regina\\Shaders\\color.hlsl", "regina\\Shaders\\color.hlsl");
+    build_input_layout();
+
+    build_raster_state();
+    build_pso();
+    build_frame_resources();
+    build_constant_buffers();
+
+    use_pso();
   }
 
   void CubeScene::build_geometry()
