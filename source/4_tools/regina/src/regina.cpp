@@ -72,7 +72,7 @@ namespace regina
 
     void draw()
     {
-      m_scene_renderer.render(m_scene.get());
+      m_scene_renderer.render(m_scene.get(), rex::globals::window_info().width, rex::globals::window_info().height);
     }
 
     void shutdown()
@@ -110,7 +110,9 @@ namespace regina
   //-------------------------------------------------------------------------
   void draw()
   {
-    const rex::Viewport vp    = {0.0f, 0.0f, static_cast<f32>(rex::globals::window_info().width), static_cast<f32>(rex::globals::window_info().height), 0.0f, 1.0f};
+    const f32 width = static_cast<f32>(rex::globals::window_info().width);
+    const f32 height = static_cast<f32>(rex::globals::window_info().height);
+    const rex::Viewport vp    = {0.0f, 0.0f, width, height, 0.0f, 1.0f};
     const rex::ScissorRect sr = {vp.top_left_x, vp.top_left_y, vp.width, vp.height};
 
     rex::renderer::set_viewport(vp);

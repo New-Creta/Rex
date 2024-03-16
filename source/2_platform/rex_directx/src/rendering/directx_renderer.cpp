@@ -2276,8 +2276,14 @@ namespace rex
 
         // a command list can be reset after it has been added to the command queue via ExecuteCommandList. Reusing the
         // command list reuses memory.
-        auto& pso = g_ctx->resource_pool.as<PipelineStateResource>(g_ctx->active_pipeline_state_object);
-        if(internal::reset_command_list(f->cmd_list_allocator.Get(), pso.get()) == false)
+        ID3D12PipelineState* dx_pso = nullptr;
+        if (g_ctx->active_pipeline_state_object.is_valid())
+        {
+          auto& pso = g_ctx->resource_pool.as<PipelineStateResource>(g_ctx->active_pipeline_state_object);
+          dx_pso = pso.get();
+        }
+
+        if(internal::reset_command_list(f->cmd_list_allocator.Get(), dx_pso) == false)
         {
           REX_ERROR(LogDirectX, "Failed to reset command list for frame: {0}", g_ctx->frame_ctx.current_frame_resource_index());
           return false;
