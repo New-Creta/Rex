@@ -173,13 +173,12 @@ namespace regina
     void build_constant_buffers();
 
     void update_view();
-    void update_object_constant_buffers();
     void update_pass_constant_buffers();
 
     rex::renderer::ResourceSlot get_object_committed_resource_of_frame(const rex::renderer::ResourceSlot* frame);
     rex::renderer::ResourceSlot get_pass_committed_resource_of_frame(const rex::renderer::ResourceSlot* frame);
-    rex::renderer::ResourceSlot get_active_object_constant_buffer_for_frame(s32 frame, s32 idx);
     rex::renderer::ResourceSlot get_active_pass_constant_buffer_for_frame(s32 frame);
+    rsl::vector<rex::renderer::ResourceSlot> SampleScene::get_active_constant_buffer_for_frame(s32 frame);
 
   private:
     rsl::unordered_map<rsl::medium_stack_string, rsl::unique_ptr<rex::renderer::Mesh>> m_meshes;

@@ -48,27 +48,30 @@ namespace regina
 
   void SampleScene::render(rex::renderer::SceneRenderer* renderer)
   {
+    // This is a fancy way of saying "Get the resource slot of the gpu resource that's already on the gpu, which has memory available for the objects constant buffers"
+    const rex::renderer::ResourceSlot curr_object_cr = get_object_committed_resource_of_frame(rex::renderer::active_frame());
+
+    // Update view needs to be done through the camera
+    // We don't have a camera class yet, it's static anyway
+    // so we can just do it in the scene at the moment
     update_view();
-    update_object_constant_buffers();
+    update_object_constant_buffers(curr_object_cr);
     update_pass_constant_buffers();
 
+    // We have a global shader for the scene at the moment
+    // In the future, this will be set on an individual model
     rex::renderer::set_shader(m_shader_program);
 
+    // TODO: The following needs to be cleaned up, setting the constant buffer needs to be done better
     rex::renderer::ResourceSlot const curr_pass_cb = get_active_pass_constant_buffer_for_frame(rex::renderer::active_frame()->slot_id());
     rex::renderer::set_constant_buffer_view(curr_pass_cb, 1);
 
-    for (const auto& render_item : render_items())
-    {
-      rex::renderer::set_vertex_buffer(render_item.geometry->vertex_buffer_slot(), 0, render_item.geometry->vertex_buffer_byte_stride(), 0);
-      rex::renderer::set_index_buffer(render_item.geometry->index_buffer_slot(), render_item.geometry->index_buffer_format(), 0);
-      rex::renderer::set_primitive_topology(rex::renderer::PrimitiveTopology::TRIANGLELIST);
+    rsl::vector<rex::renderer::ResourceSlot> contant_buffers = get_active_constant_buffer_for_frame(rex::renderer::active_frame()->slot_id());
+    render_items(renderer, contant_buffers);
 
-      rex::renderer::ResourceSlot const curr_object_cb = get_active_object_constant_buffer_for_frame(rex::renderer::active_frame()->slot_id(), render_item.constant_buffer_index);
-      rex::renderer::set_constant_buffer_view(curr_object_cb, 0);
-
-      rex::renderer::renderer_draw_indexed_instanced(1, 0, render_item.index_count, render_item.start_index_location, render_item.base_vertex_location);
-    }
-
+    // This also needs to be done by the camera, but like before
+    // We don't have a camera class at the moment and it's static anyway
+    // So we let the scene handle it at the moment.
     // The window resized, so update the aspect ratio and recompute the projection matrix.
     const auto fov = 0.25f * glm::pi<f32>();
     const auto width = static_cast<f32>(rex::globals::window_info().width);
@@ -384,27 +387,6 @@ namespace regina
     m_view = glm::lookAt(pos, target, up);
     m_view = glm::transpose(m_view); // DirectX backend ( so we have to transpose, expects row major matrices )
   }
-  void SampleScene::update_object_constant_buffers()
-  {
-    for (const auto& render_item : render_items())
-    {
-      // Only update the CBuffer data if the constants have changed.
-      // This needs to be tracked per frame resource.
-      if (render_item.num_frames_dirty > 0)
-      {
-        // Assign the new world matrixz
-        ObjectConstants obj_constants;
-        obj_constants.world = glm::transpose(render_item.world); // DirectX backend ( so we have to transpose, expects row major matrices )
-
-        rex::renderer::commands::UpdateCommittedResourceCommandDesc update_constant_buffer_command_desc;
-        update_constant_buffer_command_desc.element_index = render_item.constant_buffer_index;
-        update_constant_buffer_command_desc.buffer_data = rex::memory::make_blob(reinterpret_cast<rsl::byte*>(&obj_constants), rsl::memory_size(sizeof(ObjectConstants)));
-
-        rex::renderer::ResourceSlot const curr_object_cr = get_object_committed_resource_of_frame(rex::renderer::active_frame());
-        rex::renderer::update_committed_resource(rsl::move(update_constant_buffer_command_desc), curr_object_cr);
-      }
-    }
-  }
   void SampleScene::update_pass_constant_buffers()
   {
     rex::renderer::ResourceSlot const curr_pass_cr = get_pass_committed_resource_of_frame(rex::renderer::active_frame());
@@ -445,30 +427,29 @@ namespace regina
   //-------------------------------------------------------------------------
   rex::renderer::ResourceSlot SampleScene::get_object_committed_resource_of_frame(const rex::renderer::ResourceSlot* frame)
   {
-    auto it = rsl::find_if(rsl::cbegin(m_frame_resource_data), rsl::cend(m_frame_resource_data), [frame](const FrameData& data) { return *frame == data.frame_slot(); });
+    auto it = rsl::find_if(m_frame_resource_data.cbegin(), m_frame_resource_data.cend(), [frame](const FrameData& data) { return *frame == data.frame_slot(); });
 
-    return it != rsl::cend(m_frame_resource_data) ? it->object_committed_resource_slot() : rex::renderer::ResourceSlot::make_invalid();
+    return it != m_frame_resource_data.cend() ? it->object_committed_resource_slot() : rex::renderer::ResourceSlot::make_invalid();
   }
   //-------------------------------------------------------------------------
   rex::renderer::ResourceSlot SampleScene::get_pass_committed_resource_of_frame(const rex::renderer::ResourceSlot* frame)
   {
-    auto it = rsl::find_if(rsl::cbegin(m_frame_resource_data), rsl::cend(m_frame_resource_data), [frame](const FrameData& data) { return *frame == data.frame_slot(); });
+    auto it = rsl::find_if(m_frame_resource_data.cbegin(), m_frame_resource_data.cend(), [frame](const FrameData& data) { return *frame == data.frame_slot(); });
 
-    return it != rsl::cend(m_frame_resource_data) ? it->pass_committed_resource_slot() : rex::renderer::ResourceSlot::make_invalid();
+    return it != m_frame_resource_data.cend() ? it->pass_committed_resource_slot() : rex::renderer::ResourceSlot::make_invalid();
   }
   //-------------------------------------------------------------------------
-  rex::renderer::ResourceSlot SampleScene::get_active_object_constant_buffer_for_frame(s32 frame, s32 idx)
+  rsl::vector<rex::renderer::ResourceSlot> SampleScene::get_active_constant_buffer_for_frame(s32 frame)
   {
-    auto it = rsl::find_if(rsl::cbegin(m_frame_resource_data), rsl::cend(m_frame_resource_data), [frame](const FrameData& data) { return frame == data.frame_slot().slot_id(); });
-
-    return it != rsl::cend(m_frame_resource_data) ? it->object_constant_buffer_slots()[idx] : rex::renderer::ResourceSlot::make_invalid();
+    auto it = rsl::find_if(m_frame_resource_data.cbegin(), m_frame_resource_data.cend(), [frame](const FrameData& data) { return frame == data.frame_slot().slot_id(); });
+    return it != m_frame_resource_data.cend() ? it->object_constant_buffer_slots() : rsl::vector<rex::renderer::ResourceSlot>{};
   }
   //-------------------------------------------------------------------------
   rex::renderer::ResourceSlot SampleScene::get_active_pass_constant_buffer_for_frame(s32 frame)
   {
-    auto it = rsl::find_if(rsl::cbegin(m_frame_resource_data), rsl::cend(m_frame_resource_data), [frame](const FrameData& data) { return frame == data.frame_slot().slot_id(); });
+    auto it = rsl::find_if(m_frame_resource_data.cbegin(), m_frame_resource_data.cend(), [frame](const FrameData& data) { return frame == data.frame_slot().slot_id(); });
 
-    return it != rsl::cend(m_frame_resource_data) ? it->pass_constant_buffer_slot() : rex::renderer::ResourceSlot::make_invalid();
+    return it != m_frame_resource_data.cend() ? it->pass_constant_buffer_slot() : rex::renderer::ResourceSlot::make_invalid();
   }
 
 }

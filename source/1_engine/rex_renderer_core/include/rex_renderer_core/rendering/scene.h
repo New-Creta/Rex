@@ -23,7 +23,8 @@ namespace rex
       u32 render_item_count() const;
 
     protected:
-      const RenderItems& render_items() const;
+      void update_object_constant_buffers(const rex::renderer::ResourceSlot& currObjectCommittedResource);
+      void render_items(SceneRenderer* renderer, const rsl::vector<ResourceSlot>& contantBuffers) const;
 
     private:
       RenderItems m_render_items;
