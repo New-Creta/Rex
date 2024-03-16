@@ -109,11 +109,11 @@ namespace rex
 
     enum class VfsState
     {
-      NotInitialized,
-      Initializing,
-      Running,
-      ShuttingDown,
-      ShutDown
+      NotInitialized = (1 << 0),
+      Initializing = (1 << 1),
+      Running = (1 << 2),
+      ShuttingDown = (1 << 3),
+      ShutDown = (1 << 4)
     };
 
     // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
