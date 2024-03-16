@@ -84,6 +84,7 @@ namespace rex
         else
         {
           cmdLine = cmdLine.substr(start_pos);
+          start_pos = 0;
         }
 
         REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
