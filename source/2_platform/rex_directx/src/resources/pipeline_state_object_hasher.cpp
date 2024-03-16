@@ -83,17 +83,5 @@ namespace rex
         return seed;
       }
     } // namespace internal
-
-    //-------------------------------------------------------------------------
-    rsl::hash_result create_pso_hash(const PipelineStateObjectHashData& desc) 
-    {
-      rsl::hash_result seed = 0;
-
-      rsl::internal::hash_combine(seed, internal::hash_input_layout_resource(desc.input_layout_resource));
-      rsl::internal::hash_combine(seed, internal::hash_shader_program_resource(desc.shader_program_resource));
-      rsl::internal::hash_combine(seed, internal::hash_raster_state_resource(desc.raster_state_resource));
-
-      return seed;
-    }
   } // namespace renderer
 } // namespace rex

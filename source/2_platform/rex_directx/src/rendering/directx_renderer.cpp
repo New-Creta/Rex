@@ -516,7 +516,7 @@ namespace rex
         wrl::ComPtr<IDXGISwapChain> swapchain = nullptr;
 
         rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, wrl::ComPtr<ID3D12DescriptorHeap>> descriptor_heap_pool;
-        rsl::unordered_map<rsl::hash_result, wrl::ComPtr<ID3D12PipelineState>> pipeline_state_objects;
+        rsl::unordered_map<PipelineStateObjectHashData, wrl::ComPtr<ID3D12PipelineState>> pipeline_state_objects;
 
         D3D12_VIEWPORT screen_viewport = {};
         RECT scissor_rect              = {};
@@ -1748,15 +1748,17 @@ namespace rex
         hash_data.shader_program_resource = &shader_program_resource;
         hash_data.raster_state_resource = &raster_state_resource;
 
-        rsl::hash_result hash = create_pso_hash(hash_data);
+        auto insert_res = g_ctx->pipeline_state_objects.try_emplace(hash_data);
 
-        if(g_ctx->pipeline_state_objects.find(hash) != g_ctx->pipeline_state_objects.cend())
+        // If there's already a PSO with the above values, return that one and don't create a new one
+        if(insert_res.emplace_successful == false)
         {
-          g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx->pipeline_state_objects.at(hash)));
+          g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(insert_res.inserted_element->value.Get()));
 
           return true;
         }
 
+        // If no such PSO exists yet, create a new one
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc;
         ZeroMemory(&pso_desc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 
@@ -1781,15 +1783,15 @@ namespace rex
         pso_desc.SampleDesc.Quality    = g_ctx->msaa_state ? g_ctx->msaa_quality - 1 : 0;
         pso_desc.DSVFormat             = g_ctx->depth_stencil_format;
 
-        if(DX_FAILED(g_ctx->device->get()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx->pipeline_state_objects[hash]))))
+        if(DX_FAILED(g_ctx->device->get()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx->pipeline_state_objects[hash_data]))))
         {
           REX_ERROR(LogDirectX, "Failed to create pipeline state object");
           return false;
         }
 
-        directx::set_debug_name_for(g_ctx->pipeline_state_objects[hash].Get(), "Pipeline State Object");
+        directx::set_debug_name_for(g_ctx->pipeline_state_objects[hash_data].Get(), "Pipeline State Object");
 
-        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx->pipeline_state_objects.at(hash)));
+        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx->pipeline_state_objects.at(hash_data)));
 
         return true;
       }
