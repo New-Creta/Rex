@@ -151,8 +151,8 @@ namespace rex
       //      when a CBV allocation is requested.
       for (s32 frame = 0; frame < rex::renderer::max_frames_in_flight(); ++frame)
       {
-        m_frame_resource_data[frame].set_object_committed_resource_slot(frame, num_render_items, sizeof(ObjectConstants));
-        m_frame_resource_data[frame].set_pass_committed_resource_slot(frame, 1, sizeof(PassConstants));
+        m_frame_resource_data[frame].set_object_committed_resource_slot(frame, num_render_items, sizeof(ObjectConstants)); // This basicallly says "create upload buffer for this frame with size = (count * size per object)
+        m_frame_resource_data[frame].set_pass_committed_resource_slot(frame, 1, sizeof(PassConstants)); // This basically says "create upload buffer for this frame with size = (count * size per pass)
       }
 
       // Need a CBV descriptor for each object for each frame resource.
@@ -160,6 +160,8 @@ namespace rex
       {
         for (s32 i = 0; i < num_render_items; ++i)
         {
+          // This goes over the upload buffer for the constant buffers per object, creates a view to a range holding 1 "ObjectConstants" and increments the start address for the next
+          // In my opinion, this is a bad design, there are too many side effects here
           m_frame_resource_data[frame].add_object_constant_buffer_slot(frame, m_frame_resource_data[frame].object_committed_resource_slot(), sizeof(ObjectConstants));
         }
       }
@@ -167,6 +169,8 @@ namespace rex
       // Last three descriptors are the pass CBVs for each frame resource.
       for (s32 frame = 0; frame < rex::renderer::max_frames_in_flight(); ++frame)
       {
+        // This goes over the upload buffer for the constant buffers per object, creates a view to a range holding 1 "PassConstants" and increments the start address for the next
+          // In my opinion, this is a bad design, there are too many side effects here
         m_frame_resource_data[frame].set_pass_constant_buffer_slot(frame, m_frame_resource_data[frame].pass_committed_resource_slot(), sizeof(PassConstants));
       }
     }

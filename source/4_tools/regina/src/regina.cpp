@@ -67,7 +67,7 @@ namespace regina
 
     void update()
     {
-
+      // Nothing to implement
     }
 
     void draw()
@@ -77,7 +77,7 @@ namespace regina
 
     void shutdown()
     {
-
+      // Nothing to implement
     }
 
   private:

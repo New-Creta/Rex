@@ -2,6 +2,7 @@
 
 #include "rex_renderer_core/rendering/render_item.h"
 #include "rex_renderer_core/rendering/fill_mode.h"
+#include "rex_renderer_core/rendering/frame_data.h"
 #include "rex_std/vector.h"
 
 #include "rex_renderer_core/resource_management/resource.h"
@@ -34,126 +35,6 @@ namespace rex
 
       f32 total_time = 0.0f;
       f32 delta_time = 0.0f;
-    };
-
-    class FrameData
-    {
-    public:
-      //-------------------------------------------------------------------------
-      explicit FrameData(const rex::renderer::ResourceSlot& frameSlot)
-        : m_frame_slot(frameSlot)
-        , m_object_committed_resource_slot()
-        , m_pass_committed_resource_slot()
-        , m_object_constant_buffer_slots()
-        , m_pass_constant_buffer_slot()
-      {
-      }
-
-      //-------------------------------------------------------------------------
-      FrameData(const FrameData& other) = delete;
-      //-------------------------------------------------------------------------
-      FrameData(FrameData&& other) noexcept = default;
-
-      //-------------------------------------------------------------------------
-      ~FrameData()
-      {
-        m_frame_slot.release();
-        m_object_constant_buffer_slots.clear();
-        m_pass_constant_buffer_slot.release();
-      }
-
-      //-------------------------------------------------------------------------
-      FrameData& operator=(const FrameData& other) = delete;
-      //-------------------------------------------------------------------------
-      FrameData& operator=(FrameData&& other) noexcept = default;
-
-      //-------------------------------------------------------------------------
-      void set_object_committed_resource_slot(s32 frameIndex, s32 numItems, s32 bufferByteSize)
-      {
-        rex::renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants{};
-        attach_object_constants.frame_index = frameIndex;
-        attach_object_constants.buffer_count = numItems;
-        attach_object_constants.buffer_byte_size = bufferByteSize;
-
-        m_object_committed_resource_slot = rex::renderer::attach_committed_resource_to_frame(rsl::move(attach_object_constants));
-      }
-
-      //-------------------------------------------------------------------------
-      void set_pass_committed_resource_slot(s32 frameIndex, s32 numItems, s32 bufferByteSize)
-      {
-        rex::renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants{};
-        attach_object_constants.frame_index = frameIndex;
-        attach_object_constants.buffer_count = numItems;
-        attach_object_constants.buffer_byte_size = bufferByteSize;
-
-        m_pass_committed_resource_slot = rex::renderer::attach_committed_resource_to_frame(rsl::move(attach_object_constants));
-      }
-
-      //-------------------------------------------------------------------------
-      void add_object_constant_buffer_slot(s32 frameIndex, const rex::renderer::ResourceSlot& committedResourceSlot, s32 bufferSize)
-      {
-        rex::renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc{};
-
-        create_const_buffer_command_desc.frame_index = frameIndex;
-        create_const_buffer_command_desc.committed_resource = committedResourceSlot;
-        create_const_buffer_command_desc.buffer_size = bufferSize;
-
-        rex::renderer::ResourceSlot const object_constant_buffer = rex::renderer::create_constant_buffer_view(rsl::move(create_const_buffer_command_desc));
-
-        m_object_constant_buffer_slots.push_back(object_constant_buffer);
-      }
-
-      //-------------------------------------------------------------------------
-      void set_pass_constant_buffer_slot(s32 frameIndex, const rex::renderer::ResourceSlot& committedResourceSlot, s32 bufferSize)
-      {
-        rex::renderer::commands::CreateConstantBufferViewCommandDesc create_const_buffer_command_desc{};
-
-        create_const_buffer_command_desc.frame_index = frameIndex;
-        create_const_buffer_command_desc.committed_resource = committedResourceSlot;
-        create_const_buffer_command_desc.buffer_size = bufferSize;
-
-        rex::renderer::ResourceSlot pass_constant_buffer = rex::renderer::create_constant_buffer_view(rsl::move(create_const_buffer_command_desc));
-
-        m_pass_constant_buffer_slot = rsl::move(pass_constant_buffer);
-      }
-
-      //-------------------------------------------------------------------------
-      const rex::renderer::ResourceSlot& frame_slot() const
-      {
-        return m_frame_slot;
-      }
-
-      //-------------------------------------------------------------------------
-      const rex::renderer::ResourceSlot& object_committed_resource_slot() const
-      {
-        return m_object_committed_resource_slot;
-      }
-
-      //-------------------------------------------------------------------------
-      const rex::renderer::ResourceSlot& pass_committed_resource_slot() const
-      {
-        return m_pass_committed_resource_slot;
-      }
-
-      //-------------------------------------------------------------------------
-      const rsl::vector<rex::renderer::ResourceSlot>& object_constant_buffer_slots() const
-      {
-        return m_object_constant_buffer_slots;
-      }
-
-      //-------------------------------------------------------------------------
-      const rex::renderer::ResourceSlot& pass_constant_buffer_slot() const
-      {
-        return m_pass_constant_buffer_slot;
-      }
-
-    private:
-      rex::renderer::ResourceSlot m_frame_slot;
-      rex::renderer::ResourceSlot m_object_committed_resource_slot;
-      rex::renderer::ResourceSlot m_pass_committed_resource_slot;
-
-      rsl::vector<rex::renderer::ResourceSlot> m_object_constant_buffer_slots;
-      rex::renderer::ResourceSlot m_pass_constant_buffer_slot;
     };
 
     class Scene
