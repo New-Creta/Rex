@@ -10,6 +10,17 @@ namespace rex
 {
   namespace renderer
   {
+    bool operator==(const rex::renderer::PipelineStateObjectHashData& lhs, const rex::renderer::PipelineStateObjectHashData& rhs)
+    {
+      return lhs.input_layout_resource == rhs.input_layout_resource &&
+        lhs.raster_state_resource == rhs.raster_state_resource &&
+        lhs.shader_program_resource && rhs.shader_program_resource;
+    }
+    bool operator!=(const rex::renderer::PipelineStateObjectHashData& lhs, const rex::renderer::PipelineStateObjectHashData& rhs)
+    {
+      return !(lhs == rhs);
+    }
+
     namespace internal
     {
       //-------------------------------------------------------------------------
@@ -85,3 +96,4 @@ namespace rex
     } // namespace internal
   } // namespace renderer
 } // namespace rex
+

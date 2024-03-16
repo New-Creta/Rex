@@ -2,6 +2,9 @@
 
 #include "rex_std/bonus/functional/hash_result.h"
 
+#include "rex_engine/engine/types.h"
+#include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
+
 namespace rex
 {
   namespace renderer
@@ -20,6 +23,8 @@ namespace rex
       //BlendStateResource* blend_state_resource;
       //DepthStencilStateResource* depth_stencil_state_resource;
     };
+    bool operator==(const rex::renderer::PipelineStateObjectHashData& lhs, const rex::renderer::PipelineStateObjectHashData& rhs);
+    bool operator!=(const rex::renderer::PipelineStateObjectHashData& lhs, const rex::renderer::PipelineStateObjectHashData& rhs);
 
     namespace internal
     {
@@ -32,12 +37,13 @@ namespace rex
   } // namespace renderer
 } // namespace rex
 
+
 namespace rsl
 {
   template <>
   struct hash<rex::renderer::PipelineStateObjectHashData>
   {
-    rsl::hash_result operator()(const rex::renderer::PipelineStateObjectHashData& hashData)
+    rsl::hash_result operator()(const rex::renderer::PipelineStateObjectHashData& hashData) const
     {
       rsl::hash_result seed = 0;
 
