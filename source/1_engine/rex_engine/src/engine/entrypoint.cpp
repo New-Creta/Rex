@@ -16,6 +16,7 @@ namespace rex
   {
     void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine)
     {
+      // Initialize the commandline first as this can influence everything else
       cmdline::init(rsl::string_view(cmdLine));
 
       // if a user wants to know the arguments for the executable, we want to perform as minimal setup as possible.
@@ -53,7 +54,7 @@ namespace rex
       // This is useful to have in the log file to make sure that correct sanitization is enabled when testing
       log_sanitization();
 
-      // Initialize the filesystem as this can be needed by the entry point of the entrypoint of the client
+      // Initialize the filesystem as this can be needed by the entry point of the client
       // However it is recommended that all initialziation code is moved into the client's init function.
       // If we decide to limit this more aggresively, we can move this initialization to the initialize function
       // of the engine.
