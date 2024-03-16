@@ -18,14 +18,6 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    FrameData::~FrameData()
-    {
-      m_frame_slot.release();
-      m_object_constant_buffer_slots.clear();
-      m_pass_constant_buffer_slot.release();
-    }
-
-    //-------------------------------------------------------------------------
     void FrameData::set_object_committed_resource_slot(s32 frameIndex, s32 numItems, s32 bufferByteSize)
     {
       rex::renderer::commands::AttachCommittedResourceToFrameCommandDesc attach_object_constants{};

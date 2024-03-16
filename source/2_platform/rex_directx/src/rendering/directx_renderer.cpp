@@ -283,20 +283,6 @@ namespace rex
 
       static constexpr s32 s_num_frame_resources = 3;
 
-      //-------------------------------------------------------------------------`
-      void release_resource_slot(ResourceSlot& slot)
-      {
-          slot.release();
-      }
-      //-------------------------------------------------------------------------
-      void release_resource_slots(ResourceSlot* slots, s32 numSlots)
-      {
-          for(s32 i = 0; i < numSlots; ++i)
-          {
-            release_resource_slot(slots[i]);
-          }
-      }
-
       class Frame
       {
         public:

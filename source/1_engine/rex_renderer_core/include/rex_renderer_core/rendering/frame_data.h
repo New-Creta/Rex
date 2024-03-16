@@ -16,7 +16,7 @@ namespace rex
       FrameData(const FrameData& other) = delete;
       FrameData(FrameData&& other) noexcept = default;
 
-      ~FrameData();
+      ~FrameData() = default;
 
       FrameData& operator=(const FrameData& other) = delete;
       FrameData& operator=(FrameData&& other) noexcept = default;
