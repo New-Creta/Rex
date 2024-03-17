@@ -1494,33 +1494,12 @@ namespace rex
         {
 #if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
             // DXGI
-            bool can_report_dxgi_live_objects = false;
             wrl::ComPtr<IDXGIDebug1> dxgi_debug;
             if (g_ctx->dxgi_debug_layer_enabled)
             {
                 if(DX_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
                 {
                     REX_WARN(LogDirectX, "Unable to Query DXGI Debug Interface");
-                }
-                else
-                {
-                    can_report_dxgi_live_objects = true;
-                }
-            }
-#endif
-#if defined REX_ENABLE_DX12_DEBUG_LAYER && defined REX_ENABLE_DX12_LIVE_OBJECT_REPORT
-            // DX12
-            bool can_report_dx12_live_objects = false;
-            wrl::ComPtr<ID3D12DebugDevice> dx12_debug;
-            if (g_ctx->dx12_debug_layer_enabled)
-            {
-                if(DX_FAILED(g_ctx->device->get()->QueryInterface(IID_PPV_ARGS(&dx12_debug))))
-                {
-                    REX_WARN(LogDirectX, "Unable to Query DX12 Debug Device");
-                }
-                else
-                {
-                    can_report_dx12_live_objects = true;
                 }
             }
 #endif
@@ -1536,7 +1515,7 @@ namespace rex
 
 #if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
             // DXGI - Live Objects
-            if (can_report_dxgi_live_objects)
+            if (dxgi_debug)
             {
                 if(DX_FAILED(dxgi_debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL))))
                 {
@@ -1545,17 +1524,7 @@ namespace rex
                 }
             }
 #endif
-#if defined REX_ENABLE_DX12_DEBUG_LAYER && defined REX_ENABLE_DX12_LIVE_OBJECT_REPORT
-            // DX12 - Live Objects
-            if (can_report_dx12_live_objects)
-            {
-                if(DX_FAILED(dx12_debug->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL)))
-                {
-                    REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects of DX12");
-                    return;
-                }
-            }
-#endif
+
         }
       }
 

@@ -6,23 +6,7 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_engine/primitives/box.h"
-#include "rex_engine/primitives/cylinder.h"
-#include "rex_engine/primitives/grid.h"
-#include "rex_engine/primitives/mesh_factory.h"
-#include "rex_engine/primitives/sphere.h"
 #include "rex_engine/app/windowinfo.h"
-#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
-#include "rex_renderer_core/commands/compile_shader_cmd.h"
-#include "rex_renderer_core/commands/create_buffer_cmd.h"
-#include "rex_renderer_core/commands/create_clear_state_cmd.h"
-#include "rex_renderer_core/commands/create_constant_buffer_cmd.h"
-#include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
-#include "rex_renderer_core/commands/create_input_layout_cmd.h"
-#include "rex_renderer_core/commands/create_pipeline_state_cmd.h"
-#include "rex_renderer_core/commands/create_raster_state_cmd.h"
-#include "rex_renderer_core/commands/link_shader_cmd.h"
-#include "rex_renderer_core/commands/update_committed_resource_cmd.h"
 #include "rex_renderer_core/rendering/default_depth_info.h"
 #include "rex_renderer_core/rendering/default_targets_info.h"
 #include "rex_renderer_core/rendering/renderer.h"
@@ -75,31 +59,26 @@ namespace regina
       m_scene_renderer.render(m_scene.get(), rex::globals::window_info().width, rex::globals::window_info().height);
     }
 
-    void shutdown()
-    {
-      // Nothing to implement
-    }
-
   private:
     rsl::unique_ptr<rex::renderer::Scene> m_scene;
     rex::renderer::SceneRenderer m_scene_renderer;
   };
 
-  Regina g_regina;
+  rsl::unique_ptr<Regina> g_regina;
 
   //-------------------------------------------------------------------------
   bool initialize()
   {
     REX_LOG(LogRegina, "Initializing Regina");
 
-    g_regina.init();
+    g_regina->init();
 
     return true;
   }
   //-------------------------------------------------------------------------
   void update()
   {
-    g_regina.update();
+    g_regina->update();
 
     // Has the GPU finished processing the commands of the current frame resource?
     // If not, wait until the GPU has completed commands up to this fence point.
@@ -118,14 +97,14 @@ namespace regina
     rex::renderer::set_viewport(vp);
     rex::renderer::set_scissor_rect(sr);
 
-    g_regina.draw();
+    g_regina->draw();
   }
   //-------------------------------------------------------------------------
   void shutdown()
   {
     REX_LOG(LogRegina, "shutting down Regina");
 
-    g_regina.shutdown();
+    g_regina.reset();
   }
 
   //-------------------------------------------------------------------------
