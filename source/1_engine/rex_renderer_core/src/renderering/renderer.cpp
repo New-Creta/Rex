@@ -92,17 +92,15 @@ namespace rex
 
     rsl::unique_ptr<Context> g_ctx; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
+
+    bool process_render_command(renderer::RenderCommand* cmd)
+    {
 #if REX_SINGLE_THREADED
-    bool process_render_command(renderer::RenderCommand* cmd)
-    {
       return cmd->execute();
-    };
 #else
-    bool process_render_command(renderer::RenderCommand* cmd)
-    {
       return g_ctx->cmd_list->put(cmd);
-    };
 #endif
+    };
 
     //-------------------------------------------------------------------------
     template <typename TCommandType, typename... Args>

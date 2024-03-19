@@ -13,7 +13,7 @@ namespace rex
     class Factory : public dxgi::ComObject<IDXGIFactory>
     {
     public:
-      static Factory create(s32 flags);
+      static rsl::unique_ptr<Factory> create(s32 flags);
 
       Factory();
       Factory(wrl::ComPtr<IDXGIFactory>&& object, u32 version);

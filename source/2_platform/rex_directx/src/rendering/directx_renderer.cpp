@@ -6,6 +6,7 @@
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
+#include "rex_directx/dxgi/rhi.h"
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/diagnostics/log.h"
 
@@ -22,6 +23,7 @@
 #include "rex_directx/resources/raster_state_resource.h"
 #include "rex_directx/resources/render_target_resource.h"
 #include "rex_directx/resources/shader_program_resource.h"
+#include "rex_directx/resources/swapchain.h"
 #include "rex_directx/resources/vertex_shader_resource.h"
 #include "rex_directx/system/directx_device.h"
 
@@ -88,6 +90,7 @@
 #include "rex_renderer_core/rendering/texture_format.h"
 #include "rex_renderer_core/rendering/vertex_buffer_format.h"
 #include "rex_renderer_core/rendering/viewport.h"
+#include "rex_renderer_core/rendering/msaa_settings.h"
 
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/memory/memory_size.h"
@@ -227,16 +230,7 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      template<typename TResourceType>
-      void set_debug_name_for(TResourceType* resource, rsl::string_view name)
-      {
-#ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
-          resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length(), name.data());
-#else
-          UNUSED_PARAM(resource);
-          UNUSED_PARAM(name);
-#endif
-      }
+
 
       struct DefaultBuffer
       {
@@ -605,7 +599,7 @@ namespace rex
             return false;
           }
 
-          directx::set_debug_name_for(g_ctx->command_queue.Get(), "Global Command Queue");
+          rhi::set_debug_name_for(g_ctx->command_queue.Get(), "Global Command Queue");
 
           if(DX_FAILED(g_ctx->device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(g_ctx->command_allocator.GetAddressOf()))))
           {
@@ -613,7 +607,7 @@ namespace rex
             return false;
           }
 
-          directx::set_debug_name_for(g_ctx->command_allocator.Get(), "Global Command Allocator");
+          rhi::set_debug_name_for(g_ctx->command_allocator.Get(), "Global Command Allocator");
 
           if(DX_FAILED(g_ctx->device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_ctx->command_allocator.Get(), nullptr, IID_PPV_ARGS(g_ctx->command_list.GetAddressOf()))))
           {
@@ -621,7 +615,7 @@ namespace rex
             return false;
           }
 
-          directx::set_debug_name_for(g_ctx->command_list.Get(), "Global Command List");
+          rhi::set_debug_name_for(g_ctx->command_list.Get(), "Global Command List");
 
           // Start off in a closed state. This is because the first time we
           // refer to the command list we will Reset it, and it needs to be closed
@@ -639,6 +633,15 @@ namespace rex
         bool create_swapchain_object(dxgi::Factory* factory, const OutputWindowUserData& userData)
         {
           g_ctx->swapchain.Reset();
+
+          MsaaSettings msaa_settings{};
+          if (g_ctx->msaa_state)
+          {
+            msaa_settings.count = 4;
+            msaa_settings.quality = g_ctx->msaa_quality - 1;
+          }
+
+          rsl::unique_ptr<Swapchain> swapchain = rsl::make_unique<Swapchain>(s_swapchain_buffer_count, userData, g_ctx->back_buffer_format, msaa_settings);
 
           DXGI_SWAP_CHAIN_DESC sd;
           sd.BufferDesc.Width                   = userData.window_width;
@@ -665,7 +668,7 @@ namespace rex
             return false;
           }
 
-          directx::set_debug_name_for(g_ctx->swapchain.Get(), "SwapChain");
+          rhi::set_debug_name_for(g_ctx->swapchain.Get(), "SwapChain");
 
           return true;
         }
@@ -737,8 +740,8 @@ namespace rex
             return nullptr;
           }
 
-          directx::set_debug_name_for(default_buffer->buffer.Get(), "Buffer GPU");
-          directx::set_debug_name_for(default_buffer->upload_buffer.Get(), "Buffer Uploader");
+          rhi::set_debug_name_for(default_buffer->buffer.Get(), "Buffer GPU");
+          rhi::set_debug_name_for(default_buffer->upload_buffer.Get(), "Buffer Uploader");
 
           return rsl::make_unique<BufferResource>(buffer_cpu, default_buffer->buffer, default_buffer->upload_buffer, bufferByteSize);
         }
@@ -759,7 +762,7 @@ namespace rex
                 return nullptr;
             }
 
-            directx::set_debug_name_for(constant_buffer_uploader.Get(), "Constant Buffer Uploader");
+            rhi::set_debug_name_for(constant_buffer_uploader.Get(), "Constant Buffer Uploader");
 
             rsl::unique_ptr<CommittedBufferResource> constant_buffer_resources = rsl::make_unique<CommittedBufferResource>(constant_buffer_uploader, obj_cb_byte_size, obj_cb_byte_size * bufferCount);
 
@@ -898,7 +901,7 @@ namespace rex
             return nullptr;
           }
 
-          directx::set_debug_name_for(root_signature.Get(), "Root Signature");
+          rhi::set_debug_name_for(root_signature.Get(), "Root Signature");
 
           return root_signature;
         }
@@ -948,7 +951,7 @@ namespace rex
               return false;
             }
 
-            directx::set_debug_name_for(rtv_buffers[i].Get(), rsl::format("Render Target Buffer {}", i));
+            rhi::set_debug_name_for(rtv_buffers[i].Get(), rsl::format("Render Target Buffer {}", i));
 
             // We need to define our own desc struct to enabled SRGB.
             // We can't initialize the swapchain with 'DXGI_FORMAT_R8G8B8A8_UNORM_SRGB'
@@ -1019,7 +1022,7 @@ namespace rex
             return false;
           }
 
-          directx::set_debug_name_for(depth_stencil_buffer.Get(), "Depth Stencil Target Buffer");
+          rhi::set_debug_name_for(depth_stencil_buffer.Get(), "Depth Stencil Target Buffer");
 
           // Create descriptor to mip level 0 of entire resource using the
           // format of the resource
@@ -1072,19 +1075,19 @@ namespace rex
             {
             case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
                 {
-                    directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - RTV {}", i));
+                    rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - RTV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
                 }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
                 {
-                    directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - DSV {}", i));
+                    rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - DSV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
                 }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
                 {
-                    directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - CBV {}", i));
+                    rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - CBV {}", i));
                     REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
                 }
                 break;
@@ -1297,7 +1300,7 @@ namespace rex
             return fence;
           }
 
-          directx::set_debug_name_for(fence.Get(), "Global Fence");
+          rhi::set_debug_name_for(fence.Get(), "Global Fence");
           return fence;
         }
 
@@ -1362,6 +1365,14 @@ namespace rex
       //-------------------------------------------------------------------------
       bool initialize(const OutputWindowUserData& userData, s32 maxFramesInflight, const ResourceSlot& fbColorTargetSlot, const ResourceSlot& bbColorTargetSlot, const ResourceSlot& depthTargetSlot)
       {
+        // Initialize the render hardware interface
+        // This is the first layer of abstraction between the hardware
+        // and the software.
+        rhi::init(userData);
+
+
+
+
         g_ctx = rsl::make_unique<DirectXContext>();
 
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
@@ -1744,7 +1755,7 @@ namespace rex
           return false;
         }
 
-        directx::set_debug_name_for(g_ctx->pipeline_state_objects[hash_data].Get(), "Pipeline State Object");
+        rhi::set_debug_name_for(g_ctx->pipeline_state_objects[hash_data].Get(), "Pipeline State Object");
 
         g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx->pipeline_state_objects.at(hash_data)));
 
@@ -1762,7 +1773,7 @@ namespace rex
           return false;
         }
 
-        directx::set_debug_name_for(cmd_list_alloc.Get(), "Frame Command Allocator");
+        rhi::set_debug_name_for(cmd_list_alloc.Get(), "Frame Command Allocator");
 
         g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<FrameResource>(cmd_list_alloc));
 

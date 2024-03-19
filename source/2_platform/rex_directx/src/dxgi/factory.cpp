@@ -53,27 +53,27 @@ namespace rex
     namespace dxgi
     {
         //-------------------------------------------------------------------------
-        Factory Factory::create(s32 flags)
+        rsl::unique_ptr<Factory> Factory::create(s32 flags)
         {
             if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory7>(flags))
-                return Factory(rsl::move(factory), 7);
+                return rsl::make_unique<Factory>(rsl::move(factory), 7);
             if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory6>(flags))
-                return Factory(rsl::move(factory), 6);
+                return rsl::make_unique<Factory>(rsl::move(factory), 6);
             if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory5>(flags))
-                return Factory(rsl::move(factory), 5);
+                return rsl::make_unique<Factory>(rsl::move(factory), 5);
             if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory4>(flags))
-                return Factory(rsl::move(factory), 4);
+                return rsl::make_unique<Factory>(rsl::move(factory), 4);
             if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory3>(flags))
-                return Factory(rsl::move(factory), 3);
+                return rsl::make_unique<Factory>(rsl::move(factory), 3);
             if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory2>(flags))
-                return Factory(rsl::move(factory), 2);
+                return rsl::make_unique<Factory>(rsl::move(factory), 2);
             if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory1>())
-                return Factory(rsl::move(factory), 1);
+                return rsl::make_unique<Factory>(rsl::move(factory), 1);
             if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory())
-                return Factory(rsl::move(factory), 0);
+                return rsl::make_unique<Factory>(rsl::move(factory), 0);
 
             REX_ASSERT("Couldn't create dxgi factory!");
-            return Factory();
+            return nullptr;
         }
 
         Factory::Factory()
