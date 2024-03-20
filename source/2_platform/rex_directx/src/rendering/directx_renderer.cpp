@@ -2,6 +2,7 @@
 #include "rex_directx/diagnostics/directx_call.h"
 #include "rex_directx/system/directx_feature_level.h"
 #include "rex_directx/system/directx_feature_shader_model.h"
+#include "rex_directx/system/swapchain.h"
 #include "rex_directx/utility/directx_util.h" // IWYU pragma: keep
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
@@ -23,7 +24,6 @@
 #include "rex_directx/resources/raster_state_resource.h"
 #include "rex_directx/resources/render_target_resource.h"
 #include "rex_directx/resources/shader_program_resource.h"
-#include "rex_directx/resources/swapchain.h"
 #include "rex_directx/resources/vertex_shader_resource.h"
 #include "rex_directx/system/directx_device.h"
 
@@ -34,6 +34,7 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/memory/pointer_math.h"
+#include "rex_engine/timing/execution_logger.h"
 
 #include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
 #include "rex_renderer_core/commands/begin_draw_cmd.h"
@@ -486,9 +487,6 @@ namespace rex
         DXGI_FORMAT back_buffer_format   = DXGI_FORMAT_R8G8B8A8_UNORM;
         DXGI_FORMAT depth_stencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-        bool msaa_state  = false;
-        s32 msaa_quality = 0;
-
         wrl::ComPtr<ID3D12CommandQueue> command_queue         = nullptr;
         wrl::ComPtr<ID3D12GraphicsCommandList> command_list   = nullptr;
         wrl::ComPtr<ID3D12CommandAllocator> command_allocator = nullptr;
@@ -625,50 +623,6 @@ namespace rex
             REX_ERROR(LogDirectX, "Failed to close command list");
             return false;
           }
-
-          return true;
-        }
-
-        //-------------------------------------------------------------------------
-        bool create_swapchain_object(dxgi::Factory* factory, const OutputWindowUserData& userData)
-        {
-          g_ctx->swapchain.Reset();
-
-          MsaaSettings msaa_settings{};
-          if (g_ctx->msaa_state)
-          {
-            msaa_settings.count = 4;
-            msaa_settings.quality = g_ctx->msaa_quality - 1;
-          }
-
-          rsl::unique_ptr<Swapchain> swapchain = rsl::make_unique<Swapchain>(s_swapchain_buffer_count, userData, g_ctx->back_buffer_format, msaa_settings);
-
-          DXGI_SWAP_CHAIN_DESC sd;
-          sd.BufferDesc.Width                   = userData.window_width;
-          sd.BufferDesc.Height                  = userData.window_height;
-          sd.BufferDesc.RefreshRate.Numerator   = userData.refresh_rate;
-          sd.BufferDesc.RefreshRate.Denominator = 1;
-          sd.BufferDesc.Format                  = g_ctx->back_buffer_format;
-          sd.BufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-          sd.BufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
-          sd.SampleDesc.Count                   = g_ctx->msaa_state ? 4 : 1;
-          sd.SampleDesc.Quality                 = g_ctx->msaa_state ? g_ctx->msaa_quality - 1 : 0;
-          sd.BufferUsage                        = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-          sd.BufferCount                        = s_swapchain_buffer_count;
-          sd.OutputWindow                       = (HWND)userData.primary_display_handle;
-          sd.Windowed                           = userData.windowed;
-          sd.SwapEffect                         = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-          sd.Flags                              = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-          // Note: swap chain uses queue to perform flush.
-          rex::wrl::ComPtr<IDXGIFactory> dxgi_factory = factory->as<IDXGIFactory>();
-          if(DX_FAILED(dxgi_factory->CreateSwapChain(g_ctx->command_queue.Get(), &sd, g_ctx->swapchain.GetAddressOf())))
-          {
-            REX_ERROR(LogDirectX, "Failed to create swap chain");
-            return false;
-          }
-
-          rhi::set_debug_name_for(g_ctx->swapchain.Get(), "SwapChain");
 
           return true;
         }
@@ -1002,8 +956,8 @@ namespace rex
           // we need to create the depth buffer resource with a typeless format.
           resource_tex2d_desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 
-          resource_tex2d_desc.SampleDesc.Count   = g_ctx->msaa_state ? 4 : 1;
-          resource_tex2d_desc.SampleDesc.Quality = g_ctx->msaa_state ? g_ctx->msaa_quality - 1 : 0;
+          resource_tex2d_desc.SampleDesc.Count   = 1;
+          resource_tex2d_desc.SampleDesc.Quality = 0;
           resource_tex2d_desc.Layout             = D3D12_TEXTURE_LAYOUT_UNKNOWN;
           resource_tex2d_desc.Flags              = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
@@ -1128,7 +1082,6 @@ namespace rex
           if (DX_SUCCESS(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
           {
             debug_controller->EnableDebugLayer();
-            g_ctx->dx12_debug_layer_enabled = true;
           }
           else
           {
@@ -1249,61 +1202,6 @@ namespace rex
           return true;
         }
 
-        dxgi::Factory init_dxgi_factory()
-        {
-          s32 dxgi_factory_flags = 0;
-
-#ifdef REX_ENABLE_DXGI_DEBUG_LAYER
-          dxgi_factory_flags = internal::init_debug_interface();
-#endif
-
-          return dxgi::Factory::create(dxgi_factory_flags);
-        }
-
-        rsl::unique_ptr<DirectXDevice> init_device(dxgi::Factory& factory)
-        {
-          // Find highest scoring gpu
-          const dxgi::AdapterManager adapter_manager(&factory, &internal::highest_scoring_gpu);
-          const dxgi::Adapter* selected_gpu = adapter_manager.selected();
-          IDXGIAdapter* adapter = selected_gpu->c_ptr();
-
-          // Create device
-          const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
-
-          wrl::ComPtr<ID3D12Device> device;
-          if (DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&device))))
-          {
-            REX_ERROR(LogDirectX, "Software adapter not supported");
-            REX_ERROR(LogDirectX, "Failed to create DX12 Device");
-            return nullptr;
-          }
-
-          return rsl::make_unique<DirectXDevice>(device, feature_level, selected_gpu);
-        }
-
-        void init_shader_model(DirectXDevice* device)
-        {
-          const D3D_SHADER_MODEL shader_model = query_shader_model_version(device->get());
-
-          directx::g_renderer_info.shader_version = shader_model_name(shader_model);
-          directx::g_renderer_info.api_version = feature_level_name(device->feature_level());
-          directx::g_renderer_info.adaptor = device->adapter()->description().name;
-          directx::g_renderer_info.vendor = device->adapter()->description().vendor_name;
-        }
-
-        wrl::ComPtr<ID3D12Fence> init_global_fence(DirectXDevice* device)
-        {
-          wrl::ComPtr<ID3D12Fence> fence;
-          if (DX_FAILED(device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
-          {
-            REX_ERROR(LogDirectX, "Failed to create DX fence, to synchronize CPU/GPU");
-            return fence;
-          }
-
-          rhi::set_debug_name_for(fence.Get(), "Global Fence");
-          return fence;
-        }
-
         bool init_multi_sampling(DirectXDevice* device, DXGI_FORMAT backbufferFormat)
         {
           // 4x MSAA is supported on all DX11 hardware, since we only support DX12 devices we are guaranteed that 4x MSAA is supported.
@@ -1368,79 +1266,23 @@ namespace rex
         // Initialize the render hardware interface
         // This is the first layer of abstraction between the hardware
         // and the software.
-        rhi::init(userData);
-
-
-
+        {
+          ExecutionLogger exec_logger(LogDirectX, "Render Hardware Infrastructure Initialization");
+          if (!rhi::init(userData))
+          {
+            REX_ERROR(LogDirectX, "Failed to initialize rhi layer.");
+            return false;
+          }
+        }
 
         g_ctx = rsl::make_unique<DirectXContext>();
 
-#ifdef REX_ENABLE_DX12_DEBUG_LAYER
-        internal::init_debug_controller();
-#endif
         internal::init_frame_ctx(g_ctx.get(), maxFramesInflight);
-
-        dxgi::Factory factory = internal::init_dxgi_factory();
-        if(!factory)
-        {
-          REX_ERROR(LogDirectX, "Failed to create DXGI Factory");
-          return false;
-        }
-
-        g_ctx->device = internal::init_device(factory);
-        if (!g_ctx->device)
-        {
-          REX_ERROR(LogDirectX, "Failed to initialize DX12 Device");
-        }
-
-        REX_LOG(LogDirectX, "D3D12 Device Created!");
-
-#ifdef REX_ENABLE_DX12_DEBUG_LAYER
-        internal::init_debug_layer();
-#endif
-
-        internal::init_shader_model(g_ctx->device.get());
-
-        // Create fence for CPU/GPU synchronization
-        g_ctx->fence = internal::init_global_fence(g_ctx->device.get());
-
-        // Descriptor sizes vary across GPU so we need to query this information
-        g_ctx->rtv_desc_size         = g_ctx->device->get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-        g_ctx->dsv_desc_size         = g_ctx->device->get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-        g_ctx->cbv_srv_uav_desc_size = g_ctx->device->get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-        // Init Multi sampling
-        g_ctx->msaa_quality = internal::init_multi_sampling(g_ctx->device.get(), g_ctx->back_buffer_format);
-        REX_ASSERT_X(g_ctx->msaa_quality > 0, "Unexcpected MSAA quality level");
 
         // Init the clear state
         if (internal::build_clear_state(g_ctx.get()) == false)
         {
           REX_ERROR(LogDirectX, "Failed to create the clear state");
-          return false;
-        }
-
-        // Create command queue, command allocator and command list objects
-        if(internal::create_command_objects() == false)
-        {
-          REX_ERROR(LogDirectX, "Failed to create command objects");
-          return false;
-        }
-
-        // Create swapchain object
-        if(internal::create_swapchain_object(&factory, userData) == false)
-        {
-          REX_ERROR(LogDirectX, "Failed to create swapchain object");
-          return false;
-        }
-
-        // Create an initial set of descriptors
-        // Create descriptor heaps for storing the rtv and dsv.
-        // We need "swapchain_buffer_count" amount of rtvs to describe the buffer resources within the swapchain
-        //  and one dsv to describe the depth/stencil buffer resource for depth testing.
-        if(internal::create_descriptor_set_pools(s_rtv_descriptor_count, s_dsv_descriptor_count, s_cbv_descriptor_count) == false)
-        {
-          REX_ERROR(LogDirectX, "Failed to create descriptor set pools");
           return false;
         }
 
@@ -1745,8 +1587,8 @@ namespace rex
 
             pso_desc.RTVFormats[i] = directx::to_dxd12_texture_format(render_target.get()->format);
         }
-        pso_desc.SampleDesc.Count      = g_ctx->msaa_state ? 4 : 1;
-        pso_desc.SampleDesc.Quality    = g_ctx->msaa_state ? g_ctx->msaa_quality - 1 : 0;
+        pso_desc.SampleDesc.Count      = 1;
+        pso_desc.SampleDesc.Quality    = 0;
         pso_desc.DSVFormat             = g_ctx->depth_stencil_format;
 
         if(DX_FAILED(g_ctx->device->get()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx->pipeline_state_objects[hash_data]))))

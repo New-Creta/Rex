@@ -11,6 +11,7 @@
 #include "rex_directx/system/directx_device.h"
 #include "rex_directx/system/directx_feature_level.h"
 #include "rex_directx/system/swapchain.h"
+#include "rex_directx/d3dx12.h"
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/diagnostics/assert.h"
@@ -33,7 +34,17 @@ namespace rex
       wrl::ComPtr<ID3D12CommandQueue> g_command_queue;
       wrl::ComPtr<ID3D12CommandAllocator> g_command_allocator;
       wrl::ComPtr<ID3D12GraphicsCommandList> g_command_list;
-      static constexpr s32 s_swapchain_buffer_count = 2;
+      wrl::ComPtr<ID3D12Fence> g_fence;
+      wrl::ComPtr<ID3D12Heap> g_heap;
+
+      rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, wrl::ComPtr<ID3D12DescriptorHeap>> g_descriptor_heap_pool;
+
+      constexpr s32 g_swapchain_buffer_count = 2;
+      constexpr s32 g_num_rtv_descs = 8;
+      constexpr s32 g_num_dsv_descs = 1;
+      constexpr s32 g_num_cbv_descs = 128;
+
+      rsl::array<s32, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> g_descriptor_desc_sizes = {};
 
       // DXGI Factory
       s32 init_debug_interface()
@@ -70,12 +81,10 @@ namespace rex
           dxgi_filter.DenyList.pIDList = dxgi_hide.data();
 
           dxgi_info_queue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &dxgi_filter);
-
-          g_ctx->dxgi_debug_layer_enabled = true;
         }
         else
         {
-          REX_WARN(LogDirectX, "Unable to get GXGI Debug Interface");
+          REX_WARN(LogRhi, "Unable to get GXGI Debug Interface");
         }
 
         return dxgi_factory_flags;
@@ -89,9 +98,24 @@ namespace rex
 #endif
 
         g_factory = dxgi::Factory::create(dxgi_factory_flags);
+        return true;
+      }
+      void init_debug_controller()
+      {
+        // Enable extra debugging and send debug messages to the VC++ output window
+        rex::wrl::ComPtr<ID3D12Debug> debug_controller;
+        if (DX_SUCCESS(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
+        {
+          debug_controller->EnableDebugLayer();
+        }
+        else
+        {
+          REX_WARN(LogDirectX, "Failed to create DX debug controller");
+        }
       }
 
       // D3D Device
+      const rsl::array g_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
       count_t highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
       {
         auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
@@ -105,7 +129,47 @@ namespace rex
 
         return it != gpus.cend() ? rsl::distance(gpus.cbegin(), it) : -1;
       }
-      const rsl::array g_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
+      void init_debug_layer()
+      {
+        // Device needs to exist before we can query this
+        rex::wrl::ComPtr<ID3D12InfoQueue> dx12_info_queue;
+        if (DX_SUCCESS(g_device->get()->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
+        {
+          dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
+          dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info);
+          dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, globals::g_enable_dx12_severity_warning);
+          dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, globals::g_enable_dx12_severity_error);
+          dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dx12_severity_corruption);
+
+          /*
+           * Bug in the DX12 Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
+           * There's a simple workaround which is to suppress D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE.
+           * The bug itself will be fixed in a future Windows update.
+           *
+           * The Debug Layer has always had quirks when it comes to dealing with 'hybrid graphics' systems
+           * (i.e. laptops with both Intel Integrated and discrete GPUs)
+           *
+           * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
+           * https://github.com/walbourn/directx-vs-templates/commit/2b34dcf9ac764153699058cdc9d4dbc4e837224c
+           */
+          rsl::array<D3D12_MESSAGE_ID, 7> dx12_hide = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
+                             D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
+                             D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
+                             D3D12_MESSAGE_ID_RESOURCE_BARRIER_BEFORE_AFTER_MISMATCH,
+                             D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE,
+                             D3D12_MESSAGE_ID_COMMAND_LIST_DRAW_VERTEX_BUFFER_NOT_SET,
+                             D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE };
+
+          D3D12_INFO_QUEUE_FILTER dx12_filter = {};
+          dx12_filter.DenyList.NumIDs = rsl::safe_numeric_cast<u32>(dx12_hide.size());
+          dx12_filter.DenyList.pIDList = dx12_hide.data();
+          dx12_info_queue->AddStorageFilterEntries(&dx12_filter);
+        }
+        else
+        {
+          REX_WARN(LogDirectX, "Unable to get D3D12 Debug Interface");
+        }
+      }
 
       bool init_d3d_device()
       {
@@ -120,8 +184,8 @@ namespace rex
         wrl::ComPtr<ID3D12Device> device;
         if (DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&device))))
         {
-          REX_ERROR(LogDirectX, "Software adapter not supported");
-          REX_ERROR(LogDirectX, "Failed to create DX12 Device");
+          REX_ERROR(LogRhi, "Software adapter not supported");
+          REX_ERROR(LogRhi, "Failed to create DX12 Device");
           return false;
         }
 
@@ -138,7 +202,7 @@ namespace rex
         queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         if (DX_FAILED(g_device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(g_command_queue.GetAddressOf()))))
         {
-          REX_ERROR(LogDirectX, "Failed to create command queue");
+          REX_ERROR(LogRhi, "Failed to create command queue");
           return false;
         }
 
@@ -147,7 +211,7 @@ namespace rex
         // Command Allocator
         if (DX_FAILED(g_device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(g_command_allocator.GetAddressOf()))))
         {
-          REX_ERROR(LogDirectX, "Failed to create command allocator");
+          REX_ERROR(LogRhi, "Failed to create command allocator");
           return false;
         }
 
@@ -156,7 +220,7 @@ namespace rex
         // Command List
         if (DX_FAILED(g_device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_command_allocator.Get(), nullptr, IID_PPV_ARGS(g_command_list.GetAddressOf()))))
         {
-          REX_ERROR(LogDirectX, "Failed to create command list");
+          REX_ERROR(LogRhi, "Failed to create command list");
           return false;
         }
 
@@ -167,13 +231,26 @@ namespace rex
         // before calling Reset.
         if (DX_FAILED(g_command_list->Close()))
         {
-          REX_ERROR(LogDirectX, "Failed to close command list");
+          REX_ERROR(LogRhi, "Failed to close command list");
           return false;
         }
 
         return true;
       }
       
+      // D3D Fence
+      bool init_global_fence()
+      {
+        if (DX_FAILED(g_device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_fence))))
+        {
+          REX_ERROR(LogDirectX, "Failed to create DX fence, to synchronize CPU/GPU");
+          return false;
+        }
+
+        rhi::set_debug_name_for(g_fence.Get(), "Global Fence");
+        return true;
+      }
+
       // DXGI Swapchain
       bool init_swapchain(const renderer::OutputWindowUserData& userData)
       {
@@ -188,7 +265,7 @@ namespace rex
         sd.SampleDesc.Count = 1;
         sd.SampleDesc.Quality = 0;
         sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.BufferCount = s_swapchain_buffer_count;
+        sd.BufferCount = g_swapchain_buffer_count;
         sd.OutputWindow = (HWND)userData.primary_display_handle;
         sd.Windowed = userData.windowed;
         sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -199,72 +276,74 @@ namespace rex
         rex::wrl::ComPtr<IDXGISwapChain> swapchain;
         if (DX_FAILED(dxgi_factory->CreateSwapChain(g_command_queue.Get(), &sd, swapchain.GetAddressOf())))
         {
-          REX_ERROR(LogDirectX, "Failed to create swap chain");
+          REX_ERROR(LogRhi, "Failed to create swap chain");
           return false;
         }
 
         rhi::set_debug_name_for(swapchain.Get(), "SwapChain");
 
         g_swapchain = rsl::make_unique<renderer::Swapchain>(swapchain);
+        return true;
       }
 
       // Resource Heaps
       bool init_resource_heaps()
       {
+        // Nothing to implement at the moment
+        CD3DX12_HEAP_DESC desc(1_kib, D3D12_HEAP_TYPE_DEFAULT);
 
+        if (DX_FAILED(g_device->get()->CreateHeap(&desc, IID_PPV_ARGS(&g_heap))))
+        {
+          REX_ERROR(LogRhi, "Failed to create global resource heap");
+          return false;
+        }
+
+        return true;
       }
 
       // Descriptor Heaps
+      bool init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, s32 numDescriptors)
+      {
+        D3D12_DESCRIPTOR_HEAP_DESC desc{};
+
+        desc.Type = type;
+        desc.NumDescriptors = numDescriptors;
+        desc.Flags = type != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+          ? D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+          : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+
+        if (DX_FAILED(g_device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_descriptor_heap_pool[desc.Type]))))
+        {
+          REX_ERROR(LogRhi, "Failed to create descriptor heap for type: {}", rsl::enum_refl::enum_name(desc.Type));
+          return false;
+        }
+
+        s32 desc_size = g_device->get()->GetDescriptorHandleIncrementSize(type);
+        s32 total_size = desc_size * numDescriptors;
+        g_descriptor_desc_sizes[type] = desc_size;
+        rsl::string_view type_str = rsl::enum_refl::enum_name(type);
+        rhi::set_debug_name_for(g_descriptor_heap_pool[desc.Type].Get(), rsl::format("Descriptor Heap Element - {}", type_str));
+        REX_LOG(LogRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, numDescriptors, desc_size, total_size);
+
+        return true;
+      }
       bool init_descriptor_heaps()
       {
-        rsl::array<D3D12_DESCRIPTOR_HEAP_DESC, 3> heap_descs;
-
-        heap_descs[0] = {
-            D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rsl::safe_numeric_cast<UINT>(numRTV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-            0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-        };
-        heap_descs[1] = {
-            D3D12_DESCRIPTOR_HEAP_TYPE_DSV, rsl::safe_numeric_cast<UINT>(numDSV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-            0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-        };
-        heap_descs[2] = {
-            D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, rsl::safe_numeric_cast<UINT>(numCBV), D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-            0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-        };
-
-        for (s32 i = 0; i < heap_descs.size(); ++i)
+        if (!init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, g_num_rtv_descs))
         {
-          auto heap_desc = &heap_descs[i];
-
-          if (DX_FAILED(g_ctx->device->get()->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&g_ctx->descriptor_heap_pool[heap_desc->Type]))))
-          {
-            REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", rsl::enum_refl::enum_name(heap_desc->Type));
-            return false;
-          }
-
-          switch (heap_desc->Type)
-          {
-          case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
-          {
-            rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - RTV {}", i));
-            REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
-          }
-          break;
-          case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
-          {
-            rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - DSV {}", i));
-            REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
-          }
-          break;
-          case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
-          {
-            rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - CBV {}", i));
-            REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
-          }
-          break;
-          default:
-            REX_ASSERT("Unknown Descriptor Heap Type");
-          }
+          REX_ERROR(LogRhi, "Failed to create descriptor heap for RTV");
+          return false;
+        }
+        if (!init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, g_num_dsv_descs))
+        {
+          REX_ERROR(LogRhi, "Failed to create descriptor heap for RTV");
+          return false;
+        }
+        if (!init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, g_num_cbv_descs))
+        {
+          REX_ERROR(LogRhi, "Failed to create descriptor heap for RTV");
+          return false;
         }
 
         return true;
@@ -282,6 +361,12 @@ namespace rex
         return false;
       }
 
+#ifdef REX_ENABLE_DX12_DEBUG_LAYER
+      // 1.1) Create the debug controller before the device gets created
+      // This way we can have some additional debugging information if something goes wrong
+      internal::init_debug_controller();
+#endif
+
       // 2) we need to init the device.
       // A DirectX Device is used for creation of other resources
       // You can think of it as an abstraction of the GPU,
@@ -293,6 +378,13 @@ namespace rex
         return false;
       }
 
+#ifdef REX_ENABLE_DX12_DEBUG_LAYER
+      // 2.1) Create the debug layer aftet device gets created
+      // The debug layer is linked to the device and can therefore
+      // only get created when the device is created
+      internal::init_debug_layer();
+#endif
+
       // 3) we create the command objects.
       // A gpu works with commands, that get added to a command list.
       // command lists themselves are not executable, but need to be added
@@ -300,17 +392,27 @@ namespace rex
       if (!internal::init_command_objects())
       {
         REX_ERROR(LogRhi, "Failed to create command objects");
+        return false;
       }
 
-      // 4) we need to create a swapchain which is responsible of presenting.
+      // 4) Create the global fence
+      // The global fence is used for syncronysation between the cpu and the gpu
+      if (!internal::init_global_fence())
+      {
+        REX_ERROR(LogRhi, "Failed to create global fence");
+        return false;
+      }
+
+      // 5) we need to create a swapchain which is responsible of presenting.
       // There's no benefit in creating all the above systems if we don't have anything
       // to actually present something on screen, that's what the swapchain is for.
       if (!internal::init_swapchain(userData))
       {
         REX_ERROR(LogRhi, "Failed to create swapchain");
+        return false;
       }
       
-      // 5) We need to create initial heaps that store the data that'll be used for rendering
+      // 6) We need to create initial heaps that store the data that'll be used for rendering
       // These heaps only hold the data, but letting the graphics pipeline know which resource to use
       // is never done with the heaps directly, but instead are only used to store the data
       // To let graphics pipeline know which resources to use, we use descriptors, which are stored
@@ -318,9 +420,10 @@ namespace rex
       if (!internal::init_resource_heaps())
       {
         REX_ERROR(LogRhi, "Failed to create resource heaps");
+        return false;
       }
 
-      // 6) We need a few heaps to store descriptors which point to the actual resources in other heaps
+      // 7) We need a few heaps to store descriptors which point to the actual resources in other heaps
       // A descriptor is just some metadata about the resource, holding all the information
       // the gpu needs to use a resource.
       // A heap on the gpu is just the same as on the cpu except it's more limited to what it can store
@@ -330,23 +433,10 @@ namespace rex
       if (!internal::init_descriptor_heaps())
       {
         REX_ERROR(LogRhi, "Failed to create descriptor heaps");
-      }
-    }
-
-    rex::wrl::ComPtr<IDXGISwapChain> create_swapchain(ID3D12CommandList* commandlist, DXGI_SWAP_CHAIN_DESC& desc)
-    {
-      rex::wrl::ComPtr<IDXGIFactory> dxgi_factory = g_factory->as<IDXGIFactory>();
-      rex::wrl::ComPtr<IDXGISwapChain> swapchain;
-
-      // Note: swap chain uses queue to perform flush.
-      if (DX_FAILED(dxgi_factory->CreateSwapChain(commandlist, &desc, swapchain.GetAddressOf())))
-      {
-        REX_ERROR(LogDirectX, "Failed to create swap chain");
-        return swapchain;
+        return false;
       }
 
-      set_debug_name_for(swapchain.Get(), "SwapChain");
-      return swapchain;
+      return true;
     }
   }
 }

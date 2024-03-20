@@ -2,6 +2,9 @@
 
 #include "rex_directx/dxgi/util.h"
 
+#include "rex_std/string_view.h"
+#include "rex_engine/engine/defines.h"
+
 namespace rex
 {
   namespace renderer
@@ -12,8 +15,6 @@ namespace rex
   namespace rhi
   {
     bool init(const renderer::OutputWindowUserData& userData);
-
-    rex::wrl::ComPtr<IDXGISwapChain> create_swapchain(ID3D12CommandList* commandlist, DXGI_SWAP_CHAIN_DESC& desc);
 
     template<typename TResourceType>
     void set_debug_name_for(TResourceType* resource, rsl::string_view name)
