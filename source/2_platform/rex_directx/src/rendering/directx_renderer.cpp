@@ -376,13 +376,9 @@ namespace rex
             REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
 
             m_frame_resources.reserve(maxFrameResources);
-          }
 
-          //-------------------------------------------------------------------------
-          void initialize()
-          {
             m_curr_frame_resource_index = 0;
-            m_curr_frame_resource       = nullptr;
+            m_curr_frame_resource = nullptr;
           }
 
           //-------------------------------------------------------------------------
@@ -475,25 +471,18 @@ namespace rex
 
       struct DirectXContext
       {
-        rsl::unique_ptr<DirectXDevice> device = nullptr;
-        wrl::ComPtr<ID3D12Fence> fence   = nullptr;
+        DirectXContext(s32 maxFramesInFlight)
+        : frame_ctx(maxFramesInFlight)
+        {
+
+        }
+
+      private:
+
+      public:
 
         u64 current_fence;
 
-        s32 rtv_desc_size         = 0;
-        s32 dsv_desc_size         = 0;
-        s32 cbv_srv_uav_desc_size = 0;
-
-        DXGI_FORMAT back_buffer_format   = DXGI_FORMAT_R8G8B8A8_UNORM;
-        DXGI_FORMAT depth_stencil_format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-        wrl::ComPtr<ID3D12CommandQueue> command_queue         = nullptr;
-        wrl::ComPtr<ID3D12GraphicsCommandList> command_list   = nullptr;
-        wrl::ComPtr<ID3D12CommandAllocator> command_allocator = nullptr;
-
-        wrl::ComPtr<IDXGISwapChain> swapchain = nullptr;
-
-        rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, wrl::ComPtr<ID3D12DescriptorHeap>> descriptor_heap_pool;
         rsl::unordered_map<PipelineStateObjectHashData, wrl::ComPtr<ID3D12PipelineState>> pipeline_state_objects;
 
         D3D12_VIEWPORT screen_viewport = {};
@@ -524,21 +513,6 @@ namespace rex
 
       namespace internal
       {
-        //-------------------------------------------------------------------------
-        count_t highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
-        {
-            auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
-                [](const GpuDescription& lhs, const GpuDescription& rhs)
-                {
-                    const size_t lhs_vram = lhs.dedicated_video_memory.size_in_bytes();
-                    const size_t rhs_vram = rhs.dedicated_video_memory.size_in_bytes();
-
-                    return rhs_vram > lhs_vram;
-                });
-
-            return it != gpus.cend() ? rsl::distance(gpus.cbegin(), it) : -1;
-        }
-
         //-------------------------------------------------------------------------
         bool has_committed_resource_for_frame(const ResourceSlot* frameSlot, const ResourceSlot& committedResourceSlot)
         {
@@ -583,48 +557,6 @@ namespace rex
         {
           rsl::array<ID3D12CommandList*, 1> command_lists = { g_ctx->command_list.Get() };
           g_ctx->command_queue->ExecuteCommandLists(command_lists.size(), command_lists.data());
-        }
-
-        //-------------------------------------------------------------------------
-        bool create_command_objects()
-        {
-          D3D12_COMMAND_QUEUE_DESC queue_desc = {};
-          queue_desc.Type                     = D3D12_COMMAND_LIST_TYPE_DIRECT;
-          queue_desc.Flags                    = D3D12_COMMAND_QUEUE_FLAG_NONE;
-          if(DX_FAILED(g_ctx->device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(g_ctx->command_queue.GetAddressOf()))))
-          {
-            REX_ERROR(LogDirectX, "Failed to create command queue");
-            return false;
-          }
-
-          rhi::set_debug_name_for(g_ctx->command_queue.Get(), "Global Command Queue");
-
-          if(DX_FAILED(g_ctx->device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(g_ctx->command_allocator.GetAddressOf()))))
-          {
-            REX_ERROR(LogDirectX, "Failed to create command allocator");
-            return false;
-          }
-
-          rhi::set_debug_name_for(g_ctx->command_allocator.Get(), "Global Command Allocator");
-
-          if(DX_FAILED(g_ctx->device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, g_ctx->command_allocator.Get(), nullptr, IID_PPV_ARGS(g_ctx->command_list.GetAddressOf()))))
-          {
-            REX_ERROR(LogDirectX, "Failed to create command list");
-            return false;
-          }
-
-          rhi::set_debug_name_for(g_ctx->command_list.Get(), "Global Command List");
-
-          // Start off in a closed state. This is because the first time we
-          // refer to the command list we will Reset it, and it needs to be closed
-          // before calling Reset.
-          if(close_command_list() == false)
-          {
-            REX_ERROR(LogDirectX, "Failed to close command list");
-            return false;
-          }
-
-          return true;
         }
 
         //-------------------------------------------------------------------------
@@ -1075,133 +1007,6 @@ namespace rex
           return true;
         }
 
-        void init_debug_controller()
-        {
-          // Enable extra debugging and send debug messages to the VC++ output window
-          rex::wrl::ComPtr<ID3D12Debug> debug_controller;
-          if (DX_SUCCESS(D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller))))
-          {
-            debug_controller->EnableDebugLayer();
-          }
-          else
-          {
-            REX_WARN(LogDirectX, "Failed to create DX debug controller");
-          }
-        }
-
-        s32 init_debug_interface()
-        {
-          /*
-          * Bug in the DXGI Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
-          * There's a simple workaround which is to suppress D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE.
-          * The bug itself will be fixed in a future Windows update.
-          *
-          * The Debug Layer has always had quirks when it comes to dealing with 'hybrid graphics' systems
-          * (i.e. laptops with both Intel Integrated and discrete GPUs)
-          *
-          * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
-          * https://github.com/walbourn/directx-vs-templates/commit/18e3eaa444e98ba75d37d506ab18df8db0b82441
-          */
-          s32 dxgi_factory_flags = 0;
-
-          wrl::ComPtr<IDXGIInfoQueue> dxgi_info_queue;
-          if (DX_SUCCESS(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_info_queue.GetAddressOf()))))
-          {
-            dxgi_factory_flags = DXGI_CREATE_FACTORY_DEBUG;
-
-            dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dxgi_severity_message);
-            dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_INFO, globals::g_enable_dxgi_severity_info);
-            dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, globals::g_enable_dxgi_severity_warning);
-            dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, globals::g_enable_dxgi_severity_error);
-            dxgi_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dxgi_severity_corruption);
-
-            rsl::array<DXGI_INFO_QUEUE_MESSAGE_ID, 1> dxgi_hide = {
-                80 /* IDXGISwapChain::GetContainingOutput: The swapchain's adapter does not control the output on which the swapchain's window resides. */,
-            };
-            DXGI_INFO_QUEUE_FILTER dxgi_filter = {};
-            dxgi_filter.DenyList.NumIDs = rsl::safe_numeric_cast<u32>(dxgi_hide.size());
-            dxgi_filter.DenyList.pIDList = dxgi_hide.data();
-
-            dxgi_info_queue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &dxgi_filter);
-
-            g_ctx->dxgi_debug_layer_enabled = true;
-          }
-          else
-          {
-            REX_WARN(LogDirectX, "Unable to get GXGI Debug Interface");
-          }
-
-          return dxgi_factory_flags;
-        }
-
-        void init_debug_layer()
-        {
-          // Device needs to exist before we can query this
-          rex::wrl::ComPtr<ID3D12InfoQueue> dx12_info_queue;
-          if (g_ctx->dx12_debug_layer_enabled && DX_SUCCESS(g_ctx->device->get()->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
-          {
-            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
-            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info);
-            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, globals::g_enable_dx12_severity_warning);
-            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, globals::g_enable_dx12_severity_error);
-            dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dx12_severity_corruption);
-
-            /*
-             * Bug in the DX12 Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
-             * There's a simple workaround which is to suppress D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE.
-             * The bug itself will be fixed in a future Windows update.
-             *
-             * The Debug Layer has always had quirks when it comes to dealing with 'hybrid graphics' systems
-             * (i.e. laptops with both Intel Integrated and discrete GPUs)
-             *
-             * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
-             * https://github.com/walbourn/directx-vs-templates/commit/2b34dcf9ac764153699058cdc9d4dbc4e837224c
-             */
-            rsl::array<D3D12_MESSAGE_ID, 7> dx12_hide = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
-                               D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
-                               D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
-                               D3D12_MESSAGE_ID_RESOURCE_BARRIER_BEFORE_AFTER_MISMATCH,
-                               D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE,
-                               D3D12_MESSAGE_ID_COMMAND_LIST_DRAW_VERTEX_BUFFER_NOT_SET,
-                               D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE };
-
-            D3D12_INFO_QUEUE_FILTER dx12_filter = {};
-            dx12_filter.DenyList.NumIDs = rsl::safe_numeric_cast<u32>(dx12_hide.size());
-            dx12_filter.DenyList.pIDList = dx12_hide.data();
-            dx12_info_queue->AddStorageFilterEntries(&dx12_filter);
-          }
-          else
-          {
-            if (g_ctx->dx12_debug_layer_enabled)
-            {
-              REX_WARN(LogDirectX, "Unable to get D3D12 Debug Interface");
-            }
-            else
-            {
-              REX_WARN(LogDirectX, "Unable to get D3D12 Debug Interface because the Debug Layer could not/was not enabled");
-            }
-          }
-        }
-
-        bool init_frame_ctx(DirectXContext* ctx, s32 maxFramesInflight)
-        {
-          // Setup frame context
-          if (maxFramesInflight <= 0)
-          {
-            REX_ERROR(LogDirectX, "Unable to initialize renderer when no frame resources are allocated.");
-            return false;
-          }
-
-          if (maxFramesInflight != s_num_frame_resources)
-          {
-            ctx->frame_ctx = FrameContext(maxFramesInflight);
-          }
-
-          ctx->frame_ctx.initialize();
-
-          return true;
-        }
-
         bool init_multi_sampling(DirectXDevice* device, DXGI_FORMAT backbufferFormat)
         {
           // 4x MSAA is supported on all DX11 hardware, since we only support DX12 devices we are guaranteed that 4x MSAA is supported.
@@ -1275,7 +1080,7 @@ namespace rex
           }
         }
 
-        g_ctx = rsl::make_unique<DirectXContext>();
+        g_ctx = rsl::make_unique<DirectXContext>(maxFramesInflight);
 
         internal::init_frame_ctx(g_ctx.get(), maxFramesInflight);
 
@@ -1338,47 +1143,6 @@ namespace rex
         g_ctx->scissor_rect = {0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height)};
 
         return true;
-      }
-
-      //-------------------------------------------------------------------------
-      void shutdown()
-      {
-        if(g_ctx->device != nullptr)
-        {
-#if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
-            // DXGI
-            wrl::ComPtr<IDXGIDebug1> dxgi_debug;
-            if (g_ctx->dxgi_debug_layer_enabled)
-            {
-                if(DX_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(dxgi_debug.GetAddressOf()))))
-                {
-                    REX_WARN(LogDirectX, "Unable to Query DXGI Debug Interface");
-                }
-            }
-#endif
-
-            flush_command_queue();
-
-            // Frame ctx does custom deletion so we manually clear it
-            g_ctx->frame_ctx.clear();
-            // Resource pool does custom deletion so we manually clear it 
-            g_ctx->resource_pool.clear();
-
-            g_ctx.reset();
-
-#if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
-            // DXGI - Live Objects
-            if (dxgi_debug)
-            {
-                if(DX_FAILED(dxgi_debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL))))
-                {
-                    REX_ERROR(LogDirectX, "Cannot ReportLiveDeviceObjects of DXGI");
-                    return;
-                }
-            }
-#endif
-
-        }
       }
 
       //-------------------------------------------------------------------------
