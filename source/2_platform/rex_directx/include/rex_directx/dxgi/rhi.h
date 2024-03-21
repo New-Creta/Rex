@@ -2,6 +2,13 @@
 
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/utility/directx_util.h"
+#include "rex_renderer_core/resource_management/resource_slot.h"
+#include "rex_renderer_core/system/gpu_description.h"
+
+#include "rex_directx/system/directx_device.h"
+#include "rex_directx/system/directx_debug_interface.h"
+#include "rex_directx/system/directx_resource_heap.h"
+#include "rex_directx/system/directx_descriptor_heap.h"
 
 #include "rex_std/string_view.h"
 #include "rex_engine/engine/defines.h"
@@ -32,18 +39,22 @@ namespace rex
     // Initializes the render hardware infrastructure
     // Creates the dxgi factory, d3d device, command buffers, heaps and swapchain
     // After this, the rhi is setup to start creating resources (textures, shaders, vertex buffers, ..)
-    class RenderHarderwareInfrastructure* init(const renderer::OutputWindowUserData& userData);
+    class RenderHardwareInfrastructure* init(const renderer::OutputWindowUserData& userData);
 
     // shutdown the internal rhi, all reference to the rhi are invalidated from here on out
     void shutdown();
 
-    class RenderHarderwareInfrastructure
+    class RenderHardwareInfrastructure
     {
     public:
-      RenderHarderwareInfrastructure(const renderer::OutputWindowUserData& userData);
-      ~RenderHarderwareInfrastructure();
+      RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData);
+      ~RenderHardwareInfrastructure();
 
       bool init_successful() const;
+
+      void reset_command_list();
+      void flush_command_queue();
+      void exec_command_list();
 
     private:
       // DXGI Factory
@@ -72,29 +83,38 @@ namespace rex
       bool init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, s32 numDescriptors);
       bool init_descriptor_heaps();
 
+      // Swapchain Buffer Views
+      bool init_swapchain_buffer_views(const renderer::OutputWindowUserData& userData);
+      bool init_swapchain_rtvs(const renderer::OutputWindowUserData& userData);
+      bool init_swapchain_dsvs(const renderer::OutputWindowUserData& userData);
+
+      ScopedCommandList create_scoped_cmd_list();
+
     private:
-      bool m_is_initialized;
-      rsl::unique_ptr<dxgi::Factory> m_factory;
-      rsl::unique_ptr<renderer::DirectXDevice> m_device;
-      rsl::unique_ptr<renderer::Swapchain> m_swapchain;
-      rsl::unique_ptr<CommandQueue> m_command_queue;
-      rsl::unique_ptr<CommandList> m_command_list;
-
-      wrl::ComPtr<ID3D12Heap> m_heap;
-      wrl::ComPtr<IDXGIInfoQueue> m_debug_info_queue;
-      wrl::ComPtr<IDXGIDebug1> m_debug_interface;
-      rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, wrl::ComPtr<ID3D12DescriptorHeap>> m_descriptor_heap_pool;
-      rsl::array<s32, D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES> m_descriptor_desc_sizes = {};
-
       constexpr static s32 s_swapchain_buffer_count = 2;
       constexpr static s32 s_num_rtv_descs = 8;
       constexpr static s32 s_num_dsv_descs = 1;
       constexpr static s32 s_num_cbv_descs = 128;
       constexpr static rsl::array m_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
 
+      bool m_is_initialized;
+      // Keep the debug interface as the last resource to be destroyed
+      // it automatically reports if any resources are still active on destruction
+      DebugInterface m_debug_interface;
+      rsl::unique_ptr<dxgi::Factory> m_factory;
+      rsl::unique_ptr<renderer::DirectXDevice> m_device;
+      rsl::unique_ptr<renderer::Swapchain> m_swapchain;
+      rsl::unique_ptr<CommandQueue> m_command_queue;
+      rsl::unique_ptr<CommandList> m_command_list;
+      rsl::unique_ptr<ResourceHeap> m_heap;
+
+      wrl::ComPtr<IDXGIInfoQueue> m_debug_info_queue;
+      rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> m_descriptor_heap_pool;
+      rsl::array<renderer::ResourceSlot, s_swapchain_buffer_count> swapchain_rt_buffer_slots;   // swapchain render target buffer indices
+
     };
 
-    rsl::unique_ptr<RenderHarderwareInfrastructure> g_rhi;
+    rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi;
 
 
     void flush_command_queue();

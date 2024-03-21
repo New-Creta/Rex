@@ -6,16 +6,36 @@ namespace rex
 {
   namespace rhi
   {
+    class CommandQueue;
     class CommandList
     {
     public:
       CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList, const wrl::ComPtr<ID3D12CommandAllocator>& allocator);
 
-      bool close();
+      void reset(ID3D12PipelineState* pso = nullptr);
+      void exec(CommandQueue* cmdQueue);
+
+      ID3D12GraphicsCommandList* get();
 
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_command_list;
       wrl::ComPtr<ID3D12CommandAllocator> m_allocator;
+    };
+
+    class ScopedCommandList
+    {
+    public:
+      ScopedCommandList(CommandList* cmdList, CommandQueue* commandQueue);
+      ScopedCommandList(const ScopedCommandList&) = delete;
+      ScopedCommandList(ScopedCommandList&& other);
+      ~ScopedCommandList();
+
+      ScopedCommandList& operator=(const ScopedCommandList&) = delete;
+      ScopedCommandList& operator=(ScopedCommandList&&);
+
+    private:
+      CommandList* m_cmd_list;
+      CommandQueue* m_cmd_queue;
     };
   }
 }

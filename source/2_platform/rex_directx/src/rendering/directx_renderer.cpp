@@ -26,6 +26,7 @@
 #include "rex_directx/resources/shader_program_resource.h"
 #include "rex_directx/resources/vertex_shader_resource.h"
 #include "rex_directx/system/directx_device.h"
+#include "rex_directx/system/directx_commandlist.h"
 
 #include "rex_directx/utility/vertex.h"
 
@@ -99,6 +100,7 @@
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/utility/casting.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
+#include "rex_std/bonus/utility/scopeguard.h"
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 
@@ -113,17 +115,6 @@
 #ifdef REX_ENABLE_DXGI_DEBUG_LAYER
   #include <dxgidebug.h>
 #endif
-
-// dxguid
-// https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-debug-id
-typedef GUID DXGI_DEBUG_ID;
-
-DEFINE_GUID(DXGI_DEBUG_ALL, 0xe48ae283, 0xda80, 0x490b, 0x87, 0xe6, 0x43, 0xe9, 0xa9, 0xcf, 0xda, 0x8);
-DEFINE_GUID(DXGI_DEBUG_DX, 0x35cdd7fc, 0x13b2, 0x421d, 0xa5, 0xd7, 0x7e, 0x44, 0x51, 0x28, 0x7d, 0x64);
-DEFINE_GUID(DXGI_DEBUG_DXGI, 0x25cddaa4, 0xb1c6, 0x47e1, 0xac, 0x3e, 0x98, 0x87, 0x5b, 0x5a, 0x2e, 0x2a);
-DEFINE_GUID(DXGI_DEBUG_APP, 0x6cd6e01, 0x4219, 0x4ebd, 0x87, 0x9, 0x27, 0xed, 0x23, 0x36, 0xc, 0x62);
-
-DEFINE_GUID(DXGI_DEBUG_D3D11, 0x4b99317b, 0xac39, 0x4aa6, 0xbb, 0xb, 0xba, 0xa0, 0x47, 0x84, 0x79, 0x8f);
 
 namespace rex
 {
@@ -371,14 +362,11 @@ namespace rex
           FrameContext(s32 maxFrameResources)
               : m_frame_resources()
               , m_curr_frame_resource(nullptr)
-              , m_curr_frame_resource_index(-1)
+              , m_curr_frame_resource_index(0)
           {
             REX_ASSERT_X(maxFrameResources > 0, "A minimum of one frame has to be created in order to render anything.");
 
             m_frame_resources.reserve(maxFrameResources);
-
-            m_curr_frame_resource_index = 0;
-            m_curr_frame_resource = nullptr;
           }
 
           //-------------------------------------------------------------------------
@@ -471,22 +459,9 @@ namespace rex
 
       struct DirectXContext
       {
-        DirectXContext(s32 maxFramesInFlight)
-        : frame_ctx(maxFramesInFlight)
-        {
-
-        }
-
-      private:
-
       public:
 
-        u64 current_fence;
-
         rsl::unordered_map<PipelineStateObjectHashData, wrl::ComPtr<ID3D12PipelineState>> pipeline_state_objects;
-
-        D3D12_VIEWPORT screen_viewport = {};
-        RECT scissor_rect              = {};
 
         ResourcePool resource_pool;
 
@@ -503,7 +478,6 @@ namespace rex
 
         ResourceSlot clear_state;
 
-        FrameContext frame_ctx = FrameContext(s_num_frame_resources);
 
         bool dx12_debug_layer_enabled = false;
         bool dxgi_debug_layer_enabled = false;
@@ -524,39 +498,6 @@ namespace rex
             }
 
             return frame->has_committed_resource(committedResourceSlot);
-        }
-
-        //-------------------------------------------------------------------------
-        bool reset_command_list(ID3D12CommandAllocator* commandAllocator, ID3D12PipelineState* pipelineState)
-        {
-          REX_ASSERT_X(commandAllocator != nullptr, "Invalid frame resource to reset command list");
-
-          if(DX_FAILED(g_ctx->command_list->Reset(commandAllocator, pipelineState)))
-          {
-            REX_ERROR(LogDirectX, "Failed to reset command list");
-            return false;
-          }
-
-          return true;
-        }
-
-        //-------------------------------------------------------------------------
-        bool close_command_list()
-        {
-          if(DX_FAILED(g_ctx->command_list->Close()))
-          {
-            REX_ERROR(LogDirectX, "Failed to close command list");
-            return false;
-          }
-
-          return true;
-        }
-
-        //-------------------------------------------------------------------------
-        void exec_command_list()
-        {
-          rsl::array<ID3D12CommandList*, 1> command_lists = { g_ctx->command_list.Get() };
-          g_ctx->command_queue->ExecuteCommandLists(command_lists.size(), command_lists.data());
         }
 
         //-------------------------------------------------------------------------
@@ -804,209 +745,6 @@ namespace rex
           return CD3DX12_CPU_DESCRIPTOR_HANDLE(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart(), idx, g_ctx->dsv_desc_size);
         }
 
-        //-------------------------------------------------------------------------
-        bool create_rtvs_for_swapchain(s32 width, s32 height, const ResourceSlot& frontBufferSlot, const ResourceSlot& backBufferSlot)
-        {
-          // Release the previous resources we will be recreating.
-          for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
-          {
-            if(g_ctx->swapchain_rt_buffer_slots[i].is_valid())
-            {
-              backend::release_resource(g_ctx->swapchain_rt_buffer_slots[i]);
-            }
-          }
-
-          g_ctx->swapchain_rt_buffer_slots[0] = frontBufferSlot;
-          g_ctx->swapchain_rt_buffer_slots[1] = backBufferSlot;
-
-          // Resize the swap chain.
-          if(DX_FAILED(g_ctx->swapchain->ResizeBuffers(s_swapchain_buffer_count, width, height, g_ctx->back_buffer_format, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
-          {
-            REX_ERROR(LogDirectX, "Failed to resize swapchain buffers");
-            return false;
-          }
-
-          TextureFormat render_target_format = TextureFormat::Unorm4Srgb;
-          wrl::ComPtr<ID3D12Resource> rtv_buffers[s_swapchain_buffer_count];
-          CD3DX12_CPU_DESCRIPTOR_HANDLE rtv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV]->GetCPUDescriptorHandleForHeapStart());
-          for(s32 i = 0; i < s_swapchain_buffer_count; ++i)
-          {
-            if(DX_FAILED(g_ctx->swapchain->GetBuffer(i, IID_PPV_ARGS(rtv_buffers[i].GetAddressOf()))))
-            {
-              REX_ERROR(LogDirectX, "Failed to retrieve swapchain buffer");
-              return false;
-            }
-
-            rhi::set_debug_name_for(rtv_buffers[i].Get(), rsl::format("Render Target Buffer {}", i));
-
-            // We need to define our own desc struct to enabled SRGB.
-            // We can't initialize the swapchain with 'DXGI_FORMAT_R8G8B8A8_UNORM_SRGB'
-            // so we have to initialize the render targets with this format
-            // and then pass that through to CreateRenderTargetView
-            D3D12_RENDER_TARGET_VIEW_DESC rtv_desc;
-            rtv_desc.Format               = directx::to_dxd12_texture_format(render_target_format);
-            rtv_desc.Texture2D.MipSlice   = 0;
-            rtv_desc.Texture2D.PlaneSlice = 0;
-            rtv_desc.ViewDimension        = D3D12_RTV_DIMENSION_TEXTURE2D;
-            g_ctx->device->get()->CreateRenderTargetView(rtv_buffers[i].Get(), &rtv_desc, rtv_handle);
-
-            rtv_handle.Offset(1, g_ctx->rtv_desc_size);
-          }
-
-          // The array index of both these buffers is important here!
-          // The 0 index of the swapchain at initialization is the backbuffer
-          // The 1 index of the swapchain at initialization is the frontbuffer
-
-          g_ctx->resource_pool.insert(frontBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[1], render_target_format, 1));
-          g_ctx->resource_pool.insert(backBufferSlot, rsl::make_unique<RenderTargetResource>(rtv_buffers[0], render_target_format, 0));
-
-          return true;
-        }
-
-        //-------------------------------------------------------------------------
-        bool create_dsv_for_swapchain(s32 width, s32 height, const ResourceSlot& depthStencilTargetSlot)
-        {
-          if(g_ctx->swapchain_ds_buffer_slot.is_valid())
-          {
-            backend::release_resource(g_ctx->swapchain_ds_buffer_slot);
-          }
-
-          g_ctx->swapchain_ds_buffer_slot = depthStencilTargetSlot;
-
-          D3D12_RESOURCE_DESC resource_tex2d_desc = {};
-          resource_tex2d_desc.Dimension           = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-          resource_tex2d_desc.Alignment           = 0;
-          resource_tex2d_desc.Width               = width;
-          resource_tex2d_desc.Height              = height;
-          resource_tex2d_desc.DepthOrArraySize    = 1;
-          resource_tex2d_desc.MipLevels           = 1;
-
-          // SSAO requires an SRV to the depth buffer to read from
-          // the depth buffer.  Therefore, because we need to create two views to the same resource:
-          //   1. SRV format: DXGI_FORMAT_R24_UNORM_X8_TYPELESS
-          //   2. DSV Format: DXGI_FORMAT_D24_UNORM_S8_UINT
-          // we need to create the depth buffer resource with a typeless format.
-          resource_tex2d_desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-
-          resource_tex2d_desc.SampleDesc.Count   = 1;
-          resource_tex2d_desc.SampleDesc.Quality = 0;
-          resource_tex2d_desc.Layout             = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-          resource_tex2d_desc.Flags              = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-
-          D3D12_CLEAR_VALUE optimized_clear_value    = {};
-          optimized_clear_value.Format               = g_ctx->depth_stencil_format;
-          optimized_clear_value.DepthStencil.Depth   = 1.0f;
-          optimized_clear_value.DepthStencil.Stencil = 0;
-
-          wrl::ComPtr<ID3D12Resource> depth_stencil_buffer;
-          CD3DX12_CPU_DESCRIPTOR_HANDLE dsv_handle(g_ctx->descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV]->GetCPUDescriptorHandleForHeapStart());
-
-          CD3DX12_HEAP_PROPERTIES heap_properties(D3D12_HEAP_TYPE_DEFAULT);
-          if(DX_FAILED(g_ctx->device->get()->CreateCommittedResource(&heap_properties, D3D12_HEAP_FLAG_NONE, &resource_tex2d_desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(depth_stencil_buffer.GetAddressOf()))))
-          {
-            REX_ERROR(LogDirectX, "Failed to create depth stencil buffer");
-            return false;
-          }
-
-          rhi::set_debug_name_for(depth_stencil_buffer.Get(), "Depth Stencil Target Buffer");
-
-          // Create descriptor to mip level 0 of entire resource using the
-          // format of the resource
-          D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc;
-          dsv_desc.Flags              = D3D12_DSV_FLAG_NONE;
-          dsv_desc.ViewDimension      = D3D12_DSV_DIMENSION_TEXTURE2D;
-          dsv_desc.Format             = g_ctx->depth_stencil_format;
-          dsv_desc.Texture2D.MipSlice = 0;
-
-          g_ctx->device->get()->CreateDepthStencilView(depth_stencil_buffer.Get(), &dsv_desc, dsv_handle);
-
-          // Transition the resouce from it's inital state to be used as a depth buffer
-          CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(depth_stencil_buffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-          g_ctx->command_list->ResourceBarrier(1, &depth_write_transition);
-
-          g_ctx->resource_pool.insert(depthStencilTargetSlot, rsl::make_unique<DepthStencilTargetResource>(depth_stencil_buffer, 0));
-
-          return true;
-        }
-
-        //-------------------------------------------------------------------------
-        bool create_descriptor_set_pools(s32 numRTV, s32 numDSV, s32 numCBV)
-        {
-          rsl::array<D3D12_DESCRIPTOR_HEAP_DESC, 3> heap_descs;
-
-          heap_descs[0] = {
-              D3D12_DESCRIPTOR_HEAP_TYPE_RTV, rsl::safe_numeric_cast<UINT>(numRTV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-              0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-          };
-          heap_descs[1] = {
-              D3D12_DESCRIPTOR_HEAP_TYPE_DSV, rsl::safe_numeric_cast<UINT>(numDSV), D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
-              0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-          };
-          heap_descs[2] = {
-              D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, rsl::safe_numeric_cast<UINT>(numCBV), D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-              0 // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-          };
-
-          for(s32 i = 0; i < heap_descs.size(); ++i)
-          {
-            auto heap_desc = &heap_descs[i];
-
-            if(DX_FAILED(g_ctx->device->get()->CreateDescriptorHeap(heap_desc, IID_PPV_ARGS(&g_ctx->descriptor_heap_pool[heap_desc->Type]))))
-            {
-              REX_ERROR(LogDirectX, "Failed to create descriptor heap for type: {}", rsl::enum_refl::enum_name(heap_desc->Type));
-              return false;
-            }
-
-            switch (heap_desc->Type)
-            {
-            case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
-                {
-                    rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - RTV {}", i));
-                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
-                }
-                break;
-            case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
-                {
-                    rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - DSV {}", i));
-                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
-                }
-                break;
-            case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
-                {
-                    rhi::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - CBV {}", i));
-                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
-                }
-                break;
-            default:
-              REX_ASSERT("Unknown Descriptor Heap Type");
-            }
-          }
-
-          return true;
-        }
-
-        //-------------------------------------------------------------------------
-        bool wait_for_fence(ID3D12Fence* fence, u64 fenceVal)
-        {
-          if (fence->GetCompletedValue() < fenceVal)
-          {
-            rsl::win::handle event_handle(CreateEventEx(nullptr, nullptr, false, EVENT_ALL_ACCESS));
-
-            // Fire event when GPU hits current fence
-            if (DX_FAILED(fence->SetEventOnCompletion(fenceVal, event_handle.get())))
-            {
-              REX_ERROR(LogDirectX, "Failed to set completion event for fence");
-              return false;
-            }
-
-            constexpr DWORD milliSecondsTimeOut = 1000; // 1 second
-            REX_MAYBE_UNUSED auto res = WaitForSingleObject(event_handle.get(), milliSecondsTimeOut);
-            REX_ASSERT_X(res == WAIT_OBJECT_0, "Failed to wait for fence with error: {}", res);
-          }
-
-          return true;
-        }
-
         bool init_multi_sampling(DirectXDevice* device, DXGI_FORMAT backbufferFormat)
         {
           // 4x MSAA is supported on all DX11 hardware, since we only support DX12 devices we are guaranteed that 4x MSAA is supported.
@@ -1047,23 +785,82 @@ namespace rex
 
       } // namespace internal
 
-      //-------------------------------------------------------------------------
-      bool flush_command_queue()
+      class DirectXRenderer
       {
-        // Advance the fence value to mark commands up to this fence point.
-        g_ctx->current_fence++;
-
-        // Add an instruction to the command queue to set a new fence point. Because we
-        // are on the GPU timeline, the new fence point won't be set until the GPU finishes
-        // processing all the commands prior to this Signal().
-        if(DX_FAILED(g_ctx->command_queue->Signal(g_ctx->fence.Get(), g_ctx->current_fence)))
+      public:
+        DirectXRenderer(rhi::RenderHardwareInfrastructure* rhi, const OutputWindowUserData& userData)
+          : m_rhi(rhi)
+          , m_frame_ctx(s_num_frame_resources)
         {
-          REX_ERROR(LogDirectX, "Failed to signal command queue with fence");
-          return false;
+          // Create a scopeguard so if we exit the renderer too early on
+          // We mark it as initialization failed
+          rsl::scopeguard mark_init_failed = [this]() { m_is_initialized = false; };
+
+          // Init the clear state
+          if (internal::build_clear_state(g_ctx.get()) == false)
+          {
+            REX_ERROR(LogDirectX, "Failed to create the clear state");
+            return;
+          }
+
+          // Flush the command queue, making sure all graphic commands are executed at the end of renderer creation
+          m_rhi->flush_command_queue();
+
+          init_viewport();
+          init_scirssor_rect();
+
+          // release the scopeguard so that init gets marked successful
+          mark_init_failed.release();
         }
 
-        return internal::wait_for_fence(g_ctx->fence.Get(), g_ctx->current_fence);
-      }
+      private:
+        bool build_clear_state()
+        {
+          rex::renderer::commands::CreateClearStateCommandDesc create_clear_state_command_desc{};
+
+          create_clear_state_command_desc.rgba = rsl::colors::LightSteelBlue;
+          create_clear_state_command_desc.depth = 1.0f;
+          create_clear_state_command_desc.stencil = 0x00;
+
+          rex::StateController<rex::renderer::ClearBits> clear_flags;
+          clear_flags.add_state(rex::renderer::ClearBits::ClearColorBuffer);
+          clear_flags.add_state(rex::renderer::ClearBits::ClearDepthBuffer);
+          clear_flags.add_state(rex::renderer::ClearBits::ClearStencilBuffer);
+
+          create_clear_state_command_desc.flags = clear_flags;
+
+          m_clear_state = rex::renderer::create_clear_state(rsl::move(create_clear_state_command_desc));
+
+          return true;
+        }
+        void init_viewport()
+        {
+          // Create viewport to render our image in
+          // A viewport always needs to reset whenever a command list is reset
+          m_screen_viewport.TopLeftX = 0.0f;
+          m_screen_viewport.TopLeftY = 0.0f;
+          m_screen_viewport.Width = static_cast<f32>(userData.window_width);
+          m_screen_viewport.Height = static_cast<f32>(userData.window_height);
+          m_screen_viewport.MinDepth = 0.0f;
+          m_screen_viewport.MaxDepth = 1.0f;
+        }
+        void init_scirssor_rect()
+        {
+          // Cull pixels drawn outside of the backbuffer ( such as UI elements )
+          m_scissor_rect = { 0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height) };
+        }
+
+      private:
+        rhi::RenderHardwareInfrastructure* m_rhi;
+        D3D12_VIEWPORT m_screen_viewport;
+        RECT m_scissor_rect;
+        FrameContext m_frame_ctx;
+        ResourceSlot m_clear_state;
+
+        bool m_is_initialized;
+      };
+      
+      rsl::unique_ptr<DirectXRenderer> g_renderer;
 
       //-------------------------------------------------------------------------
       bool initialize(const OutputWindowUserData& userData, s32 maxFramesInflight, const ResourceSlot& fbColorTargetSlot, const ResourceSlot& bbColorTargetSlot, const ResourceSlot& depthTargetSlot)
@@ -1071,9 +868,10 @@ namespace rex
         // Initialize the render hardware interface
         // This is the first layer of abstraction between the hardware
         // and the software.
+        rhi::RenderHardwareInfrastructure* rhi = nullptr;
         {
           ExecutionLogger exec_logger(LogDirectX, "Render Hardware Infrastructure Initialization");
-          rhi::RenderHarderwareInfrastructure* rhi = rhi::init(userData);
+          rhi = rhi::init(userData);
           if (!rhi)
           {
             REX_ERROR(LogDirectX, "Failed to initialize rhi layer.");
@@ -1081,69 +879,15 @@ namespace rex
           }
         }
 
-        g_ctx = rsl::make_unique<DirectXContext>(maxFramesInflight);
-
-        internal::init_frame_ctx(g_ctx.get(), maxFramesInflight);
-
-        // Init the clear state
-        if (internal::build_clear_state(g_ctx.get()) == false)
-        {
-          REX_ERROR(LogDirectX, "Failed to create the clear state");
-          return false;
-        }
-
-        // Flush before changing any resources.
-        flush_command_queue();
-
-        // Reuse the memory assosiated with command recording.
-        // We can only reset when the associated command lists have finished
-        // execution on the GPU.
-        if(!internal::reset_command_list(g_ctx->command_allocator.Get(), nullptr))
-        {
-          REX_ERROR(LogDirectX, "Failed to reset command list");
-          return false;
-        }
-
-        // Create rtvs for each render target within the swapchain
-        if(internal::create_rtvs_for_swapchain(userData.window_width, userData.window_height, fbColorTargetSlot, bbColorTargetSlot) == false)
-        {
-          REX_ERROR(LogDirectX, "Failed to create rtvs for swapchain");
-          return false;
-        }
-
-        // Create depth/stencil view to bind to the pipeline and
-        // depth/stencil buffer as resource to write depth values to
-        if(internal::create_dsv_for_swapchain(userData.window_width, userData.window_height, depthTargetSlot) == false)
-        {
-          REX_ERROR(LogDirectX, "Failed to create dsv");
-          return false;
-        }
-
-        // Execute the swapchain buffer creation commands.
-        if(internal::close_command_list() == false)
-        {
-          REX_ERROR(LogDirectX, "Failed to close command list");
-          return false;
-        }
-
-        internal::exec_command_list();
-
-        // Wait until creation is complete.
-        flush_command_queue();
-
-        // Create viewport to render our image in
-        // A viewport always needs to reset whenever a command list is reset
-        g_ctx->screen_viewport.TopLeftX = 0.0f;
-        g_ctx->screen_viewport.TopLeftY = 0.0f;
-        g_ctx->screen_viewport.Width    = static_cast<f32>(userData.window_width);
-        g_ctx->screen_viewport.Height   = static_cast<f32>(userData.window_height);
-        g_ctx->screen_viewport.MinDepth = 0.0f;
-        g_ctx->screen_viewport.MaxDepth = 1.0f;
-
-        // Cull pixels drawn outside of the backbuffer ( such as UI elements )
-        g_ctx->scissor_rect = {0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height)};
+        // Initialize the renderer with the rhi.
+        g_renderer = rsl::make_unique<DirectXRenderer>(rhi, userData);
 
         return true;
+      }
+
+      void shutdown()
+      {
+        g_renderer.reset();
       }
 
       //-------------------------------------------------------------------------

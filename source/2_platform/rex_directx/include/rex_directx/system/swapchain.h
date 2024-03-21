@@ -16,10 +16,18 @@ namespace rex
     public:
       RESOURCE_CLASS_TYPE(Swapchain);
 
-      Swapchain(wrl::ComPtr<IDXGISwapChain> swapchain);
+      Swapchain(wrl::ComPtr<IDXGISwapChain> swapchain, DXGI_FORMAT format, s32 bufferCount);
+
+      HRESULT resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);
+
+      s32 buffer_count() const;
+
+      wrl::ComPtr<ID3D12Resource> get_buffer(s32 idx);
 
     private:
       wrl::ComPtr<IDXGISwapChain> m_swapchain;
+      DXGI_FORMAT m_format;
+      s32 m_buffer_count;
     };
   }
 }

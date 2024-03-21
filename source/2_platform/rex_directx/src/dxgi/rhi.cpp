@@ -12,6 +12,9 @@
 #include "rex_directx/system/directx_feature_level.h"
 #include "rex_directx/system/directx_command_queue.h"
 #include "rex_directx/system/directx_commandlist.h"
+#include "rex_directx/system/directx_descriptor_heap.h"
+#include "rex_directx/system/directx_resource_heap.h"
+#include "rex_directx/system/directx_resource.h"
 #include "rex_directx/system/swapchain.h"
 #include "rex_directx/d3dx12.h"
 
@@ -30,12 +33,12 @@ namespace rex
 
     namespace internal
     {
-      rsl::unique_ptr<RenderHarderwareInfrastructure> g_rhi;
+      rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi;
     }
 
-    class RenderHarderwareInfrastructure* init(const renderer::OutputWindowUserData& userData)
+    class RenderHardwareInfrastructure* init(const renderer::OutputWindowUserData& userData)
     {
-      internal::g_rhi = rsl::make_unique<RenderHarderwareInfrastructure>(userData);
+      internal::g_rhi = rsl::make_unique<RenderHardwareInfrastructure>(userData);
 
       if (!internal::g_rhi->init_successful())
       {
@@ -50,7 +53,8 @@ namespace rex
       internal::g_rhi.reset();
     }
 
-    RenderHarderwareInfrastructure::RenderHarderwareInfrastructure(const renderer::OutputWindowUserData& userData)
+    RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData)
+      : m_is_initialized(false)
     {
       // Create a scopeguard that automatically marks initialization as failed
       // This is to make it easy to extend initialization where needed with only
@@ -94,7 +98,7 @@ namespace rex
       // It also holds the fence for syncronysation between cpu and gpu
       if (!init_command_queue())
       {
-        REX_ERROR(LogRhi, "Failed to create command objects");
+        REX_ERROR(LogRhi, "Failed to create command queue");
         return;
       }
 
@@ -104,7 +108,7 @@ namespace rex
       // to a command queue, which in turn executes the commands.
       if (!init_command_list())
       {
-        REX_ERROR(LogRhi, "Failed to create global fence");
+        REX_ERROR(LogRhi, "Failed to create command list");
         return;
       }
 
@@ -141,43 +145,51 @@ namespace rex
         return;
       }
 
+      // 8) Now create the views for the swapchain's back buffers
+      // These views are needed for basic presenting as the GPU
+      // doesn't interact with resources directly but uses views instead
+      if (!init_swapchain_buffer_views(userData))
+      {
+        REX_ERROR(LogRhi, "Failed to create swapchain buffer views");
+        return;
+      }
+
       // release scopeguard so that init gets marked successful
       mark_init_failed.release();
     }
-    RenderHarderwareInfrastructure::~RenderHarderwareInfrastructure()
+    RenderHardwareInfrastructure::~RenderHardwareInfrastructure()
     {
       if (m_device)
       {
-        flush_command_queue();
+        // A command queue needs to be flushed to shutdown properly
+        m_command_queue->flush();
 
-        // Frame ctx does custom deletion so we manually clear it
-        m_ctx->frame_ctx.clear();
-        // Resource pool does custom deletion so we manually clear it 
-        m_ctx->resource_pool.clear();
-
-        m_ctx.reset();
-
-#if defined REX_ENABLE_DXGI_DEBUG_LAYER && defined REX_ENABLE_DXGI_LIVE_OBJECT_REPORT
-        // DXGI - Live Objects
-        if (m_debug_interface)
-        {
-          if (DX_FAILED(m_debug_interface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL))))
-          {
-            REX_ERROR(LogRhi, "Cannot ReportLiveDeviceObjects of DXGI");
-            return;
-          }
-        }
-#endif
+        // Now that all gpu commands are cleared, we can release all resources
       }
     }
 
-    bool RenderHarderwareInfrastructure::init_successful() const
+    bool RenderHardwareInfrastructure::init_successful() const
     {
       return m_is_initialized;
     }
 
+    void RenderHardwareInfrastructure::reset_command_list()
+    {
+      m_command_list->reset();
+    }
+
+    void RenderHardwareInfrastructure::exec_command_list()
+    {
+      m_command_list->close();
+      m_command_list->exec(m_command_queue.get());
+    }
+    void RenderHardwareInfrastructure::flush_command_queue()
+    {
+      m_command_queue->flush();
+    }
+
     // DXGI Factory
-    s32 RenderHarderwareInfrastructure::init_debug_interface()
+    s32 RenderHardwareInfrastructure::init_debug_interface()
     {
       /*
       * Bug in the DXGI Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
@@ -216,15 +228,9 @@ namespace rex
         REX_WARN(LogRhi, "Unable to get GXGI Debug Interface");
       }
 
-      if (DX_FAILED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(m_debug_interface.GetAddressOf()))))
-      {
-        REX_ERROR(LogRhi, "Cannot get debug interace of DXGI");
-        return;
-      }
-
       return dxgi_factory_flags;
     }
-    bool RenderHarderwareInfrastructure::init_dxgi_factory()
+    bool RenderHardwareInfrastructure::init_dxgi_factory()
     {
       s32 dxgi_factory_flags = 0;
 
@@ -235,7 +241,7 @@ namespace rex
       m_factory = dxgi::Factory::create(dxgi_factory_flags);
       return true;
     }
-    void RenderHarderwareInfrastructure::init_debug_controller()
+    void RenderHardwareInfrastructure::init_debug_controller()
     {
       // Enable extra debugging and send debug messages to the VC++ output window
       rex::wrl::ComPtr<ID3D12Debug> debug_controller;
@@ -250,7 +256,7 @@ namespace rex
     }
 
     // D3D Device
-    count_t RenderHarderwareInfrastructure::highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
+    count_t RenderHardwareInfrastructure::highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
     {
       auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
         [](const GpuDescription& lhs, const GpuDescription& rhs)
@@ -263,7 +269,7 @@ namespace rex
 
       return it != gpus.cend() ? rsl::distance(gpus.cbegin(), it) : -1;
     }
-    void RenderHarderwareInfrastructure::init_debug_layer()
+    void RenderHardwareInfrastructure::init_debug_layer()
     {
       // Device needs to exist before we can query this
       rex::wrl::ComPtr<ID3D12InfoQueue> dx12_info_queue;
@@ -305,7 +311,7 @@ namespace rex
       }
     }
 
-    bool RenderHarderwareInfrastructure::init_d3d_device()
+    bool RenderHardwareInfrastructure::init_d3d_device()
     {
       // Find highest scoring gpu
       const dxgi::AdapterManager adapter_manager(m_factory.get(), [this](const rsl::vector<GpuDescription>& gpus) { return highest_scoring_gpu(gpus); });
@@ -328,7 +334,7 @@ namespace rex
     }
 
     // D3D Command Objects
-    bool RenderHarderwareInfrastructure::init_command_queue()
+    bool RenderHardwareInfrastructure::init_command_queue()
     {
       // Command Queue
       wrl::ComPtr<ID3D12CommandQueue> command_queue;
@@ -357,7 +363,7 @@ namespace rex
       return true;
     }
 
-    bool RenderHarderwareInfrastructure::init_command_list()
+    bool RenderHardwareInfrastructure::init_command_list()
     {
       // Command Allocator
       wrl::ComPtr<ID3D12CommandAllocator> allocator;
@@ -393,7 +399,7 @@ namespace rex
     }
 
     // DXGI Swapchain
-    bool RenderHarderwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData)
+    bool RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData)
     {
       DXGI_SWAP_CHAIN_DESC sd;
       sd.BufferDesc.Width = userData.window_width;
@@ -428,22 +434,24 @@ namespace rex
     }
 
     // Resource Heaps
-    bool RenderHarderwareInfrastructure::init_resource_heaps()
+    bool RenderHardwareInfrastructure::init_resource_heaps()
     {
       // Nothing to implement at the moment
       CD3DX12_HEAP_DESC desc(1_kib, D3D12_HEAP_TYPE_DEFAULT);
 
-      if (DX_FAILED(m_device->get()->CreateHeap(&desc, IID_PPV_ARGS(&m_heap))))
+      wrl::ComPtr<ID3D12Heap> heap;
+      if (DX_FAILED(m_device->get()->CreateHeap(&desc, IID_PPV_ARGS(&heap))))
       {
         REX_ERROR(LogRhi, "Failed to create global resource heap");
         return false;
       }
 
+      m_heap = rsl::make_unique<ResourceHeap>(heap, m_device);
       return true;
     }
 
     // Descriptor Heaps
-    bool RenderHarderwareInfrastructure::init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, s32 numDescriptors)
+    bool RenderHardwareInfrastructure::init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, s32 numDescriptors)
     {
       D3D12_DESCRIPTOR_HEAP_DESC desc{};
 
@@ -454,22 +462,23 @@ namespace rex
         : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
       desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
 
-      if (DX_FAILED(m_device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_descriptor_heap_pool[desc.Type]))))
+      wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
+      if (DX_FAILED(m_device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
       {
         REX_ERROR(LogRhi, "Failed to create descriptor heap for type: {}", rsl::enum_refl::enum_name(desc.Type));
         return false;
       }
 
+      rsl::string_view type_str = rsl::enum_refl::enum_name(type);
+      rhi::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap Element - {}", type_str));
       s32 desc_size = m_device->get()->GetDescriptorHandleIncrementSize(type);
       s32 total_size = desc_size * numDescriptors;
-      m_descriptor_desc_sizes[type] = desc_size;
-      rsl::string_view type_str = rsl::enum_refl::enum_name(type);
-      rhi::set_debug_name_for(m_descriptor_heap_pool[desc.Type].Get(), rsl::format("Descriptor Heap Element - {}", type_str));
+
       REX_LOG(LogRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, numDescriptors, desc_size, total_size);
 
       return true;
     }
-    bool RenderHarderwareInfrastructure::init_descriptor_heaps()
+    bool RenderHardwareInfrastructure::init_descriptor_heaps()
     {
       if (!init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, s_num_rtv_descs))
       {
@@ -490,6 +499,61 @@ namespace rex
       return true;
     }
 
+    // Swapchain buffer views
+    bool RenderHardwareInfrastructure::init_swapchain_buffer_views(const renderer::OutputWindowUserData& userData)
+    {
+      if (!init_swapchain_rtvs(userData))
+      {
+        REX_ERROR(LogRhi, "Failed to create swapchain render target views");
+        return false;
+      }
+
+      if (!init_swapchain_dsvs(userData))
+      {
+        REX_ERROR(LogRhi, "Failed to create swapchain depth stencil views");
+        return false;
+      }
+
+      return true;
+    }
+    bool RenderHardwareInfrastructure::init_swapchain_rtvs(const renderer::OutputWindowUserData& userData)
+    {
+      s32 width = userData.window_width;
+      s32 height = userData.window_height;
+      if (DX_FAILED(m_swapchain->resize_buffers(width, height, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
+      {
+        REX_ERROR(LogRhi, "Failed to resize swapchain buffers");
+        return false;
+      }
+
+      for (s32 i = 0; i < m_swapchain->buffer_count(); ++i)
+      {
+        wrl::ComPtr<ID3D12Resource> buffer = m_swapchain->get_buffer(i);
+        set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
+        m_descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_RTV].create_rtv(Resource(buffer));
+      }
+
+      return true;
+    }
+    bool RenderHardwareInfrastructure::init_swapchain_dsvs(const renderer::OutputWindowUserData& userData)
+    {
+      s32 width = userData.window_width;
+      s32 height = userData.window_height;
+
+      Resource depth_stencil_buffer = m_heap->create_depth_stencil_resource(width, height);
+      set_debug_name_for(depth_stencil_buffer.get(), "Swapchain Depth Stencil Buffer");
+      m_descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_DSV].create_dsv(depth_stencil_buffer);
+      
+      CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(depth_stencil_buffer.get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);      
+      m_command_list->get()->ResourceBarrier(1, &depth_write_transition);
+
+      return true;
+    }
+
+    ScopedCommandList RenderHardwareInfrastructure::create_scoped_cmd_list()
+    {
+      return ScopedCommandList(m_command_list.get(), m_command_queue.get());
+    }
 
   }
 }
