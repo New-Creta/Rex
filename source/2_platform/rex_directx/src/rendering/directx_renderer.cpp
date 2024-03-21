@@ -1073,7 +1073,8 @@ namespace rex
         // and the software.
         {
           ExecutionLogger exec_logger(LogDirectX, "Render Hardware Infrastructure Initialization");
-          if (!rhi::init(userData))
+          rhi::RenderHarderwareInfrastructure* rhi = rhi::init(userData);
+          if (!rhi)
           {
             REX_ERROR(LogDirectX, "Failed to initialize rhi layer.");
             return false;

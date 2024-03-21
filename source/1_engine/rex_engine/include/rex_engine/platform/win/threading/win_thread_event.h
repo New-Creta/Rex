@@ -28,6 +28,9 @@ namespace rex
     // Note: this is blocking
     void wait_for_me();
 
+    // return the wrapper object
+    rsl::win::handle_t get() const;
+
   private:
     rsl::win::handle m_handle;
   };
