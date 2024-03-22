@@ -4,7 +4,7 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     //-------------------------------------------------------------------------
     ResourceSlot ResourceSlot::make_invalid()

@@ -15,8 +15,8 @@ namespace rex
     public:
       ResourceHeap(const wrl::ComPtr<ID3D12Heap>& heap, const wrl::ComPtr<ID3D12Device>& device);
 
-      Resource create_2d_resource(s32 width, s32 height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, s32 alignment = 0);
-      Resource create_depth_stencil_resource(s32 width, s32 height, s32 alignment = 0);
+      rsl::unique_ptr<Resource> create_2d_resource(s32 width, s32 height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, s32 alignment = 0);
+      rsl::unique_ptr<Resource> create_depth_stencil_resource(s32 width, s32 height, s32 alignment = 0);
 
     private:
       wrl::ComPtr<ID3D12Heap> m_heap;

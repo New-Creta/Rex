@@ -2,12 +2,12 @@
 #include "rex_directx/diagnostics/directx_call.h"
 #include "rex_directx/system/directx_feature_level.h"
 #include "rex_directx/system/directx_feature_shader_model.h"
-#include "rex_directx/system/swapchain.h"
+#include "rex_directx/system/directx_swapchain.h"
 #include "rex_directx/utility/directx_util.h" // IWYU pragma: keep
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
-#include "rex_directx/dxgi/rhi.h"
+#include "rex_directx/system/directx_rhi.h"
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/diagnostics/log.h"
 
@@ -1163,22 +1163,19 @@ namespace rex
       }
 
       //-------------------------------------------------------------------------
-      bool load_shader(const commands::LoadShaderCommandDesc& ls, const ResourceSlot& resourceSlot)
+      bool load_shader(const commands::LoadShaderCommandDesc& desc)
       {
-        wrl::ComPtr<ID3DBlob> byte_code;
-          if(DX_FAILED(D3DCreateBlob(ls.shader_byte_code.size(), byte_code.GetAddressOf())))
+        wrl::ComPtr<ID3DBlob> byte_code = d3d::create_blob(desc.shader_byte_code);
+        if(!byte_code)
         {
           REX_ERROR(LogDirectX, "Failed to load shader");
           return false;
         }
 
-        // Copy the data into the ID3DBlob's memory.
-        memcpy(byte_code->GetBufferPointer(), (void*)ls.shader_byte_code.data(), ls.shader_byte_code.size());
-
         switch(ls.shader_type)
         {
-          case ShaderType::VERTEX: g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<VertexShaderResource>(byte_code)); break;
-          case ShaderType::PIXEL: g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PixelShaderResource>(byte_code)); break;
+          case ShaderType::VERTEX: g_ctx->resource_pool.insert(rsl::make_unique<VertexShaderResource>(byte_code)); break;
+          case ShaderType::PIXEL: g_ctx->resource_pool.insert(rsl::make_unique<PixelShaderResource>(byte_code)); break;
 
           default: REX_ERROR(LogDirectX, "Unsupported Shader Type was given"); return false;
         }

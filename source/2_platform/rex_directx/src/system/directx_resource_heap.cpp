@@ -21,7 +21,7 @@ namespace rex
       m_memory_limit = heap_desc.SizeInBytes;
     }
 
-    Resource ResourceHeap::create_2d_resource(s32 width, s32 height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, s32 alignment)
+    rsl::unique_ptr<Resource> ResourceHeap::create_2d_resource(s32 width, s32 height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, s32 alignment)
     {
       D3D12_RESOURCE_DESC desc{};
 
@@ -39,7 +39,7 @@ namespace rex
       desc.Flags = flags;
     }
 
-    Resource ResourceHeap::create_depth_stencil_resource(s32 width, s32 height, s32 alignment)
+    rsl::unique_ptr<Resource> ResourceHeap::create_depth_stencil_resource(s32 width, s32 height, s32 alignment)
     {
       D3D12_RESOURCE_DESC desc = {};
       desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -71,7 +71,7 @@ namespace rex
         REX_ERROR(LogResourceHeap, "Failed to create depth stencil buffer");
       }
 
-      return Resource(depth_stencil_buffer);
+      return rsl::make_unique<Resource>(depth_stencil_buffer);
     }
 
   }

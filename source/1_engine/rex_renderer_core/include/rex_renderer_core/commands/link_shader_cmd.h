@@ -12,8 +12,8 @@ namespace rex
     {
       struct LinkShaderCommandDesc
       {
-        ResourceSlot vertex_shader;
-        ResourceSlot pixel_shader;
+        rhi::ResourceSlot vertex_shader;
+        rhi::ResourceSlot pixel_shader;
         rsl::vector<ConstantLayoutDescription> constants;
       };
 

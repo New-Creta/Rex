@@ -10,17 +10,16 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     using ResourcePtr = rsl::unique_ptr<IResource>;
 
     class ResourcePool
     {
     public:
-      void initialize(s32 reservedCapacity);
       void clear();
 
-      void insert(const ResourceSlot& slot, ResourcePtr&& resource);
+      ResourceSlot insert(ResourcePtr&& resource);
       void remove(const ResourceSlot& slot);
 
       bool has_slot(const ResourceSlot& slot) const;
@@ -39,8 +38,9 @@ namespace rex
     private:
       using ResourceMap = rsl::unordered_map<ResourceSlot, ResourcePtr>;
 
-      void validate_and_grow_if_necessary(s32 minCapacity);
+      ResourceSlot new_slot();
 
+    private:
       ResourceMap m_resource_map {};
       rsl::recursive_mutex m_lock;
     };

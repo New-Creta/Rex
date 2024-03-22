@@ -11,6 +11,8 @@
 #include "rex_renderer_core/commands/create_pipeline_state_cmd.h"
 #include "rex_renderer_core/commands/link_shader_cmd.h"
 
+#include "rex_renderer_core/system/rhi.h"
+
 #include "rex_engine/app/core_application.h"
 #include "rex_engine/app/windowinfo.h"
 
@@ -87,8 +89,8 @@ namespace rex
       rex::renderer::commands::CompileShaderCommandDesc ps_compile_command_desc = rex::renderer::commands::create_compile_shader_parameters("opaquePS"_small, rex::renderer::ShaderType::PIXEL, pixelShaderPath);
 
       rex::renderer::commands::LinkShaderCommandDesc link_shader_command_desc;
-      link_shader_command_desc.vertex_shader = rex::renderer::compile_shader(rsl::move(vs_compile_command_desc));
-      link_shader_command_desc.pixel_shader = rex::renderer::compile_shader(rsl::move(ps_compile_command_desc));
+      link_shader_command_desc.vertex_shader = rhi::compile_shader(rsl::move(vs_compile_command_desc));
+      link_shader_command_desc.pixel_shader = rhi::compile_shader(rsl::move(ps_compile_command_desc));
       link_shader_command_desc.constants = 
       { 
         rex::renderer::commands::ConstantLayoutDescription 

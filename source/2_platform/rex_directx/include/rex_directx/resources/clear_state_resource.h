@@ -1,30 +1,20 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/rendering/clear_bits.h"
-#include "rex_renderer_core/resource_management/resource.h"
-#include "rex_std/bonus/math/color.h"
+#include "rex_renderer_core/resources/clear_state.h"
 
 namespace rex
 {
-    namespace renderer
+    namespace rhi
     {
         namespace resources
         {
-            struct ClearState
-            {
-                rsl::Color4f rgba;
-                f32 depth{};
-                u8 stencil{};
-                ClearBits flags;
-            };
+          using ClearState = ClearStateDesc;
         } // namespace resources
 
         class ClearStateResource : public BaseResource<resources::ClearState>
         {
         public:
-            RESOURCE_CLASS_TYPE(ClearStateResource);
-
             explicit ClearStateResource(const resources::ClearState& cs)
                 :BaseResource(&m_clear_state)
                 ,m_clear_state(cs)

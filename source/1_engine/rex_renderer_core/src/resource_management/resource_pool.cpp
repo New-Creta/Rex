@@ -2,14 +2,8 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
-    //-----------------------------------------------------------------------
-    void ResourcePool::initialize(s32 reservedCapacity)
-    {
-      m_resource_map.reserve(reservedCapacity);
-    }
-
     //-----------------------------------------------------------------------
     void ResourcePool::clear()
     {
@@ -18,15 +12,14 @@ namespace rex
     }
 
     //-----------------------------------------------------------------------
-    void ResourcePool::insert(const ResourceSlot& slot, ResourcePtr&& resource)
+    ResourceSlot ResourcePool::insert(ResourcePtr&& resource)
     {
-      // The slots are all in numerical order ( see ResourceSlots.cpp )
-      // This means if there is a slot ID incoming with a larger value as the currently allocated buckets within the hashmap
-      // We have to grow rehash and allocate a larger number of buckets
-      validate_and_grow_if_necessary(slot.slot_id());
+      ResourceSlot slot = new_slot();
 
       rsl::unique_lock const sl(m_lock);
       m_resource_map[slot] = rsl::move(resource);
+
+      return slot;
     }
 
     //-----------------------------------------------------------------------
@@ -56,18 +49,6 @@ namespace rex
     {
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
       return m_resource_map.at(slot);
-    }
-
-    //-----------------------------------------------------------------------
-    void ResourcePool::validate_and_grow_if_necessary(s32 minCapacity)
-    {
-      if(minCapacity >= m_resource_map.size())
-      {
-        const s32 new_cap = (minCapacity * 2) + 1; // Grow to accommodate the slot
-
-        rsl::unique_lock const sl(m_lock);
-        m_resource_map.reserve(new_cap);
-      }
     }
   } // namespace renderer
 } // namespace rex

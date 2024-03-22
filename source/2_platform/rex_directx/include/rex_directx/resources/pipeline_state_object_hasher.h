@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     class InputLayoutResource;
     class ShaderProgramResource;

@@ -2,24 +2,14 @@
 
 #include "rex_std/bonus/utility/type_id.h"
 
-#define RESOURCE_CLASS_TYPE(resourceType)                                                                                                                                                                                                                \
-  static size_t static_type()                                                                                                                                                                                                                            \
-  {                                                                                                                                                                                                                                                      \
-    return rsl::type_id<resourceType>().hash_code();                                                                                                                                                                                                     \
-  }                                                                                                                                                                                                                                                      \
-  size_t type() const override                                                                                                                                                                                                                           \
-  {                                                                                                                                                                                                                                                      \
-    return static_type();                                                                                                                                                                                                                                \
-  }
-
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     class IResource
     {
     public:
-      IResource()          = default;
+      IResource() = default;
       virtual ~IResource() = default;
 
       virtual size_t type() const = 0;
@@ -30,11 +20,20 @@ namespace rex
     {
     public:
       explicit BaseResource(T* resource)
-          : m_resource(resource)
+        : m_resource(resource)
       {
       }
 
       ~BaseResource() override = default;
+
+      static size_t static_type()
+      {
+        return rsl::type_id<T>().hash_code();
+      }
+      size_t type() const override
+      {
+        return static_type();
+      }
 
       T* get()
       {

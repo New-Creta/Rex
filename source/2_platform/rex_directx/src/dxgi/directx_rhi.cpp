@@ -1,4 +1,4 @@
-#include "rex_directx/dxgi/rhi.h"
+#include "rex_directx/system/directx_rhi.h"
 
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/dxgi/adapter_manager.h"
@@ -15,7 +15,16 @@
 #include "rex_directx/system/directx_descriptor_heap.h"
 #include "rex_directx/system/directx_resource_heap.h"
 #include "rex_directx/system/directx_resource.h"
-#include "rex_directx/system/swapchain.h"
+#include "rex_directx/system/directx_swapchain.h"
+#include "rex_directx/system/directx_shader_compiler.h"
+
+#include "rex_directx/resources/vertex_shader_resource.h"
+#include "rex_directx/resources/pixel_shader_resource.h"
+#include "rex_directx/resources/shader_program_resource.h"
+#include "rex_directx/resources/clear_state_resource.h"
+#include "rex_directx/resources/raster_state_resource.h"
+#include "rex_directx/resources/input_layout_resource.h"
+
 #include "rex_directx/d3dx12.h"
 
 #include "rex_engine/engine/types.h"
@@ -24,6 +33,8 @@
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 
 #include "rex_std/bonus/utility.h"
+
+#include <D3Dcompiler.h>
 
 namespace rex
 {
@@ -34,32 +45,243 @@ namespace rex
     namespace internal
     {
       rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi;
+      RenderHardwareInfrastructure* get()
+      {
+        return g_rhi.get();
+      }
     }
 
     class RenderHardwareInfrastructure* init(const renderer::OutputWindowUserData& userData)
     {
       internal::g_rhi = rsl::make_unique<RenderHardwareInfrastructure>(userData);
 
-      if (!internal::g_rhi->init_successful())
+      if (!internal::g_rhi->init_successful)
       {
         shutdown();
       }
 
       return internal::g_rhi.get();
     }
-
     void shutdown()
     {
       internal::g_rhi.reset();
     }
 
+    // Command line interface
+    void reset_command_list()
+    {
+      internal::get()->command_list->reset();
+    }
+    void exec_command_list()
+    {
+      internal::get()->command_list->exec(internal::get()->command_queue.get());
+    }
+    void flush_command_queue()
+    {
+      internal::get()->command_queue->flush();
+    }
+
+    // shader API
+    ResourceSlot compile_shader(const CompileShaderDesc& desc)
+    {
+      ShaderCompiler compiler;
+      wrl::ComPtr<ID3DBlob> byte_code = compiler.compile_shader(desc);
+
+      if (!byte_code)
+      {
+        REX_ERROR(LogRhi, "Failed to compile shader");
+        return ResourceSlot::make_invalid();
+      }
+
+      switch (desc.shader_type)
+      {
+      case ShaderType::VERTEX:
+        return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(byte_code));
+        break;
+      case ShaderType::PIXEL:
+        return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(byte_code));
+        break;
+
+      default: 
+        REX_ERROR(LogDirectX, "Unsupported Shader Type was given"); 
+      }
+
+      return ResourceSlot::make_invalid();
+
+    }
+    ResourceSlot link_shader(const LinkShaderDesc& desc)
+    {
+      auto root_sig = d3d::create_shader_root_signature(desc.constants);
+
+      if (!root_sig)
+      {
+        REX_ERROR(LogRhi, "Failed to create root signature");
+        return ResourceSlot::make_invalid();
+      }
+
+      auto& vertex_shader = internal::get()->resource_pool.as<VertexShaderResource>(desc.vertex_shader);
+      auto& pixel_shader = internal::get()->resource_pool.as<PixelShaderResource>(desc.pixel_shader);
+
+      // create a combined shader object with the root sig, the vertex shader and the pixel shader
+      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(root_sig, vertex_shader, pixel_shader, desc.constants));
+    }
+    ResourceSlot load_shader(const LoadShaderDesc& desc)
+    {
+      wrl::ComPtr<ID3DBlob> byte_code = rex::d3d::create_blob(desc.shader_byte_code);
+
+      switch (desc.shader_type)
+      {
+      case ShaderType::VERTEX: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(byte_code));
+      case ShaderType::PIXEL: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(byte_code));
+
+      default: 
+        REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
+      }
+
+      return ResourceSlot::make_invalid();
+    }
+
+    // A clear state is just a struct holding different values to clear a buffer
+    // Flags control which part of the buffer (color, depths or stencil) should be cleared
+    ResourceSlot create_clear_state(const ClearStateDesc& desc)
+    {
+      internal::get()->resource_pool.insert(rsl::make_unique<ClearStateResource>(desc));
+    }
+    // A raster state holds rasterization settings
+    // settings like cull mode, fill mode, depth bias, normal orientation, ..
+    // are all included in the raster state
+    ResourceSlot create_raster_state(const RasterStateDesc& desc)
+    {
+      D3D12_RASTERIZER_DESC d3d_rs;
+
+      d3d_rs.FillMode = rex::d3d::to_d3d12_fill_mode(desc.fill_mode);
+      d3d_rs.CullMode = rex::d3d::to_d3d12_cull_mode(desc.cull_mode);
+      d3d_rs.FrontCounterClockwise = desc.front_ccw;
+      d3d_rs.DepthBias = desc.depth_bias;
+      d3d_rs.DepthBiasClamp = desc.depth_bias_clamp;
+      d3d_rs.SlopeScaledDepthBias = desc.sloped_scale_depth_bias;
+      d3d_rs.DepthClipEnable = desc.depth_clip_enable;
+      d3d_rs.ForcedSampleCount = desc.forced_sample_count;
+
+      /**
+       * Conservative rasterization means that all pixels that are at least partially covered by a rendered primitive are rasterized, which means that the pixel shader is invoked.
+       * Normal behavior is sampling, which is not used if conservative rasterization is enabled.
+       *
+       * Conservative rasterization is useful in a number of situations outside of rendering (collision detection, occlusion culling, and visibility detection).
+       *
+       * https://learn.microsoft.com/en-us/windows/win32/direct3d11/conservative-rasterization
+       */
+      d3d_rs.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+      d3d_rs.MultisampleEnable = desc.multisample;
+      d3d_rs.AntialiasedLineEnable = desc.aa_lines;
+
+      return internal::get()->resource_pool.insert(rsl::make_unique<RasterStateResource>(d3d_rs));
+    }
+    // An input layout determines the format of vertices
+    // It determines where a shader can find the position, normal, color
+    // of a vertex.
+    ResourceSlot create_input_layout(const InputLayoutDesc& desc)
+    {
+      rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
+
+      for (s32 i = 0; i < desc.input_layout.size(); ++i)
+      {
+        input_element_descriptions[i].SemanticName = desc.input_layout[i].semantic_name.data();
+        input_element_descriptions[i].SemanticIndex = desc.input_layout[i].semantic_index;
+        input_element_descriptions[i].Format = rex::d3d::to_d3d12_vertex_format(desc.input_layout[i].format);
+        input_element_descriptions[i].InputSlot = desc.input_layout[i].input_slot;
+        input_element_descriptions[i].AlignedByteOffset = desc.input_layout[i].aligned_byte_offset;
+        input_element_descriptions[i].InputSlotClass = rex::d3d::to_d3d12_input_layout_classification(desc.input_layout[i].input_slot_class);
+        input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
+      }
+
+      return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(input_element_descriptions));
+    }
+    // A vertex buffer is a buffer holding vertices of 1 or more objects
+    ResourceSlot create_vertex_buffer(const BufferDesc& desc)
+    {
+      // Create an upload buffer in the rhi to be used to upload data to this vb
+    }
+    // An index buffer is a buffer holding indices of 1 or more objects
+    ResourceSlot create_index_buffer(const BufferDesc& desc)
+    {
+      // Create an upload buffer in the rhi to be used to upload data to this ib
+    }
+    // A constant buffer is a buffer holding data that's accessible to a shader
+    // This can hold data like ints, floats, vectors and matrices
+    ResourceSlot create_consant_buffer(const BufferDesc& desc)
+    {
+      // Create an upload buffer in the rhi to be used to upload data to this cb
+    }
+    // A pipeline state object defines a state for the graphics pipeline.
+    // It holds the input layout, root signature, shaders, raster state, blend state ..
+    // needed for a draw call.
+    ResourceSlot create_pso(const PipelineStateDesc& cps)
+    {
+
+    }
+
+    namespace d3d
+    {
+      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::vector<ConstantLayoutDescription>& constants)
+      {
+        // Root parameter can be a table, root descriptor or root constants.
+        auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(constants.size()));
+
+        // This bit is hardcoded for now, we need to fix this later
+        // We want to sort the constants and then iterate over them with ranges
+        // If we find a constant, we initialize a root param as a constant
+        // If we only find 1 type of param, we init it directly
+        // If we find multiple of the same type, we init it as a range
+        root_parameters.emplace_back().InitAsConstantBufferView(0);
+        root_parameters.emplace_back().InitAsConstantBufferView(1);
+
+        // A root signature is an array of root parameters.
+        CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
+          root_parameters.size(), 
+          root_parameters.data(), 
+          0, 
+          nullptr, 
+          D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+        // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+        wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
+        wrl::ComPtr<ID3DBlob> error_blob = nullptr;
+
+        HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
+        if (error_blob != nullptr)
+        {
+          REX_ERROR(LogDirectX, "{}", (char*)error_blob->GetBufferPointer());
+          return nullptr;
+        }
+
+        if (DX_FAILED(hr))
+        {
+          REX_ERROR(LogDirectX, "Failed to serialize root signature");
+          return nullptr;
+        }
+
+        wrl::ComPtr<ID3D12RootSignature> root_signature;
+        if (DX_FAILED(internal::get()->device->get()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+        {
+          REX_ERROR(LogDirectX, "Failed to create root signature");
+          return nullptr;
+        }
+
+        rhi::set_debug_name_for(root_signature.Get(), "Root Signature");
+
+        return root_signature;
+      }
+    }
+
+#pragma region RHI Class
     RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData)
-      : m_is_initialized(false)
+      : init_successful(false)
     {
       // Create a scopeguard that automatically marks initialization as failed
       // This is to make it easy to extend initialization where needed with only
       // needing 1 place where we mark initialization as successful.
-      rsl::scopeguard mark_init_failed = [this]() { m_is_initialized = false; };
+      rsl::scopeguard mark_init_failed = [this]() { init_successful = false; };
 
       // 1) we need to init the dxgi factory.
       // This is the system we use to create most other systems.
@@ -159,33 +381,13 @@ namespace rex
     }
     RenderHardwareInfrastructure::~RenderHardwareInfrastructure()
     {
-      if (m_device)
+      if (device)
       {
         // A command queue needs to be flushed to shutdown properly
-        m_command_queue->flush();
+        command_queue->flush();
 
         // Now that all gpu commands are cleared, we can release all resources
       }
-    }
-
-    bool RenderHardwareInfrastructure::init_successful() const
-    {
-      return m_is_initialized;
-    }
-
-    void RenderHardwareInfrastructure::reset_command_list()
-    {
-      m_command_list->reset();
-    }
-
-    void RenderHardwareInfrastructure::exec_command_list()
-    {
-      m_command_list->close();
-      m_command_list->exec(m_command_queue.get());
-    }
-    void RenderHardwareInfrastructure::flush_command_queue()
-    {
-      m_command_queue->flush();
     }
 
     // DXGI Factory
@@ -204,15 +406,15 @@ namespace rex
       */
       s32 dxgi_factory_flags = 0;
 
-      if (DX_SUCCESS(DXGIGetDebugInterface1(0, IID_PPV_ARGS(m_debug_info_queue.GetAddressOf()))))
+      if (DX_SUCCESS(DXGIGetDebugInterface1(0, IID_PPV_ARGS(debug_info_queue.GetAddressOf()))))
       {
         dxgi_factory_flags = DXGI_CREATE_FACTORY_DEBUG;
 
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dxgi_severity_message);
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_INFO, globals::g_enable_dxgi_severity_info);
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, globals::g_enable_dxgi_severity_warning);
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, globals::g_enable_dxgi_severity_error);
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dxgi_severity_corruption);
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dxgi_severity_message);
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_INFO, globals::g_enable_dxgi_severity_info);
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, globals::g_enable_dxgi_severity_warning);
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, globals::g_enable_dxgi_severity_error);
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dxgi_severity_corruption);
 
         rsl::array<DXGI_INFO_QUEUE_MESSAGE_ID, 1> dxgi_hide = {
             80 /* IDXGISwapChain::GetContainingOutput: The swapchain's adapter does not control the output on which the swapchain's window resides. */,
@@ -221,7 +423,7 @@ namespace rex
         dxgi_filter.DenyList.NumIDs = rsl::safe_numeric_cast<u32>(dxgi_hide.size());
         dxgi_filter.DenyList.pIDList = dxgi_hide.data();
 
-        m_debug_info_queue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &dxgi_filter);
+        debug_info_queue->AddStorageFilterEntries(DXGI_DEBUG_DXGI, &dxgi_filter);
       }
       else
       {
@@ -238,7 +440,7 @@ namespace rex
       dxgi_factory_flags = init_debug_interface();
 #endif
 
-      m_factory = dxgi::Factory::create(dxgi_factory_flags);
+      factory = dxgi::Factory::create(dxgi_factory_flags);
       return true;
     }
     void RenderHardwareInfrastructure::init_debug_controller()
@@ -273,7 +475,7 @@ namespace rex
     {
       // Device needs to exist before we can query this
       rex::wrl::ComPtr<ID3D12InfoQueue> dx12_info_queue;
-      if (DX_SUCCESS(m_device->get()->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
+      if (DX_SUCCESS(device->get()->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
       {
         dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
         dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info);
@@ -314,22 +516,22 @@ namespace rex
     bool RenderHardwareInfrastructure::init_d3d_device()
     {
       // Find highest scoring gpu
-      const dxgi::AdapterManager adapter_manager(m_factory.get(), [this](const rsl::vector<GpuDescription>& gpus) { return highest_scoring_gpu(gpus); });
+      const dxgi::AdapterManager adapter_manager(factory.get(), [this](const rsl::vector<GpuDescription>& gpus) { return highest_scoring_gpu(gpus); });
       const dxgi::Adapter* selected_gpu = adapter_manager.selected();
       IDXGIAdapter* adapter = selected_gpu->c_ptr();
 
       // Create device
       const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
 
-      wrl::ComPtr<ID3D12Device> device;
-      if (DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&device))))
+      wrl::ComPtr<ID3D12Device> d3d_device;
+      if (DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&d3d_device))))
       {
         REX_ERROR(LogRhi, "Software adapter not supported");
         REX_ERROR(LogRhi, "Failed to create DX12 Device");
         return false;
       }
 
-      m_device = rsl::make_unique<renderer::DirectXDevice>(device, feature_level, selected_gpu);
+      device = rsl::make_unique<DirectXDevice>(d3d_device, feature_level, selected_gpu);
       return true;
     }
 
@@ -337,28 +539,28 @@ namespace rex
     bool RenderHardwareInfrastructure::init_command_queue()
     {
       // Command Queue
-      wrl::ComPtr<ID3D12CommandQueue> command_queue;
+      wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
       D3D12_COMMAND_QUEUE_DESC queue_desc = {};
       queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
       queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-      if (DX_FAILED(m_device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(command_queue.GetAddressOf()))))
+      if (DX_FAILED(device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
       {
         REX_ERROR(LogRhi, "Failed to create command queue");
         return false;
       }
 
-      rhi::set_debug_name_for(command_queue.Get(), "Global Command Queue");
+      rhi::set_debug_name_for(d3d_command_queue.Get(), "Global Command Queue");
 
       // Fence
       wrl::ComPtr<ID3D12Fence> fence;
-      if (DX_FAILED(m_device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
+      if (DX_FAILED(device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
       {
         REX_ERROR(LogRhi, "Failed to create DX fence, to synchronize CPU/GPU");
         return false;
       }
 
       rhi::set_debug_name_for(fence.Get(), "Global Fence");
-      m_command_queue = rsl::make_unique<CommandQueue>(command_queue, fence);
+      command_queue = rsl::make_unique<CommandQueue>(d3d_command_queue, fence);
 
       return true;
     }
@@ -367,7 +569,7 @@ namespace rex
     {
       // Command Allocator
       wrl::ComPtr<ID3D12CommandAllocator> allocator;
-      if (DX_FAILED(m_device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(allocator.GetAddressOf()))))
+      if (DX_FAILED(device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(allocator.GetAddressOf()))))
       {
         REX_ERROR(LogRhi, "Failed to create command allocator");
         return false;
@@ -377,23 +579,14 @@ namespace rex
 
       // Command List
       wrl::ComPtr<ID3D12CommandList> cmd_list;
-      if (DX_FAILED(m_device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
+      if (DX_FAILED(device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
       {
         REX_ERROR(LogRhi, "Failed to create command list");
         return false;
       }
 
       rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
-      m_command_list = rsl::make_unique<CommandList>(cmd_list, allocator);
-
-      // Start off in a closed state. This is because the first time we
-      // refer to the command list we will Reset it, and it needs to be closed
-      // before calling Reset.
-      if (!m_command_list->close())
-      {
-        REX_ERROR(LogRhi, "Failed to close command list");
-        return false;
-      }
+      command_list = rsl::make_unique<CommandList>(cmd_list, allocator);
 
       return true;
     }
@@ -419,17 +612,17 @@ namespace rex
       sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
       // Note: swap chain uses queue to perform flush.
-      rex::wrl::ComPtr<IDXGIFactory> dxgi_factory = m_factory->as<IDXGIFactory>();
-      rex::wrl::ComPtr<IDXGISwapChain> swapchain;
-      if (DX_FAILED(dxgi_factory->CreateSwapChain(m_command_queue->get(), &sd, swapchain.GetAddressOf())))
+      rex::wrl::ComPtr<IDXGIFactory> dxgi_factory = factory->as<IDXGIFactory>();
+      rex::wrl::ComPtr<IDXGISwapChain> d3d_swapchain;
+      if (DX_FAILED(dxgi_factory->CreateSwapChain(command_queue->get(), &sd, d3d_swapchain.GetAddressOf())))
       {
         REX_ERROR(LogRhi, "Failed to create swap chain");
         return false;
       }
 
-      rhi::set_debug_name_for(swapchain.Get(), "SwapChain");
+      rhi::set_debug_name_for(d3d_swapchain.Get(), "SwapChain");
 
-      m_swapchain = rsl::make_unique<renderer::Swapchain>(swapchain);
+      swapchain = rsl::make_unique<Swapchain>(d3d_swapchain);
       return true;
     }
 
@@ -439,14 +632,14 @@ namespace rex
       // Nothing to implement at the moment
       CD3DX12_HEAP_DESC desc(1_kib, D3D12_HEAP_TYPE_DEFAULT);
 
-      wrl::ComPtr<ID3D12Heap> heap;
-      if (DX_FAILED(m_device->get()->CreateHeap(&desc, IID_PPV_ARGS(&heap))))
+      wrl::ComPtr<ID3D12Heap> d3d_heap;
+      if (DX_FAILED(device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
       {
         REX_ERROR(LogRhi, "Failed to create global resource heap");
         return false;
       }
 
-      m_heap = rsl::make_unique<ResourceHeap>(heap, m_device);
+      heap = rsl::make_unique<ResourceHeap>(d3d_heap, device);
       return true;
     }
 
@@ -463,15 +656,15 @@ namespace rex
       desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
 
       wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
-      if (DX_FAILED(m_device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
+      rsl::string_view type_str = rsl::enum_refl::enum_name(type);
+      if (DX_FAILED(device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
       {
-        REX_ERROR(LogRhi, "Failed to create descriptor heap for type: {}", rsl::enum_refl::enum_name(desc.Type));
+        REX_ERROR(LogRhi, "Failed to create descriptor heap for type: {}", type_str);
         return false;
       }
 
-      rsl::string_view type_str = rsl::enum_refl::enum_name(type);
       rhi::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap Element - {}", type_str));
-      s32 desc_size = m_device->get()->GetDescriptorHandleIncrementSize(type);
+      s32 desc_size = device->get()->GetDescriptorHandleIncrementSize(type);
       s32 total_size = desc_size * numDescriptors;
 
       REX_LOG(LogRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, numDescriptors, desc_size, total_size);
@@ -520,17 +713,18 @@ namespace rex
     {
       s32 width = userData.window_width;
       s32 height = userData.window_height;
-      if (DX_FAILED(m_swapchain->resize_buffers(width, height, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
+      if (DX_FAILED(swapchain->resize_buffers(width, height, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
       {
         REX_ERROR(LogRhi, "Failed to resize swapchain buffers");
         return false;
       }
 
-      for (s32 i = 0; i < m_swapchain->buffer_count(); ++i)
+      for (s32 i = 0; i < swapchain->buffer_count(); ++i)
       {
-        wrl::ComPtr<ID3D12Resource> buffer = m_swapchain->get_buffer(i);
+        wrl::ComPtr<ID3D12Resource> buffer = swapchain->get_buffer(i);
         set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        m_descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_RTV].create_rtv(Resource(buffer));
+        Resource resource(buffer);
+        descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_RTV].create_rtv(&resource);
       }
 
       return true;
@@ -540,20 +734,20 @@ namespace rex
       s32 width = userData.window_width;
       s32 height = userData.window_height;
 
-      Resource depth_stencil_buffer = m_heap->create_depth_stencil_resource(width, height);
+      depth_stencil_buffer = heap->create_depth_stencil_resource(width, height);
       set_debug_name_for(depth_stencil_buffer.get(), "Swapchain Depth Stencil Buffer");
-      m_descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_DSV].create_dsv(depth_stencil_buffer);
+      descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_DSV].create_dsv(depth_stencil_buffer.get());
       
-      CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(depth_stencil_buffer.get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);      
-      m_command_list->get()->ResourceBarrier(1, &depth_write_transition);
+      CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(depth_stencil_buffer->get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);      
+      command_list->get()->ResourceBarrier(1, &depth_write_transition);
 
       return true;
     }
 
     ScopedCommandList RenderHardwareInfrastructure::create_scoped_cmd_list()
     {
-      return ScopedCommandList(m_command_list.get(), m_command_queue.get());
+      return ScopedCommandList(command_list.get(), command_queue.get());
     }
-
+#pragma endregion
   }
 }

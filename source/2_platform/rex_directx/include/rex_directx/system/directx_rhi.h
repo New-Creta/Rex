@@ -1,14 +1,18 @@
 #pragma once
 
 #include "rex_directx/dxgi/util.h"
+#include "rex_directx/dxgi/factory.h"
 #include "rex_directx/utility/directx_util.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_renderer_core/system/gpu_description.h"
+#include "rex_renderer_core/system/rhi.h"
+#include "rex_renderer_core/resource_management/resource_pool.h"
 
 #include "rex_directx/system/directx_device.h"
 #include "rex_directx/system/directx_debug_interface.h"
 #include "rex_directx/system/directx_resource_heap.h"
 #include "rex_directx/system/directx_descriptor_heap.h"
+#include "rex_directx/system/directx_commandlist.h"
 
 #include "rex_std/string_view.h"
 #include "rex_engine/engine/defines.h"
@@ -36,25 +40,14 @@ namespace rex
 #endif
     }
 
-    // Initializes the render hardware infrastructure
-    // Creates the dxgi factory, d3d device, command buffers, heaps and swapchain
-    // After this, the rhi is setup to start creating resources (textures, shaders, vertex buffers, ..)
-    class RenderHardwareInfrastructure* init(const renderer::OutputWindowUserData& userData);
-
-    // shutdown the internal rhi, all reference to the rhi are invalidated from here on out
-    void shutdown();
-
-    class RenderHardwareInfrastructure
+    // The RHI class. 
+    // This manages rhi initializes and shutdown
+    // It owns the lifetime of GPU objects.
+    struct RenderHardwareInfrastructure
     {
     public:
       RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData);
       ~RenderHardwareInfrastructure();
-
-      bool init_successful() const;
-
-      void reset_command_list();
-      void flush_command_queue();
-      void exec_command_list();
 
     private:
       // DXGI Factory
@@ -97,27 +90,29 @@ namespace rex
       constexpr static s32 s_num_cbv_descs = 128;
       constexpr static rsl::array m_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
 
-      bool m_is_initialized;
+    public:
+      bool init_successful;
       // Keep the debug interface as the last resource to be destroyed
       // it automatically reports if any resources are still active on destruction
-      DebugInterface m_debug_interface;
-      rsl::unique_ptr<dxgi::Factory> m_factory;
-      rsl::unique_ptr<renderer::DirectXDevice> m_device;
-      rsl::unique_ptr<renderer::Swapchain> m_swapchain;
-      rsl::unique_ptr<CommandQueue> m_command_queue;
-      rsl::unique_ptr<CommandList> m_command_list;
-      rsl::unique_ptr<ResourceHeap> m_heap;
+      DebugInterface debug_interface;
+      rsl::unique_ptr<dxgi::Factory> factory;
+      rsl::unique_ptr<DirectXDevice> device;
+      rsl::unique_ptr<Swapchain> swapchain;
+      rsl::unique_ptr<CommandQueue> command_queue;
+      rsl::unique_ptr<CommandList> command_list;
+      rsl::unique_ptr<ResourceHeap> heap;
+      rsl::unique_ptr<Resource> depth_stencil_buffer;
+      ResourcePool resource_pool;
 
-      wrl::ComPtr<IDXGIInfoQueue> m_debug_info_queue;
-      rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> m_descriptor_heap_pool;
+      wrl::ComPtr<IDXGIInfoQueue> debug_info_queue;
+      rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> descriptor_heap_pool;
       rsl::array<renderer::ResourceSlot, s_swapchain_buffer_count> swapchain_rt_buffer_slots;   // swapchain render target buffer indices
 
     };
 
-    rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi;
-
-
-    void flush_command_queue();
-
+    namespace d3d
+    {
+      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::vector<ConstantLayoutDescription>& constants);
+    }
   }
 }

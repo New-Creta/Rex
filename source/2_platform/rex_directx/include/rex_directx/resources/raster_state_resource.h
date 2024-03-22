@@ -7,13 +7,11 @@
 
 namespace rex
 {
-    namespace renderer
+    namespace rhi
     {
         class RasterStateResource : public BaseResource<D3D12_RASTERIZER_DESC>
         {
         public:
-            RESOURCE_CLASS_TYPE(RasterStateResource);
-
             explicit RasterStateResource(const D3D12_RASTERIZER_DESC& rs)
                 : BaseResource(&m_raster_state)
                 ,m_raster_state(rs)

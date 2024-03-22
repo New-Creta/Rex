@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     enum class ShaderType
     {

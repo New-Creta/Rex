@@ -6,7 +6,7 @@
 
 namespace rex
 {
-    namespace renderer
+    namespace rhi
     {
         namespace resources
         {
@@ -24,8 +24,6 @@ namespace rex
         class BufferResource : public BaseResource<resources::Buffer>
         {
         public:
-            RESOURCE_CLASS_TYPE(BufferResource);
-
             BufferResource(const wrl::ComPtr<ID3DBlob>& cpuBuffer, const wrl::ComPtr<ID3D12Resource>& gpuBuffer, const wrl::ComPtr<ID3D12Resource>& uploader, u32 sizeInBytes)
                 :BaseResource(&m_buffer_resource)
                 ,m_buffer_resource({ cpuBuffer , gpuBuffer, uploader, sizeInBytes })

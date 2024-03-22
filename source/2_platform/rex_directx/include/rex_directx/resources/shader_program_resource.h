@@ -8,7 +8,7 @@
 
 namespace rex
 {
-    namespace renderer
+    namespace rhi
     {
         namespace resources
         {
@@ -18,8 +18,7 @@ namespace rex
                 wrl::ComPtr<ID3DBlob> vertex_shader{};
                 wrl::ComPtr<ID3DBlob> pixel_shader{};
 
-                const commands::ConstantLayoutDescription* constants{};
-                s32 num_constants{};
+                rsl::vector<renderer::commands::ConstantLayoutDescription> constants{};
             };
         } // namespace resources
 
@@ -28,9 +27,9 @@ namespace rex
         public:
             RESOURCE_CLASS_TYPE(ShaderProgramResource);
 
-            ShaderProgramResource(const wrl::ComPtr<ID3D12RootSignature>& rootSig, const wrl::ComPtr<ID3DBlob>& vs, const wrl::ComPtr<ID3DBlob>& ps, const commands::ConstantLayoutDescription* constants, s32 numConstants)
+            ShaderProgramResource(const wrl::ComPtr<ID3D12RootSignature>& rootSig, const wrl::ComPtr<ID3DBlob>& vs, const wrl::ComPtr<ID3DBlob>& ps, const rsl::vector<renderer::commands::ConstantLayoutDescription>& constants)
               : BaseResource(&m_shader_program)
-                ,m_shader_program({ rootSig, vs, ps, constants, numConstants })
+                ,m_shader_program({ rootSig, vs, ps, constants})
             {}
             ~ShaderProgramResource() override = default;
 

@@ -9,13 +9,11 @@
 
 namespace rex
 {
-    namespace renderer
+    namespace rhi
     {
         class InputLayoutResource : public BaseResource<rsl::vector<D3D12_INPUT_ELEMENT_DESC>>
         {
         public:
-            RESOURCE_CLASS_TYPE(InputLayoutResource);
-
             explicit InputLayoutResource(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements)
                 : BaseResource(&m_input_elements)
                 ,m_input_elements(elements)

@@ -8,7 +8,7 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     /**
      * @class ResourceSlots

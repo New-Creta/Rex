@@ -6,7 +6,7 @@
 
 namespace rex
 {
-    namespace renderer
+    namespace rhi
     {
         class PipelineStateResource : public BaseResource<ID3D12PipelineState>
         {

@@ -15,8 +15,8 @@ namespace rex
     public:
       DescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device>& device);
 
-      void create_rtv(const Resource& resource);
-      void create_dsv(const Resource& resource);
+      void create_rtv(const Resource* resource);
+      void create_dsv(const Resource* resource);
 
     private:
       wrl::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;

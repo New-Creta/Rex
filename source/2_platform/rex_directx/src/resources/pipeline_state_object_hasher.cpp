@@ -8,15 +8,15 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
-    bool operator==(const rex::renderer::PipelineStateObjectHashData& lhs, const rex::renderer::PipelineStateObjectHashData& rhs)
+    bool operator==(const rex::rhi::PipelineStateObjectHashData& lhs, const rex::rhi::PipelineStateObjectHashData& rhs)
     {
       return lhs.input_layout_resource == rhs.input_layout_resource &&
         lhs.raster_state_resource == rhs.raster_state_resource &&
         lhs.shader_program_resource && rhs.shader_program_resource;
     }
-    bool operator!=(const rex::renderer::PipelineStateObjectHashData& lhs, const rex::renderer::PipelineStateObjectHashData& rhs)
+    bool operator!=(const rex::rhi::PipelineStateObjectHashData& lhs, const rex::rhi::PipelineStateObjectHashData& rhs)
     {
       return !(lhs == rhs);
     }

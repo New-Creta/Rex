@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     struct OutputWindowUserData;
     struct MsaaSettings;
@@ -14,8 +14,6 @@ namespace rex
     class Swapchain : public BaseResource<IDXGISwapChain>
     {
     public:
-      RESOURCE_CLASS_TYPE(Swapchain);
-
       Swapchain(wrl::ComPtr<IDXGISwapChain> swapchain, DXGI_FORMAT format, s32 bufferCount);
 
       HRESULT resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);

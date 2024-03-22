@@ -12,7 +12,12 @@ namespace rex
     CommandList::CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList, const wrl::ComPtr<ID3D12CommandAllocator>& allocator)
       : m_command_list(commandList)
       , m_allocator(allocator)
-    {}
+    {
+      // Start off in a closed state. This is because the first time we
+      // refer to the command list we will Reset it, and it needs to be closed
+      // before calling Reset.
+      m_command_list->Close();
+    }
 
     void CommandList::reset(ID3D12PipelineState* pso)
     {

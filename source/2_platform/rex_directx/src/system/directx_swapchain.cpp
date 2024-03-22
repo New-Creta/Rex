@@ -1,14 +1,14 @@
-#include "rex_directx/system/swapchain.h"
+#include "rex_directx/system/directx_swapchain.h"
 
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_renderer_core/rendering/msaa_settings.h"
 
 #include "rex_directx/diagnostics/directx_call.h"
-#include "rex_directx/dxgi/rhi.h"
+#include "rex_directx/system/directx_rhi.h"
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     Swapchain::Swapchain(wrl::ComPtr<IDXGISwapChain> swapchain, DXGI_FORMAT format, s32 bufferCount)
       : BaseResource<IDXGISwapChain>(m_swapchain.Get())

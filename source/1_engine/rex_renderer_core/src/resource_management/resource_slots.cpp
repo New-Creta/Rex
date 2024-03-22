@@ -9,7 +9,7 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace rhi
   {
     //-------------------------------------------------------------------------
     ResourceSlots::ResourceSlots(s32 num)
