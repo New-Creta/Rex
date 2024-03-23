@@ -27,36 +27,51 @@ namespace regina
 
   void CubeScene::build_geometry()
   {
-    auto box = rex::mesh_factory::create_box(1.5f, 0.5f, 1.5f, 0);
+    // Create the box geometry
+    auto box = rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f, 0);
 
+    // Convert the box geometry into known vertex type used by the renderer
+    REX_STATIC_WARNING("Convert mesh geometry vertex into a renderer known vertex");
     auto total_vertex_count = box.vertices().size();
-    auto total_index_count = box.indices().size();
 
-    rsl::vector<rex::renderer::VertexPosCol> box_vertices((rsl::Capacity(total_vertex_count)));
-    for (const rex::mesh_factory::Vertex& v : box.vertices())
+    rsl::unique_array<rex::renderer::VertexPosCol> box_vertices = rsl::make_unique<rex::renderer::VertexPosCol[]>((total_vertex_count));
+    for (s32 idx = 0; idx < box.vertices().size(); ++idx)
     {
-      rex::renderer::VertexPosCol const nv({ v.position.x, v.position.y, v.position.z }, { v.position.x, v.position.y, v.position.z, 1.0f });
-      box_vertices.push_back(nv);
+      const rex::mesh_factory::Vertex& v = box.vertices()[idx];
+      const rex::renderer::VertexPosCol nv({ v.position.x, v.position.y, v.position.z }, { v.position.x, v.position.y, v.position.z, 1.0f });
+      box_vertices[idx] = nv;
     }
 
-    rsl::vector<u16> box_indices((rsl::Capacity(total_index_count)));
-    box_indices.insert(box_indices.end(), rsl::begin(box.indices()), rsl::end(box.indices()));
+    rsl::unique_array<u16> index_buffer = rsl::make_unique<u16[]>(box.indices().size());
 
+    // Somehow the data wrapped in the containers here need to get released to us
+    // That way we can hold this data and pass it over to the gpu without copying it
     const u32 vb_byte_size = total_vertex_count * sizeof(rex::renderer::VertexPosCol);
-    const u32 ib_byte_size = total_index_count * sizeof(u16);
+    const u32 ib_byte_size = box.indices().size() * sizeof(u16);
 
-    rex::renderer::commands::CreateBufferCommandDesc v_create_buffer_command_desc = rex::renderer::commands::create_buffer_parameters<rex::renderer::VertexPosCol>(box_vertices.data(), box_vertices.size());
-    rex::renderer::Mesh::VertexBufferDesc vbd(rex::renderer::create_vertex_buffer(rsl::move(v_create_buffer_command_desc)), sizeof(rex::renderer::VertexPosCol), vb_byte_size);
+    // Fill in the buffer descs to transfer the data over to mesh
+    rex::renderer::VertexBufferDesc vb_desc(box_vertices.release(), sizeof(rex::renderer::VertexPosCol), vb_byte_size);
+    rex::renderer::IndexBufferDesc ib_desc{rsl::move(index_buffer)};
 
-    rex::renderer::commands::CreateBufferCommandDesc i_create_buffer_command_desc = rex::renderer::commands::create_buffer_parameters<u16>(box_indices.data(), box_indices.size());
-    rex::renderer::Mesh::IndexBufferDesc ibd(rex::renderer::create_index_buffer(rsl::move(i_create_buffer_command_desc)), rex::renderer::IndexBufferFormat::R16Uint, ib_byte_size);
+    // Create the cube mesh object
+    m_mesh_cube = rsl::make_unique<rex::renderer::Mesh>("box_geometry"_med, rsl::move(vb_desc), rsl::move(ib_desc));
 
-    m_mesh_cube = rsl::make_unique<rex::renderer::Mesh>("box_geometry"_med, vbd, ibd);
-    m_mesh_cube->add_submesh("box"_small, total_index_count, 0, 0);
+    // Meshes can have multiple submeshes.
+    // In this case the submesh points to the entire mesh, therefore we configure it as such
+    s32 start_idx = 0;
+    s32 last_idx = index_buffer.count();
+    m_mesh_cube->add_submesh("box"_small, start_idx, last_idx);
+
+    // Pass the mesh to the renderer so it'll render it next frame
+    rex::renderer::add_mesh(m_mesh_cube.get());
   }
 
   void CubeScene::build_render_items()
   {
+    // This scene only holds 1 mesh, which is a cube so we simply add that to the renderer
+    renderer::add_mesh(m_mesh_cube.get());
+
+
     auto cube_r_item = rex::renderer::RenderItem();
 
     const glm::mat4 scale = glm::scale(cube_r_item.world, glm::vec3(2.0f, 2.0f, 2.0f));

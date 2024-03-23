@@ -8,10 +8,10 @@ namespace rex
 {
   namespace rhi
   {
-    class DirectXDevice : public BaseResource<ID3D12Device>
+    class DirectXDevice : public BaseResource<ID3D12Device1>
     {
     public:
-      DirectXDevice(const wrl::ComPtr<ID3D12Device> device, D3D_FEATURE_LEVEL featureLevel, const dxgi::Adapter* adapter);
+      DirectXDevice(const wrl::ComPtr<ID3D12Device1> device, D3D_FEATURE_LEVEL featureLevel, const dxgi::Adapter* adapter);
 
       const dxgi::Adapter* adapter() const;
       D3D_FEATURE_LEVEL feature_level() const;
@@ -23,7 +23,7 @@ namespace rex
       void init_shader_model();
 
     private:
-      wrl::ComPtr<ID3D12Device> m_device;
+      wrl::ComPtr<ID3D12Device1> m_device;
       const dxgi::Adapter* m_adapter;
       D3D_FEATURE_LEVEL m_feature_level;
       rsl::small_stack_string m_shader_version;

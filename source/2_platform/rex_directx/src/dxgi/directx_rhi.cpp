@@ -24,6 +24,8 @@
 #include "rex_directx/resources/clear_state_resource.h"
 #include "rex_directx/resources/raster_state_resource.h"
 #include "rex_directx/resources/input_layout_resource.h"
+#include "rex_directx/resources/blend_state_resource.h"
+#include "rex_directx/resources/depth_stencil_state_resource.h"
 
 #include "rex_directx/d3dx12.h"
 
@@ -45,6 +47,81 @@ namespace rex
 
     namespace internal
     {
+      // The RHI class. 
+      // This manages rhi initializes and shutdown
+      // It owns the lifetime of GPU objects.
+      struct RenderHardwareInfrastructure
+      {
+      public:
+        internal::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData);
+        ~internal::RenderHardwareInfrastructure();
+
+      private:
+        // DXGI Factory
+        s32 init_debug_interface();
+        bool init_dxgi_factory();
+        void init_debug_controller();
+
+        // D3D Device
+        count_t highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus);
+        void init_debug_layer();
+
+        bool init_d3d_device();
+
+        // D3D Command Objects
+        bool init_command_queue();
+
+        bool init_command_list();
+
+        // DXGI Swapchain
+        bool init_swapchain(const renderer::OutputWindowUserData& userData);
+
+        // Resource Heaps
+        bool init_resource_heaps();
+
+        // Descriptor Heaps
+        bool init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, s32 numDescriptors);
+        bool init_descriptor_heaps();
+
+        // Swapchain Buffer Views
+        bool init_swapchain_buffer_views(const renderer::OutputWindowUserData& userData);
+        bool init_swapchain_rtvs(const renderer::OutputWindowUserData& userData);
+        bool init_swapchain_dsvs(const renderer::OutputWindowUserData& userData);
+
+        // Pipeline Library
+        bool init_pipeline_library();
+
+        ScopedCommandList create_scoped_cmd_list();
+
+      private:
+        constexpr static s32 s_swapchain_buffer_count = 2;
+        constexpr static s32 s_num_rtv_descs = 8;
+        constexpr static s32 s_num_dsv_descs = 1;
+        constexpr static s32 s_num_cbv_descs = 128;
+        constexpr static rsl::array m_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
+
+      public:
+        bool init_successful;
+        // Keep the debug interface as the last resource to be destroyed
+        // it automatically reports if any resources are still active on destruction
+        DebugInterface debug_interface;
+        rsl::unique_ptr<dxgi::Factory> factory;
+        rsl::unique_ptr<DirectXDevice> device;
+        rsl::unique_ptr<Swapchain> swapchain;
+        rsl::unique_ptr<CommandQueue> command_queue;
+        rsl::unique_ptr<CommandList> command_list;
+        rsl::unique_ptr<ResourceHeap> heap;
+        rsl::unique_ptr<Resource> depth_stencil_buffer;
+        rsl::unique_ptr<UploadBuffer> upload_buffer;
+        rsl::unique_ptr<PipelineLibrary> pso_lib;
+        ResourcePool resource_pool;
+
+        wrl::ComPtr<IDXGIInfoQueue> debug_info_queue;
+        rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> descriptor_heap_pool;
+        rsl::array<renderer::ResourceSlot, s_swapchain_buffer_count> swapchain_rt_buffer_slots;   // swapchain render target buffer indices
+
+      };
+
       rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi;
       RenderHardwareInfrastructure* get()
       {
@@ -52,16 +129,21 @@ namespace rex
       }
     }
 
-    class RenderHardwareInfrastructure* init(const renderer::OutputWindowUserData& userData)
+    bool init(const renderer::OutputWindowUserData& userData)
     {
-      internal::g_rhi = rsl::make_unique<RenderHardwareInfrastructure>(userData);
+      internal::g_rhi = rsl::make_unique<internal::RenderHardwareInfrastructure>(userData);
 
       if (!internal::g_rhi->init_successful)
       {
         shutdown();
       }
 
-      return internal::g_rhi.get();
+      // Flush the command queue, so we can be sure the entire rhi is setup
+      // and the gpu has all the resources it needs by the time we exit
+      // the initialization phase.
+      internal::get()->command_queue->flush();
+
+      return internal::get()->init_successful;
     }
     void shutdown()
     {
@@ -255,26 +337,29 @@ namespace rex
       if (cps.raster_state.is_valid())
       {
         auto& raster_state = internal::get()->resource_pool.as<RasterStateResource>(cps.raster_state);
-        d3d_raster_state = raster_state.get();
+        d3d_raster_state = *raster_state.get();
       }
 
+      D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
       if (cps.blend_state.is_valid())
       {
         auto& blend_state = internal::get()->resource_pool.as<BlendStateResource>(cps.blend_state);
         d3d_blend_state = blend_state.get();
       }
 
+      D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
       if (cps.depth_stencil_state.is_valid())
       {
-        auto& depth_stencil_state = internal::get()->resource_pool.as<BlendStateResource>(cps.depth_stencil_state);
+        auto& depth_stencil_state = internal::get()->resource_pool.as<DepthStencilStateResource>(cps.depth_stencil_state);
         d3d_depth_stencil_state = depth_stencil_state.get();
       }
 
       // 2) Fill in the PSO desc
       D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
-      pso_desc.InputLayout = input_layout.get();
-      pso_desc.VS = shader.vs().get();
-      pso_desc.PS = shader.ps().get();
+      pso_desc.InputLayout = *input_layout.get();
+      pso_desc.pRootSignature = shader.root_signature();
+      pso_desc.VS = shader.vs();
+      pso_desc.PS = shader.ps();
       pso_desc.RasterizerState = d3d_raster_state;
       pso_desc.BlendState = d3d_blend_state;
       pso_desc.DepthStencilState = d3d_depth_stencil_state;
@@ -286,16 +371,26 @@ namespace rex
       pso_desc.SampleDesc.Quality = 0;
       pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
       
-      // 3) Check if the PSO already exists in the pipeline library
-      if (internal::get()->pso_lib->has_pso(pso_desc))
+      // 3) Create a resource slot for a pso if it already exists in the lib
+      rsl::unique_ptr<PipelineState> pso = internal::get()->pso_lib->load_pso(pso_desc);
+      if (pso)
       {
-        return internal::get()->pso_lib->load_pso(pso_desc);
+        return internal::get()->resource_pool.insert(rsl::move(pso));
       }
 
-      // 4) store the new PSO in the pipeline library
-      return internal::get()->pso_lib->store_pso(pso_desc);
+      // 4) Ohterwise store the new PSO in the pipeline library
+      pso = internal::get()->pso_lib->store_pso(pso_desc);
+
+      return internal::get()->resource_pool.insert(rsl::move(pso));
     }
 
+    // Check if a certain blob of data is already on the gpu or not
+    // If it is, there's no need to upload it again
+    bool resource_exists(const void* data, s32 size)
+    {
+      u32 hash = hash_resource_data(data, size);
+      return internal::get()->gpu_resource_map.contains(hash);
+    }
     namespace d3d
     {
       wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::vector<ConstantLayoutDescription>& constants)
@@ -350,7 +445,7 @@ namespace rex
     }
 
 #pragma region RHI Class
-    RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData)
+    internal::RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData)
       : init_successful(false)
     {
       // Create a scopeguard that automatically marks initialization as failed
@@ -451,10 +546,20 @@ namespace rex
         return;
       }
 
+      // 9) Create the pipeline library
+      // This holds all the pso objects we need.
+      // Ideally this should get prefilled on boot.
+      // However on the very first boot time, all pso need to get compiled first
+      if (!init_pipeline_library())
+      {
+        REX_ERROR(LogRhi, "Failed to create pipeline library");
+        return;
+      }
+
       // release scopeguard so that init gets marked successful
       mark_init_failed.release();
     }
-    RenderHardwareInfrastructure::~RenderHardwareInfrastructure()
+    internal::RenderHardwareInfrastructure::~RenderHardwareInfrastructure()
     {
       if (device)
       {
@@ -466,7 +571,7 @@ namespace rex
     }
 
     // DXGI Factory
-    s32 RenderHardwareInfrastructure::init_debug_interface()
+    s32 internal::RenderHardwareInfrastructure::init_debug_interface()
     {
       /*
       * Bug in the DXGI Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
@@ -507,7 +612,7 @@ namespace rex
 
       return dxgi_factory_flags;
     }
-    bool RenderHardwareInfrastructure::init_dxgi_factory()
+    bool internal::RenderHardwareInfrastructure::init_dxgi_factory()
     {
       s32 dxgi_factory_flags = 0;
 
@@ -518,7 +623,7 @@ namespace rex
       factory = dxgi::Factory::create(dxgi_factory_flags);
       return true;
     }
-    void RenderHardwareInfrastructure::init_debug_controller()
+    void internal::RenderHardwareInfrastructure::init_debug_controller()
     {
       // Enable extra debugging and send debug messages to the VC++ output window
       rex::wrl::ComPtr<ID3D12Debug> debug_controller;
@@ -533,7 +638,7 @@ namespace rex
     }
 
     // D3D Device
-    count_t RenderHardwareInfrastructure::highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
+    count_t internal::RenderHardwareInfrastructure::highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
     {
       auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
         [](const GpuDescription& lhs, const GpuDescription& rhs)
@@ -546,7 +651,7 @@ namespace rex
 
       return it != gpus.cend() ? rsl::distance(gpus.cbegin(), it) : -1;
     }
-    void RenderHardwareInfrastructure::init_debug_layer()
+    void internal::RenderHardwareInfrastructure::init_debug_layer()
     {
       // Device needs to exist before we can query this
       rex::wrl::ComPtr<ID3D12InfoQueue> dx12_info_queue;
@@ -588,7 +693,7 @@ namespace rex
       }
     }
 
-    bool RenderHardwareInfrastructure::init_d3d_device()
+    bool internal::RenderHardwareInfrastructure::init_d3d_device()
     {
       // Find highest scoring gpu
       const dxgi::AdapterManager adapter_manager(factory.get(), [this](const rsl::vector<GpuDescription>& gpus) { return highest_scoring_gpu(gpus); });
@@ -598,7 +703,7 @@ namespace rex
       // Create device
       const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
 
-      wrl::ComPtr<ID3D12Device> d3d_device;
+      wrl::ComPtr<ID3D12Device1> d3d_device;
       if (DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&d3d_device))))
       {
         REX_ERROR(LogRhi, "Software adapter not supported");
@@ -611,7 +716,7 @@ namespace rex
     }
 
     // D3D Command Objects
-    bool RenderHardwareInfrastructure::init_command_queue()
+    bool internal::RenderHardwareInfrastructure::init_command_queue()
     {
       // Command Queue
       wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
@@ -640,7 +745,7 @@ namespace rex
       return true;
     }
 
-    bool RenderHardwareInfrastructure::init_command_list()
+    bool internal::RenderHardwareInfrastructure::init_command_list()
     {
       // Command Allocator
       wrl::ComPtr<ID3D12CommandAllocator> allocator;
@@ -667,7 +772,7 @@ namespace rex
     }
 
     // DXGI Swapchain
-    bool RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData)
+    bool internal::RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData)
     {
       DXGI_SWAP_CHAIN_DESC sd;
       sd.BufferDesc.Width = userData.window_width;
@@ -702,7 +807,7 @@ namespace rex
     }
 
     // Resource Heaps
-    bool RenderHardwareInfrastructure::init_resource_heaps()
+    bool internal::RenderHardwareInfrastructure::init_resource_heaps()
     {
       // Nothing to implement at the moment
       CD3DX12_HEAP_DESC desc(1_kib, D3D12_HEAP_TYPE_DEFAULT);
@@ -719,7 +824,7 @@ namespace rex
     }
 
     // Descriptor Heaps
-    bool RenderHardwareInfrastructure::init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, s32 numDescriptors)
+    bool internal::RenderHardwareInfrastructure::init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, s32 numDescriptors)
     {
       D3D12_DESCRIPTOR_HEAP_DESC desc{};
 
@@ -746,7 +851,7 @@ namespace rex
 
       return true;
     }
-    bool RenderHardwareInfrastructure::init_descriptor_heaps()
+    bool internal::RenderHardwareInfrastructure::init_descriptor_heaps()
     {
       if (!init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, s_num_rtv_descs))
       {
@@ -768,7 +873,7 @@ namespace rex
     }
 
     // Swapchain buffer views
-    bool RenderHardwareInfrastructure::init_swapchain_buffer_views(const renderer::OutputWindowUserData& userData)
+    bool internal::RenderHardwareInfrastructure::init_swapchain_buffer_views(const renderer::OutputWindowUserData& userData)
     {
       if (!init_swapchain_rtvs(userData))
       {
@@ -784,7 +889,7 @@ namespace rex
 
       return true;
     }
-    bool RenderHardwareInfrastructure::init_swapchain_rtvs(const renderer::OutputWindowUserData& userData)
+    bool internal::RenderHardwareInfrastructure::init_swapchain_rtvs(const renderer::OutputWindowUserData& userData)
     {
       s32 width = userData.window_width;
       s32 height = userData.window_height;
@@ -804,7 +909,7 @@ namespace rex
 
       return true;
     }
-    bool RenderHardwareInfrastructure::init_swapchain_dsvs(const renderer::OutputWindowUserData& userData)
+    bool internal::RenderHardwareInfrastructure::init_swapchain_dsvs(const renderer::OutputWindowUserData& userData)
     {
       s32 width = userData.window_width;
       s32 height = userData.window_height;
@@ -819,7 +924,26 @@ namespace rex
       return true;
     }
 
-    ScopedCommandList RenderHardwareInfrastructure::create_scoped_cmd_list()
+    // Pipeline Library
+    bool internal::RenderHardwareInfrastructure::init_pipeline_library()
+    {
+      // A pipeline library is saved to disk
+      // Therefore we need to create some file mapping so the pipeline library
+      // gets stored to disk right away.
+      // At the moment we haven't implement this yet, so we're creating a fresh pipeline library
+      // every time
+      wrl::ComPtr<ID3D12PipelineLibrary> d3d_pso_lib;
+      if (DX_FAILED(device->get()->CreatePipelineLibrary(nullptr, 0, IID_PPV_ARGS(&d3d_pso_lib))))
+      {
+        REX_ERROR(LogRhi, "Failed to create pipeline library. Is this supported by your OS and driver version?");
+        return false;
+      }
+
+      pso_lib = rsl::make_unique<PipelineLibrary>(d3d_pso_lib, device.get());
+      return true;
+    }
+
+    ScopedCommandList internal::RenderHardwareInfrastructure::create_scoped_cmd_list()
     {
       return ScopedCommandList(command_list.get(), command_queue.get());
     }

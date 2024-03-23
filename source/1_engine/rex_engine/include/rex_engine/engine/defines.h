@@ -45,4 +45,10 @@
     #define REX_FUNC_SIG "REX_FUNC_SIG unknown!"
   #endif
 
+#define REX_LINE_TO_STRING(L) #L
+#define REX_CALL_MACRO(M, L) M(L)
+#define REX_THIS_LINE CALL_MACRO(LINE_TO_STRING, __LINE__)		// NOLINT
+#define REX_STATIC_WARNING_PREFIX __FILE__ "(" REX_THIS_LINE ") : [WARNING] "
+#define REX_STATIC_WARNING(expr) __pragma (message(REX_STATIC_WARNING_PREFIX##expr))
+
 #endif

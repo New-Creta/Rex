@@ -31,6 +31,19 @@ namespace rex
             {}
             ~ShaderProgramResource() override = default;
 
+            ID3D12RootSignature* root_signature()
+            {
+              return m_shader_program.root_signature.Get();
+            }
+            D3D12_SHADER_BYTECODE vs()
+            {
+              return { m_shader_program.vertex_shader->GetBufferPointer(), m_shader_program.vertex_shader->GetBufferSize() };
+            }
+            D3D12_SHADER_BYTECODE ps()
+            {
+              return { m_shader_program.pixel_shader->GetBufferPointer(), m_shader_program.pixel_shader->GetBufferSize() };
+            }
+
         private:
             resources::ShaderProgram m_shader_program;
         };

@@ -10,8 +10,7 @@ namespace rex
   namespace renderer
   {
     struct OutputWindowUserData;
-
-    class ResourceSlot;
+    struct RenderItemDesc;
 
     enum class PrimitiveTopology;
     enum class IndexBufferFormat;
@@ -48,6 +47,8 @@ namespace rex
 
       bool initialize(const OutputWindowUserData& userData, s32 maxFramesInflight, const ResourceSlot& fbColorTargetSlot, const ResourceSlot& bbColorTargetSlot, const ResourceSlot& depthTargetSlot);
       void shutdown();
+
+      void add_render_item(const RenderItemDesc& desc);
 
       // Platform specific implementation, implements these function
       const ResourceSlot* active_frame();

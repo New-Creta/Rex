@@ -15,7 +15,7 @@ namespace rex
       };
 
       template <typename T>
-      rex::renderer::commands::CreateBufferCommandDesc create_buffer_parameters(T* data, s32 num)
+      rex::renderer::commands::CreateBufferCommandDesc create_buffer_parameters(const T* data, s32 num)
       {
         rex::renderer::commands::CreateBufferCommandDesc create_buffer_command_desc{};
 

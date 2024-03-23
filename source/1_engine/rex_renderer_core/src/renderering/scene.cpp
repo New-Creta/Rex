@@ -220,7 +220,7 @@ namespace rex
         rex::renderer::set_index_buffer(render_item.geometry->index_buffer_slot(), render_item.geometry->index_buffer_format(), 0);
         rex::renderer::set_primitive_topology(rex::renderer::PrimitiveTopology::TRIANGLELIST);
 
-        rex::renderer::ResourceSlot const curr_object_cb = contantBuffers[render_item.constant_buffer_index];
+        const rex::renderer::ResourceSlot curr_object_cb = contantBuffers[render_item.constant_buffer_index];
         rex::renderer::set_constant_buffer_view(curr_object_cb, 0);
 
         rex::renderer::renderer_draw_indexed_instanced(1, 0, render_item.index_count, render_item.start_index_location, render_item.base_vertex_location);

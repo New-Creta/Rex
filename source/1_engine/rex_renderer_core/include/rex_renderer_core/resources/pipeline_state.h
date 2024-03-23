@@ -8,7 +8,11 @@ namespace rex
   {
     struct PipelineStateDesc
     {
-
+      ResourceSlot input_layout;
+      ResourceSlot shader;
+      ResourceSlot raster_state;
+      ResourceSlot blend_state;
+      ResourceSlot depth_stencil_state;
     };
   }
 }

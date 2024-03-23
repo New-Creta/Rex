@@ -20,8 +20,6 @@ namespace rex
         class DepthStencilTargetResource : public BaseResource<resources::DepthStencilTarget>
         {
         public:
-            RESOURCE_CLASS_TYPE(DepthStencilTargetResource);
-
             DepthStencilTargetResource(const wrl::ComPtr<ID3D12Resource>& dst, s32 arrayIndex)
                 : BaseResource(&m_depth_stencil_target)
                 , m_depth_stencil_target({ dst, arrayIndex })

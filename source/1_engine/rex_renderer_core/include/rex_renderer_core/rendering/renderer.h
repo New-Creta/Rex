@@ -23,7 +23,7 @@ namespace rex
     struct Info;
     struct OutputWindowUserData;
 
-    class ResourceSlot;
+    class Mesh;
 
     enum class ShaderPlatform;
     enum class PrimitiveTopology;
@@ -57,6 +57,10 @@ namespace rex
 
     bool initialize(const OutputWindowUserData& userData, s32 maxCommands, s32 maxFrameResources);
     void shutdown();
+
+    void add_mesh(const Mesh* mesh);
+
+
 
     // general accessors
     const Info& info();

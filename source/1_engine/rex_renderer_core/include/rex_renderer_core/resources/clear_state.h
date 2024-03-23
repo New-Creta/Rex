@@ -14,11 +14,7 @@ namespace rex
         , depth(1.0f)
         , stencil(0x00)
         , flags()
-      {
-        flags.add_state(renderer::ClearBits::ClearColorBuffer);
-        flags.add_state(renderer::ClearBits::ClearDepthBuffer);
-        flags.add_state(renderer::ClearBits::ClearStencilBuffer);
-      }
+      {}
 
       rsl::Color4f rgba;
       f32 depth;

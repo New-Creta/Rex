@@ -93,6 +93,8 @@
 #include "rex_renderer_core/rendering/vertex_buffer_format.h"
 #include "rex_renderer_core/rendering/viewport.h"
 #include "rex_renderer_core/rendering/msaa_settings.h"
+#include "rex_renderer_core/rendering/render_item.h"
+#include "rex_renderer_core/resource_management/resource_slot.h"
 
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/memory/memory_size.h"
@@ -458,33 +460,50 @@ namespace rex
       class DirectXRenderer
       {
       public:
-        DirectXRenderer(rhi::RenderHardwareInfrastructure* rhi, const OutputWindowUserData& userData)
-          : m_rhi(rhi)
-          , m_frame_ctx(s_num_frame_resources)
+        DirectXRenderer(const OutputWindowUserData& userData)
         {
           // Create a scopeguard so if we exit the renderer too early on
           // We mark it as initialization failed
-          rsl::scopeguard mark_init_failed = [this]() { m_is_initialized = false; };
+          rsl::scopeguard mark_init_failed = [this]() { m_init_successful = false; };
 
           // Init the clear state
-          if (internal::build_clear_state(g_ctx.get()) == false)
+          if (!init_clear_state())
           {
             REX_ERROR(LogDirectX, "Failed to create the clear state");
             return;
           }
 
-          // Flush the command queue, making sure all graphic commands are executed at the end of renderer creation
-          m_rhi->flush_command_queue();
-
-          init_viewport();
-          init_scirssor_rect();
+          init_viewport(userData);
+          init_scirssor_rect(userData);
 
           // release the scopeguard so that init gets marked successful
           mark_init_failed.release();
         }
 
+        bool init_successful() const
+        {
+          return m_init_successful;
+        }
+
       private:
-        void init_viewport()
+        // the global clear state by the renderer
+        // If a clear command doesn't have a clear state defined
+        // This will be the clear state that we use, which clears everything
+        bool init_clear_state()
+        {
+          rhi::ClearStateDesc desc{};
+
+          desc.rgba = rsl::colors::LightSteelBlue;
+          desc.depth = 1.0f;
+          desc.stencil = 0x00;
+          desc.flags.add_state(ClearBits::ClearColorBuffer);
+          desc.flags.add_state(ClearBits::ClearDepthBuffer);
+          desc.flags.add_state(ClearBits::ClearStencilBuffer);
+
+          m_clear_state = rhi::create_clear_state(desc);
+
+        }
+        void init_viewport(const OutputWindowUserData& userData)
         {
           // Create viewport to render our image in
           // A viewport always needs to reset whenever a command list is reset
@@ -495,20 +514,20 @@ namespace rex
           m_screen_viewport.MinDepth = 0.0f;
           m_screen_viewport.MaxDepth = 1.0f;
         }
-        void init_scirssor_rect()
+        void init_scirssor_rect(const OutputWindowUserData& userData)
         {
           // Cull pixels drawn outside of the backbuffer ( such as UI elements )
           m_scissor_rect = { 0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height) };
         }
 
       private:
-        rhi::RenderHardwareInfrastructure* m_rhi;
-        D3D12_VIEWPORT m_screen_viewport;
-        RECT m_scissor_rect;
-        FrameContext m_frame_ctx;
-        ResourceSlot m_clear_state;
+        rhi::ResourceSlot m_clear_state; // the default clear state
 
-        bool m_is_initialized;
+        D3D12_VIEWPORT m_screen_viewport; // The viewport pointing to the entire window
+        RECT m_scissor_rect; // The scissor rect pointing to the entire window
+
+
+        bool m_init_successful;
       };
       
       rsl::unique_ptr<DirectXRenderer> g_renderer;
@@ -519,26 +538,60 @@ namespace rex
         // Initialize the render hardware interface
         // This is the first layer of abstraction between the hardware
         // and the software.
-        rhi::RenderHardwareInfrastructure* rhi = nullptr;
         {
           ExecutionLogger exec_logger(LogDirectX, "Render Hardware Infrastructure Initialization");
-          rhi = rhi::init(userData);
-          if (!rhi)
+          if (!rhi::init(userData))
           {
             REX_ERROR(LogDirectX, "Failed to initialize rhi layer.");
             return false;
           }
         }
 
-        // Initialize the renderer with the rhi.
-        g_renderer = rsl::make_unique<DirectXRenderer>(rhi, userData);
+        // After the rhi is initialized, initialize the renderer
+        // The renderer will call into the rhi to create various resources
+        // Therefore the rhi needs to get initialized first.
+        g_renderer = rsl::make_unique<DirectXRenderer>(userData);
 
+        // Initialization of the renderer could fail
+        // Therefore lets guard here and let the application handle 
+        // the initialization failure.
+        if (!g_renderer->init_successful())
+        {
+          REX_ERROR(LogDirectX, "Failed to initialize the renderer");
+          return false;
+        }
+
+        // The renderer is fully initialized from here on out
+        // All systems go and rendering can be done.
         return true;
       }
 
       void shutdown()
       {
         g_renderer.reset();
+      }
+
+      void add_render_item(const RenderItemDesc& desc)
+      {
+        // Add a new render item to the next frame's queued items to render.
+        // We need to do this smart, we don't want to have the same object twice in memory
+        // Meaning that if an object is requested to be requested for rendering, and an equivalent
+        // vertex buffer or index buffer is already in memory, we shouldn't put it in memoery again
+        // Instead we should use the existing memory for this job
+
+        // This can be performed by hashing the vertex buffer and index buffer
+        // and looking into our existing map of resource if such a buffer already exists
+        // If it does, reuse the existing data for this render item
+        // If it doesn't already exist, we create a new vertex buffer and/or index buffer
+        // and queue for uploading to the gpu.
+
+        // The same strategy can be used for constant buffers.
+        // The constant buffer that's unique per object won't (or shouldn't) have any pre existing data
+        // Other constant buffers that are shared between objects, can already sit in memory and therefore
+        // Don't need to get added again.
+        
+        rhi::create_vertex_buffer()
+
       }
 
       //-------------------------------------------------------------------------
@@ -559,88 +612,6 @@ namespace rex
       s32 max_frames_in_flight()
       {
           return g_ctx->frame_ctx.max_frame_resources_count();
-      }
-
-      //-------------------------------------------------------------------------
-      bool create_pipeline_state_object(const commands::CreatePipelineStateCommandDesc& cps, const ResourceSlot& resourceSlot)
-      {
-        REX_ASSERT_X(cps.input_layout.is_valid(), "Invalid input layout resource slot given");
-        REX_ASSERT_X(cps.shader_program.is_valid(), "Invalid shader program resource slot given");
-        REX_ASSERT_X(g_ctx->active_color_targets != 0, "No render targets have been set, a PSO needs to know the format of the render target(s)");
-
-        auto& input_layout_resource = g_ctx->resource_pool.as<InputLayoutResource>(cps.input_layout);
-        auto& shader_program_resource = g_ctx->resource_pool.as<ShaderProgramResource>(cps.shader_program);
-        auto& raster_state_resource = g_ctx->resource_pool.as<RasterStateResource>(cps.rasterizer_state);
-
-        D3D12_RASTERIZER_DESC raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-        if(cps.rasterizer_state.is_valid())
-        {
-          raster_state = *raster_state_resource.get();
-        }
-        D3D12_BLEND_DESC blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        if(cps.blend_state.is_valid())
-        {
-          // TODO:
-          // Create a Blend State Resource
-        }
-        D3D12_DEPTH_STENCIL_DESC depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-        if(cps.depth_stencil_state.is_valid())
-        {
-          // TODO:
-          // Create a Depth Stencil State Resource
-        }
-
-        PipelineStateObjectHashData hash_data;
-        hash_data.input_layout_resource = &input_layout_resource;
-        hash_data.shader_program_resource = &shader_program_resource;
-        hash_data.raster_state_resource = &raster_state_resource;
-
-        auto insert_res = g_ctx->pipeline_state_objects.try_emplace(hash_data);
-
-        // If there's already a PSO with the above values, return that one and don't create a new one
-        if(insert_res.emplace_successful == false)
-        {
-          g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(insert_res.inserted_element->value.Get()));
-
-          return true;
-        }
-
-        // If no such PSO exists yet, create a new one
-        D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc;
-        ZeroMemory(&pso_desc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-
-        pso_desc.InputLayout           = {input_layout_resource.get()->data(), rsl::safe_numeric_cast<UINT>(input_layout_resource.get()->size())};
-        pso_desc.pRootSignature        = shader_program_resource.get()->root_signature.Get();
-        pso_desc.VS                    = {reinterpret_cast<BYTE*>(shader_program_resource.get()->vertex_shader->GetBufferPointer()), shader_program_resource.get()->vertex_shader->GetBufferSize()};
-        pso_desc.PS                    = {reinterpret_cast<BYTE*>(shader_program_resource.get()->pixel_shader->GetBufferPointer()), shader_program_resource.get()->pixel_shader->GetBufferSize()};
-        pso_desc.RasterizerState       = raster_state;
-        pso_desc.BlendState            = blend_state;
-        pso_desc.DepthStencilState     = depth_stencil_state;
-        pso_desc.SampleMask            = UINT_MAX;
-        pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        pso_desc.NumRenderTargets      = g_ctx->active_color_targets;
-        for(s32 i = 0; i < g_ctx->active_color_targets; ++i)
-        {
-            auto& render_target_id = g_ctx->active_color_target[i];
-            auto& render_target    = g_ctx->resource_pool.as<RenderTargetResource>(render_target_id);
-
-            pso_desc.RTVFormats[i] = directx::to_dxd12_texture_format(render_target.get()->format);
-        }
-        pso_desc.SampleDesc.Count      = 1;
-        pso_desc.SampleDesc.Quality    = 0;
-        pso_desc.DSVFormat             = g_ctx->depth_stencil_format;
-
-        if(DX_FAILED(g_ctx->device->get()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&g_ctx->pipeline_state_objects[hash_data]))))
-        {
-          REX_ERROR(LogDirectX, "Failed to create pipeline state object");
-          return false;
-        }
-
-        rhi::set_debug_name_for(g_ctx->pipeline_state_objects[hash_data].Get(), "Pipeline State Object");
-
-        g_ctx->resource_pool.insert(resourceSlot, rsl::make_unique<PipelineStateResource>(g_ctx->pipeline_state_objects.at(hash_data)));
-
-        return true;
       }
 
       //-------------------------------------------------------------------------

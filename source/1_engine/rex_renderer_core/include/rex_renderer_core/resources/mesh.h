@@ -6,6 +6,7 @@
 #include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/unordered_map.h"
+#include "rex_std/memory.h"
 
 namespace rex
 {
@@ -59,48 +60,32 @@ namespace rex
       s32 base_vertex_location = 0;
     };
 
+    struct VertexBufferDesc
+    {
+      VertexBufferDesc(void* buffer, s32 vertexSize, s32 totalSize)
+        : data((rsl::byte*)buffer, total_size)
+        , vertex_size(vertexSize)
+        , total_size(totalSize)
+      {}
+
+      rsl::unique_array<rsl::byte> data;
+      s32 vertex_size;
+      s32 total_size;
+    };
+
+    struct IndexBufferDesc
+    {
+      rsl::unique_array<u16> data;
+    };
+
     class Mesh
     {
-    public:
-      struct VertexBufferDesc
-      {
-        VertexBufferDesc(const ResourceSlot& inSlot, s32 byteStride, s32 byteSize)
-            : slot(inSlot)
-            , byte_stride(byteStride)
-            , byte_size(byteSize)
-        {
-        }
-
-        // Resource handles to the vertex buffer of this geometry
-        const ResourceSlot slot;
-
-        // Data about the allocated buffer.
-        s32 byte_stride;
-        s32 byte_size;
-      };
-      struct IndexBufferDesc
-      {
-        IndexBufferDesc(const ResourceSlot& inSlot, IndexBufferFormat format, s32 byteSize)
-            : slot(inSlot)
-            , format(format)
-            , byte_size(byteSize)
-        {
-        }
-
-        // Resource handles to the index buffer of this geometry
-        const ResourceSlot slot;
-
-        // Data about the allocated buffers.
-        IndexBufferFormat format;
-        s32 byte_size;
-      };
-
     public:
       Mesh(rsl::string_view name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd);
 
     public:
       void add_submesh(rsl::string_view name, const Submesh& subMesh);
-      void add_submesh(rsl::string_view name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation);
+      void add_submesh(rsl::string_view name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation = 0);
 
       const Submesh* submesh(rsl::string_view name) const;
 

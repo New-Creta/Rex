@@ -10,6 +10,14 @@ namespace rex
 {
   namespace renderer
   {
+    struct RenderItemDesc
+    {
+      // VB
+      // IB
+      // CB_DATA
+      // TOPOLOGY
+    };
+
     struct RenderItem
     {
       glm::mat4 world = glm::mat4(1.0f);
