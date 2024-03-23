@@ -5,6 +5,8 @@
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
 
+#include "rex_renderer_core/resources/pipeline_state.h"
+
 namespace rex
 {
   namespace rhi
@@ -37,21 +39,3 @@ namespace rex
   } // namespace renderer
 } // namespace rex
 
-
-namespace rsl
-{
-  template <>
-  struct hash<rex::renderer::PipelineStateObjectHashData>
-  {
-    rsl::hash_result operator()(const rex::renderer::PipelineStateObjectHashData& hashData) const
-    {
-      rsl::hash_result seed = 0;
-
-      seed = rsl::internal::hash_combine(seed, rex::renderer::internal::hash_input_layout_resource(hashData.input_layout_resource));
-      seed = rsl::internal::hash_combine(seed, rex::renderer::internal::hash_shader_program_resource(hashData.shader_program_resource));
-      seed = rsl::internal::hash_combine(seed, rex::renderer::internal::hash_raster_state_resource(hashData.raster_state_resource));
-
-      return seed;
-    }
-  };
-}

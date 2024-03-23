@@ -6,7 +6,8 @@ namespace rex
   {
     struct BufferDesc
     {
-
+      s32 size;
+      void* data;
     };
   }
 }

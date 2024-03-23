@@ -25,8 +25,6 @@ namespace rex
         class ShaderProgramResource : public BaseResource<resources::ShaderProgram>
         {
         public:
-            RESOURCE_CLASS_TYPE(ShaderProgramResource);
-
             ShaderProgramResource(const wrl::ComPtr<ID3D12RootSignature>& rootSig, const wrl::ComPtr<ID3DBlob>& vs, const wrl::ComPtr<ID3DBlob>& ps, const rsl::vector<renderer::commands::ConstantLayoutDescription>& constants)
               : BaseResource(&m_shader_program)
                 ,m_shader_program({ rootSig, vs, ps, constants})

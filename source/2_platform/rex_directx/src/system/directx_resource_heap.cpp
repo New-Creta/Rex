@@ -5,6 +5,8 @@
 
 #include "rex_directx/system/directx_resource.h"
 
+#include "rex_directx/d3dx12.h"
+
 namespace rex
 {
   namespace rhi
@@ -21,22 +23,19 @@ namespace rex
       m_memory_limit = heap_desc.SizeInBytes;
     }
 
-    rsl::unique_ptr<Resource> ResourceHeap::create_2d_resource(s32 width, s32 height, DXGI_FORMAT format, D3D12_RESOURCE_FLAGS flags, s32 alignment)
+    rsl::unique_ptr<Resource> ResourceHeap::create_buffer(s32 size, s32 alignment = 0)
     {
-      D3D12_RESOURCE_DESC desc{};
+      auto desc = CD3DX12_RESOURCE_DESC::Buffer(size, D3D12_RESOURCE_FLAG_NONE, alignment);
 
-      desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-      desc.Alignment = alignment;
-      desc.Width = width;
-      desc.Height = height;
-      desc.DepthOrArraySize = 1;
-      desc.MipLevels = 1;
-
-      desc.Format = format;
-      desc.SampleDesc.Count = 1;
-      desc.SampleDesc.Quality = 0;
-      desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-      desc.Flags = flags;
+      wrl::ComPtr<ID3D12Resource> buffer;
+      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&buffer))))
+      {
+        REX_ERROR(LogResourceHeap, "Failed to create buffer");
+      }
+      
+      D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
+      m_used_memory += alloc_info.SizeInBytes;
+      return rsl::make_unique<Resource>(buffer);
     }
 
     rsl::unique_ptr<Resource> ResourceHeap::create_depth_stencil_resource(s32 width, s32 height, s32 alignment)
@@ -66,11 +65,13 @@ namespace rex
       optimized_clear_value.DepthStencil.Stencil = 0;
 
       wrl::ComPtr<ID3D12Resource> depth_stencil_buffer;
-      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), 0, &desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(&depth_stencil_buffer))))
+      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(&depth_stencil_buffer))))
       {
         REX_ERROR(LogResourceHeap, "Failed to create depth stencil buffer");
       }
 
+      D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
+      m_used_memory += alloc_info.SizeInBytes;
       return rsl::make_unique<Resource>(depth_stencil_buffer);
     }
 

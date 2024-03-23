@@ -1,7 +1,11 @@
 #include "rex_directx/system/directx_commandlist.h"
 #include "rex_directx/system/directx_command_queue.h"
+#include "rex_directx/system/directx_resource.h"
+
+#include "rex_directx/d3dx12.h"
 
 #include "rex_directx/diagnostics/directx_call.h"
+
 
 #include "rex_std/utility.h"
 
@@ -29,6 +33,23 @@ namespace rex
       m_command_list->Close();
       cmdQueue->execute(m_command_list.Get());
     }
+
+    void CommandList::change_resource_state(Resource* resource, D3D12_RESOURCE_STATES to)
+    {
+      D3D12_RESOURCE_STATES from = resource->resource_state();
+      if (from != to)
+      {
+        resource->transition()
+        CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource->get(), from, to);
+        m_command_list->ResourceBarrier(1, &barrier);
+        
+      }
+    }
+    void CommandList::copy_buffer(Resource* dst_resource, Resource* src_resource, s32 size, s32 offset)
+    {
+
+    }
+
 
     ScopedCommandList::ScopedCommandList(CommandList* cmdList, CommandQueue* cmdQueue)
       : m_cmd_list(cmdList)

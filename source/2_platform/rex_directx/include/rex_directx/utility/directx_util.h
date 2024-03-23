@@ -83,6 +83,7 @@ namespace rex
 // NOLINTEND(llvm-include-order)
 
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/engine/types.h"
 #include "rex_engine/memory/blob.h"
 #include "rex_renderer_core/rendering/fill_mode.h"
 #include "rex_renderer_core/rendering/cull_mode.h"
@@ -91,6 +92,7 @@ namespace rex
 #include "rex_renderer_core/rendering/texture_format.h"
 #include "rex_renderer_core/rendering/primitive_topology.h"
 #include "rex_renderer_core/rendering/input_layout_classification.h"
+#include "rex_std/bonus/utility.h"
 
 namespace rex
 {
@@ -201,6 +203,66 @@ namespace rex
 
       REX_ASSERT("Unsupported input layout classification given");
       return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+    }
+    s32 format_byte_size(DXGI_FORMAT format)
+    {
+      switch (format)
+      {
+      case DXGI_FORMAT_UNKNOWN:
+        return 0;
+
+      case DXGI_FORMAT_R32G32B32A32_TYPELESS:
+      case DXGI_FORMAT_R32G32B32A32_FLOAT:
+      case DXGI_FORMAT_R32G32B32A32_UINT:
+      case DXGI_FORMAT_R32G32B32A32_SINT:
+        return 16;
+
+      case DXGI_FORMAT_R32G32B32_TYPELESS:
+      case DXGI_FORMAT_R32G32B32_FLOAT:
+      case DXGI_FORMAT_R32G32B32_UINT:
+      case DXGI_FORMAT_R32G32B32_SINT:
+        return 12;
+
+      case DXGI_FORMAT_R16G16_TYPELESS:
+      case DXGI_FORMAT_R16G16_FLOAT:
+      case DXGI_FORMAT_R16G16_UNORM:
+      case DXGI_FORMAT_R16G16_UINT:
+      case DXGI_FORMAT_R16G16_SNORM:
+      case DXGI_FORMAT_R16G16_SINT:
+        return 4;
+
+      case DXGI_FORMAT_R8G8B8A8_TYPELESS:
+      case DXGI_FORMAT_R8G8B8A8_UNORM:
+      case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+      case DXGI_FORMAT_R8G8B8A8_UINT:
+      case DXGI_FORMAT_R8G8B8A8_SNORM:
+      case DXGI_FORMAT_R8G8B8A8_SINT:
+      case DXGI_FORMAT_B8G8R8A8_UNORM:
+      case DXGI_FORMAT_B8G8R8X8_UNORM:
+      case DXGI_FORMAT_B8G8R8A8_TYPELESS:
+      case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+        return 4;
+
+      case DXGI_FORMAT_R24G8_TYPELESS:
+      case DXGI_FORMAT_D24_UNORM_S8_UINT:
+        return 4;
+
+      case DXGI_FORMAT_R8G8_TYPELESS:
+      case DXGI_FORMAT_R8G8_UNORM:
+      case DXGI_FORMAT_R8G8_UINT:
+      case DXGI_FORMAT_R8G8_SNORM:
+      case DXGI_FORMAT_R8G8_SINT:
+        return 2;
+
+      default:
+        REX_ASSERT("Unknown DXGI type: {}", rsl::enum_refl::enum_name(format));
+        return 0;
+      }
+    }
+
+    s32 get_buffer_byte_size(const D3D12_RESOURCE_DESC& desc)
+    {
+      return desc.Width * desc.Height * format_byte_size(desc.Format);
     }
   }
 }

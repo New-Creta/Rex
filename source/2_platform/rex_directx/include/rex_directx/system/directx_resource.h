@@ -2,13 +2,15 @@
 
 #include "rex_directx/utility/directx_util.h"
 
+#include "rex_renderer_core/resource_management/resource.h"
+
 #include "rex_engine/engine/types.h"
 
 namespace rex
 {
   namespace rhi
   {
-    class Resource
+    class Resource : public BaseResource<Resource>
     {
     public:
       explicit Resource(const wrl::ComPtr<ID3D12Resource>& resource);

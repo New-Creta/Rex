@@ -7,6 +7,8 @@ namespace rex
   namespace rhi
   {
     class CommandQueue;
+    class Resource;
+
     class CommandList
     {
     public:
@@ -14,6 +16,9 @@ namespace rex
 
       void reset(ID3D12PipelineState* pso = nullptr);
       void exec(CommandQueue* cmdQueue);
+
+      void change_resource_state(Resource* resource, D3D12_RESOURCE_STATES to);
+      void copy_buffer(Resource* dst_resource, Resource* src_resource, s32 size, s32 offset);
 
       ID3D12GraphicsCommandList* get();
 

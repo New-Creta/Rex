@@ -13,6 +13,7 @@
 #include "rex_directx/system/directx_resource_heap.h"
 #include "rex_directx/system/directx_descriptor_heap.h"
 #include "rex_directx/system/directx_commandlist.h"
+#include "rex_directx/resources/upload_buffer.h"
 
 #include "rex_std/string_view.h"
 #include "rex_engine/engine/defines.h"
@@ -102,6 +103,7 @@ namespace rex
       rsl::unique_ptr<CommandList> command_list;
       rsl::unique_ptr<ResourceHeap> heap;
       rsl::unique_ptr<Resource> depth_stencil_buffer;
+      rsl::unique_ptr<UploadBuffer> upload_buffer;
       ResourcePool resource_pool;
 
       wrl::ComPtr<IDXGIInfoQueue> debug_info_queue;

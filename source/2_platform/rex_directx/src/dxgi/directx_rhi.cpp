@@ -28,6 +28,7 @@
 #include "rex_directx/d3dx12.h"
 
 #include "rex_engine/engine/types.h"
+#include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
@@ -200,25 +201,99 @@ namespace rex
     // A vertex buffer is a buffer holding vertices of 1 or more objects
     ResourceSlot create_vertex_buffer(const BufferDesc& desc)
     {
-      // Create an upload buffer in the rhi to be used to upload data to this vb
+      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+      s32 size = desc.size;
+      rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(size);
+      internal::get()->resource_pool.insert(rsl::move(buffer));
+      
+      // 2) Copy the data into the upload buffer
+      internal::get()->upload_buffer->write(buffer.get(), desc.data, desc.size);
+
+      // 3) Upload the data from the upload buffer onto the gpu
+      internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
     }
     // An index buffer is a buffer holding indices of 1 or more objects
     ResourceSlot create_index_buffer(const BufferDesc& desc)
     {
-      // Create an upload buffer in the rhi to be used to upload data to this ib
+      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+      s32 size = desc.size;
+      rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(size);
+      internal::get()->resource_pool.insert(rsl::move(buffer));
+
+      // 2) Copy the data into the upload buffer
+      internal::get()->upload_buffer->write(buffer.get(), desc.data, desc.size);
+
+      // 3) Upload the data from the upload buffer onto the gpu
+      internal::get()->upload_buffer->upload(internal::get()->command_list.get());
     }
     // A constant buffer is a buffer holding data that's accessible to a shader
     // This can hold data like ints, floats, vectors and matrices
     ResourceSlot create_consant_buffer(const BufferDesc& desc)
     {
-      // Create an upload buffer in the rhi to be used to upload data to this cb
+      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+      s32 aligned_size = rex::align(desc.size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+      rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
+      internal::get()->resource_pool.insert(rsl::move(buffer));
+
+      // 2) Copy the data into the upload buffer
+      internal::get()->upload_buffer->write(buffer.get(), desc.data, desc.size);
+
+      // 3) Upload the data from the upload buffer onto the gpu
+      internal::get()->upload_buffer->upload(internal::get()->command_list.get());
     }
     // A pipeline state object defines a state for the graphics pipeline.
     // It holds the input layout, root signature, shaders, raster state, blend state ..
     // needed for a draw call.
     ResourceSlot create_pso(const PipelineStateDesc& cps)
     {
+      // 1) Load the resources from the resource pool
+      auto& input_layout = internal::get()->resource_pool.as<InputLayoutResource>(cps.input_layout);
+      auto& shader = internal::get()->resource_pool.as<ShaderProgramResource>(cps.shader);
 
+      D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+      if (cps.raster_state.is_valid())
+      {
+        auto& raster_state = internal::get()->resource_pool.as<RasterStateResource>(cps.raster_state);
+        d3d_raster_state = raster_state.get();
+      }
+
+      if (cps.blend_state.is_valid())
+      {
+        auto& blend_state = internal::get()->resource_pool.as<BlendStateResource>(cps.blend_state);
+        d3d_blend_state = blend_state.get();
+      }
+
+      if (cps.depth_stencil_state.is_valid())
+      {
+        auto& depth_stencil_state = internal::get()->resource_pool.as<BlendStateResource>(cps.depth_stencil_state);
+        d3d_depth_stencil_state = depth_stencil_state.get();
+      }
+
+      // 2) Fill in the PSO desc
+      D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
+      pso_desc.InputLayout = input_layout.get();
+      pso_desc.VS = shader.vs().get();
+      pso_desc.PS = shader.ps().get();
+      pso_desc.RasterizerState = d3d_raster_state;
+      pso_desc.BlendState = d3d_blend_state;
+      pso_desc.DepthStencilState = d3d_depth_stencil_state;
+      pso_desc.SampleMask = UINT_MAX;
+      pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+      pso_desc.NumRenderTargets = 1;
+      pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+      pso_desc.SampleDesc.Count = 1;
+      pso_desc.SampleDesc.Quality = 0;
+      pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+      
+      // 3) Check if the PSO already exists in the pipeline library
+      if (internal::get()->pso_lib->has_pso(pso_desc))
+      {
+        return internal::get()->pso_lib->load_pso(pso_desc);
+      }
+
+      // 4) store the new PSO in the pipeline library
+      return internal::get()->pso_lib->store_pso(pso_desc);
     }
 
     namespace d3d

@@ -34,8 +34,6 @@ namespace rex
         class CommittedBufferResource : public BaseResource<resources::CommittedBuffer>
         {
         public:
-            RESOURCE_CLASS_TYPE(CommittedBufferResource);
-
             CommittedBufferResource(const wrl::ComPtr<ID3D12Resource>& uploader, s32 elementDataByteSize, s32 mappedDataByteSize)
                 : BaseResource(&m_committed_buffer)
                 , m_committed_buffer(uploader, elementDataByteSize, mappedDataByteSize)
