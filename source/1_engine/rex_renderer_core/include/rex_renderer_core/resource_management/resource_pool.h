@@ -8,11 +8,19 @@
 #include "rex_std/mutex.h"
 #include "rex_std/unordered_map.h"
 
+#include "rex_renderer_core/system/resource_hasher.h"
+
 namespace rex
 {
   namespace rhi
   {
     using ResourcePtr = rsl::unique_ptr<IResource>;
+
+    struct ResourceWithSlot
+    {
+      ResourcePtr resource;
+      ResourceSlot slot;
+    };
 
     class ResourcePool
     {
@@ -23,12 +31,15 @@ namespace rex
       void remove(const ResourceSlot& slot);
 
       bool has_slot(const ResourceSlot& slot) const;
+      bool has_resource(ResourceHash hash) const;
 
       template <typename U>
       bool is(const ResourceSlot& slot) const;
 
-      ResourcePtr& at(const ResourceSlot& slot);
-      const ResourcePtr& at(const ResourceSlot& slot) const;
+      IResource* at(const ResourceSlot& slot);
+      const IResource* at(const ResourceSlot& slot) const;
+
+      ResourceSlot at(ResourceHash slot) const;
 
       template <typename U>
       U& as(const ResourceSlot& slot);
@@ -36,9 +47,7 @@ namespace rex
       const U& as(const ResourceSlot& slot) const;
 
     private:
-      using ResourceMap = rsl::unordered_map<ResourceSlot, ResourcePtr>;
-
-      ResourceSlot new_slot();
+      using ResourceMap = rsl::unordered_map<ResourceHash, ResourceWithSlot>;
 
     private:
       ResourceMap m_resource_map {};

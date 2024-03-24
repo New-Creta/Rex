@@ -14,12 +14,10 @@ namespace rex
     //-----------------------------------------------------------------------
     ResourceSlot ResourcePool::insert(ResourcePtr&& resource)
     {
-      ResourceSlot slot = new_slot();
-
       rsl::unique_lock const sl(m_lock);
-      m_resource_map[slot] = rsl::move(resource);
+      m_resource_map[resource->hash()] = ResourceWithSlot{ rsl::move(resource), ResourceSlot(resource->hash()) };
 
-      return slot;
+      return m_resource_map[resource->hash()].slot;
     }
 
     //-----------------------------------------------------------------------
@@ -28,27 +26,39 @@ namespace rex
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
 
       rsl::unique_lock const sl(m_lock);
-      m_resource_map.erase(slot);
+      m_resource_map.erase(slot.slot_id());
     }
 
     //-----------------------------------------------------------------------
     bool ResourcePool::has_slot(const ResourceSlot& slot) const
     {
-      return m_resource_map.find(slot) != m_resource_map.cend();
+      has_resource(slot.slot_id());
+    }
+    //-----------------------------------------------------------------------
+    bool ResourcePool::has_resource(ResourceHash hash) const
+    {
+      return m_resource_map.find(hash) != m_resource_map.cend();
     }
 
     //-----------------------------------------------------------------------
-    ResourcePtr& ResourcePool::at(const ResourceSlot& slot)
+    IResource* ResourcePool::at(const ResourceSlot& slot)
     {
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
-      return m_resource_map.at(slot);
+      return m_resource_map.at(slot.slot_id()).resource.get();
     }
 
     //-----------------------------------------------------------------------
-    const ResourcePtr& ResourcePool::at(const ResourceSlot& slot) const
+    const IResource* ResourcePool::at(const ResourceSlot& slot) const
     {
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
-      return m_resource_map.at(slot);
+      return m_resource_map.at(slot.slot_id()).resource.get();
+    }
+
+    //-----------------------------------------------------------------------
+    ResourceSlot ResourcePool::at(ResourceHash hash) const
+    {
+      REX_ASSERT_X(has_resource(hash), "Hash was not registered within resource pool ({})", hash);
+      return m_resource_map.at(hash).slot;
     }
   } // namespace renderer
 } // namespace rex

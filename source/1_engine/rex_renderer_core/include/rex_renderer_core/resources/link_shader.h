@@ -34,7 +34,7 @@ namespace rex
     {
       rhi::ResourceSlot vertex_shader;
       rhi::ResourceSlot pixel_shader;
-      rsl::vector<ConstantLayoutDescription> constants;
+      rsl::unique_array<ConstantLayoutDescription> constants;
     };
   }
 }

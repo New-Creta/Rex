@@ -12,10 +12,10 @@ namespace rex
   {
     struct RenderItemDesc
     {
-      // VB
-      // IB
-      // CB_DATA
-      // TOPOLOGY
+      VertexBufferDesc vb_desc;
+      IndexBufferDesc ib_desc;
+      ConstantBufferDesc cb_desc;
+      PrimitiveTopology topology;
     };
 
     struct RenderItem

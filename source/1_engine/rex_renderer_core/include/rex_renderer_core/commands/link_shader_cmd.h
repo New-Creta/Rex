@@ -4,6 +4,8 @@
 #include "rex_renderer_core/commands/render_cmd.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
 
+#include "rex_std/memory.h"
+
 namespace rex
 {
   namespace renderer
@@ -14,7 +16,7 @@ namespace rex
       {
         rhi::ResourceSlot vertex_shader;
         rhi::ResourceSlot pixel_shader;
-        rsl::vector<ConstantLayoutDescription> constants;
+        rsl::unique_array<ConstantLayoutDescription> constants;
       };
 
       class LinkShader : public RenderCommand

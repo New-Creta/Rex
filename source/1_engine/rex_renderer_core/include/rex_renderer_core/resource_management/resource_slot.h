@@ -9,6 +9,8 @@ namespace rex
 {
   namespace rhi
   {
+    using ResourceHash = u32;
+
     class ResourceSlot
     {
     public:
@@ -20,7 +22,7 @@ namespace rex
       ResourceSlot(ResourceSlot&& other) noexcept;
       ~ResourceSlot();
 
-      explicit ResourceSlot(s32 slotId);
+      explicit ResourceSlot(ResourceHash slotId);
 
     public:
       ResourceSlot& operator=(const ResourceSlot& other);

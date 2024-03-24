@@ -34,6 +34,7 @@
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
+#include "rex_renderer_core/system/resource_hasher.h"
 
 #include "rex_std/bonus/utility.h"
 
@@ -53,8 +54,8 @@ namespace rex
       struct RenderHardwareInfrastructure
       {
       public:
-        internal::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData);
-        ~internal::RenderHardwareInfrastructure();
+        RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData);
+        ~RenderHardwareInfrastructure();
 
       private:
         // DXGI Factory
@@ -118,7 +119,7 @@ namespace rex
 
         wrl::ComPtr<IDXGIInfoQueue> debug_info_queue;
         rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> descriptor_heap_pool;
-        rsl::array<renderer::ResourceSlot, s_swapchain_buffer_count> swapchain_rt_buffer_slots;   // swapchain render target buffer indices
+        rsl::array<ResourceSlot, s_swapchain_buffer_count> swapchain_rt_buffer_slots;   // swapchain render target buffer indices
 
       };
 
@@ -167,6 +168,14 @@ namespace rex
     // shader API
     ResourceSlot compile_shader(const CompileShaderDesc& desc)
     {
+      // Check if we don't have the compiled shader already
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
+
+      // If we don't have it already, compile the shader
       ShaderCompiler compiler;
       wrl::ComPtr<ID3DBlob> byte_code = compiler.compile_shader(desc);
 
@@ -176,13 +185,14 @@ namespace rex
         return ResourceSlot::make_invalid();
       }
 
+      // store the new compiled shader with its hash in the resource pool
       switch (desc.shader_type)
       {
       case ShaderType::VERTEX:
-        return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(byte_code));
+        return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(hash, byte_code));
         break;
       case ShaderType::PIXEL:
-        return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(byte_code));
+        return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(hash, byte_code));
         break;
 
       default: 
@@ -194,6 +204,14 @@ namespace rex
     }
     ResourceSlot link_shader(const LinkShaderDesc& desc)
     {
+      // If there's already a linked shader, return it.
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
+
+      // If not link the shader with the params provided
       auto root_sig = d3d::create_shader_root_signature(desc.constants);
 
       if (!root_sig)
@@ -206,10 +224,18 @@ namespace rex
       auto& pixel_shader = internal::get()->resource_pool.as<PixelShaderResource>(desc.pixel_shader);
 
       // create a combined shader object with the root sig, the vertex shader and the pixel shader
-      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(root_sig, vertex_shader, pixel_shader, desc.constants));
+      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(hash, root_sig, vertex_shader, pixel_shader, desc.constants));
     }
     ResourceSlot load_shader(const LoadShaderDesc& desc)
     {
+      // Check if the shader isn't already loaded
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
+
+      // If the shader hasn't been loaded before
       wrl::ComPtr<ID3DBlob> byte_code = rex::d3d::create_blob(desc.shader_byte_code);
 
       switch (desc.shader_type)
@@ -286,7 +312,7 @@ namespace rex
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
       s32 size = desc.size;
       rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(size);
-      internal::get()->resource_pool.insert(rsl::move(buffer));
+      ResourceSlot vb_resource = internal::get()->resource_pool.insert(rsl::move(buffer));
       
       // 2) Copy the data into the upload buffer
       internal::get()->upload_buffer->write(buffer.get(), desc.data, desc.size);
@@ -294,6 +320,11 @@ namespace rex
       // 3) Upload the data from the upload buffer onto the gpu
       internal::get()->upload_buffer->upload(internal::get()->command_list.get());
 
+      // 4) Cache that the data is available on the gpu (or will be soon)
+      // so if another request comes in for the same data, we don't upload it again
+
+
+      return vb_resource;
     }
     // An index buffer is a buffer holding indices of 1 or more objects
     ResourceSlot create_index_buffer(const BufferDesc& desc)
@@ -386,11 +417,12 @@ namespace rex
 
     // Check if a certain blob of data is already on the gpu or not
     // If it is, there's no need to upload it again
-    bool resource_exists(const void* data, s32 size)
+    bool is_data_on_gpu(const void* data, s32 size)
     {
       u32 hash = hash_resource_data(data, size);
       return internal::get()->gpu_resource_map.contains(hash);
     }
+
     namespace d3d
     {
       wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::vector<ConstantLayoutDescription>& constants)

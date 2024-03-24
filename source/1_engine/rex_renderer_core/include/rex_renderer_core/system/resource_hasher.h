@@ -1,0 +1,30 @@
+#pragma once
+
+#include "rex_renderer_core/resources/buffer_desc.h"
+#include "rex_renderer_core/resources/buffer_layout.h"
+#include "rex_renderer_core/resources/clear_state.h"
+#include "rex_renderer_core/resources/compile_shader.h"
+#include "rex_renderer_core/resources/input_layout.h"
+#include "rex_renderer_core/resources/link_shader.h"
+#include "rex_renderer_core/resources/load_shader.h"
+#include "rex_renderer_core/resources/mesh.h"
+#include "rex_renderer_core/resources/pipeline_state.h"
+#include "rex_renderer_core/resources/raster_state.h"
+
+namespace rex
+{
+  namespace rhi
+  {
+    using ResourceHash = u32;
+
+    ResourceHash hash_resource_desc(const BufferDesc& desc);
+    ResourceHash hash_resource_desc(const ClearStateDesc& desc);
+    ResourceHash hash_resource_desc(const CompileShaderDesc& desc);
+    ResourceHash hash_resource_desc(const InputLayoutDesc& desc);
+    ResourceHash hash_resource_desc(const LinkShaderDesc& desc);
+    ResourceHash hash_resource_desc(const LoadShaderDesc& desc);
+    ResourceHash hash_resource_desc(const renderer::VertexBufferDesc& desc);
+    ResourceHash hash_resource_desc(const renderer::IndexBufferDesc& desc);
+    ResourceHash hash_resource_desc(const RasterStateDesc& desc);
+  }
+}

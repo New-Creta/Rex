@@ -58,16 +58,5 @@ namespace rex
     // It holds the input layout, root signature, shaders, raster state, blend state ..
     // needed for a draw call.
     ResourceSlot create_pso(const PipelineStateDesc& desc);
-
-    // Hash data of a resource. 
-    // This is done so we can check if a certain resource is already on the gpu or not
-    u32 hash_resource_data(const void* data, s32 size);
-
-    // Check if a certain blob of data is already on the gpu or not
-    // If it is, there's no need to upload it again
-    bool resource_exists(const void* data, s32 size)
-    {
-      u32 hash = hash_resource_data(data, size);
-    }
   }
 }

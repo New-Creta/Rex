@@ -91,17 +91,9 @@ namespace rex
       rex::renderer::commands::LinkShaderCommandDesc link_shader_command_desc;
       link_shader_command_desc.vertex_shader = rhi::compile_shader(rsl::move(vs_compile_command_desc));
       link_shader_command_desc.pixel_shader = rhi::compile_shader(rsl::move(ps_compile_command_desc));
-      link_shader_command_desc.constants = 
-      { 
-        rex::renderer::commands::ConstantLayoutDescription 
-        {
-          rex::renderer::commands::ConstantType::CBuffer, "ObjectConstants", 0
-        },
-        rex::renderer::commands::ConstantLayoutDescription 
-        {
-          rex::renderer::commands::ConstantType::CBuffer, "PassConstants", 1
-        } 
-      };
+      link_shader_command_desc.constants = rsl::make_unique<renderer::commands::ConstantLayoutDescription[]>(2);
+      link_shader_command_desc.constants[0] = { rex::renderer::commands::ConstantType::CBuffer, "ObjectConstants", 0 };
+      link_shader_command_desc.constants[1] = { rex::renderer::commands::ConstantType::CBuffer, "PassConstants", 1 };
 
       m_shader_program = rex::renderer::link_shader(rsl::move(link_shader_command_desc));
     }

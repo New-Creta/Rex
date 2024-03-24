@@ -590,6 +590,7 @@ namespace rex
         // Other constant buffers that are shared between objects, can already sit in memory and therefore
         // Don't need to get added again.
         
+        
         rhi::create_vertex_buffer()
 
       }

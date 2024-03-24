@@ -2,6 +2,8 @@
 
 #include "rex_std/bonus/utility/type_id.h"
 
+#include "rex_renderer_core/system/resource_hasher.h"
+
 namespace rex
 {
   namespace rhi
@@ -13,14 +15,16 @@ namespace rex
       virtual ~IResource() = default;
 
       virtual size_t type() const = 0;
+      virtual ResourceHash hash() const;
     };
 
     template <typename T>
     class BaseResource : public IResource
     {
     public:
-      explicit BaseResource(T* resource)
+      explicit BaseResource(T* resource, ResourceHash hash)
         : m_resource(resource)
+        , m_hash(hash);
       {
       }
 
@@ -44,8 +48,14 @@ namespace rex
         return m_resource;
       }
 
+      ResourceHash hash() const override
+      {
+        return m_hash;
+      }
+
     private:
       T* m_resource;
+      ResourceHash m_hash;
     };
   } // namespace renderer
 } // namespace rex
