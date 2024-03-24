@@ -69,6 +69,10 @@ namespace rex
     {
     }
 
+    Blob::Blob(void* data, rsl::memory_size size)
+      : m_data((rsl::byte*)data, size)
+    {}
+
     //-------------------------------------------------------------------------
     Blob::~Blob() = default;
 

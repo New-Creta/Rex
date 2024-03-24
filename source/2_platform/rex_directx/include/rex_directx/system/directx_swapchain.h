@@ -11,14 +11,16 @@ namespace rex
     struct OutputWindowUserData;
     struct MsaaSettings;
 
-    class Swapchain : public BaseResource<IDXGISwapChain>
+    class Swapchain
     {
     public:
-      Swapchain(wrl::ComPtr<IDXGISwapChain> swapchain, DXGI_FORMAT format, s32 bufferCount);
+      Swapchain(const wrl::ComPtr<IDXGISwapChain>& swapchain, DXGI_FORMAT format, s32 bufferCount);
 
       HRESULT resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);
 
       s32 buffer_count() const;
+
+      void present();
 
       wrl::ComPtr<ID3D12Resource> get_buffer(s32 idx);
 

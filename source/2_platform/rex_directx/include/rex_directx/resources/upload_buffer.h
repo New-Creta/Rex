@@ -18,13 +18,13 @@ namespace rex
     };
 
     class CommandList;
-    class UploadBuffer : public BaseResource<UploadBuffer>
+    class UploadBuffer : public BaseResource<ID3D12Resource>
     {
     public:
-      UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState = D3D12_RESOURCE_STATE_COMMON);
+      UploadBuffer(ResourceHash hash, const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState = D3D12_RESOURCE_STATE_COMMON);
       ~UploadBuffer();
 
-      void write(Resource* dstResource, void* data, s32 size);
+      void write(CommandList* cmdList, Resource* dstResource, const void* data, s32 size);
 
       void upload(CommandList* cmdList);
 

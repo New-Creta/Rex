@@ -20,8 +20,8 @@ namespace rex
         class DepthStencilTargetResource : public BaseResource<resources::DepthStencilTarget>
         {
         public:
-            DepthStencilTargetResource(const wrl::ComPtr<ID3D12Resource>& dst, s32 arrayIndex)
-                : BaseResource(&m_depth_stencil_target)
+            DepthStencilTargetResource(ResourceHash hash, const wrl::ComPtr<ID3D12Resource>& dst, s32 arrayIndex)
+                : BaseResource(&m_depth_stencil_target, hash)
                 , m_depth_stencil_target({ dst, arrayIndex })
             {}
             ~DepthStencilTargetResource() override = default;

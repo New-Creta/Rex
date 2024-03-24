@@ -24,8 +24,8 @@ namespace rex
         class BufferResource : public BaseResource<resources::Buffer>
         {
         public:
-            BufferResource(const wrl::ComPtr<ID3DBlob>& cpuBuffer, const wrl::ComPtr<ID3D12Resource>& gpuBuffer, const wrl::ComPtr<ID3D12Resource>& uploader, u32 sizeInBytes)
-                :BaseResource(&m_buffer_resource)
+            BufferResource(ResourceHash hash, const wrl::ComPtr<ID3DBlob>& cpuBuffer, const wrl::ComPtr<ID3D12Resource>& gpuBuffer, const wrl::ComPtr<ID3D12Resource>& uploader, u32 sizeInBytes)
+                :BaseResource(&m_buffer_resource, hash)
                 ,m_buffer_resource({ cpuBuffer , gpuBuffer, uploader, sizeInBytes })
             {}
             ~BufferResource() override = default;

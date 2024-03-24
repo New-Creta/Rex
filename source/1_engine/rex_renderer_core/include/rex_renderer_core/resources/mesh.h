@@ -1,12 +1,14 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
+#include "rex_engine/memory/blob.h"
 #include "rex_renderer_core/rendering/index_buffer_format.h"
 #include "rex_renderer_core/rendering/renderer.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/memory.h"
+#include "rex_std/bonus/utility.h"
 
 namespace rex
 {
@@ -62,26 +64,37 @@ namespace rex
 
     struct VertexBufferDesc
     {
-      VertexBufferDesc(void* buffer, s32 vertexSize, s32 totalSize)
-        : data((rsl::byte*)buffer, total_size)
-        , vertex_size(vertexSize)
-        , total_size(totalSize)
-      {}
+      VertexBufferDesc() = default;
 
-      rsl::unique_array<rsl::byte> data;
+      template <typename T>
+      VertexBufferDesc(rsl::unique_array<T>&& buffer)
+        : blob()
+        , vertex_size(buffer.elem_size())
+      {
+        // "release" sets the internal buffer count to 0
+        // so we need to get the information before we actually call release
+        blob = memory::Blob(rsl::move(buffer));
+      }
+
+      memory::Blob blob;
       s32 vertex_size;
-      s32 total_size;
     };
 
     struct IndexBufferDesc
     {
-      rsl::unique_array<u16> data;
+      memory::Blob blob;
+      IndexBufferFormat format;
+    };
+
+    struct ConstantBufferDesc
+    {
+      memory::Blob blob;
     };
 
     class Mesh
     {
     public:
-      Mesh(rsl::string_view name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd);
+      Mesh(rsl::string_view name, VertexBufferDesc&& vbd, IndexBufferDesc&& ibd, ConstantBufferDesc&& cbd);
 
     public:
       void add_submesh(rsl::string_view name, const Submesh& subMesh);
@@ -89,16 +102,20 @@ namespace rex
 
       const Submesh* submesh(rsl::string_view name) const;
 
-    public:
-      rsl::string_view name() const;
+      const VertexBufferDesc* vb() const;
+      const IndexBufferDesc* ib() const;
+      const ConstantBufferDesc* cb() const;
 
-      const ResourceSlot& vertex_buffer_slot() const;
-      s32 vertex_buffer_byte_stride() const;
-      s32 vertex_buffer_byte_size() const;
+    //public:
+    //  rsl::string_view name() const;
 
-      const ResourceSlot& index_buffer_slot() const;
-      IndexBufferFormat index_buffer_format() const;
-      s32 index_buffer_byte_size() const;
+    //  const ResourceSlot& vertex_buffer_slot() const;
+    //  s32 vertex_buffer_byte_stride() const;
+    //  s32 vertex_buffer_byte_size() const;
+
+    //  const ResourceSlot& index_buffer_slot() const;
+    //  IndexBufferFormat index_buffer_format() const;
+    //  s32 index_buffer_byte_size() const;
 
     private:
       // Give it a name so we can look it up by name.
@@ -106,6 +123,7 @@ namespace rex
 
       VertexBufferDesc m_vbd;
       IndexBufferDesc m_ibd;
+      ConstantBufferDesc m_cbd;
 
       // A Mesh may store multiple geometries in one vertex/index buffer.
       // Use this container to define the Submesh geometries so we can draw

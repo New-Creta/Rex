@@ -10,9 +10,8 @@ namespace rex
 {
   namespace rhi
   {
-    Swapchain::Swapchain(wrl::ComPtr<IDXGISwapChain> swapchain, DXGI_FORMAT format, s32 bufferCount)
-      : BaseResource<IDXGISwapChain>(m_swapchain.Get())
-      , m_swapchain(swapchain)
+    Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain>& swapchain, DXGI_FORMAT format, s32 bufferCount)
+      : m_swapchain(swapchain)
       , m_format(format)
       , m_buffer_count(bufferCount)
     {}
@@ -25,6 +24,11 @@ namespace rex
     s32 Swapchain::buffer_count() const
     {
       return m_buffer_count;
+    }
+
+    void Swapchain::present()
+    {
+      m_swapchain->Present(0, rsl::no_flags());
     }
 
     wrl::ComPtr<ID3D12Resource> Swapchain::get_buffer(s32 idx)

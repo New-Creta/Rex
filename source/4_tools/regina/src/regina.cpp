@@ -43,10 +43,10 @@ namespace regina
       {
         m_scene = rsl::make_unique<regina::CubeScene>();
       }
-      else
-      {
-        m_scene = rsl::make_unique<regina::SampleScene>();
-      }
+      //else
+      //{
+      //  m_scene = rsl::make_unique<regina::SampleScene>();
+      //}
     }
 
     void update()
@@ -84,7 +84,7 @@ namespace regina
     // If not, wait until the GPU has completed commands up to this fence point.
     //
     // This call is not queued but directly executed!
-    rex::renderer::wait_for_active_frame();
+    //rex::renderer::wait_for_active_frame();
   }
   //-------------------------------------------------------------------------
   void draw()
@@ -97,7 +97,7 @@ namespace regina
     rex::renderer::set_viewport(vp);
     rex::renderer::set_scissor_rect(sr);
 
-    g_regina->draw();
+    //g_regina->draw();
   }
   //-------------------------------------------------------------------------
   void shutdown()

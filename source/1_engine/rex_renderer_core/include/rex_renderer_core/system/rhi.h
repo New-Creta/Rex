@@ -11,6 +11,8 @@
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/raster_state.h"
 
+#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
+
 namespace rex
 {
   namespace rhi
@@ -24,9 +26,24 @@ namespace rex
     void shutdown();
 
     // command line interface
-    void reset_command_list();
+    void reset_command_list(const ResourceSlot& psoSlot);
     void flush_command_queue();
     void exec_command_list();
+
+    // We dealing with resource creation, we need to do this smart as we don't want to have the same object twice in memory.
+    // Eg. if an object is requested for rendering, and an equivalent vertex buffer or index buffer is already in memory, 
+    // we shouldn't put it in memory again, instead we should use the existing memory for this job
+    
+    // This can be performed by hashing the vertex buffer and index buffer descriptors
+    // and looking into our existing resource pool if such a hash is already exists tied to a resource.
+    // If it does, reuse the existing data for this render item
+    // If it doesn't already exist, we create a new vertex buffer and/or index buffer
+    // and queue for uploading to the gpu.
+    
+    // The same strategy can be used for constant buffers, shaders, textures, ..
+    // The constant buffer that's unique per object won't (or shouldn't) have any pre existing data
+    // Other constant buffers that are shared between objects, can already sit in memory and therefore
+    // Don't need to get added again
 
     // shader API
     // Compile a shader into binary code

@@ -19,10 +19,8 @@ namespace rex
         class PixelShaderResource : public BaseResource<resources::PixelShader>
         {
         public:
-            RESOURCE_CLASS_TYPE(PixelShaderResource);
-
-            explicit PixelShaderResource(const wrl::ComPtr<ID3DBlob>& ps)
-              : BaseResource(&m_pixel_shader)
+            explicit PixelShaderResource(ResourceHash hash, const wrl::ComPtr<ID3DBlob>& ps)
+              : BaseResource(&m_pixel_shader, hash)
                 ,m_pixel_shader({ ps })
             {}
             ~PixelShaderResource() override = default;

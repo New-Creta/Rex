@@ -14,9 +14,14 @@ namespace rex
       flush();
     }
 
-    void CommandQueue::flush()
+    void CommandQueue::inc_fence()
     {
       m_fence.inc(m_command_queue.Get());
+    }
+
+    void CommandQueue::flush()
+    {
+      inc_fence();
       m_fence.wait_for_val();
     }
 

@@ -3,6 +3,9 @@
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/resources/clear_state.h"
 
+#include "rex_renderer_core/resource_management/resource_slot.h"
+#include "rex_renderer_core/resource_management/resource.h"
+
 namespace rex
 {
     namespace rhi
@@ -15,9 +18,9 @@ namespace rex
         class ClearStateResource : public BaseResource<resources::ClearState>
         {
         public:
-            explicit ClearStateResource(const resources::ClearState& cs)
-                :BaseResource(&m_clear_state)
-                ,m_clear_state(cs)
+            explicit ClearStateResource(ResourceHash hash, const resources::ClearState& cs)
+                : BaseResource(&m_clear_state, hash)
+                , m_clear_state(cs)
             {}
             ~ClearStateResource() override = default;
 

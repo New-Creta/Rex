@@ -17,5 +17,7 @@ namespace rex
       rsl::tiny_stack_string shader_feature_target;
       memory::Blob shader_code;
     };
+
+    rex::rhi::CompileShaderDesc create_compile_shader_parameters(rsl::string_view shaderName, rex::rhi::ShaderType shaderType, rsl::string_view filePath);
   }
 }

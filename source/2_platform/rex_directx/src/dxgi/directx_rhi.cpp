@@ -34,6 +34,8 @@
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
+#include "rex_renderer_core/rendering/viewport.h"
+#include "rex_renderer_core/rendering/scissor_rect.h"
 #include "rex_renderer_core/system/resource_hasher.h"
 
 #include "rex_std/bonus/utility.h"
@@ -119,8 +121,12 @@ namespace rex
 
         wrl::ComPtr<IDXGIInfoQueue> debug_info_queue;
         rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> descriptor_heap_pool;
-        rsl::array<ResourceSlot, s_swapchain_buffer_count> swapchain_rt_buffer_slots;   // swapchain render target buffer indices
 
+        STATIC_WARNING("Move these fields into the swapchain")
+        rsl::vector<Resource> swapchain_buffers;   // swapchain render target buffer indices
+        rsl::array<D3D12_CPU_DESCRIPTOR_HANDLE, s_swapchain_buffer_count> swapchain_rtvs;
+        D3D12_CPU_DESCRIPTOR_HANDLE dsv;
+        s32 current_swapchain_buffer_idx;
       };
 
       rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi;
@@ -134,9 +140,11 @@ namespace rex
     {
       internal::g_rhi = rsl::make_unique<internal::RenderHardwareInfrastructure>(userData);
 
-      if (!internal::g_rhi->init_successful)
+      if (!internal::get()->init_successful)
       {
+        REX_ERROR(LogRhi, "Failed to initialize RHI");
         shutdown();
+        return false;
       }
 
       // Flush the command queue, so we can be sure the entire rhi is setup
@@ -152,9 +160,14 @@ namespace rex
     }
 
     // Command line interface
-    void reset_command_list()
+    void reset_command_list(const ResourceSlot& psoSlot)
     {
-      internal::get()->command_list->reset();
+      ID3D12PipelineState* pso = nullptr;
+      if (psoSlot.is_valid())
+      {
+        pso = internal::get()->resource_pool.as<PipelineState>(psoSlot)->get();
+      }
+      internal::get()->command_list->reset(pso);
     }
     void exec_command_list()
     {
@@ -195,8 +208,8 @@ namespace rex
         return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(hash, byte_code));
         break;
 
-      default: 
-        REX_ERROR(LogDirectX, "Unsupported Shader Type was given"); 
+      default:
+        REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
       }
 
       return ResourceSlot::make_invalid();
@@ -220,11 +233,14 @@ namespace rex
         return ResourceSlot::make_invalid();
       }
 
-      auto& vertex_shader = internal::get()->resource_pool.as<VertexShaderResource>(desc.vertex_shader);
-      auto& pixel_shader = internal::get()->resource_pool.as<PixelShaderResource>(desc.pixel_shader);
+      auto* vertex_shader = internal::get()->resource_pool.as<VertexShaderResource>(desc.vertex_shader);
+      auto* pixel_shader = internal::get()->resource_pool.as<PixelShaderResource>(desc.pixel_shader);
+
+      rsl::unique_array<ConstantLayoutDescription> constants = rsl::make_unique<ConstantLayoutDescription[]>(desc.constants.count());
+      rsl::memcpy(constants.get(), desc.constants.get(), desc.constants.byte_size());
 
       // create a combined shader object with the root sig, the vertex shader and the pixel shader
-      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(hash, root_sig, vertex_shader, pixel_shader, desc.constants));
+      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(hash, root_sig, vertex_shader, pixel_shader, rsl::move(constants)));
     }
     ResourceSlot load_shader(const LoadShaderDesc& desc)
     {
@@ -240,10 +256,10 @@ namespace rex
 
       switch (desc.shader_type)
       {
-      case ShaderType::VERTEX: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(byte_code));
-      case ShaderType::PIXEL: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(byte_code));
+      case ShaderType::VERTEX: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(hash, byte_code));
+      case ShaderType::PIXEL: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(hash, byte_code));
 
-      default: 
+      default:
         REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
       }
 
@@ -254,13 +270,25 @@ namespace rex
     // Flags control which part of the buffer (color, depths or stencil) should be cleared
     ResourceSlot create_clear_state(const ClearStateDesc& desc)
     {
-      internal::get()->resource_pool.insert(rsl::make_unique<ClearStateResource>(desc));
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
+
+      return internal::get()->resource_pool.insert(rsl::make_unique<ClearStateResource>(hash, desc));
     }
     // A raster state holds rasterization settings
     // settings like cull mode, fill mode, depth bias, normal orientation, ..
     // are all included in the raster state
     ResourceSlot create_raster_state(const RasterStateDesc& desc)
     {
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
+
       D3D12_RASTERIZER_DESC d3d_rs;
 
       d3d_rs.FillMode = rex::d3d::to_d3d12_fill_mode(desc.fill_mode);
@@ -284,13 +312,18 @@ namespace rex
       d3d_rs.MultisampleEnable = desc.multisample;
       d3d_rs.AntialiasedLineEnable = desc.aa_lines;
 
-      return internal::get()->resource_pool.insert(rsl::make_unique<RasterStateResource>(d3d_rs));
+      return internal::get()->resource_pool.insert(rsl::make_unique<RasterStateResource>(hash, d3d_rs));
     }
     // An input layout determines the format of vertices
     // It determines where a shader can find the position, normal, color
     // of a vertex.
     ResourceSlot create_input_layout(const InputLayoutDesc& desc)
     {
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
       rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
 
       for (s32 i = 0; i < desc.input_layout.size(); ++i)
@@ -304,18 +337,24 @@ namespace rex
         input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
       }
 
-      return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(input_element_descriptions));
+      return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(hash, input_element_descriptions));
     }
     // A vertex buffer is a buffer holding vertices of 1 or more objects
     ResourceSlot create_vertex_buffer(const BufferDesc& desc)
     {
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
+
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.size;
+      s32 size = desc.blob_view.size();
       rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(size);
       ResourceSlot vb_resource = internal::get()->resource_pool.insert(rsl::move(buffer));
-      
+
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(buffer.get(), desc.data, desc.size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), buffer.get(), desc.blob_view.data(), size);
 
       // 3) Upload the data from the upload buffer onto the gpu
       internal::get()->upload_buffer->upload(internal::get()->command_list.get());
@@ -329,13 +368,19 @@ namespace rex
     // An index buffer is a buffer holding indices of 1 or more objects
     ResourceSlot create_index_buffer(const BufferDesc& desc)
     {
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
+
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.size;
+      s32 size = desc.blob_view.size();
       rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(size);
       internal::get()->resource_pool.insert(rsl::move(buffer));
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(buffer.get(), desc.data, desc.size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), buffer.get(), desc.blob_view.data(), size);
 
       // 3) Upload the data from the upload buffer onto the gpu
       internal::get()->upload_buffer->upload(internal::get()->command_list.get());
@@ -344,53 +389,64 @@ namespace rex
     // This can hold data like ints, floats, vectors and matrices
     ResourceSlot create_consant_buffer(const BufferDesc& desc)
     {
+      ResourceHash hash = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(hash))
+      {
+        return internal::get()->resource_pool.at(hash);
+      }
+
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 aligned_size = rex::align(desc.size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+      s32 size = desc.blob_view.size();
+      s32 aligned_size = rex::align(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
       rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
-      internal::get()->resource_pool.insert(rsl::move(buffer));
+      ResourceSlot cb_slot = internal::get()->resource_pool.insert(rsl::move(buffer));
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(buffer.get(), desc.data, desc.size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), buffer.get(), desc.blob_view.data(), aligned_size);
 
       // 3) Upload the data from the upload buffer onto the gpu
       internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
+      return cb_slot;
     }
     // A pipeline state object defines a state for the graphics pipeline.
     // It holds the input layout, root signature, shaders, raster state, blend state ..
     // needed for a draw call.
-    ResourceSlot create_pso(const PipelineStateDesc& cps)
+    ResourceSlot create_pso(const PipelineStateDesc& desc)
     {
       // 1) Load the resources from the resource pool
-      auto& input_layout = internal::get()->resource_pool.as<InputLayoutResource>(cps.input_layout);
-      auto& shader = internal::get()->resource_pool.as<ShaderProgramResource>(cps.shader);
+      InputLayoutResource* input_layout = internal::get()->resource_pool.as<InputLayoutResource>(desc.input_layout);
+      ShaderProgramResource* shader = internal::get()->resource_pool.as<ShaderProgramResource>(desc.shader);
 
       D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-      if (cps.raster_state.is_valid())
+      if (desc.raster_state.is_valid())
       {
-        auto& raster_state = internal::get()->resource_pool.as<RasterStateResource>(cps.raster_state);
-        d3d_raster_state = *raster_state.get();
+        RasterStateResource* raster_state = internal::get()->resource_pool.as<RasterStateResource>(desc.raster_state);
+        d3d_raster_state = *raster_state->get();
       }
 
       D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-      if (cps.blend_state.is_valid())
+      if (desc.blend_state.is_valid())
       {
-        auto& blend_state = internal::get()->resource_pool.as<BlendStateResource>(cps.blend_state);
-        d3d_blend_state = blend_state.get();
+        STATIC_WARNING("Implement blend state");
+        //BlendStateResource* blend_state = internal::get()->resource_pool.as<BlendStateResource>(desc.blend_state);
+        //d3d_blend_state = blend_state->get();
       }
 
       D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-      if (cps.depth_stencil_state.is_valid())
+      if (desc.depth_stencil_state.is_valid())
       {
-        auto& depth_stencil_state = internal::get()->resource_pool.as<DepthStencilStateResource>(cps.depth_stencil_state);
-        d3d_depth_stencil_state = depth_stencil_state.get();
+        STATIC_WARNING("Implement depth stencil state");
+        //DepthStencilStateResource* depth_stencil_state = internal::get()->resource_pool.as<DepthStencilStateResource>(desc.depth_stencil_state);
+        //d3d_depth_stencil_state = depth_stencil_state->get();
       }
 
       // 2) Fill in the PSO desc
       D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
-      pso_desc.InputLayout = *input_layout.get();
-      pso_desc.pRootSignature = shader.root_signature();
-      pso_desc.VS = shader.vs();
-      pso_desc.PS = shader.ps();
+      pso_desc.InputLayout = *input_layout->get();
+      pso_desc.pRootSignature = shader->root_signature();
+      pso_desc.VS = shader->vs();
+      pso_desc.PS = shader->ps();
       pso_desc.RasterizerState = d3d_raster_state;
       pso_desc.BlendState = d3d_blend_state;
       pso_desc.DepthStencilState = d3d_depth_stencil_state;
@@ -401,7 +457,7 @@ namespace rex
       pso_desc.SampleDesc.Count = 1;
       pso_desc.SampleDesc.Quality = 0;
       pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-      
+
       // 3) Create a resource slot for a pso if it already exists in the lib
       rsl::unique_ptr<PipelineState> pso = internal::get()->pso_lib->load_pso(pso_desc);
       if (pso)
@@ -415,20 +471,71 @@ namespace rex
       return internal::get()->resource_pool.insert(rsl::move(pso));
     }
 
-    // Check if a certain blob of data is already on the gpu or not
-    // If it is, there's no need to upload it again
-    bool is_data_on_gpu(const void* data, s32 size)
+    void set_viewport(const Viewport& viewport)
     {
-      u32 hash = hash_resource_data(data, size);
-      return internal::get()->gpu_resource_map.contains(hash);
+      D3D12_VIEWPORT d3d_viewport;
+      d3d_viewport.TopLeftX = viewport.top_left_x;
+      d3d_viewport.TopLeftY = viewport.top_left_y;
+      d3d_viewport.Width    = viewport.width;
+      d3d_viewport.Height   = viewport.height;
+      d3d_viewport.MinDepth = viewport.min_depth;
+      d3d_viewport.MaxDepth = viewport.max_depth;
+
+      internal::get()->command_list->get()->RSSetViewports(1, &d3d_viewport);    
+    }
+    void set_scissor_rect(const ScissorRect& rect)
+    {
+      RECT scissor_rect{};
+      scissor_rect.top    = (LONG)rect.top;
+      scissor_rect.left   = (LONG)rect.left;
+      scissor_rect.bottom = (LONG)rect.bottom;
+      scissor_rect.right  = (LONG)rect.right;
+
+      internal::get()->command_list->get()->RSSetScissorRects(1, &scissor_rect);
+    }
+
+    void transition_backbuffer(D3D12_RESOURCE_STATES state)
+    {
+      Resource& backbuffer = internal::get()->swapchain_buffers[internal::get()->current_swapchain_buffer_idx];
+      backbuffer.transition(internal::get()->command_list->get(), state);
+    }
+    void clear_backbuffer(const ResourceSlot& clearState)
+    {
+      ClearStateResource* clear_state = internal::get()->resource_pool.as<ClearStateResource>(clearState);
+      auto& clear_flags = clear_state->get()->flags;
+      if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
+      {
+        D3D12_CPU_DESCRIPTOR_HANDLE rtv = internal::get()->swapchain_rtvs[internal::get()->current_swapchain_buffer_idx];
+        internal::get()->command_list->get()->ClearRenderTargetView(rtv, clear_state->get()->rgba.data(), 0, nullptr);
+      }
+
+      if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
+      {
+        s32 d3d_clear_flags = 0;
+        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
+        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
+
+        D3D12_CPU_DESCRIPTOR_HANDLE dsv = internal::get()->dsv;
+        internal::get()->command_list->get()->ClearDepthStencilView(dsv, (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
+      }
+    }
+    void present()
+    {
+      internal::get()->swapchain->present();
+      internal::get()->current_swapchain_buffer_idx++;
+
+      if (internal::get()->current_swapchain_buffer_idx == internal::get()->swapchain_buffers.size())
+      {
+        internal::get()->current_swapchain_buffer_idx = 0;
+      }
     }
 
     namespace d3d
     {
-      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::vector<ConstantLayoutDescription>& constants)
+      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ConstantLayoutDescription>& constants)
       {
         // Root parameter can be a table, root descriptor or root constants.
-        auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(constants.size()));
+        auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(constants.count()));
 
         // This bit is hardcoded for now, we need to fix this later
         // We want to sort the constants and then iterate over them with ranges
@@ -440,10 +547,10 @@ namespace rex
 
         // A root signature is an array of root parameters.
         CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
-          root_parameters.size(), 
-          root_parameters.data(), 
-          0, 
-          nullptr, 
+          root_parameters.size(),
+          root_parameters.data(),
+          0,
+          nullptr,
           D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
         // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
@@ -478,7 +585,8 @@ namespace rex
 
 #pragma region RHI Class
     internal::RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData)
-      : init_successful(false)
+      : init_successful(true)
+      , current_swapchain_buffer_idx(0)
     {
       // Create a scopeguard that automatically marks initialization as failed
       // This is to make it easy to extend initialization where needed with only
@@ -587,6 +695,9 @@ namespace rex
         REX_ERROR(LogRhi, "Failed to create pipeline library");
         return;
       }
+
+      // 10) Execute the commandlist to finish initialization
+      command_list->exec(command_queue.get());
 
       // release scopeguard so that init gets marked successful
       mark_init_failed.release();
@@ -790,7 +901,7 @@ namespace rex
       rhi::set_debug_name_for(allocator.Get(), "Global Command Allocator");
 
       // Command List
-      wrl::ComPtr<ID3D12CommandList> cmd_list;
+      wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
       if (DX_FAILED(device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
       {
         REX_ERROR(LogRhi, "Failed to create command list");
@@ -799,6 +910,9 @@ namespace rex
 
       rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
       command_list = rsl::make_unique<CommandList>(cmd_list, allocator);
+
+      // Open the command list to allow further initialization of resources
+      command_list->reset();
 
       return true;
     }
@@ -834,7 +948,7 @@ namespace rex
 
       rhi::set_debug_name_for(d3d_swapchain.Get(), "SwapChain");
 
-      swapchain = rsl::make_unique<Swapchain>(d3d_swapchain);
+      swapchain = rsl::make_unique<Swapchain>(d3d_swapchain, sd.BufferDesc.Format, sd.BufferCount);
       return true;
     }
 
@@ -842,7 +956,7 @@ namespace rex
     bool internal::RenderHardwareInfrastructure::init_resource_heaps()
     {
       // Nothing to implement at the moment
-      CD3DX12_HEAP_DESC desc(1_kib, D3D12_HEAP_TYPE_DEFAULT);
+      CD3DX12_HEAP_DESC desc(5_mib, D3D12_HEAP_TYPE_DEFAULT);
 
       wrl::ComPtr<ID3D12Heap> d3d_heap;
       if (DX_FAILED(device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
@@ -851,7 +965,7 @@ namespace rex
         return false;
       }
 
-      heap = rsl::make_unique<ResourceHeap>(d3d_heap, device);
+      heap = rsl::make_unique<ResourceHeap>(d3d_heap, device->get());
       return true;
     }
 
@@ -878,6 +992,8 @@ namespace rex
       rhi::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap Element - {}", type_str));
       s32 desc_size = device->get()->GetDescriptorHandleIncrementSize(type);
       s32 total_size = desc_size * numDescriptors;
+
+      descriptor_heap_pool.emplace(type, desc_heap, device->get());
 
       REX_LOG(LogRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, numDescriptors, desc_size, total_size);
 
@@ -935,8 +1051,9 @@ namespace rex
       {
         wrl::ComPtr<ID3D12Resource> buffer = swapchain->get_buffer(i);
         set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        Resource resource(buffer);
-        descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_RTV].create_rtv(&resource);
+        D3D12_CPU_DESCRIPTOR_HANDLE rtv = descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(buffer.Get());
+        swapchain_buffers.emplace_back(-1, buffer, D3D12_RESOURCE_STATE_COMMON);
+        swapchain_rtvs[i] = rtv;
       }
 
       return true;
@@ -947,10 +1064,10 @@ namespace rex
       s32 height = userData.window_height;
 
       depth_stencil_buffer = heap->create_depth_stencil_resource(width, height);
-      set_debug_name_for(depth_stencil_buffer.get(), "Swapchain Depth Stencil Buffer");
-      descriptor_heap_pool[D3D12_DESCRIPTOR_HEAP_TYPE_DSV].create_dsv(depth_stencil_buffer.get());
-      
-      CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(depth_stencil_buffer->get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);      
+      set_debug_name_for(depth_stencil_buffer->get(), "Swapchain Depth Stencil Buffer");
+      dsv = descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV).create_dsv(depth_stencil_buffer->get(), DXGI_FORMAT_D24_UNORM_S8_UINT);
+
+      CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(depth_stencil_buffer->get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
       command_list->get()->ResourceBarrier(1, &depth_write_transition);
 
       return true;
@@ -971,7 +1088,7 @@ namespace rex
         return false;
       }
 
-      pso_lib = rsl::make_unique<PipelineLibrary>(d3d_pso_lib, device.get());
+      pso_lib = rsl::make_unique<PipelineLibrary>(d3d_pso_lib, device->get());
       return true;
     }
 

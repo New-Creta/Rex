@@ -4,6 +4,9 @@
 #include "rex_engine/platform/win/win_com_ptr.h"
 #include "rex_renderer_core/resource_management/resource.h"
 
+#include "rex_directx/resources/vertex_shader_resource.h"
+#include "rex_directx/resources/pixel_shader_resource.h"
+
 #include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
 
 namespace rex
@@ -15,19 +18,19 @@ namespace rex
             struct ShaderProgram
             {
                 wrl::ComPtr<ID3D12RootSignature> root_signature{};
-                wrl::ComPtr<ID3DBlob> vertex_shader{};
-                wrl::ComPtr<ID3DBlob> pixel_shader{};
+                const VertexShaderResource* vertex_shader{};
+                const PixelShaderResource* pixel_shader{};
 
-                rsl::vector<renderer::commands::ConstantLayoutDescription> constants{};
+                rsl::unique_array<ConstantLayoutDescription> constants{};
             };
         } // namespace resources
 
         class ShaderProgramResource : public BaseResource<resources::ShaderProgram>
         {
         public:
-            ShaderProgramResource(const wrl::ComPtr<ID3D12RootSignature>& rootSig, const wrl::ComPtr<ID3DBlob>& vs, const wrl::ComPtr<ID3DBlob>& ps, const rsl::vector<renderer::commands::ConstantLayoutDescription>& constants)
-              : BaseResource(&m_shader_program)
-                ,m_shader_program({ rootSig, vs, ps, constants})
+            ShaderProgramResource(ResourceHash hash, const wrl::ComPtr<ID3D12RootSignature>& rootSig, const VertexShaderResource* vs, const PixelShaderResource* ps, rsl::unique_array<ConstantLayoutDescription>&& constants)
+              : BaseResource(&m_shader_program, hash)
+                ,m_shader_program({ rootSig, vs, ps, rsl::move(constants)})
             {}
             ~ShaderProgramResource() override = default;
 
@@ -37,11 +40,11 @@ namespace rex
             }
             D3D12_SHADER_BYTECODE vs()
             {
-              return { m_shader_program.vertex_shader->GetBufferPointer(), m_shader_program.vertex_shader->GetBufferSize() };
+              return { m_shader_program.vertex_shader->get()->vertex_shader->GetBufferPointer(), m_shader_program.vertex_shader->get()->vertex_shader->GetBufferSize() };
             }
             D3D12_SHADER_BYTECODE ps()
             {
-              return { m_shader_program.pixel_shader->GetBufferPointer(), m_shader_program.pixel_shader->GetBufferSize() };
+              return { m_shader_program.pixel_shader->get()->pixel_shader->GetBufferPointer(), m_shader_program.pixel_shader->get()->pixel_shader->GetBufferSize() };
             }
 
         private:

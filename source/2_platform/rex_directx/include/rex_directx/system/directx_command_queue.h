@@ -18,6 +18,7 @@ namespace rex
       CommandQueue(const wrl::ComPtr<ID3D12CommandQueue>& commandQueue, const wrl::ComPtr<ID3D12Fence>& fence);
       ~CommandQueue();
 
+      void inc_fence();
       void flush();
       void execute(ID3D12CommandList* commandlist);
 

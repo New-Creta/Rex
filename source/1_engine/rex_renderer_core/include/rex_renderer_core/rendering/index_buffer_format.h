@@ -7,8 +7,8 @@ namespace rex
     enum class IndexBufferFormat
     {
       None = 0,
-      R16Uint,
-      R32Uint
+      Uint16,
+      Uint32
     };
   } // namespace renderer
 } // namespace rex

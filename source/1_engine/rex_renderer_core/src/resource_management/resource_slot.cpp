@@ -44,7 +44,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    ResourceSlot::ResourceSlot(s32 slotId)
+    ResourceSlot::ResourceSlot(ResourceHash slotId)
         : m_about_to_be_removed(false)
         , m_slot_id(slotId)
         , m_ref_count(new s32(1))
@@ -135,7 +135,7 @@ namespace rex
         {
           m_about_to_be_removed = true;
 
-          renderer::release_resource(*this);
+          //renderer::release_resource(*this);
 
           m_about_to_be_removed = false;
           m_slot_id             = globals::g_invalid_slot_id;

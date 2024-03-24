@@ -8,11 +8,12 @@ namespace rex
 {
   namespace rhi
   {
-    class DirectXDevice : public BaseResource<ID3D12Device1>
+    class DirectXDevice
     {
     public:
-      DirectXDevice(const wrl::ComPtr<ID3D12Device1> device, D3D_FEATURE_LEVEL featureLevel, const dxgi::Adapter* adapter);
+      DirectXDevice(const wrl::ComPtr<ID3D12Device1>& device, D3D_FEATURE_LEVEL featureLevel, const dxgi::Adapter* adapter);
 
+      ID3D12Device1* get();
       const dxgi::Adapter* adapter() const;
       D3D_FEATURE_LEVEL feature_level() const;
 

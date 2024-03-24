@@ -22,10 +22,8 @@ namespace rex
         class FrameResource : public BaseResource<resources::Frame>
         {
         public:
-            RESOURCE_CLASS_TYPE(FrameResource);
-
-            explicit FrameResource(const wrl::ComPtr<ID3D12CommandAllocator>& allocator)
-                : BaseResource(&m_frame)
+            explicit FrameResource(ResourceHash hash, const wrl::ComPtr<ID3D12CommandAllocator>& allocator)
+                : BaseResource(&m_frame, hash)
                 ,m_frame({allocator, 0})
             {}
             ~FrameResource() override = default;

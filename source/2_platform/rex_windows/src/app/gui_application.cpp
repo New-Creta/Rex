@@ -115,6 +115,9 @@ namespace rex
           m_on_draw();
 
           post_user_draw();
+
+          // all command are now queued, let's render
+          renderer::render();
         }
 
         // update the timing stats
@@ -316,11 +319,11 @@ namespace rex
           return false;
         }
 
-        if (!renderer::flush())
-        {
-          REX_ERROR(LogWindows, "Unable to flush all commands");
-          return false;
-        }
+        //if (!renderer::flush())
+        //{
+        //  REX_ERROR(LogWindows, "Unable to flush all commands");
+        //  return false;
+        //}
 
         // When the renderer is initialized we can show the window
         m_window->show();
@@ -376,7 +379,7 @@ namespace rex
 
         rex::renderer::new_frame();
 
-        rex::renderer::set_render_targets(rex::globals::default_targets_info().back_buffer_color, rex::globals::default_targets_info().depth_buffer);
+        //rex::renderer::set_render_targets(rex::globals::default_targets_info().back_buffer_color, rex::globals::default_targets_info().depth_buffer);
         rex::renderer::begin_draw();
 
       }

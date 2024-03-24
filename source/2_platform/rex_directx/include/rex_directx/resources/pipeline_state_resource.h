@@ -11,10 +11,8 @@ namespace rex
         class PipelineStateResource : public BaseResource<ID3D12PipelineState>
         {
         public:
-            RESOURCE_CLASS_TYPE(PipelineStateResource);
-
             explicit PipelineStateResource(const wrl::ComPtr<ID3D12PipelineState>& pso)
-              : BaseResource(pso.Get())
+              : BaseResource(pso.Get(), ResourceHash(pso.Get()))
                 ,m_pipeline_state(pso)
             {}
             ~PipelineStateResource() override = default;

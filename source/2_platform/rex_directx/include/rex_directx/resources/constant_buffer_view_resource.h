@@ -33,10 +33,8 @@ namespace rex
         class ConstantBufferViewResource : public BaseResource<resources::ContantBufferView>
         {
         public:
-            RESOURCE_CLASS_TYPE(ConstantBufferViewResource);
-
-            ConstantBufferViewResource(ResourceSlot committedResource, s32 bufferByteSize, s32 bufferIndex)
-                : BaseResource(&m_committed_buffer_view)
+            ConstantBufferViewResource(ResourceHash hash, ResourceSlot committedResource, s32 bufferByteSize, s32 bufferIndex)
+                : BaseResource(&m_committed_buffer_view, hash)
                 ,m_committed_buffer_view(std::move(committedResource), bufferByteSize, bufferIndex)
             {}
             ~ConstantBufferViewResource() override = default;

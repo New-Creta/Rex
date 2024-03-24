@@ -15,7 +15,7 @@ namespace rex
       virtual ~IResource() = default;
 
       virtual size_t type() const = 0;
-      virtual ResourceHash hash() const;
+      virtual ResourceHash hash() const = 0;
     };
 
     template <typename T>
@@ -24,7 +24,7 @@ namespace rex
     public:
       explicit BaseResource(T* resource, ResourceHash hash)
         : m_resource(resource)
-        , m_hash(hash);
+        , m_hash(hash)
       {
       }
 

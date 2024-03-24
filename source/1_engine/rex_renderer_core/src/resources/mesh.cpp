@@ -7,10 +7,11 @@ namespace rex
   namespace renderer
   {
     //-------------------------------------------------------------------------
-    Mesh::Mesh(rsl::string_view name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd)
+    Mesh::Mesh(rsl::string_view name, VertexBufferDesc&& vbd, IndexBufferDesc&& ibd, ConstantBufferDesc&& cbd)
         : m_name(name)
-        , m_vbd(vbd)
-        , m_ibd(ibd)
+        , m_vbd(rsl::move(vbd))
+        , m_ibd(rsl::move(ibd))
+        , m_cbd(rsl::move(cbd))
     {
     }
 
@@ -44,46 +45,59 @@ namespace rex
       return &m_submesh_map.at(name);
     }
 
-    //-------------------------------------------------------------------------
-    rsl::string_view Mesh::name() const
+    const VertexBufferDesc* Mesh::vb() const
     {
-      return m_name;
+      return &m_vbd;
+    }
+    const IndexBufferDesc* Mesh::ib() const
+    {
+      return &m_ibd;
+    }
+    const ConstantBufferDesc* Mesh::cb() const
+    {
+      return &m_cbd;
     }
 
-    //-------------------------------------------------------------------------
-    const ResourceSlot& Mesh::vertex_buffer_slot() const
-    {
-      return m_vbd.slot;
-    }
+    ////-------------------------------------------------------------------------
+    //rsl::string_view Mesh::name() const
+    //{
+    //  return m_name;
+    //}
 
-    //-------------------------------------------------------------------------
-    s32 Mesh::vertex_buffer_byte_stride() const
-    {
-      return m_vbd.byte_stride;
-    }
+    ////-------------------------------------------------------------------------
+    //const ResourceSlot& Mesh::vertex_buffer_slot() const
+    //{
+    //  return m_vbd.slot;
+    //}
 
-    //-------------------------------------------------------------------------
-    s32 Mesh::vertex_buffer_byte_size() const
-    {
-      return m_vbd.total_size;
-    }
+    ////-------------------------------------------------------------------------
+    //s32 Mesh::vertex_buffer_byte_stride() const
+    //{
+    //  return m_vbd.byte_stride;
+    //}
 
-    //-------------------------------------------------------------------------
-    const ResourceSlot& Mesh::index_buffer_slot() const
-    {
-      return m_ibd.slot;
-    }
+    ////-------------------------------------------------------------------------
+    //s32 Mesh::vertex_buffer_byte_size() const
+    //{
+    //  return m_vbd.total_size;
+    //}
 
-    //-------------------------------------------------------------------------
-    IndexBufferFormat Mesh::index_buffer_format() const
-    {
-      return m_ibd.format;
-    }
+    ////-------------------------------------------------------------------------
+    //const ResourceSlot& Mesh::index_buffer_slot() const
+    //{
+    //  return m_ibd.slot;
+    //}
 
-    //-------------------------------------------------------------------------
-    s32 Mesh::index_buffer_byte_size() const
-    {
-      return m_ibd.byte_size;
-    }
+    ////-------------------------------------------------------------------------
+    //IndexBufferFormat Mesh::index_buffer_format() const
+    //{
+    //  return m_ibd.format;
+    //}
+
+    ////-------------------------------------------------------------------------
+    //s32 Mesh::index_buffer_byte_size() const
+    //{
+    //  return m_ibd.byte_size;
+    //}
   } // namespace renderer
 } // namespace rex

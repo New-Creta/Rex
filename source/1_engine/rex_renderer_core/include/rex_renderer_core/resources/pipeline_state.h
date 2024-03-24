@@ -2,6 +2,8 @@
 
 #include "rex_std/functional.h"
 
+#include "rex_renderer_core/resource_management/resource_slot.h"
+
 namespace rex
 {
   namespace rhi

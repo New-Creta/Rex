@@ -13,14 +13,14 @@ namespace rex
     class DescriptorHeap
     {
     public:
-      DescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device>& device);
+      DescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device);
 
-      void create_rtv(const Resource* resource);
-      void create_dsv(const Resource* resource);
+      D3D12_CPU_DESCRIPTOR_HANDLE create_rtv(ID3D12Resource* resource);
+      D3D12_CPU_DESCRIPTOR_HANDLE create_dsv(ID3D12Resource* resource, DXGI_FORMAT format);
 
     private:
       wrl::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;
-      wrl::ComPtr<ID3D12Device> m_device;
+      wrl::ComPtr<ID3D12Device1> m_device;
       D3D12_DESCRIPTOR_HEAP_TYPE m_desc_heap_type;
       s32 m_descriptor_size;
       s32 m_num_descriptors;

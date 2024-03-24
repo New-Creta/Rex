@@ -5,13 +5,14 @@
 #include "rex_directx/diagnostics/directx_call.h"
 
 #include "rex_directx/system/directx_commandlist.h"
+#include "rex_directx/system/directx_resource.h"
 
 namespace rex
 {
   namespace rhi
   {
-    UploadBuffer::UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState)
-      : BaseResource()
+    UploadBuffer::UploadBuffer(ResourceHash hash, const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState)
+      : BaseResource(uploadBuffer.Get(), hash)
       , m_upload_buffer(uploadBuffer)
       , m_mapped_data(nullptr)
       , m_resource_state(startState)
@@ -25,7 +26,7 @@ namespace rex
       m_upload_buffer->Unmap(0, nullptr);
     }
  
-    void UploadBuffer::write(Resource* dstResource, void* data, s32 size)
+    void UploadBuffer::write(CommandList* cmdList, Resource* dstResource, const void* data, s32 size)
     {
       rsl::byte* start = (rsl::byte*)m_mapped_data + m_offset;
       rsl::memcpy(start, data, size);
@@ -39,9 +40,9 @@ namespace rex
       for (const UploadInfo& upload_info : m_upload_infos)
       {
         D3D12_RESOURCE_STATES original_state = upload_info.dst_resource->resource_state();
-        upload_info.dst_resource->transition(cmdList, D3D12_RESOURCE_STATE_COPY_DEST);
-        upload_info.dst_resource->write(cmdList, this, upload_info.data, upload_info.size);
-        upload_info.dst_resource->transition(cmdList, original_state);
+        upload_info.dst_resource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
+        upload_info.dst_resource->write(cmdList->get(), this, upload_info.data, upload_info.size);
+        upload_info.dst_resource->transition(cmdList->get(), original_state);
       }
 
       m_upload_infos.clear();

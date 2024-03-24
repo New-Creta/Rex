@@ -1,13 +1,14 @@
 #pragma once
 
+#include "rex_engine/memory/blob_view.h"
+
 namespace rex
 {
   namespace rhi
   {
     struct BufferDesc
     {
-      s32 size;
-      void* data;
+      memory::BlobView blob_view;
     };
   }
 }

@@ -13,7 +13,7 @@ namespace rex
     class ResourceHeap
     {
     public:
-      ResourceHeap(const wrl::ComPtr<ID3D12Heap>& heap, const wrl::ComPtr<ID3D12Device>& device);
+      ResourceHeap(const wrl::ComPtr<ID3D12Heap>& heap, const wrl::ComPtr<ID3D12Device1>& device);
 
       rsl::unique_ptr<Resource> create_buffer(s32 size, s32 alignment = 0);
       rsl::unique_ptr<Resource> create_depth_stencil_resource(s32 width, s32 height, s32 alignment = 0);

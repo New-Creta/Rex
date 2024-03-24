@@ -12,7 +12,7 @@ namespace rex
     {
       u32 hash = rsl::type_id<BufferDesc>().hash_code();
       
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.data, desc.size);
+      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size()));
 
       return hash;
     }
@@ -63,7 +63,7 @@ namespace rex
     {
       u32 hash = rsl::type_id<renderer::VertexBufferDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.data.get(), desc.data.byte_size()));
+      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob.data(), desc.blob.size()));
 
       return hash;
     }
@@ -71,13 +71,21 @@ namespace rex
     {
       u32 hash = rsl::type_id<renderer::IndexBufferDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.data.get(), desc.data.byte_size()));
+      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob.data(), desc.blob.size()));
 
       return hash;
     }
     ResourceHash hash_resource_desc(const RasterStateDesc& desc)
     {
       u32 hash = rsl::type_id<RasterStateDesc>().hash_code();
+
+      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)&desc, sizeof(desc)));
+
+      return hash;
+    }
+    ResourceHash hash_resource_desc(const PipelineStateDesc& desc)
+    {
+      u32 hash = rsl::type_id<PipelineStateDesc>().hash_code();
 
       hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)&desc, sizeof(desc)));
 

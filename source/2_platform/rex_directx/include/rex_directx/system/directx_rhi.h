@@ -42,9 +42,15 @@ namespace rex
 #endif
     }
 
+    void set_viewport(const Viewport& viewport);
+    void set_scissor_rect(const ScissorRect& rect);
+    void transition_backbuffer(D3D12_RESOURCE_STATES state);
+    void clear_backbuffer(const ResourceSlot& clearState);
+    void present();
+
     namespace d3d
     {
-      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::vector<ConstantLayoutDescription>& constants);
+      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ConstantLayoutDescription>& constants);
     }
   }
 }

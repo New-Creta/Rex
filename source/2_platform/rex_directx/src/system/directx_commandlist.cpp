@@ -25,6 +25,7 @@ namespace rex
 
     void CommandList::reset(ID3D12PipelineState* pso)
     {
+      m_allocator->Reset();
       m_command_list->Reset(m_allocator.Get(), pso);
     }
 
@@ -39,16 +40,15 @@ namespace rex
       D3D12_RESOURCE_STATES from = resource->resource_state();
       if (from != to)
       {
-        resource->transition()
-        CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource->get(), from, to);
-        m_command_list->ResourceBarrier(1, &barrier);
-        
+        resource->transition(m_command_list.Get(), to);
       }
     }
-    void CommandList::copy_buffer(Resource* dst_resource, Resource* src_resource, s32 size, s32 offset)
-    {
 
+    ID3D12GraphicsCommandList* CommandList::get()
+    {
+      return m_command_list.Get();
     }
+
 
 
     ScopedCommandList::ScopedCommandList(CommandList* cmdList, CommandQueue* cmdQueue)
@@ -75,6 +75,8 @@ namespace rex
     {
       m_cmd_list = rsl::exchange(other.m_cmd_list, nullptr);
       m_cmd_queue = rsl::exchange(other.m_cmd_queue, nullptr);
+
+      return *this;
     }
   }
 }

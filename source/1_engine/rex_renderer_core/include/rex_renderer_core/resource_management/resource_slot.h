@@ -9,7 +9,7 @@ namespace rex
 {
   namespace rhi
   {
-    using ResourceHash = u32;
+    using ResourceHash = s32;
 
     class ResourceSlot
     {
@@ -54,9 +54,9 @@ namespace rsl
   inline namespace v1
   {
     template <>
-    struct hash<rex::renderer::ResourceSlot>
+    struct hash<rex::rhi::ResourceSlot>
     {
-      rsl::hash_result operator()(const rex::renderer::ResourceSlot& resourceSlot) const
+      rsl::hash_result operator()(const rex::rhi::ResourceSlot& resourceSlot) const
       {
         return resourceSlot.slot_id();
       }

@@ -42,9 +42,9 @@ namespace rex
       ResourceSlot at(ResourceHash slot) const;
 
       template <typename U>
-      U& as(const ResourceSlot& slot);
+      U* as(const ResourceSlot& slot);
       template <typename U>
-      const U& as(const ResourceSlot& slot) const;
+      const U* as(const ResourceSlot& slot) const;
 
     private:
       using ResourceMap = rsl::unordered_map<ResourceHash, ResourceWithSlot>;
@@ -63,23 +63,23 @@ namespace rex
 
     //-----------------------------------------------------------------------
     template <typename U>
-    U& ResourcePool::as(const ResourceSlot& slot)
+    U* ResourcePool::as(const ResourceSlot& slot)
     {
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
       REX_ASSERT_X(slot != globals::g_invalid_slot_id, "Invalid index given to retrieve resource from resource pool");
       REX_ASSERT_X(is<U>(slot), "Invalid type cast for given resource");
 
-      return static_cast<U&>(*at(slot));
+      return static_cast<U*>(at(slot));
     }
     //-----------------------------------------------------------------------
     template <typename U>
-    const U& ResourcePool::as(const ResourceSlot& slot) const
+    const U* ResourcePool::as(const ResourceSlot& slot) const
     {
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
       REX_ASSERT_X(slot != globals::g_invalid_slot_id, "Invalid index given to retrieve resource from resource pool");
       REX_ASSERT_X(is<U>(slot), "Invalid type cast for given resource");
 
-      return static_cast<const U&>(*at(slot));
+      return static_cast<const U*>(at(slot));
     }
   } // namespace renderer
 } // namespace rex

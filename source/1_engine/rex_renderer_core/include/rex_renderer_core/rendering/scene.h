@@ -49,7 +49,6 @@ namespace rex
       void add_render_item(RenderItem&& item);
       void clear_render_items();
 
-      void render(SceneRenderer* renderer, f32 width, f32 height);
       u32 render_item_count() const;
 
     protected:
@@ -63,26 +62,26 @@ namespace rex
 
       // Update
       void update_pass_constant_buffers(f32 width, f32 height);
-      void update_object_constant_buffers(const rex::renderer::ResourceSlot& currObjectCommittedResource);
-      void render_items(SceneRenderer* renderer, const rsl::vector<ResourceSlot>& contantBuffers) const;
+      void update_object_constant_buffers(const rex::rhi::ResourceSlot& currObjectCommittedResource);
+      //void render_items(SceneRenderer* renderer, const rsl::vector<rhi::ResourceSlot>& contantBuffers) const;
       void use_shader();
       void use_pso();
       void update_view();
 
-      rex::renderer::ResourceSlot get_object_committed_resource_of_frame(const rex::renderer::ResourceSlot* frame);
-      rex::renderer::ResourceSlot get_pass_committed_resource_of_frame(const rex::renderer::ResourceSlot* frame);
-      rex::renderer::ResourceSlot get_active_pass_constant_buffer_for_frame(s32 frame);
-      rsl::vector<rex::renderer::ResourceSlot> get_active_constant_buffer_for_frame(s32 frame);
+      rex::rhi::ResourceSlot get_object_committed_resource_of_frame(const rex::rhi::ResourceSlot* frame);
+      rex::rhi::ResourceSlot get_pass_committed_resource_of_frame(const rex::rhi::ResourceSlot* frame);
+      rex::rhi::ResourceSlot get_active_pass_constant_buffer_for_frame(s32 frame);
+      rsl::vector<rex::rhi::ResourceSlot> get_active_constant_buffer_for_frame(s32 frame);
 
     private:
       RenderItems m_render_items;
-      rex::renderer::ResourceSlot m_shader_program;
-      rex::renderer::ResourceSlot m_input_layout;
-      rex::renderer::ResourceSlot m_raster_state;
-      rex::renderer::ResourceSlot m_pso;
+      rex::rhi::ResourceSlot m_shader_program;
+      rex::rhi::ResourceSlot m_input_layout;
+      rex::rhi::ResourceSlot m_raster_state;
+      rex::rhi::ResourceSlot m_pso;
 
       PassConstants m_pass_constants;
-      rsl::vector<FrameData> m_frame_resource_data;
+      //rsl::vector<FrameData> m_frame_resource_data;
 
       // These should be part of a camera class
       glm::vec3 m_eye_pos = { 0.0f, 0.0f, 0.0f };
