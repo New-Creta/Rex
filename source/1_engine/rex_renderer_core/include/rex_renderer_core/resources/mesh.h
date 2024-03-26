@@ -84,6 +84,7 @@ namespace rex
     {
       memory::Blob blob;
       IndexBufferFormat format;
+      s32 index_count;
     };
 
     struct ConstantBufferDesc

@@ -17,6 +17,9 @@
 #include "rex_directx/system/directx_resource.h"
 #include "rex_directx/system/directx_swapchain.h"
 #include "rex_directx/system/directx_shader_compiler.h"
+#include "rex_directx/system/directx_vertex_buffer.h"
+#include "rex_directx/system/directx_index_buffer.h"
+#include "rex_directx/system/directx_constant_buffer.h"
 
 #include "rex_directx/resources/vertex_shader_resource.h"
 #include "rex_directx/resources/pixel_shader_resource.h"
@@ -94,6 +97,9 @@ namespace rex
         // Pipeline Library
         bool init_pipeline_library();
 
+        // Upload buffers
+        bool init_upload_buffers();
+
         ScopedCommandList create_scoped_cmd_list();
 
       private:
@@ -157,6 +163,16 @@ namespace rex
     void shutdown()
     {
       internal::g_rhi.reset();
+    }
+
+    void prepare_user_initialization()
+    {
+      reset_command_list(ResourceSlot::make_invalid());
+    }
+    void finish_user_initialization()
+    {
+      exec_command_list();
+      flush_command_queue();
     }
 
     // Command line interface
@@ -340,7 +356,7 @@ namespace rex
       return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(hash, input_element_descriptions));
     }
     // A vertex buffer is a buffer holding vertices of 1 or more objects
-    ResourceSlot create_vertex_buffer(const BufferDesc& desc)
+    ResourceSlot create_vertex_buffer(const renderer::VertexBufferDesc& desc)
     {
       ResourceHash hash = hash_resource_desc(desc);
       if (internal::get()->resource_pool.has_resource(hash))
@@ -349,24 +365,25 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob_view.size();
-      rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(size);
-      ResourceSlot vb_resource = internal::get()->resource_pool.insert(rsl::move(buffer));
+      s32 size = desc.blob.size();
+      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size);
+      set_debug_name_for(buffer.Get(), "Vertex Buffer");
+      rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, desc.blob.size(), desc.vertex_size);
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), buffer.get(), desc.blob_view.data(), size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), vb.get(), desc.blob.data(), size);
 
-      // 3) Upload the data from the upload buffer onto the gpu
-      internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+      //// 3) Upload the data from the upload buffer onto the gpu
+      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
 
       // 4) Cache that the data is available on the gpu (or will be soon)
       // so if another request comes in for the same data, we don't upload it again
 
-
-      return vb_resource;
+      // 5) Add the resource to the resource pool
+      return internal::get()->resource_pool.insert(rsl::move(vb));
     }
     // An index buffer is a buffer holding indices of 1 or more objects
-    ResourceSlot create_index_buffer(const BufferDesc& desc)
+    ResourceSlot create_index_buffer(const renderer::IndexBufferDesc& desc)
     {
       ResourceHash hash = hash_resource_desc(desc);
       if (internal::get()->resource_pool.has_resource(hash))
@@ -375,19 +392,24 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob_view.size();
-      rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(size);
-      internal::get()->resource_pool.insert(rsl::move(buffer));
+      s32 size = desc.blob.size();
+      DXGI_FORMAT d3d_format = rex::d3d::to_d3d12_index_format(desc.format);
+      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size, 0);
+      set_debug_name_for(buffer.Get(), "Index Buffer");
+      rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, desc.blob.size(), d3d_format);
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), buffer.get(), desc.blob_view.data(), size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), ib.get(), desc.blob.data(), size);
 
       // 3) Upload the data from the upload buffer onto the gpu
-      internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
+      // 4) add the resource to the resource pool
+      return internal::get()->resource_pool.insert(rsl::move(ib));
     }
     // A constant buffer is a buffer holding data that's accessible to a shader
     // This can hold data like ints, floats, vectors and matrices
-    ResourceSlot create_consant_buffer(const BufferDesc& desc)
+    ResourceSlot create_constant_buffer(const renderer::ConstantBufferDesc& desc)
     {
       ResourceHash hash = hash_resource_desc(desc);
       if (internal::get()->resource_pool.has_resource(hash))
@@ -396,18 +418,23 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob_view.size();
+      s32 size = desc.blob.size();
       s32 aligned_size = rex::align(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-      rsl::unique_ptr<Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
-      ResourceSlot cb_slot = internal::get()->resource_pool.insert(rsl::move(buffer));
+      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
+      set_debug_name_for(buffer.Get(), "Constant Buffer");
+      rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, desc.blob.size());
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), buffer.get(), desc.blob_view.data(), aligned_size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), cb.get(), desc.blob.data(), aligned_size);
 
       // 3) Upload the data from the upload buffer onto the gpu
-      internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
 
-      return cb_slot;
+      // 4) Create a view to this constant buffer
+      internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(buffer.Get(), aligned_size);
+
+      // 5) add the buffer to the resource pool
+      return internal::get()->resource_pool.insert(rsl::move(cb));
     }
     // A pipeline state object defines a state for the graphics pipeline.
     // It holds the input layout, root signature, shaders, raster state, blend state ..
@@ -528,6 +555,63 @@ namespace rex
       {
         internal::get()->current_swapchain_buffer_idx = 0;
       }
+    }
+
+    void set_vertex_buffer(const rhi::ResourceSlot& vb)
+    {
+      D3D12_VERTEX_BUFFER_VIEW view{};
+      VertexBuffer* vertex_buffer = internal::get()->resource_pool.as<VertexBuffer>(vb);
+      view.BufferLocation = vertex_buffer->get()->GetGPUVirtualAddress();
+      view.SizeInBytes = vertex_buffer->size();
+      view.StrideInBytes = vertex_buffer->stride();
+      
+      internal::get()->command_list->get()->IASetVertexBuffers(0, 1, &view);
+    }
+    void set_index_buffer(const rhi::ResourceSlot& ib)
+    {
+      D3D12_INDEX_BUFFER_VIEW view{};
+      IndexBuffer* index_buffer = internal::get()->resource_pool.as<IndexBuffer>(ib);
+      view.BufferLocation = index_buffer->get()->GetGPUVirtualAddress();
+      view.Format = index_buffer->format();
+      view.SizeInBytes = index_buffer->size();
+
+      internal::get()->command_list->get()->IASetIndexBuffer(&view);
+    }
+    void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb)
+    {
+      ConstantBuffer* constant_buffer = internal::get()->resource_pool.as<ConstantBuffer>(cb);
+
+      static auto cbv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).gpu_heap_start();
+
+      internal::get()->command_list->get()->SetGraphicsRootConstantBufferView(idx, constant_buffer->get()->GetGPUVirtualAddress());
+    }
+    void set_primitive_topology(renderer::PrimitiveTopology topology)
+    {
+      auto d3d_topology = rex::d3d::to_d3d12_topology(topology);
+      internal::get()->command_list->get()->IASetPrimitiveTopology(d3d_topology);
+    }
+
+    void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc)
+    {
+      internal::get()->command_list->get()->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertexLoc, startInstance);
+    }
+
+    void set_shader(const rhi::ResourceSlot& slot)
+    {
+      auto* shader_program = internal::get()->resource_pool.as<ShaderProgramResource>(slot);
+
+      internal::get()->command_list->get()->SetGraphicsRootSignature(shader_program->get()->root_signature.Get());
+    }
+    void set_pso(const rhi::ResourceSlot& slot)
+    {
+      auto* pso = internal::get()->resource_pool.as<PipelineState>(slot);
+      internal::get()->command_list->get()->SetPipelineState(pso->get());
+    }
+
+    void swap_rendertargets()
+    {
+      auto rtv = internal::get()->swapchain_rtvs[internal::get()->current_swapchain_buffer_idx];
+      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv, true, &internal::get()->dsv);
     }
 
     namespace d3d
@@ -696,7 +780,17 @@ namespace rex
         return;
       }
 
-      // 10) Execute the commandlist to finish initialization
+      // 10) Create the upload buffers
+      // To make sure we can upload data to the gpu
+      // we need to make sure the upload buffers 
+      // are create which perform this upload for us
+      if (!init_upload_buffers())
+      {
+        REX_ERROR(LogRhi, "Failed to create upload buffers");
+        return;
+      }
+
+      // 11) Execute the commandlist to finish initialization
       command_list->exec(command_queue.get());
 
       // release scopeguard so that init gets marked successful
@@ -1052,7 +1146,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> buffer = swapchain->get_buffer(i);
         set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
         D3D12_CPU_DESCRIPTOR_HANDLE rtv = descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(buffer.Get());
-        swapchain_buffers.emplace_back(-1, buffer, D3D12_RESOURCE_STATE_COMMON);
+        swapchain_buffers.emplace_back(buffer, D3D12_RESOURCE_STATE_COMMON, 0);
         swapchain_rtvs[i] = rtv;
       }
 
@@ -1089,6 +1183,26 @@ namespace rex
       }
 
       pso_lib = rsl::make_unique<PipelineLibrary>(d3d_pso_lib, device->get());
+      return true;
+    }
+
+    // Upload buffers
+    bool internal::RenderHardwareInfrastructure::init_upload_buffers()
+    {
+      // an intermediate upload heap.
+      CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
+      auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(1_mib);
+
+      wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
+      if (DX_FAILED(device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
+      {
+        REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
+        return {};
+      }
+
+      set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
+      upload_buffer = rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
+
       return true;
     }
 

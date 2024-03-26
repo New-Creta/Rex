@@ -46,6 +46,7 @@ namespace rex
       bool flush_command_queue();
 
       bool initialize(const OutputWindowUserData& userData);
+
       void render();
       void shutdown();
 

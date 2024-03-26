@@ -7,15 +7,18 @@ namespace rex
 {
   namespace rhi
   {
-    Resource::Resource(ResourceHash hash, const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState)
-      : BaseResource(resource.Get(), hash)
+    Resource::Resource(const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState, s32 size, DXGI_FORMAT format)
+      : BaseResource(resource.Get(), make_new_hash())
       , m_resource(resource)
       , m_resource_state(startState)
+      , m_size(size)
     {
       D3D12_RESOURCE_DESC desc = m_resource->GetDesc();
       m_width = desc.Width;
       m_height = desc.Height;
-      m_format = desc.Format;
+      m_format = format != DXGI_FORMAT_UNKNOWN
+        ? format
+        : desc.Format;
     }
 
     s32 Resource::width() const
@@ -25,6 +28,10 @@ namespace rex
     s32 Resource::height() const
     {
       return m_height;
+    }
+    s32 Resource::size() const
+    {
+      return m_size;
     }
     DXGI_FORMAT Resource::format() const
     {
@@ -46,16 +53,9 @@ namespace rex
       m_resource_state = to;
     }
 
-    void Resource::write(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, const void* data, s32 size)
+    void Resource::write(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s32 start, s32 size)
     {
-      D3D12_SUBRESOURCE_DATA sub_resource_data = {};
-      sub_resource_data.pData = data;
-      sub_resource_data.RowPitch = size;
-      sub_resource_data.SlicePitch = sub_resource_data.RowPitch;
-
-      cmdList->CopyResource(m_resource.Get(), uploadBuffer->get());
-
-      UpdateSubresources<1>(cmdList, m_resource.Get(), uploadBuffer->get(), 0, 0, 1, &sub_resource_data);
+      cmdList->CopyBufferRegion(m_resource.Get(), 0, uploadBuffer->get(), start, size);
     }
 
     void Resource::copy_to(ID3D12GraphicsCommandList* cmdList, ID3D12Resource* srcResource)

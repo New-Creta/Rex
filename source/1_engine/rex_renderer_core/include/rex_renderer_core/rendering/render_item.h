@@ -25,12 +25,46 @@ namespace rex
     struct RenderItem
     {
     public:
-      RenderItem(const rhi::ResourceSlot& vb, const rhi::ResourceSlot& ib, const rhi::ResourceSlot& cb, PrimitiveTopology topology)
+      RenderItem(const rhi::ResourceSlot& vb, const rhi::ResourceSlot& ib, const rhi::ResourceSlot& cb, PrimitiveTopology topology, s32 indexCount)
         : m_vb(vb)
         , m_ib(ib)
         , m_cb(cb)
         , m_topology(topology)
-      {}
+      {
+        m_start_index_location = 0;
+        m_base_vertex_location = 0;
+        m_index_count = indexCount;
+      }
+
+      rhi::ResourceSlot vb() const
+      {
+        return m_vb;
+      }
+      rhi::ResourceSlot ib() const
+      {
+        return m_ib;
+      }
+      rhi::ResourceSlot cb() const
+      {
+        return m_cb;
+      }
+      PrimitiveTopology primtive_topology() const
+      {
+        return m_topology;
+      }
+
+      s32 index_count() const
+      {
+        return m_index_count;
+      }
+      s32 start_index() const
+      {
+        return m_start_index_location;
+      }
+      s32 base_vertex_loc() const
+      {
+        return m_base_vertex_location;
+      }
 
     private:
       rhi::ResourceSlot m_vb;
@@ -38,6 +72,9 @@ namespace rex
       rhi::ResourceSlot m_cb;
       PrimitiveTopology m_topology;
 
+      s32 m_index_count {};
+      s32 m_start_index_location {};
+      s32 m_base_vertex_location {};
 
 
 
@@ -49,9 +86,6 @@ namespace rex
 
       renderer::PrimitiveTopology topology;
 
-      s32 index_count {};
-      s32 start_index_location {};
-      s32 base_vertex_location {};
 
       s32 num_frames_dirty {};
     };

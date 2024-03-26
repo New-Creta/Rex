@@ -7,6 +7,9 @@
 
 #include "rex_engine/memory/blob_writer.h"
 
+#include "rex_windows/app/gui_application.h"
+#include "rex_engine/app/windowinfo.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace regina
@@ -22,7 +25,10 @@ namespace regina
     build_raster_state();
     build_pso();
     build_frame_resources();
-    build_constant_buffers();
+
+    f32 width = rex::globals::window_info().width;
+    f32 height = rex::globals::window_info().height;
+    build_constant_buffers(width, height);
 
     use_pso();
   }
@@ -54,10 +60,11 @@ namespace regina
     glm::mat4 world = glm::mat4(1.0f);
     world = glm::scale(world, glm::vec3(2.0f, 2.0f, 2.0f));
     rex::memory::Blob constant_buffer(rsl::make_unique<rsl::byte[]>(sizeof(world)));
+    constant_buffer.write(&world, rsl::memory_size(sizeof(world)));
     
     // Fill in the buffer descs to transfer the data over to mesh
     rex::renderer::VertexBufferDesc vb_desc(rsl::move(box_vertices));
-    rex::renderer::IndexBufferDesc ib_desc{rsl::move(index_buffer), rex::renderer::IndexBufferFormat::Uint16};
+    rex::renderer::IndexBufferDesc ib_desc{rsl::move(index_buffer), rex::renderer::IndexBufferFormat::Uint16, box.indices().size()};
     rex::renderer::ConstantBufferDesc cb_desc{ rsl::move(constant_buffer) };
 
     // Create the cube mesh object

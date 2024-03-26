@@ -35,18 +35,8 @@ namespace regina
   {
   public:
     Regina()
-    {}
-
-    void init()
     {
-      if (rex::cmdline::get_argument("UseCubeScene"))
-      {
-        m_scene = rsl::make_unique<regina::CubeScene>();
-      }
-      //else
-      //{
-      //  m_scene = rsl::make_unique<regina::SampleScene>();
-      //}
+      m_scene = rsl::make_unique<regina::CubeScene>();
     }
 
     void update()
@@ -56,7 +46,9 @@ namespace regina
 
     void draw()
     {
-      m_scene_renderer.render(m_scene.get(), rex::globals::window_info().width, rex::globals::window_info().height);
+      m_scene->update();
+
+      //m_scene_renderer.render(m_scene.get(), rex::globals::window_info().width, rex::globals::window_info().height);
     }
 
   private:
@@ -71,7 +63,7 @@ namespace regina
   {
     REX_LOG(LogRegina, "Initializing Regina");
 
-    g_regina->init();
+    g_regina = rsl::make_unique<Regina>();
 
     return true;
   }
@@ -97,7 +89,7 @@ namespace regina
     rex::renderer::set_viewport(vp);
     rex::renderer::set_scissor_rect(sr);
 
-    //g_regina->draw();
+    g_regina->draw();
   }
   //-------------------------------------------------------------------------
   void shutdown()

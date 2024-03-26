@@ -17,6 +17,9 @@ namespace rex
 
       D3D12_CPU_DESCRIPTOR_HANDLE create_rtv(ID3D12Resource* resource);
       D3D12_CPU_DESCRIPTOR_HANDLE create_dsv(ID3D12Resource* resource, DXGI_FORMAT format);
+      D3D12_CPU_DESCRIPTOR_HANDLE create_cbv(ID3D12Resource* resource, s32 size);
+
+      D3D12_GPU_DESCRIPTOR_HANDLE gpu_heap_start();
 
     private:
       wrl::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;

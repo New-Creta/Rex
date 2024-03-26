@@ -43,6 +43,14 @@ namespace rex
       m_render_items.clear();
     }
 
+    void Scene::update()
+    {
+      use_shader();
+      use_pso();
+
+      rhi::set_constant_buffer(1, m_pass_cb);
+    }
+
     //void Scene::render(rex::renderer::SceneRenderer* renderer, f32 width, f32 height)
     //{
     //  // This is a fancy way of saying "Get the resource slot of the gpu resource that's already on the gpu, which has memory available for the objects constant buffers"
@@ -133,8 +141,49 @@ namespace rex
       //  m_frame_resource_data.emplace_back(frame_slot);
       //}
     }
-    void Scene::build_constant_buffers()
+    void Scene::build_constant_buffers(f32 width, f32 height)
     {
+      m_pass_constants.eye_pos_w.x = 15.0f * sinf(0.2f * glm::pi<f32>()) * cosf(1.5f * glm::pi<f32>());
+      m_pass_constants.eye_pos_w.y = 15.0f * cosf(0.2f * glm::pi<f32>());
+      m_pass_constants.eye_pos_w.z = 35.0f * sinf(0.2f * glm::pi<f32>()) * sinf(1.5f * glm::pi<f32>());
+
+      const glm::vec3 pos = glm::vec3(m_pass_constants.eye_pos_w.x, m_pass_constants.eye_pos_w.y, m_pass_constants.eye_pos_w.z);
+      const glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
+      const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+      glm::mat4 view = glm::lookAt(pos, target, up);
+      view = glm::transpose(view); // DirectX backend ( so we have to transpose, expects row major matrices )
+
+      glm::mat4 proj = glm::perspectiveFov(0.25f * glm::pi<f32>(), width, height, rex::globals::default_depth_info().near_plane, rex::globals::default_depth_info().far_plane);
+      proj = glm::transpose(proj); // DirectX backend ( so we have to transpose, expects row major matrices )
+
+      const glm::mat4 view_proj = view * proj;
+
+      const glm::mat4 inv_view = glm::inverse(view);
+      const glm::mat4 inv_proj = glm::inverse(proj);
+      const glm::mat4 inv_view_proj = glm::inverse(view_proj);
+
+      m_pass_constants.view = view;
+      m_pass_constants.inv_view = inv_view;
+      m_pass_constants.proj = proj;
+      m_pass_constants.inv_proj = inv_proj;
+      m_pass_constants.view_proj = view_proj;
+      m_pass_constants.inv_view_proj = inv_view_proj;
+
+      m_pass_constants.render_target_size = glm::vec2(width, height);
+      m_pass_constants.inv_render_target_size = glm::vec2(1.0f / width, 1.0f / height);
+      m_pass_constants.near_z = rex::globals::default_depth_info().near_plane;
+      m_pass_constants.far_z = rex::globals::default_depth_info().far_plane;
+      m_pass_constants.delta_time = rex::globals::frame_info().delta_time().to_seconds();
+
+      ConstantBufferDesc desc;
+      desc.blob.allocate(rsl::memory_size(sizeof(m_pass_constants)));
+      desc.blob.write(&m_pass_constants, rsl::memory_size(sizeof(m_pass_constants)));
+      m_pass_cb = rhi::create_constant_buffer(desc);
+
+
+
+
       //const s32 num_render_items = render_item_count();
 
       //// Attach committed resources required for each frame
@@ -208,11 +257,11 @@ namespace rex
     {
       // We have a global shader for the scene at the moment
       // In the future, this will be set on an individual model
-      //rex::renderer::set_shader(m_shader_program);
+      rex::renderer::set_shader(m_shader_program);
     }
     void Scene::use_pso()
     {
-      //rex::renderer::set_pipeline_state_object(m_pso);
+      rex::renderer::set_pso(m_pso);
     }
 
     void Scene::update_view()

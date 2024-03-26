@@ -49,6 +49,8 @@ namespace rex
       void add_render_item(RenderItem&& item);
       void clear_render_items();
 
+      void update();
+
       u32 render_item_count() const;
 
     protected:
@@ -58,7 +60,7 @@ namespace rex
       void build_raster_state(FillMode fillMode = FillMode::SOLID);
       void build_pso();
       void build_frame_resources();
-      void build_constant_buffers();
+      void build_constant_buffers(f32 width, f32 height);
 
       // Update
       void update_pass_constant_buffers(f32 width, f32 height);
@@ -79,6 +81,7 @@ namespace rex
       rex::rhi::ResourceSlot m_input_layout;
       rex::rhi::ResourceSlot m_raster_state;
       rex::rhi::ResourceSlot m_pso;
+      rex::rhi::ResourceSlot m_pass_cb;
 
       PassConstants m_pass_constants;
       //rsl::vector<FrameData> m_frame_resource_data;

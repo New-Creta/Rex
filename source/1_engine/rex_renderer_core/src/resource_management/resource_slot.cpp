@@ -6,6 +6,12 @@ namespace rex
 {
   namespace rhi
   {
+    ResourceHash make_new_hash()
+    {
+      static s32 hash = 0;
+      return ++hash;
+    }
+
     //-------------------------------------------------------------------------
     ResourceSlot ResourceSlot::make_invalid()
     {

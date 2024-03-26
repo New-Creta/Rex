@@ -52,5 +52,26 @@ namespace rex
       return dsv_handle;
     }
 
+    D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::create_cbv(ID3D12Resource* resource, s32 size)
+    {
+      CD3DX12_CPU_DESCRIPTOR_HANDLE cbv_handle(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
+
+      // Create a new constant buffer view given the offsetted GPU address and the size of the constant buffer in bytes
+      D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
+      cbv_desc.BufferLocation = resource->GetGPUVirtualAddress();
+      cbv_desc.SizeInBytes = size;
+
+      cbv_handle.Offset(m_used_descriptors, m_descriptor_size);
+      m_device->CreateConstantBufferView(&cbv_desc, cbv_handle);
+      ++m_used_descriptors;
+
+      return cbv_handle;
+    }
+
+    D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeap::gpu_heap_start()
+    {
+      return m_descriptor_heap->GetGPUDescriptorHandleForHeapStart();
+    }
+
   }
 }

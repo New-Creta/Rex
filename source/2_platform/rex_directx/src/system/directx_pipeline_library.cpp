@@ -2,6 +2,8 @@
 
 #include "rex_std/bonus/functional.h"
 
+#include "rex_directx/diagnostics/directx_call.h"
+
 namespace rex
 {
   namespace rhi
@@ -15,7 +17,11 @@ namespace rex
     {
       const rsl::wstring name = create_pso_name(desc);
       wrl::ComPtr<ID3D12PipelineState> pso;
-      m_pipeline_library->LoadGraphicsPipeline(name.c_str(), &desc, IID_PPV_ARGS(&pso));
+      if (DX_FAILED(m_pipeline_library->LoadGraphicsPipeline(name.c_str(), &desc, IID_PPV_ARGS(&pso))))
+      {
+        return nullptr;
+      }
+
       return rsl::make_unique<PipelineState>(pso);
     }
     rsl::unique_ptr<PipelineState> PipelineLibrary::store_pso(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)

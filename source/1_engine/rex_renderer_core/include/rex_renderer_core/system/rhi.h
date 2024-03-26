@@ -10,8 +10,10 @@
 #include "rex_renderer_core/resources/load_shader.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/raster_state.h"
+#include "rex_renderer_core/resources/mesh.h"
 
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
+#include "rex_renderer_core/rendering/primitive_topology.h"
 
 namespace rex
 {
@@ -24,6 +26,12 @@ namespace rex
 
     // shutdown the internal rhi, all reference to the rhi are invalidated from here on out
     void shutdown();
+
+    // User might want to create render objects during initialization phase
+    // therefore we can start and end these phases so the rhi
+    // can prepare for these things
+    void prepare_user_initialization();
+    void finish_user_initialization();
 
     // command line interface
     void reset_command_list(const ResourceSlot& psoSlot);
@@ -65,15 +73,28 @@ namespace rex
     // of a vertex.
     ResourceSlot create_input_layout(const InputLayoutDesc& desc);
     // A vertex buffer is a buffer holding vertices of 1 or more objects
-    ResourceSlot create_vertex_buffer(const BufferDesc& desc);
+    ResourceSlot create_vertex_buffer(const renderer::VertexBufferDesc& desc);
     // An index buffer is a buffer holding indices of 1 or more objects
-    ResourceSlot create_index_buffer(const BufferDesc& desc);
+    ResourceSlot create_index_buffer(const renderer::IndexBufferDesc& desc);
     // A constant buffer is a buffer holding data that's accessible to a shader
     // This can hold data like ints, floats, vectors and matrices
-    ResourceSlot create_consant_buffer(const BufferDesc& desc);
+    ResourceSlot create_constant_buffer(const renderer::ConstantBufferDesc& desc);
     // A pipeline state object defines a state for the graphics pipeline.
     // It holds the input layout, root signature, shaders, raster state, blend state ..
     // needed for a draw call.
     ResourceSlot create_pso(const PipelineStateDesc& desc);
+
+    void swap_rendertargets();
+
+    void set_vertex_buffer(const rhi::ResourceSlot& vb);
+    void set_index_buffer(const rhi::ResourceSlot& ib);
+    void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb);
+    void set_primitive_topology(renderer::PrimitiveTopology topology);
+
+    void set_shader(const rhi::ResourceSlot& slot);
+    void set_pso(const rhi::ResourceSlot& slot);
+
+    void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
+
   }
 }

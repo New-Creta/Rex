@@ -114,10 +114,10 @@ namespace rex
           // provide this API to be able to execute draw commands properly
           m_on_draw();
 
-          post_user_draw();
-
           // all command are now queued, let's render
           renderer::render();
+
+          post_user_draw();
         }
 
         // update the timing stats

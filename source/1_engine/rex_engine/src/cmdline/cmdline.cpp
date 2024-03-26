@@ -87,7 +87,15 @@ namespace rex
           start_pos = 0;
         }
 
-        REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
+        if (cmdLine.length())
+        {
+          REX_LOG(LogEngine, "CmdLine: {}", cmdLine);
+        }
+        else
+        {
+          REX_LOG(LogEngine, "No commandline given", cmdLine);
+        }
+
         if (cmdLine.empty())
         {
           return;

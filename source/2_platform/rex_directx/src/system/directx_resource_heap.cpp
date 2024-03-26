@@ -23,7 +23,7 @@ namespace rex
       m_memory_limit = heap_desc.SizeInBytes;
     }
 
-    rsl::unique_ptr<Resource> ResourceHeap::create_buffer(s32 size, s32 alignment)
+    wrl::ComPtr<ID3D12Resource> ResourceHeap::create_buffer(s32 size, s32 alignment, DXGI_FORMAT format)
     {
       auto desc = CD3DX12_RESOURCE_DESC::Buffer(size, D3D12_RESOURCE_FLAG_NONE, alignment);
 
@@ -36,7 +36,7 @@ namespace rex
       
       D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
       m_used_memory += alloc_info.SizeInBytes;
-      return rsl::make_unique<Resource>(-1, buffer, D3D12_RESOURCE_STATE_COMMON);
+      return buffer;
     }
 
     rsl::unique_ptr<Resource> ResourceHeap::create_depth_stencil_resource(s32 width, s32 height, s32 alignment)
@@ -74,7 +74,7 @@ namespace rex
       }
 
       m_used_memory += alloc_info.SizeInBytes;
-      return rsl::make_unique<Resource>(-1, depth_stencil_buffer, D3D12_RESOURCE_STATE_COMMON);
+      return rsl::make_unique<Resource>(depth_stencil_buffer, D3D12_RESOURCE_STATE_COMMON, alloc_info.SizeInBytes);
     }
 
   }

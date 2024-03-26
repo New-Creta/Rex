@@ -11,11 +11,12 @@ namespace rex
 {
   namespace rhi
   {
-    UploadBuffer::UploadBuffer(ResourceHash hash, const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState)
-      : BaseResource(uploadBuffer.Get(), hash)
+    UploadBuffer::UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState)
+      : BaseResource(uploadBuffer.Get(), make_new_hash())
       , m_upload_buffer(uploadBuffer)
       , m_mapped_data(nullptr)
       , m_resource_state(startState)
+      , m_offset(0)
     {
       CD3DX12_RANGE read_range(0, 0); // We do not intend to read from this resource on the CPU
       DX_CALL(m_upload_buffer->Map(0, &read_range, &m_mapped_data));
@@ -28,24 +29,23 @@ namespace rex
  
     void UploadBuffer::write(CommandList* cmdList, Resource* dstResource, const void* data, s32 size)
     {
+      // Write the data into our mapped memory
       rsl::byte* start = (rsl::byte*)m_mapped_data + m_offset;
       rsl::memcpy(start, data, size);
 
-      m_upload_infos.emplace_back(UploadInfo{ dstResource, start, size });
+      // Fill the commandlist with the commands to update this resource
+      D3D12_RESOURCE_STATES original_state = dstResource->resource_state();
+      dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
+      dstResource->write(cmdList->get(), this, m_offset, size);
+      dstResource->transition(cmdList->get(), original_state);
+      
+      //m_upload_infos.emplace_back(UploadInfo{ dstResource, m_offset, size });
       m_offset += size;
     }
 
     void UploadBuffer::upload(CommandList* cmdList)
     {
-      for (const UploadInfo& upload_info : m_upload_infos)
-      {
-        D3D12_RESOURCE_STATES original_state = upload_info.dst_resource->resource_state();
-        upload_info.dst_resource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
-        upload_info.dst_resource->write(cmdList->get(), this, upload_info.data, upload_info.size);
-        upload_info.dst_resource->transition(cmdList->get(), original_state);
-      }
-
-      m_upload_infos.clear();
+      m_offset = 0;
     }
 
   }

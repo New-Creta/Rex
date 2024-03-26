@@ -11,6 +11,8 @@ namespace rex
   {
     using ResourceHash = s32;
 
+    ResourceHash make_new_hash();
+
     class ResourceSlot
     {
     public:
@@ -39,7 +41,7 @@ namespace rex
 
       s32 release();
       s32 slot_id() const;
-
+      
     private:
       bool m_about_to_be_removed;
       s32 m_slot_id;

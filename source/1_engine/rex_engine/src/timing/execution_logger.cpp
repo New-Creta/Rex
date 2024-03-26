@@ -14,7 +14,6 @@ namespace rex
 
   ExecutionLogger::~ExecutionLogger()
   {
-    REX_LOG(m_log_category, rsl::format("{} - finished", m_msg));
-    REX_LOG(m_log_category, rsl::format("Took {} ms", m_interval.value()));
+    REX_LOG(m_log_category, rsl::format("{} - finished ({} ms)", m_msg, m_interval.value()));
   }
 }

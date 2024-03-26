@@ -58,6 +58,8 @@
 #include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/rendering/render_item.h"
 
+#include "rex_renderer_core/system/rhi.h"
+
 namespace rex
 {
   namespace globals
@@ -209,6 +211,16 @@ namespace rex
 
       return backend::initialize(userData);
     }
+
+    void set_shader(const rhi::ResourceSlot& slot)
+    {
+      rhi::set_shader(slot);
+    }
+    void set_pso(const rhi::ResourceSlot& slot)
+    {
+      rhi::set_pso(slot);
+    }
+
 
     //-------------------------------------------------------------------------
     void render()
@@ -475,6 +487,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool prepare_user_initialization()
     {
+      rhi::prepare_user_initialization();
       return true;
       //commands::PrepareUserInitialization* cmd = create_new_command<commands::PrepareUserInitialization>(commands::PrepareUserInitializationCommandDesc {});
 
@@ -484,6 +497,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool finish_user_initialization()
     {
+      rhi::finish_user_initialization();
       return true;
       //commands::FinishUserInitialization* cmd = create_new_command<commands::FinishUserInitialization>(commands::FinishUserInitializationCommandDesc {});
 
