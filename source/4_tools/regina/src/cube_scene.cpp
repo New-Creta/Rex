@@ -47,7 +47,7 @@ namespace regina
     for (s32 idx = 0; idx < box.vertices().size(); ++idx)
     {
       const rex::mesh_factory::Vertex& v = box.vertices()[idx];
-      const rex::renderer::VertexPosCol nv({ v.position.x, v.position.y, v.position.z }, { v.position.x, v.position.y, v.position.z, 1.0f });
+      const rex::renderer::VertexPosCol nv({ v.position.x, v.position.y, v.position.z }, { v.normal.x, v.normal.y, v.normal.z, 1.0f });
       box_vertices[idx] = nv;
     }
 
@@ -59,6 +59,7 @@ namespace regina
     // Fill in the constant buffer
     glm::mat4 world = glm::mat4(1.0f);
     world = glm::scale(world, glm::vec3(2.0f, 2.0f, 2.0f));
+    world = glm::rotate(world, 3.14f / 4, glm::vec3(0.0f, 1.0f, 0.0f));
     rex::memory::Blob constant_buffer(rsl::make_unique<rsl::byte[]>(sizeof(world)));
     constant_buffer.write(&world, rsl::memory_size(sizeof(world)));
     
