@@ -50,7 +50,7 @@ namespace rex
       void render();
       void shutdown();
 
-      void add_render_item(const RenderItemDesc& desc);
+      RenderItem* add_render_item(const RenderItemDesc& desc);
 
       // Platform specific implementation, implements these function
       //const ResourceSlot* active_frame();

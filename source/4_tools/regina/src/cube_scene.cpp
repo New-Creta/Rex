@@ -12,25 +12,33 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "rex_renderer_core/system/rhi.h"
+
 namespace regina
 {
   CubeScene::CubeScene()
   {
     build_geometry();
-    build_render_items();
-
+   
     build_shader("regina\\Shaders\\color.hlsl", "regina\\Shaders\\color.hlsl");
     build_input_layout();
 
     build_raster_state();
     build_pso();
-    build_frame_resources();
 
     f32 width = rex::globals::window_info().width;
     f32 height = rex::globals::window_info().height;
     build_constant_buffers(width, height);
 
     use_pso();
+
+    m_cube_world = glm::mat4(1.0f);
+  }
+
+  void CubeScene::update_object_constant_buffers()
+  {
+    m_cube_world = glm::rotate(m_cube_world, 3.14f / 400, glm::vec3(01.0f, 1.0f, 0.0f));
+    rex::rhi::update_buffer(m_cube_render_item->cb(), &m_cube_world, sizeof(m_cube_world));
   }
 
   void CubeScene::build_geometry()
@@ -57,11 +65,10 @@ namespace regina
     index_buffer.write(box.indices().data(), rsl::memory_size(ib_byte_size));
 
     // Fill in the constant buffer
-    glm::mat4 world = glm::mat4(1.0f);
-    world = glm::scale(world, glm::vec3(2.0f, 2.0f, 2.0f));
-    world = glm::rotate(world, 3.14f / 4, glm::vec3(0.0f, 1.0f, 0.0f));
-    rex::memory::Blob constant_buffer(rsl::make_unique<rsl::byte[]>(sizeof(world)));
-    constant_buffer.write(&world, rsl::memory_size(sizeof(world)));
+    m_cube_world = glm::scale(m_cube_world, glm::vec3(2.0f, 2.0f, 2.0f));
+    m_cube_world = glm::rotate(m_cube_world, 3.14f / 4, glm::vec3(0.0f, 1.0f, 0.0f));
+    rex::memory::Blob constant_buffer(rsl::make_unique<rsl::byte[]>(sizeof(m_cube_world)));
+    constant_buffer.write(&m_cube_world, rsl::memory_size(sizeof(m_cube_world)));
     
     // Fill in the buffer descs to transfer the data over to mesh
     rex::renderer::VertexBufferDesc vb_desc(rsl::move(box_vertices));
@@ -78,35 +85,6 @@ namespace regina
     m_mesh_cube->add_submesh("box"_small, start_idx, last_idx);
 
     // Pass the mesh to the renderer so it'll render it next frame
-    rex::renderer::add_mesh(m_mesh_cube.get());
-  }
-
-  void CubeScene::build_render_items()
-  {
-    //// This scene only holds 1 mesh, which is a cube so we simply add that to the renderer
-    //renderer::add_mesh(m_mesh_cube.get());
-
-
-    //auto cube_r_item = rex::renderer::RenderItem();
-
-    //const glm::mat4 scale = glm::scale(cube_r_item.world, glm::vec3(2.0f, 2.0f, 2.0f));
-
-    //cube_r_item.world = scale;
-    //cube_r_item.constant_buffer_index = 0;
-    //cube_r_item.geometry = m_mesh_cube.get();
-    //cube_r_item.topology = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-    //cube_r_item.index_count = cube_r_item.geometry->submesh("box"_small)->index_count;
-    //cube_r_item.start_index_location = cube_r_item.geometry->submesh("box"_small)->start_index_location;
-    //cube_r_item.base_vertex_location = cube_r_item.geometry->submesh("box"_small)->base_vertex_location;
-
-    //// Dirty flag indicating the object data has changed and we need to update the constant buffer.
-    //// Because we have an object CBuffer for each FrameResource, we have to apply the
-    //// update to each FrameResource.
-    ////
-    //// Thus, when we modify object data we should set NumFramesDirty = gNumFrameResources
-    //// so that each frame resource gets the update.
-    //cube_r_item.num_frames_dirty = rex::renderer::max_frames_in_flight();
-
-    //add_render_item(rsl::move(cube_r_item));
+    m_cube_render_item = rex::renderer::add_mesh(m_mesh_cube.get());
   }
 }

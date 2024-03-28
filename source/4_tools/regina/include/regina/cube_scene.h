@@ -3,6 +3,7 @@
 #include "rex_renderer_core/rendering/scene.h"
 
 #include "rex_renderer_core/resources/mesh.h"
+#include "rex_renderer_core/rendering/render_item.h"
 
 namespace regina
 {
@@ -11,11 +12,15 @@ namespace regina
   public:
     CubeScene();
 
+  protected:
+    void update_object_constant_buffers() override;
+
   private:
     void build_geometry();
-    void build_render_items();
 
   private:
     rsl::unique_ptr<rex::renderer::Mesh> m_mesh_cube;
+    rex::renderer::RenderItem* m_cube_render_item;
+    glm::mat4 m_cube_world;;
   };
 }

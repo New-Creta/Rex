@@ -574,15 +574,6 @@ namespace rex
           rhi::set_primitive_topology(render_item.primtive_topology());
 
           rhi::draw_indexed(1, 0, render_item.index_count(), render_item.start_index(), render_item.base_vertex_loc());
-
-          //rex::renderer::set_vertex_buffer(render_item.geometry->vertex_buffer_slot(), 0, render_item.geometry->vertex_buffer_byte_stride(), 0);
-          //rex::renderer::set_index_buffer(render_item.geometry->index_buffer_slot(), render_item.geometry->index_buffer_format(), 0);
-          //rex::renderer::set_primitive_topology(rex::renderer::PrimitiveTopology::TRIANGLELIST);
-
-          //const rhi::ResourceSlot curr_object_cb = contantBuffers[render_item.constant_buffer_index];
-          //rex::renderer::set_constant_buffer_view(curr_object_cb, 0);
-
-          //rex::renderer::renderer_draw_indexed_instanced(1, 0, render_item.index_count, render_item.start_index_location, render_item.base_vertex_location);
         }
       }
 
@@ -592,7 +583,7 @@ namespace rex
         rhi::shutdown();
       }
 
-      void add_render_item(const RenderItemDesc& desc)
+      RenderItem* add_render_item(const RenderItemDesc& desc)
       {
         // 1) First we need to create the gpu resources for this render item on the gpu
         rhi::ResourceSlot vb = rhi::create_vertex_buffer(*desc.vb_desc);
@@ -600,7 +591,7 @@ namespace rex
         rhi::ResourceSlot cb = rhi::create_constant_buffer(*desc.cb_desc);
 
         // 2) Next we need to make sure we have the correct views to these resource, so we can use them for rendering
-        g_renderer->render_items.emplace_back(vb, ib, cb, desc.topology, desc.ib_desc->index_count);
+        return &g_renderer->render_items.emplace_back(vb, ib, cb, desc.topology, desc.ib_desc->index_count);
       }
 
       ////-------------------------------------------------------------------------
@@ -1012,6 +1003,7 @@ namespace rex
       bool new_frame()
       {
         rhi::reset_command_list(g_renderer->active_pso);
+        rhi::reset_upload_buffer();
 
         //auto& fr = g_ctx->resource_pool.as<FrameResource>(*g_ctx->frame_ctx.current_frame_resource());
         //auto f   = fr.get();
@@ -1046,8 +1038,6 @@ namespace rex
       //-------------------------------------------------------------------------
       bool end_frame()
       {
-
-
         //auto& fr = g_ctx->resource_pool.as<FrameResource>(*g_ctx->frame_ctx.current_frame_resource());
         //auto f   = fr.get();
 

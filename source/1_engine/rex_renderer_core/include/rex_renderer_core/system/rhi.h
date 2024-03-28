@@ -96,5 +96,8 @@ namespace rex
 
     void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
 
+    void reset_upload_buffer();
+    void update_buffer(const ResourceSlot& slot, void* data, s32 size);
+
   }
 }

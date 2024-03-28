@@ -614,6 +614,17 @@ namespace rex
       internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv, true, &internal::get()->dsv);
     }
 
+    void reset_upload_buffer()
+    {
+      internal::get()->upload_buffer->reset();
+    }
+
+    void update_buffer(const ResourceSlot& slot, void* data, s32 size)
+    {
+      Resource* resource = internal::get()->resource_pool.as<Resource>(slot);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), resource, data, size);
+    }
+
     namespace d3d
     {
       wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ConstantLayoutDescription>& constants)

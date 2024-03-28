@@ -47,11 +47,8 @@ namespace rex
       Scene();
 
       void add_render_item(RenderItem&& item);
-      void clear_render_items();
 
       void update();
-
-      u32 render_item_count() const;
 
     protected:
       // Initialization
@@ -59,21 +56,15 @@ namespace rex
       void build_input_layout();
       void build_raster_state(FillMode fillMode = FillMode::SOLID);
       void build_pso();
-      void build_frame_resources();
       void build_constant_buffers(f32 width, f32 height);
 
       // Update
       void update_pass_constant_buffers(f32 width, f32 height);
-      void update_object_constant_buffers(const rex::rhi::ResourceSlot& currObjectCommittedResource);
-      //void render_items(SceneRenderer* renderer, const rsl::vector<rhi::ResourceSlot>& contantBuffers) const;
       void use_shader();
       void use_pso();
       void update_view();
 
-      rex::rhi::ResourceSlot get_object_committed_resource_of_frame(const rex::rhi::ResourceSlot* frame);
-      rex::rhi::ResourceSlot get_pass_committed_resource_of_frame(const rex::rhi::ResourceSlot* frame);
-      rex::rhi::ResourceSlot get_active_pass_constant_buffer_for_frame(s32 frame);
-      rsl::vector<rex::rhi::ResourceSlot> get_active_constant_buffer_for_frame(s32 frame);
+      virtual void update_object_constant_buffers() = 0;
 
     private:
       RenderItems m_render_items;

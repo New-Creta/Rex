@@ -64,7 +64,7 @@ namespace rex
     void render();
     void shutdown();
 
-    void add_mesh(const Mesh* mesh);
+    struct RenderItem* add_mesh(const Mesh* mesh);
 
 
 

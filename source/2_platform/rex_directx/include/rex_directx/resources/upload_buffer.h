@@ -26,7 +26,7 @@ namespace rex
 
       void write(CommandList* cmdList, Resource* dstResource, const void* data, s32 size);
 
-      void upload(CommandList* cmdList);
+      void reset();
 
     private:
       wrl::ComPtr<ID3D12Resource> m_upload_buffer;

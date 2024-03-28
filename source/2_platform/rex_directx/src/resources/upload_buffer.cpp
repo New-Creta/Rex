@@ -43,7 +43,7 @@ namespace rex
       m_offset += size;
     }
 
-    void UploadBuffer::upload(CommandList* cmdList)
+    void UploadBuffer::reset()
     {
       m_offset = 0;
     }

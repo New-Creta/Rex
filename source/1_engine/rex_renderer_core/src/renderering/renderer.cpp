@@ -243,7 +243,7 @@ namespace rex
       backend::shutdown();
     }
 
-    void add_mesh(const Mesh* mesh)
+    RenderItem* add_mesh(const Mesh* mesh)
     {
       // We want to add a new mesh to the renderer so it gets rendered the next frame
       // Questions is how do we do that and what data do we need to set to do this?
@@ -262,26 +262,7 @@ namespace rex
       // Now that we've set the data, we need to let the backend know that we have a new render item
       // to draw next frame. The backend is a platform specific call that has optimised logic
       // to add render items to the renderer
-      backend::add_render_item(render_item);
-
-      //const glm::mat4 scale = glm::scale(render_item.world, glm::vec3(2.0f, 2.0f, 2.0f));
-
-      //render_item.world = scale;
-      //render_item.constant_buffer_index = 0;
-      //render_item.geometry = m_mesh_cube.get();
-      //render_item.topology = rex::renderer::PrimitiveTopology::TRIANGLELIST;
-      //render_item.index_count = cube_r_item.geometry->submesh("box"_small)->index_count;
-      //render_item.start_index_location = cube_r_item.geometry->submesh("box"_small)->start_index_location;
-      //render_item.base_vertex_location = cube_r_item.geometry->submesh("box"_small)->base_vertex_location;
-
-      //// Dirty flag indicating the object data has changed and we need to update the constant buffer.
-      //// Because we have an object CBuffer for each FrameResource, we have to apply the
-      //// update to each FrameResource.
-      ////
-      //// Thus, when we modify object data we should set NumFramesDirty = gNumFrameResources
-      //// so that each frame resource gets the update.
-      //render_item.num_frames_dirty = rex::renderer::max_frames_in_flight();
-
+      return backend::add_render_item(render_item);
     }
 
     ////-------------------------------------------------------------------------
