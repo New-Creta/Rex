@@ -3,7 +3,6 @@
 #include "rex_engine/primitives/mesh_factory.h"
 #include "rex_engine/primitives/box.h"
 #include "rex_renderer_core/resources/vertex.h"
-#include "rex_renderer_core/commands/create_buffer_cmd.h"
 
 #include "rex_engine/memory/blob_writer.h"
 

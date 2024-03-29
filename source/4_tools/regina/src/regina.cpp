@@ -9,7 +9,7 @@
 #include "rex_engine/app/windowinfo.h"
 #include "rex_renderer_core/rendering/default_depth_info.h"
 #include "rex_renderer_core/rendering/default_targets_info.h"
-#include "rex_renderer_core/rendering/renderer.h"
+#include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/rendering/scene.h"
 #include "rex_renderer_core/rendering/scene_renderer.h"
 #include "rex_renderer_core/resources/mesh.h"

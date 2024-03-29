@@ -7,8 +7,6 @@
 #include "rex_directx/resources/vertex_shader_resource.h"
 #include "rex_directx/resources/pixel_shader_resource.h"
 
-#include "rex_renderer_core/commands/create_constant_layout_description_cmd.h"
-
 namespace rex
 {
     namespace rhi

@@ -13,7 +13,7 @@
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/rendering/default_depth_info.h"
 #include "rex_renderer_core/rendering/default_targets_info.h"
-#include "rex_renderer_core/rendering/renderer.h"
+#include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/rendering/renderer_info.h"
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_std/bonus/types.h"

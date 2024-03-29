@@ -27,8 +27,6 @@
 #include "rex_directx/resources/clear_state_resource.h"
 #include "rex_directx/resources/raster_state_resource.h"
 #include "rex_directx/resources/input_layout_resource.h"
-#include "rex_directx/resources/blend_state_resource.h"
-#include "rex_directx/resources/depth_stencil_state_resource.h"
 
 #include "rex_directx/d3dx12.h"
 

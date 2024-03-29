@@ -77,12 +77,12 @@ namespace rex
         }
 
         Factory::Factory()
-          : ComObject(nullptr, 0)
+          : DxgiObject(nullptr, 0)
         {}
 
         //-------------------------------------------------------------------------
         Factory::Factory(wrl::ComPtr<IDXGIFactory>&& object, u32 version)
-            : ComObject(rsl::move(object), version)
+            : DxgiObject(rsl::move(object), version)
         {}
     } // namespace dxgi
 } // namespace rex

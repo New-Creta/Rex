@@ -10,13 +10,6 @@ namespace rex
   {
     class Resource;
 
-    struct UploadInfo
-    {
-      Resource* dst_resource;
-      s32 start;
-      s32 size;
-    };
-
     class CommandList;
     class UploadBuffer : public BaseResource<ID3D12Resource>
     {
@@ -33,7 +26,6 @@ namespace rex
       void* m_mapped_data;
       s32 m_offset;
       D3D12_RESOURCE_STATES m_resource_state;
-      rsl::vector<UploadInfo> m_upload_infos;
     };
   }
 }

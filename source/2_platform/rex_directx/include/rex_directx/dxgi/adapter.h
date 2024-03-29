@@ -12,7 +12,7 @@ namespace rex
 {
   namespace dxgi
   {
-    class Adapter : public dxgi::ComObject<IDXGIAdapter> // NOLINT(fuchsia-multiple-inheritance)
+    class Adapter : public dxgi::DxgiObject<IDXGIAdapter> // NOLINT(fuchsia-multiple-inheritance)
     {
     public:
       Adapter(wrl::ComPtr<IDXGIAdapter>&& adapter, u32 version);

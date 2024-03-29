@@ -10,7 +10,7 @@ namespace rex
 {
   namespace dxgi
   {
-    class Factory : public dxgi::ComObject<IDXGIFactory>
+    class Factory : public dxgi::DxgiObject<IDXGIFactory>
     {
     public:
       static rsl::unique_ptr<Factory> create(s32 flags);

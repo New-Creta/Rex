@@ -3,7 +3,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/memory/blob.h"
 #include "rex_renderer_core/rendering/index_buffer_format.h"
-#include "rex_renderer_core/rendering/renderer.h"
+#include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/unordered_map.h"
@@ -106,17 +106,6 @@ namespace rex
       const VertexBufferDesc* vb() const;
       const IndexBufferDesc* ib() const;
       const ConstantBufferDesc* cb() const;
-
-    //public:
-    //  rsl::string_view name() const;
-
-    //  const ResourceSlot& vertex_buffer_slot() const;
-    //  s32 vertex_buffer_byte_stride() const;
-    //  s32 vertex_buffer_byte_size() const;
-
-    //  const ResourceSlot& index_buffer_slot() const;
-    //  IndexBufferFormat index_buffer_format() const;
-    //  s32 index_buffer_byte_size() const;
 
     private:
       // Give it a name so we can look it up by name.

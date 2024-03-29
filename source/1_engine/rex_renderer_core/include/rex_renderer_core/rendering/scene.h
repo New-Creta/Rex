@@ -2,12 +2,9 @@
 
 #include "rex_renderer_core/rendering/render_item.h"
 #include "rex_renderer_core/rendering/fill_mode.h"
-#include "rex_renderer_core/rendering/frame_data.h"
 #include "rex_std/vector.h"
 
 #include "rex_renderer_core/resource_management/resource.h"
-#include "rex_renderer_core/commands/attach_committed_resource_to_frame_cmd.h"
-#include "rex_renderer_core/commands/create_constant_buffer_cmd.h"
 
 namespace rex
 {
@@ -45,6 +42,7 @@ namespace rex
       using ConstRenderItemIt = RenderItems::const_iterator;
 
       Scene();
+      virtual ~Scene() = default;
 
       void add_render_item(RenderItem&& item);
 

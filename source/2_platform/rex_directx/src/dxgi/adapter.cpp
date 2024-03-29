@@ -117,7 +117,7 @@ namespace rex
   {
     //-------------------------------------------------------------------------
     Adapter::Adapter(wrl::ComPtr<IDXGIAdapter>&& adapter, u32 version)
-        : ComObject(rsl::move(adapter), version)
+        : DxgiObject(rsl::move(adapter), version)
         , m_description(::get_description(com_ptr()))
     {
     }

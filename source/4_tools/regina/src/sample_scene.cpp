@@ -16,7 +16,7 @@
 //#include "rex_renderer_core/commands/create_raster_state_cmd.h"
 //#include "rex_renderer_core/commands/create_pipeline_state_cmd.h"
 //#include "rex_renderer_core/commands/update_committed_resource_cmd.h"
-//#include "rex_renderer_core/rendering/renderer.h"
+//#include "rex_renderer_core/system/renderer.h"
 //#include "rex_renderer_core/rendering/default_depth_info.h"
 //#include "rex_renderer_core/rendering/default_targets_info.h"
 //
