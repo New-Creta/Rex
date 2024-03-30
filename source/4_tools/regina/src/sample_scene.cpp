@@ -74,25 +74,19 @@ namespace regina
     m_geometry->add_submesh("sphere"_small, sphere);
     m_geometry->add_submesh("cylinder"_small, cylinder);
 
-    // Notify the renderer to draw the meshes
-    rex::renderer::RenderItem* render_item = nullptr;
-
     // Box
     glm::mat4 world = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 2.0f));
     world = glm::transpose(world); // Always transpose as we're working with Direct X
-
     rex::memory::Blob box_cb(rsl::make_unique<rsl::byte[]>(sizeof(world)));
     box_cb.write(&world, rsl::memory_size(sizeof(world)));
-    render_item = rex::renderer::add_mesh(m_geometry.get(), box, rex::memory::BlobView(box_cb));
-    rex::rhi::update_buffer(render_item->cb(), &world, sizeof(world));
+    rex::renderer::add_mesh(m_geometry.get(), box, rex::memory::BlobView(box_cb));
 
     // Grid
     glm::mat4 grid_trans = glm::mat4(1.0f);
     grid_trans = glm::transpose(grid_trans); // Always transpose as we're working with Direct X
     rex::memory::Blob grid_cb(rsl::make_unique<rsl::byte[]>(sizeof(grid_trans)));
     grid_cb.write(&grid_trans, rsl::memory_size(sizeof(grid_trans)));
-    render_item = rex::renderer::add_mesh(m_geometry.get(), grid, rex::memory::BlobView(grid_cb));
-    rex::rhi::update_buffer(render_item->cb(), &grid_trans, sizeof(grid_trans));
+    rex::renderer::add_mesh(m_geometry.get(), grid, rex::memory::BlobView(grid_cb));
 
      //Spheres and Cylinders
     for (s32 i = 0; i < 5; ++i)
@@ -116,14 +110,10 @@ namespace regina
       left_sphere_cb.write(&left_sphere_world, rsl::memory_size(sizeof(left_sphere_world)));
       right_sphere_cb.write(&right_sphere_world, rsl::memory_size(sizeof(right_sphere_world)));
 
-      render_item = rex::renderer::add_mesh(m_geometry.get(), cylinder, rex::memory::BlobView(left_cyl_cb));
-      rex::rhi::update_buffer(render_item->cb(), &left_cyl_world, sizeof(left_cyl_world));
-      render_item = rex::renderer::add_mesh(m_geometry.get(), cylinder, rex::memory::BlobView(right_cyl_cb));
-      rex::rhi::update_buffer(render_item->cb(), &right_cyl_world, sizeof(right_cyl_world));
-      render_item = rex::renderer::add_mesh(m_geometry.get(), sphere, rex::memory::BlobView(left_sphere_cb));
-      rex::rhi::update_buffer(render_item->cb(), &left_sphere_world, sizeof(left_sphere_world));
-      render_item = rex::renderer::add_mesh(m_geometry.get(), sphere, rex::memory::BlobView(right_sphere_cb));
-      rex::rhi::update_buffer(render_item->cb(), &right_sphere_world, sizeof(right_sphere_world));
+      rex::renderer::add_mesh(m_geometry.get(), cylinder, rex::memory::BlobView(left_cyl_cb));
+      rex::renderer::add_mesh(m_geometry.get(), cylinder, rex::memory::BlobView(right_cyl_cb));
+      rex::renderer::add_mesh(m_geometry.get(), sphere, rex::memory::BlobView(left_sphere_cb));
+      rex::renderer::add_mesh(m_geometry.get(), sphere, rex::memory::BlobView(right_sphere_cb));
     }
   }
 

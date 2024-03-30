@@ -74,19 +74,6 @@ namespace rex
       s32 m_index_count {};
       s32 m_start_index_location {};
       s32 m_base_vertex_location {};
-
-
-
-      glm::mat4 world = glm::mat4(1.0f);
-
-      u32 constant_buffer_index {};
-
-      Mesh* geometry {};
-
-      renderer::PrimitiveTopology topology;
-
-
-      s32 num_frames_dirty {};
     };
   } // namespace renderer
 } // namespace rex

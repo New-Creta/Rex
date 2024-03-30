@@ -236,7 +236,13 @@ namespace rex
         rhi::ResourceSlot cb = rhi::create_constant_buffer(desc.cb_desc);
 
         // 2) Next we need to make sure we have the correct views to these resource, so we can use them for rendering
-        return &g_renderer->render_items.emplace_back(vb, ib, cb, desc.topology, desc.ib_desc.index_count, desc.ib_desc.base_vertex_loc);
+        RenderItem* render_item = &g_renderer->render_items.emplace_back(vb, ib, cb, desc.topology, desc.ib_desc.index_count, desc.ib_desc.base_vertex_loc);
+
+        // 3) Make sure the constant buffer gets uploaded
+        rex::rhi::update_buffer(render_item->cb(), desc.cb_desc.blob_view.data(), desc.cb_desc.blob_view.size());
+
+        // 4) return the new added render item
+        return render_item;
       }
       
       //-------------------------------------------------------------------------
