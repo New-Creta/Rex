@@ -7,7 +7,7 @@ namespace rex
   namespace renderer
   {
     //-------------------------------------------------------------------------
-    Mesh::Mesh(rsl::string_view name, VertexBufferDesc vbd, IndexBufferDesc ibd)
+    Mesh::Mesh(rsl::string_view name, rhi::VertexBufferDesc vbd, rhi::IndexBufferDesc ibd)
         : m_name(name)
         , m_vbd(rsl::move(vbd))
         , m_ibd(rsl::move(ibd))
@@ -44,59 +44,14 @@ namespace rex
       return &m_submesh_map.at(name);
     }
 
-    const VertexBufferDesc* Mesh::vb() const
+    const rhi::VertexBufferDesc* Mesh::vb() const
     {
       return &m_vbd;
     }
-    const IndexBufferDesc* Mesh::ib() const
+    const rhi::IndexBufferDesc* Mesh::ib() const
     {
       return &m_ibd;
     }
-    //const ConstantBufferDesc* Mesh::cb() const
-    //{
-    //  return &m_cbd;
-    //}
 
-    ////-------------------------------------------------------------------------
-    //rsl::string_view Mesh::name() const
-    //{
-    //  return m_name;
-    //}
-
-    ////-------------------------------------------------------------------------
-    //const ResourceSlot& Mesh::vertex_buffer_slot() const
-    //{
-    //  return m_vbd.slot;
-    //}
-
-    ////-------------------------------------------------------------------------
-    //s32 Mesh::vertex_buffer_byte_stride() const
-    //{
-    //  return m_vbd.byte_stride;
-    //}
-
-    ////-------------------------------------------------------------------------
-    //s32 Mesh::vertex_buffer_byte_size() const
-    //{
-    //  return m_vbd.total_size;
-    //}
-
-    ////-------------------------------------------------------------------------
-    //const ResourceSlot& Mesh::index_buffer_slot() const
-    //{
-    //  return m_ibd.slot;
-    //}
-
-    ////-------------------------------------------------------------------------
-    //IndexBufferFormat Mesh::index_buffer_format() const
-    //{
-    //  return m_ibd.format;
-    //}
-
-    ////-------------------------------------------------------------------------
-    //s32 Mesh::index_buffer_byte_size() const
-    //{
-    //  return m_ibd.byte_size;
-    //}
   } // namespace renderer
 } // namespace rex

@@ -11,7 +11,6 @@
 #include "rex_renderer_core/rendering/default_targets_info.h"
 #include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/rendering/scene.h"
-#include "rex_renderer_core/rendering/scene_renderer.h"
 #include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/resources/vertex.h"
 #include "rex_renderer_core/rendering/scissor_rect.h"
@@ -47,13 +46,10 @@ namespace regina
     void draw()
     {
       m_scene->update();
-
-      //m_scene_renderer.render(m_scene.get(), rex::globals::window_info().width, rex::globals::window_info().height);
     }
 
   private:
     rsl::unique_ptr<rex::renderer::Scene> m_scene;
-    rex::renderer::SceneRenderer m_scene_renderer;
   };
 
   rsl::unique_ptr<Regina> g_regina;
@@ -63,6 +59,7 @@ namespace regina
   {
     REX_LOG(LogRegina, "Initializing Regina");
 
+    // Create the editor object which will initialize it.
     g_regina = rsl::make_unique<Regina>();
 
     return true;
@@ -70,17 +67,13 @@ namespace regina
   //-------------------------------------------------------------------------
   void update()
   {
+    // Update the editor
     g_regina->update();
-
-    // Has the GPU finished processing the commands of the current frame resource?
-    // If not, wait until the GPU has completed commands up to this fence point.
-    //
-    // This call is not queued but directly executed!
-    //rex::renderer::wait_for_active_frame();
   }
   //-------------------------------------------------------------------------
   void draw()
   {
+    // This function should be removed, the user should not have their own draw function
     const f32 width = static_cast<f32>(rex::globals::window_info().width);
     const f32 height = static_cast<f32>(rex::globals::window_info().height);
     const rex::Viewport vp    = {0.0f, 0.0f, width, height, 0.0f, 1.0f};
@@ -96,6 +89,7 @@ namespace regina
   {
     REX_LOG(LogRegina, "shutting down Regina");
 
+    // Shut down the editor and all its resources
     g_regina.reset();
   }
 

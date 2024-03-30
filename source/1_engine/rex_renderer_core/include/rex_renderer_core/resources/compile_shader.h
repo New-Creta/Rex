@@ -11,13 +11,14 @@ namespace rex
   {
     struct CompileShaderDesc
     {
+      CompileShaderDesc() = default;
+      CompileShaderDesc(rsl::string_view shaderName, rex::rhi::ShaderType shaderType, rsl::string_view filePath);
+
       ShaderType shader_type = ShaderType::None;
       rsl::string_view shader_entry_point;
       rsl::small_stack_string shader_name;
       rsl::tiny_stack_string shader_feature_target;
       memory::Blob shader_code;
     };
-
-    rex::rhi::CompileShaderDesc create_compile_shader_parameters(rsl::string_view shaderName, rex::rhi::ShaderType shaderType, rsl::string_view filePath);
   }
 }

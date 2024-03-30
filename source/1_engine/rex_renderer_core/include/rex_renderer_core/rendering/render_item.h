@@ -3,6 +3,9 @@
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/rendering/primitive_topology.h"
 #include "rex_renderer_core/resources/mesh.h"
+#include "rex_renderer_core/resources/vertex_buffer.h"
+#include "rex_renderer_core/resources/index_buffer.h"
+#include "rex_renderer_core/resources/constant_buffer.h"
 
 #include <glm/glm.hpp>
 
@@ -10,15 +13,11 @@ namespace rex
 {
   namespace renderer
   {
-    struct VertexBufferDesc;
-    struct IndexBufferDesc;
-    struct ConstantBufferDesc;
-
     struct RenderItemDesc
     {
-      VertexBufferDesc vb_desc;
-      IndexBufferDesc ib_desc;
-      ConstantBufferDesc cb_desc;
+      rhi::VertexBufferDesc vb_desc;
+      rhi::IndexBufferDesc ib_desc;
+      rhi::ConstantBufferDesc cb_desc;
       PrimitiveTopology topology;
     };
 

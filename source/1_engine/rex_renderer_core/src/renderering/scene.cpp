@@ -1,6 +1,5 @@
 #include "rex_renderer_core/rendering/scene.h"
 
-#include "rex_renderer_core/rendering/scene_renderer.h"
 #include "rex_renderer_core/rendering/cull_mode.h"
 #include "rex_renderer_core/rendering/default_targets_info.h"
 #include "rex_renderer_core/rendering/default_depth_info.h"
@@ -44,8 +43,8 @@ namespace rex
 
     void Scene::build_shader(rsl::string_view vertexShaderPath, rsl::string_view pixelShaderPath)
     {
-      rex::rhi::CompileShaderDesc vs_compile_command_desc = rex::rhi::create_compile_shader_parameters("standardVS"_small, rex::rhi::ShaderType::VERTEX, vertexShaderPath);
-      rex::rhi::CompileShaderDesc ps_compile_command_desc = rex::rhi::create_compile_shader_parameters("opaquePS"_small, rex::rhi::ShaderType::PIXEL, pixelShaderPath);
+      rex::rhi::CompileShaderDesc vs_compile_command_desc = rex::rhi::CompileShaderDesc("standardVS"_small, rex::rhi::ShaderType::VERTEX, vertexShaderPath);
+      rex::rhi::CompileShaderDesc ps_compile_command_desc = rex::rhi::CompileShaderDesc("opaquePS"_small, rex::rhi::ShaderType::PIXEL, pixelShaderPath);
 
       rex::rhi::LinkShaderDesc link_shader_desc;
       link_shader_desc.vertex_shader = rhi::compile_shader(rsl::move(vs_compile_command_desc));
@@ -118,7 +117,7 @@ namespace rex
       m_pass_constants.far_z = rex::globals::default_depth_info().far_plane;
       m_pass_constants.delta_time = rex::globals::frame_info().delta_time().to_seconds();
 
-      ConstantBufferDesc desc;
+      rhi::ConstantBufferDesc desc;
       m_pass_cb_blob.allocate(rsl::memory_size(sizeof(m_pass_constants)));
       m_pass_cb_blob.write(&m_pass_constants, rsl::memory_size(sizeof(m_pass_constants)));
       desc.blob_view = m_pass_cb_blob;

@@ -1,0 +1,24 @@
+#pragma once
+
+#include "rex_directx/utility/dx_util.h"
+#include "rex_engine/platform/win/win_com_ptr.h"
+#include "rex_renderer_core/resource_management/resource.h"
+
+namespace rex
+{
+    namespace rhi
+    {
+        class PipelineStateResource : public BaseResource<ID3D12PipelineState>
+        {
+        public:
+            explicit PipelineStateResource(const wrl::ComPtr<ID3D12PipelineState>& pso)
+              : BaseResource(pso.Get(), ResourceHash(pso.Get()))
+                ,m_pipeline_state(pso)
+            {}
+            ~PipelineStateResource() override = default;
+
+        private:
+            wrl::ComPtr<ID3D12PipelineState> m_pipeline_state{};
+        };
+    } // namespace renderer
+} // namespace rex

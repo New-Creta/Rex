@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_renderer_core/resources/buffer_layout.h"
 #include "rex_std/unordered_map.h"
 
 #ifdef REX_COMPILER_MSVC
@@ -27,8 +26,6 @@ namespace rex
     class VertexPos
     {
     public:
-      static BufferLayout layout();
-
       VertexPos();
       explicit VertexPos(const glm::vec3& position);
 
@@ -51,8 +48,6 @@ namespace rex
     class VertexPosCol
     {
     public:
-      static BufferLayout layout();
-
       VertexPosCol();
       VertexPosCol(const glm::vec3& position, const glm::vec4& color);
 
@@ -77,8 +72,6 @@ namespace rex
     class VertexPosTex
     {
     public:
-      static BufferLayout layout();
-
       VertexPosTex();
       VertexPosTex(const glm::vec3& position, const glm::vec2& uv);
 
@@ -104,8 +97,6 @@ namespace rex
     class VertexPosColTex
     {
     public:
-      static BufferLayout layout();
-
       VertexPosColTex();
       VertexPosColTex(const glm::vec3& position, const glm::vec4& color, const glm::vec2& uv);
 
@@ -133,8 +124,6 @@ namespace rex
     class VertexPosNormTex
     {
     public:
-      static BufferLayout layout();
-
       VertexPosNormTex();
       VertexPosNormTex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& uv);
 
@@ -150,9 +139,5 @@ namespace rex
 
     bool operator==(const VertexPosNormTex& v1, const VertexPosNormTex& v2);
     bool operator!=(const VertexPosNormTex& v1, const VertexPosNormTex& v2);
-
-    //-----------------------------------------------------------------------
-    // All available vertex layouts
-    const rsl::unordered_map<u64, BufferLayout>& buffer_layouts();
   } // namespace renderer
 } // namespace rex

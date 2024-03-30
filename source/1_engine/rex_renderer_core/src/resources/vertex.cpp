@@ -15,14 +15,6 @@ namespace rex
     // ATTRIBUTES:
     //  - POSITION
     //-----------------------------------------------------------------------
-    BufferLayout VertexPos::layout()
-    {
-      BufferLayoutCreator builder;
-      builder.add_buffer_element(DataType::Value::Vec3);
-      return builder.build();
-    }
-
-    //-----------------------------------------------------------------------
     VertexPos::VertexPos()
         : m_position(0.0f)
     {
@@ -59,15 +51,6 @@ namespace rex
     // ATTRIBUTES:
     //  - POSITION
     //  - COLOR
-    //-----------------------------------------------------------------------
-    BufferLayout VertexPosCol::layout()
-    {
-      BufferLayoutCreator builder;
-      builder.add_buffer_element(DataType::Value::Vec3);
-      builder.add_buffer_element(DataType::Value::Vec4);
-      return builder.build();
-    }
-
     //-----------------------------------------------------------------------
     VertexPosCol::VertexPosCol()
         : m_position(0.0f)
@@ -113,15 +96,6 @@ namespace rex
     //  - POSITION
     //  - UV
     //-----------------------------------------------------------------------
-    BufferLayout VertexPosTex::layout()
-    {
-      BufferLayoutCreator builder;
-      builder.add_buffer_element(DataType::Value::Vec3);
-      builder.add_buffer_element(DataType::Value::Vec2);
-      return builder.build();
-    }
-
-    //-----------------------------------------------------------------------
     VertexPosTex::VertexPosTex()
         : m_position(0.0f)
         , m_uv(0.0f)
@@ -166,16 +140,6 @@ namespace rex
     //  - POSITION
     //  - COLOR
     //  - UV
-    //-----------------------------------------------------------------------
-    BufferLayout VertexPosColTex::layout()
-    {
-      BufferLayoutCreator builder;
-      builder.add_buffer_element(DataType::Value::Vec3);
-      builder.add_buffer_element(DataType::Value::Vec4);
-      builder.add_buffer_element(DataType::Value::Vec2);
-      return builder.build();
-    }
-
     //-----------------------------------------------------------------------
     VertexPosColTex::VertexPosColTex()
         : m_position(0.0f)
@@ -229,16 +193,6 @@ namespace rex
     //  - NORMAL
     //  - UV
     //-----------------------------------------------------------------------
-    BufferLayout VertexPosNormTex::layout()
-    {
-      BufferLayoutCreator builder;
-      builder.add_buffer_element(DataType::Value::Vec3);
-      builder.add_buffer_element(DataType::Value::Vec3);
-      builder.add_buffer_element(DataType::Value::Vec2);
-      return builder.build();
-    }
-
-    //-----------------------------------------------------------------------
     VertexPosNormTex::VertexPosNormTex()
         : m_position(0.0f)
         , m_normal(0.0f)
@@ -281,20 +235,6 @@ namespace rex
     bool operator!=(const VertexPosNormTex& v1, const VertexPosNormTex& v2)
     {
       return !(v1 == v2);
-    }
-
-    //-----------------------------------------------------------------------
-    const rsl::unordered_map<u64, BufferLayout>& buffer_layouts()
-    {
-      static const rsl::unordered_map<u64, BufferLayout> s_buffer_layouts = {
-          {rsl::type_id<VertexPos>().hash_code(), VertexPos::layout()},
-          {rsl::type_id<VertexPosCol>().hash_code(), VertexPosCol::layout()},
-          {rsl::type_id<VertexPosTex>().hash_code(), VertexPosTex::layout()},
-          {rsl::type_id<VertexPosColTex>().hash_code(), VertexPosColTex::layout()},
-          {rsl::type_id<VertexPosNormTex>().hash_code(), VertexPosNormTex::layout()},
-      };
-
-      return s_buffer_layouts;
     }
   } // namespace renderer
 } // namespace rex

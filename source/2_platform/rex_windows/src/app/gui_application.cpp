@@ -14,7 +14,7 @@
 #include "rex_renderer_core/rendering/default_depth_info.h"
 #include "rex_renderer_core/rendering/default_targets_info.h"
 #include "rex_renderer_core/system/renderer.h"
-#include "rex_renderer_core/rendering/renderer_info.h"
+#include "rex_renderer_core/system/rhi.h"
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
@@ -137,11 +137,11 @@ namespace rex
     private:
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
       {
-        renderer::Info info = renderer::info();
-        REX_LOG(LogWindows, "Renderer Info - API Version: {}", info.api_version);
+        rhi::Info info = rhi::info();
         REX_LOG(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
-        REX_LOG(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);
         REX_LOG(LogWindows, "Renderer Info - Vendor: {}", info.vendor);
+        REX_LOG(LogWindows, "Renderer Info - API Version: {}", info.api_version);
+        REX_LOG(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);
       }
 
       void cap_frame_rate()
@@ -269,37 +269,9 @@ namespace rex
 
         subscribe_window_events();
 
-        // graphics context initialization
-        if (context::create(m_window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
+        if (!init_gfx())
         {
-          return false;
-        }
-
-        // renderer initialization
-
-        renderer::OutputWindowUserData user_data{};
-        user_data.primary_display_handle = m_window->primary_display_handle();
-        user_data.refresh_rate = m_gui_params.max_fps;
-        user_data.window_width = m_window->width();
-        user_data.window_height = m_window->height();
-        user_data.windowed = !m_gui_params.fullscreen;
-
-        if (renderer::initialize(user_data, m_gui_params.max_render_commands, m_gui_params.max_frames_in_flight) == false) // NOLINT(readability-simplify-boolean-expr)
-        {
-          return false;
-        }
-
-        display_renderer_info();
-
-        // if the client calls render commands some preparation is required before
-        // we can actually execute those commands.
-        //
-        // this function does this preparation.
-        //
-        // eg: on DX12 we require to reset and allow the command list to record commands
-        if (!renderer::prepare_user_initialization())
-        {
-          REX_ERROR(LogWindows, "Unable to start drawing frame");
+          REX_ERROR(LogWindows, "Failed to initialize graphics");
           return false;
         }
 
@@ -318,12 +290,6 @@ namespace rex
           REX_ERROR(LogWindows, "Unable to end draw on current frame");
           return false;
         }
-
-        //if (!renderer::flush())
-        //{
-        //  REX_ERROR(LogWindows, "Unable to flush all commands");
-        //  return false;
-        //}
 
         // When the renderer is initialized we can show the window
         m_window->show();
@@ -357,6 +323,40 @@ namespace rex
         event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { on_maximize(evt); });
         event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { on_restore(evt); });
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
+      }
+
+      // Initialize the graphics pipeline
+      // Allocating memory and setting up the resources
+      // to start using the graphics pipeline.
+      bool init_gfx()
+      {
+        renderer::OutputWindowUserData user_data{};
+        user_data.primary_display_handle = m_window->primary_display_handle();
+        user_data.refresh_rate = m_gui_params.max_fps;
+        user_data.window_width = m_window->width();
+        user_data.window_height = m_window->height();
+        user_data.windowed = !m_gui_params.fullscreen;
+
+        if (renderer::initialize(user_data, m_gui_params.max_render_commands, m_gui_params.max_frames_in_flight) == false) // NOLINT(readability-simplify-boolean-expr)
+        {
+          return false;
+        }
+
+        display_renderer_info();
+
+        // if the client calls render commands some preparation is required before
+        // we can actually execute those commands.
+        //
+        // this function does this preparation.
+        //
+        // eg: on DX12 we require to reset and allow the command list to record commands
+        if (!renderer::prepare_user_initialization())
+        {
+          REX_ERROR(LogWindows, "Unable to start drawing frame");
+          return false;
+        }
+
+        return true;
       }
 
       // Updating

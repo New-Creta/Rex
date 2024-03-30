@@ -8,33 +8,25 @@ namespace rex
 {
   namespace rhi
   {
-    ResourceHash hash_resource_desc(const BufferDesc& desc)
+    ResourceHash hash_resource_desc(const VertexBufferDesc& desc)
     {
-      u32 hash = rsl::type_id<BufferDesc>().hash_code();
-      
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size()));
-
-      return hash;
-    }
-    ResourceHash hash_resource_desc(const renderer::VertexBufferDesc& desc)
-    {
-      u32 hash = rsl::type_id<renderer::VertexBufferDesc>().hash_code();
+      u32 hash = rsl::type_id<VertexBufferDesc>().hash_code();
 
       hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size()));
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const renderer::IndexBufferDesc& desc)
+    ResourceHash hash_resource_desc(const IndexBufferDesc& desc)
     {
-      u32 hash = rsl::type_id<renderer::IndexBufferDesc>().hash_code();
+      u32 hash = rsl::type_id<IndexBufferDesc>().hash_code();
 
       hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size()));
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const renderer::ConstantBufferDesc& desc)
+    ResourceHash hash_resource_desc(const ConstantBufferDesc& desc)
     {
-      u32 hash = rsl::type_id<renderer::ConstantBufferDesc>().hash_code();
+      u32 hash = rsl::type_id<ConstantBufferDesc>().hash_code();
 
       hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size()));
 
@@ -75,9 +67,9 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const LoadShaderDesc& desc)
+    ResourceHash hash_resource_desc(const ShaderDesc& desc)
     {
-      u32 hash = rsl::type_id<LoadShaderDesc>().hash_code();
+      u32 hash = rsl::type_id<ShaderDesc>().hash_code();
 
       hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.shader_byte_code.data(), desc.shader_byte_code.size()));
       hash = rsl::internal::hash_combine(hash, static_cast<rsl::hash_result>(desc.shader_type));

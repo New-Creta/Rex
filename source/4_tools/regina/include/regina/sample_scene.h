@@ -30,9 +30,5 @@ namespace regina
     rsl::unique_ptr<rex::renderer::Mesh> m_geometry;
     rex::memory::Blob m_vb;
     rex::memory::Blob m_ib;
-
-    glm::mat4 m_cube_world;;
-    rex::renderer::RenderItem* m_cube_render_item;
-
   };
 }
