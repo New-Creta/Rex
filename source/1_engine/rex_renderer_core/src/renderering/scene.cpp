@@ -119,8 +119,9 @@ namespace rex
       m_pass_constants.delta_time = rex::globals::frame_info().delta_time().to_seconds();
 
       ConstantBufferDesc desc;
-      desc.blob.allocate(rsl::memory_size(sizeof(m_pass_constants)));
-      desc.blob.write(&m_pass_constants, rsl::memory_size(sizeof(m_pass_constants)));
+      m_pass_cb_blob.allocate(rsl::memory_size(sizeof(m_pass_constants)));
+      m_pass_cb_blob.write(&m_pass_constants, rsl::memory_size(sizeof(m_pass_constants)));
+      desc.blob_view = m_pass_cb_blob;
       m_pass_cb = rhi::create_constant_buffer(desc);
     }
     

@@ -7,11 +7,10 @@ namespace rex
   namespace renderer
   {
     //-------------------------------------------------------------------------
-    Mesh::Mesh(rsl::string_view name, VertexBufferDesc&& vbd, IndexBufferDesc&& ibd, ConstantBufferDesc&& cbd)
+    Mesh::Mesh(rsl::string_view name, VertexBufferDesc vbd, IndexBufferDesc ibd)
         : m_name(name)
         , m_vbd(rsl::move(vbd))
         , m_ibd(rsl::move(ibd))
-        , m_cbd(rsl::move(cbd))
     {
     }
 
@@ -53,10 +52,10 @@ namespace rex
     {
       return &m_ibd;
     }
-    const ConstantBufferDesc* Mesh::cb() const
-    {
-      return &m_cbd;
-    }
+    //const ConstantBufferDesc* Mesh::cb() const
+    //{
+    //  return &m_cbd;
+    //}
 
     ////-------------------------------------------------------------------------
     //rsl::string_view Mesh::name() const

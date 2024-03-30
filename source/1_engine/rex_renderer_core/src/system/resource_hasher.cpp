@@ -20,7 +20,7 @@ namespace rex
     {
       u32 hash = rsl::type_id<renderer::VertexBufferDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob.data(), desc.blob.size()));
+      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size()));
 
       return hash;
     }
@@ -28,7 +28,7 @@ namespace rex
     {
       u32 hash = rsl::type_id<renderer::IndexBufferDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob.data(), desc.blob.size()));
+      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size()));
 
       return hash;
     }
@@ -36,7 +36,7 @@ namespace rex
     {
       u32 hash = rsl::type_id<renderer::ConstantBufferDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob.data(), desc.blob.size()));
+      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size()));
 
       return hash;
     }

@@ -16,9 +16,9 @@ namespace rex
 
     struct RenderItemDesc
     {
-      const VertexBufferDesc* vb_desc;
-      const IndexBufferDesc* ib_desc;
-      const ConstantBufferDesc* cb_desc;
+      VertexBufferDesc vb_desc;
+      IndexBufferDesc ib_desc;
+      ConstantBufferDesc cb_desc;
       PrimitiveTopology topology;
     };
 

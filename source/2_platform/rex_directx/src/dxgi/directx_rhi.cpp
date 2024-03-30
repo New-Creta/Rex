@@ -363,13 +363,13 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob.size();
+      s32 size = desc.blob_view.size();
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size);
       set_debug_name_for(buffer.Get(), "Vertex Buffer");
-      rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, desc.blob.size(), desc.vertex_size);
+      rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, desc.blob_view.size(), desc.vertex_size);
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), vb.get(), desc.blob.data(), size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), vb.get(), desc.blob_view.data(), size);
 
       //// 3) Upload the data from the upload buffer onto the gpu
       //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
@@ -390,14 +390,14 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob.size();
+      s32 size = desc.blob_view.size();
       DXGI_FORMAT d3d_format = rex::d3d::to_d3d12_index_format(desc.format);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size, 0);
       set_debug_name_for(buffer.Get(), "Index Buffer");
-      rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, desc.blob.size(), d3d_format);
+      rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, desc.blob_view.size(), d3d_format);
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), ib.get(), desc.blob.data(), size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), ib.get(), desc.blob_view.data(), size);
 
       // 3) Upload the data from the upload buffer onto the gpu
       //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
@@ -416,22 +416,19 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob.size();
+      s32 size = desc.blob_view.size();
       s32 aligned_size = rex::align(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
       set_debug_name_for(buffer.Get(), "Constant Buffer");
-      rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, desc.blob.size());
+      rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, desc.blob_view.size());
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), cb.get(), desc.blob.data(), aligned_size);
+      internal::get()->upload_buffer->write(internal::get()->command_list.get(), cb.get(), desc.blob_view.data(), aligned_size);
 
-      // 3) Upload the data from the upload buffer onto the gpu
-      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
-
-      // 4) Create a view to this constant buffer
+      // 3) Create a view to this constant buffer
       internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(buffer.Get(), aligned_size);
 
-      // 5) add the buffer to the resource pool
+      // 4) add the buffer to the resource pool
       return internal::get()->resource_pool.insert(rsl::move(cb));
     }
     // A pipeline state object defines a state for the graphics pipeline.
@@ -617,7 +614,7 @@ namespace rex
       internal::get()->upload_buffer->reset();
     }
 
-    void update_buffer(const ResourceSlot& slot, void* data, s32 size)
+    void update_buffer(const ResourceSlot& slot, const void* data, s32 size)
     {
       Resource* resource = internal::get()->resource_pool.as<Resource>(slot);
       internal::get()->upload_buffer->write(internal::get()->command_list.get(), resource, data, size);
@@ -1059,7 +1056,7 @@ namespace rex
     bool internal::RenderHardwareInfrastructure::init_resource_heaps()
     {
       // Nothing to implement at the moment
-      CD3DX12_HEAP_DESC desc(5_mib, D3D12_HEAP_TYPE_DEFAULT);
+      CD3DX12_HEAP_DESC desc(100_mib, D3D12_HEAP_TYPE_DEFAULT);
 
       wrl::ComPtr<ID3D12Heap> d3d_heap;
       if (DX_FAILED(device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
@@ -1200,7 +1197,7 @@ namespace rex
     {
       // an intermediate upload heap.
       CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
-      auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(1_mib);
+      auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(100_mib);
 
       wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
       if (DX_FAILED(device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))

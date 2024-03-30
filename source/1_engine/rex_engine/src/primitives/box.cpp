@@ -14,7 +14,7 @@ namespace rex
       const f32 h2 = 0.5f * height;
       const f32 d2 = 0.5f * depth;
 
-      rsl::array<Vertex, 24> v;
+      rsl::array<Vertex, 8> v;
       v[0] = Vertex(-w2,  -h2, -d2, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f);
       v[1] = Vertex(-w2,   h2, -d2, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f);
       v[2] = Vertex( w2,   h2, -d2, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f);

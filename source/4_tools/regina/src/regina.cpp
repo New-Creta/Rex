@@ -36,7 +36,7 @@ namespace regina
   public:
     Regina()
     {
-      m_scene = rsl::make_unique<regina::CubeScene>();
+      m_scene = rsl::make_unique<regina::SampleScene>();
     }
 
     void update()

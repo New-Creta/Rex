@@ -72,6 +72,7 @@ namespace rex
       rex::rhi::ResourceSlot m_pso;
       rex::rhi::ResourceSlot m_pass_cb;
 
+      rex::memory::Blob m_pass_cb_blob;
       PassConstants m_pass_constants;
       //rsl::vector<FrameData> m_frame_resource_data;
 

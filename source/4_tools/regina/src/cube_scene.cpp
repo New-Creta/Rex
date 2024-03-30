@@ -36,7 +36,7 @@ namespace regina
 
   void CubeScene::update_object_constant_buffers()
   {
-    m_cube_world = glm::rotate(m_cube_world, 3.14f / 400, glm::vec3(01.0f, 1.0f, 0.0f));
+    //m_cube_world = glm::rotate(m_cube_world, 3.14f / 400, glm::vec3(01.0f, 1.0f, 0.0f));
     rex::rhi::update_buffer(m_cube_render_item->cb(), &m_cube_world, sizeof(m_cube_world));
   }
 
@@ -65,25 +65,30 @@ namespace regina
 
     // Fill in the constant buffer
     m_cube_world = glm::scale(m_cube_world, glm::vec3(2.0f, 2.0f, 2.0f));
-    m_cube_world = glm::rotate(m_cube_world, 3.14f / 4, glm::vec3(0.0f, 1.0f, 0.0f));
+    //m_cube_world = glm::rotate(m_cube_world, 3.14f / 4, glm::vec3(0.0f, 1.0f, 0.0f));
     rex::memory::Blob constant_buffer(rsl::make_unique<rsl::byte[]>(sizeof(m_cube_world)));
     constant_buffer.write(&m_cube_world, rsl::memory_size(sizeof(m_cube_world)));
     
     // Fill in the buffer descs to transfer the data over to mesh
-    rex::renderer::VertexBufferDesc vb_desc(rsl::move(box_vertices));
-    rex::renderer::IndexBufferDesc ib_desc{rsl::move(index_buffer), rex::renderer::IndexBufferFormat::Uint16, box.indices().size()};
-    rex::renderer::ConstantBufferDesc cb_desc{ rsl::move(constant_buffer) };
+    rex::memory::Blob vb_data(rsl::move(box_vertices));
+    rex::memory::Blob ib_data(rsl::move(index_buffer));
+
+    rex::renderer::VertexBufferDesc vb_desc{ rex::memory::BlobView(vb_data), sizeof(rex::renderer::VertexPosCol) };
+    rex::renderer::IndexBufferDesc ib_desc{rex::memory::BlobView(ib_data), rex::renderer::IndexBufferFormat::Uint16, box.indices().size()};
+    rex::renderer::ConstantBufferDesc cb_desc{ rex::memory::BlobView(constant_buffer) };
 
     // Create the cube mesh object
-    m_mesh_cube = rsl::make_unique<rex::renderer::Mesh>("box_geometry"_med, rsl::move(vb_desc), rsl::move(ib_desc), rsl::move(cb_desc));
+    m_mesh_cube = rsl::make_unique<rex::renderer::Mesh>("box_geometry"_med, vb_desc, ib_desc);
 
     // Meshes can have multiple submeshes.
     // In this case the submesh points to the entire mesh, therefore we configure it as such
-    s32 start_idx = 0;
-    s32 last_idx = box.indices().size();
-    m_mesh_cube->add_submesh("box"_small, start_idx, last_idx);
+    rex::renderer::Submesh submesh{};
+    submesh.base_vertex_location = 0;
+    submesh.start_index_location = 0;
+    submesh.index_count = box.indices().size();
+    m_mesh_cube->add_submesh("box"_small, submesh);
 
     // Pass the mesh to the renderer so it'll render it next frame
-    m_cube_render_item = rex::renderer::add_mesh(m_mesh_cube.get());
+    m_cube_render_item = rex::renderer::add_mesh(m_mesh_cube.get(), submesh, rex::memory::BlobView(constant_buffer));
   }
 }

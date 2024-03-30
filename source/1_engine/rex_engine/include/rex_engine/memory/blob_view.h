@@ -19,7 +19,8 @@ namespace rex
     {
     public:
       BlobView();
-      explicit BlobView(const Blob& blob);
+      BlobView(const Blob& blob);
+      BlobView(const void* data, rsl::memory_size size);
 
       const rsl::byte* data() const;
       rsl::memory_size size() const;

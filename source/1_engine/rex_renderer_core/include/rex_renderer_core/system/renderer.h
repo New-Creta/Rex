@@ -3,6 +3,8 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/utility/yes_no.h"
 
+#include "rex_engine/memory/blob_view.h"
+
 namespace rex
 {
   struct Viewport;
@@ -64,7 +66,7 @@ namespace rex
     void render();
     void shutdown();
 
-    struct RenderItem* add_mesh(const Mesh* mesh);
+    struct RenderItem* add_mesh(const Mesh* mesh, const struct Submesh& subMesh, rex::memory::BlobView cbView);
 
 
 

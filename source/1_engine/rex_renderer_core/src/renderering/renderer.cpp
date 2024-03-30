@@ -72,7 +72,29 @@ namespace rex
       backend::shutdown();
     }
 
-    RenderItem* add_mesh(const Mesh* mesh)
+    //RenderItem* add_mesh(const Mesh* mesh)
+    //{
+    //  // We want to add a new mesh to the renderer so it gets rendered the next frame
+    //  // Questions is how do we do that and what data do we need to set to do this?
+
+    //  // In the future this will be a model with materials etc, but for now a mesh is just
+    //  // a wrapper around a vertex buffer, index buffer, topology and a constant buffer
+    //  // So this sounds like the data we need to set
+
+    //  RenderItemDesc render_item{};
+
+    //  render_item.vb_desc = mesh->vb();
+    //  render_item.ib_desc = mesh->ib();
+    //  render_item.cb_desc = mesh->cb();
+    //  render_item.topology = PrimitiveTopology::TRIANGLELIST;
+
+    //  // Now that we've set the data, we need to let the backend know that we have a new render item
+    //  // to draw next frame. The backend is a platform specific call that has optimised logic
+    //  // to add render items to the renderer
+    //  return backend::add_render_item(render_item);
+    //}
+
+    RenderItem* add_mesh(const Mesh* mesh, const Submesh& subMesh, rex::memory::BlobView cbView)
     {
       // We want to add a new mesh to the renderer so it gets rendered the next frame
       // Questions is how do we do that and what data do we need to set to do this?
@@ -83,9 +105,17 @@ namespace rex
 
       RenderItemDesc render_item{};
 
-      render_item.vb_desc = mesh->vb();
-      render_item.ib_desc = mesh->ib();
-      render_item.cb_desc = mesh->cb();
+      const rsl::byte* start_ib = mesh->ib()->blob_view.data() + (subMesh.start_index_location * index_format_size(mesh->ib()->format));
+      const s32 size_ib = subMesh.index_count * index_format_size(mesh->ib()->format);
+
+      ConstantBufferDesc cb_desc{};
+      cb_desc.blob_view = cbView;
+
+      render_item.vb_desc = *mesh->vb();
+      render_item.ib_desc = *mesh->ib();
+      render_item.ib_desc.blob_view = rex::memory::BlobView(start_ib, rsl::memory_size(size_ib));
+      render_item.ib_desc.index_count = subMesh.index_count;
+      render_item.cb_desc = cb_desc;
       render_item.topology = PrimitiveTopology::TRIANGLELIST;
 
       // Now that we've set the data, we need to let the backend know that we have a new render item
@@ -93,6 +123,7 @@ namespace rex
       // to add render items to the renderer
       return backend::add_render_item(render_item);
     }
+
 
     //-------------------------------------------------------------------------
     bool prepare_user_initialization()
