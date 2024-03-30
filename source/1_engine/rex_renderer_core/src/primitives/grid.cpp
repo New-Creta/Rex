@@ -1,4 +1,4 @@
-#include "rex_engine/primitives/grid.h"
+#include "rex_renderer_core/primitives/grid.h"
 
 namespace rex
 {
@@ -34,10 +34,9 @@ namespace rex
 
           glm::vec3 const position = glm::vec3(x, 0.0f, z);
           glm::vec3 const normal   = glm::vec3(0.0f, 1.0f, 0.0f);
-          glm::vec3 const tangent  = glm::vec3(1.0f, 0.0f, 0.0f);
-          glm::vec2 const uv       = glm::vec2(j * du, i * dv);
+          glm::vec4 const col      = glm::vec4(normal, 0.0f);
 
-          mesh_data.insert_vertex(i * n + j, position, normal, tangent, uv);
+          mesh_data.insert_vertex(i * n + j, position, normal, col);
         }
       }
 

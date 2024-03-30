@@ -1,4 +1,4 @@
-#include "rex_engine/primitives/cylinder.h"
+#include "rex_renderer_core/primitives/cylinder.h"
 
 namespace rex
 {
@@ -28,13 +28,13 @@ namespace rex
           const f32 u = x / height + 0.5f;
           const f32 v = z / height + 0.5f;
 
-          meshData.add_vertex(Vertex(x, y, z, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
+          meshData.add_vertex(VertexPosNormCol(glm::vec3(x, y, z), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
         }
 
-        // Cap center vertex.
-        meshData.add_vertex(Vertex(0.0f, y, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
+        // Cap center VertexPosNormCol.
+        meshData.add_vertex(VertexPosNormCol(glm::vec3(0.0f, y, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
 
-        // Index of center vertex.
+        // Index of center VertexPosNormCol.
         const u16 center_index = static_cast<u16>(meshData.vertices().size()) - 1;
 
         for(u16 i = 0; i < sliceCount; ++i)
@@ -66,13 +66,13 @@ namespace rex
           const f32 u = x / height + 0.5f;
           const f32 v = z / height + 0.5f;
 
-          meshData.add_vertex(Vertex(x, y, z, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, u, v));
+          meshData.add_vertex(VertexPosNormCol(glm::vec3(x, y, z), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
         }
 
-        // Cap center vertex.
-        meshData.add_vertex(Vertex(0.0f, y, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f));
+        // Cap center VertexPosNormCol.
+        meshData.add_vertex(VertexPosNormCol(glm::vec3(0.0f, y, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
 
-        // Cache the index of center vertex.
+        // Cache the index of center VertexPosNormCol.
         const u16 center_index = static_cast<u16>(meshData.vertices().size()) - 1;
 
         for(u16 i = 0; i < sliceCount; ++i)
@@ -109,15 +109,10 @@ namespace rex
         const f32 d_theta = 2.0f * glm::pi<f32>() / sliceCount;
         for(u16 j = 0; j <= sliceCount; ++j)
         {
-          Vertex vertex;
-
           const f32 c = cosf(j * d_theta);
           const f32 s = sinf(j * d_theta);
 
-          vertex.position = glm::vec3(r * c, y, r * s);
-
-          vertex.uv.x = static_cast<f32>(j) / sliceCount;
-          vertex.uv.y = 1.0f - static_cast<f32>(i) / stackCount;
+          glm::vec3 position = glm::vec3(r * c, y, r * s);
 
           // Cylinder can be parameterized as follows, where we introduce v
           // parameter that goes in the same direction as the v tex-coord
@@ -139,36 +134,37 @@ namespace rex
           //  dz/dv = (r0-r1)*sin(t)
 
           // This is unit length.
-          vertex.tangent = glm::vec3(-s, 0.0f, c);
+          glm::vec3 tangent = glm::vec3(-s, 0.0f, c);
 
           const f32 dr = bottomRadius - topRadius;
           glm::vec3 const bitangent(dr * c, -height, dr * s);
 
-          glm::vec3 const t = vertex.tangent;
+          glm::vec3 const t = tangent;
           glm::vec3 const b = bitangent;
           glm::vec3 const n = glm::normalize(glm::cross(t, b));
-          vertex.normal     = n;
+          glm::vec3 normal     = n;
+          glm::vec4 col(normal, 1.0f);
 
-          mesh_data.add_vertex(vertex);
+          mesh_data.add_vertex(VertexPosNormCol(position, normal, col));
         }
       }
 
-      // Add one because we duplicate the first and last vertex per ring
+      // Add one because we duplicate the first and last VertexPosNormCol per ring
       // since the texture coordinates are different.
-      const u16 ring_vertex_count = sliceCount + 1;
+      const u16 ring_VertexPosNormCol_count = sliceCount + 1;
 
       // Compute indices for each stack.
       for(u16 i = 0; i < stackCount; ++i)
       {
         for(u16 j = 0; j < sliceCount; ++j)
         {
-          mesh_data.add_index(i * ring_vertex_count + j);
-          mesh_data.add_index((i + 1) * ring_vertex_count + j);
-          mesh_data.add_index((i + 1) * ring_vertex_count + j + 1);
+          mesh_data.add_index(i * ring_VertexPosNormCol_count + j);
+          mesh_data.add_index((i + 1) * ring_VertexPosNormCol_count + j);
+          mesh_data.add_index((i + 1) * ring_VertexPosNormCol_count + j + 1);
 
-          mesh_data.add_index(i * ring_vertex_count + j);
-          mesh_data.add_index((i + 1) * ring_vertex_count + j + 1);
-          mesh_data.add_index(i * ring_vertex_count + j + 1);
+          mesh_data.add_index(i * ring_VertexPosNormCol_count + j);
+          mesh_data.add_index((i + 1) * ring_VertexPosNormCol_count + j + 1);
+          mesh_data.add_index(i * ring_VertexPosNormCol_count + j + 1);
         }
       }
 

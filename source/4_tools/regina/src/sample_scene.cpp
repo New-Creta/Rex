@@ -3,12 +3,12 @@
 #include "rex_engine/app/windowinfo.h"
 #include "rex_engine/app/core_application.h"
 #include "rex_windows/app/gui_application.h"
-#include "rex_engine/primitives/mesh_factory.h"
-#include "rex_engine/primitives/box.h"
-#include "rex_engine/primitives/grid.h"
-#include "rex_engine/primitives/sphere.h"
-#include "rex_engine/primitives/cylinder.h"
-#include "rex_renderer_core/resources/vertex.h"
+#include "rex_renderer_core/primitives/mesh_factory.h"
+#include "rex_renderer_core/primitives/box.h"
+#include "rex_renderer_core/primitives/grid.h"
+#include "rex_renderer_core/primitives/sphere.h"
+#include "rex_renderer_core/primitives/cylinder.h"
+#include "rex_renderer_core/rendering/vertex.h"
 #include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/rendering/default_depth_info.h"
 #include "rex_renderer_core/rendering/default_targets_info.h"
@@ -24,6 +24,10 @@ namespace regina
   {
     build_geometry();
 
+    // input layout should be tied to the render item
+    
+    // shader and pso should be part of the material system
+
     build_shader("regina\\Shaders\\color.hlsl", "regina\\Shaders\\color.hlsl");
     build_input_layout();
 
@@ -32,7 +36,7 @@ namespace regina
 
     f32 width = rex::globals::window_info().width;
     f32 height = rex::globals::window_info().height;
-    build_constant_buffers(width, height);
+    build_constant_buffers(width, height); // Scene should not hold the pass constant buffer and therefore should not know the width and height
 
     use_pso();
   }
@@ -45,7 +49,7 @@ namespace regina
   void SampleScene::build_geometry()
   {
     // Create the vertices and indices for all objects we want to render
-    rsl::vector<rex::renderer::VertexPosCol> vertices;
+    rsl::vector<rex::renderer::VertexPosNormCol> vertices;
     rsl::vector<u16> indices;
 
     rex::renderer::Submesh box       = build_submesh(rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f, 0), vertices, indices);
@@ -54,9 +58,9 @@ namespace regina
     rex::renderer::Submesh cylinder  = build_submesh(rex::mesh_factory::create_cylinder(0.5f, 0.3f, 3.0f, 20, 20), vertices, indices);
 
     // Create the descs for the vertex buffer and index buffer
-    m_vb = rex::memory::Blob(rsl::make_unique<rex::renderer::VertexPosCol[]>(vertices.size()));
+    m_vb = rex::memory::Blob(rsl::make_unique<rex::renderer::VertexPosNormCol[]>(vertices.size()));
     m_vb.write(vertices.data(), rsl::memory_size(m_vb.size()));
-    rex::rhi::VertexBufferDesc vb_desc{ rex::memory::BlobView(m_vb), sizeof(rex::renderer::VertexPosCol) };
+    rex::rhi::VertexBufferDesc vb_desc{ rex::memory::BlobView(m_vb), sizeof(rex::renderer::VertexPosNormCol) };
 
     m_ib = rex::memory::Blob(rsl::make_unique<u16[]>(indices.size()));
     m_ib.write(indices.data(), m_ib.size());
@@ -123,26 +127,15 @@ namespace regina
     }
   }
 
-  rex::renderer::Submesh SampleScene::build_submesh(const rex::mesh_factory::MeshData16& meshData, rsl::vector<rex::renderer::VertexPosCol>& vertices, rsl::vector<u16>& indices)
+  rex::renderer::Submesh SampleScene::build_submesh(const rex::mesh_factory::MeshData16& meshData, rsl::vector<rex::renderer::VertexPosNormCol>& vertices, rsl::vector<u16>& indices)
   {
     rex::renderer::Submesh submesh;
     submesh.index_count = meshData.indices().size();
     submesh.start_index_location = indices.size();
     submesh.base_vertex_location = vertices.size();
 
-    rsl::vector<rex::renderer::VertexPosCol> meshdata_vertices{};
-    for (const rex::mesh_factory::Vertex& vtx : meshData.vertices())
-    {
-      meshdata_vertices.push_back(rex::renderer::VertexPosCol(vtx.position, glm::vec4(vtx.normal, 1.0f)));
-    }
-    rsl::vector<u16> meshdata_indices{};
-    for (u16 idx : meshData.indices())
-    {
-      meshdata_indices.push_back(idx + submesh.base_vertex_location);
-    }
-
-    vertices.insert(vertices.end(), meshdata_vertices.cbegin(), meshdata_vertices.cend());
-    indices.insert(indices.end(), meshdata_indices.cbegin(), meshdata_indices.cend());
+    vertices.insert(vertices.end(), meshData.vertices().cbegin(), meshData.vertices().cend());
+    indices.insert(indices.end(), meshData.indices().cbegin(), meshData.indices().cend());
 
     return submesh;
   }

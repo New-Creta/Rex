@@ -1,4 +1,4 @@
-#include "rex_engine/primitives/sphere.h"
+#include "rex_renderer_core/primitives/sphere.h"
 
 namespace rex
 {
@@ -15,8 +15,8 @@ namespace rex
       // Poles: note that there will be texture coordinate distortion as there is
       // not a unique point on the texture map to assign to the pole when mapping
       // a rectangular texture onto a sphere.
-      const Vertex top_vertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-      const Vertex bottom_vertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+      const VertexPosNormCol top_vertex(glm::vec3(0.0f, +radius, 0.0f), glm::vec3(0.0f, +1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+      const VertexPosNormCol bottom_vertex(glm::vec3(0.0f, -radius, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
       mesh_data.add_vertex(top_vertex);
 
@@ -33,26 +33,25 @@ namespace rex
         {
           const f32 theta = j * theta_step;
 
-          Vertex v;
-
           // spherical to cartesian
-          v.position.x = radius * sinf(phi) * cosf(theta);
-          v.position.y = radius * cosf(phi);
-          v.position.z = radius * sinf(phi) * sinf(theta);
+          glm::vec3 position;
+          position.x = radius * sinf(phi) * cosf(theta);
+          position.y = radius * cosf(phi);
+          position.z = radius * sinf(phi) * sinf(theta);
 
           // Partial derivative of P with respect to theta
-          v.tangent.x = -radius * sinf(phi) * sinf(theta);
-          v.tangent.y = 0.0f;
-          v.tangent.z = +radius * sinf(phi) * cosf(theta);
+          glm::vec3 tangent;
+          tangent.x = -radius * sinf(phi) * sinf(theta);
+          tangent.y = 0.0f;
+          tangent.z = +radius * sinf(phi) * cosf(theta);
 
-          const glm::vec3 tangent = v.tangent;
-          v.tangent               = glm::normalize(tangent);
+          tangent               = glm::normalize(tangent);
 
-          const glm::vec3 p = v.position;
-          v.normal          = glm::normalize(p);
+          const glm::vec3 p = position;
+          glm::vec3 normal          = glm::normalize(p);
+          glm::vec4 col(normal, 1.0f);
 
-          v.uv.x = theta / glm::two_pi<f32>();
-          v.uv.y = phi / glm::pi<f32>();
+          VertexPosNormCol v(position, normal, col);
 
           mesh_data.add_vertex(v);
         }

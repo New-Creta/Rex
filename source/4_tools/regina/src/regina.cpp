@@ -12,7 +12,7 @@
 #include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/rendering/scene.h"
 #include "rex_renderer_core/resources/mesh.h"
-#include "rex_renderer_core/resources/vertex.h"
+#include "rex_renderer_core/rendering/vertex.h"
 #include "rex_renderer_core/rendering/scissor_rect.h"
 #include "rex_renderer_core/rendering/viewport.h"
 #include "rex_std/bonus/math/color.h"

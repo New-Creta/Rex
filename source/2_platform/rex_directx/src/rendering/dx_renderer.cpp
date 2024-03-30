@@ -236,7 +236,7 @@ namespace rex
         rhi::ResourceSlot cb = rhi::create_constant_buffer(desc.cb_desc);
 
         // 2) Next we need to make sure we have the correct views to these resource, so we can use them for rendering
-        return &g_renderer->render_items.emplace_back(vb, ib, cb, desc.topology, desc.ib_desc.index_count);
+        return &g_renderer->render_items.emplace_back(vb, ib, cb, desc.topology, desc.ib_desc.index_count, desc.ib_desc.base_vertex_loc);
       }
       
       //-------------------------------------------------------------------------

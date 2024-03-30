@@ -13,6 +13,7 @@ namespace rex
       memory::BlobView blob_view;
       renderer::IndexBufferFormat format;
       s32 index_count;
+      s32 base_vertex_loc;
     };
   }
 }

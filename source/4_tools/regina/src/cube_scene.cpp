@@ -1,8 +1,8 @@
 #include "regina/cube_scene.h"
 
-#include "rex_engine/primitives/mesh_factory.h"
-#include "rex_engine/primitives/box.h"
-#include "rex_renderer_core/resources/vertex.h"
+#include "rex_renderer_core/primitives/mesh_factory.h"
+#include "rex_renderer_core/primitives/box.h"
+#include "rex_renderer_core/rendering/vertex.h"
 
 #include "rex_engine/memory/blob_writer.h"
 
@@ -51,12 +51,13 @@ namespace regina
     const u32 vb_byte_size = total_vertex_count * sizeof(rex::renderer::VertexPosCol);
 
     rsl::unique_array<rex::renderer::VertexPosCol> box_vertices = rsl::make_unique<rex::renderer::VertexPosCol[]>((total_vertex_count));
-    for (s32 idx = 0; idx < box.vertices().size(); ++idx)
-    {
-      const rex::mesh_factory::Vertex& v = box.vertices()[idx];
-      const rex::renderer::VertexPosCol nv({ v.position.x, v.position.y, v.position.z }, { v.normal.x, v.normal.y, v.normal.z, 1.0f });
-      box_vertices[idx] = nv;
-    }
+    rsl::memcpy(box_vertices.get(), box.vertices().data(), box_vertices.byte_size());
+    //for (s32 idx = 0; idx < box.vertices().size(); ++idx)
+    //{
+    //  const rex::mesh_factory::Vertex& v = box.vertices()[idx];
+    //  const rex::renderer::VertexPosCol nv({ v.position.x, v.position.y, v.position.z }, { v.normal.x, v.normal.y, v.normal.z, 1.0f });
+    //  box_vertices[idx] = nv;
+    //}
 
     // Copy the indices into an index buffer blob
     rex::memory::Blob index_buffer(rsl::make_unique<u16[]>(box.indices().size()));
