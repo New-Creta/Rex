@@ -69,9 +69,6 @@ namespace rex
     
     void Scene::build_pso()
     {
-      // Pipeline state object has to be aware of the render targets
-      // This is because it needs to query the render target texture format
-      // If there are no render targets set no PSO can be created
       rex::rhi::PipelineStateDesc pso_desc;
       pso_desc.input_layout = m_input_layout;
       pso_desc.raster_state = m_raster_state;

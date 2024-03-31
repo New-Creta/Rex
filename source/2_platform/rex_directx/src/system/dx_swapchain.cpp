@@ -10,7 +10,7 @@ namespace rex
 {
   namespace rhi
   {
-    Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain>& swapchain, DXGI_FORMAT format, s32 bufferCount)
+    Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount)
       : m_swapchain(swapchain)
       , m_format(format)
       , m_buffer_count(bufferCount)

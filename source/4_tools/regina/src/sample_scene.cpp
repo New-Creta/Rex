@@ -2,6 +2,8 @@
 
 #include "rex_engine/app/windowinfo.h"
 #include "rex_engine/app/core_application.h"
+#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/path.h"
 #include "rex_windows/app/gui_application.h"
 #include "rex_renderer_core/primitives/mesh_factory.h"
 #include "rex_renderer_core/primitives/box.h"
@@ -49,7 +51,7 @@ namespace regina
     // Create the descs for the vertex buffer and index buffer
     m_vb = rex::memory::Blob(rsl::make_unique<rex::renderer::VertexPosNormCol[]>(vertices.size()));
     m_vb.write(vertices.data(), rsl::memory_size(m_vb.size()));
-    rex::rhi::VertexBufferDesc vb_desc{ rex::memory::BlobView(m_vb), sizeof(rex::renderer::VertexPosNormCol) };
+    rex::rhi::VertexBufferDesc vb_desc{ rex::memory::BlobView(m_vb), sizeof(rex::renderer::VertexPosNormCol), rex::renderer::VertexPosCol::layout() };
 
     m_ib = rex::memory::Blob(rsl::make_unique<u16[]>(indices.size()));
     m_ib.write(indices.data(), m_ib.size());

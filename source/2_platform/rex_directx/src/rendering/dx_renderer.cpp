@@ -309,6 +309,7 @@ namespace rex
       RenderItem* add_render_item(const RenderItemDesc& desc)
       {
         // 1) First we need to create the gpu resources for this render item on the gpu
+        rhi::ResourceSlot input_layout = rhi::create_input_layout(desc.vb_desc.input_layout);
         rhi::ResourceSlot vb = rhi::create_vertex_buffer(desc.vb_desc);
         rhi::ResourceSlot ib = rhi::create_index_buffer(desc.ib_desc);
         rhi::ResourceSlot cb = rhi::create_constant_buffer(desc.cb_desc);

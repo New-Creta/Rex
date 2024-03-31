@@ -1049,35 +1049,29 @@ namespace rex
     // DXGI Swapchain
     bool internal::RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData)
     {
-      DXGI_SWAP_CHAIN_DESC sd;
-      sd.BufferDesc.Width = userData.window_width;
-      sd.BufferDesc.Height = userData.window_height;
-      sd.BufferDesc.RefreshRate.Numerator = userData.refresh_rate;
-      sd.BufferDesc.RefreshRate.Denominator = 1;
-      sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-      sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-      sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+      DXGI_SWAP_CHAIN_DESC1 sd{};
+      sd.Width = userData.window_width;
+      sd.Height = userData.window_height;
+      sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
       sd.SampleDesc.Count = 1;
-      sd.SampleDesc.Quality = 0;
       sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
       sd.BufferCount = s_swapchain_buffer_count;
-      sd.OutputWindow = (HWND)userData.primary_display_handle;
-      sd.Windowed = userData.windowed;
       sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-      sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
       // Note: swap chain uses queue to perform flush.
-      rex::wrl::ComPtr<IDXGIFactory> dxgi_factory = factory->as<IDXGIFactory>();
-      rex::wrl::ComPtr<IDXGISwapChain> d3d_swapchain;
-      if (DX_FAILED(dxgi_factory->CreateSwapChain(command_queue->get(), &sd, d3d_swapchain.GetAddressOf())))
+      rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = factory->as<IDXGIFactory4>();
+      rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
+      if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(command_queue->get(), (HWND)userData.primary_display_handle , &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
       {
         REX_ERROR(LogRhi, "Failed to create swap chain");
         return false;
       }
 
       rhi::set_debug_name_for(d3d_swapchain.Get(), "SwapChain");
-
-      swapchain = rsl::make_unique<Swapchain>(d3d_swapchain, sd.BufferDesc.Format, sd.BufferCount);
+      wrl::ComPtr<IDXGISwapChain3> d3d_swapchain_3;
+      DX_CALL(d3d_swapchain.As(&d3d_swapchain_3));
+      current_swapchain_buffer_idx = d3d_swapchain_3->GetCurrentBackBufferIndex();
+      swapchain = rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount);
       return true;
     }
 

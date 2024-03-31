@@ -46,7 +46,7 @@ namespace regina
     rex::memory::Blob cb(rsl::make_unique<rsl::byte[]>(sizeof(m_cube_world)));
     cb.write(&m_cube_world, rsl::memory_size(sizeof(m_cube_world)));    
 
-    rex::rhi::VertexBufferDesc vb_desc{ rex::memory::BlobView(vb), sizeof(rex::renderer::VertexPosCol) };
+    rex::rhi::VertexBufferDesc vb_desc{ rex::memory::BlobView(vb), sizeof(rex::renderer::VertexPosCol), rex::renderer::VertexPosCol::layout() };
     rex::rhi::IndexBufferDesc ib_desc{rex::memory::BlobView(ib), rex::renderer::IndexBufferFormat::Uint16, box.indices().size()};
 
     // Create the cube mesh object
