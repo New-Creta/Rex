@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_std/unordered_map.h"
+#include "rex_renderer_core/resources/input_layout.h"
 
 #ifdef REX_COMPILER_MSVC
   #pragma warning(push)
@@ -31,6 +31,8 @@ namespace rex
 
       const glm::vec3& position() const;
 
+      static rhi::InputLayoutDesc layout();
+
     private:
       glm::vec3 m_position;
     };
@@ -53,6 +55,8 @@ namespace rex
 
       const glm::vec3& position() const;
       const glm::vec4& color() const;
+
+      static rhi::InputLayoutDesc layout();
 
     private:
       glm::vec3 m_position;
@@ -80,6 +84,8 @@ namespace rex
       const glm::vec3& normal() const;
       const glm::vec4& color() const;
 
+      static rhi::InputLayoutDesc layout();
+
     private:
       glm::vec3 m_position;
       glm::vec3 m_normal;
@@ -104,6 +110,8 @@ namespace rex
 
       const glm::vec3& position() const;
       const glm::vec2& uv() const;
+
+      static rhi::InputLayoutDesc layout();
 
     private:
       glm::vec3 m_position;
@@ -131,6 +139,8 @@ namespace rex
       const glm::vec4& color() const;
       const glm::vec2& uv() const;
 
+      static rhi::InputLayoutDesc layout();
+
     private:
       glm::vec3 m_position;
       glm::vec4 m_color;
@@ -157,6 +167,8 @@ namespace rex
       const glm::vec3& position() const;
       const glm::vec3& normal() const;
       const glm::vec2& uv() const;
+
+      static rhi::InputLayoutDesc layout();
 
     private:
       glm::vec3 m_position;

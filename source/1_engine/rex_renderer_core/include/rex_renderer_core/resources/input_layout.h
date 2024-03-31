@@ -3,6 +3,7 @@
 #include "rex_renderer_core/rendering/input_layout_classification.h"
 #include "rex_renderer_core/rendering/vertex_buffer_format.h"
 #include "rex_std/string_view.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {

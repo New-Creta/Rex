@@ -33,6 +33,21 @@ namespace rex
     }
 
     //-----------------------------------------------------------------------
+    rhi::InputLayoutDesc VertexPos::layout()
+    {
+      rex::rhi::InputLayoutDesc desc;
+      desc.input_layout =
+      {
+        rex::rhi::InputLayoutElementDesc
+        {
+          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+        }
+      };
+
+      return desc;
+    }
+
+    //-----------------------------------------------------------------------
     bool operator==(const VertexPos& v1, const VertexPos& v2)
     {
       // clang-format off
@@ -74,6 +89,24 @@ namespace rex
     const glm::vec4& VertexPosCol::color() const
     {
       return m_color;
+    }
+    //-----------------------------------------------------------------------
+    rhi::InputLayoutDesc VertexPosCol::layout()
+    {
+      rex::rhi::InputLayoutDesc desc;
+      desc.input_layout =
+      {
+        rex::rhi::InputLayoutElementDesc
+        {
+          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+        },
+        rex::rhi::InputLayoutElementDesc
+        {
+          "COLOR", rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+        }
+      };
+
+      return desc;
     }
 
     //-----------------------------------------------------------------------
@@ -127,6 +160,28 @@ namespace rex
     {
       return m_color;
     }
+    //-----------------------------------------------------------------------
+    rhi::InputLayoutDesc VertexPosNormCol::layout()
+    {
+      rex::rhi::InputLayoutDesc desc;
+      desc.input_layout =
+      {
+        rex::rhi::InputLayoutElementDesc
+        {
+          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+        },
+        rex::rhi::InputLayoutElementDesc
+        {
+          "NORMAL",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+        },
+        rex::rhi::InputLayoutElementDesc
+        {
+          "COLOR", rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 24, 0
+        }
+      };
+
+      return desc;
+    }
 
     //-----------------------------------------------------------------------
     bool operator==(const VertexPosNormCol& v1, const VertexPosNormCol& v2)
@@ -170,6 +225,24 @@ namespace rex
     const glm::vec2& VertexPosTex::uv() const
     {
       return m_uv;
+    }
+    //-----------------------------------------------------------------------
+    rhi::InputLayoutDesc VertexPosTex::layout()
+    {
+      rex::rhi::InputLayoutDesc desc;
+      desc.input_layout =
+      {
+        rex::rhi::InputLayoutElementDesc
+        {
+          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+        },
+        rex::rhi::InputLayoutElementDesc
+        {
+          "TEXCOORD",  rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+        },
+      };
+
+      return desc;
     }
 
     //-----------------------------------------------------------------------
@@ -223,6 +296,28 @@ namespace rex
     {
       return m_uv;
     }
+    //-----------------------------------------------------------------------
+    rhi::InputLayoutDesc VertexPosColTex::layout()
+    {
+      rex::rhi::InputLayoutDesc desc;
+      desc.input_layout =
+      {
+        rex::rhi::InputLayoutElementDesc
+        {
+          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+        },
+        rex::rhi::InputLayoutElementDesc
+        {
+          "COLOR",  rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+        },
+        rex::rhi::InputLayoutElementDesc
+        {
+          "TEXCOORD",  rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 28, 0
+        },
+      };
+
+      return desc;
+    }
 
     //-----------------------------------------------------------------------
     bool operator==(const VertexPosColTex& v1, const VertexPosColTex& v2)
@@ -274,6 +369,28 @@ namespace rex
     const glm::vec2& VertexPosNormTex::uv() const
     {
       return m_uv;
+    }
+    //-----------------------------------------------------------------------
+    rhi::InputLayoutDesc VertexPosNormTex::layout()
+    {
+      rex::rhi::InputLayoutDesc desc;
+      desc.input_layout =
+      {
+        rex::rhi::InputLayoutElementDesc
+        {
+          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+        },
+        rex::rhi::InputLayoutElementDesc
+        {
+          "NORMAL",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+        },
+        rex::rhi::InputLayoutElementDesc
+        {
+          "TEXCOORD", rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 24, 0
+        }
+      };
+
+      return desc;
     }
 
     //-----------------------------------------------------------------------

@@ -343,6 +343,7 @@ namespace rex
         return internal::get()->resource_pool.at(hash);
       }
       rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
+      REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
 
       for (s32 i = 0; i < desc.input_layout.size(); ++i)
       {

@@ -27,6 +27,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/timing/execution_logger.h"
+#include "rex_engine/app/core_application.h"
 
 #include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/system/renderer_backend.h"
@@ -276,8 +277,16 @@ namespace rex
         return true;
       }
 
+      void update_pass_constants()
+      {
+        g_renderer->pass_constants.delta_time = globals::frame_info().delta_time().to_milliseconds();
+        rhi::update_buffer(g_renderer->pass_constant_buffer, &g_renderer->pass_constants, sizeof(g_renderer->pass_constants));
+      }
+
       void render()
       {
+        update_pass_constants();
+
         for (const auto& render_item : g_renderer->render_items)
         {
           rhi::set_vertex_buffer(render_item.vb());

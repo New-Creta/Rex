@@ -2,6 +2,7 @@
 
 #include "rex_renderer_core/rendering/cull_mode.h"
 #include "rex_renderer_core/rendering/depth_info.h"
+#include "rex_renderer_core/rendering/vertex.h"
 
 #include "rex_renderer_core/system/rhi.h"
 
@@ -55,20 +56,7 @@ namespace rex
 
     void Scene::build_input_layout()
     {
-      rex::rhi::InputLayoutDesc input_layout_command_desc;
-      input_layout_command_desc.input_layout = 
-      { 
-        rex::rhi::InputLayoutElementDesc 
-        {
-          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "COLOR", rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
-        }
-      };
-
-      m_input_layout = rex::rhi::create_input_layout(input_layout_command_desc);
+      m_input_layout = rex::rhi::create_input_layout(rex::renderer::VertexPosNormCol::layout());
     }
 
     void Scene::build_raster_state(FillMode fillMode)
