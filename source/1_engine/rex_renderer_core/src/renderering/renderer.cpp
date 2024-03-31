@@ -2,8 +2,7 @@
 
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/containers/ring_buffer.h"
-#include "rex_renderer_core/rendering/default_depth_info.h"
-#include "rex_renderer_core/rendering/default_targets_info.h"
+#include "rex_renderer_core/rendering/depth_info.h"
 #include "rex_renderer_core/rendering/index_buffer_format.h"
 #include "rex_renderer_core/diagnostics/log.h"
 #include "rex_renderer_core/rendering/primitive_topology.h"
@@ -22,25 +21,6 @@
 
 namespace rex
 {
-  namespace globals
-  {
-    DefaultDepthInfo g_default_depth_info;     // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-    DefaultTargetsInfo g_default_targets_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-
-    //-------------------------------------------------------------------------
-    const DefaultDepthInfo& default_depth_info()
-    {
-      return g_default_depth_info;
-    }
-
-    //-------------------------------------------------------------------------
-    const DefaultTargetsInfo& default_targets_info()
-    {
-      return g_default_targets_info;
-    }
-
-  } // namespace globals
-
   namespace renderer
   {
     using CommandAllocator = rsl::stack_allocator;

@@ -11,8 +11,7 @@
 #include "rex_engine/platform/win/win_com_library.h"
 #include "rex_engine/app/windowinfo.h"
 #include "rex_renderer_core/context.h"
-#include "rex_renderer_core/rendering/default_depth_info.h"
-#include "rex_renderer_core/rendering/default_targets_info.h"
+#include "rex_renderer_core/rendering/depth_info.h"
 #include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/system/rhi.h"
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
@@ -375,18 +374,12 @@ namespace rex
       // Drawing
       void pre_user_draw()
       {
-        // Nothing to implement
-
         rex::renderer::new_frame();
-
-        //rex::renderer::set_render_targets(rex::globals::default_targets_info().back_buffer_color, rex::globals::default_targets_info().depth_buffer);
         rex::renderer::begin_draw();
 
       }
       void post_user_draw()
       {
-        // Nothing to implement
-
         rex::renderer::end_draw();
         rex::renderer::present();
         rex::renderer::end_frame();

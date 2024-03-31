@@ -17,19 +17,7 @@ namespace regina
 {
   CubeScene::CubeScene()
   {
-    build_geometry();
-   
-    build_shader("regina\\Shaders\\color.hlsl", "regina\\Shaders\\color.hlsl");
-    build_input_layout();
-
-    build_raster_state();
-    build_pso();
-
-    f32 width = rex::globals::window_info().width;
-    f32 height = rex::globals::window_info().height;
-    build_constant_buffers(width, height);
-
-    use_pso();
+    build_geometry();   
 
     m_cube_world = glm::mat4(1.0f);
   }
@@ -45,10 +33,11 @@ namespace regina
     // Create the box geometry
     auto box = rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f, 0);
 
+    // Create the vertex buffer
     rex::memory::Blob vb(rsl::make_unique<rex::renderer::VertexPosCol[]>(box.vertices().size()));
     vb.write(box.vertices().data(), vb.size());
 
-    // Copy the indices into an index buffer blob
+    // Create the index buffer
     rex::memory::Blob ib(rsl::make_unique<u16[]>(box.indices().size()));
     ib.write(box.indices().data(), ib.size());
 

@@ -32,6 +32,7 @@
 #include "rex_renderer_core/system/renderer_backend.h"
 #include "rex_renderer_core/rendering/cull_mode.h"
 #include "rex_renderer_core/rendering/fill_mode.h"
+#include "rex_renderer_core/rendering/depth_info.h"
 #include "rex_renderer_core/system/gpu_description.h"
 #include "rex_renderer_core/rendering/index_buffer_format.h"
 #include "rex_renderer_core/rendering/input_layout_classification.h"
@@ -56,13 +57,13 @@
 #include "rex_std/memory.h"
 #include "rex_std/vector.h"
 
-#include <optional>
-
 #include <D3Dcompiler.h>
 #include <DirectXColors.h>
 #include <Windows.h>
 #include <cstddef>
 #include <d3d12.h>
+
+#include <glm/gtc/matrix_transform.hpp>
 
 #ifdef REX_ENABLE_DXGI_DEBUG_LAYER
   #include <dxgidebug.h>
@@ -72,16 +73,6 @@ namespace rex
 {
   namespace renderer
   {
-    namespace directx
-    {
-      struct DefaultBuffer
-      {
-          wrl::ComPtr<ID3D12Resource> buffer;
-          wrl::ComPtr<ID3D12Resource> upload_buffer;
-      };
-
-    } // namespace directx
-
     //-------------------------------------------------------------------------
     ShaderPlatform shader_platform()
     {
@@ -91,7 +82,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool is_y_up()
     {
-      return false;
+      return true;
     }
     //-------------------------------------------------------------------------
     bool is_depth_0_to_1()
@@ -101,15 +92,45 @@ namespace rex
 
     namespace backend
     {
+      struct PassConstants
+      {
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 inv_view = glm::mat4(1.0f);
+        glm::mat4 proj = glm::mat4(1.0f);
+        glm::mat4 inv_proj = glm::mat4(1.0f);
+        glm::mat4 view_proj = glm::mat4(1.0f);
+        glm::mat4 inv_view_proj = glm::mat4(1.0f);
+
+        glm::vec3 eye_pos_w = { 0.0f, 0.0f, 0.0f };
+        f32 cb_padding_1 = 0.0f;
+
+        glm::vec2 render_target_size = { 0.0f, 0.0f };
+        glm::vec2 inv_render_target_size = { 0.0f, 0.0f };
+
+        f32 near_z = 0.0f;
+        f32 far_z = 0.0f;
+
+        f32 total_time = 0.0f;
+        f32 delta_time = 0.0f;
+      };
+
+      // The renderer is just a wrapper around resources
+      // It does not handle any rendering logic itself
+      // This is so the resources the renderer wraps can be deleted
+      // using RAII without any manual involvement
       class DirectXRenderer
       {
       public:
         DirectXRenderer(const OutputWindowUserData& userData)
           : init_successful(true)
+          , depth_info({1.0f, 1000.0f})
         {
           // Create a scopeguard so if we exit the renderer too early on
           // We mark it as initialization failed
           rsl::scopeguard mark_init_failed = [this]() { init_successful = false; };
+
+          // Create a commands frame, this makes sure all the commands get executed at the end of the scope
+          rhi::CommandsFrame cmds_frame{};
 
           // Init the clear state
           if (!init_clear_state())
@@ -119,7 +140,8 @@ namespace rex
           }
 
           init_viewport(userData);
-          init_scirssor_rect(userData);
+          init_scissor_rect(userData);
+          init_pass_constants(userData);
 
           // release the scopeguard so that init gets marked successful
           mark_init_failed.release();
@@ -155,19 +177,64 @@ namespace rex
           screen_viewport.MinDepth = 0.0f;
           screen_viewport.MaxDepth = 1.0f;
         }
-        void init_scirssor_rect(const OutputWindowUserData& userData)
+        void init_scissor_rect(const OutputWindowUserData& userData)
         {
           // Cull pixels drawn outside of the backbuffer ( such as UI elements )
           scissor_rect = { 0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height) };
         }
+        void init_pass_constants(const OutputWindowUserData& userData)
+        {
+          f32 width = userData.window_width;
+          f32 height = userData.window_height;
+
+          pass_constants.eye_pos_w.x = 15.0f * sinf(0.2f * glm::pi<f32>()) * cosf(1.5f * glm::pi<f32>());
+          pass_constants.eye_pos_w.y = 15.0f * cosf(0.2f * glm::pi<f32>());
+          pass_constants.eye_pos_w.z = 35.0f * sinf(0.2f * glm::pi<f32>()) * sinf(1.5f * glm::pi<f32>());
+
+          const glm::vec3 pos = glm::vec3(pass_constants.eye_pos_w.x, pass_constants.eye_pos_w.y, pass_constants.eye_pos_w.z);
+          const glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
+          const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+          glm::mat4 view = glm::lookAt(pos, target, up);
+          view = glm::transpose(view); // DirectX backend ( so we have to transpose, expects row major matrices )
+
+          glm::mat4 proj = glm::perspectiveFov(0.25f * glm::pi<f32>(), width, height, depth_info.near_plane, depth_info.far_plane);
+          proj = glm::transpose(proj); // DirectX backend ( so we have to transpose, expects row major matrices )
+
+          const glm::mat4 view_proj = view * proj;
+
+          const glm::mat4 inv_view = glm::inverse(view);
+          const glm::mat4 inv_proj = glm::inverse(proj);
+          const glm::mat4 inv_view_proj = glm::inverse(view_proj);
+
+          pass_constants.view = view;
+          pass_constants.inv_view = inv_view;
+          pass_constants.proj = proj;
+          pass_constants.inv_proj = inv_proj;
+          pass_constants.view_proj = view_proj;
+          pass_constants.inv_view_proj = inv_view_proj;
+
+          pass_constants.render_target_size = glm::vec2(width, height);
+          pass_constants.inv_render_target_size = glm::vec2(1.0f / width, 1.0f / height);
+          pass_constants.near_z = depth_info.near_plane;
+          pass_constants.far_z = depth_info.far_plane;
+          pass_constants.delta_time = 0.0f;
+
+          rex::memory::Blob pass_cb_blob(rsl::make_unique<rsl::byte[]>(sizeof(pass_constants)));
+          pass_cb_blob.write(&pass_constants, sizeof(pass_constants));
+          rhi::ConstantBufferDesc desc;
+          desc.blob_view = rex::memory::BlobView(pass_cb_blob);
+          pass_constant_buffer = rhi::create_constant_buffer(desc);
+        }
 
       public:
         rhi::ResourceSlot clear_state; // the default clear state
-
+        rhi::ResourceSlot pass_constant_buffer; // Constant buffer used per rendering pass
         D3D12_VIEWPORT screen_viewport; // The viewport pointing to the entire window
         RECT scissor_rect; // The scissor rect pointing to the entire window
         rsl::vector<RenderItem> render_items;
-
+        PassConstants pass_constants;
+        DepthInfo depth_info;
         rhi::ResourceSlot active_pso;
 
         bool init_successful;
@@ -216,6 +283,8 @@ namespace rex
           rhi::set_vertex_buffer(render_item.vb());
           rhi::set_index_buffer(render_item.ib());
           rhi::set_constant_buffer(0, render_item.cb());
+          rhi::set_constant_buffer(1, g_renderer->pass_constant_buffer);
+
           rhi::set_primitive_topology(render_item.primtive_topology());
 
           rhi::draw_indexed(1, 0, render_item.index_count(), render_item.start_index(), render_item.base_vertex_loc());

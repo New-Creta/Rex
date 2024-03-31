@@ -10,8 +10,7 @@
 #include "rex_renderer_core/primitives/cylinder.h"
 #include "rex_renderer_core/rendering/vertex.h"
 #include "rex_renderer_core/system/renderer.h"
-#include "rex_renderer_core/rendering/default_depth_info.h"
-#include "rex_renderer_core/rendering/default_targets_info.h"
+#include "rex_renderer_core/rendering/depth_info.h"
 #include "rex_renderer_core/system/rhi.h"
 
 #include "rex_std/bonus/math/color.h"
@@ -28,17 +27,7 @@ namespace regina
     
     // shader and pso should be part of the material system
 
-    build_shader("regina\\Shaders\\color.hlsl", "regina\\Shaders\\color.hlsl");
-    build_input_layout();
 
-    build_raster_state();
-    build_pso();
-
-    f32 width = rex::globals::window_info().width;
-    f32 height = rex::globals::window_info().height;
-    build_constant_buffers(width, height); // Scene should not hold the pass constant buffer and therefore should not know the width and height
-
-    use_pso();
   }
 
   void SampleScene::update_object_constant_buffers()

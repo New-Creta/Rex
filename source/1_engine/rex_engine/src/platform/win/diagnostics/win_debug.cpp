@@ -31,6 +31,7 @@ void rex::exit_confirm(int32 exitCode)
 
 void rex::output_debug_string(rsl::string_view str)
 {
+  OutputDebugStringA("[REX] ");
   OutputDebugStringA(str.data());
   OutputDebugStringA("\n");
 }

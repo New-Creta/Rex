@@ -48,6 +48,8 @@ namespace rex
     void clear_backbuffer(const ResourceSlot& clearState);
     void present();
 
+    ScopedCommandList create_scoped_commandlist();
+
     namespace d3d
     {
       wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ConstantLayoutDescription>& constants);

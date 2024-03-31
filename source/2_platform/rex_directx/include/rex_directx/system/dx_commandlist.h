@@ -29,7 +29,7 @@ namespace rex
     class ScopedCommandList
     {
     public:
-      ScopedCommandList(CommandList* cmdList, CommandQueue* commandQueue);
+      ScopedCommandList(rsl::unique_ptr<CommandList>&& cmdList, CommandQueue* commandQueue);
       ScopedCommandList(const ScopedCommandList&) = delete;
       ScopedCommandList(ScopedCommandList&& other);
       ~ScopedCommandList();
@@ -38,7 +38,7 @@ namespace rex
       ScopedCommandList& operator=(ScopedCommandList&&);
 
     private:
-      CommandList* m_cmd_list;
+      rsl::unique_ptr<CommandList> m_cmd_list;
       CommandQueue* m_cmd_queue;
     };
   }

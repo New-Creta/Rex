@@ -29,6 +29,14 @@ namespace rex
       rsl::small_stack_string vendor;
     };
 
+    // An object that resets the commandslist and executes it on closing
+    class CommandsFrame
+    {
+    public:
+      CommandsFrame();
+      ~CommandsFrame();
+    };
+
     // Return basic info about the graphics hardware of the current machine
     const Info& info();
 

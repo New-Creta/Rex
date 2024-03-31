@@ -9,19 +9,11 @@ namespace rex
 {
   struct Viewport;
   struct ScissorRect;
-  struct DefaultTargetsInfo;
-  struct DefaultDepthInfo;
 
   namespace rhi
   {
     class ResourceSlot;
   }
-
-  namespace globals
-  {
-    const DefaultTargetsInfo& default_targets_info();
-    const DefaultDepthInfo& default_depth_info();
-  } // namespace globals
 
   namespace renderer
   {

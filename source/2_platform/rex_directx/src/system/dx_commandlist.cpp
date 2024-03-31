@@ -48,8 +48,8 @@ namespace rex
       return m_command_list.Get();
     }
 
-    ScopedCommandList::ScopedCommandList(CommandList* cmdList, CommandQueue* cmdQueue)
-      : m_cmd_list(cmdList)
+    ScopedCommandList::ScopedCommandList(rsl::unique_ptr<CommandList>&& cmdList, CommandQueue* cmdQueue)
+      : m_cmd_list(rsl::move(cmdList))
       , m_cmd_queue(cmdQueue)
     {
       m_cmd_list->reset();

@@ -99,8 +99,6 @@ namespace rex
         // Upload buffers
         bool init_upload_buffers();
 
-        ScopedCommandList create_scoped_cmd_list();
-
       private:
         constexpr static s32 s_swapchain_buffer_count = 2;
         constexpr static s32 s_num_rtv_descs = 8;
@@ -624,6 +622,30 @@ namespace rex
     {
       Resource* resource = internal::get()->resource_pool.as<Resource>(slot);
       internal::get()->upload_buffer->write(internal::get()->command_list.get(), resource, data, size);
+    }
+
+    ScopedCommandList create_scoped_commandlist()
+    {
+      // Command Allocator
+      wrl::ComPtr<ID3D12CommandAllocator> allocator;
+      if (DX_FAILED(internal::get()->device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(allocator.GetAddressOf()))))
+      {
+        REX_ERROR(LogRhi, "Failed to create command allocator");
+      }
+
+      rhi::set_debug_name_for(allocator.Get(), "Global Command Allocator");
+
+      // Command List
+      wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
+      if (DX_FAILED(internal::get()->device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
+      {
+        REX_ERROR(LogRhi, "Failed to create command list");
+      }
+
+      rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
+      rsl::unique_ptr<CommandList> command_list = rsl::make_unique<CommandList>(cmd_list, allocator);
+
+      return ScopedCommandList(rsl::move(command_list), internal::get()->command_queue.get());
     }
 
     namespace d3d
@@ -1218,10 +1240,6 @@ namespace rex
       return true;
     }
 
-    ScopedCommandList internal::RenderHardwareInfrastructure::create_scoped_cmd_list()
-    {
-      return ScopedCommandList(command_list.get(), command_queue.get());
-    }
 #pragma endregion
   }
 }
