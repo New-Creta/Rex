@@ -22,7 +22,8 @@ namespace rex
         return nullptr;
       }
 
-      return rsl::make_unique<PipelineState>(pso);
+      ResourceHash hash = rsl::hash<rsl::wstring>{}(name);
+      return rsl::make_unique<PipelineState>(pso, hash);
     }
     rsl::unique_ptr<PipelineState> PipelineLibrary::store_pso(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
     {
@@ -30,7 +31,8 @@ namespace rex
       m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pso));
       const rsl::wstring name = create_pso_name(desc);
       m_pipeline_library->StorePipeline(name.c_str(), pso.Get());
-      return rsl::make_unique<PipelineState>(pso);
+      ResourceHash hash = rsl::hash<rsl::wstring>{}(name);
+      return rsl::make_unique<PipelineState>(pso, hash);
     }
 
     rsl::wstring PipelineLibrary::create_pso_name(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc) const

@@ -34,6 +34,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/engine/casting.h"
 
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_renderer_core/rendering/viewport.h"
@@ -368,7 +369,7 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob_view.size();
+      rsl::memory_size size = desc.blob_view.size();
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size);
       set_debug_name_for(buffer.Get(), "Vertex Buffer");
       rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, desc.blob_view.size(), desc.vertex_size);
@@ -395,7 +396,7 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob_view.size();
+      rsl::memory_size size = desc.blob_view.size();
       DXGI_FORMAT d3d_format = rex::d3d::to_d3d12_index_format(desc.format);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size, 0);
       set_debug_name_for(buffer.Get(), "Index Buffer");
@@ -421,8 +422,8 @@ namespace rex
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      s32 size = desc.blob_view.size();
-      s32 aligned_size = rex::align(size, D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+      rsl::memory_size size = desc.blob_view.size();
+      rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
       set_debug_name_for(buffer.Get(), "Constant Buffer");
       rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, desc.blob_view.size());
@@ -562,7 +563,7 @@ namespace rex
       D3D12_VERTEX_BUFFER_VIEW view{};
       VertexBuffer* vertex_buffer = internal::get()->resource_pool.as<VertexBuffer>(vb);
       view.BufferLocation = vertex_buffer->get()->GetGPUVirtualAddress();
-      view.SizeInBytes = vertex_buffer->size();
+      view.SizeInBytes = narrow_cast<s32>(vertex_buffer->size());
       view.StrideInBytes = vertex_buffer->stride();
       
       internal::get()->command_list->get()->IASetVertexBuffers(0, 1, &view);
@@ -573,7 +574,7 @@ namespace rex
       IndexBuffer* index_buffer = internal::get()->resource_pool.as<IndexBuffer>(ib);
       view.BufferLocation = index_buffer->get()->GetGPUVirtualAddress();
       view.Format = index_buffer->format();
-      view.SizeInBytes = index_buffer->size();
+      view.SizeInBytes = narrow_cast<s32>(index_buffer->size());
 
       internal::get()->command_list->get()->IASetIndexBuffer(&view);
     }
@@ -619,7 +620,7 @@ namespace rex
       internal::get()->upload_buffer->reset();
     }
 
-    void update_buffer(const ResourceSlot& slot, const void* data, s32 size)
+    void update_buffer(const ResourceSlot& slot, const void* data, s64 size)
     {
       Resource* resource = internal::get()->resource_pool.as<Resource>(slot);
       internal::get()->upload_buffer->write(internal::get()->command_list.get(), resource, data, size);

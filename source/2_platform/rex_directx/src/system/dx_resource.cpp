@@ -7,15 +7,15 @@ namespace rex
 {
   namespace rhi
   {
-    Resource::Resource(const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState, s32 size, DXGI_FORMAT format)
+    Resource::Resource(const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState, s64 size, DXGI_FORMAT format)
       : BaseResource(resource.Get(), make_new_hash())
       , m_resource(resource)
       , m_resource_state(startState)
       , m_size(size)
     {
       D3D12_RESOURCE_DESC desc = m_resource->GetDesc();
-      m_width = desc.Width;
-      m_height = desc.Height;
+      m_width = static_cast<s32>(desc.Width);
+      m_height = static_cast<s32>(desc.Height);
       m_format = format != DXGI_FORMAT_UNKNOWN
         ? format
         : desc.Format;
@@ -29,7 +29,7 @@ namespace rex
     {
       return m_height;
     }
-    s32 Resource::size() const
+    s64 Resource::size() const
     {
       return m_size;
     }
@@ -53,7 +53,7 @@ namespace rex
       m_resource_state = to;
     }
 
-    void Resource::write(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s32 start, s32 size)
+    void Resource::write(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 start, s64 size)
     {
       cmdList->CopyBufferRegion(m_resource.Get(), 0, uploadBuffer->get(), start, size);
     }

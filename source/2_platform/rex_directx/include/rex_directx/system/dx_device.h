@@ -19,8 +19,8 @@ namespace rex
       D3D_FEATURE_LEVEL feature_level() const;
       const Info& info() const;
 
-      s32 memory_usage() const;
-      s32 memory_available() const;
+      s64 memory_usage() const;
+      s64 memory_available() const;
 
     private:
       void init_shader_model();

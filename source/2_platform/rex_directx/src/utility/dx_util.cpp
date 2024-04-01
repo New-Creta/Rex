@@ -179,10 +179,5 @@ namespace rex
         return 0;
       }
     }
-
-    s32 get_buffer_byte_size(const D3D12_RESOURCE_DESC& desc)
-    {
-      return desc.Width * desc.Height * format_byte_size(desc.Format);
-    }
   }
 } // namespace rex

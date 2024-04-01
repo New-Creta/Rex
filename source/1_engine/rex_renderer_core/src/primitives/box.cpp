@@ -4,7 +4,7 @@ namespace rex
 {
   namespace mesh_factory
   {
-    MeshData16 create_box(f32 width, f32 height, f32 depth, u32 subdivisions)
+    MeshData16 create_box(f32 width, f32 height, f32 depth)
     {
       //
       // Create the vertices.

@@ -27,7 +27,7 @@ namespace rex
       m_upload_buffer->Unmap(0, nullptr);
     }
  
-    void UploadBuffer::write(CommandList* cmdList, Resource* dstResource, const void* data, s32 size)
+    void UploadBuffer::write(CommandList* cmdList, Resource* dstResource, const void* data, s64 size)
     {
       // Write the data into our mapped memory
       rsl::byte* start = (rsl::byte*)m_mapped_data + m_offset;

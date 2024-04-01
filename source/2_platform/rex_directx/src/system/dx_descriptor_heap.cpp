@@ -5,6 +5,7 @@
 #include "rex_directx/system/dx_resource.h"
 
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/engine/casting.h"
 
 namespace rex
 {
@@ -52,14 +53,14 @@ namespace rex
       return dsv_handle;
     }
 
-    D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::create_cbv(ID3D12Resource* resource, s32 size)
+    D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::create_cbv(ID3D12Resource* resource, rsl::memory_size size)
     {
       CD3DX12_CPU_DESCRIPTOR_HANDLE cbv_handle(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart());
 
       // Create a new constant buffer view given the offsetted GPU address and the size of the constant buffer in bytes
       D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
       cbv_desc.BufferLocation = resource->GetGPUVirtualAddress();
-      cbv_desc.SizeInBytes = size;
+      cbv_desc.SizeInBytes = narrow_cast<s32>(size.size_in_bytes());
 
       cbv_handle.Offset(m_used_descriptors, m_descriptor_size);
       m_device->CreateConstantBufferView(&cbv_desc, cbv_handle);

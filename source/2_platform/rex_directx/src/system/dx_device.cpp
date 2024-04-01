@@ -40,13 +40,13 @@ namespace rex
     }
 
 
-    s32 DirectXDevice::memory_usage() const
+    s64 DirectXDevice::memory_usage() const
     {
       DXGI_QUERY_VIDEO_MEMORY_INFO info;
       m_adapter->as<IDXGIAdapter3>()->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);
       return info.CurrentUsage;
     }
-    s32 DirectXDevice::memory_available() const
+    s64 DirectXDevice::memory_available() const
     {
       DXGI_QUERY_VIDEO_MEMORY_INFO info;
       m_adapter->as<IDXGIAdapter3>()->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);

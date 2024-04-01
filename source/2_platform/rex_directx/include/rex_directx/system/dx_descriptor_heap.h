@@ -4,6 +4,8 @@
 
 #include "rex_engine/engine/types.h"
 
+#include "rex_std/bonus/memory.h"
+
 namespace rex
 {
   namespace rhi
@@ -18,7 +20,7 @@ namespace rex
       REX_STATIC_WARNING("Create descriptor handles based on the type they're pointing to. That way we don't have to manually pass in the offset size");
       D3D12_CPU_DESCRIPTOR_HANDLE create_rtv(ID3D12Resource* resource);
       D3D12_CPU_DESCRIPTOR_HANDLE create_dsv(ID3D12Resource* resource, DXGI_FORMAT format);
-      D3D12_CPU_DESCRIPTOR_HANDLE create_cbv(ID3D12Resource* resource, s32 size);
+      D3D12_CPU_DESCRIPTOR_HANDLE create_cbv(ID3D12Resource* resource, rsl::memory_size size);
 
       D3D12_GPU_DESCRIPTOR_HANDLE gpu_heap_start();
 

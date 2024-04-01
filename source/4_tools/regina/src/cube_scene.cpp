@@ -31,7 +31,7 @@ namespace regina
   void CubeScene::build_geometry()
   {
     // Create the box geometry
-    auto box = rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f, 0);
+    auto box = rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f);
 
     // Create the vertex buffer
     rex::memory::Blob vb(rsl::make_unique<rex::renderer::VertexPosCol[]>(box.vertices().size()));

@@ -27,7 +27,7 @@ namespace rex
     enum class PrimitiveTopology;
     enum class IndexBufferFormat;
 
-    bool initialize(const OutputWindowUserData& userData, s32 maxCommands, s32 maxFrameResources);
+    bool initialize(const OutputWindowUserData& userData);
     void render();
     void shutdown();
 
@@ -50,7 +50,7 @@ namespace rex
     void set_pso(const rhi::ResourceSlot& slot);
 
     bool new_frame();
-    bool end_frame(FlushCommands flush = FlushCommands::yes);
+    bool end_frame();
 
     bool begin_draw();
     bool end_draw();

@@ -110,7 +110,5 @@ namespace rex
     D3D12_PRIMITIVE_TOPOLOGY to_d3d12_topology(renderer::PrimitiveTopology topology);
     D3D12_INPUT_CLASSIFICATION to_d3d12_input_layout_classification(renderer::InputLayoutClassification classification);
     s32 format_byte_size(DXGI_FORMAT format);
-
-    s32 get_buffer_byte_size(const D3D12_RESOURCE_DESC& desc);
   }
 }

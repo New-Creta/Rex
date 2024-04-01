@@ -15,17 +15,17 @@ namespace rex
     class Resource : public BaseResource<ID3D12Resource>
     {
     public:
-      Resource(const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState, s32 size, DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN);
+      Resource(const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState, s64 size, DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN);
 
       s32 width() const;
       s32 height() const;
-      s32 size() const;
+      s64 size() const;
       DXGI_FORMAT format() const;
       ID3D12Resource* get() const;
       D3D12_RESOURCE_STATES resource_state() const;
 
       void transition(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES to);
-      void write(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s32 start, s32 size);
+      void write(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 start, s64 size);
       void copy_to(ID3D12GraphicsCommandList* cmdList, ID3D12Resource* srcResource);
 
     private:
@@ -33,7 +33,7 @@ namespace rex
       DXGI_FORMAT m_format;
       s32 m_width;
       s32 m_height;
-      s32 m_size;
+      s64 m_size;
       D3D12_RESOURCE_STATES m_resource_state;
     };
   }

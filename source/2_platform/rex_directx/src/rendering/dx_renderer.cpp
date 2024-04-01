@@ -13,7 +13,6 @@
 
 #include "rex_directx/resources/dx_clear_state_resource.h"
 #include "rex_directx/resources/dx_input_layout_resource.h"
-#include "rex_directx/resources/dx_pipeline_state_resource.h"
 #include "rex_directx/resources/dx_pixel_shader_resource.h"
 #include "rex_directx/resources/dx_raster_state_resource.h"
 #include "rex_directx/resources/dx_shader_program_resource.h"
@@ -185,8 +184,8 @@ namespace rex
         }
         void init_pass_constants(const OutputWindowUserData& userData)
         {
-          f32 width = userData.window_width;
-          f32 height = userData.window_height;
+          f32 width = static_cast<f32>(userData.window_width);
+          f32 height = static_cast<f32>(userData.window_height);
 
           pass_constants.eye_pos_w.x = 15.0f * sinf(0.2f * glm::pi<f32>()) * cosf(1.5f * glm::pi<f32>());
           pass_constants.eye_pos_w.y = 15.0f * cosf(0.2f * glm::pi<f32>());

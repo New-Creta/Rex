@@ -43,7 +43,7 @@ namespace regina
     rsl::vector<rex::renderer::VertexPosNormCol> vertices;
     rsl::vector<u16> indices;
 
-    rex::renderer::Submesh box       = build_submesh(rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f, 0), vertices, indices);
+    rex::renderer::Submesh box       = build_submesh(rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f), vertices, indices);
     rex::renderer::Submesh grid      = build_submesh(rex::mesh_factory::create_grid(20.0f, 30.0f, 60, 40), vertices, indices);
     rex::renderer::Submesh sphere    = build_submesh(rex::mesh_factory::create_sphere(0.5f, 20, 20), vertices, indices);
     rex::renderer::Submesh cylinder  = build_submesh(rex::mesh_factory::create_cylinder(0.5f, 0.3f, 3.0f, 20, 20), vertices, indices);

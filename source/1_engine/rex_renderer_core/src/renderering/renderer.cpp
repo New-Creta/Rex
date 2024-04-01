@@ -26,15 +26,17 @@ namespace rex
     using CommandAllocator = rsl::stack_allocator;
 
     //-------------------------------------------------------------------------
-    bool initialize(const OutputWindowUserData& userData, s32 maxCommands, s32 maxFrameResources)
+    bool initialize(const OutputWindowUserData& userData)
     {
       return backend::initialize(userData);
     }
 
+    //-------------------------------------------------------------------------
     void set_shader(const rhi::ResourceSlot& slot)
     {
       rhi::set_shader(slot);
     }
+    //-------------------------------------------------------------------------
     void set_pso(const rhi::ResourceSlot& slot)
     {
       rhi::set_pso(slot);
@@ -116,7 +118,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    bool end_frame(FlushCommands flush)
+    bool end_frame()
     {
       return backend::end_frame();
     }
