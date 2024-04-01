@@ -8,6 +8,7 @@
 #include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility/yes_no.h"
 #include "rex_std/string_view.h"
+#include "rex_engine/engine/defines.h"
 
 /// Rex VFS system supports syncronous and async file IO
 /// We want to go for very simplistic design API at the moment

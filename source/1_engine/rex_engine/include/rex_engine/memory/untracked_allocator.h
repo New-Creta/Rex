@@ -4,6 +4,7 @@
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/utility.h"
+#include "rex_engine/engine/defines.h"
 
 // IWYU pragma: no_include <new>
 

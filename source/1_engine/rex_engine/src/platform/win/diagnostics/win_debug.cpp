@@ -65,7 +65,7 @@ bool rex::wait_for_debugger(rsl::chrono::minutes minutesToWait)
 
   if (is_debugger_attached())
   {
-    DEBUG_BREAK();
+    REX_DEBUG_BREAK();
     return true;
   }
 

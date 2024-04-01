@@ -3,6 +3,7 @@
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/memory.h"
+#include "rex_engine/engine/defines.h"
 
 namespace rex
 {
@@ -27,7 +28,7 @@ namespace rex
 
       REX_NO_DISCARD pointer allocate(size_type size)
       {
-#ifndef REX_RELEASE
+#ifndef REX_BUILD_RELEASE
         return m_allocator->allocate(size);
 #else
         return nullptr;

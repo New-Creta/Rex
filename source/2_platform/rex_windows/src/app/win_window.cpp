@@ -50,7 +50,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool Window::create(HInstance hInstance, s32 cmdShow, const WindowDescription& description)
     {
-      UNUSED_PARAM(cmdShow);
+      REX_UNUSED_PARAM(cmdShow);
 
       if(!m_wnd_class.create(hInstance, default_win_procedure, description.title.data()))
       {

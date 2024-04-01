@@ -126,7 +126,7 @@ namespace rex
         wrl::ComPtr<IDXGIInfoQueue> debug_info_queue;
         rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> descriptor_heap_pool;
 
-        STATIC_WARNING("Move these fields into the swapchain")
+        REX_STATIC_WARNING("Move these fields into the swapchain")
         rsl::vector<Resource> swapchain_buffers;   // swapchain render target buffer indices
         rsl::array<D3D12_CPU_DESCRIPTOR_HANDLE, s_swapchain_buffer_count> swapchain_rtvs;
         D3D12_CPU_DESCRIPTOR_HANDLE dsv;
@@ -456,7 +456,7 @@ namespace rex
       D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
       if (desc.blend_state.is_valid())
       {
-        STATIC_WARNING("Implement blend state");
+        REX_STATIC_WARNING("Implement blend state");
         //BlendStateResource* blend_state = internal::get()->resource_pool.as<BlendStateResource>(desc.blend_state);
         //d3d_blend_state = blend_state->get();
       }
@@ -464,7 +464,7 @@ namespace rex
       D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
       if (desc.depth_stencil_state.is_valid())
       {
-        STATIC_WARNING("Implement depth stencil state");
+        REX_STATIC_WARNING("Implement depth stencil state");
         //DepthStencilStateResource* depth_stencil_state = internal::get()->resource_pool.as<DepthStencilStateResource>(desc.depth_stencil_state);
         //d3d_depth_stencil_state = depth_stencil_state->get();
       }

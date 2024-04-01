@@ -98,7 +98,7 @@ namespace rex
       // If no debugger is attached however, we always create a crash dump.
       if (rex::is_debugger_attached())
       {
-        DEBUG_BREAK();
+        REX_DEBUG_BREAK();
       }
       else
       {

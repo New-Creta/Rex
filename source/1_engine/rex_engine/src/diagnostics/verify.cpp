@@ -17,7 +17,7 @@ namespace rex
 
     rex::dialog::msg_box("Verification failed", msg, dialog::DialogType::Ok, dialog::IconType::Error, dialog::DefaultButton::Ok);
 
-    DEBUG_BREAK();
+    REX_DEBUG_BREAK();
   }
 
   //-------------------------------------------------------------------------
