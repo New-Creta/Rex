@@ -128,8 +128,8 @@ namespace rex
 
         REX_STATIC_WARNING("Move these fields into the swapchain")
         rsl::vector<Resource> swapchain_buffers;   // swapchain render target buffer indices
-        rsl::array<D3D12_CPU_DESCRIPTOR_HANDLE, s_swapchain_buffer_count> swapchain_rtvs;
-        D3D12_CPU_DESCRIPTOR_HANDLE dsv;
+        rsl::array<DescriptorHandle, s_swapchain_buffer_count> swapchain_rtvs;
+        DescriptorHandle dsv;
         s32 current_swapchain_buffer_idx;
       };
 
@@ -533,8 +533,8 @@ namespace rex
       auto& clear_flags = clear_state->get()->flags;
       if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
       {
-        D3D12_CPU_DESCRIPTOR_HANDLE rtv = internal::get()->swapchain_rtvs[internal::get()->current_swapchain_buffer_idx];
-        internal::get()->command_list->get()->ClearRenderTargetView(rtv, clear_state->get()->rgba.data(), 0, nullptr);
+        DescriptorHandle rtv = internal::get()->swapchain_rtvs[internal::get()->current_swapchain_buffer_idx];
+        internal::get()->command_list->get()->ClearRenderTargetView(rtv.get(), clear_state->get()->rgba.data(), 0, nullptr);
       }
 
       if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
@@ -543,8 +543,8 @@ namespace rex
         d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
         d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
-        D3D12_CPU_DESCRIPTOR_HANDLE dsv = internal::get()->dsv;
-        internal::get()->command_list->get()->ClearDepthStencilView(dsv, (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
+        DescriptorHandle dsv = internal::get()->dsv;
+        internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
       }
     }
     void present()
@@ -612,7 +612,7 @@ namespace rex
     void swap_rendertargets()
     {
       auto rtv = internal::get()->swapchain_rtvs[internal::get()->current_swapchain_buffer_idx];
-      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv, true, &internal::get()->dsv);
+      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, &internal::get()->dsv.get());
     }
 
     void reset_upload_buffer()
@@ -1175,7 +1175,7 @@ namespace rex
       {
         wrl::ComPtr<ID3D12Resource> buffer = swapchain->get_buffer(i);
         set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        D3D12_CPU_DESCRIPTOR_HANDLE rtv = descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(buffer.Get());
+        DescriptorHandle rtv = descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(buffer.Get());
         swapchain_buffers.emplace_back(buffer, D3D12_RESOURCE_STATE_COMMON, 0);
         swapchain_rtvs[i] = rtv;
       }
