@@ -10,21 +10,29 @@ __pycache__
 .vs/
 .ninja/
 
+# The solution files can be ignored
 rex.ninja
 rex.sln
 
+# sharpmake intermediate files can be ignored
 build/sharpmake/.ninja/
 build/sharpmake/bin/
 build/sharpmake/obj/
 
+# anything in third party can be ignored
 source/0_thirdparty
+
+# auto generated header files can be ignored.
 source/1_engine/rex_engine/include/rex_engine/memory/memory_tags.h
 source/1_engine/rex_engine/include/rex_engine/filesystem/mounting_point.h
-source/1_engine/rex_engine/include/rex_engine/cmd_args.h
+source/1_engine/rex_engine/include/rex_engine/cmdline/cmd_args.h
 
+# documentation files can be ignored
 _docs/book/
 fuzzy.log.*
 crash-*
 *.nsln
 *.unrealvs
-source/1_engine/rex_engine/include/rex_engine/cmdline/cmd_args.h
+
+# Dump files can be ignored
+*.dmp

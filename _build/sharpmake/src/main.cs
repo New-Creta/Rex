@@ -77,7 +77,8 @@ public static class Main
   private static Dictionary<string, ConfigSetting> LoadConfigFile()
   {
     string json = File.ReadAllText(ProjectGen.Settings.ConfigFileDir);
-    return JsonSerializer.Deserialize<Dictionary<string, ConfigSetting>>(json);
+    Dictionary<string, JsonDocument> config = JsonSerializer.Deserialize<Dictionary<string, JsonDocument>>(json);
+    return JsonSerializer.Deserialize<Dictionary<string, ConfigSetting>>(config["settings"].RootElement.ToString());
   }
 
   // Perform post generation steps here.
