@@ -36,31 +36,34 @@ misc_extensions = settings["misc_extensions"]
 
 def _exec_clean():
   """Remove all the files in the intermediate directory"""
-  regis.diagnostics.log_info(f"cleaning intermediates")
-  
-  try:
-    # this clean the entire intermediate directory and all sub folders
-    if os.path.exists(intermediate_dir):
-      shutil.rmtree(intermediate_dir)
+  with regis.task_raii_printing.TaskRaiiPrint(f"cleaning intermediates"):
+    try:
+      with regis.util.LoadingAnimation('Cleaning'):        
+        # this clean the entire intermediate directory and all sub folders
+        if os.path.exists(intermediate_dir):
+          regis.diagnostics.log_info(f'Cleaning {intermediate_dir}')
+          shutil.rmtree(intermediate_dir)
 
-    # There are a few misc folders other than our own intermediate directory
-    # that need to get cleaned (eg. .vscode folder)
-    for misc_folder in misc_folders:
-      if os.path.exists(misc_folder):
-        shutil.rmtree(misc_folder)
+        # There are a few misc folders other than our own intermediate directory
+        # that need to get cleaned (eg. .vscode folder)
+        for misc_folder in misc_folders:
+          if os.path.exists(misc_folder):
+            regis.diagnostics.log_info(f'Cleaning {misc_folder}')
+            shutil.rmtree(misc_folder)
 
-    # There are also a few files generated in the root
-    # that need to get removed when performing a clean setup
-    # eg. the visual studio solution of the engine.
-    files = os.listdir()
-    for file in files:
-      if os.path.isfile(file):
-        for misc_extension in misc_extensions:
-          if misc_extension in file:
-            os.remove(file)
-  except Exception as ex:
-    regis.diagnostics.log_err(f'Failed to clean intermediates: {ex}')
-    exit(0)
+        # There are also a few files generated in the root
+        # that need to get removed when performing a clean setup
+        # eg. the visual studio solution of the engine.
+        files = os.listdir()
+        for file in files:
+          if os.path.isfile(file):
+            for misc_extension in misc_extensions:
+              if misc_extension in file:
+                regis.diagnostics.log_info(f'Cleaning {file}')
+                os.remove(file)
+    except Exception as ex:
+      regis.diagnostics.log_err(f'Failed to clean intermediates: {ex}')
+      exit(1)
   
 def _exec_query():
   """Query what still needs to get installed."""
@@ -79,31 +82,28 @@ def _exec_query():
 def _exec_run():
   """Run the actual setup"""
 
-  parser = argparse.ArgumentParser()
-  parser.add_argument("-clean", help="clean setup, as if run for the first time", action="store_true")
+  with regis.task_raii_printing.TaskRaiiPrint("running setup"):
 
-  task = regis.task_raii_printing.TaskRaiiPrint("running setup")
+    # Time to install everything needed to build rex engine.
+    # This is split into multiple steps
 
-  # Time to install everything needed to build rex engine.
-  # This is split into multiple steps
+    # First we need to install the required build tools.
+    # This includes make tools, build tools, compilers, linkers, ..
+    regis.required_tools.run()
 
-  # First we need to install the required build tools.
-  # This includes make tools, build tools, compilers, linkers, ..
-  regis.required_tools.run()
+    # Next, install all required libraries for the compilers and platforms (eg. C++ standard library, Windows SDK)
+    # Rex itself doesn't use C++ standard library, but thirdparty libraries might, so we still have to provide it.
+    regis.required_libs.run()
 
-  # Next, install all required libraries for the compilers and platforms (eg. C++ standard library, Windows SDK)
-  # Rex itself doesn't use C++ standard library, but thirdparty libraries might, so we still have to provide it.
-  regis.required_libs.run()
-
-  # Next we need to install all the externals used by rex itself
-  # the difference between these libraries and the libraries of the previous step is that
-  # we (Rex developers) decided that we need these libraries and we can decide to remove them at any point.
-  # libraries like Windows SDK, C++ standard library is always required for development, where as libraries like ImGui
-  # are not required and can always be replaced if a better library comes along.
-  regis.required_externals.run()
-      
-  # Lastly, install the git hooks
-  regis.git_hooks.run(os.path.join(root_path, "_build", "scripts", "git", "hooks"))
+    # Next we need to install all the externals used by rex itself
+    # the difference between these libraries and the libraries of the previous step is that
+    # we (Rex developers) decided that we need these libraries and we can decide to remove them at any point.
+    # libraries like Windows SDK, C++ standard library is always required for development, where as libraries like ImGui
+    # are not required and can always be replaced if a better library comes along.
+    regis.required_externals.run()
+        
+    # Lastly, install the git hooks
+    regis.git_hooks.run(os.path.join(root_path, "_build", "scripts", "git", "hooks"))
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
