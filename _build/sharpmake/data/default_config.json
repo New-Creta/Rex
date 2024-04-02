@@ -1,4 +1,7 @@
 {
+  "version" : "0.0.1",
+
+  "settings": {
   "clang-tidy-regex": {
     "Description": "Add this regex to clang-tidy to filter which files it should process",
     "Value": ""
@@ -73,4 +76,5 @@
     "Description": "Disable unity builds (aka jumbo builds, combi builds)",
     "Value": true
   }
+}
 }
