@@ -6,19 +6,62 @@
 #include "rex_directx/diagnostics/dx_call.h"
 #include "rex_directx/system/dx_rhi.h"
 
+#include "rex_engine/diagnostics/logging/log_macros.h"
+
 namespace rex
 {
   namespace rhi
   {
-    Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount)
+    DEFINE_LOG_CATEGORY(LogSwapchain, rex::LogVerbosity::Log);
+
+    Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount, DescriptorHeap* rtvDescHeap, DescriptorHeap* dsvDescHeap, ResourceHeap* resourceHeap)
       : m_swapchain(swapchain)
       , m_format(format)
       , m_buffer_count(bufferCount)
-    {}
-
-    HRESULT Swapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
+      , m_rtv_desc_heap(rtvDescHeap)
+      , m_dsv_desc_heap(dsvDescHeap)
+      , m_resource_heap(resourceHeap)
     {
-      return m_swapchain->ResizeBuffers(m_buffer_count, width, height, m_format, flags);
+
+    }
+
+    DescriptorHandle Swapchain::backbuffer_view()
+    {
+      return m_swapchain_rtvs[m_swapchain->GetCurrentBackBufferIndex()];
+    }
+
+    DescriptorHandle Swapchain::depth_stencil_view()
+    {
+      return m_dsv;
+    }
+
+    void Swapchain::transition_backbuffer(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state)
+    {
+      Resource& backbuffer = m_swapchain_buffers[m_swapchain->GetCurrentBackBufferIndex()];
+      backbuffer.transition(cmdList, state);
+    }
+
+    void Swapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
+    {
+      if (DX_FAILED(m_swapchain->ResizeBuffers(m_buffer_count, width, height, m_format, flags)))
+      {
+        REX_ERROR(LogSwapchain, "Failed to resize swapchain buffers");
+        return;
+      }
+
+      for (s32 i = 0; i < m_buffer_count; ++i)
+      {
+        wrl::ComPtr<ID3D12Resource> buffer;
+        m_swapchain->GetBuffer(i, IID_PPV_ARGS(&buffer));
+        set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
+        DescriptorHandle rtv = m_rtv_desc_heap->create_rtv(buffer.Get());
+        m_swapchain_buffers.emplace_back(buffer, D3D12_RESOURCE_STATE_COMMON, 0);
+        m_swapchain_rtvs.push_back(rtv);
+      }
+
+      m_depth_stencil_buffer = m_resource_heap->create_depth_stencil_resource(width, height);
+      set_debug_name_for(m_depth_stencil_buffer->get(), "Swapchain Depth Stencil Buffer");
+      m_dsv = m_dsv_desc_heap->create_dsv(m_depth_stencil_buffer->get(), DXGI_FORMAT_D24_UNORM_S8_UINT);
     }
 
     s32 Swapchain::buffer_count() const

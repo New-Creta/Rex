@@ -89,11 +89,6 @@ namespace rex
         bool init_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, s32 numDescriptors);
         bool init_descriptor_heaps();
 
-        // Swapchain Buffer Views
-        bool init_swapchain_buffer_views(const renderer::OutputWindowUserData& userData);
-        bool init_swapchain_rtvs(const renderer::OutputWindowUserData& userData);
-        bool init_swapchain_dsvs(const renderer::OutputWindowUserData& userData);
-
         // Pipeline Library
         bool init_pipeline_library();
 
@@ -125,12 +120,6 @@ namespace rex
 
         wrl::ComPtr<IDXGIInfoQueue> debug_info_queue;
         rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> descriptor_heap_pool;
-
-        REX_STATIC_WARNING("Move these fields into the swapchain")
-        rsl::vector<Resource> swapchain_buffers;   // swapchain render target buffer indices
-        rsl::array<DescriptorHandle, s_swapchain_buffer_count> swapchain_rtvs;
-        DescriptorHandle dsv;
-        s32 current_swapchain_buffer_idx;
       };
 
       rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi;
@@ -524,8 +513,7 @@ namespace rex
 
     void transition_backbuffer(D3D12_RESOURCE_STATES state)
     {
-      Resource& backbuffer = internal::get()->swapchain_buffers[internal::get()->current_swapchain_buffer_idx];
-      backbuffer.transition(internal::get()->command_list->get(), state);
+      internal::get()->swapchain->transition_backbuffer(internal::get()->command_list->get(), state);
     }
     void clear_backbuffer(const ResourceSlot& clearState)
     {
@@ -533,7 +521,7 @@ namespace rex
       auto& clear_flags = clear_state->get()->flags;
       if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
       {
-        DescriptorHandle rtv = internal::get()->swapchain_rtvs[internal::get()->current_swapchain_buffer_idx];
+        DescriptorHandle rtv = internal::get()->swapchain->backbuffer_view();
         internal::get()->command_list->get()->ClearRenderTargetView(rtv.get(), clear_state->get()->rgba.data(), 0, nullptr);
       }
 
@@ -543,19 +531,13 @@ namespace rex
         d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
         d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
-        DescriptorHandle dsv = internal::get()->dsv;
+        DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
         internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
       }
     }
     void present()
     {
       internal::get()->swapchain->present();
-      internal::get()->current_swapchain_buffer_idx++;
-
-      if (internal::get()->current_swapchain_buffer_idx == internal::get()->swapchain_buffers.size())
-      {
-        internal::get()->current_swapchain_buffer_idx = 0;
-      }
     }
 
     void set_vertex_buffer(const rhi::ResourceSlot& vb)
@@ -611,8 +593,9 @@ namespace rex
 
     void swap_rendertargets()
     {
-      auto rtv = internal::get()->swapchain_rtvs[internal::get()->current_swapchain_buffer_idx];
-      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, &internal::get()->dsv.get());
+      auto rtv = internal::get()->swapchain->backbuffer_view();
+      auto dsv = internal::get()->swapchain->depth_stencil_view();
+      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, &dsv.get());
     }
 
     void reset_upload_buffer()
@@ -706,7 +689,6 @@ namespace rex
 #pragma region RHI Class
     internal::RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData)
       : init_successful(true)
-      , current_swapchain_buffer_idx(0)
     {
       // Create a scopeguard that automatically marks initialization as failed
       // This is to make it easy to extend initialization where needed with only
@@ -764,16 +746,7 @@ namespace rex
         return;
       }
 
-      // 5) we need to create a swapchain which is responsible of presenting.
-      // There's no benefit in creating all the above systems if we don't have anything
-      // to actually present something on screen, that's what the swapchain is for.
-      if (!init_swapchain(userData))
-      {
-        REX_ERROR(LogRhi, "Failed to create swapchain");
-        return;
-      }
-
-      // 6) We need to create initial heaps that store the data that'll be used for rendering
+      // 5) We need to create initial heaps that store the data that'll be used for rendering
       // These heaps only hold the data, but letting the graphics pipeline know which resource to use
       // is never done with the heaps directly, but instead are only used to store the data
       // To let graphics pipeline know which resources to use, we use descriptors, which are stored
@@ -784,7 +757,7 @@ namespace rex
         return;
       }
 
-      // 7) We need a few heaps to store descriptors which point to the actual resources in other heaps
+      // 6) We need a few heaps to store descriptors which point to the actual resources in other heaps
       // A descriptor is just some metadata about the resource, holding all the information
       // the gpu needs to use a resource.
       // A heap on the gpu is just the same as on the cpu except it's more limited to what it can store
@@ -797,16 +770,16 @@ namespace rex
         return;
       }
 
-      // 8) Now create the views for the swapchain's back buffers
-      // These views are needed for basic presenting as the GPU
-      // doesn't interact with resources directly but uses views instead
-      if (!init_swapchain_buffer_views(userData))
+      // 7) we need to create a swapchain which is responsible of presenting.
+      // There's no benefit in creating all the above systems if we don't have anything
+      // to actually present something on screen, that's what the swapchain is for.
+      if (!init_swapchain(userData))
       {
-        REX_ERROR(LogRhi, "Failed to create swapchain buffer views");
+        REX_ERROR(LogRhi, "Failed to create swapchain");
         return;
       }
 
-      // 9) Create the pipeline library
+      // 8) Create the pipeline library
       // This holds all the pso objects we need.
       // Ideally this should get prefilled on boot.
       // However on the very first boot time, all pso need to get compiled first
@@ -816,7 +789,7 @@ namespace rex
         return;
       }
 
-      // 10) Create the upload buffers
+      // 9) Create the upload buffers
       // To make sure we can upload data to the gpu
       // we need to make sure the upload buffers 
       // are create which perform this upload for us
@@ -826,7 +799,7 @@ namespace rex
         return;
       }
 
-      // 11) Execute the commandlist to finish initialization
+      // 10) Execute the commandlist to finish initialization
       command_list->exec(command_queue.get());
 
       // release scopeguard so that init gets marked successful
@@ -1071,8 +1044,13 @@ namespace rex
       rhi::set_debug_name_for(d3d_swapchain.Get(), "SwapChain");
       wrl::ComPtr<IDXGISwapChain3> d3d_swapchain_3;
       DX_CALL(d3d_swapchain.As(&d3d_swapchain_3));
-      current_swapchain_buffer_idx = d3d_swapchain_3->GetCurrentBackBufferIndex();
-      swapchain = rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount);
+
+      DescriptorHeap* rtv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      DescriptorHeap* dsv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+      swapchain = rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount, rtv_desc_heap, dsv_desc_heap, heap.get());
+
+      swapchain->resize_buffers(userData.window_width, userData.window_height, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+
       return true;
     }
 
@@ -1140,59 +1118,6 @@ namespace rex
         REX_ERROR(LogRhi, "Failed to create descriptor heap for RTV");
         return false;
       }
-
-      return true;
-    }
-
-    // Swapchain buffer views
-    bool internal::RenderHardwareInfrastructure::init_swapchain_buffer_views(const renderer::OutputWindowUserData& userData)
-    {
-      if (!init_swapchain_rtvs(userData))
-      {
-        REX_ERROR(LogRhi, "Failed to create swapchain render target views");
-        return false;
-      }
-
-      if (!init_swapchain_dsvs(userData))
-      {
-        REX_ERROR(LogRhi, "Failed to create swapchain depth stencil views");
-        return false;
-      }
-
-      return true;
-    }
-    bool internal::RenderHardwareInfrastructure::init_swapchain_rtvs(const renderer::OutputWindowUserData& userData)
-    {
-      s32 width = userData.window_width;
-      s32 height = userData.window_height;
-      if (DX_FAILED(swapchain->resize_buffers(width, height, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)))
-      {
-        REX_ERROR(LogRhi, "Failed to resize swapchain buffers");
-        return false;
-      }
-
-      for (s32 i = 0; i < swapchain->buffer_count(); ++i)
-      {
-        wrl::ComPtr<ID3D12Resource> buffer = swapchain->get_buffer(i);
-        set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        DescriptorHandle rtv = descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(buffer.Get());
-        swapchain_buffers.emplace_back(buffer, D3D12_RESOURCE_STATE_COMMON, 0);
-        swapchain_rtvs[i] = rtv;
-      }
-
-      return true;
-    }
-    bool internal::RenderHardwareInfrastructure::init_swapchain_dsvs(const renderer::OutputWindowUserData& userData)
-    {
-      s32 width = userData.window_width;
-      s32 height = userData.window_height;
-
-      depth_stencil_buffer = heap->create_depth_stencil_resource(width, height);
-      set_debug_name_for(depth_stencil_buffer->get(), "Swapchain Depth Stencil Buffer");
-      dsv = descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV).create_dsv(depth_stencil_buffer->get(), DXGI_FORMAT_D24_UNORM_S8_UINT);
-
-      CD3DX12_RESOURCE_BARRIER depth_write_transition = CD3DX12_RESOURCE_BARRIER::Transition(depth_stencil_buffer->get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-      command_list->get()->ResourceBarrier(1, &depth_write_transition);
 
       return true;
     }

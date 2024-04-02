@@ -68,13 +68,13 @@ namespace rex
       D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
       REX_ASSERT_X(static_cast<s64>(alloc_info.SizeInBytes) < (m_memory_limit - m_used_memory), "About to allocate {} bytes, but the heap only has {} memory available", alloc_info.SizeInBytes, (m_memory_limit - m_used_memory));
       wrl::ComPtr<ID3D12Resource> depth_stencil_buffer;
-      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, &optimized_clear_value, IID_PPV_ARGS(&depth_stencil_buffer))))
+      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &optimized_clear_value, IID_PPV_ARGS(&depth_stencil_buffer))))
       {
         REX_ERROR(LogResourceHeap, "Failed to create depth stencil buffer");
       }
 
       m_used_memory += alloc_info.SizeInBytes;
-      return rsl::make_unique<Resource>(depth_stencil_buffer, D3D12_RESOURCE_STATE_COMMON, alloc_info.SizeInBytes);
+      return rsl::make_unique<Resource>(depth_stencil_buffer, D3D12_RESOURCE_STATE_DEPTH_WRITE, alloc_info.SizeInBytes);
     }
 
   }
