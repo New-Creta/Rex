@@ -333,6 +333,7 @@ public abstract class BasicCPPProject : Project
 
     // We always add the include folder of the project to its include paths
     conf.IncludePaths.Add($@"{SourceRootPath}\include");
+    conf.IncludePrivatePaths.Add($@"{SourceRootPath}\include_private");
   }
   // Setup rules that need to be defined based on optimization settings
   // This usually means adding or removing defines, but other options are available as well.
