@@ -17,9 +17,24 @@ if __name__ == "__main__":
   parser.add_argument("-enable-asan", help="enable asan when running the tests", default=False, action="store_true")
   parser.add_argument("-enable-ubsan", help="enable ubsan when running the tests", default=False, action="store_true")
   parser.add_argument("-enable-coverage", help="enable code coverage when running the tests", default=False, action="store_true")
+  parser.add_argument("-create", help="Create a new unit test project", default=False, action="store_true")
+  parser.add_argument("-solution_folder", help="Specify the solution folder you want to generate the new unit test int")
 
   parser.add_argument("-project", dest="projects", help="Append a project to run a test on. Leave empty to run all projects applicable", action="append", default=[])
   args,unknown = parser.parse_known_args()
+
+  if args.create:
+    if len(args.projects) == 0:
+      regis.diagnostics.log_err('no project specified to create. Please specify one with "-project"')
+
+    if len(args.projects) > 1:
+      regis.diagnostics.log_err('more than 1 project specified to create. Please specify only one.')
+
+    if not args.solution_folder:
+      regis.diagnostics.log_err('No solution folder specified for new unit test. Please specify one using "-solution_folder".')
+
+    regis.test.create_new_project(args.solution_folder, args.projects[0], regis.test.TestProjectType.FuzzyTest)
+    exit(0)
 
   start = time.perf_counter()
 
