@@ -5,12 +5,14 @@
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/diagnostics/logging/internal/details/registry.h"
+#include "rex_engine/diagnostics/logging/log_functions.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/internal/utility/pair.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
+#include "rex_engine/filesystem/vfs.h"
 
 //
 // Init log levels using each argv entry that starts with "REXLOG_LEVEL="
@@ -95,6 +97,16 @@ namespace rex
       {
         helpers::load_levels(log_level.value());
       }
+    }
+
+    void init_logging()
+    {
+      // shutdown the logging registry, flushing all loggers
+      rex::log::details::Registry::instance().shutdown();
+
+      // now initialize it again with everything that's loaded
+      rex::vfs::mount_for_session(rex::MountingPoint::Logs, "logs");
+      rex::logging::init();
     }
   } // namespace diagnostics
 } // namespace rex

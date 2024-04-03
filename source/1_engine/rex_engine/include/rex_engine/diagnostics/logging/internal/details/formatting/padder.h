@@ -14,7 +14,7 @@ namespace rex
       class ScopedPadder
       {
       public:
-        ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo, rsl::string& dest);
+        ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo,memory_buf_t& dest);
 
         ScopedPadder(const ScopedPadder&) = delete;
         ScopedPadder(ScopedPadder&&)      = delete;
@@ -34,7 +34,7 @@ namespace rex
         void pad_it(ulong count);
 
         const PaddingInfo* m_padinfo;
-        rsl::string* m_dest;
+        memory_buf_t* m_dest;
         ulong m_remaining_pag;
         rsl::string_view m_spaces;
       };
@@ -42,7 +42,7 @@ namespace rex
       class NullScopedPadder
       {
       public:
-        NullScopedPadder(s32 /*wrappedSize*/, const PaddingInfo& /*padinfo*/, rsl::string& /*dest*/);
+        NullScopedPadder(s32 /*wrappedSize*/, const PaddingInfo& /*padinfo*/, memory_buf_t& /*dest*/);
 
         template <typename T>
         static unsigned int count_digits(T /* number */)

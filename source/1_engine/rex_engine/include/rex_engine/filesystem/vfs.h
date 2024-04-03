@@ -100,6 +100,7 @@ namespace rex
     void init(rsl::string_view root = "");
     void set_root(rsl::string_view root);
     void mount(MountingPoint root, rsl::string_view path);
+    void mount_for_session(MountingPoint root, rsl::string_view path);
     void shutdown();
 
     REX_NO_DISCARD memory::Blob read_file(MountingPoint root, rsl::string_view filepath);

@@ -22,6 +22,7 @@ namespace rex
     void init(rsl::string_view cmdLine);
     void shutdown();
     void print_args();
+    void log_cmdline();
 
     // This is used to scan if a certain argument is specified
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg);

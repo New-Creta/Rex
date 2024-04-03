@@ -42,6 +42,10 @@ namespace rex
     // calls the client shutdown count first, then shuts down the gui application systems
     const rsl::scopeguard shutdown_scopeguard([&]() { shutdown(); });
 
+    // Log memory usage before initialization has started
+    output_debug_string("Memory usage before initialization");
+    log_mem_usage();
+
     // this calls our internal init code, to initialize the gui application
     // afterwards it calls into client code and initializes the code there
     // calling the initialize function provided earlier in the EngineParams
@@ -52,7 +56,7 @@ namespace rex
     }
 
     // Log memory usage after initialization has finished
-    output_debug_string("Memory usage at after initialization");
+    output_debug_string("Memory usage after initialization");
     log_mem_usage();
 
     // calls into gui application update code

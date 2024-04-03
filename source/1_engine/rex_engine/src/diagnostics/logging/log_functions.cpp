@@ -11,6 +11,8 @@
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/vector.h"
+#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/path.h"
 
 #if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
   #define REX_ENABLE_COLOR_SINK
@@ -34,6 +36,17 @@ namespace rex
 
   using LoggerObjectPtr    = rsl::shared_ptr<rex::log::Logger>;
   using LoggerObjectPtrMap = DebugHashTable<LogCategoryName, LoggerObjectPtr>;
+
+  bool g_enable_file_sinks = false;
+
+  namespace logging
+  {
+    //-------------------------------------------------------------------------
+    void init()
+    {
+      g_enable_file_sinks = true;
+    }
+  }
 
   LoggerObjectPtrMap& loggers()
   {
@@ -69,16 +82,9 @@ namespace rex
   {
     const LogLevelMap log_levels = get_log_levels();
 
-    // assert(LOG_LEVELS.find(category.get_verbosity()) != rsl::cend(LOG_LEVELS) && "Unknown log verbosity was given");
-
     auto logger = rex::log::details::Registry::instance().get(category.get_category_name());
     if(logger != nullptr)
       return *logger;
-
-    // rsl::filesystem::path working_dir(rsl::filesystem::current_path());
-    // rsl::filesystem::path log_dir("log");
-    // rsl::filesystem::path filename(category.get_category_name().data());
-    // rsl::filesystem::path full_path = working_dir / log_dir / filename;
 
     rex::DebugVector<rsl::shared_ptr<rex::log::sinks::AbstractSink>> sinks;
 
@@ -86,7 +92,10 @@ namespace rex
     // Only push rexout color sink when we are in debug mode
     sinks.push_back(rsl::allocate_shared<rex::log::sinks::StdoutColorSinkMt>(rex::global_debug_allocator()));
 #endif
-    // sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(full_path.string(), true));
+    if (g_enable_file_sinks)
+    {
+      sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), "game.log"), true));
+    }
 
     rsl::shared_ptr<rex::log::Logger> new_logger = nullptr;
 

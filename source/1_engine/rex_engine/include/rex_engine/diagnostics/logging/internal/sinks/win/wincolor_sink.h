@@ -103,7 +103,7 @@ namespace rex
         const rsl::unique_lock<mutex_t> lock(*m_mutex);
         msg.m_color_range_start = 0;
         msg.m_color_range_end   = 0;
-        static rsl::string formatted;
+        static memory_buf_t formatted;
         formatted.clear();
         m_formatter.format(msg, formatted);
         if(m_should_do_colors && msg.m_color_range_end > msg.m_color_range_start)

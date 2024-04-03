@@ -14,8 +14,22 @@ namespace rex
 {
   namespace internal
   {
+    void log_init_results()
+    {
+      // Now log the commandline we started the app with
+      cmdline::log_cmdline();
+
+      // Log early on if any sanitization is enabled
+      // This is useful to have in the log file to make sure that correct sanitization is enabled when testing
+      log_sanitization();
+
+      REX_LOG(LogEngine, "Vfs Root: {}", rex::vfs::root());
+      REX_LOG(LogEngine, "Session Directory: {}", rex::vfs::session_data_root());
+    }
+
     void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine)
     {
+      // Initialize the commandline first as this can influence everything else
       cmdline::init(rsl::string_view(cmdLine));
 
       // if a user wants to know the arguments for the executable, we want to perform as minimal setup as possible.
@@ -49,15 +63,19 @@ namespace rex
       // and are pretty much required by everything else
       diagnostics::init_log_levels();
 
-      // Log early on if any sanitization is enabled
-      // This is useful to have in the log file to make sure that correct sanitization is enabled when testing
-      log_sanitization();
-
-      // Initialize the filesystem as this can be needed by the entry point of the entrypoint of the client
+      // Initialize the filesystem as this can be needed by the entry point of the client
       // However it is recommended that all initialziation code is moved into the client's init function.
       // If we decide to limit this more aggresively, we can move this initialization to the initialize function
       // of the engine.
       vfs::init();
+
+      // Now initialize all the logging diagnostics, including setting up file output
+      // We need to do this here as we need the vfs to be initialized
+      diagnostics::init_logging();
+
+      // Now that the pre initialization has finished, including logging
+      // log what we just did
+      log_init_results();
     }
 
     void post_app_shutdown()

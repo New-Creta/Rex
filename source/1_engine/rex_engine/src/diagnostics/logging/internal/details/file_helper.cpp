@@ -7,6 +7,10 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/filesystem/filesystem_constants.h"
 #include "rex_engine/memory/global_allocator.h"
+#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/directory.h"
+#include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/path.h"
 
 #include <errno.h>
 
@@ -46,28 +50,23 @@ namespace rex
         for(int tries = 0; tries < s_open_tries; ++tries)
         {
           // create containing folder if not exists already.
-          os::create_dir(os::dir_name(fname));
-          if(truncate)
+          rex::directory::create(path::dir_name(fname));
+          if(truncate && file::exists(fname))
           {
             // Truncate by opening-and-closing a tmp file in "wb" mode, always
             // opening the actual log-we-write-to in "ab" mode, since that
             // interacts more politely with eternal processes that might
             // rotate/truncate the file underneath us.
-            FILE* tmp = nullptr;
-            if(os::fopen_s(&tmp, fname, filename_t(trunc_mode)))
-            {
-              continue;
-            }
-            REX_ASSERT_X(fclose(tmp), "failed to close tmp file");
+            file::trunc(fname);
           }
-          if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
-          {
-            if(m_event_handlers.after_open)
-            {
-              m_event_handlers.after_open(m_filename, m_fd);
-            }
-            return;
-          }
+          //if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
+          //{
+          //  if(m_event_handlers.after_open)
+          //  {
+          //    m_event_handlers.after_open(m_filename, m_fd);
+          //  }
+          //  return;
+          //}
 
           details::os::sleep_for_millis(s_open_interval);
         }
@@ -136,14 +135,17 @@ namespace rex
       {
         const s32 msg_size = buf.size();
         const auto* data   = buf.data();
-        if(fwrite(data, 1, msg_size, m_fd) != msg_size)
-        {
-          rex::DebugString err(rex::global_debug_allocator());
-          err += "Failed writing to file ";
-          err += os::filename_to_str(m_filename);
-          err += " %d";
-          printf("%s, %d", err.data(), errno);
-        }
+        
+        vfs::save_to_file(m_filename, data, msg_size, vfs::AppendToFile::yes);
+
+        //if(fwrite(data, 1, msg_size, m_fd) != msg_size)
+        //{
+        //  rex::DebugString err(rex::global_debug_allocator());
+        //  err += "Failed writing to file ";
+        //  err += os::filename_to_str(m_filename);
+        //  err += " %d";
+        //  printf("%s, %d", err.data(), errno);
+        //}
       }
 
       size_t FileHelper::size() const

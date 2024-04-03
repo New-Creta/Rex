@@ -7,6 +7,7 @@
 #include "rex_windows/app/console_application.h"
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/path.h"
 #include "rex_engine/memory/memory_header.h"
 #include "rex_windows/input/input.h"
 #include "rex_engine/diagnostics/stacktrace.h"
@@ -74,8 +75,6 @@ namespace console_app_example
 
   bool initialize()
   {
-    rex::vfs::mount(rex::MountingPoint::Logs, "logs");
-
     return true;
   }
   void update()
@@ -83,6 +82,11 @@ namespace console_app_example
     if (rex::input::is_key_pressed('P'))
     {
       rex::mem_tracker().dump_stats_to_file("mem_stats.txt");
+    }
+
+    if (rex::input::is_key_pressed('Q'))
+    {
+      rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
     }
   }
   void shutdown()

@@ -46,7 +46,7 @@ namespace rex
         virtual void set_pattern_impl(rsl::string_view pattern);
         virtual void set_formatter_impl(PatternFormatter sinkFormatter);
 
-        const PatternFormatter& formatter();
+        PatternFormatter& formatter();
         Mutex& mutex();
 
       private:
@@ -108,7 +108,7 @@ namespace rex
       }
 
       template <typename Mutex>
-      const PatternFormatter& rex::log::sinks::BaseSink<Mutex>::formatter()
+      PatternFormatter& rex::log::sinks::BaseSink<Mutex>::formatter()
       {
         return m_formatter;
       }

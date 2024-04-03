@@ -8,6 +8,11 @@
 
 namespace rex
 {
+  namespace logging
+  {
+    void init();
+  }
+
   rex::log::Logger& get_logger(const LogCategory& category);
 
   template <typename T>

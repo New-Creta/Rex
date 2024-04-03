@@ -35,11 +35,20 @@ namespace rex
           // see https://learn.microsoft.com/en-us/windows/console/handlerroutine#timeouts
         case CTRL_CLOSE_EVENT:
           g_this_app->quit();
-          return false; // NOLINT(readability-implicit-bool-conversion)
+
+          // Start an infinite loop so the main thread has time to shutdown the app (knowing it only has 5 seconds)
+          // We cannot yield the thread here as that'd immediately kill the process without giving the main thread
+          // a chance to shutdown the app properly.
+          while (true) 
+          {
+            // Do nothing here
+          }
+
+          return true; // NOLINT(readability-implicit-bool-conversion)
           break;
       }
 
-      return true; // NOLINT(readability-implicit-bool-conversion)
+      return false; // NOLINT(readability-implicit-bool-conversion)
     }
 
     class ConsoleApplication::Internal
@@ -73,7 +82,12 @@ namespace rex
 
       void update()
       {
-        m_input.update();
+        if (is_focussed())
+        {
+          m_input.update();
+        }
+
+        event_system::process_events();
 
         m_on_update();
       }
