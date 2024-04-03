@@ -31,6 +31,12 @@ For every source file that needs to reference catch2, add an include to `rex_uni
 
 [`Unit Test Example`](../../../_build/sharpmake/templates/rex_unit_test_template.cpp)
 
+#### Commandline Project Generation
+
+There's a quick way of generating a unit test project by using the rex pipeline. The following command will generate a new unit test project called `MyRexUnitTestProject` and put it under the `1_engine` solution folder
+
+`py _rex.py unit-test -create -project=MyRexUnitTestProject -solution_folder=1_engine`
+
 ### Auto Test Project
 An auto test is ideal to test a complex system or test different systems working together. It'll launch an app, backed by the rex engine, in such a way that no user input is needed.
 
@@ -72,6 +78,12 @@ We define an `initialize`, `update`, and `shutdown` function, which we pass over
 That's all there is to it, once you have this code, you can run it and the editor boot will now be tested.
 If any crashes occur this will be reported by the testing pipeline
 
+#### Commandline Project Generation
+
+There's a quick way of generating a auto test project by using the rex pipeline. The following command will generate a new auto test project called `MyRexAutoTestProject` and put it under the `1_engine` solution folder
+
+`py _rex.py auto-test -create -project=MyRexUnitTestProject -solution_folder=1_engine`
+
 ### Fuzzy Test Project
 
 A fuzzy test is meant to be used to test your systems with random input. Fuzzed apps will run many iterations with garbage input, which can be used to test if systems won't crash or perform invalid operations if a user would put enter unexpected input, that either being invalid input to a text field, invalid key strokes but it could also test invalid parameters passed into a function.
@@ -103,3 +115,8 @@ Fill the file with the following code
 
 And that's it. You can run any fuzzy tests in the entry, divide it up into different function calls, etc..
 The goal is that you call as many systems as possible, you don't know the input you're giving them, the goal is just that they don't crash.
+
+#### Commandline Project Generation
+There's a quick way of generating a fuzzy test project by using the rex pipeline. The following command will generate a new fuzzy test project called `MyRexFuzzyTestProject` and put it under the `1_engine` solution folder
+
+`py _rex.py fuzzy-test -create -project=MyRexUnitTestProject -solution_folder=1_engine`
