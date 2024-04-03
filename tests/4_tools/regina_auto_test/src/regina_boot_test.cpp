@@ -1,7 +1,7 @@
 #include "regina_auto_test/regina_boot_test.h"
 #include "regina/regina.h"
 #include "rex_engine/event_system/event_system.h"
-#include "rex_windows/platform_creation_params.h"
+#include "rex_windows/engine/platform_creation_params.h"
 
 namespace regina_auto_test
 {
