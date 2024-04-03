@@ -55,7 +55,6 @@ if __name__ == "__main__":
   start = time.perf_counter()
   result = regis.build.new_build(args.project, args.config, args.compiler, not args.nobuild, args.clean, args.sln, not args.dont_build_dependencies)
   end = time.perf_counter()
-  regis.diagnostics.log_info(f"Tests took {end - start:0.4f} seconds")
 
   if result != 0:
     regis.diagnostics.log_err("Build failed")

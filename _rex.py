@@ -60,6 +60,8 @@ def _run_script(scriptPath : str, args : list[str]):
   proc = subprocess.Popen(args=script_args)
   proc.wait()
 
+  return proc.returncode
+
 def _exec_version():
   """Load the engine version and display it"""
   # The version of the engine is stored in rex.version file
@@ -98,42 +100,35 @@ def _exec_setup(argsToPassOn : list[str]):
 
   # Now that we have regis installed, 
   # We call the internal setup scripts
-  _run_script(setup_script_path, argsToPassOn)
+  return _run_script(setup_script_path, argsToPassOn)
 
 def _exec_generate(argsToPassOn : str):
   """Execute the internal generate script"""
-  _run_script(generate_script_path, argsToPassOn)
-  return
+  return _run_script(generate_script_path, argsToPassOn)
 
 def _exec_build(argsToPassOn : str):
   """Execute the internal build script"""
-  _run_script(build_script_path, argsToPassOn)
-  return
+  return _run_script(build_script_path, argsToPassOn)
 
 def _exec_launch(argsToPassOn : str):
   """Execute the internal launch script"""
-  _run_script(launch_script_path, argsToPassOn)
-  return
+  return _run_script(launch_script_path, argsToPassOn)
 
 def _exec_unit_tests(argsToPassOn : str):
   """Execute the internal unit test script"""
-  _run_script(unit_test_script_path, argsToPassOn)
-  return
+  return _run_script(unit_test_script_path, argsToPassOn)
 
 def _exec_auto_tests(argsToPassOn : str):
   """Execute the internal auto test script"""
-  _run_script(auto_test_script_path, argsToPassOn)
-  return
+  return _run_script(auto_test_script_path, argsToPassOn)
 
 def _exec_fuzzy_tests(argsToPassOn : str):
   """Execute the internal fuzzy test script"""
-  _run_script(fuzzy_test_script_path, argsToPassOn)
-  return
+  return _run_script(fuzzy_test_script_path, argsToPassOn)
 
 def _exec_code_analysis(argsToPassOn : str):
   """Execute the internal code analysis script"""
-  _run_script(code_analysis_script_path, argsToPassOn)
-  return
+  return _run_script(code_analysis_script_path, argsToPassOn)
 
 def main():
   # look into sub parsers
@@ -168,32 +163,33 @@ def main():
     _exec_version()
     exit(0)
   
+  res = 0
   if args.command == 'setup':
-    _exec_setup(unknown_args)
+    res = _exec_setup(unknown_args)
 
   if rexpy_installed:
     if args.command == 'generate':
-      _exec_generate(unknown_args)
+      res = _exec_generate(unknown_args)
 
     if args.command == 'build':
-      _exec_build(unknown_args)
+      res = _exec_build(unknown_args)
 
     if args.command == 'launch':
-      _exec_launch(unknown_args)
+      res = _exec_launch(unknown_args)
 
     if args.command == 'unit-test':
-      _exec_unit_tests(unknown_args)
+      res = _exec_unit_tests(unknown_args)
 
     if args.command == 'auto-test':
-      _exec_auto_tests(unknown_args)
+      res = _exec_auto_tests(unknown_args)
 
     if args.command == 'fuzzy-test':
-      _exec_fuzzy_tests(unknown_args)
+      res = _exec_fuzzy_tests(unknown_args)
 
     if args.command == 'code-analysis':
-      _exec_code_analysis(unknown_args)
+      res = _exec_code_analysis(unknown_args)
 
-  exit(0)
+  sys.exit(res)
 
 if __name__ == "__main__":
   main()

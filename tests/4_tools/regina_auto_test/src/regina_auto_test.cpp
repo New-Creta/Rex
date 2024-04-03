@@ -5,7 +5,7 @@
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 
-#include "rex_windows/platform_creation_params.h"
+#include "rex_windows/engine/platform_creation_params.h"
 
 #include "rex_auto_test/auto_test.h"
 
