@@ -6,6 +6,8 @@
 #include "rex_engine/memory/blob_writer.h"
 #include "rex_std/bonus/memory/stack_allocator.h"
 #include "rex_std/memory.h"
+#include "rex_std/bonus/memory.h"
+#include "rex_engine/engine/casting.h"
 
 namespace rex
 {
@@ -68,6 +70,10 @@ namespace rex
         : m_data(rsl::exchange(data, nullptr))
     {
     }
+
+    Blob::Blob(void* data, rsl::memory_size size)
+      : m_data((rsl::byte*)data, narrow_cast<s32>(size.size_in_bytes()))
+    {}
 
     //-------------------------------------------------------------------------
     Blob::~Blob() = default;

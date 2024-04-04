@@ -5,7 +5,7 @@
 namespace rex
 {
   //-------------------------------------------------------------------------
-  // simulation of Windows GetTickCount()
+  // simulation of Windows GetTickCount(), returns time in milliseconds
   inline int64_t get_tick_count()
   {
     return rsl::chrono::duration_cast<rsl::chrono::milliseconds>(rsl::chrono::steady_clock::now().time_since_epoch()).count();

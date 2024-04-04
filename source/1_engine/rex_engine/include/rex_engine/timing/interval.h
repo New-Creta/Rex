@@ -16,6 +16,7 @@ namespace rex
     ~Interval() = default;
 
     //-------------------------------------------------------------------------
+    // returns time in milliseconds
     inline int64_t value() const
     {
       return get_tick_count() - m_initial;

@@ -31,6 +31,7 @@ void rex::exit_confirm(int32 exitCode)
 
 void rex::output_debug_string(rsl::string_view str)
 {
+  OutputDebugStringA("[REX] ");
   OutputDebugStringA(str.data());
   OutputDebugStringA("\n");
 }
@@ -64,7 +65,7 @@ bool rex::wait_for_debugger(rsl::chrono::minutes minutesToWait)
 
   if (is_debugger_attached())
   {
-    DEBUG_BREAK();
+    REX_DEBUG_BREAK();
     return true;
   }
 

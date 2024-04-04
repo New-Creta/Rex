@@ -2,6 +2,7 @@
 
 #include "rex_engine/platform/win/diagnostics/win_debug.h"
 #include "rex_std/bonus/attributes.h"
+#include "rex_engine/engine/defines.h"
 
 #define NOMINMAX
 #include <Windows.h>

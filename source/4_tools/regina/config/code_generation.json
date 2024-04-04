@@ -1,7 +1,12 @@
 {
-    "MemoryTags": {
-        "Content": [
-            "Editor"
-        ]
-    }
+  "MemoryTags": {
+    "Content": [
+      "Editor"
+    ]
+  },
+  "CommandLineArgs": {
+    "Content": [
+      "\"UseCubeScene\", \"Render the wireframe sample scene instead of the default one.\""
+    ]
+  }
 }

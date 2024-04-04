@@ -6,6 +6,7 @@
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/functional.h"
 #include "rex_std/limits.h"
+#include "rex_engine/frameinfo/frameinfo.h"
 
 namespace rex
 {

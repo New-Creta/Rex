@@ -45,7 +45,7 @@ namespace rex
     rex::rex_assert(rsl::format(__VA_ARGS__));                                                                                                                                                                                                           \
     while(true)                                                                                                                                                                                                                                          \
     {                                                                                                                                                                                                                                                    \
-      DEBUG_BREAK();                                                                                                                                                                                                                                     \
+      REX_DEBUG_BREAK();                                                                                                                                                                                                                                     \
     }
   #define REX_ASSERT_X(cond, ...)                                                                                                                                                                                                                        \
     if(!(cond))                                                                                                                                                                                                                                          \
@@ -53,7 +53,7 @@ namespace rex
       REX_ASSERT(__VA_ARGS__);                                                                                                                                                                                                                           \
     }
 
-  #define REX_ASSERT_CONTEXT_SCOPE(...) const rex::AssertContextScope ANONYMOUS_VARIABLE(assert_scope)(rsl::format(__VA_ARGS__));
+  #define REX_ASSERT_CONTEXT_SCOPE(...) const rex::AssertContextScope REX_ANONYMOUS_VARIABLE(assert_scope)(rsl::format(__VA_ARGS__));
 
 #else
   #define REX_ASSERT(...)

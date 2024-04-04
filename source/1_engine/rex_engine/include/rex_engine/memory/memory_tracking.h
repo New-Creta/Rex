@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
+#include "rex_engine/engine/defines.h"
 #include "rex_engine/memory/debug_allocator.h"
 #include "rex_engine/memory/memory_stats.h"
 #include "rex_engine/memory/memory_tags.h"
@@ -88,5 +89,5 @@ namespace rex
     MemoryTagScope& operator=(MemoryTagScope&&)      = delete;
   };
 
-#define REX_MEM_TAG_SCOPE(tag) const MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
+#define REX_MEM_TAG_SCOPE(tag) const MemoryTagScope REX_ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
 } // namespace rex

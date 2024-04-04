@@ -11,7 +11,7 @@ namespace rex
   namespace win
   {
 
-    REX_CREATE_STRONG_TYPE(ErrorSuccess, DWord);
+    RSL_CREATE_STRONG_TYPE(ErrorSuccess, DWord);
 
     class WinCall
     {

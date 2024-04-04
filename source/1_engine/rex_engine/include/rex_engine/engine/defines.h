@@ -1,48 +1,37 @@
 #pragma once
 
-#ifndef REX_DEFINES
-  #define REX_DEFINES
 
-  #include "rex_std/bonus/compiler.h"
+#include "rex_std/bonus/compiler.h"
+#include "rex_std/bonus/defines.h"
 
-  //-------------------------------------------------------------------------
-  // Unused parameter.
-  #if defined REX_COMPILER_CLANG
-    #define UNUSED_PARAM(...)                                                                                                                                                                                                                            \
-      _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wunused-value\"")                                                                                                                                                            \
-      {                                                                                                                                                                                                                                                  \
-        __VA_ARGS__;                                                                                                                                                                                                                                     \
-      }                                                                                                                                                                                                                                                  \
-      _Pragma("clang diagnostic pop")
-  #elif defined REX_COMPILER_MSVC
-    #define UNUSED_PARAM(...)                                                                                                                                                                                                                            \
-      {                                                                                                                                                                                                                                                  \
-        __VA_ARGS__;                                                                                                                                                                                                                                     \
-      }
-  #endif
+//-------------------------------------------------------------------------
+// Unused parameter.
+#define REX_UNUSED_PARAM(...) RSL_UNUSED(__VA_ARGS__)
 
-  //-------------------------------------------------------------------------
-  // Assembly instruction to break execution.
-  #if defined REX_COMPILER_CLANG
-    #define DEBUG_BREAK() __builtin_trap()
-  #elif defined REX_COMPILER_MSVC
-    #define DEBUG_BREAK() __debugbreak()
-  #else
-    #error DEBUG_BREAK unsupported machine instruction ...
-  #endif
+//-------------------------------------------------------------------------
+// Assembly instruction to break execution.
+#define REX_DEBUG_BREAK RSL_DEBUG_BREAK
 
-  //-------------------------------------------------------------------------
-  // BIT TWIDDLING
-  #define BIT(x) (1 << x)
+//-------------------------------------------------------------------------
+// BIT TWIDDLING
+#define BIT(x) (1 << x)
 
-  //-------------------------------------------------------------------------
-  // Func signature
-  #if defined REX_COMPILER_CLANG
-    #define REX_FUNC_SIG __PRETTY_FUNCTION__
-  #elif defined REX_COMPILER_MSVC
-    #define REX_FUNC_SIG __FUNCSIG__
-  #else
-    #define REX_FUNC_SIG "REX_FUNC_SIG unknown!"
-  #endif
+//-------------------------------------------------------------------------
+// Func signature
+#define REX_FUNC_SIG = RSL_FUNC_SIGNATURE
 
-#endif
+//-------------------------------------------------------------------------
+// Static messaging
+#define REX_STATIC_WARNING(expr) RSL_STATIC_WARNING(expr)
+#define REX_STATIC_INFO(expr) RSL_STATIC_INFO(expr)
+
+//-------------------------------------------------------------------------
+// Anonymous Variable
+#define REX_ANONYMOUS_VARIABLE(str) RSL_ANONYMOUS_VARIABLE(str)
+
+//-------------------------------------------------------------------------
+// Attributes
+#define REX_NO_DISCARD RSL_NO_DISCARD
+#define REX_FORCE_INLINE RSL_FORCE_INLINE
+#define REX_MAYBE_UNUSED RSL_MAYBE_UNUSED
+
