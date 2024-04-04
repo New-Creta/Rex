@@ -778,7 +778,7 @@ namespace rex
                 return nullptr;
             }
 
-            REX_LOG(LogDirectX, "Create Committed Resource - buffer_count: {0}, buffer_byte_size: {1}, buffer_element_byte_size: {2}", bufferCount, obj_cb_byte_size * bufferCount, obj_cb_byte_size);
+            REX_INFO(LogDirectX, "Create Committed Resource - buffer_count: {0}, buffer_byte_size: {1}, buffer_element_byte_size: {2}", bufferCount, obj_cb_byte_size * bufferCount, obj_cb_byte_size);
 
             return constant_buffer_resources;
         }
@@ -1082,19 +1082,19 @@ namespace rex
             case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:
                 {
                     directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - RTV {}", i));
-                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
+                    REX_INFO(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numRTV);
                 }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:
                 {
                     directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - DSV {}", i));
-                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
+                    REX_INFO(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numDSV);
                 }
                 break;
             case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:
                 {
                     directx::set_debug_name_for(g_ctx->descriptor_heap_pool[heap_desc->Type].Get(), rsl::format("Descriptor Heap Element - CBV {}", i));
-                    REX_LOG(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
+                    REX_INFO(LogDirectX, "Created {0} ( amount created: {1}) ", rsl::enum_refl::enum_name(heap_desc->Type), numCBV);
                 }
                 break;
             default:
@@ -1245,7 +1245,7 @@ namespace rex
           return false;
         }
 
-        REX_LOG(LogDirectX, "D3D12 Device Created!");
+        REX_INFO(LogDirectX, "D3D12 Device Created!");
 
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // Device needs to exist before we can query this

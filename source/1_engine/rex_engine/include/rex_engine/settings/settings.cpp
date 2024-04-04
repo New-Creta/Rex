@@ -13,7 +13,7 @@ namespace rex
 {
   namespace settings
   {
-    DEFINE_LOG_CATEGORY(Settings, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(Settings, rex::LogVerbosity::Info);
 
     namespace internal
     {

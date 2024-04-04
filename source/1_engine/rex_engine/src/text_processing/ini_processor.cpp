@@ -4,7 +4,7 @@
 
 #include "rex_std/string_view.h"
 
-DEFINE_LOG_CATEGORY(LogIniProcessor, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogIniProcessor, rex::LogVerbosity::Info);
 
 namespace rex
 {

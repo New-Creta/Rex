@@ -12,7 +12,7 @@
 #include "rex_windows/input/input.h"
 #include "rex_engine/diagnostics/stacktrace.h"
 
-DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Info);
 
 namespace console_app_example
 {
@@ -50,27 +50,27 @@ namespace console_app_example
     for (count_t i = 0; i < stats.usage_per_tag.size(); ++i)
     {
       rex::MemoryTag tag = static_cast<rex::MemoryTag>(i);
-      REX_LOG(LogConsoleApp, "{}: {} bytes", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
+      REX_INFO(LogConsoleApp, "{}: {} bytes", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
     }
 
-    REX_LOG(LogConsoleApp, "----------------------------");
+    REX_INFO(LogConsoleApp, "----------------------------");
 
     for (rex::MemoryHeader* header : stats.allocation_headers)
     {
       rex::ResolvedCallstack callstack(header->callstack());
 
-      REX_LOG(LogConsoleApp, "Frame: {}", header->frame_index());
-      REX_LOG(LogConsoleApp, "Thread ID: {}", header->thread_id());
-      REX_LOG(LogConsoleApp, "Memory Tag: {}", rsl::enum_refl::enum_name(header->tag()));
-      REX_LOG(LogConsoleApp, "Size: {}", header->size());
+      REX_INFO(LogConsoleApp, "Frame: {}", header->frame_index());
+      REX_INFO(LogConsoleApp, "Thread ID: {}", header->thread_id());
+      REX_INFO(LogConsoleApp, "Memory Tag: {}", rsl::enum_refl::enum_name(header->tag()));
+      REX_INFO(LogConsoleApp, "Size: {}", header->size());
 
       for (count_t i = 0; i < callstack.size(); ++i)
       {
-        REX_LOG(LogConsoleApp, "{}", callstack[i]);
+        REX_INFO(LogConsoleApp, "{}", callstack[i]);
       }
     }
 
-    REX_LOG(LogConsoleApp, "Total of {} allocations", stats.allocation_headers.size());
+    REX_INFO(LogConsoleApp, "Total of {} allocations", stats.allocation_headers.size());
   }
 
   bool initialize()

@@ -12,7 +12,7 @@ namespace rex
 {
   namespace file
   {
-    DEFINE_LOG_CATEGORY(FileLog, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(FileLog);
 
     DEFINE_YES_NO_ENUM(OverwriteIfExist);
 

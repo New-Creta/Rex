@@ -1,11 +1,12 @@
 #include "rex_engine/diagnostics/logging/log_category.h"
 
+#include "rex_engine/diagnostics/logging/log_functions.h"
+
 namespace rex
 {
   //-------------------------------------------------------------------------
-  LogCategory::LogCategory(const LogCategoryName& inCategoryName, LogVerbosity inDefaultVerbosity, IsAsync inAsync)
-      : m_verbosity(inDefaultVerbosity & LogVerbosity::VerbosityMask)
-      , m_category_name(inCategoryName)
+  LogCategory::LogCategory(const LogCategoryName& inCategoryName, IsAsync inAsync)
+      : m_category_name(inCategoryName)
       , m_is_async(inAsync)
   {
   }
@@ -13,7 +14,7 @@ namespace rex
   //-------------------------------------------------------------------------
   bool LogCategory::is_suppressed(LogVerbosity level) const
   {
-    return (level & LogVerbosity::VerbosityMask) > m_verbosity;
+    return logging::is_supressed(level);
   }
 
   //-------------------------------------------------------------------------
@@ -26,17 +27,5 @@ namespace rex
   rsl::string_view LogCategory::get_category_name() const
   {
     return m_category_name;
-  }
-
-  //-------------------------------------------------------------------------
-  LogVerbosity LogCategory::get_verbosity() const
-  {
-    return m_verbosity;
-  }
-
-  //-------------------------------------------------------------------------
-  void LogCategory::set_verbosity(LogVerbosity newVerbosity)
-  {
-    m_verbosity = newVerbosity & LogVerbosity::VerbosityMask;
   }
 } // namespace rex

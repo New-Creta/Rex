@@ -15,6 +15,7 @@
 
 #include "rex_engine/diagnostics/logging/internal/common.h"
 #include "rex_engine/diagnostics/logging/internal/details/log_msg.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/pattern_formatter.h"
 #include "rex_engine/engine/debug_types.h"
 #include "rex_engine/engine/types.h"
@@ -41,6 +42,7 @@ namespace rex
       Logger(rsl::string_view name, It begin, It end)
           : m_name(rex::DebugString(name))
           , m_sinks(begin, end)
+          , m_level(static_cast<s32>(details::Registry::instance().get_global_level()))
       {
       }
 
@@ -168,7 +170,7 @@ namespace rex
     private:
       rex::DebugString m_name;
       Sinks m_sinks;
-      rex::log::level_t m_level {static_cast<s32>(level::LevelEnum::Info)};
+      rex::log::level_t m_level;
       rex::log::level_t m_flush_level {static_cast<s32>(level::LevelEnum::Off)};
     };
 

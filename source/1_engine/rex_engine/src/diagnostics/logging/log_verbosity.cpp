@@ -38,7 +38,7 @@ namespace rex
         case LogVerbosity::Fatal: return "Fatal";
         case LogVerbosity::Error: return "Error";
         case LogVerbosity::Warning: return "Warning";
-        case LogVerbosity::Log: return "Log";
+        case LogVerbosity::Info: return "Log";
         case LogVerbosity::Verbose: return "Verbose";
         case LogVerbosity::VeryVerbose: return "VeryVerbose";
         default: break;
@@ -67,7 +67,7 @@ namespace rex
       }
       else if(verbosity == "Log")
       {
-        return LogVerbosity::Log;
+        return LogVerbosity::Info;
       }
       else if(verbosity == "Verbose")
       {
@@ -79,7 +79,7 @@ namespace rex
       }
 
       // An unknown value is treated as log
-      return LogVerbosity::Log;
+      return LogVerbosity::Info;
     }
   } // namespace conversions
 } // namespace rex

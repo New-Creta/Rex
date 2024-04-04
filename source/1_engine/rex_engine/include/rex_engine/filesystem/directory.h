@@ -12,7 +12,7 @@ namespace rex
 {
   namespace directory
   {
-    DEFINE_LOG_CATEGORY(DirectoryLog, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(DirectoryLog);
 
     // Create a new directory
     void create(rsl::string_view path);

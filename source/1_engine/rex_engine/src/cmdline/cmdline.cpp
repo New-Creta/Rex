@@ -49,7 +49,7 @@ namespace rex
 
         if(cmdLine.empty())
         {
-          REX_LOG(LogEngine, "No command line arguments to parse");
+          REX_INFO(LogEngine, "No command line arguments to parse");
           return;
         }
 
@@ -227,7 +227,7 @@ namespace rex
 
     void print_args()
     {
-      REX_LOG(LogEngine, "Listing Command line arguments");
+      REX_INFO(LogEngine, "Listing Command line arguments");
 
       rsl::unordered_map<rsl::string_view, rsl::vector<Argument>> project_to_arguments;
 
@@ -238,13 +238,13 @@ namespace rex
 
       for(auto& [project, cmds]: project_to_arguments)
       {
-        REX_LOG(LogEngine, "");
-        REX_LOG(LogEngine, "Commandline Arguments For {}", project);
-        REX_LOG(LogEngine, "------------------------------");
+        REX_INFO(LogEngine, "");
+        REX_INFO(LogEngine, "Commandline Arguments For {}", project);
+        REX_INFO(LogEngine, "------------------------------");
 
         for(const Argument& cmd: cmds)
         {
-          REX_LOG(LogEngine, "\"{}\" - {}", cmd.name, cmd.desc);
+          REX_INFO(LogEngine, "\"{}\" - {}", cmd.name, cmd.desc);
         }
       }
     }
@@ -253,11 +253,11 @@ namespace rex
     {
       if (g_cmd_line.length())
       {
-        REX_LOG(LogEngine, "Commandline: {}", g_cmd_line);
+        REX_INFO(LogEngine, "Commandline: {}", g_cmd_line);
       }
       else
       {
-        REX_LOG(LogEngine, "No commandline given");
+        REX_INFO(LogEngine, "No commandline given");
       }
     }
 

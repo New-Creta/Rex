@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  DEFINE_LOG_CATEGORY(LogVerify, LogVerbosity::Error);
+  DEFINE_LOG_CATEGORY(LogVerify);
 
   //-------------------------------------------------------------------------
   void rex_verify(rsl::string_view condition, rsl::string_view msg)

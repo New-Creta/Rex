@@ -23,7 +23,7 @@
 #include <processenv.h>
 #include <stddef.h>
 
-DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Info);
 
 // NOLINTBEGIN(modernize-use-nullptr)
 

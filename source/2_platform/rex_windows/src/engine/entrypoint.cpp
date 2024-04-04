@@ -59,7 +59,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, in
   }
 
   // by this point the application has finished and shutdown
-  REX_LOG(LogWindows, "Application completed with result: {0}", result);
+  REX_INFO(LogWindows, "Application completed with result: {0}", result);
 
   rex::internal::post_app_shutdown();
 

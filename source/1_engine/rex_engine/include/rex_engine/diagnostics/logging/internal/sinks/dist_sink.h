@@ -55,21 +55,21 @@ namespace rex
       template <typename Mutex>
       void DistSink<Mutex>::add_sink(rsl::shared_ptr<AbstractSink> subSink)
       {
-        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
+        rsl::unique_lock<Mutex> lock(BaseSink<Mutex>::m_mutex);
         m_sinks.push_back(rsl::move(subSink));
       }
 
       template <typename Mutex>
       void DistSink<Mutex>::remove_sink(rsl::shared_ptr<AbstractSink> subSink)
       {
-        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
+        rsl::unique_lock<Mutex> lock(BaseSink<Mutex>::m_mutex);
         m_sinks.erase(rsl::remove(m_sinks.begin(), m_sinks.end(), subSink), m_sinks.end());
       }
 
       template <typename Mutex>
       void DistSink<Mutex>::set_sinks(rex::DebugVector<rsl::shared_ptr<AbstractSink>> sinks)
       {
-        rsl::lock_guard<Mutex> lock(BaseSink<Mutex>::m_mutex);
+        rsl::unique_lock<Mutex> lock(BaseSink<Mutex>::m_mutex);
         m_sinks = rsl::move(sinks);
       }
 

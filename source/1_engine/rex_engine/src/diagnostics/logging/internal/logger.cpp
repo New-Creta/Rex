@@ -4,6 +4,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/bonus/atomic/atomic.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
 
 // IWYU pragma: no_include <built-in>
 
@@ -17,6 +18,7 @@ namespace rex
     Logger::Logger(rsl::string_view name)
         : m_name(rex::DebugString(name))
         , m_sinks()
+        , m_level(static_cast<s32>(details::Registry::instance().get_global_level()))
     {
     }
 

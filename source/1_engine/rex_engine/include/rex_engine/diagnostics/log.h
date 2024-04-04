@@ -2,4 +2,4 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 
-DEFINE_LOG_CATEGORY(LogEngine, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogEngine);

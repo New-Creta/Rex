@@ -9,7 +9,7 @@
 
 namespace rex
 {
-  DEFINE_LOG_CATEGORY(LogAssert, LogVerbosity::Error);
+  DEFINE_LOG_CATEGORY(LogAssert);
 
   DebugVector<AssertContext>& contexts()
   {

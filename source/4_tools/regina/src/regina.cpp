@@ -39,7 +39,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Info);
 
 #define RENDER_WIREFRAME 0
 #define RENDER_SCENE     1
@@ -804,7 +804,7 @@ namespace regina
   //-------------------------------------------------------------------------
   bool initialize()
   {
-    REX_LOG(LogRegina, "Initializing Regina");
+    REX_INFO(LogRegina, "Initializing Regina");
 
     return init_gfx();
   }
@@ -866,7 +866,7 @@ namespace regina
   //-------------------------------------------------------------------------
   void shutdown()
   {
-    REX_LOG(LogRegina, "shutting down Regina");
+    REX_INFO(LogRegina, "shutting down Regina");
 
     g_regina_ctx.clear_state.release();
 

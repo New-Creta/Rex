@@ -101,6 +101,11 @@ namespace rex
 
     void init_logging()
     {
+      // Initialize the log levels as early as possible
+      // They don't have dependencies (other than the commandline)
+      // and are pretty much required by everything else
+      diagnostics::init_log_levels();
+
       // shutdown the logging registry, flushing all loggers
       rex::log::details::Registry::instance().shutdown();
 

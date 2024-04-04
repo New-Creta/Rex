@@ -33,7 +33,7 @@ namespace rex
     /**
      * Prints a message to the console (and log file).
      */
-    Log,
+    Info,
 
     /**
      * Prints a verbose message to a log file

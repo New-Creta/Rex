@@ -23,8 +23,8 @@ namespace rex
       // This is useful to have in the log file to make sure that correct sanitization is enabled when testing
       log_sanitization();
 
-      REX_LOG(LogEngine, "Vfs Root: {}", rex::vfs::root());
-      REX_LOG(LogEngine, "Session Directory: {}", rex::vfs::session_data_root());
+      REX_INFO(LogEngine, "Vfs Root: {}", rex::vfs::root());
+      REX_INFO(LogEngine, "Session Directory: {}", rex::vfs::session_data_root());
     }
 
     void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine)
@@ -57,11 +57,6 @@ namespace rex
       {
         attach_debugger();
       }
-
-      // Initialize the log levels as early as possible
-      // They don't have dependencies (other than the commandline)
-      // and are pretty much required by everything else
-      diagnostics::init_log_levels();
 
       // Initialize the filesystem as this can be needed by the entry point of the client
       // However it is recommended that all initialziation code is moved into the client's init function.

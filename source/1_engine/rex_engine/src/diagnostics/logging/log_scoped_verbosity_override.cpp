@@ -1,6 +1,9 @@
 #include "rex_engine/diagnostics/logging/log_scoped_verbosity_override.h"
 
 #include "rex_engine/diagnostics/logging/log_category.h"
+#include "rex_engine/diagnostics/logging/log_functions.h"
+
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
 
 namespace rex
 {
@@ -8,17 +11,16 @@ namespace rex
   /** Back up the existing verbosity for the category then sets new verbosity.*/
   LogScopedVerbosityOverride::LogScopedVerbosityOverride(LogCategory* category, LogVerbosity verbosity)
       : m_saved_category(category)
-      , m_saved_verbosity(m_saved_category->get_verbosity())
+      , m_saved_log_level(log::details::Registry::instance().get_global_level())
   {
-    // assert(saved_category_ != nullptr);
-
-    m_saved_category->set_verbosity(verbosity);
+    log::level::LevelEnum log_level = logging::get_log_levels()[verbosity];
+    log::details::Registry::instance().set_level(log_level);
   }
 
   //-------------------------------------------------------------------------
   /** Restore the verbosity overrides for the category to the previous value.*/
   LogScopedVerbosityOverride::~LogScopedVerbosityOverride()
   {
-    m_saved_category->set_verbosity(m_saved_verbosity);
+    log::details::Registry::instance().set_level(m_saved_log_level);
   }
 } // namespace rex

@@ -105,7 +105,7 @@ namespace rex
 {
   namespace vfs
   {
-    DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Info);
 
     enum class VfsState
     {
@@ -465,8 +465,8 @@ namespace rex
       // has somewhere to put itself
       create_dirs(session_data_root());
 
-      REX_LOG(FileSystem, "FileSystem initialized");
-      REX_LOG(FileSystem, "Session Directory: {}", session_data_root());
+      REX_INFO(FileSystem, "FileSystem initialized");
+      REX_INFO(FileSystem, "Session Directory: {}", session_data_root());
     }
 
     void set_root(rsl::string_view root)
@@ -485,7 +485,7 @@ namespace rex
       }
 
       REX_ASSERT_X(directory::exists(g_root), "root of vfs is not a directory");
-      REX_LOG(FileSystem, "FileSystem root changed to: {}", g_root);
+      REX_INFO(FileSystem, "FileSystem root changed to: {}", g_root);
     }
 
     void mount(MountingPoint root, rsl::string_view path)

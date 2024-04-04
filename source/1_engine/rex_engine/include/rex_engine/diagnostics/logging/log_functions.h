@@ -11,6 +11,11 @@ namespace rex
   namespace logging
   {
     void init();
+
+    using LogLevelMap = DebugHashTable<LogVerbosity, rex::log::level::LevelEnum>;
+    LogLevelMap get_log_levels();
+
+    bool is_supressed(LogVerbosity);
   }
 
   rex::log::Logger& get_logger(const LogCategory& category);
@@ -80,18 +85,12 @@ namespace rex
   template <typename T>
   void trace_log(const LogCategory& category, LogVerbosity verbosity, const T& msg)
   {
-    if(category.get_verbosity() < verbosity)
-    {
-      // Too low of a log level to print log statements
-      return;
-    }
-
     switch(verbosity & LogVerbosity::VerbosityMask)
     {
       case LogVerbosity::Fatal: trace_fatal_log(category, msg); break;
       case LogVerbosity::Error: trace_error_log(category, msg); break;
       case LogVerbosity::Warning: trace_warning_log(category, msg); break;
-      case LogVerbosity::Log: trace_log_log(category, msg); break;
+      case LogVerbosity::Info: trace_log_log(category, msg); break;
       case LogVerbosity::Verbose: trace_verbose_log(category, msg); break;
       case LogVerbosity::VeryVerbose: trace_very_verbose_log(category, msg); break;
       default: trace_fatal_log(category, "Unknown log category: {0}", category.get_category_name()); break;
@@ -101,18 +100,12 @@ namespace rex
   template <typename FormatString, typename... Args>
   void trace_log(const LogCategory& category, LogVerbosity verbosity, const FormatString& fmt, Args&&... args)
   {
-    if(category.get_verbosity() < verbosity)
-    {
-      // Too low of a log level to print log statements
-      return;
-    }
-
     switch(verbosity & LogVerbosity::VerbosityMask)
     {
       case LogVerbosity::Fatal: trace_fatal_log(category, fmt, rsl::forward<Args>(args)...); break;
       case LogVerbosity::Error: trace_error_log(category, fmt, rsl::forward<Args>(args)...); break;
       case LogVerbosity::Warning: trace_warning_log(category, fmt, rsl::forward<Args>(args)...); break;
-      case LogVerbosity::Log: trace_log_log(category, fmt, rsl::forward<Args>(args)...); break;
+      case LogVerbosity::Info: trace_log_log(category, fmt, rsl::forward<Args>(args)...); break;
       case LogVerbosity::Verbose: trace_verbose_log(category, fmt, rsl::forward<Args>(args)...); break;
       case LogVerbosity::VeryVerbose: trace_very_verbose_log(category, fmt, rsl::forward<Args>(args)...); break;
       default: trace_fatal_log(category, "Unknown log category: {0}", category.get_category_name()); break;

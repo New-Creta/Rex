@@ -52,7 +52,7 @@ rsl::medium_stack_string rex::win::report_win_error(HResult hr, [[maybe_unused]]
 
 bool rex::wait_for_debugger(rsl::chrono::minutes minutesToWait)
 {
-  REX_LOG(LogEngine, "Waiting for debugger to get attached..");
+  REX_INFO(LogEngine, "Waiting for debugger to get attached..");
 
   using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
   auto i = 1s;

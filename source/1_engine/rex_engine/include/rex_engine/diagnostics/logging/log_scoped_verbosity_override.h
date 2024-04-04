@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
+#include "rex_engine/diagnostics/logging/internal/common.h"
 
 namespace rex
 {
@@ -30,7 +31,7 @@ namespace rex
   private:
     /** Backup of the category, verbosity pairs that was present when we were constructed **/
     LogCategory* m_saved_category;
-    LogVerbosity m_saved_verbosity;
+    log::level::LevelEnum m_saved_log_level;
   };
 
   /**

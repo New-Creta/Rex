@@ -22,7 +22,7 @@ namespace rex
 
   namespace win
   {
-    DEFINE_LOG_CATEGORY(LogWinConsoleApp, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(LogWinConsoleApp);
 
     CoreApplication* g_this_app = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 

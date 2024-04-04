@@ -94,10 +94,10 @@ namespace rex
         case EventType::WindowDeactivate:
         case EventType::WindowStartWindowResize:
         case EventType::QuitApp:
-        case EventType::WindowStopWindowResize: REX_LOG(LogEngine, "Firing event: Event Type: {0}", rsl::enum_refl::enum_name(evt.type)); break;
+        case EventType::WindowStopWindowResize: REX_INFO(LogEngine, "Firing event: Event Type: {0}", rsl::enum_refl::enum_name(evt.type)); break;
         case EventType::WindowMinimized:
         case EventType::WindowMaximized:
-        case EventType::WindowRestored: REX_LOG(LogEngine, "Firing event: Event Type: {0} - Window Size: [{1}, {2}]", rsl::enum_refl::enum_name(evt.type), evt.data.window_resize.window_width, evt.data.window_resize.window_height); break;
+        case EventType::WindowRestored: REX_INFO(LogEngine, "Firing event: Event Type: {0} - Window Size: [{1}, {2}]", rsl::enum_refl::enum_name(evt.type), evt.data.window_resize.window_width, evt.data.window_resize.window_height); break;
       }
 
       event_queue().enqueue(evt);
