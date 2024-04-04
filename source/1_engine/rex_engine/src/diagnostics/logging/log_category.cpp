@@ -12,9 +12,9 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  bool LogCategory::is_suppressed(LogVerbosity level) const
+  bool LogCategory::is_suppressed(log::LogVerbosity level) const
   {
-    return logging::is_supressed(level);
+    return log::is_supressed(level);
   }
 
   //-------------------------------------------------------------------------

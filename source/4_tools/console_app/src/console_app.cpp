@@ -12,7 +12,7 @@
 #include "rex_windows/input/input.h"
 #include "rex_engine/diagnostics/stacktrace.h"
 
-DEFINE_LOG_CATEGORY(LogConsoleApp, rex::LogVerbosity::Info);
+DEFINE_LOG_CATEGORY(LogConsoleApp);
 
 namespace console_app_example
 {

@@ -14,7 +14,7 @@ namespace rex
 {
   namespace internal
   {
-    void log_init_results()
+    void log_pre_init_results()
     {
       // Now log the commandline we started the app with
       cmdline::log_cmdline();
@@ -66,11 +66,13 @@ namespace rex
 
       // Now initialize all the logging diagnostics, including setting up file output
       // We need to do this here as we need the vfs to be initialized
-      diagnostics::init_logging();
+      // We purposely don't initialize anything else here as this is meant to be a quick initialization phase
+      // Proper initialization of other, more adavanced systems is deferred until the initialize function of the app
+      log::init();
 
       // Now that the pre initialization has finished, including logging
       // log what we just did
-      log_init_results();
+      log_pre_init_results();
     }
 
     void post_app_shutdown()

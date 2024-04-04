@@ -39,7 +39,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Info);
+DEFINE_LOG_CATEGORY(LogRegina);
 
 #define RENDER_WIREFRAME 0
 #define RENDER_SCENE     1

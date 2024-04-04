@@ -9,12 +9,11 @@ namespace rex
 {
   //-------------------------------------------------------------------------
   /** Back up the existing verbosity for the category then sets new verbosity.*/
-  LogScopedVerbosityOverride::LogScopedVerbosityOverride(LogCategory* category, LogVerbosity verbosity)
+  LogScopedVerbosityOverride::LogScopedVerbosityOverride(LogCategory* category, log::LogVerbosity verbosity)
       : m_saved_category(category)
       , m_saved_log_level(log::details::Registry::instance().get_global_level())
   {
-    log::level::LevelEnum log_level = logging::get_log_levels()[verbosity];
-    log::details::Registry::instance().set_level(log_level);
+    log::details::Registry::instance().set_level(verbosity);
   }
 
   //-------------------------------------------------------------------------

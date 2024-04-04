@@ -45,12 +45,12 @@ namespace rex
 //-------------------------------------------------------------------------
 // Logging features
 
-  #define REX_FATAL(CategoryName, ...)       rex::trace_log(CategoryName, rex::LogVerbosity::Fatal, __VA_ARGS__)
-  #define REX_ERROR(CategoryName, ...)       rex::trace_log(CategoryName, rex::LogVerbosity::Error, __VA_ARGS__)
-  #define REX_WARN(CategoryName, ...)        rex::trace_log(CategoryName, rex::LogVerbosity::Warning, __VA_ARGS__)
-  #define REX_INFO(CategoryName, ...)        rex::trace_log(CategoryName, rex::LogVerbosity::Info, __VA_ARGS__)
-  #define REX_VERBOSE(CategoryName, ...)     rex::trace_log(CategoryName, rex::LogVerbosity::Verbose, __VA_ARGS__)
-  #define REX_VERYVERBOSE(CategoryName, ...) rex::trace_log(CategoryName, rex::LogVerbosity::VeryVerbose, __VA_ARGS__)
+  #define REX_FATAL(CategoryName, ...)       rex::trace_log(CategoryName, rex::log::LogVerbosity::Critical, __VA_ARGS__)
+  #define REX_ERROR(CategoryName, ...)       rex::trace_log(CategoryName, rex::log::LogVerbosity::Err,      __VA_ARGS__)
+  #define REX_WARN(CategoryName, ...)        rex::trace_log(CategoryName, rex::log::LogVerbosity::Warn,     __VA_ARGS__)
+  #define REX_INFO(CategoryName, ...)        rex::trace_log(CategoryName, rex::log::LogVerbosity::Info,     __VA_ARGS__)
+  #define REX_VERBOSE(CategoryName, ...)     rex::trace_log(CategoryName, rex::log::LogVerbosity::Debug,    __VA_ARGS__)
+  #define REX_VERYVERBOSE(CategoryName, ...) rex::trace_log(CategoryName, rex::log::LogVerbosity::Trace,    __VA_ARGS__)
 
   #define REX_FATAL_X(CategoryName, cond, ...)                                                                                                                                                                                                           \
     [&]()                                                                                                                                                                                                                                                \

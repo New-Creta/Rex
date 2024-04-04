@@ -24,7 +24,7 @@ namespace rex
     rsl::string_view get_category_name() const;
 
     /** Should not generally be used directly. Tests the runtime verbosity and maybe triggers a debug break, etc. **/
-    bool is_suppressed(LogVerbosity verbosityLevel) const;
+    bool is_suppressed(log::LogVerbosity verbosityLevel) const;
 
     /** Check if this logger is async */
     bool is_async() const;

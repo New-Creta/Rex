@@ -26,92 +26,77 @@
 // turn off all logging except for logger1 and logger2:
 // example.exe "REXLOG_LEVEL=off,logger1=debug,logger2=info"
 
-namespace rex
-{
-  namespace diagnostics
-  {
-    namespace helpers
-    {
-      // return vector of key/value pairs from sequence of "K1=V1,K2=V2,.."
-      // "a=AAA,b=BBB,c=CCC,.." => {("a","AAA"),("b","BBB"),("c", "CCC"),...}
-      rsl::unordered_map<rsl::string_view, rsl::string_view> extract_key_vals(rsl::string_view str)
-      {
-        rsl::unordered_map<rsl::string_view, rsl::string_view> rv {};
-        const rsl::vector<rsl::string_view> key_value_pairs = rsl::split(str, ",");
-
-        for(const rsl::string_view key_value_pair: key_value_pairs)
-        {
-          rsl::vector<rsl::string_view> key_value = rsl::split(key_value_pair, "=");
-
-          REX_ASSERT_X(key_value.size() == 2, "Invalid logger level found at {}", key_value_pair);
-          rv[key_value[0]] = key_value[1];
-        }
-
-        return rv;
-      }
-
-      void load_levels(rsl::string_view input)
-      {
-        if(input.empty() || input.size() > 512)
-        {
-          return;
-        }
-
-        auto key_vals = extract_key_vals(input);
-        rex::log::details::Registry::LogLevels levels;
-        rex::log::level::LevelEnum global_level = rex::log::level::LevelEnum::Info;
-        bool global_level_found                 = false;
-
-        for(auto& name_level: key_vals)
-        {
-          const auto& logger_name = name_level.key;
-          auto level_name         = name_level.value;
-          auto level              = rex::log::level::from_str(level_name);
-          // ignore unrecognized level names
-          if(level == rex::log::level::LevelEnum::Off && level_name != "off")
-          {
-            continue;
-          }
-          if(logger_name.empty()) // no Logger name indicate global level
-          {
-            global_level_found = true;
-            global_level       = level;
-          }
-          else
-          {
-            levels[logger_name] = level;
-          }
-        }
-
-        rex::log::details::Registry::instance().set_levels(rsl::move(levels), global_level_found ? &global_level : nullptr);
-      }
-
-    } // namespace helpers
-
-    // search for REXLOG_LEVEL= in the args and use it to init the levels
-    void init_log_levels()
-    {
-      rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogLevel");
-
-      if(log_level)
-      {
-        helpers::load_levels(log_level.value());
-      }
-    }
-
-    void init_logging()
-    {
-      // Initialize the log levels as early as possible
-      // They don't have dependencies (other than the commandline)
-      // and are pretty much required by everything else
-      diagnostics::init_log_levels();
-
-      // shutdown the logging registry, flushing all loggers
-      rex::log::details::Registry::instance().shutdown();
-
-      // now initialize it again with everything that's loaded
-      rex::vfs::mount_for_session(rex::MountingPoint::Logs, "logs");
-      rex::logging::init();
-    }
-  } // namespace diagnostics
-} // namespace rex
+//namespace rex
+//{
+//  namespace diagnostics
+//  {
+//    namespace helpers
+//    {
+//      // return vector of key/value pairs from sequence of "K1=V1,K2=V2,.."
+//      // "a=AAA,b=BBB,c=CCC,.." => {("a","AAA"),("b","BBB"),("c", "CCC"),...}
+//      rsl::unordered_map<rsl::string_view, rsl::string_view> extract_key_vals(rsl::string_view str)
+//      {
+//        rsl::unordered_map<rsl::string_view, rsl::string_view> rv {};
+//        const rsl::vector<rsl::string_view> key_value_pairs = rsl::split(str, ",");
+//
+//        for(const rsl::string_view key_value_pair: key_value_pairs)
+//        {
+//          rsl::vector<rsl::string_view> key_value = rsl::split(key_value_pair, "=");
+//
+//          REX_ASSERT_X(key_value.size() == 2, "Invalid logger level found at {}", key_value_pair);
+//          rv[key_value[0]] = key_value[1];
+//        }
+//
+//        return rv;
+//      }
+//
+//      void load_levels(rsl::string_view input)
+//      {
+//        if(input.empty() || input.size() > 512)
+//        {
+//          return;
+//        }
+//
+//        auto key_vals = extract_key_vals(input);
+//        rex::log::details::Registry::LogLevels levels;
+//        rex::log::level::LevelEnum global_level = rex::log::level::LevelEnum::Info;
+//        bool global_level_found                 = false;
+//
+//        for(auto& name_level: key_vals)
+//        {
+//          const auto& logger_name = name_level.key;
+//          auto level_name         = name_level.value;
+//          auto level              = rex::log::level::from_str(level_name);
+//          // ignore unrecognized level names
+//          if(level == rex::log::level::LevelEnum::Off && level_name != "off")
+//          {
+//            continue;
+//          }
+//          if(logger_name.empty()) // no Logger name indicate global level
+//          {
+//            global_level_found = true;
+//            global_level       = level;
+//          }
+//          else
+//          {
+//            levels[logger_name] = level;
+//          }
+//        }
+//
+//        rex::log::details::Registry::instance().set_levels(rsl::move(levels), global_level_found ? &global_level : nullptr);
+//      }
+//
+//    } // namespace helpers
+//
+//    // search for REXLOG_LEVEL= in the args and use it to init the levels
+//    void init_log_levels()
+//    {
+//      rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogLevel");
+//
+//      if(log_level)
+//      {
+//        helpers::load_levels(log_level.value());
+//      }
+//    }
+//  } // namespace diagnostics
+//} // namespace rex

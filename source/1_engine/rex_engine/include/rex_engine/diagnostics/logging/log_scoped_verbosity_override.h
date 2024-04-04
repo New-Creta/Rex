@@ -19,7 +19,7 @@ namespace rex
   {
   public:
     /** Back up the existing verbosity for the category then sets new verbosity.*/
-    LogScopedVerbosityOverride(LogCategory* category, LogVerbosity verbosity);
+    LogScopedVerbosityOverride(LogCategory* category, log::LogVerbosity verbosity);
 
     /** Restore the verbosity overrides for the category to the previous value.*/
     ~LogScopedVerbosityOverride();

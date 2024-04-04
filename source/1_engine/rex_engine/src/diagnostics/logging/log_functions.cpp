@@ -6,6 +6,7 @@
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
+#include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/engine/debug_types.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/bonus/hashtable.h"
@@ -32,59 +33,61 @@ namespace rex
 namespace rex
 {
   using LogPattern  = rsl::string_view;
-  using LogLevelMap = DebugHashTable<LogVerbosity, rex::log::level::LevelEnum>;
+  using LogLevelMap = DebugHashTable<log::LogVerbosity, rex::log::level::LevelEnum>;
 
   using LoggerObjectPtr    = rsl::shared_ptr<rex::log::Logger>;
   using LoggerObjectPtrMap = DebugHashTable<LogCategoryName, LoggerObjectPtr>;
 
   bool g_enable_file_sinks = false;
 
-  namespace logging
+  namespace log
   {
     //-------------------------------------------------------------------------
-    void init()
+    void init_log_verbosity()
     {
-      g_enable_file_sinks = true;
+      LogVerbosity verbosity = LogVerbosity::Info;
+
+      // read the required log versboity from the commandline
+      rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogVerbosity");
+      if (log_level)
+      {
+        verbosity = rsl::enum_refl::enum_cast<LogVerbosity>(log_level.value()).value_or(verbosity);
+      }
+
+      // assign the verbosity as the global verbosity log level
+      rex::log::details::Registry::instance().set_level(verbosity);
     }
 
     //-------------------------------------------------------------------------
-    LogLevelMap get_log_levels()
+    void init()
     {
-      // clang-format off
-      return {
-        {LogVerbosity::NoLogging,       rex::log::level::LevelEnum::Off},
-        {LogVerbosity::Fatal,           rex::log::level::LevelEnum::Critical},
-        {LogVerbosity::Error,           rex::log::level::LevelEnum::Err},
-        {LogVerbosity::Warning,         rex::log::level::LevelEnum::Warn},
-        {LogVerbosity::Info,            rex::log::level::LevelEnum::Info},
-        {LogVerbosity::Verbose,         rex::log::level::LevelEnum::Debug},
-        {LogVerbosity::VeryVerbose,     rex::log::level::LevelEnum::Trace} };
-      // clang-format on
+      // shutdown the logging registry, flushing all loggers
+      // We'll be starting from scratch again, as we now have all systems
+      // initialized to start proper logging with the engine
+      rex::log::details::Registry::instance().shutdown();
+
+      // Initialize the log verbosity as early as possible
+      // They don't have dependencies (other than the commandline)
+      // and are pretty much required by everything else
+      // Log verbosity determines how much we log.
+      init_log_verbosity();
+
+      // Setup the path where logs will go using a mounting point
+      // With mounting points, we abstract away the hardcoded paths
+      // so we can always set them elsewhere at runtime if we want to
+      rex::vfs::mount_for_session(rex::MountingPoint::Logs, "logs");
+
+      // Enable file sinks. The vfs is initialized by now, and the path for logs as well
+      // we can start using file sinks
+      g_enable_file_sinks = true;
     }
 
     //-------------------------------------------------------------------------
     bool is_supressed(LogVerbosity verbosity)
     {
-      auto level = get_log_levels()[verbosity];
       auto global_verbosity = rex::log::details::Registry::instance().get_global_level();
-
-      return global_verbosity > level;
+      return global_verbosity > verbosity;
     }
-
-  }
-
-  LoggerObjectPtrMap& loggers()
-  {
-    static LoggerObjectPtrMap loggers(rex::global_debug_allocator());
-    return loggers;
-  }
-
-  //-------------------------------------------------------------------------
-  rex::log::Logger* find_logger(const LogCategoryName& name)
-  {
-    auto it = loggers().find(name);
-
-    return it != rsl::cend(loggers()) ? (*it).value.get() : nullptr;
   }
 
   //-------------------------------------------------------------------------
@@ -120,12 +123,6 @@ namespace rex
     {
       new_logger = rex::log::create<rex::log::sinks::DistSink_st>(category.get_category_name(), rsl::move(sinks));
     }
-
-    const LogLevelMap log_levels = logging::get_log_levels();
-
-    loggers().insert({category.get_category_name(), new_logger});
-
-    return *find_logger(category.get_category_name());
   }
 
 } // namespace rex
