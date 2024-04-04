@@ -51,9 +51,9 @@ void rex::win::check_for_win_errors(rsl::string_view file, rsl::string_view func
 
   if(err != ERROR_SUCCESS)
   {
-    REX_WARN(LogEngine, "Still Windows errors in pool!");
-
     const HRESULT hr = HRESULT_FROM_WIN32(err);
+
+    REX_WARN(LogEngine, "Still Windows errors in pool!");
     report_win_error(hr, __FUNCTION__, file, function, lineNr);
   }
 #endif

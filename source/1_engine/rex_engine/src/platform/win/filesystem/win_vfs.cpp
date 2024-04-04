@@ -23,7 +23,7 @@
 #include <processenv.h>
 #include <stddef.h>
 
-DEFINE_LOG_CATEGORY(FileSystem);
+DEFINE_LOG_CATEGORY(LogFileSystem);
 
 // NOLINTBEGIN(modernize-use-nullptr)
 
@@ -49,7 +49,7 @@ namespace rex
 
       if (!handle.is_valid())
       {
-        REX_ERROR(FileSystem, "Failed to open file {}", path);
+        REX_ERROR(LogFileSystem, "Failed to open file {}", path);
         return {};
       }
 
@@ -70,15 +70,24 @@ namespace rex
     {
       rsl::string fullpath = create_full_path(filepath);
 
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(fullpath.data(),           // Path to file
+      const rsl::win::handle handle(CreateFileA(fullpath.data(),           // Path to file
                                                                 GENERIC_WRITE,             // General read and write access
                                                                 FILE_SHARE_READ,           // Other processes can also read the file
                                                                 NULL,                      // No SECURITY_ATTRIBUTES
                                                                 OPEN_ALWAYS,               // Create a new file, error when it already exists
                                                                 FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
                                                                 NULL                       // No template file
-                                                                ),
-                                                    ERROR_ALREADY_EXISTS));
+                                                                ));
+
+      // make sure the handle is valid
+      if (!handle.is_valid())
+      {
+        REX_ERROR(LogFileSystem, "Failed to open file at \"{}\"", fullpath);
+        return false;
+      }
+
+      // if the file already exists, ERROR_ALREADY_EXISTS is set, so we need to clear this
+      rex::win::clear_win_errors();
 
       const DWORD move_method = shouldAppend ? FILE_END : FILE_BEGIN;
 

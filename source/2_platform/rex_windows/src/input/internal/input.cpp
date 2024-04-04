@@ -18,7 +18,7 @@ namespace rex
         for(card32 i = m_current_input_idx; i < max_input_keys; ++i, ++m_current_input_idx)
         {
           const uint8 key = static_cast<uint8>(i);
-          if(WIN_CALL(GetAsyncKeyState(key)) & 0x8000u) // NOLINT(hicpp-signed-bitwise)
+          if(GetAsyncKeyState(key) & 0x8000u) // NOLINT(hicpp-signed-bitwise)
           {
             // If a key is set, make sure we set the last index we processed so we don't have to restart
             // then return the key that's pressed
