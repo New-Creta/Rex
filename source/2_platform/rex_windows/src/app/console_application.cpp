@@ -87,9 +87,9 @@ namespace rex
           m_input.update();
         }
 
-        event_system::process_events();
-
         m_on_update();
+
+        event_system::process_events();
       }
 
       void shutdown()

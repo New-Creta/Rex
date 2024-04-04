@@ -18,9 +18,9 @@ namespace regina_auto_test
     regina::shutdown();
   }
 
-  rex::ApplicationCreationParams boot_test_entry(rex::PlatformCreationParams&& platformParams)
+  rex::ApplicationCreationParams boot_test_entry(rex::PlatformCreationParams& platformParams)
   {
-    rex::ApplicationCreationParams app_params = regina::create_regina_app_creation_params(rsl::move(platformParams));
+    rex::ApplicationCreationParams app_params = regina::create_regina_app_creation_params(platformParams);
 
     app_params.gui_params.window_title = "Regina Test";
 

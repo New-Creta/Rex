@@ -32,7 +32,7 @@ int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, in
   // See: https://learn.microsoft.com/en-us/cpp/cpp/try-except-statement?view=msvc-170
   __try
   {
-    rex::ApplicationCreationParams app_params = rex::app_entry(rsl::move(creation_params));
+    rex::ApplicationCreationParams app_params = rex::app_entry(creation_params);
 
     if(app_params.create_window)
     {

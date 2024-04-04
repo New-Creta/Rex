@@ -12,5 +12,5 @@ namespace regina_auto_test
   void update();
   void shutdown();
 
-  rex::ApplicationCreationParams boot_test_entry(rex::PlatformCreationParams&& platformParams);
+  rex::ApplicationCreationParams boot_test_entry(rex::PlatformCreationParams& platformParams);
 } // namespace regina_test

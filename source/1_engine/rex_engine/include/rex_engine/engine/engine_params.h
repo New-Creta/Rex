@@ -36,9 +36,9 @@ namespace rex
   struct ApplicationCreationParams
   {
   public:
-    explicit ApplicationCreationParams(PlatformCreationParams* platformParams)
+    explicit ApplicationCreationParams(PlatformCreationParams& platformParams)
         : engine_params()
-        , platform_params(platformParams)
+        , platform_params(&platformParams)
         , gui_params()
         , create_window(false)
     {
