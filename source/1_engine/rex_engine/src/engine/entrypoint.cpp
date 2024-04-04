@@ -3,7 +3,6 @@
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/diagnostics/log.h"
-#include "rex_engine/diagnostics/logging/logger_config.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_std/bonus/attributes.h"

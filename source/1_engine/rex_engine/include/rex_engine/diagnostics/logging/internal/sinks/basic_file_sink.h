@@ -40,7 +40,7 @@ namespace rex
       };
 
       template <typename Mutex>
-      BasicFileSink<Mutex>::BasicFileSink(rsl::string_view filename, bool truncate, const FileEventHandlers& eventHandlers)
+      BasicFileSink<Mutex>::BasicFileSink(rsl::string_view filename, bool /*truncate*/, const FileEventHandlers& eventHandlers)
           : m_file_helper {eventHandlers}
         , m_filename(filename)
       {

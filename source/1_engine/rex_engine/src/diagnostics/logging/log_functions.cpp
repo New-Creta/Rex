@@ -88,40 +88,42 @@ namespace rex
       auto global_verbosity = rex::log::details::Registry::instance().get_global_level();
       return global_verbosity > verbosity;
     }
-  }
 
-  //-------------------------------------------------------------------------
-  rex::log::Logger& get_logger(const LogCategory& category)
-  {
-    // Check if a logger with this name already exists or not
-    auto logger = rex::log::details::Registry::instance().get(category.get_category_name());
-    if(logger != nullptr)
-      return *logger;
+    //-------------------------------------------------------------------------
+    rex::log::Logger& get_logger(const LogCategory& category)
+    {
+      // Check if a logger with this name already exists or not
+      auto logger = rex::log::details::Registry::instance().get(category.get_category_name());
+      if (logger != nullptr)
+        return *logger;
 
-    // If no logger is found with the above name, create a new one
-    rex::DebugVector<rsl::shared_ptr<rex::log::sinks::AbstractSink>> sinks;
+      // If no logger is found with the above name, create a new one
+      rex::DebugVector<rsl::shared_ptr<rex::log::sinks::AbstractSink>> sinks;
 
-    // By default we log to both the console window
+      // By default we log to both the console window
 #ifdef REX_ENABLE_COLOR_SINK
     // Only push rexout color sink when we are in debug mode
-    sinks.push_back(rsl::allocate_shared<rex::log::sinks::StdoutColorSinkMt>(rex::global_debug_allocator()));
+      sinks.push_back(rsl::allocate_shared<rex::log::sinks::StdoutColorSinkMt>(rex::global_debug_allocator()));
 #endif
 
-    // If the logging system has been initialized, we log to files as well
-    if (g_enable_file_sinks)
-    {
-      sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), "game.log"), true));
-    }
+      // If the logging system has been initialized, we log to files as well
+      if (g_enable_file_sinks)
+      {
+        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), "game.log"), true));
+      }
 
-    rsl::shared_ptr<rex::log::Logger> new_logger = nullptr;
+      rsl::shared_ptr<rex::log::Logger> new_logger = nullptr;
 
-    if(category.is_async())
-    {
-      new_logger = rex::log::create_async<rex::log::sinks::DistSink_mt>(category.get_category_name(), rsl::move(sinks));
-    }
-    else
-    {
-      new_logger = rex::log::create<rex::log::sinks::DistSink_st>(category.get_category_name(), rsl::move(sinks));
+      if (category.is_async())
+      {
+        new_logger = rex::log::create_async<rex::log::sinks::DistSink_mt>(category.get_category_name(), rsl::move(sinks));
+      }
+      else
+      {
+        new_logger = rex::log::create<rex::log::sinks::DistSink_st>(category.get_category_name(), rsl::move(sinks));
+      }
+
+      return *new_logger;
     }
   }
 
