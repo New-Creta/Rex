@@ -9,18 +9,7 @@ namespace rex
     const MemoryStats stats = query_memory_stats();
 
     // Physical memory
-    rsl::medium_stack_string msg;
-    msg += "[REX] Current used physical memory: ";
-    msg += rsl::to_stack_string(stats.used_physical_mem.size_in_bytes());
-    msg += " bytes.";
-    output_debug_string(msg);
-
-    msg.clear();
-
-    // Virtual memory
-    msg += "[REX] Current used virtual memory:  ";
-    msg += rsl::to_stack_string(stats.used_virtual_mem.size_in_bytes());
-    msg += " bytes.";
-    output_debug_string(msg);
+    output_debug_string(rsl::format("Current used physical memory: {} bytes.", stats.used_physical_mem.size_in_bytes()));
+    output_debug_string(rsl::format("Current used virtual memory: {} bytes.", stats.used_virtual_mem.size_in_bytes()));
   }
 } // namespace rex

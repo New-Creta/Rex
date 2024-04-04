@@ -50,13 +50,7 @@ namespace rex
        * Retrieve this com object as a different type
        */
       template <typename To>
-      wrl::ComPtr<To> as();
-
-      /**
-       * Retrieve this com object as a different type
-       */
-      template <typename To>
-      const wrl::ComPtr<const To> as() const;
+      wrl::ComPtr<To> as() const;
 
       /**
        * Check if this com object is valid
@@ -111,21 +105,11 @@ namespace rex
     //-------------------------------------------------------------------------
     template <typename T>
     template <typename To>
-    wrl::ComPtr<To> ComObject<T>::as()
+    wrl::ComPtr<To> ComObject<T>::as() const // NOLINT(readability-const-return-type)
     {
       // T needs to be non-const
       // so we need to case away the const
       return convert_to<To, T>(c_ptr());
-    }
-
-    //-------------------------------------------------------------------------
-    template <typename T>
-    template <typename To>
-    const wrl::ComPtr<const To> ComObject<T>::as() const // NOLINT(readability-const-return-type)
-    {
-      // T needs to be non-const
-      // so we need to case away the const
-      return convert_to<const To, T>(c_ptr());
     }
 
     //-------------------------------------------------------------------------

@@ -19,6 +19,16 @@ namespace rex
       Blob(const Blob& other) = delete;
       Blob(Blob&& other) noexcept;
       explicit Blob(rsl::unique_array<rsl::byte> data);
+      template <typename T>
+      explicit Blob(rsl::unique_array<T>&& data)
+        : m_data()
+      {
+        // "release" sets internal count to 0
+        // so we need to make sure we cache this data before actually calling release.
+        s32 total_size = data.byte_size();
+        m_data = rsl::unique_array<rsl::byte>((rsl::byte*)data.release(), total_size);
+      }
+      Blob(void* data, rsl::memory_size size);
       ~Blob();
 
       Blob& operator=(const Blob& other) = delete;
@@ -48,15 +58,12 @@ namespace rex
       template <typename T>
       const T& read(const rsl::memory_size& offset = 0_bytes) const;
 
-    private:
-      friend class BlobWriter;
-      friend class BlobReader;
-
       rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset);
       const rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
 
       void write(const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset = 0_bytes);
 
+    private:
       rsl::unique_array<rsl::byte> m_data;
     };
 

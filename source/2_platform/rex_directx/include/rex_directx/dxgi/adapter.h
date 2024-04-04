@@ -3,7 +3,7 @@
 #include "rex_directx/dxgi/comobject.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
-#include "rex_renderer_core/gpu_description.h"
+#include "rex_renderer_core/system/gpu_description.h"
 #include "rex_std/bonus/types.h"
 
 struct IDXGIAdapter;
@@ -12,7 +12,7 @@ namespace rex
 {
   namespace dxgi
   {
-    class Adapter : public dxgi::ComObject<IDXGIAdapter> // NOLINT(fuchsia-multiple-inheritance)
+    class Adapter : public dxgi::DxgiObject<IDXGIAdapter> // NOLINT(fuchsia-multiple-inheritance)
     {
     public:
       Adapter(wrl::ComPtr<IDXGIAdapter>&& adapter, u32 version);

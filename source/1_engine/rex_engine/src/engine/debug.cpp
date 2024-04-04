@@ -12,9 +12,9 @@ namespace rex
     REX_INFO(LogEngine, "Address Sanitizer Disabled");
 #endif
 #ifdef REX_UBSAN
-    REX_INFO(LogEngine, "Undefined Behavior Enabled");
+    REX_INFO(LogEngine, "Undefined Behavior Sanitizer Enabled");
 #else
-    REX_INFO(LogEngine, "Undefined Behavior Disabled");
+    REX_INFO(LogEngine, "Undefined Behavior Sanitizer Disabled");
 #endif
   }
 }

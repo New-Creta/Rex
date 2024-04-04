@@ -1,11 +1,17 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/index_buffer_format.h"
-#include "rex_renderer_core/renderer.h"
-#include "rex_renderer_core/resource_slot.h"
+#include "rex_engine/memory/blob.h"
+#include "rex_engine/memory/blob_view.h"
+#include "rex_renderer_core/rendering/index_buffer_format.h"
+#include "rex_renderer_core/system/renderer.h"
+#include "rex_renderer_core/resource_management/resource_slot.h"
+#include "rex_renderer_core/resources/vertex_buffer.h"
+#include "rex_renderer_core/resources/index_buffer.h"
 #include "rex_std/bonus/string/stack_string.h"
 #include "rex_std/unordered_map.h"
+#include "rex_std/memory.h"
+#include "rex_std/bonus/utility.h"
 
 namespace rex
 {
@@ -62,65 +68,23 @@ namespace rex
     class Mesh
     {
     public:
-      struct VertexBufferDesc
-      {
-        VertexBufferDesc(const ResourceSlot& inSlot, s32 byteStride, s32 byteSize)
-            : slot(inSlot)
-            , byte_stride(byteStride)
-            , byte_size(byteSize)
-        {
-        }
-
-        // Resource handles to the vertex buffer of this geometry
-        const ResourceSlot slot;
-
-        // Data about the allocated buffer.
-        s32 byte_stride;
-        s32 byte_size;
-      };
-      struct IndexBufferDesc
-      {
-        IndexBufferDesc(const ResourceSlot& inSlot, IndexBufferFormat format, s32 byteSize)
-            : slot(inSlot)
-            , format(format)
-            , byte_size(byteSize)
-        {
-        }
-
-        // Resource handles to the index buffer of this geometry
-        const ResourceSlot slot;
-
-        // Data about the allocated buffers.
-        IndexBufferFormat format;
-        s32 byte_size;
-      };
-
-    public:
-      Mesh(rsl::string_view name, const VertexBufferDesc& vbd, const IndexBufferDesc& ibd);
+      Mesh(rsl::string_view name, rhi::VertexBufferDesc vbd, rhi::IndexBufferDesc ibd);
 
     public:
       void add_submesh(rsl::string_view name, const Submesh& subMesh);
-      void add_submesh(rsl::string_view name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation);
+      void add_submesh(rsl::string_view name, s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation = 0);
 
       const Submesh* submesh(rsl::string_view name) const;
 
-    public:
-      rsl::string_view name() const;
-
-      const ResourceSlot& vertex_buffer_slot() const;
-      s32 vertex_buffer_byte_stride() const;
-      s32 vertex_buffer_byte_size() const;
-
-      const ResourceSlot& index_buffer_slot() const;
-      IndexBufferFormat index_buffer_format() const;
-      s32 index_buffer_byte_size() const;
+      const rhi::VertexBufferDesc* vb() const;
+      const rhi::IndexBufferDesc* ib() const;
 
     private:
       // Give it a name so we can look it up by name.
       rsl::medium_stack_string m_name;
 
-      VertexBufferDesc m_vbd;
-      IndexBufferDesc m_ibd;
+      rhi::VertexBufferDesc m_vbd;
+      rhi::IndexBufferDesc m_ibd;
 
       // A Mesh may store multiple geometries in one vertex/index buffer.
       // Use this container to define the Submesh geometries so we can draw

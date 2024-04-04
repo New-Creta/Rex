@@ -2,6 +2,7 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/attributes.h"
+#include "rex_engine/engine/defines.h"
 
 void operator delete(void* ptr) noexcept;           // NOLINT(misc-new-delete-overloads, readability-inconsistent-declaration-parameter-name, readability-redundant-declaration)
 void operator delete(void* ptr, u64 size) noexcept; // NOLINT(misc-new-delete-overloads, readability-inconsistent-declaration-parameter-name, readability-redundant-declaration)

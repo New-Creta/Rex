@@ -17,6 +17,11 @@ namespace rex
         , m_size(blob.size())
     {
     }
+    BlobView::BlobView(const void* data, rsl::memory_size size)
+      : m_data((const rsl::byte*)data)
+      , m_size(size)
+    {
+    }
 
     const rsl::byte* BlobView::data() const
     {

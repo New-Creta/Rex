@@ -10,10 +10,10 @@ namespace rex
 {
   namespace dxgi
   {
-    class Factory : public dxgi::ComObject<IDXGIFactory>
+    class Factory : public dxgi::DxgiObject<IDXGIFactory>
     {
     public:
-      static Factory create(s32 flags);
+      static rsl::unique_ptr<Factory> create(s32 flags);
 
       Factory();
       Factory(wrl::ComPtr<IDXGIFactory>&& object, u32 version);

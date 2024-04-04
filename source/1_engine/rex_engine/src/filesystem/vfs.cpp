@@ -466,7 +466,6 @@ namespace rex
       create_dirs(session_data_root());
 
       REX_INFO(FileSystem, "FileSystem initialized");
-      REX_INFO(FileSystem, "Session Directory: {}", session_data_root());
     }
 
     void set_root(rsl::string_view root)

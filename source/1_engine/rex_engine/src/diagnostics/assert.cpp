@@ -47,7 +47,7 @@ namespace rex
     {
       // if this is hit, an assert occurred while processing another one.
       // to avoid circular dependency, we break here if there's a debugger attached
-      DEBUG_BREAK();
+      REX_DEBUG_BREAK();
     }
   }
 
