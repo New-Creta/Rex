@@ -20,7 +20,10 @@ namespace rex
 
       // Ignore the data folder, this folder can become very big
       // and will never contain any sharpmake files
-      SourceFilesExcludeRegex.Add(Path.Combine(Globals.Root, "data").Replace("\\", "/"));
+      SourceFilesExcludeRegex.Add("data");
+
+      // ignore the templates folder, these are used for auto generation, shouldn't be added to the project itself
+      SourceFilesExcludeRegex.Add("templates");
 
       // manually add the sharpmake root files
       var RootSharpmakeFiles = Directory.GetFiles(Path.Combine(Globals.SharpmakeRoot, "src"));
