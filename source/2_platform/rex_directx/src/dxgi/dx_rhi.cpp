@@ -49,7 +49,7 @@ namespace rex
 {
   namespace rhi
   {
-    DEFINE_LOG_CATEGORY(LogRhi, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(LogRhi);
 
     namespace internal
     {

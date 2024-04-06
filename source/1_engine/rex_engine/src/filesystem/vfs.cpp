@@ -105,7 +105,7 @@ namespace rex
 {
   namespace vfs
   {
-    DEFINE_LOG_CATEGORY(FileSystem, rex::LogVerbosity::Info);
+    DEFINE_LOG_CATEGORY(FileSystem);
 
     enum class VfsState
     {
