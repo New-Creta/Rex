@@ -21,4 +21,4 @@ namespace rex
     // see Game Engine Architecture Third Edition (page 326)
     volatile bool m_is_locked;
   };
-}
+} // namespace rex

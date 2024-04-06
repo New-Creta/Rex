@@ -1,7 +1,7 @@
 #include "rex_directx/diagnostics/dx_call.h"
 
-#include "rex_directx/utility/dx_util.h"
 #include "rex_directx/diagnostics/log.h"
+#include "rex_directx/utility/dx_util.h"
 
 #include <comdef.h>
 
@@ -31,7 +31,7 @@ namespace rex
       {
         if(FAILED(m_error))
         {
-          m_error_message  = report_hr_error(m_error, file, function, lineNr);
+          m_error_message = report_hr_error(m_error, file, function, lineNr);
         }
       }
 

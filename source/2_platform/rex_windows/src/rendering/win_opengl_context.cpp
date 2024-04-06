@@ -81,9 +81,9 @@ namespace rex
         gladLoaderLoadWGL(g_glctx.dc);
 
         rsl::array attribs = {WGL_CONTEXT_MAJOR_VERSION_ARB,
-                              3, // Set the MAJOR version of OpenGL to 3
+                              3,                                      // Set the MAJOR version of OpenGL to 3
                               WGL_CONTEXT_MINOR_VERSION_ARB,
-                              2, // Set the MINOR version of OpenGL to 2
+                              2,                                      // Set the MINOR version of OpenGL to 2
                               WGL_CONTEXT_FLAGS_ARB,
                               WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, // Set our OpenGL context to be forward compatible
                               0};

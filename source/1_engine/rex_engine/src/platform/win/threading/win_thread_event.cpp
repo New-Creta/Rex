@@ -1,5 +1,4 @@
 #include "rex_engine/threading/thread_event.h"
-
 #include "rex_std/bonus/utility.h"
 
 #include <Windows.h>

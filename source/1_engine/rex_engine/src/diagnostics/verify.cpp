@@ -1,9 +1,8 @@
 #include "rex_engine/diagnostics/verify.h"
 
+#include "rex_engine/diagnostics/file_dialogs.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
-#include "rex_engine/diagnostics/file_dialogs.h"
-
 
 namespace rex
 {

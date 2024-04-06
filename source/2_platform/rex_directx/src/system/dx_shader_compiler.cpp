@@ -1,7 +1,7 @@
 #include "rex_directx/system/dx_shader_compiler.h"
-#include "rex_directx/diagnostics/log.h"
-#include "rex_directx/diagnostics/dx_call.h"
 
+#include "rex_directx/diagnostics/dx_call.h"
+#include "rex_directx/diagnostics/log.h"
 #include "rex_renderer_core/resources/compile_shader.h"
 
 #include <d3dcompiler.h>
@@ -22,8 +22,9 @@ namespace rex
       HRESULT hr = S_OK;
 
       wrl::ComPtr<ID3DBlob> byte_code = nullptr;
-      wrl::ComPtr<ID3DBlob> errors = nullptr;
+      wrl::ComPtr<ID3DBlob> errors    = nullptr;
 
+      // clang-format off
       hr = D3DCompile2(
         desc.shader_code.data(),
         desc.shader_code.size(),
@@ -33,19 +34,20 @@ namespace rex
         desc.shader_entry_point.data(),
         desc.shader_feature_target.data(),
         compile_flags, 0, 0, 0, 0, &byte_code, &errors);
+      // clang-format on
 
-      if (errors != nullptr)
+      if(errors != nullptr)
       {
         REX_ERROR(LogShaderCompiler, "{}", (char*)errors->GetBufferPointer());
       }
 
-      if (DX_FAILED(hr))
+      if(DX_FAILED(hr))
       {
         REX_ERROR(LogShaderCompiler, "Failed to compile shader");
       }
-     
+
       return byte_code;
     }
 
-  }
-}
+  } // namespace rhi
+} // namespace rex

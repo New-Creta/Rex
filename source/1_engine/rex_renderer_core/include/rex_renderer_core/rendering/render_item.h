@@ -2,10 +2,10 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/rendering/primitive_topology.h"
+#include "rex_renderer_core/resources/constant_buffer.h"
+#include "rex_renderer_core/resources/index_buffer.h"
 #include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/resources/vertex_buffer.h"
-#include "rex_renderer_core/resources/index_buffer.h"
-#include "rex_renderer_core/resources/constant_buffer.h"
 
 #include <glm/glm.hpp>
 
@@ -25,14 +25,14 @@ namespace rex
     {
     public:
       RenderItem(const rhi::ResourceSlot& vb, const rhi::ResourceSlot& ib, const rhi::ResourceSlot& cb, PrimitiveTopology topology, s32 indexCount, s32 baseVertexLocation = 0)
-        : m_vb(vb)
-        , m_ib(ib)
-        , m_cb(cb)
-        , m_topology(topology)
+          : m_vb(vb)
+          , m_ib(ib)
+          , m_cb(cb)
+          , m_topology(topology)
       {
         m_start_index_location = 0;
         m_base_vertex_location = baseVertexLocation;
-        m_index_count = indexCount;
+        m_index_count          = indexCount;
       }
 
       rhi::ResourceSlot vb() const

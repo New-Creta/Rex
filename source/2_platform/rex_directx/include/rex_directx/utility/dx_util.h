@@ -85,13 +85,13 @@ namespace rex
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/memory/blob.h"
-#include "rex_renderer_core/rendering/fill_mode.h"
 #include "rex_renderer_core/rendering/cull_mode.h"
-#include "rex_renderer_core/rendering/vertex_buffer_format.h"
+#include "rex_renderer_core/rendering/fill_mode.h"
 #include "rex_renderer_core/rendering/index_buffer_format.h"
-#include "rex_renderer_core/rendering/texture_format.h"
-#include "rex_renderer_core/rendering/primitive_topology.h"
 #include "rex_renderer_core/rendering/input_layout_classification.h"
+#include "rex_renderer_core/rendering/primitive_topology.h"
+#include "rex_renderer_core/rendering/texture_format.h"
+#include "rex_renderer_core/rendering/vertex_buffer_format.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -110,5 +110,5 @@ namespace rex
     D3D12_PRIMITIVE_TOPOLOGY to_d3d12_topology(renderer::PrimitiveTopology topology);
     D3D12_INPUT_CLASSIFICATION to_d3d12_input_layout_classification(renderer::InputLayoutClassification classification);
     s32 format_byte_size(DXGI_FORMAT format);
-  }
-}
+  } // namespace d3d
+} // namespace rex

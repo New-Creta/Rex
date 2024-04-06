@@ -131,4 +131,4 @@ namespace rex
   }
 } // namespace rex
 
-// NOLINTEND(cppcoreguidelines-prefer-member-initializer,readability-convert-member-functions-to-static)
+  // NOLINTEND(cppcoreguidelines-prefer-member-initializer,readability-convert-member-functions-to-static)

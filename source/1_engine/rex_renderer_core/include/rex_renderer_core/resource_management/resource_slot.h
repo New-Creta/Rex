@@ -41,14 +41,14 @@ namespace rex
 
       s32 release();
       s32 slot_id() const;
-      
+
     private:
       bool m_about_to_be_removed;
       s32 m_slot_id;
       s32* m_ref_count;
     };
 
-  } // namespace renderer
+  } // namespace rhi
 } // namespace rex
 
 namespace rsl

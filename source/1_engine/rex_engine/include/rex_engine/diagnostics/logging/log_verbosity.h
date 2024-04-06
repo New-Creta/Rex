@@ -7,18 +7,18 @@ namespace rex
   namespace log
   {
     using LogVerbosity = level::LevelEnum;
-  }
-}
+  } // namespace log
+} // namespace rex
 
-//#pragma once
+// #pragma once
 //
-//#include "rex_engine/engine/debug_types.h"
-//#include "rex_engine/engine/types.h"
+// #include "rex_engine/engine/debug_types.h"
+// #include "rex_engine/engine/types.h"
 //
 ///**
 // * Enum that defines the verbosity levels of the logging system.
 // **/
-//namespace rex
+// namespace rex
 //{
 //  enum class LogVerbosity
 //  {

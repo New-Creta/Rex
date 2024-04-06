@@ -1,8 +1,7 @@
 #pragma once
 
-#include "rex_renderer_core/resource_management/resource.h"
-
 #include "rex_directx/utility/dx_util.h"
+#include "rex_renderer_core/resource_management/resource.h"
 
 namespace rex
 {
@@ -16,5 +15,5 @@ namespace rex
     private:
       wrl::ComPtr<ID3D12PipelineState> m_pso;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

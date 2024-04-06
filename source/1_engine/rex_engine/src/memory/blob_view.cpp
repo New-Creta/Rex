@@ -18,8 +18,8 @@ namespace rex
     {
     }
     BlobView::BlobView(const void* data, rsl::memory_size size)
-      : m_data((const rsl::byte*)data)
-      , m_size(size)
+        : m_data((const rsl::byte*)data)
+        , m_size(size)
     {
     }
 

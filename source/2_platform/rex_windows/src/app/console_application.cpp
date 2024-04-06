@@ -6,8 +6,8 @@
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/event_system/event_type.h"
 #include "rex_std/functional.h"
-#include "rex_windows/input/internal/input.h"
 #include "rex_windows/engine/platform_creation_params.h"
+#include "rex_windows/input/internal/input.h"
 
 #include <Windows.h>
 #include <consoleapi.h>
@@ -39,7 +39,7 @@ namespace rex
           // Start an infinite loop so the main thread has time to shutdown the app (knowing it only has 5 seconds)
           // We cannot yield the thread here as that'd immediately kill the process without giving the main thread
           // a chance to shutdown the app properly.
-          while (true) 
+          while(true)
           {
             // Do nothing here
           }
@@ -82,7 +82,7 @@ namespace rex
 
       void update()
       {
-        if (is_focussed())
+        if(is_focussed())
         {
           m_input.update();
         }

@@ -6,7 +6,7 @@ namespace rex
 {
   // Returns the endline characters for the current platform
   rsl::string_view endline();
-  
+
   // Removes leading and trailing whitespace
   rsl::string_view strip(rsl::string_view input);
 
@@ -32,4 +32,4 @@ namespace rex
   // we're taking a string by ref
   // to reuse the memory
   void remove_spaces(rsl::string& input);
-}
+} // namespace rex

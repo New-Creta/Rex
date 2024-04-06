@@ -1,9 +1,8 @@
 #include "rex_engine/diagnostics/logging/log_scoped_verbosity_override.h"
 
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/log_category.h"
 #include "rex_engine/diagnostics/logging/log_functions.h"
-
-#include "rex_engine/diagnostics/logging/internal/details/registry.h"
 
 namespace rex
 {

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "rex_std/functional.h"
-
 #include "rex_renderer_core/resource_management/resource_slot.h"
+#include "rex_std/functional.h"
 
 namespace rex
 {
@@ -16,8 +15,8 @@ namespace rex
       ResourceSlot blend_state;
       ResourceSlot depth_stencil_state;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex
 
 namespace rsl
 {
@@ -26,10 +25,10 @@ namespace rsl
   {
     rsl::hash_result operator()(const rex::rhi::PipelineStateDesc& psoDesc) const
     {
-      const char* buffer = reinterpret_cast<const char*>(&psoDesc);
+      const char* buffer       = reinterpret_cast<const char*>(&psoDesc);
       const size_t buffer_size = sizeof(psoDesc);
 
       return rsl::internal::hash(buffer, buffer_size);
     }
   };
-}
+} // namespace rsl

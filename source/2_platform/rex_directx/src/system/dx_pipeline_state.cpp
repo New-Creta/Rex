@@ -5,10 +5,9 @@ namespace rex
   namespace rhi
   {
     PipelineState::PipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso, ResourceHash hash)
-      : BaseResource(pso.Get(), hash)
-      , m_pso(pso)
+        : BaseResource(pso.Get(), hash)
+        , m_pso(pso)
     {
-
     }
-  }
-}
+  } // namespace rhi
+} // namespace rex

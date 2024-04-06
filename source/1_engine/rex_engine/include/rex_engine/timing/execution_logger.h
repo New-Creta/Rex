@@ -1,9 +1,8 @@
 #pragma once
 
-#include "rex_std/string_view.h"
-
 #include "rex_engine/diagnostics/logging/log_category.h"
 #include "rex_engine/timing/interval.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {
@@ -18,4 +17,4 @@ namespace rex
     LogCategory m_log_category;
     Interval m_interval;
   };
-}
+} // namespace rex

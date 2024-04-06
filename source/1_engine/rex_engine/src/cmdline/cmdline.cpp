@@ -76,18 +76,18 @@ namespace rex
       {
         // skip all text that doesn't start until we find the first arg prefix
         const rsl::string_view arg_prefix = "-"; // all arguments should start with a '-'
-        card32 start_pos = cmdLine.find(arg_prefix);
-        if (start_pos == -1)
+        card32 start_pos                  = cmdLine.find(arg_prefix);
+        if(start_pos == -1)
         {
           cmdLine = "";
         }
         else
         {
-          cmdLine = cmdLine.substr(start_pos);
+          cmdLine   = cmdLine.substr(start_pos);
           start_pos = 0;
         }
 
-        if (cmdLine.empty())
+        if(cmdLine.empty())
         {
           return;
         }
@@ -251,7 +251,7 @@ namespace rex
 
     void log_cmdline()
     {
-      if (g_cmd_line.length())
+      if(g_cmd_line.length())
       {
         REX_INFO(LogEngine, "Commandline: {}", g_cmd_line);
       }

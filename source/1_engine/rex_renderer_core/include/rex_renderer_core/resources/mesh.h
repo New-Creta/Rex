@@ -4,14 +4,14 @@
 #include "rex_engine/memory/blob.h"
 #include "rex_engine/memory/blob_view.h"
 #include "rex_renderer_core/rendering/index_buffer_format.h"
-#include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
-#include "rex_renderer_core/resources/vertex_buffer.h"
 #include "rex_renderer_core/resources/index_buffer.h"
+#include "rex_renderer_core/resources/vertex_buffer.h"
+#include "rex_renderer_core/system/renderer.h"
 #include "rex_std/bonus/string/stack_string.h"
-#include "rex_std/unordered_map.h"
-#include "rex_std/memory.h"
 #include "rex_std/bonus/utility.h"
+#include "rex_std/memory.h"
+#include "rex_std/unordered_map.h"
 
 namespace rex
 {

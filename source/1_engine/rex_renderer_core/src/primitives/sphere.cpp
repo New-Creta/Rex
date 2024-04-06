@@ -45,10 +45,10 @@ namespace rex
           tangent.y = 0.0f;
           tangent.z = +radius * sinf(phi) * cosf(theta);
 
-          tangent               = glm::normalize(tangent);
+          tangent = glm::normalize(tangent);
 
           const glm::vec3 p = position;
-          glm::vec3 normal          = glm::normalize(p);
+          glm::vec3 normal  = glm::normalize(p);
           glm::vec4 col(normal, 1.0f);
 
           VertexPosNormCol v(position, normal, col);

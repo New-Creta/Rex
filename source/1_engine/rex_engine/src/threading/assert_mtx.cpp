@@ -5,8 +5,9 @@
 namespace rex
 {
   AssertMtx::AssertMtx()
-    : m_is_locked(false)
-  {}
+      : m_is_locked(false)
+  {
+  }
 
   bool AssertMtx::try_lock()
   {
@@ -26,4 +27,4 @@ namespace rex
     m_is_locked = false;
   }
 
-}
+} // namespace rex

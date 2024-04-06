@@ -4,11 +4,10 @@
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/resource_management/resource.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
+#include "rex_renderer_core/system/resource_hasher.h"
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 #include "rex_std/unordered_map.h"
-
-#include "rex_renderer_core/system/resource_hasher.h"
 
 namespace rex
 {
@@ -81,5 +80,5 @@ namespace rex
 
       return static_cast<const U*>(at(slot));
     }
-  } // namespace renderer
+  } // namespace rhi
 } // namespace rex

@@ -5,9 +5,10 @@ namespace rex
   namespace rhi
   {
     CommandQueue::CommandQueue(const wrl::ComPtr<ID3D12CommandQueue>& commandQueue, const wrl::ComPtr<ID3D12Fence>& fence)
-      : m_command_queue(commandQueue)
-      , m_fence(fence)
-    {}
+        : m_command_queue(commandQueue)
+        , m_fence(fence)
+    {
+    }
 
     CommandQueue::~CommandQueue()
     {
@@ -35,5 +36,5 @@ namespace rex
       return m_command_queue.Get();
     }
 
-  }
-}
+  } // namespace rhi
+} // namespace rex

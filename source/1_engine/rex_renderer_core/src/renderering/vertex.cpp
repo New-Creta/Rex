@@ -36,13 +36,7 @@ namespace rex
     rhi::InputLayoutDesc VertexPos::layout()
     {
       rex::rhi::InputLayoutDesc desc;
-      desc.input_layout =
-      {
-        rex::rhi::InputLayoutElementDesc
-        {
-          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
-        }
-      };
+      desc.input_layout = {rex::rhi::InputLayoutElementDesc {"POSITION", rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0}};
 
       return desc;
     }
@@ -94,17 +88,8 @@ namespace rex
     rhi::InputLayoutDesc VertexPosCol::layout()
     {
       rex::rhi::InputLayoutDesc desc;
-      desc.input_layout =
-      {
-        rex::rhi::InputLayoutElementDesc
-        {
-          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "COLOR", rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
-        }
-      };
+      desc.input_layout = {rex::rhi::InputLayoutElementDesc {"POSITION", rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0},
+                           rex::rhi::InputLayoutElementDesc {"COLOR", rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0}};
 
       return desc;
     }
@@ -164,21 +149,9 @@ namespace rex
     rhi::InputLayoutDesc VertexPosNormCol::layout()
     {
       rex::rhi::InputLayoutDesc desc;
-      desc.input_layout =
-      {
-        rex::rhi::InputLayoutElementDesc
-        {
-          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "NORMAL",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "COLOR", rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 24, 0
-        }
-      };
+      desc.input_layout = {rex::rhi::InputLayoutElementDesc {"POSITION", rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0},
+                           rex::rhi::InputLayoutElementDesc {"NORMAL", rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0},
+                           rex::rhi::InputLayoutElementDesc {"COLOR", rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 24, 0}};
 
       return desc;
     }
@@ -230,16 +203,9 @@ namespace rex
     rhi::InputLayoutDesc VertexPosTex::layout()
     {
       rex::rhi::InputLayoutDesc desc;
-      desc.input_layout =
-      {
-        rex::rhi::InputLayoutElementDesc
-        {
-          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "TEXCOORD",  rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
-        },
+      desc.input_layout = {
+          rex::rhi::InputLayoutElementDesc {"POSITION", rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0},
+          rex::rhi::InputLayoutElementDesc {"TEXCOORD", rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0},
       };
 
       return desc;
@@ -300,20 +266,10 @@ namespace rex
     rhi::InputLayoutDesc VertexPosColTex::layout()
     {
       rex::rhi::InputLayoutDesc desc;
-      desc.input_layout =
-      {
-        rex::rhi::InputLayoutElementDesc
-        {
-          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "COLOR",  rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "TEXCOORD",  rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 28, 0
-        },
+      desc.input_layout = {
+          rex::rhi::InputLayoutElementDesc {"POSITION", rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0},
+          rex::rhi::InputLayoutElementDesc {"COLOR", rex::renderer::VertexBufferFormat::FLOAT4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0},
+          rex::rhi::InputLayoutElementDesc {"TEXCOORD", rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 28, 0},
       };
 
       return desc;
@@ -374,21 +330,9 @@ namespace rex
     rhi::InputLayoutDesc VertexPosNormTex::layout()
     {
       rex::rhi::InputLayoutDesc desc;
-      desc.input_layout =
-      {
-        rex::rhi::InputLayoutElementDesc
-        {
-          "POSITION",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "NORMAL",  rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0
-        },
-        rex::rhi::InputLayoutElementDesc
-        {
-          "TEXCOORD", rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 24, 0
-        }
-      };
+      desc.input_layout = {rex::rhi::InputLayoutElementDesc {"POSITION", rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0},
+                           rex::rhi::InputLayoutElementDesc {"NORMAL", rex::renderer::VertexBufferFormat::FLOAT3, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 12, 0},
+                           rex::rhi::InputLayoutElementDesc {"TEXCOORD", rex::renderer::VertexBufferFormat::FLOAT2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 24, 0}};
 
       return desc;
     }
@@ -408,4 +352,4 @@ namespace rex
   } // namespace renderer
 } // namespace rex
 
-// NOLINTEND(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)
+  // NOLINTEND(cppcoreguidelines-pro-type-union-access,-warnings-as-errors)

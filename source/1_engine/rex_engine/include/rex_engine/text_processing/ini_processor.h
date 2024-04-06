@@ -2,9 +2,9 @@
 
 #include "rex_engine/diagnostics/error.h"
 #include "rex_engine/memory/blob_view.h"
+#include "rex_std/bonus/utility/key_value.h"
 #include "rex_std/string_view.h"
 #include "rex_std/vector.h"
-#include "rex_std/bonus/utility/key_value.h"
 
 namespace rex
 {
@@ -30,7 +30,7 @@ namespace rex
   {
   public:
     IniProcessor(memory::BlobView data);
-    
+
     rex::Error process();
 
     const rsl::vector<IniHeaderWithItems>& items() const;
@@ -42,4 +42,4 @@ namespace rex
     memory::BlobView m_data;
     rsl::vector<IniHeaderWithItems> m_headers_with_items;
   };
-}
+} // namespace rex

@@ -31,7 +31,7 @@
 
   #include <direct.h> // for _mkdir/_wmkdir
 
-#else // unix
+#else                 // unix
 
   #include <fcntl.h>
   #include <unistd.h>
@@ -52,7 +52,7 @@
     #include <thread.h> // for thr_self
   #endif
 
-#endif // unix
+#endif                       // unix
 
 #ifndef __has_feature        // Clang - feature checking macros.
   #define __has_feature(x) 0 // Compatibility with non-clang compilers.
@@ -403,4 +403,4 @@ namespace rex
   }     // namespace log
 } // namespace rex
 
-// NOLINTEND(misc-definitions-in-headers)
+  // NOLINTEND(misc-definitions-in-headers)

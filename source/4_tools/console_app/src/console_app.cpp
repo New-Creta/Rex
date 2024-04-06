@@ -1,16 +1,16 @@
-#include "rex_engine/engine/defines.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/engine/entrypoint.h"
-#include "rex_engine/memory/memory_tracking.h"
-#include "rex_std/iostream.h"
-#include "rex_std/bonus/utility/type_id.h"
-#include "rex_windows/app/console_application.h"
-#include "rex_engine/event_system/event_system.h"
-#include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/filesystem/path.h"
-#include "rex_engine/memory/memory_header.h"
-#include "rex_windows/input/input.h"
 #include "rex_engine/diagnostics/stacktrace.h"
+#include "rex_engine/engine/defines.h"
+#include "rex_engine/engine/entrypoint.h"
+#include "rex_engine/event_system/event_system.h"
+#include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/memory/memory_header.h"
+#include "rex_engine/memory/memory_tracking.h"
+#include "rex_std/bonus/utility/type_id.h"
+#include "rex_std/iostream.h"
+#include "rex_windows/app/console_application.h"
+#include "rex_windows/input/input.h"
 
 DEFINE_LOG_CATEGORY(LogConsoleApp);
 
@@ -24,17 +24,17 @@ namespace console_app_example
     // the code will follow the following step:
     // operator new -> Global Allocator (Tracked) -> Global Allocator (Untracked) -> System Call
     //                                                                                    |
-    //                                                                                    | 
-    // operator new <- Global Allocator (Tracked) <- Global Allocator (Untracked)  <------+ 
+    //                                                                                    |
+    // operator new <- Global Allocator (Tracked) <- Global Allocator (Untracked)  <------+
     //                         |
     //                         |
     //                         v
     //                   Save to file
-    // 
+    //
     // Functionality should be implemented in memory_tracking.cpp
     // However, we'll need a file system first to save things to disk
     // We can then write a tool that scans this file for a memory analysis
-    // 
+    //
     // Requirements of this tool:
     // - Open a memory report file saved by the engine (See above)
     // - Track all live allocations with their callstacks
@@ -47,7 +47,7 @@ namespace console_app_example
 
   void display_mem_usage_stats(const rex::MemoryUsageStats& stats)
   {
-    for (count_t i = 0; i < stats.usage_per_tag.size(); ++i)
+    for(count_t i = 0; i < stats.usage_per_tag.size(); ++i)
     {
       rex::MemoryTag tag = static_cast<rex::MemoryTag>(i);
       REX_INFO(LogConsoleApp, "{}: {} bytes", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
@@ -55,7 +55,7 @@ namespace console_app_example
 
     REX_INFO(LogConsoleApp, "----------------------------");
 
-    for (rex::MemoryHeader* header : stats.allocation_headers)
+    for(rex::MemoryHeader* header: stats.allocation_headers)
     {
       rex::ResolvedCallstack callstack(header->callstack());
 
@@ -64,7 +64,7 @@ namespace console_app_example
       REX_INFO(LogConsoleApp, "Memory Tag: {}", rsl::enum_refl::enum_name(header->tag()));
       REX_INFO(LogConsoleApp, "Size: {}", header->size());
 
-      for (count_t i = 0; i < callstack.size(); ++i)
+      for(count_t i = 0; i < callstack.size(); ++i)
       {
         REX_INFO(LogConsoleApp, "{}", callstack[i]);
       }
@@ -79,19 +79,17 @@ namespace console_app_example
   }
   void update()
   {
-    if (rex::input::is_key_pressed('P'))
+    if(rex::input::is_key_pressed('P'))
     {
       rex::mem_tracker().dump_stats_to_file("mem_stats.txt");
     }
 
-    if (rex::input::is_key_pressed('Q'))
+    if(rex::input::is_key_pressed('Q'))
     {
       rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
     }
   }
-  void shutdown()
-  {
-  }
+  void shutdown() {}
 
 } // namespace console_app_example
 
@@ -107,4 +105,4 @@ namespace rex
 
     return app_params;
   }
-}
+} // namespace rex

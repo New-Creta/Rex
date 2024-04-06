@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_directx/utility/dx_util.h"
 #include "rex_directx/system/dx_pipeline_state.h"
+#include "rex_directx/utility/dx_util.h"
 
 namespace rex
 {
@@ -22,5 +22,5 @@ namespace rex
       wrl::ComPtr<ID3D12PipelineLibrary> m_pipeline_library;
       wrl::ComPtr<ID3D12Device1> m_device;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

@@ -1,21 +1,19 @@
 #pragma once
 
+#include "rex_renderer_core/rendering/primitive_topology.h"
+#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
-
-#include "rex_renderer_core/resources/compile_shader.h"
 #include "rex_renderer_core/resources/clear_state.h"
+#include "rex_renderer_core/resources/compile_shader.h"
+#include "rex_renderer_core/resources/constant_buffer.h"
+#include "rex_renderer_core/resources/index_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/resources/link_shader.h"
-#include "rex_renderer_core/resources/shader.h"
+#include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/raster_state.h"
-#include "rex_renderer_core/resources/mesh.h"
+#include "rex_renderer_core/resources/shader.h"
 #include "rex_renderer_core/resources/vertex_buffer.h"
-#include "rex_renderer_core/resources/index_buffer.h"
-#include "rex_renderer_core/resources/constant_buffer.h"
-
-#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
-#include "rex_renderer_core/rendering/primitive_topology.h"
 
 namespace rex
 {
@@ -60,15 +58,15 @@ namespace rex
     void exec_command_list();
 
     // We dealing with resource creation, we need to do this smart as we don't want to have the same object twice in memory.
-    // Eg. if an object is requested for rendering, and an equivalent vertex buffer or index buffer is already in memory, 
+    // Eg. if an object is requested for rendering, and an equivalent vertex buffer or index buffer is already in memory,
     // we shouldn't put it in memory again, instead we should use the existing memory for this job
-    
+
     // This can be performed by hashing the vertex buffer and index buffer descriptors
     // and looking into our existing resource pool if such a hash is already exists tied to a resource.
     // If it does, reuse the existing data for this render item
     // If it doesn't already exist, we create a new vertex buffer and/or index buffer
     // and queue for uploading to the gpu.
-    
+
     // The same strategy can be used for constant buffers, shaders, textures, ..
     // The constant buffer that's unique per object won't (or shouldn't) have any pre existing data
     // Other constant buffers that are shared between objects, can already sit in memory and therefore
@@ -120,5 +118,5 @@ namespace rex
     void reset_upload_buffer();
     void update_buffer(const ResourceSlot& slot, const void* data, s64 size);
 
-  }
-}
+  } // namespace rhi
+} // namespace rex

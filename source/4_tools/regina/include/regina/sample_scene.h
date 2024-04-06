@@ -1,15 +1,13 @@
 #pragma once
 
-#include "rex_renderer_core/rendering/scene.h"
-#include "rex_renderer_core/resources/mesh.h"
-
-#include "rex_std/unordered_map.h"
-#include "rex_std/memory.h"
-#include "rex_std/bonus/string.h"
-
-#include "rex_renderer_core/resource_management/resource.h"
-#include "rex_renderer_core/rendering/vertex.h"
 #include "rex_renderer_core/primitives/mesh_factory.h"
+#include "rex_renderer_core/rendering/scene.h"
+#include "rex_renderer_core/rendering/vertex.h"
+#include "rex_renderer_core/resource_management/resource.h"
+#include "rex_renderer_core/resources/mesh.h"
+#include "rex_std/bonus/string.h"
+#include "rex_std/memory.h"
+#include "rex_std/unordered_map.h"
 
 namespace regina
 {
@@ -31,4 +29,4 @@ namespace regina
     rex::memory::Blob m_vb;
     rex::memory::Blob m_ib;
   };
-}
+} // namespace regina

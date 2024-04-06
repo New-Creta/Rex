@@ -3,9 +3,10 @@
 namespace rex
 {
   Error::Error(rsl::string_view errorMsg, s32 errorCode)
-    : m_error_msg(errorMsg)
-    , m_error_code(errorCode)
-  {}
+      : m_error_msg(errorMsg)
+      , m_error_code(errorCode)
+  {
+  }
 
   Error::operator bool() const
   {
@@ -28,4 +29,4 @@ namespace rex
   {
     return Error("", 0);
   }
-}
+} // namespace rex

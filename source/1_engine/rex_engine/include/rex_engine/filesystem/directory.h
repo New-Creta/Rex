@@ -1,12 +1,11 @@
 #pragma once
 
-#include "rex_std/string_view.h"
-#include "rex_std/string.h"
-#include "rex_std/vector.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_std/bonus/time/timepoint.h"
 #include "rex_std/bonus/utility/yes_no.h"
-
-#include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_std/string.h"
+#include "rex_std/string_view.h"
+#include "rex_std/vector.h"
 
 namespace rex
 {
@@ -39,5 +38,5 @@ namespace rex
     rsl::time_point access_time(rsl::string_view path);
     // Return the modification time of a directory
     rsl::time_point modification_time(rsl::string_view path);
-  }
-}
+  } // namespace directory
+} // namespace rex

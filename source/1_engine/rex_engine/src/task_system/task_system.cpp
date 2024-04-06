@@ -116,7 +116,7 @@ namespace rex
                 // When this thread starts, take away the ownership of the thread handle and the job and let it be managed by this callable
                 // this allows the thread that runs this callable to be automatically be added to the thread pool again after it finished executing
                 const threading::ThreadHandle thread_handle = rsl::move(m_thread_handle);
-                rsl::shared_ptr<Job> job                = rsl::move(m_job);
+                rsl::shared_ptr<Job> job                    = rsl::move(m_job);
 
                 // signal that this job thread has started
                 // After this, the this point can be invalid, so we can't access it anymore

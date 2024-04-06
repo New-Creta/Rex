@@ -1,8 +1,8 @@
 #include "rex_engine/engine/entrypoint.h"
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/platform/win/crash_reporter/win_crash_handler.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/platform/win/crash_reporter/win_crash_handler.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/iostream.h"
 #include "rex_windows/app/console_application.h"

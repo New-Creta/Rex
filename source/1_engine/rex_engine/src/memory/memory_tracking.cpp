@@ -113,7 +113,7 @@ namespace rex
     // That's why we track the initial memory usage before the initialization
     // so we can subtract this later, making sure that we only track the memory
     // that got allocated at runtime
-    m_max_mem_budget        = static_cast<s64>(maxMemUsage);
+    m_max_mem_budget       = static_cast<s64>(maxMemUsage);
     m_mem_stats_on_startup = query_memory_stats();
   }
 

@@ -1,6 +1,7 @@
 ﻿#include "rex_windows/app/gui_application.h"
 
 #include "rex_engine/app/core_window.h"
+#include "rex_engine/app/windowinfo.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/event_system/event.h" // IWYU pragma: keep
@@ -9,21 +10,20 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/platform/win/win_com_library.h"
-#include "rex_engine/app/windowinfo.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/rendering/depth_info.h"
+#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/system/rhi.h"
-#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
 #include "rex_std/memory.h"
 #include "rex_std/ratio.h"
 #include "rex_std/thread.h"
+#include "rex_windows/app/win_window.h"
 #include "rex_windows/diagnostics/log.h"
 #include "rex_windows/engine/platform_creation_params.h"
-#include "rex_windows/app/win_window.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -68,7 +68,7 @@ namespace rex
 
         bool result = pre_user_init();
 
-        if (!result)
+        if(!result)
         {
           REX_ERROR(LogWindows, "Pre user initialization failed. exiting");
           return result;
@@ -84,7 +84,7 @@ namespace rex
         }
 
         result = post_user_init();
-        if (!result)
+        if(!result)
         {
           REX_ERROR(LogWindows, "Post user initialization failed. exiting.");
           return result;
@@ -258,17 +258,17 @@ namespace rex
 
         // window initialization
         m_window = create_window();
-        if (m_window == nullptr)
+        if(m_window == nullptr)
         {
           return false;
         }
 
-        globals::g_window_info.width = m_window->width();
+        globals::g_window_info.width  = m_window->width();
         globals::g_window_info.height = m_window->height();
 
         subscribe_window_events();
 
-        if (!init_gfx())
+        if(!init_gfx())
         {
           REX_ERROR(LogWindows, "Failed to initialize graphics");
           return false;
@@ -284,7 +284,7 @@ namespace rex
         // this function does the close
         //
         // eg: on DX12 we require to close the command list and execute them
-        if (!renderer::finish_user_initialization())
+        if(!renderer::finish_user_initialization())
         {
           REX_ERROR(LogWindows, "Unable to end draw on current frame");
           return false;
@@ -300,10 +300,10 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowDescription wnd_description;
-        wnd_description.title = m_gui_params.window_title;
-        wnd_description.viewport = { 0, 0, m_gui_params.window_width, m_gui_params.window_height };
+        wnd_description.title    = m_gui_params.window_title;
+        wnd_description.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
 
-        if (wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
+        if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
         {
           return wnd;
         }
@@ -329,14 +329,14 @@ namespace rex
       // to start using the graphics pipeline.
       bool init_gfx()
       {
-        renderer::OutputWindowUserData user_data{};
+        renderer::OutputWindowUserData user_data {};
         user_data.primary_display_handle = m_window->primary_display_handle();
-        user_data.refresh_rate = m_gui_params.max_fps;
-        user_data.window_width = m_window->width();
-        user_data.window_height = m_window->height();
-        user_data.windowed = !m_gui_params.fullscreen;
+        user_data.refresh_rate           = m_gui_params.max_fps;
+        user_data.window_width           = m_window->width();
+        user_data.window_height          = m_window->height();
+        user_data.windowed               = !m_gui_params.fullscreen;
 
-        if (renderer::initialize(user_data) == false) // NOLINT(readability-simplify-boolean-expr)
+        if(renderer::initialize(user_data) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
@@ -349,7 +349,7 @@ namespace rex
         // this function does this preparation.
         //
         // eg: on DX12 we require to reset and allow the command list to record commands
-        if (!renderer::prepare_user_initialization())
+        if(!renderer::prepare_user_initialization())
         {
           REX_ERROR(LogWindows, "Unable to start drawing frame");
           return false;
@@ -376,7 +376,6 @@ namespace rex
       {
         rex::renderer::new_frame();
         rex::renderer::begin_draw();
-
       }
       void post_user_draw()
       {
@@ -430,5 +429,5 @@ namespace rex
   } // namespace win
 } // namespace rex
 
-// NOLINTEND(modernize-use-nullptr)
+  // NOLINTEND(modernize-use-nullptr)
 // NOLINTEND(cppcoreguidelines-pro-type-union-access)

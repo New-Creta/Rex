@@ -7,5 +7,5 @@ namespace rex
   namespace rhi
   {
     using ConstantBuffer = rhi::Resource;
-  }
-}
+  } // namespace rhi
+} // namespace rex

@@ -8,17 +8,15 @@ namespace rex
   namespace rhi
   {
     Resource::Resource(const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState, s64 size, DXGI_FORMAT format)
-      : BaseResource(resource.Get(), make_new_hash())
-      , m_resource(resource)
-      , m_resource_state(startState)
-      , m_size(size)
+        : BaseResource(resource.Get(), make_new_hash())
+        , m_resource(resource)
+        , m_resource_state(startState)
+        , m_size(size)
     {
       D3D12_RESOURCE_DESC desc = m_resource->GetDesc();
-      m_width = static_cast<s32>(desc.Width);
-      m_height = static_cast<s32>(desc.Height);
-      m_format = format != DXGI_FORMAT_UNKNOWN
-        ? format
-        : desc.Format;
+      m_width                  = static_cast<s32>(desc.Width);
+      m_height                 = static_cast<s32>(desc.Height);
+      m_format                 = format != DXGI_FORMAT_UNKNOWN ? format : desc.Format;
     }
 
     s32 Resource::width() const
@@ -63,5 +61,5 @@ namespace rex
       cmdList->CopyResource(m_resource.Get(), srcResource);
     }
 
-  }
-}
+  } // namespace rhi
+} // namespace rex

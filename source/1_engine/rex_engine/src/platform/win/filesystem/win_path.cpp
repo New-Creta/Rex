@@ -1,9 +1,9 @@
 #include "rex_engine/platform/win/filesystem/win_path.h"
 
 #include "rex_engine/engine/numeric.h"
-#include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/path.h"
 #include "rex_engine/platform/win/win_com_library.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"

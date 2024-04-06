@@ -1,16 +1,19 @@
 #include "rex_engine/platform/win/crash_reporter/win_crash_handler.h"
 
-#include "rex_std/stacktrace.h"
-#include "rex_std/mutex.h"
-#include "rex_std/thread.h"
-#include "rex_std/bonus/platform.h"
-#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/debug.h"
-#include "rex_engine/threading/assert_mtx.h"
+#include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/threading/assert_mtx.h"
+#include "rex_std/bonus/platform.h"
+#include "rex_std/mutex.h"
+#include "rex_std/stacktrace.h"
+#include "rex_std/thread.h"
 
+// clang-format off
 #include <Windows.h>
+// clang-format on
+
 #include <DbgHelp.h>
 
 namespace rex
@@ -34,19 +37,20 @@ namespace rex
       // We need to create the file before we start creating the dump
       rsl::win::handle file_handle(CreateFileA(filepath.data(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
 
-      MINIDUMP_EXCEPTION_INFORMATION dump_exc_info{};
+      MINIDUMP_EXCEPTION_INFORMATION dump_exc_info {};
 
       // Initialize the exception information
-      dump_exc_info.ThreadId = GetCurrentThreadId();
+      dump_exc_info.ThreadId          = GetCurrentThreadId();
       dump_exc_info.ExceptionPointers = exceptionInfo;
-      dump_exc_info.ClientPointers = true;
+      dump_exc_info.ClientPointers    = true;
 
-      MINIDUMP_TYPE minidump_type{};
- 
+      MINIDUMP_TYPE minidump_type {};
+
       // Full dumps hold the entire state of the process including whatever's loaded in memory
       // Be careful when using these as they can fill up your disk quite quickly
-      if (createFullDump)
+      if(createFullDump)
       {
+        // clang-format off
         minidump_type = static_cast<MINIDUMP_TYPE>(
           MiniDumpWithFullMemory |
           MiniDumpWithThreadInfo |
@@ -55,9 +59,11 @@ namespace rex
           MiniDumpWithHandleData |
           MiniDumpWithUnloadedModules
           );
+        // clang-format on
       }
       else
       {
+        // clang-format off
         minidump_type = static_cast<MINIDUMP_TYPE>(
           MiniDumpNormal |
           MiniDumpWithThreadInfo |
@@ -66,6 +72,7 @@ namespace rex
           MiniDumpWithHandleData |
           MiniDumpWithIndirectlyReferencedMemory
           );
+        // clang-format on
       }
 
       // Fill up the memory dump and close the file handle
@@ -86,7 +93,7 @@ namespace rex
       // We cannot allocate heap memory as we have possibly run out of memory
       // Therefore we cannot use any logging and need to perform all operations on the stack
       REX_ERROR(CrashHandlingLog, "Error occurred!");
-      for (const rsl::stacktrace_entry& line : stack)
+      for(const rsl::stacktrace_entry& line: stack)
       {
         REX_ERROR(CrashHandlingLog, line.description());
       }
@@ -94,9 +101,9 @@ namespace rex
       // If a debugger is attached, we will have triggered a breakpoint at the point of the crash
       // However, if a crash dumps needs to get created, we reach this point and the user has the possibility
       // to create a crash dump by dragging the instruction pointer through an IDE.
-      // 
+      //
       // If no debugger is attached however, we always create a crash dump.
-      if (rex::is_debugger_attached())
+      if(rex::is_debugger_attached())
       {
         REX_DEBUG_BREAK();
       }
@@ -120,5 +127,5 @@ namespace rex
       const s32 num_frames_to_skip = 7;
       return report_crash(exceptionInfo, num_frames_to_skip);
     }
-  }
-}
+  } // namespace win
+} // namespace rex

@@ -8,22 +8,22 @@ namespace rex
   {
     CompileShaderDesc::CompileShaderDesc(rsl::string_view shaderName, rex::rhi::ShaderType shaderType, rsl::string_view filePath)
     {
-      switch (shaderType)
+      switch(shaderType)
       {
-      case rex::rhi::ShaderType::VERTEX:
-        shader_entry_point = "VS";
-        shader_feature_target = "vs_5_1";
-        break;
-      case rex::rhi::ShaderType::PIXEL:
-        shader_entry_point = "PS";
-        shader_feature_target = "ps_5_1";
-        break;
-      default: break;
+        case rex::rhi::ShaderType::VERTEX:
+          shader_entry_point    = "VS";
+          shader_feature_target = "vs_5_1";
+          break;
+        case rex::rhi::ShaderType::PIXEL:
+          shader_entry_point    = "PS";
+          shader_feature_target = "ps_5_1";
+          break;
+        default: break;
       }
 
       shader_code = rex::vfs::read_file(filePath);
       shader_name = shaderName;
       shader_type = shaderType;
     }
-  }
-}
+  } // namespace rhi
+} // namespace rex

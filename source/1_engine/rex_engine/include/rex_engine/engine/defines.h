@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "rex_std/bonus/compiler.h"
 #include "rex_std/bonus/defines.h"
 
@@ -23,7 +22,7 @@
 //-------------------------------------------------------------------------
 // Static messaging
 #define REX_STATIC_WARNING(expr) RSL_STATIC_WARNING(expr)
-#define REX_STATIC_INFO(expr) RSL_STATIC_INFO(expr)
+#define REX_STATIC_INFO(expr)    RSL_STATIC_INFO(expr)
 
 //-------------------------------------------------------------------------
 // Anonymous Variable
@@ -31,7 +30,6 @@
 
 //-------------------------------------------------------------------------
 // Attributes
-#define REX_NO_DISCARD RSL_NO_DISCARD
+#define REX_NO_DISCARD   RSL_NO_DISCARD
 #define REX_FORCE_INLINE RSL_FORCE_INLINE
 #define REX_MAYBE_UNUSED RSL_MAYBE_UNUSED
-

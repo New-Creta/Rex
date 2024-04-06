@@ -1,4 +1,7 @@
+#include "regina/cube_scene.h"
+#include "regina/sample_scene.h"
 #include "rex_engine/app/core_application.h"
+#include "rex_engine/app/windowinfo.h"
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
@@ -6,14 +9,13 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_engine/app/windowinfo.h"
 #include "rex_renderer_core/rendering/depth_info.h"
-#include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/rendering/scene.h"
-#include "rex_renderer_core/resources/mesh.h"
-#include "rex_renderer_core/rendering/vertex.h"
 #include "rex_renderer_core/rendering/scissor_rect.h"
+#include "rex_renderer_core/rendering/vertex.h"
 #include "rex_renderer_core/rendering/viewport.h"
+#include "rex_renderer_core/resources/mesh.h"
+#include "rex_renderer_core/system/renderer.h"
 #include "rex_std/bonus/math/color.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/string.h"
@@ -21,9 +23,6 @@
 #include "rex_windows/engine/platform_creation_params.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-
-#include "regina/sample_scene.h"
-#include "regina/cube_scene.h"
 
 DEFINE_LOG_CATEGORY(LogRegina);
 
@@ -73,8 +72,8 @@ namespace regina
   void draw()
   {
     // This function should be removed, the user should not have their own draw function
-    const f32 width = static_cast<f32>(rex::globals::window_info().width);
-    const f32 height = static_cast<f32>(rex::globals::window_info().height);
+    const f32 width           = static_cast<f32>(rex::globals::window_info().width);
+    const f32 height          = static_cast<f32>(rex::globals::window_info().height);
     const rex::Viewport vp    = {0.0f, 0.0f, width, height, 0.0f, 1.0f};
     const rex::ScissorRect sr = {vp.top_left_x, vp.top_left_y, vp.width, vp.height};
 

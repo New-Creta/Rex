@@ -15,5 +15,5 @@ namespace rex
       s32 index_count;
       s32 base_vertex_loc;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

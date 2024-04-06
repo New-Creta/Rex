@@ -30,7 +30,7 @@ namespace rex
       explicit PatternFormatter(rsl::string_view pattern, PatternTimeType timeType = PatternTimeType::Local, rsl::string_view eol = rex::g_default_eol);
       explicit PatternFormatter(PatternTimeType timeType = PatternTimeType::Local, rsl::string_view eol = rex::g_default_eol);
 
-      void format(const details::LogMsg& msg,memory_buf_t& dest);
+      void format(const details::LogMsg& msg, memory_buf_t& dest);
       void set_pattern(rsl::string_view pattern);
       void need_localtime(bool need = true);
 

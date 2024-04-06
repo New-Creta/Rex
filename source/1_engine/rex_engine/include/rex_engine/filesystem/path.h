@@ -23,7 +23,7 @@ namespace rex
         join_impl(str, rsl::forward<PathLikeType>(firstArg)); // append the first arg
         join_impl(str, rsl::forward<Args>(args)...);          // append the rest
       }
-    } // namespace internal
+    }                                                         // namespace internal
     // returns the seperation char for paths
     char8 seperation_char();
 

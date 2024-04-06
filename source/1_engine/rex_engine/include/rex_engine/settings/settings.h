@@ -1,8 +1,7 @@
 #pragma once
 
-#include "rex_std/string_view.h"
-
 #include "rex_engine/engine/types.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {
@@ -21,5 +20,5 @@ namespace rex
     // This behaves the same as if you can "set" multiple times
     // for each setting in the file
     void load(rsl::string_view path);
-  }
-}
+  } // namespace settings
+} // namespace rex

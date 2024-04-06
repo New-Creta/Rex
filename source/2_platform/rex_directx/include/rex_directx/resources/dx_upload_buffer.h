@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-
 #include "rex_renderer_core/resource_management/resource.h"
 
 namespace rex
@@ -27,5 +26,5 @@ namespace rex
       s64 m_offset;
       D3D12_RESOURCE_STATES m_resource_state;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

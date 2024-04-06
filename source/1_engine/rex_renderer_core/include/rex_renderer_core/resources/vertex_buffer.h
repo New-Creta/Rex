@@ -14,5 +14,5 @@ namespace rex
       s32 vertex_size;
       InputLayoutDesc input_layout;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

@@ -8,8 +8,8 @@ namespace rex
   {
     struct MsaaSettings
     {
-      s32 count = 1; // number of multi samples per pixel
+      s32 count   = 1; // number of multi samples per pixel
       s32 quality = 0; // the image quality level
     };
-  }
-}
+  }                    // namespace renderer
+} // namespace rex

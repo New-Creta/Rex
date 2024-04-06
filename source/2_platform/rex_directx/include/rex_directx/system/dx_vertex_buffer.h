@@ -10,9 +10,10 @@ namespace rex
     {
     public:
       VertexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size, s32 stride)
-        : Resource(resource, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, size)
-        , m_stride(stride)
-      {}
+          : Resource(resource, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, size)
+          , m_stride(stride)
+      {
+      }
 
       s32 stride() const
       {
@@ -22,5 +23,5 @@ namespace rex
     private:
       s32 m_stride;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

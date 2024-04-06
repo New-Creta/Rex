@@ -1,9 +1,7 @@
 #pragma once
 
-#include "rex_directx/utility/dx_util.h"
-
 #include "rex_directx/system/dx_fence.h"
-
+#include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"
 
 namespace rex
@@ -28,5 +26,5 @@ namespace rex
       wrl::ComPtr<ID3D12CommandQueue> m_command_queue;
       Fence m_fence;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

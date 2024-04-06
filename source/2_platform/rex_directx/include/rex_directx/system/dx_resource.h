@@ -1,10 +1,8 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-
-#include "rex_renderer_core/resource_management/resource.h"
-
 #include "rex_engine/engine/types.h"
+#include "rex_renderer_core/resource_management/resource.h"
 
 namespace rex
 {
@@ -36,5 +34,5 @@ namespace rex
       s64 m_size;
       D3D12_RESOURCE_STATES m_resource_state;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

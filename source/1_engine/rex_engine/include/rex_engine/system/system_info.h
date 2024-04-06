@@ -68,9 +68,9 @@ namespace rex
 
     // Returns the number of logical processors
     s32 number_logical_processors();
-  }
+  } // namespace sys_info
 } // namespace rex
 
 #ifdef REX_PLATFORM_WINDOWS
-#include "rex_engine/platform/win/system/win_sys_info.h"
+  #include "rex_engine/platform/win/system/win_sys_info.h"
 #endif

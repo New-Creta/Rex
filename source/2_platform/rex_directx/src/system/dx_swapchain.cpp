@@ -1,12 +1,10 @@
 #include "rex_directx/system/dx_swapchain.h"
 
-#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
-#include "rex_renderer_core/rendering/msaa_settings.h"
-
 #include "rex_directx/diagnostics/dx_call.h"
 #include "rex_directx/system/dx_rhi.h"
-
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_renderer_core/rendering/msaa_settings.h"
+#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 
 namespace rex
 {
@@ -15,14 +13,13 @@ namespace rex
     DEFINE_LOG_CATEGORY(LogSwapchain);
 
     Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount, DescriptorHeap* rtvDescHeap, DescriptorHeap* dsvDescHeap, ResourceHeap* resourceHeap)
-      : m_swapchain(swapchain)
-      , m_format(format)
-      , m_buffer_count(bufferCount)
-      , m_rtv_desc_heap(rtvDescHeap)
-      , m_dsv_desc_heap(dsvDescHeap)
-      , m_resource_heap(resourceHeap)
+        : m_swapchain(swapchain)
+        , m_format(format)
+        , m_buffer_count(bufferCount)
+        , m_rtv_desc_heap(rtvDescHeap)
+        , m_dsv_desc_heap(dsvDescHeap)
+        , m_resource_heap(resourceHeap)
     {
-
     }
 
     DescriptorHandle Swapchain::backbuffer_view()
@@ -43,13 +40,13 @@ namespace rex
 
     void Swapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
     {
-      if (DX_FAILED(m_swapchain->ResizeBuffers(m_buffer_count, width, height, m_format, flags)))
+      if(DX_FAILED(m_swapchain->ResizeBuffers(m_buffer_count, width, height, m_format, flags)))
       {
         REX_ERROR(LogSwapchain, "Failed to resize swapchain buffers");
         return;
       }
 
-      for (s32 i = 0; i < m_buffer_count; ++i)
+      for(s32 i = 0; i < m_buffer_count; ++i)
       {
         wrl::ComPtr<ID3D12Resource> buffer;
         m_swapchain->GetBuffer(i, IID_PPV_ARGS(&buffer));
@@ -82,5 +79,5 @@ namespace rex
       m_swapchain->GetBuffer(idx, IID_PPV_ARGS(&buffer));
       return buffer;
     }
-  }
-}
+  } // namespace rhi
+} // namespace rex

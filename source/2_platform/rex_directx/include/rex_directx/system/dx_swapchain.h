@@ -1,12 +1,11 @@
 #pragma once
 
-#include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/resource_management/resource.h"
-#include "rex_engine/engine/types.h"
-
 #include "rex_directx/system/dx_descriptor_heap.h"
-#include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/system/dx_resource.h"
+#include "rex_directx/system/dx_resource_heap.h"
+#include "rex_directx/utility/dx_util.h"
+#include "rex_engine/engine/types.h"
+#include "rex_renderer_core/resource_management/resource.h"
 
 #include <dxgi1_4.h>
 
@@ -36,7 +35,7 @@ namespace rex
     private:
       wrl::ComPtr<IDXGISwapChain3> m_swapchain;
       DXGI_FORMAT m_format;
-      rsl::vector<Resource> m_swapchain_buffers;   // swapchain render target buffer indices
+      rsl::vector<Resource> m_swapchain_buffers; // swapchain render target buffer indices
       DescriptorHeap* m_rtv_desc_heap;
       DescriptorHeap* m_dsv_desc_heap;
       ResourceHeap* m_resource_heap;
@@ -47,5 +46,5 @@ namespace rex
 
       s32 m_buffer_count;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

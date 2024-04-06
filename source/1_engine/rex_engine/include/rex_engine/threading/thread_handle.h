@@ -28,5 +28,5 @@ namespace rex
     private:
       internal::Thread* m_thread;
     };
-  }
-}
+  } // namespace threading
+} // namespace rex

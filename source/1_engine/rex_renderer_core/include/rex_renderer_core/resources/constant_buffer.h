@@ -10,5 +10,5 @@ namespace rex
     {
       memory::BlobView blob_view;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

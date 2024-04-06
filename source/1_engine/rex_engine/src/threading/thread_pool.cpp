@@ -20,7 +20,7 @@ namespace rex
         m_threads.reserve(num_threads_to_spawn);
         m_idle_threads.reserve(num_threads_to_spawn);
 
-        for (s32 idx = 0; idx < num_threads_to_spawn; ++idx)
+        for(s32 idx = 0; idx < num_threads_to_spawn; ++idx)
         {
           m_threads.push_back(rsl::make_unique<Thread>());
           m_idle_threads.push_back(m_threads.back().get());
@@ -39,7 +39,7 @@ namespace rex
       // if so return it.
       Thread* ThreadPool::acquire_idle_thread()
       {
-        if (has_idle_threads())
+        if(has_idle_threads())
         {
           const rsl::unique_lock lock(m_threads_access_mtx);
           Thread* thread = m_idle_threads.back();
@@ -82,5 +82,5 @@ namespace rex
       return ThreadHandle(internal::global_thread_pool().acquire_idle_thread());
     }
 
-  } // namespace thread_pool
+  } // namespace threading
 } // namespace rex

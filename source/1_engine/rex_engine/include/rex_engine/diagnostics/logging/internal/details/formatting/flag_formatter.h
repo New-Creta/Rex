@@ -71,7 +71,7 @@ namespace rex
         explicit FlagFormatter(PaddingInfo padinfo);
         virtual ~FlagFormatter() = default;
 
-        virtual void format(const details::LogMsg& msg, const tm& tmTime,memory_buf_t& dest) = 0;
+        virtual void format(const details::LogMsg& msg, const tm& tmTime, memory_buf_t& dest) = 0;
 
       protected:
         void set_padding_info(const details::PaddingInfo& padding);
@@ -91,7 +91,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           ScopedPadder p(msg.logger_name().size(), padding_info(), dest);
           fmt_helper::append_string_view(msg.logger_name(), dest);
@@ -109,7 +109,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           const rsl::string_view level_name = level::to_string_view(msg.level());
           ScopedPadder p(level_name.size(), padding_info(), dest);
@@ -128,7 +128,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           const rsl::string_view level_name {level::to_short_c_str(msg.level())};
           ScopedPadder p(level_name.size(), padding_info(), dest);
@@ -146,7 +146,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const rsl::string_view field_value {DayNames::s_days[static_cast<count_t>(tmTime.tm_wday)]};
           ScopedPadder p(field_value.size(), padding_info(), dest);
@@ -164,7 +164,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const rsl::string_view field_value {DayNames::s_full_days[static_cast<count_t>(tmTime.tm_wday)]};
           ScopedPadder p(field_value.size(), padding_info(), dest);
@@ -182,7 +182,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const rsl::string_view field_value {MonthNames::s_months[static_cast<count_t>(tmTime.tm_mon)]};
           ScopedPadder p(field_value.size(), padding_info(), dest);
@@ -200,7 +200,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const rsl::string_view field_value {MonthNames::s_full_months[static_cast<count_t>(tmTime.tm_mon)]};
           ScopedPadder p(field_value.size(), padding_info(), dest);
@@ -219,7 +219,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 24;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -253,7 +253,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 2;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -272,7 +272,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 10;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -296,7 +296,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 4;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -315,7 +315,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 2;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -334,7 +334,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 2;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -353,7 +353,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 2;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -372,7 +372,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 2;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -391,7 +391,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 2;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -410,7 +410,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 2;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -429,7 +429,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           auto millis          = fmt_helper::time_fraction<rsl::chrono::milliseconds>(msg.time());
           const s32 field_size = 3;
@@ -449,7 +449,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           auto micros = fmt_helper::time_fraction<rsl::chrono::microseconds>(msg.time());
 
@@ -470,7 +470,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           auto ns              = fmt_helper::time_fraction<rsl::chrono::nanoseconds>(msg.time());
           const s32 field_size = 9;
@@ -490,7 +490,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           const s32 field_size = 10;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -511,7 +511,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 2;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -530,7 +530,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 11;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -556,7 +556,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 5;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -578,7 +578,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 8;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -607,7 +607,7 @@ namespace rex
         ~z_Formatter() override                    = default;
         z_Formatter& operator=(const z_Formatter&) = delete;
 
-        void format(const details::LogMsg& msg, const tm& tmTime,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& tmTime, memory_buf_t& dest) override
         {
           const s32 field_size = 6;
           ScopedPadder p(field_size, padding_info(), dest);
@@ -657,7 +657,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           const auto field_size = ScopedPadder::count_digits(msg.thread_id());
           ScopedPadder p(field_size, padding_info(), dest);
@@ -676,7 +676,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& /*unused*/, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest) override
         {
           const auto pid  = static_cast<uint32_t>(details::os::pid());
           auto field_size = ScopedPadder::count_digits(pid);
@@ -695,7 +695,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           ScopedPadder p(msg.payload().size(), padding_info(), dest);
           fmt_helper::append_string_view(msg.payload(), dest);
@@ -713,7 +713,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           if(!msg.source().file_name().empty())
           {
@@ -750,7 +750,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           if(!msg.source().file_name().empty())
           {
@@ -799,7 +799,7 @@ namespace rex
   #pragma warning(pop)
 #endif // _MSC_VER
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           if(!msg.source().file_name().empty())
           {
@@ -823,7 +823,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           if(!msg.source().file_name().empty())
           {
@@ -848,7 +848,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           if(!msg.source().file_name().empty())
           {
@@ -876,7 +876,7 @@ namespace rex
         {
         }
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override
         {
           auto delta          = (rsl::max)(msg.time() - m_last_message_time, log_clock::duration::zero());
           auto delta_units    = rsl::chrono::duration_cast<DurationUnits>(delta);
@@ -897,7 +897,7 @@ namespace rex
       public:
         explicit CharacterFormatter(char ch);
 
-        void format(const details::LogMsg& /*unused*/, const tm& /*unused*/,memory_buf_t& dest) override;
+        void format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest) override;
 
       private:
         char m_character;
@@ -911,7 +911,7 @@ namespace rex
         AggregateFormatter() = default;
 
         void add_ch(char ch);
-        void format(const details::LogMsg& /*unused*/, const tm& /*unused*/,memory_buf_t& dest) override;
+        void format(const details::LogMsg& /*unused*/, const tm& /*unused*/, memory_buf_t& dest) override;
 
       private:
         rex::DebugString m_string;
@@ -924,7 +924,7 @@ namespace rex
       public:
         explicit ColorStartFormatter(PaddingInfo padinfo);
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override;
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override;
       };
 
       //-------------------------------------------------------------------------
@@ -933,7 +933,7 @@ namespace rex
       public:
         explicit ColorStopFormatter(PaddingInfo padinfo);
 
-        void format(const details::LogMsg& msg, const tm& /*unused*/,memory_buf_t& dest) override;
+        void format(const details::LogMsg& msg, const tm& /*unused*/, memory_buf_t& dest) override;
       };
 
       //-------------------------------------------------------------------------
@@ -944,7 +944,7 @@ namespace rex
       public:
         explicit FullFormatter(PaddingInfo padinfo);
 
-        void format(const details::LogMsg& msg, const tm& tmTime,memory_buf_t& dest) override;
+        void format(const details::LogMsg& msg, const tm& tmTime, memory_buf_t& dest) override;
 
       private:
         rsl::chrono::seconds m_cache_timestamp {0};

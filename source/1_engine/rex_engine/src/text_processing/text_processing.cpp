@@ -1,7 +1,7 @@
 #include "rex_engine/text_processing/text_processing.h"
 
-#include "rex_std/ctype.h"
 #include "rex_std/algorithm.h"
+#include "rex_std/ctype.h"
 
 namespace rex
 {
@@ -17,6 +17,7 @@ namespace rex
   // Removes leading and trailing whitespace
   rsl::string_view strip(rsl::string_view input)
   {
+    // clang-format off
     auto first_not_whitespace = rsl::find_if(input.cbegin(), input.cend(),
       [](const char8 c)
       {
@@ -28,15 +29,16 @@ namespace rex
       {
         return !rsl::is_space(c);
       }).base();
+    // clang-format on
 
-      return rsl::string_view(first_not_whitespace, last_not_whitespace);
+    return rsl::string_view(first_not_whitespace, last_not_whitespace);
   }
 
   // Removes leading and trailing characters that match any character in the view
   rsl::string_view strip(rsl::string_view input, rsl::string_view characters)
   {
     auto first_not_whitespace = rsl::find_first_not_of(input.cbegin(), input.cend(), characters.cbegin(), characters.cend());
-    auto last_not_whitespace = rsl::find_last_not_of(input.cbegin(), input.cend(), characters.cbegin(), characters.cend());
+    auto last_not_whitespace  = rsl::find_last_not_of(input.cbegin(), input.cend(), characters.cbegin(), characters.cend());
 
     return rsl::string_view(first_not_whitespace, last_not_whitespace);
   }
@@ -44,11 +46,13 @@ namespace rex
   // Removes leading whitespace
   rsl::string_view lstrip(rsl::string_view input)
   {
+    // clang-format off
     auto first_not_whitespace = rsl::find_if(input.cbegin(), input.cend(),
       [](const char8 c)
       {
         return !rsl::is_space(c);
       });
+    // clang-format on
 
     return rsl::string_view(first_not_whitespace, input.cend());
   }
@@ -64,13 +68,15 @@ namespace rex
   // Removes trailing whitespace
   rsl::string_view rstrip(rsl::string_view input)
   {
+    // clang-format off
     auto last_not_whitespace = rsl::find_if(input.crbegin(), input.crend(),
       [](const char8 c)
       {
         return !rsl::is_space(c);
       }).base();
+    // clang-format on
 
-      return rsl::string_view(input.cbegin(), last_not_whitespace);
+    return rsl::string_view(input.cbegin(), last_not_whitespace);
   }
 
   // Removes trailing characters that match any character in the view
@@ -101,4 +107,4 @@ namespace rex
   {
     input.replace(" ", "");
   }
-}
+} // namespace rex

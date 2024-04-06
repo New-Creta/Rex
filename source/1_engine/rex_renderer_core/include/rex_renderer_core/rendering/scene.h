@@ -1,10 +1,9 @@
 #pragma once
 
-#include "rex_renderer_core/rendering/render_item.h"
 #include "rex_renderer_core/rendering/fill_mode.h"
-#include "rex_std/vector.h"
-
+#include "rex_renderer_core/rendering/render_item.h"
 #include "rex_renderer_core/resource_management/resource.h"
+#include "rex_std/vector.h"
 
 namespace rex
 {
@@ -43,9 +42,9 @@ namespace rex
       rex::rhi::ResourceSlot m_pso;
 
       // These should be part of a camera class
-      glm::vec3 m_eye_pos = { 0.0f, 0.0f, 0.0f };
-      glm::mat4 m_view = glm::mat4(1.0f);
-      glm::mat4 m_proj = glm::mat4(1.0f);
+      glm::vec3 m_eye_pos = {0.0f, 0.0f, 0.0f};
+      glm::mat4 m_view    = glm::mat4(1.0f);
+      glm::mat4 m_proj    = glm::mat4(1.0f);
     };
   } // namespace renderer
 } // namespace rex

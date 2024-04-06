@@ -1,12 +1,10 @@
 #pragma once
 
-#include "rex_std/functional.h"
-
 #include "rex_engine/threading/thread.h"
 #include "rex_engine/threading/thread_handle.h"
-
-#include "rex_std/vector.h"
+#include "rex_std/functional.h"
 #include "rex_std/mutex.h"
+#include "rex_std/vector.h"
 
 namespace rex
 {
@@ -40,7 +38,7 @@ namespace rex
       };
 
       ThreadPool& global_thread_pool();
-    }
+    } // namespace internal
 
     // This checks if we have any threads in the thread pool that are idle and ready for use
     bool has_any_idle_thread();

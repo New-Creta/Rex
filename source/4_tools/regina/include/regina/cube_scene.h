@@ -1,9 +1,8 @@
 #pragma once
 
-#include "rex_renderer_core/rendering/scene.h"
-
-#include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/rendering/render_item.h"
+#include "rex_renderer_core/rendering/scene.h"
+#include "rex_renderer_core/resources/mesh.h"
 
 namespace regina
 {
@@ -21,6 +20,7 @@ namespace regina
   private:
     rsl::unique_ptr<rex::renderer::Mesh> m_mesh_cube;
     rex::renderer::RenderItem* m_cube_render_item;
-    glm::mat4 m_cube_world;;
+    glm::mat4 m_cube_world;
+    ;
   };
-}
+} // namespace regina

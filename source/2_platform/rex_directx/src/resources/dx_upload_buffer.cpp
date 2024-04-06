@@ -1,22 +1,20 @@
 #include "rex_directx/resources/dx_upload_buffer.h"
 
-#include "rex_directx/utility/d3dx12.h"
-
 #include "rex_directx/diagnostics/dx_call.h"
-
 #include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_resource.h"
+#include "rex_directx/utility/d3dx12.h"
 
 namespace rex
 {
   namespace rhi
   {
     UploadBuffer::UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState)
-      : BaseResource(uploadBuffer.Get(), make_new_hash())
-      , m_upload_buffer(uploadBuffer)
-      , m_mapped_data(nullptr)
-      , m_resource_state(startState)
-      , m_offset(0)
+        : BaseResource(uploadBuffer.Get(), make_new_hash())
+        , m_upload_buffer(uploadBuffer)
+        , m_mapped_data(nullptr)
+        , m_resource_state(startState)
+        , m_offset(0)
     {
       CD3DX12_RANGE read_range(0, 0); // We do not intend to read from this resource on the CPU
       DX_CALL(m_upload_buffer->Map(0, &read_range, &m_mapped_data));
@@ -26,7 +24,7 @@ namespace rex
     {
       m_upload_buffer->Unmap(0, nullptr);
     }
- 
+
     void UploadBuffer::write(CommandList* cmdList, Resource* dstResource, const void* data, s64 size)
     {
       // Write the data into our mapped memory
@@ -38,8 +36,8 @@ namespace rex
       dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
       dstResource->write(cmdList->get(), this, m_offset, size);
       dstResource->transition(cmdList->get(), original_state);
-      
-      //m_upload_infos.emplace_back(UploadInfo{ dstResource, m_offset, size });
+
+      // m_upload_infos.emplace_back(UploadInfo{ dstResource, m_offset, size });
       m_offset += size;
     }
 
@@ -48,5 +46,5 @@ namespace rex
       m_offset = 0;
     }
 
-  }
-}
+  } // namespace rhi
+} // namespace rex

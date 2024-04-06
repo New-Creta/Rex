@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-
 #include "rex_std/type_traits.h"
 
 namespace rex
@@ -10,7 +9,7 @@ namespace rex
   class StateController
   {
   public:
-      //-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     StateController()
         : m_state(static_cast<TState>(0))
     {
@@ -47,7 +46,7 @@ namespace rex
     //-----------------------------------------------------------------------
     TState state() const
     {
-        return m_state;
+      return m_state;
     }
 
   private:

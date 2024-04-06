@@ -5,7 +5,6 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/text_processing/ini_processor.h"
 #include "rex_engine/text_processing/text_processing.h"
-
 #include "rex_std/algorithm.h"
 #include "rex_std/unordered_map.h"
 
@@ -32,7 +31,7 @@ namespace rex
         // If a setting comes from a header, we add the header to the final name
         // and seperate it by a '.'
         rsl::string full_setting_name;
-        if (!header.empty())
+        if(!header.empty())
         {
           full_setting_name.assign(rsl::format("{}.{}", header, key));
         }
@@ -47,7 +46,7 @@ namespace rex
         rsl::to_lower(full_setting_name.data(), full_setting_name.data(), full_setting_name.length());
         all_settings()[rsl::move(full_setting_name)] = rsl::string(val);
       }
-    }
+    } // namespace internal
 
     // Check if a certain setting exists
     bool has_setting(rsl::string_view name)
@@ -73,7 +72,7 @@ namespace rex
     void load(rsl::string_view path)
     {
       // of course if the path doesn't exist, we exit early
-      if (!file::exists(path))
+      if(!file::exists(path))
       {
         return;
       }
@@ -84,18 +83,18 @@ namespace rex
       // Settings are just plain ini files
       // so we can use the ini processor here
       IniProcessor ini_processor = IniProcessor(memory::BlobView(settings_blob));
-      Error error = ini_processor.process();
+      Error error                = ini_processor.process();
 
       REX_ERROR_X(Settings, !error, "Invalid settings found in \"{}\"", path);
 
       // Loop over the processed settings and add them to the global map
-      for (const IniHeaderWithItems& header_with_items : ini_processor.items())
+      for(const IniHeaderWithItems& header_with_items: ini_processor.items())
       {
-        for (const rsl::key_value<rsl::string_view, rsl::string_view>& item : header_with_items.items())
+        for(const rsl::key_value<rsl::string_view, rsl::string_view>& item: header_with_items.items())
         {
           internal::add_new_settings(header_with_items.header(), item.key, item.value);
         }
       }
     }
-  }
-}
+  } // namespace settings
+} // namespace rex

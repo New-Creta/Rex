@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/rendering/fill_mode.h"
 #include "rex_renderer_core/rendering/cull_mode.h"
+#include "rex_renderer_core/rendering/fill_mode.h"
 
 namespace rex
 {
@@ -11,16 +11,16 @@ namespace rex
     struct RasterStateDesc
     {
       RasterStateDesc()
-        : fill_mode(renderer::FillMode::SOLID)
-        , cull_mode(renderer::CullMode::BACK)
-        , front_ccw(0)
-        , depth_bias(0)
-        , depth_bias_clamp(0.0f)
-        , sloped_scale_depth_bias(0.0f)
-        , depth_clip_enable(1)
-        , multisample(0)
-        , aa_lines(0)
-        , forced_sample_count(0)
+          : fill_mode(renderer::FillMode::SOLID)
+          , cull_mode(renderer::CullMode::BACK)
+          , front_ccw(0)
+          , depth_bias(0)
+          , depth_bias_clamp(0.0f)
+          , sloped_scale_depth_bias(0.0f)
+          , depth_clip_enable(1)
+          , multisample(0)
+          , aa_lines(0)
+          , forced_sample_count(0)
       {
       }
 
@@ -35,5 +35,5 @@ namespace rex
       s32 aa_lines;
       s32 forced_sample_count;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

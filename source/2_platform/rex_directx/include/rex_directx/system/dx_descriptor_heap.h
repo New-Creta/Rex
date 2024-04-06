@@ -1,10 +1,8 @@
 #pragma once
 
-#include "rex_directx/utility/dx_util.h"
 #include "rex_directx/utility/d3dx12.h"
-
+#include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"
-
 #include "rex_std/bonus/memory.h"
 
 namespace rex
@@ -61,5 +59,5 @@ namespace rex
       s32 m_num_descriptors;
       s32 m_used_descriptors;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

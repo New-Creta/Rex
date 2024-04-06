@@ -1,5 +1,4 @@
 #include "rex_engine/threading/thread_handle.h"
-#include "rex_engine/threading/thread_pool.h"
 
 #include "rex_engine/threading/thread_pool.h"
 
@@ -8,12 +7,12 @@ namespace rex
   namespace threading
   {
     ThreadHandle::ThreadHandle(internal::Thread* thread)
-      : m_thread(thread)
+        : m_thread(thread)
     {
     }
 
     ThreadHandle::ThreadHandle(ThreadHandle&& other)
-      : m_thread(rsl::exchange(other.m_thread, nullptr))
+        : m_thread(rsl::exchange(other.m_thread, nullptr))
     {
     }
 
@@ -37,10 +36,10 @@ namespace rex
 
     void ThreadHandle::return_me_to_thread_pool()
     {
-      if (m_thread)
+      if(m_thread)
       {
         threading::internal::global_thread_pool().return_thread(m_thread);
       }
     }
-  }
-}
+  } // namespace threading
+} // namespace rex

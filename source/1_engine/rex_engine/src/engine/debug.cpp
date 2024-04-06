@@ -17,4 +17,4 @@ namespace rex
     REX_INFO(LogEngine, "Undefined Behavior Sanitizer Disabled");
 #endif
   }
-}
+} // namespace rex

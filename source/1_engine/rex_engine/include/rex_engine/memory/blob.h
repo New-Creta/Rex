@@ -21,12 +21,12 @@ namespace rex
       explicit Blob(rsl::unique_array<rsl::byte> data);
       template <typename T>
       explicit Blob(rsl::unique_array<T>&& data)
-        : m_data()
+          : m_data()
       {
         // "release" sets internal count to 0
         // so we need to make sure we cache this data before actually calling release.
         s32 total_size = data.byte_size();
-        m_data = rsl::unique_array<rsl::byte>((rsl::byte*)data.release(), total_size);
+        m_data         = rsl::unique_array<rsl::byte>((rsl::byte*)data.release(), total_size);
       }
       Blob(void* data, rsl::memory_size size);
       ~Blob();

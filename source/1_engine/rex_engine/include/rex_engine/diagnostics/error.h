@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_std/bonus/string.h"
 #include "rex_engine/engine/types.h"
+#include "rex_std/bonus/string.h"
 
 namespace rex
 {
@@ -28,4 +28,4 @@ namespace rex
     rsl::medium_stack_string m_error_msg;
     s32 m_error_code;
   };
-}
+} // namespace rex

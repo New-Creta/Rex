@@ -45,7 +45,7 @@ namespace rex
       // we close down the program
       if(cmdline::get_argument("BreakOnBoot"))
       {
-        if (!wait_for_debugger())
+        if(!wait_for_debugger())
         {
           rsl::exit(1); // exit if debugger didn't get attached
         }

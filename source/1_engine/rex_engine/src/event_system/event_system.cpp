@@ -5,9 +5,9 @@
 #include "rex_engine/event_system/event.h"
 #include "rex_engine/event_system/event_type.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
+#include "rex_std/mutex.h"
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
-#include "rex_std/mutex.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
@@ -121,4 +121,4 @@ namespace rex
   } // namespace event_system
 } // namespace rex
 
-// NOLINTEND(cppcoreguidelines-pro-type-union-access)
+  // NOLINTEND(cppcoreguidelines-pro-type-union-access)

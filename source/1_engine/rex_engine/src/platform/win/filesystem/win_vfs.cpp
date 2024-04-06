@@ -47,7 +47,7 @@ namespace rex
                                                                 ),
                                                     ERROR_ALREADY_EXISTS));
 
-      if (!handle.is_valid())
+      if(!handle.is_valid())
       {
         REX_ERROR(LogFileSystem, "Failed to open file {}", path);
         return {};
@@ -71,16 +71,16 @@ namespace rex
       rsl::string fullpath = create_full_path(filepath);
 
       const rsl::win::handle handle(CreateFileA(fullpath.data(),           // Path to file
-                                                                GENERIC_WRITE,             // General read and write access
-                                                                FILE_SHARE_READ,           // Other processes can also read the file
-                                                                NULL,                      // No SECURITY_ATTRIBUTES
-                                                                OPEN_ALWAYS,               // Create a new file, error when it already exists
-                                                                FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
-                                                                NULL                       // No template file
-                                                                ));
+                                                GENERIC_WRITE,             // General read and write access
+                                                FILE_SHARE_READ,           // Other processes can also read the file
+                                                NULL,                      // No SECURITY_ATTRIBUTES
+                                                OPEN_ALWAYS,               // Create a new file, error when it already exists
+                                                FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
+                                                NULL                       // No template file
+                                                ));
 
       // make sure the handle is valid
-      if (!handle.is_valid())
+      if(!handle.is_valid())
       {
         REX_ERROR(LogFileSystem, "Failed to open file at \"{}\"", fullpath);
         return false;
@@ -107,13 +107,13 @@ namespace rex
 
     bool create_dirs(rsl::string_view path)
     {
-      rsl::string fullpath = create_full_path(path);
+      rsl::string fullpath                         = create_full_path(path);
       rsl::vector<rsl::string_view> splitted_paths = rsl::split(fullpath, "/\\");
 
       rsl::string full_path;
       full_path.reserve(fullpath.size());
 
-      for (rsl::string_view sub_path : splitted_paths)
+      for(rsl::string_view sub_path: splitted_paths)
       {
         full_path += sub_path;
         WIN_SUCCESS_IGNORE(CreateDirectoryA(full_path.data(), NULL), ERROR_ALREADY_EXISTS);

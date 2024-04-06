@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_directx/utility/dx_util.h"
 #include "rex_directx/dxgi/util.h"
+#include "rex_directx/utility/dx_util.h"
 
 namespace rex
 {
@@ -16,5 +16,5 @@ namespace rex
     private:
       wrl::ComPtr<IDXGIDebug1> m_debug_interface;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

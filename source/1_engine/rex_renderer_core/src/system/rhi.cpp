@@ -13,5 +13,5 @@ namespace rex
       exec_command_list();
       flush_command_queue();
     }
-  }
-}
+  } // namespace rhi
+} // namespace rex

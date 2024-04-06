@@ -6,7 +6,7 @@ namespace rex
 {
   UntrackedAllocator& untracked_allocator()
   {
-    static UntrackedAllocator alloc{};
+    static UntrackedAllocator alloc {};
     return alloc;
   }
-}
+} // namespace rex

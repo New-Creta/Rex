@@ -36,5 +36,5 @@ namespace rex
       rhi::ResourceSlot pixel_shader;
       rsl::unique_array<ConstantLayoutDescription> constants;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

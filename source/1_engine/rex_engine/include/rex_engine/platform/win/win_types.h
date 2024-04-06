@@ -6,5 +6,5 @@ namespace rex
   {
     using HResult = long; // HRESULT
     using DWord   = unsigned long;
-  } // namespace win
+  }                       // namespace win
 } // namespace rex

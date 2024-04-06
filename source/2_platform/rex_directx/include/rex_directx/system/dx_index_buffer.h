@@ -7,5 +7,5 @@ namespace rex
   namespace rhi
   {
     using IndexBuffer = rhi::Resource;
-  }
-}
+  } // namespace rhi
+} // namespace rex

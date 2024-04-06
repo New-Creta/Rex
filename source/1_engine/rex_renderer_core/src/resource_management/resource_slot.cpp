@@ -141,7 +141,7 @@ namespace rex
         {
           m_about_to_be_removed = true;
 
-          //renderer::release_resource(*this);
+          // renderer::release_resource(*this);
 
           m_about_to_be_removed = false;
           m_slot_id             = globals::g_invalid_slot_id;
@@ -159,5 +159,5 @@ namespace rex
     {
       return m_slot_id;
     }
-  } // namespace renderer
+  } // namespace rhi
 } // namespace rex

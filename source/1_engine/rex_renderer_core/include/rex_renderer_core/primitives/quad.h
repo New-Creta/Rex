@@ -15,29 +15,13 @@ namespace rex
       mesh_data.resize_indices(6);
 
       // Position coordinates specified in NDC space.
-			mesh_data.vertices()[0] = Vertex(
-				x, y - h, depth,
-				0.0f, 0.0f, -1.0f,
-				1.0f, 0.0f, 0.0f,
-				0.0f, 1.0f);
+      mesh_data.vertices()[0] = Vertex(x, y - h, depth, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
-			mesh_data.vertices()[1] = Vertex(
-				x, y, depth,
-				0.0f, 0.0f, -1.0f,
-				1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f);
+      mesh_data.vertices()[1] = Vertex(x, y, depth, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
-			mesh_data.vertices()[2] = Vertex(
-				x + w, y, depth,
-				0.0f, 0.0f, -1.0f,
-				1.0f, 0.0f, 0.0f,
-				1.0f, 0.0f);
+      mesh_data.vertices()[2] = Vertex(x + w, y, depth, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
-			mesh_data.vertices()[3] = Vertex(
-				x + w, y - h, depth,
-				0.0f, 0.0f, -1.0f,
-				1.0f, 0.0f, 0.0f,
-				1.0f, 1.0f);
+      mesh_data.vertices()[3] = Vertex(x + w, y - h, depth, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
 
       mesh_data.indices()[0] = 0;
       mesh_data.indices()[1] = 1;

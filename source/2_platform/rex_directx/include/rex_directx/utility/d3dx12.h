@@ -9,21 +9,20 @@
 //
 //*********************************************************
 
-//NOLINTBEGIN
+// NOLINTBEGIN
 
 #pragma warning(push)
 #pragma warning(disable : 4324)
 #pragma warning(disable : 4238)
 
 #ifndef __D3DX12_H__
-#define __D3DX12_H__
+  #define __D3DX12_H__
 
-#include "d3d12.h"
+  #include "d3d12.h"
+  #include "rex_std/list.h"
+  #include "rex_std/vector.h"
 
-#include "rex_std/list.h"
-#include "rex_std/vector.h"
-
-#if defined(__cplusplus)
+  #if defined(__cplusplus)
 
 struct CD3DX12_DEFAULT
 {
@@ -1763,8 +1762,7 @@ private:
   InnerStructType _Inner;
 
 public:
-  CD3DX12_PIPELINE_STATE_STREAM_SUBOBJECT()
-  noexcept
+  CD3DX12_PIPELINE_STATE_STREAM_SUBOBJECT() noexcept
       : _Type(Type)
       , _Inner(DefaultArg())
   {
@@ -2046,8 +2044,7 @@ struct CD3DX12_PIPELINE_STATE_STREAM
 struct CD3DX12_PIPELINE_STATE_STREAM_PARSE_HELPER : public ID3DX12PipelineParserCallbacks
 {
   CD3DX12_PIPELINE_STATE_STREAM1 PipelineStream;
-  CD3DX12_PIPELINE_STATE_STREAM_PARSE_HELPER()
-  noexcept
+  CD3DX12_PIPELINE_STATE_STREAM_PARSE_HELPER() noexcept
       : SeenDSS(false)
   {
     // Adjust defaults to account for absent members.
@@ -2379,26 +2376,26 @@ inline bool operator==(const D3D12_RENDER_PASS_DEPTH_STENCIL_DESC& a, const D3D1
   return true;
 }
 
-  #ifndef D3DX12_NO_STATE_OBJECT_HELPERS
+    #ifndef D3DX12_NO_STATE_OBJECT_HELPERS
 
-    //================================================================================================
-    // D3DX12 State Object Creation Helpers
-    //
-    // Helper classes for creating new style state objects out of an arbitrary set of subobjects.
-    // Uses STL
-    //
-    // Start by instantiating CD3DX12_STATE_OBJECT_DESC (see it's public methods).
-    // One of its methods is CreateSubobject(), which has a comment showing a couple of options for
-    // defining subobjects using the helper classes for each subobject (CD3DX12_DXIL_LIBRARY_SUBOBJECT
-    // etc.). The subobject helpers each have methods specific to the subobject for configuring it's
-    // contents.
-    //
-    //================================================================================================
-    #include <list>
-    #include <memory>
-    #include <string>
-    #include <vector>
-    #include <wrl/client.h>
+      //================================================================================================
+      // D3DX12 State Object Creation Helpers
+      //
+      // Helper classes for creating new style state objects out of an arbitrary set of subobjects.
+      // Uses STL
+      //
+      // Start by instantiating CD3DX12_STATE_OBJECT_DESC (see it's public methods).
+      // One of its methods is CreateSubobject(), which has a comment showing a couple of options for
+      // defining subobjects using the helper classes for each subobject (CD3DX12_DXIL_LIBRARY_SUBOBJECT
+      // etc.). The subobject helpers each have methods specific to the subobject for configuring it's
+      // contents.
+      //
+      //================================================================================================
+      #include <list>
+      #include <memory>
+      #include <string>
+      #include <vector>
+      #include <wrl/client.h>
 
 //------------------------------------------------------------------------------------------------
 class CD3DX12_STATE_OBJECT_DESC
@@ -2513,9 +2510,9 @@ private:
                                                     // for repointing pointers in subobjects
   } SUBOBJECT_WRAPPER;
   D3D12_STATE_OBJECT_DESC m_Desc;
-  rsl::list<SUBOBJECT_WRAPPER> m_SubobjectList;        // Pointers to list nodes handed out so
-                                                       // these can be edited live
-  rsl::vector<D3D12_STATE_SUBOBJECT> m_SubobjectArray; // Built at the end, copying list contents
+  rsl::list<SUBOBJECT_WRAPPER> m_SubobjectList;                              // Pointers to list nodes handed out so
+                                                                             // these can be edited live
+  rsl::vector<D3D12_STATE_SUBOBJECT> m_SubobjectArray;                       // Built at the end, copying list contents
 
   rsl::list<D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION> m_RepointedAssociations; // subobject type that contains pointers to other subobjects,
                                                                              // repointed to flattened array
@@ -2575,9 +2572,9 @@ private:
     D3D12_STATE_SUBOBJECT* m_pSubobject;
   };
 
-    #if(__cplusplus >= 201103L)
+      #if(__cplusplus >= 201103L)
   rsl::list<rsl::unique_ptr<const SUBOBJECT_HELPER_BASE>> m_OwnedSubobjectHelpers;
-    #else
+      #else
   class OWNED_HELPER
   {
   public:
@@ -2593,7 +2590,7 @@ private:
   };
 
   rsl::list<OWNED_HELPER> m_OwnedSubobjectHelpers;
-    #endif
+      #endif
 
   friend class CD3DX12_DXIL_LIBRARY_SUBOBJECT;
   friend class CD3DX12_EXISTING_COLLECTION_SUBOBJECT;
@@ -3218,12 +3215,12 @@ private:
   D3D12_NODE_MASK m_Desc;
 };
 
-  #endif // #ifndef D3DX12_NO_STATE_OBJECT_HELPERS
+    #endif // #ifndef D3DX12_NO_STATE_OBJECT_HELPERS
 
-#endif // defined( __cplusplus )
+  #endif   // defined( __cplusplus )
 
-#endif //__D3DX12_H__
+#endif     //__D3DX12_H__
 
 #pragma warning(pop)
 
-//NOLINTEND
+// NOLINTEND

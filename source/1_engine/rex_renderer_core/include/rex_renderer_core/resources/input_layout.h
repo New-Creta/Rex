@@ -1,9 +1,9 @@
 #pragma once
 
+#include "rex_engine/engine/types.h"
 #include "rex_renderer_core/rendering/input_layout_classification.h"
 #include "rex_renderer_core/rendering/vertex_buffer_format.h"
 #include "rex_std/string_view.h"
-#include "rex_engine/engine/types.h"
 
 namespace rex
 {
@@ -22,7 +22,7 @@ namespace rex
 
     struct InputLayoutDesc
     {
-      rsl::vector<InputLayoutElementDesc> input_layout{};
+      rsl::vector<InputLayoutElementDesc> input_layout {};
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

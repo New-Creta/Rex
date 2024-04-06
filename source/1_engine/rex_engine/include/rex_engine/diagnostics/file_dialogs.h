@@ -50,81 +50,81 @@ misrepresented as being the original software.
 // We've changed tinyfiledialogs to make it more performant
 
 #ifndef TINYFILEDIALOGS_H
-#define TINYFILEDIALOGS_H
+  #define TINYFILEDIALOGS_H
 
-#ifdef	__cplusplus
-/* if tinydialogs.c is compiled as C++ code rather than C code, you may need to comment this out
-				and the corresponding closing bracket near the end of this file. */
-//extern "C" {
-#endif
+  #ifdef __cplusplus
+  /* if tinydialogs.c is compiled as C++ code rather than C code, you may need to comment this out
+                                  and the corresponding closing bracket near the end of this file. */
+  // extern "C" {
+  #endif
 
-#include "rex_std/bonus/math/color.h"
+  #include "rex_std/bonus/math/color.h"
 
 namespace rex
 {
-	namespace dialog
-	{
-		// Plays a beep noise
-		void beep(void);
+  namespace dialog
+  {
+    // Plays a beep noise
+    void beep(void);
 
-		enum class IconType
-		{
-			Info,
-			Warning,
-			Error,
-			Question
-		};
+    enum class IconType
+    {
+      Info,
+      Warning,
+      Error,
+      Question
+    };
 
-		enum class DialogType
-		{
-			Ok,
-			OkCancel,
-			YesNo,
-			YesNoCancel
-		};
+    enum class DialogType
+    {
+      Ok,
+      OkCancel,
+      YesNo,
+      YesNoCancel
+    };
 
-		enum class InputType
-		{
-			Default,
-			Password
-		};
+    enum class InputType
+    {
+      Default,
+      Password
+    };
 
-		enum class DefaultButton
-		{
-			Cancel,
-			Yes,
-			Ok = Yes,
-			No
-		};
+    enum class DefaultButton
+    {
+      Cancel,
+      Yes,
+      Ok = Yes,
+      No
+    };
 
-		// spawns a native pop up window with a title, message and tooltip
+    // spawns a native pop up window with a title, message and tooltip
     int popup(rsl::string_view title, rsl::string_view msg, rsl::string_view tip, IconType iconType);
 
-		// spawns a messagebox to the user
+    // spawns a messagebox to the user
     int msg_box(rsl::string_view title, rsl::string_view msg, DialogType aDialogType, IconType aIconType, DefaultButton defaultButton);
 
-		// create a dialog where the user can select a file to save to. filter is a semicolon seperated list of filters to use
-		rsl::medium_stack_string save_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
+    // create a dialog where the user can select a file to save to. filter is a semicolon seperated list of filters to use
+    rsl::medium_stack_string save_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
 
-		// create a dialog where the user can select a file to open. filter is a semicolon seperated list of filters to use
-		// allows for multi selection of files
-		rsl::vector<rsl::string> open_file_dialog_multiselect(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
+    // create a dialog where the user can select a file to open. filter is a semicolon seperated list of filters to use
+    // allows for multi selection of files
+    rsl::vector<rsl::string> open_file_dialog_multiselect(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
 
-		// create a dialog where the user can select a file to open. filter is a semicolon seperated list of filters to use
-		// doesn't allow for multi selection of files
-		rsl::medium_stack_string open_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
+    // create a dialog where the user can select a file to open. filter is a semicolon seperated list of filters to use
+    // doesn't allow for multi selection of files
+    rsl::medium_stack_string open_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter);
 
-		// create a dialog where the user can select a folder to open
+    // create a dialog where the user can select a folder to open
     rsl::big_stack_string open_folder_dialog(rsl::string_view title, rsl::string_view defaultPath);
 
-		// creates a dialog where the user can select a color
+    // creates a dialog where the user can select a color
     rsl::Rgb color_chooser(rsl::string_view title, rsl::Rgb defaultRgb);
-	}
+  } // namespace dialog
 
-}
-#ifdef	__cplusplus
-//} /*extern "C"*/
-#endif
+} // namespace rex
+  #ifdef __cplusplus
+  //} /*extern "C"*/
+  #endif
 
 #endif /* TINYFILEDIALOGS_H */
 

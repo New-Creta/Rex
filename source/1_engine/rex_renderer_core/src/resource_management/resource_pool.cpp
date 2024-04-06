@@ -15,8 +15,8 @@ namespace rex
     ResourceSlot ResourcePool::insert(ResourcePtr&& resource)
     {
       rsl::unique_lock const sl(m_lock);
-      ResourceHash hash = resource->hash();
-      m_resource_map[hash] = ResourceWithSlot{ rsl::move(resource), ResourceSlot(hash) };
+      ResourceHash hash    = resource->hash();
+      m_resource_map[hash] = ResourceWithSlot {rsl::move(resource), ResourceSlot(hash)};
 
       return m_resource_map[hash].slot;
     }
@@ -61,5 +61,5 @@ namespace rex
       REX_ASSERT_X(has_resource(hash), "Hash was not registered within resource pool ({})", hash);
       return m_resource_map.at(hash).slot;
     }
-  } // namespace renderer
+  } // namespace rhi
 } // namespace rex

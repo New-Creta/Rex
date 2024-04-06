@@ -10,9 +10,9 @@ void* operator new(u64 size) // NOLINT(readability-inconsistent-declaration-para
   return rex::global_allocator().allocate(static_cast<card64>(size));
 }
 
-void operator delete(void* ptr) noexcept // NOLINT(readability-inconsistent-declaration-parameter-name)
+void operator delete(void* ptr) noexcept           // NOLINT(readability-inconsistent-declaration-parameter-name)
 {
-  rex::global_allocator().deallocate(ptr, -1); // unknown size
+  rex::global_allocator().deallocate(ptr, -1);     // unknown size
 }
 void operator delete(void* ptr, u64 size) noexcept // NOLINT(readability-inconsistent-declaration-parameter-name)
 {

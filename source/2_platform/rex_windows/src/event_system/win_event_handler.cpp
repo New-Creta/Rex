@@ -116,4 +116,4 @@ namespace rex
   } // namespace win
 } // namespace rex
 
-// NOLINTEND(cppcoreguidelines-pro-type-union-access)
+  // NOLINTEND(cppcoreguidelines-pro-type-union-access)

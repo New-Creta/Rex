@@ -1,9 +1,8 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_std/bonus/utility/yes_no.h"
-
 #include "rex_engine/memory/blob_view.h"
+#include "rex_std/bonus/utility/yes_no.h"
 
 namespace rex
 {
@@ -13,7 +12,7 @@ namespace rex
   namespace rhi
   {
     class ResourceSlot;
-  }
+  } // namespace rhi
 
   namespace renderer
   {

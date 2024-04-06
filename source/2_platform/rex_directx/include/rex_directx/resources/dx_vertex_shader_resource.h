@@ -6,27 +6,28 @@
 
 namespace rex
 {
-    namespace rhi
+  namespace rhi
+  {
+    namespace resources
     {
-        namespace resources
-        {
-            struct VertexShader
-            {
-                wrl::ComPtr<ID3DBlob> vertex_shader{};
-            };
-        } // namespace resources
+      struct VertexShader
+      {
+        wrl::ComPtr<ID3DBlob> vertex_shader {};
+      };
+    } // namespace resources
 
-        class VertexShaderResource : public BaseResource<resources::VertexShader>
-        {
-        public:
-            explicit VertexShaderResource(ResourceHash hash, const wrl::ComPtr<ID3DBlob>& vs)
-              : BaseResource(&m_vertex_shader, hash)
-                ,m_vertex_shader({ vs })
-            {}
-            ~VertexShaderResource() override = default;
+    class VertexShaderResource : public BaseResource<resources::VertexShader>
+    {
+    public:
+      explicit VertexShaderResource(ResourceHash hash, const wrl::ComPtr<ID3DBlob>& vs)
+          : BaseResource(&m_vertex_shader, hash)
+          , m_vertex_shader({vs})
+      {
+      }
+      ~VertexShaderResource() override = default;
 
-        private:
-            resources::VertexShader m_vertex_shader;
-        };
-    } // namespace renderer
+    private:
+      resources::VertexShader m_vertex_shader;
+    };
+  } // namespace rhi
 } // namespace rex

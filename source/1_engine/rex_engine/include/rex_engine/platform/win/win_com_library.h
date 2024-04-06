@@ -5,13 +5,9 @@
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
 
-
 #include <Windows.h>
 #include <d3d12.h>
 #include <stddef.h>
-
-#include "rex_engine/platform/win/diagnostics/hr_call.h"
-#include "rex_engine/platform/win/win_com_ptr.h"
 
 namespace rex::win
 {
@@ -52,5 +48,5 @@ namespace rex::win
       HR_CALL(CoCreateInstance(id, NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.GetAddressOf())));
       return com_object;
     }
-  }
+  } // namespace com_lib
 } // namespace rex::win

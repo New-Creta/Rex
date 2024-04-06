@@ -1,9 +1,9 @@
 #pragma once
 
+#include "rex_engine/threading/thread_event.h"
 #include "rex_std/atomic.h"
 #include "rex_std/functional.h"
 #include "rex_std/thread.h"
-#include "rex_engine/threading/thread_event.h"
 
 namespace rex
 {
@@ -17,7 +17,7 @@ namespace rex
         Thread();
 
         Thread(const Thread&) = delete;
-        Thread(Thread&&) = delete;
+        Thread(Thread&&)      = delete;
 
         ~Thread();
 
@@ -38,10 +38,10 @@ namespace rex
       // It wraps a thread entry so that any crash gets captured
       // and crash analysis can be performed on a worker thread
       rsl::function<void()> crash_guard_thread_entry(rsl::function<void()>&& func);
-    }
-  }
-}
+    } // namespace internal
+  }   // namespace threading
+} // namespace rex
 
 #ifdef REX_PLATFORM_WINDOWS
-#include "rex_engine/platform/win/threading/win_thread.h"
+  #include "rex_engine/platform/win/threading/win_thread.h"
 #endif

@@ -5,12 +5,12 @@
 #include "rex_engine/diagnostics/logging/internal/details/os.h"
 #include "rex_engine/engine/debug_types.h"
 #include "rex_engine/engine/types.h"
-#include "rex_engine/filesystem/filesystem_constants.h"
-#include "rex_engine/memory/global_allocator.h"
-#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/filesystem_constants.h"
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/memory/global_allocator.h"
 
 #include <errno.h>
 
@@ -40,8 +40,8 @@ namespace rex
         close();
         m_filename = filename_t(fname);
 
-        //const auto* mode       = "ab";
-        //const auto* trunc_mode = "wb";
+        // const auto* mode       = "ab";
+        // const auto* trunc_mode = "wb";
 
         if(m_event_handlers.before_open)
         {
@@ -59,14 +59,14 @@ namespace rex
             // rotate/truncate the file underneath us.
             file::trunc(fname);
           }
-          //if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
+          // if(!os::fopen_s(&m_fd, fname, filename_t(mode)))
           //{
-          //  if(m_event_handlers.after_open)
-          //  {
-          //    m_event_handlers.after_open(m_filename, m_fd);
-          //  }
-          //  return;
-          //}
+          //   if(m_event_handlers.after_open)
+          //   {
+          //     m_event_handlers.after_open(m_filename, m_fd);
+          //   }
+          //   return;
+          // }
 
           details::os::sleep_for_millis(s_open_interval);
         }
@@ -135,17 +135,17 @@ namespace rex
       {
         const s32 msg_size = buf.size();
         const auto* data   = buf.data();
-        
+
         vfs::save_to_file(m_filename, data, msg_size, vfs::AppendToFile::yes);
 
-        //if(fwrite(data, 1, msg_size, m_fd) != msg_size)
+        // if(fwrite(data, 1, msg_size, m_fd) != msg_size)
         //{
-        //  rex::DebugString err(rex::global_debug_allocator());
-        //  err += "Failed writing to file ";
-        //  err += os::filename_to_str(m_filename);
-        //  err += " %d";
-        //  printf("%s, %d", err.data(), errno);
-        //}
+        //   rex::DebugString err(rex::global_debug_allocator());
+        //   err += "Failed writing to file ";
+        //   err += os::filename_to_str(m_filename);
+        //   err += " %d";
+        //   printf("%s, %d", err.data(), errno);
+        // }
       }
 
       size_t FileHelper::size() const

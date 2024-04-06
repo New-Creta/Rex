@@ -10,16 +10,16 @@ namespace rex
     //-------------------------------------------------------------------------
     rsl::string_view shader_model_name(D3D_SHADER_MODEL shaderModel)
     {
-      switch (shaderModel)
+      switch(shaderModel)
       {
-      case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_6: return rsl::string_view("D3D_SHADER_MODEL_6_6");
-      case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_5: return rsl::string_view("D3D_SHADER_MODEL_6_5");
-      case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_4: return rsl::string_view("D3D_SHADER_MODEL_6_4");
-      case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_2: return rsl::string_view("D3D_SHADER_MODEL_6_2");
-      case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_1: return rsl::string_view("D3D_SHADER_MODEL_6_1");
-      case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_0: return rsl::string_view("D3D_SHADER_MODEL_6_0");
-      case D3D_SHADER_MODEL::D3D_SHADER_MODEL_5_1: return rsl::string_view("D3D_SHADER_MODEL_5_1");
-      default: return rsl::string_view("Unknown shader model");
+        case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_6: return rsl::string_view("D3D_SHADER_MODEL_6_6");
+        case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_5: return rsl::string_view("D3D_SHADER_MODEL_6_5");
+        case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_4: return rsl::string_view("D3D_SHADER_MODEL_6_4");
+        case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_2: return rsl::string_view("D3D_SHADER_MODEL_6_2");
+        case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_1: return rsl::string_view("D3D_SHADER_MODEL_6_1");
+        case D3D_SHADER_MODEL::D3D_SHADER_MODEL_6_0: return rsl::string_view("D3D_SHADER_MODEL_6_0");
+        case D3D_SHADER_MODEL::D3D_SHADER_MODEL_5_1: return rsl::string_view("D3D_SHADER_MODEL_5_1");
+        default: return rsl::string_view("Unknown shader model");
       }
     }
 
@@ -27,7 +27,7 @@ namespace rex
     bool check_for_shader_model_support(ID3D12Device* device, D3D_SHADER_MODEL version)
     {
       D3D12_FEATURE_DATA_SHADER_MODEL shader_model = {};
-      shader_model.HighestShaderModel = version;
+      shader_model.HighestShaderModel              = version;
 
       const HRESULT hr = device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &shader_model, sizeof(shader_model));
 
@@ -54,27 +54,27 @@ namespace rex
 #endif
 
       HRESULT hr = device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &shader_model, sizeof(shader_model));
-      if (SUCCEEDED(hr))
+      if(SUCCEEDED(hr))
       {
         return shader_model.HighestShaderModel;
       }
 
-      while (hr == E_INVALIDARG && shader_model.HighestShaderModel > D3D_SHADER_MODEL_6_0)
+      while(hr == E_INVALIDARG && shader_model.HighestShaderModel > D3D_SHADER_MODEL_6_0)
       {
         shader_model.HighestShaderModel = static_cast<D3D_SHADER_MODEL>(static_cast<int>(shader_model.HighestShaderModel) - 1);
-        hr = device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &shader_model, sizeof(shader_model));
-        if (SUCCEEDED(hr))
+        hr                              = device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &shader_model, sizeof(shader_model));
+        if(SUCCEEDED(hr))
         {
           return shader_model.HighestShaderModel;
         }
       }
 
-      if (FAILED(hr))
+      if(FAILED(hr))
       {
         shader_model.HighestShaderModel = D3D_SHADER_MODEL_5_1;
       }
 
       return shader_model.HighestShaderModel;
     }
-  }
+  } // namespace rhi
 } // namespace rex

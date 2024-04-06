@@ -117,7 +117,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void PatternFormatter::format(const details::LogMsg& msg,memory_buf_t& dest)
+    void PatternFormatter::format(const details::LogMsg& msg, memory_buf_t& dest)
     {
       if(m_need_localtime)
       {
@@ -434,5 +434,5 @@ namespace rex
   } // namespace log
 } // namespace rex
 
-// NOLINTEND(misc-definitions-in-headers)
+  // NOLINTEND(misc-definitions-in-headers)
 // NOLINTEND(readability-identifier-naming)

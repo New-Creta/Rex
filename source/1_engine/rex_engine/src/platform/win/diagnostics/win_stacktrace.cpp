@@ -68,7 +68,7 @@ namespace rex
 
       IMAGEHLP_LINE64 line {};
       line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-      if(SymGetLineFromAddr64(process, addr, reinterpret_cast<DWORD*>(displacement), &line) == TRUE) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
+      if(SymGetLineFromAddr64(process, addr, reinterpret_cast<DWORD*>(displacement), &line) == TRUE)                                                               // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
       {
         return rsl::stacktrace_entry(reinterpret_cast<void*>(addr), rsl::big_stack_string(line.FileName), undecorated_name, static_cast<card32>(line.LineNumber)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast, performance-no-int-to-ptr)
       }

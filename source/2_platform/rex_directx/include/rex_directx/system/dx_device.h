@@ -1,9 +1,9 @@
 #pragma once
 
+#include "rex_directx/dxgi/adapter.h"
+#include "rex_directx/utility/dx_util.h"
 #include "rex_renderer_core/resource_management/resource.h"
 #include "rex_renderer_core/system/rhi.h"
-#include "rex_directx/utility/dx_util.h"
-#include "rex_directx/dxgi/adapter.h"
 
 namespace rex
 {
@@ -33,5 +33,5 @@ namespace rex
       rsl::small_stack_string m_shader_version;
       rsl::small_stack_string m_api_version;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

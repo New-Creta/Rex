@@ -14,7 +14,7 @@ namespace rex
       class ScopedPadder
       {
       public:
-        ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo,memory_buf_t& dest);
+        ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo, memory_buf_t& dest);
 
         ScopedPadder(const ScopedPadder&) = delete;
         ScopedPadder(ScopedPadder&&)      = delete;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/engine/defines.h"
 #include "rex_engine/filesystem/mounting_point.h"
 #include "rex_engine/memory/blob.h"
 #include "rex_std/bonus/attributes.h"
@@ -8,7 +9,6 @@
 #include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility/yes_no.h"
 #include "rex_std/string_view.h"
-#include "rex_engine/engine/defines.h"
 
 /// Rex VFS system supports syncronous and async file IO
 /// We want to go for very simplistic design API at the moment
@@ -131,8 +131,8 @@ namespace rex
     bool save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
     bool create_dir(rsl::string_view path);
 
-  }
-}
+  } // namespace vfs
+} // namespace rex
 
 #ifdef REX_PLATFORM_WINDOWS
   #include "rex_engine/platform/win/filesystem/win_vfs.h"

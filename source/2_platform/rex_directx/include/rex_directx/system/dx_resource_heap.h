@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/memory.h"
 
@@ -25,5 +24,5 @@ namespace rex
       rsl::memory_size m_used_memory;
       rsl::memory_size m_memory_limit;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

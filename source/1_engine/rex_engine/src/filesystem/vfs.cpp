@@ -1,13 +1,12 @@
 #include "rex_engine/filesystem/vfs.h"
 
-#include "rex_engine/filesystem/path.h"
-#include "rex_engine/filesystem/file.h"
-#include "rex_engine/filesystem/directory.h"
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/engine/state_controller.h"
+#include "rex_engine/filesystem/directory.h"
+#include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/atomic/atomic.h"
@@ -110,10 +109,10 @@ namespace rex
     enum class VfsState
     {
       NotInitialized = BIT(0),
-      Initializing = BIT(1),
-      Running = BIT(2),
-      ShuttingDown = BIT(3),
-      ShutDown = BIT(4)
+      Initializing   = BIT(1),
+      Running        = BIT(2),
+      ShuttingDown   = BIT(3),
+      ShutDown       = BIT(4)
     };
 
     // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
@@ -201,10 +200,10 @@ namespace rex
     {
     public:
       explicit QueuedRequest(rsl::string_view filepath)
-        : m_filepath(filepath)
-        , m_requests()
-        , m_requests_access_mtx()
-        , m_is_done(false)
+          : m_filepath(filepath)
+          , m_requests()
+          , m_requests_access_mtx()
+          , m_is_done(false)
       {
       }
 
@@ -218,7 +217,7 @@ namespace rex
         const rsl::unique_lock lock(m_requests_access_mtx);
         auto it = rsl::find(m_requests.cbegin(), m_requests.cend(), request);
 
-        if (it != m_requests.cend())
+        if(it != m_requests.cend())
         {
           m_requests.erase(it);
         }
@@ -237,7 +236,7 @@ namespace rex
       {
         const rsl::unique_lock lock(m_requests_access_mtx);
 
-        for (ReadRequest* read_request : m_requests)
+        for(ReadRequest* read_request: m_requests)
         {
           read_request->signal(buffer, size);
         }
@@ -261,37 +260,37 @@ namespace rex
     };
 
     ReadRequest::ReadRequest(rsl::string_view filepath, QueuedRequest* queuedRequest)
-      : m_filepath(filepath)
-      , m_queued_request(queuedRequest)
-      , m_is_done(false)
-      , m_buffer(nullptr)
-      , m_size(0_bytes)
+        : m_filepath(filepath)
+        , m_queued_request(queuedRequest)
+        , m_is_done(false)
+        , m_buffer(nullptr)
+        , m_size(0_bytes)
     {
     }
 
     ReadRequest::ReadRequest(const ReadRequest& other)
-      : m_filepath(other.m_filepath)
-      , m_queued_request(other.m_queued_request)
-      , m_is_done(other.m_is_done)
-      , m_buffer(other.m_buffer)
-      , m_size(other.m_size)
+        : m_filepath(other.m_filepath)
+        , m_queued_request(other.m_queued_request)
+        , m_is_done(other.m_is_done)
+        , m_buffer(other.m_buffer)
+        , m_size(other.m_size)
     {
       m_queued_request->add_request_to_signal(this);
     }
 
     ReadRequest::ReadRequest(ReadRequest&& other)
-      : m_filepath(rsl::exchange(other.m_filepath, ""))
-      , m_queued_request(rsl::exchange(other.m_queued_request, nullptr))
-      , m_is_done(rsl::exchange(other.m_is_done, false))
-      , m_buffer(rsl::exchange(other.m_buffer, nullptr))
-      , m_size(rsl::exchange(other.m_size, 0_bytes))
+        : m_filepath(rsl::exchange(other.m_filepath, ""))
+        , m_queued_request(rsl::exchange(other.m_queued_request, nullptr))
+        , m_is_done(rsl::exchange(other.m_is_done, false))
+        , m_buffer(rsl::exchange(other.m_buffer, nullptr))
+        , m_size(rsl::exchange(other.m_size, 0_bytes))
     {
       m_queued_request->swap_request_to_signal(&other, this);
     }
 
     ReadRequest::~ReadRequest()
     {
-      if (m_queued_request)
+      if(m_queued_request)
       {
         m_queued_request->remove_request_to_signal(this);
       }
@@ -303,11 +302,11 @@ namespace rex
 
       m_queued_request->remove_request_to_signal(this);
 
-      m_filepath = other.m_filepath;
+      m_filepath       = other.m_filepath;
       m_queued_request = other.m_queued_request;
-      m_is_done = other.m_is_done;
-      m_buffer = other.m_buffer;
-      m_size = other.m_size;
+      m_is_done        = other.m_is_done;
+      m_buffer         = other.m_buffer;
+      m_size           = other.m_size;
 
       m_queued_request->add_request_to_signal(this);
 
@@ -317,11 +316,11 @@ namespace rex
     {
       REX_ASSERT_X(this != &other, "moving a read request to itself");
 
-      m_filepath = rsl::exchange(other.m_filepath, "");
+      m_filepath       = rsl::exchange(other.m_filepath, "");
       m_queued_request = rsl::exchange(other.m_queued_request, nullptr);
-      m_is_done = rsl::exchange(other.m_is_done, false);
-      m_buffer = rsl::exchange(other.m_buffer, nullptr);
-      m_size = rsl::exchange(other.m_size, 0_bytes);
+      m_is_done        = rsl::exchange(other.m_is_done, false);
+      m_buffer         = rsl::exchange(other.m_buffer, nullptr);
+      m_size           = rsl::exchange(other.m_size, 0_bytes);
 
       m_queued_request->swap_request_to_signal(&other, this);
 
@@ -331,14 +330,14 @@ namespace rex
     void ReadRequest::signal(const rsl::byte* buffer, rsl::memory_size size)
     {
       m_is_done = true;
-      m_buffer = buffer;
-      m_size = size;
+      m_buffer  = buffer;
+      m_size    = size;
     }
 
     void ReadRequest::wait() const
     {
       // this should ideally be solved with fibers..
-      while (!m_is_done)
+      while(!m_is_done)
       {
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
         rsl::this_thread::sleep_for(1ms);
@@ -361,10 +360,10 @@ namespace rex
 
     void process_read_requests()
     {
-      while (g_vfs_state_controller.has_state(VfsState::Running))
+      while(g_vfs_state_controller.has_state(VfsState::Running))
       {
         rsl::unique_lock lock(g_read_request_mutex);
-        if (!g_read_requests.empty())
+        if(!g_read_requests.empty())
         {
           // get the queued request and remvoe it from the queue,
           // but remove in the reverse order that they got added
@@ -399,15 +398,15 @@ namespace rex
 
     void wait_for_read_requests()
     {
-      while (g_vfs_state_controller.has_state(VfsState::Running))
+      while(g_vfs_state_controller.has_state(VfsState::Running))
       {
         const rsl::unique_lock lock(g_closed_request_mutex);
-        if (!g_closed_requests.empty())
+        if(!g_closed_requests.empty())
         {
           // Go over all the queued request and check if their read requests are all done
-          for (rsl::unique_ptr<QueuedRequest>& request : g_closed_requests)
+          for(rsl::unique_ptr<QueuedRequest>& request: g_closed_requests)
           {
-            if (request->all_requests_finished())
+            if(request->all_requests_finished())
             {
               request.reset();
             }
@@ -470,11 +469,11 @@ namespace rex
 
     void set_root(rsl::string_view root)
     {
-      if (root.empty())
+      if(root.empty())
       {
         g_root = rex::path::cwd();
       }
-      else if (path::is_absolute(root))
+      else if(path::is_absolute(root))
       {
         g_root = root;
       }
@@ -519,14 +518,14 @@ namespace rex
 
     memory::Blob read_file(MountingPoint root, rsl::string_view filepath)
     {
-      filepath = path::remove_quotes(filepath);
+      filepath               = path::remove_quotes(filepath);
       const rsl::string path = path::join(g_mounted_roots.at(root), filepath);
       return read_file(path);
     }
 
     ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath)
     {
-      filepath = path::remove_quotes(filepath);
+      filepath                            = path::remove_quotes(filepath);
       const rsl::medium_stack_string path = rsl::string_view(path::join(g_mounted_roots.at(root), filepath));
       return read_file_async(path);
     }
@@ -539,7 +538,7 @@ namespace rex
       auto it = g_read_requests.find(filepath);
 
       // If we already have a request for this file, add a new request to signal to the queued request
-      if (it != g_read_requests.end())
+      if(it != g_read_requests.end())
       {
         ReadRequest request(filepath, it->value.get());
         it->value->add_request_to_signal(&request);
@@ -624,7 +623,7 @@ namespace rex
     {
       path = path::remove_quotes(path);
 
-      if (path::is_absolute(path))
+      if(path::is_absolute(path))
       {
         return rsl::string(path);
       }
@@ -635,7 +634,7 @@ namespace rex
 
     rsl::string_view mount_path(MountingPoint mount)
     {
-      if (g_mounted_roots.contains(mount))
+      if(g_mounted_roots.contains(mount))
       {
         return g_mounted_roots.at(mount);
       }
@@ -659,5 +658,5 @@ namespace rex
 
       return directory::list_files(full_path);
     }
-  }
-}
+  } // namespace vfs
+} // namespace rex

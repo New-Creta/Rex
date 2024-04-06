@@ -4,9 +4,8 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/platform/win/diagnostics/win_message_box.h"
 #include "rex_engine/system/process.h"
-
-#include "rex_std/thread.h"
 #include "rex_std/format.h"
+#include "rex_std/thread.h"
 
 #define NOMINMAX
 #include <Windows.h>
@@ -57,13 +56,13 @@ bool rex::wait_for_debugger(rsl::chrono::minutes minutesToWait)
 
   using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
   auto i = 1s;
-  while (i < minutesToWait && !rex::is_debugger_attached())
+  while(i < minutesToWait && !rex::is_debugger_attached())
   {
     rsl::this_thread::sleep_for(1s);
     ++i;
   }
 
-  if (is_debugger_attached())
+  if(is_debugger_attached())
   {
     REX_DEBUG_BREAK();
     return true;
@@ -78,4 +77,3 @@ void rex::attach_debugger()
   auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::current_process_id());
   system(cmd.c_str());
 }
-

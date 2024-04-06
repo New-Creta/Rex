@@ -1,6 +1,5 @@
-#include "rex_directx/dxgi/adapter_manager.h"
-
 #include "rex_directx/dxgi/adapter.h" // IWYU pragma: keep
+#include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/dxgi/util.h"
 #include "rex_engine/diagnostics/assert.h"
@@ -44,7 +43,7 @@ namespace
   template <typename DXGIAdapterInterface>
   rsl::vector<rex::dxgi::Adapter> get_adapters(const rsl::function<HRESULT(UINT, rex::wrl::ComPtr<DXGIAdapterInterface>*)>& enumarationFnc, uint32 version)
   {
-    uint32 i                                        = 0;
+    uint32 i                                       = 0;
     rex::wrl::ComPtr<DXGIAdapterInterface> adapter = nullptr;
 
     rsl::vector<rex::dxgi::Adapter> adapters;

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "rex_std/bonus/types.h"
-#include "rex_std/string_view.h"
 #include "rex_std/chrono.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {

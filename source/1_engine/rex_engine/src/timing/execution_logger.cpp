@@ -5,9 +5,9 @@
 namespace rex
 {
   ExecutionLogger::ExecutionLogger(LogCategory category, rsl::string_view msg)
-    : m_msg(msg)
-    , m_log_category(category)
-    , m_interval()
+      : m_msg(msg)
+      , m_log_category(category)
+      , m_interval()
   {
     REX_INFO(m_log_category, rsl::format("{} - started", m_msg));
   }
@@ -16,4 +16,4 @@ namespace rex
   {
     REX_INFO(m_log_category, rsl::format("{} - finished ({} ms)", m_msg, m_interval.value()));
   }
-}
+} // namespace rex

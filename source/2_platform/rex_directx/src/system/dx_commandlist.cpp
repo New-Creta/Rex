@@ -1,11 +1,9 @@
 #include "rex_directx/system/dx_commandlist.h"
-#include "rex_directx/system/dx_command_queue.h"
-#include "rex_directx/system/dx_resource.h"
-
-#include "rex_directx/utility/d3dx12.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-
+#include "rex_directx/system/dx_command_queue.h"
+#include "rex_directx/system/dx_resource.h"
+#include "rex_directx/utility/d3dx12.h"
 #include "rex_std/utility.h"
 
 namespace rex
@@ -13,8 +11,8 @@ namespace rex
   namespace rhi
   {
     CommandList::CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList, const wrl::ComPtr<ID3D12CommandAllocator>& allocator)
-      : m_command_list(commandList)
-      , m_allocator(allocator)
+        : m_command_list(commandList)
+        , m_allocator(allocator)
     {
       // Start off in a closed state. This is because the first time we
       // refer to the command list we will Reset it, and it needs to be closed
@@ -37,7 +35,7 @@ namespace rex
     void CommandList::change_resource_state(Resource* resource, D3D12_RESOURCE_STATES to)
     {
       D3D12_RESOURCE_STATES from = resource->resource_state();
-      if (from != to)
+      if(from != to)
       {
         resource->transition(m_command_list.Get(), to);
       }
@@ -49,20 +47,21 @@ namespace rex
     }
 
     ScopedCommandList::ScopedCommandList(rsl::unique_ptr<CommandList>&& cmdList, CommandQueue* cmdQueue)
-      : m_cmd_list(rsl::move(cmdList))
-      , m_cmd_queue(cmdQueue)
+        : m_cmd_list(rsl::move(cmdList))
+        , m_cmd_queue(cmdQueue)
     {
       m_cmd_list->reset();
     }
 
     ScopedCommandList::ScopedCommandList(ScopedCommandList&& other)
-      : m_cmd_list(rsl::exchange(other.m_cmd_list, nullptr))
-      , m_cmd_queue(rsl::exchange(other.m_cmd_queue, nullptr))
-    {}
+        : m_cmd_list(rsl::exchange(other.m_cmd_list, nullptr))
+        , m_cmd_queue(rsl::exchange(other.m_cmd_queue, nullptr))
+    {
+    }
 
     ScopedCommandList::~ScopedCommandList()
     {
-      if (m_cmd_list)
+      if(m_cmd_list)
       {
         m_cmd_list->exec(m_cmd_queue);
       }
@@ -70,10 +69,10 @@ namespace rex
 
     ScopedCommandList& ScopedCommandList::operator=(ScopedCommandList&& other)
     {
-      m_cmd_list = rsl::exchange(other.m_cmd_list, nullptr);
+      m_cmd_list  = rsl::exchange(other.m_cmd_list, nullptr);
       m_cmd_queue = rsl::exchange(other.m_cmd_queue, nullptr);
 
       return *this;
     }
-  }
-}
+  } // namespace rhi
+} // namespace rex

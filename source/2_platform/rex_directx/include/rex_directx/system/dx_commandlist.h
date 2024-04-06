@@ -41,5 +41,5 @@ namespace rex
       rsl::unique_ptr<CommandList> m_cmd_list;
       CommandQueue* m_cmd_queue;
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

@@ -7,7 +7,7 @@ namespace rex
   namespace win
   {
 
-  } // namespace win
+  }                    // namespace win
 
   using namespace win; // NOLINT(google-build-using-namespace)
 #endif

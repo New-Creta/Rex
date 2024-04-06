@@ -53,8 +53,8 @@ namespace rex
           return rex::renderer::directx::DXCall(hr, file, function, lineNr).has_failed();
         }
       } // namespace internal
-    } // namespace directx
-  } // namespace renderer
+    }   // namespace directx
+  }     // namespace renderer
 } // namespace rex
 
 #ifdef REX_ENABLE_DX_CALL

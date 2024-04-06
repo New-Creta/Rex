@@ -31,5 +31,5 @@ namespace rex
       };
     } // namespace details
 
-  } // namespace log
+  }   // namespace log
 } // namespace rex

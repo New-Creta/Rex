@@ -1,7 +1,7 @@
 #include "rex_engine/text_processing/ini_processor.h"
-#include "rex_engine/text_processing/text_processing.h"
-#include "rex_engine/diagnostics/log.h"
 
+#include "rex_engine/diagnostics/log.h"
+#include "rex_engine/text_processing/text_processing.h"
 #include "rex_std/string_view.h"
 
 DEFINE_LOG_CATEGORY(LogIniProcessor);
@@ -9,9 +9,10 @@ DEFINE_LOG_CATEGORY(LogIniProcessor);
 namespace rex
 {
   IniHeaderWithItems::IniHeaderWithItems(rsl::string_view header, rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>&& items)
-    : m_header(header)
-    , m_items(rsl::move(items))
-  {}
+      : m_header(header)
+      , m_items(rsl::move(items))
+  {
+  }
 
   rsl::string_view IniHeaderWithItems::header() const
   {
@@ -23,7 +24,7 @@ namespace rex
   }
 
   IniProcessor::IniProcessor(memory::BlobView data)
-    : m_data(data)
+      : m_data(data)
   {
   }
 
@@ -35,14 +36,14 @@ namespace rex
     rsl::string_view current_header;
     rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>> items;
     rex::Error error = rex::Error::no_error();
-    
-    for (rsl::string_view line : lines)
+
+    for(rsl::string_view line: lines)
     {
       // Make sure we remove all leading and trailing whitespaces
       line = rex::strip(line);
 
       // Headers are surrounded with '[' and ']'
-      if (line.starts_with('[') && line.ends_with(']'))
+      if(line.starts_with('[') && line.ends_with(']'))
       {
         add_new_header_with_items(current_header, rsl::move(items));
         current_header = line.substr(1, line.length() - 2);
@@ -51,9 +52,9 @@ namespace rex
 
       // an item looks like key=value
       auto equal_pos = line.find('=');
-      if (equal_pos != line.npos())
+      if(equal_pos != line.npos())
       {
-        rsl::string_view key = line.substr(0, equal_pos);
+        rsl::string_view key   = line.substr(0, equal_pos);
         rsl::string_view value = line.substr(equal_pos + 1);
 
         items.emplace_back(key, value);
@@ -76,10 +77,10 @@ namespace rex
 
   void IniProcessor::add_new_header_with_items(rsl::string_view header, rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>&& items)
   {
-    if (!items.empty())
+    if(!items.empty())
     {
       m_headers_with_items.emplace_back(header, rsl::move(items));
     }
   }
 
-}
+} // namespace rex

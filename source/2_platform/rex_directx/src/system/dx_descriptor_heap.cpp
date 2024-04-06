@@ -1,7 +1,6 @@
 #include "rex_directx/system/dx_descriptor_heap.h"
 
 #include "rex_directx/system/dx_resource.h"
-
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/casting.h"
 
@@ -10,10 +9,11 @@ namespace rex
   namespace rhi
   {
     DescriptorHandle::DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size)
-      : m_handle(handle)
-      , m_type(type)
-      , m_size(size)
-    {}
+        : m_handle(handle)
+        , m_type(type)
+        , m_size(size)
+    {
+    }
 
     DescriptorHandle& DescriptorHandle::operator++()
     {
@@ -39,7 +39,7 @@ namespace rex
       return DescriptorHandle(handle, m_type, m_size);
     }
 
-    DescriptorHandle  DescriptorHandle::operator+(s32 offset) const
+    DescriptorHandle DescriptorHandle::operator+(s32 offset) const
     {
       DescriptorHandle handle = *this;
       handle += offset;
@@ -51,7 +51,7 @@ namespace rex
       return *this;
     }
 
-    DescriptorHandle  DescriptorHandle::operator-(s32 offset) const
+    DescriptorHandle DescriptorHandle::operator-(s32 offset) const
     {
       DescriptorHandle handle = *this;
       handle -= offset;
@@ -68,24 +68,23 @@ namespace rex
       return m_handle;
     }
 
-
     DescriptorHeap::DescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device)
-      : m_descriptor_heap(descHeap)
-      , m_device(device)
-      , m_used_descriptors(0)
+        : m_descriptor_heap(descHeap)
+        , m_device(device)
+        , m_used_descriptors(0)
     {
       D3D12_DESCRIPTOR_HEAP_DESC desc = m_descriptor_heap->GetDesc();
-      m_desc_heap_type = desc.Type;
-      m_num_descriptors = desc.NumDescriptors;
-      m_descriptor_size = m_device->GetDescriptorHandleIncrementSize(m_desc_heap_type);
+      m_desc_heap_type                = desc.Type;
+      m_num_descriptors               = desc.NumDescriptors;
+      m_descriptor_size               = m_device->GetDescriptorHandleIncrementSize(m_desc_heap_type);
     }
 
     DescriptorHandle DescriptorHeap::create_rtv(ID3D12Resource* resource)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_RTV, "Trying to create a render target view from a descriptor heap that's not configured to create render target views");
 
-      D3D12_RENDER_TARGET_VIEW_DESC rtv_desc{};
-      rtv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+      D3D12_RENDER_TARGET_VIEW_DESC rtv_desc {};
+      rtv_desc.Format        = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
       rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
       DescriptorHandle rtv_handle = my_start_handle();
@@ -100,10 +99,10 @@ namespace rex
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_DSV, "Trying to create a depth stencil view from a descriptor heap that's not configured to create depth stencil views");
 
-      D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc{};
-      dsv_desc.Flags = D3D12_DSV_FLAG_NONE;
+      D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc {};
+      dsv_desc.Flags         = D3D12_DSV_FLAG_NONE;
       dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-      dsv_desc.Format = format;
+      dsv_desc.Format        = format;
 
       DescriptorHandle dsv_handle = my_start_handle();
       dsv_handle += m_used_descriptors;
@@ -120,7 +119,7 @@ namespace rex
       // Create a new constant buffer view given the offsetted GPU address and the size of the constant buffer in bytes
       D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
       cbv_desc.BufferLocation = resource->GetGPUVirtualAddress();
-      cbv_desc.SizeInBytes = narrow_cast<s32>(size.size_in_bytes());
+      cbv_desc.SizeInBytes    = narrow_cast<s32>(size.size_in_bytes());
 
       DescriptorHandle cbv_handle = my_start_handle();
       cbv_handle += m_used_descriptors;
@@ -140,6 +139,5 @@ namespace rex
       return DescriptorHandle(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), m_desc_heap_type, m_descriptor_size);
     }
 
-
-  }
-}
+  } // namespace rhi
+} // namespace rex

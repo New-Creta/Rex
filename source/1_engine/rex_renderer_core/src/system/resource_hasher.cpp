@@ -92,5 +92,5 @@ namespace rex
 
       return hash;
     }
-  }
-}
+  } // namespace rhi
+} // namespace rex

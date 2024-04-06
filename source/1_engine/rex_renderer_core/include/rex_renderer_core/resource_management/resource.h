@@ -1,8 +1,7 @@
 #pragma once
 
-#include "rex_std/bonus/utility/type_id.h"
-
 #include "rex_renderer_core/system/resource_hasher.h"
+#include "rex_std/bonus/utility/type_id.h"
 
 namespace rex
 {
@@ -11,10 +10,10 @@ namespace rex
     class IResource
     {
     public:
-      IResource() = default;
+      IResource()          = default;
       virtual ~IResource() = default;
 
-      virtual size_t type() const = 0;
+      virtual size_t type() const       = 0;
       virtual ResourceHash hash() const = 0;
     };
 
@@ -23,8 +22,8 @@ namespace rex
     {
     public:
       explicit BaseResource(T* resource, ResourceHash hash)
-        : m_resource(resource)
-        , m_hash(hash)
+          : m_resource(resource)
+          , m_hash(hash)
       {
       }
 
@@ -57,5 +56,5 @@ namespace rex
       T* m_resource;
       ResourceHash m_hash;
     };
-  } // namespace renderer
+  } // namespace rhi
 } // namespace rex

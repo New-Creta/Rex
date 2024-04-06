@@ -14,7 +14,7 @@ namespace rex
       // Scoped Padder
       ///////////////////////////////////////////////////////////////////////
       //-------------------------------------------------------------------------
-      ScopedPadder::ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo,memory_buf_t& dest)
+      ScopedPadder::ScopedPadder(s32 wrappedSize, const PaddingInfo& padinfo, memory_buf_t& dest)
           : m_padinfo(&padinfo)
           , m_dest(&dest)
           , m_remaining_pag(static_cast<long>(padinfo.width) - static_cast<long>(wrappedSize))

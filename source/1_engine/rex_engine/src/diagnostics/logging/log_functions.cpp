@@ -1,19 +1,19 @@
 #include "rex_engine/diagnostics/logging/log_functions.h"
 
-#include "rex_engine/diagnostics/logging/internal/details/registry.h"
+#include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/logging/internal/details/diag_thread_pool.h"
+#include "rex_engine/diagnostics/logging/internal/details/registry.h"
 #include "rex_engine/diagnostics/logging/internal/logger_factory.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/basic_file_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
-#include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/engine/debug_types.h"
+#include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/utility.h"
 #include "rex_std/vector.h"
-#include "rex_engine/filesystem/vfs.h"
-#include "rex_engine/filesystem/path.h"
 
 #if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
   #define REX_ENABLE_COLOR_SINK
@@ -49,7 +49,7 @@ namespace rex
 
       // read the required log versboity from the commandline
       rsl::optional<rsl::string_view> log_level = cmdline::get_argument("LogVerbosity");
-      if (log_level)
+      if(log_level)
       {
         verbosity = rsl::enum_refl::enum_cast<LogVerbosity>(log_level.value()).value_or(verbosity);
       }
@@ -94,7 +94,7 @@ namespace rex
     {
       // Check if a logger with this name already exists or not
       auto logger = rex::log::details::Registry::instance().get(category.get_category_name());
-      if (logger != nullptr)
+      if(logger != nullptr)
         return *logger;
 
       // If no logger is found with the above name, create a new one
@@ -102,19 +102,19 @@ namespace rex
 
       // By default we log to both the console window
 #ifdef REX_ENABLE_COLOR_SINK
-    // Only push rexout color sink when we are in debug mode
+      // Only push rexout color sink when we are in debug mode
       sinks.push_back(rsl::allocate_shared<rex::log::sinks::StdoutColorSinkMt>(rex::global_debug_allocator()));
 #endif
 
       // If the logging system has been initialized, we log to files as well
-      if (g_enable_file_sinks)
+      if(g_enable_file_sinks)
       {
         sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), "game.log"), true));
       }
 
       rsl::shared_ptr<rex::log::Logger> new_logger = nullptr;
 
-      if (category.is_async())
+      if(category.is_async())
       {
         new_logger = rex::log::create_async<rex::log::sinks::DistSink_mt>(category.get_category_name(), rsl::move(sinks));
       }
@@ -125,6 +125,6 @@ namespace rex
 
       return *new_logger;
     }
-  }
+  } // namespace log
 
 } // namespace rex

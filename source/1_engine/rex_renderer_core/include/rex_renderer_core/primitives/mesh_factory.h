@@ -1,10 +1,9 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
+#include "rex_renderer_core/rendering/vertex.h"
 #include "rex_std/bonus/utility/casting.h"
 #include "rex_std/vector.h"
-
-#include "rex_renderer_core/rendering/vertex.h"
 
 #include <glm/glm.hpp>
 
@@ -114,7 +113,7 @@ namespace rex
     {
       auto it = m_vertices.begin();
       rsl::advance(it, idx);
-      m_vertices.insert(it, VertexPosNormCol{pos, norm, col});
+      m_vertices.insert(it, VertexPosNormCol {pos, norm, col});
     }
 
     //-----------------------------------------------------------------------

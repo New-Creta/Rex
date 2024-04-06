@@ -13,5 +13,5 @@ namespace rex
     public:
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
     };
-  }
-}
+  } // namespace rhi
+} // namespace rex

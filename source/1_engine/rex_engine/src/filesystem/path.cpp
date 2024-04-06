@@ -1,9 +1,8 @@
 #include "rex_engine/filesystem/path.h"
 
+#include "rex_engine/engine/numeric.h"
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
-
-#include "rex_engine/engine/numeric.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
@@ -61,7 +60,7 @@ namespace rex
         // of the total input path
         return ext_start != filename.npos() // NOLINT(readability-static-accessed-through-instance)
                    ? static_cast<card32>(&filename[ext_start] - path.data())
-                   : path.npos(); // NOLINT(readability-static-accessed-through-instance)
+                   : path.npos();           // NOLINT(readability-static-accessed-through-instance)
       }
 
       // Fills a string with a number of random characters
@@ -163,14 +162,14 @@ namespace rex
     rsl::string abs_path(rsl::string_view path)
     {
       // If the path is already absolute, just return it
-      if (is_absolute(path))
+      if(is_absolute(path))
       {
         return rsl::string(path);
       }
 
       // Get the current working directory and prepend it to the path
       rsl::string current_dir = path::cwd();
-      rsl::string res = path::join(current_dir, path);
+      rsl::string res         = path::join(current_dir, path);
       return res.replace("\\", "/");
     }
     // Returns the root directory path of the given path

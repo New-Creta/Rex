@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/diagnostics/logging/internal/common.h"
+#include "rex_engine/diagnostics/logging/log_verbosity.h"
 
 namespace rex
 {

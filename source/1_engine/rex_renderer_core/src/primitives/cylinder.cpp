@@ -142,7 +142,7 @@ namespace rex
           glm::vec3 const t = tangent;
           glm::vec3 const b = bitangent;
           glm::vec3 const n = glm::normalize(glm::cross(t, b));
-          glm::vec3 normal     = n;
+          glm::vec3 normal  = n;
           glm::vec4 col(normal, 1.0f);
 
           mesh_data.add_vertex(VertexPosNormCol(position, normal, col));
