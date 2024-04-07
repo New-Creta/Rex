@@ -58,6 +58,7 @@ namespace rex
           : m_platform_creation_params(*appCreationParams.platform_params)
           , m_engine_params(rsl::move(appCreationParams.engine_params))
           , m_app_instance(appInstance)
+          , m_app_name(appCreationParams.gui_params.window_title)
       {
         g_this_app = m_app_instance;
 
@@ -76,6 +77,11 @@ namespace rex
         input::internal::set_global_input_handler(m_input);
 
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
+
+        if (!m_app_name.empty())
+        {
+          SetConsoleTitleA(m_app_name.data());
+        }
 
         return m_on_initialize();
       }
@@ -106,6 +112,7 @@ namespace rex
       PlatformCreationParams m_platform_creation_params;
       EngineParams m_engine_params;
       CoreApplication* m_app_instance;
+      rsl::string m_app_name;
 
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;

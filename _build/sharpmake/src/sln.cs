@@ -52,6 +52,8 @@ namespace rex
         conf.AddProject<Regina>(target);
         conf.AddProject<ConsoleApp>(target);
       }
+
+      conf.AddProject<PokemonProject>(target);
     }
 
     protected string GenerateName(string baseName)
