@@ -11,7 +11,12 @@ namespace rex
     {
     public:
       DebugInterface();
+      DebugInterface(const DebugInterface&) = delete;
+      DebugInterface(DebugInterface&&) = delete;
       ~DebugInterface();
+
+      DebugInterface& operator=(const DebugInterface&) = delete;
+      DebugInterface& operator=(DebugInterface&&) = delete;
 
     private:
       wrl::ComPtr<IDXGIDebug1> m_debug_interface;

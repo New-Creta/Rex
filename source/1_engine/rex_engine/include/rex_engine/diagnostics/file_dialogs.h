@@ -65,7 +65,7 @@ namespace rex
   namespace dialog
   {
     // Plays a beep noise
-    void beep(void);
+    void beep();
 
     enum class IconType
     {

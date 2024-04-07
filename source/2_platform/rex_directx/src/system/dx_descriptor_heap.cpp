@@ -22,7 +22,7 @@ namespace rex
     }
     DescriptorHandle DescriptorHandle::operator++(int)
     {
-      CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_handle);
+      const CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_handle);
       m_handle.Offset(1, m_size);
       return DescriptorHandle(handle, m_type, m_size);
     }
@@ -34,7 +34,7 @@ namespace rex
     }
     DescriptorHandle DescriptorHandle::operator--(int)
     {
-      CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_handle);
+      const CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_handle);
       m_handle.Offset(-1, m_size);
       return DescriptorHandle(handle, m_type, m_size);
     }
@@ -72,11 +72,12 @@ namespace rex
         : m_descriptor_heap(descHeap)
         , m_device(device)
         , m_used_descriptors(0)
+        , m_descriptor_size(0)
     {
-      D3D12_DESCRIPTOR_HEAP_DESC desc = m_descriptor_heap->GetDesc();
+      const D3D12_DESCRIPTOR_HEAP_DESC desc = m_descriptor_heap->GetDesc();
       m_desc_heap_type                = desc.Type;
-      m_num_descriptors               = desc.NumDescriptors;
-      m_descriptor_size               = m_device->GetDescriptorHandleIncrementSize(m_desc_heap_type);
+      m_num_descriptors               = static_cast<s32>(desc.NumDescriptors);
+      m_descriptor_size               = static_cast<s32>(m_device->GetDescriptorHandleIncrementSize(m_desc_heap_type)); // NOLINT(cppcoreguidelines-prefer-member-initializer)
     }
 
     DescriptorHandle DescriptorHeap::create_rtv(ID3D12Resource* resource)

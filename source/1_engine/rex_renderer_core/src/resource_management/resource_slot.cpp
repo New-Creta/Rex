@@ -15,13 +15,13 @@ namespace rex
     //-------------------------------------------------------------------------
     ResourceSlot ResourceSlot::make_invalid()
     {
-      return ResourceSlot(globals::g_invalid_slot_id);
+      return ResourceSlot(s_invalid_slot);
     }
 
     //-------------------------------------------------------------------------
     ResourceSlot::ResourceSlot()
         : m_about_to_be_removed(false)
-        , m_slot_id(globals::g_invalid_slot_id)
+        , m_slot_id(s_invalid_slot)
         , m_ref_count(nullptr)
     {
     }
@@ -38,7 +38,7 @@ namespace rex
     //-------------------------------------------------------------------------
     ResourceSlot::ResourceSlot(ResourceSlot&& other) noexcept
         : m_about_to_be_removed(rsl::exchange(other.m_about_to_be_removed, false))
-        , m_slot_id(rsl::exchange(other.m_slot_id, globals::g_invalid_slot_id))
+        , m_slot_id(rsl::exchange(other.m_slot_id, s_invalid_slot))
         , m_ref_count(rsl::exchange(other.m_ref_count, nullptr)) // A moved ResourceSlot should leave the remaining ResourceSlot invalid
     {
     }
@@ -83,7 +83,7 @@ namespace rex
       }
 
       m_about_to_be_removed = rsl::exchange(other.m_about_to_be_removed, false);
-      m_slot_id             = rsl::exchange(other.m_slot_id, globals::g_invalid_slot_id);
+      m_slot_id             = rsl::exchange(other.m_slot_id, s_invalid_slot);
       m_ref_count           = rsl::exchange(other.m_ref_count, nullptr); // A moved ResourceSlot should leave the remaining ResourceSlot invalid
 
       return *this;
@@ -102,13 +102,13 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    bool ResourceSlot::operator==(s32 other) const
+    bool ResourceSlot::operator==(ResourceHash other) const
     {
       return this->m_slot_id == other;
     }
 
     //-------------------------------------------------------------------------
-    bool ResourceSlot::operator!=(s32 other) const
+    bool ResourceSlot::operator!=(ResourceHash other) const
     {
       return !(*this == other);
     }
@@ -116,8 +116,8 @@ namespace rex
     //-------------------------------------------------------------------------
     bool ResourceSlot::is_valid() const
     {
-      // when the slot id is globals::g_invalid_slot_id, something went wrong during the creation of this slot
-      return m_slot_id != globals::g_invalid_slot_id && m_ref_count != nullptr;
+      // when the slot id is s_invalid_slot, something went wrong during the creation of this slot
+      return m_slot_id != s_invalid_slot && m_ref_count != nullptr;
     }
 
     //-------------------------------------------------------------------------
@@ -144,7 +144,7 @@ namespace rex
           // renderer::release_resource(*this);
 
           m_about_to_be_removed = false;
-          m_slot_id             = globals::g_invalid_slot_id;
+          m_slot_id             = s_invalid_slot;
 
           delete m_ref_count;
           m_ref_count = nullptr;
@@ -155,9 +155,16 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    s32 ResourceSlot::slot_id() const
+    ResourceHash ResourceSlot::slot_id() const
     {
       return m_slot_id;
     }
+
+    //-------------------------------------------------------------------------
+    ResourceHash ResourceSlot::invalid_id()
+    {
+      return s_invalid_slot;
+    }
+
   } // namespace rhi
 } // namespace rex

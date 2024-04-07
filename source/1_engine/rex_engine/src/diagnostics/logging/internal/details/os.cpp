@@ -331,7 +331,7 @@ namespace rex
         }
 
         // return true on success
-        static bool mkdir_impl(const filename_t& path)
+        static bool mkdir_impl(const filename_t& path) // NOLINT(misc-use-anonymous-namespace)
         {
 #ifdef _WIN32
           return ::_mkdir(path.c_str()) == 0;
@@ -355,7 +355,7 @@ namespace rex
           }
 
           s32 search_offset = 0;
-          do
+          do // NOLINT(cppcoreguidelines-avoid-do-while)
           {
             auto token_pos = path.find_first_of(rex::g_folder_seps_filename, static_cast<count_t>(search_offset));
             // treat the entire path as a folder if no folder separator not found

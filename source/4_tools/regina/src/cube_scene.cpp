@@ -13,10 +13,11 @@
 namespace regina
 {
   CubeScene::CubeScene()
+  : m_mesh_cube()
+  , m_cube_render_item()
+  , m_cube_world(glm::mat4(1.0f))
   {
     build_geometry();
-
-    m_cube_world = glm::mat4(1.0f);
   }
 
   void CubeScene::update_object_constant_buffers()
@@ -31,16 +32,16 @@ namespace regina
     auto box = rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f);
 
     // Create the vertex buffer
-    rex::memory::Blob vb(rsl::make_unique<rex::renderer::VertexPosCol[]>(box.vertices().size()));
+    rex::memory::Blob vb(rsl::make_unique<rex::renderer::VertexPosCol[]>(box.vertices().size())); // NOLINT(modernize-avoid-c-arrays)
     vb.write(box.vertices().data(), vb.size());
 
     // Create the index buffer
-    rex::memory::Blob ib(rsl::make_unique<u16[]>(box.indices().size()));
+    rex::memory::Blob ib(rsl::make_unique<u16[]>(box.indices().size())); // NOLINT(modernize-avoid-c-arrays)
     ib.write(box.indices().data(), ib.size());
 
     // Fill in the constant buffer
     m_cube_world = glm::scale(m_cube_world, glm::vec3(2.0f, 2.0f, 2.0f));
-    rex::memory::Blob cb(rsl::make_unique<rsl::byte[]>(sizeof(m_cube_world)));
+    rex::memory::Blob cb(rsl::make_unique<rsl::byte[]>(sizeof(m_cube_world))); // NOLINT(modernize-avoid-c-arrays)
     cb.write(&m_cube_world, rsl::memory_size(sizeof(m_cube_world)));
 
     rex::rhi::VertexBufferDesc vb_desc {rex::memory::BlobView(vb), sizeof(rex::renderer::VertexPosCol), rex::renderer::VertexPosCol::layout()};

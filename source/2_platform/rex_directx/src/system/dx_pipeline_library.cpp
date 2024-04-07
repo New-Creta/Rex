@@ -22,7 +22,7 @@ namespace rex
         return nullptr;
       }
 
-      ResourceHash hash = rsl::hash<rsl::wstring> {}(name);
+      const ResourceHash hash = rsl::hash<rsl::wstring> {}(name);
       return rsl::make_unique<PipelineState>(pso, hash);
     }
     rsl::unique_ptr<PipelineState> PipelineLibrary::store_pso(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
@@ -31,15 +31,15 @@ namespace rex
       m_device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&pso));
       const rsl::wstring name = create_pso_name(desc);
       m_pipeline_library->StorePipeline(name.c_str(), pso.Get());
-      ResourceHash hash = rsl::hash<rsl::wstring> {}(name);
+      const ResourceHash hash = rsl::hash<rsl::wstring> {}(name);
       return rsl::make_unique<PipelineState>(pso, hash);
     }
 
-    rsl::wstring PipelineLibrary::create_pso_name(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc) const
+    rsl::wstring PipelineLibrary::create_pso_name(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc) const // NOLINT(readability-convert-member-functions-to-static)
     {
-      const char* data  = reinterpret_cast<const char*>(&desc);
+      const char* data  = reinterpret_cast<const char*>(&desc); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
       const size_t size = sizeof(desc);
-      u32 hash          = rsl::crc32c::Crc32c(data, size);
+      const u32 hash          = rsl::crc32c::Crc32c(data, size);
       return rsl::to_wstring(hash);
     }
 

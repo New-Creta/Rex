@@ -10,7 +10,7 @@ namespace rex
     class Fence
     {
     public:
-      Fence(const wrl::ComPtr<ID3D12Fence>& fence);
+      explicit Fence(const wrl::ComPtr<ID3D12Fence>& fence);
 
       // Increment the internal target value
       // and signal the command queue to increment the value

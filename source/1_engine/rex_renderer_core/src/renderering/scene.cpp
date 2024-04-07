@@ -45,7 +45,7 @@ namespace rex
       rex::rhi::LinkShaderDesc link_shader_desc;
       link_shader_desc.vertex_shader = rhi::compile_shader(rsl::move(vs_compile_command_desc));
       link_shader_desc.pixel_shader  = rhi::compile_shader(rsl::move(ps_compile_command_desc));
-      link_shader_desc.constants     = rsl::make_unique<rex::rhi::ConstantLayoutDescription[]>(2);
+      link_shader_desc.constants     = rsl::make_unique<rex::rhi::ConstantLayoutDescription[]>(2); // NOLINT(modernize-avoid-c-arrays)
       link_shader_desc.constants[0]  = {rex::rhi::ConstantType::CBuffer, "ObjectConstants", 0};
       link_shader_desc.constants[1]  = {rex::rhi::ConstantType::CBuffer, "PassConstants", 1};
 

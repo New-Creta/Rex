@@ -23,7 +23,7 @@ namespace rex
       // DXGI - Live Objects
       if(m_debug_interface)
       {
-        if(DX_FAILED(m_debug_interface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL))))
+        if(DX_FAILED(m_debug_interface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL)))) // NOLINT(hicpp-signed-bitwise)
         {
           REX_ERROR(LogDebugInterface, "Cannot ReportLiveDeviceObjects of DXGI");
           return;

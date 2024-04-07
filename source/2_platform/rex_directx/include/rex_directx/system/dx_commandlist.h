@@ -35,7 +35,7 @@ namespace rex
       ~ScopedCommandList();
 
       ScopedCommandList& operator=(const ScopedCommandList&) = delete;
-      ScopedCommandList& operator=(ScopedCommandList&&);
+      ScopedCommandList& operator=(ScopedCommandList&& other);
 
     private:
       rsl::unique_ptr<CommandList> m_cmd_list;

@@ -115,14 +115,14 @@ namespace rex
     load_settings();
 
     globals::g_frame_info.update();
-    bool res = platform_init();
+    const bool res = platform_init();
 
     // Some settings get overriden in the editor and the project
     // so we can only use those settings after they've been loaded.
     // the max allowed memory usage is one of those examples
 
     // Settings are loaded now, we can initialize all the sub systems with settings loaded from them
-    rsl::memory_size max_mem_budget = rsl::memory_size(rsl::stoi(settings::get("max_memory_mib")).value());
+    const rsl::memory_size max_mem_budget = rsl::memory_size(rsl::stoi(settings::get("max_memory_mib")).value());
     mem_tracker().initialize(max_mem_budget);
 
     return res;
@@ -162,22 +162,22 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::mount_paths()
+  void CoreApplication::mount_paths() // NOLINT(readability-convert-member-functions-to-static)
   {
     vfs::mount(MountingPoint::EngineSettings, path::join(vfs::engine_root(), "settings"));
   }
 
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::load_settings()
+  void CoreApplication::load_settings() // NOLINT(readability-convert-member-functions-to-static)
   {
     // Load the engine settings.
     // They can always be overridden in a project
     // but the engine loads the default settings
 
     // get the default settings of the engine and load them into memory
-    rsl::vector<rsl::string> files = directory::list_files(vfs::mount_path(MountingPoint::EngineSettings));
+    const rsl::vector<rsl::string> files = directory::list_files(vfs::mount_path(MountingPoint::EngineSettings));
 
-    for(rsl::string_view file: files)
+    for(const rsl::string_view file: files)
     {
       settings::load(file);
     }

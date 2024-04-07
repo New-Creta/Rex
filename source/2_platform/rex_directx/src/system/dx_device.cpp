@@ -43,13 +43,13 @@ namespace rex
     {
       DXGI_QUERY_VIDEO_MEMORY_INFO info;
       m_adapter->as<IDXGIAdapter3>()->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);
-      return info.CurrentUsage;
+      return static_cast<s64>(info.CurrentUsage);
     }
     s64 DirectXDevice::memory_available() const
     {
       DXGI_QUERY_VIDEO_MEMORY_INFO info;
       m_adapter->as<IDXGIAdapter3>()->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);
-      return info.Budget;
+      return static_cast<s64>(info.Budget);
     }
 
     void DirectXDevice::init_shader_model()

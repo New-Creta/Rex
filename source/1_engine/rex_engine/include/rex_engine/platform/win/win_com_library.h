@@ -13,17 +13,23 @@ namespace rex::win
 {
   namespace com_lib
   {
+    // Creates a WinComHandle.
+    // Makes sure the win com lib is initialized before creating the handle
+    class WinComLibHandle create_lib_handle();
+
     // A WinComLibHandle makes sure the win com lib gets destroyed
     // when the handle goes out of scope
     class WinComLibHandle
     {
     public:
+      WinComLibHandle() = default;
+      WinComLibHandle(const WinComLibHandle& /*other*/);
+      WinComLibHandle(WinComLibHandle&&) = default;
       ~WinComLibHandle();
-    };
 
-    // Creates a WinComHandle.
-    // Makes sure the win com lib is initialized before creating the handle
-    WinComLibHandle create_lib_handle();
+      WinComLibHandle& operator=(const WinComLibHandle&) = default;
+      WinComLibHandle& operator=(WinComLibHandle&&) = default;
+    };
 
     // Return if the win com lib is initialized already or not
     bool is_initialized();
@@ -45,7 +51,7 @@ namespace rex::win
     wrl::ComPtr<ComObject> create_com_object(IID id)
     {
       wrl::ComPtr<ComObject> com_object;
-      HR_CALL(CoCreateInstance(id, NULL, CLSCTX_ALL, IID_PPV_ARGS(com_object.GetAddressOf())));
+      HR_CALL(CoCreateInstance(id, nullptr, CLSCTX_ALL, IID_PPV_ARGS(com_object.GetAddressOf())));
       return com_object;
     }
   } // namespace com_lib

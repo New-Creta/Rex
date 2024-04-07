@@ -13,8 +13,13 @@ namespace rex
     class UploadBuffer : public BaseResource<ID3D12Resource>
     {
     public:
-      UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState = D3D12_RESOURCE_STATE_COMMON);
-      ~UploadBuffer();
+      explicit UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState = D3D12_RESOURCE_STATE_COMMON);
+      UploadBuffer(const UploadBuffer&) = delete;
+      UploadBuffer(UploadBuffer&&) = delete;
+      ~UploadBuffer() override;
+
+      UploadBuffer& operator=(const UploadBuffer&) = delete;
+      UploadBuffer& operator=(UploadBuffer&&) = delete;
 
       void write(CommandList* cmdList, Resource* dstResource, const void* data, s64 size);
 

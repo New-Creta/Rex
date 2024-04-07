@@ -49,7 +49,7 @@ Thanks for contributions, bug corrections & thorough testing to:
 
 #ifndef __sun
   #ifndef _POSIX_C_SOURCE
-    #define _POSIX_C_SOURCE 2 /* to accept POSIX 2 in old ANSI C standards */
+    #define _POSIX_C_SOURCE 2 /* to accept POSIX 2 in old ANSI C standards */ // NOLINT(bugprone-reserved-identifier, readability-identifier-naming)
   #endif
 #endif
 
@@ -59,10 +59,10 @@ Thanks for contributions, bug corrections & thorough testing to:
   #endif
 #endif
 
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <sys/stat.h>
 
 #ifdef _WIN32
@@ -95,6 +95,7 @@ Thanks for contributions, bug corrections & thorough testing to:
 
 #ifdef REX_PLATFORM_WINDOWS
   #include "rex_engine/platform/win/win_com_library.h"
+  #include "rex_engine/platform/win/diagnostics/hr_call.h"
 #endif
 
 namespace rex
@@ -115,12 +116,12 @@ namespace rex
 
       bool quotes_detected(rsl::string_view path)
       {
-        if(path.find('\'') != path.npos())
+        if(path.find('\'') != path.npos()) // NOLINT(readability-static-accessed-through-instance)
         {
           return true;
         }
 
-        if(path.find('\"') != path.npos())
+        if(path.find('\"') != path.npos()) // NOLINT(readability-static-accessed-through-instance)
         {
           return true;
         }
@@ -130,7 +131,7 @@ namespace rex
 
       DEFINE_YES_NO_ENUM(AllowMultipleSelection);
 
-      rsl::vector<char> open_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter, AllowMultipleSelection allowMultipleSelection)
+      rsl::vector<char> open_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter, AllowMultipleSelection allowMultipleSelection) // NOLINT(misc-no-recursion)
       {
         if(internal::quotes_detected(title))
         {
@@ -151,11 +152,11 @@ namespace rex
 
         auto dirname = internal::path_without_final_slash(defaultPath);
 
-        rsl::vector<rsl::string_view> filters = rsl::split(filter, ";");
+        const rsl::vector<rsl::string_view> filters = rsl::split(filter, ";");
 
         rsl::string filter_patterns;
         filter_patterns.reserve(filter.size());
-        for(rsl::string_view splitted_filter: filters)
+        for(const rsl::string_view splitted_filter: filters)
         {
           filter_patterns += splitted_filter;
           filter_patterns += ";";
@@ -167,24 +168,24 @@ namespace rex
         OPENFILENAMEA ofn     = {0};
         ofn.lStructSize       = sizeof(OPENFILENAME);
         ofn.hwndOwner         = GetForegroundWindow();
-        ofn.hInstance         = 0;
-        ofn.lpstrFilter       = filter_patterns.size() ? filter_patterns.data() : NULL;
-        ofn.lpstrCustomFilter = NULL;
+        ofn.hInstance         = nullptr;
+        ofn.lpstrFilter       = !filter_patterns.empty() ? filter_patterns.data() : nullptr;
+        ofn.lpstrCustomFilter = nullptr;
         ofn.nMaxCustFilter    = 0;
         ofn.nFilterIndex      = 1;
         ofn.lpstrFile         = buffer.data();
         ofn.nMaxFile          = buffer.size();
-        ofn.lpstrFileTitle    = NULL;
+        ofn.lpstrFileTitle    = nullptr;
         ofn.nMaxFileTitle     = MAX_PATH / 2;
-        ofn.lpstrInitialDir   = dirname.size() ? dirname.data() : nullptr;
-        ofn.lpstrTitle        = title.size() ? title.data() : nullptr;
+        ofn.lpstrInitialDir   = !dirname.empty() ? dirname.data() : nullptr;
+        ofn.lpstrTitle        = !title.empty() ? title.data() : nullptr;
         ofn.Flags             = OFN_EXPLORER | OFN_NOCHANGEDIR | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         ofn.nFileOffset       = 0;
         ofn.nFileExtension    = 0;
-        ofn.lpstrDefExt       = NULL;
+        ofn.lpstrDefExt       = nullptr;
         ofn.lCustData         = 0L;
-        ofn.lpfnHook          = NULL;
-        ofn.lpTemplateName    = NULL;
+        ofn.lpfnHook          = nullptr;
+        ofn.lpTemplateName    = nullptr;
 
         if(allowMultipleSelection)
         {
@@ -195,14 +196,14 @@ namespace rex
       }
     } // namespace internal
 
-    void beep(void)
+    void beep()
     {
       Beep(440, 300);
     }
 
 #ifdef _WIN32
 
-    int msg_box(rsl::string_view title, rsl::string_view msg, DialogType dialogType, IconType iconType, DefaultButton defaultButton)
+    int msg_box(rsl::string_view title, rsl::string_view msg, DialogType dialogType, IconType iconType, DefaultButton defaultButton) // NOLINT(misc-no-recursion)
     {
       // Detecht invalid title or messages
       if(internal::quotes_detected(title))
@@ -215,60 +216,62 @@ namespace rex
       }
 
       // Create the code to be passed in to Win API
-      UINT aCode = 0;
+      UINT code = 0;
       switch(iconType)
       {
-        case rex::dialog::IconType::Info: aCode = MB_ICONINFORMATION; break;
-        case rex::dialog::IconType::Warning: aCode = MB_ICONWARNING; break;
-        case rex::dialog::IconType::Error: aCode = MB_ICONERROR; break;
-        case rex::dialog::IconType::Question: aCode = MB_ICONQUESTION; break;
-        default: aCode = MB_ICONINFORMATION; break;
+        case rex::dialog::IconType::Info: code = MB_ICONINFORMATION; break;
+        case rex::dialog::IconType::Warning: code = MB_ICONWARNING; break;
+        case rex::dialog::IconType::Error: code = MB_ICONERROR; break;
+        case rex::dialog::IconType::Question: code = MB_ICONQUESTION; break;
+        default: code = MB_ICONINFORMATION; break;
       }
 
+      // NOLINTBEGIN(bugprone-branch-clone)
       switch(dialogType)
       {
-        case rex::dialog::DialogType::Ok: aCode += MB_OK; break;
+        case rex::dialog::DialogType::Ok: code += MB_OK; break;
         case rex::dialog::DialogType::OkCancel:
-          aCode += MB_OKCANCEL;
+          code += MB_OKCANCEL;
           if(defaultButton == DefaultButton::Cancel)
           {
-            aCode += MB_DEFBUTTON2;
+            code += MB_DEFBUTTON2;
           }
           break;
         case rex::dialog::DialogType::YesNo:
-          aCode += MB_YESNO;
+          code += MB_YESNO;
           if(defaultButton == DefaultButton::Cancel)
           {
-            aCode += MB_DEFBUTTON2;
+            code += MB_DEFBUTTON2;
           }
           break;
         case rex::dialog::DialogType::YesNoCancel:
-          aCode += MB_YESNOCANCEL;
+          code += MB_YESNOCANCEL;
           if(defaultButton == DefaultButton::Yes)
           {
-            aCode += MB_DEFBUTTON1;
+            code += MB_DEFBUTTON1;
           }
           else if(defaultButton == DefaultButton::No)
           {
-            aCode += MB_DEFBUTTON2;
+            code += MB_DEFBUTTON2;
           }
           else
           {
-            aCode += MB_DEFBUTTON3;
+            code += MB_DEFBUTTON3;
           }
           break;
-        default: aCode += MB_OK; break;
+        default: code += MB_OK; break;
       }
+      // NOLINTEND(bugprone-branch-clone)
 
-      aCode += MB_TOPMOST;
+      code += MB_TOPMOST;
 
-      int lBoxReturnValue = MessageBoxA(GetForegroundWindow(), msg.data(), title.data(), aCode);
+      const int box_return_value = MessageBoxA(GetForegroundWindow(), msg.data(), title.data(), code);
 
-      if((lBoxReturnValue == IDNO) && (dialogType == DialogType::YesNoCancel))
+      if((box_return_value == IDNO) && (dialogType == DialogType::YesNoCancel))
       {
         return 2;
       }
-      else if((lBoxReturnValue == IDOK) || (lBoxReturnValue == IDYES))
+      else if((box_return_value == IDOK) || (box_return_value == IDYES))
       {
         return 1;
       }
@@ -298,7 +301,7 @@ namespace rex
         m_nid.uID              = new_baloon_tip_id(); // This can be a random number, as long as there aren't any 2 track icons active with the same
         m_nid.uFlags           = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO;
         m_nid.uCallbackMessage = WM_TRAYICON;
-        m_nid.hIcon            = LoadIcon(NULL, IDI_APPLICATION); // This is the icon shown to the left or your application
+        m_nid.hIcon            = LoadIcon(nullptr, IDI_APPLICATION); // This is the icon shown to the left or your application
         memcpy(m_nid.szTip, tip.data(), tip.length());
 
         // Balloon tip settings
@@ -310,15 +313,21 @@ namespace rex
         Shell_NotifyIcon(NIM_ADD, &m_nid);
         Shell_NotifyIcon(NIM_MODIFY, &m_nid);
       }
+      BaloonTip(const BaloonTip&) = delete;
+      BaloonTip(BaloonTip&&) = delete;
 
       ~BaloonTip()
       {
         Shell_NotifyIcon(NIM_DELETE, &m_nid);
       }
 
+      BaloonTip& operator=(const BaloonTip&) = delete;
+      BaloonTip& operator=(BaloonTip&&) = delete;
+
     private:
-      int info_flags(IconType iconType)
+      int info_flags(IconType iconType) // NOLINT(readability-convert-member-functions-to-static)
       {
+        // NOLINTBEGIN(bugprone-branch-clone)
         switch(iconType)
         {
           case rex::dialog::IconType::Info: return NIIF_INFO; break;
@@ -327,6 +336,7 @@ namespace rex
           case rex::dialog::IconType::Question: return NIIF_INFO; break;
           default: return NIIF_INFO; break;
         }
+        // NOLINTEND(bugprone-branch-clone)
       }
 
     private:
@@ -336,12 +346,12 @@ namespace rex
     /* return has only meaning for tinyfd_query */
     int popup(rsl::string_view title, rsl::string_view msg, rsl::string_view tip, IconType iconType)
     {
-      BaloonTip baloon_tip(title, msg, tip, iconType);
+      const BaloonTip baloon_tip(title, msg, tip, iconType);
 
       return 0;
     }
 
-    rsl::medium_stack_string save_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter)
+    rsl::medium_stack_string save_file_dialog(rsl::string_view title, rsl::string_view defaultPath, rsl::string_view filter) // NOLINT(misc-no-recursion)
     {
       if(internal::quotes_detected(title))
       {
@@ -356,11 +366,11 @@ namespace rex
         return save_file_dialog(title, defaultPath, "INVALID FILTER_DESCRIPTION WITH QUOTES");
       }
 
-      rsl::vector<rsl::string_view> filters = rsl::split(filter, ";");
+      const rsl::vector<rsl::string_view> filters = rsl::split(filter, ";");
 
       rsl::string filter_patterns;
       filter_patterns.reserve(filter.size());
-      for(rsl::string_view splitted_filter: filters)
+      for(const rsl::string_view splitted_filter: filters)
       {
         filter_patterns += splitted_filter;
         filter_patterns += ";";
@@ -370,33 +380,33 @@ namespace rex
       filter_patterns.replace("\n", "\0");
 
       defaultPath              = internal::path_without_final_slash(defaultPath);
-      rsl::string_view dirname = rex::path::dir_name(defaultPath);
+      const rsl::string_view dirname = rex::path::dir_name(defaultPath);
       rsl::medium_stack_string result;
 
       OPENFILENAMEA ofn     = {0};
       ofn.lStructSize       = sizeof(OPENFILENAMEA);
       ofn.hwndOwner         = GetForegroundWindow();
-      ofn.hInstance         = 0;
+      ofn.hInstance         = nullptr;
       ofn.lpstrFilter       = filter_patterns.data();
-      ofn.lpstrCustomFilter = NULL;
+      ofn.lpstrCustomFilter = nullptr;
       ofn.nMaxCustFilter    = 0;
       ofn.nFilterIndex      = 1;
       ofn.lpstrFile         = result.data();
 
       ofn.nMaxFile        = MAX_PATH;
-      ofn.lpstrFileTitle  = NULL;
+      ofn.lpstrFileTitle  = nullptr;
       ofn.nMaxFileTitle   = MAX_PATH / 2;
       ofn.lpstrInitialDir = dirname.data();
       ofn.lpstrTitle      = title.data();
       ofn.Flags           = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR | OFN_PATHMUSTEXIST;
       ofn.nFileOffset     = 0;
       ofn.nFileExtension  = 0;
-      ofn.lpstrDefExt     = filter.size() ? filter.data() : nullptr;
+      ofn.lpstrDefExt     = !filter.empty() ? filter.data() : nullptr;
       ofn.lCustData       = 0L;
-      ofn.lpfnHook        = NULL;
-      ofn.lpTemplateName  = NULL;
+      ofn.lpfnHook        = nullptr;
+      ofn.lpTemplateName  = nullptr;
 
-      if(GetSaveFileNameA(&ofn))
+      if(GetSaveFileNameA(&ofn)) // NOLINT(readability-implicit-bool-conversion)
       {
         result.reset_null_termination_offset();
       }
@@ -412,7 +422,7 @@ namespace rex
       const char* start = buffer.data();
       while(start)
       {
-        count_t string_length = rsl::strlen(start);
+        const count_t string_length = rsl::strlen(start);
         rsl::string_view str(start, string_length);
         start += string_length + 1;
         selected_files.emplace_back(str);
@@ -430,7 +440,7 @@ namespace rex
       return result;
     }
 
-    rsl::big_stack_string open_folder_dialog(rsl::string_view title, rsl::string_view defaultPath)
+    rsl::big_stack_string open_folder_dialog(rsl::string_view title, rsl::string_view defaultPath) // NOLINT(misc-no-recursion)
     {
       if(internal::quotes_detected(title))
       {
@@ -444,7 +454,7 @@ namespace rex
       auto file_open_dialog = rex::win::com_lib::create_com_object<IFileOpenDialog>(CLSID_FileOpenDialog);
       FILEOPENDIALOGOPTIONS options {};
 
-      options |= FOS_PICKFOLDERS;
+      options |= FOS_PICKFOLDERS; // NOLINT(hicpp-signed-bitwise)
       file_open_dialog->SetOptions(options);
 
       HWND parent_handle = nullptr;
@@ -457,15 +467,15 @@ namespace rex
       rex::wrl::ComPtr<IShellItem> item;
       HR_CALL(file_open_dialog->GetResult(item.GetAddressOf()));
 
-      PWSTR psz_file_path;
+      PWSTR psz_file_path{};
       HR_CALL(item->GetDisplayName(SIGDN_FILESYSPATH, &psz_file_path));
-      WideCharToMultiByte(CP_UTF8, 0, psz_file_path, -1, result.data(), result.max_size(), "\0", NULL);
+      WideCharToMultiByte(CP_UTF8, 0, psz_file_path, -1, result.data(), result.max_size(), "\0", nullptr); // NOLINT(readability-static-accessed-through-instance)
       CoTaskMemFree(psz_file_path);
 
       return result;
     }
 
-    rsl::Rgb color_chooser(rsl::string_view title, rsl::Rgb defaultRgb)
+    rsl::Rgb color_chooser(rsl::string_view title, rsl::Rgb defaultRgb) // NOLINT(misc-no-recursion)
     {
       if(internal::quotes_detected(title))
       {
@@ -473,24 +483,24 @@ namespace rex
       }
 
       // This isn't used, but we need it to call the color picker
-      COLORREF crCustColors[16];
+      COLORREF curst_colors[16]; // NOLINT(modernize-avoid-c-arrays)
 
       /* we can't use title */
       CHOOSECOLORW cc {};
       cc.lStructSize    = sizeof(CHOOSECOLOR);
       cc.hwndOwner      = GetForegroundWindow();
-      cc.hInstance      = NULL;
+      cc.hInstance      = nullptr;
       cc.rgbResult      = RGB(defaultRgb.red, defaultRgb.green, defaultRgb.blue);
-      cc.lpCustColors   = crCustColors;
+      cc.lpCustColors   = curst_colors;
       cc.Flags          = CC_RGBINIT | CC_FULLOPEN | CC_ANYCOLOR;
       cc.lCustData      = 0;
-      cc.lpfnHook       = NULL;
-      cc.lpTemplateName = NULL;
+      cc.lpfnHook       = nullptr;
+      cc.lpTemplateName = nullptr;
 
-      int lRet = ChooseColorW(&cc);
+      const int ret = ChooseColorW(&cc);
 
       rsl::Rgb res {};
-      if(!lRet)
+      if(!ret) // NOLINT(readability-implicit-bool-conversion)
       {
         return rsl::Rgb();
       }
@@ -546,14 +556,14 @@ namespace rex
       strcat(lTestedString, aExecutable);
       strcat(lTestedString, " 2>/dev/null ");
       lIn = popen(lTestedString, "r");
-      if((fgets(dirname, sizeof(dirname), lIn) != NULL) && (!strchr(dirname, ':')) && (strncmp(dirname, "no ", 3)))
+      if((fgets(dirname, sizeof(dirname), lIn) != nullptr) && (!strchr(dirname, ':')) && (strncmp(dirname, "no ", 3)))
       { /* present */
         pclose(lIn);
 
   #ifdef _GNU_SOURCE /*to bypass this, just comment out "#define _GNU_SOURCE" at the top of the file*/
         if(dirname[strlen(dirname) - 1] == '\n')
           dirname[strlen(dirname) - 1] = '\0';
-        lAllocatedCharString = realpath(dirname, NULL); /*same as canonicalize_file_name*/
+        lAllocatedCharString = realpath(dirname, nullptr); /*same as canonicalize_file_name*/
         lSubstringUndetected = !strstr(lAllocatedCharString, aExecutable);
         free(lAllocatedCharString);
         if(lSubstringUndetected)
@@ -610,7 +620,7 @@ namespace rex
       /* printf("lArray2 %d\n", lArray[2]); */
 
       if(!lArray[0] && !lArray[1] && !lArray[2])
-        return NULL;
+        return nullptr;
       return lArray;
     }
 
@@ -620,7 +630,7 @@ namespace rex
       FILE* lIn;
 
       lIn = popen(aCommand, "r");
-      if(fgets(dirname, sizeof(dirname), lIn) == NULL)
+      if(fgets(dirname, sizeof(dirname), lIn) == nullptr)
       { /* present */
         pclose(lIn);
         return 1;
@@ -736,7 +746,7 @@ namespace rex
         else
         {
           strcpy(lTerminalName, "");
-          return NULL;
+          return nullptr;
         }
 
         if(tfd_isDarwin())
@@ -836,7 +846,7 @@ namespace rex
       }
       else
       {
-        return NULL;
+        return nullptr;
       }
     }
 
@@ -850,7 +860,7 @@ namespace rex
       }
       else
       {
-        return NULL;
+        return nullptr;
       }
     }
 
@@ -975,7 +985,7 @@ namespace rex
         if(lPerlPresent)
         {
           lIn = popen("perl -MNet::DBus -e \"Net::DBus->session->get_service('org.freedesktop.Notifications')\" 2>&1", "r");
-          if(fgets(dirname, sizeof(dirname), lIn) == NULL)
+          if(fgets(dirname, sizeof(dirname), lIn) == nullptr)
           {
             lPerlPresent = 2;
           }
@@ -999,7 +1009,7 @@ namespace rex
         if(lAfplayPresent)
         {
           lIn = popen("test -e /System/Library/Sounds/Ping.aiff || echo Ping", "r");
-          if(fgets(dirname, sizeof(dirname), lIn) == NULL)
+          if(fgets(dirname, sizeof(dirname), lIn) == nullptr)
           {
             lAfplayPresent = 2;
           }
@@ -1166,7 +1176,7 @@ namespace rex
         if(tfd_zenityPresent())
         {
           lIn = popen("zenity --version", "r");
-          if(fgets(dirname, sizeof(dirname), lIn) != NULL)
+          if(fgets(dirname, sizeof(dirname), lIn) != nullptr)
           {
             if(atoi(dirname) >= 3)
             {
@@ -1217,7 +1227,7 @@ namespace rex
         if(lKdialogPresent && !getenv("SSH_TTY"))
         {
           lIn = popen("kdialog --attach 2>&1", "r");
-          if(fgets(dirname, sizeof(dirname), lIn) != NULL)
+          if(fgets(dirname, sizeof(dirname), lIn) != nullptr)
           {
             if(!strstr("Unknown", dirname))
             {
@@ -1232,7 +1242,7 @@ namespace rex
           {
             lKdialogPresent = 1;
             lIn             = popen("kdialog --passiveBaloonTip 2>&1", "r");
-            if(fgets(dirname, sizeof(dirname), lIn) != NULL)
+            if(fgets(dirname, sizeof(dirname), lIn) != nullptr)
             {
               if(!strstr("Unknown", dirname))
               {
@@ -1260,7 +1270,7 @@ namespace rex
         lOsx9orBetter = 0;
         lIn           = popen("osascript -e 'set osver to system version of (system info)'", "r");
         V             = 0;
-        if((fgets(dirname, sizeof(dirname), lIn) != NULL) && (2 == sscanf(dirname, "%d.%d", &V, &v)))
+        if((fgets(dirname, sizeof(dirname), lIn) != nullptr) && (2 == sscanf(dirname, "%d.%d", &V, &v)))
         {
           V = V * 100 + v;
           if(V >= 1009)
@@ -1478,14 +1488,14 @@ notify=dbus.Interface(notif,'org.freedesktop.Notifications');\nexcept:\n\tprint(
       }
     }
 
-    int tinyfd_msg_box(const char* title,     /* NULL or "" */
-                       const char* msg,       /* NULL or ""  may contain \n and \t */
+    int tinyfd_msg_box(const char* title,     /* nullptr or "" */
+                       const char* msg,       /* nullptr or ""  may contain \n and \t */
                        DialogType dialogType, /* "ok" "okcancel" "yesno" "yesnocancel" */
                        IconType iconType,     /* "info" "warning" "error" "question" */
                        int defaultButton)     /* 0 for cancel/no , 1 for ok/yes , 2 for no in yesnocancel */
     {
       char dirname[MAX_PATH];
-      char* lDialogString = NULL;
+      char* lDialogString = nullptr;
       char* lpDialogString;
       FILE* lIn;
       int lWasGraphicDialog = 0;
@@ -2501,7 +2511,7 @@ my \\$notificationsObject = \\$notificationsService->get_object('/org/freedeskto
         free(lDialogString);
         return 0;
       }
-      while(fgets(dirname, sizeof(dirname), lIn) != NULL)
+      while(fgets(dirname, sizeof(dirname), lIn) != nullptr)
       {
       }
 
@@ -2534,12 +2544,12 @@ my \\$notificationsObject = \\$notificationsService->get_object('/org/freedeskto
     }
 
     /* return has only meaning for tinyfd_query */
-    int tinyfd_notifyBaloonTip(const char* title, /* NULL or "" */
-                               const char* msg,   /* NULL or ""  may contain \n and \t */
+    int tinyfd_notifyBaloonTip(const char* title, /* nullptr or "" */
+                               const char* msg,   /* nullptr or ""  may contain \n and \t */
                                IconType iconType) /* "info" "warning" "error" */
     {
       char dirname[MAX_PATH];
-      char* lDialogString = NULL;
+      char* lDialogString = nullptr;
       char* lpDialogString;
       FILE* lIn;
       size_t lTitleLen;
@@ -2792,13 +2802,13 @@ my \\$notificationsObject = \\$notificationsService->get_object('/org/freedeskto
       return 1;
     }
 
-    /* returns NULL on cancel */
-    char* tinyfd_inputBox(const char* title,         /* NULL or "" */
-                          const char* msg,           /* NULL or "" (\n and \t have no effect) */
-                          const char* aDefaultInput) /* "" , if NULL it's a passwordBox */
+    /* returns nullptr on cancel */
+    char* tinyfd_inputBox(const char* title,         /* nullptr or "" */
+                          const char* msg,           /* nullptr or "" (\n and \t have no effect) */
+                          const char* aDefaultInput) /* "" , if nullptr it's a passwordBox */
     {
       static char dirname[MAX_PATH];
-      char* lDialogString = NULL;
+      char* lDialogString = nullptr;
       char* lpDialogString;
       FILE* lIn;
       int lResult;
@@ -3324,7 +3334,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
           return (char*)0;
         }
         free(lDialogString);
-        return NULL;
+        return nullptr;
       }
       else
       {
@@ -3361,7 +3371,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
         if(!lEOF || (dirname[0] == '\0'))
         {
           free(lDialogString);
-          return NULL;
+          return nullptr;
         }
 
         if(dirname[0] == '\n')
@@ -3371,7 +3381,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
           if(!lEOF || (dirname[0] == '\0'))
           {
             free(lDialogString);
-            return NULL;
+            return nullptr;
           }
         }
 
@@ -3384,7 +3394,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
         if(strchr(dirname, 27))
         {
           free(lDialogString);
-          return NULL;
+          return nullptr;
         }
         if(dirname[strlen(dirname) - 1] == '\n')
         {
@@ -3410,9 +3420,9 @@ frontmost of process \\\"Python\\\" to true' ''');");
           remove("/tmp/tinyfd0.txt");
         }
         free(lDialogString);
-        return NULL;
+        return nullptr;
       }
-      while(fgets(dirname, sizeof(dirname), lIn) != NULL)
+      while(fgets(dirname, sizeof(dirname), lIn) != nullptr)
       {
       }
 
@@ -3441,7 +3451,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
         if(strstr(dirname, "^[")) /* esc was pressed */
         {
           free(lDialogString);
-          return NULL;
+          return nullptr;
         }
       }
 
@@ -3450,7 +3460,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
       if(!lResult)
       {
         free(lDialogString);
-        return NULL;
+        return nullptr;
       }
 
       /* printf( "dirname+1: %s\n" , dirname+1 ) ; */
@@ -3458,11 +3468,11 @@ frontmost of process \\\"Python\\\" to true' ''');");
       return dirname + 1;
     }
 
-    char* tinyfd_save_file_dialog(const char* title,                    /* NULL or "" */
-                                  const char* defaultPath,              /* NULL or "" */
+    char* tinyfd_save_file_dialog(const char* title,                    /* nullptr or "" */
+                                  const char* defaultPath,              /* nullptr or "" */
                                   int aNumOfFilterPatterns,             /* 0 */
-                                  const char* const* aFilterPatterns,   /* NULL or {"*.txt","*.doc"} */
-                                  const char* aSingleFilterDescription) /* NULL or "text files" */
+                                  const char* const* aFilterPatterns,   /* nullptr or {"*.txt","*.doc"} */
+                                  const char* aSingleFilterDescription) /* nullptr or "text files" */
     {
       static char dirname[MAX_PATH];
       char lDialogString[MAX_PATH];
@@ -3486,7 +3496,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
       for(i = 0; i < aNumOfFilterPatterns; i++)
       {
         if(tfd_quoteDetected(aFilterPatterns[i]))
-          return save_file_dialog("INVALID FILTER_PATTERN WITH QUOTES", defaultPath, 0, NULL, NULL);
+          return save_file_dialog("INVALID FILTER_PATTERN WITH QUOTES", defaultPath, 0, nullptr, nullptr);
       }
 
       if(osascriptPresent())
@@ -3903,11 +3913,11 @@ frontmost of process \\\"Python\\\" to true' ''');");
       {
         if(title && !strcmp(title, "tinyfd_query"))
         {
-          return inputBox(title, NULL, NULL);
+          return inputBox(title, nullptr, nullptr);
         }
         strcpy(dirname, "Save file in ");
         strcat(dirname, getCurDir());
-        lPointerInputBox = inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(nullptr, nullptr, nullptr); /* obtain a pointer on the current content of tinyfd_inputBox */
         if(lPointerInputBox)
           strcpy(lString, lPointerInputBox);           /* preserve the current content of tinyfd_inputBox */
         p = inputBox(title, dirname, "");
@@ -3922,12 +3932,12 @@ frontmost of process \\\"Python\\\" to true' ''');");
         getPathWithoutFinalSlash(lString, p);
         if(strlen(lString) && !dirExists(lString))
         {
-          return NULL;
+          return nullptr;
         }
         getLastName(lString, p);
         if(!strlen(lString))
         {
-          return NULL;
+          return nullptr;
         }
         return p;
       }
@@ -3936,9 +3946,9 @@ frontmost of process \\\"Python\\\" to true' ''');");
         printf("lDialogString: %s\n", lDialogString);
       if(!(lIn = popen(lDialogString, "r")))
       {
-        return NULL;
+        return nullptr;
       }
-      while(fgets(dirname, sizeof(dirname), lIn) != NULL)
+      while(fgets(dirname, sizeof(dirname), lIn) != nullptr)
       {
       }
       pclose(lIn);
@@ -3949,27 +3959,27 @@ frontmost of process \\\"Python\\\" to true' ''');");
       /* printf( "dirname: %s\n" , dirname ) ; */
       if(!strlen(dirname))
       {
-        return NULL;
+        return nullptr;
       }
       getPathWithoutFinalSlash(lString, dirname);
       if(strlen(lString) && !dirExists(lString))
       {
-        return NULL;
+        return nullptr;
       }
       getLastName(lString, dirname);
       if(!filenameValid(lString))
       {
-        return NULL;
+        return nullptr;
       }
       return dirname;
     }
 
     /* in case of multiple files, the separator is | */
-    char* tinyfd_open_file_dialog_multiselect(const char* title,                    /* NULL or "" */
-                                              const char* defaultPath,              /* NULL or "" */
+    char* tinyfd_open_file_dialog_multiselect(const char* title,                    /* nullptr or "" */
+                                              const char* defaultPath,              /* nullptr or "" */
                                               int aNumOfFilterPatterns,             /* 0 */
-                                              const char* const* aFilterPatterns,   /* NULL or {"*.jpg","*.png"} */
-                                              const char* aSingleFilterDescription, /* NULL or "image files" */
+                                              const char* const* aFilterPatterns,   /* nullptr or {"*.jpg","*.png"} */
+                                              const char* aSingleFilterDescription, /* nullptr or "image files" */
                                               int aAllowMultipleSelects)            /* 0 or 1 */
     {
       char lDialogString[MAX_PATH];
@@ -3982,7 +3992,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
       int lWasGraphicDialog = 0;
       int lWasXterm         = 0;
       size_t lFuldirnameLen;
-      static char* dirname = NULL;
+      static char* dirname = nullptr;
 
       if(!aFilterPatterns)
         aNumOfFilterPatterns = 0;
@@ -3995,13 +4005,13 @@ frontmost of process \\\"Python\\\" to true' ''');");
       for(i = 0; i < aNumOfFilterPatterns; i++)
       {
         if(tfd_quoteDetected(aFilterPatterns[i]))
-          return open_file_dialog_multiselect("INVALID FILTER_PATTERN WITH QUOTES", defaultPath, 0, NULL, NULL, aAllowMultipleSelects);
+          return open_file_dialog_multiselect("INVALID FILTER_PATTERN WITH QUOTES", defaultPath, 0, nullptr, nullptr, aAllowMultipleSelects);
       }
 
       free(dirname);
       if(title && !strcmp(title, "tinyfd_query"))
       {
-        dirname = NULL;
+        dirname = nullptr;
       }
       else
       {
@@ -4021,7 +4031,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
           dirname        = (char*)(malloc(lFuldirnameLen * sizeof(char)));
         }
         if(!dirname)
-          return NULL;
+          return nullptr;
         dirname[0] = '\0';
       }
 
@@ -4494,11 +4504,11 @@ frontmost of process \\\"Python\\\" to true' ''');");
       {
         if(title && !strcmp(title, "tinyfd_query"))
         {
-          return inputBox(title, NULL, NULL);
+          return inputBox(title, nullptr, nullptr);
         }
         strcpy(dirname, "Open file from ");
         strcat(dirname, getCurDir());
-        lPointerInputBox = inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(nullptr, nullptr, nullptr); /* obtain a pointer on the current content of tinyfd_inputBox */
         if(lPointerInputBox)
           strcpy(lDialogString, lPointerInputBox);     /* preserve the current content of tinyfd_inputBox */
         p = inputBox(title, dirname, "");
@@ -4511,7 +4521,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
         if(!fileExists(dirname))
         {
           free(dirname);
-          dirname = NULL;
+          dirname = nullptr;
         }
         else
         {
@@ -4525,12 +4535,12 @@ frontmost of process \\\"Python\\\" to true' ''');");
       if(!(lIn = popen(lDialogString, "r")))
       {
         free(dirname);
-        dirname = NULL;
-        return NULL;
+        dirname = nullptr;
+        return nullptr;
       }
       dirname[0] = '\0';
       p          = dirname;
-      while(fgets(p, sizeof(dirname), lIn) != NULL)
+      while(fgets(p, sizeof(dirname), lIn) != nullptr)
       {
         p += strlen(p);
       }
@@ -4551,23 +4561,23 @@ frontmost of process \\\"Python\\\" to true' ''');");
       if(!strlen(dirname))
       {
         free(dirname);
-        dirname = NULL;
-        return NULL;
+        dirname = nullptr;
+        return nullptr;
       }
       if(aAllowMultipleSelects && strchr(dirname, '|'))
       {
         if(!ensureFilesExist(dirname, dirname))
         {
           free(dirname);
-          dirname = NULL;
-          return NULL;
+          dirname = nullptr;
+          return nullptr;
         }
       }
       else if(!fileExists(dirname))
       {
         free(dirname);
-        dirname = NULL;
-        return NULL;
+        dirname = nullptr;
+        return nullptr;
       }
 
       dirname = (char*)(realloc(dirname, (strlen(dirname) + 1) * sizeof(char)));
@@ -4889,11 +4899,11 @@ frontmost of process \\\"Python\\\" to true' ''');");
       {
         if(title && !strcmp(title, "tinyfd_query"))
         {
-          return inputBox(title, NULL, NULL);
+          return inputBox(title, nullptr, nullptr);
         }
         strcpy(dirname, "Select folder from ");
         strcat(dirname, getCurDir());
-        lPointerInputBox = inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(nullptr, nullptr, nullptr); /* obtain a pointer on the current content of tinyfd_inputBox */
         if(lPointerInputBox)
           strcpy(lDialogString, lPointerInputBox);     /* preserve the current content of tinyfd_inputBox */
         p = inputBox(title, dirname, "");
@@ -4907,7 +4917,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
 
         if(!p || !strlen(p) || !dirExists(p))
         {
-          return NULL;
+          return nullptr;
         }
         return p;
       }
@@ -4915,9 +4925,9 @@ frontmost of process \\\"Python\\\" to true' ''');");
         printf("lDialogString: %s\n", lDialogString);
       if(!(lIn = popen(lDialogString, "r")))
       {
-        return NULL;
+        return nullptr;
       }
-      while(fgets(dirname, sizeof(dirname), lIn) != NULL)
+      while(fgets(dirname, sizeof(dirname), lIn) != nullptr)
       {
       }
       pclose(lIn);
@@ -4928,18 +4938,18 @@ frontmost of process \\\"Python\\\" to true' ''');");
       /* printf( "dirname: %s\n" , dirname ) ; */
       if(!strlen(dirname) || !dirExists(dirname))
       {
-        return NULL;
+        return nullptr;
       }
       return dirname;
     }
 
     /* aDefaultRGB is used only if aDefaultHexRGB is absent */
     /* aDefaultRGB and aoResultRGB can be the same array */
-    /* returns NULL on cancel */
+    /* returns nullptr on cancel */
     /* returns the hexcolor as a string "#FF0000" */
     /* aoResultRGB also contains the result */
-    char* tinyfd_color_chooser(const char* title,                  /* NULL or "" */
-                               const char* aDefaultHexRGB,         /* NULL or "#FF0000"*/
+    char* tinyfd_color_chooser(const char* title,                  /* nullptr or "" */
+                               const char* aDefaultHexRGB,         /* nullptr or "#FF0000"*/
                                const unsigned char aDefaultRGB[3], /* { 0 , 255 , 255 } */
                                unsigned char aoResultRGB[3])       /* { 0 , 0 , 0 } */
     {
@@ -5199,22 +5209,22 @@ frontmost of process \\\"Python\\\" to true' ''');");
       {
         if(title && !strcmp(title, "tinyfd_query"))
         {
-          return inputBox(title, NULL, NULL);
+          return inputBox(title, nullptr, nullptr);
         }
-        lPointerInputBox = inputBox(NULL, NULL, NULL); /* obtain a pointer on the current content of tinyfd_inputBox */
+        lPointerInputBox = inputBox(nullptr, nullptr, nullptr); /* obtain a pointer on the current content of tinyfd_inputBox */
         if(lPointerInputBox)
           strcpy(lDialogString, lPointerInputBox);     /* preserve the current content of tinyfd_inputBox */
         p = inputBox(title, "Enter hex rgb color (i.e. #f5ca20)", lDefaultHexRGB);
 
         if(!p || (strlen(p) != 7) || (p[0] != '#'))
         {
-          return NULL;
+          return nullptr;
         }
         for(i = 1; i < 7; i++)
         {
           if(!isxdigit((int)p[i]))
           {
-            return NULL;
+            return nullptr;
           }
         }
         hex_to_rgb(p, aoResultRGB);
@@ -5228,15 +5238,15 @@ frontmost of process \\\"Python\\\" to true' ''');");
         printf("lDialogString: %s\n", lDialogString);
       if(!(lIn = popen(lDialogString, "r")))
       {
-        return NULL;
+        return nullptr;
       }
-      while(fgets(dirname, sizeof(dirname), lIn) != NULL)
+      while(fgets(dirname, sizeof(dirname), lIn) != nullptr)
       {
       }
       pclose(lIn);
       if(!strlen(dirname))
       {
-        return NULL;
+        return nullptr;
       }
       /* printf( "len Buff: %lu\n" , strlen(dirname) ) ; */
       /* printf( "dirname0: %s\n" , dirname ) ; */
@@ -5266,7 +5276,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
   #else
           aoResultRGB[0] = strtol(dirname + 4, &lTmp2, 10);
           aoResultRGB[1] = strtol(lTmp2 + 1, &lTmp2, 10);
-          aoResultRGB[2] = strtol(lTmp2 + 1, NULL, 10);
+          aoResultRGB[2] = strtol(lTmp2 + 1, nullptr, 10);
   #endif
           rgb_to_hex(aoResultRGB, dirname);
         }
@@ -5277,7 +5287,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
   #else
           aoResultRGB[0] = strtol(dirname + 5, &lTmp2, 10);
           aoResultRGB[1] = strtol(lTmp2 + 1, &lTmp2, 10);
-          aoResultRGB[2] = strtol(lTmp2 + 1, NULL, 10);
+          aoResultRGB[2] = strtol(lTmp2 + 1, nullptr, 10);
   #endif
           rgb_to_hex(aoResultRGB, dirname);
         }
@@ -5290,7 +5300,7 @@ frontmost of process \\\"Python\\\" to true' ''');");
   #else
         aoResultRGB[0] = strtol(dirname, &lTmp2, 10);
         aoResultRGB[1] = strtol(lTmp2 + 1, &lTmp2, 10);
-        aoResultRGB[2] = strtol(lTmp2 + 1, NULL, 10);
+        aoResultRGB[2] = strtol(lTmp2 + 1, nullptr, 10);
   #endif
         rgb_to_hex(aoResultRGB, dirname);
       }

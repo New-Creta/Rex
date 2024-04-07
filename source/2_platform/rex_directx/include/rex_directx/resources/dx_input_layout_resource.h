@@ -15,6 +15,7 @@ namespace rex
       explicit InputLayoutResource(ResourceHash hash, const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements)
           : BaseResource(&m_input_layout_desc, hash)
           , m_input_elements(elements)
+          , m_input_layout_desc()
       {
         m_input_layout_desc = {m_input_elements.data(), static_cast<u32>(m_input_elements.size())};
       }

@@ -31,6 +31,7 @@ namespace rex
 #ifndef REX_BUILD_RELEASE
         return m_allocator->allocate(size);
 #else
+        REX_UNUSED_PARAM(size);
         return nullptr;
 #endif
       }

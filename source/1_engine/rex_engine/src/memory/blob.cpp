@@ -72,7 +72,7 @@ namespace rex
     }
 
     Blob::Blob(void* data, rsl::memory_size size)
-        : m_data((rsl::byte*)data, narrow_cast<s32>(size.size_in_bytes()))
+        : m_data((rsl::byte*)data, narrow_cast<s32>(size.size_in_bytes())) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
     {
     }
 

@@ -4,12 +4,12 @@ namespace rex
 {
   namespace mesh_factory
   {
-    MeshData16 create_grid(f32 width, f32 depth, u16 m, u16 n)
+    MeshData16 create_grid(f32 width, f32 depth, s16 m, u16 n)
     {
       MeshData16 mesh_data;
 
-      const u32 vertex_count = m * n;
-      const u32 face_count   = (m - 1) * (n - 1) * 2;
+      const s32 vertex_count = m * n;
+      const s32 face_count   = (m - 1) * (n - 1) * 2;
 
       //
       // Create the vertices.
@@ -18,19 +18,19 @@ namespace rex
       const f32 half_width = 0.5f * width;
       const f32 half_depth = 0.5f * depth;
 
-      const f32 dx = width / (n - 1);
-      const f32 dz = depth / (m - 1);
+      const f32 dx = width / static_cast<f32>(n - 1);
+      const f32 dz = depth / static_cast<f32>(m - 1);
 
-      const f32 du = 1.0f / (n - 1);
-      const f32 dv = 1.0f / (m - 1);
+      const f32 du = 1.0f / static_cast<f32>(n - 1);
+      const f32 dv = 1.0f / static_cast<f32>(m - 1);
 
       mesh_data.reserve_vertices(vertex_count);
       for(u16 i = 0; i < m; ++i)
       {
-        const f32 z = half_depth - i * dz;
+        const f32 z = half_depth - static_cast<f32>(i) * dz;
         for(u16 j = 0; j < n; ++j)
         {
-          const f32 x = -half_width + j * dx;
+          const f32 x = -half_width + static_cast<f32>(j) * dx;
 
           glm::vec3 const position = glm::vec3(x, 0.0f, z);
           glm::vec3 const normal   = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -43,7 +43,7 @@ namespace rex
       //
       // Create the indices.
       //
-
+      const s32 num_indices = face_count * 3;
       mesh_data.reserve_indices(face_count * 3); // 3 indices per face
 
       // Iterate over each quad and compute indices.

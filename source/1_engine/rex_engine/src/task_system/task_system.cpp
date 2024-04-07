@@ -81,7 +81,7 @@ namespace rex
       };
 
       // The global job queue of all jobs that are pending execution
-      JobQueue g_job_queue; // NOLINT(fuchsia-statically-constructed-objects)
+      JobQueue g_job_queue; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
       // A wrapper around a thread holding a job.
       // Jobs are owned by both the thread that executes them

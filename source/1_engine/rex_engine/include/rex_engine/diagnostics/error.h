@@ -12,7 +12,7 @@ namespace rex
   class Error
   {
   public:
-    Error(rsl::string_view errorMsg, s32 errorCode = 1);
+    explicit Error(rsl::string_view errorMsg, s32 errorCode = 1);
 
     // Returns true on error
     explicit operator bool() const;

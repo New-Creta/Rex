@@ -15,10 +15,10 @@ namespace rex
   {
     struct RenderItemDesc
     {
-      rhi::VertexBufferDesc vb_desc;
-      rhi::IndexBufferDesc ib_desc;
-      rhi::ConstantBufferDesc cb_desc;
-      PrimitiveTopology topology;
+      rhi::VertexBufferDesc vb_desc{};
+      rhi::IndexBufferDesc ib_desc{};
+      rhi::ConstantBufferDesc cb_desc{};
+      PrimitiveTopology topology{};
     };
 
     struct RenderItem
@@ -29,10 +29,10 @@ namespace rex
           , m_ib(ib)
           , m_cb(cb)
           , m_topology(topology)
+          , m_start_index_location(0)
+          , m_base_vertex_location(baseVertexLocation)
+          , m_index_count(indexCount)
       {
-        m_start_index_location = 0;
-        m_base_vertex_location = baseVertexLocation;
-        m_index_count          = indexCount;
       }
 
       rhi::ResourceSlot vb() const

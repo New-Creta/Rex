@@ -9,7 +9,7 @@
 #include "rex_std/memory.h"
 #include "rex_std/string.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 // IWYU pragma: no_include <built-in>
 

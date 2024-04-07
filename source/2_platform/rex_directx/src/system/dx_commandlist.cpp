@@ -34,7 +34,7 @@ namespace rex
 
     void CommandList::change_resource_state(Resource* resource, D3D12_RESOURCE_STATES to)
     {
-      D3D12_RESOURCE_STATES from = resource->resource_state();
+      const D3D12_RESOURCE_STATES from = resource->resource_state();
       if(from != to)
       {
         resource->transition(m_command_list.Get(), to);
@@ -46,9 +46,9 @@ namespace rex
       return m_command_list.Get();
     }
 
-    ScopedCommandList::ScopedCommandList(rsl::unique_ptr<CommandList>&& cmdList, CommandQueue* cmdQueue)
+    ScopedCommandList::ScopedCommandList(rsl::unique_ptr<CommandList>&& cmdList, CommandQueue* commandQueue)
         : m_cmd_list(rsl::move(cmdList))
-        , m_cmd_queue(cmdQueue)
+        , m_cmd_queue(commandQueue)
     {
       m_cmd_list->reset();
     }

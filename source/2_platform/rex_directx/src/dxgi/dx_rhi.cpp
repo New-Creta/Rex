@@ -52,8 +52,13 @@ namespace rex
       struct RenderHardwareInfrastructure
       {
       public:
-        RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData);
+        explicit RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData);
+        RenderHardwareInfrastructure(const RenderHardwareInfrastructure&) = delete;
+        RenderHardwareInfrastructure(RenderHardwareInfrastructure&&) = delete;
         ~RenderHardwareInfrastructure();
+
+        RenderHardwareInfrastructure& operator=(const RenderHardwareInfrastructure&) = delete;
+        RenderHardwareInfrastructure& operator=(RenderHardwareInfrastructure&&) = delete;
 
       private:
         // DXGI Factory
@@ -115,7 +120,7 @@ namespace rex
         rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> descriptor_heap_pool;
       };
 
-      rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi;
+      rsl::unique_ptr<RenderHardwareInfrastructure> g_rhi; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
       RenderHardwareInfrastructure* get()
       {
         return g_rhi.get();
@@ -183,7 +188,7 @@ namespace rex
     ResourceSlot compile_shader(const CompileShaderDesc& desc)
     {
       // Check if we don't have the compiled shader already
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
@@ -213,7 +218,7 @@ namespace rex
     ResourceSlot link_shader(const LinkShaderDesc& desc)
     {
       // If there's already a linked shader, return it.
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
@@ -231,7 +236,7 @@ namespace rex
       auto* vertex_shader = internal::get()->resource_pool.as<VertexShaderResource>(desc.vertex_shader);
       auto* pixel_shader  = internal::get()->resource_pool.as<PixelShaderResource>(desc.pixel_shader);
 
-      rsl::unique_array<ConstantLayoutDescription> constants = rsl::make_unique<ConstantLayoutDescription[]>(desc.constants.count());
+      rsl::unique_array<ConstantLayoutDescription> constants = rsl::make_unique<ConstantLayoutDescription[]>(desc.constants.count()); // NOLINT(modernize-avoid-c-arrays)
       rsl::memcpy(constants.get(), desc.constants.get(), desc.constants.byte_size());
 
       // create a combined shader object with the root sig, the vertex shader and the pixel shader
@@ -240,7 +245,7 @@ namespace rex
     ResourceSlot create_shader(const ShaderDesc& desc)
     {
       // Check if the shader isn't already loaded
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
@@ -264,7 +269,7 @@ namespace rex
     // Flags control which part of the buffer (color, depths or stencil) should be cleared
     ResourceSlot create_clear_state(const ClearStateDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
@@ -277,7 +282,7 @@ namespace rex
     // are all included in the raster state
     ResourceSlot create_raster_state(const RasterStateDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
@@ -313,7 +318,7 @@ namespace rex
     // of a vertex.
     ResourceSlot create_input_layout(const InputLayoutDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
@@ -337,14 +342,14 @@ namespace rex
     // A vertex buffer is a buffer holding vertices of 1 or more objects
     ResourceSlot create_vertex_buffer(const VertexBufferDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      rsl::memory_size size              = desc.blob_view.size();
+      const rsl::memory_size size              = desc.blob_view.size();
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size);
       set_debug_name_for(buffer.Get(), "Vertex Buffer");
       rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, desc.blob_view.size(), desc.vertex_size);
@@ -364,14 +369,14 @@ namespace rex
     // An index buffer is a buffer holding indices of 1 or more objects
     ResourceSlot create_index_buffer(const IndexBufferDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      rsl::memory_size size              = desc.blob_view.size();
+      const rsl::memory_size size              = desc.blob_view.size();
       DXGI_FORMAT d3d_format             = rex::d3d::to_d3d12_index_format(desc.format);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size, 0);
       set_debug_name_for(buffer.Get(), "Index Buffer");
@@ -390,15 +395,15 @@ namespace rex
     // This can hold data like ints, floats, vectors and matrices
     ResourceSlot create_constant_buffer(const ConstantBufferDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
+      const ResourceHash hash = hash_resource_desc(desc);
       if(internal::get()->resource_pool.has_resource(hash))
       {
         return internal::get()->resource_pool.at(hash);
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      rsl::memory_size size              = desc.blob_view.size();
-      rsl::memory_size aligned_size      = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+      const rsl::memory_size size              = desc.blob_view.size();
+      const rsl::memory_size aligned_size      = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
       set_debug_name_for(buffer.Get(), "Constant Buffer");
       rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, desc.blob_view.size());
@@ -428,7 +433,7 @@ namespace rex
         d3d_raster_state                  = *raster_state->get();
       }
 
-      D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+      const D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
       if(desc.blend_state.is_valid())
       {
         REX_STATIC_WARNING("Implement blend state");
@@ -436,7 +441,7 @@ namespace rex
         // d3d_blend_state = blend_state->get();
       }
 
-      D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+      const D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
       if(desc.depth_stencil_state.is_valid())
       {
         REX_STATIC_WARNING("Implement depth stencil state");
@@ -489,10 +494,10 @@ namespace rex
     void set_scissor_rect(const ScissorRect& rect)
     {
       RECT scissor_rect {};
-      scissor_rect.top    = (LONG)rect.top;
-      scissor_rect.left   = (LONG)rect.left;
-      scissor_rect.bottom = (LONG)rect.bottom;
-      scissor_rect.right  = (LONG)rect.right;
+      scissor_rect.top    = (LONG)rect.top; // NOLINT(google-readability-casting)     
+      scissor_rect.left   = (LONG)rect.left; // NOLINT(google-readability-casting)  
+      scissor_rect.bottom = (LONG)rect.bottom; // NOLINT(google-readability-casting)
+      scissor_rect.right  = (LONG)rect.right; // NOLINT(google-readability-casting)
 
       internal::get()->command_list->get()->RSSetScissorRects(1, &scissor_rect);
     }
@@ -507,18 +512,18 @@ namespace rex
       auto& clear_flags               = clear_state->get()->flags;
       if(clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
       {
-        DescriptorHandle rtv = internal::get()->swapchain->backbuffer_view();
+        const DescriptorHandle rtv = internal::get()->swapchain->backbuffer_view();
         internal::get()->command_list->get()->ClearRenderTargetView(rtv.get(), clear_state->get()->rgba.data(), 0, nullptr);
       }
 
       if(clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
       {
         s32 d3d_clear_flags = 0;
-        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
-        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
+        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0; // NOLINT(hicpp-signed-bitwise)
+        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0; // NOLINT(hicpp-signed-bitwise)
 
-        DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
-        internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
+        const DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
+        internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr); // NOLINT(google-readability-casting)
       }
     }
     void present()
@@ -581,7 +586,7 @@ namespace rex
     {
       auto rtv = internal::get()->swapchain->backbuffer_view();
       auto dsv = internal::get()->swapchain->depth_stencil_view();
-      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, &dsv.get());
+      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, &dsv.get()); // NOLINT(readability-implicit-bool-conversion)
     }
 
     void reset_upload_buffer()
@@ -641,10 +646,10 @@ namespace rex
         wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
         wrl::ComPtr<ID3DBlob> error_blob          = nullptr;
 
-        HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
+        const HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
         if(error_blob != nullptr)
         {
-          REX_ERROR(LogDirectX, "{}", (char*)error_blob->GetBufferPointer());
+          REX_ERROR(LogDirectX, "{}", (char*)error_blob->GetBufferPointer()); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
           return nullptr;
         }
 
@@ -817,11 +822,11 @@ namespace rex
       {
         dxgi_factory_flags = DXGI_CREATE_FACTORY_DEBUG;
 
-        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dxgi_severity_message);
-        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_INFO, globals::g_enable_dxgi_severity_info);
-        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, globals::g_enable_dxgi_severity_warning);
-        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, globals::g_enable_dxgi_severity_error);
-        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dxgi_severity_corruption);
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dxgi_severity_message); // NOLINT(readability-implicit-bool-conversion) 
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_INFO, globals::g_enable_dxgi_severity_info); // NOLINT(readability-implicit-bool-conversion)
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, globals::g_enable_dxgi_severity_warning); // NOLINT(readability-implicit-bool-conversion)
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, globals::g_enable_dxgi_severity_error); // NOLINT(readability-implicit-bool-conversion)
+        debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dxgi_severity_corruption); // NOLINT(readability-implicit-bool-conversion)
 
         rsl::array<DXGI_INFO_QUEUE_MESSAGE_ID, 1> dxgi_hide = {
             80 /* IDXGISwapChain::GetContainingOutput: The swapchain's adapter does not control the output on which the swapchain's window resides. */,
@@ -850,7 +855,7 @@ namespace rex
       factory = dxgi::Factory::create(dxgi_factory_flags);
       return true;
     }
-    void internal::RenderHardwareInfrastructure::init_debug_controller()
+    void internal::RenderHardwareInfrastructure::init_debug_controller() // NOLINT(readability-convert-member-functions-to-static)
     {
       // Enable extra debugging and send debug messages to the VC++ output window
       rex::wrl::ComPtr<ID3D12Debug> debug_controller;
@@ -865,7 +870,7 @@ namespace rex
     }
 
     // D3D Device
-    count_t internal::RenderHardwareInfrastructure::highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus)
+    count_t internal::RenderHardwareInfrastructure::highest_scoring_gpu(const rsl::vector<GpuDescription>& gpus) // NOLINT(readability-convert-member-functions-to-static)
     {
       auto it = rsl::max_element(gpus.cbegin(), gpus.cend(),
                                  [](const GpuDescription& lhs, const GpuDescription& rhs)
@@ -884,11 +889,11 @@ namespace rex
       rex::wrl::ComPtr<ID3D12InfoQueue> dx12_info_queue;
       if(DX_SUCCESS(device->get()->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
       {
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info);
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, globals::g_enable_dx12_severity_warning);
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, globals::g_enable_dx12_severity_error);
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dx12_severity_corruption);
+        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message); // NOLINT(readability-implicit-bool-conversion)
+        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info); // NOLINT(readability-implicit-bool-conversion)
+        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, globals::g_enable_dx12_severity_warning); // NOLINT(readability-implicit-bool-conversion)
+        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, globals::g_enable_dx12_severity_error); // NOLINT(readability-implicit-bool-conversion)
+        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dx12_severity_corruption); // NOLINT(readability-implicit-bool-conversion)
 
         /*
          * Bug in the DX12 Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
@@ -1014,9 +1019,9 @@ namespace rex
       sd.SwapEffect       = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
       // Note: swap chain uses queue to perform flush.
-      rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = factory->as<IDXGIFactory4>();
+      const rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = factory->as<IDXGIFactory4>();
       rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
-      if(DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(command_queue->get(), (HWND)userData.primary_display_handle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
+      if(DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(command_queue->get(), (HWND)userData.primary_display_handle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf()))) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
       {
         REX_ERROR(LogRhi, "Failed to create swap chain");
         return false;
@@ -1071,8 +1076,8 @@ namespace rex
       }
 
       rhi::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap Element - {}", type_str));
-      s32 desc_size  = device->get()->GetDescriptorHandleIncrementSize(type);
-      s32 total_size = desc_size * numDescriptors;
+      const s32 desc_size  = static_cast<s32>(device->get()->GetDescriptorHandleIncrementSize(type));
+      const s32 total_size = desc_size * numDescriptors;
 
       descriptor_heap_pool.emplace(type, desc_heap, device->get());
 

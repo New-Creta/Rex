@@ -49,7 +49,7 @@ namespace console_app_example
   {
     for(count_t i = 0; i < stats.usage_per_tag.size(); ++i)
     {
-      rex::MemoryTag tag = static_cast<rex::MemoryTag>(i);
+      const rex::MemoryTag tag = static_cast<rex::MemoryTag>(i);
       REX_INFO(LogConsoleApp, "{}: {} bytes", rsl::enum_refl::enum_name(tag), stats.usage_per_tag[i]);
     }
 
@@ -57,7 +57,7 @@ namespace console_app_example
 
     for(rex::MemoryHeader* header: stats.allocation_headers)
     {
-      rex::ResolvedCallstack callstack(header->callstack());
+      const rex::ResolvedCallstack callstack(header->callstack());
 
       REX_INFO(LogConsoleApp, "Frame: {}", header->frame_index());
       REX_INFO(LogConsoleApp, "Thread ID: {}", header->thread_id());

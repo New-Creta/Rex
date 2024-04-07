@@ -65,7 +65,7 @@ namespace rex
     rsl::string cwd()
     {
       rsl::medium_stack_string current_dir;
-      GetCurrentDirectoryA(current_dir.max_size(), current_dir.data());
+      GetCurrentDirectoryA(current_dir.max_size(), current_dir.data()); // NOLINT(readability-static-accessed-through-instance)
       current_dir.reset_null_termination_offset();
       return rsl::string(current_dir).replace("\\", "/");
     }
@@ -73,7 +73,7 @@ namespace rex
     rsl::string temp_path()
     {
       rsl::big_stack_string str;
-      GetTempPathA(str.max_size(), str.data());
+      GetTempPathA(str.max_size(), str.data()); // NOLINT(readability-static-accessed-through-instance)
       str.reset_null_termination_offset();
       return rsl::string(str);
     }

@@ -25,7 +25,7 @@ namespace rex
     {
       wrl::ComPtr<ID3DBlob> d3d_blob;
       D3DCreateBlob(blob.size(), d3d_blob.GetAddressOf());
-      memcpy(d3d_blob->GetBufferPointer(), (void*)blob.data(), blob.size());
+      memcpy(d3d_blob->GetBufferPointer(), (void*)blob.data(), blob.size()); // NOLINT(google-readability-casting)
       return d3d_blob;
     }
     //-------------------------------------------------------------------------
@@ -126,6 +126,7 @@ namespace rex
     }
     s32 format_byte_size(DXGI_FORMAT format)
     {
+      // NOLINTBEGIN(bugprone-branch-clone)
       switch(format)
       {
         case DXGI_FORMAT_UNKNOWN: return 0;
@@ -169,6 +170,7 @@ namespace rex
 
         default: REX_ASSERT("Unknown DXGI type: {}", rsl::enum_refl::enum_name(format)); return 0;
       }
+      // NOLINTEND(bugprone-branch-clone)
     }
   } // namespace d3d
 } // namespace rex

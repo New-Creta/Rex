@@ -10,7 +10,13 @@ namespace rex
   {
   public:
     ExecutionLogger(LogCategory category, rsl::string_view msg);
+    ExecutionLogger(const ExecutionLogger&) = delete;
+    ExecutionLogger(ExecutionLogger&&) = delete;
+
     ~ExecutionLogger();
+
+    ExecutionLogger& operator=(const ExecutionLogger&) = delete;
+    ExecutionLogger& operator=(ExecutionLogger&&) = delete;
 
   private:
     rsl::string_view m_msg;

@@ -153,25 +153,25 @@ namespace rex
 
     rsl::string_view engine_root()
     {
-      static rsl::string engine_root = path::join(vfs::root(), "rex");
-      return engine_root;
+      static const rsl::string s_engine_root = path::join(vfs::root(), "rex");
+      return s_engine_root;
     }
 
     rsl::string_view editor_root()
     {
-      static rsl::string editor_root = path::join(vfs::root(), "regina");
-      return editor_root;
+      static const rsl::string s_editor_root = path::join(vfs::root(), "regina");
+      return s_editor_root;
     }
 
     rsl::string_view project_root()
     {
-      static rsl::string project_root = path::join(vfs::root(), "project_name");
-      return project_root;
+      static const rsl::string s_project_root = path::join(vfs::root(), "project_name");
+      return s_project_root;
     }
 
     rsl::string current_timepoint_str()
     {
-      rsl::time_point current_time = rsl::current_timepoint();
+      const rsl::time_point current_time = rsl::current_timepoint();
       rsl::string timepoint_str(rsl::format("{}_{}", current_time.date().to_string_without_weekday(), current_time.time().to_string()));
       timepoint_str.replace("/", "_");
       timepoint_str.replace(":", "_");
@@ -180,20 +180,20 @@ namespace rex
 
     rsl::string_view sessions_root()
     {
-      static rsl::string sessions_root = path::join(vfs::root(), "_sessions");
-      return sessions_root;
+      static const rsl::string s_sessions_root = path::join(vfs::root(), "_sessions");
+      return s_sessions_root;
     }
 
     rsl::string_view project_sessions_root()
     {
-      static rsl::string project_sessions_root = path::join(sessions_root(), "project_name");
-      return project_sessions_root;
+      static const rsl::string s_project_sessions_root = path::join(sessions_root(), "project_name");
+      return s_project_sessions_root;
     }
 
     rsl::string_view session_data_root()
     {
-      static rsl::string session_data_root = path::join(project_sessions_root(), current_timepoint_str());
-      return session_data_root;
+      static const rsl::string s_session_data_root = path::join(project_sessions_root(), current_timepoint_str());
+      return s_session_data_root;
     }
 
     class QueuedRequest
@@ -526,7 +526,7 @@ namespace rex
     ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath)
     {
       filepath                            = path::remove_quotes(filepath);
-      const rsl::medium_stack_string path = rsl::string_view(path::join(g_mounted_roots.at(root), filepath));
+      const rsl::string path = path::join(g_mounted_roots.at(root), filepath);
       return read_file_async(path);
     }
 
@@ -652,9 +652,7 @@ namespace rex
 
     rsl::vector<rsl::string> files_in_dir(rsl::string_view path)
     {
-      rsl::vector<rsl::string> result;
-
-      rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = vfs::create_full_path(path);
 
       return directory::list_files(full_path);
     }

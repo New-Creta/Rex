@@ -17,8 +17,8 @@ namespace rex
         , m_used_memory(0)
         , m_memory_limit(0)
     {
-      D3D12_HEAP_DESC heap_desc = m_heap->GetDesc();
-      m_memory_limit            = heap_desc.SizeInBytes;
+      const D3D12_HEAP_DESC heap_desc = m_heap->GetDesc();
+      m_memory_limit            = static_cast<s64>(heap_desc.SizeInBytes);
     }
 
     wrl::ComPtr<ID3D12Resource> ResourceHeap::create_buffer(rsl::memory_size size, s32 alignment)
@@ -32,8 +32,8 @@ namespace rex
         return nullptr;
       }
 
-      D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
-      m_used_memory += alloc_info.SizeInBytes;
+      const D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
+      m_used_memory += static_cast<s64>(alloc_info.SizeInBytes);
       return buffer;
     }
 
@@ -71,7 +71,7 @@ namespace rex
         REX_ERROR(LogResourceHeap, "Failed to create depth stencil buffer");
       }
 
-      m_used_memory += alloc_info.SizeInBytes;
+      m_used_memory += static_cast<s64>(alloc_info.SizeInBytes);
       return rsl::make_unique<Resource>(depth_stencil_buffer, D3D12_RESOURCE_STATE_DEPTH_WRITE, alloc_info.SizeInBytes);
     }
 

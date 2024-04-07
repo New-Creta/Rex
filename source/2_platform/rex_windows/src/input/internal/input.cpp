@@ -18,7 +18,7 @@ namespace rex
         for(card32 i = m_current_input_idx; i < max_input_keys; ++i, ++m_current_input_idx)
         {
           const uint8 key = static_cast<uint8>(i);
-          if(GetAsyncKeyState(key) & 0x8000u) // NOLINT(hicpp-signed-bitwise)
+          if(GetAsyncKeyState(key) & 0x8000u) // NOLINT(hicpp-signed-bitwise, readability-implicit-bool-conversion)
           {
             // If a key is set, make sure we set the last index we processed so we don't have to restart
             // then return the key that's pressed
@@ -70,7 +70,7 @@ namespace rex
         return m_prev_keys->at(key) == false && m_current_keys->at(key) == false; // NOLINT(readability-simplify-boolean-expr)
       }
 
-      const Input* g_global_input_handler = nullptr;
+      const Input* g_global_input_handler = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
       void set_global_input_handler(const Input& input)
       {
         g_global_input_handler = &input;

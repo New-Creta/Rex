@@ -32,15 +32,15 @@ namespace rex
       }
       ~ShaderProgramResource() override = default;
 
-      ID3D12RootSignature* root_signature()
+      ID3D12RootSignature* root_signature() // NOLINT(readability-make-member-function-const)
       {
         return m_shader_program.root_signature.Get();
       }
-      D3D12_SHADER_BYTECODE vs()
+      D3D12_SHADER_BYTECODE vs() const
       {
         return {m_shader_program.vertex_shader->get()->vertex_shader->GetBufferPointer(), m_shader_program.vertex_shader->get()->vertex_shader->GetBufferSize()};
       }
-      D3D12_SHADER_BYTECODE ps()
+      D3D12_SHADER_BYTECODE ps() const
       {
         return {m_shader_program.pixel_shader->get()->pixel_shader->GetBufferPointer(), m_shader_program.pixel_shader->get()->pixel_shader->GetBufferSize()};
       }

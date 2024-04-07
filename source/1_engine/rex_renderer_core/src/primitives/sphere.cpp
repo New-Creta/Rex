@@ -20,18 +20,18 @@ namespace rex
 
       mesh_data.add_vertex(top_vertex);
 
-      const f32 phi_step   = glm::pi<f32>() / stackCount;
-      const f32 theta_step = 2.0f * glm::pi<f32>() / sliceCount;
+      const f32 phi_step   = glm::pi<f32>() / static_cast<f32>(stackCount);
+      const f32 theta_step = 2.0f * glm::pi<f32>() / static_cast<f32>(sliceCount);
 
       // Compute vertices for each stack ring (do not count the poles as rings).
       for(u16 i = 1; i <= stackCount - 1; ++i)
       {
-        const f32 phi = i * phi_step;
+        const f32 phi = static_cast<f32>(i) * phi_step;
 
         // Vertices of ring.
         for(u16 j = 0; j <= sliceCount; ++j)
         {
-          const f32 theta = j * theta_step;
+          const f32 theta = static_cast<f32>(j) * theta_step;
 
           // spherical to cartesian
           glm::vec3 position;
@@ -48,10 +48,10 @@ namespace rex
           tangent = glm::normalize(tangent);
 
           const glm::vec3 p = position;
-          glm::vec3 normal  = glm::normalize(p);
-          glm::vec4 col(normal, 1.0f);
+          const glm::vec3 normal  = glm::normalize(p);
+          const glm::vec4 col(normal, 1.0f);
 
-          VertexPosNormCol v(position, normal, col);
+          const VertexPosNormCol v(position, normal, col);
 
           mesh_data.add_vertex(v);
         }

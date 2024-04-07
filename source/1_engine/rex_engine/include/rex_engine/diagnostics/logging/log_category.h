@@ -18,7 +18,7 @@ namespace rex
      * @param CategoryName, name of the category
      * @param inAsync, should this Category log async or not.
      **/
-    LogCategory(const LogCategoryName& inCategoryName, IsAsync inAsync = IsAsync::no);
+    explicit LogCategory(const LogCategoryName& inCategoryName, IsAsync inAsync = IsAsync::no);
 
     /** Gets the category name **/
     rsl::string_view get_category_name() const;

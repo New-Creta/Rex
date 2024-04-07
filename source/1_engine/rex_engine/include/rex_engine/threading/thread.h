@@ -21,6 +21,9 @@ namespace rex
 
         ~Thread();
 
+        Thread& operator=(const Thread&) = delete;
+        Thread& operator=(Thread&&) = delete;
+
         // Run the callable on another thread
         void run(rsl::function<int(void*)>&& callable, void* arg = nullptr);
 

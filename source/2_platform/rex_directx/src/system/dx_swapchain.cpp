@@ -19,12 +19,14 @@ namespace rex
         , m_rtv_desc_heap(rtvDescHeap)
         , m_dsv_desc_heap(dsvDescHeap)
         , m_resource_heap(resourceHeap)
+        , m_current_swapchain_buffer_idx(0)
+        , m_dsv()
     {
     }
 
     DescriptorHandle Swapchain::backbuffer_view()
     {
-      return m_swapchain_rtvs[m_swapchain->GetCurrentBackBufferIndex()];
+      return m_swapchain_rtvs[static_cast<s32>(m_swapchain->GetCurrentBackBufferIndex())];
     }
 
     DescriptorHandle Swapchain::depth_stencil_view()
@@ -34,7 +36,7 @@ namespace rex
 
     void Swapchain::transition_backbuffer(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state)
     {
-      Resource& backbuffer = m_swapchain_buffers[m_swapchain->GetCurrentBackBufferIndex()];
+      Resource& backbuffer = m_swapchain_buffers[static_cast<s32>(m_swapchain->GetCurrentBackBufferIndex())];
       backbuffer.transition(cmdList, state);
     }
 
@@ -51,7 +53,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> buffer;
         m_swapchain->GetBuffer(i, IID_PPV_ARGS(&buffer));
         set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        DescriptorHandle rtv = m_rtv_desc_heap->create_rtv(buffer.Get());
+        const DescriptorHandle rtv = m_rtv_desc_heap->create_rtv(buffer.Get());
         m_swapchain_buffers.emplace_back(buffer, D3D12_RESOURCE_STATE_COMMON, 0);
         m_swapchain_rtvs.push_back(rtv);
       }

@@ -22,10 +22,10 @@ namespace rex
 
     struct ConstantLayoutDescription
     {
-      ConstantType type;
+      ConstantType type{};
 
-      rsl::string_view name;
-      s32 location;
+      rsl::string_view name{};
+      s32 location{};
     };
 
     using ConstantLayoutDescriptions = rsl::vector<ConstantLayoutDescription>;

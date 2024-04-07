@@ -10,9 +10,18 @@ namespace rex
   {
     card64 res = {};
     res        = high;
-    res <<= sizeof(high) * static_cast<u32>(rsl::limits_byte::num_bits_per_byte);
-    res |= static_cast<u32>(low);
+    res <<= sizeof(high) * static_cast<u32>(rsl::limits_byte::num_bits_per_byte); // NOLINT(hicpp-signed-bitwise)
+    res |= static_cast<u32>(low); // NOLINT(hicpp-signed-bitwise)
 
     return res;
+  }
+
+  constexpr u64 merge_int32_to_int64(u32 high, u32 low)
+  {
+    return merge_int32_to_int64(static_cast<s32>(high), static_cast<s32>(low));
+  }
+  constexpr u64 merge_int32_to_int64(ulong high, ulong low)
+  {
+    return merge_int32_to_int64(static_cast<s32>(high), static_cast<s32>(low));
   }
 } // namespace rex

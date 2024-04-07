@@ -21,7 +21,7 @@
 
 #include <Windows.h>
 #include <processenv.h>
-#include <stddef.h>
+#include <cstddef>
 
 DEFINE_LOG_CATEGORY(LogFileSystem);
 
@@ -35,7 +35,7 @@ namespace rex
   {
     memory::Blob read_file(rsl::string_view filepath)
     {
-      rsl::string path = create_full_path(filepath);
+      const rsl::string path = create_full_path(filepath);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(path.data(),               // Path to file
                                                                 GENERIC_READ,              // General read and write access
@@ -68,7 +68,7 @@ namespace rex
 
     bool save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
-      rsl::string fullpath = create_full_path(filepath);
+      const rsl::string fullpath = create_full_path(filepath);
 
       const rsl::win::handle handle(CreateFileA(fullpath.data(),           // Path to file
                                                 GENERIC_WRITE,             // General read and write access
@@ -101,19 +101,19 @@ namespace rex
 
     bool create_dir(rsl::string_view path)
     {
-      rsl::string fullpath = create_full_path(path);
+      const rsl::string fullpath = create_full_path(path);
       return WIN_SUCCESS_IGNORE(CreateDirectoryA(fullpath.data(), NULL), ERROR_ALREADY_EXISTS);
     }
 
     bool create_dirs(rsl::string_view path)
     {
-      rsl::string fullpath                         = create_full_path(path);
-      rsl::vector<rsl::string_view> splitted_paths = rsl::split(fullpath, "/\\");
+      const rsl::string fullpath                         = create_full_path(path);
+      const rsl::vector<rsl::string_view> splitted_paths = rsl::split(fullpath, "/\\");
 
       rsl::string full_path;
       full_path.reserve(fullpath.size());
 
-      for(rsl::string_view sub_path: splitted_paths)
+      for(const rsl::string_view sub_path: splitted_paths)
       {
         full_path += sub_path;
         WIN_SUCCESS_IGNORE(CreateDirectoryA(full_path.data(), NULL), ERROR_ALREADY_EXISTS);

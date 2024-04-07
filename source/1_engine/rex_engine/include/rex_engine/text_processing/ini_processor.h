@@ -29,7 +29,7 @@ namespace rex
   class IniProcessor
   {
   public:
-    IniProcessor(memory::BlobView data);
+    explicit IniProcessor(memory::BlobView data);
 
     rex::Error process();
 

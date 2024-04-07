@@ -372,12 +372,12 @@ namespace rex
       }
 
       // Drawing
-      void pre_user_draw()
+      void pre_user_draw() // NOLINT(readability-convert-member-functions-to-static)
       {
         rex::renderer::new_frame();
         rex::renderer::begin_draw();
       }
-      void post_user_draw()
+      void post_user_draw() // NOLINT(readability-convert-member-functions-to-static)
       {
         rex::renderer::end_draw();
         rex::renderer::present();

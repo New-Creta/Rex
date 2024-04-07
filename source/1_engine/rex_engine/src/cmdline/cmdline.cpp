@@ -251,7 +251,7 @@ namespace rex
 
     void log_cmdline()
     {
-      if(g_cmd_line.length())
+      if(g_cmd_line.length() > 0)
       {
         REX_INFO(LogEngine, "Commandline: {}", g_cmd_line);
       }

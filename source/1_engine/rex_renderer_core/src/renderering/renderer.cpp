@@ -16,6 +16,7 @@
 #include "rex_renderer_core/system/rhi.h"
 #include "rex_std/bonus/memory/stack_allocator.h"
 #include "rex_std/bonus/utility/enum_reflection.h"
+#include "rex_std/bonus/types.h"
 
 namespace rex
 {
@@ -63,7 +64,7 @@ namespace rex
 
       RenderItemDesc render_item {};
 
-      const rsl::byte* start_ib = mesh->ib()->blob_view.data() + (subMesh.start_index_location * index_format_size(mesh->ib()->format));
+      const rsl::byte* start_ib = mesh->ib()->blob_view.data() + static_cast<rsl::ptrdiff>(subMesh.start_index_location * index_format_size(mesh->ib()->format));
       const s32 size_ib         = subMesh.index_count * index_format_size(mesh->ib()->format);
 
       rhi::ConstantBufferDesc cb_desc {};

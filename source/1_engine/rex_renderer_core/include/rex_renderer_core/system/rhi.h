@@ -32,7 +32,13 @@ namespace rex
     {
     public:
       CommandsFrame();
+
+      CommandsFrame(const CommandsFrame&) = delete;
+      CommandsFrame(CommandsFrame&&) = delete;
       ~CommandsFrame();
+
+      CommandsFrame& operator=(const CommandsFrame&) = delete;
+      CommandsFrame& operator=(CommandsFrame&&) = delete;
     };
 
     // Return basic info about the graphics hardware of the current machine

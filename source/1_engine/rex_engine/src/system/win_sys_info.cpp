@@ -24,7 +24,7 @@ namespace rex
         WIN_CALL_IGNORE(GetLogicalProcessorInformation(nullptr, &buffer_size), ERROR_INSUFFICIENT_BUFFER);
 
         // Allocate the buffer to hold the processor info.
-        rsl::unique_array<char> buffer                    = rsl::make_unique<char[]>(buffer_size);                                 // NOLINT(modernize-avoid-c-arrays)
+        rsl::unique_array<char> buffer                    = rsl::make_unique<char[]>(static_cast<s32>(buffer_size));                                 // NOLINT(modernize-avoid-c-arrays)
         PSYSTEM_LOGICAL_PROCESSOR_INFORMATION slpi_buffer = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION>(buffer.get()); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
         // Get the actual information.

@@ -45,11 +45,3 @@ using a_bool = rsl::atomic<bool>;
 using a_s32  = rsl::atomic<s32>;
   #define rex_atomic_load(a) a.load() // NOLINT(readability-identifier-naming)
 #endif
-
-namespace rex
-{
-  namespace globals
-  {
-    constexpr s32 g_invalid_slot_id = -1;
-  } // namespace globals
-} // namespace rex

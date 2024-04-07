@@ -13,7 +13,7 @@ namespace rex
         , m_resource_state(startState)
         , m_size(size)
     {
-      D3D12_RESOURCE_DESC desc = m_resource->GetDesc();
+      const D3D12_RESOURCE_DESC desc = m_resource->GetDesc();
       m_width                  = static_cast<s32>(desc.Width);
       m_height                 = static_cast<s32>(desc.Height);
       m_format                 = format != DXGI_FORMAT_UNKNOWN ? format : desc.Format;

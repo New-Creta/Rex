@@ -74,6 +74,6 @@ bool rex::wait_for_debugger(rsl::chrono::minutes minutesToWait)
 void rex::attach_debugger()
 {
   // https://stackoverflow.com/questions/1291580/what-is-this-command-in-c-sharp-c-windows-system32-vsjitdebugger-exe-p-ld
-  auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::current_process_id());
-  system(cmd.c_str());
+  const auto cmd = rsl::format("vsjitdebugger.exe -p {}", rex::current_process_id());
+  system(cmd.c_str()); // NOLINT(cert-env33-c, concurrency-mt-unsafe)
 }

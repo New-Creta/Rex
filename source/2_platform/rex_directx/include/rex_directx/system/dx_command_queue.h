@@ -14,7 +14,12 @@ namespace rex
     {
     public:
       CommandQueue(const wrl::ComPtr<ID3D12CommandQueue>& commandQueue, const wrl::ComPtr<ID3D12Fence>& fence);
+      CommandQueue(const CommandQueue&) = delete;
+      CommandQueue(CommandQueue&&) = delete;
       ~CommandQueue();
+
+      CommandQueue& operator=(const CommandQueue&) = delete;
+      CommandQueue& operator=(CommandQueue&&) = delete;
 
       void inc_fence();
       void flush();

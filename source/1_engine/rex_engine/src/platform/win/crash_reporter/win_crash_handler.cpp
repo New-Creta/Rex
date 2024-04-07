@@ -42,7 +42,7 @@ namespace rex
       // Initialize the exception information
       dump_exc_info.ThreadId          = GetCurrentThreadId();
       dump_exc_info.ExceptionPointers = exceptionInfo;
-      dump_exc_info.ClientPointers    = true;
+      dump_exc_info.ClientPointers    = true; // NOLINT(readability-implicit-bool-conversion)
 
       MINIDUMP_TYPE minidump_type {};
 
@@ -52,12 +52,12 @@ namespace rex
       {
         // clang-format off
         minidump_type = static_cast<MINIDUMP_TYPE>(
-          MiniDumpWithFullMemory |
-          MiniDumpWithThreadInfo |
-          MiniDumpWithProcessThreadData |
-          MiniDumpWithFullMemoryInfo |
-          MiniDumpWithHandleData |
-          MiniDumpWithUnloadedModules
+          MiniDumpWithFullMemory | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithThreadInfo | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithProcessThreadData | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithFullMemoryInfo | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithHandleData | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithUnloadedModules // NOLINT(hicpp-signed-bitwise)
           );
         // clang-format on
       }
@@ -65,12 +65,12 @@ namespace rex
       {
         // clang-format off
         minidump_type = static_cast<MINIDUMP_TYPE>(
-          MiniDumpNormal |
-          MiniDumpWithThreadInfo |
-          MiniDumpWithProcessThreadData |
-          MiniDumpWithDataSegs |
-          MiniDumpWithHandleData |
-          MiniDumpWithIndirectlyReferencedMemory
+          MiniDumpNormal | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithThreadInfo | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithProcessThreadData | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithDataSegs | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithHandleData | // NOLINT(hicpp-signed-bitwise)
+          MiniDumpWithIndirectlyReferencedMemory // NOLINT(hicpp-signed-bitwise)
           );
         // clang-format on
       }
@@ -83,7 +83,7 @@ namespace rex
 
     s32 report_crash(void* exceptionInfo, s32 numFramesToSkip)
     {
-      rsl::unique_lock lock(crash_assert_mtx());
+      const rsl::unique_lock lock(crash_assert_mtx());
 
       LPEXCEPTION_POINTERS exception_info = static_cast<LPEXCEPTION_POINTERS>(exceptionInfo);
 

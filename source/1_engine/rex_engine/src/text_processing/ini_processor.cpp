@@ -30,8 +30,8 @@ namespace rex
 
   rex::Error IniProcessor::process()
   {
-    rsl::string_view content(m_data.data_as<const char>(), static_cast<s32>(m_data.size()) - 1); // -1 to remove trailing null
-    rsl::vector<rsl::string_view> lines = rsl::split(content, rex::endline());
+    const rsl::string_view content(m_data.data_as<const char>(), static_cast<s32>(m_data.size()) - 1); // -1 to remove trailing null
+    const rsl::vector<rsl::string_view> lines = rsl::split(content, rex::endline());
 
     rsl::string_view current_header;
     rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>> items;
@@ -52,7 +52,7 @@ namespace rex
 
       // an item looks like key=value
       auto equal_pos = line.find('=');
-      if(equal_pos != line.npos())
+      if(equal_pos != line.npos()) // NOLINT(readability-static-accessed-through-instance)
       {
         rsl::string_view key   = line.substr(0, equal_pos);
         rsl::string_view value = line.substr(equal_pos + 1);

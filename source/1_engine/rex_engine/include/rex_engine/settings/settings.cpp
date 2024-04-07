@@ -78,7 +78,7 @@ namespace rex
       }
 
       // load the content of the settings file into memory
-      rex::memory::Blob settings_blob = vfs::read_file(path);
+      const rex::memory::Blob settings_blob = vfs::read_file(path);
 
       // Settings are just plain ini files
       // so we can use the ini processor here

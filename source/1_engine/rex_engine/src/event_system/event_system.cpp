@@ -36,7 +36,7 @@ namespace rex
 
         void enqueue(const Event& evt)
         {
-          rsl::unique_lock lock(m_enqueue_mtx);
+          const rsl::unique_lock lock(m_enqueue_mtx);
           m_next->push_back(evt);
         }
 
@@ -57,7 +57,7 @@ namespace rex
 
         void present()
         {
-          rsl::unique_lock lock(m_enqueue_mtx);
+          const rsl::unique_lock lock(m_enqueue_mtx);
           rsl::swap(m_current, m_next);
         }
 

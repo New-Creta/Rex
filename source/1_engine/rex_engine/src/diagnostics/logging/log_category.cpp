@@ -12,7 +12,7 @@ namespace rex
   }
 
   //-------------------------------------------------------------------------
-  bool LogCategory::is_suppressed(log::LogVerbosity level) const
+  bool LogCategory::is_suppressed(log::LogVerbosity level) const // NOLINT(readability-convert-member-functions-to-static)
   {
     return log::is_supressed(level);
   }

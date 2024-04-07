@@ -9,6 +9,8 @@
 
 #include <Windows.h>
 
+// NOLINTBEGIN(modernize-use-nullptr)
+
 namespace rex
 {
   namespace file
@@ -44,7 +46,7 @@ namespace rex
         return;
       }
 
-      rsl::string full_path = rex::vfs::create_full_path(path);
+      const rsl::string full_path = rex::vfs::create_full_path(path);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),         // Path to file
                                                                 GENERIC_READ,              // General read and write access
@@ -58,7 +60,7 @@ namespace rex
 
       internal::append_to_file(handle.get());
 
-      for(rsl::string_view line: lines)
+      for(const rsl::string_view line: lines)
       {
         WriteFile(handle.get(), line.data(), line.length(), NULL, NULL);
       }
@@ -72,7 +74,7 @@ namespace rex
         return;
       }
 
-      rsl::string full_path = rex::vfs::create_full_path(path);
+      const rsl::string full_path = rex::vfs::create_full_path(path);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),         // Path to file
                                                                 GENERIC_READ,              // General read and write access
@@ -97,7 +99,7 @@ namespace rex
         return;
       }
 
-      rsl::string full_path = rex::vfs::create_full_path(path);
+      const rsl::string full_path = rex::vfs::create_full_path(path);
 
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),         // Path to file
                                                                 GENERIC_READ,              // General read and write access
@@ -114,15 +116,15 @@ namespace rex
     // Copy a file, overwiting an existing one is possible
     void copy(rsl::string_view src, rsl::string_view dst, OverwriteIfExist overwriteIfExist)
     {
-      rsl::string full_src = vfs::create_full_path(src);
-      rsl::string full_dst = vfs::create_full_path(dst);
-      CopyFileA(full_src.c_str(), full_dst.c_str(), !overwriteIfExist);
+      const rsl::string full_src = vfs::create_full_path(src);
+      const rsl::string full_dst = vfs::create_full_path(dst);
+      CopyFileA(full_src.c_str(), full_dst.c_str(), !overwriteIfExist); // NOLINT(readability-implicit-bool-conversion)
     }
     // Move/Rename a file, overwriting an existing one is possible
     void move(rsl::string_view src, rsl::string_view dst)
     {
-      rsl::string full_src = vfs::create_full_path(src);
-      rsl::string full_dst = vfs::create_full_path(dst);
+      const rsl::string full_src = vfs::create_full_path(src);
+      const rsl::string full_dst = vfs::create_full_path(dst);
 
       if(file::exists(full_dst))
       {
@@ -132,9 +134,9 @@ namespace rex
       MoveFileA(full_src.c_str(), full_dst.c_str());
     }
     // Create a new empty file
-    void create(rsl::string_view path)
+    void create(rsl::string_view const path)
     {
-      rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = vfs::create_full_path(path);
 
       if(file::exists(full_path))
       {
@@ -154,7 +156,7 @@ namespace rex
     // Delete a file
     void del(rsl::string_view path)
     {
-      rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = vfs::create_full_path(path);
 
       if(!file::exists(full_path))
       {
@@ -166,7 +168,7 @@ namespace rex
     // return the file size
     card64 size(rsl::string_view path)
     {
-      rsl::string full_path       = vfs::create_full_path(path);
+      const rsl::string full_path       = vfs::create_full_path(path);
       const rsl::win::handle file = internal::open_file_for_attribs(full_path);
 
       // When we have an invalid handle, we simply return the input
@@ -177,12 +179,12 @@ namespace rex
 
       DWORD high_word      = 0;
       DWORD const low_word = GetFileSize(file.get(), &high_word);
-      return rex::merge_int32_to_int64(high_word, low_word);
+      return static_cast<card64>(rex::merge_int32_to_int64(high_word, low_word));
     }
     // Check if a file exists
     bool exists(rsl::string_view path)
     {
-      rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = vfs::create_full_path(path);
       const DWORD attribs   = GetFileAttributesA(full_path.c_str());
 
       if(attribs == INVALID_FILE_ATTRIBUTES)
@@ -200,19 +202,19 @@ namespace rex
     // Check if a file is marked read only
     bool is_readonly(rsl::string_view path)
     {
-      rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = vfs::create_full_path(path);
       if(!exists(full_path))
       {
         return false;
       }
 
       const DWORD attribs = GetFileAttributesA(full_path.c_str());
-      return attribs & FILE_ATTRIBUTE_READONLY;
+      return attribs & FILE_ATTRIBUTE_READONLY; // NOLINT(readability-implicit-bool-conversion)
     }
     // Set a file to be readonly
     void set_readonly(rsl::string_view path)
     {
-      rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = vfs::create_full_path(path);
       if(!exists(full_path))
       {
         return;
@@ -225,14 +227,14 @@ namespace rex
     // Remove the readonly flag of a file
     void remove_readonly(rsl::string_view path)
     {
-      rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = vfs::create_full_path(path);
       if(!exists(full_path))
       {
         return;
       }
 
       DWORD attribs = GetFileAttributesA(full_path.c_str());
-      attribs &= ~FILE_ATTRIBUTE_READONLY;
+      attribs &= ~FILE_ATTRIBUTE_READONLY; // NOLINT(hicpp-signed-bitwise)
       SetFileAttributesA(full_path.c_str(), attribs);
     }
     // Return the creation time of a file
@@ -248,13 +250,13 @@ namespace rex
 
       FILETIME creation_time {};
       GetFileTime(file.get(), &creation_time, nullptr, nullptr);
-      SYSTEMTIME sys_time = rsl::win::to_local_sys_time(creation_time);
+      const SYSTEMTIME sys_time = rsl::win::to_local_sys_time(creation_time);
       return rsl::timepoint_from_systime(sys_time);
     }
     // Return the access time of a file
     rsl::time_point access_time(rsl::string_view path)
     {
-      rsl::win::handle const file = internal::open_file_for_attribs(path);
+      const rsl::win::handle file = internal::open_file_for_attribs(path);
 
       // When we have an invalid handle, we return 0
       if(!file.is_valid())
@@ -264,13 +266,13 @@ namespace rex
 
       FILETIME access_time {};
       GetFileTime(file.get(), nullptr, &access_time, nullptr);
-      SYSTEMTIME sys_time = rsl::win::to_local_sys_time(access_time);
+      const SYSTEMTIME sys_time = rsl::win::to_local_sys_time(access_time);
       return rsl::timepoint_from_systime(sys_time);
     }
     // Return the modification time of a file
     rsl::time_point modification_time(rsl::string_view path)
     {
-      rsl::win::handle const file = internal::open_file_for_attribs(path);
+      const rsl::win::handle file = internal::open_file_for_attribs(path);
 
       // When we have an invalid handle, we return 0
       if(!file.is_valid())
@@ -280,8 +282,10 @@ namespace rex
 
       FILETIME modification_time {};
       GetFileTime(file.get(), nullptr, nullptr, &modification_time);
-      SYSTEMTIME sys_time = rsl::win::to_local_sys_time(modification_time);
+      const SYSTEMTIME sys_time = rsl::win::to_local_sys_time(modification_time);
       return rsl::timepoint_from_systime(sys_time);
     }
   } // namespace file
 } // namespace rex
+
+// NOLINTEND(modernize-use-nullptr)

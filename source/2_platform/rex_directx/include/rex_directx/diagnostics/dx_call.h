@@ -32,7 +32,7 @@ namespace rex
         template <typename Func>
         HResult call_to_dx_api(Func func, rsl::string_view file, rsl::string_view function, card32 lineNr)
         {
-          HResult hr = func();
+          const HResult hr = func();
           rex::renderer::directx::DXCall(hr, file, function, lineNr);
           return hr;
         }
@@ -41,7 +41,7 @@ namespace rex
         template <typename Func>
         bool call_to_dx_api_has_succeeded(Func func, rsl::string_view file, rsl::string_view function, card32 lineNr)
         {
-          HResult hr = func();
+          const HResult hr = func();
           return rex::renderer::directx::DXCall(hr, file, function, lineNr).has_succeeded();
         }
 
@@ -49,7 +49,7 @@ namespace rex
         template <typename Func>
         bool call_to_dx_api_has_failed(Func func, rsl::string_view file, rsl::string_view function, card32 lineNr)
         {
-          HResult hr = func();
+          const HResult hr = func();
           return rex::renderer::directx::DXCall(hr, file, function, lineNr).has_failed();
         }
       } // namespace internal

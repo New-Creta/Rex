@@ -19,7 +19,7 @@ namespace rex
     {
     public:
       BlobView();
-      BlobView(const Blob& blob);
+      BlobView(const Blob& blob); // NOLINT(google-explicit-constructor)
       BlobView(const void* data, rsl::memory_size size);
 
       const rsl::byte* data() const;
@@ -28,7 +28,7 @@ namespace rex
       template <typename T>
       const T* data_as() const
       {
-        return reinterpret_cast<T*>(data());
+        return reinterpret_cast<T*>(data()); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
       }
 
     private:

@@ -38,7 +38,7 @@ namespace rex
   using LoggerObjectPtr    = rsl::shared_ptr<rex::log::Logger>;
   using LoggerObjectPtrMap = DebugHashTable<LogCategoryName, LoggerObjectPtr>;
 
-  bool g_enable_file_sinks = false;
+  bool g_enable_file_sinks = false; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
   namespace log
   {

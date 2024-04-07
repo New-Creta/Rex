@@ -38,7 +38,7 @@ namespace rex
       IResource* at(const ResourceSlot& slot);
       const IResource* at(const ResourceSlot& slot) const;
 
-      ResourceSlot at(ResourceHash slot) const;
+      ResourceSlot at(ResourceHash hash) const;
 
       template <typename U>
       U* as(const ResourceSlot& slot);
@@ -65,7 +65,7 @@ namespace rex
     U* ResourcePool::as(const ResourceSlot& slot)
     {
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
-      REX_ASSERT_X(slot != globals::g_invalid_slot_id, "Invalid index given to retrieve resource from resource pool");
+      REX_ASSERT_X(slot != ResourceSlot::invalid_id(), "Invalid index given to retrieve resource from resource pool");
       REX_ASSERT_X(is<U>(slot), "Invalid type cast for given resource");
 
       return static_cast<U*>(at(slot));
@@ -75,7 +75,7 @@ namespace rex
     const U* ResourcePool::as(const ResourceSlot& slot) const
     {
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
-      REX_ASSERT_X(slot != globals::g_invalid_slot_id, "Invalid index given to retrieve resource from resource pool");
+      REX_ASSERT_X(slot != ResourceSlot::invalid_id(), "Invalid index given to retrieve resource from resource pool");
       REX_ASSERT_X(is<U>(slot), "Invalid type cast for given resource");
 
       return static_cast<const U*>(at(slot));

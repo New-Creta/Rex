@@ -50,7 +50,7 @@ namespace regina
     rsl::unique_ptr<rex::renderer::Scene> m_scene;
   };
 
-  rsl::unique_ptr<Regina> g_regina;
+  rsl::unique_ptr<Regina> g_regina; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
 
   //-------------------------------------------------------------------------
   bool initialize()

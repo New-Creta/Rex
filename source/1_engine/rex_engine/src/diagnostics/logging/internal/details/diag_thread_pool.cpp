@@ -5,7 +5,7 @@
 #include "rex_std/bonus/types.h"
 
 #include <cassert>
-#include <stdio.h>
+#include <cstdio> // for printf
 
 // IWYU pragma: no_include <built-in>
 

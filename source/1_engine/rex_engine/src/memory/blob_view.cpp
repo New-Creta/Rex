@@ -18,7 +18,7 @@ namespace rex
     {
     }
     BlobView::BlobView(const void* data, rsl::memory_size size)
-        : m_data((const rsl::byte*)data)
+        : m_data((const rsl::byte*)data) // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
         , m_size(size)
     {
     }

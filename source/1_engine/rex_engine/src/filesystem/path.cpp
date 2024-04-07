@@ -86,14 +86,14 @@ namespace rex
     // returns true if it's a valid path, returns false otherwise
     bool is_valid_path(rsl::string_view path)
     {
-      rsl::string_view invalid_chars(invalid_path_chars().data(), invalid_path_chars().size());
-      return path.find_first_of(invalid_chars) != path.npos();
+      const rsl::string_view invalid_chars(invalid_path_chars().data(), invalid_path_chars().size());
+      return path.find_first_of(invalid_chars) != path.npos(); // NOLINT(readability-static-accessed-through-instance)
     }
     // returns true if it's a valid filename, returns false otherwise
     bool is_valid_filename(rsl::string_view filename)
     {
-      rsl::string_view invalid_chars(invalid_file_name_chars().data(), invalid_file_name_chars().size());
-      return filename.find_first_of(invalid_chars) != filename.npos();
+      const rsl::string_view invalid_chars(invalid_file_name_chars().data(), invalid_file_name_chars().size());
+      return filename.find_first_of(invalid_chars) != filename.npos(); // NOLINT(readability-static-accessed-through-instance)
     }
 
     // removes leading and trailing quotes from a path
@@ -191,7 +191,7 @@ namespace rex
       const card32 num_dirname_chars = 8;
       rsl::string result;
 
-      do
+      do // NOLINT(cppcoreguidelines-avoid-do-while)
       {
         // clear the result first before adding to it
         result.clear();
@@ -210,7 +210,7 @@ namespace rex
       const card32 num_ext_chars  = 3;
       rsl::string result;
 
-      do
+      do // NOLINT(cppcoreguidelines-avoid-do-while)
       {
         // clear the result first before adding to it
         result.clear();

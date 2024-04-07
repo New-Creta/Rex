@@ -28,11 +28,11 @@ namespace rex
     void UploadBuffer::write(CommandList* cmdList, Resource* dstResource, const void* data, s64 size)
     {
       // Write the data into our mapped memory
-      rsl::byte* start = (rsl::byte*)m_mapped_data + m_offset;
+      rsl::byte* start = (rsl::byte*)m_mapped_data + m_offset; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
       rsl::memcpy(start, data, size);
 
       // Fill the commandlist with the commands to update this resource
-      D3D12_RESOURCE_STATES original_state = dstResource->resource_state();
+      const D3D12_RESOURCE_STATES original_state = dstResource->resource_state(); 
       dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
       dstResource->write(cmdList->get(), this, m_offset, size);
       dstResource->transition(cmdList->get(), original_state);

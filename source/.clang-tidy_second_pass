@@ -57,6 +57,9 @@
 #  this comes from the statement that pointers should only point to single objects
 #  this check would break too much C code, which is why we disable it for now
 #
+# [cppcoreguidelines-pro-type-union-access]
+# glm uses unions under the hood for their vectors for example
+# 
 # [cppcoreguidelines-pro-type-vararg]
 #  C-style vararg functions is not allowed in Rex
 #
@@ -292,6 +295,7 @@ Checks: >
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-union-access,
   -cppcoreguidelines-pro-type-vararg,
   -fuchsia-default-arguments-calls,
   -fuchsia-default-arguments-declarations,

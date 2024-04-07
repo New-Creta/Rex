@@ -115,16 +115,18 @@ namespace rex
       class DirectXRenderer
       {
       public:
-        DirectXRenderer(const OutputWindowUserData& userData)
+        explicit DirectXRenderer(const OutputWindowUserData& userData)
             : init_successful(true)
             , depth_info({1.0f, 1000.0f})
+            , screen_viewport()
+            , scissor_rect()
         {
           // Create a scopeguard so if we exit the renderer too early on
           // We mark it as initialization failed
           rsl::scopeguard mark_init_failed = [this]() { init_successful = false; };
 
           // Create a commands frame, this makes sure all the commands get executed at the end of the scope
-          rhi::CommandsFrame cmds_frame {};
+          const rhi::CommandsFrame cmds_frame {};
 
           // Init the clear state
           if(!init_clear_state())
@@ -178,8 +180,8 @@ namespace rex
         }
         void init_pass_constants(const OutputWindowUserData& userData)
         {
-          f32 width  = static_cast<f32>(userData.window_width);
-          f32 height = static_cast<f32>(userData.window_height);
+          const f32 width  = static_cast<f32>(userData.window_width);
+          const f32 height = static_cast<f32>(userData.window_height);
 
           pass_constants.eye_pos_w.x = 15.0f * sinf(0.2f * glm::pi<f32>()) * cosf(1.5f * glm::pi<f32>());
           pass_constants.eye_pos_w.y = 15.0f * cosf(0.2f * glm::pi<f32>());
@@ -214,7 +216,7 @@ namespace rex
           pass_constants.far_z                  = depth_info.far_plane;
           pass_constants.delta_time             = 0.0f;
 
-          rex::memory::Blob pass_cb_blob(rsl::make_unique<rsl::byte[]>(sizeof(pass_constants)));
+          rex::memory::Blob pass_cb_blob(rsl::make_unique<rsl::byte[]>(sizeof(pass_constants))); // NOLINT(modernize-avoid-c-arrays)
           pass_cb_blob.write(&pass_constants, sizeof(pass_constants));
           rhi::ConstantBufferDesc desc;
           desc.blob_view       = rex::memory::BlobView(pass_cb_blob);
@@ -234,7 +236,7 @@ namespace rex
         bool init_successful;
       };
 
-      rsl::unique_ptr<DirectXRenderer> g_renderer;
+      rsl::unique_ptr<DirectXRenderer> g_renderer; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
 
       //-------------------------------------------------------------------------
       bool initialize(const OutputWindowUserData& userData)
@@ -243,7 +245,7 @@ namespace rex
         // This is the first layer of abstraction between the hardware
         // and the software.
         {
-          ExecutionLogger exec_logger(LogDirectX, "Render Hardware Infrastructure Initialization");
+          const ExecutionLogger exec_logger(LogDirectX, "Render Hardware Infrastructure Initialization");
           if(!rhi::init(userData))
           {
             REX_ERROR(LogDirectX, "Failed to initialize rhi layer.");
@@ -302,7 +304,6 @@ namespace rex
       RenderItem* add_render_item(const RenderItemDesc& desc)
       {
         // 1) First we need to create the gpu resources for this render item on the gpu
-        rhi::ResourceSlot input_layout = rhi::create_input_layout(desc.vb_desc.input_layout);
         rhi::ResourceSlot vb           = rhi::create_vertex_buffer(desc.vb_desc);
         rhi::ResourceSlot ib           = rhi::create_index_buffer(desc.ib_desc);
         rhi::ResourceSlot cb           = rhi::create_constant_buffer(desc.cb_desc);

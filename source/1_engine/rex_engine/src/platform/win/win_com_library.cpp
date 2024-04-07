@@ -33,22 +33,22 @@ namespace rex
           ComLibrary& operator=(ComLibrary&&)      = delete;
 
           // Return if the library is initialized
-          bool is_initialized() const
+          bool is_initialized() const // NOLINT(readability-convert-member-functions-to-static)
           {
             return s_ref_count == 0;
           }
 
           // Read a symbolic link's path and return the path it actually points to
-          rsl::string read_link(rsl::string_view filepath)
+          rsl::string read_link(rsl::string_view filepath) // NOLINT(readability-convert-member-functions-to-static)
           {
             IShellLinkW* psl = nullptr;
-            HRESULT hres     = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&psl));
+            HRESULT hres     = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&psl)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
             rsl::wbig_stack_string res;
 
             if(SUCCEEDED(hres))
             {
               IPersistFile* ppf = nullptr;
-              hres              = psl->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID*>(&ppf));
+              hres              = psl->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID*>(&ppf)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 
               if(SUCCEEDED(hres))
               {
@@ -91,22 +91,22 @@ namespace rex
 
         private:
           // Initialize the library
-          bool init_lib()
+          bool init_lib() // NOLINT(readability-convert-member-functions-to-static)
           {
-            return HR_SUCCESS(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));
+            return HR_SUCCESS(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)); // NOLINT(hicpp-signed-bitwise)
           }
 
           // Destroy the com library
-          void shutdown()
+          void shutdown() // NOLINT(readability-convert-member-functions-to-static)
           {
             CoUninitialize();
           }
 
         private:
-          thread_local static s32 s_ref_count;
+          thread_local static s32 s_ref_count; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
         };
 
-        thread_local s32 ComLibrary::s_ref_count = 0;
+        thread_local s32 ComLibrary::s_ref_count = 0; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
         // Return the global com library object
         ComLibrary& com_library()
@@ -136,11 +136,17 @@ namespace rex
         return internal::com_library().read_link(filepath);
       }
 
+      WinComLibHandle::WinComLibHandle(const WinComLibHandle& /*other*/)
+      {
+        internal::com_library().inc_ref();
+      }
+
       // Destroy the win com library
       WinComLibHandle::~WinComLibHandle()
       {
         internal::com_library().dec_ref();
       }
+
     } // namespace com_lib
   }   // namespace win
 } // namespace rex

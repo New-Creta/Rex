@@ -9,7 +9,7 @@ namespace rex
 {
   namespace rhi
   {
-    using ResourceHash = s32;
+    using ResourceHash = u32;
 
     ResourceHash make_new_hash();
 
@@ -32,20 +32,22 @@ namespace rex
 
       bool operator==(const ResourceSlot& other) const;
       bool operator!=(const ResourceSlot& other) const;
-      bool operator==(s32 other) const;
-      bool operator!=(s32 other) const;
+      bool operator==(ResourceHash other) const;
+      bool operator!=(ResourceHash other) const;
 
     public:
       bool is_valid() const;
       bool is_about_to_be_removed() const;
 
       s32 release();
-      s32 slot_id() const;
-
+      ResourceHash slot_id() const;
+      static ResourceHash invalid_id();
     private:
       bool m_about_to_be_removed;
-      s32 m_slot_id;
+      ResourceHash m_slot_id;
       s32* m_ref_count;
+
+      static constexpr ResourceHash s_invalid_slot = static_cast<ResourceHash>(-1);
     };
 
   } // namespace rhi

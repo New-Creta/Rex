@@ -12,7 +12,7 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/memory/global_allocator.h"
 
-#include <errno.h>
+#include <cerrno>
 
 // IWYU pragma: no_include <built-in>
 

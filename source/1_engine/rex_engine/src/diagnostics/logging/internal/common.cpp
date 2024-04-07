@@ -3,7 +3,7 @@
 #include "rex_std/bonus/string.h"
 #include "rex_std/cstring.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 // IWYU pragma: no_include <built-in>
 
