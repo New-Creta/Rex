@@ -5,10 +5,12 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/engine/state_controller.h"
+#include "rex_engine/engine/project.h"
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
+#include "rex_engine/timing/timepoint.h"
 #include "rex_std/bonus/atomic/atomic.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/memory.h"
@@ -104,7 +106,7 @@ namespace rex
 {
   namespace vfs
   {
-    DEFINE_LOG_CATEGORY(FileSystem);
+    DEFINE_LOG_CATEGORY(LogFileSystem);
 
     enum class VfsState
     {
@@ -119,11 +121,6 @@ namespace rex
 
     // This the root where all relative paths will start from
     rsl::medium_stack_string g_root;
-
-    // This is the root dir of all engine data
-    // this data is shared between all projects
-    // that use rex as their game engine
-    rsl::medium_stack_string g_engine_data_root;
 
     // This controls the state of the vfs
     StateController<VfsState> g_vfs_state_controller(VfsState::NotInitialized);
@@ -144,6 +141,8 @@ namespace rex
     rsl::thread g_reading_thread;
     rsl::thread g_closing_thread;
 
+    // the project
+
     // NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
 
     rsl::string_view root()
@@ -151,49 +150,34 @@ namespace rex
       return g_root;
     }
 
+    // Returns the root directory of the engine files
     rsl::string_view engine_root()
     {
-      static const rsl::string s_engine_root = path::join(vfs::root(), "rex");
-      return s_engine_root;
+      return mount_path(MountingPoint::EngineRoot);
     }
 
-    rsl::string_view editor_root()
-    {
-      static const rsl::string s_editor_root = path::join(vfs::root(), "regina");
-      return s_editor_root;
-    }
-
+    // Returns the root directory of the current project
     rsl::string_view project_root()
     {
-      static const rsl::string s_project_root = path::join(vfs::root(), "project_name");
-      return s_project_root;
+      return mount_path(MountingPoint::ProjectRoot);
     }
 
-    rsl::string current_timepoint_str()
-    {
-      const rsl::time_point current_time = rsl::current_timepoint();
-      rsl::string timepoint_str(rsl::format("{}_{}", current_time.date().to_string_without_weekday(), current_time.time().to_string()));
-      timepoint_str.replace("/", "_");
-      timepoint_str.replace(":", "_");
-      return timepoint_str;
-    }
-
+    // Returns the root for all sessions data
     rsl::string_view sessions_root()
     {
-      static const rsl::string s_sessions_root = path::join(vfs::root(), "_sessions");
-      return s_sessions_root;
+      return mount_path(MountingPoint::SessionsRoot);
     }
 
+    // Returns the root for all sessions data of this project
     rsl::string_view project_sessions_root()
     {
-      static const rsl::string s_project_sessions_root = path::join(sessions_root(), "project_name");
-      return s_project_sessions_root;
+      return mount_path(MountingPoint::ProjectSessionsRoot);
     }
 
+    // Returns the root for all files outputed during this session run (eg. logs)
     rsl::string_view session_data_root()
     {
-      static const rsl::string s_session_data_root = path::join(project_sessions_root(), current_timepoint_str());
-      return s_session_data_root;
+      return mount_path(MountingPoint::Session);
     }
 
     class QueuedRequest
@@ -448,12 +432,12 @@ namespace rex
       // This has the same effect as if you would put the working directory to this path
       set_root(cmdline::get_argument("Root").value_or(root));
 
-      // Engine data root is always in the following path
-      // ~/data/RexEngine
-      // This might change in the future, but at the moment
-      // the best way to get this path is to start from our given root
-      // WE DON'T WANT THIS, FIND A BETTER WAY TO TRACK THIS
-      g_engine_data_root = path::abs_path(path::join("..", "RexEngine"));
+      // Create the mount points
+      mount(MountingPoint::EngineRoot, path::join(vfs::root(), "rex"));
+      mount(MountingPoint::ProjectRoot, path::join(vfs::root(), project_name()));
+      mount(MountingPoint::SessionsRoot, path::join(vfs::root(), "_sessions"));
+      mount(MountingPoint::ProjectSessionsRoot, path::join(mount_path(MountingPoint::SessionsRoot), project_name()));
+      mount(MountingPoint::Session, path::join(mount_path(MountingPoint::ProjectSessionsRoot), current_timepoint_str()));
 
       // Start the worker threads, listening to file IO requests and processing them
       start_threads();
@@ -462,9 +446,9 @@ namespace rex
 
       // Create the current session root so data generated during this session
       // has somewhere to put itself
-      create_dirs(session_data_root());
+      create_dirs(mount_path(MountingPoint::Session));
 
-      REX_INFO(FileSystem, "FileSystem initialized");
+      REX_INFO(LogFileSystem, "LogFileSystem initialized");
     }
 
     void set_root(rsl::string_view root)
@@ -483,7 +467,7 @@ namespace rex
       }
 
       REX_ASSERT_X(directory::exists(g_root), "root of vfs is not a directory");
-      REX_INFO(FileSystem, "FileSystem root changed to: {}", g_root);
+      REX_INFO(LogFileSystem, "LogFileSystem root changed to: {}", g_root);
     }
 
     void mount(MountingPoint root, rsl::string_view path)
@@ -500,7 +484,7 @@ namespace rex
       REX_ASSERT_X(!g_mounted_roots.contains(root), "root {} is already mapped. currently mapped to '{}'", rsl::enum_refl::enum_name(root), g_mounted_roots.at(root));
 
       // make sure the mount exists
-      rsl::string full_path = path::join(session_data_root(), path);
+      rsl::string full_path = path::join(mount_path(MountingPoint::Session), path);
       create_dir(full_path);
 
       g_mounted_roots[root] = rsl::move(full_path);

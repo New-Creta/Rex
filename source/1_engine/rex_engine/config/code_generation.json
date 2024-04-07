@@ -15,8 +15,13 @@
     "ClassName": "MountingPoint",
     "Filepath": "1_engine/rex_engine/include/rex_engine/filesystem/mounting_point.h",
     "Content": [
-      "Logs",
-      "EngineSettings"
+      "Logs /*Folder where all logs go*/",
+      "EngineSettings /*Root directory of engine settings*/",
+      "EngineRoot /*Root directory of engine files*/",
+      "ProjectRoot /*Root directory of the current project*/",
+      "SessionsRoot /*Root directory of all sessions*/",
+      "ProjectSessionsRoot /*Root directory of all sessions of this project*/",
+      "Session /*Root directory of the current session*/"
     ]
   },
   "CommandLineArgs": {

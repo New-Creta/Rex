@@ -853,14 +853,32 @@ public class PlatformProject : BasicCPPProject
 }
 
 // All projects sitting in 3_app_libs folder should inherit from this
-public class AppLibrariesProject : BasicCPPProject
+public class GameProject : BasicCPPProject
 {
-  public AppLibrariesProject() : base()
+  // This is the project name that'll be defined
+  // The root project directory will have a folder name 
+  // that matches this name
+  protected string ProjectName = "project_name";
+
+  public GameProject() : base()
   { }
 
   protected override void SetupSolutionFolder(RexConfiguration conf, RexTarget target)
   {
-    conf.SolutionFolder = "3_app_libs";
+    conf.SolutionFolder = "3_games";
+  }
+
+  protected override void SetupConfigSettings(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupConfigSettings(conf, target);
+
+    conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data");
+
+    if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
+    {
+      Directory.CreateDirectory(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory);
+    }
   }
 
   protected override void SetupOutputType(RexConfiguration conf, RexTarget target)

@@ -2,6 +2,11 @@
 
 namespace rex
 {
+  rsl::string_view project_name()
+  {
+    return "Pokemon";
+  }
+
   ApplicationCreationParams app_entry(PlatformCreationParams& platformParams)
   {
     rex::ApplicationCreationParams app_params(platformParams);

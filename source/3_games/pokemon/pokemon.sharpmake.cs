@@ -2,7 +2,7 @@ using Sharpmake;
 using System.IO;
 
 [Generate]
-public class PokemonProject : AppLibrariesProject
+public class PokemonProject : GameProject
 {
   public PokemonProject() : base()
   {

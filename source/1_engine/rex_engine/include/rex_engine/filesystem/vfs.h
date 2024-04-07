@@ -51,9 +51,6 @@ namespace rex
     // Returns the root directory of the engine files
     rsl::string_view engine_root();
 
-    // Returns the root directory of the editor files
-    rsl::string_view editor_root();
-
     // Returns the root directory of the current project
     rsl::string_view project_root();
 

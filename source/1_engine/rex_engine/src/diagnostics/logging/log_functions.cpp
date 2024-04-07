@@ -8,6 +8,7 @@
 #include "rex_engine/diagnostics/logging/internal/sinks/dist_sink.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/stdout_color_sinks.h"
 #include "rex_engine/engine/debug_types.h"
+#include "rex_engine/engine/project.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/memory/global_allocator.h"
@@ -109,7 +110,7 @@ namespace rex
       // If the logging system has been initialized, we log to files as well
       if(g_enable_file_sinks)
       {
-        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), "game.log"), true));
+        sinks.push_back(rsl::make_shared<rex::log::sinks::basic_file_sink_mt>(rex::path::join(rex::vfs::mount_path(rex::MountingPoint::Logs), rsl::format("{}.log", project_name())), true));
       }
 
       rsl::shared_ptr<rex::log::Logger> new_logger = nullptr;
