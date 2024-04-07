@@ -43,6 +43,7 @@ namespace rex
 
       if (ProjectGen.Settings.AutoTestsEnabled)
       {
+        conf.AddProject<RexEngineAutoTest>(target);
         conf.AddProject<ReginaAutoTest>(target);
       }
 

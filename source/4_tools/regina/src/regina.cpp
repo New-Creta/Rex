@@ -92,9 +92,9 @@ namespace regina
   }
 
   //-------------------------------------------------------------------------
-  rex::ApplicationCreationParams create_regina_app_creation_params(rex::PlatformCreationParams&& platformParams)
+  rex::ApplicationCreationParams create_regina_app_creation_params(rex::PlatformCreationParams& platformParams)
   {
-    rex::ApplicationCreationParams app_params(&platformParams);
+    rex::ApplicationCreationParams app_params(platformParams);
 
     app_params.gui_params.window_width  = 1280;
     app_params.gui_params.window_height = 720;
@@ -115,9 +115,9 @@ namespace rex
 {
 #ifndef REX_ENABLE_AUTO_TESTS
   //-------------------------------------------------------------------------
-  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams)
+  ApplicationCreationParams app_entry(PlatformCreationParams& platformParams)
   {
-    return regina::create_regina_app_creation_params(rsl::move(platformParams));
+    return regina::create_regina_app_creation_params(platformParams);
   }
 #endif
 } // namespace rex
