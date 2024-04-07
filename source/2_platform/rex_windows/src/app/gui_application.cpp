@@ -219,9 +219,9 @@ namespace rex
           // window and releases the resize bars, which sends a
           // "WindowStopWindowResize" message.
         }
-        else // API call such as SetWindowPos or mSwapChain->SetFullscreenState.
+        else // API call such as SetWindowPos or mSwapChain->SetFullscreenState will also invoke a resize event.
         {
-          REX_WARN(LogWindows, "API call such as SetWindowPos or mSwapChain->SetFullscreenState will also invoke a resize event.");
+          // Do nothing
         }
       }
       void resize(const event_system::Event& /*evt*/)

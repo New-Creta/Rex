@@ -29,10 +29,6 @@ namespace rex
 
         rsl::zero_memory(&window_class, sizeof(window_class));
 
-        REX_WARN(LogWindows, "Make window style data driven");
-        REX_WARN(LogWindows, "Make window icon data driven");
-        REX_WARN(LogWindows, "Make window cursor data driven");
-
         window_class.style         = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
         window_class.lpfnWndProc   = reinterpret_cast<WNDPROC>(wndProc); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
         window_class.cbClsExtra    = 0;

@@ -58,7 +58,6 @@ namespace rex
       }
 
       // Initialize the filesystem as this can be needed by the entry point of the client
-      // Initialize the filesystem as this can be needed by the entry point of the client
       // However it is recommended that all initialziation code is moved into the client's init function.
       // If we decide to limit this more aggresively, we can move this initialization to the initialize function
       // of the engine.

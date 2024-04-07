@@ -17,6 +17,9 @@
 //-------------------------------------------------------------------------
 int rex_entry(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPCSTR lpCmdLine, int nShowCmd)
 {
+  // some systems need to be set up even before we get into the app entry function
+  // commandline, logging and the vfs need to get set up before hand so the user has 
+  // access to these system when they're setting up their app
   rex::internal::pre_app_entry(lpCmdLine);
 
   rex::PlatformCreationParams creation_params {};
