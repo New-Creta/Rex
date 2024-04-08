@@ -9,11 +9,11 @@ namespace rex
     , m_log_category(category)
     , m_interval()
   {
-    REX_LOG(m_log_category, rsl::format("{} - started", m_msg));
+    REX_INFO(m_log_category, rsl::format("{} - started", m_msg));
   }
 
   ExecutionLogger::~ExecutionLogger()
   {
-    REX_LOG(m_log_category, rsl::format("{} - finished ({} ms)", m_msg, m_interval.value()));
+    REX_INFO(m_log_category, rsl::format("{} - finished ({} ms)", m_msg, m_interval.value()));
   }
 }

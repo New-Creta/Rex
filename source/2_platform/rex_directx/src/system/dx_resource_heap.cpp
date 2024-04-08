@@ -11,7 +11,7 @@ namespace rex
 {
   namespace rhi
   {
-    DEFINE_LOG_CATEGORY(LogResourceHeap, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(LogResourceHeap);
 
     ResourceHeap::ResourceHeap(const wrl::ComPtr<ID3D12Heap>& heap, const wrl::ComPtr<ID3D12Device1>& device)
       : m_heap(heap)

@@ -12,7 +12,7 @@ namespace rex
 {
   namespace rhi
   {
-    DEFINE_LOG_CATEGORY(LogSwapchain, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(LogSwapchain);
 
     Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount, DescriptorHeap* rtvDescHeap, DescriptorHeap* dsvDescHeap, ResourceHeap* resourceHeap)
       : m_swapchain(swapchain)

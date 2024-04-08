@@ -17,7 +17,7 @@ namespace rex
 {
   namespace win
   {
-    DEFINE_LOG_CATEGORY(CrashHandlingLog, rex::LogVerbosity::Info);
+    DEFINE_LOG_CATEGORY(CrashHandlingLog);
 
     DEFINE_YES_NO_ENUM(CreateFullDump);
 

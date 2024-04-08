@@ -10,7 +10,7 @@ namespace rex
 {
   namespace rhi
   {
-    DEFINE_LOG_CATEGORY(LogShaderCompiler, rex::LogVerbosity::Warning);
+    DEFINE_LOG_CATEGORY(LogShaderCompiler);
 
     wrl::ComPtr<ID3DBlob> ShaderCompiler::compile_shader(const CompileShaderDesc& desc)
     {

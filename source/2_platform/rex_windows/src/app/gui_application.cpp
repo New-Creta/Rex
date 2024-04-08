@@ -137,10 +137,10 @@ namespace rex
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
       {
         rhi::Info info = rhi::info();
-        REX_LOG(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
-        REX_LOG(LogWindows, "Renderer Info - Vendor: {}", info.vendor);
-        REX_LOG(LogWindows, "Renderer Info - API Version: {}", info.api_version);
-        REX_LOG(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);
+        REX_INFO(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
+        REX_INFO(LogWindows, "Renderer Info - Vendor: {}", info.vendor);
+        REX_INFO(LogWindows, "Renderer Info - API Version: {}", info.api_version);
+        REX_INFO(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);
       }
 
       void cap_frame_rate()

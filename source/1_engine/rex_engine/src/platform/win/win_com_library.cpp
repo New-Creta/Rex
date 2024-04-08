@@ -15,7 +15,7 @@ namespace rex
   {
     namespace com_lib
     {
-      DEFINE_LOG_CATEGORY(WinComLibrary, rex::LogVerbosity::Info);
+      DEFINE_LOG_CATEGORY(WinComLibrary);
 
       namespace internal
       {

@@ -49,7 +49,7 @@ namespace rex
 {
   namespace rhi
   {
-    DEFINE_LOG_CATEGORY(LogRhi, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(LogRhi);
 
     namespace internal
     {
@@ -1097,7 +1097,7 @@ namespace rex
 
       descriptor_heap_pool.emplace(type, desc_heap, device->get());
 
-      REX_LOG(LogRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, numDescriptors, desc_size, total_size);
+      REX_INFO(LogRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, numDescriptors, desc_size, total_size);
 
       return true;
     }

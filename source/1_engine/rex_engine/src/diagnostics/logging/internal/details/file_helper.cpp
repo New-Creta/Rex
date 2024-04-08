@@ -40,8 +40,8 @@ namespace rex
         close();
         m_filename = filename_t(fname);
 
-        const auto* mode       = "ab";
-        const auto* trunc_mode = "wb";
+        //const auto* mode       = "ab";
+        //const auto* trunc_mode = "wb";
 
         if(m_event_handlers.before_open)
         {

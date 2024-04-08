@@ -25,7 +25,7 @@
 #include "regina/sample_scene.h"
 #include "regina/cube_scene.h"
 
-DEFINE_LOG_CATEGORY(LogRegina, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogRegina);
 
 namespace regina
 {
@@ -56,7 +56,7 @@ namespace regina
   //-------------------------------------------------------------------------
   bool initialize()
   {
-    REX_LOG(LogRegina, "Initializing Regina");
+    REX_INFO(LogRegina, "Initializing Regina");
 
     // Create the editor object which will initialize it.
     g_regina = rsl::make_unique<Regina>();
@@ -86,7 +86,7 @@ namespace regina
   //-------------------------------------------------------------------------
   void shutdown()
   {
-    REX_LOG(LogRegina, "shutting down Regina");
+    REX_INFO(LogRegina, "shutting down Regina");
 
     // Shut down the editor and all its resources
     g_regina.reset();
