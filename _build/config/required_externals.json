@@ -16,11 +16,5 @@
     "url": "https://gitlab.com/rex-externals/rex-glm/",
     "tag": "v1.1.0",
     "storage": "~/source/0_thirdparty"
-  },
-  "rex_imgui": {
-    "name": "rex_imgui",
-    "url": "https://gitlab.com/rex-externals/rex-imgui/",
-    "tag": "v1.0.1",
-    "storage": "~/source/0_thirdparty"
   }
 }

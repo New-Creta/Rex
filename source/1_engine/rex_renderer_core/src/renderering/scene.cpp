@@ -22,7 +22,7 @@ namespace rex
 
     Scene::Scene()
     {
-      build_shader("regina\\Shaders\\color.hlsl", "regina\\Shaders\\color.hlsl");
+      build_shader("regina\\Shaders\\vertex_shader.hlsl", "regina\\Shaders\\pixel_shader.hlsl");
       build_input_layout();
 
       build_raster_state();

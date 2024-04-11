@@ -591,7 +591,7 @@ namespace rex
       internal::get()->command_list->get()->SetPipelineState(pso->get());
     }
 
-    void swap_rendertargets()
+    void bind_backbuffer_rendertarget()
     {
       auto rtv = internal::get()->swapchain->backbuffer_view();
       auto dsv = internal::get()->swapchain->depth_stencil_view();

@@ -24,7 +24,7 @@ namespace regina
 
   void CubeScene::update_object_constant_buffers()
   {
-    //m_cube_world = glm::rotate(m_cube_world, 3.14f / 400, glm::vec3(01.0f, 1.0f, 0.0f));
+    m_cube_world = glm::rotate(m_cube_world, 3.14f / 400, glm::vec3(01.0f, 1.0f, 0.0f));
     rex::rhi::update_buffer(m_cube_render_item->cb(), &m_cube_world, sizeof(m_cube_world));
   }
 
@@ -34,7 +34,7 @@ namespace regina
     auto box = rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f);
 
     // Create the vertex buffer
-    rex::memory::Blob vb(rsl::make_unique<rex::renderer::VertexPosCol[]>(box.vertices().size()));
+    rex::memory::Blob vb(rsl::make_unique<rex::renderer::VertexPosNormCol[]>(box.vertices().size()));
     vb.write(box.vertices().data(), vb.size());
 
     // Create the index buffer
@@ -46,7 +46,7 @@ namespace regina
     rex::memory::Blob cb(rsl::make_unique<rsl::byte[]>(sizeof(m_cube_world)));
     cb.write(&m_cube_world, rsl::memory_size(sizeof(m_cube_world)));    
 
-    rex::rhi::VertexBufferDesc vb_desc{ rex::memory::BlobView(vb), sizeof(rex::renderer::VertexPosCol), rex::renderer::VertexPosCol::layout() };
+    rex::rhi::VertexBufferDesc vb_desc{ rex::memory::BlobView(vb), sizeof(rex::renderer::VertexPosNormCol), rex::renderer::VertexPosNormCol::layout() };
     rex::rhi::IndexBufferDesc ib_desc{rex::memory::BlobView(ib), rex::renderer::IndexBufferFormat::Uint16, box.indices().size()};
 
     // Create the cube mesh object

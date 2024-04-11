@@ -22,11 +22,6 @@
 
 namespace rex
 {
-  namespace renderer
-  {
-    struct OutputWindowUserData;
-  }
-
   namespace rhi
   {
     // Useful function that assigns a name to a resource.
@@ -42,8 +37,6 @@ namespace rex
 #endif
     }
 
-    void set_viewport(const Viewport& viewport);
-    void set_scissor_rect(const ScissorRect& rect);
     void transition_backbuffer(D3D12_RESOURCE_STATES state);
     void clear_backbuffer(const ResourceSlot& clearState);
     void present();
