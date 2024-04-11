@@ -11,8 +11,8 @@ namespace rex
     struct RasterStateDesc
     {
       RasterStateDesc()
-        : fill_mode(renderer::FillMode::SOLID)
-        , cull_mode(renderer::CullMode::BACK)
+        : fill_mode(renderer::FillMode::Solid)
+        , cull_mode(renderer::CullMode::Back)
         , front_ccw(0)
         , depth_bias(0)
         , depth_bias_clamp(0.0f)

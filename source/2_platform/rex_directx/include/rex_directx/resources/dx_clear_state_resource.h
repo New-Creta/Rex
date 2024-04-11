@@ -13,8 +13,8 @@ namespace rex
         class ClearStateResource : public BaseResource<ClearStateDesc>
         {
         public:
-            explicit ClearStateResource(ResourceHash hash, const ClearStateDesc& cs)
-                : BaseResource(&m_clear_state, hash)
+            explicit ClearStateResource(ResourceID id, const ClearStateDesc& cs)
+                : BaseResource(&m_clear_state, id)
                 , m_clear_state(cs)
             {}
             ~ClearStateResource() override = default;

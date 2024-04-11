@@ -190,10 +190,10 @@ namespace rex
     ResourceSlot compile_shader(const CompileShaderDesc& desc)
     {
       // Check if we don't have the compiled shader already
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
 
       // If we don't have it already, compile the shader
@@ -206,14 +206,14 @@ namespace rex
         return ResourceSlot::make_invalid();
       }
 
-      // store the new compiled shader with its hash in the resource pool
+      // store the new compiled shader with its id in the resource pool
       switch (desc.shader_type)
       {
       case ShaderType::VERTEX:
-        return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(hash, byte_code));
+        return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
         break;
       case ShaderType::PIXEL:
-        return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(hash, byte_code));
+        return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
         break;
 
       default:
@@ -226,10 +226,10 @@ namespace rex
     ResourceSlot link_shader(const LinkShaderDesc& desc)
     {
       // If there's already a linked shader, return it.
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
 
       // If not link the shader with the params provided
@@ -248,15 +248,15 @@ namespace rex
       rsl::memcpy(constants.get(), desc.constants.get(), desc.constants.byte_size());
 
       // create a combined shader object with the root sig, the vertex shader and the pixel shader
-      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(hash, root_sig, vertex_shader, pixel_shader, rsl::move(constants)));
+      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(id, root_sig, vertex_shader, pixel_shader, rsl::move(constants)));
     }
     ResourceSlot create_shader(const ShaderDesc& desc)
     {
       // Check if the shader isn't already loaded
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
 
       // If the shader hasn't been loaded before
@@ -264,8 +264,8 @@ namespace rex
 
       switch (desc.shader_type)
       {
-      case ShaderType::VERTEX: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(hash, byte_code));
-      case ShaderType::PIXEL: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(hash, byte_code));
+      case ShaderType::VERTEX: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
+      case ShaderType::PIXEL: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
 
       default:
         REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
@@ -278,23 +278,23 @@ namespace rex
     // Flags control which part of the buffer (color, depths or stencil) should be cleared
     ResourceSlot create_clear_state(const ClearStateDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
 
-      return internal::get()->resource_pool.insert(rsl::make_unique<ClearStateResource>(hash, desc));
+      return internal::get()->resource_pool.insert(rsl::make_unique<ClearStateResource>(id, desc));
     }
     // A raster state holds rasterization settings
     // settings like cull mode, fill mode, depth bias, normal orientation, ..
     // are all included in the raster state
     ResourceSlot create_raster_state(const RasterStateDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
 
       D3D12_RASTERIZER_DESC d3d_rs;
@@ -320,17 +320,17 @@ namespace rex
       d3d_rs.MultisampleEnable = desc.multisample;
       d3d_rs.AntialiasedLineEnable = desc.aa_lines;
 
-      return internal::get()->resource_pool.insert(rsl::make_unique<RasterStateResource>(hash, d3d_rs));
+      return internal::get()->resource_pool.insert(rsl::make_unique<RasterStateResource>(id, d3d_rs));
     }
     // An input layout determines the format of vertices
     // It determines where a shader can find the position, normal, color
     // of a vertex.
     ResourceSlot create_input_layout(const InputLayoutDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
       rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
       REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
@@ -346,15 +346,15 @@ namespace rex
         input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
       }
 
-      return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(hash, input_element_descriptions));
+      return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(id, input_element_descriptions));
     }
     // A vertex buffer is a buffer holding vertices of 1 or more objects
     ResourceSlot create_vertex_buffer(const VertexBufferDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
@@ -378,10 +378,10 @@ namespace rex
     // An index buffer is a buffer holding indices of 1 or more objects
     ResourceSlot create_index_buffer(const IndexBufferDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
@@ -404,10 +404,10 @@ namespace rex
     // This can hold data like ints, floats, vectors and matrices
     ResourceSlot create_constant_buffer(const ConstantBufferDesc& desc)
     {
-      ResourceHash hash = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(hash))
+      ResourceID id = hash_resource_desc(desc);
+      if (internal::get()->resource_pool.has_resource(id))
       {
-        return internal::get()->resource_pool.at(hash);
+        return internal::get()->resource_pool.at(id);
       }
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer

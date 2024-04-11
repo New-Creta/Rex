@@ -13,6 +13,7 @@ namespace rex
 {
   namespace renderer
   {
+    // Descriptor holding all the data needed to create a render item
     struct RenderItemDesc
     {
       rhi::VertexBufferDesc vb_desc;
@@ -21,49 +22,32 @@ namespace rex
       PrimitiveTopology topology;
     };
 
-    struct RenderItem
+    // A render item is the renderer's representation of something in the world/scene.
+    // It holds its vertex buffer, index buffer and any material settings needed to render this object.
+    class RenderItem
     {
     public:
-      RenderItem(const rhi::ResourceSlot& vb, const rhi::ResourceSlot& ib, const rhi::ResourceSlot& cb, PrimitiveTopology topology, s32 indexCount, s32 baseVertexLocation = 0)
-        : m_vb(vb)
-        , m_ib(ib)
-        , m_cb(cb)
-        , m_topology(topology)
-      {
-        m_start_index_location = 0;
-        m_base_vertex_location = baseVertexLocation;
-        m_index_count = indexCount;
-      }
+      // Construct the render item object
+      RenderItem(const rhi::ResourceSlot& vb, const rhi::ResourceSlot& ib, const rhi::ResourceSlot& cb, PrimitiveTopology topology, s32 indexCount, s32 baseVertexLocation = 0);
 
-      rhi::ResourceSlot vb() const
-      {
-        return m_vb;
-      }
-      rhi::ResourceSlot ib() const
-      {
-        return m_ib;
-      }
-      rhi::ResourceSlot cb() const
-      {
-        return m_cb;
-      }
-      PrimitiveTopology primtive_topology() const
-      {
-        return m_topology;
-      }
+      // return the slot of the vertex buffer
+      rhi::ResourceSlot vb() const;
+      // return the slot of the index buffer
+      rhi::ResourceSlot ib() const;
+      // return the slot of the constantbuffer
+      rhi::ResourceSlot cb() const;
+      // return the primitive topology
+      PrimitiveTopology primtive_topology() const;
 
-      s32 index_count() const
-      {
-        return m_index_count;
-      }
-      s32 start_index() const
-      {
-        return m_start_index_location;
-      }
-      s32 base_vertex_loc() const
-      {
-        return m_base_vertex_location;
-      }
+      // return the number of indices
+      s32 index_count() const;
+      // return the start index
+      s32 start_index() const;
+      // return the base vertex location.
+      // this value gets automatically added by the gpu to any index before drawing
+      // this is useful in case in case you're working with a big vertex and index buffer
+      // holding multiple objects
+      s32 base_vertex_loc() const;
 
     private:
       rhi::ResourceSlot m_vb;

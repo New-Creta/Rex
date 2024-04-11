@@ -77,7 +77,7 @@ namespace rex
       render_item.ib_desc.index_count = subMesh.index_count;
       render_item.ib_desc.base_vertex_loc = subMesh.base_vertex_location;
       render_item.cb_desc = cb_desc;
-      render_item.topology = PrimitiveTopology::TRIANGLELIST;
+      render_item.topology = PrimitiveTopology::TriangleList;
 
       // Now that we've set the data, we need to let the backend know that we have a new render item
       // to draw next frame. The backend is a platform specific call that has optimised logic

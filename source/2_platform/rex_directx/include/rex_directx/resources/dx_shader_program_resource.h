@@ -26,8 +26,8 @@ namespace rex
         class ShaderProgramResource : public BaseResource<resources::ShaderProgram>
         {
         public:
-            ShaderProgramResource(ResourceHash hash, const wrl::ComPtr<ID3D12RootSignature>& rootSig, const VertexShaderResource* vs, const PixelShaderResource* ps, rsl::unique_array<ConstantLayoutDescription>&& constants)
-              : BaseResource(&m_shader_program, hash)
+            ShaderProgramResource(ResourceID id, const wrl::ComPtr<ID3D12RootSignature>& rootSig, const VertexShaderResource* vs, const PixelShaderResource* ps, rsl::unique_array<ConstantLayoutDescription>&& constants)
+              : BaseResource(&m_shader_program, id)
                 ,m_shader_program({ rootSig, vs, ps, rsl::move(constants)})
             {}
             ~ShaderProgramResource() override = default;

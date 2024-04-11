@@ -6,7 +6,7 @@ namespace rex
 {
   namespace rhi
   {
-    ResourceHash make_new_hash()
+    ResourceID make_new_hash()
     {
       static s32 hash = 0;
       return ++hash;
@@ -50,7 +50,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    ResourceSlot::ResourceSlot(ResourceHash slotId)
+    ResourceSlot::ResourceSlot(ResourceID slotId)
         : m_about_to_be_removed(false)
         , m_slot_id(slotId)
         , m_ref_count(new s32(1))

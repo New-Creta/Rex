@@ -11,6 +11,7 @@ namespace rex
   {
     struct OutputWindowUserData;
     struct RenderItemDesc;
+    class RenderItem;
 
     enum class PrimitiveTopology;
     enum class IndexBufferFormat;

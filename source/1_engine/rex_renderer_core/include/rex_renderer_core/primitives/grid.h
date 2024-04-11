@@ -6,6 +6,7 @@ namespace rex
 {
   namespace mesh_factory
   {
+    // Create a single grid mesh
     MeshData16 create_grid(f32 width, f32 depth, u16 m, u16 n);
   } // namespace mesh_factory
 } // namespace rex

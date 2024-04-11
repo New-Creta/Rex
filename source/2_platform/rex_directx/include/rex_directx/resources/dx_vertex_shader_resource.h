@@ -19,8 +19,8 @@ namespace rex
         class VertexShaderResource : public BaseResource<resources::VertexShader>
         {
         public:
-            explicit VertexShaderResource(ResourceHash hash, const wrl::ComPtr<ID3DBlob>& vs)
-              : BaseResource(&m_vertex_shader, hash)
+            explicit VertexShaderResource(ResourceID id, const wrl::ComPtr<ID3DBlob>& vs)
+              : BaseResource(&m_vertex_shader, id)
                 ,m_vertex_shader({ vs })
             {}
             ~VertexShaderResource() override = default;

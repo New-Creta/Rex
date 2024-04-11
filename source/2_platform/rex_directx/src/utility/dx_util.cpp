@@ -33,8 +33,8 @@ namespace rex
     {
       switch (mode)
       {
-      case renderer::FillMode::SOLID: return D3D12_FILL_MODE_SOLID;
-      case renderer::FillMode::WIREFRAME: return D3D12_FILL_MODE_WIREFRAME;
+      case renderer::FillMode::Solid: return D3D12_FILL_MODE_SOLID;
+      case renderer::FillMode::Wireframe: return D3D12_FILL_MODE_WIREFRAME;
       default: break;
       }
 
@@ -47,8 +47,8 @@ namespace rex
       switch (mode)
       {
       case renderer::CullMode::None: return D3D12_CULL_MODE_NONE;
-      case renderer::CullMode::FRONT: return D3D12_CULL_MODE_FRONT;
-      case renderer::CullMode::BACK: return D3D12_CULL_MODE_BACK;
+      case renderer::CullMode::Front: return D3D12_CULL_MODE_FRONT;
+      case renderer::CullMode::Back: return D3D12_CULL_MODE_BACK;
       default: break;
       }
 
@@ -60,13 +60,13 @@ namespace rex
     {
       switch (format)
       {
-      case renderer::VertexBufferFormat::FLOAT1: return DXGI_FORMAT_R32_FLOAT;
-      case renderer::VertexBufferFormat::FLOAT2: return DXGI_FORMAT_R32G32_FLOAT;
-      case renderer::VertexBufferFormat::FLOAT3: return DXGI_FORMAT_R32G32B32_FLOAT;
-      case renderer::VertexBufferFormat::FLOAT4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
-      case renderer::VertexBufferFormat::UNORM1: return DXGI_FORMAT_R8_UNORM;
-      case renderer::VertexBufferFormat::UNORM2: return DXGI_FORMAT_R8G8_UNORM;
-      case renderer::VertexBufferFormat::UNORM4: return DXGI_FORMAT_R8G8B8A8_UNORM;
+      case renderer::VertexBufferFormat::Float1: return DXGI_FORMAT_R32_FLOAT;
+      case renderer::VertexBufferFormat::Float2: return DXGI_FORMAT_R32G32_FLOAT;
+      case renderer::VertexBufferFormat::Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
+      case renderer::VertexBufferFormat::Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+      case renderer::VertexBufferFormat::UNorm1: return DXGI_FORMAT_R8_UNORM;
+      case renderer::VertexBufferFormat::UNorm2: return DXGI_FORMAT_R8G8_UNORM;
+      case renderer::VertexBufferFormat::UNorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
       default: break;
       }
       REX_ASSERT("Unsupported vertex buffer format given");
@@ -101,11 +101,11 @@ namespace rex
     {
       switch (topology)
       {
-      case renderer::PrimitiveTopology::LINELIST: return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-      case renderer::PrimitiveTopology::LINESTRIP: return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
-      case renderer::PrimitiveTopology::POINTLIST: return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
-      case renderer::PrimitiveTopology::TRIANGLELIST: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-      case renderer::PrimitiveTopology::TRIANGLESTRIP: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+      case renderer::PrimitiveTopology::LineList: return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+      case renderer::PrimitiveTopology::LineStrip: return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+      case renderer::PrimitiveTopology::PointList: return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+      case renderer::PrimitiveTopology::TriangleList: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+      case renderer::PrimitiveTopology::TriangleStrip: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
       default: break;
       }
       REX_ASSERT("Unsupported primitive topology given");

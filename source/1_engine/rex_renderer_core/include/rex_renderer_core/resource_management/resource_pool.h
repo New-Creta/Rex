@@ -31,7 +31,7 @@ namespace rex
       void remove(const ResourceSlot& slot);
 
       bool has_slot(const ResourceSlot& slot) const;
-      bool has_resource(ResourceHash hash) const;
+      bool has_resource(ResourceID id) const;
 
       template <typename U>
       bool is(const ResourceSlot& slot) const;
@@ -39,7 +39,7 @@ namespace rex
       IResource* at(const ResourceSlot& slot);
       const IResource* at(const ResourceSlot& slot) const;
 
-      ResourceSlot at(ResourceHash slot) const;
+      ResourceSlot at(ResourceID slot) const;
 
       template <typename U>
       U* as(const ResourceSlot& slot);
@@ -47,7 +47,7 @@ namespace rex
       const U* as(const ResourceSlot& slot) const;
 
     private:
-      using ResourceMap = rsl::unordered_map<ResourceHash, ResourceWithSlot>;
+      using ResourceMap = rsl::unordered_map<ResourceID, ResourceWithSlot>;
 
     private:
       ResourceMap m_resource_map {};

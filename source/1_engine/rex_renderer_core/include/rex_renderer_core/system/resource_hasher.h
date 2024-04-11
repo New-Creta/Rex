@@ -18,15 +18,15 @@ namespace rex
 {
   namespace rhi
   {
-    ResourceHash hash_resource_desc(const VertexBufferDesc& desc);
-    ResourceHash hash_resource_desc(const IndexBufferDesc& desc);
-    ResourceHash hash_resource_desc(const ConstantBufferDesc& desc);
-    ResourceHash hash_resource_desc(const ClearStateDesc& desc);
-    ResourceHash hash_resource_desc(const CompileShaderDesc& desc);
-    ResourceHash hash_resource_desc(const InputLayoutDesc& desc);
-    ResourceHash hash_resource_desc(const LinkShaderDesc& desc);
-    ResourceHash hash_resource_desc(const ShaderDesc& desc);
-    ResourceHash hash_resource_desc(const RasterStateDesc& desc);
-    ResourceHash hash_resource_desc(const PipelineStateDesc& desc);
+    ResourceID hash_resource_desc(const VertexBufferDesc& desc);
+    ResourceID hash_resource_desc(const IndexBufferDesc& desc);
+    ResourceID hash_resource_desc(const ConstantBufferDesc& desc);
+    ResourceID hash_resource_desc(const ClearStateDesc& desc);
+    ResourceID hash_resource_desc(const CompileShaderDesc& desc);
+    ResourceID hash_resource_desc(const InputLayoutDesc& desc);
+    ResourceID hash_resource_desc(const LinkShaderDesc& desc);
+    ResourceID hash_resource_desc(const ShaderDesc& desc);
+    ResourceID hash_resource_desc(const RasterStateDesc& desc);
+    ResourceID hash_resource_desc(const PipelineStateDesc& desc);
   }
 }

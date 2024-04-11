@@ -63,7 +63,7 @@ namespace rex
     {
       rex::rhi::RasterStateDesc solid_rs_command_desc;
       solid_rs_command_desc.fill_mode = fillMode;
-      solid_rs_command_desc.cull_mode = rex::renderer::CullMode::BACK;
+      solid_rs_command_desc.cull_mode = rex::renderer::CullMode::Back;
       m_raster_state = rex::rhi::create_raster_state(solid_rs_command_desc);
     }
     
@@ -86,22 +86,6 @@ namespace rex
     void Scene::use_pso()
     {
       rex::renderer::set_pso(m_pso);
-    }
-
-    void Scene::update_view()
-    {
-      // Convert Spherical to Cartesian coordinates.
-      m_eye_pos.x = 15.0f * sinf(0.2f * glm::pi<f32>()) * cosf(1.5f * glm::pi<f32>());
-      m_eye_pos.y = 15.0f * cosf(0.2f * glm::pi<f32>());
-      m_eye_pos.z = 35.0f * sinf(0.2f * glm::pi<f32>()) * sinf(1.5f * glm::pi<f32>());
-
-      // Build the view matrix.
-      const glm::vec3 pos = glm::vec3(m_eye_pos.x, m_eye_pos.y, m_eye_pos.z);
-      const glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
-      const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-      m_view = glm::lookAt(pos, target, up);
-      m_view = glm::transpose(m_view); // DirectX backend ( so we have to transpose, expects row major matrices )
     }
   } // namespace renderer
 } // namespace rex

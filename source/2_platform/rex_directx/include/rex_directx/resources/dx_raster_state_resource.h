@@ -12,8 +12,8 @@ namespace rex
         class RasterStateResource : public BaseResource<D3D12_RASTERIZER_DESC>
         {
         public:
-            explicit RasterStateResource(ResourceHash hash, const D3D12_RASTERIZER_DESC& rs)
-                : BaseResource(&m_raster_state, hash)
+            explicit RasterStateResource(ResourceID id, const D3D12_RASTERIZER_DESC& rs)
+                : BaseResource(&m_raster_state, id)
                 ,m_raster_state(rs)
             {}
             ~RasterStateResource() override = default;

@@ -8,7 +8,7 @@ namespace rex
 {
   namespace rhi
   {
-    DEFINE_LOG_CATEGORY(LogDebugInterface, rex::LogVerbosity::Log);
+    DEFINE_LOG_CATEGORY(LogDebugInterface);
 
     DebugInterface::DebugInterface()
     {
