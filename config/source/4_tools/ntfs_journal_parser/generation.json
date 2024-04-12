@@ -1,0 +1,15 @@
+{
+    "CommandLineArgs": {
+        "Type": "Array",
+        "Content": {
+          "Name": "g_command_line_args",
+          "ElementType": "cmdline::Argument",
+          "Includes" : ["rex_engine/cmdline.h"],
+          "Values": [
+            "\"Drive\", \"The drive who's journal you want to scan. D drive is default selected\"",
+            "\"Output\", \"The input file to load the start USN from. The new last USN read will also be saved to this path.\""
+          ],
+          "Filepath": "1_engine/rex_engine/include/rex_engine/cmd_args.h"
+        }
+      }
+}
