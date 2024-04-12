@@ -1,11 +1,11 @@
 #include "dokan_fs/internal/dokan/dokan.h"
 #include "dokan_fs/internal/dokan/fileinfo.h"
-#include "rex_engine/cmdline.h"
+#include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_engine/entrypoint.h"
-#include "rex_engine/event_system.h"
-#include "rex_std_extra/memory.h"
-#include "rex_windows/platform_creation_params.h"
+#include "rex_engine/engine/entrypoint.h"
+#include "rex_engine/event_system/event_system.h"
+#include "rex_std/bonus/memory.h"
+#include "rex_windows/engine/platform_creation_params.h"
 
 #include <Windows.h>
 
@@ -77,13 +77,13 @@ void PrintUserName(PDOKAN_FILE_INFO DokanFileInfo)
     return;
   }
 
-  REX_LOG(LogDokan, "  AccountName: {}, DomainName: {}", accountName, domainName);
+  REX_INFO(LogDokan, L"  AccountName: {}, DomainName: {}", accountName, domainName);
 }
 
 BOOL AddSeSecurityNamePrivilege()
 {
   HANDLE token = 0;
-  REX_LOG(LogDokan, "## Attempting to add SE_SECURITY_NAME privilege to process token ##");
+  REX_INFO(LogDokan, "## Attempting to add SE_SECURITY_NAME privilege to process token ##");
   DWORD err;
   LUID luid;
   if(!LookupPrivilegeValue(0, SE_SECURITY_NAME, &luid))
@@ -143,7 +143,7 @@ BOOL AddSeSecurityNamePrivilege()
 #define MirrorCheckFlag(val, flag)                                                                                                                                                                                                                       \
   if(val & flag)                                                                                                                                                                                                                                         \
   {                                                                                                                                                                                                                                                      \
-    REX_LOG(LogDokan, "\t" #flag);                                                                                                                                                                                                                     \
+    REX_INFO(LogDokan, "\t" #flag);                                                                                                                                                                                                                     \
   }
 
 NTSTATUS DOKAN_CALLBACK MirrorCreateFile(LPCWSTR FileName, PDOKAN_IO_SECURITY_CONTEXT SecurityContext, ACCESS_MASK DesiredAccess, ULONG FileAttributes, ULONG ShareAccess, ULONG CreateDisposition, ULONG CreateOptions,
@@ -169,7 +169,7 @@ NTSTATUS DOKAN_CALLBACK MirrorCreateFile(LPCWSTR FileName, PDOKAN_IO_SECURITY_CO
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "CreateFileW : {}", filePath);
+  REX_INFO(LogDokan, L"CreateFileW : {}", filePath);
 
   PrintUserName(DokanFileInfo);
 
@@ -180,13 +180,13 @@ NTSTATUS DOKAN_CALLBACK MirrorCreateFile(LPCWSTR FileName, PDOKAN_IO_SECURITY_CO
           ShareMode = FILE_SHARE_READ;
   */
 
-  REX_LOG(LogDokan, "\tShareMode = {:#x}", ShareAccess);
+  REX_INFO(LogDokan, "\tShareMode = {:#x}", ShareAccess);
 
   MirrorCheckFlag(ShareAccess, FILE_SHARE_READ);
   MirrorCheckFlag(ShareAccess, FILE_SHARE_WRITE);
   MirrorCheckFlag(ShareAccess, FILE_SHARE_DELETE);
 
-  REX_LOG(LogDokan, "\tDesiredAccess = {:#x}", DesiredAccess);
+  REX_INFO(LogDokan, "\tDesiredAccess = {:#x}", DesiredAccess);
 
   MirrorCheckFlag(DesiredAccess, GENERIC_READ);
   MirrorCheckFlag(DesiredAccess, GENERIC_WRITE);
@@ -226,7 +226,7 @@ NTSTATUS DOKAN_CALLBACK MirrorCreateFile(LPCWSTR FileName, PDOKAN_IO_SECURITY_CO
     ShareAccess |= FILE_SHARE_READ;
   }
 
-  REX_LOG(LogDokan, "\tFlagsAndAttributes = {:#x}", fileAttributesAndFlags);
+  REX_INFO(LogDokan, "\tFlagsAndAttributes = {:#x}", fileAttributesAndFlags);
 
   MirrorCheckFlag(fileAttributesAndFlags, FILE_ATTRIBUTE_ARCHIVE);
   MirrorCheckFlag(fileAttributesAndFlags, FILE_ATTRIBUTE_COMPRESSED);
@@ -268,23 +268,23 @@ NTSTATUS DOKAN_CALLBACK MirrorCreateFile(LPCWSTR FileName, PDOKAN_IO_SECURITY_CO
 
   if(creationDisposition == CREATE_NEW)
   {
-    REX_LOG(LogDokan, "\tCREATE_NEW");
+    REX_INFO(LogDokan, "\tCREATE_NEW");
   }
   else if(creationDisposition == OPEN_ALWAYS)
   {
-    REX_LOG(LogDokan, "\tOPEN_ALWAYS");
+    REX_INFO(LogDokan, "\tOPEN_ALWAYS");
   }
   else if(creationDisposition == CREATE_ALWAYS)
   {
-    REX_LOG(LogDokan, "\tCREATE_ALWAYS");
+    REX_INFO(LogDokan, "\tCREATE_ALWAYS");
   }
   else if(creationDisposition == OPEN_EXISTING)
   {
-    REX_LOG(LogDokan, "\tOPEN_EXISTING");
+    REX_INFO(LogDokan, "\tOPEN_EXISTING");
   }
   else if(creationDisposition == TRUNCATE_EXISTING)
   {
-    REX_LOG(LogDokan, "\tTRUNCATE_EXISTING");
+    REX_INFO(LogDokan, "\tTRUNCATE_EXISTING");
   }
   else
   {
@@ -464,7 +464,7 @@ NTSTATUS DOKAN_CALLBACK MirrorCreateFile(LPCWSTR FileName, PDOKAN_IO_SECURITY_CO
     }
   }
 
-  REX_LOG(LogDokan, "");
+  REX_INFO(LogDokan, "");
   return status;
 }
 
@@ -478,14 +478,14 @@ void DOKAN_CALLBACK MirrorCloseFile(LPCWSTR FileName, PDOKAN_FILE_INFO DokanFile
 
   if(DokanFileInfo->Context)
   {
-    REX_ERROR(LogDokan, "CloseFile: {}", filePath);
+    REX_ERROR(LogDokan, L"CloseFile: {}", filePath);
     REX_ERROR(LogDokan, "\terror : not cleanuped file{}");
     CloseHandle((HANDLE)DokanFileInfo->Context);
     DokanFileInfo->Context = 0;
   }
   else
   {
-    REX_LOG(LogDokan, "Close: {}", filePath);
+    REX_INFO(LogDokan, L"Close: {}", filePath);
   }
 }
 
@@ -496,42 +496,42 @@ void DOKAN_CALLBACK MirrorCleanup(LPCWSTR FileName, PDOKAN_FILE_INFO DokanFileIn
 
   if(DokanFileInfo->Context)
   {
-    REX_LOG(LogDokan, "Cleanup: {}", filePath);
+    REX_INFO(LogDokan, L"Cleanup: {}", filePath);
     CloseHandle((HANDLE)(DokanFileInfo->Context));
     DokanFileInfo->Context = 0;
   }
   else
   {
-    REX_ERROR(LogDokan, "Cleanup: {}\tinvalid handle", filePath);
+    REX_ERROR(LogDokan, L"Cleanup: {}\tinvalid handle", filePath);
   }
 
   if(DokanFileInfo->DeleteOnClose)
   {
     // Should already be deleted by CloseHandle
     // if open with FILE_FLAG_DELETE_ON_CLOSE
-    REX_LOG(LogDokan, "\tDeleteOnClose");
+    REX_INFO(LogDokan, "\tDeleteOnClose");
     if(DokanFileInfo->IsDirectory)
     {
-      REX_LOG(LogDokan, "  DeleteDirectory ");
+      REX_INFO(LogDokan, "  DeleteDirectory ");
       if(!RemoveDirectoryW(filePath))
       {
         REX_ERROR(LogDokan, "Error code = {}", GetLastError());
       }
       else
       {
-        REX_LOG(LogDokan, "success{}");
+        REX_INFO(LogDokan, "success{}");
       }
     }
     else
     {
-      REX_LOG(LogDokan, "  DeleteFileW ");
+      REX_INFO(LogDokan, "  DeleteFileW ");
       if(DeleteFileW(filePath) == 0)
       {
         REX_ERROR(LogDokan, " error code = {}", GetLastError());
       }
       else
       {
-        REX_LOG(LogDokan, "success{}");
+        REX_INFO(LogDokan, "success{}");
       }
     }
   }
@@ -546,7 +546,7 @@ NTSTATUS DOKAN_CALLBACK MirrorReadFile(LPCWSTR FileName, LPVOID Buffer, DWORD Bu
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "ReadFile : {}", filePath);
+  REX_INFO(LogDokan, L"ReadFile : {}", filePath);
 
   if(!handle || handle == INVALID_HANDLE_VALUE)
   {
@@ -575,7 +575,7 @@ NTSTATUS DOKAN_CALLBACK MirrorReadFile(LPCWSTR FileName, LPVOID Buffer, DWORD Bu
   }
   else
   {
-    REX_LOG(LogDokan, "\tByte to read: {}, Byte read {}, offset {}", BufferLength, *ReadLength, offset);
+    REX_INFO(LogDokan, "\tByte to read: {}, Byte read {}, offset {}", BufferLength, *ReadLength, offset);
   }
 
   if(opened)
@@ -592,7 +592,7 @@ NTSTATUS DOKAN_CALLBACK MirrorWriteFile(LPCWSTR FileName, LPCVOID Buffer, DWORD 
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "WriteFile : {}, offset %I64d, length {}", filePath, Offset, NumberOfBytesToWrite);
+  REX_INFO(LogDokan, L"WriteFile : {}, offset %I64d, length {}", filePath, Offset, NumberOfBytesToWrite);
 
   // reopen the file
   if(!handle || handle == INVALID_HANDLE_VALUE)
@@ -679,7 +679,7 @@ NTSTATUS DOKAN_CALLBACK MirrorWriteFile(LPCWSTR FileName, LPCVOID Buffer, DWORD 
   }
   else
   {
-    REX_LOG(LogDokan, "\twrite {}, offset %I64d{}", *NumberOfBytesWritten, Offset);
+    REX_INFO(LogDokan, L"\twrite {}, offset %I64d{}", *NumberOfBytesWritten, Offset);
   }
 
   // close the file when it is reopened
@@ -696,7 +696,7 @@ NTSTATUS DOKAN_CALLBACK MirrorFlushFileBuffers(LPCWSTR FileName, PDOKAN_FILE_INF
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "FlushFileBuffers : {}", filePath);
+  REX_INFO(LogDokan, L"FlushFileBuffers : {}", filePath);
 
   if(!handle || handle == INVALID_HANDLE_VALUE)
   {
@@ -724,7 +724,7 @@ NTSTATUS DOKAN_CALLBACK MirrorGetFileInformation(LPCWSTR FileName, LPBY_HANDLE_F
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "GetFileInfo : {}", filePath);
+  REX_INFO(LogDokan, L"GetFileInfo : {}", filePath);
 
   if(!handle || handle == INVALID_HANDLE_VALUE)
   {
@@ -769,16 +769,16 @@ NTSTATUS DOKAN_CALLBACK MirrorGetFileInformation(LPCWSTR FileName, LPBY_HANDLE_F
       HandleFileInformation->ftLastWriteTime  = find.ftLastWriteTime;
       HandleFileInformation->nFileSizeHigh    = find.nFileSizeHigh;
       HandleFileInformation->nFileSizeLow     = find.nFileSizeLow;
-      REX_LOG(LogDokan, "\tFindFiles OK, file size = {}", find.nFileSizeLow);
+      REX_INFO(LogDokan, "\tFindFiles OK, file size = {}", find.nFileSizeLow);
       FindClose(findHandle);
     }
   }
   else
   {
-    REX_LOG(LogDokan, "\tGetFileInformationByHandle success, file size = {}", HandleFileInformation->nFileSizeLow);
+    REX_INFO(LogDokan, "\tGetFileInformationByHandle success, file size = {}", HandleFileInformation->nFileSizeLow);
   }
 
-  REX_LOG(LogDokan, "FILE ATTRIBUTE  = {}", HandleFileInformation->dwFileAttributes);
+  REX_INFO(LogDokan, "FILE ATTRIBUTE  = {}", HandleFileInformation->dwFileAttributes);
 
   if(opened)
     CloseHandle(handle);
@@ -799,7 +799,7 @@ NTSTATUS DOKAN_CALLBACK MirrorFindFiles(LPCWSTR FileName,
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "FindFiles : {}", filePath);
+  REX_INFO(LogDokan, L"FindFiles : {}", filePath);
 
   fileLen = wcslen(filePath);
   if(filePath[fileLen - 1] != L'\\')
@@ -838,7 +838,7 @@ NTSTATUS DOKAN_CALLBACK MirrorFindFiles(LPCWSTR FileName,
     return DokanNtStatusFromWin32(error);
   }
 
-  REX_LOG(LogDokan, "\tFindFiles return {} entries in {}", count, filePath);
+  REX_INFO(LogDokan, L"\tFindFiles return {} entries in {}", count, filePath);
 
   return STATUS_SUCCESS;
 }
@@ -849,7 +849,7 @@ NTSTATUS DOKAN_CALLBACK MirrorDeleteFile(LPCWSTR FileName, PDOKAN_FILE_INFO Doka
   HANDLE handle = (HANDLE)DokanFileInfo->Context;
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
-  REX_LOG(LogDokan, "DeleteFileW {} - {}", filePath, DokanFileInfo->DeleteOnClose);
+  REX_INFO(LogDokan, L"DeleteFileW {} - {}", filePath, DokanFileInfo->DeleteOnClose);
 
   DWORD dwAttrib = GetFileAttributesW(filePath);
 
@@ -878,7 +878,7 @@ NTSTATUS DOKAN_CALLBACK MirrorDeleteDirectory(LPCWSTR FileName, PDOKAN_FILE_INFO
   ZeroMemory(filePath, sizeof(filePath));
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "DeleteDirectory {} - {}", filePath, DokanFileInfo->DeleteOnClose);
+  REX_INFO(LogDokan, L"DeleteDirectory {} - {}", filePath, DokanFileInfo->DeleteOnClose);
 
   if(!DokanFileInfo->DeleteOnClose)
     // Dokan notify that the file is requested not to be deleted.
@@ -908,7 +908,7 @@ NTSTATUS DOKAN_CALLBACK MirrorDeleteDirectory(LPCWSTR FileName, PDOKAN_FILE_INFO
     if(wcscmp(findData.cFileName, L"..") != 0 && wcscmp(findData.cFileName, L".") != 0)
     {
       FindClose(hFind);
-      REX_ERROR(LogDokan, "\tDirectory is not empty: {}", findData.cFileName);
+      REX_ERROR(LogDokan, L"\tDirectory is not empty: {}", findData.cFileName);
       return STATUS_DIRECTORY_NOT_EMPTY;
     }
   } while(FindNextFileW(hFind, &findData) != 0);
@@ -950,7 +950,7 @@ NTSTATUS DOKAN_CALLBACK MirrorMoveFile(LPCWSTR FileName, // existing file name
     wcsncpy_s(newFilePath, DOKAN_MAX_PATH, NewFileName, wcslen(NewFileName));
   }
 
-  REX_LOG(LogDokan, "MoveFile {} -> {}", filePath, newFilePath);
+  REX_INFO(LogDokan, L"MoveFile {} -> {}", filePath, newFilePath);
   handle = (HANDLE)DokanFileInfo->Context;
   if(!handle || handle == INVALID_HANDLE_VALUE)
   {
@@ -1004,7 +1004,7 @@ NTSTATUS DOKAN_CALLBACK MirrorLockFile(LPCWSTR FileName, LONGLONG ByteOffset, LO
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "LockFile {}", filePath);
+  REX_INFO(LogDokan, L"LockFile {}", filePath);
 
   handle = (HANDLE)DokanFileInfo->Context;
   if(!handle || handle == INVALID_HANDLE_VALUE)
@@ -1023,7 +1023,7 @@ NTSTATUS DOKAN_CALLBACK MirrorLockFile(LPCWSTR FileName, LONGLONG ByteOffset, LO
     return DokanNtStatusFromWin32(error);
   }
 
-  REX_LOG(LogDokan, "\tsuccess{}");
+  REX_INFO(LogDokan, "\tsuccess{}");
   return STATUS_SUCCESS;
 }
 
@@ -1035,7 +1035,7 @@ NTSTATUS DOKAN_CALLBACK MirrorSetEndOfFile(LPCWSTR FileName, LONGLONG ByteOffset
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "SetEndOfFile {}, %I64d", filePath, ByteOffset);
+  REX_INFO(LogDokan, L"SetEndOfFile {}, %I64d", filePath, ByteOffset);
 
   handle = (HANDLE)DokanFileInfo->Context;
   if(!handle || handle == INVALID_HANDLE_VALUE)
@@ -1070,7 +1070,7 @@ NTSTATUS DOKAN_CALLBACK MirrorSetAllocationSize(LPCWSTR FileName, LONGLONG Alloc
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "SetAllocationSize {}, %I64d", filePath, AllocSize);
+  REX_INFO(LogDokan, L"SetAllocationSize {}, %I64d", filePath, AllocSize);
 
   handle = (HANDLE)DokanFileInfo->Context;
   if(!handle || handle == INVALID_HANDLE_VALUE)
@@ -1115,7 +1115,7 @@ NTSTATUS DOKAN_CALLBACK MirrorSetFileAttributes(LPCWSTR FileName, DWORD FileAttr
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "SetFileAttributesW {} {:#x}", filePath, FileAttributes);
+  REX_INFO(LogDokan, L"SetFileAttributesW {} {:#x}", filePath, FileAttributes);
 
   if(FileAttributes != 0)
   {
@@ -1134,7 +1134,7 @@ NTSTATUS DOKAN_CALLBACK MirrorSetFileAttributes(LPCWSTR FileName, DWORD FileAttr
     REX_ERROR(LogDokan, "Set 0 to FileAttributes means MUST NOT be changed. Didn't call SetFileAttributesW function. ");
   }
 
-  REX_LOG(LogDokan, "");
+  REX_INFO(LogDokan, "");
   return STATUS_SUCCESS;
 }
 
@@ -1145,7 +1145,7 @@ NTSTATUS DOKAN_CALLBACK MirrorSetFileTime(LPCWSTR FileName, CONST FILETIME* Crea
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "SetFileTime {}", filePath);
+  REX_INFO(LogDokan, L"SetFileTime {}", filePath);
 
   handle = (HANDLE)DokanFileInfo->Context;
 
@@ -1162,7 +1162,7 @@ NTSTATUS DOKAN_CALLBACK MirrorSetFileTime(LPCWSTR FileName, CONST FILETIME* Crea
     return DokanNtStatusFromWin32(error);
   }
 
-  REX_LOG(LogDokan, "");
+  REX_INFO(LogDokan, "");
   return STATUS_SUCCESS;
 }
 
@@ -1175,7 +1175,7 @@ NTSTATUS DOKAN_CALLBACK MirrorUnlockFile(LPCWSTR FileName, LONGLONG ByteOffset, 
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "UnlockFile {}", filePath);
+  REX_INFO(LogDokan, L"UnlockFile {}", filePath);
 
   handle = (HANDLE)DokanFileInfo->Context;
   if(!handle || handle == INVALID_HANDLE_VALUE)
@@ -1194,7 +1194,7 @@ NTSTATUS DOKAN_CALLBACK MirrorUnlockFile(LPCWSTR FileName, LONGLONG ByteOffset, 
     return DokanNtStatusFromWin32(error);
   }
 
-  REX_LOG(LogDokan, "\tsuccess{}");
+  REX_INFO(LogDokan, "\tsuccess{}");
   return STATUS_SUCCESS;
 }
 
@@ -1207,7 +1207,7 @@ NTSTATUS DOKAN_CALLBACK MirrorGetFileSecurity(LPCWSTR FileName, PSECURITY_INFORM
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "GetFileSecurity {}", filePath);
+  REX_INFO(LogDokan, L"GetFileSecurity {}", filePath);
 
   MirrorCheckFlag(*SecurityInformation, FILE_SHARE_READ);
   MirrorCheckFlag(*SecurityInformation, OWNER_SECURITY_INFORMATION);
@@ -1232,7 +1232,7 @@ NTSTATUS DOKAN_CALLBACK MirrorGetFileSecurity(LPCWSTR FileName, PSECURITY_INFORM
     *SecurityInformation &= ~BACKUP_SECURITY_INFORMATION;
   }
 
-  REX_LOG(LogDokan, "  Opening new handle with READ_CONTROL access");
+  REX_INFO(LogDokan, "  Opening new handle with READ_CONTROL access");
   HANDLE handle = CreateFileW(filePath, READ_CONTROL | ((requestingSaclInfo && g_HasSeSecurityPrivilege) ? ACCESS_SYSTEM_SECURITY : 0), FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE,
                               NULL, // security attribute
                               OPEN_EXISTING,
@@ -1265,7 +1265,7 @@ NTSTATUS DOKAN_CALLBACK MirrorGetFileSecurity(LPCWSTR FileName, PSECURITY_INFORM
 
   // Ensure the Security Descriptor Length is set
   DWORD securityDescriptorLength = GetSecurityDescriptorLength(SecurityDescriptor);
-  REX_LOG(LogDokan, "  GetUserObjectSecurity return true,  *LengthNeeded = securityDescriptorLength ");
+  REX_INFO(LogDokan, "  GetUserObjectSecurity return true,  *LengthNeeded = securityDescriptorLength ");
   *LengthNeeded = securityDescriptorLength;
 
   CloseHandle(handle);
@@ -1282,7 +1282,7 @@ NTSTATUS DOKAN_CALLBACK MirrorSetFileSecurity(LPCWSTR FileName, PSECURITY_INFORM
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "SetFileSecurity {}", filePath);
+  REX_INFO(LogDokan, L"SetFileSecurity {}", filePath);
 
   handle = (HANDLE)DokanFileInfo->Context;
   if(!handle || handle == INVALID_HANDLE_VALUE)
@@ -1335,15 +1335,15 @@ NTSTATUS DOKAN_CALLBACK MirrorGetVolumeInformation(LPWSTR VolumeNameBuffer, DWOR
 
     if(MaximumComponentLength)
     {
-      REX_LOG(LogDokan, "GetVolumeInformation: max component length {}", *MaximumComponentLength);
+      REX_INFO(LogDokan, "GetVolumeInformation: max component length {}", *MaximumComponentLength);
     }
     if(FileSystemNameBuffer)
     {
-      REX_LOG(LogDokan, "GetVolumeInformation: file system name {}", file_system_name_buffer);
+      REX_INFO(LogDokan, "GetVolumeInformation: file system name {}", file_system_name_buffer);
     }
     if(FileSystemFlags)
     {
-      REX_LOG(LogDokan, "GetVolumeInformation: got file system flags {}, returning {:#x}", fsFlags, *FileSystemFlags);
+      REX_INFO(LogDokan, "GetVolumeInformation: got file system flags {}, returning {:#x}", fsFlags, *FileSystemFlags);
     }
   }
   else
@@ -1440,7 +1440,7 @@ NTSTATUS DOKAN_CALLBACK MirrorFindStreams(LPCWSTR FileName, PFillFindStreamData 
 
   GetFilePath(filePath, DOKAN_MAX_PATH, FileName);
 
-  REX_LOG(LogDokan, "FindStreams :{}", filePath);
+  REX_INFO(LogDokan, L"FindStreams :{}", filePath);
 
   hFind = FindFirstStreamW(filePath, FindStreamInfoStandard, &findData, 0);
 
@@ -1469,7 +1469,7 @@ NTSTATUS DOKAN_CALLBACK MirrorFindStreams(LPCWSTR FileName, PFillFindStreamData 
 
   if(!bufferFull)
   {
-    REX_ERROR(LogDokan, "\tFindStreams returned {} entries in {} with STATUS_BUFFER_OVERFLOW", count, filePath);
+    REX_ERROR(LogDokan, L"\tFindStreams returned {} entries in {} with STATUS_BUFFER_OVERFLOW", count, filePath);
     // https://msdn.microsoft.com/en-us/library/windows/hardware/ff540364(v=vs.85).aspx
     return STATUS_BUFFER_OVERFLOW;
   }
@@ -1480,7 +1480,7 @@ NTSTATUS DOKAN_CALLBACK MirrorFindStreams(LPCWSTR FileName, PFillFindStreamData 
     return DokanNtStatusFromWin32(error);
   }
 
-  REX_LOG(LogDokan, "\tFindStreams return {} entries in {}", count, filePath);
+  REX_INFO(LogDokan, L"\tFindStreams return {} entries in {}", count, filePath);
 
   return STATUS_SUCCESS;
 }
@@ -1490,7 +1490,7 @@ NTSTATUS DOKAN_CALLBACK MirrorMounted(LPCWSTR MountPoint, PDOKAN_FILE_INFO Dokan
   UNREFERENCED_PARAMETER(DokanFileInfo);
 
   rsl::string mount_point = rsl::to_string(rsl::wstring_view(MountPoint));
-  REX_LOG(LogDokan, "Mounted as {}", mount_point);
+  REX_INFO(LogDokan, "Mounted as {}", mount_point);
   return STATUS_SUCCESS;
 }
 
@@ -1498,7 +1498,7 @@ NTSTATUS DOKAN_CALLBACK MirrorUnmounted(PDOKAN_FILE_INFO DokanFileInfo)
 {
   UNREFERENCED_PARAMETER(DokanFileInfo);
 
-  REX_LOG(LogDokan, "Unmounted");
+  REX_INFO(LogDokan, "Unmounted");
   return STATUS_SUCCESS;
 }
 
@@ -1581,7 +1581,7 @@ namespace dokan_fs
     {
       g_unc_name = rsl::to_wstring(rex::cmdline::get_argument("ShowAsNetworkDevice").value());
       dokan_options.UNCName = g_unc_name;
-      REX_LOG(LogDokan, "UNC Name: {}", rex::cmdline::get_argument("ShowAsNetworkDevice").value());
+      REX_INFO(LogDokan, "UNC Name: {}", rex::cmdline::get_argument("ShowAsNetworkDevice").value());
     }
     if (rex::cmdline::get_argument("EnableCallerUser"))
     {
@@ -1656,7 +1656,7 @@ namespace dokan_fs
   {
     switch (status)
     {
-    case DOKAN_SUCCESS: REX_LOG(LogDokan, "Success"); break;
+    case DOKAN_SUCCESS: REX_INFO(LogDokan, "Success"); break;
     case DOKAN_ERROR: REX_ERROR(LogDokan, "Error"); break;
     case DOKAN_DRIVE_LETTER_ERROR: REX_ERROR(LogDokan, "Bad Drive letter"); break;
     case DOKAN_DRIVER_INSTALL_ERROR: REX_ERROR(LogDokan, "Can't install driver"); break;
@@ -1761,11 +1761,10 @@ namespace dokan_fs
 
 namespace rex
 {
-  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams)
+  ApplicationCreationParams app_entry(PlatformCreationParams& platformParams)
   {
-    ApplicationCreationParams app_params(rsl::move(platformParams));
+    ApplicationCreationParams app_params(platformParams);
 
-    app_params.engine_params.max_memory        = 256_kb;
     app_params.engine_params.app_init_func     = dokan_fs::initialize;
     app_params.engine_params.app_update_func   = dokan_fs::update;
     app_params.engine_params.app_shutdown_func = dokan_fs::shutdown;

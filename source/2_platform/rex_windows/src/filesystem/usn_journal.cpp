@@ -2,6 +2,7 @@
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/file.h"
 #include "rex_std/iostream.h"
 #include "rex_std/set.h"
 #include "rex_std/utility.h"
@@ -9,7 +10,7 @@
 #include "rex_windows/filesystem/ntfs_api.h"
 #include "rex_windows/filesystem/usn_record.h"
 
-DEFINE_LOG_CATEGORY(LogNtfsJournal, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogNtfsJournal);
 
 namespace rex
 {
@@ -55,7 +56,7 @@ namespace rex
         {
           if(bytes_read == 0)
           {
-            REX_LOG(LogNtfsJournal, "Failed to read USN Journal for {} : error({})", m_journal_data->UsnJournalID, GetLastError());
+            REX_INFO(LogNtfsJournal, "Failed to read USN Journal for {} : error({})", m_journal_data->UsnJournalID, GetLastError());
           }
           break;
         }
@@ -101,9 +102,9 @@ namespace rex
 
         switch(err)
         {
-          case ERROR_JOURNAL_NOT_ACTIVE: REX_LOG(LogNtfsJournal, "Drive's journal hasn't been activated. Drive: {}", m_drive_handle.volume_path()); break;
+          case ERROR_JOURNAL_NOT_ACTIVE: REX_INFO(LogNtfsJournal, "Drive's journal hasn't been activated. Drive: {}", m_drive_handle.volume_path()); break;
 
-          default: REX_LOG(LogNtfsJournal, "Couldn't query USN journal with error: {}", err); break;
+          default: REX_INFO(LogNtfsJournal, "Couldn't query USN journal with error: {}", err); break;
         }
       }
 
@@ -112,12 +113,12 @@ namespace rex
 
     uint64 UsnJournal::load_last_usn()
     {
-      if(!rex::vfs::exists(m_last_usn_filepath))
+      if(!rex::file::exists(m_last_usn_filepath))
       {
         return 0;
       }
 
-      rex::memory::Blob blob = rex::vfs::open_read(m_last_usn_filepath);
+      rex::memory::Blob blob = rex::vfs::read_file(m_last_usn_filepath);
       return blob.read<uint64>();
     }
 

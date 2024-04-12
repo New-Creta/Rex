@@ -13,13 +13,16 @@ public class NtfsJournalParser : ToolsProject
     SourceRootPath = ThisFileFolder;
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
-
-    conf.AddPublicDependency<RexWindows>(target);
-
     conf.Output = Configuration.OutputType.Exe;
     conf.Options.Add(Options.Vc.Linker.SubSystem.Console);
+  }
+
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
+  {
+    base.SetupLibDependencies(conf, target);
+
+    conf.AddPublicDependency<RexWindows>(target);
   }
 }

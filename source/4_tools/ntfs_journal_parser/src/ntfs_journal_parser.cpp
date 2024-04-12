@@ -1,8 +1,8 @@
-#include "rex_engine/cmdline.h"
+#include "rex_engine/cmdline/cmdline.h"
 
-#include "rex_engine/entrypoint.h"
-#include "rex_windows/platform_creation_params.h"
-#include "rex_engine/event_system.h"
+#include "rex_engine/engine/entrypoint.h"
+#include "rex_windows/engine/platform_creation_params.h"
+#include "rex_engine/event_system/event_system.h"
 
 #include "rex_windows/filesystem/drive_handle.h"
 #include "rex_windows/filesystem/usn_journal.h"
@@ -29,9 +29,7 @@ namespace ntfs_journal
       rsl::cout << file << "\n";
     }
 
-    rex::event_system::Event ev{};
-    ev.type = rex::event_system::EventType::QuitApp;
-    rex::event_system::fire_event(ev);
+    rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
   }
   void shutdown()
   {
@@ -40,11 +38,10 @@ namespace ntfs_journal
 
 namespace rex
 {
-  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams)
+  ApplicationCreationParams app_entry(PlatformCreationParams& platformParams)
   {
-    ApplicationCreationParams app_params(rsl::move(platformParams));
+    ApplicationCreationParams app_params(platformParams);
 
-    app_params.engine_params.max_memory = 256_kb;
     app_params.engine_params.app_init_func = ntfs_journal::initialize;
     app_params.engine_params.app_update_func = ntfs_journal::update;
     app_params.engine_params.app_shutdown_func = ntfs_journal::shutdown;

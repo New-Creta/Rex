@@ -1,10 +1,12 @@
 #include "projected_filesystem/projected_filesystem.h"
 
-#include "rex_engine/diagnostics/win/hr_call.h"
-#include "rex_engine/diagnostics/win/win_call.h"
+#include "rex_engine/platform/win/diagnostics/hr_call.h"
+#include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 
 #include "rex_engine/filesystem/vfs.h"
+#include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/directory.h"
 
 #include "rex_std/bonus/platform.h"
 
@@ -15,7 +17,7 @@
 
 #include <objbase.h>    // For CoCreateGuid
 
-DEFINE_LOG_CATEGORY(LogProjFs, rex::LogVerbosity::Log);
+DEFINE_LOG_CATEGORY(LogProjFs);
 
 // The goal of this filesystem is to deduplicate data between different perforce branches
 // The provider will look at your workspaces and check which files you have synced and which are identical
@@ -272,7 +274,7 @@ namespace proj_fs
     rsl::string process_image_name = rsl::to_string(rsl::wstring_view(CallbackData->TriggeringProcessImageFileName));
     process_image_name = convert_physical_path_to_logical_path(process_image_name, m_phyiscal_drive_to_logical_drive);
 
-    REX_LOG(LogProjFs, "{} - LOADING PLACEHOLDER INFO FOR - \t\t{}", process_image_name, full_filepath);
+    REX_INFO(LogProjFs, "{} - LOADING PLACEHOLDER INFO FOR - \t\t{}", process_image_name, full_filepath);
 
     if (filepath_name == "desktop.ini")
     {
@@ -281,19 +283,19 @@ namespace proj_fs
 
     rsl::medium_stack_string blob_path = convert_branch_path_to_blob_store_path(full_filepath);
 
-    if (!rex::vfs::exists(blob_path))
+    if (!rex::file::exists(blob_path))
     {
       return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
     }
 
     PRJ_PLACEHOLDER_INFO place_holder_info = {};
-    place_holder_info.FileBasicInfo.IsDirectory = rex::vfs::is_dir(blob_path);
+    place_holder_info.FileBasicInfo.IsDirectory = rex::directory::exists(blob_path);
     place_holder_info.FileBasicInfo.FileSize = 0;
 
     rsl::wstring_view wide_filepath = rsl::wstring_view(CallbackData->FilePathName);
     HRESULT hr = HR_CALL(PrjWritePlaceholderInfo(m_instance_handle, wide_filepath.data(), &place_holder_info, sizeof(place_holder_info)));
 
-    REX_LOG(LogProjFs, "<---- {}: return {:#x}, ", __FUNCTION__, hr);
+    REX_INFO(LogProjFs, "<---- {}: return {:#x}, ", __FUNCTION__, hr);
 
     return hr;
   }
@@ -314,7 +316,7 @@ namespace proj_fs
     rsl::string filepath_name = rsl::to_string(rsl::wstring_view(CallbackData->FilePathName));
     rsl::string process_image_name = CallbackData->TriggeringProcessImageFileName ? rsl::to_string(rsl::wstring_view(CallbackData->TriggeringProcessImageFileName)) : rsl::string("");
     process_image_name = convert_physical_path_to_logical_path(process_image_name, m_phyiscal_drive_to_logical_drive);
-    REX_LOG(LogProjFs, "{} - STARTED DIR ENUM ON - \t\t{}", process_image_name, create_filepath(m_root, filepath_name));
+    REX_INFO(LogProjFs, "{} - STARTED DIR ENUM ON - \t\t{}", process_image_name, create_filepath(m_root, filepath_name));
 
     // For each dir enum session, ProjFS sends:
     //      one StartEnumCallback
@@ -337,7 +339,7 @@ namespace proj_fs
     rsl::string filepath_name = rsl::to_string(rsl::wstring_view(CallbackData->FilePathName));
     rsl::string process_image_name = CallbackData->TriggeringProcessImageFileName ? rsl::to_string(rsl::wstring_view(CallbackData->TriggeringProcessImageFileName)) : rsl::string("");
     process_image_name = convert_physical_path_to_logical_path(process_image_name, m_phyiscal_drive_to_logical_drive);
-    REX_LOG(LogProjFs, "{} - ENDED DIR ENUM ON - \t\t{}", process_image_name, create_filepath(m_root, filepath_name));
+    REX_INFO(LogProjFs, "{} - ENDED DIR ENUM ON - \t\t{}", process_image_name, create_filepath(m_root, filepath_name));
 
     // Get rid of the DirInfo object we created in StartDirEnum.
     m_enumeration_sessions.erase(*EnumerationId);
@@ -383,7 +385,7 @@ namespace proj_fs
     process_image_name = convert_physical_path_to_logical_path(process_image_name, m_phyiscal_drive_to_logical_drive);
     rsl::string search_expr = rsl::to_string(rsl::wstring_view(SearchExpression));
 
-    REX_LOG(LogProjFs, "{} - GET DIR ENUM ON - \t\t{} [{}]", process_image_name, create_filepath(m_root, filepath_name), search_expr);
+    REX_INFO(LogProjFs, "{} - GET DIR ENUM ON - \t\t{} [{}]", process_image_name, create_filepath(m_root, filepath_name), search_expr);
 
     HRESULT hr = S_OK;
 
@@ -394,7 +396,7 @@ namespace proj_fs
       // We were asked for an enumeration we don't know about.
       hr = E_INVALIDARG;
 
-      REX_LOG(LogProjFs, "<---- {}: Unknown enumeration ID", __FUNCTION__);
+      REX_INFO(LogProjFs, "<---- {}: Unknown enumeration ID", __FUNCTION__);
 
       return hr;
     }
@@ -418,7 +420,7 @@ namespace proj_fs
 
       if (FAILED(hr))
       {
-        REX_LOG(LogProjFs, "<---- {}: Failed to populate dirInfo: {:#x}", __FUNCTION__, hr);
+        REX_INFO(LogProjFs, "<---- {}: Failed to populate dirInfo: {:#x}", __FUNCTION__, hr);
         return hr;
       }
 
@@ -496,7 +498,7 @@ namespace proj_fs
     rsl::string process_image_name = rsl::to_string(rsl::wstring_view(CallbackData->TriggeringProcessImageFileName));
     process_image_name = convert_physical_path_to_logical_path(process_image_name, m_phyiscal_drive_to_logical_drive);
 
-    REX_LOG(LogProjFs, "{} - FILLING IN FILE DATA - \t\t{}", process_image_name, create_filepath(m_root, filepath_name));
+    REX_INFO(LogProjFs, "{} - FILLING IN FILE DATA - \t\t{}", process_image_name, create_filepath(m_root, filepath_name));
 
     HRESULT hr = S_OK;
 
@@ -609,7 +611,7 @@ namespace proj_fs
       {
         // Block file renames.
         hr = HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED);
-        REX_LOG(LogProjFs, "----- rename request for [{}] was rejected ", create_filepath(m_root, filepath_name));
+        REX_INFO(LogProjFs, "----- rename request for [{}] was rejected ", create_filepath(m_root, filepath_name));
       }
       else
       {
@@ -623,7 +625,7 @@ namespace proj_fs
         // Block file deletion.  We must return a particular NTSTATUS to ensure the file system
         // properly recognizes that this is a deny-delete.
         hr = HRESULT_FROM_NT(STATUS_CANNOT_DELETE);
-        REX_LOG(LogProjFs, "----- delete request for [{}] was rejected ", create_filepath(m_root, filepath_name));
+        REX_INFO(LogProjFs, "----- delete request for [{}] was rejected ", create_filepath(m_root, filepath_name));
       }
       else
       {
@@ -646,16 +648,16 @@ namespace proj_fs
     case PRJ_NOTIFICATION_FILE_HANDLE_CLOSED_NO_MODIFICATION: notify_closed_no_modification(process_image_name, full_filepath); break;
     case PRJ_NOTIFICATION_FILE_PRE_CONVERT_TO_FULL: notify_pre_hydration(full_filepath); break;
     
-    default: REX_LOG(LogProjFs, "%hs: Unexpected notification", __FUNCTION__); break;
+    default: REX_INFO(LogProjFs, "%hs: Unexpected notification", __FUNCTION__); break;
     }
 
-    //REX_LOG(LogProjFs, "<---- {}: return {:#x}", __FUNCTION__, hr);
+    //REX_INFO(LogProjFs, "<---- {}: return {:#x}", __FUNCTION__, hr);
     return hr;
   }
 
   bool ProjectedFilesystem::verify_root()
   {
-    if (rex::vfs::exists(m_root))
+    if (rex::directory::exists(m_root))
     {
       rex::vfs::set_root(m_root);
       return true;
@@ -724,59 +726,59 @@ namespace proj_fs
 
   void ProjectedFilesystem::notify_file_opened(rsl::string_view app, rsl::string_view path)
   {
-    REX_LOG(LogProjFs, "{} - OPENED - \t\t\t\t{}", app, path);
+    REX_INFO(LogProjFs, "{} - OPENED - \t\t\t\t{}", app, path);
   }
   void ProjectedFilesystem::notify_file_created(rsl::string_view app, rsl::string_view path)
   {
-    REX_LOG(LogProjFs, "{} - CLOSED - \t\t{}", app, path);
+    REX_INFO(LogProjFs, "{} - CLOSED - \t\t{}", app, path);
   }
   void ProjectedFilesystem::notify_file_overwritten(rsl::string_view app, rsl::string_view path)
   {
-    REX_LOG(LogProjFs, "{} - MODIFIED - \t\t{}", app, path);
+    REX_INFO(LogProjFs, "{} - MODIFIED - \t\t{}", app, path);
   }
   void ProjectedFilesystem::notify_pre_delete(rsl::string_view app, rsl::string_view path)
   {
-    REX_LOG(LogProjFs, "{} - TRIES TO DELETE - \t\t{}", app, path);
+    REX_INFO(LogProjFs, "{} - TRIES TO DELETE - \t\t{}", app, path);
   }
   void ProjectedFilesystem::notify_pre_rename(rsl::string_view app, rsl::string_view oldPath, rsl::string_view newPath)
   {
-    REX_LOG(LogProjFs, "{} - TRIES TO RENAME - \t\t{} to {}", app, oldPath, newPath);
+    REX_INFO(LogProjFs, "{} - TRIES TO RENAME - \t\t{} to {}", app, oldPath, newPath);
   }
   void ProjectedFilesystem::notify_pre_set_hardlink(rsl::string_view newHardlink, rsl::string_view hardLinkTarget)
   {
-    REX_LOG(LogProjFs, "TRYING TO HARDLINK FROM - \t\t{} TO {}", newHardlink, hardLinkTarget);
+    REX_INFO(LogProjFs, "TRYING TO HARDLINK FROM - \t\t{} TO {}", newHardlink, hardLinkTarget);
   }
   void ProjectedFilesystem::notify_renamed(rsl::string_view app, rsl::string_view oldPath, rsl::string_view newPath)
   {
-    REX_LOG(LogProjFs, "{} - RENAMED - \t\t{} TO {}", app, oldPath, newPath);
+    REX_INFO(LogProjFs, "{} - RENAMED - \t\t{} TO {}", app, oldPath, newPath);
   }
   void ProjectedFilesystem::notify_hardlink_created(rsl::string_view newHardlink, rsl::string_view hardLinkTarget)
   {
-    REX_LOG(LogProjFs, "HARDLINK CREATED FROM - \t\t{} TO {}", newHardlink, hardLinkTarget);
+    REX_INFO(LogProjFs, "HARDLINK CREATED FROM - \t\t{} TO {}", newHardlink, hardLinkTarget);
   }
   void ProjectedFilesystem::notify_closed_no_modification(rsl::string_view app, rsl::string_view path)
   {
-    REX_LOG(LogProjFs, "{} - CLOSED NO MODIFICATION - \t\t{}", app, path);
+    REX_INFO(LogProjFs, "{} - CLOSED NO MODIFICATION - \t\t{}", app, path);
 
   }
   void ProjectedFilesystem::notify_closed_with_modification(rsl::string_view app, rsl::string_view path)
   {
-    REX_LOG(LogProjFs, "{} - CLOSED WITH MODIFICATION - \t\t{}", app, path);
+    REX_INFO(LogProjFs, "{} - CLOSED WITH MODIFICATION - \t\t{}", app, path);
   }
   void ProjectedFilesystem::notify_closed_with_deletion(rsl::string_view app, rsl::string_view path)
   {
-    REX_LOG(LogProjFs, "{} - CLOSED WITH DELETION - \t\t{}", app, path);
+    REX_INFO(LogProjFs, "{} - CLOSED WITH DELETION - \t\t{}", app, path);
   }
   void ProjectedFilesystem::notify_pre_hydration(rsl::string_view path)
   {
-    REX_LOG(LogProjFs, "HYDRATED {}", path);
+    REX_INFO(LogProjFs, "HYDRATED {}", path);
   }
 
   void ProjectedFilesystem::break_hardlink(rsl::string_view path)
   {
     rsl::medium_stack_string blob_path = convert_branch_path_to_blob_store_path(path);
 
-    if (!rex::vfs::exists(blob_path) || rex::vfs::is_dir(blob_path))
+    if (!rex::file::exists(blob_path) || rex::directory::exists(blob_path))
     {
       return;
     }
@@ -784,7 +786,7 @@ namespace proj_fs
     rsl::medium_stack_string tmp_path(path);
     tmp_path += ".tmp";
 
-    if (rex::vfs::exists(tmp_path))
+    if (rex::file::exists(tmp_path))
     {
       return;
     }

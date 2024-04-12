@@ -1,6 +1,6 @@
 #include "projected_filesystem/dirInfo.h"
 
-#include <algorithm>
+#include "rex_std/algorithm.h"
 
 //////////////////////////////////////////////////////////////////////////
 // See dirInfo.h for descriptions of the routines in this module.
@@ -12,7 +12,7 @@ namespace proj_fs
 
   // A comparison routine for std::sort that wraps PrjFileNameCompare() so that we can sort our DirInfo
   // the same way the file system would.
-  bool FileNameLessThan(DirEntry entry1, DirEntry entry2)
+  bool FileNameLessThan(const DirEntry& entry1, const DirEntry& entry2)
   {
     return PrjFileNameCompare(entry1.FileName.c_str(), entry2.FileName.c_str()) < 0;
   }
@@ -95,7 +95,7 @@ namespace proj_fs
   {
     m_entries_filled = true;
 
-    std::sort(m_entries.begin(),
+    rsl::sort(m_entries.begin(),
       m_entries.end(),
       FileNameLessThan);
   }

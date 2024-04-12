@@ -1,6 +1,6 @@
 #include "rex_windows/filesystem/drive_handle.h"
 
-#include "rex_engine/diagnostics/win/win_call.h"
+#include "rex_engine/platform/win/diagnostics/win_call.h"
 
 #include <Windows.h>
 

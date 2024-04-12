@@ -13,15 +13,16 @@ public class ProjectedFileSystem : ToolsProject
     SourceRootPath = ThisFileFolder;
   }
 
-  public override void Configure(RexConfiguration conf, RexTarget target)
+  protected override void SetupOutputType(RexConfiguration conf, RexTarget target)
   {
-    base.Configure(conf, target);
+    conf.Output = Configuration.OutputType.Exe;
+    conf.Options.Add(Options.Vc.Linker.SubSystem.Console);
+  }
 
+  protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
+  {
     conf.AddPublicDependency<RexWindows>(target);
 
     conf.LibraryFiles.Add("ProjectedFSLib.lib");
-
-    conf.Output = Configuration.OutputType.Exe;
-    conf.Options.Add(Options.Vc.Linker.SubSystem.Console);
   }
 }

@@ -95,9 +95,9 @@ namespace console_app_example
 
 namespace rex
 {
-  ApplicationCreationParams app_entry(PlatformCreationParams&& platformParams)
+  ApplicationCreationParams app_entry(PlatformCreationParams& platformParams)
   {
-    ApplicationCreationParams app_params(&platformParams);
+    ApplicationCreationParams app_params(platformParams);
 
     app_params.engine_params.app_init_func     = console_app_example::initialize;
     app_params.engine_params.app_update_func   = console_app_example::update;

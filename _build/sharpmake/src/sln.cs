@@ -50,6 +50,9 @@ namespace rex
       if (ProjectGen.Settings.EnableDefaultGeneration)
       {
         conf.AddProject<Regina>(target);
+        conf.AddProject<NtfsJournalParser>(target);
+        conf.AddProject<DokanFs>(target);
+        conf.AddProject<ProjectedFileSystem>(target);
         conf.AddProject<ConsoleApp>(target);
       }
     }

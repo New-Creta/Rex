@@ -1,3 +1,5 @@
+#pragma once
+
 /*
   Dokan : user-mode file system library for Windows
 
@@ -36,7 +38,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 
-DECLARE_LOG_CATEGORY(LogDokan);
+DEFINE_LOG_CATEGORY(LogDokan);
 
 #ifdef _EXPORTING
   /** Export dokan API see also dokan.def for export */

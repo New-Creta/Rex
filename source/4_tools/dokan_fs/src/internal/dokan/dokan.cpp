@@ -34,8 +34,6 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
 
-DEFINE_LOG_CATEGORY(LogDokan, rex::LogVerbosity::Log);
-
 #define DokanMapKernelBit(dest, src, userBit, kernelBit)                                                                                                                                                                                                 \
   if(((src) & (kernelBit)) == (kernelBit))                                                                                                                                                                                                               \
   (dest) |= (userBit)
@@ -337,7 +335,7 @@ VOID OnDeviceIoCtlFailed(PDOKAN_INSTANCE DokanInstance, DWORD Result)
 {
   if(!DokanInstance->FileSystemStopped)
   {
-    DbgPrint("Dokan Fatal: Closing IO processing for dokan instance {} with error code {:#x} and unmounting volume.", DokanInstance->DeviceName, Result);
+    DbgPrint(L"Dokan Fatal: Closing IO processing for dokan instance {} with error code {:#x} and unmounting volume.", DokanInstance->DeviceName, Result);
   }
 
   if(InterlockedAdd(&DokanInstance->UnmountedCalled, 1) == 1)
@@ -868,7 +866,7 @@ int DOKANAPI DokanCreateFileSystem(_In_ PDOKAN_OPTIONS DokanOptions, _In_ PDOKAN
   dokanInstance->NotifyHandle = CreateFileW(notify_path, 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
   if(dokanInstance->NotifyHandle == INVALID_HANDLE_VALUE)
   {
-    DbgPrint("Failed to open notify handle: {}", notify_path);
+    DbgPrint(L"Failed to open notify handle: {}", notify_path);
   }
 
   // Here we should have been mounter by mountmanager thanks to
@@ -1188,7 +1186,7 @@ int DokanStart(_In_ PDOKAN_INSTANCE DokanInstance)
     }
     else if(driverInfo.Flags == DOKAN_DRIVER_INFO_NO_MOUNT_POINT_ASSIGNED)
     {
-      REX_ERROR(LogDokan, "Dokan Error: Driver failed to set mount point {}", eventStart.MountPoint);
+      REX_ERROR(LogDokan, L"Dokan Error: Driver failed to set mount point {}", eventStart.MountPoint);
       return DOKAN_MOUNT_ERROR;
     }
     REX_ERROR(LogDokan, "Dokan Error: driver start error");

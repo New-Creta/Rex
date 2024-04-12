@@ -418,14 +418,15 @@ BOOL CreateMountPoint(LPCWSTR MountPoint, LPCWSTR DeviceName)
   CloseHandle(handle);
   free(reparseData);
 
+  rsl::string target_device_name = rsl::to_string(targetDeviceName);
   if(result)
   {
-    DbgPrint("CreateMountPoint {} -> {} success", rsl::to_string(rsl::wstring_view(MountPoint)), targetDeviceName);
+    DbgPrint("CreateMountPoint {} -> {} success", rsl::to_string(rsl::wstring_view(MountPoint)), target_device_name);
   }
   else
   {
     FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), errorMsg, 256, NULL);
-    DbgPrint("CreateMountPoint {} -> {} failed: ({}) {}", rsl::to_string(rsl::wstring_view(MountPoint)), targetDeviceName, GetLastError(), rsl::to_string(rsl::wstring_view(errorMsg)));
+    DbgPrint("CreateMountPoint {} -> {} failed: ({}) {}", rsl::to_string(rsl::wstring_view(MountPoint)), target_device_name, GetLastError(), rsl::to_string(rsl::wstring_view(errorMsg)));
   }
   return result;
 }
