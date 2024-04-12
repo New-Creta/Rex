@@ -2,6 +2,7 @@
 
 #include "rex_std/string.h"
 #include "rex_std/vector.h"
+#include "rex_std/string_view.h"
 
 #include <Windows.h>
 #include <projectedfslib.h>

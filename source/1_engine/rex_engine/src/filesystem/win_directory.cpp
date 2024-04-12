@@ -44,6 +44,7 @@ namespace rex
 
       if(attribs == INVALID_FILE_ATTRIBUTES)
       {
+        rex::win::clear_win_errors();
         return false;
       }
 

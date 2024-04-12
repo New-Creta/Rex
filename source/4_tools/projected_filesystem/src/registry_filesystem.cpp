@@ -1,4 +1,4 @@
-#include "projected_filesystem/projected_filesystem.h"
+#include "projected_filesystem/registry_filesystem.h"
 
 #include "rex_engine/platform/win/diagnostics/hr_call.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
@@ -18,11 +18,6 @@
 #include <objbase.h>    // For CoCreateGuid
 
 DEFINE_LOG_CATEGORY(LogProjFs);
-
-// The goal of this filesystem is to deduplicate data between different perforce branches
-// The provider will look at your workspaces and check which files you have synced and which are identical
-// to different files you have synced of a different branch. If such an identical file is found,
-// A hardlink is created instead of an actual copy of the file.
 
 namespace proj_fs
 {
@@ -132,23 +127,6 @@ namespace proj_fs
         result.append(logical);
         result.append(path.substr(physical.length()));
       }
-    }
-
-    return result;
-  }
-
-  rsl::medium_stack_string convert_branch_path_to_blob_store_path(rsl::string_view path)
-  {
-    rsl::string_view branches_prefix = "branches";
-    
-    rsl::medium_stack_string result = path;
-
-    if (path.contains(branches_prefix))
-    {
-      card32 prefix_pos = path.find(branches_prefix);
-      result = path.substr(prefix_pos + branches_prefix.length());
-      result = result.substr(result.find('\\'));
-      result = "D:\\ProjFS\\blob" + result;
     }
 
     return result;
@@ -276,24 +254,32 @@ namespace proj_fs
 
     REX_INFO(LogProjFs, "{} - LOADING PLACEHOLDER INFO FOR - \t\t{}", process_image_name, full_filepath);
 
-    if (filepath_name == "desktop.ini")
+    bool isKey;
+    INT64 valSize = 0;
+
+    // Find out whether the specified path exists in the registry, and whether it is a key or a value.
+    std::wstring filepath = CallbackData->FilePathName;
+    std::string filepath_ascii(filepath.cbegin(), filepath.cend());
+    if (m_reg_ops.DoesKeyExist(filepath_ascii))
     {
-      return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+      isKey = true;
     }
-
-    rsl::medium_stack_string blob_path = convert_branch_path_to_blob_store_path(full_filepath);
-
-    if (!rex::file::exists(blob_path))
+    else if (m_reg_ops.DoesValueExist(filepath_ascii, valSize))
     {
+      isKey = false;
+    }
+    else
+    {
+      wprintf(L"<---- %hs: return 0x%08x\n",
+        __FUNCTION__, ERROR_FILE_NOT_FOUND);
       return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
     }
 
     PRJ_PLACEHOLDER_INFO place_holder_info = {};
-    place_holder_info.FileBasicInfo.IsDirectory = rex::directory::exists(blob_path);
-    place_holder_info.FileBasicInfo.FileSize = 0;
+    place_holder_info.FileBasicInfo.IsDirectory = isKey;
+    place_holder_info.FileBasicInfo.FileSize = valSize;
 
-    rsl::wstring_view wide_filepath = rsl::wstring_view(CallbackData->FilePathName);
-    HRESULT hr = HR_CALL(PrjWritePlaceholderInfo(m_instance_handle, wide_filepath.data(), &place_holder_info, sizeof(place_holder_info)));
+    HRESULT hr = HR_CALL(PrjWritePlaceholderInfo(m_instance_handle, filepath.data(), &place_holder_info, sizeof(place_holder_info)));
 
     REX_INFO(LogProjFs, "<---- {}: return {:#x}, ", __FUNCTION__, hr);
 
@@ -453,16 +439,43 @@ namespace proj_fs
   // Populates a DirInfo object with directory and file entires that represent the registry keys and
   // values that are under a given key.
   HRESULT ProjectedFilesystem::PopulateDirInfoForPath(
-    std::wstring                       /*relativePath*/,
-    DirInfo* /*dirInfo*/,
-    std::wstring                       /*searchExpression*/
+    std::wstring                       relativePath,
+    DirInfo* dirInfo,
+    std::wstring                       searchExpression
   )
   {
-    // File in the dir info with files and directories
-    // I wonder how this will work if I have to go through the directory..
-    // I'd have to negate the dir enumeration, to not get stuck in an infinite loop
+    RegEntries entries;
 
-    return S_OK;
+    // Get a list of the registry keys and values under the given key.
+    HRESULT hr = m_reg_ops.EnumerateKey(relativePath.c_str(), entries);
+    if (FAILED(hr))
+    {
+      wprintf(L"%hs: Could not enumerate key: 0x%08x",
+        __FUNCTION__, hr);
+      return hr;
+    }
+
+    // Store each registry key that matches searchExpression as a directory entry.
+    for (auto subKey : entries.SubKeys)
+    {
+      rsl::wstring wide_name(subKey.Name.cbegin(), subKey.Name.cend());
+      if (PrjFileNameMatch(wide_name.c_str(), searchExpression.c_str()))
+      {
+        dirInfo->FillDirEntry(wide_name);
+      }
+    }
+
+    // Store each registry value that matches searchExpression as a file entry.
+    for (auto val : entries.Values)
+    {
+      rsl::wstring wide_name(val.Name.cbegin(), val.Name.cend());
+      if (PrjFileNameMatch(wide_name.c_str(), searchExpression.c_str()))
+      {
+        dirInfo->FillFileEntry(wide_name, val.Size);
+      }
+    }
+
+    return hr;
   }
 
   // Description:
@@ -525,13 +538,13 @@ namespace proj_fs
       return E_OUTOFMEMORY;
     }
 
-    // Read the actual value of the file
-    if (!true /*Read data func goes here*/)
+    // Read the data out of the registry.
+    if (!m_reg_ops.ReadValue(std::string(filepath_name.c_str()), reinterpret_cast<PBYTE>(writeBuffer), Length))
     {
       hr = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
 
       PrjFreeAlignedBuffer(writeBuffer);
-      REX_ERROR(LogProjFs, "<---- {}: Failed to read from registry.", __FUNCTION__);
+      REX_ERROR(LogProjFs, "<---- %hs: Failed to read from registry.\n", __FUNCTION__);
 
       return hr;
     }
@@ -594,7 +607,7 @@ namespace proj_fs
 
     switch (NotificationType)
     {
-    case PRJ_NOTIFICATION_FILE_OPENED: notify_file_opened(process_image_name, full_filepath);  break_hardlink(full_filepath);    break;
+    case PRJ_NOTIFICATION_FILE_OPENED: notify_file_opened(process_image_name, full_filepath); break;
     case PRJ_NOTIFICATION_FILE_HANDLE_CLOSED_FILE_MODIFIED: notify_file_overwritten(process_image_name, full_filepath); break;
     case PRJ_NOTIFICATION_FILE_OVERWRITTEN: notify_file_overwritten(process_image_name, full_filepath); break;
     case PRJ_NOTIFICATION_NEW_FILE_CREATED: notify_file_created(process_image_name, full_filepath); break;
@@ -772,48 +785,5 @@ namespace proj_fs
   void ProjectedFilesystem::notify_pre_hydration(rsl::string_view path)
   {
     REX_INFO(LogProjFs, "HYDRATED {}", path);
-  }
-
-  void ProjectedFilesystem::break_hardlink(rsl::string_view path)
-  {
-    rsl::medium_stack_string blob_path = convert_branch_path_to_blob_store_path(path);
-
-    if (!rex::file::exists(blob_path) || rex::directory::exists(blob_path))
-    {
-      return;
-    }
-
-    rsl::medium_stack_string tmp_path(path);
-    tmp_path += ".tmp";
-
-    if (rex::file::exists(tmp_path))
-    {
-      return;
-    }
-
-    // Create local copy
-    if (WIN_FAILED(CopyFile(path.data(), tmp_path.c_str(), TRUE)))
-    {
-      REX_ERROR(LogProjFs, "Failed to create local copy of {}", path);
-    }
-
-    // Delete the hard link
-    if (WIN_FAILED(DeleteFileA(path.data())))
-    {
-      REX_ERROR(LogProjFs, "Failed to delete {}.", path);
-    }
-
-    // Rename the copy
-    if (WIN_FAILED(MoveFile(tmp_path.c_str(), path.data())))
-    {
-      REX_ERROR(LogProjFs, "Failed to rename {} to {}.", tmp_path.c_str(), path.data());
-    }
-
-    //exec("p4 -c RST-CM-NICDEB-MAIN sync -f //ue4/main/Stones/Data/Dedupe/BigTextFile.txt#head");
-    // Restore any damage that's potentially been done
-    //if (!CopyFile("D:\\USNParsing\\data\\file_a.txt", filename.generic_string().data(), FALSE))
-    //{
-     // log_error("Failed to restore damage");
-    //}
   }
 }

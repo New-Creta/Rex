@@ -6,7 +6,8 @@
 #include "rex_std/functional.h"
 #include "rex_std/set.h"
 
-#include "projected_filesystem/dirInfo.h"
+#include "projected_filesystem/dir_info.h"
+#include "projected_filesystem/reg_ops.h"
 
 #include <windows.h>
 #include <objbase.h>    // For CoCreateGuid
@@ -122,14 +123,14 @@ namespace proj_fs
     void notify_closed_with_deletion(rsl::string_view app, rsl::string_view path);
     void notify_pre_hydration(rsl::string_view path);
 
-    void break_hardlink(rsl::string_view path);
-
     HRESULT PopulateDirInfoForPath(
       std::wstring                       relativePath,
       DirInfo* dirInfo,
       std::wstring                       searchExpression);
 
   private:
+    RegOps m_reg_ops;
+
     PRJ_CALLBACKS m_callbacks = {};
     PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT m_instance_handle = nullptr;
     rsl::medium_stack_string m_root;

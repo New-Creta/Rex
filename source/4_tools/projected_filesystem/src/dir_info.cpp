@@ -1,4 +1,4 @@
-#include "projected_filesystem/dirInfo.h"
+#include "projected_filesystem/dir_info.h"
 
 #include "rex_std/algorithm.h"
 
@@ -70,12 +70,12 @@ namespace proj_fs
     FillItemEntry(DirName, 0, true);
   }
 
-  void DirInfo::FillFileEntry(rsl::wstring_view FileName, INT64 FileSize)
+  void DirInfo::FillFileEntry(rsl::wstring_view FileName, int64 FileSize)
   {
     FillItemEntry(FileName, FileSize, false);
   }
 
-  void DirInfo::FillItemEntry(rsl::wstring_view FileName, INT64 FileSize, bool IsDirectory)
+  void DirInfo::FillItemEntry(rsl::wstring_view FileName, int64 FileSize, bool IsDirectory)
   {
     DirEntry entry;
     auto nameLen = FileName.length();

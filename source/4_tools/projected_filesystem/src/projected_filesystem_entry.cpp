@@ -8,7 +8,7 @@
 #include "rex_windows/engine/platform_creation_params.h"
 #include "rex_windows/input/input.h"
 
-#include "projected_filesystem/projected_filesystem.h"
+#include "projected_filesystem/registry_filesystem.h"
 
 #include "rex_std/thread.h"
 #include "rex_std/chrono.h"
@@ -17,7 +17,7 @@ namespace proj_fs
 {
   ProjectedFilesystem* projected_fs()
   {
-    static auto fs = rsl::make_unique<ProjectedFilesystem>("D:\\ProjFS\\branches");;
+    static auto fs = rsl::make_unique<ProjectedFilesystem>("D:\\ProjFS\\");;
     return fs.get();
   }
 
@@ -29,7 +29,7 @@ namespace proj_fs
   }
   void update()
   {
-    rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
+    //rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
   }
   void shutdown()
   {
