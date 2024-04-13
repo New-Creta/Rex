@@ -163,7 +163,7 @@ namespace rex
           return;
         }
 
-        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return rsl::strincmp(key.data(), activeArg.argument.data(), key.length()) == 0; });
+        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return rsl::stricmp(key.data(), activeArg.argument.data()) == 0; });
 
         if(active_it != m_arguments.cend())
         {
