@@ -16,7 +16,7 @@ namespace rex
     public:
       Window();
 
-      bool create(HInstance hInstance, s32 cmdShow, const WindowDescription& description);
+      bool create(HInstance hInstance, s32 cmdShow, const WindowInfo& info);
 
     public:
       void update() override;

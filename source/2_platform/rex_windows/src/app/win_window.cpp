@@ -48,20 +48,20 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    bool Window::create(HInstance hInstance, s32 cmdShow, const WindowDescription& description)
+    bool Window::create(HInstance hInstance, s32 cmdShow, const WindowInfo& info)
     {
       REX_UNUSED_PARAM(cmdShow);
 
-      if(!m_wnd_class.create(hInstance, default_win_procedure, description.title.data()))
+      if(!m_wnd_class.create(hInstance, default_win_procedure, info.title.data()))
       {
         REX_ERROR(LogWindows, "Failed to create window class");
         return false;
       }
 
-      m_min_width  = description.min_width;
-      m_min_height = description.min_height;
+      m_min_width  = info.min_width;
+      m_min_height = info.min_height;
 
-      WindowViewport viewport = description.viewport;
+      WindowViewport viewport = info.viewport;
 
       const s32 x      = viewport.x;
       const s32 y      = viewport.y;
@@ -99,8 +99,8 @@ namespace rex
 
       // clang-format off
         m_hwnd = WIN_CALL(
-            static_cast<HWND>(CreateWindowA(description.title.data(),
-                description.title.data(),
+            static_cast<HWND>(CreateWindowA(info.title.data(),
+                info.title.data(),
                 WS_OVERLAPPEDWINDOW,
                 x == 0
                 ? screen_mid_x - half_x

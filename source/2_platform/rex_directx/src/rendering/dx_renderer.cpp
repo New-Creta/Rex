@@ -166,17 +166,14 @@ namespace rex
         {
           // Create viewport to render our image in
           // A viewport always needs to reset whenever a command list is reset
-          screen_viewport.TopLeftX = 0.0f;
-          screen_viewport.TopLeftY = 0.0f;
-          screen_viewport.Width    = static_cast<f32>(userData.window_width);
-          screen_viewport.Height   = static_cast<f32>(userData.window_height);
-          screen_viewport.MinDepth = 0.0f;
-          screen_viewport.MaxDepth = 1.0f;
+          const f32 width = static_cast<f32>(userData.window_width);
+          const f32 height = static_cast<f32>(userData.window_height);
+          screen_viewport = { 0.0f, 0.0f, width, height, 0.0f, 1.0f };
         }
         void init_scissor_rect(const OutputWindowUserData& userData)
         {
           // Cull pixels drawn outside of the backbuffer ( such as UI elements )
-          scissor_rect = {0, 0, static_cast<s32>(userData.window_width), static_cast<s32>(userData.window_height)};
+          scissor_rect = {0, 0, static_cast<f32>(userData.window_width), static_cast<f32>(userData.window_height)};
         }
         void init_pass_constants(const OutputWindowUserData& userData)
         {
@@ -226,8 +223,8 @@ namespace rex
       public:
         rhi::ResourceSlot clear_state;          // the default clear state
         rhi::ResourceSlot pass_constant_buffer; // Constant buffer used per rendering pass
-        D3D12_VIEWPORT screen_viewport;         // The viewport pointing to the entire window
-        RECT scissor_rect;                      // The scissor rect pointing to the entire window
+        Viewport screen_viewport;         // The viewport pointing to the entire window
+        ScissorRect scissor_rect;                      // The scissor rect pointing to the entire window
         rsl::vector<RenderItem> render_items;
         PassConstants pass_constants;
         DepthInfo depth_info;
@@ -362,6 +359,9 @@ namespace rex
       {
         rhi::reset_command_list(g_renderer->active_pso);
         rhi::reset_upload_buffer();
+
+        set_viewport(g_renderer->screen_viewport);
+        set_scissor_rect(g_renderer->scissor_rect);
 
         return true;
       }

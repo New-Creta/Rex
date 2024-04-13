@@ -1,6 +1,5 @@
 #include "regina/cube_scene.h"
 
-#include "rex_engine/app/windowinfo.h"
 #include "rex_engine/memory/blob_writer.h"
 #include "rex_renderer_core/primitives/box.h"
 #include "rex_renderer_core/primitives/mesh_factory.h"

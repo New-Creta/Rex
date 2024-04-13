@@ -1,7 +1,6 @@
 ﻿#include "rex_windows/app/gui_application.h"
 
 #include "rex_engine/app/core_window.h"
-#include "rex_engine/app/windowinfo.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/event_system/event.h" // IWYU pragma: keep
@@ -30,16 +29,6 @@
 
 namespace rex
 {
-  namespace globals
-  {
-    WindowInfo g_window_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)S
-
-    //-------------------------------------------------------------------------
-    const WindowInfo& window_info()
-    {
-      return g_window_info;
-    }
-  } // namespace globals
   namespace win
   {
     class GuiApplication::Internal
@@ -263,9 +252,6 @@ namespace rex
           return false;
         }
 
-        globals::g_window_info.width  = m_window->width();
-        globals::g_window_info.height = m_window->height();
-
         subscribe_window_events();
 
         if(!init_gfx())
@@ -299,11 +285,11 @@ namespace rex
       {
         auto wnd = rsl::make_unique<Window>();
 
-        WindowDescription wnd_description;
-        wnd_description.title    = m_gui_params.window_title;
-        wnd_description.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
+        WindowInfo window_info;
+        window_info.title    = m_gui_params.window_title;
+        window_info.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
 
-        if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, wnd_description))
+        if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, window_info))
         {
           return wnd;
         }
