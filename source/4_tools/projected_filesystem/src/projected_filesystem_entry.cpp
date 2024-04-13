@@ -40,6 +40,10 @@ namespace rex
 {
   ApplicationCreationParams app_entry(PlatformCreationParams& platformParams)
   {
+    // Remember, to enable projected filesystem, run the following in a powershell window with elevated permissions
+    // Enable-WindowsOptionalFeature -Online -FeatureName Client-ProjFS -NoRestart
+    // https://learn.microsoft.com/en-us/windows/win32/projfs/enabling-windows-projected-file-system
+    
     ApplicationCreationParams app_params(platformParams);
 
     app_params.engine_params.app_init_func = proj_fs::initialize;
