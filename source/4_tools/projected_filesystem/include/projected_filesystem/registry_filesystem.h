@@ -41,10 +41,10 @@ namespace rsl
 
 namespace proj_fs
 {
-  class ProjectedFilesystem
+  class RegistryFilesystem
   {
   public:
-    ProjectedFilesystem(rsl::string_view root);
+    RegistryFilesystem(rsl::string_view root);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Virtualization instance callbacks (kernel mode -> user mode).  These are the methods the derived

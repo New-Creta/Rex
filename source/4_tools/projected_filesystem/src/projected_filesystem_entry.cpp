@@ -15,9 +15,9 @@
 
 namespace proj_fs
 {
-  ProjectedFilesystem* projected_fs()
+  RegistryFilesystem* projected_fs()
   {
-    static auto fs = rsl::make_unique<ProjectedFilesystem>("D:\\ProjFS\\");;
+    static auto fs = rsl::make_unique<RegistryFilesystem>("D:\\ProjFS\\");;
     return fs.get();
   }
 

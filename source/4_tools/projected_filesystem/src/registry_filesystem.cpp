@@ -29,7 +29,7 @@ namespace proj_fs
       const GUID* EnumerationId
     )
     {
-      auto instance = reinterpret_cast<ProjectedFilesystem*>(CallbackData->InstanceContext);
+      auto instance = reinterpret_cast<RegistryFilesystem*>(CallbackData->InstanceContext);
       return instance->StartDirEnum(CallbackData, EnumerationId);
     }
 
@@ -38,7 +38,7 @@ namespace proj_fs
       const GUID* EnumerationId
     )
     {
-      auto instance = reinterpret_cast<ProjectedFilesystem*>(CallbackData->InstanceContext);
+      auto instance = reinterpret_cast<RegistryFilesystem*>(CallbackData->InstanceContext);
       return instance->EndDirEnum(CallbackData, EnumerationId);
     }
 
@@ -49,7 +49,7 @@ namespace proj_fs
       PRJ_DIR_ENTRY_BUFFER_HANDLE DirEntryBufferHandle
     )
     {
-      auto instance = reinterpret_cast<ProjectedFilesystem*>(CallbackData->InstanceContext);
+      auto instance = reinterpret_cast<RegistryFilesystem*>(CallbackData->InstanceContext);
       return instance->GetDirEnum(CallbackData,
         EnumerationId,
         SearchExpression,
@@ -60,7 +60,7 @@ namespace proj_fs
       const PRJ_CALLBACK_DATA* CallbackData
     )
     {
-      auto instance = reinterpret_cast<ProjectedFilesystem*>(CallbackData->InstanceContext);
+      auto instance = reinterpret_cast<RegistryFilesystem*>(CallbackData->InstanceContext);
       return instance->GetPlaceholderInfo(CallbackData);
     }
 
@@ -70,7 +70,7 @@ namespace proj_fs
       UINT32                      Length
     )
     {
-      auto instance = reinterpret_cast<ProjectedFilesystem*>(CallbackData->InstanceContext);
+      auto instance = reinterpret_cast<RegistryFilesystem*>(CallbackData->InstanceContext);
       return instance->GetFileData(CallbackData, ByteOffset, Length);
     }
 
@@ -82,7 +82,7 @@ namespace proj_fs
       PRJ_NOTIFICATION_PARAMETERS* NotificationParameters
     )
     {
-      auto instance = reinterpret_cast<ProjectedFilesystem*>(CallbackData->InstanceContext);
+      auto instance = reinterpret_cast<RegistryFilesystem*>(CallbackData->InstanceContext);
       return instance->Notify(CallbackData,
         IsDirectory,
         NotificationType,
@@ -93,14 +93,14 @@ namespace proj_fs
     HRESULT QueryFileNameCallback(
       const PRJ_CALLBACK_DATA* CallbackData)
     {
-      auto instance = reinterpret_cast<ProjectedFilesystem*>(CallbackData->InstanceContext);
+      auto instance = reinterpret_cast<RegistryFilesystem*>(CallbackData->InstanceContext);
       return instance->QueryFileName(CallbackData);
     }
 
     void CancelCommandCallback(
       const PRJ_CALLBACK_DATA* CallbackData)
     {
-      auto instance = reinterpret_cast<ProjectedFilesystem*>(CallbackData->InstanceContext);
+      auto instance = reinterpret_cast<RegistryFilesystem*>(CallbackData->InstanceContext);
       instance->CancelCommand(CallbackData);
     }
   }
@@ -132,7 +132,7 @@ namespace proj_fs
     return result;
   }
 
-  ProjectedFilesystem::ProjectedFilesystem(rsl::string_view root)
+  RegistryFilesystem::RegistryFilesystem(rsl::string_view root)
     : m_root(root)
     , m_readonly_namespace(false)
     , m_callbacks()
@@ -245,7 +245,7 @@ namespace proj_fs
   //     2) "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft"
   //     3) "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\.NETFramework"
 
-  HRESULT ProjectedFilesystem::GetPlaceholderInfo(const PRJ_CALLBACK_DATA* CallbackData)
+  HRESULT RegistryFilesystem::GetPlaceholderInfo(const PRJ_CALLBACK_DATA* CallbackData)
   {
     rsl::string filepath_name = rsl::to_string(rsl::wstring_view(CallbackData->FilePathName));
     rsl::medium_stack_string full_filepath = create_filepath(m_root, filepath_name);
@@ -297,7 +297,7 @@ namespace proj_fs
   //     namespace, merges those names with the names physically on disk under that folder, then unblocks
   //     the enumeration requests and returns the merged list to the caller.
 
-  HRESULT ProjectedFilesystem::StartDirEnum(const PRJ_CALLBACK_DATA* CallbackData, const GUID* EnumerationId)
+  HRESULT RegistryFilesystem::StartDirEnum(const PRJ_CALLBACK_DATA* CallbackData, const GUID* EnumerationId)
   {
     rsl::string filepath_name = rsl::to_string(rsl::wstring_view(CallbackData->FilePathName));
     rsl::string process_image_name = CallbackData->TriggeringProcessImageFileName ? rsl::to_string(rsl::wstring_view(CallbackData->TriggeringProcessImageFileName)) : rsl::string("");
@@ -320,7 +320,7 @@ namespace proj_fs
   //     ProjFS invokes this callback to tell the provider that a directory enumeration is over.  This
   //     gives the provider the opportunity to release any resources it set up for the enumeration.
 
-  HRESULT ProjectedFilesystem::EndDirEnum(const PRJ_CALLBACK_DATA* CallbackData, const GUID* EnumerationId)
+  HRESULT RegistryFilesystem::EndDirEnum(const PRJ_CALLBACK_DATA* CallbackData, const GUID* EnumerationId)
   {
     rsl::string filepath_name = rsl::to_string(rsl::wstring_view(CallbackData->FilePathName));
     rsl::string process_image_name = CallbackData->TriggeringProcessImageFileName ? rsl::to_string(rsl::wstring_view(CallbackData->TriggeringProcessImageFileName)) : rsl::string("");
@@ -359,7 +359,7 @@ namespace proj_fs
   //     and other special file system wildcard values in its PrjFileNameMatch and PrjDoesNameContainWildCards
   //     APIs.
 
-  HRESULT ProjectedFilesystem::GetDirEnum(
+  HRESULT RegistryFilesystem::GetDirEnum(
     const PRJ_CALLBACK_DATA* CallbackData,
     const GUID* EnumerationId,
     PCWSTR                      SearchExpression,
@@ -438,7 +438,7 @@ namespace proj_fs
 
   // Populates a DirInfo object with directory and file entires that represent the registry keys and
   // values that are under a given key.
-  HRESULT ProjectedFilesystem::PopulateDirInfoForPath(
+  HRESULT RegistryFilesystem::PopulateDirInfoForPath(
     std::wstring                       relativePath,
     DirInfo* dirInfo,
     std::wstring                       searchExpression
@@ -501,7 +501,7 @@ namespace proj_fs
   //     echo 123>>testfile
   //     echo 123>testfile
 
-  HRESULT ProjectedFilesystem::GetFileData(
+  HRESULT RegistryFilesystem::GetFileData(
     const PRJ_CALLBACK_DATA* CallbackData,
     UINT64                      ByteOffset,
     UINT32                      Length
@@ -590,7 +590,7 @@ namespace proj_fs
   // 
   //     See also the PRJ_NOTIFICATION_TYPE enum for more details about the notification types.
 
-  HRESULT ProjectedFilesystem::Notify(
+  HRESULT RegistryFilesystem::Notify(
     const PRJ_CALLBACK_DATA* CallbackData,
     BOOLEAN                         /*IsDirectory*/,
     PRJ_NOTIFICATION                NotificationType,
@@ -668,7 +668,7 @@ namespace proj_fs
     return hr;
   }
 
-  bool ProjectedFilesystem::verify_root()
+  bool RegistryFilesystem::verify_root()
   {
     if (rex::directory::exists(m_root))
     {
@@ -701,7 +701,7 @@ namespace proj_fs
     return SUCCEEDED(hr);
   }
 
-  void ProjectedFilesystem::query_drives()
+  void RegistryFilesystem::query_drives()
   {
     rsl::array<char8, 128> drives_buffer;
     DWORD bytes_written = WIN_CALL(GetLogicalDriveStringsA(drives_buffer.max_size(), drives_buffer.data()));
@@ -723,66 +723,66 @@ namespace proj_fs
     }
   }
 
-  HRESULT ProjectedFilesystem::QueryFileName(
+  HRESULT RegistryFilesystem::QueryFileName(
     const PRJ_CALLBACK_DATA* /*CallbackData*/
   )
   {
     return S_OK;
   }
 
-  void ProjectedFilesystem::CancelCommand(
+  void RegistryFilesystem::CancelCommand(
     const PRJ_CALLBACK_DATA* /*CallbackData*/
   )
   {
 
   }
 
-  void ProjectedFilesystem::notify_file_opened(rsl::string_view app, rsl::string_view path)
+  void RegistryFilesystem::notify_file_opened(rsl::string_view app, rsl::string_view path)
   {
     REX_INFO(LogProjFs, "{} - OPENED - \t\t\t\t{}", app, path);
   }
-  void ProjectedFilesystem::notify_file_created(rsl::string_view app, rsl::string_view path)
+  void RegistryFilesystem::notify_file_created(rsl::string_view app, rsl::string_view path)
   {
     REX_INFO(LogProjFs, "{} - CLOSED - \t\t{}", app, path);
   }
-  void ProjectedFilesystem::notify_file_overwritten(rsl::string_view app, rsl::string_view path)
+  void RegistryFilesystem::notify_file_overwritten(rsl::string_view app, rsl::string_view path)
   {
     REX_INFO(LogProjFs, "{} - MODIFIED - \t\t{}", app, path);
   }
-  void ProjectedFilesystem::notify_pre_delete(rsl::string_view app, rsl::string_view path)
+  void RegistryFilesystem::notify_pre_delete(rsl::string_view app, rsl::string_view path)
   {
     REX_INFO(LogProjFs, "{} - TRIES TO DELETE - \t\t{}", app, path);
   }
-  void ProjectedFilesystem::notify_pre_rename(rsl::string_view app, rsl::string_view oldPath, rsl::string_view newPath)
+  void RegistryFilesystem::notify_pre_rename(rsl::string_view app, rsl::string_view oldPath, rsl::string_view newPath)
   {
     REX_INFO(LogProjFs, "{} - TRIES TO RENAME - \t\t{} to {}", app, oldPath, newPath);
   }
-  void ProjectedFilesystem::notify_pre_set_hardlink(rsl::string_view newHardlink, rsl::string_view hardLinkTarget)
+  void RegistryFilesystem::notify_pre_set_hardlink(rsl::string_view newHardlink, rsl::string_view hardLinkTarget)
   {
     REX_INFO(LogProjFs, "TRYING TO HARDLINK FROM - \t\t{} TO {}", newHardlink, hardLinkTarget);
   }
-  void ProjectedFilesystem::notify_renamed(rsl::string_view app, rsl::string_view oldPath, rsl::string_view newPath)
+  void RegistryFilesystem::notify_renamed(rsl::string_view app, rsl::string_view oldPath, rsl::string_view newPath)
   {
     REX_INFO(LogProjFs, "{} - RENAMED - \t\t{} TO {}", app, oldPath, newPath);
   }
-  void ProjectedFilesystem::notify_hardlink_created(rsl::string_view newHardlink, rsl::string_view hardLinkTarget)
+  void RegistryFilesystem::notify_hardlink_created(rsl::string_view newHardlink, rsl::string_view hardLinkTarget)
   {
     REX_INFO(LogProjFs, "HARDLINK CREATED FROM - \t\t{} TO {}", newHardlink, hardLinkTarget);
   }
-  void ProjectedFilesystem::notify_closed_no_modification(rsl::string_view app, rsl::string_view path)
+  void RegistryFilesystem::notify_closed_no_modification(rsl::string_view app, rsl::string_view path)
   {
     REX_INFO(LogProjFs, "{} - CLOSED NO MODIFICATION - \t\t{}", app, path);
 
   }
-  void ProjectedFilesystem::notify_closed_with_modification(rsl::string_view app, rsl::string_view path)
+  void RegistryFilesystem::notify_closed_with_modification(rsl::string_view app, rsl::string_view path)
   {
     REX_INFO(LogProjFs, "{} - CLOSED WITH MODIFICATION - \t\t{}", app, path);
   }
-  void ProjectedFilesystem::notify_closed_with_deletion(rsl::string_view app, rsl::string_view path)
+  void RegistryFilesystem::notify_closed_with_deletion(rsl::string_view app, rsl::string_view path)
   {
     REX_INFO(LogProjFs, "{} - CLOSED WITH DELETION - \t\t{}", app, path);
   }
-  void ProjectedFilesystem::notify_pre_hydration(rsl::string_view path)
+  void RegistryFilesystem::notify_pre_hydration(rsl::string_view path)
   {
     REX_INFO(LogProjFs, "HYDRATED {}", path);
   }
