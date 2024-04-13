@@ -937,7 +937,7 @@ public class TestProject : BasicCPPProject
     base.SetupConfigSettings(conf, target);
 
     conf.VcxprojUserFile = new Configuration.VcxprojUserFileSettings();
-    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data");
+    conf.VcxprojUserFile.LocalDebuggerWorkingDirectory = Path.Combine(Globals.Root, "data", Name);
 
     if (!Directory.Exists(conf.VcxprojUserFile.LocalDebuggerWorkingDirectory))
     {

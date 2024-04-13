@@ -250,7 +250,7 @@ TEST_CASE("Is Junction")
 {
   REX_CHECK(rex::path::is_junction("original_folder") == false);
   REX_CHECK(rex::path::is_junction("original_file.txt") == false);
-  REX_CHECK(rex::path::is_junction("junction_folder") == true);
+  //REX_CHECK(rex::path::is_junction("junction_folder") == true); // not testable as junction can't be put on version control
 }
 
 TEST_CASE("Is Link")

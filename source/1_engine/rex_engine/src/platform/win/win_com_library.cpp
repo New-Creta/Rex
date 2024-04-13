@@ -23,8 +23,14 @@ namespace rex
         {
         public:
           // Initialize the library on first try
-          ComLibrary()  = default;
-          ~ComLibrary() = default;
+          ComLibrary()
+          {
+            inc_ref();
+          }
+          ~ComLibrary()
+          {
+            dec_ref();
+          }
 
           ComLibrary(const ComLibrary&) = delete;
           ComLibrary(ComLibrary&&)      = delete;
@@ -35,7 +41,7 @@ namespace rex
           // Return if the library is initialized
           bool is_initialized() const // NOLINT(readability-convert-member-functions-to-static)
           {
-            return s_ref_count == 0;
+            return s_ref_count > 0;
           }
 
           // Read a symbolic link's path and return the path it actually points to
@@ -43,7 +49,7 @@ namespace rex
           {
             IShellLinkW* psl = nullptr;
             HRESULT hres     = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&psl)); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-            rsl::wbig_stack_string res;
+            rsl::big_stack_string res;
 
             if(SUCCEEDED(hres))
             {
@@ -57,7 +63,7 @@ namespace rex
 
                 if(SUCCEEDED(hres))
                 {
-                  hres = psl->GetPath(res.data(), rsl::wbig_stack_string::max_size(), nullptr, SLGP_UNCPRIORITY);
+                  hres = psl->GetPath((LPWSTR)res.data(), res.max_size(), nullptr, SLGP_UNCPRIORITY);
                   res.reset_null_termination_offset();
                 }
 
@@ -67,7 +73,7 @@ namespace rex
               psl->Release();
             }
 
-            return rsl::to_string(res);
+            return rsl::string(res);
           }
 
           // Increase the amount of reference the com lib has on this thread

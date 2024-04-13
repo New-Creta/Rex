@@ -628,7 +628,6 @@ namespace rex
         return rsl::string(path);
       }
 
-      REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");
       return path::join(g_root, path);
     }
 

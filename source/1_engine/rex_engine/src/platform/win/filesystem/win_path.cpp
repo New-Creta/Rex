@@ -83,17 +83,20 @@ namespace rex
     {
       // It's a bit tricky to get the real path as there are multiple ways
       // of linking to a the same file (.lnk files, symlinks, hardlinks, junctions)
+      rsl::string fullpath = abs_path(path);
+
+      fullpath = rex::path::norm_path(fullpath);
 
       // If the path doesn't exist, just return its input
-      if(!file::exists(path) && !directory::exists(path))
+      if(!file::exists(fullpath) && !directory::exists(fullpath))
       {
-        return rsl::string(path);
+        return fullpath;
       }
 
       // If the path is a .lnk file, we can read its link
-      if(rex::path::extension(path).ends_with(".lnk"))
+      if(rex::path::extension(fullpath).ends_with(".lnk"))
       {
-        rsl::string res = rex::win::com_lib::read_link(path);
+        rsl::string res = rex::win::com_lib::read_link(fullpath);
         res.replace("\\", "/");
         return res;
       }
@@ -102,12 +105,12 @@ namespace rex
       // this can return an empty path in rare cases
       // If it does, just return the input
       rsl::big_stack_string stack_res;
-      GetFullPathNameA(path.data(), path.length(), stack_res.data(), nullptr);
+      GetFullPathNameA(fullpath.data(), fullpath.length(), stack_res.data(), nullptr);
       stack_res.reset_null_termination_offset();
 
       if(stack_res.empty())
       {
-        return rex::path::norm_path(path);
+        return fullpath;
       }
 
       rsl::string res(stack_res);
