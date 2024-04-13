@@ -21,7 +21,7 @@ TEST_CASE("File Creation Time")
   // query the creation time again, it should still be the same
   auto new_creation_time = rex::file::creation_time(random_filename);
 
-  CHECK(creation_time == new_creation_time);
+  REX_CHECK(creation_time == new_creation_time);
 
   // delete the file to leave nothing behind
   rex::file::del(random_filename);
@@ -44,7 +44,7 @@ TEST_CASE("File Modification Time")
 
   // query the modification time again, it should still be the same
   auto new_mod_time = rex::file::modification_time(random_filename);
-  CHECK(mod_time == new_mod_time);
+  REX_CHECK(mod_time == new_mod_time);
 
   // delete the file to leave nothing behind
   rex::file::del(random_filename);
@@ -75,7 +75,7 @@ TEST_CASE("File Access Time")
   new_access_time = rex::file::access_time(random_filename);
 
   // access time should now be different
-  CHECK(access_time != new_access_time);
+  REX_CHECK(access_time != new_access_time);
 
   // query an attribute of the file
   rex::file::is_readonly(random_filename);
@@ -83,8 +83,8 @@ TEST_CASE("File Access Time")
   auto newer_access_time = rex::file::access_time(random_filename);
 
   // access time should now be different
-  CHECK(access_time != newer_access_time);
-  CHECK(new_access_time != newer_access_time);
+  REX_CHECK(access_time != newer_access_time);
+  REX_CHECK(new_access_time != newer_access_time);
 
   // delete the file to leave nothing behind
   rex::file::del(random_filename);
@@ -92,17 +92,17 @@ TEST_CASE("File Access Time")
 
 TEST_CASE("File Size")
 {
-  CHECK(rex::file::size("file_0_bytes.txt") == 0);
-  CHECK(rex::file::size("file_500_bytes.txt") == 500);
-  CHECK(rex::file::size("file_1000_bytes.txt") == 1000);
+  REX_CHECK(rex::file::size("file_0_bytes.txt") == 0);
+  REX_CHECK(rex::file::size("file_500_bytes.txt") == 500);
+  REX_CHECK(rex::file::size("file_1000_bytes.txt") == 1000);
 }
 
 TEST_CASE("File Exists")
 {
-  CHECK(rex::file::exists("file_that_definitely_exists.txt"));
-  CHECK(rex::file::exists(rex::path::random_filename()) == false);
-  CHECK(rex::file::exists("this_is_a_file.txt"));
-  CHECK(rex::file::exists("this_is_a_directory") == false);
-  CHECK(rex::file::exists(rex::path::random_filename()) == false);
-  CHECK(rex::file::exists(rex::path::random_dir()) == false);
+  REX_CHECK(rex::file::exists("file_that_definitely_exists.txt"));
+  REX_CHECK(rex::file::exists(rex::path::random_filename()) == false);
+  REX_CHECK(rex::file::exists("this_is_a_file.txt"));
+  REX_CHECK(rex::file::exists("this_is_a_directory") == false);
+  REX_CHECK(rex::file::exists(rex::path::random_filename()) == false);
+  REX_CHECK(rex::file::exists(rex::path::random_dir()) == false);
 }

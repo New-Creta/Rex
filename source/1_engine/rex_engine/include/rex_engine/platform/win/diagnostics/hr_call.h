@@ -2,6 +2,7 @@
 
 #include "rex_engine/platform/win/win_types.h"
 #include "rex_std/bonus/string.h"
+#include "rex_std/string_view.h"
 #include "rex_std/bonus/types.h"
 
 namespace rex
