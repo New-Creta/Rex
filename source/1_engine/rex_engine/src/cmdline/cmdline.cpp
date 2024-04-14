@@ -49,7 +49,6 @@ namespace rex
 
         if(cmdLine.empty())
         {
-          REX_INFO(LogEngine, "No command line arguments to parse");
           return;
         }
 

@@ -68,7 +68,7 @@ namespace rex
       // allocate the memory with enough extra memory to fit the memory header pointer
       pointer ptr = m_allocator->allocate(num_mem_needed);
 
-      m_total_mem_allocated += num_mem_needed;
+      m_total_mem_allocated += static_cast<s32>(num_mem_needed);
       ++m_total_num_allocations;
       rex::MemoryHeader* dbg_header_ptr = mem_tracker().track_alloc(ptr, num_mem_needed);
 
@@ -96,7 +96,7 @@ namespace rex
 
       rsl::byte* mem_block = static_cast<rsl::byte*>(jump_backward(ptr, sizeof(MemoryHeader*)));
       MemoryHeader* header = *reinterpret_cast<MemoryHeader**>(mem_block); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-      m_total_mem_allocated -= header->size();
+      m_total_mem_allocated -= static_cast<s32>(header->size());
 
       mem_tracker().track_dealloc(header);
       m_allocator->deallocate(mem_block, size);
