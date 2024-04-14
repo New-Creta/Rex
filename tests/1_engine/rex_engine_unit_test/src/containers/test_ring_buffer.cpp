@@ -8,9 +8,6 @@ TEST_CASE("Ringbuffer Construction")
 
   REX_CHECK(buffer.check() == nullptr);
   REX_CHECK(buffer.get() == nullptr);
-
-  REX_CHECK(buffer.will_wrap_on_next_put() == false);
-  REX_CHECK(buffer.will_wrap_on_next_get() == false);
 }
 
 TEST_CASE("Ringbuffer sequential putting and getting")
@@ -21,13 +18,11 @@ TEST_CASE("Ringbuffer sequential putting and getting")
   buffer.put(1);
   REX_CHECK(*buffer.check() == 1);
   REX_CHECK(*buffer.get() == 1);
-  REX_CHECK(buffer.will_wrap_on_next_put() == false);
 
   // this is the second element. we can get this, the next element will wrap
   buffer.put(2);
   REX_CHECK(*buffer.check() == 2);
   REX_CHECK(*buffer.get() == 2);
-  REX_CHECK(buffer.will_wrap_on_next_put() == true);
 }
 
 TEST_CASE("Ringbuffer first putting, then getting")
@@ -38,7 +33,6 @@ TEST_CASE("Ringbuffer first putting, then getting")
   buffer.put(1);
   // this is the second element. we can get this, the next element will wrap
   buffer.put(2);
-  REX_CHECK(buffer.will_wrap_on_next_put() == true);
 
   // we get the first element, moving the read idx forward, now pointing to the second element
   REX_CHECK(*buffer.check() == 1);
@@ -46,9 +40,13 @@ TEST_CASE("Ringbuffer first putting, then getting")
 
   // we write over the first element, leaving the second element still untouched and available for reading
   buffer.put(3);
+  REX_CHECK(*buffer.check() == 2);
+  REX_CHECK(*buffer.get() == 2);
+
+  // checking again will wrap back to the first element
   REX_CHECK(*buffer.check() == 3);
   REX_CHECK(*buffer.get() == 3);
-  REX_CHECK(buffer.will_wrap_on_next_get() == true);
+
 }
 
 TEST_CASE("Ringbuffer using check")

@@ -7,6 +7,7 @@
 
 #include "rex_std/bonus/memory.h"
 #include "rex_std/bonus/types.h"
+#include "rex_std/algorithm.h"
 
 namespace rex
 {
@@ -29,11 +30,6 @@ namespace rex
     // Put a new item at the next available location in the ring buffer
     bool put(const T& item);
 
-    // Check if the next put will wrap to the beginning of the buffer
-    bool will_wrap_on_next_put() const;
-    // Check if the next get will wrap to the beginning of the buffer
-    bool will_wrap_on_next_get() const;
-
     // get the next element and increment the get pos
     T* get();
     // get the next element and don't increment the get pos
@@ -47,8 +43,8 @@ namespace rex
 
     s32 m_get_pos;
     s32 m_put_pos;
-
-    s64 m_capacity;
+    s32 m_num_reads_available;
+    s32 m_capacity;
   };
 
   //-------------------------------------------------------------------------
@@ -57,6 +53,7 @@ namespace rex
       : m_data(nullptr)
       , m_get_pos(0)
       , m_put_pos(0)
+      , m_num_reads_available(0)
       , m_capacity(numElements)
   {
     m_data = rsl::make_unique<T[]>(rsl::safe_numeric_cast<u32>(sizeof(T) * m_capacity));
@@ -66,12 +63,13 @@ namespace rex
   template <typename T>
   bool RingBuffer<T>::put(const T& item)
   {
+    m_data[m_put_pos] = rsl::move(item);
+    m_num_reads_available = rsl::min(m_num_reads_available + 1, m_capacity);
+    ++m_put_pos;
     if (m_put_pos == m_capacity)
     {
       m_put_pos = 0;
     }
-    m_data[m_put_pos] = rsl::move(item);
-    ++m_put_pos;
 
     return true;
   }
@@ -80,44 +78,32 @@ namespace rex
   template <typename T>
   T* RingBuffer<T>::get()
   {
-    if (m_get_pos == m_capacity)
+    T* res = check();
+
+    if (res)
     {
-      m_get_pos = 0;
+      --m_num_reads_available;
+      ++m_get_pos;
+    
+      if (m_get_pos == m_capacity)
+      {
+        m_get_pos = 0;
+      }
     }
 
-    const u32 gp = m_get_pos;
-    if(gp == m_put_pos)
-    {
-      return nullptr;
-    }
-    ++m_get_pos;
-    return &m_data[gp];
+    return res;
   }
 
   //-------------------------------------------------------------------------
   template <typename T>
   T* RingBuffer<T>::check()
   {
-    u32 gp = m_get_pos;
-    if(gp == m_put_pos)
+    if (m_num_reads_available == 0)
     {
       return nullptr;
     }
-    return &m_data[gp];
-  }
 
-  //-------------------------------------------------------------------------
-  template <typename T>
-  bool RingBuffer<T>::will_wrap_on_next_put() const
-  {
-    return m_put_pos >= m_capacity;
-  }
-
-  //-------------------------------------------------------------------------
-  template <typename T>
-  bool RingBuffer<T>::will_wrap_on_next_get() const
-  {
-    return m_get_pos >= m_capacity;
+    return &m_data[m_get_pos];
   }
 
   //-------------------------------------------------------------------------
