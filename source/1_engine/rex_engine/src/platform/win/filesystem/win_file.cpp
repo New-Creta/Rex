@@ -283,10 +283,15 @@ namespace rex
     bool exists(rsl::string_view path)
     {
       const rsl::string full_path = path::abs_path(path);
-      const DWORD attribs   = WIN_CALL_IGNORE(GetFileAttributesA(full_path.c_str()), ERROR_FILE_NOT_FOUND);
+
+      // It's possible the error returned here is ERROR_FILE_NOT_FOUND or ERROR_PATH_NOT_FOUND
+      // because we can't ignore both, we just call it without wrapping it in WIN_CALL
+      // and manually reset the windows error if an error has occurred
+      const DWORD attribs   = GetFileAttributesA(full_path.c_str());
 
       if(attribs == INVALID_FILE_ATTRIBUTES)
       {
+        win::clear_win_errors();
         return false;
       }
 

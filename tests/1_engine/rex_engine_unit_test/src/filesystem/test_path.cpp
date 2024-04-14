@@ -199,6 +199,35 @@ TEST_CASE("Relative Path")
   REX_CHECK(rex::path::rel_path("C:\\path\\to\\..\\dir", "C:\\path") == rex::path::join("dir"));
 }
 
+TEST_CASE("Is Under Dir")
+{
+  REX_CHECK(rex::path::is_under_dir("/path/to/dir", "/path") == true);
+  REX_CHECK(rex::path::is_under_dir("path/to/dir", "path") == true);
+  REX_CHECK(rex::path::is_under_dir("/", "/") == true);
+
+  REX_CHECK(rex::path::is_under_dir("/path/./to/./dir", "/path") == true);
+  REX_CHECK(rex::path::is_under_dir("/path/to/../dir", "/path") == true);
+  REX_CHECK(rex::path::is_under_dir("/path/to/../../dir", "/path") == false);
+
+  REX_CHECK(rex::path::is_under_dir("/path/to/dir\\file", "/path") == true);
+  REX_CHECK(rex::path::is_under_dir("\\path\\to\\dir\\file", "/path") == true);
+  REX_CHECK(rex::path::is_under_dir("path/to/dir/file\\", "path") == true);
+
+  REX_CHECK(rex::path::is_under_dir("//path/to//dir", "/") == true);
+  REX_CHECK(rex::path::is_under_dir("/\\path\\to/dir", "/") == true);
+  REX_CHECK(rex::path::is_under_dir("/path/to/dir\\", "/") == true);
+
+  REX_CHECK(rex::path::is_under_dir("/path//to//dir", "/") == true);
+  REX_CHECK(rex::path::is_under_dir("/path/to//dir", "/") == true);
+  REX_CHECK(rex::path::is_under_dir("/path/to/dir//", "/") == true);
+
+  REX_CHECK(rex::path::is_under_dir("/path//to//dir/", "/") == true);
+  REX_CHECK(rex::path::is_under_dir("/", "path/to/dir") == false);
+
+  REX_CHECK(rex::path::is_under_dir("C:\\path\\to\\dir", "C:\\path") == true);
+  REX_CHECK(rex::path::is_under_dir("C:\\path\\to\\..\\dir", "C:\\path") == true);
+}
+
 TEST_CASE("Has Extension")
 {
   REX_CHECK(rex::path::has_extension("file.txt") == true);

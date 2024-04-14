@@ -2,6 +2,7 @@
 
 #include "rex_std/string.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/memory/blob.h"
 
 namespace rex
 {
@@ -20,6 +21,7 @@ namespace rex
     TempFile& operator=(TempFile&&) = delete;
 
     void write(const void* data, s32 size);
+    memory::Blob read();
 
     rsl::string_view filename() const;
 

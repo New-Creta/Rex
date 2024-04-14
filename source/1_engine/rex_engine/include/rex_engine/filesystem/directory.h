@@ -18,6 +18,8 @@ namespace rex
     Error create_recursive(rsl::string_view path);
     // Delete a directory
     Error del(rsl::string_view path);
+    // Delete a directory recursively, including all files and sub folders
+    Error del_recusrive(rsl::string_view path);
     // Return if a directory exists
     bool exists(rsl::string_view path);
     // Copy a directory and its content

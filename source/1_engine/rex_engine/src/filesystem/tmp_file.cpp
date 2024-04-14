@@ -21,6 +21,11 @@ namespace rex
     file::append_text(m_filename, rsl::string_view((const char8*)data, size));
   }
 
+  memory::Blob TempFile::read()
+  {
+    return file::read_file(m_filename);
+  }
+
   rsl::string_view TempFile::filename() const
   {
     return m_filename;

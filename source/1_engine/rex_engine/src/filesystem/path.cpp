@@ -368,6 +368,13 @@ namespace rex
       return start != rsl::string_view::npos() && start != path.size() - 1;
     }
 
+    // Returns if a file is under a certain directory
+    bool is_under_dir(rsl::string_view path, rsl::string_view dir)
+    {
+      rsl::string relative_path = rel_path(path, dir);
+      return !relative_path.starts_with("..");
+    }
+
     // Returns if the given path is a relative path
     bool is_relative(rsl::string_view path)
     {
