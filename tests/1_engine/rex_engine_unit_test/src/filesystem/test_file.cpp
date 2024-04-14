@@ -9,6 +9,7 @@ TEST_CASE("File Creation Time")
 {
   // create a file that doesn't exist yet
   rsl::string random_filename = rex::path::random_filename();
+  random_filename = rex::path::abs_path(random_filename);
   rex::file::create(random_filename);
 
   // query the creation time and compare it to the original time with a threshold
@@ -31,6 +32,8 @@ TEST_CASE("File Modification Time")
 {
   // create a file that doesn't exist yet
   rsl::string random_filename = rex::path::random_filename();
+  random_filename = rex::path::abs_path(random_filename);
+  rex::file::create(random_filename);
 
   // query the modification time and compare it to the original time with a threshold
   auto mod_time = rex::file::modification_time(random_filename);
@@ -39,12 +42,16 @@ TEST_CASE("File Modification Time")
   using namespace rsl::chrono_literals;
   rsl::this_thread::sleep_for(1s);
 
-  // Modify the file
-  rex::file::append_text(random_filename, "random_text.txt");
-
   // query the modification time again, it should still be the same
   auto new_mod_time = rex::file::modification_time(random_filename);
   REX_CHECK(mod_time == new_mod_time);
+
+  // Modify the file
+  rex::file::append_text(random_filename, "random_text.txt");
+
+  // query the modification time again, it should be different now
+  new_mod_time = rex::file::modification_time(random_filename);
+  REX_CHECK(mod_time != new_mod_time);
 
   // delete the file to leave nothing behind
   rex::file::del(random_filename);
@@ -57,6 +64,8 @@ TEST_CASE("File Access Time")
 
   // create a file that doesn't exist yet
   rsl::string random_filename = rex::path::random_filename();
+  random_filename = rex::path::abs_path(random_filename);
+  rex::file::create(random_filename);
 
   // query the modification time and compare it to the original time with a threshold
   auto access_time = rex::file::modification_time(random_filename);
@@ -77,14 +86,14 @@ TEST_CASE("File Access Time")
   // access time should now be different
   REX_CHECK(access_time != new_access_time);
 
-  // query an attribute of the file
+  // query an attribute of the file, attribute changes don't affect the access time
   rex::file::is_readonly(random_filename);
 
   auto newer_access_time = rex::file::access_time(random_filename);
 
   // access time should now be different
   REX_CHECK(access_time != newer_access_time);
-  REX_CHECK(new_access_time != newer_access_time);
+  REX_CHECK(new_access_time == newer_access_time);
 
   // delete the file to leave nothing behind
   rex::file::del(random_filename);
