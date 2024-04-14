@@ -2,6 +2,8 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/string.h"
+#include "rex_engine/diagnostics/log.h"
+#include "rex_std/format.h"
 
 namespace rex
 {
@@ -23,6 +25,15 @@ namespace rex
 
     // Returns an Error object that indicates no error
     static Error no_error();
+
+    // Creates an error object and logs its error msg
+    template <typename ... Args>
+    static Error create_with_log(LogCategory category, rsl::string_view msg, Args&& ... args)
+    {
+      auto fmt_string = rsl::format(msg, rsl::forward<Args>(args)...);
+      REX_ERROR(category, fmt_string);
+      return Error(fmt_string);
+    }
 
   private:
     rsl::medium_stack_string m_error_msg;

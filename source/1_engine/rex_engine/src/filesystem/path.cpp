@@ -164,7 +164,7 @@ namespace rex
       // If the path is already absolute, just return it
       if(is_absolute(path))
       {
-        return rsl::string(path);
+        return rsl::string(path).replace("\\", "/");
       }
 
       // Get the current working directory and prepend it to the path

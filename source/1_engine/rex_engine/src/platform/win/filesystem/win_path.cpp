@@ -5,6 +5,7 @@
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/platform/win/win_com_library.h"
+#include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
@@ -36,7 +37,8 @@ namespace rex
       ReparseTag get_reparse_tag(rsl::string_view path)
       {
         WIN32_FIND_DATAA find_file_data;
-        HANDLE hfind = FindFirstFileA(path.data(), &find_file_data);
+        auto err = GetLastError();
+        HANDLE hfind = WIN_CALL_IGNORE(FindFirstFileA(path.data(), &find_file_data), ERROR_FILE_NOT_FOUND);
 
         if(hfind == INVALID_HANDLE_VALUE)
         {
@@ -57,6 +59,7 @@ namespace rex
           }
         }
 
+        err = GetLastError();
         return ReparseTag::None;
       }
     } // namespace internal

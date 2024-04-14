@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/diagnostics/error.h"
 #include "rex_std/bonus/time/timepoint.h"
 #include "rex_std/bonus/utility/yes_no.h"
 #include "rex_std/string.h"
@@ -11,18 +12,18 @@ namespace rex
 {
   namespace directory
   {
-    DEFINE_LOG_CATEGORY(DirectoryLog);
-
     // Create a new directory
-    void create(rsl::string_view path);
+    Error create(rsl::string_view path);
+    // Create a directory recursively, creating all sub directories until the leaf dir
+    Error create_recursive(rsl::string_view path);
     // Delete a directory
-    void del(rsl::string_view path);
+    Error del(rsl::string_view path);
     // Return if a directory exists
     bool exists(rsl::string_view path);
     // Copy a directory and its content
-    void copy(rsl::string_view src, rsl::string_view dst);
+    Error copy(rsl::string_view src, rsl::string_view dst);
     // Move/Rename a directory
-    void move(rsl::string_view src, rsl::string_view dst);
+    Error move(rsl::string_view src, rsl::string_view dst);
 
     DEFINE_YES_NO_ENUM(ListRecusrive);
     // List all entries under a directory

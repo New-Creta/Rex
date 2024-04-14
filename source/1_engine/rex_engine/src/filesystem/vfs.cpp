@@ -558,7 +558,7 @@ namespace rex
       return request;
     }
 
-    bool save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    Error save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
       filepath = path::remove_quotes(filepath);
 
@@ -566,7 +566,7 @@ namespace rex
       return save_to_file(path, data, size, shouldAppend);
     }
 
-    bool save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    Error save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
       filepath = path::remove_quotes(filepath);
 
@@ -574,12 +574,12 @@ namespace rex
       return save_to_file(path, blob.data(), blob.size(), shouldAppend);
     }
 
-    bool save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
+    Error save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend)
     {
       return save_to_file(filepath, blob.data(), blob.size(), shouldAppend);
     }
 
-    bool create_dir(MountingPoint root, rsl::string_view path)
+    Error create_dir(MountingPoint root, rsl::string_view path)
     {
       path = path::remove_quotes(path);
 
