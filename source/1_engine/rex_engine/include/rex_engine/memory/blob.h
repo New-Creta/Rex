@@ -11,14 +11,17 @@ namespace rex
     class Blob
     {
     public:
-      static void copy(const Blob& src, Blob& dst);
-      static void copy(const Blob& src, void* dst);
-      static void copy(void* src, const rsl::memory_size& size, Blob& dst);
-
+      // Initialize a blob with no underlying buffer
       Blob();
       Blob(const Blob& other) = delete;
+      // Initialize a blob taken the underlying buffer from the other buffer
+      // leaving the other buffer with no underlying buffer afterwards
       Blob(Blob&& other) noexcept;
-      explicit Blob(rsl::unique_array<rsl::byte> data);
+      // Initialize a blob from a byte array.
+      // This simply assigns the underlying buffer to this byte array
+      explicit Blob(rsl::unique_array<rsl::byte>&& data);
+      // Initialize a blob from a array
+      // This simply assigns the underlying buffer to this byte array
       template <typename T>
       explicit Blob(rsl::unique_array<T>&& data)
           : m_data()
@@ -28,61 +31,50 @@ namespace rex
         const s32 total_size = data.byte_size();
         m_data         = rsl::unique_array<rsl::byte>((rsl::byte*)data.release(), total_size); // NOLINT(google-readability-casting)
       }
+      // Initialize a blob from a pointer with size.
+      // The blob takes ownership of the passed in pointer
       Blob(void* data, rsl::memory_size size);
+      // Release the underlying pointer, giving the memory back to where it came from
       ~Blob();
 
       Blob& operator=(const Blob& other) = delete;
+      // Release the underlying buffer and takes it from the other blob
+      // The other blob doesn't hold a buffer anymore afterwards
       Blob& operator=(Blob&& other) noexcept;
 
+      // Returns true if the blob holds a buffer
+      // Returns false if it doesn't
       explicit operator bool() const;
 
+      // Access into the underlying buffer by byte offset.
       rsl::byte& operator[](int32 index);
       const rsl::byte& operator[](int32 index) const;
 
-      void allocate(const rsl::memory_size& inSize);
-      void release();
+      // Zero out the underlying buffer, setting all bytes to 0
       void zero_initialize();
 
-      rsl::byte* data();
+      // Returns a const access to the Blob's underlying buffer
       const rsl::byte* data() const;
-
+      // Returns the size of the underlying buffer
       rsl::memory_size size() const;
 
-      template <typename T>
-      T* data_as();
+      // Returns the address of the underlying buffer casted into a specific type
       template <typename T>
       const T* data_as() const;
 
-      template <typename T>
-      T& read(const rsl::memory_size& offset = 0_bytes);
+      // Read bytes from the underlying buffer at a certain offset and cast them to a type
       template <typename T>
       const T& read(const rsl::memory_size& offset = 0_bytes) const;
 
-      rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset);
-      const rsl::byte* read_bytes(rsl::byte* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
+      // Read x amount of bytes from the underlying buffer at a certain offset and copy them into a desintation
+      void* read_bytes(void* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
 
+      // Write x amount of bytes into the underlying buffer, starting from a certain offset
       void write(const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset = 0_bytes);
 
     private:
       rsl::unique_array<rsl::byte> m_data;
     };
-
-    //-------------------------------------------------------------------------
-    Blob make_blob(const rsl::byte* inData, const rsl::memory_size& inSize);
-    //-------------------------------------------------------------------------
-    template <typename T>
-    Blob make_blob(const T* data, int32 num)
-    {
-      return make_blob(reinterpret_cast<const rsl::byte*>(data), rsl::memory_size(sizeof(T) * num));
-    }
-
-    //-------------------------------------------------------------------------
-    template <typename T>
-    T& Blob::read(const rsl::memory_size& offset /*= 0*/)
-    {
-      T* data = reinterpret_cast<T*>(m_data.get() + offset);
-      return *data;
-    }
 
     //-------------------------------------------------------------------------
     template <typename T>
@@ -91,12 +83,6 @@ namespace rex
       return *(T*)(m_data.get() + offset);
     }
 
-    //-------------------------------------------------------------------------
-    template <typename T>
-    T* Blob::data_as()
-    {
-      return reinterpret_cast<T*>(m_data.get());
-    }
     //-------------------------------------------------------------------------
     template <typename T>
     const T* Blob::data_as() const
