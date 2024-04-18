@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_engine/memory/blob.h" // IWYU pragma: keep
+#include "rex_engine/memory/blob_view.h" // IWYU pragma: keep
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/memory.h"
 
@@ -11,16 +11,20 @@ namespace rex
     class BlobReader
     {
     public:
-      explicit BlobReader(const memory::Blob& b);
-      BlobReader(const memory::Blob& b, const rsl::memory_size& offset);
+      // Create a blob reader, looking at a blob view, starting from the first byte
+      explicit BlobReader(memory::BlobView b);
+      // Create a blob reader, looking at a blob view, starting from the offset
+      BlobReader(memory::BlobView b, rsl::memory_size offset);
 
+      // Read data from the current offset and reinterpret is it as T and return it
       template <typename T>
       T read();
 
-      rsl::byte* read(const rsl::memory_size& bytesToRead);
+      // Skip a certain amount of bytes
+      void skip(rsl::memory_size amount);
 
     private:
-      const memory::Blob* m_blob;
+      memory::BlobView m_blob;
       rsl::memory_size m_read_offset;
     };
 
@@ -32,26 +36,5 @@ namespace rex
       m_read_offset += sizeof(T);
       return value;
     }
-
-    namespace reader
-    {
-      //-------------------------------------------------------------------------
-      template <typename T>
-      T read(const memory::Blob& b)
-      {
-        BlobReader reader(b);
-        return reader.read<T>();
-      }
-      //-------------------------------------------------------------------------
-      template <typename T>
-      T read(const memory::Blob& b, const rsl::memory_size& offset)
-      {
-        BlobReader reader(b, offset);
-        return reader.read<T>();
-      }
-
-      //-------------------------------------------------------------------------
-      rsl::byte* read(const memory::Blob& b, const rsl::memory_size& bytesToRead, const rsl::memory_size& offset);
-    } // namespace reader
   }   // namespace memory
 } // namespace rex

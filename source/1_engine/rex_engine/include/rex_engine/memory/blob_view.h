@@ -22,14 +22,28 @@ namespace rex
       BlobView(const Blob& blob); // NOLINT(google-explicit-constructor)
       BlobView(const void* data, rsl::memory_size size);
 
+      // Returns true if the blob view holds a buffer
+      // Returns false if it doesn't
+      explicit operator bool() const;
+
+      // Access into the underlying buffer by byte offset.
+      const rsl::byte& operator[](int32 index) const;
+
+      // Returns a const access to the blob view's underlying buffer
       const rsl::byte* data() const;
+      // Returns the size of the underlying buffer
       rsl::memory_size size() const;
 
+      // Returns the address of the underlying buffer casted into a specific type
       template <typename T>
-      const T* data_as() const
-      {
-        return reinterpret_cast<T*>(data()); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-      }
+      const T* data_as() const;
+
+      // Read bytes from the underlying buffer at a certain offset and cast them to a type
+      template <typename T>
+      const T& read(const rsl::memory_size& offset = 0_bytes) const;
+
+      // Read x amount of bytes from the underlying buffer at a certain offset and copy them into a desintation
+      void* read_bytes(void* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
 
     private:
       const rsl::byte* m_data;
