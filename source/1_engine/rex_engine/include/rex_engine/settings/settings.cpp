@@ -55,15 +55,55 @@ namespace rex
     }
 
     // gets a setting from the global map
-    rsl::string_view get(rsl::string_view name)
+    rsl::string_view get_string(rsl::string_view name, rsl::string_view defaultVal)
     {
-      return internal::all_settings()[name];
+      if (has_setting(name))
+      {
+        return internal::all_settings()[name];
+      }
+      
+      set(name, defaultVal);
+      return defaultVal;
+    }
+
+    // Get the value of a setting as an int
+    s32 get_int(rsl::string_view name, s32 defaultVal)
+    {
+      if (has_setting(name))
+      {
+        return rsl::stoi(get_string(name)).value_or(defaultVal);
+      }
+
+      set(name, defaultVal);
+      return defaultVal;
+    }
+    // Get the value of a setting as a float
+    f32 get_float(rsl::string_view name, f32 defaultVal)
+    {
+      if (has_setting(name))
+      {
+        return rsl::stof(get_string(name)).value_or(defaultVal);
+      }
+
+      set(name, defaultVal);
+      return defaultVal;
     }
 
     // set s asetting in the global map
     void set(rsl::string_view name, rsl::string_view val)
     {
       internal::all_settings()[name].assign(val);
+    }
+
+    // Set a setting from an int. This supports adding new settings
+    void set(rsl::string_view name, s32 val)
+    {
+      internal::all_settings()[name].assign(rsl::to_string(val));
+    }
+    // Set a setting from a float. This supports adding new settings
+    void set(rsl::string_view name, f32 val)
+    {
+      internal::all_settings()[name].assign(rsl::to_string(val));
     }
 
     // Load a settings file and adds it settings to the settings

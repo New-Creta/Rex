@@ -40,7 +40,7 @@ namespace rex
 
       // Read bytes from the underlying buffer at a certain offset and cast them to a type
       template <typename T>
-      const T& read(const rsl::memory_size& offset = 0_bytes) const;
+      const T& read(rsl::memory_size offset = 0_bytes) const;
 
       // Read x amount of bytes from the underlying buffer at a certain offset and copy them into a desintation
       void* read_bytes(void* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
@@ -49,5 +49,20 @@ namespace rex
       const rsl::byte* m_data;
       rsl::memory_size m_size;
     };
+
+    //-------------------------------------------------------------------------
+    template <typename T>
+    const T& BlobView::read(rsl::memory_size offset) const
+    {
+      return *(T*)(m_data + offset);
+    }
+
+    //-------------------------------------------------------------------------
+    template <typename T>
+    const T* BlobView::data_as() const
+    {
+      return reinterpret_cast<const T*>(m_data);
+    }
+
   } // namespace memory
 } // namespace rex

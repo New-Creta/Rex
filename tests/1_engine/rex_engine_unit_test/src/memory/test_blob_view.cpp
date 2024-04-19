@@ -105,7 +105,7 @@ TEST_CASE("BlobView - Copy assignment")
   REX_CHECK(view2.read<s32>() == 1);
 
   auto data_2 = rsl::make_unique<s32[]>(1);
-  data_2[0] = 1;
+  data_2[0] = 2;
   rex::memory::Blob b2(rsl::move(data_2));
   auto ptr_2 = b2.data();
   auto size_2 = b2.size();
@@ -119,7 +119,7 @@ TEST_CASE("BlobView - Copy assignment")
 
   REX_CHECK(view2.data() == ptr_2);
   REX_CHECK(view2.size() == size_2);
-  REX_CHECK(*view2.data_as<s32>() == 2);
+  REX_CHECK(*view2.data_as<s32>() == 2); // data_as always starts from the start
   REX_CHECK(view2.read<s32>() == 2);
 
   REX_CHECK(view3.data() == ptr_2);
@@ -150,7 +150,7 @@ TEST_CASE("BlobView - Move assignment")
   REX_CHECK(view2.read<s32>() == 1);
 
   auto data_2 = rsl::make_unique<s32[]>(1);
-  data_2[0] = 1;
+  data_2[0] = 2;
   rex::memory::Blob b2(rsl::move(data_2));
   auto ptr_2 = b2.data();
   auto size_2 = b2.size();

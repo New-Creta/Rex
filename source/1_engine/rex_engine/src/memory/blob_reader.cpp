@@ -17,9 +17,17 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void BlobReader::skip(rsl::memory_size amount)
+    s32 BlobReader::skip(rsl::memory_size amount)
     {
       m_read_offset += amount;
+      return static_cast<s32>(m_read_offset);
     }
+
+    //-------------------------------------------------------------------------
+    s32 BlobReader::read_offset() const
+    {
+      return static_cast<s32>(m_read_offset);
+    }
+
   }   // namespace memory
 } // namespace rex

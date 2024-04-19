@@ -56,7 +56,7 @@ namespace rex
       {
         rsl::string_view key   = line.substr(0, equal_pos);
         rsl::string_view value = line.substr(equal_pos + 1);
-
+        value = rex::remove_quotes(value);
         items.emplace_back(key, value);
         continue;
       }
@@ -79,7 +79,9 @@ namespace rex
   {
     if(!items.empty())
     {
-      m_headers_with_items.emplace_back(header, rsl::move(items));
+      rsl::string header_str(header);
+      rex::remove_spaces(header_str);
+      m_headers_with_items.emplace_back(header_str, rsl::move(items));
     }
   }
 

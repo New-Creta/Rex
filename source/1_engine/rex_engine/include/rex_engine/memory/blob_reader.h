@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/memory/blob_view.h" // IWYU pragma: keep
+#include "rex_engine/engine/types.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/memory.h"
 
@@ -21,7 +22,11 @@ namespace rex
       T read();
 
       // Skip a certain amount of bytes
-      void skip(rsl::memory_size amount);
+      // it returns the read offset after the skip has been applied
+      s32 skip(rsl::memory_size amount);
+
+      // Return the current read offset
+      s32 read_offset() const;
 
     private:
       memory::BlobView m_blob;
@@ -32,7 +37,7 @@ namespace rex
     template <typename T>
     T rex::memory::BlobReader::read()
     {
-      T value = m_blob->read<T>(m_read_offset);
+      T value = m_blob.read<T>(m_read_offset);
       m_read_offset += sizeof(T);
       return value;
     }

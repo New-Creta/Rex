@@ -37,6 +37,7 @@ namespace rex
   constexpr T align(T addr, card32 alignment)
   {
     const card32 mask = alignment - 1;
+    REX_ASSERT_X(alignment > 0, "Alignment must be bigger than 0"); // NOLINT(hicpp-signed-bitwise)
     REX_ASSERT_X((alignment & mask) == 0, "Alignment must be a power of 2"); // NOLINT(hicpp-signed-bitwise)
     return (addr + mask) & ~mask;                                            // NOLINT(hicpp-signed-bitwise)
   }

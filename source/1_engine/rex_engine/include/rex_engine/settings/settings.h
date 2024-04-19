@@ -11,10 +11,18 @@ namespace rex
     bool has_setting(rsl::string_view name);
 
     // Get the value of a setting as a string
-    rsl::string_view get(rsl::string_view name);
+    rsl::string_view get_string(rsl::string_view name, rsl::string_view defaultVal = "");
+    // Get the value of a setting as an int
+    s32 get_int(rsl::string_view name, s32 defaultVal = 0);
+    // Get the value of a setting as a float
+    f32 get_float(rsl::string_view name, f32 defaultVal = 0.0f);
 
-    // Set a setting. This supports adding new settings
+    // Set a setting from a string. This supports adding new settings
     void set(rsl::string_view name, rsl::string_view val);
+    // Set a setting from an int. This supports adding new settings
+    void set(rsl::string_view name, s32 val);
+    // Set a setting from a float. This supports adding new settings
+    void set(rsl::string_view name, f32 val);
 
     // Load a settings file and adds it settings to the settings
     // This behaves the same as if you can "set" multiple times

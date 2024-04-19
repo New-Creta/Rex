@@ -16,11 +16,17 @@ TEST_CASE("BlobReader - Read from blob")
   rex::memory::Blob blob(rsl::move(data));
   rex::memory::BlobReader reader(blob);
 
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 0);
   REX_CHECK(reader.read<s32>() == 1);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 1);
   REX_CHECK(reader.read<s32>() == 2);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 2);
   REX_CHECK(reader.read<s32>() == 3);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 3);
   REX_CHECK(reader.read<s32>() == 4);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 4);
   REX_CHECK(reader.read<s32>() == 5);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 5);
 }
 
 TEST_CASE("BlobReader - Read from blob from offset")
@@ -35,10 +41,15 @@ TEST_CASE("BlobReader - Read from blob from offset")
   rex::memory::Blob blob(rsl::move(data));
   rex::memory::BlobReader reader(blob, sizeof(s32));
 
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 1);
   REX_CHECK(reader.read<s32>() == 2);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 2);
   REX_CHECK(reader.read<s32>() == 3);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 3);
   REX_CHECK(reader.read<s32>() == 4);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 4);
   REX_CHECK(reader.read<s32>() == 5);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 5);
 }
 
 TEST_CASE("BlobReader - Read from blob with skipping")
@@ -53,11 +64,17 @@ TEST_CASE("BlobReader - Read from blob with skipping")
   rex::memory::Blob blob(rsl::move(data));
   rex::memory::BlobReader reader(blob);
 
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 0);
   REX_CHECK(reader.read<s32>() == 1);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 1);
   reader.skip(sizeof(s32));
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 2);
   REX_CHECK(reader.read<s32>() == 3);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 3);
   reader.skip(sizeof(s32));
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 4);
   REX_CHECK(reader.read<s32>() == 5);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 5);
 }
 
 TEST_CASE("BlobReader - Read from blob from offset with skipping")
@@ -72,8 +89,13 @@ TEST_CASE("BlobReader - Read from blob from offset with skipping")
   rex::memory::Blob blob(rsl::move(data));
   rex::memory::BlobReader reader(blob, sizeof(s32));
 
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 1);
   REX_CHECK(reader.read<s32>() == 2);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 2);
   reader.skip(sizeof(s32));
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 3);
   reader.skip(sizeof(s32));
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 4);
   REX_CHECK(reader.read<s32>() == 5);
+  REX_CHECK(reader.read_offset() == sizeof(s32) * 5);
 }

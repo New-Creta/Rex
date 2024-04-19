@@ -2,13 +2,13 @@
 
 #include "rex_engine/engine/numeric.h"
 #include "rex_engine/filesystem/directory.h"
+#include "rex_engine/text_processing/text_processing.h"
 #include "rex_engine/filesystem/file.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/ctype.h"
 #include "rex_std/format.h"
-
 // The current implementation of this namespace is Windows only
 
 namespace rex
@@ -99,12 +99,7 @@ namespace rex
     // removes leading and trailing quotes from a path
     rsl::string_view remove_quotes(rsl::string_view path)
     {
-      if(path.starts_with("\"") && path.ends_with("\""))
-      {
-        path = path.substr(1, path.length() - 2);
-      }
-
-      return path;
+      return rex::remove_quotes(path);
     }
     // Changes the extension of a path string_view
     // If extension argument is empty, the extension is removed

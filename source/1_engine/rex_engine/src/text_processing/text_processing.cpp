@@ -107,4 +107,15 @@ namespace rex
   {
     input.replace(" ", "");
   }
+
+  // removes leading and trailing quotes from a path
+  rsl::string_view remove_quotes(rsl::string_view path)
+  {
+    if (path.starts_with("\"") && path.ends_with("\""))
+    {
+      path = path.substr(1, path.length() - 2);
+    }
+
+    return path;
+  }
 } // namespace rex

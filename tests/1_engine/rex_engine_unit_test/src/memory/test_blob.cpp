@@ -53,11 +53,11 @@ TEST_CASE("Blob - Construction from typed array")
   s32* int_array = arr.get();
   rex::memory::Blob b(rsl::move(arr));
   REX_CHECK(static_cast<bool>(b) == true);
-  REX_CHECK(b.size() == 3_bytes);
+  REX_CHECK(b.size() == 3 * sizeof(s32));
   REX_CHECK(b.data() == (rsl::byte*)int_array);
-  REX_CHECK(static_cast<s32>(b[0]) == 1);
-  REX_CHECK(static_cast<s32>(b[1]) == 2);
-  REX_CHECK(static_cast<s32>(b[2]) == 3);
+  REX_CHECK(*reinterpret_cast<const s32*>(b.data() + sizeof(s32) * 0) == 1);
+  REX_CHECK(*reinterpret_cast<const s32*>(b.data() + sizeof(s32) * 1) == 2);
+  REX_CHECK(*reinterpret_cast<const s32*>(b.data() + sizeof(s32) * 2) == 3);
 }
 
 TEST_CASE("Blob - Move assignment")
@@ -90,7 +90,7 @@ TEST_CASE("Blob - Blob zero_initialize")
   REX_CHECK(static_cast<s32>(b[2]) == 0);
 }
 
-TEST_CASE("Blob - Blob zero_initialize")
+TEST_CASE("Blob - Blob data_as")
 {
   {
     auto arr = rsl::make_unique<s32[]>(1);
@@ -118,7 +118,7 @@ TEST_CASE("Blob - Blob zero_initialize")
     rsl::memcpy(byte_arr.get(), &vars, sizeof(vars));
     rex::memory::Blob b(rsl::move(byte_arr));
 
-    SomeVariables* vars2 = b.data_as<SomeVariables>();
+    const SomeVariables* vars2 = b.data_as<SomeVariables>();
     REX_CHECK(vars.x == vars2->x);
     REX_CHECK(vars.y == vars2->y);
     REX_CHECK(vars.z == vars2->z);
@@ -156,8 +156,8 @@ TEST_CASE("Blob - writing")
   REX_CHECK(b.read<s32>(0) == x);
   x = 2;
   b.write(&x, sizeof(x), 4);
-  REX_CHECK(b.read<s32>(0) == x);
+  REX_CHECK(b.read<s32>(4) == x);
   x = 3;
   b.write(&x, sizeof(x), 8);
-  REX_CHECK(b.read<s32>(0) == x);
+  REX_CHECK(b.read<s32>(8) == x);
 }

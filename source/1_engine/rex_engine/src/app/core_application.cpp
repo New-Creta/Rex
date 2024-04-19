@@ -122,7 +122,7 @@ namespace rex
     // the max allowed memory usage is one of those examples
 
     // Settings are loaded now, we can initialize all the sub systems with settings loaded from them
-    const rsl::memory_size max_mem_budget = rsl::memory_size(rsl::stoi(settings::get("max_memory_mib")).value());
+    const rsl::memory_size max_mem_budget = rsl::memory_size(settings::get_int("max_memory_mib"));
     mem_tracker().initialize(max_mem_budget);
 
     return res;
