@@ -46,24 +46,29 @@ namespace rex
         rsl::to_lower(full_setting_name.data(), full_setting_name.data(), full_setting_name.length());
         all_settings()[rsl::move(full_setting_name)] = rsl::string(val);
       }
+
+      rsl::optional<rsl::string_view> get_setting(rsl::string_view name)
+      {
+        rsl::string name_lower(name.length(), '\0');
+        rsl::to_lower(name.data(), name_lower.data(), name.length());
+        if (all_settings().contains(name_lower))
+        {
+          return all_settings().at(name_lower);
+        }
+        return rsl::nullopt;
+      }
     } // namespace internal
 
     // Check if a certain setting exists
     bool has_setting(rsl::string_view name)
     {
-      return internal::all_settings().contains(name);
+      return internal::get_setting(name).has_value();
     }
 
     // gets a setting from the global map
     rsl::string_view get_string(rsl::string_view name, rsl::string_view defaultVal)
     {
-      if (has_setting(name))
-      {
-        return internal::all_settings()[name];
-      }
-      
-      set(name, defaultVal);
-      return defaultVal;
+      return internal::get_setting(name).value_or(defaultVal);
     }
 
     // Get the value of a setting as an int
@@ -74,7 +79,6 @@ namespace rex
         return rsl::stoi(get_string(name)).value_or(defaultVal);
       }
 
-      set(name, defaultVal);
       return defaultVal;
     }
     // Get the value of a setting as a float
@@ -85,7 +89,6 @@ namespace rex
         return rsl::stof(get_string(name)).value_or(defaultVal);
       }
 
-      set(name, defaultVal);
       return defaultVal;
     }
 
@@ -135,6 +138,12 @@ namespace rex
           internal::add_new_settings(header_with_items.header(), item.key, item.value);
         }
       }
+    }
+
+    // unload all settings
+    void unload()
+    {
+      internal::all_settings().clear();
     }
   } // namespace settings
 } // namespace rex

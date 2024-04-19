@@ -28,5 +28,9 @@ namespace rex
     // This behaves the same as if you can "set" multiple times
     // for each setting in the file
     void load(rsl::string_view path);
+
+    // unload all settings
+    void unload();
+
   } // namespace settings
 } // namespace rex
