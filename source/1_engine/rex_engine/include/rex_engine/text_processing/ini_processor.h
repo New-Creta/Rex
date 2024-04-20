@@ -19,7 +19,7 @@ namespace rex
     const rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>& items() const;
 
   private:
-    rsl::string m_header;
+    rsl::string_view m_header;
     rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>> m_items;
   };
 

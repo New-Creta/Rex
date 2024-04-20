@@ -129,6 +129,7 @@ namespace rex
       Error error                = ini_processor.process();
 
       REX_ERROR_X(Settings, !error, "Invalid settings found in \"{}\"", path);
+      REX_ERROR_X(Settings, !error, "Error: {}", error.error_msg());
 
       // Loop over the processed settings and add them to the global map
       for(const IniHeaderWithItems& header_with_items: ini_processor.items())
