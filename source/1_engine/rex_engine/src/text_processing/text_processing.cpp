@@ -31,16 +31,26 @@ namespace rex
       }).base();
     // clang-format on
 
-    return rsl::string_view(first_not_whitespace, last_not_whitespace);
+    if (last_not_whitespace > first_not_whitespace)
+    {
+      return rsl::string_view(first_not_whitespace, last_not_whitespace);
+    }
+
+    return "";
   }
 
   // Removes leading and trailing characters that match any character in the view
   rsl::string_view strip(rsl::string_view input, rsl::string_view characters)
   {
-    auto first_not_whitespace = rsl::find_first_not_of(input.cbegin(), input.cend(), characters.cbegin(), characters.cend());
-    auto last_not_whitespace  = rsl::find_last_not_of(input.cbegin(), input.cend(), characters.cbegin(), characters.cend());
+    auto first_not_character = rsl::find_first_not_of(input.cbegin(), input.cend(), characters.cbegin(), characters.cend());
+    auto last_not_character  = rsl::find_last_not_of(input.cbegin(), input.cend(), characters.cbegin(), characters.cend());
 
-    return rsl::string_view(first_not_whitespace, last_not_whitespace);
+    if (last_not_character > first_not_character)
+    {
+      return rsl::string_view(first_not_character, last_not_character + 1);
+    }
+
+    return "";
   }
 
   // Removes leading whitespace
@@ -84,12 +94,17 @@ namespace rex
   {
     auto last_not_whitespace = rsl::find_last_not_of(input.cbegin(), input.cend(), characters.cbegin(), characters.cend());
 
-    return rsl::string_view(input.cbegin(), last_not_whitespace);
+    return rsl::string_view(input.cbegin(), last_not_whitespace + 1);
   }
 
   // Add quotes around a string
   rsl::string quoted(rsl::string_view input)
   {
+    if (input.starts_with('"') && input.ends_with('"'))
+    {
+      return rsl::string(input);
+    }
+
     rsl::string res;
     res.reserve(input.size() + 2);
 
@@ -103,9 +118,10 @@ namespace rex
   // Removes all spaces from a string
   // we're taking a string by ref
   // to reuse the memory
-  void remove_spaces(rsl::string& input)
+  rsl::string& remove_spaces(rsl::string& input)
   {
     input.replace(" ", "");
+    return input;
   }
 
   // removes leading and trailing quotes from a path

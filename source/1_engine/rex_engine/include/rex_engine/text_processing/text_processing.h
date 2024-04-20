@@ -31,7 +31,7 @@ namespace rex
   // Removes all spaces from a string
   // we're taking a string by ref
   // to reuse the memory
-  void remove_spaces(rsl::string& input);
+  rsl::string& remove_spaces(rsl::string& input);
 
   // removes leading and trailing quotes from a path
   rsl::string_view remove_quotes(rsl::string_view path);
