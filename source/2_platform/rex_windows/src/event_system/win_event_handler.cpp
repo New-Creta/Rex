@@ -10,6 +10,8 @@
 #include "rex_std/bonus/utility.h"
 #include "rex_windows/diagnostics/log.h"
 
+#include "rex_engine/event_system/event_handler.h"
+
 #define NOMINMAX
 #include <Windows.h>
 
@@ -19,10 +21,17 @@ namespace rex
 {
   namespace win
   {
+    DEFINE_LOG_CATEGORY(LogWinEventHandler);
+
     //-------------------------------------------------------------------------
     EventHandler::EventHandler(IWindow* wnd)
         : m_wnd(wnd)
     {
+      event_handler().add_callback<CharDown>(
+        [](const CharDown& ev) 
+        {
+          REX_INFO(LogWinEventHandler, "Key down: {}", ev.key().ascii);
+        });
     }
 
     //-------------------------------------------------------------------------
@@ -106,6 +115,9 @@ namespace rex
             event_system::enqueue_event(evt);
           }
           return 0;
+        case WM_CHAR:
+          event_handler().handle_event(rex::CharDown(CharKey{KeyCode::A, "", (char8)wparam}));
+
         default:
           // Nothing to implement
           break;

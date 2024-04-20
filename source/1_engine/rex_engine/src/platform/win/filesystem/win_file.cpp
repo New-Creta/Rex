@@ -117,7 +117,7 @@ namespace rex
                                                                 GENERIC_READ | GENERIC_WRITE,  // General read and write access
                                                                 FILE_SHARE_READ,               // Other processes can also read the file
                                                                 NULL,                          // No SECURITY_ATTRIBUTES
-                                                                OPEN_EXISTING,                 // Open the file, only if it exists
+                                                                CREATE_ALWAYS,                 // Open the file, only if it exists
                                                                 FILE_FLAG_SEQUENTIAL_SCAN,     // Files will be read from beginning to end
                                                                 NULL                           // No template file
                                                                 ),
@@ -151,7 +151,7 @@ namespace rex
                                                                 GENERIC_READ | GENERIC_WRITE, // General read and write access
                                                                 FILE_SHARE_READ,              // Other processes can also read the file
                                                                 NULL,                         // No SECURITY_ATTRIBUTES
-                                                                OPEN_EXISTING,                // Open the file, only if it exists
+                                                                CREATE_ALWAYS,                // Open the file, only if it exists
                                                                 FILE_FLAG_SEQUENTIAL_SCAN,    // Files will be read from beginning to end
                                                                 NULL                          // No template file
                                                                 ),
