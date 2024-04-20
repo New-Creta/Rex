@@ -23,9 +23,9 @@ namespace rex
     s32 height;
   };
 
-  struct WindowDescription
+  struct WindowInfo
   {
-    WindowDescription()
+    WindowInfo()
         : title("rex")
         , viewport({0, 0, 1280, 720})
         , min_width(200)

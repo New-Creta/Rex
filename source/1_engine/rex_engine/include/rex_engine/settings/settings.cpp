@@ -46,24 +46,67 @@ namespace rex
         rsl::to_lower(full_setting_name.data(), full_setting_name.data(), full_setting_name.length());
         all_settings()[rsl::move(full_setting_name)] = rsl::string(val);
       }
+
+      rsl::optional<rsl::string_view> get_setting(rsl::string_view name)
+      {
+        rsl::string name_lower(name.length(), '\0');
+        rsl::to_lower(name.data(), name_lower.data(), name.length());
+        if (all_settings().contains(name_lower))
+        {
+          return all_settings().at(name_lower);
+        }
+        return rsl::nullopt;
+      }
     } // namespace internal
 
     // Check if a certain setting exists
     bool has_setting(rsl::string_view name)
     {
-      return internal::all_settings().contains(name);
+      return internal::get_setting(name).has_value();
     }
 
     // gets a setting from the global map
-    rsl::string_view get(rsl::string_view name)
+    rsl::string_view get_string(rsl::string_view name, rsl::string_view defaultVal)
     {
-      return internal::all_settings()[name];
+      return internal::get_setting(name).value_or(defaultVal);
+    }
+
+    // Get the value of a setting as an int
+    s32 get_int(rsl::string_view name, s32 defaultVal)
+    {
+      if (has_setting(name))
+      {
+        return rsl::stoi(get_string(name)).value_or(defaultVal);
+      }
+
+      return defaultVal;
+    }
+    // Get the value of a setting as a float
+    f32 get_float(rsl::string_view name, f32 defaultVal)
+    {
+      if (has_setting(name))
+      {
+        return rsl::stof(get_string(name)).value_or(defaultVal);
+      }
+
+      return defaultVal;
     }
 
     // set s asetting in the global map
     void set(rsl::string_view name, rsl::string_view val)
     {
       internal::all_settings()[name].assign(val);
+    }
+
+    // Set a setting from an int. This supports adding new settings
+    void set(rsl::string_view name, s32 val)
+    {
+      internal::all_settings()[name].assign(rsl::to_string(val));
+    }
+    // Set a setting from a float. This supports adding new settings
+    void set(rsl::string_view name, f32 val)
+    {
+      internal::all_settings()[name].assign(rsl::to_string(val));
     }
 
     // Load a settings file and adds it settings to the settings
@@ -86,6 +129,7 @@ namespace rex
       Error error                = ini_processor.process();
 
       REX_ERROR_X(Settings, !error, "Invalid settings found in \"{}\"", path);
+      REX_ERROR_X(Settings, !error, "Error: {}", error.error_msg());
 
       // Loop over the processed settings and add them to the global map
       for(const IniHeaderWithItems& header_with_items: ini_processor.items())
@@ -95,6 +139,12 @@ namespace rex
           internal::add_new_settings(header_with_items.header(), item.key, item.value);
         }
       }
+    }
+
+    // unload all settings
+    void unload()
+    {
+      internal::all_settings().clear();
     }
   } // namespace settings
 } // namespace rex

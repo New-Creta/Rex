@@ -8,12 +8,6 @@
 
 namespace rex
 {
-  struct WindowInfo;
-
-  namespace globals
-  {
-    const WindowInfo& window_info();
-  } // namespace globals
   namespace win
   {
     class GuiApplication : public CoreApplication

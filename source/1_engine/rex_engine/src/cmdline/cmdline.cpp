@@ -20,7 +20,7 @@ namespace rex
     {
       StringID create_string_id_for_arg(rsl::string_view arg)
       {
-        return StringID(rsl::medium_stack_string(arg).to_lower());
+        return StringID::create(rsl::medium_stack_string(arg).to_lower());
       }
     } // namespace internal
 
@@ -49,7 +49,6 @@ namespace rex
 
         if(cmdLine.empty())
         {
-          REX_INFO(LogEngine, "No command line arguments to parse");
           return;
         }
 
@@ -163,7 +162,7 @@ namespace rex
           return;
         }
 
-        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return rsl::strincmp(key.data(), activeArg.argument.data(), key.length()) == 0; });
+        auto active_it = rsl::find_if(m_arguments.cbegin(), m_arguments.cend(), [key](const ActiveArgument& activeArg) { return rsl::stricmp(key.data(), activeArg.argument.data()) == 0; });
 
         if(active_it != m_arguments.cend())
         {

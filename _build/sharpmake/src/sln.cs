@@ -24,7 +24,7 @@ namespace rex
 
       // Because the sharpmake project only gets added to Visual Studio
       // We can only add its dependency if the target development env is Visual Studio
-      if (target.DevEnv == DevEnv.vs2019 && target.Compiler == Compiler.MSVC)
+      if (target.DevEnv.IsVisualStudio() && target.Compiler == Compiler.MSVC)
       {
         conf.AddProject<SharpmakeProject>(target);
       }
@@ -50,6 +50,9 @@ namespace rex
       if (ProjectGen.Settings.EnableDefaultGeneration)
       {
         conf.AddProject<Regina>(target);
+        conf.AddProject<NtfsJournalParser>(target);
+        conf.AddProject<DokanFs>(target);
+        conf.AddProject<ProjectedFileSystem>(target);
         conf.AddProject<ConsoleApp>(target);
       }
 

@@ -5,6 +5,10 @@
 #include "rex_std/bonus/utility/casting.h"
 #include "rex_std/memory.h"
 
+#include "rex_std/bonus/memory.h"
+#include "rex_std/bonus/types.h"
+#include "rex_std/algorithm.h"
+
 namespace rex
 {
   // lockless single producer single consumer - thread safe ring buffer
@@ -12,90 +16,47 @@ namespace rex
   class RingBuffer
   {
   public:
-    RingBuffer();
-    explicit RingBuffer(u32 cap);
+    // Create a ring buffer with a given amount of elements
+    explicit RingBuffer(s32 numElements);
 
     RingBuffer(const RingBuffer&) = delete;
     RingBuffer(RingBuffer&&)      = delete;
 
-    ~RingBuffer();
+    ~RingBuffer() = default;
 
     RingBuffer& operator=(const RingBuffer&) = delete;
     RingBuffer& operator=(RingBuffer&&)      = delete;
 
-    void shutdown();
-
+    // Put a new item at the next available location in the ring buffer
     bool put(const T& item);
-    bool will_wrap_on_next_put() const;
-    bool will_wrap_on_next_get() const;
 
+    // get the next element and increment the get pos
     T* get();
+    // get the next element and don't increment the get pos
     T* check();
 
-  private:
-    void initialize(u32 cap);
+    // reset the buffer, setting the put and get position back to zero
+    void reset();
 
   private:
-    rsl::unique_array<T> m_data = nullptr;
+    rsl::unique_array<T> m_data;
 
-    a_u32 m_get_pos;
-    a_u32 m_put_pos;
-
-    a_u64 m_capacity;
+    s32 m_get_pos;
+    s32 m_put_pos;
+    s32 m_num_reads_available;
+    s32 m_capacity;
   };
 
   //-------------------------------------------------------------------------
   template <typename T>
-  RingBuffer<T>::RingBuffer()
+  RingBuffer<T>::RingBuffer(s32 numElements)
       : m_data(nullptr)
+      , m_get_pos(0)
+      , m_put_pos(0)
+      , m_num_reads_available(0)
+      , m_capacity(numElements)
   {
-    initialize(0);
-  }
-
-  //-------------------------------------------------------------------------
-  template <typename T>
-  RingBuffer<T>::RingBuffer(u32 cap)
-      : m_data(nullptr)
-  {
-    initialize(cap);
-  }
-
-  //-------------------------------------------------------------------------
-  template <typename T>
-  RingBuffer<T>::~RingBuffer()
-  {
-    shutdown();
-  }
-
-  //-------------------------------------------------------------------------
-  template <typename T>
-  void RingBuffer<T>::initialize(u32 cap)
-  {
-    if(m_data)
-    {
-      m_data.reset();
-    }
-
-    m_get_pos  = 0;
-    m_put_pos  = 0;
-    m_capacity = cap;
-
-    if(cap == 0)
-    {
-      return;
-    }
-
-    m_data = rsl::make_unique<T[]>(rsl::safe_numeric_cast<u32>(sizeof(T) * m_capacity.load()));
-  }
-
-  //-------------------------------------------------------------------------
-  template <typename T>
-  void RingBuffer<T>::shutdown()
-  {
-    if(m_data)
-    {
-      m_data.reset();
-    }
+    m_data = rsl::make_unique<T[]>(rsl::safe_numeric_cast<u32>(sizeof(T) * m_capacity));
   }
 
   //-------------------------------------------------------------------------
@@ -103,7 +64,12 @@ namespace rex
   bool RingBuffer<T>::put(const T& item)
   {
     m_data[m_put_pos] = rsl::move(item);
-    m_put_pos         = (m_put_pos + 1) % m_capacity;
+    m_num_reads_available = rsl::min(m_num_reads_available + 1, m_capacity);
+    ++m_put_pos;
+    if (m_put_pos == m_capacity)
+    {
+      m_put_pos = 0;
+    }
 
     return true;
   }
@@ -112,40 +78,39 @@ namespace rex
   template <typename T>
   T* RingBuffer<T>::get()
   {
-    const u32 gp = m_get_pos;
-    if(gp == m_put_pos)
+    T* res = check();
+
+    if (res)
     {
-      return nullptr;
+      --m_num_reads_available;
+      ++m_get_pos;
+    
+      if (m_get_pos == m_capacity)
+      {
+        m_get_pos = 0;
+      }
     }
 
-    m_get_pos = (m_get_pos + 1) % m_capacity;
-
-    return &m_data[gp];
+    return res;
   }
 
   //-------------------------------------------------------------------------
   template <typename T>
   T* RingBuffer<T>::check()
   {
-    u32 gp = m_get_pos;
-    if(gp == m_put_pos)
+    if (m_num_reads_available == 0)
     {
       return nullptr;
     }
-    return &m_data[gp];
+
+    return &m_data[m_get_pos];
   }
 
   //-------------------------------------------------------------------------
   template <typename T>
-  bool RingBuffer<T>::will_wrap_on_next_put() const
+  void RingBuffer<T>::reset()
   {
-    return (m_put_pos + 1) % m_capacity == 0;
-  }
-
-  //-------------------------------------------------------------------------
-  template <typename T>
-  bool RingBuffer<T>::will_wrap_on_next_get() const
-  {
-    return (m_get_pos + 1) % m_capacity == 0;
+    m_get_pos = 0;
+    m_put_pos = 0;
   }
 } // namespace rex

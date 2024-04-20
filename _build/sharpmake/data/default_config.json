@@ -1,5 +1,5 @@
 {
-  "version" : "0.0.1",
+  "version" : "0.0.2",
 
   "settings": {
   "clang-tidy-regex": {
@@ -62,6 +62,7 @@
     "Description": "Select which IDE to use. Visual Studio is the default.",
     "Value": "None",
     "Options": [
+      "VisualStudio",
       "VisualStudio19",
       "VisualStudio22",
       "VSCode",

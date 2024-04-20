@@ -2,6 +2,7 @@
 
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/filesystem/mounting_point.h"
+#include "rex_engine/diagnostics/error.h"
 #include "rex_engine/memory/blob.h"
 #include "rex_std/bonus/attributes.h"
 #include "rex_std/bonus/memory/memory_size.h"
@@ -104,11 +105,11 @@ namespace rex
     REX_NO_DISCARD memory::Blob read_file(MountingPoint root, rsl::string_view filepath);
     REX_NO_DISCARD ReadRequest read_file_async(rsl::string_view filepath);
     REX_NO_DISCARD ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath);
-    bool save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
-    bool save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
-    bool save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
-    bool create_dir(MountingPoint root, rsl::string_view path);
-    bool create_dirs(rsl::string_view path);
+    Error save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
+    Error save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
+    Error save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
+    Error create_dir(MountingPoint root, rsl::string_view path);
+    Error create_dirs(rsl::string_view path);
 
     bool exists(MountingPoint root, rsl::string_view path);
     bool is_dir(MountingPoint root, rsl::string_view path);
@@ -125,8 +126,8 @@ namespace rex
     // PLATFORM SPECIFIC IMPLEMENTATIONS
     // **************************************************************************
     REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
-    bool save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
-    bool create_dir(rsl::string_view path);
+    Error save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
+    Error create_dir(rsl::string_view path);
 
   } // namespace vfs
 } // namespace rex

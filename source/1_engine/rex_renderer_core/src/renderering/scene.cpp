@@ -1,7 +1,6 @@
 #include "rex_renderer_core/rendering/scene.h"
 
 #include "rex_engine/app/core_application.h"
-#include "rex_engine/app/windowinfo.h"
 #include "rex_renderer_core/rendering/cull_mode.h"
 #include "rex_renderer_core/rendering/depth_info.h"
 #include "rex_renderer_core/rendering/vertex.h"

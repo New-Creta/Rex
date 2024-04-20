@@ -1,7 +1,6 @@
 #include "regina/cube_scene.h"
 #include "regina/sample_scene.h"
 #include "rex_engine/app/core_application.h"
-#include "rex_engine/app/windowinfo.h"
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
@@ -71,15 +70,6 @@ namespace regina
   //-------------------------------------------------------------------------
   void draw()
   {
-    // This function should be removed, the user should not have their own draw function
-    const f32 width           = static_cast<f32>(rex::globals::window_info().width);
-    const f32 height          = static_cast<f32>(rex::globals::window_info().height);
-    const rex::Viewport vp    = {0.0f, 0.0f, width, height, 0.0f, 1.0f};
-    const rex::ScissorRect sr = {vp.top_left_x, vp.top_left_y, vp.width, vp.height};
-
-    rex::renderer::set_viewport(vp);
-    rex::renderer::set_scissor_rect(sr);
-
     g_regina->draw();
   }
   //-------------------------------------------------------------------------

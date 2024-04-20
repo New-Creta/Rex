@@ -5,7 +5,10 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/engine/state_controller.h"
+#include "rex_engine/engine/casting.h"
 #include "rex_engine/filesystem/path.h"
+#include "rex_engine/filesystem/file.h"
+#include "rex_engine/filesystem/directory.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/atomic/atomic.h"
 #include "rex_std/bonus/hashtable.h"
@@ -35,92 +38,33 @@ namespace rex
   {
     memory::Blob read_file(rsl::string_view filepath)
     {
-      const rsl::string path = create_full_path(filepath);
-
-      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(path.data(),               // Path to file
-                                                                GENERIC_READ,              // General read and write access
-                                                                FILE_SHARE_READ,           // Other processes can also read the file
-                                                                NULL,                      // No SECURITY_ATTRIBUTES
-                                                                OPEN_EXISTING,             // Open the file, only if it exists
-                                                                FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
-                                                                NULL                       // No template file
-                                                                ),
-                                                    ERROR_ALREADY_EXISTS));
-
-      if(!handle.is_valid())
-      {
-        REX_ERROR(LogFileSystem, "Failed to open file {}", path);
-        return {};
-      }
-
-      // prepare a buffer to receive the file content
-      const card32 file_size              = static_cast<card32>(GetFileSize(handle.get(), nullptr));
-      rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_size + 1); // NOLINT(modernize-avoid-c-arrays)
-      buffer[file_size]                   = static_cast<rsl::byte>(0);                    // make sure we end with a null char
-
-      // actually read the file
-      DWORD bytes_read = 0;
-      WIN_CALL(ReadFile(handle.get(), buffer.get(), static_cast<DWORD>(buffer.count()), &bytes_read, NULL));
-
-      // return the buffer
-      return memory::Blob(rsl::move(buffer));
+      const rsl::string fullpath = create_full_path(filepath);
+      return rex::file::read_file(fullpath);
     }
 
-    bool save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
+    Error save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend)
     {
       const rsl::string fullpath = create_full_path(filepath);
-
-      const rsl::win::handle handle(CreateFileA(fullpath.data(),           // Path to file
-                                                GENERIC_WRITE,             // General read and write access
-                                                FILE_SHARE_READ,           // Other processes can also read the file
-                                                NULL,                      // No SECURITY_ATTRIBUTES
-                                                OPEN_ALWAYS,               // Create a new file, error when it already exists
-                                                FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
-                                                NULL                       // No template file
-                                                ));
-
-      // make sure the handle is valid
-      if(!handle.is_valid())
+      if (shouldAppend)
       {
-        REX_ERROR(LogFileSystem, "Failed to open file at \"{}\"", fullpath);
-        return false;
+        return rex::file::append_text(fullpath, rsl::string_view((const char8*)data, narrow_cast<s32>(size)));
       }
-
-      // if the file already exists, ERROR_ALREADY_EXISTS is set, so we need to clear this
-      rex::win::clear_win_errors();
-
-      const DWORD move_method = shouldAppend ? FILE_END : FILE_BEGIN;
-
-      // either trunc or append to the file
-      WIN_CALL(SetFilePointer(handle.get(), 0, NULL, move_method));
-      WIN_CALL(SetEndOfFile(handle.get()));
-
-      DWORD bytes_written = 0;
-      return WIN_SUCCESS(WriteFile(handle.get(), data, static_cast<DWORD>(size), &bytes_written, NULL));
+      else
+      {
+        return rex::file::save_to_file(fullpath, data, size);
+      }
     }
 
-    bool create_dir(rsl::string_view path)
+    Error create_dir(rsl::string_view path)
     {
       const rsl::string fullpath = create_full_path(path);
-      return WIN_SUCCESS_IGNORE(CreateDirectoryA(fullpath.data(), NULL), ERROR_ALREADY_EXISTS);
+      return directory::create(fullpath);
     }
 
-    bool create_dirs(rsl::string_view path)
+    Error create_dirs(rsl::string_view path)
     {
-      const rsl::string fullpath                         = create_full_path(path);
-      const rsl::vector<rsl::string_view> splitted_paths = rsl::split(fullpath, "/\\");
-
-      rsl::string full_path;
-      full_path.reserve(fullpath.size());
-
-      for(const rsl::string_view sub_path: splitted_paths)
-      {
-        full_path += sub_path;
-        WIN_SUCCESS_IGNORE(CreateDirectoryA(full_path.data(), NULL), ERROR_ALREADY_EXISTS);
-        full_path += g_folder_seps;
-      }
-
-      return true;
+      const rsl::string fullpath = create_full_path(path);
+      return directory::create_recursive(fullpath);
     }
 
   } // namespace vfs

@@ -4,8 +4,6 @@
 #include "rex_engine/text_processing/text_processing.h"
 #include "rex_std/string_view.h"
 
-DEFINE_LOG_CATEGORY(LogIniProcessor);
-
 namespace rex
 {
   IniHeaderWithItems::IniHeaderWithItems(rsl::string_view header, rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>&& items)
@@ -56,14 +54,29 @@ namespace rex
       {
         rsl::string_view key   = line.substr(0, equal_pos);
         rsl::string_view value = line.substr(equal_pos + 1);
+        
+        // an empty key is not support
+        if (key.empty())
+        {
+          m_headers_with_items.clear();
+          return rex::Error(rsl::format("Invalid line: \"{}\". No key provided", line));
+        }
 
+        // an empty value is not support
+        if (value.empty())
+        {
+          m_headers_with_items.clear();
+          return rex::Error(rsl::format("Invalid line: \"{}\". No value provided", line));
+        }
+
+        value = rex::remove_quotes(value);
         items.emplace_back(key, value);
         continue;
       }
 
       // anything else is an error
-      REX_ERROR(LogIniProcessor, "Invalid line: \"{}\"", line);
-      error = rex::Error("Invalid line found");
+      m_headers_with_items.clear();
+      return rex::Error(rsl::format("Invalid line: \"{}\"", line));
     }
 
     add_new_header_with_items(current_header, rsl::move(items));

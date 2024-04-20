@@ -25,7 +25,7 @@ try:
 except:
   rexpy_installed = False
 
-required_rexpy_version = "0.1.83"
+required_rexpy_version = "0.1.85"
 
 # all scripts are located in ~/_build/scripts path.
 # to make it easier to call these scripts wherever we need them
@@ -33,6 +33,7 @@ required_rexpy_version = "0.1.83"
 root = os.path.dirname(__file__)
 scripts_path = os.path.join(root, '_build', 'scripts')
 setup_script_path = os.path.join(scripts_path, 'setup.py')
+validate_script_path = os.path.join(scripts_path, 'validate.py')
 generate_script_path = os.path.join(scripts_path, 'generate.py')
 build_script_path = os.path.join(scripts_path, 'build.py')
 launch_script_path = os.path.join(scripts_path, 'launch.py')
@@ -102,6 +103,10 @@ def _exec_setup(argsToPassOn : list[str]):
   # We call the internal setup scripts
   return _run_script(setup_script_path, argsToPassOn)
 
+def _exec_validate(argsToPassOn : str):
+  """Execute the internal validation script"""
+  return _run_script(validate_script_path, argsToPassOn)
+
 def _exec_generate(argsToPassOn : str):
   """Execute the internal generate script"""
   return _run_script(generate_script_path, argsToPassOn)
@@ -141,6 +146,7 @@ def main():
   if not rexpy_installed:
     print("Warning: rexpy not installed. Only setup is possible.")
   else:
+    command_subparser.add_parser("validate", help="Validate the setup of rex.", add_help=False)
     command_subparser.add_parser("generate", help="Generate the solution of rex engine", add_help=False)
     command_subparser.add_parser("build", help="Build the rex engine", add_help=False)
     command_subparser.add_parser("launch", help="Launch a previous build project with the engine.", add_help=False)
@@ -168,6 +174,9 @@ def main():
     res = _exec_setup(unknown_args)
 
   if rexpy_installed:
+    if args.command == 'validate':
+      res = _exec_validate(unknown_args)
+
     if args.command == 'generate':
       res = _exec_generate(unknown_args)
 

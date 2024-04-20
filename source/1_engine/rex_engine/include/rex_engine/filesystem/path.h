@@ -207,20 +207,11 @@ namespace rex
     // Otherwise returns the input
     rsl::string real_path(rsl::string_view path);
 
-    // Returns the latest access time of the file or directory at the given path
-    card64 get_access_time(rsl::string_view path);
-
-    // Returns the modification time of the file or directory at the given path
-    card64 get_modification_time(rsl::string_view path);
-
-    // Returns the creation time of the file or directory at the given path
-    card64 get_creation_time(rsl::string_view path);
-
-    // Returns the creation time of the file or directory at the given path
-    card64 get_file_size(rsl::string_view path);
-
     // Returns if the given path is an absolute path
     bool is_absolute(rsl::string_view path);
+
+    // Returns if a file is under a certain directory
+    bool is_under_dir(rsl::string_view path, rsl::string_view dir);
 
     // Returns true if the given path points to a junction
     bool is_junction(rsl::string_view path);

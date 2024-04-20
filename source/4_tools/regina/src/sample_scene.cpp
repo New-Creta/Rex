@@ -1,7 +1,6 @@
 #include "regina/sample_scene.h"
 
 #include "rex_engine/app/core_application.h"
-#include "rex_engine/app/windowinfo.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_renderer_core/primitives/box.h"

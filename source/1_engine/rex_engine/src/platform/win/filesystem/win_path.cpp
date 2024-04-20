@@ -5,6 +5,7 @@
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/platform/win/win_com_library.h"
+#include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/algorithm.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/string.h"
@@ -36,7 +37,8 @@ namespace rex
       ReparseTag get_reparse_tag(rsl::string_view path)
       {
         WIN32_FIND_DATAA find_file_data;
-        HANDLE hfind = FindFirstFileA(path.data(), &find_file_data);
+        auto err = GetLastError();
+        HANDLE hfind = WIN_CALL_IGNORE(FindFirstFileA(path.data(), &find_file_data), ERROR_FILE_NOT_FOUND);
 
         if(hfind == INVALID_HANDLE_VALUE)
         {
@@ -57,6 +59,7 @@ namespace rex
           }
         }
 
+        err = GetLastError();
         return ReparseTag::None;
       }
     } // namespace internal
@@ -83,17 +86,20 @@ namespace rex
     {
       // It's a bit tricky to get the real path as there are multiple ways
       // of linking to a the same file (.lnk files, symlinks, hardlinks, junctions)
+      rsl::string fullpath = abs_path(path);
+
+      fullpath = rex::path::norm_path(fullpath);
 
       // If the path doesn't exist, just return its input
-      if(!file::exists(path) && !directory::exists(path))
+      if(!file::exists(fullpath) && !directory::exists(fullpath))
       {
-        return rsl::string(path);
+        return fullpath;
       }
 
       // If the path is a .lnk file, we can read its link
-      if(rex::path::extension(path).ends_with(".lnk"))
+      if(rex::path::extension(fullpath).ends_with(".lnk"))
       {
-        rsl::string res = rex::win::com_lib::read_link(path);
+        rsl::string res = rex::win::com_lib::read_link(fullpath);
         res.replace("\\", "/");
         return res;
       }
@@ -102,12 +108,12 @@ namespace rex
       // this can return an empty path in rare cases
       // If it does, just return the input
       rsl::big_stack_string stack_res;
-      GetFullPathNameA(path.data(), path.length(), stack_res.data(), nullptr);
+      GetFullPathNameA(fullpath.data(), fullpath.length(), stack_res.data(), nullptr);
       stack_res.reset_null_termination_offset();
 
       if(stack_res.empty())
       {
-        return rex::path::norm_path(path);
+        return fullpath;
       }
 
       rsl::string res(stack_res);

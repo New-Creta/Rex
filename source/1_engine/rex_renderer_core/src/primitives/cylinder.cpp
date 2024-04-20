@@ -12,7 +12,7 @@ namespace rex
         // Build top cap.
         //
 
-        const u16 base_index = static_cast<u16>(meshData.vertices().size());
+        const s32 base_index = meshData.vertices().size();
 
         const f32 y       = 0.5f * height;
         const f32 d_theta = 2.0f * glm::pi<f32>() / static_cast<f32>(sliceCount);
@@ -40,8 +40,8 @@ namespace rex
         for(s32 i = 0; i < sliceCount; ++i)
         {
           meshData.add_index(center_index);
-          meshData.add_index(base_index + i + 1);
-          meshData.add_index(base_index + i);
+          meshData.add_index(static_cast<u16>(base_index + i + 1));
+          meshData.add_index(static_cast<u16>(base_index + i));
         }
       }
 
@@ -78,8 +78,8 @@ namespace rex
         for(s32 i = 0; i < sliceCount; ++i)
         {
           meshData.add_index(center_index);
-          meshData.add_index(base_index + i);
-          meshData.add_index(base_index + i + 1);
+          meshData.add_index(static_cast<u16>(base_index + i));
+          meshData.add_index(static_cast<u16>(base_index + i + 1));
         }
       }
     } // namespace internal
@@ -158,13 +158,13 @@ namespace rex
       {
         for(s32 j = 0; j < sliceCount; ++j)
         {
-          mesh_data.add_index(i * ring_vertex_count + j);
-          mesh_data.add_index((i + 1) * ring_vertex_count + j);
-          mesh_data.add_index((i + 1) * ring_vertex_count + j + 1);
+          mesh_data.add_index(static_cast<u16>(i * ring_vertex_count + j));
+          mesh_data.add_index(static_cast<u16>((i + 1) * ring_vertex_count + j));
+          mesh_data.add_index(static_cast<u16>((i + 1) * ring_vertex_count + j + 1));
 
-          mesh_data.add_index(i * ring_vertex_count + j);
-          mesh_data.add_index((i + 1) * ring_vertex_count + j + 1);
-          mesh_data.add_index(i * ring_vertex_count + j + 1);
+          mesh_data.add_index(static_cast<u16>(i * ring_vertex_count + j));
+          mesh_data.add_index(static_cast<u16>((i + 1) * ring_vertex_count + j + 1));
+          mesh_data.add_index(static_cast<u16>(i * ring_vertex_count + j + 1));
         }
       }
 

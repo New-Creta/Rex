@@ -2,7 +2,6 @@
 
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/path.h"
-#include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/time/win/win_time_functions.h"
@@ -11,6 +10,8 @@ namespace rex
 {
   namespace directory
   {
+    DEFINE_LOG_CATEGORY(LogDirectory);
+
     namespace internal
     {
       rsl::win::handle open_file_for_attribs(rsl::string_view path)
@@ -20,30 +21,96 @@ namespace rex
     } // namespace internal
 
     // Create a new directory
-    void create(rsl::string_view path)
+    Error create(rsl::string_view path)
     {
-      const rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = path::abs_path(path);
       if(exists(full_path))
       {
-        return;
+        return Error::create_with_log(LogDirectory, "Cannot create directory \"{}\" as it already exists", full_path);
       }
 
-      WIN_CALL(CreateDirectoryA(full_path.c_str(), nullptr));
+      const bool success = WIN_SUCCESS(CreateDirectoryA(full_path.c_str(), nullptr));
+
+      return success
+        ? Error::no_error()
+        : Error::create_with_log(LogDirectory, "Failed to create directory at \"{}\"", full_path);
+    }
+    // Create a directory recursively, creating all sub directories until the leaf dir
+    Error create_recursive(rsl::string_view path)
+    {
+      const rsl::string fullpath = path::abs_path(path);
+      const rsl::vector<rsl::string_view> splitted_paths = rsl::split(fullpath, "/\\");
+
+      rsl::string full_path;
+      full_path.reserve(fullpath.size());
+
+      for (const rsl::string_view sub_path : splitted_paths)
+      {
+        full_path += sub_path;
+        const bool success = WIN_SUCCESS_IGNORE(CreateDirectoryA(full_path.data(), NULL), ERROR_ALREADY_EXISTS);
+
+        if (!success)
+        {
+          return Error::create_with_log(LogDirectory, "Failed to create directory at \"{}\"", full_path);
+        }
+
+        full_path += g_folder_seps;
+      }
+
+      return Error::no_error();
     }
     // Delete a directory
-    void del(rsl::string_view path)
+    Error del(rsl::string_view path)
     {
-      const rsl::string full_path = vfs::create_full_path(path);
-      RemoveDirectoryA(full_path.c_str());
+      const rsl::string full_path = path::abs_path(path);
+      const bool success = RemoveDirectoryA(full_path.c_str());
+
+      return success
+        ? Error::no_error()
+        : Error::create_with_log(LogDirectory, "Failed to delete directory at \"{}\"", full_path);
+    }
+    // Delete a directory recursively, including all files and sub folders
+    Error del_recusrive(rsl::string_view path)
+    {
+      const rsl::string full_path = path::abs_path(path);
+
+      Error error = Error::no_error();
+
+      rsl::vector<rsl::string> dirs = list_dirs(full_path);
+      for (rsl::string_view dir : dirs)
+      {
+        error = del_recusrive(dir);
+        if (error)
+        {
+          return Error::create_with_log(LogDirectory, "Failed to recursively delete \"{}\"", full_path);
+        }
+      }
+
+      rsl::vector<rsl::string> files = list_files(full_path);
+      for (rsl::string_view file : files)
+      {
+        error = file::del(file);
+        if (error)
+        {
+          return Error::create_with_log(LogDirectory, "Failed to recursively delete \"{}\"", full_path);
+        }
+      }
+
+      return directory::del(full_path);
     }
     // Return if a directory exists
     bool exists(rsl::string_view path)
     {
-      const rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = path::abs_path(path);
+
+      // It's possible the error returned here is ERROR_FILE_NOT_FOUND or ERROR_PATH_NOT_FOUND
+      // because we can't ignore both, we just call it without wrapping it in WIN_CALL
+      // and manually reset the windows error if an error has occurred
       const DWORD attribs   = GetFileAttributesA(full_path.c_str());
 
       if(attribs == INVALID_FILE_ATTRIBUTES)
       {
+        win::clear_win_errors();
         return false;
       }
 
@@ -55,46 +122,68 @@ namespace rex
       return false;
     }
     // Copy a directory and its content
-    void copy(rsl::string_view src, rsl::string_view dst) // NOLINT(misc-no-recursion)
+    Error copy(rsl::string_view src, rsl::string_view dst) // NOLINT(misc-no-recursion)
     {
-      const rsl::string full_src = vfs::create_full_path(src);
-      const rsl::string full_dst = vfs::create_full_path(dst);
+      const rsl::string full_src = path::abs_path(src);
+      const rsl::string full_dst = path::abs_path(dst);
 
       const rsl::vector<rsl::string> all_files = list_files(full_src);
       const rsl::vector<rsl::string> all_dirs  = list_dirs(full_src);
 
-      create(full_dst);
+      Error error = create(full_dst);
+      if (error)
+      {
+        return error;
+      }
 
       for(const rsl::string_view file_entry: all_files)
       {
         const rsl::string rel_path  = path::rel_path(file_entry, full_src);
         const rsl::string entry_dst = path::join(full_dst, rel_path);
-        file::copy(file_entry, entry_dst);
+        error = file::copy(file_entry, entry_dst);
+        if (error)
+        {
+          return error;
+        }
       }
 
       for(const rsl::string_view dir_entry: all_dirs)
       {
         const rsl::string rel_path  = path::rel_path(dir_entry, full_src);
         const rsl::string entry_dst = path::join(full_dst, rel_path);
-        create(entry_dst);
-        copy(dir_entry, entry_dst);
+        error = create(entry_dst);
+        if (error)
+        {
+          return error;
+        }
+        error = copy(dir_entry, entry_dst);
+        if (error)
+        {
+          return error;
+        }
       }
+
+      return Error::no_error();
     }
     // Move/Rename a directory
-    void move(rsl::string_view src, rsl::string_view dst)
+    Error move(rsl::string_view src, rsl::string_view dst)
     {
-      const rsl::string full_src = vfs::create_full_path(src);
-      const rsl::string full_dst = vfs::create_full_path(dst);
+      const rsl::string full_src = path::abs_path(src);
+      const rsl::string full_dst = path::abs_path(dst);
 
-      MoveFileA(full_src.c_str(), full_dst.c_str());
+      const bool success = MoveFileA(full_src.c_str(), full_dst.c_str());
+
+      return success
+        ? Error::no_error()
+        : Error::create_with_log(LogDirectory, "Failed to move directory from \"{}\" to \"{}\"", full_src, full_dst);
     }
     // List all entries under a directory
-    rsl::vector<rsl::string> list_entries(rsl::string_view path)
+    rsl::vector<rsl::string> list_entries(rsl::string_view path, ListRecusrive listRecursive)
     {
       WIN32_FIND_DATAA ffd;
-      rsl::big_stack_string dir_search(path);
-      dir_search += "\\*";
-      HANDLE find_handle = FindFirstFileA(path.data(), &ffd);
+      rsl::string full_path = rex::path::abs_path(path);
+      full_path += "\\*";
+      HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
       if(find_handle == INVALID_HANDLE_VALUE)
       {
@@ -103,11 +192,31 @@ namespace rex
       }
 
       rsl::vector<rsl::string> result;
+      rsl::vector<rsl::string> dirs;
+      rsl::string fullpath;
       do // NOLINT(cppcoreguidelines-avoid-do-while)
       {
-        const rsl::string_view name = ffd.cFileName;
-        result.push_back(path::join(path, name));
-      } while(FindNextFile(find_handle, &ffd) != 0);
+        s32 length = rsl::strlen(ffd.cFileName);
+        const rsl::string_view name(ffd.cFileName, length);
+        fullpath = path::join(path, name);
+        result.push_back(fullpath);
+        if (listRecursive && directory::exists(fullpath) && name != "." && name != "..")
+        {
+          dirs.push_back(fullpath);
+        }
+
+      } while(FindNextFileA(find_handle, &ffd) != 0);
+
+      // FindNextfile sets the error to ERROR_NO_MORE_FILES
+      // if there are no more files found
+      // We reset it here to avoid any confusion
+      rex::win::clear_win_errors();
+
+      for (rsl::string_view dir : dirs)
+      {
+        rsl::vector<rsl::string> sub_results = list_entries(dir, listRecursive);
+        result.insert(result.cend(), sub_results.cbegin(), sub_results.cend());
+      }
 
       return result;
     }
@@ -115,9 +224,9 @@ namespace rex
     rsl::vector<rsl::string> list_dirs(rsl::string_view path)
     {
       WIN32_FIND_DATAA ffd;
-      rsl::big_stack_string dir_search(path);
-      dir_search += "\\*";
-      HANDLE find_handle = FindFirstFileA(path.data(), &ffd);
+      rsl::string full_path = rex::path::abs_path(path);
+      full_path += "\\*";
+      HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
       if(find_handle == INVALID_HANDLE_VALUE)
       {
@@ -128,13 +237,19 @@ namespace rex
       rsl::vector<rsl::string> result;
       do // NOLINT(cppcoreguidelines-avoid-do-while)
       {
-        const rsl::string_view name     = ffd.cFileName;
+        s32 length = rsl::strlen(ffd.cFileName);
+        const rsl::string_view name(ffd.cFileName, length);
         const rsl::string full_filename = path::join(path, name);
-        if(exists(full_filename))
+        if(exists(full_filename) && name != "." && name != "..")
         {
           result.push_back(rsl::move(full_filename));
         }
-      } while(FindNextFile(find_handle, &ffd) != 0);
+      } while(FindNextFileA(find_handle, &ffd) != 0);
+
+      // FindNextfile sets the error to ERROR_NO_MORE_FILES
+      // if there are no more files found
+      // We reset it here to avoid any confusion
+      rex::win::clear_win_errors();
 
       return result;
     }
@@ -142,9 +257,9 @@ namespace rex
     rsl::vector<rsl::string> list_files(rsl::string_view path)
     {
       WIN32_FIND_DATAA ffd {};
-      rsl::big_stack_string dir_search(path);
-      dir_search += "\\*";
-      HANDLE find_handle = FindFirstFileA(dir_search.data(), &ffd);
+      rsl::string full_path = rex::path::abs_path(path);
+      full_path += "\\*";
+      HANDLE find_handle = FindFirstFileA(full_path.data(), &ffd);
 
       if(find_handle == INVALID_HANDLE_VALUE)
       {
@@ -167,7 +282,7 @@ namespace rex
       // FindNextfile sets the error to ERROR_NO_MORE_FILES
       // if there are no more files found
       // We reset it here to avoid any confusion
-      SetLastError(ERROR_SUCCESS);
+      rex::win::clear_win_errors();
 
       return result;
     }

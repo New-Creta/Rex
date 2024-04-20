@@ -5,36 +5,29 @@ namespace rex
   namespace memory
   {
     //-------------------------------------------------------------------------
-    BlobReader::BlobReader(const memory::Blob& b)
+    BlobReader::BlobReader(BlobView b)
         : BlobReader(b, 0_bytes)
     {
     }
     //-------------------------------------------------------------------------
-    BlobReader::BlobReader(const memory::Blob& b, const rsl::memory_size& offset)
-        : m_blob(&b)
+    BlobReader::BlobReader(BlobView b, rsl::memory_size offset)
+        : m_blob(b)
         , m_read_offset(offset)
     {
     }
 
     //-------------------------------------------------------------------------
-    rsl::byte* BlobReader::read(const rsl::memory_size& bytesToRead)
+    s32 BlobReader::skip(rsl::memory_size amount)
     {
-      rsl::byte* dst = new rsl::byte[bytesToRead];
-
-      m_blob->read_bytes(dst, bytesToRead, m_read_offset);
-      m_read_offset += bytesToRead;
-
-      return dst;
+      m_read_offset += amount;
+      return static_cast<s32>(m_read_offset);
     }
 
-    namespace reader
+    //-------------------------------------------------------------------------
+    s32 BlobReader::read_offset() const
     {
-      //-------------------------------------------------------------------------
-      rsl::byte* read(const memory::Blob& b, const rsl::memory_size& bytesToRead, const rsl::memory_size& offset)
-      {
-        BlobReader reader(b, offset);
-        return reader.read(bytesToRead);
-      }
-    } // namespace reader
+      return static_cast<s32>(m_read_offset);
+    }
+
   }   // namespace memory
 } // namespace rex

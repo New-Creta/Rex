@@ -1,0 +1,9 @@
+{
+  "CommandLineArgs": {
+    "Content": [
+      "\"ExampleArgument\", \"Example argument, not used for anything other than testing if it works.\"",
+      "\"ExampleArgument2\", \"Example argument, not used for anything other than testing if it works.\"",
+      "\"ExampleArgumentWithEqual\", \"Example argument with equal sign. not used for anything other than testing if it works\""
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+    "CommandLineArgs": {
+        "Type": "Array",
+        "Content": {
+          "Name": "g_command_line_args",
+          "ElementType": "cmdline::Argument",
+          "Includes" : ["rex_engine/cmdline.h"],
+          "Values": [
+            "\"MountPath\", \"The mount point where the virtual file system gets mounted. can be a driver letter (M:\\\\) or an empty NTFS folder.\"",
+            "\"BlobStorePath\", \"The path to the blob store.\"",
+            "\"SingleThreaded\", \"Only use a single thread to process events. This is highly not recommended as can easily create a bottleneck.\"",
+            "\"DebugApp\", \"Enable debug output to an attached debugger.\"",
+            "\"EnableStdErr\", \"Enable debug output to stderr.\"",
+            "\"UseRemovableDrive\", \"Show device as removable media.\"",
+            "\"ReadOnly\", \"Read only filesystem.\"",
+            "\"EnableCaseSensitive\", \"Supports case-sensitive file names.\"",
+            "\"UseMountManager\", \"Register device to Windows mount manager. This enables advanced Windows features like recycle bin and more...\"",
+            "\"EnableForCurrentSessionOnly\", \"Device only visible for current user session.\"",
+            "\"ShowAsNetworkDevice\", \"Show device as network device with a UNC name. (eg. \\\\myfs\\\\fs1)\"",
+            "\"EnableCallerUser\", \"Impersonate Caller User when getting the handle in CreateFileW for operations. This option requires administrator right to work properly.\"",
+            "\"AllocationUnitSize\", \"Allocation Unit Size of the volume. This will behave on the disk file size.\"",
+            "\"SectorSize\", \"Sector Size of the volume. This will behave on the disk file size.\"",
+            "\"EnableLockMode\", \"Enable Lockfile/Unlockfile operations. Otherwise Dokan will take care of it.\"",
+            "\"Timeout\", \"Timeout in Milliseconds. Timeout until a running operation is aborted and the device is unmounted.\"",
+            "\"HelpAntiVirus\", \"Enabled FCB GCt. Might speed up on env with filter drivers (Anti-virus) slowing down the system. (Unsupported)\"",
+            "\"AllowUnmount\", \"Allows unmounting network drive from file explorer.\"",
+            "\"EnableDriverLogs\", \"Forward Driver logs to userland.\"",
+            "\"VolumeName\", \"Personalize the volume name.\""
+          ],
+          "Filepath": "1_engine/rex_engine/include/rex_engine/cmd_args.h"
+        }
+      }
+}
