@@ -3,6 +3,8 @@
 ## Introduction
 Rex's entire building pipeline, going from setting up the initial setup to the actual build process, generation and testing is written in python. This is done to allow quick iteration which would be more of hassle in C# or C++.
 
+For quick iteration, `generate_project_files.bat` is provided which performs the setup and generates a default Visual Studio solution. 
+
 Every system in the pipeline has the same interface which is the _rex.py python script, sitting at the root of the project. This script will call into various script that are stored internally. These reason for this is to keep the root of the project as minimalistic as possible.
 Each script that the root script calls is only supposed to launch multiple intermediate steps and not do much work on its own.
 
@@ -10,6 +12,8 @@ Most build scripts have a `-clean` command which pretends the script is run for 
 
 The intermediate directory for everything related to rex is the `.rex` folder sitting in the root of the project. This acts similar to `.git`, `.vs` and `.vscode` which are intermediate folders of other programs.
 This is done so that it's very easy to start the project from scratch, just delete the `.rex` folder and you're developing again as if it was the very first time.
+
+If at any point you think there's something wrong with your setup, run the validation script by running `py _rex.py validate` or `validate.bat` to check your local setup
 
 ## Setup
 
