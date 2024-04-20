@@ -91,7 +91,7 @@ def _validate_rex_sources(root : str):
   if _validate_dir_present(os.path.join(root, 'source'), missing_dirs):
      _validate_dir_present(os.path.join(root, 'source', '0_thirdparty'), missing_dirs)
      _validate_dir_present(os.path.join(root, 'source', '1_engine'), missing_dirs)
-     _validate_dir_present(os.path.join(root, 'source', '2d_platform'), missing_dirs)
+     _validate_dir_present(os.path.join(root, 'source', '2_platform'), missing_dirs)
      _validate_dir_present(os.path.join(root, 'source', '4_tools'), missing_dirs)
   if _validate_dir_present(os.path.join(root, 'tests'), missing_dirs):
      _validate_dir_present(os.path.join(root, 'tests', '1_engine'), missing_dirs)
