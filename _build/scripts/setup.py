@@ -89,18 +89,18 @@ def _exec_run():
 
     # First we need to install the required build tools.
     # This includes make tools, build tools, compilers, linkers, ..
-    regis.required_tools.run()
+    regis.required_tools.install()
 
     # Next, install all required libraries for the compilers and platforms (eg. C++ standard library, Windows SDK)
     # Rex itself doesn't use C++ standard library, but thirdparty libraries might, so we still have to provide it.
-    regis.required_libs.run()
+    regis.required_libs.install()
 
     # Next we need to install all the externals used by rex itself
     # the difference between these libraries and the libraries of the previous step is that
     # we (Rex developers) decided that we need these libraries and we can decide to remove them at any point.
     # libraries like Windows SDK, C++ standard library is always required for development, where as libraries like ImGui
     # are not required and can always be replaced if a better library comes along.
-    regis.required_externals.run()
+    regis.required_externals.install()
         
     # Lastly, install the git hooks
     regis.git_hooks.run(os.path.join(root_path, "_build", "scripts", "git", "hooks"))
