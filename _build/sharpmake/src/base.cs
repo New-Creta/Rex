@@ -112,6 +112,7 @@ public class RegenerateProjects : Project
     string IdeCommandLineOption = "VisualStudio19";
     switch (ProjectGen.Settings.IDE)
     {
+      case ProjectGen.IDE.VisualStudio: IdeCommandLineOption = "VisualStudio"; break;
       case ProjectGen.IDE.VisualStudio19: IdeCommandLineOption = "VisualStudio19"; break;
       case ProjectGen.IDE.VisualStudio22: IdeCommandLineOption = "VisualStudio22"; break;
       case ProjectGen.IDE.VSCode: IdeCommandLineOption = "VSCode"; break;

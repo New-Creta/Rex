@@ -195,6 +195,7 @@ namespace ProjectGen
   public enum IDE
   {
     None,
+    VisualStudio, // Latest visual studio version
     VisualStudio19,
     VisualStudio22,
     VSCode
@@ -411,12 +412,27 @@ public static class Extensions
 {
   public static DevEnv ToDevEnv(this ProjectGen.IDE ide)
   {
+    if (ide == ProjectGen.IDE.VisualStudio)
+    {
+      if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2019).Count > 0)
+      {
+        return DevEnv.vs2019;
+      }
+
+      if (Util.GetVisualStudioInstallationsFromQuery(DevEnv.vs2022).Count > 0)
+      {
+        return DevEnv.vs2022;
+      }
+    }
+
     switch (ide)
     {
       case ProjectGen.IDE.VisualStudio19:
         return DevEnv.vs2019;
       case ProjectGen.IDE.VisualStudio22:
         return DevEnv.vs2022;
+      case ProjectGen.IDE.VSCode: 
+        return DevEnv.vscode;
     }
     return DevEnv.vs2019;
 

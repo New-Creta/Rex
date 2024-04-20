@@ -66,9 +66,10 @@ public class RexTarget : ITarget
 
     switch (ProjectGen.Settings.IDE)
     {
+      case ProjectGen.IDE.VisualStudio:
       case ProjectGen.IDE.VisualStudio19:
       case ProjectGen.IDE.VisualStudio22:
-        DevEnv devenv = IdeToEnv(ProjectGen.Settings.IDE);
+        DevEnv devenv = ProjectGen.Settings.IDE.ToDevEnv();
         if (Util.GetVisualStudioInstallationsFromQuery(devenv).Count > 0)
         { 
           targets.AddRange(CreateTargetsForDevEnv(devenv));
@@ -118,16 +119,5 @@ public class RexTarget : ITarget
     return targets;
   }
 
-  private static DevEnv IdeToEnv(ProjectGen.IDE ide)
-  {
-    switch (ide)
-    {
-      case ProjectGen.IDE.VisualStudio19: return DevEnv.vs2019;
-      case ProjectGen.IDE.VisualStudio22: return DevEnv.vs2022;
-      case ProjectGen.IDE.VSCode: return DevEnv.vscode;
-      default:
-        return DevEnv.ninja;
-    }
-  }
 }
 

@@ -1,0 +1,1 @@
+py _rex.py setup && py _rex.py generate -use-default-config -IDE VisualStudio
