@@ -3,7 +3,6 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_engine/memory/memory_tracking.h"
-#include "rex_engine/string/stringentry.h"
 #include "rex_engine/string/stringid.h"
 #include "rex_std/bonus/functional.h"
 #include "rex_std/bonus/hashtable.h"
@@ -15,84 +14,38 @@ namespace rex
 {
   namespace string_pool
   {
-    using EntryMap = rsl::unordered_map<StringID, StringEntry>;
-
-    //-------------------------------------------------------------------------
-    EntryMap load_entry_map()
-    {
-      REX_MEM_TAG_SCOPE(MemoryTag::StringPool);
-
-      EntryMap map;
-
-      StringID entry_id;
-      StringEntry entry("Invalid StringID");
-
-      map.emplace(rsl::move(entry_id), rsl::move(entry));
-
-      return map;
-    }
+    using EntryMap = rsl::unordered_map<rsl::hash_result, rsl::string>;
 
     //-------------------------------------------------------------------------
     EntryMap& get_entries()
     {
-      static EntryMap entries = load_entry_map();
+      static EntryMap entries;
       return entries;
     }
 
     //-------------------------------------------------------------------------
-    StringID store(rsl::hash_result hash, rsl::string_view newCharacters)
+    StringID find_or_store(rsl::string_view string)
     {
+      rsl::hash_result hash = rsl::hash<rsl::string_view>{}(string);
       REX_MEM_TAG_SCOPE(MemoryTag::StringPool);
 
-      StringID entry_id = StringID(hash);
-
-      StringEntry entry(newCharacters);
-      auto it = get_entries().find(entry_id);
-      if(it != rsl::cend(get_entries()))
+      // Check if the string isn't already in the string pool
+      auto it = get_entries().find(hash);
+      if (it != rsl::cend(get_entries()))
       {
-        REX_ASSERT_X(rsl::strcmp(newCharacters.data(), it->value.characters().data()) == 0, "Hash collision");
-
-        return it->key;
+        // If we have found an existing entry, return it
+        return StringID(hash, it->value);
       }
 
-      auto result = get_entries().emplace(rsl::move(entry_id), rsl::move(entry));
-      if(result.emplace_successful)
+      // If we haven't found an existing entry, create a new entry
+      auto res = get_entries().emplace(hash, rsl::string(string));
+      if (res.emplace_successful)
       {
-        return result.inserted_element->key;
+        return StringID(hash, res.inserted_element->value);
       }
 
       REX_ASSERT("This path should never be reached, insertion into the string pool failed somehow.");
-      return {};
-    }
-
-    //-------------------------------------------------------------------------
-    rsl::string_view resolve(const StringID& entryID)
-    {
-      const StringEntry& entry = find(entryID);
-
-      REX_ASSERT_X(entry.is_valid(), "Entry not found");
-
-      return entry.characters();
-    }
-
-    //-------------------------------------------------------------------------
-    const StringEntry& find(const StringID& entryID)
-    {
-      auto it = get_entries().find(entryID);
-      if(it == rsl::cend(get_entries()))
-      {
-        it = get_entries().find(StringID::create_invalid());
-
-        REX_ASSERT_X(it != rsl::cend(get_entries()), "StringID::is_none() not present");
-      }
-
-      return it->value;
-    }
-
-    //-------------------------------------------------------------------------
-    StringID make_and_store(rsl::string_view characters)
-    {
-      return store(rsl::hash<rsl::string_view> {}(characters), characters);
+      return StringID::create_invalid();
     }
   } // namespace string_pool
 } // namespace rex

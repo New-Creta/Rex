@@ -32,33 +32,35 @@ namespace rex
      */
     static constexpr StringID create_invalid()
     {
-      return StringID(s_none_state_hash_val);
+      return StringID{};
     }
+
+    //-------------------------------------------------------------------------
+    /**
+     * Create a string id object and store it in the string pool
+     */
+    static StringID create(rsl::string_view string);
 
     //-------------------------------------------------------------------------
     /**
      * Create an None StringID.
      */
     constexpr StringID()
-        : m_comparison_hash(create_invalid())
+      : m_comparison_hash(s_none_state_hash_val)
+      , m_string("Invalid StringID")
     {
     }
 
     //-------------------------------------------------------------------------
     /**
      * Create a runtime generated StringID.
+     * Users are not expected to call this directly,
+     * instead call the static "create" function which
+     * which will create a string id and intern it in the string pool
      */
-    constexpr explicit StringID(rsl::hash_result entryID)
-        : m_comparison_hash(entryID)
-    {
-    }
-
-    //-------------------------------------------------------------------------
-    /**
-     * Create an StringID with characters.
-     */
-    constexpr explicit StringID(rsl::string_view stringView)
-        : m_comparison_hash(rsl::hash<rsl::string_view> {}(stringView))
+    constexpr StringID(rsl::hash_result entryID, rsl::string_view str)
+      : m_comparison_hash(entryID)
+      , m_string(str)
     {
     }
 
@@ -76,7 +78,7 @@ namespace rex
      */
     constexpr explicit operator bool() const
     {
-      return is_none() == false; // NOLINT(readability-simplify-boolean-expr)
+      return is_valid();
     }
 
     //-------------------------------------------------------------------------
@@ -103,9 +105,9 @@ namespace rex
 
     //-------------------------------------------------------------------------
     /** True for StringID() and StringID("Invalid StringID") */
-    constexpr bool is_none() const
+    constexpr bool is_valid() const
     {
-      return m_comparison_hash == s_none_state_hash_val;
+      return m_comparison_hash != s_none_state_hash_val;
     }
 
     //-------------------------------------------------------------------------
@@ -117,26 +119,39 @@ namespace rex
       return static_cast<u32>(m_comparison_hash);
     }
 
+    //-------------------------------------------------------------------------
+    // Return the underlying string
+    constexpr rsl::string_view string() const
+    {
+      return m_string;
+    }
+
+    //-------------------------------------------------------------------------
+    // Return the length of the underlying string
+    constexpr s32 length() const
+    {
+      return m_string.length();
+    }
+
   private:
     /** Hash for invalid StringID into string pool */
     static constexpr u32 s_none_state_hash_val = 0;
 
     /** Hash into the StringID hash table */
     rsl::hash_result m_comparison_hash;
+
+    // view to the underlying string that the string id represents
+    rsl::string_view m_string;
   };
 
-  StringID store_sid(rsl::string_view characters);
-  rsl::string_view restore_sid(const StringID& sid);
-
-  bool operator==(rsl::string_view s, const StringID& sid);
-  bool operator!=(rsl::string_view s, const StringID& sid);
-  bool operator==(const StringID& sid, rsl::string_view s);
-  bool operator!=(const StringID& sid, rsl::string_view s);
 } // namespace rex
 
+// create a compile time string id but it doesn't get stored in the string pool
 constexpr rex::StringID operator""_sid(const char* string, size_t size)
 {
-  return rex::StringID(rsl::string_view(string, static_cast<u32>(size))); // NOLINT(cppcoreguidelines-narrowing-conversions)
+  rsl::string_view view(string, static_cast<u32>(size)); // NOLINT(cppcoreguidelines-narrowing-conversions)
+  rsl::hash_result hash = rsl::hash<rsl::string_view>{}(view);
+  return rex::StringID(hash, view);
 }
 
 rsl::ostream& operator<<(rsl::ostream& os, const rex::StringID& stringID);

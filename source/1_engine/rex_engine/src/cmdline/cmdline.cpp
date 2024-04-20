@@ -20,7 +20,7 @@ namespace rex
     {
       StringID create_string_id_for_arg(rsl::string_view arg)
       {
-        return StringID(rsl::medium_stack_string(arg).to_lower());
+        return StringID::create(rsl::medium_stack_string(arg).to_lower());
       }
     } // namespace internal
 
