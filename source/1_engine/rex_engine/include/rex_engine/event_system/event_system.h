@@ -12,6 +12,8 @@
 
 namespace rex
 {
+  // A subscription handle is a handle the user could optional keep
+  // if they ever want to remove a subscription from the event system at a future time
   class SubscriptionHandle
   {
   public:
@@ -20,11 +22,13 @@ namespace rex
       , m_id(id)
     {}
 
+    // the id of this subscription
     s32 id() const
     {
       return m_id;
     }
 
+    // the type id of the event for this subscription
     rsl::type_id_t type_id() const
     {
       return m_type_id;
@@ -77,16 +81,18 @@ namespace rex
     void dispatch_queued_events();
 
   private:
-    template <typename T>
-    EventDispatcher<T>* dispatcher()
+    // return the dispatcher for the event
+    // create a new one if one doesn't already exist
+    template <typename Event>
+    EventDispatcher<Event>* dispatcher()
     {
-      rsl::type_id_t type_id = rsl::type_id<T>();
+      rsl::type_id_t type_id = rsl::type_id<Event>();
       if (!m_dispatchers.contains(type_id))
       {
-        m_dispatchers.emplace(type_id, rsl::make_unique<EventDispatcher<T>>());
+        m_dispatchers.emplace(type_id, rsl::make_unique<EventDispatcher<Event>>());
       }
 
-      return static_cast<EventDispatcher<T>*>(m_dispatchers.at(type_id).get());
+      return static_cast<EventDispatcher<Event>*>(m_dispatchers.at(type_id).get());
     }
 
   private:
