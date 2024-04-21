@@ -8,7 +8,7 @@ public class PokemonProject : GameProject
   {
     // The name of the project in Visual Studio. The default is the name of
     // the class, but you usually want to override that.
-    Name = "PokemonProject";
+    Name = "Pokemon";
     GenerateTargets();
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
