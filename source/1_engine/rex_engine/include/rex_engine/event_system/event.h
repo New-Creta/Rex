@@ -3,6 +3,7 @@
 #include "rex_engine/engine/types.h"
 
 #include "rex_std/bonus/utility.h"
+#include "rex_std/bonus/memory.h"
 
 namespace rex
 {
@@ -12,8 +13,9 @@ namespace rex
   class EventBase
   {
 	public:
-		EventBase(rsl::type_id_t typeId)
+		EventBase(rsl::type_id_t typeId, rsl::memory_size sizeOfEvent)
 			: m_type_id(typeId)
+			, m_size_of_event(sizeOfEvent)
 		{}
 
 		rsl::type_id_t type_id() const
@@ -21,8 +23,14 @@ namespace rex
 			return m_type_id;
 		}
 
+		rsl::memory_size event_size() const
+		{
+			return m_size_of_event;
+		}
+
 	private:
-		rsl::type_id_t m_type_id;
+		rsl::memory_size m_size_of_event; // total size of this event object
+		rsl::type_id_t m_type_id; // type id of the most derived event object's type
   };
 
 	// templated event type
@@ -34,7 +42,7 @@ namespace rex
 	{
 	public:
 		Event()
-			: EventBase(rsl::type_id<T>())
+			: EventBase(rsl::type_id<T>(), sizeof(T))
 		{}
 	};
 } // namespace rex

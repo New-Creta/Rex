@@ -352,8 +352,10 @@ namespace rex
 
         case WM_KEYDOWN: 
           event_system().enqueue_event(KeyDown(internal::keycode_from_vk(wparam, lparam)));
+          break;
         case WM_KEYUP:
           event_system().enqueue_event(KeyUp(internal::keycode_from_vk(wparam, lparam)));
+          break;
         default:
           // Nothing to implement
           break;

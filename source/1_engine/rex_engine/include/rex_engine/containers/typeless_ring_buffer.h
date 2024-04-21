@@ -29,6 +29,8 @@ namespace rex
 
     // Resets the read and write offset to the start of the buffer
     void reset();
+    // increments the read offset by the given amount
+    void skip(s32 offset);
 
   private:
     rsl::unique_array<rsl::byte> m_data;

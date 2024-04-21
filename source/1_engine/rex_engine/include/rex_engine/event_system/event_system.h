@@ -3,9 +3,12 @@
 #include "rex_engine/event_system/event.h" // IWYU pragma: keep
 #include "rex_std/functional.h"
 #include "rex_std/unordered_map.h"
+#include "rex_std/bonus/utility.h"
 
 #include "rex_engine/containers/typeless_ring_buffer.h"
 #include "rex_engine/event_system/event_dispatcher.h"
+
+#include "rex_engine/diagnostics/log.h"
 
 namespace rex
 {
@@ -63,7 +66,7 @@ namespace rex
     rsl::unordered_map<rsl::type_id_t, rsl::unique_ptr<EventDispatcherBase>> m_dispatchers;
     TypelessRingBuffer m_event_queue;
     rsl::vector<rsl::byte> m_intermediate_event_data;
-    static constexpr rsl::memory_size s_event_queue_byte_size = 1_kib;
+    static constexpr rsl::memory_size s_event_queue_byte_size = 256;
     s32 m_num_events_queued; // flag to indicate events were queued this frame
   };
   EventSystem& event_system();

@@ -1,5 +1,6 @@
 #include "rex_engine/containers/typeless_ring_buffer.h"
 #include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/diagnostics/log.h"
 
 #include "rex_std/memory.h"
 #include "rex_std/bonus/memory.h"
@@ -18,15 +19,26 @@ namespace rex
   void TypelessRingBuffer::write(const void* data, rsl::memory_size size)
   {
     // Write as much as we can into the buffer
+    // we start by adding to the buffer if possible, wrapping around if we can't append everything
     s32 space_available_until_end = m_data.count() - m_put_pos;
-    rsl::memcpy(m_data.get() + m_put_pos, data, space_available_until_end);
-    m_put_pos += size;
+    s32 size_to_copy = rsl::min(space_available_until_end, static_cast<s32>(size.size_in_bytes()));
+
+    // the src is simply the input
+    // the dst is wherever we currently are in the buffer for writing
+    const rsl::byte* src = static_cast<const rsl::byte*>(data);
+    rsl::byte* dst = m_data.get() + m_put_pos;
+    rsl::memcpy(dst, src, size_to_copy);
+    m_put_pos += size_to_copy;
 
     // If we still have bytes to write, wrap around and write the remaining bytes
-    s32 remaining_size = (size.size_in_bytes() - space_available_until_end);
+    s32 remaining_size = (size.size_in_bytes() - size_to_copy);
     if (remaining_size > 0)
     {
-      rsl::memcpy(m_data.get(), data, remaining_size);
+      // If we wrap around, we reset our destination to the beginning of our buffer
+      // we need to make sure we advance our source as well to where we've already copied
+      dst = m_data.get();
+      src += size_to_copy;
+      rsl::memcpy(dst, src, remaining_size);
       m_put_pos = remaining_size;
     }
 
@@ -43,10 +55,7 @@ namespace rex
     m_num_reads_available -= size;
 
     // update the get pos to the right position
-    s32 space_available_until_end = m_data.count() - m_get_pos;
-    m_get_pos = m_get_pos + size < m_data.count()
-      ? m_get_pos += size
-      : m_get_pos = (size.size_in_bytes() - space_available_until_end);
+    skip(static_cast<s32>(size));
   }
   // Read x amount of bytes from the buffer, without increasing the read offset
   void TypelessRingBuffer::peek(void* data, rsl::memory_size size) const
@@ -54,15 +63,25 @@ namespace rex
     REX_ASSERT_X(m_num_reads_available >= size, "Not enough bytes available for reading, would read invalid memory from buffer");
    
     // Read as much of the buffer as we can
-    s32 space_available_until_end = rsl::min(static_cast<s32>(size.size_in_bytes()), m_data.count() - m_get_pos);
-    rsl::memcpy(data, m_data.get() + m_get_pos, space_available_until_end);
-    size -= space_available_until_end;
+    s32 space_available_until_end = m_data.count() - m_get_pos;
+    s32 size_to_copy = rsl::min(space_available_until_end, static_cast<s32>(size.size_in_bytes()));
+
+    // the src is where we currently are in the buffer for reading
+    // the dst is simply the data argument passed in
+    const rsl::byte* src = m_data.get() + m_get_pos;
+    rsl::byte* dst = static_cast<rsl::byte*>(data);
+    rsl::memcpy(dst, src, size_to_copy);
+    s32 remaining_size = size.size_in_bytes() - size_to_copy;
 
     // If there's still data we need to read, wrap around
     // and read it from the beginning of the buffer
-    if (size > 0)
+    if (remaining_size > 0)
     {
-      rsl::memcpy(data, m_data.get(), size);
+      // If we wrap around, we reset our source to the beginning of our buffer
+      // we need to make sure we advance our destination as well to where we've already copied
+      src = m_data.get();
+      dst += size_to_copy;
+      rsl::memcpy(dst, src, remaining_size);
     }
   }
 
@@ -72,5 +91,16 @@ namespace rex
     m_get_pos = 0;
     m_put_pos = 0;
     m_num_reads_available = 0;
+  }
+  // increments the read offset by the given amount
+  void TypelessRingBuffer::skip(s32 offset)
+  {
+    REX_ASSERT_X(offset >= 0, "Invalid offset given to typeless ring buffer");
+
+    m_get_pos += offset;
+    if (m_get_pos > m_data.count())
+    {
+      m_get_pos -= m_data.count();
+    }
   }
 }

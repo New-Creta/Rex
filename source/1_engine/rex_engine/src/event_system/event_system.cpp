@@ -10,12 +10,9 @@
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
-#include "rex_engine/diagnostics/log.h"
 
 namespace rex
 {
-  DEFINE_LOG_CATEGORY(LogEventSystem);
-
   EventSystem& event_system()
   {
     static EventSystem event_system{};
@@ -32,24 +29,25 @@ namespace rex
     while (m_num_events_queued > 0)
     {
       // Read the event type info first, this will give us information how much we actually should read
-      rsl::aligned_storage_t<rsl::type_id_t> type_id;
-      m_event_queue.peek(&type_id, sizeof(type_id));
-      rsl::type_id_t event_type_id = *type_id.get<rsl::type_id_t>();
-
-      REX_INFO(LogEventSystem, "Processing: {}", event_type_id.name());
-
-      if (!m_dispatchers.contains(event_type_id))
-      {
-        return;
-      }
+      rsl::aligned_storage_t<EventBase> event_base_storage;
+      m_event_queue.peek(&event_base_storage, sizeof(event_base_storage));
+      EventBase event_base = *event_base_storage.get<EventBase>();
 
       // If we have a dispatcher for this event, call it
-      EventDispatcherBase* dispatcher = m_dispatchers.at(event_type_id).get();
-      s32 event_size = static_cast<s32>(dispatcher->event_size());
-      m_intermediate_event_data.resize(event_size);
-      m_event_queue.read(m_intermediate_event_data.data(), event_size);
-      dispatcher->dispatch_from_data(m_intermediate_event_data.data(), event_size);
-
+      if (m_dispatchers.contains(event_base.type_id()))
+      {
+        EventDispatcherBase* dispatcher = m_dispatchers.at(event_base.type_id()).get();
+        s32 event_size = static_cast<s32>(dispatcher->event_size());
+        REX_ASSERT_X(event_size == event_base.event_size(), "Mismatching event size in dispatcher vs base type");
+        m_intermediate_event_data.resize(event_size);
+        m_event_queue.read(m_intermediate_event_data.data(), event_size);
+        dispatcher->dispatch_from_data(m_intermediate_event_data.data(), event_size);
+      }
+      // otherwise increment the read offset in the event queue with the total size of this event
+      else
+      {
+        m_event_queue.skip(event_base.event_size());
+      }
       --m_num_events_queued;
     }
   }
