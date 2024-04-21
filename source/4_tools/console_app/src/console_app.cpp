@@ -12,6 +12,8 @@
 #include "rex_windows/app/console_application.h"
 #include "rex_windows/input/input.h"
 
+#include "rex_engine/event_system/events/app/quit_app.h"
+
 DEFINE_LOG_CATEGORY(LogConsoleApp);
 
 namespace console_app_example
@@ -86,7 +88,7 @@ namespace console_app_example
 
     if(rex::input::is_key_pressed('Q'))
     {
-      rex::event_system::enqueue_event(rex::event_system::EventType::QuitApp);
+      rex::event_system().enqueue_event(rex::QuitApp());
     }
   }
   void shutdown() {}
