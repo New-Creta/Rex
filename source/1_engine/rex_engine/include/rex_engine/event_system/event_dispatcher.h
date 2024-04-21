@@ -10,7 +10,30 @@
 namespace rex
 {
   template <typename T>
-  using EventDispatcherFunc = rsl::function<void(const T&)>;
+  class EventDispatcherFunc
+  {
+  public:
+    EventDispatcherFunc(s32 id, const rsl::function<void(const T&)>& func)
+      : m_function(func)
+      , m_id(id)
+    {
+
+    }
+
+    s32 id() const
+    {
+      return m_id;
+    }
+
+    void operator()(const T& ev) const
+    {
+      m_function(ev);
+    }
+
+  private:
+    rsl::function<void(const T&)> m_function;
+    s32 m_id;
+  };
 
   class EventDispatcherBase
   {
@@ -32,6 +55,7 @@ namespace rex
     }
 
     virtual void dispatch_from_data(void* data, rsl::memory_size size) = 0;
+    virtual void remove_function(s32 id) = 0;
 
   private:
     rsl::memory_size m_event_size;
@@ -64,11 +88,22 @@ namespace rex
       dispatch(*ev);
     }
 
-    void add_function(const EventDispatcherFunc<EventType>& func)
+    s32 add_function(const rsl::function<void(const EventType&)>& func)
     {
-      m_functions.push_back(func);
+      m_functions.emplace_back(++m_internal_id_counter, func);
+      return m_internal_id_counter;
+    }
+
+    void remove_function(s32 id) override
+    {
+      m_functions.erase(rsl::remove_if(m_functions.begin(), m_functions.end(),
+        [id](const EventDispatcherFunc<EventType>& func)
+        {
+          return func.id() == id;
+        }));
     }
   private:
     rsl::vector<EventDispatcherFunc<EventType>> m_functions;
+    s32 m_internal_id_counter;
   };
 }

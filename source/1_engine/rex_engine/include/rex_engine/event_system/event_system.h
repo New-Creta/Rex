@@ -12,6 +12,29 @@
 
 namespace rex
 {
+  class SubscriptionHandle
+  {
+  public:
+    SubscriptionHandle(rsl::type_id_t typeId, s32 id)
+      : m_type_id(typeId)
+      , m_id(id)
+    {}
+
+    s32 id() const
+    {
+      return m_id;
+    }
+
+    rsl::type_id_t type_id() const
+    {
+      return m_type_id;
+    }
+
+  private:
+    rsl::type_id_t m_type_id;
+    s32 m_id;
+  };
+
   class EventSystem
   {
   public:
@@ -21,12 +44,16 @@ namespace rex
 
     // subscribe to a certain event being fired
     template <typename Event>
-    void subscribe(const EventDispatcherFunc<Event>& eventFunc)
+    SubscriptionHandle subscribe(const rsl::function<void(const Event&)>& eventFunc)
     {
       static_assert(rsl::is_base_of_v<EventBase, Event>, "Invalid event type. T does not derive from EventBase class ");
       EventDispatcher<Event>* event_dispatcher = dispatcher<Event>();
-      event_dispatcher->add_function(eventFunc);
+      s32 func_id = event_dispatcher->add_function(eventFunc);
+      return SubscriptionHandle(rsl::type_id<Event>(), func_id);
     }
+
+    // Remove a previously bound subscription from the list
+    void remove_subscription(SubscriptionHandle handle);
 
     // enqueue the event in a pool, to be processed at the next frame
     template <typename Event>

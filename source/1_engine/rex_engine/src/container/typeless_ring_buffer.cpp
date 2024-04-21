@@ -13,11 +13,15 @@ namespace rex
     , m_get_pos(0)
     , m_put_pos(0)
     , m_num_reads_available(0)
-  {}
+  {
+    REX_ASSERT_X(size > 0, "Creating a typeless ring buffer of invalid size");
+  }
 
   // Write x amount of bytes into the buffer
   void TypelessRingBuffer::write(const void* data, rsl::memory_size size)
   {
+    REX_ASSERT_X(size < m_data.count(), "Overwriting all data of the ring buffer, this doesn't make sense");
+
     // Write as much as we can into the buffer
     // we start by adding to the buffer if possible, wrapping around if we can't append everything
     s32 space_available_until_end = m_data.count() - m_put_pos;

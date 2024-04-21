@@ -24,6 +24,12 @@ namespace rex
     , m_num_events_queued(0)
   {}
 
+  void EventSystem::remove_subscription(SubscriptionHandle handle)
+  {
+    EventDispatcherBase* dispatcher = m_dispatchers.at(handle.type_id()).get();
+    dispatcher->remove_function(handle.id());
+  }
+
   void EventSystem::dispatch_queued_events()
   {
     while (m_num_events_queued > 0)
@@ -46,7 +52,7 @@ namespace rex
       // otherwise increment the read offset in the event queue with the total size of this event
       else
       {
-        m_event_queue.skip(event_base.event_size());
+        m_event_queue.skip(static_cast<s32>(event_base.event_size()));
       }
       --m_num_events_queued;
     }
