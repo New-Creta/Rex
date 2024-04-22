@@ -2,20 +2,105 @@
 
 #include "rex_engine/event_system/event.h" // IWYU pragma: keep
 #include "rex_std/functional.h"
+#include "rex_std/unordered_map.h"
+#include "rex_std/bonus/utility.h"
+
+#include "rex_engine/containers/typeless_ring_buffer.h"
+#include "rex_engine/event_system/event_dispatcher.h"
+
+#include "rex_engine/diagnostics/log.h"
 
 namespace rex
 {
-  namespace event_system
+  // A subscription handle is a handle the user could optional keep
+  // if they ever want to remove a subscription from the event system at a future time
+  class SubscriptionHandle
   {
-    enum class EventType;
+  public:
+    SubscriptionHandle(rsl::type_id_t typeId, s32 id)
+      : m_type_id(typeId)
+      , m_id(id)
+    {}
 
-    using EventFunction = rsl::function<void(const Event&)>;
+    // the id of this subscription
+    s32 id() const
+    {
+      return m_id;
+    }
 
-    void subscribe(EventType type, const EventFunction& function);
+    // the type id of the event for this subscription
+    rsl::type_id_t type_id() const
+    {
+      return m_type_id;
+    }
 
-    void enqueue_event(const Event& evt);
-    void enqueue_event(EventType evt);
+  private:
+    rsl::type_id_t m_type_id;
+    s32 m_id;
+  };
 
-    void process_events();
-  } // namespace event_system
+  class EventSystem
+  {
+  public:
+    // constructs the event system.
+    // mostly allocates memory in the event queue for the events
+    EventSystem();
+
+    // subscribe to a certain event being fired
+    template <typename Event>
+    SubscriptionHandle subscribe(const rsl::function<void(const Event&)>& eventFunc)
+    {
+      static_assert(rsl::is_base_of_v<EventBase, Event>, "Invalid event type. T does not derive from EventBase class ");
+      EventDispatcher<Event>* event_dispatcher = dispatcher<Event>();
+      s32 func_id = event_dispatcher->add_function(eventFunc);
+      return SubscriptionHandle(rsl::type_id<Event>(), func_id);
+    }
+
+    // Remove a previously bound subscription from the list
+    void remove_subscription(SubscriptionHandle handle);
+
+    // enqueue the event in a pool, to be processed at the next frame
+    template <typename Event>
+    void enqueue_event(const Event& ev)
+    {
+      static_assert(rsl::is_base_of_v<EventBase, Event>, "Invalid event type. T does not derive from EventBase class ");
+      m_num_events_queued++;
+      m_event_queue.write(&ev, sizeof(ev));
+    }
+
+    // fire off an event to be handled immediately.
+    template <typename Event>
+    void fire_event(const Event& ev)
+    {
+      static_assert(rsl::is_base_of_v<EventBase, Event>, "Invalid event type. T does not derive from EventBase class ");
+      EventDispatcher<Event>* event_dispatcher = dispatcher<Event>();
+      event_dispatcher->dispatch(ev);
+    }
+
+    // dispatch the event that were queued last frame
+    void dispatch_queued_events();
+
+  private:
+    // return the dispatcher for the event
+    // create a new one if one doesn't already exist
+    template <typename Event>
+    EventDispatcher<Event>* dispatcher()
+    {
+      rsl::type_id_t type_id = rsl::type_id<Event>();
+      if (!m_dispatchers.contains(type_id))
+      {
+        m_dispatchers.emplace(type_id, rsl::make_unique<EventDispatcher<Event>>());
+      }
+
+      return static_cast<EventDispatcher<Event>*>(m_dispatchers.at(type_id).get());
+    }
+
+  private:
+    rsl::unordered_map<rsl::type_id_t, rsl::unique_ptr<EventDispatcherBase>> m_dispatchers;
+    TypelessRingBuffer m_event_queue;
+    rsl::vector<rsl::byte> m_intermediate_event_data;
+    static constexpr rsl::memory_size s_event_queue_byte_size = 256;
+    s32 m_num_events_queued; // flag to indicate events were queued this frame
+  };
+  EventSystem& event_system();
 } // namespace rex

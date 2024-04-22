@@ -476,7 +476,10 @@ namespace rex
       g_mounted_roots[root] = rsl::string(path);
 
       // make sure the mount exists
-      create_dir(path);
+      if (!directory::exists(path))
+      {
+        create_dir(path);
+      }
     }
 
     void mount_for_session(MountingPoint root, rsl::string_view path)

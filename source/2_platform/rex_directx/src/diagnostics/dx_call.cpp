@@ -20,7 +20,7 @@ namespace rex
         REX_ERROR(LogDirectX, "File: {}", file);
         REX_ERROR(LogDirectX, "Function: {}", function);
         REX_ERROR(LogDirectX, "On line: {}", lineNr);
-        REX_ERROR(LogDirectX, "DXdows error: {}", error_message);
+        REX_ERROR(LogDirectX, "DirectX error: {}", error_message);
 
         return error_message;
       }

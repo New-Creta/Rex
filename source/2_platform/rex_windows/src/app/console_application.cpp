@@ -4,10 +4,11 @@
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/engine/engine_params.h"
 #include "rex_engine/event_system/event_system.h"
-#include "rex_engine/event_system/event_type.h"
 #include "rex_std/functional.h"
 #include "rex_windows/engine/platform_creation_params.h"
 #include "rex_windows/input/internal/input.h"
+
+#include "rex_engine/event_system/events/app/quit_app.h"
 
 #include <Windows.h>
 #include <consoleapi.h>
@@ -15,11 +16,6 @@
 
 namespace rex
 {
-  namespace event_system
-  {
-    struct Event;
-  } // namespace event_system
-
   namespace win
   {
     DEFINE_LOG_CATEGORY(LogWinConsoleApp);
@@ -76,7 +72,7 @@ namespace rex
         SetConsoleCtrlHandler(handler_routine, true); // NOLINT(readability-implicit-bool-conversion)
         input::internal::set_global_input_handler(m_input);
 
-        event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*event*/) { m_app_instance->quit(); });
+        event_system().subscribe<QuitApp>([this](const QuitApp& /*event*/) { m_app_instance->quit(); });
 
         if (!m_app_name.empty())
         {
@@ -95,7 +91,7 @@ namespace rex
 
         m_on_update();
 
-        event_system::process_events();
+        event_system().dispatch_queued_events();
       }
 
       void shutdown()

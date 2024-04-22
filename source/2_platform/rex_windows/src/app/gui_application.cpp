@@ -5,7 +5,6 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/event_system/event.h" // IWYU pragma: keep
 #include "rex_engine/event_system/event_system.h"
-#include "rex_engine/event_system/event_type.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/platform/win/win_com_library.h"
@@ -23,6 +22,14 @@
 #include "rex_windows/app/win_window.h"
 #include "rex_windows/diagnostics/log.h"
 #include "rex_windows/engine/platform_creation_params.h"
+
+#include "rex_engine/event_system/events/window/window_close.h"
+#include "rex_engine/event_system/events/window/window_activated.h"
+#include "rex_engine/event_system/events/window/window_deactivated.h"
+#include "rex_engine/event_system/events/window/window_start_resize.h"
+#include "rex_engine/event_system/events/window/window_end_resize.h"
+#include "rex_engine/event_system/events/window/window_resize.h"
+#include "rex_engine/event_system/events/app/quit_app.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -155,45 +162,37 @@ namespace rex
         m_app_instance->pause();
         m_window->start_resize();
       }
-      void on_stop_resize(const event_system::Event& evt)
+      void on_stop_resize()
       {
         m_app_instance->resume();
         m_window->stop_resize();
-
-        REX_ASSERT_X(evt.type == event_system::EventType::WindowStopWindowResize, "Event has to be of type \"WindowStopWindowResize\"");
-
-        resize(evt);
       }
       void on_minimize()
       {
         m_app_instance->pause();
         m_window->minimize();
       }
-      void on_maximize(const event_system::Event& evt)
+      void on_maximize(s32 newWidth, s32 newHeight)
       {
         m_app_instance->resume();
         m_window->maximize();
 
-        REX_ASSERT_X(evt.type == event_system::EventType::WindowMaximized, "Event has to be of type \"WindowMaximized\"");
-
-        resize(evt);
+        resize(newWidth, newHeight);
       }
-      void on_restore(const event_system::Event& evt)
+      void on_restore(s32 newWidth, s32 newHeight)
       {
-        REX_ASSERT_X(evt.type == event_system::EventType::WindowRestored, "Event has to be of type \"WindowRestored\"");
-
         if(m_window->is_minimized())
         {
           m_app_instance->resume();
           m_window->restore();
 
-          resize(evt);
+          resize(newWidth, newHeight);
         }
         else if(m_window->is_maximized())
         {
           m_window->restore();
 
-          resize(evt);
+          resize(newWidth, newHeight);
         }
         else if(m_window->is_resizing())
         {
@@ -213,7 +212,7 @@ namespace rex
           // Do nothing
         }
       }
-      void resize(const event_system::Event& /*evt*/)
+      void resize(s32 newWidth, s32 newHeight)
       {
         // Resize window ( although we might want to capture this within the window itself ... )
         //
@@ -299,15 +298,29 @@ namespace rex
       }
       void subscribe_window_events()
       {
-        event_system::subscribe(event_system::EventType::WindowClose, [this](const event_system::Event& /*evt*/) { event_system::enqueue_event(event_system::EventType::QuitApp); });
-        event_system::subscribe(event_system::EventType::WindowActivate, [this](const event_system::Event& /*evt*/) { m_app_instance->resume(); });
-        event_system::subscribe(event_system::EventType::WindowDeactivate, [this](const event_system::Event& /*evt*/) { m_app_instance->pause(); });
-        event_system::subscribe(event_system::EventType::WindowStartWindowResize, [this](const event_system::Event& /*evt*/) { on_start_resize(); });
-        event_system::subscribe(event_system::EventType::WindowStopWindowResize, [this](const event_system::Event& evt) { on_stop_resize(evt); });
-        event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { on_minimize(); });
-        event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { on_maximize(evt); });
-        event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { on_restore(evt); });
-        event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
+        event_system().subscribe<WindowClose>([this](const WindowClose& /*evt*/) { event_system().enqueue_event(QuitApp()); });
+        event_system().subscribe<WindowActivated>( [this](const WindowActivated& /*evt*/) { m_app_instance->resume(); });
+        event_system().subscribe<WindowDeactivated>( [this](const WindowDeactivated& /*evt*/) { m_app_instance->pause(); });
+        event_system().subscribe<WindowStartResize>( [this](const WindowStartResize& /*evt*/) { on_start_resize(); });
+        event_system().subscribe<WindowEndResize>( [this](const WindowEndResize& evt) { on_stop_resize(); });
+        event_system().subscribe<QuitApp>( [this](const QuitApp& /*evt*/) { m_app_instance->quit(); });
+        event_system().subscribe<WindowResize>( [this](const WindowResize& evt) 
+          { 
+            switch (evt.resize_type())
+            {
+            case WindowResizeType::Maximized:
+              on_maximize(evt.width(), evt.height());
+              break;
+            case WindowResizeType::Minimized:
+              on_minimize();
+              break;
+            case WindowResizeType::Restored:
+              on_restore(evt.width(), evt.height());
+              break;
+            default:
+              break;
+            }
+          });
       }
 
       // Initialize the graphics pipeline
@@ -350,7 +363,7 @@ namespace rex
         // update the window (this pulls input as well)
         m_window->update();
 
-        event_system::process_events();
+        event_system().dispatch_queued_events();
       }
       void post_user_update()
       {
