@@ -1,25 +1,16 @@
-//---------------------------------------------------
-// File: 	"mouse_down.h"
-// Created: 	2021/09/15 16:15:03
-// 
-// Created By: nick.debreuck
-// 
-// Copyright (c) Nick De Breuck
-// 
-//---------------------------------------------------
-
 #pragma once
 
-#include "rex_engine/event_system/events/input/mouse_event.h"
 #include "rex_engine/input/mouse_button.h"
 #include "rex_engine/input/mouse_position.h"
 #include "rex_std/bonus/utility.h"
+
+#include "rex_engine/event_system/event.h"
 
 namespace rex
 {
 	DEFINE_YES_NO_ENUM(IsDoubleClick);
 
-	class MouseDown : public MouseEvent
+	class MouseDown : public Event<MouseDown>
 	{
 	public:
 		MouseDown(MouseButton mouseButton, MousePosition position, IsDoubleClick isDoubleClick)
