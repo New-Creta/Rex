@@ -88,7 +88,7 @@ namespace regina
 
     app_params.gui_params.window_width  = 1280;
     app_params.gui_params.window_height = 720;
-    app_params.gui_params.window_title  = "Regina";
+    app_params.gui_params.window_title  = rex::project_name();
 
     app_params.engine_params.app_init_func     = initialize;
     app_params.engine_params.app_update_func   = update;
@@ -103,6 +103,12 @@ namespace regina
 
 namespace rex
 {
+  rsl::string_view project_name()
+  {
+    static rsl::string_view project_name = rex::cmdline::get_argument("project").value_or("editor_project");
+    return project_name;
+  }
+
 #ifndef REX_ENABLE_AUTO_TESTS
   //-------------------------------------------------------------------------
   ApplicationCreationParams app_entry(PlatformCreationParams& platformParams)

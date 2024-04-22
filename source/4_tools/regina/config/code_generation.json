@@ -6,7 +6,7 @@
   },
   "CommandLineArgs": {
     "Content": [
-      "\"UseCubeScene\", \"Render the wireframe sample scene instead of the default one.\""
+      "\"project\", \"The project to load by the editor\""
     ]
   }
 }
