@@ -2,7 +2,7 @@
   "rex_std": {
     "name": "rex_std",
     "url": "https://github.com/RisingLiberty/RexStl/",
-    "tag": "v1.1.75",
+    "tag": "v1.1.87",
     "storage": "~/source/0_thirdparty"
   },
   "rex_glad": {
@@ -15,6 +15,24 @@
     "name": "rex_glm",
     "url": "https://gitlab.com/rex-externals/rex-glm/",
     "tag": "v1.1.0",
+    "storage": "~/source/0_thirdparty"
+  },
+  "rex_imgui": {
+    "name": "rex_imgui",
+    "url": "https://gitlab.com/rex-externals/rex-imgui/",
+    "tag": "v1.0.5",
+    "storage": "~/source/0_thirdparty"
+  },
+  "rex_directx_extra": {
+    "name": "rex_directx_extra",
+    "url": "https://gitlab.com/rex-externals/rex-directx-extra/",
+    "tag": "v1.0.1",
+    "storage": "~/source/0_thirdparty"
+  },
+  "rex_directx_tex": {
+    "name": "rex_directx_tex",
+    "url": "https://gitlab.com/rex-externals/rex-directx-tex",
+    "tag": "v1.0.0",
     "storage": "~/source/0_thirdparty"
   }
 }
