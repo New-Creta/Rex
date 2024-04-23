@@ -7,7 +7,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-rex::win::HrCall::HrCall(HResult hr, HResult ignoreSuccess, REX_MAYBE_UNUSED rsl::string_view winFunc, REX_MAYBE_UNUSED rsl::string_view file, REX_MAYBE_UNUSED rsl::string_view function, REX_MAYBE_UNUSED card32 lineNr)
+rex::win::HrCall::HrCall(HResult hr, HResult ignoreSuccess, RSL_MAYBE_UNUSED rsl::string_view winFunc, RSL_MAYBE_UNUSED rsl::string_view file, RSL_MAYBE_UNUSED rsl::string_view function, RSL_MAYBE_UNUSED card32 lineNr)
     : m_hresult(hr)
     , m_hresult_to_ignore(ignoreSuccess)
     , m_has_failed(FAILED(hr))

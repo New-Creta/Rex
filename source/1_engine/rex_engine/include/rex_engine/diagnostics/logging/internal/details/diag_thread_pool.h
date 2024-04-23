@@ -12,8 +12,6 @@
 #include "rex_std/memory.h"
 #include "rex_std/thread.h"
 
-#include <functional>
-
 namespace rex
 {
   namespace log

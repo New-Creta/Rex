@@ -52,11 +52,11 @@ namespace rex
     {
     }
 
-    REX_NO_DISCARD pointer allocate(rsl::memory_size size)
+    RSL_NO_DISCARD pointer allocate(rsl::memory_size size)
     {
       return allocate(size.size_in_bytes());
     }
-    REX_NO_DISCARD pointer allocate(size_type size)
+    RSL_NO_DISCARD pointer allocate(size_type size)
     {
       // calculate the number of bytes are needed for the allocation
       size_type num_mem_needed = size;

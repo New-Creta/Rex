@@ -5,8 +5,6 @@
 #include "rex_engine/diagnostics/logging/internal/details/null_mutex.h"
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 
-#include <mutex>
-
 namespace rex
 {
   namespace log

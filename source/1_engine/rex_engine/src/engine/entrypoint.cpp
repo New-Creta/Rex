@@ -14,7 +14,7 @@ namespace rex
 {
   namespace internal
   {
-    void pre_app_entry(REX_MAYBE_UNUSED const char8* cmdLine)
+    void pre_app_entry(RSL_MAYBE_UNUSED const char8* cmdLine)
     {
       cmdline::init(rsl::string_view(cmdLine));
 

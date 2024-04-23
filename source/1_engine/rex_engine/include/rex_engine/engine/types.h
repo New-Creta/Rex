@@ -37,7 +37,6 @@ using a_bool = bool;
 using a_s32  = s32;
   #define rex_atomic_load(a) a // NOLINT(readability-identifier-naming)
 #else
-  #include <atomic>
 using a_u8   = rsl::atomic<u8>;
 using a_u32  = rsl::atomic<u32>;
 using a_u64  = rsl::atomic<u64>;

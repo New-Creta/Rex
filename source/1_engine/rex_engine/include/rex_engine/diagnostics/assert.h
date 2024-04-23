@@ -53,7 +53,7 @@ namespace rex
       REX_ASSERT(__VA_ARGS__);                                                                                                                                                                                                                           \
     }
 
-  #define REX_ASSERT_CONTEXT_SCOPE(...) const rex::AssertContextScope ANONYMOUS_VARIABLE(assert_scope)(rsl::format(__VA_ARGS__));
+  #define REX_ASSERT_CONTEXT_SCOPE(...) const rex::AssertContextScope RSL_ANONYMOUS_VARIABLE(assert_scope)(rsl::format(__VA_ARGS__));
 
 #else
   #define REX_ASSERT(...)

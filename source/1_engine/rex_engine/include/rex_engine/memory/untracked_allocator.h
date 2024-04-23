@@ -15,8 +15,8 @@ namespace rex
     using size_type = card64;
     using pointer   = void*;
 
-    REX_NO_DISCARD pointer allocate(rsl::memory_size size);
-    REX_NO_DISCARD pointer allocate(size_type size);
+    RSL_NO_DISCARD pointer allocate(rsl::memory_size size);
+    RSL_NO_DISCARD pointer allocate(size_type size);
 
     void deallocate(pointer ptr, rsl::memory_size size);
     void deallocate(pointer ptr, size_type size);

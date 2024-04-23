@@ -5,8 +5,6 @@
 #include "rex_std/algorithm.h"
 #include "rex_std/atomic.h"
 
-#include <atomic>
-#include <utility>
 // null, no cost dummy "mutex" and dummy "atomic" int
 
 namespace rex

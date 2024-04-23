@@ -25,7 +25,7 @@ namespace rex
       {
       }
 
-      REX_NO_DISCARD pointer allocate(size_type size)
+      RSL_NO_DISCARD pointer allocate(size_type size)
       {
 #ifndef REX_RELEASE
         return m_allocator->allocate(size);

@@ -8,9 +8,9 @@
 namespace Catch {
   template<>
   struct StringMaker<rsl::string> {
-    static std::string convert(rsl::string const& value)
+    static rsl::string convert(rsl::string const& value)
     {
-      std::string res("\"");
+      rsl::string res("\"");
       res.append(value.data(), value.length());
       res += "\"";
       return res;
@@ -19,9 +19,9 @@ namespace Catch {
 
   template<>
   struct StringMaker<rsl::string_view> {
-    static std::string convert(rsl::string_view const& value)
+    static rsl::string convert(rsl::string_view const& value)
     {
-      std::string res("\"");
+      rsl::string res("\"");
       res.append(value.data(), value.length());
       res += "\"";
       return res;

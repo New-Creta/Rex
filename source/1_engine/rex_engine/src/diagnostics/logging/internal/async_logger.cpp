@@ -1,6 +1,5 @@
 #include "rex_engine/diagnostics/logging/internal/async_logger.h"
 
-#include <functional>
 #include <stdio.h>
 
 // IWYU pragma: no_include <built-in>

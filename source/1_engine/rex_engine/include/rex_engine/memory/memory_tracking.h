@@ -52,12 +52,12 @@ namespace rex
 
     void dump_stats_to_file(rsl::string_view filepath);
 
-    REX_NO_DISCARD MemoryUsageStats current_stats();      // deliberate copy as we don't want to have any race conditions when accessing
-    REX_NO_DISCARD MemoryUsageStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
-    REX_NO_DISCARD MemoryUsageStats get_init_stats();     // deliberate copy as we don't want to have any race conditions when accessing
+    RSL_NO_DISCARD MemoryUsageStats current_stats();      // deliberate copy as we don't want to have any race conditions when accessing
+    RSL_NO_DISCARD MemoryUsageStats get_pre_init_stats(); // deliberate copy as we don't want to have any race conditions when accessing
+    RSL_NO_DISCARD MemoryUsageStats get_init_stats();     // deliberate copy as we don't want to have any race conditions when accessing
 
   private:
-    REX_NO_DISCARD MemoryUsageStats get_stats_for_frame(card32 idx);
+    RSL_NO_DISCARD MemoryUsageStats get_stats_for_frame(card32 idx);
 
     rsl::high_water_mark<s64> m_mem_usage; // current memory usage
     s64 m_max_mem_budget;                   // maximum allowed memory usage
@@ -87,5 +87,5 @@ namespace rex
     MemoryTagScope& operator=(MemoryTagScope&&)      = delete;
   };
 
-#define REX_MEM_TAG_SCOPE(tag) const MemoryTagScope ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
+#define REX_MEM_TAG_SCOPE(tag) const MemoryTagScope RSL_ANONYMOUS_VARIABLE(mem_tag_scope)(tag)
 } // namespace rex

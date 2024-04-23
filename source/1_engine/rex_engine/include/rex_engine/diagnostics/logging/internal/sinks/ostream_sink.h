@@ -6,9 +6,6 @@
 #include "rex_engine/diagnostics/logging/internal/sinks/base_sink.h"
 #include "rex_std/bonus/utility/yes_no.h"
 
-#include <mutex>
-#include <ostream>
-
 namespace rex
 {
   namespace log

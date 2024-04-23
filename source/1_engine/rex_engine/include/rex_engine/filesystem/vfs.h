@@ -102,9 +102,9 @@ namespace rex
     void mount(MountingPoint root, rsl::string_view path);
     void shutdown();
 
-    REX_NO_DISCARD memory::Blob read_file(MountingPoint root, rsl::string_view filepath);
-    REX_NO_DISCARD ReadRequest read_file_async(rsl::string_view filepath);
-    REX_NO_DISCARD ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath);
+    RSL_NO_DISCARD memory::Blob read_file(MountingPoint root, rsl::string_view filepath);
+    RSL_NO_DISCARD ReadRequest read_file_async(rsl::string_view filepath);
+    RSL_NO_DISCARD ReadRequest read_file_async(MountingPoint root, rsl::string_view filepath);
     bool save_to_file(MountingPoint root, rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
     bool save_to_file(rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
     bool save_to_file(MountingPoint root, rsl::string_view filepath, const memory::Blob& blob, AppendToFile shouldAppend);
@@ -125,7 +125,7 @@ namespace rex
     // **************************************************************************
     // PLATFORM SPECIFIC IMPLEMENTATIONS
     // **************************************************************************
-    REX_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
+    RSL_NO_DISCARD memory::Blob read_file(rsl::string_view filepath);
     bool save_to_file(rsl::string_view filepath, const void* data, card64 size, AppendToFile shouldAppend);
     bool create_dir(rsl::string_view path);
 
