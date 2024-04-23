@@ -6,22 +6,9 @@
 #include "rex_engine/platform/win/win_com_ptr.h"
 
 #include <d3d12.h>
+#include <d3dx12.h>
 #include <d3d11on12.h>
-
-// Link necessary d3d12 libraries.
-#pragma comment(lib,"d3dcompiler.lib")
-#pragma comment(lib, "D3D12.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "dxguid.lib")
-
-
   
-    
-
-    
-  
-
-
 #if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
 #define REX_ENABLE_GFX_DEBUGGING
 #endif
