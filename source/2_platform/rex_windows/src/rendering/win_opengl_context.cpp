@@ -3,6 +3,7 @@
   #include "rex_renderer_core/context.h"
   #include "rex_windows/log.h"
 
+  #define WIN32_LEAN_AND_MEAN
   #include <Windows.h>
   #include <glad/gl.h>
   #include <glad/wgl.h>

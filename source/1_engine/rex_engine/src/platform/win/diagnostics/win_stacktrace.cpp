@@ -2,6 +2,7 @@
 
 // NOLINTBEGIN(llvm-include-order)
 // clang-format off
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h> // this needs to be included before DbgHelp.h
 #include <DbgHelp.h>
 

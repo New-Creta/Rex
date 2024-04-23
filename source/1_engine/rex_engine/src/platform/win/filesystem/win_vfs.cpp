@@ -19,6 +19,7 @@
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <processenv.h>
 #include <stddef.h>

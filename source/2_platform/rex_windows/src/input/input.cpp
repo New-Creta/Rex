@@ -6,6 +6,7 @@
 #include "rex_std/bonus/types.h"
 #include "rex_windows/input/internal/input.h"
 
+#define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
 

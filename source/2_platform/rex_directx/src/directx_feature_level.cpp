@@ -3,6 +3,7 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_std/array.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 namespace rex

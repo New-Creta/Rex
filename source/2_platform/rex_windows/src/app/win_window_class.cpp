@@ -5,6 +5,7 @@
 #include "rex_std/bonus/memory.h"
 #include "rex_windows/diagnostics/log.h"
 
+#define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
 

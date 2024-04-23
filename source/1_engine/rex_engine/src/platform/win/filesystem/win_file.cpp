@@ -6,6 +6,8 @@
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/time/win/win_time_functions.h"
+
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 namespace rex

@@ -14,6 +14,7 @@
 
 // The current implementation of this namespace is Windows only
 
+#define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
 #include <cstdlib>

@@ -4,6 +4,7 @@
 #include "rex_engine/platform/win/diagnostics/win_call.h"
 #include "rex_std/memory.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 namespace rex

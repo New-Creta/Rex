@@ -10,6 +10,7 @@
 #include "rex_windows/diagnostics/log.h"
 #include "rex_windows/engine/platform_creation_params.h"
 
+#define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
 #include <processenv.h>

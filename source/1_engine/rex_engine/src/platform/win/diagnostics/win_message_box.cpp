@@ -3,6 +3,7 @@
 #include "rex_std/bonus/string.h"
 
 #define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 int32 rex::win::message_box(rsl::string_view msg)

@@ -1,5 +1,6 @@
 #include "rex_directx/directx_feature_shader_model.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <sdkddkver.h>
 

@@ -20,6 +20,7 @@
 
   #include "rex_engine/diagnostics/logging/internal/details/windows_include.h"
 
+  #define WIN32_LEAN_AND_MEAN
   #include <Windows.h>
   #include <fileapi.h> // for FlushFileBuffers
   #include <io.h>      // for _get_osfhandle, _isatty, _fileno

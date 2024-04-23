@@ -5,6 +5,7 @@
 #include "rex_engine/platform/win/diagnostics/win_debug.h"
 
 #define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 rex::win::WinCall::WinCall(DWord /*funcResult*/, ErrorSuccess errorSuccess, rsl::string_view winFunc, rsl::string_view file, rsl::string_view function, card32 lineNr)

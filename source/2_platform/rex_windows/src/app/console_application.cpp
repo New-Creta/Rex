@@ -9,7 +9,9 @@
 #include "rex_windows/input/internal/input.h"
 #include "rex_windows/engine/platform_creation_params.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
 #include <consoleapi.h>
 #include <consoleapi3.h>
 

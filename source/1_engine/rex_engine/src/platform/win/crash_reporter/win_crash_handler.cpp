@@ -10,6 +10,7 @@
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/vfs.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <DbgHelp.h>
 

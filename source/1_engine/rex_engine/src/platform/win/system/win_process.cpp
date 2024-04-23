@@ -1,5 +1,6 @@
 #include "rex_engine/platform/win/system/win_process.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 namespace rex
