@@ -1,6 +1,6 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_opengl/opengl_error.h"
-#include "rex_renderer_core/renderer.h"
+#include "rex_renderer_core_legacy/renderer.h"
 #include "rex_std/string.h"
 #include "rex_std_extra/math/color.h"
 

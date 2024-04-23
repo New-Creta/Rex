@@ -1,6 +1,6 @@
 #ifdef REX_API_OPENGL
   #include "rex_engine/engine/types.h"
-  #include "rex_renderer_core/context.h"
+  #include "rex_renderer_core_legacy/context.h"
   #include "rex_windows/log.h"
 
   #define WIN32_LEAN_AND_MEAN
