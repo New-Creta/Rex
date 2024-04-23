@@ -15,6 +15,9 @@ namespace rex
       WindowMaximized,
       WindowRestored,
 
+      Update,
+      Render,
+
       // In some cases, WindowClose wants to close the app,
       // however, you may want to capture this to prompt the user if they really want to close the app.
       // also, you want to be able to exit the application through a menu as well.
