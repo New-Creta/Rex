@@ -9,8 +9,9 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/platform/win/win_com_library.h"
+#include "rex_engine/scenegraph/scene_manager.h"
+#include "rex_engine/scenegraph/scene_node.h"
 #include "rex_engine/windowinfo.h"
-#include "rex_renderer_core/context.h"
 #include "rex_renderer_core/renderer.h"
 #include "rex_renderer_core/renderer_info.h"
 #include "rex_renderer_core/renderer_output_window_user_data.h"
@@ -20,9 +21,9 @@
 #include "rex_std/memory.h"
 #include "rex_std/ratio.h"
 #include "rex_std/thread.h"
+#include "rex_windows/app/win_window.h"
 #include "rex_windows/diagnostics/log.h"
 #include "rex_windows/engine/platform_creation_params.h"
-#include "rex_windows/app/win_window.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -56,7 +57,7 @@ namespace rex
 
         m_on_update = m_engine_params.app_update_func ? rsl::move(m_engine_params.app_update_func) : [&]() {};
 
-        m_on_draw = m_engine_params.app_draw_func ? rsl::move(m_engine_params.app_draw_func) : [&]() {};
+        m_on_gui = m_engine_params.app_gui_func ? rsl::move(m_engine_params.app_gui_func) : [&]() {};
 
         m_on_shutdown = m_engine_params.app_shutdown_func ? rsl::move(m_engine_params.app_shutdown_func) : [&]() {};
       }
@@ -82,14 +83,11 @@ namespace rex
 
         subscribe_window_events();
 
-        // graphics context initialization
-        if(context::create(m_window->primary_display_handle()) == false) // NOLINT(readability-simplify-boolean-expr)
-        {
-          return false;
-        }
+        // scene setup
+        SceneManager::create_instance();
+        SceneManager::instance()->active_scene()->set_root_node(rsl::make_shared<SceneNode>(glm::mat4(1.0), rsl::string("Root Node")));
 
         // renderer initialization
-
         renderer::OutputWindowUserData user_data {};
         user_data.primary_display_handle = m_window->primary_display_handle();
         user_data.refresh_rate           = m_gui_params.max_fps;
@@ -97,50 +95,25 @@ namespace rex
         user_data.window_height          = m_window->height();
         user_data.windowed               = !m_gui_params.fullscreen;
 
-        if(renderer::initialize(user_data, m_gui_params.max_render_commands, m_gui_params.max_frames_in_flight) == false) // NOLINT(readability-simplify-boolean-expr)
+        if(renderer::initialize(user_data) == false) // NOLINT(readability-simplify-boolean-expr)
         {
           return false;
         }
 
         display_renderer_info();
 
-        // if the client calls render commands some preparation is required before
-        // we can actually execute those commands.
-        //
-        // this function does this preparation.
-        //
-        // eg: on DX12 we require to reset and allow the command list to record commands
-        if(!renderer::prepare_user_initialization())
-        {
-          REX_ERROR(LogWindows, "Unable to start drawing frame");
-          return false;
-        }
-
         // call client code so it can get initialized
-        const bool result = m_on_initialize();
-
-        if(!result)
+        if (!m_on_initialize())
         {
-          return result;
-        }
-
-        // if the client had called render commands some closing up has to be done before
-        // we can actually execute these commands.
-        //
-        // this function does the close
-        //
-        // eg: on DX12 we require to close the command list and execute them
-        if(!renderer::finish_user_initialization())
-        {
-          REX_ERROR(LogWindows, "Unable to end draw on current frame");
           return false;
         }
 
-        if(!renderer::flush())
+        if(renderer::post_initialize() == false) // NOLINT(readability-simplify-boolean-expr)
         {
-          REX_ERROR(LogWindows, "Unable to flush all commands");
           return false;
         }
+
+        renderer::flush();
 
         // When the renderer is initialized we can show the window
         m_window->show();
@@ -151,22 +124,11 @@ namespace rex
       {
         REX_ASSERT_CONTEXT_SCOPE("Application update");
 
-        // update the window (this pulls input as well)
-        m_window->update();
-
+        // pull new events
+        m_window->poll_events();
+            
+        // process the received events
         event_system::process_events();
-
-        m_on_update();
-
-        // don't render when the application is paused
-        if(!m_app_instance->is_paused())
-        {
-          // TODO: this call eventually has to go.
-          // we will query the scenegraph and pull geometry from the scene instead of letting the user
-          // execute draw commands manually. However, for the setup of this framework we will
-          // provide this API to be able to execute draw commands properly
-          m_on_draw();
-        }
 
         // update the timing stats
         m_delta_time.update();
@@ -180,6 +142,7 @@ namespace rex
 
         m_on_shutdown();
         renderer::shutdown();
+        SceneManager::destroy_instance();
       }
 
     private:
@@ -210,6 +173,8 @@ namespace rex
         event_system::subscribe(event_system::EventType::WindowMinimized, [this](const event_system::Event& /*evt*/) { on_minimize(); });
         event_system::subscribe(event_system::EventType::WindowMaximized, [this](const event_system::Event& evt) { on_maximize(evt); });
         event_system::subscribe(event_system::EventType::WindowRestored, [this](const event_system::Event& evt) { on_restore(evt); });
+        event_system::subscribe(event_system::EventType::Update, [this](const event_system::Event& evt) { on_update(evt); });
+        event_system::subscribe(event_system::EventType::Render, [this](const event_system::Event& evt) { on_render(evt); });
         event_system::subscribe(event_system::EventType::QuitApp, [this](const event_system::Event& /*evt*/) { m_app_instance->quit(); });
       }
 
@@ -331,6 +296,25 @@ namespace rex
         // Update scissor rect
       }
 
+      void on_update(const event_system::Event& /*evt*/)
+      {
+        m_on_update();
+      }
+
+      void on_render(const event_system::Event& /*evt*/)
+      {
+        // don't render when the application is paused
+        if(!m_app_instance->is_paused())
+        {
+          renderer::draw_scene(SceneManager::instance()->active_scene());
+
+          m_on_gui();
+
+          renderer::draw_gui();
+          renderer::present();
+        }
+      }
+
     private:
       DeltaTime m_delta_time;
       FPS m_fps;
@@ -339,7 +323,7 @@ namespace rex
 
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;
-      rsl::function<void()> m_on_draw;
+      rsl::function<void()> m_on_gui;
       rsl::function<void()> m_on_shutdown;
 
       PlatformCreationParams m_platform_creation_params;
