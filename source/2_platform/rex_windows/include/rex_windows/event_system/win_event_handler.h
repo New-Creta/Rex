@@ -2,6 +2,7 @@
 
 #include "rex_std/bonus/types.h"
 #include "rex_windows/engine/win_types.h"
+#include "rex_windows/imgui/gui_event_handler.h"
 
 namespace rex
 {
@@ -18,6 +19,7 @@ namespace rex
 
     private:
       IWindow* m_wnd;
+      rsl::unique_ptr<ImGUIEventHandler> m_gui_event_handler;
     };
   } // namespace win
 } // namespace rex

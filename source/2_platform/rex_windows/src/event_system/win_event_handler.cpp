@@ -20,15 +20,31 @@ namespace rex
 {
   namespace win
   {
+    namespace adaptors
+    {
+      class MakeImGUIEventHandler : public ImGUIEventHandler
+      {
+      public:
+        MakeImGUIEventHandler()           = default;
+        ~MakeImGUIEventHandler() override = default;
+      };
+    } // namespace internal
     //-------------------------------------------------------------------------
     EventHandler::EventHandler(IWindow* wnd)
         : m_wnd(wnd)
+        , m_gui_event_handler(rsl::make_unique<adaptors::MakeImGUIEventHandler>())
     {
     }
 
     //-------------------------------------------------------------------------
     LResult EventHandler::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam) // NOLINT (readability-convert-member-functions-to-static,-warnings-as-errors)
     {
+      // Allow for external handling of window messages.
+      if(m_gui_event_handler->wnd_proc_handler(hwnd, msg, wparam, lparam))
+      {
+        return 1;
+      }
+
       REX_ASSERT_X(m_wnd != nullptr, "Window was not given to the Window Event Handler");
 
       // Sometimes Windows set error states between messages
@@ -43,6 +59,13 @@ namespace rex
 
       switch(msg)
       {
+        case WM_PAINT:
+            evt.type = event_system::EventType::Update;
+            event_system::enqueue_event(evt);
+            evt.type = event_system::EventType::Render;
+            event_system::enqueue_event(evt);
+            return 0;
+
         case WM_CLOSE: REX_WARN(LogWindows, "Verify if the user really wants to close"); break;
         case WM_DESTROY:
           PostQuitMessage(0);
