@@ -51,7 +51,7 @@ namespace rex
     IWindow& operator=(const IWindow&) = delete;
     IWindow& operator=(IWindow&&)      = delete;
 
-    virtual void update() = 0;
+    virtual void poll_events() = 0;
     virtual void show()   = 0;
     virtual void hide()   = 0;
     virtual void close()  = 0;
