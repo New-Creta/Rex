@@ -4,6 +4,12 @@ namespace rex
 {
   namespace renderer
   {
+    ResourcePool::ResourcePool(s32 initialSlots)
+        : m_resource_slots(initialSlots)
+    {
+
+    }
+
     //-----------------------------------------------------------------------
     void ResourcePool::initialize(s32 reservedCapacity)
     {
@@ -11,14 +17,26 @@ namespace rex
     }
 
     //-----------------------------------------------------------------------
+    ResourceSlot ResourcePool::allocate(const ResourcePtr& resource)
+    {
+      ResourceSlot new_slot = m_resource_slots.alloc_slot();
+
+      insert(new_slot, resource);
+      
+      return new_slot;
+    }
+
+    //-----------------------------------------------------------------------
     void ResourcePool::clear()
     {
+      m_resource_slots.free_slots();
+
       rsl::unique_lock const sl(m_lock);
       m_resource_map.clear();
     }
 
     //-----------------------------------------------------------------------
-    void ResourcePool::insert(const ResourceSlot& slot, ResourcePtr&& resource)
+    void ResourcePool::insert(const ResourceSlot& slot, const ResourcePtr& resource)
     {
       // The slots are all in numerical order ( see ResourceSlots.cpp )
       // This means if there is a slot ID incoming with a larger value as the currently allocated buckets within the hashmap
@@ -33,6 +51,8 @@ namespace rex
     void ResourcePool::remove(const ResourceSlot& slot)
     {
       REX_ASSERT_X(has_slot(slot), "Slot was not registered within resource pool ({})", slot.slot_id());
+
+      m_resource_slots.free_slot(slot.slot_id());
 
       rsl::unique_lock const sl(m_lock);
       m_resource_map.erase(slot);

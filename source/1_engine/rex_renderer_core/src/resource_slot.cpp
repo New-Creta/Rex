@@ -14,16 +14,14 @@ namespace rex
 
     //-------------------------------------------------------------------------
     ResourceSlot::ResourceSlot()
-        : m_about_to_be_removed(false)
-        , m_slot_id(globals::g_invalid_slot_id)
+        : m_slot_id(globals::g_invalid_slot_id)
         , m_ref_count(nullptr)
     {
     }
 
     //-------------------------------------------------------------------------
     ResourceSlot::ResourceSlot(const ResourceSlot& other)
-        : m_about_to_be_removed(false)
-        , m_slot_id(other.m_slot_id)
+        : m_slot_id(other.m_slot_id)
         , m_ref_count(other.m_ref_count)
     {
       rsl::atomic_increment(*m_ref_count);
@@ -31,8 +29,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     ResourceSlot::ResourceSlot(ResourceSlot&& other) noexcept
-        : m_about_to_be_removed(rsl::exchange(other.m_about_to_be_removed, false))
-        , m_slot_id(rsl::exchange(other.m_slot_id, globals::g_invalid_slot_id))
+        : m_slot_id(rsl::exchange(other.m_slot_id, globals::g_invalid_slot_id))
         , m_ref_count(rsl::exchange(other.m_ref_count, nullptr)) // A moved ResourceSlot should leave the remaining ResourceSlot invalid
     {
     }
@@ -45,8 +42,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     ResourceSlot::ResourceSlot(s32 slotId)
-        : m_about_to_be_removed(false)
-        , m_slot_id(slotId)
+        : m_slot_id(slotId)
         , m_ref_count(new s32(1))
     {
     }
@@ -59,7 +55,6 @@ namespace rex
         return *this;
       }
 
-      m_about_to_be_removed = other.m_about_to_be_removed;
       m_slot_id             = other.m_slot_id;
       m_ref_count           = other.m_ref_count;
 
@@ -76,7 +71,6 @@ namespace rex
         return *this;
       }
 
-      m_about_to_be_removed = rsl::exchange(other.m_about_to_be_removed, false);
       m_slot_id             = rsl::exchange(other.m_slot_id, globals::g_invalid_slot_id);
       m_ref_count           = rsl::exchange(other.m_ref_count, nullptr); // A moved ResourceSlot should leave the remaining ResourceSlot invalid
 
@@ -115,12 +109,6 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    bool ResourceSlot::is_about_to_be_removed() const
-    {
-      return m_about_to_be_removed;
-    }
-
-    //-------------------------------------------------------------------------
     s32 ResourceSlot::release()
     {
       s32 ref_count = 0;
@@ -133,11 +121,6 @@ namespace rex
 
         if(rsl::atomic_decrement(*m_ref_count) == 0)
         {
-          m_about_to_be_removed = true;
-
-          renderer::release_resource(*this);
-
-          m_about_to_be_removed = false;
           m_slot_id             = globals::g_invalid_slot_id;
 
           delete m_ref_count;
