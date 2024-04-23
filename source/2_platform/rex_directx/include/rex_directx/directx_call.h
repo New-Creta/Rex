@@ -23,7 +23,7 @@ namespace rex
 
       private:
         HResult m_error;
-        rsl::medium_stack_string m_error_message;
+        rsl::big_stack_string m_error_message;
       };
 
       namespace internal
