@@ -33,11 +33,17 @@ namespace rex
   // 0x0200
   // 512
 
-  template <typename T>
-  constexpr T align(T addr, card32 alignment)
+  template <typename T, typename U>
+  constexpr T align_up(T addr, U alignment)
   {
-    const card32 mask = alignment - 1;
-    REX_ASSERT_X((alignment & mask) == 0, "Alignment must be a power of 2"); // NOLINT(hicpp-signed-bitwise)
+    const U mask = alignment - 1;
     return (addr + mask) & ~mask;                                            // NOLINT(hicpp-signed-bitwise)
+  }
+
+  template <typename T, typename U>
+  constexpr T align_down(T addr, U alignment)
+  {
+    const U mask = alignment - 1;
+    return addr & ~mask;                                                     // NOLINT(hicpp-signed-bitwise)
   }
 } // namespace rex
