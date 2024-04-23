@@ -7,20 +7,23 @@
 
 namespace rex
 {
-  struct GpuDescription
+  namespace renderer
   {
-    GpuDescription();
+    struct GpuDescription
+    {
+      GpuDescription();
 
-    rsl::small_stack_string name;
-    rsl::small_stack_string vendor_name;
+      rsl::small_stack_string name;
+      rsl::small_stack_string vendor_name;
 
-    u32 vendor_id;
-    u32 device_id;
+      u32 vendor_id;
+      u32 device_id;
 
-    rsl::memory_size dedicated_video_memory;
-    rsl::memory_size dedicated_system_memory;
-    rsl::memory_size shared_system_memory;
-  };
+      rsl::memory_size dedicated_video_memory;
+      rsl::memory_size dedicated_system_memory;
+      rsl::memory_size shared_system_memory;
+    };
 
-  rsl::ostream& operator<<(rsl::ostream& os, const GpuDescription& desc);
+    rsl::ostream& operator<<(rsl::ostream& os, const GpuDescription& desc);
+  } // namespace renderer
 } // namespace rex

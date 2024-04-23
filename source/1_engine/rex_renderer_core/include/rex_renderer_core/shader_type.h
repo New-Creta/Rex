@@ -12,5 +12,5 @@ namespace rex
       GEOMETRY,
       COMPUTE
     };
-  } // namespace renderer
+  }
 } // namespace rex

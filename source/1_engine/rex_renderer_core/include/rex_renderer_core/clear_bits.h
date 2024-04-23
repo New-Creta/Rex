@@ -7,7 +7,6 @@ namespace rex
 {
   namespace renderer
   {
-    //-------------------------------------------------------------------------
     enum class ClearBits
     {
       None               = BIT(0),
@@ -16,16 +15,7 @@ namespace rex
       ClearStencilBuffer = BIT(3),
     };
 
-    //-------------------------------------------------------------------------
-    REX_FORCE_INLINE bool operator&(ClearBits bits1, ClearBits bits2)
-    {
-      return (static_cast<u32>(bits1) & static_cast<u32>(bits2)) != 0;
-    }
-
-    //-------------------------------------------------------------------------
-    REX_FORCE_INLINE bool operator|(ClearBits bits1, ClearBits bits2)
-    {
-      return (static_cast<u32>(bits1) | static_cast<u32>(bits2)) != 0;
-    }
+    bool operator&(ClearBits bits1, ClearBits bits2);
+    bool operator|(ClearBits bits1, ClearBits bits2);
   } // namespace renderer
 } // namespace rex

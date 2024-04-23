@@ -9,5 +9,5 @@ namespace rex
       SOLID,
       WIREFRAME
     };
-  } // namespace renderer
+  }
 } // namespace rex

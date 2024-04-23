@@ -7,5 +7,8 @@
 
 namespace rex
 {
-  using GpuScorerFn = rsl::function<count_t(const rsl::vector<GpuDescription>&)>;
+  namespace renderer
+  {
+    using GpuScorerFn = rsl::function<count_t(const rsl::vector<GpuDescription>&)>;
+  }
 } // namespace rex
