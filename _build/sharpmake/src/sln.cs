@@ -43,13 +43,14 @@ namespace rex
 
       if (ProjectGen.Settings.AutoTestsEnabled)
       {
-        conf.AddProject<ReginaAutoTest>(target);
+        //conf.AddProject<ReginaAutoTest>(target);
       }
 
       if (ProjectGen.Settings.EnableDefaultGeneration)
       {
-        conf.AddProject<Regina>(target);
-        conf.AddProject<ConsoleApp>(target);
+        conf.AddProject<TechDemo>(target);
+        //conf.AddProject<Regina>(target);
+        //conf.AddProject<ConsoleApp>(target);
       }
     }
 
