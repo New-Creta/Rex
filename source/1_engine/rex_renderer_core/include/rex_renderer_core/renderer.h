@@ -1,126 +1,197 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_std/bonus/utility/yes_no.h"
+#include "rex_std/bonus/memory/memory_size.h"
+#include "rex_renderer_core/format.h"
 
 namespace rex
-{
-  struct Viewport;
-  struct ScissorRect;
-  struct DefaultTargetsInfo;
-  struct DefaultDepthInfo;
-
-  namespace globals
-  {
-    const DefaultTargetsInfo& default_targets_info();
-    const DefaultDepthInfo& default_depth_info();
-  } // namespace globals
+{ 
+  class Scene;
 
   namespace renderer
   {
-    DEFINE_YES_NO_ENUM(FlushCommands);
+    struct Viewport;
+    struct ScissorRect;
 
     struct Info;
     struct OutputWindowUserData;
 
     class ResourceSlot;
 
-    enum class ShaderPlatform;
     enum class PrimitiveTopology;
-    enum class IndexBufferFormat;
+    enum class Format;
 
-    namespace commands
-    {
-      struct CreateClearStateCommandDesc;
-      struct CreateRasterStateCommandDesc;
-      struct CreateBufferCommandDesc;
-      struct CreateIndexBufferCommandDesc;
-      struct CreateConstantBufferViewCommandDesc;
-      struct CreatePipelineStateCommandDesc;
-      struct CreateInputLayoutCommandDesc;
-      struct AttachCommittedResourceToFrameCommandDesc;
-      struct BeginDrawCommandDesc;
-      struct EndDrawCommandDesc;
-      struct NewFrameCommandDesc;
-      struct EndFrameCommandDesc;
-      struct CompileShaderCommandDesc;
-      struct LinkShaderCommandDesc;
-      struct LoadShaderCommandDesc;
-      struct ClearCommandDesc;
-      struct DrawCommandDesc;
-      struct DrawIndexedCommandDesc;
-      struct DrawIndexedInstancedCommandDesc;
-      struct DrawInstanceCommandDesc;
-      struct ReleaseResourceCommandDesc;
-      struct UpdateCommittedResourceCommandDesc;
-    } // namespace commands
+    struct CreateClearStateDesc;
+    struct CreateRasterStateDesc;
+    struct CreateTextureDesc;
+    struct CreateVertexBufferDesc;
+    struct CreateIndexBufferDesc;
+    struct CreatePipelineStateDesc;
 
-    bool initialize(const OutputWindowUserData& userData, s32 maxCommands, s32 maxFrameResources);
+    bool initialize(const OutputWindowUserData& userData);
+    bool post_initialize();
     void shutdown();
 
     // general accessors
     const Info& info();
-    ShaderPlatform shader_platform();
 
     bool is_y_up();
     bool is_depth_0_to_1();
 
-    // public-api will buffer all commands for dispatch on dedicated thread
-    const ResourceSlot* active_frame();
-    const ResourceSlot* frame_at_index(s32 idx);
-    s32 max_frames_in_flight();
+    /**
+    * Render a scene
+    */
+    void draw_scene(Scene* scene);
 
-    ResourceSlot create_clear_state(commands::CreateClearStateCommandDesc&& desc);
-    ResourceSlot create_raster_state(commands::CreateRasterStateCommandDesc&& desc);
-    ResourceSlot create_input_layout(commands::CreateInputLayoutCommandDesc&& desc);
-    ResourceSlot create_vertex_buffer(commands::CreateBufferCommandDesc&& createBufferParams);
-    ResourceSlot create_index_buffer(commands::CreateBufferCommandDesc&& createBufferParams);
-    ResourceSlot create_constant_buffer_view(commands::CreateConstantBufferViewCommandDesc&& createBufferParams);
-    ResourceSlot create_pipeline_state_object(commands::CreatePipelineStateCommandDesc&& createPipelineStateParams);
-    ResourceSlot create_frame_resource();
-    ResourceSlot attach_committed_resource_to_frame(commands::AttachCommittedResourceToFrameCommandDesc&& attachCommittedResourceParams);
+    /**
+     * Render the gui
+     */
+    void draw_gui();
 
-    ResourceSlot load_shader(commands::LoadShaderCommandDesc&& loadShaderParams);
-    ResourceSlot link_shader(commands::LinkShaderCommandDesc&& linkShaderParams);
-    ResourceSlot compile_shader(commands::CompileShaderCommandDesc&& compileShaderParams);
+    /**
+     * Swap out for a new back buffer to draw to
+     */
+    void present();
 
-    bool update_committed_resource(commands::UpdateCommittedResourceCommandDesc&& updateConstantBufferParams, const ResourceSlot& constantBufferTarget);
+    /**
+     * Flush all command queues.
+     */
+    void flush();
 
-    void wait_for_active_frame();
+    /**
+     * Copy the contents to a vertex buffer in GPU memory.
+     */
+    ResourceSlot copy_vertex_buffer(size_t numVertices, size_t vertexStride, const void* vertexBufferData);
+    template <typename T>
+    ResourceSlot copy_vertex_buffer(const rsl::vector<T>& vertexBufferData)
+    {
+      return copy_vertex_buffer(vertexBufferData.size(), sizeof(T), vertexBufferData.data());
+    }
 
-    bool release_resource(const ResourceSlot& resourceTarget);
+    /**
+     * Copy the contents to a index buffer in GPU memory.
+     */
+    ResourceSlot copy_index_buffer(size_t numIndices, Format indexFormat, const void* indexBufferData);
+    template <typename T>
+    ResourceSlot copy_index_buffer(const rsl::vector<T>& indexBufferData)
+    {
+      assert(sizeof(T) == 2 || sizeof(T) == 4);
 
-    bool prepare_user_initialization();
-    bool finish_user_initialization();
+      Format index_format = (sizeof(T) == 2) ? Format::R16_UINT : Format::R32_UINT;
+      return copy_index_buffer(indexBufferData.size(), index_format, indexBufferData.data());
+    }
 
-    bool clear(const ResourceSlot& clearStateTarget);
+    /**
+     * Resource creation functions
+     */
+    ResourceSlot create_clear_state(CreateClearStateDesc&& clearStateParams);
+    ResourceSlot create_raster_state(CreateRasterStateDesc&& rasterStateParams);
+    ResourceSlot create_texture(CreateTextureDesc&& createTextureParams);
+    ResourceSlot create_vertex_buffer(CreateVertexBufferDesc&& createBufferParams);
+    ResourceSlot create_index_buffer(CreateIndexBufferDesc&& createBufferParams);
+    ResourceSlot create_pipeline_state_object(CreatePipelineStateDesc&& createPipelineStateParams);
 
-    bool renderer_draw(s32 vertexCount, s32 startVertex);
-    bool renderer_draw_indexed(s32 indexCount, s32 startIndex, s32 baseVertex);
-    bool renderer_draw_indexed_instanced(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertex);
-    bool renderer_draw_instanced(s32 vertexCount, s32 instanceCount, s32 startVertex, s32 startInstance);
+    /**
+     * Manually release a resource
+     */
+    void release_resource(const ResourceSlot& slot);
 
-    bool set_raster_state(const ResourceSlot& rasterStateTarget);
-    bool set_render_targets(const ResourceSlot* colorTargets, s32 numColorTargets, const ResourceSlot& depthTarget);
-    bool set_render_targets(const ResourceSlot& colorTarget, const ResourceSlot& depthTarget);
-    bool set_viewport(const Viewport& vp);
-    bool set_scissor_rect(const ScissorRect& sr);
-    bool set_input_layout(const ResourceSlot& inputLayoutTarget);
-    bool set_vertex_buffer(const ResourceSlot& vertexBufferTarget, s32 startSlot, s32 stride, s32 offset);
-    bool set_vertex_buffers(const ResourceSlot* vertexBufferTargets, s32 numBuffers, s32 startSlot, const s32* strides, const s32* offsets);
-    bool set_index_buffer(const ResourceSlot& indexBufferTarget, IndexBufferFormat format, s32 offset);
-    bool set_shader(const ResourceSlot& shaderTarget);
-    bool set_pipeline_state_object(const ResourceSlot& psoTarget);
-    bool set_constant_buffer_view(const ResourceSlot& constantBufferTarget, s32 location);
-    bool set_primitive_topology(PrimitiveTopology primitiveTopology);
+    /**
+     * Clear a texture.
+     */
+    void clear_texture(const ResourceSlot& texture, const ResourceSlot& clearState);
 
-    bool new_frame();
-    bool end_frame(FlushCommands flush = FlushCommands::yes);
+    /**
+     * Clear depth/stencil texture.
+     */
+    void clear_depth_stencil_texture(const ResourceSlot& texture, const ResourceSlot& clearState);
 
-    bool begin_draw();
-    bool end_draw();
+    /**
+     * Draw geometry.
+     */
+    void draw_geometry(u32 vertexCount, u32 instanceCount = 1, u32 startVertex = 0, u32 startInstance = 0);
+    void draw_geometry_indexed(u32 indexCount, u32 instanceCount = 1, u32 startIndex = 0, s32 baseVertex = 0, u32 startInstance = 0);
 
-    bool present();
-    bool flush();
+    /**
+     * Set the render targets for the graphics rendering pipeline.
+     */
+    void set_render_target(const ResourceSlot& renderTarget);
+
+    /**
+     * Set the pipeline state object on the command list.
+     */
+    void set_pipeline_state(const ResourceSlot& pipelineState);
+
+    /**
+     * Set a dynamic constant buffer data to an inline descriptor in the root
+     * signature.
+     */
+    void set_graphics_dynamic_constant_buffer(u32 rootParameterIndex, rsl::memory_size sizeInBytes, const void* bufferData);
+    template <typename T>
+    void set_graphics_dynamic_constant_buffer(u32 rootParameterIndex, const T& data)
+    {
+      set_graphics_dynamic_constant_buffer(rootParameterIndex, sizeof(T), &data);
+    }
+
+    /**
+     * Set a set of 32-bit constants on the graphics pipeline.
+     */
+    void set_graphics_32_bit_constants(u32 rootParameterIndex, u32 numConstants, const void* constants);
+    template <typename T>
+    void set_graphics_32_bit_constants(u32 rootParameterIndex, const T& constants)
+    {
+      static_assert(sizeof(T) % sizeof(u32) == 0, "Size of type must be a multiple of 4 bytes");
+      set_graphics_32_bit_constants(rootParameterIndex, sizeof(T) / sizeof(u32), &constants);
+    }
+
+    /**
+     * Set the vertex buffer to the rendering pipeline.
+     */
+    void set_vertex_buffer(u32 slot, const ResourceSlot& vertexBuffer);
+    void set_vertex_buffers(u32 slot, const rsl::vector<ResourceSlot>& vertexBuffers);
+
+    /**
+     * Set dynamic vertex buffer data to the rendering pipeline.
+     */
+    void set_dynamic_vertex_buffer(u32 slot, size_t numVertices, rsl::memory_size vertexSize, const void* vertexBufferData);
+    template <typename T>
+    void set_dynamic_vertex_buffer(u32 slot, const rsl::vector<T>& vertexBufferData)
+    {
+      set_dynamic_vertex_buffer(slot, vertexBufferData.size(), rsl::memory_size(sizeof(T)), vertexBufferData.data());
+    }
+
+    /**
+     * Bind the index buffer to the rendering pipeline.
+     */
+    void set_index_buffer(const ResourceSlot& indexBuffer);
+
+    /**
+     * Bind dynamic index buffer data to the rendering pipeline.
+     */
+    void set_dynamic_index_buffer(size_t numIndicies, Format indexFormat, const void* indexBufferData);
+    template <typename T>
+    void set_dynamic_index_buffer(const rsl::vector<T>& indexBufferData)
+    {
+      static_assert(sizeof(T) == 2 || sizeof(T) == 4);
+
+      Format index_format = (sizeof(T) == 2) ? Format::R16_UINT : Format::R32_UINT;
+      set_dynamic_index_buffer(indexBufferData.size(), indexFormat, indexBufferData.data());
+    }
+
+    /**
+     * Set the current primitive topology for the rendering pipeline.
+     */
+    void set_primitive_topology(PrimitiveTopology primitiveTopology);
+    /**
+     * Set viewports.
+     */
+    void set_viewport(const Viewport& viewport);
+    void set_viewports(const rsl::vector<Viewport>& viewports);
+
+    /**
+     * Set scissor rects.
+     */
+    void set_scissor_rect(const ScissorRect& scissorRect);
+    void set_scissor_rects(const rsl::vector<ScissorRect>& scissorRects);
   } // namespace renderer
 } // namespace rex
