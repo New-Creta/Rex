@@ -19,7 +19,7 @@ namespace rex
       bool create(HInstance hInstance, s32 cmdShow, const WindowDescription& description);
 
     public:
-      void update() override;
+      void poll_events() override;
       void show() override;
       void hide() override;
       void close() override;

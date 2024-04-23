@@ -126,10 +126,10 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void Window::update()
+    void Window::poll_events()
     {
       MSG message = {};
-      while(PeekMessage(&message, nullptr, NULL, NULL, PM_REMOVE) > 0)
+      if(PeekMessage(&message, nullptr, NULL, NULL, PM_REMOVE) > 0)
       {
         TranslateMessage(&message);
         DispatchMessage(&message);
