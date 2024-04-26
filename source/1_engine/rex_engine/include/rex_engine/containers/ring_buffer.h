@@ -11,7 +11,6 @@
 
 namespace rex
 {
-  // lockless single producer single consumer - thread safe ring buffer
   template <typename T>
   class RingBuffer
   {
@@ -28,6 +27,8 @@ namespace rex
     RingBuffer& operator=(RingBuffer&&)      = delete;
 
     // Put a new item at the next available location in the ring buffer
+    // returns true if the next put would be at the start of the buffer,
+    // returns false otherwise
     bool put(const T& item);
 
     // get the next element and increment the get pos
@@ -44,7 +45,6 @@ namespace rex
     s32 m_get_pos;
     s32 m_put_pos;
     s32 m_num_reads_available;
-    s32 m_capacity;
   };
 
   //-------------------------------------------------------------------------
@@ -54,9 +54,8 @@ namespace rex
       , m_get_pos(0)
       , m_put_pos(0)
       , m_num_reads_available(0)
-      , m_capacity(numElements)
   {
-    m_data = rsl::make_unique<T[]>(rsl::safe_numeric_cast<u32>(sizeof(T) * m_capacity));
+    m_data = rsl::make_unique<T[]>(numElements);
   }
 
   //-------------------------------------------------------------------------
@@ -64,14 +63,15 @@ namespace rex
   bool RingBuffer<T>::put(const T& item)
   {
     m_data[m_put_pos] = rsl::move(item);
-    m_num_reads_available = rsl::min(m_num_reads_available + 1, m_capacity);
+    m_num_reads_available = rsl::min(m_num_reads_available + 1, m_data.count());
     ++m_put_pos;
-    if (m_put_pos == m_capacity)
+    if (m_put_pos == m_data.count())
     {
       m_put_pos = 0;
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   //-------------------------------------------------------------------------
@@ -85,7 +85,7 @@ namespace rex
       --m_num_reads_available;
       ++m_get_pos;
     
-      if (m_get_pos == m_capacity)
+      if (m_get_pos == m_data.count())
       {
         m_get_pos = 0;
       }
