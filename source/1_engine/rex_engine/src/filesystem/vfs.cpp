@@ -488,11 +488,16 @@ namespace rex
 
     void mount(MountingPoint root, rsl::string_view path)
     {
+      rsl::string full_path = vfs::create_full_path(path);
+
       REX_ASSERT_X(!g_mounted_roots.contains(root), "root {} is already mapped. currently mapped to '{}'", rsl::enum_refl::enum_name(root), g_mounted_roots.at(root));
-      g_mounted_roots[root] = rsl::string(path);
+      g_mounted_roots[root] = full_path;
 
       // make sure the mount exists
-      create_dir(path);
+      if (!directory::exists(full_path))
+      {
+        create_dir(full_path);
+      }
     }
 
     void mount_for_session(MountingPoint root, rsl::string_view path)
@@ -501,7 +506,10 @@ namespace rex
 
       // make sure the mount exists
       rsl::string full_path = path::join(session_data_root(), path);
-      create_dir(full_path);
+      if (!directory::exists(full_path))
+      {
+        create_dir(full_path);
+      }
 
       g_mounted_roots[root] = rsl::move(full_path);
     }

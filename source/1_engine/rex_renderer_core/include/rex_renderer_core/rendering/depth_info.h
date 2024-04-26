@@ -6,6 +6,7 @@ namespace rex
 {
   namespace renderer
   {
+    // Depth info is just settings of the near plance and the far plane
     struct DepthInfo
     {
       f32 near_plane = 1.0f;

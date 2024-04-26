@@ -6,7 +6,7 @@ namespace rex
 {
   namespace rhi
   {
-    ResourceHash make_new_hash()
+    ResourceID make_new_hash()
     {
       static s32 hash = 0;
       return ++hash;
@@ -50,7 +50,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    ResourceSlot::ResourceSlot(ResourceHash slotId)
+    ResourceSlot::ResourceSlot(ResourceID slotId)
         : m_about_to_be_removed(false)
         , m_slot_id(slotId)
         , m_ref_count(new s32(1))
@@ -102,13 +102,13 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    bool ResourceSlot::operator==(ResourceHash other) const
+    bool ResourceSlot::operator==(ResourceID other) const
     {
       return this->m_slot_id == other;
     }
 
     //-------------------------------------------------------------------------
-    bool ResourceSlot::operator!=(ResourceHash other) const
+    bool ResourceSlot::operator!=(ResourceID other) const
     {
       return !(*this == other);
     }
@@ -155,13 +155,13 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    ResourceHash ResourceSlot::slot_id() const
+    ResourceID ResourceSlot::slot_id() const
     {
       return m_slot_id;
     }
 
     //-------------------------------------------------------------------------
-    ResourceHash ResourceSlot::invalid_id()
+    ResourceID ResourceSlot::invalid_id()
     {
       return s_invalid_slot;
     }

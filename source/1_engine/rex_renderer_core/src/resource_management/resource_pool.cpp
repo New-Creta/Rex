@@ -15,10 +15,10 @@ namespace rex
     ResourceSlot ResourcePool::insert(ResourcePtr&& resource)
     {
       rsl::unique_lock const sl(m_lock);
-      ResourceHash hash    = resource->hash();
-      m_resource_map[hash] = ResourceWithSlot {rsl::move(resource), ResourceSlot(hash)};
+      ResourceID id = resource->id();
+      m_resource_map[id] = ResourceWithSlot{ rsl::move(resource), ResourceSlot(id) };
 
-      return m_resource_map[hash].slot;
+      return m_resource_map[id].slot;
     }
 
     //-----------------------------------------------------------------------
@@ -36,9 +36,9 @@ namespace rex
       return has_resource(slot.slot_id());
     }
     //-----------------------------------------------------------------------
-    bool ResourcePool::has_resource(ResourceHash hash) const
+    bool ResourcePool::has_resource(ResourceID id) const
     {
-      return m_resource_map.find(hash) != m_resource_map.cend();
+      return m_resource_map.find(id) != m_resource_map.cend();
     }
 
     //-----------------------------------------------------------------------
@@ -56,10 +56,10 @@ namespace rex
     }
 
     //-----------------------------------------------------------------------
-    ResourceSlot ResourcePool::at(ResourceHash hash) const
+    ResourceSlot ResourcePool::at(ResourceID id) const
     {
-      REX_ASSERT_X(has_resource(hash), "Hash was not registered within resource pool ({})", hash);
-      return m_resource_map.at(hash).slot;
+      REX_ASSERT_X(has_resource(id), "Hash was not registered within resource pool ({})", id);
+      return m_resource_map.at(id).slot;
     }
-  } // namespace rhi
+  } // namespace renderer
 } // namespace rex

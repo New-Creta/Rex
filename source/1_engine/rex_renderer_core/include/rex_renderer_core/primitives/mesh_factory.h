@@ -13,36 +13,61 @@ namespace rex
   {
     using rex::renderer::VertexPosNormCol;
 
+    // calculate the mid point of a vertex.
+    // all elements of the vertex are halved, position is the middle point between the 2
     VertexPosNormCol mid_point(const VertexPosNormCol& v0, const VertexPosNormCol& v1);
 
+    // A mesh data object is simply a wrapper around a vertex and index buffer.
     template <typename T>
     class MeshData
     {
     public:
       using index_type = T;
 
+      // Create a default mesh data object with no vertices nor indices
       MeshData();
+      // Create a mesh data object with given vertices and indices
       MeshData(rsl::vector<VertexPosNormCol>&& vertices, rsl::vector<index_type>&& indices);
 
+      // Overwrite the existing vertices of a MeshData object
       void assign_vertices(const VertexPosNormCol* vertices, u32 numVerticess);
+      // Overwrite the existing indices of a MeshData object
       void assign_indices(const index_type* indices, u32 numIndices);
 
+      // Add a single vertex to the internal vertex buffer
       void add_vertex(const VertexPosNormCol& v);
+      // Add a single index to the internal index buffer
       void add_index(index_type i);
 
+      // Add a single vertex inplace to the internal vertex buffer
       void emplace_vertex(const glm::vec3& pos, const glm::vec3& norm, const glm::vec4& col);
+      // Add a single index inplace to the internal index buffer
       void emplace_index(index_type i);
 
+      // Insert a single vertex into the internal vertex buffer at a given position
       void insert_vertex(s32 idx, const glm::vec3& pos, const glm::vec3& norm, const glm::vec4& col);
+      // Insert a single index into the internal index buffer at a given position
       void insert_index(s32 idx, index_type i);
-
+      
+      // Reserve a given amount of vertices into the internal vertex buffer.
+      // This does a simple allocation to prepare for future insertion.
+      // The size of the vertex buffer remains 0
       void reserve_vertices(s32 num);
+      // Reserve a given amount of indices into the internal index buffer.
+      // This does a simple allocation to prepare for future insertion.
+      // The size of the index buffer remains 0
       void reserve_indices(s32 num);
 
+      // Resizes the internal vertex buffer, either extending or shrinking what's already there.
+      // On growth, the new added vertices are default initialized
       void resize_vertices(s32 num);
+      // Resizes the internal index buffer, either extending or shrinking what's already there.
+      // On growth, the new added indices are default initialized
       void resize_indices(s32 num);
 
+      // Return the vertex buffer
       const rsl::vector<VertexPosNormCol>& vertices() const;
+      // Return the index buffer
       const rsl::vector<index_type>& indices() const;
 
     private:

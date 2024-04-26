@@ -6,6 +6,7 @@ namespace rex
 {
   namespace renderer
   {
+    // graphics api abstraction of multi sampling settings
     struct MsaaSettings
     {
       s32 count   = 1; // number of multi samples per pixel

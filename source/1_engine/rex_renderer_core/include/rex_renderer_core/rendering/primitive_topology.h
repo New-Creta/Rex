@@ -7,11 +7,11 @@ namespace rex
     enum class PrimitiveTopology
     {
       None = 0,
-      POINTLIST,
-      LINELIST,
-      LINESTRIP,
-      TRIANGLELIST,
-      TRIANGLESTRIP
+      PointList,
+      LineList,
+      LineStrip,
+      TriangleList,
+      TriangleStrip
     };
   } // namespace renderer
 } // namespace rex

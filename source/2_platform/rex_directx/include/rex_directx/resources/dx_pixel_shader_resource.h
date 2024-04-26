@@ -6,28 +6,27 @@
 
 namespace rex
 {
-  namespace rhi
-  {
-    namespace resources
+    namespace rhi
     {
-      struct PixelShader
-      {
-        wrl::ComPtr<ID3DBlob> pixel_shader {};
-      };
-    } // namespace resources
+        namespace resources
+        {
+            struct PixelShader
+            {
+                wrl::ComPtr<ID3DBlob> pixel_shader{};
+            };
+        } // namespace resources
 
-    class PixelShaderResource : public BaseResource<resources::PixelShader>
-    {
-    public:
-      explicit PixelShaderResource(ResourceHash hash, const wrl::ComPtr<ID3DBlob>& ps)
-          : BaseResource(&m_pixel_shader, hash)
-          , m_pixel_shader({ps})
-      {
-      }
-      ~PixelShaderResource() override = default;
+        class PixelShaderResource : public BaseResource<resources::PixelShader>
+        {
+        public:
+            explicit PixelShaderResource(ResourceID id, const wrl::ComPtr<ID3DBlob>& ps)
+              : BaseResource(&m_pixel_shader, id)
+                ,m_pixel_shader({ ps })
+            {}
+            ~PixelShaderResource() override = default;
 
-    private:
-      resources::PixelShader m_pixel_shader;
-    };
-  } // namespace rhi
+        private:
+            resources::PixelShader m_pixel_shader;
+        };
+    } // namespace renderer
 } // namespace rex

@@ -4,11 +4,12 @@ namespace rex
 {
   namespace renderer
   {
+    // Graphics Api abstraction of the cull mode
     enum class CullMode
     {
       None,
-      FRONT,
-      BACK
+      Front,
+      Back
     };
   } // namespace renderer
 } // namespace rex
