@@ -48,11 +48,11 @@ TEST_CASE("BlobWriter - Write to blob from offset")
   writer.write(5);
   REX_CHECK(writer.write_offset() == sizeof(s32) * 5);
 
-  REX_CHECK(blob.read<s32>(0) == 0);
-  REX_CHECK(blob.read<s32>(4) == 2);
-  REX_CHECK(blob.read<s32>(8) == 3);
-  REX_CHECK(blob.read<s32>(12) == 4);
-  REX_CHECK(blob.read<s32>(16) == 5);
+  REX_CHECK(blob.read<s32>(0_bytes) == 0);
+  REX_CHECK(blob.read<s32>(4_bytes) == 2);
+  REX_CHECK(blob.read<s32>(8_bytes) == 3);
+  REX_CHECK(blob.read<s32>(12_bytes) == 4);
+  REX_CHECK(blob.read<s32>(16_bytes) == 5);
 }
 
 TEST_CASE("BlobWriter - Write to blob using ptr and size")

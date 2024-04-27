@@ -177,8 +177,9 @@ namespace rex
         ? Error::no_error()
         : Error::create_with_log(LogDirectory, "Failed to move directory from \"{}\" to \"{}\"", full_src, full_dst);
     }
+
     // List all entries under a directory
-    rsl::vector<rsl::string> list_entries(rsl::string_view path, ListRecusrive listRecursive)
+    rsl::vector<rsl::string> list_entries(rsl::string_view path, Recursive listRecursive)
     {
       WIN32_FIND_DATAA ffd;
       rsl::string full_path = rex::path::abs_path(path);
@@ -198,9 +199,14 @@ namespace rex
       {
         s32 length = rsl::strlen(ffd.cFileName);
         const rsl::string_view name(ffd.cFileName, length);
+        if (name == "." || name == "..")
+        {
+          continue;
+        }
+
         fullpath = path::join(path, name);
         result.push_back(fullpath);
-        if (listRecursive && directory::exists(fullpath) && name != "." && name != "..")
+        if (listRecursive && directory::exists(fullpath))
         {
           dirs.push_back(fullpath);
         }

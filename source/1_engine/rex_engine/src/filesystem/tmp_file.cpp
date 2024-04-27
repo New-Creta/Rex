@@ -7,28 +7,32 @@ namespace rex
 {
   TempFile::TempFile(rsl::string_view directory)
   {
-    m_filename = path::abs_path(path::join(directory, path::random_filename()));
-    file::create(m_filename);
+    m_filepath = path::abs_path(path::join(directory, path::random_filename()));
+    file::create(m_filepath);
   }
 
   TempFile::~TempFile()
   {
-    file::del(m_filename);
+    file::del(m_filepath);
   }
 
   void TempFile::write(const void* data, s32 size)
   {
-    file::append_text(m_filename, rsl::string_view((const char8*)data, size));
+    file::append_text(m_filepath, rsl::string_view((const char8*)data, size));
   }
 
   memory::Blob TempFile::read()
   {
-    return file::read_file(m_filename);
+    return file::read_file(m_filepath);
   }
 
   rsl::string_view TempFile::filename() const
   {
-    return m_filename;
+    return rex::path::filename(m_filepath);
   }
 
+  rsl::string_view TempFile::filepath() const
+  {
+    return m_filepath;
+  }
 }

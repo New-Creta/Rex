@@ -28,7 +28,7 @@ namespace rex
 
   rex::Error IniProcessor::process()
   {
-    const rsl::string_view content(m_data.data_as<const char>(), static_cast<s32>(m_data.size()) - 1); // -1 to remove trailing null
+    const rsl::string_view content(m_data.data_as<const char>(), static_cast<s32>(m_data.size()));
     const rsl::vector<rsl::string_view> lines = rsl::split(content, rex::endline());
 
     rsl::string_view current_header;

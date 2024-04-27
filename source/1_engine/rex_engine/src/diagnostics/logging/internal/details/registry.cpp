@@ -23,7 +23,7 @@ namespace rex
     {
       //-------------------------------------------------------------------------
       Registry::Registry()
-          : m_global_log_level(level::LevelEnum::Info)
+          : m_global_log_level(level::LevelEnum::Off)
           , m_flush_level(level::LevelEnum::Off)
       {
       }

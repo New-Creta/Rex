@@ -10,7 +10,7 @@ TEST_CASE("Empty Temp File")
   rsl::string filename;
   {
     rex::TempFile tmp_file;
-    filename.assign(tmp_file.filename());
+    filename.assign(tmp_file.filepath());
     
     REX_CHECK(rex::file::exists(filename) == true);
     REX_CHECK(rex::path::is_under_dir(filename, rex::path::cwd()) == true);
@@ -22,7 +22,7 @@ TEST_CASE("Empty Temp File")
   {
 
     rex::TempFile tmp_file(test_directory);
-    filename.assign(tmp_file.filename());
+    filename.assign(tmp_file.filepath());
 
     REX_CHECK(rex::file::exists(filename) == true);
     REX_CHECK(rex::path::is_under_dir(filename, rex::path::cwd()) == true);
@@ -38,7 +38,7 @@ TEST_CASE("Temp File With Text")
   rsl::string filename;
   {
     rex::TempFile tmp_file;
-    filename.assign(tmp_file.filename());
+    filename.assign(tmp_file.filepath());
 
     int x = 1;
     tmp_file.write(&x, sizeof(x));
@@ -55,7 +55,7 @@ TEST_CASE("Temp File With Text")
 
   {
     rex::TempFile tmp_file(test_directory);
-    filename.assign(tmp_file.filename());
+    filename.assign(tmp_file.filepath());
 
     int x = 1;
     tmp_file.write(&x, sizeof(x));

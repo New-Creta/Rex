@@ -10,14 +10,14 @@ namespace rex
     {
     }
     //-------------------------------------------------------------------------
-    BlobWriter::BlobWriter(memory::Blob& b, card64 offset)
+    BlobWriter::BlobWriter(memory::Blob& b, rsl::memory_size offset)
         : m_blob(&b)
         , m_write_offset(offset)
     {
     }
 
     //-------------------------------------------------------------------------
-    void BlobWriter::write(const void* inData, const rsl::memory_size& inSize)
+    void BlobWriter::write(const void* inData, rsl::memory_size inSize)
     {
       m_blob->write(inData, inSize, m_write_offset);
       m_write_offset += inSize;
@@ -32,14 +32,14 @@ namespace rex
     namespace writer
     {
       //-------------------------------------------------------------------------
-      void write(memory::Blob& b, const void* inData, const rsl::memory_size& inSize)
+      void write(memory::Blob& b, const void* inData, rsl::memory_size inSize)
       {
         BlobWriter writer(b);
         writer.write(inData, inSize);
       }
 
       //-------------------------------------------------------------------------
-      void write(memory::Blob& b, const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset)
+      void write(memory::Blob& b, const void* inData, rsl::memory_size inSize, rsl::memory_size inOffset)
       {
         BlobWriter writer(b, inOffset);
         writer.write(inData, inSize);

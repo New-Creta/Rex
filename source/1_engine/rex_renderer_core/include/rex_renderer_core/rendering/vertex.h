@@ -13,6 +13,8 @@
   #pragma warning(pop)
 #endif
 
+// This header describes a list of vertex formats supported by the engine.
+
 namespace rex
 {
   namespace renderer

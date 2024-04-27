@@ -9,7 +9,7 @@ namespace rex
 {
   // construct the ring buffer with the given size, in bytes
   TypelessRingBuffer::TypelessRingBuffer(rsl::memory_size size)
-    : m_data(rsl::make_unique<rsl::byte[]>(size))
+    : m_data(rsl::make_unique<rsl::byte[]>(static_cast<s32>(size)))
     , m_get_pos(0)
     , m_put_pos(0)
     , m_num_reads_available(0)
@@ -35,7 +35,7 @@ namespace rex
     m_put_pos += size_to_copy;
 
     // If we still have bytes to write, wrap around and write the remaining bytes
-    s32 remaining_size = (size.size_in_bytes() - size_to_copy);
+    s32 remaining_size = static_cast<s32>(size.size_in_bytes() - size_to_copy);
     if (remaining_size > 0)
     {
       // If we wrap around, we reset our destination to the beginning of our buffer
@@ -56,7 +56,7 @@ namespace rex
     peek(data, size);
 
     // update how many bytes we have available for reading
-    m_num_reads_available -= size;
+    m_num_reads_available -= static_cast<s32>(size);
 
     // update the get pos to the right position
     skip(static_cast<s32>(size));
@@ -75,7 +75,7 @@ namespace rex
     const rsl::byte* src = m_data.get() + m_get_pos;
     rsl::byte* dst = static_cast<rsl::byte*>(data);
     rsl::memcpy(dst, src, size_to_copy);
-    s32 remaining_size = size.size_in_bytes() - size_to_copy;
+    s32 remaining_size = static_cast<s32>(size.size_in_bytes() - size_to_copy);
 
     // If there's still data we need to read, wrap around
     // and read it from the beginning of the buffer

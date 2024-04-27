@@ -343,7 +343,7 @@ namespace rex
           {
             resize_type = WindowResizeType::Restored;
           }
-          event_system().enqueue_event(WindowResize(LOWORD(lparam), HIWORD(lparam), resize_type));
+          event_system().enqueue_event(WindowResize(width, height, resize_type));
           return 0;
         }
         case WM_CHAR:

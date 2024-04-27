@@ -10,7 +10,7 @@ namespace rex
     class PipelineState : public BaseResource<ID3D12PipelineState>
     {
     public:
-      PipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso, ResourceHash hash);
+      PipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso, ResourceID id);
 
     private:
       wrl::ComPtr<ID3D12PipelineState> m_pso;

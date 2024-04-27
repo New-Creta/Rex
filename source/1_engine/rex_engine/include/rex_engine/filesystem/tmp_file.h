@@ -20,12 +20,18 @@ namespace rex
     TempFile& operator=(const TempFile&) = delete;
     TempFile& operator=(TempFile&&) = delete;
 
+    // Write to the tmp file
     void write(const void* data, s32 size);
+
+    // Read from the tmp file
     memory::Blob read();
 
+    // Return the filename of the tmp file
     rsl::string_view filename() const;
+    // Return the full file path of the tmp file
+    rsl::string_view filepath() const;
 
   private:
-    rsl::string m_filename;
+    rsl::string m_filepath;
   };
 }

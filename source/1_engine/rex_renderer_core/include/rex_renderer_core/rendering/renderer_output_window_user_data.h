@@ -6,6 +6,7 @@ namespace rex
 {
   namespace renderer
   {
+    // Wrapper around some user data that's relevant for the renderer
     struct OutputWindowUserData
     {
       void* primary_display_handle;

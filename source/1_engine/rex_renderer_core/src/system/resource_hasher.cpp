@@ -8,7 +8,7 @@ namespace rex
 {
   namespace rhi
   {
-    ResourceHash hash_resource_desc(const VertexBufferDesc& desc)
+    ResourceID hash_resource_desc(const VertexBufferDesc& desc)
     {
       u32 hash = rsl::type_id<VertexBufferDesc>().hash_code();
 
@@ -16,7 +16,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const IndexBufferDesc& desc)
+    ResourceID hash_resource_desc(const IndexBufferDesc& desc)
     {
       u32 hash = rsl::type_id<IndexBufferDesc>().hash_code();
 
@@ -24,7 +24,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const ConstantBufferDesc& desc)
+    ResourceID hash_resource_desc(const ConstantBufferDesc& desc)
     {
       u32 hash = rsl::type_id<ConstantBufferDesc>().hash_code();
 
@@ -32,7 +32,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const ClearStateDesc& desc)
+    ResourceID hash_resource_desc(const ClearStateDesc& desc)
     {
       u32 hash = rsl::type_id<ClearStateDesc>().hash_code();
 
@@ -40,7 +40,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const CompileShaderDesc& desc)
+    ResourceID hash_resource_desc(const CompileShaderDesc& desc)
     {
       u32 hash = rsl::type_id<CompileShaderDesc>().hash_code();
 
@@ -49,7 +49,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const InputLayoutDesc& desc)
+    ResourceID hash_resource_desc(const InputLayoutDesc& desc)
     {
       u32 hash = rsl::type_id<InputLayoutDesc>().hash_code();
 
@@ -57,7 +57,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const LinkShaderDesc& desc)
+    ResourceID hash_resource_desc(const LinkShaderDesc& desc)
     {
       u32 hash = rsl::type_id<LinkShaderDesc>().hash_code();
 
@@ -67,7 +67,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const ShaderDesc& desc)
+    ResourceID hash_resource_desc(const ShaderDesc& desc)
     {
       u32 hash = rsl::type_id<ShaderDesc>().hash_code();
 
@@ -76,7 +76,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const RasterStateDesc& desc)
+    ResourceID hash_resource_desc(const RasterStateDesc& desc)
     {
       u32 hash = rsl::type_id<RasterStateDesc>().hash_code();
 
@@ -84,7 +84,7 @@ namespace rex
 
       return hash;
     }
-    ResourceHash hash_resource_desc(const PipelineStateDesc& desc)
+    ResourceID hash_resource_desc(const PipelineStateDesc& desc)
     {
       u32 hash = rsl::type_id<PipelineStateDesc>().hash_code();
 

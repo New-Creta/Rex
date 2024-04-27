@@ -3,6 +3,7 @@
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/memory.h"
+#include "rex_std/string_view.h"
 
 namespace rex
 {
@@ -64,13 +65,13 @@ namespace rex
 
       // Read bytes from the underlying buffer at a certain offset and cast them to a type
       template <typename T>
-      const T& read(const rsl::memory_size& offset = 0_bytes) const;
+      const T& read(rsl::memory_size offset = 0_bytes) const;
 
       // Read x amount of bytes from the underlying buffer at a certain offset and copy them into a desintation
-      void* read_bytes(void* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const;
+      void* read_bytes(void* dst, rsl::memory_size inSize, rsl::memory_size inOffset) const;
 
       // Write x amount of bytes into the underlying buffer, starting from a certain offset
-      void write(const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset = 0_bytes);
+      void write(const void* inData, rsl::memory_size inSize, rsl::memory_size inOffset = 0_bytes);
 
     private:
       rsl::unique_array<rsl::byte> m_data;
@@ -78,7 +79,7 @@ namespace rex
 
     //-------------------------------------------------------------------------
     template <typename T>
-    const T& Blob::read(const rsl::memory_size& offset) const
+    const T& Blob::read(rsl::memory_size offset) const
     {
       return *(T*)(m_data.get() + offset);
     }
@@ -89,5 +90,7 @@ namespace rex
     {
       return reinterpret_cast<const T*>(m_data.get());
     }
+
+    rsl::string_view blob_to_string_view(const Blob& blob);
   } // namespace memory
 } // namespace rex

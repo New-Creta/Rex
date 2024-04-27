@@ -3,6 +3,7 @@
 #include "rex_engine/memory/blob.h" // IWYU pragma: keep
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/types.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {
@@ -12,11 +13,11 @@ namespace rex
     {
     public:
       explicit BlobWriter(memory::Blob& b);
-      BlobWriter(memory::Blob& b, card64 offset);
+      BlobWriter(memory::Blob& b, rsl::memory_size offset);
 
       template <typename T>
       void write(const T& data);
-      void write(const void* inData, const rsl::memory_size& inSize);
+      void write(const void* inData, rsl::memory_size inSize);
 
       card64 write_offset() const;
 
@@ -44,8 +45,8 @@ namespace rex
         writer.write<T>(data);
       }
 
-      void write(memory::Blob& b, const void* inData, const rsl::memory_size& inSize);
-      void write(memory::Blob& b, const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset);
+      void write(memory::Blob& b, const void* inData, rsl::memory_size inSize);
+      void write(memory::Blob& b, const void* inData, rsl::memory_size inSize, rsl::memory_size inOffset);
     } // namespace writer
   }   // namespace memory
 } // namespace rex

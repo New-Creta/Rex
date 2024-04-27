@@ -58,6 +58,14 @@ namespace rex
     void prepare_user_initialization();
     void finish_user_initialization();
 
+    // Specifying draw area
+
+    // Specify the viewport where we'll be drawing in
+    void set_viewport(const Viewport& viewport);
+
+    // Speicfy the scissor rect outside of which we clip drawing
+    void set_scissor_rect(const ScissorRect& rect);
+
     // command line interface
     void reset_command_list(const ResourceSlot& psoSlot);
     void flush_command_queue();
@@ -109,19 +117,31 @@ namespace rex
     // needed for a draw call.
     ResourceSlot create_pso(const PipelineStateDesc& desc);
 
-    void swap_rendertargets();
+    // bind the render target of the backbuffer to the pipeline
+    void bind_backbuffer_rendertarget();
 
+    // Bind the vertex buffer specified at the resource slot to the pipeline
     void set_vertex_buffer(const rhi::ResourceSlot& vb);
+    // Bind the index buffer specified at the resource slot to the pipeline
     void set_index_buffer(const rhi::ResourceSlot& ib);
+    // Bind the constant buffer to the pipeline at the specified index
     void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb);
+    // Specify the primitive topology of the pipeline
     void set_primitive_topology(renderer::PrimitiveTopology topology);
-
+    // Bind the shader specified at the resource slot to the pipeline
     void set_shader(const rhi::ResourceSlot& slot);
+    // Set the pipeline of the pipeline
     void set_pso(const rhi::ResourceSlot& slot);
 
+    // Draw to the screen, using indexed primitives
     void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
 
+    // Reset the upload buffer offset. Should be called at the start of the frame (or after every upload has finished)
+    // So new data can be queued for uploading
     void reset_upload_buffer();
+
+    // Update a buffer with new data.
+    // Data is always written at the start of the destination resource
     void update_buffer(const ResourceSlot& slot, const void* data, s64 size);
 
   } // namespace rhi

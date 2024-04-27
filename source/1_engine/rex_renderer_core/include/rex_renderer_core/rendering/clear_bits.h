@@ -7,7 +7,7 @@ namespace rex
 {
   namespace renderer
   {
-    //-------------------------------------------------------------------------
+    // Clear bits is an mask holding which buffer of a framebuffer to clear
     enum class ClearBits
     {
       None               = BIT(0),

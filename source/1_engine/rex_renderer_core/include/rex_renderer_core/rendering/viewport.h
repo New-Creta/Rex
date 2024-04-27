@@ -4,6 +4,7 @@
 
 namespace rex
 {
+  // Graphics api abstraction of the viewport
   struct Viewport
   {
     Viewport()

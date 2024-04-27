@@ -20,6 +20,7 @@ namespace rex
 
     struct OutputWindowUserData;
 
+    class RenderItem;
     class Mesh;
 
     enum class ShaderPlatform;
@@ -30,7 +31,7 @@ namespace rex
     void render();
     void shutdown();
 
-    struct RenderItem* add_mesh(const Mesh* mesh, const struct Submesh& subMesh, rex::memory::BlobView cbView);
+    RenderItem* add_mesh(const Mesh* mesh, const struct Submesh& subMesh, rex::memory::BlobView cbView);
 
     ShaderPlatform shader_platform();
 

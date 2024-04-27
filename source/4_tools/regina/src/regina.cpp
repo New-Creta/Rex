@@ -1,5 +1,3 @@
-#include "regina/cube_scene.h"
-#include "regina/sample_scene.h"
 #include "rex_engine/app/core_application.h"
 #include "rex_engine/cmdline/cmdline.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
@@ -9,12 +7,12 @@
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
 #include "rex_renderer_core/rendering/depth_info.h"
-#include "rex_renderer_core/rendering/scene.h"
-#include "rex_renderer_core/rendering/scissor_rect.h"
-#include "rex_renderer_core/rendering/vertex.h"
-#include "rex_renderer_core/rendering/viewport.h"
-#include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/system/renderer.h"
+#include "rex_renderer_core/rendering/scene.h"
+#include "rex_renderer_core/resources/mesh.h"
+#include "rex_renderer_core/rendering/vertex.h"
+#include "rex_renderer_core/rendering/scissor_rect.h"
+#include "rex_renderer_core/rendering/viewport.h"
 #include "rex_std/bonus/math/color.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/string.h"
@@ -22,6 +20,9 @@
 #include "rex_windows/engine/platform_creation_params.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "regina/sample_scene.h"
+#include "regina/cube_scene.h"
 
 DEFINE_LOG_CATEGORY(LogRegina);
 
@@ -32,7 +33,7 @@ namespace regina
   public:
     Regina()
     {
-      m_scene = rsl::make_unique<regina::SampleScene>();
+      m_scene = rsl::make_unique<regina::CubeScene>();
     }
 
     void update()
@@ -49,7 +50,7 @@ namespace regina
     rsl::unique_ptr<rex::renderer::Scene> m_scene;
   };
 
-  rsl::unique_ptr<Regina> g_regina; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables, fuchsia-statically-constructed-objects)
+  rsl::unique_ptr<Regina> g_regina;
 
   //-------------------------------------------------------------------------
   bool initialize()

@@ -1,5 +1,7 @@
 #include "rex_renderer_core/primitives/sphere.h"
 
+#include "rex_std/numbers.h"
+
 namespace rex
 {
   namespace mesh_factory
@@ -120,9 +122,21 @@ namespace rex
       MeshData<u16> mesh_data;
 
       // Approximate a sphere by tessellating an icosahedron.
+      // The sides of a golden rectangle with diagonal d = 1 are a = 0.850651 and b = 0.525731.
+      // To find these results :
+      // Use the Pythagorean theorem to find the length of the side b as a function of a
+      // b = sqrt(1 - a^2).
+      // 
+      // Compute the length of the side a knowing that a / b = phi :
+      // a / b = phi
+      // a / sqrt(1 - a^2) = phi
+      // a = sqrt(phi^2 / (1 + phi^2)) = 0.850651
+      // Compute the length of side b with the following formula :
+      // b = a / phi = 0.525731
 
-      const f32 X = 0.525731f;
-      const f32 Z = 0.850651f;
+      const f32 X = 0.525731f; // b from the calculation above
+      const f32 Z = 0.850651f; // a from the calculation above
+
 
       glm::vec3 pos[12] = {glm::vec3(-X, 0.0f, Z), glm::vec3(X, 0.0f, Z),   glm::vec3(-X, 0.0f, -Z), glm::vec3(X, 0.0f, -Z), glm::vec3(0.0f, Z, X),  glm::vec3(0.0f, Z, -X),
                            glm::vec3(0.0f, -Z, X), glm::vec3(0.0f, -Z, -X), glm::vec3(Z, X, 0.0f),   glm::vec3(-Z, X, 0.0f), glm::vec3(Z, -X, 0.0f), glm::vec3(-Z, -X, 0.0f)};

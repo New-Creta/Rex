@@ -4,10 +4,11 @@
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/resource_management/resource.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
-#include "rex_renderer_core/system/resource_hasher.h"
 #include "rex_std/memory.h"
 #include "rex_std/mutex.h"
 #include "rex_std/unordered_map.h"
+
+#include "rex_renderer_core/system/resource_hasher.h"
 
 namespace rex
 {
@@ -30,7 +31,7 @@ namespace rex
       void remove(const ResourceSlot& slot);
 
       bool has_slot(const ResourceSlot& slot) const;
-      bool has_resource(ResourceHash hash) const;
+      bool has_resource(ResourceID id) const;
 
       template <typename U>
       bool is(const ResourceSlot& slot) const;
@@ -38,7 +39,7 @@ namespace rex
       IResource* at(const ResourceSlot& slot);
       const IResource* at(const ResourceSlot& slot) const;
 
-      ResourceSlot at(ResourceHash hash) const;
+      ResourceSlot at(ResourceID slot) const;
 
       template <typename U>
       U* as(const ResourceSlot& slot);
@@ -46,7 +47,7 @@ namespace rex
       const U* as(const ResourceSlot& slot) const;
 
     private:
-      using ResourceMap = rsl::unordered_map<ResourceHash, ResourceWithSlot>;
+      using ResourceMap = rsl::unordered_map<ResourceID, ResourceWithSlot>;
 
     private:
       ResourceMap m_resource_map {};
@@ -80,5 +81,5 @@ namespace rex
 
       return static_cast<const U*>(at(slot));
     }
-  } // namespace rhi
+  } // namespace renderer
 } // namespace rex

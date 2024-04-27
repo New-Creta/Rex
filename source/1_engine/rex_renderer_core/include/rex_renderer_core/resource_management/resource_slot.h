@@ -9,9 +9,9 @@ namespace rex
 {
   namespace rhi
   {
-    using ResourceHash = u32;
+    using ResourceID = s32;
 
-    ResourceHash make_new_hash();
+    ResourceID make_new_hash();
 
     class ResourceSlot
     {
@@ -24,7 +24,7 @@ namespace rex
       ResourceSlot(ResourceSlot&& other) noexcept;
       ~ResourceSlot();
 
-      explicit ResourceSlot(ResourceHash slotId);
+      explicit ResourceSlot(ResourceID slotId);
 
     public:
       ResourceSlot& operator=(const ResourceSlot& other);
@@ -32,25 +32,25 @@ namespace rex
 
       bool operator==(const ResourceSlot& other) const;
       bool operator!=(const ResourceSlot& other) const;
-      bool operator==(ResourceHash other) const;
-      bool operator!=(ResourceHash other) const;
+      bool operator==(s32 other) const;
+      bool operator!=(s32 other) const;
 
     public:
       bool is_valid() const;
       bool is_about_to_be_removed() const;
 
       s32 release();
-      ResourceHash slot_id() const;
-      static ResourceHash invalid_id();
+      s32 slot_id() const;
+      static ResourceID invalid_id();
+
     private:
       bool m_about_to_be_removed;
-      ResourceHash m_slot_id;
+      s32 m_slot_id;
       s32* m_ref_count;
-
-      static constexpr ResourceHash s_invalid_slot = static_cast<ResourceHash>(-1);
+      static constexpr ResourceID s_invalid_slot = static_cast<ResourceID>(-1);
     };
 
-  } // namespace rhi
+  } // namespace renderer
 } // namespace rex
 
 namespace rsl

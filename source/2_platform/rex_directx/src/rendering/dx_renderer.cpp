@@ -377,7 +377,7 @@ namespace rex
       //-------------------------------------------------------------------------
       bool begin_draw()
       {
-        rhi::swap_rendertargets();
+        rhi::bind_backbuffer_rendertarget();
 
         rhi::transition_backbuffer(D3D12_RESOURCE_STATE_RENDER_TARGET);
 
