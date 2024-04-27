@@ -72,7 +72,12 @@ public:
         {
             // The path is somewhere below the root, so try opening the key.
             HKEY subKey = nullptr;
-            std::string ascii_path(path.cbegin(), path.cend());
+            std::string ascii_path;
+            ascii_path.reserve(path.size());
+            for (const wchar_t c : path)
+            {
+              ascii_path.push_back((char)c);
+            }
             hr = OpenKeyByPath(ascii_path, subKey);
 
             // If the path corresponds to a registry key, enumerate it.

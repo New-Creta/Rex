@@ -259,7 +259,12 @@ namespace proj_fs
 
     // Find out whether the specified path exists in the registry, and whether it is a key or a value.
     std::wstring filepath = CallbackData->FilePathName;
-    std::string filepath_ascii(filepath.cbegin(), filepath.cend());
+    std::string filepath_ascii;
+    filepath_ascii.reserve(filepath.size());
+    for (const wchar_t c : filepath)
+    {
+      filepath_ascii.push_back((char)c);
+    }
     if (m_reg_ops.DoesKeyExist(filepath_ascii))
     {
       isKey = true;
