@@ -5,6 +5,7 @@
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/diagnostics/logging/log_verbosity.h"
 #include "rex_engine/engine/state_controller.h"
+#include "rex_engine/engine/project.h"
 #include "rex_engine/filesystem/directory.h"
 #include "rex_engine/filesystem/file.h"
 #include "rex_engine/filesystem/path.h"
@@ -165,7 +166,7 @@ namespace rex
 
     rsl::string_view project_root()
     {
-      static const rsl::string s_project_root = path::join(vfs::root(), "project_name");
+      static const rsl::string s_project_root = path::join(vfs::root(), project_name());
       return s_project_root;
     }
 
@@ -186,7 +187,7 @@ namespace rex
 
     rsl::string_view project_sessions_root()
     {
-      static const rsl::string s_project_sessions_root = path::join(sessions_root(), "project_name");
+      static const rsl::string s_project_sessions_root = path::join(sessions_root(), project_name());
       return s_project_sessions_root;
     }
 
@@ -440,13 +441,13 @@ namespace rex
       g_closing_thread = rsl::thread(wait_for_read_requests);
     }
 
-    void init(rsl::string_view root)
+    void init()
     {
       g_vfs_state_controller.change_state(VfsState::Initializing);
 
       // Setting the root directory has the effect that all data will be read relative from this directory
       // This has the same effect as if you would put the working directory to this path
-      set_root(cmdline::get_argument("Root").value_or(root));
+      set_root(cmdline::get_argument("Root").value_or(rex::path::cwd()));
 
       // Engine data root is always in the following path
       // ~/data/RexEngine

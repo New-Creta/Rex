@@ -96,7 +96,7 @@ namespace rex
       rsl::memory_size m_size;
     };
 
-    void init(rsl::string_view root = "");
+    void init();
     void set_root(rsl::string_view root);
     void mount(MountingPoint root, rsl::string_view path);
     void mount_for_session(MountingPoint root, rsl::string_view path);

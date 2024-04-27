@@ -4,7 +4,9 @@
 
 namespace rex
 {
-  // This return the name of the project itself. This is used by systems (eg. filesystem)
+  // This return the name of the project itself. This is used by engine systems (eg. filesystem)
   // for initialization
-  extern rsl::string_view project_name();
+  bool set_project_name(rsl::string_view projectName);
+
+  rsl::string_view project_name();
 }

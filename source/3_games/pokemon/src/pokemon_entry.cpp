@@ -26,10 +26,7 @@ namespace pokemon
 
 namespace rex
 {
-  rsl::string_view project_name()
-  {
-    return "Pokemon";
-  }
+  bool g_project_name_set = set_project_name("Pokemon");
 
   ApplicationCreationParams app_entry(PlatformCreationParams& platformParams)
   {
