@@ -120,23 +120,20 @@ namespace rex
         return;
       }
 
-      // load the content of the settings file into memory
-      const rex::memory::Blob settings_blob = vfs::read_file(path);
-
       // Settings are just plain ini files
       // so we can use the ini processor here
-      IniProcessor ini_processor = IniProcessor(memory::BlobView(settings_blob));
+      IniProcessor ini_processor(path);
       Error error                = ini_processor.process();
 
       REX_ERROR_X(Settings, !error, "Invalid settings found in \"{}\"", path);
       REX_ERROR_X(Settings, !error, "Error: {}", error.error_msg());
 
       // Loop over the processed settings and add them to the global map
-      for(const IniHeaderWithItems& header_with_items: ini_processor.items())
+      for(const rsl::key_value<const rsl::string_view, IniHeaderWithItems>& header_with_items : ini_processor.all_items())
       {
-        for(const rsl::key_value<rsl::string_view, rsl::string_view>& item: header_with_items.items())
+        for(const rsl::key_value<const rsl::string_view, rsl::string_view>& item : header_with_items.value.all_items())
         {
-          internal::add_new_settings(header_with_items.header(), item.key, item.value);
+          internal::add_new_settings(header_with_items.value.header(), item.key, item.value);
         }
       }
     }

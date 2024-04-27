@@ -1,0 +1,13 @@
+{
+  "MemoryTags": {
+    "Content": [
+      "Pokemon"
+    ]
+  },
+  "CommandLineArgs": {
+    "Content": [
+      "\"StartLevel\", \"The level to load on start.\"",
+      "\"StartMap\", \"The map to load on start.\""
+    ]
+  }
+}

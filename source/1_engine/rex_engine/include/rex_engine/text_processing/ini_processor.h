@@ -5,6 +5,7 @@
 #include "rex_std/bonus/utility/key_value.h"
 #include "rex_std/string_view.h"
 #include "rex_std/vector.h"
+#include "rex_std/unordered_map.h"
 
 namespace rex
 {
@@ -13,14 +14,15 @@ namespace rex
   class IniHeaderWithItems
   {
   public:
-    IniHeaderWithItems(rsl::string_view header, rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>&& items);
+    IniHeaderWithItems(rsl::string_view header, const rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>& items);
 
     rsl::string_view header() const;
-    const rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>& items() const;
+    rsl::string_view get(rsl::string_view key, rsl::string_view default = "") const;
+    const rsl::unordered_map<rsl::string_view, rsl::string_view>& all_items() const;
 
   private:
     rsl::string_view m_header;
-    rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>> m_items;
+    rsl::unordered_map<rsl::string_view, rsl::string_view> m_items;
   };
 
   // A processor taking in data, but doesn't own it
@@ -30,16 +32,19 @@ namespace rex
   {
   public:
     explicit IniProcessor(memory::BlobView data);
+    explicit IniProcessor(rsl::string_view filepath);
 
     rex::Error process();
 
-    const rsl::vector<IniHeaderWithItems>& items() const;
+    rsl::string_view get(rsl::string_view header, rsl::string_view key, rsl::string_view default = "") const;
+    rsl::unordered_map<rsl::string_view, IniHeaderWithItems> all_items() const;
 
   private:
-    void add_new_header_with_items(rsl::string_view header, rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>&& items);
+    void add_new_header_with_items(rsl::string_view header, const rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>& items);
 
   private:
     memory::BlobView m_data;
-    rsl::vector<IniHeaderWithItems> m_headers_with_items;
+    rsl::string_view m_filepath;
+    rsl::unordered_map<rsl::string_view, IniHeaderWithItems> m_headers_with_items;
   };
 } // namespace rex

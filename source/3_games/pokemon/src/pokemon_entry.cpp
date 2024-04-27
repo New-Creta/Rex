@@ -2,12 +2,18 @@
 
 #include "rex_engine/diagnostics/log.h"
 
+#include "pokemon/game_session.h"
+
 namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogPokemon);
 
+  rsl::unique_ptr<GameSession> g_game_session;
+
   bool initialise()
   {
+    g_game_session = rsl::make_unique<GameSession>();
+
     REX_INFO(LogPokemon, "Pokemon initialized");
 
     return true;
@@ -20,7 +26,7 @@ namespace pokemon
 
   void shutdown()
   {
-
+    g_game_session.reset();
   }
 }
 

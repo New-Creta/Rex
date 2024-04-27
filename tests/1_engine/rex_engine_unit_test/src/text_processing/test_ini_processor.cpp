@@ -11,16 +11,13 @@ TEST_CASE("Ini Processor - no headers")
   rex::Error error = ini_processor.process();
 
   REX_CHECK(error.has_error() == false);
-  REX_CHECK(ini_processor.items().size() == 1);
+  REX_CHECK(ini_processor.all_items().size() == 1);
 
-  const auto& header_with_items = ini_processor.items().front();
-  REX_CHECK(header_with_items.header() == "");
-  REX_CHECK(header_with_items.items()[0].key == "test_int");
-  REX_CHECK(header_with_items.items()[0].value == "10");
-  REX_CHECK(header_with_items.items()[1].key == "test_float");
-  REX_CHECK(header_with_items.items()[1].value == "10.0");
-  REX_CHECK(header_with_items.items()[2].key == "test_string");
-  REX_CHECK(header_with_items.items()[2].value == "some string");
+  const auto& header_with_items = *ini_processor.all_items().cbegin();
+  REX_CHECK(header_with_items.value.header() == "");
+  REX_CHECK(header_with_items.value.get("test_int") == "10");
+  REX_CHECK(header_with_items.value.get("test_float") == "10.0");
+  REX_CHECK(header_with_items.value.get("test_string") == "some string");
 }
 
 TEST_CASE("Ini Processor - with headers")
@@ -30,25 +27,15 @@ TEST_CASE("Ini Processor - with headers")
   rex::Error error = ini_processor.process();
 
   REX_CHECK(error.has_error() == false);
-  REX_CHECK(ini_processor.items().size() == 2);
+  REX_CHECK(ini_processor.all_items().size() == 2);
 
-  auto header_with_items = ini_processor.items()[0];
-  REX_CHECK(header_with_items.header() == "Test Header 1");
-  REX_CHECK(header_with_items.items()[0].key == "test_int");
-  REX_CHECK(header_with_items.items()[0].value == "10");
-  REX_CHECK(header_with_items.items()[1].key == "test_float");
-  REX_CHECK(header_with_items.items()[1].value == "10.0");
-  REX_CHECK(header_with_items.items()[2].key == "test_string");
-  REX_CHECK(header_with_items.items()[2].value == "some string");
+  REX_CHECK(ini_processor.get("Test Header 1", "test_int") == "10");
+  REX_CHECK(ini_processor.get("Test Header 1", "test_float") == "10.0");
+  REX_CHECK(ini_processor.get("Test Header 1", "test_string") == "some string");
 
-  header_with_items = ini_processor.items()[1];
-  REX_CHECK(header_with_items.header() == "Test Header 2");
-  REX_CHECK(header_with_items.items()[0].key == "test_int");
-  REX_CHECK(header_with_items.items()[0].value == "20");
-  REX_CHECK(header_with_items.items()[1].key == "test_float");
-  REX_CHECK(header_with_items.items()[1].value == "20.0");
-  REX_CHECK(header_with_items.items()[2].key == "test_string");
-  REX_CHECK(header_with_items.items()[2].value == "some other string");
+  REX_CHECK(ini_processor.get("Test Header 2", "test_int") == "20");
+  REX_CHECK(ini_processor.get("Test Header 2", "test_float") == "20.0");
+  REX_CHECK(ini_processor.get("Test Header 2", "test_string") == "some other string");
 }
 
 TEST_CASE("Ini Processor - error detection")
@@ -59,7 +46,7 @@ TEST_CASE("Ini Processor - error detection")
     rex::Error error = ini_processor.process();
 
     REX_CHECK(error.has_error() == true);
-    REX_CHECK(ini_processor.items().empty() == true);
+    REX_CHECK(ini_processor.all_items().empty() == true);
   }
 
   {
@@ -68,7 +55,7 @@ TEST_CASE("Ini Processor - error detection")
     rex::Error error = ini_processor.process();
 
     REX_CHECK(error.has_error() == true);
-    REX_CHECK(ini_processor.items().empty() == true);
+    REX_CHECK(ini_processor.all_items().empty() == true);
   }
 
   {
@@ -77,7 +64,7 @@ TEST_CASE("Ini Processor - error detection")
     rex::Error error = ini_processor.process();
 
     REX_CHECK(error.has_error() == true);
-    REX_CHECK(ini_processor.items().empty() == true);
+    REX_CHECK(ini_processor.all_items().empty() == true);
   }
 
   {
@@ -86,6 +73,6 @@ TEST_CASE("Ini Processor - error detection")
     rex::Error error = ini_processor.process();
 
     REX_CHECK(error.has_error() == true);
-    REX_CHECK(ini_processor.items().empty() == true);
+    REX_CHECK(ini_processor.all_items().empty() == true);
   }
 }
