@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/platform/win/diagnostics/win_call.h"
+#include "rex_engine/text_processing/text_processing.h"
 #include "rex_std/bonus/platform.h"
 #include "rex_std/bonus/time/win/win_time_functions.h"
 
@@ -62,8 +63,12 @@ namespace rex
 
       // prepare a buffer to receive the file content
       const card32 file_size = static_cast<card32>(GetFileSize(handle.get(), nullptr));
-      rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_size + 1); // NOLINT(modernize-aError-c-arrays)
-      buffer[file_size] = static_cast<rsl::byte>(0);                    // make sure we end with a null char
+      if (file_size == 0)
+      {
+        return memory::Blob();
+      }
+
+      rsl::unique_array<rsl::byte> buffer = rsl::make_unique<rsl::byte[]>(file_size); // NOLINT(modernize-aError-c-arrays)
 
       // actually read the file
       DWORD bytes_read = 0;
@@ -103,6 +108,40 @@ namespace rex
         ? Error::no_error()
         : Error::create_with_log(LogFile, "Failed to write to \"{}\"", fullpath);
     }
+    Error append_line(rsl::string_view path, rsl::string_view line)
+    {
+      const rsl::string full_path = path::abs_path(path);
+
+      if (is_readonly(full_path))
+      {
+        return Error::create_with_log(LogFile, "File \"\" is read only. Cannot append lines", full_path);
+      }
+
+      const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.c_str(),             // Path to file
+        GENERIC_READ | GENERIC_WRITE,  // General read and write access
+        FILE_SHARE_READ,               // Other processes can also read the file
+        NULL,                          // No SECURITY_ATTRIBUTES
+        OPEN_ALWAYS,                   // Open the file, only if it exists
+        FILE_FLAG_SEQUENTIAL_SCAN,     // Files will be read from beginning to end
+        NULL                           // No template file
+      ),
+        ERROR_ALREADY_EXISTS));
+
+      if (!handle.is_valid())
+      {
+        return Error::create_with_log(LogFile, "Cannot append to file \"{}\" as it doesn't exist", full_path);
+      }
+
+      internal::append_to_file(handle.get());
+
+      WIN_CALL(WriteFile(handle.get(), line.data(), line.length(), NULL, NULL));
+      rsl::string_view endl_char = rex::endline();
+      WIN_CALL(WriteFile(handle.get(), endl_char.data(), endl_char.size(), NULL, NULL));
+
+      return Error::no_error();
+
+    }
+
     // Append lines to a file
     Error append_lines(rsl::string_view path, const rsl::vector<rsl::string>& lines)
     {
@@ -133,6 +172,8 @@ namespace rex
       for(const rsl::string_view line: lines)
       {
         WIN_CALL(WriteFile(handle.get(), line.data(), line.length(), NULL, NULL));
+        rsl::string_view endl_char = rex::endline();
+        WIN_CALL(WriteFile(handle.get(), endl_char.data(), endl_char.size(), NULL, NULL));
       }
 
       return Error::no_error();
@@ -200,6 +241,16 @@ namespace rex
     // Copy a file, overwiting an existing one is possible
     Error copy(rsl::string_view src, rsl::string_view dst, OverwriteIfExist overwriteIfExist)
     {
+      if (src == dst)
+      {
+        return Error::create_with_log(LogFile, "Cannot copy a file to itself");
+      }
+
+      if (!overwriteIfExist && file::exists(dst))
+      {
+        return Error::create_with_log(LogFile, "Cannot copy to a file that already exists if overwriting is disabled");
+      }
+
       const rsl::string full_src = path::abs_path(src);
       const rsl::string full_dst = path::abs_path(dst);
       const bool success = WIN_SUCCESS(CopyFileA(full_src.c_str(), full_dst.c_str(), !overwriteIfExist)); // NOLINT(readability-implicit-bool-conversion)
@@ -210,6 +261,11 @@ namespace rex
     // Move/Rename a file, overwriting an existing one is possible
     Error move(rsl::string_view src, rsl::string_view dst)
     {
+      if (src == dst)
+      {
+        return Error::create_with_log(LogFile, "Cannot move a file to itself");
+      }
+
       const rsl::string full_src = path::abs_path(src);
       const rsl::string full_dst = path::abs_path(dst);
 
@@ -275,9 +331,9 @@ namespace rex
         return -1;
       }
 
-      DWORD high_word      = 0;
-      DWORD const low_word = GetFileSize(file.get(), &high_word);
-      return static_cast<card64>(rex::merge_int32_to_int64(high_word, low_word));
+      LARGE_INTEGER large_integer{};
+      GetFileSizeEx(file.get(), &large_integer);
+      return large_integer.QuadPart;
     }
     // Check if a file exists
     bool exists(rsl::string_view path)

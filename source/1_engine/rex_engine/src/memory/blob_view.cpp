@@ -40,7 +40,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void* BlobView::read_bytes(void* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const
+    void* BlobView::read_bytes(void* dst, rsl::memory_size inSize, rsl::memory_size inOffset) const
     {
       REX_ASSERT_X(inOffset + inSize <= size(), "amount of read out of bounds");
 

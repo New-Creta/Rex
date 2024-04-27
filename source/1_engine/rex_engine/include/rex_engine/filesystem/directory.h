@@ -27,9 +27,12 @@ namespace rex
     // Move/Rename a directory
     Error move(rsl::string_view src, rsl::string_view dst);
 
-    DEFINE_YES_NO_ENUM(ListRecusrive);
+    DEFINE_YES_NO_ENUM(Recursive);
+    // Get the size of all the files in the directory
+    // possible going recursive over all the sub folders as well
+    rsl::memory_size size(rsl::string_view path, Recursive goRecursive = Recursive::no);
     // List all entries under a directory
-    rsl::vector<rsl::string> list_entries(rsl::string_view path, ListRecusrive listRecursive = ListRecusrive::no);
+    rsl::vector<rsl::string> list_entries(rsl::string_view path, Recursive listRecursive = Recursive::no);
     // List all directories under a directory
     rsl::vector<rsl::string> list_dirs(rsl::string_view path);
     // List all files under a directory

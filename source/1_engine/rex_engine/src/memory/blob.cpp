@@ -76,7 +76,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void* Blob::read_bytes(void* dst, const rsl::memory_size& inSize, const rsl::memory_size& inOffset) const
+    void* Blob::read_bytes(void* dst, rsl::memory_size inSize, rsl::memory_size inOffset) const
     {
       REX_ASSERT_X(inOffset + inSize <= size(), "amount of read out of bounds");
 
@@ -85,7 +85,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    void Blob::write(const void* inData, const rsl::memory_size& inSize, const rsl::memory_size& inOffset)
+    void Blob::write(const void* inData, rsl::memory_size inSize, rsl::memory_size inOffset)
     {
       REX_ASSERT_X(inOffset + inSize <= size(), "amount for write out of bounds");
 
@@ -102,6 +102,12 @@ namespace rex
     rsl::memory_size Blob::size() const
     {
       return rsl::memory_size(m_data.count());
+    }
+
+    rsl::string_view blob_to_string_view(const Blob& blob)
+    {
+      rsl::string_view view((const char*)blob.data(), static_cast<s32>(blob.size()));
+      return view;
     }
   } // namespace memory
 } // namespace rex

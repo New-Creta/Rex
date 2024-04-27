@@ -343,7 +343,8 @@ namespace rex
         }
       }
 
-      return path::join(result, rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char, 1)).as_string());
+      result = path::join(result, rsl::join(res.lhs_it, splitted_path.cend(), rsl::string_view(&g_seperation_char, 1)).as_string());
+      return result;
     }
 
     // Returns if the given path has an extension
