@@ -40,14 +40,7 @@ namespace rex
   {
   }
 
-  IniProcessor::IniProcessor(rsl::string_view filepath)
-    : m_data()
-    , m_filepath(filepath)
-  {
-    m_data = rex::vfs::read_file(filepath);
-  }
-
-    rex::Error IniProcessor::process()
+  rex::Error IniProcessor::process()
   {
     const rsl::string_view content(m_data.data_as<const char>(), static_cast<s32>(m_data.size()));
     const rsl::vector<rsl::string_view> lines = rsl::split(content, rex::endline());

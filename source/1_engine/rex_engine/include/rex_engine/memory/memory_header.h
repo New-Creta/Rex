@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/engine/types.h"
 #include "rex_engine/diagnostics/stacktrace.h"
 #include "rex_engine/memory/memory_tags.h"
 #include "rex_std/bonus/memory/memory_size.h"
@@ -27,6 +28,18 @@ namespace rex
     rsl::thread::id m_thread_id; // the thread id this was allocated on
     MemoryTag m_tag;             // memory tag that allocated this memory
     card32 m_frame_idx;          // frame index when this memory was allocated
+
   };
 
+  struct InlineMemoryHeader
+  {
+    // The pointer to the actual memory header
+    MemoryHeader* ptr;
+
+    // Because arrays can have an index allocated in front of them or not, depending on the type. 
+    // To check for this we check for a magic number, if it matches, we found the memory header
+    s64 magic_number = s_magic_number_value;
+
+    static constexpr s64 s_magic_number_value = 0x0FFFF524558FFFF0; // 0x52 0x45 0x58 == REX
+  };
 } // namespace rex

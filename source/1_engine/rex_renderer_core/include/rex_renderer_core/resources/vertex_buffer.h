@@ -12,7 +12,7 @@ namespace rex
     {
       memory::BlobView blob_view;
       s32 vertex_size;
-      InputLayoutDesc input_layout;
+      //InputLayoutDesc input_layout;
     };
   } // namespace rhi
 } // namespace rex

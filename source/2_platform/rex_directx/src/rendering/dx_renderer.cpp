@@ -58,6 +58,7 @@
 #include <cstddef>
 #include <d3d12.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include "rex_directx/rendering/dx_imgui_renderer.h"
 
 #ifdef REX_ENABLE_DXGI_DEBUG_LAYER
   #include <dxgidebug.h>
@@ -234,6 +235,7 @@ namespace rex
       };
 
       rsl::unique_ptr<DirectXRenderer> g_renderer; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+      rsl::unique_ptr<imgui::ImGuiRenderer> g_imgui_renderer;
 
       //-------------------------------------------------------------------------
       bool initialize(const OutputWindowUserData& userData)
@@ -264,6 +266,12 @@ namespace rex
           return false;
         }
 
+        // Initialize the imgui renderer if it's needed
+        rhi::reset_command_list(rhi::ResourceSlot::make_invalid());
+        g_imgui_renderer = rsl::make_unique<imgui::ImGuiRenderer>((HWND)userData.primary_display_handle, DXGI_FORMAT_R8G8B8A8_UNORM, /*maxFramesInFlgiht=*/ 3);
+        rhi::exec_command_list();
+        rhi::flush_command_queue();
+
         // The renderer is fully initialized from here on out
         // All systems go and rendering can be done.
         return true;
@@ -290,6 +298,15 @@ namespace rex
 
           rhi::draw_indexed(1, 0, render_item.index_count(), render_item.start_index(), render_item.base_vertex_loc());
         }
+
+        g_imgui_renderer->new_frame();
+        ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
+        ImGui::Render();
+        g_imgui_renderer->render_draw_data(ImGui::GetDrawData(), rhi::cmd_list());
+
+        ImGui::EndFrame();
       }
 
       void shutdown()

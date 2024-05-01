@@ -122,7 +122,8 @@ namespace rex
 
       // Settings are just plain ini files
       // so we can use the ini processor here
-      IniProcessor ini_processor(path);
+      memory::Blob settings_data = vfs::read_file(path);
+      IniProcessor ini_processor(settings_data);
       Error error                = ini_processor.process();
 
       REX_ERROR_X(Settings, !error, "Invalid settings found in \"{}\"", path);

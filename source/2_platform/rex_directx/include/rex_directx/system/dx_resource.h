@@ -14,6 +14,7 @@ namespace rex
     {
     public:
       Resource(const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState, s64 size, DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN);
+      Resource(const wrl::ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES startState, s32 width, s32 height, DXGI_FORMAT format);
 
       s32 width() const;
       s32 height() const;
@@ -23,7 +24,8 @@ namespace rex
       D3D12_RESOURCE_STATES resource_state() const;
 
       void transition(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES to);
-      void write(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 start, s64 size);
+      void write_buffer(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 start, s64 size);
+      void write_texture(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 width, s64 height, s64 rowPitch);
       void copy_to(ID3D12GraphicsCommandList* cmdList, ID3D12Resource* srcResource);
 
     private:

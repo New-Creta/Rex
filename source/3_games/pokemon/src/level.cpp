@@ -47,7 +47,8 @@ namespace pokemon
 
   void Level::load_map_names(rsl::string_view iniFilePath)
   {
-    rex::IniProcessor ini_processor = rex::IniProcessor(iniFilePath);
+    rex::memory::Blob ini_data = rex::vfs::read_file(iniFilePath);
+    rex::IniProcessor ini_processor = rex::IniProcessor(ini_data);
     rex::Error err = ini_processor.process();
 
     REX_ASSERT_X(!err.has_error(), "Failed to load level ini file at {}", rex::quoted(iniFilePath));

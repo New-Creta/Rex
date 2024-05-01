@@ -107,16 +107,23 @@ namespace rex
     ResourceSlot create_input_layout(const InputLayoutDesc& desc);
     // A vertex buffer is a buffer holding vertices of 1 or more objects
     ResourceSlot create_vertex_buffer(const VertexBufferDesc& desc);
+    // A vertex buffer is a buffer holding vertices of 1 or more objects
+    ResourceSlot create_vertex_buffer(s32 totalSize, s32 vertexSize);
     // An index buffer is a buffer holding indices of 1 or more objects
     ResourceSlot create_index_buffer(const IndexBufferDesc& desc);
+    // An index buffer is a buffer holding indices of 1 or more objects
+    ResourceSlot create_index_buffer(s32 totalSize, renderer::IndexBufferFormat format);
     // A constant buffer is a buffer holding data that's accessible to a shader
     // This can hold data like ints, floats, vectors and matrices
     ResourceSlot create_constant_buffer(const ConstantBufferDesc& desc);
+    // A constant buffer is a buffer holding data that's accessible to a shader
+    // This can hold data like ints, floats, vectors and matrices
+    ResourceSlot create_constant_buffer(rsl::memory_size size);
     // A pipeline state object defines a state for the graphics pipeline.
     // It holds the input layout, root signature, shaders, raster state, blend state ..
     // needed for a draw call.
     ResourceSlot create_pso(const PipelineStateDesc& desc);
-
+    
     // bind the render target of the backbuffer to the pipeline
     void bind_backbuffer_rendertarget();
 

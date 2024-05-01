@@ -26,6 +26,9 @@
 #define NOMINMAX
 #include <Windows.h>
 
+#include "imgui/imgui.h"
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 
 namespace rex
@@ -276,6 +279,9 @@ namespace rex
     LResult EventHandler::on_event(Hwnd hwnd, card32 msg, WParam wparam, LParam lparam) // NOLINT (readability-convert-member-functions-to-static,-warnings-as-errors)
     {
       REX_ASSERT_X(m_wnd != nullptr, "Window was not given to the Window Event Handler");
+
+      if (ImGui_ImplWin32_WndProcHandler((HWND)hwnd, msg, wparam, lparam))
+        return true;
 
       // Sometimes Windows set error states between messages
       // because these aren't our fault, we'll ignore those

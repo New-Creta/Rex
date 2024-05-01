@@ -10,11 +10,11 @@ namespace rex
     {
       switch(shaderType)
       {
-        case rex::rhi::ShaderType::VERTEX:
+        case rex::rhi::ShaderType::Vertex:
           shader_entry_point    = "VS";
           shader_feature_target = "vs_5_1";
           break;
-        case rex::rhi::ShaderType::PIXEL:
+        case rex::rhi::ShaderType::Pixel:
           shader_entry_point    = "PS";
           shader_feature_target = "ps_5_1";
           break;

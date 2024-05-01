@@ -92,6 +92,15 @@ namespace rex
 #include "rex_renderer_core/rendering/primitive_topology.h"
 #include "rex_renderer_core/rendering/texture_format.h"
 #include "rex_renderer_core/rendering/vertex_buffer_format.h"
+#include "rex_renderer_core/rendering/shader_visibility.h"
+#include "rex_renderer_core/rendering/sampler_filtering.h"
+#include "rex_renderer_core/rendering/comparison_func.h"
+#include "rex_renderer_core/rendering/border_color.h"
+#include "rex_renderer_core/rendering/texture_address_mode.h"
+#include "rex_renderer_core/resources/blend_state.h"
+#include "rex_renderer_core/resources/depth_stencil_state.h"
+#include "rex_renderer_core/rendering/texture_address_mode.h"
+#include "rex_renderer_core/resources/link_shader.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -110,5 +119,22 @@ namespace rex
     D3D12_PRIMITIVE_TOPOLOGY to_d3d12_topology(renderer::PrimitiveTopology topology);
     D3D12_INPUT_CLASSIFICATION to_d3d12_input_layout_classification(renderer::InputLayoutClassification classification);
     s32 format_byte_size(DXGI_FORMAT format);
+    s32 texture_2d_size(DXGI_FORMAT format, s32 width, s32 height);
+    D3D12_SHADER_VISIBILITY to_d3d12_shader_visibility(renderer::ShaderVisibility visibility);
+    D3D12_FILTER to_d3d12_sampler_filtering(renderer::SamplerFiltering filter);
+    D3D12_COMPARISON_FUNC to_d3d12_comparison_func(renderer::ComparisonFunc comparisonFunc);
+    D3D12_STATIC_BORDER_COLOR to_d3d12_border_color(renderer::BorderColor borderColor);
+    D3D12_TEXTURE_ADDRESS_MODE to_d3d12_texture_address_mode(renderer::TextureAddressMode addressMode);
+
+    D3D12_BLEND_DESC to_d3d12_blend_desc(const rhi::BlendState& blendState);
+    D3D12_BLEND to_d3d12_blend(rhi::Blend blend);
+    D3D12_BLEND_OP to_d3d12_blend_op(rhi::BlendOp blendOp);
+    D3D12_LOGIC_OP to_d3d12_logic_op(rhi::LogicOp logicOp);
+    D3D12_DEPTH_STENCIL_DESC to_d3d12_depth_stencil(const rhi::DepthStencilDesc& depthStencilState);
+    D3D12_DEPTH_WRITE_MASK to_d3d12_depth_write_mask(rhi::DepthWriteMask mask);
+    D3D12_DEPTH_STENCILOP_DESC to_d3d12_depth_stencil_op(const rhi::DepthStencilOpDesc& depthStencilOp);
+    D3D12_STENCIL_OP to_d3d12_stencil_op(rhi::StencilOp stencilOp);
+    D3D12_DESCRIPTOR_RANGE to_d3d12_descriptor_range(rhi::DescriptorRange range);
+    D3D12_DESCRIPTOR_RANGE_TYPE to_d3d12_range_type(rhi::DescriptorRangeType type);
   } // namespace d3d
 } // namespace rex

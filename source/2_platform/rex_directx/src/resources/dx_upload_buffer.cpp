@@ -5,6 +5,8 @@
 #include "rex_directx/system/dx_resource.h"
 #include "rex_directx/utility/d3dx12.h"
 
+#include "rex_engine/memory/pointer_math.h"
+
 namespace rex
 {
   namespace rhi
@@ -18,6 +20,7 @@ namespace rex
     {
       CD3DX12_RANGE read_range(0, 0); // We do not intend to read from this resource on the CPU
       DX_CALL(m_upload_buffer->Map(0, &read_range, &m_mapped_data));
+      m_size = m_upload_buffer->GetDesc().Width;
     }
 
     UploadBuffer::~UploadBuffer()
@@ -25,21 +28,56 @@ namespace rex
       m_upload_buffer->Unmap(0, nullptr);
     }
 
-    void UploadBuffer::write(CommandList* cmdList, Resource* dstResource, const void* data, s64 size)
+    void UploadBuffer::write(CommandList* cmdList, Resource* dstResource, const void* data, s64 size, s32 alignment)
     {
       // Write the data into our mapped memory
+      REX_ASSERT_X(m_offset + size < m_size, "Upload buffer overflow. Would write more into the upload buffer than is supported");
+
       rsl::byte* start = (rsl::byte*)m_mapped_data + m_offset; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+      start = align(start, alignment);
       rsl::memcpy(start, data, size);
 
       // Fill the commandlist with the commands to update this resource
       const D3D12_RESOURCE_STATES original_state = dstResource->resource_state(); 
       dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
-      dstResource->write(cmdList->get(), this, m_offset, size);
+      dstResource->write_buffer(cmdList->get(), this, m_offset, size);
       dstResource->transition(cmdList->get(), original_state);
 
       // m_upload_infos.emplace_back(UploadInfo{ dstResource, m_offset, size });
       m_offset += size;
     }
+
+    void UploadBuffer::write_texture(CommandList* cmdList, Resource* dstResource, const void* data, DXGI_FORMAT format, s64 width, s64 height)
+    {
+      // Write the data into our mapped memory
+      s32 format_size = rex::d3d::format_byte_size(format);
+      s32 pitch_size = width * format_size;
+      s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
+      pitch_size = align(pitch_size, alignment);
+      REX_ASSERT_X((m_offset + (pitch_size * height)) < m_size, "Upload buffer overflow. Would write more into the upload buffer than is supported");
+
+      // Texture data needs to get written 1 row at a time
+      const char* src = (const char*)data;
+      rsl::byte* dst = (rsl::byte*)m_mapped_data + m_offset; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+      dst = align(dst, alignment);
+      for (s32 y = 0; y < height; ++y)
+      {
+        rsl::memcpy(dst, src, pitch_size);
+        src += pitch_size;
+        dst += pitch_size;
+        //rsl::memcpy((void*)((uintptr_t)dst + y * pitch_size), src + y * pitch_size, pitch_size);
+      }
+
+      // Fill the commandlist with the commands to update this resource
+      const D3D12_RESOURCE_STATES original_state = dstResource->resource_state();
+      dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
+      dstResource->write_texture(cmdList->get(), this, width, height, pitch_size);
+      dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+      // m_upload_infos.emplace_back(UploadInfo{ dstResource, m_offset, size });
+      m_offset += (pitch_size * height);
+    }
+
 
     void UploadBuffer::reset()
     {

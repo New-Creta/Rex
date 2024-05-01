@@ -19,16 +19,18 @@ namespace rex
                 const VertexShaderResource* vertex_shader{};
                 const PixelShaderResource* pixel_shader{};
 
-                rsl::unique_array<ConstantLayoutDescription> constants{};
+                rsl::unique_array<ShaderParameterLayoutDescription> constants{};
+                rsl::unique_array<DescriptorTableDescription> desc_tables{};
+                rsl::unique_array<ShaderSamplerDescription> samplers{};
             };
         } // namespace resources
 
         class ShaderProgramResource : public BaseResource<resources::ShaderProgram>
         {
         public:
-            ShaderProgramResource(ResourceID id, const wrl::ComPtr<ID3D12RootSignature>& rootSig, const VertexShaderResource* vs, const PixelShaderResource* ps, rsl::unique_array<ConstantLayoutDescription>&& constants)
+            ShaderProgramResource(ResourceID id, const wrl::ComPtr<ID3D12RootSignature>& rootSig, const VertexShaderResource* vs, const PixelShaderResource* ps, rsl::unique_array<ShaderParameterLayoutDescription>&& constants, rsl::unique_array<DescriptorTableDescription>&& descTables, rsl::unique_array<ShaderSamplerDescription>&& samplers)
               : BaseResource(&m_shader_program, id)
-                ,m_shader_program({ rootSig, vs, ps, rsl::move(constants)})
+              , m_shader_program({ rootSig, vs, ps, rsl::move(constants), rsl::move(descTables), rsl::move(samplers)})
             {}
             ~ShaderProgramResource() override = default;
 

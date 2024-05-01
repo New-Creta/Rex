@@ -15,7 +15,7 @@ namespace rex
     {
     public:
       DescriptorHandle() = default;
-      DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size);
+      DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_GPU_DESCRIPTOR_HANDLE handleGpu, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size);
 
       DescriptorHandle& operator++();
       DescriptorHandle operator++(int);
@@ -30,9 +30,11 @@ namespace rex
       DescriptorHandle& operator-=(s32 offset);
 
       const CD3DX12_CPU_DESCRIPTOR_HANDLE& get() const;
+      const D3D12_GPU_DESCRIPTOR_HANDLE& get_gpu() const;
 
     private:
       CD3DX12_CPU_DESCRIPTOR_HANDLE m_handle;
+      D3D12_GPU_DESCRIPTOR_HANDLE m_handle_gpu;
       D3D12_DESCRIPTOR_HEAP_TYPE m_type;
       s32 m_size;
     };
@@ -45,11 +47,15 @@ namespace rex
       DescriptorHandle create_rtv(ID3D12Resource* resource);
       DescriptorHandle create_dsv(ID3D12Resource* resource, DXGI_FORMAT format);
       DescriptorHandle create_cbv(ID3D12Resource* resource, rsl::memory_size size);
+      DescriptorHandle create_texture2d_srv(ID3D12Resource* resource);
 
       D3D12_GPU_DESCRIPTOR_HANDLE gpu_heap_start();
 
+      ID3D12DescriptorHeap* get();
+
     private:
       DescriptorHandle my_start_handle();
+      DescriptorHandle new_free_handle();
 
     private:
       wrl::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;

@@ -30,6 +30,7 @@
 #include "rex_directx/resources/dx_input_layout_resource.h"
 
 #include "rex_directx/utility/d3dx12.h"
+#include "rex_directx/utility/dx_util.h"
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/memory/pointer_math.h"
@@ -176,6 +177,9 @@ namespace rex
         pso = internal::get()->resource_pool.as<PipelineState>(psoSlot)->get();
       }
       internal::get()->command_list->reset(pso);
+
+      ID3D12DescriptorHeap* heap = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).get();
+      internal::get()->command_list->get()->SetDescriptorHeaps(1, &heap);
     }
     void exec_command_list()
     {
@@ -209,10 +213,10 @@ namespace rex
       // store the new compiled shader with its id in the resource pool
       switch (desc.shader_type)
       {
-      case ShaderType::VERTEX:
+      case ShaderType::Vertex:
         return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
         break;
-      case ShaderType::PIXEL:
+      case ShaderType::Pixel:
         return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
         break;
 
@@ -233,7 +237,7 @@ namespace rex
       }
 
       // If not link the shader with the params provided
-      auto root_sig = d3d::create_shader_root_signature(desc.constants);
+      auto root_sig = d3d::create_shader_root_signature(desc.constants, desc.desc_tables, desc.samplers);
 
       if (!root_sig)
       {
@@ -244,11 +248,17 @@ namespace rex
       auto* vertex_shader = internal::get()->resource_pool.as<VertexShaderResource>(desc.vertex_shader);
       auto* pixel_shader = internal::get()->resource_pool.as<PixelShaderResource>(desc.pixel_shader);
 
-      rsl::unique_array<ConstantLayoutDescription> constants = rsl::make_unique<ConstantLayoutDescription[]>(desc.constants.count());
+      rsl::unique_array<ShaderParameterLayoutDescription> constants = rsl::make_unique<ShaderParameterLayoutDescription[]>(desc.constants.count());
       rsl::memcpy(constants.get(), desc.constants.get(), desc.constants.byte_size());
 
+      rsl::unique_array<DescriptorTableDescription> desc_tables = rsl::make_unique<DescriptorTableDescription[]>(desc.desc_tables.count());
+      rsl::memcpy(desc_tables.get(), desc.desc_tables.get(), desc.desc_tables.byte_size());
+
+      rsl::unique_array<ShaderSamplerDescription> samplers = rsl::make_unique<ShaderSamplerDescription[]>(desc.samplers.count());
+      rsl::memcpy(samplers.get(), desc.samplers.get(), desc.samplers.byte_size());
+
       // create a combined shader object with the root sig, the vertex shader and the pixel shader
-      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(id, root_sig, vertex_shader, pixel_shader, rsl::move(constants)));
+      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(id, root_sig, vertex_shader, pixel_shader, rsl::move(constants), rsl::move(desc_tables), rsl::move(samplers)));
     }
     ResourceSlot create_shader(const ShaderDesc& desc)
     {
@@ -264,8 +274,8 @@ namespace rex
 
       switch (desc.shader_type)
       {
-      case ShaderType::VERTEX: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
-      case ShaderType::PIXEL: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
+      case ShaderType::Vertex: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
+      case ShaderType::Pixel: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
 
       default:
         REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
@@ -375,6 +385,27 @@ namespace rex
       // 5) Add the resource to the resource pool
       return internal::get()->resource_pool.insert(rsl::move(vb));
     }
+    // A vertex buffer is a buffer holding vertices of 1 or more objects
+    ResourceSlot create_vertex_buffer(s32 totalSize, s32 vertexSize)
+    {
+      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(totalSize * vertexSize);
+      set_debug_name_for(buffer.Get(), "Vertex Buffer");
+      rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, totalSize * vertexSize, vertexSize);
+
+      // 2) Copy the data into the upload buffer
+      //internal::get()->upload_buffer->write(internal::get()->command_list.get(), vb.get(), desc.blob_view.data(), size);
+
+      //// 3) Upload the data from the upload buffer onto the gpu
+      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
+      // 4) Cache that the data is available on the gpu (or will be soon)
+      // so if another request comes in for the same data, we don't upload it again
+
+      // 5) Add the resource to the resource pool
+      return internal::get()->resource_pool.insert(rsl::move(vb));
+    }
+
     // An index buffer is a buffer holding indices of 1 or more objects
     ResourceSlot create_index_buffer(const IndexBufferDesc& desc)
     {
@@ -400,25 +431,48 @@ namespace rex
       // 4) add the resource to the resource pool
       return internal::get()->resource_pool.insert(rsl::move(ib));
     }
+    // An index buffer is a buffer holding indices of 1 or more objects
+    ResourceSlot create_index_buffer(s32 totalSize, renderer::IndexBufferFormat format)
+    {
+      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+      DXGI_FORMAT d3d_format = rex::d3d::to_d3d12_index_format(format);
+      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(totalSize, 0);
+      set_debug_name_for(buffer.Get(), "Index Buffer");
+      rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, totalSize, d3d_format);
+
+      // 2) Copy the data into the upload buffer
+      //internal::get()->upload_buffer->write(internal::get()->command_list.get(), ib.get(), desc.blob_view.data(), size);
+
+      // 3) Upload the data from the upload buffer onto the gpu
+      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
+      // 4) add the resource to the resource pool
+      return internal::get()->resource_pool.insert(rsl::move(ib));
+    }
     // A constant buffer is a buffer holding data that's accessible to a shader
     // This can hold data like ints, floats, vectors and matrices
     ResourceSlot create_constant_buffer(const ConstantBufferDesc& desc)
     {
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
-      {
-        return internal::get()->resource_pool.at(id);
-      }
+      return create_constant_buffer(desc.blob_view.size());
+    }
+    // A constant buffer is a buffer holding data that's accessible to a shader
+    // This can hold data like ints, floats, vectors and matrices
+    ResourceSlot create_constant_buffer(rsl::memory_size size)
+    {
+      //ResourceID id = hash_resource_desc();
+      //if (internal::get()->resource_pool.has_resource(id))
+      //{
+      //  return internal::get()->resource_pool.at(id);
+      //}
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      rsl::memory_size size = desc.blob_view.size();
       rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
       set_debug_name_for(buffer.Get(), "Constant Buffer");
-      rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, desc.blob_view.size());
+      rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, size);
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), cb.get(), desc.blob_view.data(), aligned_size);
+      //internal::get()->upload_buffer->write(internal::get()->command_list.get(), cb.get(), desc.blob_view.data(), aligned_size);
 
       // 3) Create a view to this constant buffer
       internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(buffer.Get(), aligned_size);
@@ -443,19 +497,15 @@ namespace rex
       }
 
       D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-      if (desc.blend_state.is_valid())
+      if (desc.blend_state.has_value())
       {
-        REX_STATIC_WARNING("Implement blend state");
-        //BlendStateResource* blend_state = internal::get()->resource_pool.as<BlendStateResource>(desc.blend_state);
-        //d3d_blend_state = blend_state->get();
+        d3d_blend_state = rex::d3d::to_d3d12_blend_desc(desc.blend_state.value());
       }
 
       D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-      if (desc.depth_stencil_state.is_valid())
+      if (desc.depth_stencil_state.has_value())
       {
-        REX_STATIC_WARNING("Implement depth stencil state");
-        //DepthStencilStateResource* depth_stencil_state = internal::get()->resource_pool.as<DepthStencilStateResource>(desc.depth_stencil_state);
-        //d3d_depth_stencil_state = depth_stencil_state->get();
+        d3d_depth_stencil_state = rex::d3d::to_d3d12_depth_stencil(desc.depth_stencil_state.value());
       }
 
       // 2) Fill in the PSO desc
@@ -470,7 +520,7 @@ namespace rex
       pso_desc.SampleMask = UINT_MAX;
       pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
       pso_desc.NumRenderTargets = 1;
-      pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+      pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
       pso_desc.SampleDesc.Count = 1;
       pso_desc.SampleDesc.Quality = 0;
       pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -487,6 +537,18 @@ namespace rex
 
       return internal::get()->resource_pool.insert(rsl::move(pso));
     }
+    // Create a 2D texture on the gpu and add the data to the upload buffer
+    // to be uploaded the next time the upload buffer
+    ResourceSlot create_texture2d(const char* data, DXGI_FORMAT format, s32 width, s32 height)
+    {
+      wrl::ComPtr<ID3D12Resource> d3d_texture = internal::get()->heap->create_texture2d(format, width, height);
+      rsl::unique_ptr<Texture2D> texture = rsl::make_unique<Texture2D>(d3d_texture, width, height, format);
+
+      internal::get()->upload_buffer->write_texture(internal::get()->command_list.get(), texture.get(), data, format, width, height);
+      
+      return internal::get()->resource_pool.insert(rsl::move(texture));
+    }
+
 
     void set_viewport(const Viewport& viewport)
     {
@@ -538,6 +600,12 @@ namespace rex
     void present()
     {
       internal::get()->swapchain->present();
+    }
+
+    DescriptorHandle create_texture2d_srv(const ResourceSlot& textureSlot)
+    {
+      Texture2D* texture = internal::get()->resource_pool.as<Texture2D>(textureSlot);
+      return internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(texture->get());
     }
 
     void set_vertex_buffer(const rhi::ResourceSlot& vb)
@@ -635,25 +703,67 @@ namespace rex
 
     namespace d3d
     {
-      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ConstantLayoutDescription>& constants)
+      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers)
       {
         // Root parameter can be a table, root descriptor or root constants.
         auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(constants.count()));
 
-        // This bit is hardcoded for now, we need to fix this later
-        // We want to sort the constants and then iterate over them with ranges
-        // If we find a constant, we initialize a root param as a constant
-        // If we only find 1 type of param, we init it directly
-        // If we find multiple of the same type, we init it as a range
-        root_parameters.emplace_back().InitAsConstantBufferView(0);
-        root_parameters.emplace_back().InitAsConstantBufferView(1);
+        for (s32 i = 0; i < constants.count(); ++i)
+        {
+          const auto& param = constants[i];
+
+          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_d3d12_shader_visibility(param.visibility);
+          switch (param.type)
+          {
+          case ShaderParameterType::CBuffer: root_parameters.emplace_back().InitAsConstantBufferView(param.reg, param.space, visibility); break;
+          case ShaderParameterType::Constant: root_parameters.emplace_back().InitAsConstants(param.num_32bits_for_constant, param.reg, param.space, visibility); break;
+          case ShaderParameterType::ShaderResourceView: root_parameters.emplace_back().InitAsShaderResourceView(param.reg, param.space, visibility); break;
+          case ShaderParameterType::UnorderedAccessView: root_parameters.emplace_back().InitAsUnorderedAccessView(param.reg, param.space, visibility); break;
+          }
+        }
+
+        rsl::vector<D3D12_DESCRIPTOR_RANGE> ranges;
+        for (s32 i = 0; i < tables.count(); ++i)
+        {
+          const auto& table = tables[i];
+          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_d3d12_shader_visibility(table.visibility);
+          for (s32 range_idx = 0; range_idx < table.ranges.count(); ++range_idx)
+          {
+            ranges.push_back(rex::d3d::to_d3d12_descriptor_range(table.ranges[range_idx]));
+          }
+
+          root_parameters.emplace_back().InitAsDescriptorTable(ranges.size(), ranges.data(), visibility);
+        }
+
+        auto root_samplers = rsl::vector<D3D12_STATIC_SAMPLER_DESC>(rsl::Capacity(samplers.count()));
+
+        for (s32 i = 0; i < samplers.count(); ++i)
+        {
+          const auto& sampler = samplers[i];
+
+          D3D12_STATIC_SAMPLER_DESC desc{};
+          desc.Filter = rex::d3d::to_d3d12_sampler_filtering(sampler.filtering);
+          desc.AddressU = rex::d3d::to_d3d12_texture_address_mode(sampler.address_mode_u);
+          desc.AddressV = rex::d3d::to_d3d12_texture_address_mode(sampler.address_mode_v);
+          desc.AddressW = rex::d3d::to_d3d12_texture_address_mode(sampler.address_mode_w);
+          desc.MipLODBias =sampler.mip_lod_bias;
+          desc.MaxAnisotropy = sampler.max_anisotropy;
+          desc.ComparisonFunc = rex::d3d::to_d3d12_comparison_func(sampler.comparison_func);
+          desc.BorderColor = rex::d3d::to_d3d12_border_color(sampler.border_color);
+          desc.MinLOD = sampler.min_lod;
+          desc.MaxLOD = sampler.max_lod;
+          desc.ShaderRegister = sampler.shader_register;
+          desc.RegisterSpace = sampler.register_space;
+          desc.ShaderVisibility = rex::d3d::to_d3d12_shader_visibility(sampler.shader_visibility);
+          root_samplers.emplace_back(desc);
+        }
 
         // A root signature is an array of root parameters.
         CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
           root_parameters.size(),
           root_parameters.data(),
-          0,
-          nullptr,
+          root_samplers.size(),
+          root_samplers.data(),
           D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
         // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
@@ -685,6 +795,12 @@ namespace rex
         return root_signature;
       }
     }
+
+    Texture2D* get_texture(const ResourceSlot& slot)
+    {
+      return internal::get()->resource_pool.as<Texture2D>(slot);
+    }
+
 
 #pragma region RHI Class
     internal::RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData)
@@ -1159,6 +1275,17 @@ namespace rex
       upload_buffer = rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
 
       return true;
+    }
+
+    ID3D12GraphicsCommandList* cmd_list()
+    {
+      return internal::get()->command_list->get();
+    }
+
+    void set_graphics_root_descriptor_table(ResourceID id)
+    {
+      ResourceSlot slot(id);
+      
     }
 
 #pragma endregion

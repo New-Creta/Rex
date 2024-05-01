@@ -40,15 +40,15 @@ namespace rex
 
     void Scene::build_shader(rsl::string_view vertexShaderPath, rsl::string_view pixelShaderPath)
     {
-      rex::rhi::CompileShaderDesc vs_compile_command_desc = rex::rhi::CompileShaderDesc("standardVS"_small, rex::rhi::ShaderType::VERTEX, vertexShaderPath);
-      rex::rhi::CompileShaderDesc ps_compile_command_desc = rex::rhi::CompileShaderDesc("opaquePS"_small, rex::rhi::ShaderType::PIXEL, pixelShaderPath);
+      rex::rhi::CompileShaderDesc vs_compile_command_desc = rex::rhi::CompileShaderDesc("standardVS"_small, rex::rhi::ShaderType::Vertex, vertexShaderPath);
+      rex::rhi::CompileShaderDesc ps_compile_command_desc = rex::rhi::CompileShaderDesc("opaquePS"_small, rex::rhi::ShaderType::Pixel, pixelShaderPath);
 
       rex::rhi::LinkShaderDesc link_shader_desc;
       link_shader_desc.vertex_shader = rhi::compile_shader(rsl::move(vs_compile_command_desc));
       link_shader_desc.pixel_shader = rhi::compile_shader(rsl::move(ps_compile_command_desc));
-      link_shader_desc.constants = rsl::make_unique<rex::rhi::ConstantLayoutDescription[]>(2);
-      link_shader_desc.constants[0] = { rex::rhi::ConstantType::CBuffer, "ObjectConstants", 0 };
-      link_shader_desc.constants[1] = { rex::rhi::ConstantType::CBuffer, "PassConstants", 1 };
+      link_shader_desc.constants = rsl::make_unique<rex::rhi::ShaderParameterLayoutDescription[]>(2);
+      link_shader_desc.constants[0] = { rex::rhi::ShaderParameterType::CBuffer, "ObjectConstants", 0 };
+      link_shader_desc.constants[1] = { rex::rhi::ShaderParameterType::CBuffer, "PassConstants", 1 };
 
       m_shader_program = rex::rhi::link_shader(link_shader_desc);
     }

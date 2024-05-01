@@ -2,6 +2,10 @@
 
 #include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_std/functional.h"
+#include "rex_std/optional.h"
+
+#include "rex_renderer_core/resources/blend_state.h"
+#include "rex_renderer_core/resources/depth_stencil_state.h"
 
 namespace rex
 {
@@ -12,8 +16,8 @@ namespace rex
       ResourceSlot input_layout;
       ResourceSlot shader;
       ResourceSlot raster_state;
-      ResourceSlot blend_state;
-      ResourceSlot depth_stencil_state;
+      rsl::optional<BlendState> blend_state;
+      rsl::optional<DepthStencilDesc> depth_stencil_state;
     };
   } // namespace rhi
 } // namespace rex

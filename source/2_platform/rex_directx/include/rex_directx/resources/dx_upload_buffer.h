@@ -21,7 +21,8 @@ namespace rex
       UploadBuffer& operator=(const UploadBuffer&) = delete;
       UploadBuffer& operator=(UploadBuffer&&) = delete;
 
-      void write(CommandList* cmdList, Resource* dstResource, const void* data, s64 size);
+      void write(CommandList* cmdList, Resource* dstResource, const void* data, s64 size, s32 alignment = 1);
+      void write_texture(CommandList* cmdList, Resource* dstResource, const void* data, DXGI_FORMAT format, s64 width, s64 height);
 
       void reset();
 
@@ -29,6 +30,7 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> m_upload_buffer;
       void* m_mapped_data;
       s64 m_offset;
+      s64 m_size;
       D3D12_RESOURCE_STATES m_resource_state;
     };
   } // namespace rhi

@@ -3,6 +3,10 @@
 #include "rex_directx/diagnostics/log.h"
 
 #include "rex_renderer_core/rendering/index_buffer_format.h"
+#include "rex_engine/memory/pointer_math.h"
+#include "rex_engine/engine/invalid_object.h"
+
+#include "rex_std/bonus/utility.h"
 
 #include <d3dcompiler.h>
 
@@ -179,5 +183,279 @@ namespace rex
         return 0;
       }
     }
+    s32 texture_2d_size(DXGI_FORMAT format, s32 width, s32 height)
+    {
+      s32 format_size = d3d::format_byte_size(format);
+      s32 upload_pitch = align(width * format_size, D3D12_TEXTURE_DATA_PITCH_ALIGNMENT);
+      s32 total_size = height * upload_pitch;
+      return total_size;
+    }
+
+
+    D3D12_SHADER_VISIBILITY to_d3d12_shader_visibility(renderer::ShaderVisibility visibility)
+    {
+      switch (visibility)
+      {
+      case rex::renderer::ShaderVisibility::Vertex: return D3D12_SHADER_VISIBILITY_VERTEX;
+      case rex::renderer::ShaderVisibility::Pixel: return D3D12_SHADER_VISIBILITY_PIXEL;
+      case rex::renderer::ShaderVisibility::All: return D3D12_SHADER_VISIBILITY_ALL;
+      }
+
+      REX_ASSERT("Unsupported shader visibility for directx 12: {}", rsl::enum_refl::enum_name(visibility));
+      return invalid_obj<D3D12_SHADER_VISIBILITY>();
+    }
+    D3D12_FILTER to_d3d12_sampler_filtering(renderer::SamplerFiltering filter)
+    {
+      switch (filter)
+      {
+      case rex::renderer::SamplerFiltering::MinMagMipPoint:                                      return D3D12_FILTER_MIN_MAG_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MinMagPointMipLinear:                                return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MinPointMagLinearMipPoint:                           return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MinPointMagMipLinear:                                return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MinLinearMagMipPoint:                                return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MinLinearMagPointMipLinear:                          return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MinMagLinearMipPoint:                                return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MinMagMipLinear:                                     return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::Anisotropic:                                         return D3D12_FILTER_ANISOTROPIC;
+      case rex::renderer::SamplerFiltering::ComparisonMinMagMipPoint:                            return D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+      case rex::renderer::SamplerFiltering::ComparisonMinMagPointMipLinear:                      return D3D12_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::ComparisonMinPointMagLinearMipPoint:                 return D3D12_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
+      case rex::renderer::SamplerFiltering::ComparisonMinPointMagMipLinear:                      return D3D12_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::ComparisonMinLinearMagMipPoint:                      return D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT;
+      case rex::renderer::SamplerFiltering::ComparisonMinLinearMagPointMipLinear:                return D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::ComparisonMinMagLinearMipPoint:                      return D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+      case rex::renderer::SamplerFiltering::ComparisonMinMagMipLinear:                           return D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::ComparisonAnisotropic:                               return D3D12_FILTER_COMPARISON_ANISOTROPIC;
+      case rex::renderer::SamplerFiltering::MinimumMinMagMipPoint:                               return D3D12_FILTER_MINIMUM_MIN_MAG_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MinimumMinMagPointMipLinear:                         return D3D12_FILTER_MINIMUM_MIN_MAG_POINT_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MinimumMinPointMagLinearMipPoint:                    return D3D12_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MinimumMinPointMagMipLinear:                         return D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MinimumMinLinearMagMipPoint:                         return D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MinimumMinLinearMagPointMipLinear:                   return D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MinimumMinMagLinearMipPoint:                         return D3D12_FILTER_MINIMUM_MIN_MAG_LINEAR_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MinimumMinMagMipLinear:                              return D3D12_FILTER_MINIMUM_MIN_MAG_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MinimumAnisotropic:                                  return D3D12_FILTER_MINIMUM_ANISOTROPIC;
+      case rex::renderer::SamplerFiltering::MaximumMinMagMipPoint:                               return D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MaximumMinMagPointMipLinear:                         return D3D12_FILTER_MAXIMUM_MIN_MAG_POINT_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MaximumMinPointMagLinearMipPoint:                    return D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MaximumMinPointMagMipLinear:                         return D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MaximumMinLinearMagMipPoint:                         return D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MaximumMinLinearMagPointMipLinear:                   return D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MaximumMinMagLinearMipPoint:                         return D3D12_FILTER_MAXIMUM_MIN_MAG_LINEAR_MIP_POINT;
+      case rex::renderer::SamplerFiltering::MaximumMinMagMipLinear:                              return D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR;
+      case rex::renderer::SamplerFiltering::MaximumAnisotropic:                                  return D3D12_FILTER_MAXIMUM_ANISOTROPIC;
+      }
+
+      REX_ASSERT("Unsupported sampler filter for directx 12: {}", rsl::enum_refl::enum_name(filter));
+      return invalid_obj<D3D12_FILTER>();
+    }
+    D3D12_COMPARISON_FUNC to_d3d12_comparison_func(renderer::ComparisonFunc comparisonFunc)
+    {
+      switch (comparisonFunc)
+      {
+      case rex::renderer::ComparisonFunc::Never: return D3D12_COMPARISON_FUNC_NEVER;
+      case rex::renderer::ComparisonFunc::Always: return D3D12_COMPARISON_FUNC_ALWAYS;
+      case rex::renderer::ComparisonFunc::Less: return D3D12_COMPARISON_FUNC_LESS;
+      case rex::renderer::ComparisonFunc::LessEqual: return D3D12_COMPARISON_FUNC_LESS_EQUAL;
+      case rex::renderer::ComparisonFunc::Equal: return D3D12_COMPARISON_FUNC_EQUAL;
+      case rex::renderer::ComparisonFunc::Great: return D3D12_COMPARISON_FUNC_GREATER;
+      case rex::renderer::ComparisonFunc::GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+      case rex::renderer::ComparisonFunc::NotEqual: return D3D12_COMPARISON_FUNC_NOT_EQUAL;
+      }
+
+      REX_ASSERT("Unsupported comparison func for directx 12: {}", rsl::enum_refl::enum_name(comparisonFunc));
+      return invalid_obj<D3D12_COMPARISON_FUNC>();
+    }
+    D3D12_STATIC_BORDER_COLOR to_d3d12_border_color(renderer::BorderColor borderColor)
+    {
+      switch (borderColor)
+      {
+      case rex::renderer::BorderColor::TransparentBlack: return D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+      case rex::renderer::BorderColor::OpaqueBlack: return D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+      case rex::renderer::BorderColor::OpaqueWhite: return D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
+      }
+
+      REX_ASSERT("Unsupported border color for directx 12: {}", rsl::enum_refl::enum_name(borderColor));
+      return invalid_obj<D3D12_STATIC_BORDER_COLOR>();
+    }
+    D3D12_TEXTURE_ADDRESS_MODE to_d3d12_texture_address_mode(renderer::TextureAddressMode addressMode)
+    {
+      switch (addressMode)
+      {
+      case rex::renderer::TextureAddressMode::Wrap: return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+      case rex::renderer::TextureAddressMode::Mirror: return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
+      case rex::renderer::TextureAddressMode::Clamp: return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+      case rex::renderer::TextureAddressMode::Border: return D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+      case rex::renderer::TextureAddressMode::MirrorOnce: return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE;
+      }
+
+      REX_ASSERT("Unsupported addressmode for directx 12: {}", rsl::enum_refl::enum_name(addressMode));
+      return invalid_obj<D3D12_TEXTURE_ADDRESS_MODE>();
+    }
+    D3D12_BLEND_DESC to_d3d12_blend_desc(const rhi::BlendState& blendState)
+    {
+      D3D12_BLEND_DESC desc{};
+      desc.AlphaToCoverageEnable = blendState.enable_alpha_to_coverage;
+      desc.IndependentBlendEnable = blendState.independent_blend_state;
+
+      for (s32 i = 0; i < rsl::size(desc.RenderTarget); ++i)
+      {
+        desc.RenderTarget[i].BlendEnable = blendState.render_target[i].blend_enable;
+        desc.RenderTarget[i].SrcBlend = to_d3d12_blend(blendState.render_target[i].src_blend);
+        desc.RenderTarget[i].DestBlend = to_d3d12_blend(blendState.render_target[i].dst_blend);
+        desc.RenderTarget[i].BlendOp = to_d3d12_blend_op(blendState.render_target[i].blend_op);
+        desc.RenderTarget[i].SrcBlendAlpha = to_d3d12_blend(blendState.render_target[i].src_blend_alpha);
+        desc.RenderTarget[i].DestBlendAlpha = to_d3d12_blend(blendState.render_target[i].dst_blend_alpha);
+        desc.RenderTarget[i].BlendOpAlpha = to_d3d12_blend_op(blendState.render_target[i].blend_op_alpha);
+        desc.RenderTarget[i].LogicOpEnable = blendState.render_target[i].logic_op_enable;
+        desc.RenderTarget[i].LogicOp = to_d3d12_logic_op(blendState.render_target[i].logic_op);
+        desc.RenderTarget[i].RenderTargetWriteMask = static_cast<uint8>(blendState.render_target[i].render_target_write_mask);
+      }
+
+      return desc;
+    }
+    D3D12_BLEND to_d3d12_blend(rhi::Blend blend)
+    {
+      switch (blend)
+      {
+      case rex::rhi::Blend::Zero:           return D3D12_BLEND_ZERO;
+      case rex::rhi::Blend::One:            return D3D12_BLEND_ONE;
+      case rex::rhi::Blend::SrcColor:       return D3D12_BLEND_SRC_COLOR;
+      case rex::rhi::Blend::InvSrcColor:    return D3D12_BLEND_INV_SRC_COLOR;
+      case rex::rhi::Blend::SrcAlpha:       return D3D12_BLEND_SRC_ALPHA;
+      case rex::rhi::Blend::InvSrcAlpha:    return D3D12_BLEND_INV_SRC_ALPHA;
+      case rex::rhi::Blend::DestAlpha:      return D3D12_BLEND_DEST_ALPHA;
+      case rex::rhi::Blend::InvDestAlpha:   return D3D12_BLEND_INV_DEST_ALPHA;
+      case rex::rhi::Blend::DestColor:      return D3D12_BLEND_DEST_COLOR;
+      case rex::rhi::Blend::InvDestColor:   return D3D12_BLEND_INV_DEST_COLOR;
+      case rex::rhi::Blend::SrcAlphaSat:    return D3D12_BLEND_SRC_ALPHA_SAT;
+      case rex::rhi::Blend::BlendFactor:    return D3D12_BLEND_BLEND_FACTOR;
+      case rex::rhi::Blend::InvBlendFactor: return D3D12_BLEND_INV_BLEND_FACTOR;
+      case rex::rhi::Blend::Src1Color:      return D3D12_BLEND_SRC1_COLOR;
+      case rex::rhi::Blend::InvSrc1Color:   return D3D12_BLEND_INV_SRC1_COLOR;
+      case rex::rhi::Blend::Src1Alpha:      return D3D12_BLEND_SRC1_ALPHA;
+      case rex::rhi::Blend::InvSrc1Alpha:   return D3D12_BLEND_INV_SRC1_ALPHA;
+      default:
+        break;
+      }
+     
+      return invalid_obj<D3D12_BLEND>();
+    }
+    D3D12_BLEND_OP to_d3d12_blend_op(rhi::BlendOp blendOp)
+    {
+      switch (blendOp)
+      {
+      case rex::rhi::BlendOp::Add:          return D3D12_BLEND_OP_ADD;
+      case rex::rhi::BlendOp::Subtract:     return D3D12_BLEND_OP_SUBTRACT;
+      case rex::rhi::BlendOp::RevSubtract:  return D3D12_BLEND_OP_REV_SUBTRACT;
+      case rex::rhi::BlendOp::Min:          return D3D12_BLEND_OP_MIN;
+      case rex::rhi::BlendOp::Max:          return D3D12_BLEND_OP_MAX;
+      }
+
+      return invalid_obj<D3D12_BLEND_OP>();
+    }
+    D3D12_LOGIC_OP to_d3d12_logic_op(rhi::LogicOp logicOp)
+    {
+      switch (logicOp)
+      {
+      case rex::rhi::LogicOp::Clear:          return D3D12_LOGIC_OP_CLEAR;
+      case rex::rhi::LogicOp::Set:            return D3D12_LOGIC_OP_SET;
+      case rex::rhi::LogicOp::Copy:           return D3D12_LOGIC_OP_COPY;
+      case rex::rhi::LogicOp::CopyInverted:   return D3D12_LOGIC_OP_COPY_INVERTED;
+      case rex::rhi::LogicOp::Noop:           return D3D12_LOGIC_OP_NOOP;
+      case rex::rhi::LogicOp::And:            return D3D12_LOGIC_OP_AND;
+      case rex::rhi::LogicOp::Nand:           return D3D12_LOGIC_OP_NAND;
+      case rex::rhi::LogicOp::Or:             return D3D12_LOGIC_OP_OR;
+      case rex::rhi::LogicOp::Nor:            return D3D12_LOGIC_OP_NOR;
+      case rex::rhi::LogicOp::Xor:            return D3D12_LOGIC_OP_XOR;
+      case rex::rhi::LogicOp::Equiv:          return D3D12_LOGIC_OP_EQUIV;
+      case rex::rhi::LogicOp::AndReverse:     return D3D12_LOGIC_OP_AND_REVERSE;
+      case rex::rhi::LogicOp::AndInverted:    return D3D12_LOGIC_OP_AND_INVERTED;
+      case rex::rhi::LogicOp::OrReverse:      return D3D12_LOGIC_OP_OR_REVERSE;
+      case rex::rhi::LogicOp::OrInverted:     return D3D12_LOGIC_OP_OR_INVERTED;
+      }
+
+      return invalid_obj<D3D12_LOGIC_OP>();
+    }
+    D3D12_DEPTH_STENCIL_DESC to_d3d12_depth_stencil(const rhi::DepthStencilDesc& depthStencilState)
+    {
+      D3D12_DEPTH_STENCIL_DESC desc{};
+
+      desc.DepthEnable = depthStencilState.depth_enable;
+      desc.DepthWriteMask = to_d3d12_depth_write_mask(depthStencilState.depth_write_mask);
+      desc.DepthFunc = to_d3d12_comparison_func(depthStencilState.depth_func);
+      desc.StencilEnable = depthStencilState.stencil_enable;
+      desc.StencilReadMask = depthStencilState.stencil_read_mask;
+      desc.StencilWriteMask = depthStencilState.stencil_write_mask;
+      desc.FrontFace = to_d3d12_depth_stencil_op(depthStencilState.front_face);
+      desc.BackFace = to_d3d12_depth_stencil_op(depthStencilState.back_face);
+
+      return desc;
+    }
+
+    D3D12_DEPTH_WRITE_MASK to_d3d12_depth_write_mask(rhi::DepthWriteMask mask)
+    {
+      switch (mask)
+      {
+      case rex::rhi::DepthWriteMask::DepthWriteMaskZero: return D3D12_DEPTH_WRITE_MASK_ZERO;
+      case rex::rhi::DepthWriteMask::DepthWriteMaskAll: return D3D12_DEPTH_WRITE_MASK_ALL;
+      }
+
+      return invalid_obj<D3D12_DEPTH_WRITE_MASK>();
+    }
+
+    D3D12_DEPTH_STENCILOP_DESC to_d3d12_depth_stencil_op(const rhi::DepthStencilOpDesc& depthStencilOp)
+    {
+      D3D12_DEPTH_STENCILOP_DESC desc{};
+
+      desc.StencilDepthFailOp = to_d3d12_stencil_op(depthStencilOp.stencil_depth_fail_op);
+      desc.StencilPassOp = to_d3d12_stencil_op(depthStencilOp.stencil_pass_op);
+      desc.StencilFailOp = to_d3d12_stencil_op(depthStencilOp.stencil_fail_op);
+      desc.StencilFunc = to_d3d12_comparison_func(depthStencilOp.stencil_func);
+
+      return desc;
+    }
+    D3D12_STENCIL_OP to_d3d12_stencil_op(rhi::StencilOp stencilOp)
+    {
+      switch (stencilOp)
+      {
+      case rex::rhi::StencilOp::Keep:     return D3D12_STENCIL_OP_KEEP;
+      case rex::rhi::StencilOp::Zero:     return D3D12_STENCIL_OP_ZERO;
+      case rex::rhi::StencilOp::Replace:  return D3D12_STENCIL_OP_REPLACE;
+      case rex::rhi::StencilOp::IncrSat:  return D3D12_STENCIL_OP_INCR_SAT;
+      case rex::rhi::StencilOp::DecrSat:  return D3D12_STENCIL_OP_DECR_SAT;
+      case rex::rhi::StencilOp::Invert:   return D3D12_STENCIL_OP_INVERT;
+      case rex::rhi::StencilOp::Incr:     return D3D12_STENCIL_OP_INCR;
+      case rex::rhi::StencilOp::Decr:     return D3D12_STENCIL_OP_DECR;
+      }
+
+      return invalid_obj<D3D12_STENCIL_OP>();
+    }
+
+    D3D12_DESCRIPTOR_RANGE to_d3d12_descriptor_range(rhi::DescriptorRange range)
+    {
+      D3D12_DESCRIPTOR_RANGE range_desc{};
+      range_desc.BaseShaderRegister = range.base_shader_register;
+      range_desc.NumDescriptors = range.num_descriptors;
+      range_desc.OffsetInDescriptorsFromTableStart = range.offset_in_descriptors_from_table_start;
+      range_desc.RangeType = to_d3d12_range_type(range.type);
+      range_desc.RegisterSpace = range.register_space;
+
+      return range_desc;
+    }
+
+    D3D12_DESCRIPTOR_RANGE_TYPE to_d3d12_range_type(rhi::DescriptorRangeType type)
+    {
+      switch (type)
+      {
+      case rex::rhi::DescriptorRangeType::ConstantBufferView:   return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+      case rex::rhi::DescriptorRangeType::ShaderResourceView:   return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+      case rex::rhi::DescriptorRangeType::UnorderedAccessView:  return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+      case rex::rhi::DescriptorRangeType::Sampler:              return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+      }
+
+      return invalid_obj<D3D12_DESCRIPTOR_RANGE_TYPE>();
+    }
+
   }
 } // namespace rex

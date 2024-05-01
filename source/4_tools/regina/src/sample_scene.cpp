@@ -47,7 +47,7 @@ namespace regina
     // Create the descs for the vertex buffer and index buffer
     m_vb = rex::memory::Blob(rsl::make_unique<rex::renderer::VertexPosNormCol[]>(vertices.size())); // NOLINT(modernize-avoid-c-arrays)
     m_vb.write(vertices.data(), m_vb.size());
-    rex::rhi::VertexBufferDesc vb_desc {rex::memory::BlobView(m_vb), sizeof(rex::renderer::VertexPosNormCol), rex::renderer::VertexPosCol::layout()};
+    rex::rhi::VertexBufferDesc vb_desc {rex::memory::BlobView(m_vb), sizeof(rex::renderer::VertexPosNormCol)/*, rex::renderer::VertexPosCol::layout()*/};
 
     m_ib = rex::memory::Blob(rsl::make_unique<u16[]>(indices.size())); // NOLINT(modernize-avoid-c-arrays)
     m_ib.write(indices.data(), m_ib.size());

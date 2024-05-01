@@ -7,10 +7,10 @@ namespace rex
     enum class ShaderType
     {
       None = 0,
-      VERTEX,
-      PIXEL,
-      GEOMETRY,
-      COMPUTE
+      Vertex,
+      Pixel,
+      Geometry,
+      Compute
     };
   } // namespace rhi
 } // namespace rex

@@ -32,7 +32,6 @@ namespace rex
   {
   public:
     explicit IniProcessor(memory::BlobView data);
-    explicit IniProcessor(rsl::string_view filepath);
 
     rex::Error process();
 
