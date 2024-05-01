@@ -176,8 +176,6 @@ namespace rex::renderer::imgui
           //texture_handle.ptr = (UINT64)pcmd->GetTexID();
           //rhi::set_graphics_root_descriptor_table(rhi::ResourceID(pcmd->GetTexID()));
           auto texture = rhi::get_texture(m_font_texture_slot);
-          auto x = texture->get()->AddRef();
-          texture->get()->Release();
           ctx->SetGraphicsRootDescriptorTable(1, m_font_texture_srv.get_gpu());
           ctx->RSSetScissorRects(1, &r);
           ctx->DrawIndexedInstanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
