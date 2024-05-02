@@ -593,8 +593,8 @@ namespace rex
         d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
         d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
-        DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
-        internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
+        //DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
+        //internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
       }
     }
     void present()
@@ -662,8 +662,8 @@ namespace rex
     void bind_backbuffer_rendertarget()
     {
       auto rtv = internal::get()->swapchain->backbuffer_view();
-      auto dsv = internal::get()->swapchain->depth_stencil_view();
-      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, &dsv.get());
+      //auto dsv = internal::get()->swapchain->depth_stencil_view();
+      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, nullptr);
     }
 
     void reset_upload_buffer()
@@ -1169,7 +1169,7 @@ namespace rex
       DescriptorHeap* dsv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
       swapchain = rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount, rtv_desc_heap, dsv_desc_heap, heap.get());
 
-      swapchain->resize_buffers(userData.window_width, userData.window_height, DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
+      //swapchain->resize_buffers(userData.window_width, userData.window_height, DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
 
       return true;
     }

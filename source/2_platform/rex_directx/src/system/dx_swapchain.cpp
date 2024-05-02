@@ -22,6 +22,15 @@ namespace rex
         , m_current_swapchain_buffer_idx(0)
         , m_dsv()
     {
+      for (s32 i = 0; i < m_buffer_count; ++i)
+      {
+        wrl::ComPtr<ID3D12Resource> buffer;
+        m_swapchain->GetBuffer(i, IID_PPV_ARGS(&buffer));
+        set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
+        const DescriptorHandle rtv = m_rtv_desc_heap->create_rtv(buffer.Get());
+        m_swapchain_buffers.emplace_back(buffer, D3D12_RESOURCE_STATE_COMMON, 0);
+        m_swapchain_rtvs.push_back(rtv);
+      }
     }
 
     DescriptorHandle Swapchain::backbuffer_view()
