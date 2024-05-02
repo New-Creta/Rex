@@ -6,7 +6,7 @@ namespace rex
   {
     rsl::string& project_name()
     {
-      static rsl::string project_name;
+      static rsl::string project_name("unknown_project");
       return project_name;
     }
   }

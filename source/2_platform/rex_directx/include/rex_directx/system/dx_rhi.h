@@ -57,6 +57,10 @@ namespace rex
     void set_graphics_root_descriptor_table(ResourceID id);
     Texture2D* get_texture(const ResourceSlot& slot);
 
+    ID3D12Device* get_device();
+    ID3D12DescriptorHeap* get_cbv_uav_srv_heap();
+    DescriptorHandle get_free_handle();
+
     namespace d3d
     {
       wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers);

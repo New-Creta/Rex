@@ -99,7 +99,7 @@ namespace rex
     rsl::unordered_map<rsl::type_id_t, rsl::unique_ptr<EventDispatcherBase>> m_dispatchers;
     TypelessRingBuffer m_event_queue;
     rsl::vector<rsl::byte> m_intermediate_event_data;
-    static constexpr rsl::memory_size s_event_queue_byte_size = 256;
+    static constexpr rsl::memory_size s_event_queue_byte_size = 256_kib;
     s32 m_num_events_queued; // flag to indicate events were queued this frame
   };
   EventSystem& event_system();

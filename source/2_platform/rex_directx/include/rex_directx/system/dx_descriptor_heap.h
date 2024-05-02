@@ -52,10 +52,10 @@ namespace rex
       D3D12_GPU_DESCRIPTOR_HANDLE gpu_heap_start();
 
       ID3D12DescriptorHeap* get();
+      DescriptorHandle new_free_handle();
 
     private:
       DescriptorHandle my_start_handle();
-      DescriptorHandle new_free_handle();
 
     private:
       wrl::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;

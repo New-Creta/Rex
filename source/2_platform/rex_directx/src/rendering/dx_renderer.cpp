@@ -59,6 +59,9 @@
 #include <d3d12.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "rex_directx/rendering/dx_imgui_renderer.h"
+#include "rex_directx/rendering/dx_imgui_renderer2.h"
+
+#include "imgui/platform/win/imgui_impl_win32.h"
 
 #ifdef REX_ENABLE_DXGI_DEBUG_LAYER
   #include <dxgidebug.h>
@@ -235,7 +238,7 @@ namespace rex
       };
 
       rsl::unique_ptr<DirectXRenderer> g_renderer; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-      rsl::unique_ptr<imgui::ImGuiRenderer> g_imgui_renderer;
+      //rsl::unique_ptr<imgui::ImGuiRenderer> g_imgui_renderer;
 
       //-------------------------------------------------------------------------
       bool initialize(const OutputWindowUserData& userData)
@@ -267,8 +270,31 @@ namespace rex
         }
 
         // Initialize the imgui renderer if it's needed
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable gamepad controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewport / Platform windows
+        
+        // Enable dark mode
+        ImGui::StyleColorsDark();
+        
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+          style.WindowRounding = 0.0f;
+          style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        }
+        
+        io.BackendRendererName = "DirectX 12 ImGui Renderer";
+        io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
+
         rhi::reset_command_list(rhi::ResourceSlot::make_invalid());
-        g_imgui_renderer = rsl::make_unique<imgui::ImGuiRenderer>((HWND)userData.primary_display_handle, DXGI_FORMAT_R8G8B8A8_UNORM, /*maxFramesInFlgiht=*/ 3);
+        rhi::DescriptorHandle handle = rhi::get_free_handle();
+        ImGui_ImplWin32_Init((HWND)userData.primary_display_handle);
+        ImGui_ImplDX12_Init(rhi::get_device(), 3, DXGI_FORMAT_R8G8B8A8_UNORM, rhi::get_cbv_uav_srv_heap(), handle.get(), handle.get_gpu());
         rhi::exec_command_list();
         rhi::flush_command_queue();
 
@@ -299,14 +325,22 @@ namespace rex
           rhi::draw_indexed(1, 0, render_item.index_count(), render_item.start_index(), render_item.base_vertex_loc());
         }
 
-        g_imgui_renderer->new_frame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui_ImplDX12_NewFrame();
         ImGui::NewFrame();
 
         ImGui::ShowDemoWindow();
         ImGui::Render();
-        g_imgui_renderer->render_draw_data(ImGui::GetDrawData(), rhi::cmd_list());
+        ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), rhi::cmd_list());
 
-        ImGui::EndFrame();
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+          ImGui::UpdatePlatformWindows();
+          ImGui::RenderPlatformWindowsDefault(nullptr, (void*)rhi::cmd_list());
+        }
+
+
+        //ImGui::EndFrame();
       }
 
       void shutdown()

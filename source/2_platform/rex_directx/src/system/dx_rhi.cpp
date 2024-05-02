@@ -1140,13 +1140,17 @@ namespace rex
     bool internal::RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData)
     {
       DXGI_SWAP_CHAIN_DESC1 sd{};
-      sd.Width = userData.window_width;
-      sd.Height = userData.window_height;
+      sd.Width = 0;
+      sd.Height = 0;
       sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
       sd.SampleDesc.Count = 1;
+      sd.SampleDesc.Quality = 0;
       sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
       sd.BufferCount = s_swapchain_buffer_count;
       sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+      sd.AlphaMode - DXGI_ALPHA_MODE_UNSPECIFIED;
+      sd.Stereo = false;
+      sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
 
       // Note: swap chain uses queue to perform flush.
       rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = factory->as<IDXGIFactory4>();
@@ -1165,7 +1169,7 @@ namespace rex
       DescriptorHeap* dsv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
       swapchain = rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount, rtv_desc_heap, dsv_desc_heap, heap.get());
 
-      swapchain->resize_buffers(userData.window_width, userData.window_height, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+      swapchain->resize_buffers(userData.window_width, userData.window_height, DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
 
       return true;
     }
@@ -1286,6 +1290,19 @@ namespace rex
     {
       ResourceSlot slot(id);
       
+    }
+
+    ID3D12Device* get_device()
+    {
+      return internal::get()->device->get();
+    }
+    ID3D12DescriptorHeap* get_cbv_uav_srv_heap()
+    {
+      return internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).get();
+    }
+    DescriptorHandle get_free_handle()
+    {
+      return internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).new_free_handle();
     }
 
 #pragma endregion
