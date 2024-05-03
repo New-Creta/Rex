@@ -31,6 +31,7 @@ namespace rex
       void present();
 
       wrl::ComPtr<ID3D12Resource> get_buffer(s32 idx);
+      IDXGISwapChain3* get();
 
     private:
       wrl::ComPtr<IDXGISwapChain3> m_swapchain;

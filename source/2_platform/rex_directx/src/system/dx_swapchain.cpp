@@ -67,9 +67,12 @@ namespace rex
         m_swapchain_rtvs.push_back(rtv);
       }
 
-      m_depth_stencil_buffer = m_resource_heap->create_depth_stencil_resource(width, height);
-      set_debug_name_for(m_depth_stencil_buffer->get(), "Swapchain Depth Stencil Buffer");
-      m_dsv = m_dsv_desc_heap->create_dsv(m_depth_stencil_buffer->get(), DXGI_FORMAT_D24_UNORM_S8_UINT);
+      if (m_resource_heap)
+      {
+        m_depth_stencil_buffer = m_resource_heap->create_depth_stencil_resource(width, height);
+        set_debug_name_for(m_depth_stencil_buffer->get(), "Swapchain Depth Stencil Buffer");
+        m_dsv = m_dsv_desc_heap->create_dsv(m_depth_stencil_buffer->get(), DXGI_FORMAT_D24_UNORM_S8_UINT);
+      }
     }
 
     s32 Swapchain::buffer_count() const
@@ -90,5 +93,11 @@ namespace rex
       m_swapchain->GetBuffer(idx, IID_PPV_ARGS(&buffer));
       return buffer;
     }
+
+    IDXGISwapChain3* Swapchain::get()
+    {
+      return m_swapchain.Get();
+    }
+
   } // namespace rhi
 } // namespace rex

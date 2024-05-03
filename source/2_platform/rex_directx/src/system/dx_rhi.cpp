@@ -1292,7 +1292,7 @@ namespace rex
       
     }
 
-    ID3D12Device* get_device()
+    ID3D12Device1* get_device()
     {
       return internal::get()->device->get();
     }

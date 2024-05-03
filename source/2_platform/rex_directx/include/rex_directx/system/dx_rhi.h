@@ -57,7 +57,7 @@ namespace rex
     void set_graphics_root_descriptor_table(ResourceID id);
     Texture2D* get_texture(const ResourceSlot& slot);
 
-    ID3D12Device* get_device();
+    ID3D12Device1* get_device();
     ID3D12DescriptorHeap* get_cbv_uav_srv_heap();
     DescriptorHandle get_free_handle();
 
