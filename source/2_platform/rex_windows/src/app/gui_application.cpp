@@ -99,8 +99,8 @@ namespace rex
         post_user_update();
 
         // don't render when the application is paused
-        //if(!m_app_instance->is_paused())
-        //{
+        if(!m_app_instance->is_marked_for_destroy())
+        {
           pre_user_draw();
 
           // TODO: this call eventually has to go.
@@ -113,7 +113,7 @@ namespace rex
           renderer::render();
 
           post_user_draw();
-        //}
+        }
 
         // update the timing stats
         m_delta_time.update();

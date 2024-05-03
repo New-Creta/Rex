@@ -39,6 +39,7 @@ namespace rex
 
     bool is_paused() const;
     bool is_running() const;
+    bool is_marked_for_destroy() const;
 
   protected:
     virtual bool platform_init()     = 0;

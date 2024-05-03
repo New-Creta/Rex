@@ -99,6 +99,12 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
+  bool CoreApplication::is_marked_for_destroy() const
+  {
+    return m_app_state.has_state(ApplicationState::MarkedForDestroy);
+  }
+
+  //--------------------------------------------------------------------------------------------
   bool CoreApplication::initialize()
   {
     m_app_state.change_state(ApplicationState::Initializing);
