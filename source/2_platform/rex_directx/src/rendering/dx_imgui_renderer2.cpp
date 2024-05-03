@@ -75,19 +75,44 @@
 #include "rex_directx/system/dx_swapchain.h"
 #include "rex_directx/system/dx_texture_2d.h"
 #include "rex_directx/system/dx_vertex_buffer.h"
+#include "rex_directx/resources/dx_shader_program_resource.h"
 
 // DirectX data
 struct ImGui_ImplDX12_Data
 {
   ID3D12Device1* pd3dDevice;
-  ID3D12RootSignature* pRootSignature;
-  ID3D12PipelineState* pPipelineState;
+  //ID3D12RootSignature* pRootSignature;
+  //ID3D12PipelineState* pPipelineState;
   DXGI_FORMAT                 RTVFormat;
   ID3D12Resource* pFontTextureResource;
   D3D12_CPU_DESCRIPTOR_HANDLE hFontSrvCpuDescHandle;
   D3D12_GPU_DESCRIPTOR_HANDLE hFontSrvGpuDescHandle;
   ID3D12DescriptorHeap* pd3dSrvDescHeap;
   UINT                        numFramesInFlight;
+
+
+
+  rex::rhi::ResourceSlot shader_program;
+  rex::rhi::ResourceSlot pipeline_state;
+  rex::rhi::ResourceSlot constant_buffer;
+  rex::rhi::ResourceSlot input_layout;
+  rex::rhi::ResourceSlot vertex_shader;
+  rex::rhi::ResourceSlot pixel_shader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   ImGui_ImplDX12_Data() { memset((void*)this, 0, sizeof(*this)); }
 };
@@ -128,7 +153,7 @@ struct ImGui_ImplDX12_ViewportData
   //ID3D12DescriptorHeap* RtvDescHeap;
   //IDXGISwapChain3* SwapChain;
   UINT64                          FenceSignaledValue;
-  HANDLE                          FenceEvent;
+  //HANDLE                          FenceEvent;
   UINT                            NumFramesInFlight;
   ImGui_ImplDX12_FrameContext* FrameCtx;
 
@@ -142,7 +167,6 @@ struct ImGui_ImplDX12_ViewportData
   rsl::unique_ptr<rex::rhi::CommandList> rex_command_list;
   rsl::unique_ptr<rex::rhi::DescriptorHeap> rex_descriptor_heap;
   rsl::unique_ptr<rex::rhi::Swapchain> rex_swapchain;
-  rsl::unique_ptr<rex::rhi::Fence> rex_fence;
 
 
 
@@ -167,7 +191,7 @@ struct ImGui_ImplDX12_ViewportData
     //SwapChain = nullptr;
     //Fence = nullptr;
     FenceSignaledValue = 0;
-    FenceEvent = nullptr;
+    //FenceEvent = nullptr;
     NumFramesInFlight = num_frames_in_flight;
     FrameCtx = new ImGui_ImplDX12_FrameContext[NumFramesInFlight];
     FrameIndex = UINT_MAX;
@@ -191,7 +215,7 @@ struct ImGui_ImplDX12_ViewportData
     //IM_ASSERT(RtvDescHeap == nullptr);
     //IM_ASSERT(SwapChain == nullptr);
     //IM_ASSERT(Fence == nullptr);
-    IM_ASSERT(FenceEvent == nullptr);
+    //IM_ASSERT(FenceEvent == nullptr);
 
     for (UINT i = 0; i < NumFramesInFlight; ++i)
     {
@@ -262,9 +286,11 @@ static void ImGui_ImplDX12_SetupRenderState(ImDrawData* draw_data, ID3D12Graphic
   ibv.Format = sizeof(ImDrawIdx) == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
   ctx->IASetIndexBuffer(&ibv);
   ctx->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  ctx->SetPipelineState(bd->pPipelineState);
-  ctx->SetGraphicsRootSignature(bd->pRootSignature);
-  ctx->SetGraphicsRoot32BitConstants(0, 16, &vertex_constant_buffer, 0);
+  ctx->SetPipelineState(rex::rhi::get_pso(bd->pipeline_state)->get());
+  ctx->SetGraphicsRootSignature(rex::rhi::get_shader(bd->shader_program)->root_signature());
+  //ctx->SetGraphicsRoot32BitConstants(0, 16, &vertex_constant_buffer, 0);
+  rex::rhi::update_buffer(bd->constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx);
+  rex::rhi::set_constant_buffer(0, bd->constant_buffer, ctx);
 
   // Setup blend factor
   const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
@@ -567,231 +593,439 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
   ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
   if (!bd || !bd->pd3dDevice)
     return false;
-  if (bd->pPipelineState)
+  if (!bd->pipeline_state.is_valid())
     ImGui_ImplDX12_InvalidateDeviceObjects();
 
   // Create the root signature
+  //{
+  //  D3D12_DESCRIPTOR_RANGE descRange = {};
+  //  descRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+  //  descRange.NumDescriptors = 1;
+  //  descRange.BaseShaderRegister = 0;
+  //  descRange.RegisterSpace = 0;
+  //  descRange.OffsetInDescriptorsFromTableStart = 0;
+
+  //  D3D12_ROOT_PARAMETER param[2] = {};
+
+  //  param[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+  //  param[0].Constants.ShaderRegister = 0;
+  //  param[0].Constants.RegisterSpace = 0;
+  //  param[0].Constants.Num32BitValues = 16;
+  //  param[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+  //  param[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+  //  param[1].DescriptorTable.NumDescriptorRanges = 1;
+  //  param[1].DescriptorTable.pDescriptorRanges = &descRange;
+  //  param[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+  //  // Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
+  //  D3D12_STATIC_SAMPLER_DESC staticSampler = {};
+  //  staticSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+  //  staticSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+  //  staticSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+  //  staticSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+  //  staticSampler.MipLODBias = 0.f;
+  //  staticSampler.MaxAnisotropy = 0;
+  //  staticSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+  //  staticSampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+  //  staticSampler.MinLOD = 0.f;
+  //  staticSampler.MaxLOD = 0.f;
+  //  staticSampler.ShaderRegister = 0;
+  //  staticSampler.RegisterSpace = 0;
+  //  staticSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+  //  D3D12_ROOT_SIGNATURE_DESC desc = {};
+  //  desc.NumParameters = _countof(param);
+  //  desc.pParameters = param;
+  //  desc.NumStaticSamplers = 1;
+  //  desc.pStaticSamplers = &staticSampler;
+  //  desc.Flags =
+  //    D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+  //    D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+  //    D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+  //    D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+
+  //  // Load d3d12.dll and D3D12SerializeRootSignature() function address dynamically to facilitate using with D3D12On7.
+  //  // See if any version of d3d12.dll is already loaded in the process. If so, give preference to that.
+  //  static HINSTANCE d3d12_dll = ::GetModuleHandleA("d3d12.dll");
+  //  if (d3d12_dll == nullptr)
+  //  {
+  //    // Attempt to load d3d12.dll from local directories. This will only succeed if
+  //    // (1) the current OS is Windows 7, and
+  //    // (2) there exists a version of d3d12.dll for Windows 7 (D3D12On7) in one of the following directories.
+  //    // See https://github.com/ocornut/imgui/pull/3696 for details.
+  //    const char* localD3d12Paths[] = { ".\\d3d12.dll", ".\\d3d12on7\\d3d12.dll", ".\\12on7\\d3d12.dll" }; // A. current directory, B. used by some games, C. used in Microsoft D3D12On7 sample
+  //    for (int i = 0; i < IM_ARRAYSIZE(localD3d12Paths); i++)
+  //      if ((d3d12_dll = ::LoadLibraryA(localD3d12Paths[i])) != nullptr)
+  //        break;
+
+  //    // If failed, we are on Windows >= 10.
+  //    if (d3d12_dll == nullptr)
+  //      d3d12_dll = ::LoadLibraryA("d3d12.dll");
+
+  //    if (d3d12_dll == nullptr)
+  //      return false;
+  //  }
+
+  //  PFN_D3D12_SERIALIZE_ROOT_SIGNATURE D3D12SerializeRootSignatureFn = (PFN_D3D12_SERIALIZE_ROOT_SIGNATURE)::GetProcAddress(d3d12_dll, "D3D12SerializeRootSignature");
+  //  if (D3D12SerializeRootSignatureFn == nullptr)
+  //    return false;
+
+  //  ID3DBlob* blob = nullptr;
+  //  if (D3D12SerializeRootSignatureFn(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, nullptr) != S_OK)
+  //    return false;
+
+  //  bd->pd3dDevice->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&bd->pRootSignature));
+  //  blob->Release();
+  //}
+
+  //// By using D3DCompile() from <d3dcompiler.h> / d3dcompiler.lib, we introduce a dependency to a given version of d3dcompiler_XX.dll (see D3DCOMPILER_DLL_A)
+  //// If you would like to use this DX12 sample code but remove this dependency you can:
+  ////  1) compile once, save the compiled shader blobs into a file or source code and assign them to psoDesc.VS/PS [preferred solution]
+  ////  2) use code to detect any version of the DLL and grab a pointer to D3DCompile from the DLL.
+  //// See https://github.com/ocornut/imgui/pull/638 for sources and details.
+
+  //D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
+  //memset(&psoDesc, 0, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+  //psoDesc.NodeMask = 1;
+  //psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+  //psoDesc.pRootSignature = bd->pRootSignature;
+  //psoDesc.SampleMask = UINT_MAX;
+  //psoDesc.NumRenderTargets = 1;
+  //psoDesc.RTVFormats[0] = bd->RTVFormat;
+  //psoDesc.SampleDesc.Count = 1;
+  //psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+
+  //ID3DBlob* vertexShaderBlob;
+  //ID3DBlob* pixelShaderBlob;
+
+  //// Create the vertex shader
+  //{
+  //  static const char* vertexShader =
+  //    "cbuffer vertexBuffer : register(b0) \
+  //          {\
+  //            float4x4 ProjectionMatrix; \
+  //          };\
+  //          struct VS_INPUT\
+  //          {\
+  //            float2 pos : POSITION;\
+  //            float4 col : COLOR0;\
+  //            float2 uv  : TEXCOORD0;\
+  //          };\
+  //          \
+  //          struct PS_INPUT\
+  //          {\
+  //            float4 pos : SV_POSITION;\
+  //            float4 col : COLOR0;\
+  //            float2 uv  : TEXCOORD0;\
+  //          };\
+  //          \
+  //          PS_INPUT main(VS_INPUT input)\
+  //          {\
+  //            PS_INPUT output;\
+  //            output.pos = mul( ProjectionMatrix, float4(input.pos.xy, 0.f, 1.f));\
+  //            output.col = input.col;\
+  //            output.uv  = input.uv;\
+  //            return output;\
+  //          }";
+
+  //  if (FAILED(D3DCompile(vertexShader, strlen(vertexShader), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBlob, nullptr)))
+  //    return false; // NB: Pass ID3DBlob* pErrorBlob to D3DCompile() to get error showing in (const char*)pErrorBlob->GetBufferPointer(). Make sure to Release() the blob!
+  //  psoDesc.VS = { vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize() };
+
+  //  // Create the input layout
+  //  static D3D12_INPUT_ELEMENT_DESC local_layout[] =
+  //  {
+  //      { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT,   0, (UINT)offsetof(ImDrawVert, pos), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+  //      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, (UINT)offsetof(ImDrawVert, uv),  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+  //      { "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, (UINT)offsetof(ImDrawVert, col), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+  //  };
+  //  psoDesc.InputLayout = { local_layout, 3 };
+  //}
+
+  //// Create the pixel shader
+  //{
+  //  static const char* pixelShader =
+  //    "struct PS_INPUT\
+  //          {\
+  //            float4 pos : SV_POSITION;\
+  //            float4 col : COLOR0;\
+  //            float2 uv  : TEXCOORD0;\
+  //          };\
+  //          SamplerState sampler0 : register(s0);\
+  //          Texture2D texture0 : register(t0);\
+  //          \
+  //          float4 main(PS_INPUT input) : SV_Target\
+  //          {\
+  //            float4 out_col = input.col * texture0.Sample(sampler0, input.uv); \
+  //            return out_col; \
+  //          }";
+
+  //  if (FAILED(D3DCompile(pixelShader, strlen(pixelShader), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBlob, nullptr)))
+  //  {
+  //    vertexShaderBlob->Release();
+  //    return false; // NB: Pass ID3DBlob* pErrorBlob to D3DCompile() to get error showing in (const char*)pErrorBlob->GetBufferPointer(). Make sure to Release() the blob!
+  //  }
+  //  psoDesc.PS = { pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize() };
+  //}
+
+  //// Create the blending setup
+  //{
+  //  D3D12_BLEND_DESC& desc = psoDesc.BlendState;
+  //  desc.AlphaToCoverageEnable = false;
+  //  desc.RenderTarget[0].BlendEnable = true;
+  //  desc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+  //  desc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+  //  desc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+  //  desc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+  //  desc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+  //  desc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+  //  desc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+  //}
+
+  //// Create the rasterizer state
+  //{
+  //  D3D12_RASTERIZER_DESC& desc = psoDesc.RasterizerState;
+  //  desc.FillMode = D3D12_FILL_MODE_SOLID;
+  //  desc.CullMode = D3D12_CULL_MODE_NONE;
+  //  desc.FrontCounterClockwise = FALSE;
+  //  desc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
+  //  desc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+  //  desc.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+  //  desc.DepthClipEnable = true;
+  //  desc.MultisampleEnable = FALSE;
+  //  desc.AntialiasedLineEnable = FALSE;
+  //  desc.ForcedSampleCount = 0;
+  //  desc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+  //}
+
+  //// Create depth-stencil State
+  //{
+  //  D3D12_DEPTH_STENCIL_DESC& desc = psoDesc.DepthStencilState;
+  //  desc.DepthEnable = false;
+  //  desc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+  //  desc.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+  //  desc.StencilEnable = false;
+  //  desc.FrontFace.StencilFailOp = desc.FrontFace.StencilDepthFailOp = desc.FrontFace.StencilPassOp = D3D12_STENCIL_OP_KEEP;
+  //  desc.FrontFace.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+  //  desc.BackFace = desc.FrontFace;
+  //}
+
+  //HRESULT result_pipeline_state = bd->pd3dDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&bd->pPipelineState));
+  //vertexShaderBlob->Release();
+  //pixelShaderBlob->Release();
+  //if (result_pipeline_state != S_OK)
+  //  return false;
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Compile the shaders
+  static rsl::string_view vertex_shader =
+    "cbuffer vertexBuffer : register(b0) \
+      {\
+        float4x4 ProjectionMatrix; \
+      };\
+      struct VS_INPUT\
+      {\
+        float2 pos : POSITION;\
+        float4 col : COLOR0;\
+        float2 uv  : TEXCOORD0;\
+      };\
+      \
+      struct PS_INPUT\
+      {\
+        float4 pos : SV_POSITION;\
+        float4 col : COLOR0;\
+        float2 uv  : TEXCOORD0;\
+      };\
+      \
+      PS_INPUT main(VS_INPUT input)\
+      {\
+        PS_INPUT output;\
+        output.pos = mul( ProjectionMatrix, float4(input.pos.xy, 0.f, 1.f));\
+        output.col = input.col;\
+        output.uv  = input.uv;\
+        return output;\
+      }";
+
+  rex::rhi::CompileShaderDesc compile_vs_desc{};
+  compile_vs_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(vertex_shader.length()));
+  compile_vs_desc.shader_code.write(vertex_shader.data(), vertex_shader.length());
+  compile_vs_desc.shader_entry_point = "main";
+  compile_vs_desc.shader_feature_target = "vs_5_0";
+  compile_vs_desc.shader_name = "imgui_vertex_shader";
+  compile_vs_desc.shader_type = rex::rhi::ShaderType::Vertex;
+  bd->vertex_shader = rex::rhi::compile_shader(compile_vs_desc);
+
+  static rsl::string_view pixel_shader =
+    "struct PS_INPUT\
+       {\
+         float4 pos : SV_POSITION;\
+         float4 col : COLOR0;\
+         float2 uv  : TEXCOORD0;\
+       };\
+       SamplerState sampler0 : register(s0);\
+       Texture2D texture0 : register(t0);\
+       \
+       float4 main(PS_INPUT input) : SV_Target\
+       {\
+         float4 out_col = input.col * texture0.Sample(sampler0, input.uv); \
+         return out_col; \
+       }";
+
+  rex::rhi::CompileShaderDesc compile_ps_desc{};
+  compile_ps_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(pixel_shader.length()));
+  compile_ps_desc.shader_code.write(pixel_shader.data(), pixel_shader.length());
+  compile_ps_desc.shader_entry_point = "main";
+  compile_ps_desc.shader_feature_target = "ps_5_0";
+  compile_ps_desc.shader_name = "imgui_pixel_shader";
+  compile_ps_desc.shader_type = rex::rhi::ShaderType::Pixel;
+  bd->pixel_shader = rex::rhi::compile_shader(compile_ps_desc);
+
+  // Link shaders
+  rex::rhi::LinkShaderDesc link_shader_desc{};
+  link_shader_desc.vertex_shader = bd->vertex_shader;
+  link_shader_desc.pixel_shader = bd->pixel_shader;
+
+  // We have 2 constants for the shader, 1 in the vertex shader and 1 in the pixel shader
+  link_shader_desc.constants = rsl::make_unique<rex::rhi::ShaderParameterLayoutDescription[]>(1);
+  link_shader_desc.constants[0] = { rex::rhi::ShaderParameterType::CBuffer, "vertexBuffer", 0, rex::renderer::ShaderVisibility::Vertex }; // We have 1 constant buffer in the vertex shader
+
+  link_shader_desc.desc_tables = rsl::make_unique<rex::rhi::DescriptorTableDescription[]>(1);
+  link_shader_desc.desc_tables[0].ranges = rsl::make_unique<rex::rhi::DescriptorRange[]>(1);
+  link_shader_desc.desc_tables[0].ranges[0] = { rex::rhi::DescriptorRangeType::ShaderResourceView, 1 }; // We have 1 src which points to our font texture
+  link_shader_desc.desc_tables[0].visibility = rex::renderer::ShaderVisibility::Pixel;
+
+  // We have 1 sampler, used for sampling the font texture
+  link_shader_desc.samplers = rsl::make_unique<rex::rhi::ShaderSamplerDescription[]>(1);
+  link_shader_desc.samplers[0].filtering = rex::renderer::SamplerFiltering::MinMagMipLinear;
+  link_shader_desc.samplers[0].address_mode_u = rex::renderer::TextureAddressMode::Wrap;
+  link_shader_desc.samplers[0].address_mode_v = rex::renderer::TextureAddressMode::Wrap;
+  link_shader_desc.samplers[0].address_mode_w = rex::renderer::TextureAddressMode::Wrap;
+  link_shader_desc.samplers[0].mip_lod_bias = 0.0f;
+  link_shader_desc.samplers[0].max_anisotropy = 0;
+  link_shader_desc.samplers[0].comparison_func = rex::renderer::ComparisonFunc::Always;
+  link_shader_desc.samplers[0].border_color = rex::renderer::BorderColor::TransparentBlack;
+  link_shader_desc.samplers[0].min_lod = 0.0f;
+  link_shader_desc.samplers[0].max_lod = 0.0f;
+  link_shader_desc.samplers[0].shader_register = 0;
+  link_shader_desc.samplers[0].register_space = 0;
+  link_shader_desc.samplers[0].shader_visibility = rex::renderer::ShaderVisibility::Pixel;
+
+  bd->shader_program = rex::rhi::link_shader(link_shader_desc);
+
+  bd->constant_buffer = rex::rhi::create_constant_buffer(sizeof(VERTEX_CONSTANT_BUFFER_DX12));
+
+  rex::rhi::InputLayoutDesc input_layout_desc;
+  input_layout_desc.input_layout =
   {
-    D3D12_DESCRIPTOR_RANGE descRange = {};
-    descRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-    descRange.NumDescriptors = 1;
-    descRange.BaseShaderRegister = 0;
-    descRange.RegisterSpace = 0;
-    descRange.OffsetInDescriptorsFromTableStart = 0;
+    rex::rhi::InputLayoutElementDesc { "POSITION",  rex::renderer::VertexBufferFormat::Float2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
+    rex::rhi::InputLayoutElementDesc { "TEXCOORD",  rex::renderer::VertexBufferFormat::Float2, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
+    rex::rhi::InputLayoutElementDesc { "COLOR", rex::renderer::VertexBufferFormat::UNorm4, rex::renderer::InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
+  };
+  bd->input_layout = rex::rhi::create_input_layout(input_layout_desc);
 
-    D3D12_ROOT_PARAMETER param[2] = {};
+  // Raster State
+  rex::rhi::RasterStateDesc rasterizer_desc{};
+  rasterizer_desc.fill_mode = rex::renderer::FillMode::Solid;
+  rasterizer_desc.cull_mode = rex::renderer::CullMode::None;
+  rasterizer_desc.front_ccw = false;
+  rasterizer_desc.depth_bias = D3D12_DEFAULT_DEPTH_BIAS;
+  rasterizer_desc.depth_bias_clamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+  rasterizer_desc.sloped_scale_depth_bias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+  rasterizer_desc.depth_clip_enable = true;
+  rasterizer_desc.multisample = false;
+  rasterizer_desc.aa_lines = false;
+  rasterizer_desc.forced_sample_count = 0;
 
-    param[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-    param[0].Constants.ShaderRegister = 0;
-    param[0].Constants.RegisterSpace = 0;
-    param[0].Constants.Num32BitValues = 16;
-    param[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+  rex::rhi::PipelineStateDesc pso_desc{};
+  pso_desc.input_layout = bd->input_layout;
+  pso_desc.raster_state = rex::rhi::create_raster_state(rasterizer_desc);
+  pso_desc.shader = bd->shader_program;
 
-    param[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-    param[1].DescriptorTable.NumDescriptorRanges = 1;
-    param[1].DescriptorTable.pDescriptorRanges = &descRange;
-    param[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+  // Blend State
+  pso_desc.blend_state = rex::rhi::BlendState();
+  rex::rhi::BlendState& blend_state = pso_desc.blend_state.value();
+  blend_state.enable_alpha_to_coverage = false;
+  blend_state.render_target[0].blend_enable = true;
+  blend_state.render_target[0].src_blend = rex::rhi::Blend::SrcAlpha;
+  blend_state.render_target[0].dst_blend = rex::rhi::Blend::InvSrcAlpha;
+  blend_state.render_target[0].blend_op = rex::rhi::BlendOp::Add;
+  blend_state.render_target[0].src_blend_alpha = rex::rhi::Blend::One;
+  blend_state.render_target[0].dst_blend_alpha = rex::rhi::Blend::InvSrcAlpha;
+  blend_state.render_target[0].blend_op_alpha = rex::rhi::BlendOp::Add;
+  blend_state.render_target[0].render_target_write_mask = rex::rhi::RenderTargetWriteMask::All;
 
-    // Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling.
-    D3D12_STATIC_SAMPLER_DESC staticSampler = {};
-    staticSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-    staticSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-    staticSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-    staticSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-    staticSampler.MipLODBias = 0.f;
-    staticSampler.MaxAnisotropy = 0;
-    staticSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-    staticSampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-    staticSampler.MinLOD = 0.f;
-    staticSampler.MaxLOD = 0.f;
-    staticSampler.ShaderRegister = 0;
-    staticSampler.RegisterSpace = 0;
-    staticSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+  // depth stencil state
+  pso_desc.depth_stencil_state = rex::rhi::DepthStencilDesc();
+  rex::rhi::DepthStencilDesc& depth_stencil_desc = pso_desc.depth_stencil_state.value();
+  depth_stencil_desc.depth_enable = false;
+  depth_stencil_desc.depth_write_mask = rex::rhi::DepthWriteMask::DepthWriteMaskAll;
+  depth_stencil_desc.depth_func = rex::renderer::ComparisonFunc::Always;
+  depth_stencil_desc.stencil_enable = false;
+  depth_stencil_desc.front_face.stencil_fail_op = rex::rhi::StencilOp::Keep;
+  depth_stencil_desc.front_face.stencil_depth_fail_op = rex::rhi::StencilOp::Keep;
+  depth_stencil_desc.front_face.stencil_pass_op = rex::rhi::StencilOp::Keep;
+  depth_stencil_desc.front_face.stencil_func = rex::renderer::ComparisonFunc::Always;
+  depth_stencil_desc.back_face = depth_stencil_desc.front_face;
 
-    D3D12_ROOT_SIGNATURE_DESC desc = {};
-    desc.NumParameters = _countof(param);
-    desc.pParameters = param;
-    desc.NumStaticSamplers = 1;
-    desc.pStaticSamplers = &staticSampler;
-    desc.Flags =
-      D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-      D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-      D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-      D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+  bd->pipeline_state = rex::rhi::create_pso(pso_desc);
 
-    // Load d3d12.dll and D3D12SerializeRootSignature() function address dynamically to facilitate using with D3D12On7.
-    // See if any version of d3d12.dll is already loaded in the process. If so, give preference to that.
-    static HINSTANCE d3d12_dll = ::GetModuleHandleA("d3d12.dll");
-    if (d3d12_dll == nullptr)
-    {
-      // Attempt to load d3d12.dll from local directories. This will only succeed if
-      // (1) the current OS is Windows 7, and
-      // (2) there exists a version of d3d12.dll for Windows 7 (D3D12On7) in one of the following directories.
-      // See https://github.com/ocornut/imgui/pull/3696 for details.
-      const char* localD3d12Paths[] = { ".\\d3d12.dll", ".\\d3d12on7\\d3d12.dll", ".\\12on7\\d3d12.dll" }; // A. current directory, B. used by some games, C. used in Microsoft D3D12On7 sample
-      for (int i = 0; i < IM_ARRAYSIZE(localD3d12Paths); i++)
-        if ((d3d12_dll = ::LoadLibraryA(localD3d12Paths[i])) != nullptr)
-          break;
 
-      // If failed, we are on Windows >= 10.
-      if (d3d12_dll == nullptr)
-        d3d12_dll = ::LoadLibraryA("d3d12.dll");
 
-      if (d3d12_dll == nullptr)
-        return false;
-    }
 
-    PFN_D3D12_SERIALIZE_ROOT_SIGNATURE D3D12SerializeRootSignatureFn = (PFN_D3D12_SERIALIZE_ROOT_SIGNATURE)::GetProcAddress(d3d12_dll, "D3D12SerializeRootSignature");
-    if (D3D12SerializeRootSignatureFn == nullptr)
-      return false;
 
-    ID3DBlob* blob = nullptr;
-    if (D3D12SerializeRootSignatureFn(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, nullptr) != S_OK)
-      return false;
 
-    bd->pd3dDevice->CreateRootSignature(0, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&bd->pRootSignature));
-    blob->Release();
-  }
 
-  // By using D3DCompile() from <d3dcompiler.h> / d3dcompiler.lib, we introduce a dependency to a given version of d3dcompiler_XX.dll (see D3DCOMPILER_DLL_A)
-  // If you would like to use this DX12 sample code but remove this dependency you can:
-  //  1) compile once, save the compiled shader blobs into a file or source code and assign them to psoDesc.VS/PS [preferred solution]
-  //  2) use code to detect any version of the DLL and grab a pointer to D3DCompile from the DLL.
-  // See https://github.com/ocornut/imgui/pull/638 for sources and details.
 
-  D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
-  memset(&psoDesc, 0, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-  psoDesc.NodeMask = 1;
-  psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-  psoDesc.pRootSignature = bd->pRootSignature;
-  psoDesc.SampleMask = UINT_MAX;
-  psoDesc.NumRenderTargets = 1;
-  psoDesc.RTVFormats[0] = bd->RTVFormat;
-  psoDesc.SampleDesc.Count = 1;
-  psoDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
-  ID3DBlob* vertexShaderBlob;
-  ID3DBlob* pixelShaderBlob;
 
-  // Create the vertex shader
-  {
-    static const char* vertexShader =
-      "cbuffer vertexBuffer : register(b0) \
-            {\
-              float4x4 ProjectionMatrix; \
-            };\
-            struct VS_INPUT\
-            {\
-              float2 pos : POSITION;\
-              float4 col : COLOR0;\
-              float2 uv  : TEXCOORD0;\
-            };\
-            \
-            struct PS_INPUT\
-            {\
-              float4 pos : SV_POSITION;\
-              float4 col : COLOR0;\
-              float2 uv  : TEXCOORD0;\
-            };\
-            \
-            PS_INPUT main(VS_INPUT input)\
-            {\
-              PS_INPUT output;\
-              output.pos = mul( ProjectionMatrix, float4(input.pos.xy, 0.f, 1.f));\
-              output.col = input.col;\
-              output.uv  = input.uv;\
-              return output;\
-            }";
 
-    if (FAILED(D3DCompile(vertexShader, strlen(vertexShader), nullptr, nullptr, nullptr, "main", "vs_5_0", 0, 0, &vertexShaderBlob, nullptr)))
-      return false; // NB: Pass ID3DBlob* pErrorBlob to D3DCompile() to get error showing in (const char*)pErrorBlob->GetBufferPointer(). Make sure to Release() the blob!
-    psoDesc.VS = { vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize() };
 
-    // Create the input layout
-    static D3D12_INPUT_ELEMENT_DESC local_layout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT,   0, (UINT)offsetof(ImDrawVert, pos), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, (UINT)offsetof(ImDrawVert, uv),  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, (UINT)offsetof(ImDrawVert, col), D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-    };
-    psoDesc.InputLayout = { local_layout, 3 };
-  }
 
-  // Create the pixel shader
-  {
-    static const char* pixelShader =
-      "struct PS_INPUT\
-            {\
-              float4 pos : SV_POSITION;\
-              float4 col : COLOR0;\
-              float2 uv  : TEXCOORD0;\
-            };\
-            SamplerState sampler0 : register(s0);\
-            Texture2D texture0 : register(t0);\
-            \
-            float4 main(PS_INPUT input) : SV_Target\
-            {\
-              float4 out_col = input.col * texture0.Sample(sampler0, input.uv); \
-              return out_col; \
-            }";
-
-    if (FAILED(D3DCompile(pixelShader, strlen(pixelShader), nullptr, nullptr, nullptr, "main", "ps_5_0", 0, 0, &pixelShaderBlob, nullptr)))
-    {
-      vertexShaderBlob->Release();
-      return false; // NB: Pass ID3DBlob* pErrorBlob to D3DCompile() to get error showing in (const char*)pErrorBlob->GetBufferPointer(). Make sure to Release() the blob!
-    }
-    psoDesc.PS = { pixelShaderBlob->GetBufferPointer(), pixelShaderBlob->GetBufferSize() };
-  }
-
-  // Create the blending setup
-  {
-    D3D12_BLEND_DESC& desc = psoDesc.BlendState;
-    desc.AlphaToCoverageEnable = false;
-    desc.RenderTarget[0].BlendEnable = true;
-    desc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-    desc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-    desc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-    desc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-    desc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
-    desc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-    desc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-  }
-
-  // Create the rasterizer state
-  {
-    D3D12_RASTERIZER_DESC& desc = psoDesc.RasterizerState;
-    desc.FillMode = D3D12_FILL_MODE_SOLID;
-    desc.CullMode = D3D12_CULL_MODE_NONE;
-    desc.FrontCounterClockwise = FALSE;
-    desc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
-    desc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
-    desc.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-    desc.DepthClipEnable = true;
-    desc.MultisampleEnable = FALSE;
-    desc.AntialiasedLineEnable = FALSE;
-    desc.ForcedSampleCount = 0;
-    desc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-  }
-
-  // Create depth-stencil State
-  {
-    D3D12_DEPTH_STENCIL_DESC& desc = psoDesc.DepthStencilState;
-    desc.DepthEnable = false;
-    desc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-    desc.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-    desc.StencilEnable = false;
-    desc.FrontFace.StencilFailOp = desc.FrontFace.StencilDepthFailOp = desc.FrontFace.StencilPassOp = D3D12_STENCIL_OP_KEEP;
-    desc.FrontFace.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
-    desc.BackFace = desc.FrontFace;
-  }
-
-  HRESULT result_pipeline_state = bd->pd3dDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&bd->pPipelineState));
-  vertexShaderBlob->Release();
-  pixelShaderBlob->Release();
-  if (result_pipeline_state != S_OK)
-    return false;
 
   ImGui_ImplDX12_CreateFontsTexture();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return true;
 }
@@ -810,8 +1044,8 @@ void    ImGui_ImplDX12_InvalidateDeviceObjects()
     return;
 
   ImGuiIO& io = ImGui::GetIO();
-  SafeRelease(bd->pRootSignature);
-  SafeRelease(bd->pPipelineState);
+  //SafeRelease(bd->pRootSignature);
+  //SafeRelease(bd->pPipelineState);
   SafeRelease(bd->pFontTextureResource);
   io.Fonts->SetTexID(0); // We copied bd->pFontTextureView to io.Fonts->TexID so let's clear that as well.
 }
@@ -878,7 +1112,7 @@ void ImGui_ImplDX12_NewFrame()
   ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
   IM_ASSERT(bd != nullptr && "Did you call ImGui_ImplDX12_Init()?");
 
-  if (!bd->pPipelineState)
+  if (!bd->pipeline_state.is_valid())
     ImGui_ImplDX12_CreateDeviceObjects();
 }
 
@@ -903,12 +1137,13 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
   HRESULT res = S_OK;
 
   // Create fence.
+  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv REX CODE vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
   rex::wrl::ComPtr<ID3D12Fence> fence;
   res = bd->pd3dDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(fence.GetAddressOf()));
   IM_ASSERT(res == S_OK);
 
-  vd->FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-  IM_ASSERT(vd->FenceEvent != nullptr);
+  //vd->FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+  //IM_ASSERT(vd->FenceEvent != nullptr);
 
   // Create command queue.
   D3D12_COMMAND_QUEUE_DESC queue_desc = {};
@@ -919,6 +1154,7 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
   res = bd->pd3dDevice->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(command_queue.GetAddressOf()));
   vd->rex_command_queue = rsl::make_unique<rex::rhi::CommandQueue>(command_queue, fence);
   IM_ASSERT(res == S_OK);
+  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ REX CODE ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   // Create command allocator.
   for (UINT i = 0; i < bd->numFramesInFlight; ++i)
@@ -931,6 +1167,8 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
   res = bd->pd3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, vd->FrameCtx[0].CommandAllocator, nullptr, IID_PPV_ARGS(&vd->CommandList));
   IM_ASSERT(res == S_OK);
   vd->CommandList->Close();
+
+  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv REX CODE vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
   // Create swap chain
   // FIXME-VIEWPORT: May want to copy/inherit swap chain settings from the user/application.
@@ -994,6 +1232,7 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
       vd->FrameCtx[i].RenderTarget = back_buffer;
     }
   //}
+  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ REX CODE ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
   for (UINT i = 0; i < bd->numFramesInFlight; i++)
@@ -1003,7 +1242,7 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
 static void ImGui_WaitForPendingOperations(ImGui_ImplDX12_ViewportData* vd)
 {
   HRESULT hr = S_FALSE;
-  if (vd && vd->rex_command_queue /*&& vd->Fence */&& vd->FenceEvent)
+  if (vd && vd->rex_command_queue /*&& vd->Fence && vd->FenceEvent*/)
   {
     vd->rex_command_queue->flush();
     ++vd->FenceSignaledValue;
@@ -1029,8 +1268,8 @@ static void ImGui_ImplDX12_DestroyWindow(ImGuiViewport* viewport)
     //SafeRelease(vd->SwapChain);
     //SafeRelease(vd->RtvDescHeap);
     //SafeRelease(vd->Fence);
-    ::CloseHandle(vd->FenceEvent);
-    vd->FenceEvent = nullptr;
+    //::CloseHandle(vd->FenceEvent);
+    //vd->FenceEvent = nullptr;
 
     for (UINT i = 0; i < bd->numFramesInFlight; i++)
     {

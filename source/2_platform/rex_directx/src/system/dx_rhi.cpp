@@ -374,7 +374,7 @@ namespace rex
       rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, desc.blob_view.size(), desc.vertex_size);
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), vb.get(), desc.blob_view.data(), size);
+      internal::get()->upload_buffer->write(internal::get()->command_list->get(), vb.get(), desc.blob_view.data(), size);
 
       //// 3) Upload the data from the upload buffer onto the gpu
       //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
@@ -423,7 +423,7 @@ namespace rex
       rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, desc.blob_view.size(), d3d_format);
 
       // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), ib.get(), desc.blob_view.data(), size);
+      internal::get()->upload_buffer->write(internal::get()->command_list->get(), ib.get(), desc.blob_view.data(), size);
 
       // 3) Upload the data from the upload buffer onto the gpu
       //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
@@ -628,13 +628,17 @@ namespace rex
 
       internal::get()->command_list->get()->IASetIndexBuffer(&view);
     }
-    void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb)
+    void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb, struct ID3D12GraphicsCommandList* cmdList)
     {
       ConstantBuffer* constant_buffer = internal::get()->resource_pool.as<ConstantBuffer>(cb);
 
       static auto cbv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).gpu_heap_start();
 
-      internal::get()->command_list->get()->SetGraphicsRootConstantBufferView(idx, constant_buffer->get()->GetGPUVirtualAddress());
+      if (!cmdList)
+      {
+        cmdList = internal::get()->command_list->get();
+      }
+      cmdList->SetGraphicsRootConstantBufferView(idx, constant_buffer->get()->GetGPUVirtualAddress());
     }
     void set_primitive_topology(renderer::PrimitiveTopology topology)
     {
@@ -671,10 +675,14 @@ namespace rex
       internal::get()->upload_buffer->reset();
     }
 
-    void update_buffer(const ResourceSlot& slot, const void* data, s64 size)
+    void update_buffer(const ResourceSlot& slot, const void* data, s64 size, ID3D12GraphicsCommandList* cmdList)
     {
       Resource* resource = internal::get()->resource_pool.as<Resource>(slot);
-      internal::get()->upload_buffer->write(internal::get()->command_list.get(), resource, data, size);
+      if (!cmdList)
+      {
+        cmdList = internal::get()->command_list->get();
+      }
+      internal::get()->upload_buffer->write(cmdList, resource, data, size);
     }
 
     ScopedCommandList create_scoped_commandlist()
@@ -1306,5 +1314,14 @@ namespace rex
     }
 
 #pragma endregion
+
+    class ShaderProgramResource* get_shader(const ResourceSlot& slot)
+    {
+      return internal::get()->resource_pool.as<ShaderProgramResource>(slot);
+    }
+    class PipelineState* get_pso(const ResourceSlot& slot)
+    {
+      return internal::get()->resource_pool.as<PipelineState>(slot);
+    }
   }
 }

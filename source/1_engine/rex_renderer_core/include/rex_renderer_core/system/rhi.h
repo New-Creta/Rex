@@ -132,7 +132,7 @@ namespace rex
     // Bind the index buffer specified at the resource slot to the pipeline
     void set_index_buffer(const rhi::ResourceSlot& ib);
     // Bind the constant buffer to the pipeline at the specified index
-    void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb);
+    void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb, struct ID3D12GraphicsCommandList* cmdList = nullptr);
     // Specify the primitive topology of the pipeline
     void set_primitive_topology(renderer::PrimitiveTopology topology);
     // Bind the shader specified at the resource slot to the pipeline
@@ -149,7 +149,7 @@ namespace rex
 
     // Update a buffer with new data.
     // Data is always written at the start of the destination resource
-    void update_buffer(const ResourceSlot& slot, const void* data, s64 size);
+    void update_buffer(const ResourceSlot& slot, const void* data, s64 size, struct ID3D12GraphicsCommandList* cmdList = nullptr);
 
   } // namespace rhi
 } // namespace rex

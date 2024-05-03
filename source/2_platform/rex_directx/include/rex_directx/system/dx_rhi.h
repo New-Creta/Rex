@@ -61,6 +61,8 @@ namespace rex
     ID3D12DescriptorHeap* get_cbv_uav_srv_heap();
     DescriptorHandle get_free_handle();
 
+    class ShaderProgramResource* get_shader(const ResourceSlot& slot);
+    class PipelineState* get_pso(const ResourceSlot& slot);
     namespace d3d
     {
       wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers);
