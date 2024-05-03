@@ -31,6 +31,16 @@ namespace rex
       m_command_queue->ExecuteCommandLists(1, &commandlist);
     }
 
+    void CommandQueue::wait(s32 val)
+    {
+      m_command_queue->Wait(m_fence.get(), val);
+    }
+
+    s32 CommandQueue::fence_value()
+    {
+      return m_fence.get()->GetCompletedValue();
+    }
+
     ID3D12CommandQueue* CommandQueue::get()
     {
       return m_command_queue.Get();

@@ -28,5 +28,11 @@ namespace rex
         evt.wait_for_me();
       }
     }
+
+    ID3D12Fence* Fence::get()
+    {
+      return m_fence.Get();
+    }
+
   } // namespace rhi
 } // namespace rex

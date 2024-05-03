@@ -21,6 +21,8 @@ namespace rex
       // this is a blocking call
       void wait_for_val();
 
+      ID3D12Fence* get();
+
     private:
       wrl::ComPtr<ID3D12Fence> m_fence;
       s32 m_target_val;

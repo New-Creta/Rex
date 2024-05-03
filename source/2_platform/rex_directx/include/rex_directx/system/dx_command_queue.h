@@ -24,8 +24,10 @@ namespace rex
       void inc_fence();
       void flush();
       void execute(ID3D12CommandList* commandlist);
+      void wait(s32 val);
 
       ID3D12CommandQueue* get();
+      s32 fence_value();
 
     private:
       wrl::ComPtr<ID3D12CommandQueue> m_command_queue;
