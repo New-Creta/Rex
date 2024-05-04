@@ -59,7 +59,6 @@
 #include <d3d12.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include "rex_directx/rendering/dx_imgui_renderer.h"
-#include "rex_directx/rendering/dx_imgui_renderer2.h"
 
 #include "imgui/platform/win/imgui_impl_win32.h"
 
