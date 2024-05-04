@@ -57,7 +57,6 @@ namespace rex
       }
 
       conf.AddProject<PokemonProject>(target);
-      conf.AddProject<ImguiTest>(target);
     }
 
     protected string GenerateName(string baseName)
