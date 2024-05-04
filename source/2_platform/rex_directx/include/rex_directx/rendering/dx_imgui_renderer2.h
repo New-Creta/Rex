@@ -5,6 +5,7 @@
 #include <d3d12.h>
 
 #include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_rhi.h"
 
 #include "rex_engine/diagnostics/error.h"
 
@@ -14,18 +15,7 @@ struct ID3D12GraphicsCommandList;
 struct D3D12_CPU_DESCRIPTOR_HANDLE;
 struct D3D12_GPU_DESCRIPTOR_HANDLE;
 
-// cmd_list is the command list that the implementation will use to render imgui draw lists.
-// Before calling the render function, caller must prepare cmd_list by resetting it and setting the appropriate
-// render target and descriptor heap that contains font_srv_cpu_desc_handle/font_srv_gpu_desc_handle.
-// font_srv_cpu_desc_handle and font_srv_gpu_desc_handle are handles to a single SRV descriptor to use for the internal font texture.
-IMGUI_IMPL_API void     ImGui_ImplDX12_NewFrame();
-IMGUI_IMPL_API void     ImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandList* graphics_command_list);
-
-// Use if you want to reset your rendering device without losing Dear ImGui state.
-IMGUI_IMPL_API void     ImGui_ImplDX12_InvalidateDeviceObjects();
-IMGUI_IMPL_API bool     ImGui_ImplDX12_CreateDeviceObjects();
-
-
+class ImGui_ImplDX12_RenderBuffers;
 
 namespace rex
 {
@@ -33,6 +23,15 @@ namespace rex
   {
     class ImGuiRenderer
     {
+    public:
+      // global functions used for callbacks.
+      // Imgui uses functions pointers, so can't use lambdas
+      friend void create_window_callback(ImGuiViewport* viewport);
+      friend void destroy_window_callback(ImGuiViewport* viewport);
+      friend void set_window_size_callback(ImGuiViewport* viewport, ImVec2 size);
+      friend void render_window_callback(ImGuiViewport* viewport, void* renderArg);
+      friend void swap_buffers_callback(ImGuiViewport* viewport, void* renderArg);
+
     public:
       ImGuiRenderer(ID3D12Device1* device, s32 numFramesInFlight, DXGI_FORMAT rtvFormat, HWND hwnd);
       ~ImGuiRenderer();
@@ -47,13 +46,38 @@ namespace rex
       void render();
 
     private:
+      Error init_device_objects();
       Error init_input_layout();
       Error init_shader();
       Error init_font_texture();
       Error init_buffers();
+      Error init_pso();
+
+      void setup_render_state(ImDrawData* drawData, ID3D12GraphicsCommandList* ctx, ImGui_ImplDX12_RenderBuffers* fr);
+      void render_draw_data(ImDrawData* drawData, ID3D12GraphicsCommandList* ctx);
+
+      void init_platform_interface();
+      void create_window(ImGuiViewport* viewport);
+      void destroy_window(ImGuiViewport* viewport);
+      void render_window(ImGuiViewport* viewport);
+      void set_window_size(ImGuiViewport* viewport, ImVec2 size);
+      void swap_buffers(ImGuiViewport* viewport);
 
     private:
-      ID3D12Device1* m_device;
+      ID3D12Device1* m_device;                                  // Needed to initialize child windows with their own directx objects
+      DXGI_FORMAT                 m_rtv_format;                 // Comes in from the main rendered, to match child windows rtv format with that of the main window
+      rex::rhi::DescriptorHeap* m_srv_desc_heap;                // Probably not needed, rex uses single descriptor heaps throughout the process.
+      rex::rhi::DescriptorHandle m_texture_handle;              // the handle to the shader resource view of the font texture
+      UINT                        m_max_num_frames_in_flight;   // used to store the number of frames we can handle at once.
+
+      rex::rhi::ResourceSlot m_shader_program;                 // resource slot for the compiled imgui shader as well as its root signature
+      rex::rhi::ResourceSlot m_pipeline_state;                 // resource slot for the pipeline state of imgui
+      rex::rhi::ResourceSlot m_constant_buffer;                // resource slot for the constant buffer holding the mvp matrix. This single object is shared between all viewports
+      rex::rhi::ResourceSlot m_input_layout;                   // resource slot for the input layout of imgui
+      rex::rhi::ResourceSlot m_vertex_shader;                  // resource slot for the vertex shader of imgui
+      rex::rhi::ResourceSlot m_pixel_shader;                   // resource slot for the pixel shader of imgui
+      rex::rhi::ResourceSlot m_texture;                        // resources lot for the fonts texture, used by imgui
+
     };
   }
 }
