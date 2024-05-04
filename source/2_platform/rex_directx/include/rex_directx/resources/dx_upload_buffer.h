@@ -22,7 +22,7 @@ namespace rex
       UploadBuffer& operator=(UploadBuffer&&) = delete;
 
       void write(ID3D12GraphicsCommandList* cmdList, Resource* dstResource, const void* data, s64 size, s32 alignment = 1, s32 offset = 0);
-      void write_texture(CommandList* cmdList, Resource* dstResource, const void* data, DXGI_FORMAT format, s64 width, s64 height);
+      void write_texture(ID3D12GraphicsCommandList* cmdList, Resource* dstResource, const void* data, DXGI_FORMAT format, s64 width, s64 height);
 
       void reset();
 

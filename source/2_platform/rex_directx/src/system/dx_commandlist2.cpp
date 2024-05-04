@@ -13,7 +13,7 @@ namespace rex
       m_cmd_list->Close();
     }
 
-    void CommandList2::start_recording_commands(CommandAllocator* alloc)
+    void CommandList2::start_recording_commands(CommandAllocator* alloc, ID3D12PipelineState* pso)
     {
       REX_ASSERT_X(alloc != nullptr, "The allocator for a commandlist cannot be null");
       REX_ASSERT_X(m_alloc == nullptr, "There's already an allocator assigned to this commandlist");
@@ -21,7 +21,7 @@ namespace rex
       m_alloc = alloc;
 
       alloc->get()->Reset();
-      m_cmd_list->Reset(m_alloc->get(), nullptr);
+      m_cmd_list->Reset(m_alloc->get(), pso);
     }
     void CommandList2::stop_recording_commands()
     {

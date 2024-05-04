@@ -44,6 +44,7 @@ namespace rex
 
       void new_frame();
       void render();
+      void end_frame();
 
     private:
       Error init_device_objects();
@@ -52,9 +53,6 @@ namespace rex
       Error init_font_texture();
       Error init_buffers();
       Error init_pso();
-
-      void setup_render_state(ImDrawData* drawData, ID3D12GraphicsCommandList* ctx, ImGui_ImplDX12_RenderBuffers* fr);
-      void render_draw_data(ImDrawData* drawData, ID3D12GraphicsCommandList* ctx);
 
       void init_platform_interface();
       void create_window(ImGuiViewport* viewport);

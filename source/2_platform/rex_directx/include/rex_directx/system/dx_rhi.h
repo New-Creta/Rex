@@ -52,7 +52,7 @@ namespace rex
 
     ScopedCommandList create_scoped_commandlist();
 
-    ID3D12GraphicsCommandList* cmd_list();
+    class CommandList2* cmd_list();
 
     void set_graphics_root_descriptor_table(ResourceID id);
     Texture2D* get_texture(const ResourceSlot& slot);
@@ -66,7 +66,7 @@ namespace rex
     //class VertexBuffer* get_vertex_buffer(const ResourceSlot* slot);
     //class IndexBuffer* get_index_buffer(const ResourceSlot* slot);
 
-
+    DescriptorHandle get_rtv();
 
     namespace d3d
     {

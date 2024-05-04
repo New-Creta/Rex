@@ -13,7 +13,7 @@ namespace rex
     public:
       CommandList2(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList);
 
-      void start_recording_commands(CommandAllocator* alloc);
+      void start_recording_commands(CommandAllocator* alloc, ID3D12PipelineState* pso = nullptr);
       void stop_recording_commands();
 
       ID3D12GraphicsCommandList* get();

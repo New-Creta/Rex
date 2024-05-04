@@ -11,7 +11,9 @@
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_command_queue.h"
+#include "rex_directx/system/dx_command_allocator.h"
 #include "rex_directx/system/dx_commandlist.h"
+#include "rex_directx/system/dx_commandlist2.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/system/dx_resource.h"
@@ -112,13 +114,14 @@ namespace rex
         rsl::unique_ptr<DirectXDevice> device;
         rsl::unique_ptr<Swapchain> swapchain;
         rsl::unique_ptr<CommandQueue> command_queue;
-        rsl::unique_ptr<CommandList> command_list;
+        rsl::unique_ptr<CommandAllocator> command_allocator;
+        rsl::unique_ptr<CommandList2> command_list;
         rsl::unique_ptr<ResourceHeap> heap;
         rsl::unique_ptr<Resource> depth_stencil_buffer;
         rsl::unique_ptr<UploadBuffer> upload_buffer;
         rsl::unique_ptr<PipelineLibrary> pso_lib;
         ResourcePool resource_pool;
-
+        
         wrl::ComPtr<IDXGIInfoQueue> debug_info_queue;
         rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, DescriptorHeap> descriptor_heap_pool;
       };
@@ -176,14 +179,16 @@ namespace rex
       {
         pso = internal::get()->resource_pool.as<PipelineState>(psoSlot)->get();
       }
-      internal::get()->command_list->reset(pso);
+      internal::get()->command_list->start_recording_commands(internal::get()->command_allocator.get(), pso);
 
       ID3D12DescriptorHeap* heap = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).get();
       internal::get()->command_list->get()->SetDescriptorHeaps(1, &heap);
     }
     void exec_command_list()
     {
-      internal::get()->command_list->exec(internal::get()->command_queue.get());
+      internal::get()->command_list->stop_recording_commands();
+      ID3D12CommandList* cmdlist = internal::get()->command_list->get();
+      internal::get()->command_queue->get()->ExecuteCommandLists(1, &cmdlist);
     }
     void flush_command_queue()
     {
@@ -544,7 +549,7 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> d3d_texture = internal::get()->heap->create_texture2d(format, width, height);
       rsl::unique_ptr<Texture2D> texture = rsl::make_unique<Texture2D>(d3d_texture, width, height, format);
 
-      internal::get()->upload_buffer->write_texture(internal::get()->command_list.get(), texture.get(), data, format, width, height);
+      internal::get()->upload_buffer->write_texture(internal::get()->command_list->get(), texture.get(), data, format, width, height);
       
       return internal::get()->resource_pool.insert(rsl::move(texture));
     }
@@ -932,7 +937,9 @@ namespace rex
       }
 
       // 10) Execute the commandlist to finish initialization
-      command_list->exec(command_queue.get());
+      command_list->stop_recording_commands();
+      ID3D12CommandList* cmdlist = command_list->get();
+      command_queue->get()->ExecuteCommandLists(1, &cmdlist);
 
       // release scopeguard so that init gets marked successful
       mark_init_failed.release();
@@ -1132,8 +1139,8 @@ namespace rex
         REX_ERROR(LogRhi, "Failed to create command allocator");
         return false;
       }
-
       rhi::set_debug_name_for(allocator.Get(), "Global Command Allocator");
+      command_allocator = rsl::make_unique<rex::rhi::CommandAllocator>(allocator);
 
       // Command List
       wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
@@ -1144,10 +1151,10 @@ namespace rex
       }
 
       rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
-      command_list = rsl::make_unique<CommandList>(cmd_list, allocator);
+      command_list = rsl::make_unique<CommandList2>(cmd_list);
 
       // Open the command list to allow further initialization of resources
-      command_list->reset();
+      command_list->start_recording_commands(command_allocator.get());
 
       return true;
     }
@@ -1297,9 +1304,9 @@ namespace rex
       return true;
     }
 
-    ID3D12GraphicsCommandList* cmd_list()
+    CommandList2* cmd_list()
     {
-      return internal::get()->command_list->get();
+      return internal::get()->command_list.get();
     }
 
     void set_graphics_root_descriptor_table(ResourceID id)
@@ -1330,6 +1337,11 @@ namespace rex
     class PipelineState* get_pso(const ResourceSlot& slot)
     {
       return internal::get()->resource_pool.as<PipelineState>(slot);
+    }
+
+    DescriptorHandle get_rtv()
+    {
+      return internal::get()->swapchain->backbuffer_view();
     }
   }
 }

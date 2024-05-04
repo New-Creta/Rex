@@ -49,7 +49,7 @@ namespace rex
       m_offset += size;
     }
 
-    void UploadBuffer::write_texture(CommandList* cmdList, Resource* dstResource, const void* data, DXGI_FORMAT format, s64 width, s64 height)
+    void UploadBuffer::write_texture(ID3D12GraphicsCommandList* cmdList, Resource* dstResource, const void* data, DXGI_FORMAT format, s64 width, s64 height)
     {
       // Write the data into our mapped memory
       s32 format_size = rex::d3d::format_byte_size(format);
@@ -73,9 +73,9 @@ namespace rex
 
       // Fill the commandlist with the commands to update this resource
       const D3D12_RESOURCE_STATES original_state = dstResource->resource_state();
-      dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
-      dstResource->write_texture(cmdList->get(), this, width, height, pitch_size, m_offset);
-      dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+      dstResource->transition(cmdList, D3D12_RESOURCE_STATE_COPY_DEST);
+      dstResource->write_texture(cmdList, this, width, height, pitch_size, m_offset);
+      dstResource->transition(cmdList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
       // m_upload_infos.emplace_back(UploadInfo{ dstResource, m_offset, size });
       m_offset += (pitch_size * height);
