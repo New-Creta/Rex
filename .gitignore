@@ -37,3 +37,4 @@ crash-*
 # Dump files can be ignored
 *.dmp
 data/_sessions/
+data/imgui.ini

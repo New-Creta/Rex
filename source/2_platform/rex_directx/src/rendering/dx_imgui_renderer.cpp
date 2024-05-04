@@ -39,97 +39,52 @@
 
 DEFINE_LOG_CATEGORY(LogImgui);
 
-// Buffers used during the rendering of a frame
-struct ImGui_ImplDX12_RenderBuffers
-{
-  s32                 IndexBufferSize;    // the number of indices the index buffer supports
-  s32                 VertexBufferSize;   // the number of vertices the vertex buffer supports
-
-  rex::rhi::ResourceSlot vertex_buffer;   // resource slot of the vertex buffer
-  rex::rhi::ResourceSlot index_buffer;    // resource slot of the index buffer
-};
-
-// We support multiple frames in flight at the same time.
-// Therefore we need some resources that are tied to each frame that's currently in flight
-class ImGui_ImplDX12_FrameContext
-{
-public:
-  ImGui_ImplDX12_FrameContext(ID3D12Device1* device)
-  {
-    rex::wrl::ComPtr<ID3D12CommandAllocator> cmd_alloc;
-    DX_CALL(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_alloc.GetAddressOf())));
-    m_command_allocator = rsl::make_unique<rex::rhi::CommandAllocator>(cmd_alloc);
-  }
-
-  rex::rhi::CommandAllocator* allocator()
-  {
-    return m_command_allocator.get();
-  }
-
-private:
-  rsl::unique_ptr<rex::rhi::CommandAllocator> m_command_allocator;
-};
-
-// Helper structure we store in the void* RendererUserData field of each ImGuiViewport to easily retrieve our backend data.
-// Main viewport created by application will only use the Resources field.
-// Secondary viewports created by this backend will use all the fields (including Window fields),
-
-// Each viewport holds some of its own resources which aren't shared by other viewports
-// the below is to manage each on of these
-//struct ImGui_ImplDX12_ViewportData
-//{
-//  // Window
-//  rsl::unique_ptr<rex::rhi::CommandList2> command_list;
-//  UINT64                          FenceSignaledValue;
-//  UINT                            NumFramesInFlight;
-//  ImGui_ImplDX12_FrameContext* FrameCtx;
-//
-//  // Render buffers
-//  UINT                            FrameIndex;
-//  ImGui_ImplDX12_RenderBuffers* FrameRenderBuffers;
-//
-//  rsl::unique_ptr<rex::rhi::CommandQueue> rex_command_queue;
-//  rsl::unique_ptr<rex::rhi::DescriptorHeap> rex_descriptor_heap;
-//  rsl::unique_ptr<rex::rhi::Swapchain> rex_swapchain;
-//
-//  ImGui_ImplDX12_ViewportData(UINT num_frames_in_flight)
-//  {
-//    FenceSignaledValue = 0;
-//    NumFramesInFlight = num_frames_in_flight;
-//    FrameCtx = new ImGui_ImplDX12_FrameContext[NumFramesInFlight];
-//    FrameIndex = UINT_MAX;
-//    FrameRenderBuffers = new ImGui_ImplDX12_RenderBuffers[NumFramesInFlight];
-//
-//    for (UINT i = 0; i < NumFramesInFlight; ++i)
-//    {
-//      // Create buffers with a default size (they will later be grown as needed)
-//      FrameRenderBuffers[i].VertexBufferSize = 5000;
-//      FrameRenderBuffers[i].IndexBufferSize = 10000;
-//    }
-//  }
-//  ~ImGui_ImplDX12_ViewportData()
-//  {
-//    delete[] FrameCtx; FrameCtx = nullptr;
-//    delete[] FrameRenderBuffers; FrameRenderBuffers = nullptr;
-//  }
-//};
-
-struct VERTEX_CONSTANT_BUFFER_DX12
-{
-  float   mvp[4][4];
-};
-
 // First render the main window widgets
 // Next render all the child windows
-
-// Forward Declarations
-
-//-----------------------------------------------------------------------------
 
 namespace rex
 {
   namespace renderer
   {
+    // Buffers used during the rendering of a frame
+    struct ImGuiRenderBuffer
+    {
+      s32                 IndexBufferSize;    // the number of indices the index buffer supports
+      s32                 VertexBufferSize;   // the number of vertices the vertex buffer supports
+
+      rex::rhi::ResourceSlot vertex_buffer;   // resource slot of the vertex buffer
+      rex::rhi::ResourceSlot index_buffer;    // resource slot of the index buffer
+    };
+
+    // We support multiple frames in flight at the same time.
+    // Therefore we need some resources that are tied to each frame that's currently in flight
+    class ImGuiFrameContext
+    {
+    public:
+      ImGuiFrameContext(ID3D12Device1* device)
+      {
+        rex::wrl::ComPtr<ID3D12CommandAllocator> cmd_alloc;
+        DX_CALL(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_alloc.GetAddressOf())));
+        m_command_allocator = rsl::make_unique<rex::rhi::CommandAllocator>(cmd_alloc);
+      }
+
+      rex::rhi::CommandAllocator* allocator()
+      {
+        return m_command_allocator.get();
+      }
+
+    private:
+      rsl::unique_ptr<rex::rhi::CommandAllocator> m_command_allocator;
+    };
+
+    struct ImGuiVertexConstantBuffer
+    {
+      float   mvp[4][4];
+    };
+
+    // Helper structure we store in the void* RendererUserData field of each ImGuiViewport to easily retrieve our backend data.
+    // Main viewport created by application will only use the Resources field.
+    // Secondary viewports created by this backend will use all the fields (including Window fields),
     class ImGuiViewportData
     {
     public:
@@ -243,12 +198,12 @@ namespace rex
       Error init_frame_contexts(ID3D12Device1* device)
       {
         // Create command allocator.
-        m_frame_ctx = rsl::make_unique<rsl::unique_ptr<ImGui_ImplDX12_FrameContext>[]>(m_max_num_frames_in_flight);
-        m_render_buffers = rsl::make_unique<rsl::unique_ptr<ImGui_ImplDX12_RenderBuffers>[]>(m_max_num_frames_in_flight);
+        m_frame_ctx = rsl::make_unique<rsl::unique_ptr<ImGuiFrameContext>[]>(m_max_num_frames_in_flight);
+        m_render_buffers = rsl::make_unique<rsl::unique_ptr<ImGuiRenderBuffer>[]>(m_max_num_frames_in_flight);
         for (UINT i = 0; i < m_max_num_frames_in_flight; ++i)
         {
-          m_frame_ctx[i] = rsl::make_unique<ImGui_ImplDX12_FrameContext>(device);
-          m_render_buffers[i] = rsl::make_unique<ImGui_ImplDX12_RenderBuffers>();
+          m_frame_ctx[i] = rsl::make_unique<ImGuiFrameContext>(device);
+          m_render_buffers[i] = rsl::make_unique<ImGuiRenderBuffer>();
         }
 
         return Error::no_error();
@@ -317,15 +272,15 @@ namespace rex
           m_frame_idx = 0;
         }
       }
-      ImGui_ImplDX12_FrameContext* current_frame_ctx()
+      ImGuiFrameContext* current_frame_ctx()
       {
         return m_frame_ctx[m_frame_idx].get();
       }
-      void setup_render_state(ImDrawData* drawData, ID3D12GraphicsCommandList* ctx, class ImGui_ImplDX12_RenderBuffers* fr)
+      void setup_render_state(ImDrawData* drawData, ID3D12GraphicsCommandList* ctx, class ImGuiRenderBuffer* fr)
       {
         // Setup orthographic projection matrix into our constant buffer
         // Our visible imgui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize (bottom right).
-        VERTEX_CONSTANT_BUFFER_DX12 vertex_constant_buffer;
+        ImGuiVertexConstantBuffer vertex_constant_buffer;
         {
           float L = drawData->DisplayPos.x;
           float R = drawData->DisplayPos.x + drawData->DisplaySize.x;
@@ -379,10 +334,10 @@ namespace rex
 
         ImGuiViewportData* vd = this;
         update_to_next_frame_ctx();
-        ImGui_ImplDX12_RenderBuffers* fr = m_render_buffers[m_frame_idx % m_max_num_frames_in_flight].get();
+        ImGuiRenderBuffer* fr = m_render_buffers[m_frame_idx % m_max_num_frames_in_flight].get();
 
         //vd->FrameIndex++;
-        //ImGui_ImplDX12_RenderBuffers* fr = &vd->FrameRenderBuffers[vd->FrameIndex % m_max_num_frames_in_flight];
+        //ImGuiRenderBuffer* fr = &vd->FrameRenderBuffers[vd->FrameIndex % m_max_num_frames_in_flight];
 
         // Create and grow vertex/index buffers if needed
         if (!fr->vertex_buffer.is_valid() || fr->VertexBufferSize < drawData->TotalVtxCount)
@@ -463,8 +418,8 @@ namespace rex
 
     private:
       rsl::unique_ptr<rhi::CommandList2> m_command_list;
-      rsl::unique_array<rsl::unique_ptr<ImGui_ImplDX12_FrameContext>> m_frame_ctx;
-      rsl::unique_array<rsl::unique_ptr<ImGui_ImplDX12_RenderBuffers>> m_render_buffers;
+      rsl::unique_array<rsl::unique_ptr<ImGuiFrameContext>> m_frame_ctx;
+      rsl::unique_array<rsl::unique_ptr<ImGuiRenderBuffer>> m_render_buffers;
       rsl::unique_ptr<rhi::CommandQueue> m_command_queue;
       rsl::unique_ptr<rhi::DescriptorHeap> m_descriptor_heap;
       rsl::unique_ptr<rhi::Swapchain> m_swapchain;
@@ -798,7 +753,7 @@ namespace rex
     }
     Error ImGuiRenderer::init_buffers()
     {
-      m_constant_buffer = rex::rhi::create_constant_buffer(sizeof(VERTEX_CONSTANT_BUFFER_DX12));
+      m_constant_buffer = rex::rhi::create_constant_buffer(sizeof(ImGuiVertexConstantBuffer));
 
       return Error::no_error();
     }
