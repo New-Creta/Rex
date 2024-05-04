@@ -2,6 +2,8 @@
 #ifndef IMGUI_DISABLE
 #include "rex_directx/rendering/dx_imgui_renderer2.h"
 
+#include "imgui/platform/win/imgui_impl_win32.h"
+
 // DirectX
 #include <d3d12.h>
 #include <dxgi1_4.h>
@@ -501,70 +503,6 @@ void    ImGui_ImplDX12_InvalidateDeviceObjects()
   io.Fonts->SetTexID(0); // We copied bd->pFontTextureView to io.Fonts->TexID so let's clear that as well.
 }
 
-bool ImGui_ImplDX12_Init(ID3D12Device1* device, int num_frames_in_flight, DXGI_FORMAT rtv_format, rex::rhi::DescriptorHeap* cbv_srv_heap)
-{
-  ImGuiIO& io = ImGui::GetIO();
-  IM_ASSERT(io.BackendRendererUserData == nullptr && "Already initialized a renderer backend!");
-
-  // Setup backend capabilities flags
-  ImGui_ImplDX12_Data* bd = IM_NEW(ImGui_ImplDX12_Data)();
-  io.BackendRendererUserData = (void*)bd;
-  io.BackendRendererName = "imgui_impl_dx12";
-  io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
-  io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
-  if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    ImGui_ImplDX12_InitPlatformInterface();
-
-  bd->pd3dDevice = device;
-  bd->RTVFormat = rtv_format;
-
-  bd->numFramesInFlight = num_frames_in_flight;
-  bd->pd3dSrvDescHeap = cbv_srv_heap;
-
-  // Create a dummy ImGui_ImplDX12_ViewportData holder for the main viewport,
-  // Since this is created and managed by the application, we will only use the ->Resources[] fields.
-  ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-  main_viewport->RendererUserData = IM_NEW(ImGui_ImplDX12_ViewportData)(bd->numFramesInFlight);
-
-  return true;
-}
-
-void ImGui_ImplDX12_Shutdown()
-{
-  ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
-  IM_ASSERT(bd != nullptr && "No renderer backend to shutdown, or already shutdown?");
-  ImGuiIO& io = ImGui::GetIO();
-
-  // Manually delete main viewport render resources in-case we haven't initialized for viewports
-  ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-  if (ImGui_ImplDX12_ViewportData* vd = (ImGui_ImplDX12_ViewportData*)main_viewport->RendererUserData)
-  {
-    // We could just call ImGui_ImplDX12_DestroyWindow(main_viewport) as a convenience but that would be misleading since we only use data->Resources[]
-    for (UINT i = 0; i < bd->numFramesInFlight; i++)
-      ImGui_ImplDX12_DestroyRenderBuffers(&vd->FrameRenderBuffers[i]);
-    IM_DELETE(vd);
-    main_viewport->RendererUserData = nullptr;
-  }
-
-  // Clean up windows and device objects
-  ImGui_ImplDX12_ShutdownPlatformInterface();
-  ImGui_ImplDX12_InvalidateDeviceObjects();
-
-  io.BackendRendererName = nullptr;
-  io.BackendRendererUserData = nullptr;
-  io.BackendFlags &= ~(ImGuiBackendFlags_RendererHasVtxOffset | ImGuiBackendFlags_RendererHasViewports);
-  IM_DELETE(bd);
-}
-
-void ImGui_ImplDX12_NewFrame()
-{
-  ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
-  IM_ASSERT(bd != nullptr && "Did you call ImGui_ImplDX12_Init()?");
-
-  if (!bd->pipeline_state.is_valid())
-    ImGui_ImplDX12_CreateDeviceObjects();
-}
-
 //--------------------------------------------------------------------------------------------------------
 // MULTI-VIEWPORT / PLATFORM INTERFACE SUPPORT
 // This is an _advanced_ and _optional_ feature, allowing the backend to create and handle multiple viewports simultaneously.
@@ -804,5 +742,128 @@ void ImGui_ImplDX12_ShutdownPlatformInterface()
 }
 
 //-----------------------------------------------------------------------------
+
+namespace rex
+{
+  namespace renderer
+  {
+    ImGuiRenderer::ImGuiRenderer(ID3D12Device1* device, s32 numFramesInFlight, DXGI_FORMAT rtvFormat, HWND hwnd)
+    {
+      IMGUI_CHECKVERSION();
+      ImGui::CreateContext();
+      ImGuiIO& io = ImGui::GetIO();
+      io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
+      io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable gamepad controls
+      io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
+      io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewport / Platform windows
+
+      // Enable dark mode
+      ImGui::StyleColorsDark();
+
+      ImGuiStyle& style = ImGui::GetStyle();
+      if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+      {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+      }
+
+      io.BackendRendererName = "DirectX 12 ImGui Renderer";
+      io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
+
+      ImGui_ImplWin32_Init(hwnd);
+
+      IM_ASSERT(io.BackendRendererUserData == nullptr && "Already initialized a renderer backend!");
+
+      // Setup backend capabilities flags
+      ImGui_ImplDX12_Data* bd = IM_NEW(ImGui_ImplDX12_Data)();
+      io.BackendRendererUserData = (void*)bd;
+      io.BackendRendererName = "imgui_impl_dx12";
+      io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
+      io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
+      if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        ImGui_ImplDX12_InitPlatformInterface();
+
+      bd->pd3dDevice = device;
+      bd->RTVFormat = rtvFormat;
+
+      bd->numFramesInFlight = numFramesInFlight;
+      bd->pd3dSrvDescHeap = rhi::get_cbv_uav_srv_heap();
+
+      // Create a dummy ImGui_ImplDX12_ViewportData holder for the main viewport,
+      // Since this is created and managed by the application, we will only use the ->Resources[] fields.
+      ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+      main_viewport->RendererUserData = IM_NEW(ImGui_ImplDX12_ViewportData)(bd->numFramesInFlight);
+    }
+    ImGuiRenderer::~ImGuiRenderer()
+    {
+      ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
+      IM_ASSERT(bd != nullptr && "No renderer backend to shutdown, or already shutdown?");
+      ImGuiIO& io = ImGui::GetIO();
+
+      // Manually delete main viewport render resources in-case we haven't initialized for viewports
+      ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+      if (ImGui_ImplDX12_ViewportData* vd = (ImGui_ImplDX12_ViewportData*)main_viewport->RendererUserData)
+      {
+        // We could just call ImGui_ImplDX12_DestroyWindow(main_viewport) as a convenience but that would be misleading since we only use data->Resources[]
+        for (UINT i = 0; i < bd->numFramesInFlight; i++)
+          ImGui_ImplDX12_DestroyRenderBuffers(&vd->FrameRenderBuffers[i]);
+        IM_DELETE(vd);
+        main_viewport->RendererUserData = nullptr;
+      }
+
+      // Clean up windows and device objects
+      ImGui_ImplDX12_ShutdownPlatformInterface();
+      ImGui_ImplDX12_InvalidateDeviceObjects();
+
+      io.BackendRendererName = nullptr;
+      io.BackendRendererUserData = nullptr;
+      io.BackendFlags &= ~(ImGuiBackendFlags_RendererHasVtxOffset | ImGuiBackendFlags_RendererHasViewports);
+      IM_DELETE(bd);
+    }
+
+    void ImGuiRenderer::new_frame()
+    {
+      ImGui_ImplWin32_NewFrame();
+
+      ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
+      IM_ASSERT(bd != nullptr && "Did you call ImGui_ImplDX12_Init()?");
+
+      if (!bd->pipeline_state.is_valid())
+        ImGui_ImplDX12_CreateDeviceObjects();
+
+      ImGui::NewFrame();
+    }
+
+    void ImGuiRenderer::render()
+    {
+      ImGui::Render();
+
+      ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), rhi::cmd_list());
+
+      if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+      {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault(nullptr, (void*)rhi::cmd_list());
+      }
+    }
+
+    Error ImGuiRenderer::init_input_layout()
+    {
+      return Error::no_error();
+    }
+    Error ImGuiRenderer::init_shader()
+    {
+      return Error::no_error();
+    }
+    Error ImGuiRenderer::init_font_texture()
+    {
+      return Error::no_error();
+    }
+    Error ImGuiRenderer::init_buffers()
+    {
+      return Error::no_error();
+    }
+  }
+}
 
 #endif // #ifndef IMGUI_DISABLE
