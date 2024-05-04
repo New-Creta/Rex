@@ -1,49 +1,3 @@
-// dear imgui: Renderer Backend for DirectX12
-// This needs to be used along with a Platform Backend (e.g. Win32)
-
-// Implemented features:
-//  [X] Renderer: User texture binding. Use 'D3D12_GPU_DESCRIPTOR_HANDLE' as ImTextureID. Read the FAQ about ImTextureID!
-//  [X] Renderer: Large meshes support (64k+ vertices) with 16-bit indices.
-//  [X] Renderer: Multi-viewport support (multiple windows). Enable with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
-//      FIXME: The transition from removing a viewport and moving the window in an existing hosted viewport tends to flicker.
-
-// Important: to compile on 32-bit systems, this backend requires code to be compiled with '#define ImTextureID ImU64'.
-// This is because we need ImTextureID to carry a 64-bit value and by default ImTextureID is defined as void*.
-// To build this on 32-bit systems:
-// - [Solution 1] IDE/msbuild: in "Properties/C++/Preprocessor Definitions" add 'ImTextureID=ImU64' (this is what we do in the 'example_win32_direct12/example_win32_direct12.vcxproj' project file)
-// - [Solution 2] IDE/msbuild: in "Properties/C++/Preprocessor Definitions" add 'IMGUI_USER_CONFIG="my_imgui_config.h"' and inside 'my_imgui_config.h' add '#define ImTextureID ImU64' and as many other options as you like.
-// - [Solution 3] IDE/msbuild: edit imconfig.h and add '#define ImTextureID ImU64' (prefer solution 2 to create your own config file!)
-// - [Solution 4] command-line: add '/D ImTextureID=ImU64' to your cl.exe command-line (this is what we do in the example_win32_direct12/build_win32.bat file)
-
-// You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this.
-// Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.
-// Learn about Dear ImGui:
-// - FAQ                  https://dearimgui.com/faq
-// - Getting Started      https://dearimgui.com/getting-started
-// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
-// - Introduction, links and more at the top of imgui.cpp
-
-// CHANGELOG
-// (minor and older changes stripped away, please see git history for details)
-//  2024-XX-XX: Platform: Added support for multiple windows via the ImGuiPlatformIO interface.
-//  2022-10-11: Using 'nullptr' instead of 'NULL' as per our switch to C++11.
-//  2021-06-29: Reorganized backend to pull data from a single structure to facilitate usage with multiple-contexts (all g_XXXX access changed to bd->XXXX).
-//  2021-05-19: DirectX12: Replaced direct access to ImDrawCmd::TextureId with a call to ImDrawCmd::GetTexID(). (will become a requirement)
-//  2021-02-18: DirectX12: Change blending equation to preserve alpha in output buffer.
-//  2021-01-11: DirectX12: Improve Windows 7 compatibility (for D3D12On7) by loading d3d12.dll dynamically.
-//  2020-09-16: DirectX12: Avoid rendering calls with zero-sized scissor rectangle since it generates a validation layer warning.
-//  2020-09-08: DirectX12: Clarified support for building on 32-bit systems by redefining ImTextureID.
-//  2019-10-18: DirectX12: *BREAKING CHANGE* Added extra ID3D12DescriptorHeap parameter to ImGui_ImplDX12_Init() function.
-//  2019-05-29: DirectX12: Added support for large mesh (64K+ vertices), enable ImGuiBackendFlags_RendererHasVtxOffset flag.
-//  2019-04-30: DirectX12: Added support for special ImDrawCallback_ResetRenderState callback to reset render state.
-//  2019-03-29: Misc: Various minor tidying up.
-//  2018-12-03: Misc: Added #pragma comment statement to automatically link with d3dcompiler.lib when using D3DCompile().
-//  2018-11-30: Misc: Setting up io.BackendRendererName so it can be displayed in the About Window.
-//  2018-06-12: DirectX12: Moved the ID3D12GraphicsCommandList* parameter from NewFrame() to RenderDrawData().
-//  2018-06-08: Misc: Extracted imgui_impl_dx12.cpp/.h away from the old combined DX12+Win32 example.
-//  2018-06-08: DirectX12: Use draw_data->DisplayPos and draw_data->DisplaySize to setup projection matrix and clipping rectangle (to ease support for future multi-viewport).
-//  2018-02-22: Merged into master with all Win32 code synchronized to other examples.
-
 #include "imgui/imgui.h"
 #ifndef IMGUI_DISABLE
 #include "rex_directx/rendering/dx_imgui_renderer2.h"
@@ -57,6 +11,7 @@
 #endif
 
 #include "rex_directx/system/dx_commandlist.h"
+#include "rex_directx/system/dx_commandlist2.h"
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_constant_buffer.h"
 #include "rex_directx/system/dx_debug_interface.h"
@@ -80,35 +35,25 @@
 #include "rex_directx/diagnostics/log.h"
 
 // DirectX data
+
+// These resources are shared between all viewports
+// They're initialized at startup and destroyed on shutdown
+// They're one of the "set once, use forever" resources
 struct ImGui_ImplDX12_Data
 {
-  ID3D12Device1* pd3dDevice;
-  DXGI_FORMAT                 RTVFormat;
-  rex::rhi::DescriptorHeap* pd3dSrvDescHeap;
-  rex::rhi::DescriptorHandle texture_handle;
-  UINT                        numFramesInFlight;
+  ID3D12Device1* pd3dDevice;                             // Needed to initialize child windows with their own directx objects
+  DXGI_FORMAT                 RTVFormat;                 // Comes in from the main rendered, to match child windows rtv format with that of the main window
+  rex::rhi::DescriptorHeap* pd3dSrvDescHeap;             // Probably not needed, rex uses single descriptor heaps throughout the process.
+  rex::rhi::DescriptorHandle texture_handle;             // the handle to the shader resource view of the font texture
+  UINT                        numFramesInFlight;         // used to store the number of frames we can handle at once.
 
-  rex::rhi::ResourceSlot shader_program;
-  rex::rhi::ResourceSlot pipeline_state;
-  rex::rhi::ResourceSlot constant_buffer;
-  rex::rhi::ResourceSlot input_layout;
-  rex::rhi::ResourceSlot vertex_shader;
-  rex::rhi::ResourceSlot pixel_shader;
-  rex::rhi::ResourceSlot texture;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  rex::rhi::ResourceSlot shader_program;                 // resource slot for the compiled imgui shader as well as its root signature
+  rex::rhi::ResourceSlot pipeline_state;                 // resource slot for the pipeline state of imgui
+  rex::rhi::ResourceSlot constant_buffer;                // resource slot for the constant buffer holding the mvp matrix. This single object is shared between all viewports
+  rex::rhi::ResourceSlot input_layout;                   // resource slot for the input layout of imgui
+  rex::rhi::ResourceSlot vertex_shader;                  // resource slot for the vertex shader of imgui
+  rex::rhi::ResourceSlot pixel_shader;                   // resource slot for the pixel shader of imgui
+  rex::rhi::ResourceSlot texture;                        // resources lot for the fonts texture, used by imgui
 
   ImGui_ImplDX12_Data() { memset((void*)this, 0, sizeof(*this)); }
 };
@@ -123,30 +68,35 @@ static ImGui_ImplDX12_Data* ImGui_ImplDX12_GetBackendData()
 // Buffers used during the rendering of a frame
 struct ImGui_ImplDX12_RenderBuffers
 {
-  int                 IndexBufferSize;
-  int                 VertexBufferSize;
+  int                 IndexBufferSize;    // the number of indices the index buffer supports
+  int                 VertexBufferSize;   // the number of vertices the vertex buffer supports
 
-  rex::rhi::ResourceSlot vertex_buffer;
-  rex::rhi::ResourceSlot index_buffer; 
+  rex::rhi::ResourceSlot vertex_buffer;   // resource slot of the vertex buffer
+  rex::rhi::ResourceSlot index_buffer;    // resource slot of the index buffer
 };
 
 // Buffers used for secondary viewports created by the multi-viewports systems
+// We support multiple frames in flight, so we need to have a few resources that we need per frame
+// which cannot be shared between frames
 struct ImGui_ImplDX12_FrameContext
 {
-  ID3D12CommandAllocator* CommandAllocator;
-  ID3D12Resource* RenderTarget;
+  ID3D12Resource* RenderTarget;               
   D3D12_CPU_DESCRIPTOR_HANDLE     RenderTargetCpuDescriptors;
 
-  rsl::unique_ptr<rex::rhi::CommandList> command_list;
+  rsl::unique_ptr<rex::rhi::CommandAllocator> command_allocator;
+
 };
 
 // Helper structure we store in the void* RendererUserData field of each ImGuiViewport to easily retrieve our backend data.
 // Main viewport created by application will only use the Resources field.
 // Secondary viewports created by this backend will use all the fields (including Window fields),
+
+// Each viewport holds some of its own resources which aren't shared by other viewports
+// the below is to manage each on of these
 struct ImGui_ImplDX12_ViewportData
 {
   // Window
-  ID3D12GraphicsCommandList* CommandList;
+  rsl::unique_ptr<rex::rhi::CommandList2> command_list;
   UINT64                          FenceSignaledValue;
   UINT                            NumFramesInFlight;
   ImGui_ImplDX12_FrameContext* FrameCtx;
@@ -155,31 +105,12 @@ struct ImGui_ImplDX12_ViewportData
   UINT                            FrameIndex;
   ImGui_ImplDX12_RenderBuffers* FrameRenderBuffers;
 
-
-
   rsl::unique_ptr<rex::rhi::CommandQueue> rex_command_queue;
-  rsl::unique_ptr<rex::rhi::CommandList> rex_command_list;
   rsl::unique_ptr<rex::rhi::DescriptorHeap> rex_descriptor_heap;
   rsl::unique_ptr<rex::rhi::Swapchain> rex_swapchain;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   ImGui_ImplDX12_ViewportData(UINT num_frames_in_flight)
   {
-    CommandList = nullptr;
     FenceSignaledValue = 0;
     NumFramesInFlight = num_frames_in_flight;
     FrameCtx = new ImGui_ImplDX12_FrameContext[NumFramesInFlight];
@@ -188,7 +119,6 @@ struct ImGui_ImplDX12_ViewportData
 
     for (UINT i = 0; i < NumFramesInFlight; ++i)
     {
-      FrameCtx[i].CommandAllocator = nullptr;
       FrameCtx[i].RenderTarget = nullptr;
 
       // Create buffers with a default size (they will later be grown as needed)
@@ -198,11 +128,11 @@ struct ImGui_ImplDX12_ViewportData
   }
   ~ImGui_ImplDX12_ViewportData()
   {
-    IM_ASSERT(CommandList == nullptr);
+    //IM_ASSERT(CommandList == nullptr);
 
     for (UINT i = 0; i < NumFramesInFlight; ++i)
     {
-      IM_ASSERT(FrameCtx[i].CommandAllocator == nullptr && FrameCtx[i].RenderTarget == nullptr);
+      IM_ASSERT(/*FrameCtx[i].CommandAllocator == nullptr && */FrameCtx[i].RenderTarget == nullptr);
     }
 
     delete[] FrameCtx; FrameCtx = nullptr;
@@ -214,6 +144,9 @@ struct VERTEX_CONSTANT_BUFFER_DX12
 {
   float   mvp[4][4];
 };
+
+// First render the main window widgets
+// Next render all the child windows
 
 // Forward Declarations
 static void ImGui_ImplDX12_InitPlatformInterface();
@@ -280,6 +213,9 @@ void ImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandL
 {
   // Avoid rendering when minimized
   if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
+    return;
+
+  if (draw_data->CmdListsCount == 0)
     return;
 
   ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
@@ -669,14 +605,17 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
   // Create command allocator.
   for (UINT i = 0; i < bd->numFramesInFlight; ++i)
   {
-    res = bd->pd3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&vd->FrameCtx[i].CommandAllocator));
+    rex::wrl::ComPtr<ID3D12CommandAllocator> cmd_alloc;
+    res = bd->pd3dDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(cmd_alloc.GetAddressOf()));
+    vd->FrameCtx[i].command_allocator = rsl::make_unique<rex::rhi::CommandAllocator>(cmd_alloc);
     IM_ASSERT(res == S_OK);
   }
 
   // Create command list.
-  res = bd->pd3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, vd->FrameCtx[0].CommandAllocator, nullptr, IID_PPV_ARGS(&vd->CommandList));
+  rex::wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
+  res = bd->pd3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, vd->FrameCtx[0].command_allocator->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()));
+  vd->command_list = rsl::make_unique<rex::rhi::CommandList2>(cmd_list);
   IM_ASSERT(res == S_OK);
-  vd->CommandList->Close();
 
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv REX CODE vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -764,12 +703,9 @@ static void ImGui_ImplDX12_DestroyWindow(ImGuiViewport* viewport)
   {
     ImGui_WaitForPendingOperations(vd);
 
-    SafeRelease(vd->CommandList);
-
     for (UINT i = 0; i < bd->numFramesInFlight; i++)
     {
       SafeRelease(vd->FrameCtx[i].RenderTarget);
-      SafeRelease(vd->FrameCtx[i].CommandAllocator);
       ImGui_ImplDX12_DestroyRenderBuffers(&vd->FrameRenderBuffers[i]);
     }
     IM_DELETE(vd);
@@ -818,10 +754,10 @@ static void ImGui_ImplDX12_RenderWindow(ImGuiViewport* viewport, void*)
   barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
   // Draw
-  ID3D12GraphicsCommandList* cmd_list = vd->CommandList;
 
-  frame_context->CommandAllocator->Reset();
-  cmd_list->Reset(frame_context->CommandAllocator, nullptr);
+  vd->command_list->start_recording_commands(frame_context->command_allocator.get());
+
+  ID3D12GraphicsCommandList* cmd_list = vd->command_list->get();
   cmd_list->ResourceBarrier(1, &barrier);
   cmd_list->OMSetRenderTargets(1, &vd->FrameCtx[back_buffer_idx].RenderTargetCpuDescriptors, FALSE, nullptr);
   if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
@@ -834,7 +770,7 @@ static void ImGui_ImplDX12_RenderWindow(ImGuiViewport* viewport, void*)
   barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
   barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
   cmd_list->ResourceBarrier(1, &barrier);
-  cmd_list->Close();
+  vd->command_list->stop_recording_commands();
 
   vd->rex_command_queue->wait(vd->FenceSignaledValue);
   vd->rex_command_queue->execute(cmd_list);
