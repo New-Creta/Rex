@@ -85,9 +85,10 @@ struct ImGui_ImplDX12_Data
   //ID3D12PipelineState* pPipelineState;
   DXGI_FORMAT                 RTVFormat;
   ID3D12Resource* pFontTextureResource;
-  D3D12_CPU_DESCRIPTOR_HANDLE hFontSrvCpuDescHandle;
-  D3D12_GPU_DESCRIPTOR_HANDLE hFontSrvGpuDescHandle;
+  //D3D12_CPU_DESCRIPTOR_HANDLE hFontSrvCpuDescHandle;
+  //D3D12_GPU_DESCRIPTOR_HANDLE hFontSrvGpuDescHandle;
   rex::rhi::DescriptorHeap* pd3dSrvDescHeap;
+  rex::rhi::DescriptorHandle texture_handle;
   UINT                        numFramesInFlight;
 
 
@@ -601,7 +602,8 @@ static void ImGui_ImplDX12_CreateFontsTexture()
     srvDesc.Texture2D.MipLevels = desc.MipLevels;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    bd->pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, bd->hFontSrvCpuDescHandle);
+    bd->texture_handle = bd->pd3dSrvDescHeap->create_texture2d_srv(pTexture);
+    //bd->pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, bd->hFontSrvCpuDescHandle);
     SafeRelease(bd->pFontTextureResource);
     bd->pFontTextureResource = pTexture;
   }
@@ -614,8 +616,8 @@ static void ImGui_ImplDX12_CreateFontsTexture()
   // [Solution 2] IDE/msbuild: in "Properties/C++/Preprocessor Definitions" add 'IMGUI_USER_CONFIG="my_imgui_config.h"' and inside 'my_imgui_config.h' add '#define ImTextureID ImU64' and as many other options as you like.
   // [Solution 3] IDE/msbuild: edit imconfig.h and add '#define ImTextureID ImU64' (prefer solution 2 to create your own config file!)
   // [Solution 4] command-line: add '/D ImTextureID=ImU64' to your cl.exe command-line (this is what we do in the example_win32_direct12/build_win32.bat file)
-  static_assert(sizeof(ImTextureID) >= sizeof(bd->hFontSrvGpuDescHandle.ptr), "Can't pack descriptor handle into TexID, 32-bit not supported yet.");
-  io.Fonts->SetTexID((ImTextureID)bd->hFontSrvGpuDescHandle.ptr);
+  static_assert(sizeof(ImTextureID) >= sizeof(bd->texture_handle.get_gpu().ptr), "Can't pack descriptor handle into TexID, 32-bit not supported yet.");
+  io.Fonts->SetTexID((ImTextureID)bd->texture_handle.get_gpu().ptr);
 }
 
 bool    ImGui_ImplDX12_CreateDeviceObjects()
@@ -1097,9 +1099,6 @@ bool ImGui_ImplDX12_Init(ID3D12Device1* device, int num_frames_in_flight, DXGI_F
   bd->pd3dDevice = device;
   bd->RTVFormat = rtv_format;
 
-  rex::rhi::DescriptorHandle handle = cbv_srv_heap->new_free_handle();
-  bd->hFontSrvCpuDescHandle = handle.get();
-  bd->hFontSrvGpuDescHandle = handle.get_gpu();
   bd->numFramesInFlight = num_frames_in_flight;
   bd->pd3dSrvDescHeap = cbv_srv_heap;
 
