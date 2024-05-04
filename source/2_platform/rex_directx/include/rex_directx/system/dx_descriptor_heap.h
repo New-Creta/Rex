@@ -54,6 +54,8 @@ namespace rex
       ID3D12DescriptorHeap* get();
       DescriptorHandle new_free_handle();
 
+      void reset();
+
     private:
       DescriptorHandle my_start_handle();
 

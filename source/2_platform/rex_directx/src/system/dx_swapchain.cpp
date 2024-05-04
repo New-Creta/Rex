@@ -51,6 +51,9 @@ namespace rex
 
     void Swapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
     {
+      m_swapchain_buffers.clear();
+      m_rtv_desc_heap->reset();
+
       if(DX_FAILED(m_swapchain->ResizeBuffers(m_buffer_count, width, height, m_format, flags)))
       {
         REX_ERROR(LogSwapchain, "Failed to resize swapchain buffers");

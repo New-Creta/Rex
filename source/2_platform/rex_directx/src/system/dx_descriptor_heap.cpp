@@ -175,6 +175,11 @@ namespace rex
       return handle;
     }
 
+    void DescriptorHeap::reset()
+    {
+      m_used_descriptors = 0;
+    }
+
     ID3D12DescriptorHeap* DescriptorHeap::get()
     {
       return m_descriptor_heap.Get();

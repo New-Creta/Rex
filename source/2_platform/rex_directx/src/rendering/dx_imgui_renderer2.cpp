@@ -82,8 +82,8 @@ struct ImGui_ImplDX12_RenderBuffers
 // which cannot be shared between frames
 struct ImGui_ImplDX12_FrameContext
 {
-  ID3D12Resource* RenderTarget;               
-  D3D12_CPU_DESCRIPTOR_HANDLE     RenderTargetCpuDescriptors;
+  //rex::wrl::ComPtr<ID3D12Resource> RenderTarget;               
+  //D3D12_CPU_DESCRIPTOR_HANDLE     RenderTargetCpuDescriptors;
 
   rsl::unique_ptr<rex::rhi::CommandAllocator> command_allocator;
 
@@ -121,7 +121,7 @@ struct ImGui_ImplDX12_ViewportData
 
     for (UINT i = 0; i < NumFramesInFlight; ++i)
     {
-      FrameCtx[i].RenderTarget = nullptr;
+      //FrameCtx[i].RenderTarget = nullptr;
 
       // Create buffers with a default size (they will later be grown as needed)
       FrameRenderBuffers[i].VertexBufferSize = 5000;
@@ -134,7 +134,7 @@ struct ImGui_ImplDX12_ViewportData
 
     for (UINT i = 0; i < NumFramesInFlight; ++i)
     {
-      IM_ASSERT(/*FrameCtx[i].CommandAllocator == nullptr && */FrameCtx[i].RenderTarget == nullptr);
+      //IM_ASSERT(/*FrameCtx[i].CommandAllocator == nullptr && */FrameCtx[i].RenderTarget == nullptr);
     }
 
     delete[] FrameCtx; FrameCtx = nullptr;
@@ -200,6 +200,13 @@ static void ImGui_ImplDX12_SetupRenderState(ImDrawData* draw_data, ID3D12Graphic
   // Setup blend factor
   const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
   ctx->OMSetBlendFactor(blend_factor);
+}
+
+template <typename T>
+s32 RefCount(T* res)
+{
+  res->AddRef();
+  return res->Release();
 }
 
 template<typename T>
@@ -581,6 +588,9 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
   res = dxgi_factory->CreateSwapChainForHwnd(vd->rex_command_queue->get(), hwnd, &sd1, nullptr, nullptr, &swap_chain);
   IM_ASSERT(res == S_OK);
 
+  rex::wrl::ComPtr<ID3D12Resource> back_buffer2;
+  swap_chain->GetBuffer(0, IID_PPV_ARGS(back_buffer2.GetAddressOf()));
+
   dxgi_factory->Release();
 
   // Or swapChain.As(&mSwapChain)
@@ -600,22 +610,27 @@ static void ImGui_ImplDX12_CreateWindow(ImGuiViewport* viewport)
     vd->rex_descriptor_heap = rsl::make_unique<rex::rhi::DescriptorHeap>(desc_heap, bd->pd3dDevice);
 
     SIZE_T rtv_descriptor_size = bd->pd3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv_handle = vd->rex_descriptor_heap->get()->GetCPUDescriptorHandleForHeapStart();
-    for (UINT i = 0; i < bd->numFramesInFlight; i++)
-    {
-      vd->FrameCtx[i].RenderTargetCpuDescriptors = rtv_handle;
-      rtv_handle.ptr += rtv_descriptor_size;
-    }
+    //D3D12_CPU_DESCRIPTOR_HANDLE rtv_handle = vd->rex_descriptor_heap->get()->GetCPUDescriptorHandleForHeapStart();
+    //for (UINT i = 0; i < bd->numFramesInFlight; i++)
+    //{
+    //  vd->FrameCtx[i].RenderTargetCpuDescriptors = rtv_handle;
+    //  rtv_handle.ptr += rtv_descriptor_size;
+    //}
+
+    s32 ref_count2 = RefCount(back_buffer2.Get());
 
     vd->rex_swapchain = rsl::make_unique<rex::rhi::Swapchain>(d3d_swapchain_3, sd1.Format, sd1.BufferCount, vd->rex_descriptor_heap.get(), nullptr, nullptr);
-    ID3D12Resource* back_buffer;
+    //rex::wrl::ComPtr<ID3D12Resource> back_buffer;
     for (UINT i = 0; i < bd->numFramesInFlight; i++)
     {
-      IM_ASSERT(vd->FrameCtx[i].RenderTarget == nullptr);
-      vd->rex_swapchain->get()->GetBuffer(i, IID_PPV_ARGS(&back_buffer));
-      bd->pd3dDevice->CreateRenderTargetView(back_buffer, nullptr, vd->FrameCtx[i].RenderTargetCpuDescriptors);
-      vd->FrameCtx[i].RenderTarget = back_buffer;
+    //  IM_ASSERT(vd->FrameCtx[i].RenderTarget == nullptr);
+    //  vd->rex_swapchain->get()->GetBuffer(i, IID_PPV_ARGS(back_buffer.GetAddressOf()));
+    //  bd->pd3dDevice->CreateRenderTargetView(back_buffer.Get(), nullptr, vd->FrameCtx[i].RenderTargetCpuDescriptors);
+      //vd->FrameCtx[i].RenderTarget = vd->rex_swapchain->get_buffer(i);
     }
+
+    ref_count2 = RefCount(back_buffer2.Get());
+
   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ REX CODE ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
@@ -643,7 +658,7 @@ static void ImGui_ImplDX12_DestroyWindow(ImGuiViewport* viewport)
 
     for (UINT i = 0; i < bd->numFramesInFlight; i++)
     {
-      SafeRelease(vd->FrameCtx[i].RenderTarget);
+      //vd->FrameCtx[i].RenderTarget.Reset();
       ImGui_ImplDX12_DestroyRenderBuffers(&vd->FrameRenderBuffers[i]);
     }
     IM_DELETE(vd);
@@ -657,20 +672,23 @@ static void ImGui_ImplDX12_SetWindowSize(ImGuiViewport* viewport, ImVec2 size)
   ImGui_ImplDX12_ViewportData* vd = (ImGui_ImplDX12_ViewportData*)viewport->RendererUserData;
 
   ImGui_WaitForPendingOperations(vd);
-
-  for (UINT i = 0; i < bd->numFramesInFlight; i++)
-    SafeRelease(vd->FrameCtx[i].RenderTarget);
+  //s32 ref_count = 0;
+  //for (UINT i = 0; i < bd->numFramesInFlight; i++)
+  //{
+  //  vd->FrameCtx[i].RenderTarget.Reset();
+  //}
 
   if (vd->rex_swapchain)
   {
-    ID3D12Resource* back_buffer = nullptr;
-    vd->rex_swapchain->get()->ResizeBuffers(0, (UINT)size.x, (UINT)size.y, DXGI_FORMAT_UNKNOWN, 0);
-    for (UINT i = 0; i < bd->numFramesInFlight; i++)
-    {
-      vd->rex_swapchain->get()->GetBuffer(i, IID_PPV_ARGS(&back_buffer));
-      bd->pd3dDevice->CreateRenderTargetView(back_buffer, nullptr, vd->FrameCtx[i].RenderTargetCpuDescriptors);
-      vd->FrameCtx[i].RenderTarget = back_buffer;
-    }
+    vd->rex_swapchain->resize_buffers(size.x, size.y, (DXGI_SWAP_CHAIN_FLAG)0);
+    //rex::wrl::ComPtr<ID3D12Resource> back_buffer = nullptr;
+    //vd->rex_swapchain->get()->ResizeBuffers(0, (UINT)size.x, (UINT)size.y, DXGI_FORMAT_UNKNOWN, 0);
+    //for (UINT i = 0; i < bd->numFramesInFlight; i++)
+    //{
+    //  vd->rex_swapchain->get()->GetBuffer(i, IID_PPV_ARGS(back_buffer.GetAddressOf()));
+    //  bd->pd3dDevice->CreateRenderTargetView(back_buffer.Get(), nullptr, vd->FrameCtx[i].RenderTargetCpuDescriptors);
+    //  vd->FrameCtx[i].RenderTarget = back_buffer;
+    //}
   }
 }
 
@@ -686,7 +704,7 @@ static void ImGui_ImplDX12_RenderWindow(ImGuiViewport* viewport, void*)
   D3D12_RESOURCE_BARRIER barrier = {};
   barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
   barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-  barrier.Transition.pResource = vd->FrameCtx[back_buffer_idx].RenderTarget;
+  barrier.Transition.pResource = vd->rex_swapchain->get_buffer(back_buffer_idx).Get();/* vd->FrameCtx[back_buffer_idx].RenderTarget.Get();*/
   barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
   barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
   barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -697,9 +715,9 @@ static void ImGui_ImplDX12_RenderWindow(ImGuiViewport* viewport, void*)
 
   ID3D12GraphicsCommandList* cmd_list = vd->command_list->get();
   cmd_list->ResourceBarrier(1, &barrier);
-  cmd_list->OMSetRenderTargets(1, &vd->FrameCtx[back_buffer_idx].RenderTargetCpuDescriptors, FALSE, nullptr);
+  cmd_list->OMSetRenderTargets(1, &vd->rex_swapchain->backbuffer_view().get() /*vd->FrameCtx[back_buffer_idx].RenderTargetCpuDescriptors*/, FALSE, nullptr);
   if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
-    cmd_list->ClearRenderTargetView(vd->FrameCtx[back_buffer_idx].RenderTargetCpuDescriptors, (float*)&clear_color, 0, nullptr);
+    cmd_list->ClearRenderTargetView(vd->rex_swapchain->backbuffer_view().get()/*vd->FrameCtx[back_buffer_idx].RenderTargetCpuDescriptors*/, (float*)&clear_color, 0, nullptr);
   ID3D12DescriptorHeap* desc_heap = bd->pd3dSrvDescHeap->get();
   cmd_list->SetDescriptorHeaps(1, &desc_heap);
 
