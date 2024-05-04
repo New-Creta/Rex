@@ -63,6 +63,11 @@ namespace rex
 
     class ShaderProgramResource* get_shader(const ResourceSlot& slot);
     class PipelineState* get_pso(const ResourceSlot& slot);
+    //class VertexBuffer* get_vertex_buffer(const ResourceSlot* slot);
+    //class IndexBuffer* get_index_buffer(const ResourceSlot* slot);
+
+
+
     namespace d3d
     {
       wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers);

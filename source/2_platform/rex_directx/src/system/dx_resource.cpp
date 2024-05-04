@@ -63,9 +63,9 @@ namespace rex
       m_resource_state = to;
     }
 
-    void Resource::write_buffer(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 start, s64 size)
+    void Resource::write_buffer(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 start, s64 size, s32 offset)
     {
-      cmdList->CopyBufferRegion(m_resource.Get(), 0, uploadBuffer->get(), start, size);
+      cmdList->CopyBufferRegion(m_resource.Get(), offset, uploadBuffer->get(), start, size);
     }
 
     void Resource::write_texture(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 width, s64 height, s64 rowPitch)

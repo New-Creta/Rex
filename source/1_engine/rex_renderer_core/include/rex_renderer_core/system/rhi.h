@@ -128,9 +128,9 @@ namespace rex
     void bind_backbuffer_rendertarget();
 
     // Bind the vertex buffer specified at the resource slot to the pipeline
-    void set_vertex_buffer(const rhi::ResourceSlot& vb);
+    void set_vertex_buffer(const rhi::ResourceSlot& vb, struct ID3D12GraphicsCommandList* cmdList = nullptr);
     // Bind the index buffer specified at the resource slot to the pipeline
-    void set_index_buffer(const rhi::ResourceSlot& ib);
+    void set_index_buffer(const rhi::ResourceSlot& ib, struct ID3D12GraphicsCommandList* cmdList = nullptr);
     // Bind the constant buffer to the pipeline at the specified index
     void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb, struct ID3D12GraphicsCommandList* cmdList = nullptr);
     // Specify the primitive topology of the pipeline
@@ -149,7 +149,7 @@ namespace rex
 
     // Update a buffer with new data.
     // Data is always written at the start of the destination resource
-    void update_buffer(const ResourceSlot& slot, const void* data, s64 size, struct ID3D12GraphicsCommandList* cmdList = nullptr);
+    void update_buffer(const ResourceSlot& slot, const void* data, s64 size, struct ID3D12GraphicsCommandList* cmdList = nullptr, s32 offset = 0);
 
   } // namespace rhi
 } // namespace rex

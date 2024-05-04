@@ -608,25 +608,33 @@ namespace rex
       return internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(texture->get());
     }
 
-    void set_vertex_buffer(const rhi::ResourceSlot& vb)
+    void set_vertex_buffer(const rhi::ResourceSlot& vb, struct ID3D12GraphicsCommandList* cmdList)
     {
+      if (!cmdList)
+      {
+        cmdList = internal::get()->command_list->get();
+      }
       D3D12_VERTEX_BUFFER_VIEW view{};
       VertexBuffer* vertex_buffer = internal::get()->resource_pool.as<VertexBuffer>(vb);
       view.BufferLocation = vertex_buffer->get()->GetGPUVirtualAddress();
       view.SizeInBytes = narrow_cast<s32>(vertex_buffer->size());
       view.StrideInBytes = vertex_buffer->stride();
       
-      internal::get()->command_list->get()->IASetVertexBuffers(0, 1, &view);
+      cmdList->IASetVertexBuffers(0, 1, &view);
     }
-    void set_index_buffer(const rhi::ResourceSlot& ib)
+    void set_index_buffer(const rhi::ResourceSlot& ib, struct ID3D12GraphicsCommandList* cmdList)
     {
+      if (!cmdList)
+      {
+        cmdList = internal::get()->command_list->get();
+      }
       D3D12_INDEX_BUFFER_VIEW view{};
       IndexBuffer* index_buffer = internal::get()->resource_pool.as<IndexBuffer>(ib);
       view.BufferLocation = index_buffer->get()->GetGPUVirtualAddress();
       view.Format = index_buffer->format();
       view.SizeInBytes = narrow_cast<s32>(index_buffer->size());
 
-      internal::get()->command_list->get()->IASetIndexBuffer(&view);
+      cmdList->IASetIndexBuffer(&view);
     }
     void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb, struct ID3D12GraphicsCommandList* cmdList)
     {
@@ -675,14 +683,14 @@ namespace rex
       internal::get()->upload_buffer->reset();
     }
 
-    void update_buffer(const ResourceSlot& slot, const void* data, s64 size, ID3D12GraphicsCommandList* cmdList)
+    void update_buffer(const ResourceSlot& slot, const void* data, s64 size, ID3D12GraphicsCommandList* cmdList, s32 offset)
     {
       Resource* resource = internal::get()->resource_pool.as<Resource>(slot);
       if (!cmdList)
       {
         cmdList = internal::get()->command_list->get();
       }
-      internal::get()->upload_buffer->write(cmdList, resource, data, size);
+      internal::get()->upload_buffer->write(cmdList, resource, data, size, 1, offset);
     }
 
     ScopedCommandList create_scoped_commandlist()

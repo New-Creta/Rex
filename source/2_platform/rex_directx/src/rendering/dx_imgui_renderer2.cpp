@@ -127,10 +127,17 @@ static ImGui_ImplDX12_Data* ImGui_ImplDX12_GetBackendData()
 // Buffers used during the rendering of a frame
 struct ImGui_ImplDX12_RenderBuffers
 {
-  ID3D12Resource* IndexBuffer;
-  ID3D12Resource* VertexBuffer;
+  //ID3D12Resource* IndexBuffer;
+  //ID3D12Resource* VertexBuffer;
   int                 IndexBufferSize;
   int                 VertexBufferSize;
+
+  // make sure we copy the right data into these buffers
+  // before we had weird issues where it looks like the vertices are offseted wrongly
+  // appearing to be a project issue.
+  // it's possible this is because we're copying invalid vertices into the buffer
+  rex::rhi::ResourceSlot vertex_buffer;
+  rex::rhi::ResourceSlot index_buffer; 
 };
 
 // Buffers used for secondary viewports created by the multi-viewports systems
@@ -203,9 +210,9 @@ struct ImGui_ImplDX12_ViewportData
       FrameCtx[i].RenderTarget = nullptr;
 
       // Create buffers with a default size (they will later be grown as needed)
-      FrameRenderBuffers[i].IndexBuffer = nullptr;
+      /*FrameRenderBuffers[i].IndexBuffer = nullptr;
       FrameRenderBuffers[i].VertexBuffer = nullptr;
-      FrameRenderBuffers[i].VertexBufferSize = 5000;
+      */FrameRenderBuffers[i].VertexBufferSize = 5000;
       FrameRenderBuffers[i].IndexBufferSize = 10000;
     }
   }
@@ -220,7 +227,7 @@ struct ImGui_ImplDX12_ViewportData
     for (UINT i = 0; i < NumFramesInFlight; ++i)
     {
       IM_ASSERT(FrameCtx[i].CommandAllocator == nullptr && FrameCtx[i].RenderTarget == nullptr);
-      IM_ASSERT(FrameRenderBuffers[i].IndexBuffer == nullptr && FrameRenderBuffers[i].VertexBuffer == nullptr);
+      //IM_ASSERT(FrameRenderBuffers[i].IndexBuffer == nullptr && FrameRenderBuffers[i].VertexBuffer == nullptr);
     }
 
     delete[] FrameCtx; FrameCtx = nullptr;
@@ -271,24 +278,32 @@ static void ImGui_ImplDX12_SetupRenderState(ImDrawData* draw_data, ID3D12Graphic
   ctx->RSSetViewports(1, &vp);
 
   // Bind shader and vertex buffers
-  unsigned int stride = sizeof(ImDrawVert);
-  unsigned int offset = 0;
-  D3D12_VERTEX_BUFFER_VIEW vbv;
-  memset(&vbv, 0, sizeof(D3D12_VERTEX_BUFFER_VIEW));
-  vbv.BufferLocation = fr->VertexBuffer->GetGPUVirtualAddress() + offset;
-  vbv.SizeInBytes = fr->VertexBufferSize * stride;
-  vbv.StrideInBytes = stride;
-  ctx->IASetVertexBuffers(0, 1, &vbv);
-  D3D12_INDEX_BUFFER_VIEW ibv;
-  memset(&ibv, 0, sizeof(D3D12_INDEX_BUFFER_VIEW));
-  ibv.BufferLocation = fr->IndexBuffer->GetGPUVirtualAddress();
-  ibv.SizeInBytes = fr->IndexBufferSize * sizeof(ImDrawIdx);
-  ibv.Format = sizeof(ImDrawIdx) == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
-  ctx->IASetIndexBuffer(&ibv);
+  //unsigned int stride = sizeof(ImDrawVert);
+  //unsigned int offset = 0;
+  //D3D12_VERTEX_BUFFER_VIEW vbv;
+  //memset(&vbv, 0, sizeof(D3D12_VERTEX_BUFFER_VIEW));
+  //vbv.BufferLocation = fr->VertexBuffer->GetGPUVirtualAddress() + offset;
+  //vbv.SizeInBytes = fr->VertexBufferSize * stride;
+  //vbv.StrideInBytes = stride;
+  //ctx->IASetVertexBuffers(0, 1, &vbv);
+  //D3D12_INDEX_BUFFER_VIEW ibv;
+  //memset(&ibv, 0, sizeof(D3D12_INDEX_BUFFER_VIEW));
+  //ibv.BufferLocation = fr->IndexBuffer->GetGPUVirtualAddress();
+  //ibv.SizeInBytes = fr->IndexBufferSize * sizeof(ImDrawIdx);
+  //ibv.Format = sizeof(ImDrawIdx) == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+  //ctx->IASetIndexBuffer(&ibv);
+
+  rex::rhi::set_vertex_buffer(fr->vertex_buffer, ctx);
+  rex::rhi::set_index_buffer(fr->index_buffer, ctx);
+
+
+
+
   ctx->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
   ctx->SetPipelineState(rex::rhi::get_pso(bd->pipeline_state)->get());
   ctx->SetGraphicsRootSignature(rex::rhi::get_shader(bd->shader_program)->root_signature());
   //ctx->SetGraphicsRoot32BitConstants(0, 16, &vertex_constant_buffer, 0);
+
   rex::rhi::update_buffer(bd->constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx);
   rex::rhi::set_constant_buffer(0, bd->constant_buffer, ctx);
 
@@ -318,73 +333,88 @@ void ImGui_ImplDX12_RenderDrawData(ImDrawData* draw_data, ID3D12GraphicsCommandL
   ImGui_ImplDX12_RenderBuffers* fr = &vd->FrameRenderBuffers[vd->FrameIndex % bd->numFramesInFlight];
 
   // Create and grow vertex/index buffers if needed
-  if (fr->VertexBuffer == nullptr || fr->VertexBufferSize < draw_data->TotalVtxCount)
+  if (!fr->vertex_buffer.is_valid() || fr->VertexBufferSize < draw_data->TotalVtxCount)
   {
-    SafeRelease(fr->VertexBuffer);
+    //SafeRelease(fr->VertexBuffer);
+    //D3D12_HEAP_PROPERTIES props;
+    //memset(&props, 0, sizeof(D3D12_HEAP_PROPERTIES));
+    //props.Type = D3D12_HEAP_TYPE_UPLOAD;
+    //props.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+    //props.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+    //D3D12_RESOURCE_DESC desc;
+    //memset(&desc, 0, sizeof(D3D12_RESOURCE_DESC));
+    //desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+    //desc.Width = fr->VertexBufferSize * sizeof(ImDrawVert);
+    //desc.Height = 1;
+    //desc.DepthOrArraySize = 1;
+    //desc.MipLevels = 1;
+    //desc.Format = DXGI_FORMAT_UNKNOWN;
+    //desc.SampleDesc.Count = 1;
+    //desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+    //desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+    //if (bd->pd3dDevice->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&fr->VertexBuffer)) < 0)
+    //  return;
+
     fr->VertexBufferSize = draw_data->TotalVtxCount + 5000;
-    D3D12_HEAP_PROPERTIES props;
-    memset(&props, 0, sizeof(D3D12_HEAP_PROPERTIES));
-    props.Type = D3D12_HEAP_TYPE_UPLOAD;
-    props.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-    props.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-    D3D12_RESOURCE_DESC desc;
-    memset(&desc, 0, sizeof(D3D12_RESOURCE_DESC));
-    desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-    desc.Width = fr->VertexBufferSize * sizeof(ImDrawVert);
-    desc.Height = 1;
-    desc.DepthOrArraySize = 1;
-    desc.MipLevels = 1;
-    desc.Format = DXGI_FORMAT_UNKNOWN;
-    desc.SampleDesc.Count = 1;
-    desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-    desc.Flags = D3D12_RESOURCE_FLAG_NONE;
-    if (bd->pd3dDevice->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&fr->VertexBuffer)) < 0)
-      return;
+    fr->vertex_buffer = rex::rhi::create_vertex_buffer(sizeof(ImDrawVert) * fr->VertexBufferSize, sizeof(ImDrawVert));
   }
-  if (fr->IndexBuffer == nullptr || fr->IndexBufferSize < draw_data->TotalIdxCount)
+  if (!fr->index_buffer.is_valid() || fr->IndexBufferSize < draw_data->TotalIdxCount)
   {
-    SafeRelease(fr->IndexBuffer);
+    //SafeRelease(fr->IndexBuffer);
+    //D3D12_HEAP_PROPERTIES props;
+    //memset(&props, 0, sizeof(D3D12_HEAP_PROPERTIES));
+    //props.Type = D3D12_HEAP_TYPE_UPLOAD;
+    //props.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+    //props.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+    //D3D12_RESOURCE_DESC desc;
+    //memset(&desc, 0, sizeof(D3D12_RESOURCE_DESC));
+    //desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+    //desc.Width = fr->IndexBufferSize * sizeof(ImDrawIdx);
+    //desc.Height = 1;
+    //desc.DepthOrArraySize = 1;
+    //desc.MipLevels = 1;
+    //desc.Format = DXGI_FORMAT_UNKNOWN;
+    //desc.SampleDesc.Count = 1;
+    //desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+    //desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+    //if (bd->pd3dDevice->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&fr->IndexBuffer)) < 0)
+    //  return;
+
+    rex::renderer::IndexBufferFormat format = sizeof(ImDrawIdx) == 2
+      ? rex::renderer::IndexBufferFormat::Uint16
+      : rex::renderer::IndexBufferFormat::Uint32;
     fr->IndexBufferSize = draw_data->TotalIdxCount + 10000;
-    D3D12_HEAP_PROPERTIES props;
-    memset(&props, 0, sizeof(D3D12_HEAP_PROPERTIES));
-    props.Type = D3D12_HEAP_TYPE_UPLOAD;
-    props.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-    props.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-    D3D12_RESOURCE_DESC desc;
-    memset(&desc, 0, sizeof(D3D12_RESOURCE_DESC));
-    desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-    desc.Width = fr->IndexBufferSize * sizeof(ImDrawIdx);
-    desc.Height = 1;
-    desc.DepthOrArraySize = 1;
-    desc.MipLevels = 1;
-    desc.Format = DXGI_FORMAT_UNKNOWN;
-    desc.SampleDesc.Count = 1;
-    desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-    desc.Flags = D3D12_RESOURCE_FLAG_NONE;
-    if (bd->pd3dDevice->CreateCommittedResource(&props, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&fr->IndexBuffer)) < 0)
-      return;
+    fr->index_buffer = rex::rhi::create_index_buffer(fr->IndexBufferSize * sizeof(ImDrawIdx), format);
   }
 
   // Upload vertex/index data into a single contiguous GPU buffer
-  void* vtx_resource, * idx_resource;
-  D3D12_RANGE range;
-  memset(&range, 0, sizeof(D3D12_RANGE));
-  if (fr->VertexBuffer->Map(0, &range, &vtx_resource) != S_OK)
-    return;
-  if (fr->IndexBuffer->Map(0, &range, &idx_resource) != S_OK)
-    return;
-  ImDrawVert* vtx_dst = (ImDrawVert*)vtx_resource;
-  ImDrawIdx* idx_dst = (ImDrawIdx*)idx_resource;
+  //void* vtx_resource, * idx_resource;
+  //D3D12_RANGE range;
+  //memset(&range, 0, sizeof(D3D12_RANGE));
+  //if (fr->VertexBuffer->Map(0, &range, &vtx_resource) != S_OK)
+  //  return;
+  //if (fr->IndexBuffer->Map(0, &range, &idx_resource) != S_OK)
+  //  return;
+  //ImDrawVert* vtx_dst = (ImDrawVert*)vtx_resource;
+  //ImDrawIdx* idx_dst = (ImDrawIdx*)idx_resource;
+  s32 vtx_offset = 0;
+  s32 idx_offset = 0;
+  
   for (int n = 0; n < draw_data->CmdListsCount; n++)
   {
     const ImDrawList* cmd_list = draw_data->CmdLists[n];
-    memcpy(vtx_dst, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
-    memcpy(idx_dst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
-    vtx_dst += cmd_list->VtxBuffer.Size;
-    idx_dst += cmd_list->IdxBuffer.Size;
+    rex::rhi::update_buffer(fr->vertex_buffer, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), ctx, vtx_offset);
+    rex::rhi::update_buffer(fr->index_buffer, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), ctx, idx_offset);
+    vtx_offset += cmd_list->VtxBuffer.Size * sizeof(ImDrawVert);
+    idx_offset += cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx);
+
+    //memcpy(vtx_dst, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
+    //memcpy(idx_dst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
+    //vtx_dst += cmd_list->VtxBuffer.Size;
+    //idx_dst += cmd_list->IdxBuffer.Size;
   }
-  fr->VertexBuffer->Unmap(0, &range);
-  fr->IndexBuffer->Unmap(0, &range);
+  //fr->VertexBuffer->Unmap(0, &range);
+  //fr->IndexBuffer->Unmap(0, &range);
 
   // Setup desired DX state
   ImGui_ImplDX12_SetupRenderState(draw_data, ctx, fr);
@@ -1032,8 +1062,8 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
 
 static void ImGui_ImplDX12_DestroyRenderBuffers(ImGui_ImplDX12_RenderBuffers* render_buffers)
 {
-  SafeRelease(render_buffers->IndexBuffer);
-  SafeRelease(render_buffers->VertexBuffer);
+  //SafeRelease(render_buffers->IndexBuffer);
+  //SafeRelease(render_buffers->VertexBuffer);
   render_buffers->IndexBufferSize = render_buffers->VertexBufferSize = 0;
 }
 
@@ -1343,6 +1373,7 @@ static void ImGui_ImplDX12_RenderWindow(ImGuiViewport* viewport, void*)
   vd->rex_command_queue->wait(vd->FenceSignaledValue);
   vd->rex_command_queue->execute(cmd_list);
   vd->rex_command_queue->inc_fence();
+  vd->rex_command_queue->flush();
   ++vd->FenceSignaledValue;
   //vd->CommandQueue->Wait(vd->Fence, vd->FenceSignaledValue);
   //vd->CommandQueue->ExecuteCommandLists(1, (ID3D12CommandList* const*)&cmd_list);
