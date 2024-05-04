@@ -292,9 +292,8 @@ namespace rex
         io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
         rhi::reset_command_list(rhi::ResourceSlot::make_invalid());
-        rhi::DescriptorHandle handle = rhi::get_free_handle();
         ImGui_ImplWin32_Init((HWND)userData.primary_display_handle);
-        ImGui_ImplDX12_Init(rhi::get_device(), 3, DXGI_FORMAT_R8G8B8A8_UNORM, rhi::get_cbv_uav_srv_heap(), handle.get(), handle.get_gpu());
+        ImGui_ImplDX12_Init(rhi::get_device(), 3, DXGI_FORMAT_R8G8B8A8_UNORM, rhi::get_cbv_uav_srv_heap());
         rhi::exec_command_list();
         rhi::flush_command_queue();
 

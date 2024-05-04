@@ -58,7 +58,7 @@ namespace rex
     Texture2D* get_texture(const ResourceSlot& slot);
 
     ID3D12Device1* get_device();
-    ID3D12DescriptorHeap* get_cbv_uav_srv_heap();
+    DescriptorHeap* get_cbv_uav_srv_heap();
     DescriptorHandle get_free_handle();
 
     class ShaderProgramResource* get_shader(const ResourceSlot& slot);

@@ -1312,9 +1312,9 @@ namespace rex
     {
       return internal::get()->device->get();
     }
-    ID3D12DescriptorHeap* get_cbv_uav_srv_heap()
+    DescriptorHeap* get_cbv_uav_srv_heap()
     {
-      return internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).get();
+      return &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     }
     DescriptorHandle get_free_handle()
     {

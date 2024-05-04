@@ -87,7 +87,7 @@ struct ImGui_ImplDX12_Data
   ID3D12Resource* pFontTextureResource;
   D3D12_CPU_DESCRIPTOR_HANDLE hFontSrvCpuDescHandle;
   D3D12_GPU_DESCRIPTOR_HANDLE hFontSrvGpuDescHandle;
-  ID3D12DescriptorHeap* pd3dSrvDescHeap;
+  rex::rhi::DescriptorHeap* pd3dSrvDescHeap;
   UINT                        numFramesInFlight;
 
 
@@ -1080,8 +1080,7 @@ void    ImGui_ImplDX12_InvalidateDeviceObjects()
   io.Fonts->SetTexID(0); // We copied bd->pFontTextureView to io.Fonts->TexID so let's clear that as well.
 }
 
-bool ImGui_ImplDX12_Init(ID3D12Device1* device, int num_frames_in_flight, DXGI_FORMAT rtv_format, ID3D12DescriptorHeap* cbv_srv_heap,
-  D3D12_CPU_DESCRIPTOR_HANDLE font_srv_cpu_desc_handle, D3D12_GPU_DESCRIPTOR_HANDLE font_srv_gpu_desc_handle)
+bool ImGui_ImplDX12_Init(ID3D12Device1* device, int num_frames_in_flight, DXGI_FORMAT rtv_format, rex::rhi::DescriptorHeap* cbv_srv_heap)
 {
   ImGuiIO& io = ImGui::GetIO();
   IM_ASSERT(io.BackendRendererUserData == nullptr && "Already initialized a renderer backend!");
@@ -1097,8 +1096,10 @@ bool ImGui_ImplDX12_Init(ID3D12Device1* device, int num_frames_in_flight, DXGI_F
 
   bd->pd3dDevice = device;
   bd->RTVFormat = rtv_format;
-  bd->hFontSrvCpuDescHandle = font_srv_cpu_desc_handle;
-  bd->hFontSrvGpuDescHandle = font_srv_gpu_desc_handle;
+
+  rex::rhi::DescriptorHandle handle = cbv_srv_heap->new_free_handle();
+  bd->hFontSrvCpuDescHandle = handle.get();
+  bd->hFontSrvGpuDescHandle = handle.get_gpu();
   bd->numFramesInFlight = num_frames_in_flight;
   bd->pd3dSrvDescHeap = cbv_srv_heap;
 
@@ -1361,7 +1362,8 @@ static void ImGui_ImplDX12_RenderWindow(ImGuiViewport* viewport, void*)
   cmd_list->OMSetRenderTargets(1, &vd->FrameCtx[back_buffer_idx].RenderTargetCpuDescriptors, FALSE, nullptr);
   if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
     cmd_list->ClearRenderTargetView(vd->FrameCtx[back_buffer_idx].RenderTargetCpuDescriptors, (float*)&clear_color, 0, nullptr);
-  cmd_list->SetDescriptorHeaps(1, &bd->pd3dSrvDescHeap);
+  ID3D12DescriptorHeap* desc_heap = bd->pd3dSrvDescHeap->get();
+  cmd_list->SetDescriptorHeaps(1, &desc_heap);
 
   ImGui_ImplDX12_RenderDrawData(viewport->DrawData, cmd_list);
 
