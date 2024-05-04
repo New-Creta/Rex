@@ -25,7 +25,7 @@ namespace rex
 
       void transition(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES to);
       void write_buffer(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 start, s64 size, s32 offset);
-      void write_texture(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 width, s64 height, s64 rowPitch);
+      void write_texture(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 width, s64 height, s64 rowPitch, s32 offset);
       void copy_to(ID3D12GraphicsCommandList* cmdList, ID3D12Resource* srcResource);
 
     private:

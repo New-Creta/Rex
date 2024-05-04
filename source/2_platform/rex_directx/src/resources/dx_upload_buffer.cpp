@@ -7,6 +7,8 @@
 
 #include "rex_engine/memory/pointer_math.h"
 
+#include "rex_directx/diagnostics/log.h"
+
 namespace rex
 {
   namespace rhi
@@ -58,6 +60,7 @@ namespace rex
 
       // Texture data needs to get written 1 row at a time
       const char* src = (const char*)data;
+      m_offset = align(m_offset, D3D12_TEXTURE_DATA_PITCH_ALIGNMENT);
       rsl::byte* dst = (rsl::byte*)m_mapped_data + m_offset; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
       dst = align(dst, alignment);
       for (s32 y = 0; y < height; ++y)
@@ -71,7 +74,7 @@ namespace rex
       // Fill the commandlist with the commands to update this resource
       const D3D12_RESOURCE_STATES original_state = dstResource->resource_state();
       dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_COPY_DEST);
-      dstResource->write_texture(cmdList->get(), this, width, height, pitch_size);
+      dstResource->write_texture(cmdList->get(), this, width, height, pitch_size, m_offset);
       dstResource->transition(cmdList->get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
       // m_upload_infos.emplace_back(UploadInfo{ dstResource, m_offset, size });

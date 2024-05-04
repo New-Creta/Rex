@@ -68,7 +68,7 @@ namespace rex
       cmdList->CopyBufferRegion(m_resource.Get(), offset, uploadBuffer->get(), start, size);
     }
 
-    void Resource::write_texture(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 width, s64 height, s64 rowPitch)
+    void Resource::write_texture(ID3D12GraphicsCommandList* cmdList, UploadBuffer* uploadBuffer, s64 width, s64 height, s64 rowPitch, s32 offset)
     {
       CD3DX12_TEXTURE_COPY_LOCATION dst_loc(get(), 0);
       D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint{};
@@ -77,6 +77,7 @@ namespace rex
       footprint.Footprint.Height = height;
       footprint.Footprint.Depth = 1;
       footprint.Footprint.RowPitch = rowPitch;
+      footprint.Offset = offset;
 
       CD3DX12_TEXTURE_COPY_LOCATION src_loc(uploadBuffer->get(), footprint);
       cmdList->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);

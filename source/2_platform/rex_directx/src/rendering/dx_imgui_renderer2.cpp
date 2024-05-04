@@ -77,6 +77,8 @@
 #include "rex_directx/system/dx_vertex_buffer.h"
 #include "rex_directx/resources/dx_shader_program_resource.h"
 
+#include "rex_directx/diagnostics/log.h"
+
 // DirectX data
 struct ImGui_ImplDX12_Data
 {
@@ -84,7 +86,7 @@ struct ImGui_ImplDX12_Data
   //ID3D12RootSignature* pRootSignature;
   //ID3D12PipelineState* pPipelineState;
   DXGI_FORMAT                 RTVFormat;
-  ID3D12Resource* pFontTextureResource;
+  //ID3D12Resource* pFontTextureResource;
   //D3D12_CPU_DESCRIPTOR_HANDLE hFontSrvCpuDescHandle;
   //D3D12_GPU_DESCRIPTOR_HANDLE hFontSrvGpuDescHandle;
   rex::rhi::DescriptorHeap* pd3dSrvDescHeap;
@@ -99,7 +101,7 @@ struct ImGui_ImplDX12_Data
   rex::rhi::ResourceSlot input_layout;
   rex::rhi::ResourceSlot vertex_shader;
   rex::rhi::ResourceSlot pixel_shader;
-
+  rex::rhi::ResourceSlot texture;
 
 
 
@@ -525,8 +527,13 @@ static void ImGui_ImplDX12_CreateFontsTexture()
     hr = uploadBuffer->Map(0, &range, &mapped);
     IM_ASSERT(SUCCEEDED(hr));
     for (int y = 0; y < height; y++)
+    {
       memcpy((void*)((uintptr_t)mapped + y * uploadPitch), pixels + y * width * 4, width * 4);
+    }
     uploadBuffer->Unmap(0, &range);
+
+    REX_INFO(LogDirectX, "--------------------------");
+
 
     D3D12_TEXTURE_COPY_LOCATION srcLocation = {};
     srcLocation.pResource = uploadBuffer;
@@ -602,10 +609,15 @@ static void ImGui_ImplDX12_CreateFontsTexture()
     srvDesc.Texture2D.MipLevels = desc.MipLevels;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-    bd->texture_handle = bd->pd3dSrvDescHeap->create_texture2d_srv(pTexture);
+
+
+    bd->texture = rex::rhi::create_texture2d((const char*)pixels, DXGI_FORMAT_R8G8B8A8_UNORM, width, height);
+    bd->texture_handle = rex::rhi::create_texture2d_srv(bd->texture);
+
+    //bd->texture_handle = bd->pd3dSrvDescHeap->create_texture2d_srv(pTexture);
     //bd->pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, bd->hFontSrvCpuDescHandle);
-    SafeRelease(bd->pFontTextureResource);
-    bd->pFontTextureResource = pTexture;
+    //SafeRelease(bd->pFontTextureResource);
+    //bd->pFontTextureResource = pTexture;
   }
 
   // Store our identifier
@@ -858,6 +870,7 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
 
 
 
+  ImGui_ImplDX12_CreateFontsTexture();
 
 
 
@@ -1026,7 +1039,6 @@ bool    ImGui_ImplDX12_CreateDeviceObjects()
 
 
 
-  ImGui_ImplDX12_CreateFontsTexture();
 
 
 
@@ -1078,7 +1090,7 @@ void    ImGui_ImplDX12_InvalidateDeviceObjects()
   ImGuiIO& io = ImGui::GetIO();
   //SafeRelease(bd->pRootSignature);
   //SafeRelease(bd->pPipelineState);
-  SafeRelease(bd->pFontTextureResource);
+  //SafeRelease(bd->pFontTextureResource);
   io.Fonts->SetTexID(0); // We copied bd->pFontTextureView to io.Fonts->TexID so let's clear that as well.
 }
 
