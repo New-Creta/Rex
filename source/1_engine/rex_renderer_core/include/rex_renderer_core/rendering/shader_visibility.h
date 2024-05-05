@@ -6,12 +6,13 @@ namespace rex
 {
   namespace renderer
   {
+    // shader visibility is used to indicate which shader type has access to the specified resource
     enum class ShaderVisibility
     {
-      Vertex = BIT(0),
-      Pixel = BIT(1),
+      Vertex = BIT(0), // only the vertex shader has access to this resource
+      Pixel = BIT(1), // only the vertex shader has access to this resource
 
-      All = Vertex | Pixel
+      All = Vertex | Pixel // all shaders have access to this resource
     };
   }
 }

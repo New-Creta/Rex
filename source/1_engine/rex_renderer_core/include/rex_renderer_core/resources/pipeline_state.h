@@ -16,7 +16,7 @@ namespace rex
       ResourceSlot input_layout;
       ResourceSlot shader;
       ResourceSlot raster_state;
-      rsl::optional<BlendState> blend_state;
+      rsl::optional<BlendDesc> blend_state;
       rsl::optional<DepthStencilDesc> depth_stencil_state;
     };
   } // namespace rhi

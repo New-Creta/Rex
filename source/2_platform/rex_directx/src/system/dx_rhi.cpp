@@ -314,8 +314,8 @@ namespace rex
 
       D3D12_RASTERIZER_DESC d3d_rs;
 
-      d3d_rs.FillMode = rex::d3d::to_d3d12_fill_mode(desc.fill_mode);
-      d3d_rs.CullMode = rex::d3d::to_d3d12_cull_mode(desc.cull_mode);
+      d3d_rs.FillMode = rex::d3d::to_dx12(desc.fill_mode);
+      d3d_rs.CullMode = rex::d3d::to_dx12(desc.cull_mode);
       d3d_rs.FrontCounterClockwise = desc.front_ccw;
       d3d_rs.DepthBias = desc.depth_bias;
       d3d_rs.DepthBiasClamp = desc.depth_bias_clamp;
@@ -354,10 +354,10 @@ namespace rex
       {
         input_element_descriptions[i].SemanticName = desc.input_layout[i].semantic_name.data();
         input_element_descriptions[i].SemanticIndex = desc.input_layout[i].semantic_index;
-        input_element_descriptions[i].Format = rex::d3d::to_d3d12_vertex_format(desc.input_layout[i].format);
+        input_element_descriptions[i].Format = rex::d3d::to_dx12(desc.input_layout[i].format);
         input_element_descriptions[i].InputSlot = desc.input_layout[i].input_slot;
         input_element_descriptions[i].AlignedByteOffset = desc.input_layout[i].aligned_byte_offset;
-        input_element_descriptions[i].InputSlotClass = rex::d3d::to_d3d12_input_layout_classification(desc.input_layout[i].input_slot_class);
+        input_element_descriptions[i].InputSlotClass = rex::d3d::to_dx12(desc.input_layout[i].input_slot_class);
         input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
       }
 
@@ -422,7 +422,7 @@ namespace rex
 
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
       rsl::memory_size size = desc.blob_view.size();
-      DXGI_FORMAT d3d_format = rex::d3d::to_d3d12_index_format(desc.format);
+      DXGI_FORMAT d3d_format = rex::d3d::to_dx12(desc.format);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size, 0);
       set_debug_name_for(buffer.Get(), "Index Buffer");
       rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, desc.blob_view.size(), d3d_format);
@@ -440,7 +440,7 @@ namespace rex
     ResourceSlot create_index_buffer(s32 totalSize, renderer::IndexBufferFormat format)
     {
       // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      DXGI_FORMAT d3d_format = rex::d3d::to_d3d12_index_format(format);
+      DXGI_FORMAT d3d_format = rex::d3d::to_dx12(format);
       wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(totalSize, 0);
       set_debug_name_for(buffer.Get(), "Index Buffer");
       rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, totalSize, d3d_format);
@@ -504,13 +504,13 @@ namespace rex
       D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
       if (desc.blend_state.has_value())
       {
-        d3d_blend_state = rex::d3d::to_d3d12_blend_desc(desc.blend_state.value());
+        d3d_blend_state = rex::d3d::to_dx12(desc.blend_state.value());
       }
 
       D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
       if (desc.depth_stencil_state.has_value())
       {
-        d3d_depth_stencil_state = rex::d3d::to_d3d12_depth_stencil(desc.depth_stencil_state.value());
+        d3d_depth_stencil_state = rex::d3d::to_dx12(desc.depth_stencil_state.value());
       }
 
       // 2) Fill in the PSO desc
@@ -655,7 +655,7 @@ namespace rex
     }
     void set_primitive_topology(renderer::PrimitiveTopology topology)
     {
-      auto d3d_topology = rex::d3d::to_d3d12_topology(topology);
+      auto d3d_topology = rex::d3d::to_dx12(topology);
       internal::get()->command_list->get()->IASetPrimitiveTopology(d3d_topology);
     }
 
@@ -733,7 +733,7 @@ namespace rex
         {
           const auto& param = constants[i];
 
-          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_d3d12_shader_visibility(param.visibility);
+          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(param.visibility);
           switch (param.type)
           {
           case ShaderParameterType::CBuffer: root_parameters.emplace_back().InitAsConstantBufferView(param.reg, param.space, visibility); break;
@@ -747,10 +747,10 @@ namespace rex
         for (s32 i = 0; i < tables.count(); ++i)
         {
           const auto& table = tables[i];
-          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_d3d12_shader_visibility(table.visibility);
+          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(table.visibility);
           for (s32 range_idx = 0; range_idx < table.ranges.count(); ++range_idx)
           {
-            ranges.push_back(rex::d3d::to_d3d12_descriptor_range(table.ranges[range_idx]));
+            ranges.push_back(rex::d3d::to_dx12(table.ranges[range_idx]));
           }
 
           root_parameters.emplace_back().InitAsDescriptorTable(ranges.size(), ranges.data(), visibility);
@@ -763,19 +763,19 @@ namespace rex
           const auto& sampler = samplers[i];
 
           D3D12_STATIC_SAMPLER_DESC desc{};
-          desc.Filter = rex::d3d::to_d3d12_sampler_filtering(sampler.filtering);
-          desc.AddressU = rex::d3d::to_d3d12_texture_address_mode(sampler.address_mode_u);
-          desc.AddressV = rex::d3d::to_d3d12_texture_address_mode(sampler.address_mode_v);
-          desc.AddressW = rex::d3d::to_d3d12_texture_address_mode(sampler.address_mode_w);
+          desc.Filter = rex::d3d::to_dx12(sampler.filtering);
+          desc.AddressU = rex::d3d::to_dx12(sampler.address_mode_u);
+          desc.AddressV = rex::d3d::to_dx12(sampler.address_mode_v);
+          desc.AddressW = rex::d3d::to_dx12(sampler.address_mode_w);
           desc.MipLODBias =sampler.mip_lod_bias;
           desc.MaxAnisotropy = sampler.max_anisotropy;
-          desc.ComparisonFunc = rex::d3d::to_d3d12_comparison_func(sampler.comparison_func);
-          desc.BorderColor = rex::d3d::to_d3d12_border_color(sampler.border_color);
+          desc.ComparisonFunc = rex::d3d::to_dx12(sampler.comparison_func);
+          desc.BorderColor = rex::d3d::to_dx12(sampler.border_color);
           desc.MinLOD = sampler.min_lod;
           desc.MaxLOD = sampler.max_lod;
           desc.ShaderRegister = sampler.shader_register;
           desc.RegisterSpace = sampler.register_space;
-          desc.ShaderVisibility = rex::d3d::to_d3d12_shader_visibility(sampler.shader_visibility);
+          desc.ShaderVisibility = rex::d3d::to_dx12(sampler.shader_visibility);
           root_samplers.emplace_back(desc);
         }
 

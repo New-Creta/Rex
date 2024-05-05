@@ -778,8 +778,8 @@ namespace rex
       pso_desc.shader = m_shader_program;
 
       // Blend State
-      pso_desc.blend_state = rex::rhi::BlendState();
-      rex::rhi::BlendState& blend_state = pso_desc.blend_state.value();
+      pso_desc.blend_state = rex::rhi::BlendDesc();
+      rex::rhi::BlendDesc& blend_state = pso_desc.blend_state.value();
       blend_state.enable_alpha_to_coverage = false;
       blend_state.render_target[0].blend_enable = true;
       blend_state.render_target[0].src_blend = rex::rhi::Blend::SrcAlpha;

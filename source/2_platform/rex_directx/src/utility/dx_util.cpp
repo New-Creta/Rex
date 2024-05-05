@@ -33,7 +33,7 @@ namespace rex
       return d3d_blob;
     }
     //-------------------------------------------------------------------------
-    D3D12_FILL_MODE to_d3d12_fill_mode(renderer::FillMode mode)
+    D3D12_FILL_MODE to_dx12(renderer::FillMode mode)
     {
       switch (mode)
       {
@@ -46,7 +46,7 @@ namespace rex
       return D3D12_FILL_MODE_SOLID;
     }
     //-------------------------------------------------------------------------
-    D3D12_CULL_MODE to_d3d12_cull_mode(renderer::CullMode mode)
+    D3D12_CULL_MODE to_dx12(renderer::CullMode mode)
     {
       switch (mode)
       {
@@ -60,7 +60,7 @@ namespace rex
       return D3D12_CULL_MODE_NONE;
     }
     //-------------------------------------------------------------------------
-    DXGI_FORMAT to_d3d12_vertex_format(renderer::VertexBufferFormat format)
+    DXGI_FORMAT to_dx12(renderer::VertexBufferFormat format)
     {
       switch (format)
       {
@@ -77,7 +77,7 @@ namespace rex
       return DXGI_FORMAT_UNKNOWN;
     }
     //-------------------------------------------------------------------------
-    DXGI_FORMAT to_d3d12_index_format(renderer::IndexBufferFormat format)
+    DXGI_FORMAT to_dx12(renderer::IndexBufferFormat format)
     {
       switch (format)
       {
@@ -89,7 +89,7 @@ namespace rex
       return DXGI_FORMAT_UNKNOWN;
     }
     //-------------------------------------------------------------------------
-    DXGI_FORMAT to_dxd12_texture_format(renderer::TextureFormat format)
+    DXGI_FORMAT to_dx12(renderer::TextureFormat format)
     {
       switch (format)
       {
@@ -101,7 +101,7 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
-    D3D12_PRIMITIVE_TOPOLOGY to_d3d12_topology(renderer::PrimitiveTopology topology)
+    D3D12_PRIMITIVE_TOPOLOGY to_dx12(renderer::PrimitiveTopology topology)
     {
       switch (topology)
       {
@@ -116,7 +116,7 @@ namespace rex
       return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
     }
     //-------------------------------------------------------------------------
-    D3D12_INPUT_CLASSIFICATION to_d3d12_input_layout_classification(renderer::InputLayoutClassification classification)
+    D3D12_INPUT_CLASSIFICATION to_dx12(renderer::InputLayoutClassification classification)
     {
       switch (classification)
       {
@@ -192,7 +192,7 @@ namespace rex
     }
 
 
-    D3D12_SHADER_VISIBILITY to_d3d12_shader_visibility(renderer::ShaderVisibility visibility)
+    D3D12_SHADER_VISIBILITY to_dx12(renderer::ShaderVisibility visibility)
     {
       switch (visibility)
       {
@@ -204,7 +204,7 @@ namespace rex
       REX_ASSERT("Unsupported shader visibility for directx 12: {}", rsl::enum_refl::enum_name(visibility));
       return invalid_obj<D3D12_SHADER_VISIBILITY>();
     }
-    D3D12_FILTER to_d3d12_sampler_filtering(renderer::SamplerFiltering filter)
+    D3D12_FILTER to_dx12(renderer::SamplerFiltering filter)
     {
       switch (filter)
       {
@@ -249,7 +249,7 @@ namespace rex
       REX_ASSERT("Unsupported sampler filter for directx 12: {}", rsl::enum_refl::enum_name(filter));
       return invalid_obj<D3D12_FILTER>();
     }
-    D3D12_COMPARISON_FUNC to_d3d12_comparison_func(renderer::ComparisonFunc comparisonFunc)
+    D3D12_COMPARISON_FUNC to_dx12(renderer::ComparisonFunc comparisonFunc)
     {
       switch (comparisonFunc)
       {
@@ -266,7 +266,7 @@ namespace rex
       REX_ASSERT("Unsupported comparison func for directx 12: {}", rsl::enum_refl::enum_name(comparisonFunc));
       return invalid_obj<D3D12_COMPARISON_FUNC>();
     }
-    D3D12_STATIC_BORDER_COLOR to_d3d12_border_color(renderer::BorderColor borderColor)
+    D3D12_STATIC_BORDER_COLOR to_dx12(renderer::BorderColor borderColor)
     {
       switch (borderColor)
       {
@@ -278,7 +278,7 @@ namespace rex
       REX_ASSERT("Unsupported border color for directx 12: {}", rsl::enum_refl::enum_name(borderColor));
       return invalid_obj<D3D12_STATIC_BORDER_COLOR>();
     }
-    D3D12_TEXTURE_ADDRESS_MODE to_d3d12_texture_address_mode(renderer::TextureAddressMode addressMode)
+    D3D12_TEXTURE_ADDRESS_MODE to_dx12(renderer::TextureAddressMode addressMode)
     {
       switch (addressMode)
       {
@@ -292,7 +292,7 @@ namespace rex
       REX_ASSERT("Unsupported addressmode for directx 12: {}", rsl::enum_refl::enum_name(addressMode));
       return invalid_obj<D3D12_TEXTURE_ADDRESS_MODE>();
     }
-    D3D12_BLEND_DESC to_d3d12_blend_desc(const rhi::BlendState& blendState)
+    D3D12_BLEND_DESC to_dx12(const rhi::BlendState& blendState)
     {
       D3D12_BLEND_DESC desc{};
       desc.AlphaToCoverageEnable = blendState.enable_alpha_to_coverage;
@@ -301,20 +301,20 @@ namespace rex
       for (s32 i = 0; i < rsl::size(desc.RenderTarget); ++i)
       {
         desc.RenderTarget[i].BlendEnable = blendState.render_target[i].blend_enable;
-        desc.RenderTarget[i].SrcBlend = to_d3d12_blend(blendState.render_target[i].src_blend);
-        desc.RenderTarget[i].DestBlend = to_d3d12_blend(blendState.render_target[i].dst_blend);
-        desc.RenderTarget[i].BlendOp = to_d3d12_blend_op(blendState.render_target[i].blend_op);
-        desc.RenderTarget[i].SrcBlendAlpha = to_d3d12_blend(blendState.render_target[i].src_blend_alpha);
-        desc.RenderTarget[i].DestBlendAlpha = to_d3d12_blend(blendState.render_target[i].dst_blend_alpha);
-        desc.RenderTarget[i].BlendOpAlpha = to_d3d12_blend_op(blendState.render_target[i].blend_op_alpha);
+        desc.RenderTarget[i].SrcBlend = to_dx12(blendState.render_target[i].src_blend);
+        desc.RenderTarget[i].DestBlend = to_dx12(blendState.render_target[i].dst_blend);
+        desc.RenderTarget[i].BlendOp = to_dx12(blendState.render_target[i].blend_op);
+        desc.RenderTarget[i].SrcBlendAlpha = to_dx12(blendState.render_target[i].src_blend_alpha);
+        desc.RenderTarget[i].DestBlendAlpha = to_dx12(blendState.render_target[i].dst_blend_alpha);
+        desc.RenderTarget[i].BlendOpAlpha = to_dx12(blendState.render_target[i].blend_op_alpha);
         desc.RenderTarget[i].LogicOpEnable = blendState.render_target[i].logic_op_enable;
-        desc.RenderTarget[i].LogicOp = to_d3d12_logic_op(blendState.render_target[i].logic_op);
+        desc.RenderTarget[i].LogicOp = to_dx12(blendState.render_target[i].logic_op);
         desc.RenderTarget[i].RenderTargetWriteMask = static_cast<uint8>(blendState.render_target[i].render_target_write_mask);
       }
 
       return desc;
     }
-    D3D12_BLEND to_d3d12_blend(rhi::Blend blend)
+    D3D12_BLEND to_dx12(rhi::Blend blend)
     {
       switch (blend)
       {
@@ -341,7 +341,7 @@ namespace rex
      
       return invalid_obj<D3D12_BLEND>();
     }
-    D3D12_BLEND_OP to_d3d12_blend_op(rhi::BlendOp blendOp)
+    D3D12_BLEND_OP to_dx12(rhi::BlendOp blendOp)
     {
       switch (blendOp)
       {
@@ -354,7 +354,7 @@ namespace rex
 
       return invalid_obj<D3D12_BLEND_OP>();
     }
-    D3D12_LOGIC_OP to_d3d12_logic_op(rhi::LogicOp logicOp)
+    D3D12_LOGIC_OP to_dx12(rhi::LogicOp logicOp)
     {
       switch (logicOp)
       {
@@ -363,6 +363,7 @@ namespace rex
       case rex::rhi::LogicOp::Copy:           return D3D12_LOGIC_OP_COPY;
       case rex::rhi::LogicOp::CopyInverted:   return D3D12_LOGIC_OP_COPY_INVERTED;
       case rex::rhi::LogicOp::Noop:           return D3D12_LOGIC_OP_NOOP;
+      case rex::rhi::LogicOp::Invert:            return D3D12_LOGIC_OP_INVERT;
       case rex::rhi::LogicOp::And:            return D3D12_LOGIC_OP_AND;
       case rex::rhi::LogicOp::Nand:           return D3D12_LOGIC_OP_NAND;
       case rex::rhi::LogicOp::Or:             return D3D12_LOGIC_OP_OR;
@@ -377,23 +378,23 @@ namespace rex
 
       return invalid_obj<D3D12_LOGIC_OP>();
     }
-    D3D12_DEPTH_STENCIL_DESC to_d3d12_depth_stencil(const rhi::DepthStencilDesc& depthStencilState)
+    D3D12_DEPTH_STENCIL_DESC to_dx12(const rhi::DepthStencilDesc& depthStencilState)
     {
       D3D12_DEPTH_STENCIL_DESC desc{};
 
       desc.DepthEnable = depthStencilState.depth_enable;
-      desc.DepthWriteMask = to_d3d12_depth_write_mask(depthStencilState.depth_write_mask);
-      desc.DepthFunc = to_d3d12_comparison_func(depthStencilState.depth_func);
+      desc.DepthWriteMask = to_dx12(depthStencilState.depth_write_mask);
+      desc.DepthFunc = to_dx12(depthStencilState.depth_func);
       desc.StencilEnable = depthStencilState.stencil_enable;
       desc.StencilReadMask = depthStencilState.stencil_read_mask;
       desc.StencilWriteMask = depthStencilState.stencil_write_mask;
-      desc.FrontFace = to_d3d12_depth_stencil_op(depthStencilState.front_face);
-      desc.BackFace = to_d3d12_depth_stencil_op(depthStencilState.back_face);
+      desc.FrontFace = to_dx12(depthStencilState.front_face);
+      desc.BackFace = to_dx12(depthStencilState.back_face);
 
       return desc;
     }
 
-    D3D12_DEPTH_WRITE_MASK to_d3d12_depth_write_mask(rhi::DepthWriteMask mask)
+    D3D12_DEPTH_WRITE_MASK to_dx12(rhi::DepthWriteMask mask)
     {
       switch (mask)
       {
@@ -404,18 +405,18 @@ namespace rex
       return invalid_obj<D3D12_DEPTH_WRITE_MASK>();
     }
 
-    D3D12_DEPTH_STENCILOP_DESC to_d3d12_depth_stencil_op(const rhi::DepthStencilOpDesc& depthStencilOp)
+    D3D12_DEPTH_STENCILOP_DESC to_dx12(const rhi::DepthStencilOpDesc& depthStencilOp)
     {
       D3D12_DEPTH_STENCILOP_DESC desc{};
 
-      desc.StencilDepthFailOp = to_d3d12_stencil_op(depthStencilOp.stencil_depth_fail_op);
-      desc.StencilPassOp = to_d3d12_stencil_op(depthStencilOp.stencil_pass_op);
-      desc.StencilFailOp = to_d3d12_stencil_op(depthStencilOp.stencil_fail_op);
-      desc.StencilFunc = to_d3d12_comparison_func(depthStencilOp.stencil_func);
+      desc.StencilDepthFailOp = to_dx12(depthStencilOp.stencil_depth_fail_op);
+      desc.StencilPassOp = to_dx12(depthStencilOp.stencil_pass_op);
+      desc.StencilFailOp = to_dx12(depthStencilOp.stencil_fail_op);
+      desc.StencilFunc = to_dx12(depthStencilOp.stencil_func);
 
       return desc;
     }
-    D3D12_STENCIL_OP to_d3d12_stencil_op(rhi::StencilOp stencilOp)
+    D3D12_STENCIL_OP to_dx12(rhi::StencilOp stencilOp)
     {
       switch (stencilOp)
       {
@@ -432,19 +433,19 @@ namespace rex
       return invalid_obj<D3D12_STENCIL_OP>();
     }
 
-    D3D12_DESCRIPTOR_RANGE to_d3d12_descriptor_range(rhi::DescriptorRange range)
+    D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRange range)
     {
       D3D12_DESCRIPTOR_RANGE range_desc{};
       range_desc.BaseShaderRegister = range.base_shader_register;
       range_desc.NumDescriptors = range.num_descriptors;
       range_desc.OffsetInDescriptorsFromTableStart = range.offset_in_descriptors_from_table_start;
-      range_desc.RangeType = to_d3d12_range_type(range.type);
+      range_desc.RangeType = to_dx12(range.type);
       range_desc.RegisterSpace = range.register_space;
 
       return range_desc;
     }
 
-    D3D12_DESCRIPTOR_RANGE_TYPE to_d3d12_range_type(rhi::DescriptorRangeType type)
+    D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type)
     {
       switch (type)
       {
