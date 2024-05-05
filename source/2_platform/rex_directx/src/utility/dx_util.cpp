@@ -258,7 +258,7 @@ namespace rex
       case rex::renderer::ComparisonFunc::Less: return D3D12_COMPARISON_FUNC_LESS;
       case rex::renderer::ComparisonFunc::LessEqual: return D3D12_COMPARISON_FUNC_LESS_EQUAL;
       case rex::renderer::ComparisonFunc::Equal: return D3D12_COMPARISON_FUNC_EQUAL;
-      case rex::renderer::ComparisonFunc::Great: return D3D12_COMPARISON_FUNC_GREATER;
+      case rex::renderer::ComparisonFunc::Greater: return D3D12_COMPARISON_FUNC_GREATER;
       case rex::renderer::ComparisonFunc::GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
       case rex::renderer::ComparisonFunc::NotEqual: return D3D12_COMPARISON_FUNC_NOT_EQUAL;
       }
@@ -292,7 +292,7 @@ namespace rex
       REX_ASSERT("Unsupported addressmode for directx 12: {}", rsl::enum_refl::enum_name(addressMode));
       return invalid_obj<D3D12_TEXTURE_ADDRESS_MODE>();
     }
-    D3D12_BLEND_DESC to_dx12(const rhi::BlendState& blendState)
+    D3D12_BLEND_DESC to_dx12(const rhi::BlendDesc& blendState)
     {
       D3D12_BLEND_DESC desc{};
       desc.AlphaToCoverageEnable = blendState.enable_alpha_to_coverage;
