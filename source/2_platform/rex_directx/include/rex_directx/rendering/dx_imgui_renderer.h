@@ -9,6 +9,8 @@
 
 #include "rex_engine/diagnostics/error.h"
 
+#include "rex_directx/rendering/dx_imgui_window.h"
+
 struct ID3D12Device;
 struct ID3D12DescriptorHeap;
 struct ID3D12GraphicsCommandList;
@@ -26,11 +28,11 @@ namespace rex
     public:
       // global functions used for callbacks.
       // Imgui uses functions pointers, so can't use lambdas
-      friend void create_window_callback(ImGuiViewport* viewport);
-      friend void destroy_window_callback(ImGuiViewport* viewport);
-      friend void set_window_size_callback(ImGuiViewport* viewport, ImVec2 size);
-      friend void render_window_callback(ImGuiViewport* viewport, void* renderArg);
-      friend void swap_buffers_callback(ImGuiViewport* viewport, void* renderArg);
+      friend void create_window_callback(::ImGuiViewport* viewport);
+      friend void destroy_window_callback(::ImGuiViewport* viewport);
+      friend void set_window_size_callback(::ImGuiViewport* viewport, ImVec2 size);
+      friend void render_window_callback(::ImGuiViewport* viewport, void* renderArg);
+      friend void swap_buffers_callback(::ImGuiViewport* viewport, void* renderArg);
 
     public:
       ImGuiRenderer(ID3D12Device1* device, s32 numFramesInFlight, DXGI_FORMAT rtvFormat, HWND hwnd);
@@ -44,7 +46,6 @@ namespace rex
 
       void new_frame();
       void render();
-      void end_frame();
 
     private:
       Error init_device_objects();
@@ -55,11 +56,11 @@ namespace rex
       Error init_pso();
 
       void init_platform_interface();
-      void create_window(ImGuiViewport* viewport);
-      void destroy_window(ImGuiViewport* viewport);
-      void render_window(ImGuiViewport* viewport);
-      void set_window_size(ImGuiViewport* viewport, ImVec2 size);
-      void swap_buffers(ImGuiViewport* viewport);
+      void create_window(::ImGuiViewport* viewport);
+      void destroy_window(::ImGuiViewport* viewport);
+      void render_window(::ImGuiViewport* viewport);
+      void set_window_size(::ImGuiViewport* viewport, ImVec2 size);
+      void swap_buffers(::ImGuiViewport* viewport);
 
     private:
       ID3D12Device1* m_device;                                  // Needed to initialize child windows with their own directx objects
@@ -76,6 +77,7 @@ namespace rex
       rex::rhi::ResourceSlot m_pixel_shader;                   // resource slot for the pixel shader of imgui
       rex::rhi::ResourceSlot m_texture;                        // resources lot for the fonts texture, used by imgui
 
+      rsl::vector<ImGuiWindow> m_imgui_child_windows;          // Child windows of ImGui, spawned by draging a viewport outside of the main window
     };
   }
 }

@@ -31,12 +31,17 @@ namespace rex
       m_command_queue->ExecuteCommandLists(1, &commandlist);
     }
 
-    void CommandQueue::wait(s32 val)
+    void CommandQueue::wait()
     {
-      m_command_queue->Wait(m_fence.get(), val);
+      m_command_queue->Wait(m_fence.get(), m_fence.target_value());
     }
 
-    s32 CommandQueue::fence_value()
+    bool CommandQueue::has_reached_latest_fence() const
+    {
+      return fence_value() < m_fence.target_value();
+    }
+
+    s32 CommandQueue::fence_value() const
     {
       return m_fence.get()->GetCompletedValue();
     }

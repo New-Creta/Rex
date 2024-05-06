@@ -36,6 +36,8 @@
 
 #include "rex_directx/rendering/dx_imgui_viewport.h"
 
+#include "rex_engine/memory/global_allocator.h"
+
 DEFINE_LOG_CATEGORY(LogImgui);
 
 // First render the main window widgets
@@ -77,6 +79,7 @@ namespace rex
       REX_ASSERT_X(g_imgui_renderer == nullptr, "You can only have 1 imgui renderer");
       g_imgui_renderer = this;
 
+      // Imgui boilerplate code
       IMGUI_CHECKVERSION();
       ImGui::CreateContext();
       ImGuiIO& io = ImGui::GetIO();
@@ -88,6 +91,7 @@ namespace rex
       // Enable dark mode
       ImGui::StyleColorsDark();
 
+      // We support multiple viewport, having imgui widget in their own windows when dragged outside of the main window
       ImGuiStyle& style = ImGui::GetStyle();
       if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
       {
@@ -98,13 +102,14 @@ namespace rex
       io.BackendRendererName = "DirectX 12 ImGui Renderer";
       io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
 
+      // Win32 boiletplate code
       ImGui_ImplWin32_Init(hwnd);
 
       IM_ASSERT(io.BackendRendererUserData == nullptr && "Already initialized a renderer backend!");
 
       // Setup backend capabilities flags
       io.BackendRendererUserData = (void*)this;
-      io.BackendRendererName = "imgui_impl_dx12";
+      io.BackendRendererName = "ImGui DirectX12 Renderer";
       io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
       io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
       if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -129,7 +134,6 @@ namespace rex
       ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (ImGuiViewport* vd = (ImGuiViewport*)main_viewport->RendererUserData)
       {
-        // We could just call ImGui_ImplDX12_DestroyWindow(main_viewport) as a convenience but that would be misleading since we only use data->Resources[]
         IM_DELETE(vd);
         main_viewport->RendererUserData = nullptr;
       }
@@ -155,23 +159,13 @@ namespace rex
       ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (ImGuiViewport* vd = (ImGuiViewport*)main_viewport->RendererUserData)
       {
-        vd->begin_draw();
-        vd->draw(main_viewport->DrawData, m_srv_desc_heap);
-        //vd->end_draw();
+        vd->draw(rhi::cmd_list()->get());
       }
 
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
       {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault(nullptr, (void*)rhi::cmd_list());
-      }
-    }
-    void ImGuiRenderer::end_frame()
-    {
-      ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-      if (ImGuiViewport* vd = (ImGuiViewport*)main_viewport->RendererUserData)
-      {
-        vd->end_draw();
       }
     }
 
@@ -327,7 +321,6 @@ namespace rex
     {
       // Build texture atlas
       ImGuiIO& io = ImGui::GetIO();
-      //ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
       unsigned char* pixels;
       int width, height;
       io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
@@ -417,24 +410,24 @@ namespace rex
     }
     void ImGuiRenderer::create_window(::ImGuiViewport* viewport)
     {
-      ImGuiViewport* vd = IM_NEW(ImGuiViewport)(viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_shader_program, m_pipeline_state, m_constant_buffer);
+      void* mem = rex::global_debug_allocator().allocate<ImGuiWindow>();
+      ImGuiWindow* vd = new (mem)(ImGuiWindow)(viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_shader_program, m_pipeline_state, m_constant_buffer);
       viewport->RendererUserData = vd;
     }
     void ImGuiRenderer::destroy_window(::ImGuiViewport* viewport)
     {
-      if (ImGuiViewport* vd = (ImGuiViewport*)viewport->RendererUserData)
+      if (ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData)
       {
         vd->wait_for_pending_operations();
-        IM_DELETE(vd);
+        rex::global_debug_allocator().deallocate(vd);
       }
       viewport->RendererUserData = nullptr;
     }
     void ImGuiRenderer::render_window(::ImGuiViewport* viewport)
     {
-      //ImGui_ImplDX12_Data* bd = ImGui_ImplDX12_GetBackendData();
-      ImGuiViewport* vd = (ImGuiViewport*)viewport->RendererUserData;
+      ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData;
 
-      vd->begin_draw();
+      vd->begin_draw(m_srv_desc_heap);
 
       if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
       {
@@ -442,18 +435,18 @@ namespace rex
         vd->clear_render_target(clear_color);
       }
 
-      vd->draw(viewport->DrawData, m_srv_desc_heap);
+      vd->draw();
       vd->end_draw();
     }
     void ImGuiRenderer::set_window_size(::ImGuiViewport* viewport, ImVec2 size)
     {
-      ImGuiViewport* vd = (ImGuiViewport*)viewport->RendererUserData;
+      ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData;
       vd->wait_for_pending_operations();
       vd->resize_buffers(size.x, size.y);
     }
     void ImGuiRenderer::swap_buffers(::ImGuiViewport* viewport)
     {
-      ImGuiViewport* vd = (ImGuiViewport*)viewport->RendererUserData;
+      ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData;
       
       vd->present();
       vd->yield_thread();

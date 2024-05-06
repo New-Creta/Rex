@@ -35,9 +35,23 @@ namespace rex
         return nullptr;
 #endif
       }
+      // We return a void* on purpose here as the following allocation
+      // doesn't perform any initialization.
+      // It just allocates the memory, the user is expected to use placement new
+      // to initialize the memory for the type
+      template <typename T>
+      REX_NO_DISCARD pointer allocate()
+      {
+        return allocate(sizeof(T));
+      }
       void deallocate(pointer ptr, size_type size)
       {
         m_allocator->deallocate(ptr, size);
+      }
+      template <typename T>
+      void deallocate(T* ptr)
+      {
+        deallocate(ptr, sizeof(T));
       }
 
       template <typename U, typename... Args>

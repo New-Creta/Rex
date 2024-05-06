@@ -29,9 +29,13 @@ namespace rex
       }
     }
 
-    ID3D12Fence* Fence::get()
+    ID3D12Fence* Fence::get() const
     {
       return m_fence.Get();
+    }
+    s32 Fence::target_value() const
+    {
+      return m_target_val;
     }
 
   } // namespace rhi
