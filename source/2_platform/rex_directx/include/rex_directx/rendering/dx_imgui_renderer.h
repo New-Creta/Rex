@@ -48,11 +48,13 @@ namespace rex
       void render();
 
     private:
-      Error init_device_objects();
+      void init_imgui(HWND hwnd);
+
+      Error init_gpu_resources();
       Error init_input_layout();
       Error init_shader();
       Error init_font_texture();
-      Error init_buffers();
+      Error init_constant_buffer();
       Error init_pso();
 
       void init_platform_interface();

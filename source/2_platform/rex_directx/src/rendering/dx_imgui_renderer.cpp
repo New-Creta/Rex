@@ -49,6 +49,8 @@ namespace rex
   {
     ImGuiRenderer* g_imgui_renderer = nullptr;
 
+    // global functions used for callbacks.
+    // Imgui uses functions pointers, so can't use lambdas
     void create_window_callback(::ImGuiViewport* viewport)
     {
       g_imgui_renderer->create_window(viewport);
@@ -79,43 +81,14 @@ namespace rex
       REX_ASSERT_X(g_imgui_renderer == nullptr, "You can only have 1 imgui renderer");
       g_imgui_renderer = this;
 
-      // Imgui boilerplate code
-      IMGUI_CHECKVERSION();
-      ImGui::CreateContext();
-      ImGuiIO& io = ImGui::GetIO();
-      io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
-      io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable gamepad controls
-      io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
-      io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewport / Platform windows
+      init_imgui(hwnd);
 
-      // Enable dark mode
-      ImGui::StyleColorsDark();
-
-      // We support multiple viewport, having imgui widget in their own windows when dragged outside of the main window
-      ImGuiStyle& style = ImGui::GetStyle();
-      if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+      if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
       {
-        style.WindowRounding = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        init_platform_interface();
       }
 
-      io.BackendRendererName = "DirectX 12 ImGui Renderer";
-      io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
-
-      // Win32 boiletplate code
-      ImGui_ImplWin32_Init(hwnd);
-
-      IM_ASSERT(io.BackendRendererUserData == nullptr && "Already initialized a renderer backend!");
-
-      // Setup backend capabilities flags
-      io.BackendRendererUserData = (void*)this;
-      io.BackendRendererName = "ImGui DirectX12 Renderer";
-      io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
-      io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
-      if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        init_platform_interface();
-
-      if (init_device_objects())
+      if (init_gpu_resources())
       {
         REX_ERROR(LogImgui, "Failed to create imgui device objects");
         return;
@@ -170,7 +143,43 @@ namespace rex
       }
     }
 
-    Error ImGuiRenderer::init_device_objects()
+    void ImGuiRenderer::init_imgui(HWND hwnd)
+    {
+      IMGUI_CHECKVERSION();
+      ImGui::CreateContext();
+      ImGuiIO& io = ImGui::GetIO();
+      io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
+      io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable gamepad controls
+      io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
+      io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewport / Platform windows
+
+      // Enable dark mode
+      ImGui::StyleColorsDark();
+
+      // We support multiple viewport, having imgui widget in their own windows when dragged outside of the main window
+      ImGuiStyle& style = ImGui::GetStyle();
+      if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+      {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+      }
+
+      io.BackendRendererName = "DirectX 12 ImGui Renderer";
+      io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
+
+      // Win32 boiletplate code
+      ImGui_ImplWin32_Init(hwnd);
+
+      IM_ASSERT(io.BackendRendererUserData == nullptr && "Already initialized a renderer backend!");
+
+      // Setup backend capabilities flags
+      io.BackendRendererUserData = (void*)this;
+      io.BackendRendererName = "ImGui DirectX12 Renderer";
+      io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
+      io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
+    }
+
+    Error ImGuiRenderer::init_gpu_resources()
     {
       Error err = Error::no_error();
 
@@ -192,7 +201,7 @@ namespace rex
         return Error::create_with_log(LogImgui, "Failed to create imgui input layout");
       }
 
-      err = init_buffers();
+      err = init_constant_buffer();
       if (err)
       {
         return Error::create_with_log(LogImgui, "Failed to create imgui resource buffers");
@@ -343,7 +352,7 @@ namespace rex
 
       return Error::no_error();
     }
-    Error ImGuiRenderer::init_buffers()
+    Error ImGuiRenderer::init_constant_buffer()
     {
       m_constant_buffer = rex::rhi::create_constant_buffer(sizeof(ImGuiVertexConstantBuffer));
 
