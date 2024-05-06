@@ -115,9 +115,10 @@ namespace rex
       if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         init_platform_interface();
 
-      if (!init_device_objects())
+      if (init_device_objects())
       {
         REX_ERROR(LogImgui, "Failed to create imgui device objects");
+        return;
       }
 
       // Create a dummy ImGui_ImplDX12_ViewportData holder for the main viewport,
@@ -419,6 +420,7 @@ namespace rex
       if (ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData)
       {
         vd->wait_for_pending_operations();
+        rex::global_debug_allocator().destroy(vd);
         rex::global_debug_allocator().deallocate(vd);
       }
       viewport->RendererUserData = nullptr;
