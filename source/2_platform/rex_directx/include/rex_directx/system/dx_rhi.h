@@ -68,6 +68,23 @@ namespace rex
 
     DescriptorHandle get_rtv();
 
+    void set_viewport(CommandList2* cmdList, const Viewport& viewport);
+    void set_scissor_rect(CommandList2* cmdList, const ScissorRect& rect);
+
+    void transition_backbuffer(CommandList2* cmdList, D3D12_RESOURCE_STATES state);
+    void clear_backbuffer(CommandList2* cmdList, const ResourceSlot& clearState);
+
+    void set_vertex_buffer(CommandList2* cmdList, const ResourceSlot& vb);
+    void set_index_buffer(CommandList2* cmdList, const ResourceSlot& ib);
+    void set_constant_buffer(CommandList2* cmdList, s32 idx, const ResourceSlot& cb);
+    void set_primitive_topology(CommandList2* cmdList, renderer::PrimitiveTopology topology);
+
+    void draw_indexed(CommandList2* cmdList, s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
+    void set_shader(CommandList2* cmdList, const ResourceSlot& slot);
+    void set_pso(CommandList2* cmdList, const ResourceSlot& slot);
+
+    void set_render_target(CommandList2* cmdList, DescriptorHandle rtv);
+
     namespace d3d
     {
       wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers);

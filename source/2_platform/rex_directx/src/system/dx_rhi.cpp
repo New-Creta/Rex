@@ -683,6 +683,126 @@ namespace rex
       internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, nullptr);
     }
 
+
+
+
+    void set_viewport(CommandList2* cmdList, const Viewport& viewport)
+    {
+      D3D12_VIEWPORT d3d_viewport;
+      d3d_viewport.TopLeftX = viewport.top_left_x;
+      d3d_viewport.TopLeftY = viewport.top_left_y;
+      d3d_viewport.Width = viewport.width;
+      d3d_viewport.Height = viewport.height;
+      d3d_viewport.MinDepth = viewport.min_depth;
+      d3d_viewport.MaxDepth = viewport.max_depth;
+
+      cmdList->get()->RSSetViewports(1, &d3d_viewport);
+    }
+    void set_scissor_rect(CommandList2* cmdList, const ScissorRect& rect)
+    {
+      RECT scissor_rect{};
+      scissor_rect.top = (LONG)rect.top;
+      scissor_rect.left = (LONG)rect.left;
+      scissor_rect.bottom = (LONG)rect.bottom;
+      scissor_rect.right = (LONG)rect.right;
+
+      cmdList->get()->RSSetScissorRects(1, &scissor_rect);
+    }
+
+    void transition_backbuffer(CommandList2* cmdList, D3D12_RESOURCE_STATES state)
+    {
+      internal::get()->swapchain->transition_backbuffer(cmdList->get(), state);
+    }
+    void clear_backbuffer(CommandList2* cmdList, const ResourceSlot& clearState)
+    {
+      ClearStateResource* clear_state = internal::get()->resource_pool.as<ClearStateResource>(clearState);
+      auto& clear_flags = clear_state->get()->flags;
+      if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
+      {
+        DescriptorHandle rtv = internal::get()->swapchain->backbuffer_view();
+        cmdList->get()->ClearRenderTargetView(rtv.get(), clear_state->get()->rgba.data(), 0, nullptr);
+      }
+
+      if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
+      {
+        s32 d3d_clear_flags = 0;
+        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
+        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
+
+        DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
+        cmdList->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
+      }
+    }
+
+    void set_vertex_buffer(CommandList2* cmdList, const ResourceSlot& vb)
+    {
+      D3D12_VERTEX_BUFFER_VIEW view{};
+      VertexBuffer* vertex_buffer = internal::get()->resource_pool.as<VertexBuffer>(vb);
+      view.BufferLocation = vertex_buffer->get()->GetGPUVirtualAddress();
+      view.SizeInBytes = narrow_cast<s32>(vertex_buffer->size());
+      view.StrideInBytes = vertex_buffer->stride();
+
+      cmdList->get()->IASetVertexBuffers(0, 1, &view);
+    }
+    void set_index_buffer(CommandList2* cmdList, const ResourceSlot& ib)
+    {
+      D3D12_INDEX_BUFFER_VIEW view{};
+      IndexBuffer* index_buffer = internal::get()->resource_pool.as<IndexBuffer>(ib);
+      view.BufferLocation = index_buffer->get()->GetGPUVirtualAddress();
+      view.Format = index_buffer->format();
+      view.SizeInBytes = narrow_cast<s32>(index_buffer->size());
+
+      cmdList->get()->IASetIndexBuffer(&view);
+    }
+    void set_constant_buffer(CommandList2* cmdList, s32 idx, const ResourceSlot& cb)
+    {
+      ConstantBuffer* constant_buffer = internal::get()->resource_pool.as<ConstantBuffer>(cb);
+
+      static auto cbv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).gpu_heap_start();
+
+      cmdList->get()->SetGraphicsRootConstantBufferView(idx, constant_buffer->get()->GetGPUVirtualAddress());
+    }
+    void set_primitive_topology(CommandList2* cmdList, renderer::PrimitiveTopology topology)
+    {
+      auto d3d_topology = rex::d3d::to_dx12(topology);
+      cmdList->get()->IASetPrimitiveTopology(d3d_topology);
+    }
+
+    void draw_indexed(CommandList2* cmdList, s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc)
+    {
+      cmdList->get()->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertexLoc, startInstance);
+    }
+    void set_shader(CommandList2* cmdList, const ResourceSlot& slot)
+    {
+      auto* shader_program = internal::get()->resource_pool.as<ShaderProgramResource>(slot);
+      cmdList->get()->SetGraphicsRootSignature(shader_program->get()->root_signature.Get());
+    }
+    void set_pso(CommandList2* cmdList, const ResourceSlot& slot)
+    {
+      auto* pso = internal::get()->resource_pool.as<PipelineState>(slot);
+      cmdList->get()->SetPipelineState(pso->get());
+    }
+
+    void set_render_target(CommandList2* cmdList, DescriptorHandle rtv)
+    {
+      auto rtv = internal::get()->swapchain->backbuffer_view();
+      cmdList->get()->OMSetRenderTargets(1, &rtv.get(), true, nullptr);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     void reset_upload_buffer()
     {
       internal::get()->upload_buffer->reset();

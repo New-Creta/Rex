@@ -97,8 +97,17 @@ namespace rex
       rex::rhi::set_constant_buffer(0, m_constant_buffer, ctx);
 
       // Setup blend factor
-      const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
+      const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
       ctx->OMSetBlendFactor(blend_factor);
+
+      rex::rhi::set_vertex_buffer(ctx, fr->vertex_buffer);
+      rex::rhi::set_index_buffer(ctx, fr->index_buffer);
+      rex::rhi::set_primitive_topology(ctx, PrimitiveTopology::TriangleList);
+      rex::rhi::set_pso(ctx, m_pipeline_state);
+      rex::rhi::set_shader(ctx, m_shader_program);
+      rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx);
+      rex::rhi::set_constant_buffer(ctx, 0, m_constant_buffer);
+      rex::rhi::set_blend_factor(ctx, blend_factor);
     }
     void ImGuiViewport::render_draw_data(ID3D12GraphicsCommandList* ctx)
     {
@@ -181,6 +190,11 @@ namespace rex
             ctx->SetGraphicsRootDescriptorTable(1, texture_handle);
             ctx->RSSetScissorRects(1, &r);
             ctx->DrawIndexedInstanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
+
+
+            rex::rhi::set_graphics_root_desc_table(ctx, 1, texture_handle);
+            rex::rhi::set_scissor_rect(1, r);
+            rex::rhi::draw_indexed_instanced(ctx, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
           }
         }
         global_idx_offset += cmd_list->IdxBuffer.Size;
