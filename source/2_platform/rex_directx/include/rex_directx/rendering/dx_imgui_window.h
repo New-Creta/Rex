@@ -25,7 +25,7 @@ namespace rex
       void clear_render_target(const ImVec4& clearColor);
       void resize_buffers(s32 width, s32 height);
       void present();
-      void yield_thread();
+      void yield_thread_until_in_sync_with_gpu();
 
     private:
       Error init_command_queue(ID3D12Device1* device);

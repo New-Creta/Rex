@@ -34,7 +34,7 @@ namespace rex
     }
     void ImGuiWindow::draw()
     {
-      m_viewport.draw(m_command_list->get());
+      m_viewport.draw(m_command_list.get());
     }
     void ImGuiWindow::end_draw()
     {
@@ -64,7 +64,7 @@ namespace rex
     {
       m_swapchain->get()->Present(0, 0);
     }
-    void ImGuiWindow::yield_thread()
+    void ImGuiWindow::yield_thread_until_in_sync_with_gpu()
     {
       while (m_command_queue->has_reached_latest_fence())
       {

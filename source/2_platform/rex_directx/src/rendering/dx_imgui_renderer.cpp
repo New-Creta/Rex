@@ -106,9 +106,9 @@ namespace rex
 
       // Manually delete main viewport render resources in-case we haven't initialized for viewports
       ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-      if (ImGuiViewport* vd = (ImGuiViewport*)main_viewport->RendererUserData)
+      if (ImGuiViewport* imgui_window = (ImGuiViewport*)main_viewport->RendererUserData)
       {
-        IM_DELETE(vd);
+        IM_DELETE(imgui_window);
         main_viewport->RendererUserData = nullptr;
       }
 
@@ -131,9 +131,9 @@ namespace rex
       ImGui::Render();
 
       ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-      if (ImGuiViewport* vd = (ImGuiViewport*)main_viewport->RendererUserData)
+      if (ImGuiViewport* imgui_window = (ImGuiViewport*)main_viewport->RendererUserData)
       {
-        vd->draw(rhi::cmd_list()->get());
+        imgui_window->draw(rhi::cmd_list());
       }
 
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -421,46 +421,46 @@ namespace rex
     void ImGuiRenderer::create_window(::ImGuiViewport* viewport)
     {
       void* mem = rex::global_debug_allocator().allocate<ImGuiWindow>();
-      ImGuiWindow* vd = new (mem)(ImGuiWindow)(viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_shader_program, m_pipeline_state, m_constant_buffer);
-      viewport->RendererUserData = vd;
+      ImGuiWindow* imgui_window = new (mem)(ImGuiWindow)(viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_shader_program, m_pipeline_state, m_constant_buffer);
+      viewport->RendererUserData = imgui_window;
     }
     void ImGuiRenderer::destroy_window(::ImGuiViewport* viewport)
     {
-      if (ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData)
+      if (ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData)
       {
-        vd->wait_for_pending_operations();
-        rex::global_debug_allocator().destroy(vd);
-        rex::global_debug_allocator().deallocate(vd);
+        imgui_window->wait_for_pending_operations();
+        rex::global_debug_allocator().destroy(imgui_window);
+        rex::global_debug_allocator().deallocate(imgui_window);
       }
       viewport->RendererUserData = nullptr;
     }
     void ImGuiRenderer::render_window(::ImGuiViewport* viewport)
     {
-      ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData;
+      ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
 
-      vd->begin_draw(m_srv_desc_heap);
+      imgui_window->begin_draw(m_srv_desc_heap);
 
       if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
       {
         const ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-        vd->clear_render_target(clear_color);
+        imgui_window->clear_render_target(clear_color);
       }
 
-      vd->draw();
-      vd->end_draw();
+      imgui_window->draw();
+      imgui_window->end_draw();
     }
     void ImGuiRenderer::set_window_size(::ImGuiViewport* viewport, ImVec2 size)
     {
-      ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData;
-      vd->wait_for_pending_operations();
-      vd->resize_buffers(size.x, size.y);
+      ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
+      imgui_window->wait_for_pending_operations();
+      imgui_window->resize_buffers(size.x, size.y);
     }
     void ImGuiRenderer::swap_buffers(::ImGuiViewport* viewport)
     {
-      ImGuiWindow* vd = (ImGuiWindow*)viewport->RendererUserData;
+      ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
       
-      vd->present();
-      vd->yield_thread();
+      imgui_window->present();
+      imgui_window->yield_thread_until_in_sync_with_gpu();
     }
   }
 }

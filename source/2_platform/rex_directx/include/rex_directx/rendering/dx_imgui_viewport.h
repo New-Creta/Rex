@@ -13,6 +13,7 @@
 #include "rex_renderer_core/resource_management/resource_slot.h"
 
 #include "rex_directx/rendering/dx_imgui_frame_context.h"
+#include "rex_directx/system/dx_commandlist2.h"
 
 namespace rex
 {
@@ -24,17 +25,23 @@ namespace rex
     public:
       ImGuiViewport(::ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb);
 
-      void draw(ID3D12GraphicsCommandList* ctx);
+      void draw(rhi::CommandList2* ctx);
       ImGuiFrameContext* current_frame_ctx();
 
     protected:
       void update_to_next_frame_ctx();
 
-      void setup_render_state(ImDrawData* drawData, ID3D12GraphicsCommandList* ctx, class ImGuiRenderBuffer* fr);
-      void render_draw_data(ID3D12GraphicsCommandList* ctx);
+      void setup_render_state(ImDrawData* drawData, rhi::CommandList2* ctx, class ImGuiRenderBuffer* fr);
+      void render_draw_data(rhi::CommandList2* ctx);
 
     private:
       Error init_frame_contexts(ID3D12Device1* device);
+      ImGuiRenderBuffer* current_render_buffer();
+
+      void increase_vertex_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer);
+      void increase_index_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer);
+
+      void update_render_buffer(rhi::CommandList2* ctx, ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer);
 
     private:
       rsl::unique_array<rsl::unique_ptr<ImGuiFrameContext>> m_frame_ctx;

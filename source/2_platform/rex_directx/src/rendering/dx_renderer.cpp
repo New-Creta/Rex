@@ -225,15 +225,27 @@ namespace rex
 
       public:
         rhi::ResourceSlot clear_state;          // the default clear state
-        rhi::ResourceSlot pass_constant_buffer; // Constant buffer used per rendering pass
-        Viewport screen_viewport;         // The viewport pointing to the entire window
-        ScissorRect scissor_rect;                      // The scissor rect pointing to the entire window
-        rsl::vector<RenderItem> render_items;
-        PassConstants pass_constants;
-        DepthInfo depth_info;
-        rhi::ResourceSlot active_pso;
+        Viewport screen_viewport;               // The viewport pointing to the entire window
+        ScissorRect scissor_rect;               // The scissor rect pointing to the entire window
+        rsl::vector<RenderItem> render_items;   // The render items to draw
+        DepthInfo depth_info;                   // Info about the depth settings (eg. near and far plane)
+        rhi::ResourceSlot active_pso;           // The currently active pso
+        bool init_successful;                   // Boolean indicating initialization was successful
 
-        bool init_successful;
+        // To add
+        // Frame resource
+        //  - render target
+        //  - depth stencil buffer
+        //  - command allocator
+        // Command list
+
+
+
+
+        // To be deleted in the future
+        rhi::ResourceSlot pass_constant_buffer; // Constant buffer used per rendering pass
+        PassConstants pass_constants;           // The data used for the pass constants
+        
       };
 
       rsl::unique_ptr<DirectXRenderer> g_renderer; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
