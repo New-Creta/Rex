@@ -36,6 +36,12 @@ namespace rex
 
     private:
       Error init_frame_contexts(ID3D12Device1* device);
+      ImGuiRenderBuffer* current_render_buffer();
+
+      void increase_vertex_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer);
+      void increase_index_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer);
+
+      void update_render_buffer(rhi::CommandList2* ctx, ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer);
 
     private:
       rsl::unique_array<rsl::unique_ptr<ImGuiFrameContext>> m_frame_ctx;
