@@ -4,6 +4,7 @@
 #include "rex_directx/system/dx_rhi.h"
 #include "rex_directx/resources/dx_shader_program_resource.h"
 
+
 namespace rex
 {
   namespace renderer
@@ -24,7 +25,7 @@ namespace rex
       init_frame_contexts(device);
     }
 
-    void ImGuiViewport::draw(ID3D12GraphicsCommandList* ctx)
+    void ImGuiViewport::draw(rhi::CommandList2* ctx)
     {
       render_draw_data(ctx);
     }
@@ -56,7 +57,7 @@ namespace rex
       return m_frame_ctx[m_frame_idx].get();
     }
 
-    void ImGuiViewport::setup_render_state(ImDrawData* drawData, ID3D12GraphicsCommandList* ctx, class ImGuiRenderBuffer* fr)
+    void ImGuiViewport::setup_render_state(ImDrawData* drawData, rhi::CommandList2* ctx, class ImGuiRenderBuffer* fr)
     {
       // Setup orthographic projection matrix into our constant buffer
       // Our visible imgui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize (bottom right).
@@ -84,32 +85,32 @@ namespace rex
       vp.MinDepth = 0.0f;
       vp.MaxDepth = 1.0f;
       vp.TopLeftX = vp.TopLeftY = 0.0f;
-      ctx->RSSetViewports(1, &vp);
+      //ctx->RSSetViewports(1, &vp);
 
-      rex::rhi::set_vertex_buffer(fr->vertex_buffer, ctx);
-      rex::rhi::set_index_buffer(fr->index_buffer, ctx);
+      //rex::rhi::set_vertex_buffer(fr->vertex_buffer, ctx);
+      //rex::rhi::set_index_buffer(fr->index_buffer, ctx);
 
-      ctx->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      ctx->SetPipelineState(rex::rhi::get_pso(m_pipeline_state)->get());
-      ctx->SetGraphicsRootSignature(rex::rhi::get_shader(m_shader_program)->root_signature());
+      //ctx->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+      //ctx->SetPipelineState(rex::rhi::get_pso(m_pipeline_state)->get());
+      //ctx->SetGraphicsRootSignature(rex::rhi::get_shader(m_shader_program)->root_signature());
 
-      rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx);
-      rex::rhi::set_constant_buffer(0, m_constant_buffer, ctx);
+      //rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx->get());
+      //rex::rhi::set_constant_buffer(ctx, 0, m_constant_buffer);
 
       // Setup blend factor
       const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
-      ctx->OMSetBlendFactor(blend_factor);
+      //ctx->OMSetBlendFactor(blend_factor);
 
       rex::rhi::set_vertex_buffer(ctx, fr->vertex_buffer);
       rex::rhi::set_index_buffer(ctx, fr->index_buffer);
       rex::rhi::set_primitive_topology(ctx, PrimitiveTopology::TriangleList);
       rex::rhi::set_pso(ctx, m_pipeline_state);
       rex::rhi::set_shader(ctx, m_shader_program);
-      rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx);
+      rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx->get());
       rex::rhi::set_constant_buffer(ctx, 0, m_constant_buffer);
       rex::rhi::set_blend_factor(ctx, blend_factor);
     }
-    void ImGuiViewport::render_draw_data(ID3D12GraphicsCommandList* ctx)
+    void ImGuiViewport::render_draw_data(rhi::CommandList2* ctx)
     {
       ImDrawData* drawData = m_imgui_viewport->DrawData;
 
@@ -146,8 +147,8 @@ namespace rex
       for (int n = 0; n < drawData->CmdListsCount; n++)
       {
         const ImDrawList* cmd_list = drawData->CmdLists[n];
-        rex::rhi::update_buffer(fr->vertex_buffer, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), ctx, vtx_offset);
-        rex::rhi::update_buffer(fr->index_buffer, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), ctx, idx_offset);
+        rex::rhi::update_buffer(fr->vertex_buffer, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), ctx->get(), vtx_offset);
+        rex::rhi::update_buffer(fr->index_buffer, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), ctx->get(), idx_offset);
         vtx_offset += cmd_list->VtxBuffer.Size * sizeof(ImDrawVert);
         idx_offset += cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx);
       }
@@ -187,14 +188,14 @@ namespace rex
             const D3D12_RECT r = { (LONG)clip_min.x, (LONG)clip_min.y, (LONG)clip_max.x, (LONG)clip_max.y };
             D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
             texture_handle.ptr = (UINT64)pcmd->GetTexID();
-            ctx->SetGraphicsRootDescriptorTable(1, texture_handle);
-            ctx->RSSetScissorRects(1, &r);
-            ctx->DrawIndexedInstanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
+            ctx->get()->SetGraphicsRootDescriptorTable(1, texture_handle);
+            ctx->get()->RSSetScissorRects(1, &r);
+            ctx->get()->DrawIndexedInstanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
 
 
-            rex::rhi::set_graphics_root_desc_table(ctx, 1, texture_handle);
-            rex::rhi::set_scissor_rect(1, r);
-            rex::rhi::draw_indexed_instanced(ctx, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
+            //rex::rhi::set_graphics_root_desc_table(ctx, 1, texture_handle);
+            //rex::rhi::set_scissor_rect(1, r);
+            //rex::rhi::draw_indexed_instanced(ctx, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
           }
         }
         global_idx_offset += cmd_list->IdxBuffer.Size;

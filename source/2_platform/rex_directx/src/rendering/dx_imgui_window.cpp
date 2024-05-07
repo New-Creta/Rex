@@ -34,7 +34,7 @@ namespace rex
     }
     void ImGuiWindow::draw()
     {
-      m_viewport.draw(m_command_list->get());
+      m_viewport.draw(m_command_list.get());
     }
     void ImGuiWindow::end_draw()
     {

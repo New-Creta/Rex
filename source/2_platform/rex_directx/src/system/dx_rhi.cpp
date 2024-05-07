@@ -782,10 +782,13 @@ namespace rex
       auto* pso = internal::get()->resource_pool.as<PipelineState>(slot);
       cmdList->get()->SetPipelineState(pso->get());
     }
+    void set_blend_factor(CommandList2* cmdList, const f32 blendFactor[4])
+    {
+      cmdList->get()->OMSetBlendFactor(blendFactor);
+    }
 
     void set_render_target(CommandList2* cmdList, DescriptorHandle rtv)
     {
-      auto rtv = internal::get()->swapchain->backbuffer_view();
       cmdList->get()->OMSetRenderTargets(1, &rtv.get(), true, nullptr);
     }
 

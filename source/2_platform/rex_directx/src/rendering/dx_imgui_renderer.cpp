@@ -133,7 +133,7 @@ namespace rex
       ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (ImGuiViewport* imgui_window = (ImGuiViewport*)main_viewport->RendererUserData)
       {
-        imgui_window->draw(rhi::cmd_list()->get());
+        imgui_window->draw(rhi::cmd_list());
       }
 
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

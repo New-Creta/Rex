@@ -82,6 +82,7 @@ namespace rex
     void draw_indexed(CommandList2* cmdList, s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
     void set_shader(CommandList2* cmdList, const ResourceSlot& slot);
     void set_pso(CommandList2* cmdList, const ResourceSlot& slot);
+    void set_blend_factor(CommandList2* cmdList, const f32 blendFactor[4]);
 
     void set_render_target(CommandList2* cmdList, DescriptorHandle rtv);
 
