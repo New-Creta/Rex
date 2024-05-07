@@ -3,7 +3,8 @@
 #include "rex_directx/diagnostics/dx_call.h"
 #include "rex_directx/system/dx_rhi.h"
 #include "rex_directx/resources/dx_shader_program_resource.h"
-
+#include "rex_renderer_core/rendering/viewport.h"
+#include "rex_renderer_core/rendering/scissor_rect.h"
 
 namespace rex
 {
@@ -43,6 +44,10 @@ namespace rex
 
       return Error::no_error();
     }
+    ImGuiRenderBuffer* ImGuiViewport::current_render_buffer()
+    {
+      return m_render_buffers[m_frame_idx % m_max_num_frames_in_flight].get();
+    }
 
     void ImGuiViewport::update_to_next_frame_ctx()
     {
@@ -78,29 +83,14 @@ namespace rex
       }
 
       // Setup viewport
-      D3D12_VIEWPORT vp;
-      memset(&vp, 0, sizeof(D3D12_VIEWPORT));
-      vp.Width = drawData->DisplaySize.x;
-      vp.Height = drawData->DisplaySize.y;
-      vp.MinDepth = 0.0f;
-      vp.MaxDepth = 1.0f;
-      vp.TopLeftX = vp.TopLeftY = 0.0f;
-      //ctx->RSSetViewports(1, &vp);
+      Viewport vp{};
+      vp.width = drawData->DisplaySize.x;
+      vp.height = drawData->DisplaySize.y;
+      vp.min_depth = 0.0f;
+      vp.max_depth = 1.0f;
+      vp.top_left_x = vp.top_left_y = 0.0f;
 
-      //rex::rhi::set_vertex_buffer(fr->vertex_buffer, ctx);
-      //rex::rhi::set_index_buffer(fr->index_buffer, ctx);
-
-      //ctx->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-      //ctx->SetPipelineState(rex::rhi::get_pso(m_pipeline_state)->get());
-      //ctx->SetGraphicsRootSignature(rex::rhi::get_shader(m_shader_program)->root_signature());
-
-      //rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx->get());
-      //rex::rhi::set_constant_buffer(ctx, 0, m_constant_buffer);
-
-      // Setup blend factor
-      const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
-      //ctx->OMSetBlendFactor(blend_factor);
-
+      rex::rhi::set_viewport(ctx, vp);
       rex::rhi::set_vertex_buffer(ctx, fr->vertex_buffer);
       rex::rhi::set_index_buffer(ctx, fr->index_buffer);
       rex::rhi::set_primitive_topology(ctx, PrimitiveTopology::TriangleList);
@@ -108,99 +98,109 @@ namespace rex
       rex::rhi::set_shader(ctx, m_shader_program);
       rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx->get());
       rex::rhi::set_constant_buffer(ctx, 0, m_constant_buffer);
+
+      // Setup blend factor
+      const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
       rex::rhi::set_blend_factor(ctx, blend_factor);
     }
     void ImGuiViewport::render_draw_data(rhi::CommandList2* ctx)
     {
-      ImDrawData* drawData = m_imgui_viewport->DrawData;
+      ImDrawData* draw_data = m_imgui_viewport->DrawData;
 
       // Avoid rendering when minimized
-      if (drawData->DisplaySize.x <= 0.0f || drawData->DisplaySize.y <= 0.0f)
+      if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
         return;
 
-      if (drawData->CmdListsCount == 0)
+      if (draw_data->CmdListsCount == 0)
         return;
 
-      ImGuiViewport* vd = this;
       update_to_next_frame_ctx();
-      ImGuiRenderBuffer* fr = m_render_buffers[m_frame_idx % m_max_num_frames_in_flight].get();
 
-      // Create and grow vertex/index buffers if needed
-      if (!fr->vertex_buffer.is_valid() || fr->VertexBufferSize < drawData->TotalVtxCount)
-      {
-        fr->VertexBufferSize = drawData->TotalVtxCount + 5000;
-        fr->vertex_buffer = rex::rhi::create_vertex_buffer(sizeof(ImDrawVert) * fr->VertexBufferSize, sizeof(ImDrawVert));
-      }
-      if (!fr->index_buffer.is_valid() || fr->IndexBufferSize < drawData->TotalIdxCount)
-      {
-        rex::renderer::IndexBufferFormat format = sizeof(ImDrawIdx) == 2
-          ? rex::renderer::IndexBufferFormat::Uint16
-          : rex::renderer::IndexBufferFormat::Uint32;
-        fr->IndexBufferSize = drawData->TotalIdxCount + 10000;
-        fr->index_buffer = rex::rhi::create_index_buffer(fr->IndexBufferSize * sizeof(ImDrawIdx), format);
-      }
+      ImGuiRenderBuffer* render_buffer = current_render_buffer();
 
       // Upload vertex/index data into a single contiguous GPU buffer
-      s32 vtx_offset = 0;
-      s32 idx_offset = 0;
-
-      for (int n = 0; n < drawData->CmdListsCount; n++)
-      {
-        const ImDrawList* cmd_list = drawData->CmdLists[n];
-        rex::rhi::update_buffer(fr->vertex_buffer, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), ctx->get(), vtx_offset);
-        rex::rhi::update_buffer(fr->index_buffer, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), ctx->get(), idx_offset);
-        vtx_offset += cmd_list->VtxBuffer.Size * sizeof(ImDrawVert);
-        idx_offset += cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx);
-      }
+      update_render_buffer(ctx, draw_data, render_buffer);
 
       // Setup desired DX state
-      setup_render_state(drawData, ctx, fr);
+      setup_render_state(draw_data, ctx, render_buffer);
 
       // Render command lists
       // (Because we merged all buffers into a single one, we maintain our own offset into them)
-      int global_vtx_offset = 0;
-      int global_idx_offset = 0;
-      ImVec2 clip_off = drawData->DisplayPos;
-      for (int n = 0; n < drawData->CmdListsCount; n++)
+      s32 global_vtx_offset = 0;
+      s32 global_idx_offset = 0;
+      ImVec2 clip_off = draw_data->DisplayPos;
+      for (s32 n = 0; n < draw_data->CmdListsCount; n++)
       {
-        const ImDrawList* cmd_list = drawData->CmdLists[n];
-        for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
+        const ImDrawList* cmd_list = draw_data->CmdLists[n];
+        for (s32 cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
         {
           const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-          if (pcmd->UserCallback != nullptr)
+          
+          // Project scissor/clipping rectangles into framebuffer space
+          ImVec2 clip_min(pcmd->ClipRect.x - clip_off.x, pcmd->ClipRect.y - clip_off.y);
+          ImVec2 clip_max(pcmd->ClipRect.z - clip_off.x, pcmd->ClipRect.w - clip_off.y);
+          if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
           {
-            // User callback, registered via ImDrawList::AddCallback()
-            // (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset render state.)
-            if (pcmd->UserCallback == ImDrawCallback_ResetRenderState)
-              setup_render_state(drawData, ctx, fr);
-            else
-              pcmd->UserCallback(cmd_list, pcmd);
+            continue;
           }
-          else
-          {
-            // Project scissor/clipping rectangles into framebuffer space
-            ImVec2 clip_min(pcmd->ClipRect.x - clip_off.x, pcmd->ClipRect.y - clip_off.y);
-            ImVec2 clip_max(pcmd->ClipRect.z - clip_off.x, pcmd->ClipRect.w - clip_off.y);
-            if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
-              continue;
 
-            // Apply Scissor/clipping rectangle, Bind texture, Draw
-            const D3D12_RECT r = { (LONG)clip_min.x, (LONG)clip_min.y, (LONG)clip_max.x, (LONG)clip_max.y };
-            D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
-            texture_handle.ptr = (UINT64)pcmd->GetTexID();
-            ctx->get()->SetGraphicsRootDescriptorTable(1, texture_handle);
-            ctx->get()->RSSetScissorRects(1, &r);
-            ctx->get()->DrawIndexedInstanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
+          // Apply Scissor/clipping rectangle, Bind texture, Draw
+          ScissorRect rect{};
+          rect.left = clip_min.x;
+          rect.top = clip_min.y;
+          rect.right = clip_max.x;
+          rect.bottom = clip_max.y;
+          
+          D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
+          texture_handle.ptr = (UINT64)pcmd->GetTexID();
 
-
-            //rex::rhi::set_graphics_root_desc_table(ctx, 1, texture_handle);
-            //rex::rhi::set_scissor_rect(1, r);
-            //rex::rhi::draw_indexed_instanced(ctx, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
-          }
+          rhi::set_scissor_rect(ctx, rect);
+          rhi::set_graphics_root_descriptor_table(ctx, texture_handle);
+          rhi::draw_indexed_instanced(ctx, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
         }
         global_idx_offset += cmd_list->IdxBuffer.Size;
         global_vtx_offset += cmd_list->VtxBuffer.Size;
       }
     }
+
+    void ImGuiViewport::increase_vertex_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
+    {
+      renderBuffer->VertexBufferSize = drawData->TotalVtxCount + 5000;
+      renderBuffer->vertex_buffer = rex::rhi::create_vertex_buffer(sizeof(ImDrawVert) * renderBuffer->VertexBufferSize, sizeof(ImDrawVert));
+    }
+    void ImGuiViewport::increase_index_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
+    {
+      rex::renderer::IndexBufferFormat format = sizeof(ImDrawIdx) == 2
+        ? rex::renderer::IndexBufferFormat::Uint16
+        : rex::renderer::IndexBufferFormat::Uint32;
+      renderBuffer->IndexBufferSize = drawData->TotalIdxCount + 10000;
+      renderBuffer->index_buffer = rex::rhi::create_index_buffer(renderBuffer->IndexBufferSize * sizeof(ImDrawIdx), format);
+    }
+
+    void ImGuiViewport::update_render_buffer(rhi::CommandList2* ctx, ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
+    {
+      // Create and grow vertex/index buffers if needed
+      if (!renderBuffer->vertex_buffer.is_valid() || renderBuffer->VertexBufferSize < drawData->TotalVtxCount)
+      {
+        increase_vertex_buffer(drawData, renderBuffer);
+      }
+      if (!renderBuffer->index_buffer.is_valid() || renderBuffer->IndexBufferSize < drawData->TotalIdxCount)
+      {
+        increase_index_buffer(drawData, renderBuffer);
+      }
+
+      s32 vtx_offset = 0;
+      s32 idx_offset = 0;
+
+      for (s32 n = 0; n < drawData->CmdListsCount; n++)
+      {
+        const ImDrawList* cmd_list = drawData->CmdLists[n];
+        rex::rhi::update_buffer(renderBuffer->vertex_buffer, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), ctx->get(), vtx_offset);
+        rex::rhi::update_buffer(renderBuffer->index_buffer, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), ctx->get(), idx_offset);
+        vtx_offset += cmd_list->VtxBuffer.Size * sizeof(ImDrawVert);
+        idx_offset += cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx);
+      }
+    }
+
   }
 }

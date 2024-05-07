@@ -54,17 +54,11 @@ namespace rex
 
     class CommandList2* cmd_list();
 
-    void set_graphics_root_descriptor_table(ResourceID id);
+    void set_graphics_root_descriptor_table(CommandList2* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE handle);
     Texture2D* get_texture(const ResourceSlot& slot);
 
     ID3D12Device1* get_device();
     DescriptorHeap* get_cbv_uav_srv_heap();
-    DescriptorHandle get_free_handle();
-
-    class ShaderProgramResource* get_shader(const ResourceSlot& slot);
-    class PipelineState* get_pso(const ResourceSlot& slot);
-    //class VertexBuffer* get_vertex_buffer(const ResourceSlot* slot);
-    //class IndexBuffer* get_index_buffer(const ResourceSlot* slot);
 
     DescriptorHandle get_rtv();
 
@@ -79,12 +73,10 @@ namespace rex
     void set_constant_buffer(CommandList2* cmdList, s32 idx, const ResourceSlot& cb);
     void set_primitive_topology(CommandList2* cmdList, renderer::PrimitiveTopology topology);
 
-    void draw_indexed(CommandList2* cmdList, s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
+    void draw_indexed_instanced(CommandList2* cmdList, s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
     void set_shader(CommandList2* cmdList, const ResourceSlot& slot);
     void set_pso(CommandList2* cmdList, const ResourceSlot& slot);
     void set_blend_factor(CommandList2* cmdList, const f32 blendFactor[4]);
-
-    void set_render_target(CommandList2* cmdList, DescriptorHandle rtv);
 
     namespace d3d
     {

@@ -684,8 +684,6 @@ namespace rex
     }
 
 
-
-
     void set_viewport(CommandList2* cmdList, const Viewport& viewport)
     {
       D3D12_VIEWPORT d3d_viewport;
@@ -768,9 +766,9 @@ namespace rex
       cmdList->get()->IASetPrimitiveTopology(d3d_topology);
     }
 
-    void draw_indexed(CommandList2* cmdList, s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc)
+    void draw_indexed_instanced(CommandList2* cmdList, s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation)
     {
-      cmdList->get()->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertexLoc, startInstance);
+      cmdList->get()->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
     void set_shader(CommandList2* cmdList, const ResourceSlot& slot)
     {
@@ -786,25 +784,6 @@ namespace rex
     {
       cmdList->get()->OMSetBlendFactor(blendFactor);
     }
-
-    void set_render_target(CommandList2* cmdList, DescriptorHandle rtv)
-    {
-      cmdList->get()->OMSetRenderTargets(1, &rtv.get(), true, nullptr);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     void reset_upload_buffer()
     {
@@ -1432,10 +1411,9 @@ namespace rex
       return internal::get()->command_list.get();
     }
 
-    void set_graphics_root_descriptor_table(ResourceID id)
+    void set_graphics_root_descriptor_table(CommandList2* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE handle)
     {
-      ResourceSlot slot(id);
-      
+      cmdList->get()->SetGraphicsRootDescriptorTable(1, handle);
     }
 
     ID3D12Device1* get_device()
@@ -1446,21 +1424,8 @@ namespace rex
     {
       return &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     }
-    DescriptorHandle get_free_handle()
-    {
-      return internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).new_free_handle();
-    }
 
 #pragma endregion
-
-    class ShaderProgramResource* get_shader(const ResourceSlot& slot)
-    {
-      return internal::get()->resource_pool.as<ShaderProgramResource>(slot);
-    }
-    class PipelineState* get_pso(const ResourceSlot& slot)
-    {
-      return internal::get()->resource_pool.as<PipelineState>(slot);
-    }
 
     DescriptorHandle get_rtv()
     {
