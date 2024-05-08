@@ -10,7 +10,7 @@ namespace rex
 {
   namespace renderer
   {
-    ImGuiViewport::ImGuiViewport(::ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb)
+    RexImGuiViewport::RexImGuiViewport(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb)
       : m_imgui_viewport(viewport)
       , m_max_num_frames_in_flight(maxNumFramesInFlight)
       , m_frame_idx(0)
@@ -26,12 +26,12 @@ namespace rex
       init_frame_contexts(device);
     }
 
-    void ImGuiViewport::draw(rhi::CommandList2* ctx)
+    void RexImGuiViewport::draw(rhi::CommandList2* ctx)
     {
       render_draw_data(ctx);
     }
 
-    Error ImGuiViewport::init_frame_contexts(ID3D12Device1* device)
+    Error RexImGuiViewport::init_frame_contexts(ID3D12Device1* device)
     {
       // Create command allocator.
       m_frame_ctx = rsl::make_unique<rsl::unique_ptr<ImGuiFrameContext>[]>(m_max_num_frames_in_flight);
@@ -44,12 +44,12 @@ namespace rex
 
       return Error::no_error();
     }
-    ImGuiRenderBuffer* ImGuiViewport::current_render_buffer()
+    ImGuiRenderBuffer* RexImGuiViewport::current_render_buffer()
     {
       return m_render_buffers[m_frame_idx % m_max_num_frames_in_flight].get();
     }
 
-    void ImGuiViewport::update_to_next_frame_ctx()
+    void RexImGuiViewport::update_to_next_frame_ctx()
     {
       ++m_frame_idx;
       if (m_frame_idx == m_max_num_frames_in_flight)
@@ -57,12 +57,12 @@ namespace rex
         m_frame_idx = 0;
       }
     }
-    ImGuiFrameContext* ImGuiViewport::current_frame_ctx()
+    ImGuiFrameContext* RexImGuiViewport::current_frame_ctx()
     {
       return m_frame_ctx[m_frame_idx].get();
     }
 
-    void ImGuiViewport::setup_render_state(ImDrawData* drawData, rhi::CommandList2* ctx, class ImGuiRenderBuffer* fr)
+    void RexImGuiViewport::setup_render_state(ImDrawData* drawData, rhi::CommandList2* ctx, class ImGuiRenderBuffer* fr)
     {
       // Setup orthographic projection matrix into our constant buffer
       // Our visible imgui space lies from draw_data->DisplayPos (top left) to draw_data->DisplayPos+data_data->DisplaySize (bottom right).
@@ -103,7 +103,7 @@ namespace rex
       const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
       rex::rhi::set_blend_factor(ctx, blend_factor);
     }
-    void ImGuiViewport::render_draw_data(rhi::CommandList2* ctx)
+    void RexImGuiViewport::render_draw_data(rhi::CommandList2* ctx)
     {
       ImDrawData* draw_data = m_imgui_viewport->DrawData;
 
@@ -163,12 +163,12 @@ namespace rex
       }
     }
 
-    void ImGuiViewport::increase_vertex_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
+    void RexImGuiViewport::increase_vertex_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
     {
       renderBuffer->VertexBufferSize = drawData->TotalVtxCount + 5000;
       renderBuffer->vertex_buffer = rex::rhi::create_vertex_buffer(sizeof(ImDrawVert) * renderBuffer->VertexBufferSize, sizeof(ImDrawVert));
     }
-    void ImGuiViewport::increase_index_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
+    void RexImGuiViewport::increase_index_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
     {
       rex::renderer::IndexBufferFormat format = sizeof(ImDrawIdx) == 2
         ? rex::renderer::IndexBufferFormat::Uint16
@@ -177,7 +177,7 @@ namespace rex
       renderBuffer->index_buffer = rex::rhi::create_index_buffer(renderBuffer->IndexBufferSize * sizeof(ImDrawIdx), format);
     }
 
-    void ImGuiViewport::update_render_buffer(rhi::CommandList2* ctx, ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
+    void RexImGuiViewport::update_render_buffer(rhi::CommandList2* ctx, ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
     {
       // Create and grow vertex/index buffers if needed
       if (!renderBuffer->vertex_buffer.is_valid() || renderBuffer->VertexBufferSize < drawData->TotalVtxCount)

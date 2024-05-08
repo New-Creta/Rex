@@ -49,6 +49,7 @@ namespace rex
     ResourceSlot create_texture2d(const char* data, DXGI_FORMAT format, s32 width, s32 height);
 
     DescriptorHandle create_texture2d_srv(const ResourceSlot& textureSlot);
+    DescriptorHandle create_texture2d_srv(DescriptorHeap* descriptorHeap, const ResourceSlot& textureSlot);
 
     ScopedCommandList create_scoped_commandlist();
 
@@ -58,7 +59,6 @@ namespace rex
     Texture2D* get_texture(const ResourceSlot& slot);
 
     ID3D12Device1* get_device();
-    DescriptorHeap* get_cbv_uav_srv_heap();
 
     DescriptorHandle get_rtv();
 

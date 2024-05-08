@@ -20,10 +20,10 @@ namespace rex
   namespace renderer
   {
     // Wrapper around a imgui viewport.
-    class ImGuiViewport
+    class RexImGuiViewport
     {
     public:
-      ImGuiViewport(::ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb);
+      RexImGuiViewport(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb);
 
       void draw(rhi::CommandList2* ctx);
       ImGuiFrameContext* current_frame_ctx();
@@ -46,7 +46,7 @@ namespace rex
     private:
       rsl::unique_array<rsl::unique_ptr<ImGuiFrameContext>> m_frame_ctx;
       rsl::unique_array<rsl::unique_ptr<ImGuiRenderBuffer>> m_render_buffers;
-      ::ImGuiViewport* m_imgui_viewport;
+      ImGuiViewport* m_imgui_viewport;
 
       rex::rhi::ResourceSlot m_shader_program;
       rex::rhi::ResourceSlot m_pipeline_state;

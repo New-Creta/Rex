@@ -28,11 +28,11 @@ namespace rex
     public:
       // global functions used for callbacks.
       // Imgui uses functions pointers, so can't use lambdas
-      friend void create_window_callback(::ImGuiViewport* viewport);
-      friend void destroy_window_callback(::ImGuiViewport* viewport);
-      friend void set_window_size_callback(::ImGuiViewport* viewport, ImVec2 size);
-      friend void render_window_callback(::ImGuiViewport* viewport, void* renderArg);
-      friend void swap_buffers_callback(::ImGuiViewport* viewport, void* renderArg);
+      friend void create_window_callback(ImGuiViewport* viewport);
+      friend void destroy_window_callback(ImGuiViewport* viewport);
+      friend void set_window_size_callback(ImGuiViewport* viewport, ImVec2 size);
+      friend void render_window_callback(ImGuiViewport* viewport, void* renderArg);
+      friend void swap_buffers_callback(ImGuiViewport* viewport, void* renderArg);
 
     public:
       ImGuiRenderer(ID3D12Device1* device, s32 numFramesInFlight, DXGI_FORMAT rtvFormat, HWND hwnd);
@@ -51,6 +51,7 @@ namespace rex
       void init_imgui(HWND hwnd);
 
       Error init_gpu_resources();
+      Error init_src_desc_heap();
       Error init_input_layout();
       Error init_shader();
       Error init_font_texture();
@@ -58,17 +59,17 @@ namespace rex
       Error init_pso();
 
       void init_platform_interface();
-      void create_window(::ImGuiViewport* viewport);
-      void destroy_window(::ImGuiViewport* viewport);
-      void render_window(::ImGuiViewport* viewport);
-      void set_window_size(::ImGuiViewport* viewport, ImVec2 size);
-      void swap_buffers(::ImGuiViewport* viewport);
+      void create_window(ImGuiViewport* viewport);
+      void destroy_window(ImGuiViewport* viewport);
+      void render_window(ImGuiViewport* viewport);
+      void set_window_size(ImGuiViewport* viewport, ImVec2 size);
+      void swap_buffers(ImGuiViewport* viewport);
 
     private:
       ID3D12Device1* m_device;                                  // Needed to initialize child windows with their own directx objects
       DXGI_FORMAT                 m_rtv_format;                 // Comes in from the main rendered, to match child windows rtv format with that of the main window
-      rex::rhi::DescriptorHeap* m_srv_desc_heap;                // Probably not needed, rex uses single descriptor heaps throughout the process.
       rex::rhi::DescriptorHandle m_texture_handle;              // the handle to the shader resource view of the font texture
+      rsl::unique_ptr<rex::rhi::DescriptorHeap> m_srv_desc_heap;                // Probably not needed, rex uses single descriptor heaps throughout the process.
       UINT                        m_max_num_frames_in_flight;   // used to store the number of frames we can handle at once.
 
       rex::rhi::ResourceSlot m_shader_program;                 // resource slot for the compiled imgui shader as well as its root signature

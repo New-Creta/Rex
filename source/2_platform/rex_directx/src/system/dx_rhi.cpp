@@ -609,8 +609,13 @@ namespace rex
 
     DescriptorHandle create_texture2d_srv(const ResourceSlot& textureSlot)
     {
+      DescriptorHeap* desc_heap = &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+      return create_texture2d_srv(desc_heap, textureSlot);
+    }
+    DescriptorHandle create_texture2d_srv(DescriptorHeap* descriptorHeap, const ResourceSlot& textureSlot)
+    {
       Texture2D* texture = internal::get()->resource_pool.as<Texture2D>(textureSlot);
-      return internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(texture->get());
+      return descriptorHeap->create_texture2d_srv(texture->get());
     }
 
     void set_vertex_buffer(const rhi::ResourceSlot& vb, struct ID3D12GraphicsCommandList* cmdList)
@@ -1419,10 +1424,6 @@ namespace rex
     ID3D12Device1* get_device()
     {
       return internal::get()->device->get();
-    }
-    DescriptorHeap* get_cbv_uav_srv_heap()
-    {
-      return &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     }
 
 #pragma endregion

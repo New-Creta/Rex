@@ -51,23 +51,23 @@ namespace rex
 
     // global functions used for callbacks.
     // Imgui uses functions pointers, so can't use lambdas
-    void create_window_callback(::ImGuiViewport* viewport)
+    void create_window_callback(ImGuiViewport* viewport)
     {
       g_imgui_renderer->create_window(viewport);
     }
-    void destroy_window_callback(::ImGuiViewport* viewport)
+    void destroy_window_callback(ImGuiViewport* viewport)
     {
       g_imgui_renderer->destroy_window(viewport);
     }
-    void set_window_size_callback(::ImGuiViewport* viewport, ImVec2 size)
+    void set_window_size_callback(ImGuiViewport* viewport, ImVec2 size)
     {
       g_imgui_renderer->set_window_size(viewport, size);
     }
-    void render_window_callback(::ImGuiViewport* viewport, void* /*renderArg*/)
+    void render_window_callback(ImGuiViewport* viewport, void* /*renderArg*/)
     {
       g_imgui_renderer->render_window(viewport);
     }
-    void swap_buffers_callback(::ImGuiViewport* viewport, void* /*renderArg*/)
+    void swap_buffers_callback(ImGuiViewport* viewport, void* /*renderArg*/)
     {
       g_imgui_renderer->swap_buffers(viewport);
     }
@@ -76,7 +76,6 @@ namespace rex
       : m_device(device)
       , m_rtv_format(rtvFormat)
       , m_max_num_frames_in_flight(numFramesInFlight)
-      , m_srv_desc_heap(rhi::get_cbv_uav_srv_heap())
     {
       REX_ASSERT_X(g_imgui_renderer == nullptr, "You can only have 1 imgui renderer");
       g_imgui_renderer = this;
@@ -96,8 +95,8 @@ namespace rex
 
       // Create a dummy ImGui_ImplDX12_ViewportData holder for the main viewport,
       // Since this is created and managed by the application, we will only use the ->Resources[] fields.
-      ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-      main_viewport->RendererUserData = IM_NEW(ImGuiViewport)(main_viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_shader_program, m_pipeline_state, m_constant_buffer);
+      ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+      main_viewport->RendererUserData = IM_NEW(RexImGuiViewport)(main_viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_shader_program, m_pipeline_state, m_constant_buffer);
 
     }
     ImGuiRenderer::~ImGuiRenderer()
@@ -105,8 +104,8 @@ namespace rex
       ImGuiIO& io = ImGui::GetIO();
 
       // Manually delete main viewport render resources in-case we haven't initialized for viewports
-      ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-      if (ImGuiViewport* imgui_window = (ImGuiViewport*)main_viewport->RendererUserData)
+      ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+      if (RexImGuiViewport* imgui_window = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
         IM_DELETE(imgui_window);
         main_viewport->RendererUserData = nullptr;
@@ -130,10 +129,14 @@ namespace rex
     {
       ImGui::Render();
 
-      ::ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-      if (ImGuiViewport* imgui_window = (ImGuiViewport*)main_viewport->RendererUserData)
+      ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+      if (RexImGuiViewport* imgui_window = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
-        imgui_window->draw(rhi::cmd_list());
+        rhi::CommandList2* cmd_list = rhi::cmd_list();
+        ID3D12DescriptorHeap* desc_heap = m_srv_desc_heap->get();
+        cmd_list->get()->SetDescriptorHeaps(1, &desc_heap);
+
+        imgui_window->draw(cmd_list);
       }
 
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -182,6 +185,12 @@ namespace rex
     Error ImGuiRenderer::init_gpu_resources()
     {
       Error err = Error::no_error();
+
+      err = init_src_desc_heap();
+      if (err)
+      {
+        return Error::create_with_log(LogImgui, "Failed to create desc heap for imgui texture");
+      }
 
       err = init_font_texture();
       if (err)
@@ -327,6 +336,27 @@ namespace rex
 
       return Error::no_error();
     }
+    Error ImGuiRenderer::init_src_desc_heap()
+    {
+      D3D12_DESCRIPTOR_HEAP_DESC desc{};
+
+      desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+      desc.NumDescriptors = 1;
+      desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+      desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+
+      wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
+      if (DX_FAILED(m_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
+      {
+        return Error::create_with_log(LogImgui, "Failed to create imgui descriptor heap resource");
+      }
+
+      rhi::set_debug_name_for(desc_heap.Get(), "Imgui's texture descriptor heap");
+
+      m_srv_desc_heap = rsl::make_unique<rhi::DescriptorHeap>(desc_heap, m_device);
+
+      return Error::no_error();
+    }
     Error ImGuiRenderer::init_font_texture()
     {
       // Build texture atlas
@@ -337,7 +367,7 @@ namespace rex
 
       // Upload texture to graphics system
       m_texture = rex::rhi::create_texture2d((const char*)pixels, DXGI_FORMAT_R8G8B8A8_UNORM, width, height);
-      m_texture_handle = rex::rhi::create_texture2d_srv(m_texture);
+      m_texture_handle = rex::rhi::create_texture2d_srv(m_srv_desc_heap.get(), m_texture);
 
       // Store our identifier
       // READ THIS IF THE STATIC_ASSERT() TRIGGERS:
@@ -418,13 +448,13 @@ namespace rex
       platform_io.Renderer_RenderWindow = render_window_callback;
       platform_io.Renderer_SwapBuffers = swap_buffers_callback;
     }
-    void ImGuiRenderer::create_window(::ImGuiViewport* viewport)
+    void ImGuiRenderer::create_window(ImGuiViewport* viewport)
     {
       void* mem = rex::global_debug_allocator().allocate<ImGuiWindow>();
       ImGuiWindow* imgui_window = new (mem)(ImGuiWindow)(viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_shader_program, m_pipeline_state, m_constant_buffer);
       viewport->RendererUserData = imgui_window;
     }
-    void ImGuiRenderer::destroy_window(::ImGuiViewport* viewport)
+    void ImGuiRenderer::destroy_window(ImGuiViewport* viewport)
     {
       if (ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData)
       {
@@ -434,11 +464,11 @@ namespace rex
       }
       viewport->RendererUserData = nullptr;
     }
-    void ImGuiRenderer::render_window(::ImGuiViewport* viewport)
+    void ImGuiRenderer::render_window(ImGuiViewport* viewport)
     {
       ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
 
-      imgui_window->begin_draw(m_srv_desc_heap);
+      imgui_window->begin_draw(m_srv_desc_heap.get());
 
       if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
       {
@@ -449,13 +479,13 @@ namespace rex
       imgui_window->draw();
       imgui_window->end_draw();
     }
-    void ImGuiRenderer::set_window_size(::ImGuiViewport* viewport, ImVec2 size)
+    void ImGuiRenderer::set_window_size(ImGuiViewport* viewport, ImVec2 size)
     {
       ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
       imgui_window->wait_for_pending_operations();
       imgui_window->resize_buffers(size.x, size.y);
     }
-    void ImGuiRenderer::swap_buffers(::ImGuiViewport* viewport)
+    void ImGuiRenderer::swap_buffers(ImGuiViewport* viewport)
     {
       ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
       

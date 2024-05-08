@@ -7,7 +7,7 @@ namespace rex
 {
   namespace renderer
   {
-    ImGuiWindow::ImGuiWindow(::ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb)
+    ImGuiWindow::ImGuiWindow(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb)
       : m_viewport(viewport, device, maxNumFramesInFlight, rtvFormat, shaderProgram, pso, cb)
     {
       // PlatformHandleRaw should always be a HWND, whereas PlatformHandle might be a higher-level handle (e.g. GLFWWindow*, SDL_Window*).
