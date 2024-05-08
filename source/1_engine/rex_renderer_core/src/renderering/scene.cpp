@@ -80,11 +80,11 @@ namespace rex
     {
       // We have a global shader for the scene at the moment
       // In the future, this will be set on an individual model
-      rex::renderer::set_shader(m_shader_program);
+      //rex::renderer::set_shader(m_shader_program);
     }
     void Scene::use_pso()
     {
-      rex::renderer::set_pso(m_pso);
+      //rex::renderer::set_pso(m_pso);
     }
   } // namespace renderer
 } // namespace rex

@@ -128,9 +128,6 @@ namespace rex
           // We mark it as initialization failed
           rsl::scopeguard mark_init_failed = [this]() { init_successful = false; };
 
-          // Create a commands frame, this makes sure all the commands get executed at the end of the scope
-          const rhi::CommandsFrame cmds_frame {};
-
           // Init the clear state
           if(!init_clear_state())
           {
@@ -178,6 +175,8 @@ namespace rex
           // Cull pixels drawn outside of the backbuffer ( such as UI elements )
           scissor_rect = {0, 0, static_cast<f32>(userData.window_width), static_cast<f32>(userData.window_height)};
         }
+
+        // These function should not be here, as it's hardcoded to the shader
         void init_pass_constants(const OutputWindowUserData& userData)
         {
           const f32 width  = static_cast<f32>(userData.window_width);
@@ -303,12 +302,12 @@ namespace rex
 
         for(const auto& render_item: g_renderer->render_items)
         {
-          rhi::set_vertex_buffer(render_item.vb());
-          rhi::set_index_buffer(render_item.ib());
-          rhi::set_constant_buffer(0, render_item.cb());
-          rhi::set_constant_buffer(1, g_renderer->pass_constant_buffer);
+          //rhi::set_vertex_buffer(render_item.vb());
+          //rhi::set_index_buffer(render_item.ib());
+          //rhi::set_constant_buffer(0, render_item.cb());
+          //rhi::set_constant_buffer(1, g_renderer->pass_constant_buffer);
 
-          rhi::set_primitive_topology(render_item.primtive_topology());
+          //rhi::set_primitive_topology(render_item.primtive_topology());
 
           rhi::draw_indexed(1, 0, render_item.index_count(), render_item.start_index(), render_item.base_vertex_loc());
         }

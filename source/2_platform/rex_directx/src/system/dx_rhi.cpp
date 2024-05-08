@@ -54,6 +54,11 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogRhi);
 
+    namespace d3d
+    {
+      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers);
+    }
+
     namespace internal
     {
       // The RHI class. 
@@ -107,6 +112,7 @@ namespace rex
 
       public:
         bool init_successful;
+
         // Keep the debug interface as the last resource to be destroyed
         // it automatically reports if any resources are still active on destruction
         DebugInterface debug_interface;
