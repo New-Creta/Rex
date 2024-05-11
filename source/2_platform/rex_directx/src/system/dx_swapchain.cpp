@@ -12,75 +12,41 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogSwapchain);
 
-    Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount, DescriptorHeap* rtvDescHeap, DescriptorHeap* dsvDescHeap, ResourceHeap* resourceHeap)
+    Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount)
         : m_swapchain(swapchain)
         , m_format(format)
-        , m_buffer_count(bufferCount)
-        , m_rtv_desc_heap(rtvDescHeap)
-        , m_dsv_desc_heap(dsvDescHeap)
-        , m_resource_heap(resourceHeap)
-        , m_current_swapchain_buffer_idx(0)
-        , m_dsv()
     {
-      for (s32 i = 0; i < m_buffer_count; ++i)
+      for (s32 i = 0; i < bufferCount; ++i)
       {
         wrl::ComPtr<ID3D12Resource> buffer;
         m_swapchain->GetBuffer(i, IID_PPV_ARGS(&buffer));
         set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        const DescriptorHandle rtv = m_rtv_desc_heap->create_rtv(buffer.Get());
-        m_swapchain_buffers.emplace_back(buffer, D3D12_RESOURCE_STATE_COMMON, 0);
-        m_swapchain_rtvs.push_back(rtv);
+        m_swapchain_buffers.emplace_back(buffer);
       }
     }
-
-    DescriptorHandle Swapchain::backbuffer_view()
-    {
-      return m_swapchain_rtvs[static_cast<s32>(m_swapchain->GetCurrentBackBufferIndex())];
-    }
-
-    DescriptorHandle Swapchain::depth_stencil_view()
-    {
-      return m_dsv;
-    }
-
-    void Swapchain::transition_backbuffer(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES state)
-    {
-      Resource& backbuffer = m_swapchain_buffers[static_cast<s32>(m_swapchain->GetCurrentBackBufferIndex())];
-      backbuffer.transition(cmdList, state);
-    }
-
     void Swapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
     {
+      s32 buffer_count = m_swapchain_buffers.size();
       m_swapchain_buffers.clear();
-      m_rtv_desc_heap->reset();
 
-      if(DX_FAILED(m_swapchain->ResizeBuffers(m_buffer_count, width, height, m_format, flags)))
+      if(DX_FAILED(m_swapchain->ResizeBuffers(buffer_count, width, height, m_format, flags)))
       {
         REX_ERROR(LogSwapchain, "Failed to resize swapchain buffers");
         return;
       }
 
-      for(s32 i = 0; i < m_buffer_count; ++i)
+      for(s32 i = 0; i < buffer_count; ++i)
       {
         wrl::ComPtr<ID3D12Resource> buffer;
         m_swapchain->GetBuffer(i, IID_PPV_ARGS(&buffer));
         set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        const DescriptorHandle rtv = m_rtv_desc_heap->create_rtv(buffer.Get());
-        m_swapchain_buffers.emplace_back(buffer, D3D12_RESOURCE_STATE_COMMON, 0);
-        m_swapchain_rtvs.push_back(rtv);
-      }
-
-      if (m_resource_heap)
-      {
-        m_depth_stencil_buffer = m_resource_heap->create_depth_stencil_resource(width, height);
-        set_debug_name_for(m_depth_stencil_buffer->get(), "Swapchain Depth Stencil Buffer");
-        m_dsv = m_dsv_desc_heap->create_dsv(m_depth_stencil_buffer->get(), DXGI_FORMAT_D24_UNORM_S8_UINT);
+        m_swapchain_buffers.emplace_back(buffer);
       }
     }
 
     s32 Swapchain::buffer_count() const
     {
-      return m_buffer_count;
+      return m_swapchain_buffers.size();
     }
 
     void Swapchain::present()
@@ -88,19 +54,10 @@ namespace rex
       m_swapchain->Present(0, rsl::no_flags());
     }
 
-    wrl::ComPtr<ID3D12Resource> Swapchain::get_buffer(s32 idx)
+    Resource2* Swapchain::get_buffer(s32 idx)
     {
-      REX_ASSERT_X(idx < m_buffer_count, "Buffer index out of bounds");
-
-      wrl::ComPtr<ID3D12Resource> buffer;
-      m_swapchain->GetBuffer(idx, IID_PPV_ARGS(&buffer));
-      return buffer;
-    }
-    DescriptorHandle Swapchain::get_rtv(s32 idx)
-    {
-      REX_ASSERT_X(idx < m_swapchain_rtvs.size(), "Render target view index out of bounds");
-
-      return m_swapchain_rtvs[idx];
+      REX_ASSERT_X(idx < m_swapchain_buffers.size(), "Buffer index out of bounds");
+      return &m_swapchain_buffers[idx];
     }
 
     IDXGISwapChain3* Swapchain::get()

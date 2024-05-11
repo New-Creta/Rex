@@ -12,7 +12,7 @@
 #include "rex_directx/resources/dx_vertex_shader_resource.h"
 #include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_command_allocator.h"
-#include "rex_directx/system/dx_commandlist.h"
+#include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_feature_shader_model.h"
@@ -184,6 +184,8 @@ namespace rex
           , depth_info({ 1.0f, 1000.0f })
           , screen_viewport()
           , scissor_rect()
+          , command_queue(rhi::create_command_queue())
+          , swapchain(rhi::create_swapchain(s_max_frames_in_flight, command_queue.get(), userData.primary_display_handle))
           , command_list(rhi::create_commandlist())
         {
           // Create a scopeguard so if we exit the renderer too early on
@@ -252,7 +254,8 @@ namespace rex
         {
           for (s32 i = 0; i < cmd_allocators.size(); ++i)
           {
-            render_targets[i] = rhi::create_render_target_from_backbuffer(i);
+            rhi::Resource2* buffer = swapchain->get_buffer(i);
+            render_targets[i] = rhi::create_render_target_from_backbuffer(buffer);
           }
         }
 
@@ -320,7 +323,10 @@ namespace rex
         //  - command allocator
         // Command list
         
+        rsl::unique_ptr<rhi::CommandQueue> command_queue;
+        rsl::unique_ptr<rhi::Swapchain> swapchain;
         rsl::unique_ptr<rhi::CommandList> command_list;
+
         rsl::array<rsl::unique_ptr<rhi::CommandAllocator>, s_max_frames_in_flight> cmd_allocators;
         rsl::array<rsl::unique_ptr<rhi::RenderTarget>, s_max_frames_in_flight> render_targets;
         
@@ -386,8 +392,8 @@ namespace rex
       void render()
       {
         // Begin frame
-        rhi::CommandAllocator* cmd_alloc = g_renderer->cmd_allocators[rhi::back_buffer_index()].get();
-        rhi::RenderTarget* render_target = g_renderer->render_targets[rhi::back_buffer_index()].get();
+        rhi::CommandAllocator* cmd_alloc = g_renderer->cmd_allocators[g_renderer->swapchain->get()->GetCurrentBackBufferIndex()].get();
+        rhi::RenderTarget* render_target = g_renderer->render_targets[g_renderer->swapchain->get()->GetCurrentBackBufferIndex()].get();
         g_renderer->command_list->start_recording_commands(cmd_alloc);
 
         // Begin Draw
@@ -409,8 +415,9 @@ namespace rex
         g_renderer->command_list->stop_recording_commands();
 
         // End Frame
-        rhi::execute_commandlist(g_renderer->command_list.get());
-        rhi::present();
+        g_renderer->command_queue->execute(g_renderer->command_list->dx_object());
+        g_renderer->command_queue->flush();
+        g_renderer->swapchain->present();
 
         //g_renderer->command_queue->exec_commandlist(g_renderer->command_list);
         //g_renderer->swapchain->present();

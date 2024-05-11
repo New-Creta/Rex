@@ -83,12 +83,12 @@ namespace rex
         bool init_d3d_device();
 
         // D3D Command Objects
-        bool init_command_queue();
+        //bool init_command_queue();
 
         bool init_command_list();
 
         // DXGI Swapchain
-        bool init_swapchain(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight);
+        //bool init_swapchain(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight);
 
         // Resource Heaps
         bool init_resource_heaps();
@@ -101,7 +101,7 @@ namespace rex
         bool init_pipeline_library();
 
         // Upload buffers
-        bool init_upload_buffers();
+        //bool init_upload_buffers();
 
       private:
         constexpr static s32 s_num_rtv_descs = 8;
@@ -117,13 +117,13 @@ namespace rex
         DebugInterface debug_interface;
         rsl::unique_ptr<dxgi::Factory> factory;
         rsl::unique_ptr<DirectXDevice> device;
-        rsl::unique_ptr<Swapchain> swapchain;
-        rsl::unique_ptr<CommandQueue> command_queue;
+        //rsl::unique_ptr<Swapchain> swapchain;
+        //rsl::unique_ptr<CommandQueue> command_queue;
         rsl::unique_ptr<CommandAllocator> command_allocator;
         //rsl::unique_ptr<CommandList> command_list;
         rsl::unique_ptr<ResourceHeap> heap;
-        rsl::unique_ptr<Resource> depth_stencil_buffer;
-        rsl::unique_ptr<UploadBuffer> upload_buffer;
+        //rsl::unique_ptr<Resource> depth_stencil_buffer;
+        //rsl::unique_ptr<UploadBuffer> upload_buffer;
         rsl::unique_ptr<PipelineLibrary> pso_lib;
         ResourcePool resource_pool;
         
@@ -157,7 +157,7 @@ namespace rex
       // Flush the command queue, so we can be sure the entire rhi is setup
       // and the gpu has all the resources it needs by the time we exit
       // the initialization phase.
-      internal::get()->command_queue->flush();
+      //internal::get()->command_queue->flush();
 
       return internal::get()->init_successful;
     }
@@ -311,16 +311,73 @@ namespace rex
       return rsl::make_unique<CommandList>(cmd_list);
     }
 
-    s32 back_buffer_index()
-    {
-      return internal::get()->swapchain->get()->GetCurrentBackBufferIndex();
-    }
+    //s32 back_buffer_index()
+    //{
+    //  return internal::get()->swapchain->get()->GetCurrentBackBufferIndex();
+    //}
 
-    void execute_commandlist(CommandList* cmdList)
+    //void execute_commandlist(CommandList* cmdList)
+    //{
+    //  ID3D12CommandList* d3d_cmdlist = cmdList->dx_object();
+    //  internal::get()->command_queue->get()->ExecuteCommandLists(1, &d3d_cmdlist);
+    //  internal::get()->command_queue->flush();
+    //}
+
+    rsl::unique_ptr<CommandQueue> create_command_queue()
     {
-      ID3D12CommandList* d3d_cmdlist = cmdList->dx_object();
-      internal::get()->command_queue->get()->ExecuteCommandLists(1, &d3d_cmdlist);
-      internal::get()->command_queue->flush();
+      // Command Queue
+      wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
+      D3D12_COMMAND_QUEUE_DESC queue_desc = {};
+      queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+      queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+      if (DX_FAILED(internal::get()->device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
+      {
+        REX_ERROR(LogRhi, "Failed to create command queue");
+        return false;
+      }
+
+      rhi::set_debug_name_for(d3d_command_queue.Get(), "Global Command Queue");
+
+      // Fence
+      wrl::ComPtr<ID3D12Fence> fence;
+      if (DX_FAILED(internal::get()->device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
+      {
+        REX_ERROR(LogRhi, "Failed to create DX fence, to synchronize CPU/GPU");
+        return false;
+      }
+
+      rhi::set_debug_name_for(fence.Get(), "Global Fence");
+      return rsl::make_unique<CommandQueue>(d3d_command_queue, fence);
+    }
+    rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, CommandQueue* commandQueue, void* primaryDisplayHandle)
+    {
+      DXGI_SWAP_CHAIN_DESC1 sd{};
+      sd.Width = 0;
+      sd.Height = 0;
+      sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+      sd.SampleDesc.Count = 1;
+      sd.SampleDesc.Quality = 0;
+      sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+      sd.BufferCount = bufferCount;
+      sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+      sd.AlphaMode - DXGI_ALPHA_MODE_UNSPECIFIED;
+      sd.Stereo = false;
+      sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+
+      // Note: swap chain uses queue to perform flush.
+      rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = internal::get()->factory->as<IDXGIFactory4>();
+      rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
+      if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(commandQueue->get(), (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
+      {
+        REX_ERROR(LogRhi, "Failed to create swap chain");
+        return false;
+      }
+
+      rhi::set_debug_name_for(d3d_swapchain.Get(), "SwapChain");
+      wrl::ComPtr<IDXGISwapChain3> d3d_swapchain_3;
+      DX_CALL(d3d_swapchain.As(&d3d_swapchain_3));
+
+      return rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount);
     }
 
     rsl::unique_ptr<CommandAllocator> create_command_allocator()
@@ -335,12 +392,10 @@ namespace rex
       return rsl::make_unique<rex::rhi::CommandAllocator>(allocator);
 
     }
-    rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(s32 backBufferIdx)
+    rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource)
     {
-      wrl::ComPtr<ID3D12Resource> backbuffer = internal::get()->swapchain->get_buffer(backBufferIdx);
-      DescriptorHandle rtv = internal::get()->swapchain->get_rtv(backBufferIdx);
-
-      return rsl::make_unique<RenderTarget>(backbuffer, rtv);
+      DescriptorHandle rtv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(resource->dx_object());
+      return rsl::make_unique<RenderTarget>(resource->dx_object(), rtv);
     }
 
 
@@ -676,10 +731,10 @@ namespace rex
     //    //internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
     //  }
     //}
-    void present()
-    {
-      internal::get()->swapchain->present();
-    }
+    //void present()
+    //{
+    //  internal::get()->swapchain->present();
+    //}
 
     //DescriptorHandle create_texture2d_srv(const ResourceSlot& textureSlot)
     //{
@@ -1024,11 +1079,11 @@ namespace rex
       // 3) we create the command queue.
       // The command queue is used to send commands to the gpu
       // It also holds the fence for syncronysation between cpu and gpu
-      if (!init_command_queue())
-      {
-        REX_ERROR(LogRhi, "Failed to create command queue");
-        return;
-      }
+      //if (!init_command_queue())
+      //{
+      //  REX_ERROR(LogRhi, "Failed to create command queue");
+      //  return;
+      //}
 
       // 4) Create the global command list
       // A gpu works with commands, that get added to a command list.
@@ -1067,11 +1122,11 @@ namespace rex
       // 7) we need to create a swapchain which is responsible of presenting.
       // There's no benefit in creating all the above systems if we don't have anything
       // to actually present something on screen, that's what the swapchain is for.
-      if (!init_swapchain(userData, maxFramesInFlight))
-      {
-        REX_ERROR(LogRhi, "Failed to create swapchain");
-        return;
-      }
+      //if (!init_swapchain(userData, maxFramesInFlight))
+      //{
+      //  REX_ERROR(LogRhi, "Failed to create swapchain");
+      //  return;
+      //}
 
       // 8) Create the pipeline library
       // This holds all the pso objects we need.
@@ -1087,11 +1142,11 @@ namespace rex
       // To make sure we can upload data to the gpu
       // we need to make sure the upload buffers 
       // are create which perform this upload for us
-      if (!init_upload_buffers())
-      {
-        REX_ERROR(LogRhi, "Failed to create upload buffers");
-        return;
-      }
+      //if (!init_upload_buffers())
+      //{
+      //  REX_ERROR(LogRhi, "Failed to create upload buffers");
+      //  return;
+      //}
 
       // 10) Execute the commandlist to finish initialization
       //command_list->stop_recording_commands();
@@ -1106,7 +1161,7 @@ namespace rex
       if (device)
       {
         // A command queue needs to be flushed to shutdown properly
-        command_queue->flush();
+        //command_queue->flush();
 
         // Now that all gpu commands are cleared, we can release all resources
       }
@@ -1258,34 +1313,34 @@ namespace rex
     }
 
     // D3D Command Objects
-    bool internal::RenderHardwareInfrastructure::init_command_queue()
-    {
-      // Command Queue
-      wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
-      D3D12_COMMAND_QUEUE_DESC queue_desc = {};
-      queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-      queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-      if (DX_FAILED(device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
-      {
-        REX_ERROR(LogRhi, "Failed to create command queue");
-        return false;
-      }
+    //bool internal::RenderHardwareInfrastructure::init_command_queue()
+    //{
+    //  // Command Queue
+    //  wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
+    //  D3D12_COMMAND_QUEUE_DESC queue_desc = {};
+    //  queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    //  queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    //  if (DX_FAILED(device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
+    //  {
+    //    REX_ERROR(LogRhi, "Failed to create command queue");
+    //    return false;
+    //  }
 
-      rhi::set_debug_name_for(d3d_command_queue.Get(), "Global Command Queue");
+    //  rhi::set_debug_name_for(d3d_command_queue.Get(), "Global Command Queue");
 
-      // Fence
-      wrl::ComPtr<ID3D12Fence> fence;
-      if (DX_FAILED(device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
-      {
-        REX_ERROR(LogRhi, "Failed to create DX fence, to synchronize CPU/GPU");
-        return false;
-      }
+    //  // Fence
+    //  wrl::ComPtr<ID3D12Fence> fence;
+    //  if (DX_FAILED(device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
+    //  {
+    //    REX_ERROR(LogRhi, "Failed to create DX fence, to synchronize CPU/GPU");
+    //    return false;
+    //  }
 
-      rhi::set_debug_name_for(fence.Get(), "Global Fence");
-      command_queue = rsl::make_unique<CommandQueue>(d3d_command_queue, fence);
+    //  rhi::set_debug_name_for(fence.Get(), "Global Fence");
+    //  command_queue = rsl::make_unique<CommandQueue>(d3d_command_queue, fence);
 
-      return true;
-    }
+    //  return true;
+    //}
 
     bool internal::RenderHardwareInfrastructure::init_command_list()
     {
@@ -1317,42 +1372,42 @@ namespace rex
     }
 
     // DXGI Swapchain
-    bool internal::RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight)
-    {
-      DXGI_SWAP_CHAIN_DESC1 sd{};
-      sd.Width = 0;
-      sd.Height = 0;
-      sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-      sd.SampleDesc.Count = 1;
-      sd.SampleDesc.Quality = 0;
-      sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-      sd.BufferCount = maxFramesInFlight;
-      sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-      sd.AlphaMode - DXGI_ALPHA_MODE_UNSPECIFIED;
-      sd.Stereo = false;
-      sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+    //bool internal::RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight)
+    //{
+    //  DXGI_SWAP_CHAIN_DESC1 sd{};
+    //  sd.Width = 0;
+    //  sd.Height = 0;
+    //  sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    //  sd.SampleDesc.Count = 1;
+    //  sd.SampleDesc.Quality = 0;
+    //  sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    //  sd.BufferCount = maxFramesInFlight;
+    //  sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    //  sd.AlphaMode - DXGI_ALPHA_MODE_UNSPECIFIED;
+    //  sd.Stereo = false;
+    //  sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
 
-      // Note: swap chain uses queue to perform flush.
-      rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = factory->as<IDXGIFactory4>();
-      rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
-      if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(command_queue->get(), (HWND)userData.primary_display_handle , &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
-      {
-        REX_ERROR(LogRhi, "Failed to create swap chain");
-        return false;
-      }
+    //  // Note: swap chain uses queue to perform flush.
+    //  rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = factory->as<IDXGIFactory4>();
+    //  rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
+    //  if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(command_queue->get(), (HWND)userData.primary_display_handle , &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
+    //  {
+    //    REX_ERROR(LogRhi, "Failed to create swap chain");
+    //    return false;
+    //  }
 
-      rhi::set_debug_name_for(d3d_swapchain.Get(), "SwapChain");
-      wrl::ComPtr<IDXGISwapChain3> d3d_swapchain_3;
-      DX_CALL(d3d_swapchain.As(&d3d_swapchain_3));
+    //  rhi::set_debug_name_for(d3d_swapchain.Get(), "SwapChain");
+    //  wrl::ComPtr<IDXGISwapChain3> d3d_swapchain_3;
+    //  DX_CALL(d3d_swapchain.As(&d3d_swapchain_3));
 
-      DescriptorHeap* rtv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-      DescriptorHeap* dsv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-      swapchain = rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount, rtv_desc_heap, dsv_desc_heap, heap.get());
+    //  DescriptorHeap* rtv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    //  DescriptorHeap* dsv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    //  //swapchain = rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount, rtv_desc_heap, dsv_desc_heap, heap.get());
 
-      //swapchain->resize_buffers(userData.window_width, userData.window_height, DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
+    //  //swapchain->resize_buffers(userData.window_width, userData.window_height, DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
 
-      return true;
-    }
+    //  return true;
+    //}
 
     // Resource Heaps
     bool internal::RenderHardwareInfrastructure::init_resource_heaps()
@@ -1442,24 +1497,24 @@ namespace rex
     }
 
     // Upload buffers
-    bool internal::RenderHardwareInfrastructure::init_upload_buffers()
-    {
-      // an intermediate upload heap.
-      CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
-      auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(100_mib);
+    //bool internal::RenderHardwareInfrastructure::init_upload_buffers()
+    //{
+    //  // an intermediate upload heap.
+    //  CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
+    //  auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(100_mib);
 
-      wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
-      if (DX_FAILED(device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
-      {
-        REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
-        return {};
-      }
+    //  wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
+    //  if (DX_FAILED(device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
+    //  {
+    //    REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
+    //    return {};
+    //  }
 
-      set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
-      upload_buffer = rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
+    //  set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
+    //  upload_buffer = rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
 
-      return true;
-    }
+    //  return true;
+    //}
 
     //CommandList* cmd_list()
     //{

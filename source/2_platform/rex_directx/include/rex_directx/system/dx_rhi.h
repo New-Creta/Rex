@@ -13,8 +13,11 @@
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
 #include "rex_directx/system/dx_commandlist.h"
+#include "rex_directx/system/dx_command_queue.h"
+#include "rex_directx/system/dx_swapchain.h"
 #include "rex_directx/system/dx_pipeline_library.h"
 #include "rex_directx/system/dx_texture_2d.h"
+#include "rex_directx/system/dx_resource.h"
 #include "rex_directx/resources/dx_upload_buffer.h"
 
 #include "rex_std/string_view.h"
@@ -102,9 +105,10 @@ namespace rex
 
     void execute_commandlist(CommandList* cmdList);
 
+    rsl::unique_ptr<CommandQueue> create_command_queue();
+    rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, CommandQueue* commandQueue, void* primaryDisplayHandle);
     rsl::unique_ptr<CommandAllocator> create_command_allocator();
-    rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(s32 backBufferIdx);
-
+    rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource);
 
 
     // Resource Creation
