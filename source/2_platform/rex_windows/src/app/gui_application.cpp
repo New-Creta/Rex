@@ -31,6 +31,8 @@
 #include "rex_engine/event_system/events/window/window_resize.h"
 #include "rex_engine/event_system/events/app/quit_app.h"
 
+#include "rex_directx/rendering/dx_renderer.h"
+
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
 
@@ -101,18 +103,18 @@ namespace rex
         // don't render when the application is paused
         if(!m_app_instance->is_marked_for_destroy())
         {
-          pre_user_draw();
+          //pre_user_draw();
 
           // TODO: this call eventually has to go.
           // we will query the scenegraph and pull geometry from the scene instead of letting the user
           // execute draw commands manually. However, for the setup of this framework we will
           // provide this API to be able to execute draw commands properly
-          m_on_draw();
+          //m_on_draw();
 
           // all command are now queued, let's render
           renderer::render();
 
-          post_user_draw();
+          //post_user_draw();
         }
 
         // update the timing stats
