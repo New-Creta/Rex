@@ -25,7 +25,7 @@ namespace rex
       void render();
       void shutdown();
 
-      RenderItem* add_render_item(const RenderItemDesc& desc);
+      //RenderItem* add_render_item(const RenderItemDesc& desc);
 
       s32 max_frames_in_flight();
 

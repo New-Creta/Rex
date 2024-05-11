@@ -8,10 +8,10 @@ namespace rex
 {
   namespace rhi
   {
-    class CommandList2
+    class CommandList
     {
     public:
-      CommandList2(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList);
+      CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList);
 
       void start_recording_commands(CommandAllocator* alloc, ID3D12PipelineState* pso = nullptr);
       void stop_recording_commands();

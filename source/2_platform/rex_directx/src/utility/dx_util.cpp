@@ -433,7 +433,7 @@ namespace rex
       return invalid_obj<D3D12_STENCIL_OP>();
     }
 
-    D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRange range)
+    D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range)
     {
       D3D12_DESCRIPTOR_RANGE range_desc{};
       range_desc.BaseShaderRegister = range.base_shader_register;
@@ -457,6 +457,44 @@ namespace rex
 
       return invalid_obj<D3D12_DESCRIPTOR_RANGE_TYPE>();
     }
+
+    D3D12_RESOURCE_STATES to_dx12(ResourceState state)
+    {
+      switch (state)
+      {
+      case rex::ResourceState::Common:                                  return D3D12_RESOURCE_STATE_COMMON                                   ;
+      case rex::ResourceState::VertexAndConstantBuffer:                 return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER               ;
+      case rex::ResourceState::IndexBuffer:                             return D3D12_RESOURCE_STATE_INDEX_BUFFER                             ;
+      case rex::ResourceState::RenderTarget:                            return D3D12_RESOURCE_STATE_RENDER_TARGET                            ;
+      case rex::ResourceState::UnorderedAccess:                         return D3D12_RESOURCE_STATE_UNORDERED_ACCESS                         ;
+      case rex::ResourceState::DepthWrite:                              return D3D12_RESOURCE_STATE_DEPTH_WRITE                              ;
+      case rex::ResourceState::DepthRead:                               return D3D12_RESOURCE_STATE_DEPTH_READ                               ;
+      case rex::ResourceState::NonPixelShaderResource:                  return D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE                ;
+      case rex::ResourceState::PixelShaderResource:                     return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE                    ;
+      case rex::ResourceState::StreamOut:                               return D3D12_RESOURCE_STATE_STREAM_OUT                               ;
+      case rex::ResourceState::IndirectArgument:                        return D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT                        ;
+      case rex::ResourceState::CopyDest:                                return D3D12_RESOURCE_STATE_COPY_DEST                                ;
+      case rex::ResourceState::CopySource:                              return D3D12_RESOURCE_STATE_COPY_SOURCE                              ;
+      case rex::ResourceState::ResolveDest:                             return D3D12_RESOURCE_STATE_RESOLVE_DEST                             ;
+      case rex::ResourceState::ResolveSource:                           return D3D12_RESOURCE_STATE_RESOLVE_SOURCE                           ;
+      case rex::ResourceState::RaytracingAccelerationStructure:         return D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE        ;
+      case rex::ResourceState::ShadingRateSource:                       return D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE                      ;
+      case rex::ResourceState::GenericRead:                             return D3D12_RESOURCE_STATE_GENERIC_READ                             ;
+      case rex::ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
+      case rex::ResourceState::Predication:                             return D3D12_RESOURCE_STATE_PREDICATION                              ;
+      case rex::ResourceState::VideoDecodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_DECODE_READ                        ;
+      case rex::ResourceState::VideoDecodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE                       ;
+      case rex::ResourceState::VideoProcessRead:                        return D3D12_RESOURCE_STATE_VIDEO_PROCESS_READ                       ;
+      case rex::ResourceState::VideoProcessWrite:                       return D3D12_RESOURCE_STATE_VIDEO_PROCESS_WRITE                      ;
+      case rex::ResourceState::VideoEncodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_ENCODE_READ                        ;
+      case rex::ResourceState::VideoEncodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_ENCODE_WRITE                       ;
+      default:
+        break;
+      }
+
+      return invalid_obj<D3D12_RESOURCE_STATES>();
+    }
+
 
   }
 } // namespace rex

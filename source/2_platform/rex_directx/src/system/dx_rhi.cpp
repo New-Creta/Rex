@@ -13,7 +13,7 @@
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_command_allocator.h"
 #include "rex_directx/system/dx_commandlist.h"
-#include "rex_directx/system/dx_commandlist2.h"
+#include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/system/dx_resource.h"
@@ -54,10 +54,10 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogRhi);
 
-    namespace d3d
-    {
-      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers);
-    }
+    //namespace d3d
+    //{
+    //  wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers);
+    //}
 
     namespace internal
     {
@@ -67,7 +67,7 @@ namespace rex
       struct RenderHardwareInfrastructure
       {
       public:
-        RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData);
+        RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight);
         ~RenderHardwareInfrastructure();
 
       private:
@@ -88,7 +88,7 @@ namespace rex
         bool init_command_list();
 
         // DXGI Swapchain
-        bool init_swapchain(const renderer::OutputWindowUserData& userData);
+        bool init_swapchain(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight);
 
         // Resource Heaps
         bool init_resource_heaps();
@@ -104,7 +104,6 @@ namespace rex
         bool init_upload_buffers();
 
       private:
-        constexpr static s32 s_swapchain_buffer_count = 2;
         constexpr static s32 s_num_rtv_descs = 8;
         constexpr static s32 s_num_dsv_descs = 1;
         constexpr static s32 s_num_cbv_descs = 128;
@@ -121,7 +120,7 @@ namespace rex
         rsl::unique_ptr<Swapchain> swapchain;
         rsl::unique_ptr<CommandQueue> command_queue;
         rsl::unique_ptr<CommandAllocator> command_allocator;
-        rsl::unique_ptr<CommandList2> command_list;
+        //rsl::unique_ptr<CommandList> command_list;
         rsl::unique_ptr<ResourceHeap> heap;
         rsl::unique_ptr<Resource> depth_stencil_buffer;
         rsl::unique_ptr<UploadBuffer> upload_buffer;
@@ -144,9 +143,9 @@ namespace rex
       return internal::get()->device->info();
     }
 
-    bool init(const renderer::OutputWindowUserData& userData)
+    bool init(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight)
     {
-      internal::g_rhi = rsl::make_unique<internal::RenderHardwareInfrastructure>(userData);
+      internal::g_rhi = rsl::make_unique<internal::RenderHardwareInfrastructure>(userData, maxFramesInFlight);
 
       if (!internal::get()->init_successful)
       {
@@ -169,775 +168,820 @@ namespace rex
 
     void prepare_user_initialization()
     {
-      reset_command_list(ResourceSlot::make_invalid());
+      //reset_command_list(ResourceSlot::make_invalid());
     }
     void finish_user_initialization()
     {
-      exec_command_list();
-      flush_command_queue();
+      //exec_command_list();
+      //flush_command_queue();
     }
 
-    // Command line interface
-    void reset_command_list(const ResourceSlot& psoSlot)
+    //// Command line interface
+    //void reset_command_list(const ResourceSlot& psoSlot)
+    //{
+    //  ID3D12PipelineState* pso = nullptr;
+    //  if (psoSlot.is_valid())
+    //  {
+    //    pso = internal::get()->resource_pool.as<PipelineState>(psoSlot)->get();
+    //  }
+    //  internal::get()->command_list->start_recording_commands(internal::get()->command_allocator.get(), pso);
+
+    //  ID3D12DescriptorHeap* heap = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).get();
+    //  internal::get()->command_list->get()->SetDescriptorHeaps(1, &heap);
+    //}
+    //void exec_command_list()
+    //{
+    //  internal::get()->command_list->stop_recording_commands();
+    //  ID3D12CommandList* cmdlist = internal::get()->command_list->get();
+    //  internal::get()->command_queue->get()->ExecuteCommandLists(1, &cmdlist);
+    //}
+    //void flush_command_queue()
+    //{
+    //  internal::get()->command_queue->flush();
+    //}
+
+    // shader API
+    //ResourceSlot compile_shader(const CompileShaderDesc& desc)
+    //{
+    //  // Check if we don't have the compiled shader already
+    //  ResourceID id = hash_resource_desc(desc);
+    //  if (internal::get()->resource_pool.has_resource(id))
+    //  {
+    //    return internal::get()->resource_pool.at(id);
+    //  }
+
+    //  // If we don't have it already, compile the shader
+    //  ShaderCompiler compiler;
+    //  wrl::ComPtr<ID3DBlob> byte_code = compiler.compile_shader(desc);
+
+    //  if (!byte_code)
+    //  {
+    //    REX_ERROR(LogRhi, "Failed to compile shader");
+    //    return ResourceSlot::make_invalid();
+    //  }
+
+    //  // store the new compiled shader with its id in the resource pool
+    //  switch (desc.shader_type)
+    //  {
+    //  case ShaderType::Vertex:
+    //    return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
+    //    break;
+    //  case ShaderType::Pixel:
+    //    return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
+    //    break;
+
+    //  default:
+    //    REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
+    //  }
+
+    //  return ResourceSlot::make_invalid();
+
+    //}
+    //ResourceSlot link_shader(const LinkShaderDesc& desc)
+    //{
+    //  // If there's already a linked shader, return it.
+    //  ResourceID id = hash_resource_desc(desc);
+    //  if (internal::get()->resource_pool.has_resource(id))
+    //  {
+    //    return internal::get()->resource_pool.at(id);
+    //  }
+
+    //  // If not link the shader with the params provided
+    //  auto root_sig = d3d::create_shader_root_signature(desc.constants, desc.desc_tables, desc.samplers);
+
+    //  if (!root_sig)
+    //  {
+    //    REX_ERROR(LogRhi, "Failed to create root signature");
+    //    return ResourceSlot::make_invalid();
+    //  }
+
+    //  auto* vertex_shader = internal::get()->resource_pool.as<VertexShaderResource>(desc.vertex_shader);
+    //  auto* pixel_shader = internal::get()->resource_pool.as<PixelShaderResource>(desc.pixel_shader);
+
+    //  rsl::unique_array<ShaderParameterLayoutDescription> constants = rsl::make_unique<ShaderParameterLayoutDescription[]>(desc.constants.count());
+    //  rsl::memcpy(constants.get(), desc.constants.get(), desc.constants.byte_size());
+
+    //  rsl::unique_array<DescriptorTableDescription> desc_tables = rsl::make_unique<DescriptorTableDescription[]>(desc.desc_tables.count());
+    //  rsl::memcpy(desc_tables.get(), desc.desc_tables.get(), desc.desc_tables.byte_size());
+
+    //  rsl::unique_array<ShaderSamplerDescription> samplers = rsl::make_unique<ShaderSamplerDescription[]>(desc.samplers.count());
+    //  rsl::memcpy(samplers.get(), desc.samplers.get(), desc.samplers.byte_size());
+
+    //  // create a combined shader object with the root sig, the vertex shader and the pixel shader
+    //  return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(id, root_sig, vertex_shader, pixel_shader, rsl::move(constants), rsl::move(desc_tables), rsl::move(samplers)));
+    //}
+    //ResourceSlot create_shader(const ShaderDesc& desc)
+    //{
+    //  // Check if the shader isn't already loaded
+    //  ResourceID id = hash_resource_desc(desc);
+    //  if (internal::get()->resource_pool.has_resource(id))
+    //  {
+    //    return internal::get()->resource_pool.at(id);
+    //  }
+
+    //  // If the shader hasn't been loaded before
+    //  wrl::ComPtr<ID3DBlob> byte_code = rex::d3d::create_blob(desc.shader_byte_code);
+
+    //  switch (desc.shader_type)
+    //  {
+    //  case ShaderType::Vertex: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
+    //  case ShaderType::Pixel: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
+
+    //  default:
+    //    REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
+    //  }
+
+    //  return ResourceSlot::make_invalid();
+    //}
+
+
+
+
+
+    rsl::unique_ptr<CommandList> create_commandlist()
     {
-      ID3D12PipelineState* pso = nullptr;
-      if (psoSlot.is_valid())
+      wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
+      if (DX_FAILED(internal::get()->device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, internal::get()->command_allocator->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
       {
-        pso = internal::get()->resource_pool.as<PipelineState>(psoSlot)->get();
+        REX_ERROR(LogRhi, "Failed to create command list");
+        return false;
       }
-      internal::get()->command_list->start_recording_commands(internal::get()->command_allocator.get(), pso);
 
-      ID3D12DescriptorHeap* heap = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).get();
-      internal::get()->command_list->get()->SetDescriptorHeaps(1, &heap);
+      rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
+      return rsl::make_unique<CommandList>(cmd_list);
     }
-    void exec_command_list()
+
+    s32 back_buffer_index()
     {
-      internal::get()->command_list->stop_recording_commands();
-      ID3D12CommandList* cmdlist = internal::get()->command_list->get();
-      internal::get()->command_queue->get()->ExecuteCommandLists(1, &cmdlist);
+      return internal::get()->swapchain->get()->GetCurrentBackBufferIndex();
     }
-    void flush_command_queue()
+
+    void execute_commandlist(CommandList* cmdList)
     {
+      ID3D12CommandList* d3d_cmdlist = cmdList->dx_object();
+      internal::get()->command_queue->get()->ExecuteCommandLists(1, &d3d_cmdlist);
       internal::get()->command_queue->flush();
     }
 
-    // shader API
-    ResourceSlot compile_shader(const CompileShaderDesc& desc)
+    rsl::unique_ptr<CommandAllocator> create_command_allocator()
     {
-      // Check if we don't have the compiled shader already
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
+      wrl::ComPtr<ID3D12CommandAllocator> allocator;
+      if (DX_FAILED(internal::get()->device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(allocator.GetAddressOf()))))
       {
-        return internal::get()->resource_pool.at(id);
+        REX_ERROR(LogRhi, "Failed to create command allocator");
+        return false;
       }
-
-      // If we don't have it already, compile the shader
-      ShaderCompiler compiler;
-      wrl::ComPtr<ID3DBlob> byte_code = compiler.compile_shader(desc);
-
-      if (!byte_code)
-      {
-        REX_ERROR(LogRhi, "Failed to compile shader");
-        return ResourceSlot::make_invalid();
-      }
-
-      // store the new compiled shader with its id in the resource pool
-      switch (desc.shader_type)
-      {
-      case ShaderType::Vertex:
-        return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
-        break;
-      case ShaderType::Pixel:
-        return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
-        break;
-
-      default:
-        REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
-      }
-
-      return ResourceSlot::make_invalid();
+      //rhi::set_debug_name_for(allocator.Get(), "Global Command Allocator");
+      return rsl::make_unique<rex::rhi::CommandAllocator>(allocator);
 
     }
-    ResourceSlot link_shader(const LinkShaderDesc& desc)
+    rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(s32 backBufferIdx)
     {
-      // If there's already a linked shader, return it.
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
-      {
-        return internal::get()->resource_pool.at(id);
-      }
+      wrl::ComPtr<ID3D12Resource> backbuffer = internal::get()->swapchain->get_buffer(backBufferIdx);
+      DescriptorHandle rtv = internal::get()->swapchain->get_rtv(backBufferIdx);
 
-      // If not link the shader with the params provided
-      auto root_sig = d3d::create_shader_root_signature(desc.constants, desc.desc_tables, desc.samplers);
-
-      if (!root_sig)
-      {
-        REX_ERROR(LogRhi, "Failed to create root signature");
-        return ResourceSlot::make_invalid();
-      }
-
-      auto* vertex_shader = internal::get()->resource_pool.as<VertexShaderResource>(desc.vertex_shader);
-      auto* pixel_shader = internal::get()->resource_pool.as<PixelShaderResource>(desc.pixel_shader);
-
-      rsl::unique_array<ShaderParameterLayoutDescription> constants = rsl::make_unique<ShaderParameterLayoutDescription[]>(desc.constants.count());
-      rsl::memcpy(constants.get(), desc.constants.get(), desc.constants.byte_size());
-
-      rsl::unique_array<DescriptorTableDescription> desc_tables = rsl::make_unique<DescriptorTableDescription[]>(desc.desc_tables.count());
-      rsl::memcpy(desc_tables.get(), desc.desc_tables.get(), desc.desc_tables.byte_size());
-
-      rsl::unique_array<ShaderSamplerDescription> samplers = rsl::make_unique<ShaderSamplerDescription[]>(desc.samplers.count());
-      rsl::memcpy(samplers.get(), desc.samplers.get(), desc.samplers.byte_size());
-
-      // create a combined shader object with the root sig, the vertex shader and the pixel shader
-      return internal::get()->resource_pool.insert(rsl::make_unique<ShaderProgramResource>(id, root_sig, vertex_shader, pixel_shader, rsl::move(constants), rsl::move(desc_tables), rsl::move(samplers)));
-    }
-    ResourceSlot create_shader(const ShaderDesc& desc)
-    {
-      // Check if the shader isn't already loaded
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
-      {
-        return internal::get()->resource_pool.at(id);
-      }
-
-      // If the shader hasn't been loaded before
-      wrl::ComPtr<ID3DBlob> byte_code = rex::d3d::create_blob(desc.shader_byte_code);
-
-      switch (desc.shader_type)
-      {
-      case ShaderType::Vertex: return internal::get()->resource_pool.insert(rsl::make_unique<VertexShaderResource>(id, byte_code));
-      case ShaderType::Pixel: return internal::get()->resource_pool.insert(rsl::make_unique<PixelShaderResource>(id, byte_code));
-
-      default:
-        REX_ERROR(LogDirectX, "Unsupported Shader Type was given");
-      }
-
-      return ResourceSlot::make_invalid();
-    }
-
-    // A clear state is just a struct holding different values to clear a buffer
-    // Flags control which part of the buffer (color, depths or stencil) should be cleared
-    ResourceSlot create_clear_state(const ClearStateDesc& desc)
-    {
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
-      {
-        return internal::get()->resource_pool.at(id);
-      }
-
-      return internal::get()->resource_pool.insert(rsl::make_unique<ClearStateResource>(id, desc));
-    }
-    // A raster state holds rasterization settings
-    // settings like cull mode, fill mode, depth bias, normal orientation, ..
-    // are all included in the raster state
-    ResourceSlot create_raster_state(const RasterStateDesc& desc)
-    {
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
-      {
-        return internal::get()->resource_pool.at(id);
-      }
-
-      D3D12_RASTERIZER_DESC d3d_rs;
-
-      d3d_rs.FillMode = rex::d3d::to_dx12(desc.fill_mode);
-      d3d_rs.CullMode = rex::d3d::to_dx12(desc.cull_mode);
-      d3d_rs.FrontCounterClockwise = desc.front_ccw;
-      d3d_rs.DepthBias = desc.depth_bias;
-      d3d_rs.DepthBiasClamp = desc.depth_bias_clamp;
-      d3d_rs.SlopeScaledDepthBias = desc.sloped_scale_depth_bias;
-      d3d_rs.DepthClipEnable = desc.depth_clip_enable;
-      d3d_rs.ForcedSampleCount = desc.forced_sample_count;
-
-      /**
-       * Conservative rasterization means that all pixels that are at least partially covered by a rendered primitive are rasterized, which means that the pixel shader is invoked.
-       * Normal behavior is sampling, which is not used if conservative rasterization is enabled.
-       *
-       * Conservative rasterization is useful in a number of situations outside of rendering (collision detection, occlusion culling, and visibility detection).
-       *
-       * https://learn.microsoft.com/en-us/windows/win32/direct3d11/conservative-rasterization
-       */
-      d3d_rs.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-      d3d_rs.MultisampleEnable = desc.multisample;
-      d3d_rs.AntialiasedLineEnable = desc.aa_lines;
-
-      return internal::get()->resource_pool.insert(rsl::make_unique<RasterStateResource>(id, d3d_rs));
-    }
-    // An input layout determines the format of vertices
-    // It determines where a shader can find the position, normal, color
-    // of a vertex.
-    ResourceSlot create_input_layout(const InputLayoutDesc& desc)
-    {
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
-      {
-        return internal::get()->resource_pool.at(id);
-      }
-      rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
-      REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
-
-      for (s32 i = 0; i < desc.input_layout.size(); ++i)
-      {
-        input_element_descriptions[i].SemanticName = desc.input_layout[i].semantic_name.data();
-        input_element_descriptions[i].SemanticIndex = desc.input_layout[i].semantic_index;
-        input_element_descriptions[i].Format = rex::d3d::to_dx12(desc.input_layout[i].format);
-        input_element_descriptions[i].InputSlot = desc.input_layout[i].input_slot;
-        input_element_descriptions[i].AlignedByteOffset = desc.input_layout[i].aligned_byte_offset;
-        input_element_descriptions[i].InputSlotClass = rex::d3d::to_dx12(desc.input_layout[i].input_slot_class);
-        input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
-      }
-
-      return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(id, input_element_descriptions));
-    }
-    // A vertex buffer is a buffer holding vertices of 1 or more objects
-    ResourceSlot create_vertex_buffer(const VertexBufferDesc& desc)
-    {
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
-      {
-        return internal::get()->resource_pool.at(id);
-      }
-
-      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      rsl::memory_size size = desc.blob_view.size();
-      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size);
-      set_debug_name_for(buffer.Get(), "Vertex Buffer");
-      rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, desc.blob_view.size(), desc.vertex_size);
-
-      // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list->get(), vb.get(), desc.blob_view.data(), size);
-
-      //// 3) Upload the data from the upload buffer onto the gpu
-      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
-
-      // 4) Cache that the data is available on the gpu (or will be soon)
-      // so if another request comes in for the same data, we don't upload it again
-
-      // 5) Add the resource to the resource pool
-      return internal::get()->resource_pool.insert(rsl::move(vb));
-    }
-    // A vertex buffer is a buffer holding vertices of 1 or more objects
-    ResourceSlot create_vertex_buffer(s32 totalSize, s32 vertexSize)
-    {
-      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(totalSize * vertexSize);
-      set_debug_name_for(buffer.Get(), "Vertex Buffer");
-      rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, totalSize * vertexSize, vertexSize);
-
-      // 2) Copy the data into the upload buffer
-      //internal::get()->upload_buffer->write(internal::get()->command_list.get(), vb.get(), desc.blob_view.data(), size);
-
-      //// 3) Upload the data from the upload buffer onto the gpu
-      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
-
-      // 4) Cache that the data is available on the gpu (or will be soon)
-      // so if another request comes in for the same data, we don't upload it again
-
-      // 5) Add the resource to the resource pool
-      return internal::get()->resource_pool.insert(rsl::move(vb));
-    }
-
-    // An index buffer is a buffer holding indices of 1 or more objects
-    ResourceSlot create_index_buffer(const IndexBufferDesc& desc)
-    {
-      ResourceID id = hash_resource_desc(desc);
-      if (internal::get()->resource_pool.has_resource(id))
-      {
-        return internal::get()->resource_pool.at(id);
-      }
-
-      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      rsl::memory_size size = desc.blob_view.size();
-      DXGI_FORMAT d3d_format = rex::d3d::to_dx12(desc.format);
-      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size, 0);
-      set_debug_name_for(buffer.Get(), "Index Buffer");
-      rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, desc.blob_view.size(), d3d_format);
-
-      // 2) Copy the data into the upload buffer
-      internal::get()->upload_buffer->write(internal::get()->command_list->get(), ib.get(), desc.blob_view.data(), size);
-
-      // 3) Upload the data from the upload buffer onto the gpu
-      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
-
-      // 4) add the resource to the resource pool
-      return internal::get()->resource_pool.insert(rsl::move(ib));
-    }
-    // An index buffer is a buffer holding indices of 1 or more objects
-    ResourceSlot create_index_buffer(s32 totalSize, renderer::IndexBufferFormat format)
-    {
-      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      DXGI_FORMAT d3d_format = rex::d3d::to_dx12(format);
-      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(totalSize, 0);
-      set_debug_name_for(buffer.Get(), "Index Buffer");
-      rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, totalSize, d3d_format);
-
-      // 2) Copy the data into the upload buffer
-      //internal::get()->upload_buffer->write(internal::get()->command_list.get(), ib.get(), desc.blob_view.data(), size);
-
-      // 3) Upload the data from the upload buffer onto the gpu
-      //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
-
-      // 4) add the resource to the resource pool
-      return internal::get()->resource_pool.insert(rsl::move(ib));
-    }
-    // A constant buffer is a buffer holding data that's accessible to a shader
-    // This can hold data like ints, floats, vectors and matrices
-    ResourceSlot create_constant_buffer(const ConstantBufferDesc& desc)
-    {
-      return create_constant_buffer(desc.blob_view.size());
-    }
-    // A constant buffer is a buffer holding data that's accessible to a shader
-    // This can hold data like ints, floats, vectors and matrices
-    ResourceSlot create_constant_buffer(rsl::memory_size size)
-    {
-      //ResourceID id = hash_resource_desc();
-      //if (internal::get()->resource_pool.has_resource(id))
-      //{
-      //  return internal::get()->resource_pool.at(id);
-      //}
-
-      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-      rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
-      set_debug_name_for(buffer.Get(), "Constant Buffer");
-      rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, size);
-
-      // 2) Copy the data into the upload buffer
-      //internal::get()->upload_buffer->write(internal::get()->command_list.get(), cb.get(), desc.blob_view.data(), aligned_size);
-
-      // 3) Create a view to this constant buffer
-      internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(buffer.Get(), aligned_size);
-
-      // 4) add the buffer to the resource pool
-      return internal::get()->resource_pool.insert(rsl::move(cb));
-    }
-    // A pipeline state object defines a state for the graphics pipeline.
-    // It holds the input layout, root signature, shaders, raster state, blend state ..
-    // needed for a draw call.
-    ResourceSlot create_pso(const PipelineStateDesc& desc)
-    {
-      // 1) Load the resources from the resource pool
-      InputLayoutResource* input_layout = internal::get()->resource_pool.as<InputLayoutResource>(desc.input_layout);
-      ShaderProgramResource* shader = internal::get()->resource_pool.as<ShaderProgramResource>(desc.shader);
-
-      D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-      if (desc.raster_state.is_valid())
-      {
-        RasterStateResource* raster_state = internal::get()->resource_pool.as<RasterStateResource>(desc.raster_state);
-        d3d_raster_state = *raster_state->get();
-      }
-
-      D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-      if (desc.blend_state.has_value())
-      {
-        d3d_blend_state = rex::d3d::to_dx12(desc.blend_state.value());
-      }
-
-      D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-      if (desc.depth_stencil_state.has_value())
-      {
-        d3d_depth_stencil_state = rex::d3d::to_dx12(desc.depth_stencil_state.value());
-      }
-
-      // 2) Fill in the PSO desc
-      D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
-      pso_desc.InputLayout = *input_layout->get();
-      pso_desc.pRootSignature = shader->root_signature();
-      pso_desc.VS = shader->vs();
-      pso_desc.PS = shader->ps();
-      pso_desc.RasterizerState = d3d_raster_state;
-      pso_desc.BlendState = d3d_blend_state;
-      pso_desc.DepthStencilState = d3d_depth_stencil_state;
-      pso_desc.SampleMask = UINT_MAX;
-      pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-      pso_desc.NumRenderTargets = 1;
-      pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-      pso_desc.SampleDesc.Count = 1;
-      pso_desc.SampleDesc.Quality = 0;
-      pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-      // 3) Create a resource slot for a pso if it already exists in the lib
-      rsl::unique_ptr<PipelineState> pso = internal::get()->pso_lib->load_pso(pso_desc);
-      if (pso)
-      {
-        return internal::get()->resource_pool.insert(rsl::move(pso));
-      }
-
-      // 4) Ohterwise store the new PSO in the pipeline library
-      pso = internal::get()->pso_lib->store_pso(pso_desc);
-
-      return internal::get()->resource_pool.insert(rsl::move(pso));
-    }
-    // Create a 2D texture on the gpu and add the data to the upload buffer
-    // to be uploaded the next time the upload buffer
-    ResourceSlot create_texture2d(const char* data, DXGI_FORMAT format, s32 width, s32 height)
-    {
-      wrl::ComPtr<ID3D12Resource> d3d_texture = internal::get()->heap->create_texture2d(format, width, height);
-      rsl::unique_ptr<Texture2D> texture = rsl::make_unique<Texture2D>(d3d_texture, width, height, format);
-
-      internal::get()->upload_buffer->write_texture(internal::get()->command_list->get(), texture.get(), data, format, width, height);
-      
-      return internal::get()->resource_pool.insert(rsl::move(texture));
+      return rsl::make_unique<RenderTarget>(backbuffer, rtv);
     }
 
 
-    void set_viewport(const Viewport& viewport)
-    {
-      D3D12_VIEWPORT d3d_viewport;
-      d3d_viewport.TopLeftX = viewport.top_left_x;
-      d3d_viewport.TopLeftY = viewport.top_left_y;
-      d3d_viewport.Width    = viewport.width;
-      d3d_viewport.Height   = viewport.height;
-      d3d_viewport.MinDepth = viewport.min_depth;
-      d3d_viewport.MaxDepth = viewport.max_depth;
 
-      internal::get()->command_list->get()->RSSetViewports(1, &d3d_viewport);    
-    }
-    void set_scissor_rect(const ScissorRect& rect)
-    {
-      RECT scissor_rect{};
-      scissor_rect.top    = (LONG)rect.top;
-      scissor_rect.left   = (LONG)rect.left;
-      scissor_rect.bottom = (LONG)rect.bottom;
-      scissor_rect.right  = (LONG)rect.right;
 
-      internal::get()->command_list->get()->RSSetScissorRects(1, &scissor_rect);
-    }
 
-    void transition_backbuffer(D3D12_RESOURCE_STATES state)
-    {
-      internal::get()->swapchain->transition_backbuffer(internal::get()->command_list->get(), state);
-    }
-    void clear_backbuffer(const ResourceSlot& clearState)
-    {
-      ClearStateResource* clear_state = internal::get()->resource_pool.as<ClearStateResource>(clearState);
-      auto& clear_flags = clear_state->get()->flags;
-      if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
-      {
-        DescriptorHandle rtv = internal::get()->swapchain->backbuffer_view();
-        internal::get()->command_list->get()->ClearRenderTargetView(rtv.get(), clear_state->get()->rgba.data(), 0, nullptr);
-      }
 
-      if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
-      {
-        s32 d3d_clear_flags = 0;
-        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
-        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
-        //DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
-        //internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
-      }
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //// A clear state is just a struct holding different values to clear a buffer
+    //// Flags control which part of the buffer (color, depths or stencil) should be cleared
+    //ResourceSlot create_clear_state(const ClearStateDesc& desc)
+    //{
+    //  ResourceID id = hash_resource_desc(desc);
+    //  if (internal::get()->resource_pool.has_resource(id))
+    //  {
+    //    return internal::get()->resource_pool.at(id);
+    //  }
+
+    //  return internal::get()->resource_pool.insert(rsl::make_unique<ClearStateResource>(id, desc));
+    //}
+    //// A raster state holds rasterization settings
+    //// settings like cull mode, fill mode, depth bias, normal orientation, ..
+    //// are all included in the raster state
+    //ResourceSlot create_raster_state(const RasterStateDesc& desc)
+    //{
+    //  ResourceID id = hash_resource_desc(desc);
+    //  if (internal::get()->resource_pool.has_resource(id))
+    //  {
+    //    return internal::get()->resource_pool.at(id);
+    //  }
+
+    //  D3D12_RASTERIZER_DESC d3d_rs;
+
+    //  d3d_rs.FillMode = rex::d3d::to_dx12(desc.fill_mode);
+    //  d3d_rs.CullMode = rex::d3d::to_dx12(desc.cull_mode);
+    //  d3d_rs.FrontCounterClockwise = desc.front_ccw;
+    //  d3d_rs.DepthBias = desc.depth_bias;
+    //  d3d_rs.DepthBiasClamp = desc.depth_bias_clamp;
+    //  d3d_rs.SlopeScaledDepthBias = desc.sloped_scale_depth_bias;
+    //  d3d_rs.DepthClipEnable = desc.depth_clip_enable;
+    //  d3d_rs.ForcedSampleCount = desc.forced_sample_count;
+
+    //  /**
+    //   * Conservative rasterization means that all pixels that are at least partially covered by a rendered primitive are rasterized, which means that the pixel shader is invoked.
+    //   * Normal behavior is sampling, which is not used if conservative rasterization is enabled.
+    //   *
+    //   * Conservative rasterization is useful in a number of situations outside of rendering (collision detection, occlusion culling, and visibility detection).
+    //   *
+    //   * https://learn.microsoft.com/en-us/windows/win32/direct3d11/conservative-rasterization
+    //   */
+    //  d3d_rs.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+    //  d3d_rs.MultisampleEnable = desc.multisample;
+    //  d3d_rs.AntialiasedLineEnable = desc.aa_lines;
+
+    //  return internal::get()->resource_pool.insert(rsl::make_unique<RasterStateResource>(id, d3d_rs));
+    //}
+    //// An input layout determines the format of vertices
+    //// It determines where a shader can find the position, normal, color
+    //// of a vertex.
+    //ResourceSlot create_input_layout(const InputLayoutDesc& desc)
+    //{
+    //  ResourceID id = hash_resource_desc(desc);
+    //  if (internal::get()->resource_pool.has_resource(id))
+    //  {
+    //    return internal::get()->resource_pool.at(id);
+    //  }
+    //  rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
+    //  REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
+
+    //  for (s32 i = 0; i < desc.input_layout.size(); ++i)
+    //  {
+    //    input_element_descriptions[i].SemanticName = desc.input_layout[i].semantic_name.data();
+    //    input_element_descriptions[i].SemanticIndex = desc.input_layout[i].semantic_index;
+    //    input_element_descriptions[i].Format = rex::d3d::to_dx12(desc.input_layout[i].format);
+    //    input_element_descriptions[i].InputSlot = desc.input_layout[i].input_slot;
+    //    input_element_descriptions[i].AlignedByteOffset = desc.input_layout[i].aligned_byte_offset;
+    //    input_element_descriptions[i].InputSlotClass = rex::d3d::to_dx12(desc.input_layout[i].input_slot_class);
+    //    input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
+    //  }
+
+    //  return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(id, input_element_descriptions));
+    //}
+    //// A vertex buffer is a buffer holding vertices of 1 or more objects
+    //ResourceSlot create_vertex_buffer(const VertexBufferDesc& desc)
+    //{
+    //  ResourceID id = hash_resource_desc(desc);
+    //  if (internal::get()->resource_pool.has_resource(id))
+    //  {
+    //    return internal::get()->resource_pool.at(id);
+    //  }
+
+    //  // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+    //  rsl::memory_size size = desc.blob_view.size();
+    //  wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size);
+    //  set_debug_name_for(buffer.Get(), "Vertex Buffer");
+    //  rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, desc.blob_view.size(), desc.vertex_size);
+
+    //  // 2) Copy the data into the upload buffer
+    //  internal::get()->upload_buffer->write(internal::get()->command_list->get(), vb.get(), desc.blob_view.data(), size);
+
+    //  //// 3) Upload the data from the upload buffer onto the gpu
+    //  //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
+    //  // 4) Cache that the data is available on the gpu (or will be soon)
+    //  // so if another request comes in for the same data, we don't upload it again
+
+    //  // 5) Add the resource to the resource pool
+    //  return internal::get()->resource_pool.insert(rsl::move(vb));
+    //}
+    //// A vertex buffer is a buffer holding vertices of 1 or more objects
+    //ResourceSlot create_vertex_buffer(s32 totalSize, s32 vertexSize)
+    //{
+    //  // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+    //  wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(totalSize * vertexSize);
+    //  set_debug_name_for(buffer.Get(), "Vertex Buffer");
+    //  rsl::unique_ptr<VertexBuffer> vb = rsl::make_unique<VertexBuffer>(buffer, totalSize * vertexSize, vertexSize);
+
+    //  // 2) Copy the data into the upload buffer
+    //  //internal::get()->upload_buffer->write(internal::get()->command_list.get(), vb.get(), desc.blob_view.data(), size);
+
+    //  //// 3) Upload the data from the upload buffer onto the gpu
+    //  //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
+    //  // 4) Cache that the data is available on the gpu (or will be soon)
+    //  // so if another request comes in for the same data, we don't upload it again
+
+    //  // 5) Add the resource to the resource pool
+    //  return internal::get()->resource_pool.insert(rsl::move(vb));
+    //}
+
+    //// An index buffer is a buffer holding indices of 1 or more objects
+    //ResourceSlot create_index_buffer(const IndexBufferDesc& desc)
+    //{
+    //  ResourceID id = hash_resource_desc(desc);
+    //  if (internal::get()->resource_pool.has_resource(id))
+    //  {
+    //    return internal::get()->resource_pool.at(id);
+    //  }
+
+    //  // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+    //  rsl::memory_size size = desc.blob_view.size();
+    //  DXGI_FORMAT d3d_format = rex::d3d::to_dx12(desc.format);
+    //  wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(size, 0);
+    //  set_debug_name_for(buffer.Get(), "Index Buffer");
+    //  rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, desc.blob_view.size(), d3d_format);
+
+    //  // 2) Copy the data into the upload buffer
+    //  internal::get()->upload_buffer->write(internal::get()->command_list->get(), ib.get(), desc.blob_view.data(), size);
+
+    //  // 3) Upload the data from the upload buffer onto the gpu
+    //  //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
+    //  // 4) add the resource to the resource pool
+    //  return internal::get()->resource_pool.insert(rsl::move(ib));
+    //}
+    //// An index buffer is a buffer holding indices of 1 or more objects
+    //ResourceSlot create_index_buffer(s32 totalSize, renderer::IndexBufferFormat format)
+    //{
+    //  // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+    //  DXGI_FORMAT d3d_format = rex::d3d::to_dx12(format);
+    //  wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(totalSize, 0);
+    //  set_debug_name_for(buffer.Get(), "Index Buffer");
+    //  rsl::unique_ptr<IndexBuffer> ib = rsl::make_unique<IndexBuffer>(buffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, totalSize, d3d_format);
+
+    //  // 2) Copy the data into the upload buffer
+    //  //internal::get()->upload_buffer->write(internal::get()->command_list.get(), ib.get(), desc.blob_view.data(), size);
+
+    //  // 3) Upload the data from the upload buffer onto the gpu
+    //  //internal::get()->upload_buffer->upload(internal::get()->command_list.get());
+
+    //  // 4) add the resource to the resource pool
+    //  return internal::get()->resource_pool.insert(rsl::move(ib));
+    //}
+    //// A constant buffer is a buffer holding data that's accessible to a shader
+    //// This can hold data like ints, floats, vectors and matrices
+    //ResourceSlot create_constant_buffer(const ConstantBufferDesc& desc)
+    //{
+    //  return create_constant_buffer(desc.blob_view.size());
+    //}
+    //// A constant buffer is a buffer holding data that's accessible to a shader
+    //// This can hold data like ints, floats, vectors and matrices
+    //ResourceSlot create_constant_buffer(rsl::memory_size size)
+    //{
+    //  //ResourceID id = hash_resource_desc();
+    //  //if (internal::get()->resource_pool.has_resource(id))
+    //  //{
+    //  //  return internal::get()->resource_pool.at(id);
+    //  //}
+
+    //  // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+    //  rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+    //  wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
+    //  set_debug_name_for(buffer.Get(), "Constant Buffer");
+    //  rsl::unique_ptr<ConstantBuffer> cb = rsl::make_unique<ConstantBuffer>(buffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, size);
+
+    //  // 2) Copy the data into the upload buffer
+    //  //internal::get()->upload_buffer->write(internal::get()->command_list.get(), cb.get(), desc.blob_view.data(), aligned_size);
+
+    //  // 3) Create a view to this constant buffer
+    //  internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(buffer.Get(), aligned_size);
+
+    //  // 4) add the buffer to the resource pool
+    //  return internal::get()->resource_pool.insert(rsl::move(cb));
+    //}
+    //// A pipeline state object defines a state for the graphics pipeline.
+    //// It holds the input layout, root signature, shaders, raster state, blend state ..
+    //// needed for a draw call.
+    //ResourceSlot create_pso(const PipelineStateDesc& desc)
+    //{
+    //  // 1) Load the resources from the resource pool
+    //  InputLayoutResource* input_layout = internal::get()->resource_pool.as<InputLayoutResource>(desc.input_layout);
+    //  ShaderProgramResource* shader = internal::get()->resource_pool.as<ShaderProgramResource>(desc.shader);
+
+    //  D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+    //  if (desc.raster_state.is_valid())
+    //  {
+    //    RasterStateResource* raster_state = internal::get()->resource_pool.as<RasterStateResource>(desc.raster_state);
+    //    d3d_raster_state = *raster_state->get();
+    //  }
+
+    //  D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+    //  if (desc.blend_state.has_value())
+    //  {
+    //    d3d_blend_state = rex::d3d::to_dx12(desc.blend_state.value());
+    //  }
+
+    //  D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+    //  if (desc.depth_stencil_state.has_value())
+    //  {
+    //    d3d_depth_stencil_state = rex::d3d::to_dx12(desc.depth_stencil_state.value());
+    //  }
+
+    //  // 2) Fill in the PSO desc
+    //  D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
+    //  pso_desc.InputLayout = *input_layout->get();
+    //  pso_desc.pRootSignature = shader->root_signature();
+    //  pso_desc.VS = shader->vs();
+    //  pso_desc.PS = shader->ps();
+    //  pso_desc.RasterizerState = d3d_raster_state;
+    //  pso_desc.BlendState = d3d_blend_state;
+    //  pso_desc.DepthStencilState = d3d_depth_stencil_state;
+    //  pso_desc.SampleMask = UINT_MAX;
+    //  pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+    //  pso_desc.NumRenderTargets = 1;
+    //  pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+    //  pso_desc.SampleDesc.Count = 1;
+    //  pso_desc.SampleDesc.Quality = 0;
+    //  pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+    //  // 3) Create a resource slot for a pso if it already exists in the lib
+    //  rsl::unique_ptr<PipelineState> pso = internal::get()->pso_lib->load_pso(pso_desc);
+    //  if (pso)
+    //  {
+    //    return internal::get()->resource_pool.insert(rsl::move(pso));
+    //  }
+
+    //  // 4) Ohterwise store the new PSO in the pipeline library
+    //  pso = internal::get()->pso_lib->store_pso(pso_desc);
+
+    //  return internal::get()->resource_pool.insert(rsl::move(pso));
+    //}
+    //// Create a 2D texture on the gpu and add the data to the upload buffer
+    //// to be uploaded the next time the upload buffer
+    //ResourceSlot create_texture2d(const char* data, DXGI_FORMAT format, s32 width, s32 height)
+    //{
+    //  wrl::ComPtr<ID3D12Resource> d3d_texture = internal::get()->heap->create_texture2d(format, width, height);
+    //  rsl::unique_ptr<Texture2D> texture = rsl::make_unique<Texture2D>(d3d_texture, width, height, format);
+
+    //  internal::get()->upload_buffer->write_texture(internal::get()->command_list->get(), texture.get(), data, format, width, height);
+    //  
+    //  return internal::get()->resource_pool.insert(rsl::move(texture));
+    //}
+
+
+    //void set_viewport(const Viewport& viewport)
+    //{
+    //  D3D12_VIEWPORT d3d_viewport;
+    //  d3d_viewport.TopLeftX = viewport.top_left_x;
+    //  d3d_viewport.TopLeftY = viewport.top_left_y;
+    //  d3d_viewport.Width    = viewport.width;
+    //  d3d_viewport.Height   = viewport.height;
+    //  d3d_viewport.MinDepth = viewport.min_depth;
+    //  d3d_viewport.MaxDepth = viewport.max_depth;
+
+    //  internal::get()->command_list->get()->RSSetViewports(1, &d3d_viewport);    
+    //}
+    //void set_scissor_rect(const ScissorRect& rect)
+    //{
+    //  RECT scissor_rect{};
+    //  scissor_rect.top    = (LONG)rect.top;
+    //  scissor_rect.left   = (LONG)rect.left;
+    //  scissor_rect.bottom = (LONG)rect.bottom;
+    //  scissor_rect.right  = (LONG)rect.right;
+
+    //  internal::get()->command_list->get()->RSSetScissorRects(1, &scissor_rect);
+    //}
+
+    //void transition_backbuffer(D3D12_RESOURCE_STATES state)
+    //{
+    //  internal::get()->swapchain->transition_backbuffer(internal::get()->command_list->get(), state);
+    //}
+    //void clear_backbuffer(const ResourceSlot& clearState)
+    //{
+    //  ClearStateResource* clear_state = internal::get()->resource_pool.as<ClearStateResource>(clearState);
+    //  auto& clear_flags = clear_state->get()->flags;
+    //  if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
+    //  {
+    //    DescriptorHandle rtv = internal::get()->swapchain->backbuffer_view();
+    //    internal::get()->command_list->get()->ClearRenderTargetView(rtv.get(), clear_state->get()->rgba.data(), 0, nullptr);
+    //  }
+
+    //  if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
+    //  {
+    //    s32 d3d_clear_flags = 0;
+    //    d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
+    //    d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
+
+    //    //DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
+    //    //internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
+    //  }
+    //}
     void present()
     {
       internal::get()->swapchain->present();
     }
 
-    DescriptorHandle create_texture2d_srv(const ResourceSlot& textureSlot)
-    {
-      DescriptorHeap* desc_heap = &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-      return create_texture2d_srv(desc_heap, textureSlot);
-    }
-    DescriptorHandle create_texture2d_srv(DescriptorHeap* descriptorHeap, const ResourceSlot& textureSlot)
-    {
-      Texture2D* texture = internal::get()->resource_pool.as<Texture2D>(textureSlot);
-      return descriptorHeap->create_texture2d_srv(texture->get());
-    }
+    //DescriptorHandle create_texture2d_srv(const ResourceSlot& textureSlot)
+    //{
+    //  DescriptorHeap* desc_heap = &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    //  return create_texture2d_srv(desc_heap, textureSlot);
+    //}
+    //DescriptorHandle create_texture2d_srv(DescriptorHeap* descriptorHeap, const ResourceSlot& textureSlot)
+    //{
+    //  Texture2D* texture = internal::get()->resource_pool.as<Texture2D>(textureSlot);
+    //  return descriptorHeap->create_texture2d_srv(texture->get());
+    //}
 
-    void set_vertex_buffer(const rhi::ResourceSlot& vb, struct ID3D12GraphicsCommandList* cmdList)
-    {
-      if (!cmdList)
-      {
-        cmdList = internal::get()->command_list->get();
-      }
-      D3D12_VERTEX_BUFFER_VIEW view{};
-      VertexBuffer* vertex_buffer = internal::get()->resource_pool.as<VertexBuffer>(vb);
-      view.BufferLocation = vertex_buffer->get()->GetGPUVirtualAddress();
-      view.SizeInBytes = narrow_cast<s32>(vertex_buffer->size());
-      view.StrideInBytes = vertex_buffer->stride();
-      
-      cmdList->IASetVertexBuffers(0, 1, &view);
-    }
-    void set_index_buffer(const rhi::ResourceSlot& ib, struct ID3D12GraphicsCommandList* cmdList)
-    {
-      if (!cmdList)
-      {
-        cmdList = internal::get()->command_list->get();
-      }
-      D3D12_INDEX_BUFFER_VIEW view{};
-      IndexBuffer* index_buffer = internal::get()->resource_pool.as<IndexBuffer>(ib);
-      view.BufferLocation = index_buffer->get()->GetGPUVirtualAddress();
-      view.Format = index_buffer->format();
-      view.SizeInBytes = narrow_cast<s32>(index_buffer->size());
+    //void set_vertex_buffer(const rhi::ResourceSlot& vb, struct ID3D12GraphicsCommandList* cmdList)
+    //{
+    //  if (!cmdList)
+    //  {
+    //    cmdList = internal::get()->command_list->get();
+    //  }
+    //  D3D12_VERTEX_BUFFER_VIEW view{};
+    //  VertexBuffer* vertex_buffer = internal::get()->resource_pool.as<VertexBuffer>(vb);
+    //  view.BufferLocation = vertex_buffer->get()->GetGPUVirtualAddress();
+    //  view.SizeInBytes = narrow_cast<s32>(vertex_buffer->size());
+    //  view.StrideInBytes = vertex_buffer->stride();
+    //  
+    //  cmdList->IASetVertexBuffers(0, 1, &view);
+    //}
+    //void set_index_buffer(const rhi::ResourceSlot& ib, struct ID3D12GraphicsCommandList* cmdList)
+    //{
+    //  if (!cmdList)
+    //  {
+    //    cmdList = internal::get()->command_list->get();
+    //  }
+    //  D3D12_INDEX_BUFFER_VIEW view{};
+    //  IndexBuffer* index_buffer = internal::get()->resource_pool.as<IndexBuffer>(ib);
+    //  view.BufferLocation = index_buffer->get()->GetGPUVirtualAddress();
+    //  view.Format = index_buffer->format();
+    //  view.SizeInBytes = narrow_cast<s32>(index_buffer->size());
 
-      cmdList->IASetIndexBuffer(&view);
-    }
-    void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb, struct ID3D12GraphicsCommandList* cmdList)
-    {
-      ConstantBuffer* constant_buffer = internal::get()->resource_pool.as<ConstantBuffer>(cb);
+    //  cmdList->IASetIndexBuffer(&view);
+    //}
+    //void set_constant_buffer(s32 idx, const rhi::ResourceSlot& cb, struct ID3D12GraphicsCommandList* cmdList)
+    //{
+    //  ConstantBuffer* constant_buffer = internal::get()->resource_pool.as<ConstantBuffer>(cb);
 
-      static auto cbv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).gpu_heap_start();
+    //  static auto cbv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).gpu_heap_start();
 
-      if (!cmdList)
-      {
-        cmdList = internal::get()->command_list->get();
-      }
-      cmdList->SetGraphicsRootConstantBufferView(idx, constant_buffer->get()->GetGPUVirtualAddress());
-    }
-    void set_primitive_topology(renderer::PrimitiveTopology topology)
-    {
-      auto d3d_topology = rex::d3d::to_dx12(topology);
-      internal::get()->command_list->get()->IASetPrimitiveTopology(d3d_topology);
-    }
-
-    void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc)
-    {
-      internal::get()->command_list->get()->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertexLoc, startInstance);
-    }
-
-    void set_shader(const rhi::ResourceSlot& slot)
-    {
-      auto* shader_program = internal::get()->resource_pool.as<ShaderProgramResource>(slot);
-
-      internal::get()->command_list->get()->SetGraphicsRootSignature(shader_program->get()->root_signature.Get());
-    }
-    void set_pso(const rhi::ResourceSlot& slot)
-    {
-      auto* pso = internal::get()->resource_pool.as<PipelineState>(slot);
-      internal::get()->command_list->get()->SetPipelineState(pso->get());
-    }
-
-    void bind_backbuffer_rendertarget()
-    {
-      auto rtv = internal::get()->swapchain->backbuffer_view();
-      //auto dsv = internal::get()->swapchain->depth_stencil_view();
-      internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, nullptr);
-    }
+    //  if (!cmdList)
+    //  {
+    //    cmdList = internal::get()->command_list->get();
+    //  }
+    //  cmdList->SetGraphicsRootConstantBufferView(idx, constant_buffer->get()->GetGPUVirtualAddress());
+    //}
+    //void set_primitive_topology(renderer::PrimitiveTopology topology)
+    //{
+    //  auto d3d_topology = rex::d3d::to_dx12(topology);
+    //  internal::get()->command_list->get()->IASetPrimitiveTopology(d3d_topology);
+    //}
 
 
-    void set_viewport(CommandList2* cmdList, const Viewport& viewport)
-    {
-      D3D12_VIEWPORT d3d_viewport;
-      d3d_viewport.TopLeftX = viewport.top_left_x;
-      d3d_viewport.TopLeftY = viewport.top_left_y;
-      d3d_viewport.Width = viewport.width;
-      d3d_viewport.Height = viewport.height;
-      d3d_viewport.MinDepth = viewport.min_depth;
-      d3d_viewport.MaxDepth = viewport.max_depth;
+    //void set_shader(const rhi::ResourceSlot& slot)
+    //{
+    //  auto* shader_program = internal::get()->resource_pool.as<ShaderProgramResource>(slot);
 
-      cmdList->get()->RSSetViewports(1, &d3d_viewport);
-    }
-    void set_scissor_rect(CommandList2* cmdList, const ScissorRect& rect)
-    {
-      RECT scissor_rect{};
-      scissor_rect.top = (LONG)rect.top;
-      scissor_rect.left = (LONG)rect.left;
-      scissor_rect.bottom = (LONG)rect.bottom;
-      scissor_rect.right = (LONG)rect.right;
+    //  internal::get()->command_list->get()->SetGraphicsRootSignature(shader_program->get()->root_signature.Get());
+    //}
+    //void set_pso(const rhi::ResourceSlot& slot)
+    //{
+    //  auto* pso = internal::get()->resource_pool.as<PipelineState>(slot);
+    //  internal::get()->command_list->get()->SetPipelineState(pso->get());
+    //}
 
-      cmdList->get()->RSSetScissorRects(1, &scissor_rect);
-    }
+    //void bind_backbuffer_rendertarget()
+    //{
+    //  auto rtv = internal::get()->swapchain->backbuffer_view();
+    //  //auto dsv = internal::get()->swapchain->depth_stencil_view();
+    //  internal::get()->command_list->get()->OMSetRenderTargets(1, &rtv.get(), true, nullptr);
+    //}
 
-    void transition_backbuffer(CommandList2* cmdList, D3D12_RESOURCE_STATES state)
-    {
-      internal::get()->swapchain->transition_backbuffer(cmdList->get(), state);
-    }
-    void clear_backbuffer(CommandList2* cmdList, const ResourceSlot& clearState)
-    {
-      ClearStateResource* clear_state = internal::get()->resource_pool.as<ClearStateResource>(clearState);
-      auto& clear_flags = clear_state->get()->flags;
-      if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
-      {
-        DescriptorHandle rtv = internal::get()->swapchain->backbuffer_view();
-        cmdList->get()->ClearRenderTargetView(rtv.get(), clear_state->get()->rgba.data(), 0, nullptr);
-      }
 
-      if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
-      {
-        s32 d3d_clear_flags = 0;
-        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
-        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
+    //void set_viewport(CommandList* cmdList, const Viewport& viewport)
+    //{
+    //  D3D12_VIEWPORT d3d_viewport;
+    //  d3d_viewport.TopLeftX = viewport.top_left_x;
+    //  d3d_viewport.TopLeftY = viewport.top_left_y;
+    //  d3d_viewport.Width = viewport.width;
+    //  d3d_viewport.Height = viewport.height;
+    //  d3d_viewport.MinDepth = viewport.min_depth;
+    //  d3d_viewport.MaxDepth = viewport.max_depth;
 
-        DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
-        cmdList->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
-      }
-    }
+    //  cmdList->get()->RSSetViewports(1, &d3d_viewport);
+    //}
+    //void set_scissor_rect(CommandList* cmdList, const ScissorRect& rect)
+    //{
+    //  RECT scissor_rect{};
+    //  scissor_rect.top = (LONG)rect.top;
+    //  scissor_rect.left = (LONG)rect.left;
+    //  scissor_rect.bottom = (LONG)rect.bottom;
+    //  scissor_rect.right = (LONG)rect.right;
 
-    void set_vertex_buffer(CommandList2* cmdList, const ResourceSlot& vb)
-    {
-      D3D12_VERTEX_BUFFER_VIEW view{};
-      VertexBuffer* vertex_buffer = internal::get()->resource_pool.as<VertexBuffer>(vb);
-      view.BufferLocation = vertex_buffer->get()->GetGPUVirtualAddress();
-      view.SizeInBytes = narrow_cast<s32>(vertex_buffer->size());
-      view.StrideInBytes = vertex_buffer->stride();
+    //  cmdList->get()->RSSetScissorRects(1, &scissor_rect);
+    //}
 
-      cmdList->get()->IASetVertexBuffers(0, 1, &view);
-    }
-    void set_index_buffer(CommandList2* cmdList, const ResourceSlot& ib)
-    {
-      D3D12_INDEX_BUFFER_VIEW view{};
-      IndexBuffer* index_buffer = internal::get()->resource_pool.as<IndexBuffer>(ib);
-      view.BufferLocation = index_buffer->get()->GetGPUVirtualAddress();
-      view.Format = index_buffer->format();
-      view.SizeInBytes = narrow_cast<s32>(index_buffer->size());
+    //void transition_backbuffer(CommandList* cmdList, D3D12_RESOURCE_STATES state)
+    //{
+    //  internal::get()->swapchain->transition_backbuffer(cmdList->get(), state);
+    //}
+    //void clear_backbuffer(CommandList* cmdList, const ResourceSlot& clearState)
+    //{
+    //  ClearStateResource* clear_state = internal::get()->resource_pool.as<ClearStateResource>(clearState);
+    //  auto& clear_flags = clear_state->get()->flags;
+    //  if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
+    //  {
+    //    DescriptorHandle rtv = internal::get()->swapchain->backbuffer_view();
+    //    cmdList->get()->ClearRenderTargetView(rtv.get(), clear_state->get()->rgba.data(), 0, nullptr);
+    //  }
 
-      cmdList->get()->IASetIndexBuffer(&view);
-    }
-    void set_constant_buffer(CommandList2* cmdList, s32 idx, const ResourceSlot& cb)
-    {
-      ConstantBuffer* constant_buffer = internal::get()->resource_pool.as<ConstantBuffer>(cb);
+    //  if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
+    //  {
+    //    s32 d3d_clear_flags = 0;
+    //    d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
+    //    d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
-      static auto cbv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).gpu_heap_start();
+    //    DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
+    //    cmdList->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
+    //  }
+    //}
 
-      cmdList->get()->SetGraphicsRootConstantBufferView(idx, constant_buffer->get()->GetGPUVirtualAddress());
-    }
-    void set_primitive_topology(CommandList2* cmdList, renderer::PrimitiveTopology topology)
-    {
-      auto d3d_topology = rex::d3d::to_dx12(topology);
-      cmdList->get()->IASetPrimitiveTopology(d3d_topology);
-    }
+    //void set_vertex_buffer(CommandList* cmdList, const ResourceSlot& vb)
+    //{
+    //  D3D12_VERTEX_BUFFER_VIEW view{};
+    //  VertexBuffer* vertex_buffer = internal::get()->resource_pool.as<VertexBuffer>(vb);
+    //  view.BufferLocation = vertex_buffer->get()->GetGPUVirtualAddress();
+    //  view.SizeInBytes = narrow_cast<s32>(vertex_buffer->size());
+    //  view.StrideInBytes = vertex_buffer->stride();
 
-    void draw_indexed_instanced(CommandList2* cmdList, s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation)
-    {
-      cmdList->get()->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
-    }
-    void set_shader(CommandList2* cmdList, const ResourceSlot& slot)
-    {
-      auto* shader_program = internal::get()->resource_pool.as<ShaderProgramResource>(slot);
-      cmdList->get()->SetGraphicsRootSignature(shader_program->get()->root_signature.Get());
-    }
-    void set_pso(CommandList2* cmdList, const ResourceSlot& slot)
-    {
-      auto* pso = internal::get()->resource_pool.as<PipelineState>(slot);
-      cmdList->get()->SetPipelineState(pso->get());
-    }
-    void set_blend_factor(CommandList2* cmdList, const f32 blendFactor[4])
-    {
-      cmdList->get()->OMSetBlendFactor(blendFactor);
-    }
+    //  cmdList->get()->IASetVertexBuffers(0, 1, &view);
+    //}
+    //void set_index_buffer(CommandList* cmdList, const ResourceSlot& ib)
+    //{
+    //  D3D12_INDEX_BUFFER_VIEW view{};
+    //  IndexBuffer* index_buffer = internal::get()->resource_pool.as<IndexBuffer>(ib);
+    //  view.BufferLocation = index_buffer->get()->GetGPUVirtualAddress();
+    //  view.Format = index_buffer->format();
+    //  view.SizeInBytes = narrow_cast<s32>(index_buffer->size());
 
-    void reset_upload_buffer()
-    {
-      internal::get()->upload_buffer->reset();
-    }
+    //  cmdList->get()->IASetIndexBuffer(&view);
+    //}
+    //void set_constant_buffer(CommandList* cmdList, s32 idx, const ResourceSlot& cb)
+    //{
+    //  ConstantBuffer* constant_buffer = internal::get()->resource_pool.as<ConstantBuffer>(cb);
 
-    void update_buffer(const ResourceSlot& slot, const void* data, s64 size, ID3D12GraphicsCommandList* cmdList, s32 offset)
-    {
-      Resource* resource = internal::get()->resource_pool.as<Resource>(slot);
-      if (!cmdList)
-      {
-        cmdList = internal::get()->command_list->get();
-      }
-      internal::get()->upload_buffer->write(cmdList, resource, data, size, 1, offset);
-    }
+    //  static auto cbv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).gpu_heap_start();
 
-    ScopedCommandList create_scoped_commandlist()
-    {
-      // Command Allocator
-      wrl::ComPtr<ID3D12CommandAllocator> allocator;
-      if (DX_FAILED(internal::get()->device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(allocator.GetAddressOf()))))
-      {
-        REX_ERROR(LogRhi, "Failed to create command allocator");
-      }
+    //  cmdList->get()->SetGraphicsRootConstantBufferView(idx, constant_buffer->get()->GetGPUVirtualAddress());
+    //}
+    //void set_primitive_topology(CommandList* cmdList, renderer::PrimitiveTopology topology)
+    //{
+    //  auto d3d_topology = rex::d3d::to_dx12(topology);
+    //  cmdList->get()->IASetPrimitiveTopology(d3d_topology);
+    //}
 
-      rhi::set_debug_name_for(allocator.Get(), "Global Command Allocator");
+    //void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc)
+    //{
+    //  internal::get()->command_list->get()->DrawIndexedInstanced(indexCount, instanceCount, startIndex, baseVertexLoc, startInstance);
+    //}
+    //void draw_indexed_instanced(CommandList* cmdList, s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation)
+    //{
+    //  cmdList->get()->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+    //}
+    //void set_shader(CommandList* cmdList, const ResourceSlot& slot)
+    //{
+    //  auto* shader_program = internal::get()->resource_pool.as<ShaderProgramResource>(slot);
+    //  cmdList->get()->SetGraphicsRootSignature(shader_program->get()->root_signature.Get());
+    //}
+    //void set_pso(CommandList* cmdList, const ResourceSlot& slot)
+    //{
+    //  auto* pso = internal::get()->resource_pool.as<PipelineState>(slot);
+    //  cmdList->get()->SetPipelineState(pso->get());
+    //}
+    //void set_blend_factor(CommandList* cmdList, const f32 blendFactor[4])
+    //{
+    //  cmdList->get()->OMSetBlendFactor(blendFactor);
+    //}
 
-      // Command List
-      wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
-      if (DX_FAILED(internal::get()->device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
-      {
-        REX_ERROR(LogRhi, "Failed to create command list");
-      }
+    //void reset_upload_buffer()
+    //{
+    //  internal::get()->upload_buffer->reset();
+    //}
 
-      rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
-      rsl::unique_ptr<CommandList> command_list = rsl::make_unique<CommandList>(cmd_list, allocator);
+    //void update_buffer(const ResourceSlot& slot, const void* data, s64 size, ID3D12GraphicsCommandList* cmdList, s32 offset)
+    //{
+    //  Resource* resource = internal::get()->resource_pool.as<Resource>(slot);
+    //  if (!cmdList)
+    //  {
+    //    cmdList = internal::get()->command_list->get();
+    //  }
+    //  internal::get()->upload_buffer->write(cmdList, resource, data, size, 1, offset);
+    //}
 
-      return ScopedCommandList(rsl::move(command_list), internal::get()->command_queue.get());
-    }
+    //namespace d3d
+    //{
+    //  wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers)
+    //  {
+    //    // Root parameter can be a table, root descriptor or root constants.
+    //    auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(constants.count()));
 
-    namespace d3d
-    {
-      wrl::ComPtr<ID3D12RootSignature> create_shader_root_signature(const rsl::unique_array<ShaderParameterLayoutDescription>& constants, const rsl::unique_array<rhi::DescriptorTableDescription>& tables, const rsl::unique_array<rhi::ShaderSamplerDescription>& samplers)
-      {
-        // Root parameter can be a table, root descriptor or root constants.
-        auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(constants.count()));
+    //    for (s32 i = 0; i < constants.count(); ++i)
+    //    {
+    //      const auto& param = constants[i];
 
-        for (s32 i = 0; i < constants.count(); ++i)
-        {
-          const auto& param = constants[i];
+    //      D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(param.visibility);
+    //      switch (param.type)
+    //      {
+    //      case ShaderParameterType::CBuffer: root_parameters.emplace_back().InitAsConstantBufferView(param.reg, param.space, visibility); break;
+    //      case ShaderParameterType::Constant: root_parameters.emplace_back().InitAsConstants(param.num_32bits_for_constant, param.reg, param.space, visibility); break;
+    //      case ShaderParameterType::ShaderResourceView: root_parameters.emplace_back().InitAsShaderResourceView(param.reg, param.space, visibility); break;
+    //      case ShaderParameterType::UnorderedAccessView: root_parameters.emplace_back().InitAsUnorderedAccessView(param.reg, param.space, visibility); break;
+    //      }
+    //    }
 
-          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(param.visibility);
-          switch (param.type)
-          {
-          case ShaderParameterType::CBuffer: root_parameters.emplace_back().InitAsConstantBufferView(param.reg, param.space, visibility); break;
-          case ShaderParameterType::Constant: root_parameters.emplace_back().InitAsConstants(param.num_32bits_for_constant, param.reg, param.space, visibility); break;
-          case ShaderParameterType::ShaderResourceView: root_parameters.emplace_back().InitAsShaderResourceView(param.reg, param.space, visibility); break;
-          case ShaderParameterType::UnorderedAccessView: root_parameters.emplace_back().InitAsUnorderedAccessView(param.reg, param.space, visibility); break;
-          }
-        }
+    //    rsl::vector<D3D12_DESCRIPTOR_RANGE> ranges;
+    //    for (s32 i = 0; i < tables.count(); ++i)
+    //    {
+    //      const auto& table = tables[i];
+    //      D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(table.visibility);
+    //      for (s32 range_idx = 0; range_idx < table.ranges.count(); ++range_idx)
+    //      {
+    //        ranges.push_back(rex::d3d::to_dx12(table.ranges[range_idx]));
+    //      }
 
-        rsl::vector<D3D12_DESCRIPTOR_RANGE> ranges;
-        for (s32 i = 0; i < tables.count(); ++i)
-        {
-          const auto& table = tables[i];
-          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(table.visibility);
-          for (s32 range_idx = 0; range_idx < table.ranges.count(); ++range_idx)
-          {
-            ranges.push_back(rex::d3d::to_dx12(table.ranges[range_idx]));
-          }
+    //      root_parameters.emplace_back().InitAsDescriptorTable(ranges.size(), ranges.data(), visibility);
+    //    }
 
-          root_parameters.emplace_back().InitAsDescriptorTable(ranges.size(), ranges.data(), visibility);
-        }
+    //    auto root_samplers = rsl::vector<D3D12_STATIC_SAMPLER_DESC>(rsl::Capacity(samplers.count()));
 
-        auto root_samplers = rsl::vector<D3D12_STATIC_SAMPLER_DESC>(rsl::Capacity(samplers.count()));
+    //    for (s32 i = 0; i < samplers.count(); ++i)
+    //    {
+    //      const auto& sampler = samplers[i];
 
-        for (s32 i = 0; i < samplers.count(); ++i)
-        {
-          const auto& sampler = samplers[i];
+    //      D3D12_STATIC_SAMPLER_DESC desc{};
+    //      desc.Filter = rex::d3d::to_dx12(sampler.filtering);
+    //      desc.AddressU = rex::d3d::to_dx12(sampler.address_mode_u);
+    //      desc.AddressV = rex::d3d::to_dx12(sampler.address_mode_v);
+    //      desc.AddressW = rex::d3d::to_dx12(sampler.address_mode_w);
+    //      desc.MipLODBias =sampler.mip_lod_bias;
+    //      desc.MaxAnisotropy = sampler.max_anisotropy;
+    //      desc.ComparisonFunc = rex::d3d::to_dx12(sampler.comparison_func);
+    //      desc.BorderColor = rex::d3d::to_dx12(sampler.border_color);
+    //      desc.MinLOD = sampler.min_lod;
+    //      desc.MaxLOD = sampler.max_lod;
+    //      desc.ShaderRegister = sampler.shader_register;
+    //      desc.RegisterSpace = sampler.register_space;
+    //      desc.ShaderVisibility = rex::d3d::to_dx12(sampler.shader_visibility);
+    //      root_samplers.emplace_back(desc);
+    //    }
 
-          D3D12_STATIC_SAMPLER_DESC desc{};
-          desc.Filter = rex::d3d::to_dx12(sampler.filtering);
-          desc.AddressU = rex::d3d::to_dx12(sampler.address_mode_u);
-          desc.AddressV = rex::d3d::to_dx12(sampler.address_mode_v);
-          desc.AddressW = rex::d3d::to_dx12(sampler.address_mode_w);
-          desc.MipLODBias =sampler.mip_lod_bias;
-          desc.MaxAnisotropy = sampler.max_anisotropy;
-          desc.ComparisonFunc = rex::d3d::to_dx12(sampler.comparison_func);
-          desc.BorderColor = rex::d3d::to_dx12(sampler.border_color);
-          desc.MinLOD = sampler.min_lod;
-          desc.MaxLOD = sampler.max_lod;
-          desc.ShaderRegister = sampler.shader_register;
-          desc.RegisterSpace = sampler.register_space;
-          desc.ShaderVisibility = rex::d3d::to_dx12(sampler.shader_visibility);
-          root_samplers.emplace_back(desc);
-        }
+    //    // A root signature is an array of root parameters.
+    //    CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
+    //      root_parameters.size(),
+    //      root_parameters.data(),
+    //      root_samplers.size(),
+    //      root_samplers.data(),
+    //      D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-        // A root signature is an array of root parameters.
-        CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
-          root_parameters.size(),
-          root_parameters.data(),
-          root_samplers.size(),
-          root_samplers.data(),
-          D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+    //    // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+    //    wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
+    //    wrl::ComPtr<ID3DBlob> error_blob = nullptr;
 
-        // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
-        wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
-        wrl::ComPtr<ID3DBlob> error_blob = nullptr;
+    //    HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
+    //    if (error_blob != nullptr)
+    //    {
+    //      REX_ERROR(LogDirectX, "{}", (char*)error_blob->GetBufferPointer());
+    //      return nullptr;
+    //    }
 
-        HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
-        if (error_blob != nullptr)
-        {
-          REX_ERROR(LogDirectX, "{}", (char*)error_blob->GetBufferPointer());
-          return nullptr;
-        }
+    //    if (DX_FAILED(hr))
+    //    {
+    //      REX_ERROR(LogDirectX, "Failed to serialize root signature");
+    //      return nullptr;
+    //    }
 
-        if (DX_FAILED(hr))
-        {
-          REX_ERROR(LogDirectX, "Failed to serialize root signature");
-          return nullptr;
-        }
+    //    wrl::ComPtr<ID3D12RootSignature> root_signature;
+    //    if (DX_FAILED(internal::get()->device->get()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+    //    {
+    //      REX_ERROR(LogDirectX, "Failed to create root signature");
+    //      return nullptr;
+    //    }
 
-        wrl::ComPtr<ID3D12RootSignature> root_signature;
-        if (DX_FAILED(internal::get()->device->get()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
-        {
-          REX_ERROR(LogDirectX, "Failed to create root signature");
-          return nullptr;
-        }
+    //    rhi::set_debug_name_for(root_signature.Get(), "Root Signature");
 
-        rhi::set_debug_name_for(root_signature.Get(), "Root Signature");
+    //    return root_signature;
+    //  }
+    //}
 
-        return root_signature;
-      }
-    }
-
-    Texture2D* get_texture(const ResourceSlot& slot)
-    {
-      return internal::get()->resource_pool.as<Texture2D>(slot);
-    }
+    //Texture2D* get_texture(const ResourceSlot& slot)
+    //{
+    //  return internal::get()->resource_pool.as<Texture2D>(slot);
+    //}
 
 
 #pragma region RHI Class
-    internal::RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData)
+    internal::RenderHardwareInfrastructure::RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight)
       : init_successful(true)
     {
       // Create a scopeguard that automatically marks initialization as failed
@@ -1023,7 +1067,7 @@ namespace rex
       // 7) we need to create a swapchain which is responsible of presenting.
       // There's no benefit in creating all the above systems if we don't have anything
       // to actually present something on screen, that's what the swapchain is for.
-      if (!init_swapchain(userData))
+      if (!init_swapchain(userData, maxFramesInFlight))
       {
         REX_ERROR(LogRhi, "Failed to create swapchain");
         return;
@@ -1050,9 +1094,9 @@ namespace rex
       }
 
       // 10) Execute the commandlist to finish initialization
-      command_list->stop_recording_commands();
-      ID3D12CommandList* cmdlist = command_list->get();
-      command_queue->get()->ExecuteCommandLists(1, &cmdlist);
+      //command_list->stop_recording_commands();
+      //ID3D12CommandList* cmdlist = command_list->get();
+      //command_queue->get()->ExecuteCommandLists(1, &cmdlist);
 
       // release scopeguard so that init gets marked successful
       mark_init_failed.release();
@@ -1256,24 +1300,24 @@ namespace rex
       command_allocator = rsl::make_unique<rex::rhi::CommandAllocator>(allocator);
 
       // Command List
-      wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
-      if (DX_FAILED(device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
-      {
-        REX_ERROR(LogRhi, "Failed to create command list");
-        return false;
-      }
+      //wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
+      //if (DX_FAILED(device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator.Get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
+      //{
+      //  REX_ERROR(LogRhi, "Failed to create command list");
+      //  return false;
+      //}
 
-      rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
-      command_list = rsl::make_unique<CommandList2>(cmd_list);
+      //rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
+      //command_list = rsl::make_unique<CommandList>(cmd_list);
 
-      // Open the command list to allow further initialization of resources
-      command_list->start_recording_commands(command_allocator.get());
+      //// Open the command list to allow further initialization of resources
+      //command_list->start_recording_commands(command_allocator.get());
 
       return true;
     }
 
     // DXGI Swapchain
-    bool internal::RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData)
+    bool internal::RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight)
     {
       DXGI_SWAP_CHAIN_DESC1 sd{};
       sd.Width = 0;
@@ -1282,7 +1326,7 @@ namespace rex
       sd.SampleDesc.Count = 1;
       sd.SampleDesc.Quality = 0;
       sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-      sd.BufferCount = s_swapchain_buffer_count;
+      sd.BufferCount = maxFramesInFlight;
       sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
       sd.AlphaMode - DXGI_ALPHA_MODE_UNSPECIFIED;
       sd.Stereo = false;
@@ -1417,15 +1461,15 @@ namespace rex
       return true;
     }
 
-    CommandList2* cmd_list()
-    {
-      return internal::get()->command_list.get();
-    }
+    //CommandList* cmd_list()
+    //{
+    //  return internal::get()->command_list.get();
+    //}
 
-    void set_graphics_root_descriptor_table(CommandList2* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE handle)
-    {
-      cmdList->get()->SetGraphicsRootDescriptorTable(1, handle);
-    }
+    //void set_graphics_root_descriptor_table(CommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE handle)
+    //{
+    //  cmdList->get()->SetGraphicsRootDescriptorTable(1, handle);
+    //}
 
     ID3D12Device1* get_device()
     {
@@ -1434,9 +1478,9 @@ namespace rex
 
 #pragma endregion
 
-    DescriptorHandle get_rtv()
-    {
-      return internal::get()->swapchain->backbuffer_view();
-    }
+    //DescriptorHandle get_rtv()
+    //{
+    //  return internal::get()->swapchain->backbuffer_view();
+    //}
   }
 }

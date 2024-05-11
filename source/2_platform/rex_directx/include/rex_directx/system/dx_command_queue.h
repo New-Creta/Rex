@@ -8,8 +8,6 @@ namespace rex
 {
   namespace rhi
   {
-    class CommandList;
-
     class CommandQueue
     {
     public:

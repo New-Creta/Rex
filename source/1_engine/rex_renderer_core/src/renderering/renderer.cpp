@@ -82,14 +82,15 @@ namespace rex
       // Now that we've set the data, we need to let the backend know that we have a new render item
       // to draw next frame. The backend is a platform specific call that has optimised logic
       // to add render items to the renderer
-      return backend::add_render_item(render_item);
+      //return backend::add_render_item(render_item);
+      return nullptr;
     }
 
 
     //-------------------------------------------------------------------------
     bool prepare_user_initialization()
     {
-      rhi::prepare_user_initialization();
+      //rhi::prepare_user_initialization();
 
       return true;
     }
@@ -97,7 +98,7 @@ namespace rex
     //-------------------------------------------------------------------------
     bool finish_user_initialization()
     {
-      rhi::finish_user_initialization();
+      //rhi::finish_user_initialization();
 
       return true;
     }

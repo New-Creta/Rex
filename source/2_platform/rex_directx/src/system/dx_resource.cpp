@@ -88,5 +88,30 @@ namespace rex
       cmdList->CopyResource(m_resource.Get(), srcResource);
     }
 
+
+
+
+
+
+
+    Resource2::Resource2(const wrl::ComPtr<ID3D12Resource>& resource)
+      : m_resource(resource)
+    {}
+
+    ID3D12Resource* Resource2::dx_object()
+    {
+      return m_resource.Get();
+    }
+
+
+
+
+
+
+
+
+
+
+
   } // namespace rhi
 } // namespace rex

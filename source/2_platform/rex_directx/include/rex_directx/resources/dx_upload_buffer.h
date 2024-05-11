@@ -9,7 +9,6 @@ namespace rex
   {
     class Resource;
 
-    class CommandList;
     class UploadBuffer : public BaseResource<ID3D12Resource>
     {
     public:

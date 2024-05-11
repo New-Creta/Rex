@@ -1,78 +1,141 @@
 #include "rex_directx/system/dx_commandlist.h"
 
-#include "rex_directx/diagnostics/dx_call.h"
-#include "rex_directx/system/dx_command_queue.h"
-#include "rex_directx/system/dx_resource.h"
-#include "rex_directx/utility/d3dx12.h"
-#include "rex_std/utility.h"
+#include "rex_engine/diagnostics/assert.h"
+#include "rex_engine/engine/casting.h"
 
 namespace rex
 {
   namespace rhi
   {
-    CommandList::CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList, const wrl::ComPtr<ID3D12CommandAllocator>& allocator)
-        : m_command_list(commandList)
-        , m_allocator(allocator)
+    CommandList::CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList)
+      : m_cmd_list(commandList)
+      , m_alloc(nullptr)
     {
-      // Start off in a closed state. This is because the first time we
-      // refer to the command list we will Reset it, and it needs to be closed
-      // before calling Reset.
-      m_command_list->Close();
+      m_cmd_list->Close();
     }
 
-    void CommandList::reset(ID3D12PipelineState* pso)
+    void CommandList::start_recording_commands(CommandAllocator* alloc, ID3D12PipelineState* pso)
     {
-      m_allocator->Reset();
-      m_command_list->Reset(m_allocator.Get(), pso);
+      REX_ASSERT_X(alloc != nullptr, "The allocator for a commandlist cannot be null");
+      REX_ASSERT_X(m_alloc == nullptr, "There's already an allocator assigned to this commandlist");
+
+      m_alloc = alloc;
+
+      alloc->get()->Reset();
+      m_cmd_list->Reset(m_alloc->get(), pso);
+    }
+    void CommandList::stop_recording_commands()
+    {
+      m_alloc = nullptr;
+      m_cmd_list->Close();
+      m_resource_state_tracker.update_parent();
+      m_resource_state_tracker.clear();
     }
 
-    void CommandList::exec(CommandQueue* cmdQueue)
+    void CommandList::set_viewport(const Viewport& vp)
     {
-      m_command_list->Close();
-      cmdQueue->execute(m_command_list.Get());
-    }
+      D3D12_VIEWPORT d3d_viewport;
+      d3d_viewport.TopLeftX = vp.top_left_x;
+      d3d_viewport.TopLeftY = vp.top_left_y;
+      d3d_viewport.Width = vp.width;
+      d3d_viewport.Height = vp.height;
+      d3d_viewport.MinDepth = vp.min_depth;
+      d3d_viewport.MaxDepth = vp.max_depth;
 
-    void CommandList::change_resource_state(Resource* resource, D3D12_RESOURCE_STATES to)
+      m_cmd_list->RSSetViewports(1, &d3d_viewport);
+    }
+    void CommandList::set_scissor_rect(const ScissorRect& rect)
     {
-      const D3D12_RESOURCE_STATES from = resource->resource_state();
-      if(from != to)
+      RECT scissor_rect{};
+      scissor_rect.top = (LONG)rect.top;
+      scissor_rect.left = (LONG)rect.left;
+      scissor_rect.bottom = (LONG)rect.bottom;
+      scissor_rect.right = (LONG)rect.right;
+
+      m_cmd_list->RSSetScissorRects(1, &scissor_rect);
+    }
+    void CommandList::transition_buffer(Resource2* resource, ResourceState state)
+    {
+      ResourceStateTransition transition = m_resource_state_tracker.track_resource_transition(resource, state);
+      if (transition.before != transition.after)
       {
-        resource->transition(m_command_list.Get(), to);
+        D3D12_RESOURCE_STATES before_state = d3d::to_dx12(transition.before);
+        D3D12_RESOURCE_STATES after_state = d3d::to_dx12(transition.after);
+        D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource->dx_object(), before_state, after_state);
+        m_cmd_list->ResourceBarrier(1, &barrier);
       }
     }
-
-    ID3D12GraphicsCommandList* CommandList::get()
+    void CommandList::set_render_target(RenderTarget* renderTarget)
     {
-      return m_command_list.Get();
+      m_cmd_list->OMSetRenderTargets(1, &renderTarget->cpu_handle(), true, nullptr);
     }
-
-    ScopedCommandList::ScopedCommandList(rsl::unique_ptr<CommandList>&& cmdList, CommandQueue* commandQueue)
-        : m_cmd_list(rsl::move(cmdList))
-        , m_cmd_queue(commandQueue)
+    void CommandList::clear_render_target(RenderTarget* renderTarget, ClearStateResource* clearState)
     {
-      m_cmd_list->reset();
-    }
-
-    ScopedCommandList::ScopedCommandList(ScopedCommandList&& other)
-        : m_cmd_list(rsl::exchange(other.m_cmd_list, nullptr))
-        , m_cmd_queue(rsl::exchange(other.m_cmd_queue, nullptr))
-    {
-    }
-
-    ScopedCommandList::~ScopedCommandList()
-    {
-      if(m_cmd_list)
+      auto& clear_flags = clearState->get()->flags;
+      if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
       {
-        m_cmd_list->exec(m_cmd_queue);
+        m_cmd_list->ClearRenderTargetView(renderTarget->cpu_handle(), clearState->get()->rgba.data(), 0, nullptr);
+      }
+
+      if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
+      {
+        s32 d3d_clear_flags = 0;
+        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
+        d3d_clear_flags |= clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
+
+        //DescriptorHandle dsv = internal::get()->swapchain->depth_stencil_view();
+        //internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
       }
     }
-
-    ScopedCommandList& ScopedCommandList::operator=(ScopedCommandList&& other)
+    void CommandList::set_vertex_buffer(VertexBuffer* vb)
     {
-      m_cmd_list  = rsl::exchange(other.m_cmd_list, nullptr);
-      m_cmd_queue = rsl::exchange(other.m_cmd_queue, nullptr);
+      D3D12_VERTEX_BUFFER_VIEW view{};
+      view.BufferLocation = vb->get()->GetGPUVirtualAddress();
+      view.SizeInBytes = narrow_cast<s32>(vb->size());
+      view.StrideInBytes = vb->stride();
 
-      return *this;
+      m_cmd_list->IASetVertexBuffers(0, 1, &view);
     }
-  } // namespace rhi
-} // namespace rex
+    void CommandList::set_index_buffer(IndexBuffer* ib)
+    {
+      D3D12_INDEX_BUFFER_VIEW view{};
+      view.BufferLocation = ib->get()->GetGPUVirtualAddress();
+      view.Format = ib->format();
+      view.SizeInBytes = narrow_cast<s32>(ib->size());
+
+      m_cmd_list->IASetIndexBuffer(&view);
+    }
+    void CommandList::set_primitive_topology(renderer::PrimitiveTopology topology)
+    {
+      auto d3d_topology = rex::d3d::to_dx12(topology);
+      m_cmd_list->IASetPrimitiveTopology(d3d_topology);
+    }
+    //void CommandList::set_blend_factor(BlendFactor* blendFactor)
+    //{
+    //  m_cmd_list->OMSetBlendFactor(blendFactor->as_float_array());
+    //}
+    //void CommandList::set_root_signature(RootSignature* rootSignature)
+    //{
+    //  m_cmd_list->SetGraphicsRootSignature(rootSignature->dx_object());
+    //}
+    //void CommandList::set_pipeline_state(PipelineState* pso)
+    //{
+    //  m_cmd_list->SetPipelineState(pso->dx_object());
+    //}
+
+    void CommandList::draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation)
+    {
+      draw_indexed_instanced(indexCount, 1, startIndexLocation, baseVertexLocation, startInstanceLocation);
+    }
+    void CommandList::draw_indexed_instanced(s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation)
+    {
+      m_cmd_list->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+    }
+
+    ID3D12GraphicsCommandList* CommandList::dx_object()
+    {
+      return m_cmd_list.Get();
+    }
+
+  }
+}

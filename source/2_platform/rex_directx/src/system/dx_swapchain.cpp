@@ -96,6 +96,12 @@ namespace rex
       m_swapchain->GetBuffer(idx, IID_PPV_ARGS(&buffer));
       return buffer;
     }
+    DescriptorHandle Swapchain::get_rtv(s32 idx)
+    {
+      REX_ASSERT_X(idx < m_swapchain_rtvs.size(), "Render target view index out of bounds");
+
+      return m_swapchain_rtvs[idx];
+    }
 
     IDXGISwapChain3* Swapchain::get()
     {

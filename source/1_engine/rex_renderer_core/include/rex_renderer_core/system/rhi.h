@@ -35,7 +35,7 @@ namespace rex
     // Initializes the render hardware infrastructure
     // For DirectX, creates the dxgi factory, d3d device, command buffers, heaps and swapchain
     // After this, the rhi is setup to start creating resources (textures, shaders, vertex buffers, ..)
-    bool init(const renderer::OutputWindowUserData& userData);
+    bool init(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight);
 
     // shutdown the internal rhi, all reference to the rhi are invalidated from here on out
     void shutdown();

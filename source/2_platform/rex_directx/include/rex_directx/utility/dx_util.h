@@ -101,6 +101,7 @@ namespace rex
 #include "rex_renderer_core/resources/depth_stencil_state.h"
 #include "rex_renderer_core/rendering/texture_address_mode.h"
 #include "rex_renderer_core/resources/link_shader.h"
+#include "rex_renderer_core/rendering/resource_state.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -134,7 +135,8 @@ namespace rex
     D3D12_DEPTH_WRITE_MASK to_dx12(rhi::DepthWriteMask mask);
     D3D12_DEPTH_STENCILOP_DESC to_dx12(const rhi::DepthStencilOpDesc& depthStencilOp);
     D3D12_STENCIL_OP to_dx12(rhi::StencilOp stencilOp);
-    D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRange range);
+    D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range);
     D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type);
+    D3D12_RESOURCE_STATES to_dx12(ResourceState state);
   } // namespace d3d
 } // namespace rex

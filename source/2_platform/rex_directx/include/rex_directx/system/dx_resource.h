@@ -36,5 +36,16 @@ namespace rex
       s64 m_size;
       D3D12_RESOURCE_STATES m_resource_state;
     };
+
+    class Resource2
+    {
+    public:
+      Resource2(const wrl::ComPtr<ID3D12Resource>& resource);
+
+      ID3D12Resource* dx_object();
+
+    private:
+      wrl::ComPtr<ID3D12Resource> m_resource;
+    };
   } // namespace rhi
 } // namespace rex

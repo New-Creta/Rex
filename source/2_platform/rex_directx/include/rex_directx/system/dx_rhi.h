@@ -51,11 +51,9 @@ namespace rex
     DescriptorHandle create_texture2d_srv(const ResourceSlot& textureSlot);
     DescriptorHandle create_texture2d_srv(DescriptorHeap* descriptorHeap, const ResourceSlot& textureSlot);
 
-    ScopedCommandList create_scoped_commandlist();
+    class CommandList* cmd_list();
 
-    class CommandList2* cmd_list();
-
-    void set_graphics_root_descriptor_table(CommandList2* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE handle);
+    void set_graphics_root_descriptor_table(CommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE handle);
     Texture2D* get_texture(const ResourceSlot& slot);
 
     ID3D12Device1* get_device();
@@ -97,6 +95,17 @@ namespace rex
     // The constant buffer that's unique per object won't (or shouldn't) have any pre existing data
     // Other constant buffers that are shared between objects, can already sit in memory and therefore
     // Don't need to get added again
+
+    rsl::unique_ptr<CommandList> create_commandlist();
+
+    s32 back_buffer_index();
+
+    void execute_commandlist(CommandList* cmdList);
+
+    rsl::unique_ptr<CommandAllocator> create_command_allocator();
+    rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(s32 backBufferIdx);
+
+
 
     // Resource Creation
     // -----------------------------------------------------------------------
@@ -143,33 +152,33 @@ namespace rex
     // Graphics Pipeline
     // -----------------------------------------------------------------------
     // Specify the viewport where we'll be drawing in
-    void set_viewport(CommandList2* cmdList, const Viewport& viewport);
+    void set_viewport(CommandList* cmdList, const Viewport& viewport);
     // Speicfy the scissor rect outside of which we clip drawing
-    void set_scissor_rect(CommandList2* cmdList, const ScissorRect& rect);
+    void set_scissor_rect(CommandList* cmdList, const ScissorRect& rect);
 
     // Transition the back buffer into a specified state
-    void transition_backbuffer(CommandList2* cmdList, D3D12_RESOURCE_STATES state);
+    void transition_backbuffer(CommandList* cmdList, D3D12_RESOURCE_STATES state);
     // Clear the back buffer using a clear state
-    void clear_backbuffer(CommandList2* cmdList, const ResourceSlot& clearState);
+    void clear_backbuffer(CommandList* cmdList, const ResourceSlot& clearState);
 
     // Bind the vertex buffer specified at the resource slot to the pipeline
-    void set_vertex_buffer(CommandList2* cmdList, const ResourceSlot& vb);
+    void set_vertex_buffer(CommandList* cmdList, const ResourceSlot& vb);
     // Bind the index buffer specified at the resource slot to the pipeline
-    void set_index_buffer(CommandList2* cmdList, const ResourceSlot& ib);
+    void set_index_buffer(CommandList* cmdList, const ResourceSlot& ib);
     // Bind the constant buffer to the pipeline at the specified index
-    void set_constant_buffer(CommandList2* cmdList, s32 idx, const ResourceSlot& cb);
+    void set_constant_buffer(CommandList* cmdList, s32 idx, const ResourceSlot& cb);
     // Specify the primitive topology of the pipeline
-    void set_primitive_topology(CommandList2* cmdList, renderer::PrimitiveTopology topology);
+    void set_primitive_topology(CommandList* cmdList, renderer::PrimitiveTopology topology);
     // Specify the blend factor of the pipeline
-    void set_blend_factor(CommandList2* cmdList, const f32 blendFactor[4]);
+    void set_blend_factor(CommandList* cmdList, const f32 blendFactor[4]);
     // Bind the shader specified at the resource slot to the pipeline
-    void set_shader(CommandList2* cmdList, const ResourceSlot& slot);
+    void set_shader(CommandList* cmdList, const ResourceSlot& slot);
     // Set the pipeline of the pipeline
-    void set_pso(CommandList2* cmdList, const ResourceSlot& slot);
+    void set_pso(CommandList* cmdList, const ResourceSlot& slot);
 
     // Draw to the screen, using indexed instances
     void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
     // Draw to the screen, using indexed instances of primitives
-    void draw_indexed_instanced(CommandList2* cmdList, s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
+    void draw_indexed_instanced(CommandList* cmdList, s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
   }
 }

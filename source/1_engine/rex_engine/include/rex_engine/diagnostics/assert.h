@@ -50,7 +50,7 @@ namespace rex
   #define REX_ASSERT_X(cond, ...)                                                                                                                                                                                                                        \
     if(!(cond))                                                                                                                                                                                                                                          \
     {                                                                                                                                                                                                                                                    \
-      REX_ASSERT(__VA_ARGS__);                                                                                                                                                                                                                           \
+      REX_ASSERT("\"{}\" Failed. {}", #cond, __VA_ARGS__);                                                                                                                                                                                                                           \
     }
 
   #define REX_ASSERT_CONTEXT_SCOPE(...) const rex::AssertContextScope REX_ANONYMOUS_VARIABLE(assert_scope)(rsl::format(__VA_ARGS__));
