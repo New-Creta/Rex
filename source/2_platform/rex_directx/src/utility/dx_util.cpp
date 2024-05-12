@@ -32,6 +32,17 @@ namespace rex
       memcpy(d3d_blob->GetBufferPointer(), (void*)blob.data(), blob.size());
       return d3d_blob;
     }
+
+    s32 total_texture_size(s32 width, s32 height, renderer::TextureFormat format)
+    {
+      const s32 format_size = rex::d3d::format_byte_size(format);
+      const s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
+      s32 pitch_size = width * format_size;
+      pitch_size = align(pitch_size, alignment);
+
+      return pitch_size * height;
+    }
+
     //-------------------------------------------------------------------------
     D3D12_FILL_MODE to_dx12(renderer::FillMode mode)
     {
@@ -94,6 +105,7 @@ namespace rex
       switch (format)
       {
       case renderer::TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+      case renderer::TextureFormat::Unorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
       default: break;
       }
       REX_ASSERT("Unsupported vertex buffer format given");
@@ -127,6 +139,11 @@ namespace rex
 
       REX_ASSERT("Unsupported input layout classification given");
       return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+    }
+    s32 format_byte_size(renderer::TextureFormat format)
+    {
+      DXGI_FORMAT d3d_format = to_dx12(format);
+      return format_byte_size(d3d_format);
     }
     s32 format_byte_size(DXGI_FORMAT format)
     {
@@ -494,7 +511,6 @@ namespace rex
 
       return invalid_obj<D3D12_RESOURCE_STATES>();
     }
-
 
   }
 } // namespace rex

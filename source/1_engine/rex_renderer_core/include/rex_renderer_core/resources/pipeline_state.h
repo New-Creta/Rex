@@ -11,14 +11,16 @@ namespace rex
 {
   namespace rhi
   {
-    struct PipelineStateDesc
-    {
-      ResourceSlot input_layout;
-      ResourceSlot shader;
-      ResourceSlot raster_state;
-      rsl::optional<BlendDesc> blend_state;
-      rsl::optional<DepthStencilDesc> depth_stencil_state;
-    };
+    //struct PipelineStateDesc
+    //{
+    //  InputLayoutResource* input_layout;
+    //  RootSignature* root_signature;
+    //  VertexShader* vertex_shader;
+    //  PixelShader* pixel_shader;
+    //  RasterStateResource* raster_size;
+    //  rsl::optional<BlendDesc> blend_state;
+    //  rsl::optional<DepthStencilDesc> depth_stencil_state;
+    //};
   } // namespace rhi
 } // namespace rex
 

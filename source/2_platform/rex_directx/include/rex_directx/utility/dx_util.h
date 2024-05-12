@@ -112,6 +112,8 @@ namespace rex
     // from our blob to a d3d blob, we need to copy it over.
     // This means that memory will be duplicated.
     wrl::ComPtr<ID3DBlob> create_blob(const memory::Blob& blob);
+    s32 total_texture_size(s32 width, s32 height, renderer::TextureFormat format);
+
     D3D12_FILL_MODE to_dx12(renderer::FillMode mode);
     D3D12_CULL_MODE to_dx12(renderer::CullMode mode);
     DXGI_FORMAT to_dx12(renderer::VertexBufferFormat format);
@@ -119,6 +121,7 @@ namespace rex
     DXGI_FORMAT to_dx12(renderer::TextureFormat format);
     D3D12_PRIMITIVE_TOPOLOGY to_dx12(renderer::PrimitiveTopology topology);
     D3D12_INPUT_CLASSIFICATION to_dx12(renderer::InputLayoutClassification classification);
+    s32 format_byte_size(renderer::TextureFormat format);
     s32 format_byte_size(DXGI_FORMAT format);
     s32 texture_2d_size(DXGI_FORMAT format, s32 width, s32 height);
     D3D12_SHADER_VISIBILITY to_dx12(renderer::ShaderVisibility visibility);

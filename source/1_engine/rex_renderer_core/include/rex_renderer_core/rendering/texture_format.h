@@ -8,6 +8,7 @@ namespace rex
     enum class TextureFormat
     {
       None = 0,
+      Unorm4,
       Unorm4Srgb,
     };
   } // namespace renderer

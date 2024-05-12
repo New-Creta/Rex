@@ -42,11 +42,14 @@ namespace rex
       void set_index_buffer(IndexBuffer* ib);
       void set_primitive_topology(renderer::PrimitiveTopology topology);
       //void set_blend_factor(BlendFactor* blendFactor);
-      //void set_root_signature(RootSignature* rootSignature);
-      //void set_pipeline_state(PipelineState* pso);
+      void set_root_signature(RootSignature* rootSignature);
+      void set_pipeline_state(PipelineState* pso);
 
       void draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
       void draw_indexed_instanced(s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
+
+      void update_buffer(Resource2* buffer, void* data, rsl::memory_size size);
+      void update_texture(Resource2* texture, Resource2* updateBuffer, void* data, rsl::memory_size size);
 
       ID3D12GraphicsCommandList* dx_object();
 

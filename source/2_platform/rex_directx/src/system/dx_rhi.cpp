@@ -21,8 +21,8 @@
 #include "rex_directx/system/dx_shader_compiler.h"
 #include "rex_directx/system/dx_vertex_buffer.h"
 #include "rex_directx/system/dx_index_buffer.h"
-#include "rex_directx/system/dx_constant_buffer.h"
 #include "rex_directx/system/dx_feature_shader_model.h"
+#include "rex_directx/system/dx_constant_buffer.h"
 
 #include "rex_directx/resources/dx_vertex_shader_resource.h"
 #include "rex_directx/resources/dx_pixel_shader_resource.h"
@@ -101,7 +101,7 @@ namespace rex
         bool init_pipeline_library();
 
         // Upload buffers
-        //bool init_upload_buffers();
+        bool init_upload_buffers();
 
       private:
         constexpr static s32 s_num_rtv_descs = 8;
@@ -123,7 +123,7 @@ namespace rex
         //rsl::unique_ptr<CommandList> command_list;
         rsl::unique_ptr<ResourceHeap> heap;
         //rsl::unique_ptr<Resource> depth_stencil_buffer;
-        //rsl::unique_ptr<UploadBuffer> upload_buffer;
+        rsl::unique_ptr<UploadBuffer> upload_buffer;
         rsl::unique_ptr<PipelineLibrary> pso_lib;
         ResourcePool resource_pool;
         
@@ -397,9 +397,291 @@ namespace rex
       DescriptorHandle rtv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(resource->dx_object());
       return rsl::make_unique<RenderTarget>(resource->dx_object(), rtv);
     }
+    rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize)
+    {
+      s32 total_size = numVertices * vertexSize;
+      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(total_size);
+      set_debug_name_for(buffer.Get(), "Vertex Buffer");
+      return rsl::make_unique<VertexBuffer>(buffer, numVertices, vertexSize);
+    }
+    rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format)
+    {
+      s32 index_size = renderer::index_format_size(format);
+      s32 total_size = numIndices * index_size;
+      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(total_size);
+      set_debug_name_for(buffer.Get(), "Index Buffer");
+      return rsl::make_unique<IndexBuffer>(buffer, numIndices, format);
+    }
+    rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc)
+    {
+      // Root parameter can be a table, root descriptor or root constants.
+      auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(desc.views.count()));
 
+      for (s32 i = 0; i < desc.constants.count(); ++i)
+      {
+        const auto& param = desc.constants[i];
 
+        D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(param.visibility);
+        root_parameters.emplace_back().InitAsConstants(param.num_32bits, param.reg, param.reg_space, visibility);
+      }
 
+      for (s32 i = 0; i < desc.views.count(); ++i)
+      {
+        const auto& param = desc.views[i];
+
+        D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(param.visibility);
+        switch (param.type)
+        {
+        case ShaderViewType::ConstantBufferView: root_parameters.emplace_back().InitAsConstantBufferView(param.reg, param.reg_space, visibility); break;
+        case ShaderViewType::ShaderResourceView: root_parameters.emplace_back().InitAsShaderResourceView(param.reg, param.reg_space, visibility); break;
+        case ShaderViewType::UnorderedAccessView: root_parameters.emplace_back().InitAsUnorderedAccessView(param.reg, param.reg_space, visibility); break;
+        }
+      }
+
+      rsl::vector<D3D12_DESCRIPTOR_RANGE> ranges;
+      for (s32 i = 0; i < desc.desc_tables.count(); ++i)
+      {
+        const auto& table = desc.desc_tables[i];
+        D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(table.visibility);
+        for (s32 range_idx = 0; range_idx < table.ranges.count(); ++range_idx)
+        {
+          ranges.push_back(rex::d3d::to_dx12(table.ranges[range_idx]));
+        }
+
+        root_parameters.emplace_back().InitAsDescriptorTable(ranges.size(), ranges.data(), visibility);
+      }
+
+      auto root_samplers = rsl::vector<D3D12_STATIC_SAMPLER_DESC>(rsl::Capacity(desc.samplers.count()));
+
+      for (s32 i = 0; i < desc.samplers.count(); ++i)
+      {
+        const auto& sampler = desc.samplers[i];
+
+        D3D12_STATIC_SAMPLER_DESC desc{};
+        desc.Filter = rex::d3d::to_dx12(sampler.filtering);
+        desc.AddressU = rex::d3d::to_dx12(sampler.address_mode_u);
+        desc.AddressV = rex::d3d::to_dx12(sampler.address_mode_v);
+        desc.AddressW = rex::d3d::to_dx12(sampler.address_mode_w);
+        desc.MipLODBias = sampler.mip_lod_bias;
+        desc.MaxAnisotropy = sampler.max_anisotropy;
+        desc.ComparisonFunc = rex::d3d::to_dx12(sampler.comparison_func);
+        desc.BorderColor = rex::d3d::to_dx12(sampler.border_color);
+        desc.MinLOD = sampler.min_lod;
+        desc.MaxLOD = sampler.max_lod;
+        desc.ShaderRegister = sampler.shader_register;
+        desc.RegisterSpace = sampler.register_space;
+        desc.ShaderVisibility = rex::d3d::to_dx12(sampler.shader_visibility);
+        root_samplers.emplace_back(desc);
+      }
+
+      // A root signature is an array of root parameters.
+      CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
+        root_parameters.size(),
+        root_parameters.data(),
+        root_samplers.size(),
+        root_samplers.data(),
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+      // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+      wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
+      wrl::ComPtr<ID3DBlob> error_blob = nullptr;
+
+      HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
+      if (error_blob != nullptr)
+      {
+        REX_ERROR(LogDirectX, "{}", (char*)error_blob->GetBufferPointer());
+        return nullptr;
+      }
+
+      if (DX_FAILED(hr))
+      {
+        REX_ERROR(LogDirectX, "Failed to serialize root signature");
+        return nullptr;
+      }
+
+      wrl::ComPtr<ID3D12RootSignature> root_signature;
+      if (DX_FAILED(internal::get()->device->get()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+      {
+        REX_ERROR(LogDirectX, "Failed to create root signature");
+        return nullptr;
+      }
+
+      rhi::set_debug_name_for(root_signature.Get(), "Root Signature");
+
+      return rsl::make_unique<RootSignature>(root_signature);
+    }
+
+    rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc)
+    {
+      // 1) Load the resources from the resource pool
+      D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+      if (desc.raster_state)
+      {
+        d3d_raster_state = *desc.raster_state->get();
+      }
+
+      D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+      if (desc.blend_state.has_value())
+      {
+        d3d_blend_state = rex::d3d::to_dx12(desc.blend_state.value());
+      }
+
+      D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+      if (desc.depth_stencil_state.has_value())
+      {
+        d3d_depth_stencil_state = rex::d3d::to_dx12(desc.depth_stencil_state.value());
+      }
+
+      // 2) Fill in the PSO desc
+      D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
+      pso_desc.InputLayout = *desc.input_layout->get();
+      pso_desc.pRootSignature = desc.root_signature->dx_object();
+      pso_desc.VS = desc.vertex_shader->dx_bytecode();
+      pso_desc.PS = desc.pixel_shader->dx_bytecode();
+      pso_desc.RasterizerState = d3d_raster_state;
+      pso_desc.BlendState = d3d_blend_state;
+      pso_desc.DepthStencilState = d3d_depth_stencil_state;
+      pso_desc.SampleMask = UINT_MAX;
+      pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+      pso_desc.NumRenderTargets = 1;
+      pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+      pso_desc.SampleDesc.Count = 1;
+      pso_desc.SampleDesc.Quality = 0;
+      pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+      wrl::ComPtr<ID3D12PipelineState> pso;
+      internal::get()->device->get()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso));
+
+      return rsl::make_unique<PipelineState>(pso);
+    }
+
+    rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format)
+    {
+      DXGI_FORMAT d3d_format = d3d::to_dx12(format);
+      wrl::ComPtr<ID3D12Resource> d3d_texture = internal::get()->heap->create_texture2d(d3d_format, width, height);
+      DescriptorHandle desc_handle = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(d3d_texture.Get());
+      return rsl::make_unique<Texture2D>(d3d_texture, desc_handle, width, height);
+    }
+    rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc)
+    {
+      D3D12_RASTERIZER_DESC d3d_rs;
+
+      d3d_rs.FillMode = rex::d3d::to_dx12(desc.fill_mode);
+      d3d_rs.CullMode = rex::d3d::to_dx12(desc.cull_mode);
+      d3d_rs.FrontCounterClockwise = desc.front_ccw;
+      d3d_rs.DepthBias = desc.depth_bias;
+      d3d_rs.DepthBiasClamp = desc.depth_bias_clamp;
+      d3d_rs.SlopeScaledDepthBias = desc.sloped_scale_depth_bias;
+      d3d_rs.DepthClipEnable = desc.depth_clip_enable;
+      d3d_rs.ForcedSampleCount = desc.forced_sample_count;
+
+      /**
+       * Conservative rasterization means that all pixels that are at least partially covered by a rendered primitive are rasterized, which means that the pixel shader is invoked.
+       * Normal behavior is sampling, which is not used if conservative rasterization is enabled.
+       *
+       * Conservative rasterization is useful in a number of situations outside of rendering (collision detection, occlusion culling, and visibility detection).
+       *
+       * https://learn.microsoft.com/en-us/windows/win32/direct3d11/conservative-rasterization
+       */
+      d3d_rs.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+      d3d_rs.MultisampleEnable = desc.multisample;
+      d3d_rs.AntialiasedLineEnable = desc.aa_lines;
+
+      return rsl::make_unique<RasterStateResource>(d3d_rs);
+    }
+    rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size)
+    {
+      // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
+      rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+      wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(aligned_size);
+      set_debug_name_for(buffer.Get(), "Constant Buffer");
+
+      // 2) Copy the data into the upload buffer
+      //internal::get()->upload_buffer->write(internal::get()->command_list.get(), cb.get(), desc.blob_view.data(), aligned_size);
+
+      // 3) Create a view to this constant buffer
+      DescriptorHandle desc_handle = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(buffer.Get(), aligned_size);
+
+      return rsl::make_unique<ConstantBuffer>(buffer, desc_handle, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, size);
+    }
+    rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc)
+    {
+      rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
+      REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
+
+      for (s32 i = 0; i < desc.input_layout.size(); ++i)
+      {
+        input_element_descriptions[i].SemanticName = desc.input_layout[i].semantic_name.data();
+        input_element_descriptions[i].SemanticIndex = desc.input_layout[i].semantic_index;
+        input_element_descriptions[i].Format = rex::d3d::to_dx12(desc.input_layout[i].format);
+        input_element_descriptions[i].InputSlot = desc.input_layout[i].input_slot;
+        input_element_descriptions[i].AlignedByteOffset = desc.input_layout[i].aligned_byte_offset;
+        input_element_descriptions[i].InputSlotClass = rex::d3d::to_dx12(desc.input_layout[i].input_slot_class);
+        input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
+      }
+
+      return rsl::make_unique<InputLayoutResource>(input_element_descriptions);
+    }
+    rsl::unique_ptr<VertexShader> create_vertex_shader(rsl::string_view sourceCode)
+    {
+      rex::rhi::CompileShaderDesc compile_vs_desc{};
+      compile_vs_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
+      compile_vs_desc.shader_code.write(sourceCode.data(), sourceCode.length());
+      compile_vs_desc.shader_entry_point = "main";
+      compile_vs_desc.shader_feature_target = "vs_5_0";
+      compile_vs_desc.shader_name = "imgui_vertex_shader";
+      compile_vs_desc.shader_type = rex::rhi::ShaderType::Vertex;
+      wrl::ComPtr<ID3DBlob> compiled_vs_blob = rex::rhi::compile_shader(compile_vs_desc);
+
+      return rsl::make_unique<VertexShader>(compiled_vs_blob);
+    }
+    rsl::unique_ptr<PixelShader> create_pixel_shader(rsl::string_view sourceCode)
+    {
+      rex::rhi::CompileShaderDesc compile_ps_desc{};
+      compile_ps_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
+      compile_ps_desc.shader_code.write(sourceCode.data(), sourceCode.length());
+      compile_ps_desc.shader_entry_point = "main";
+      compile_ps_desc.shader_feature_target = "ps_5_0";
+      compile_ps_desc.shader_name = "imgui_pixel_shader";
+      compile_ps_desc.shader_type = rex::rhi::ShaderType::Pixel;
+      wrl::ComPtr<ID3DBlob> compiled_ps_blob = rex::rhi::compile_shader(compile_ps_desc);
+
+      return rsl::make_unique<PixelShader>(compiled_ps_blob);
+    }
+    wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc)
+    {
+      ShaderCompiler compiler;
+      wrl::ComPtr<ID3DBlob> byte_code = compiler.compile_shader(desc);
+
+      if (!byte_code)
+      {
+        REX_ERROR(LogRhi, "Failed to compile shader");
+        return nullptr;
+      }
+
+      return byte_code;
+    }
+    rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size)
+    {
+      // an intermediate upload heap.
+      CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
+      auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(size);
+
+      wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
+      if (DX_FAILED(internal::get()->device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
+      {
+        REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
+        return {};
+      }
+
+      set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
+      return rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
+    }
+
+    UploadBuffer* global_upload_buffer()
+    {
+      return internal::get()->upload_buffer.get();
+    }
 
 
 
@@ -1142,11 +1424,11 @@ namespace rex
       // To make sure we can upload data to the gpu
       // we need to make sure the upload buffers 
       // are create which perform this upload for us
-      //if (!init_upload_buffers())
-      //{
-      //  REX_ERROR(LogRhi, "Failed to create upload buffers");
-      //  return;
-      //}
+      if (!init_upload_buffers())
+      {
+        REX_ERROR(LogRhi, "Failed to create upload buffers");
+        return;
+      }
 
       // 10) Execute the commandlist to finish initialization
       //command_list->stop_recording_commands();
@@ -1497,24 +1779,24 @@ namespace rex
     }
 
     // Upload buffers
-    //bool internal::RenderHardwareInfrastructure::init_upload_buffers()
-    //{
-    //  // an intermediate upload heap.
-    //  CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
-    //  auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(100_mib);
+    bool internal::RenderHardwareInfrastructure::init_upload_buffers()
+    {
+      // an intermediate upload heap.
+      CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
+      auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(100_mib);
 
-    //  wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
-    //  if (DX_FAILED(device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
-    //  {
-    //    REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
-    //    return {};
-    //  }
+      wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
+      if (DX_FAILED(device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
+      {
+        REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
+        return {};
+      }
 
-    //  set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
-    //  upload_buffer = rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
+      set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
+      upload_buffer = rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
 
-    //  return true;
-    //}
+      return true;
+    }
 
     //CommandList* cmd_list()
     //{

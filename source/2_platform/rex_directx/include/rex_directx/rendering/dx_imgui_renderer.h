@@ -22,6 +22,20 @@ class ImGui_ImplDX12_RenderBuffers;
 
 namespace rex
 {
+  namespace rhi
+  {
+    class CommandQueue;
+    class CommandList;
+    class Texture2D;
+    class InputLayoutResource;
+    class VertexShader;
+    class PixelShader;
+    class RootSignature;
+    class RasterStateResource;
+    class ConstantBuffer;
+    class PipelineState;
+  }
+
   namespace renderer
   {
     class ImGuiRenderer
@@ -52,7 +66,7 @@ namespace rex
       void init_imgui(HWND hwnd);
 
       Error init_gpu_resources();
-      Error init_src_desc_heap();
+      //Error init_srv_desc_heap();
       Error init_input_layout();
       Error init_shader();
       Error init_font_texture();
@@ -69,20 +83,28 @@ namespace rex
     private:
       ID3D12Device1* m_device;                                  // Needed to initialize child windows with their own directx objects
       DXGI_FORMAT                 m_rtv_format;                 // Comes in from the main rendered, to match child windows rtv format with that of the main window
-      rex::rhi::DescriptorHandle m_texture_handle;              // the handle to the shader resource view of the font texture
-      rsl::unique_ptr<rex::rhi::DescriptorHeap> m_srv_desc_heap;                // Probably not needed, rex uses single descriptor heaps throughout the process.
+      //rex::rhi::DescriptorHandle m_texture_handle;              // the handle to the shader resource view of the font texture
+      //rsl::unique_ptr<rex::rhi::DescriptorHeap> m_srv_desc_heap;                // Probably not needed, rex uses single descriptor heaps throughout the process.
       UINT                        m_max_num_frames_in_flight;   // used to store the number of frames we can handle at once.
 
       rsl::unique_ptr<rhi::CommandQueue> m_cmd_queue;
       rsl::unique_ptr<rhi::CommandList> m_cmd_list;
+      rsl::unique_ptr<rhi::Texture2D> m_font_texture;
+      rsl::unique_ptr<rhi::InputLayoutResource> m_input_layout;
+      rsl::unique_ptr<rhi::VertexShader> m_vertex_shader;
+      rsl::unique_ptr<rhi::PixelShader> m_pixel_shader;
+      rsl::unique_ptr<rhi::RootSignature> m_root_signature;
+      rsl::unique_ptr<rhi::RasterStateResource> m_raster_state;
+      rsl::unique_ptr<rhi::ConstantBuffer> m_constant_buffer;
+      rsl::unique_ptr<rhi::PipelineState> m_pipeline_state;
 
-      rex::rhi::ResourceSlot m_shader_program;                 // resource slot for the compiled imgui shader as well as its root signature
-      rex::rhi::ResourceSlot m_pipeline_state;                 // resource slot for the pipeline state of imgui
-      rex::rhi::ResourceSlot m_constant_buffer;                // resource slot for the constant buffer holding the mvp matrix. This single object is shared between all viewports
-      rex::rhi::ResourceSlot m_input_layout;                   // resource slot for the input layout of imgui
-      rex::rhi::ResourceSlot m_vertex_shader;                  // resource slot for the vertex shader of imgui
-      rex::rhi::ResourceSlot m_pixel_shader;                   // resource slot for the pixel shader of imgui
-      rex::rhi::ResourceSlot m_texture;                        // resources lot for the fonts texture, used by imgui
+      //rex::rhi::ResourceSlot m_shader_program;                 // resource slot for the compiled imgui shader as well as its root signature
+      //rex::rhi::ResourceSlot m_pipeline_state;                 // resource slot for the pipeline state of imgui
+      //rex::rhi::ResourceSlot m_constant_buffer;                // resource slot for the constant buffer holding the mvp matrix. This single object is shared between all viewports
+      //rex::rhi::ResourceSlot m_input_layout;                   // resource slot for the input layout of imgui
+      //rex::rhi::ResourceSlot m_vertex_shader;                  // resource slot for the vertex shader of imgui
+      //rex::rhi::ResourceSlot m_pixel_shader;                   // resource slot for the pixel shader of imgui
+      //rex::rhi::ResourceSlot m_texture;                        // resources lot for the fonts texture, used by imgui
 
       rsl::vector<ImGuiWindow> m_imgui_child_windows;          // Child windows of ImGui, spawned by draging a viewport outside of the main window
     };

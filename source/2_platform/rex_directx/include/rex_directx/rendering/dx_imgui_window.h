@@ -4,9 +4,17 @@
 
 #include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_swapchain.h"
+#include "rex_directx/system/dx_root_signature.h"
+#include "rex_directx/system/dx_pipeline_state.h"
+#include "rex_directx/system/dx_constant_buffer.h"
 
 namespace rex
 {
+  namespace rhi
+  {
+    class RenderTarget;
+  }
+
   namespace renderer
   {
     // Am imgui window is a standalone window that's just used for imgui rendering
@@ -15,7 +23,7 @@ namespace rex
     class ImGuiWindow
     {
     public:
-      ImGuiWindow(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb);
+      ImGuiWindow(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb);
 
       void begin_draw(rex::rhi::DescriptorHeap* srvDescHeap);
       void draw();
@@ -38,7 +46,10 @@ namespace rex
       rsl::unique_ptr<rhi::Swapchain> m_swapchain;
       rsl::unique_ptr<rhi::DescriptorHeap> m_rtv_desc_heap;
       rsl::unique_ptr<rhi::CommandQueue> m_command_queue;
+      rsl::unique_ptr<rhi::ClearStateResource> m_clear_state;
       rsl::unique_array<rsl::unique_ptr<ImGuiRenderBuffer>> m_render_buffers;
+
+      rsl::unique_array<rsl::unique_ptr<rhi::RenderTarget>> m_render_targets;
 
       RexImGuiViewport m_viewport;
     };

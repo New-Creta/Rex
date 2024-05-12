@@ -3,6 +3,8 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_renderer_core/resource_management/resource.h"
 
+#include "rex_directx/system/dx_resource.h"
+
 namespace rex
 {
   namespace rhi
@@ -20,7 +22,8 @@ namespace rex
       UploadBuffer& operator=(const UploadBuffer&) = delete;
       UploadBuffer& operator=(UploadBuffer&&) = delete;
 
-      void write(ID3D12GraphicsCommandList* cmdList, Resource* dstResource, const void* data, s64 size, s32 alignment = 1, s32 offset = 0);
+      void write(CommandList* cmdList, Resource2* dstResource, const void* data, s64 size, s32 alignment = 1, s32 offset = 0);
+      void write_buffer(CommandList* cmdList, Resource2* dstResource, const void* data, s64 size, s32 alignment = 1, s32 offset = 0);
       void write_texture(ID3D12GraphicsCommandList* cmdList, Resource* dstResource, const void* data, DXGI_FORMAT format, s64 width, s64 height);
 
       void reset();

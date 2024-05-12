@@ -23,7 +23,7 @@ namespace rex
     class RexImGuiViewport
     {
     public:
-      RexImGuiViewport(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb);
+      RexImGuiViewport(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb);
 
       void draw(rhi::CommandList* ctx);
       ImGuiFrameContext* current_frame_ctx();
@@ -48,9 +48,13 @@ namespace rex
       rsl::unique_array<rsl::unique_ptr<ImGuiRenderBuffer>> m_render_buffers;
       ImGuiViewport* m_imgui_viewport;
 
-      rex::rhi::ResourceSlot m_shader_program;
-      rex::rhi::ResourceSlot m_pipeline_state;
-      rex::rhi::ResourceSlot m_constant_buffer;
+      rhi::RootSignature* m_root_signature;
+      rhi::PipelineState* m_pipeline_state;
+      rhi::ConstantBuffer* m_constant_buffer;
+
+      //rex::rhi::ResourceSlot m_shader_program;
+      //rex::rhi::ResourceSlot m_pipeline_state;
+      //rex::rhi::ResourceSlot m_constant_buffer;
 
       s32 m_max_num_frames_in_flight;
       s32 m_frame_idx;

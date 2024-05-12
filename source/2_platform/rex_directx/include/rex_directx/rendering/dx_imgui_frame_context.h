@@ -37,8 +37,8 @@ namespace rex
       s32                 IndexBufferSize;    // the number of indices the index buffer supports
       s32                 VertexBufferSize;   // the number of vertices the vertex buffer supports
 
-      rex::rhi::ResourceSlot vertex_buffer;   // resource slot of the vertex buffer
-      rex::rhi::ResourceSlot index_buffer;    // resource slot of the index buffer
+      rsl::unique_ptr<rhi::VertexBuffer> vertex_buffer;   // resource slot of the vertex buffer
+      rsl::unique_ptr<rhi::IndexBuffer> index_buffer;    // resource slot of the index buffer
     };
   }
 }

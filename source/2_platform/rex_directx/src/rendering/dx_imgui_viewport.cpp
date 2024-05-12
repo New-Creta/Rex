@@ -10,11 +10,11 @@ namespace rex
 {
   namespace renderer
   {
-    RexImGuiViewport::RexImGuiViewport(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, const rhi::ResourceSlot& shaderProgram, const rhi::ResourceSlot& pso, const rhi::ResourceSlot& cb)
+    RexImGuiViewport::RexImGuiViewport(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb)
       : m_imgui_viewport(viewport)
       , m_max_num_frames_in_flight(maxNumFramesInFlight)
       , m_frame_idx(0)
-      , m_shader_program(shaderProgram)
+      , m_root_signature(rootSignature)
       , m_pipeline_state(pso)
       , m_constant_buffer(cb)
     {
@@ -103,8 +103,8 @@ namespace rex
       ctx->set_vertex_buffer(fr->vertex_buffer);
       ctx->set_index_buffer(fr->index_buffer);
       ctx->set_primitive_topology(PrimitiveTopology::TriangleList);
-      ctx->set_pso(m_pipeline_state);
-      ctx->set_shader(m_shader_program);
+      ctx->set_pipeline_state(m_pipeline_state);
+      ctx->set_root_signature(m_root_signature);
       ctx->update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer));
       ctx->set_constant_buffer(0, m_constant_buffer);
       ctx->set_blend_factor(blend_factor);

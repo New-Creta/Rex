@@ -225,7 +225,7 @@ namespace rex
           desc.flags.add_state(ClearBits::ClearDepthBuffer);
           desc.flags.add_state(ClearBits::ClearStencilBuffer);
 
-          clear_state = rsl::make_unique<rhi::ClearStateResource>(hash_resource_desc(desc), desc);
+          clear_state = rsl::make_unique<rhi::ClearStateResource>(desc);
 
           return true;
         }

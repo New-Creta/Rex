@@ -19,6 +19,15 @@
 #include "rex_directx/system/dx_texture_2d.h"
 #include "rex_directx/system/dx_resource.h"
 #include "rex_directx/resources/dx_upload_buffer.h"
+#include "rex_directx/system/dx_constant_buffer.h"
+
+#include "rex_directx/system/dx_vertex_buffer.h"
+#include "rex_directx/system/dx_index_buffer.h"
+#include "rex_directx/system/dx_root_signature.h"
+#include "rex_directx/system/dx_pipeline_state.h"
+
+
+
 
 #include "rex_std/string_view.h"
 #include "rex_engine/engine/defines.h"
@@ -74,7 +83,7 @@ namespace rex
     // Data is always written at the start of the destination resource
     void update_buffer(const ResourceSlot& slot, const void* data, s64 size, struct ID3D12GraphicsCommandList* cmdList = nullptr, s32 offset = 0);
 
-
+    UploadBuffer* global_upload_buffer();
 
 
 
@@ -109,45 +118,67 @@ namespace rex
     rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, CommandQueue* commandQueue, void* primaryDisplayHandle);
     rsl::unique_ptr<CommandAllocator> create_command_allocator();
     rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource);
+    rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
+    rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format);
+    rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
+    rsl::unique_ptr<PipelineState> create_pso(const rex::rhi::PipelineStateDesc& desc);
+    rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format);
+    rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc);
+    rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
+    rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc);
+    rsl::unique_ptr<VertexShader> create_vertex_shader(rsl::string_view sourceCode);
+    rsl::unique_ptr<PixelShader> create_pixel_shader(rsl::string_view sourceCode);
+    rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
+
+    wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
 
 
     // Resource Creation
     // -----------------------------------------------------------------------
     // A clear state is just a struct holding different values to clear a buffer
     // Flags control which part of the buffer (color, depths or stencil) should be cleared
-    ResourceSlot create_clear_state(const ClearStateDesc& desc);
+    //ResourceSlot create_clear_state(const ClearStateDesc& desc);
+
     // A raster state holds rasterization settings
     // settings like cull mode, fill mode, depth bias, normal orientation, ..
     // are all included in the raster state
-    ResourceSlot create_raster_state(const RasterStateDesc& desc);
+    //ResourceSlot create_raster_state(const RasterStateDesc& desc);
+
     // An input layout determines the format of vertices
     // It determines where a shader can find the position, normal, color
     // of a vertex.
-    ResourceSlot create_input_layout(const InputLayoutDesc& desc);
+    //ResourceSlot create_input_layout(const InputLayoutDesc& desc);
+
     // A vertex buffer is a buffer holding vertices of 1 or more objects
-    ResourceSlot create_vertex_buffer(const VertexBufferDesc& desc);
+    //ResourceSlot create_vertex_buffer(const VertexBufferDesc& desc);
+
     // A vertex buffer is a buffer holding vertices of 1 or more objects
-    ResourceSlot create_vertex_buffer(s32 totalSize, s32 vertexSize);
+    //ResourceSlot create_vertex_buffer(s32 totalSize, s32 vertexSize);
+
     // An index buffer is a buffer holding indices of 1 or more objects
-    ResourceSlot create_index_buffer(const IndexBufferDesc& desc);
+    //ResourceSlot create_index_buffer(const IndexBufferDesc& desc);
+
     // An index buffer is a buffer holding indices of 1 or more objects
-    ResourceSlot create_index_buffer(s32 totalSize, renderer::IndexBufferFormat format);
+    //ResourceSlot create_index_buffer(s32 totalSize, renderer::IndexBufferFormat format);
+
     // A constant buffer is a buffer holding data that's accessible to a shader
     // This can hold data like ints, floats, vectors and matrices
-    ResourceSlot create_constant_buffer(const ConstantBufferDesc& desc);
+    //ResourceSlot create_constant_buffer(const ConstantBufferDesc& desc);
+
     // A constant buffer is a buffer holding data that's accessible to a shader
     // This can hold data like ints, floats, vectors and matrices
-    ResourceSlot create_constant_buffer(rsl::memory_size size);
+    //ResourceSlot create_constant_buffer(rsl::memory_size size);
+
     // A pipeline state object defines a state for the graphics pipeline.
     // It holds the input layout, root signature, shaders, raster state, blend state ..
     // needed for a draw call.
-    ResourceSlot create_pso(const PipelineStateDesc& desc);
+    //ResourceSlot create_pso(const PipelineStateDesc& desc);
 
     
     // Shader API
     // -----------------------------------------------------------------------
     // Compile a shader into binary code
-    ResourceSlot compile_shader(const CompileShaderDesc& desc);
+    //ResourceSlot compile_shader(const CompileShaderDesc& desc);
     // Link a vertex and pixel shader together with a root signature.
     ResourceSlot link_shader(const LinkShaderDesc& desc);
     // Create a shader object from precompiled binary code

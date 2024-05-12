@@ -36,6 +36,7 @@ namespace rex
       s32 reg; // The register of the shader constant
       s32 reg_space; // The register space of the shader constant, this is often 0
       s32 num_32bits; // The number of constants that occupy a sigle shader slot
+      renderer::ShaderVisibility visibility; // the shader or shaders this view is visible in.
     };
 
     // Describes a shader view parameter (eg. constant buffer view)
@@ -47,7 +48,7 @@ namespace rex
       s32 reg_space{}; // the register space of the shader view, this is often 0
       renderer::ShaderVisibility visibility; // the shader or shaders this view is visible in.
     };
-    
+
     // Describe a descriptor/view range (2 constant buffer views)
     struct DescriptorRangeDesc
     {
@@ -90,6 +91,42 @@ namespace rex
     {
       rhi::ResourceSlot vertex_shader; // the vertex shader of the "shader program"
       rhi::ResourceSlot pixel_shader; // the pixel shader of the "shader program"
+      rsl::unique_array<ShaderConstantDesc> constants; // all the constants of the shaders
+      rsl::unique_array<ShaderViewDesc> views; // All the views of the shaders
+      rsl::unique_array<DescriptorTableDesc> desc_tables; // all the descriptor tables describing the various views and samplers of the shaders
+      rsl::unique_array<rhi::ShaderSamplerDesc> samplers; // All the samplers of the shaders
+    };
+
+    // Describe the root signature for all the shaders
+    // This basically says what resources are needed for the graphics pipeline
+    // It only specifies the type, not the actual data
+    // for example:
+    //
+    // -- VERTEX SHADER --
+    //   
+    // cbuffer my_vertex_buffer : register(b0)
+    // {
+    //    .. some data here ..
+    // };
+    //
+    // .. other vertex shader code ..
+    //
+    // 
+    // 
+    // -- PIXEL SHADER -- 
+    //
+    // SamplerState sampler0 : register(s0);
+    // Texture2D texture0 : register(t0);
+    //
+    // .. other pixel shader code ..
+    //
+    //
+    // The above would result in a root signature defining
+    // a constant buffer, a sampler and a texture 2d as its parameters.
+    // 
+    // A root signature holds all the parameters for every shader type bound to a pipeline.
+    struct RootSignatureDesc
+    {
       rsl::unique_array<ShaderConstantDesc> constants; // all the constants of the shaders
       rsl::unique_array<ShaderViewDesc> views; // All the views of the shaders
       rsl::unique_array<DescriptorTableDesc> desc_tables; // all the descriptor tables describing the various views and samplers of the shaders

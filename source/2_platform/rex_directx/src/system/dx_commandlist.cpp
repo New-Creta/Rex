@@ -3,6 +3,8 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/casting.h"
 
+#include "rex_directx/system/dx_rhi.h"
+
 namespace rex
 {
   namespace rhi
@@ -114,14 +116,16 @@ namespace rex
     //{
     //  m_cmd_list->OMSetBlendFactor(blendFactor->as_float_array());
     //}
-    //void CommandList::set_root_signature(RootSignature* rootSignature)
-    //{
-    //  m_cmd_list->SetGraphicsRootSignature(rootSignature->dx_object());
-    //}
-    //void CommandList::set_pipeline_state(PipelineState* pso)
-    //{
-    //  m_cmd_list->SetPipelineState(pso->dx_object());
-    //}
+    void CommandList::set_root_signature(RootSignature* rootSignature)
+    {
+      m_cmd_list->SetGraphicsRootSignature(rootSignature->dx_object());
+    }
+    void CommandList::set_pipeline_state(PipelineState* pso)
+    {
+      m_cmd_list->SetPipelineState(pso->get());
+    }
+
+    
 
     void CommandList::draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation)
     {
@@ -131,6 +135,21 @@ namespace rex
     {
       m_cmd_list->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
+
+    void CommandList::update_buffer(Resource2* buffer, void* data, rsl::memory_size size)
+    {
+      UploadBuffer* upload_buffer = rhi::global_upload_buffer();
+
+      transition_buffer(buffer, ResourceState::CopyDest);
+      upload_buffer->write(this, buffer, data, size);
+    }
+    void CommandList::update_texture(Resource2* texture, Resource2* updateBuffer, void* data, rsl::memory_size size)
+    {
+      // Copy memory into update buffer first
+
+      // Copy memory into texture after
+    }
+
 
     ID3D12GraphicsCommandList* CommandList::dx_object()
     {
