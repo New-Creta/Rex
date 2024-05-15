@@ -40,7 +40,7 @@ namespace rex
       m_clear_state = rsl::make_unique<rhi::ClearStateResource>(desc);
     }
 
-    void ImGuiWindow::begin_draw(rex::rhi::DescriptorHeap* srvDescHeap)
+    void ImGuiWindow::begin_draw()
     {
       rhi::RenderTarget* render_target = m_render_targets[m_swapchain->get()->GetCurrentBackBufferIndex()].get();
 

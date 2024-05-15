@@ -22,13 +22,14 @@ namespace rex
     RaytracingAccelerationStructure,    
     ShadingRateSource,    
     GenericRead,    
-    Present,    
     Predication,    
     VideoDecodeRead,    
     VideoDecodeWrite,    
     VideoProcessRead,    
     VideoProcessWrite,    
     VideoEncodeRead,    
-    VideoEncodeWrite
+    VideoEncodeWrite,
+
+    Present = Common,
   };
 }

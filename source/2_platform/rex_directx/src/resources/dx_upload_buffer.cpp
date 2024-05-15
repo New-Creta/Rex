@@ -49,10 +49,25 @@ namespace rex
       //m_offset += size;
     }
 
+    s32 UploadBuffer::prepare_for_new_write(const void* data, s64 size, s32 alignment, s32 offset)
+    {
+      // Write the data into our mapped memory
+      REX_ASSERT_X(m_offset + size <= m_size, "Upload buffer overflow. Would write more into the upload buffer than is supported");
+
+      rsl::byte* start = (rsl::byte*)m_mapped_data + m_offset; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+      start = align(start, alignment);
+      rsl::memcpy(start, data, size);
+
+      s32 old_offset = m_offset;
+      m_offset += size;
+
+      return old_offset;
+    }
+
     void UploadBuffer::write_buffer(CommandList* cmdList, Resource2* dstResource, const void* data, s64 size, s32 alignment, s32 offset)
     {
       // Write the data into our mapped memory
-      REX_ASSERT_X(m_offset + size < m_size, "Upload buffer overflow. Would write more into the upload buffer than is supported");
+      REX_ASSERT_X(m_offset + size <= m_size, "Upload buffer overflow. Would write more into the upload buffer than is supported");
 
       rsl::byte* start = (rsl::byte*)m_mapped_data + m_offset; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
       start = align(start, alignment);
@@ -71,7 +86,7 @@ namespace rex
       s32 pitch_size = width * format_size;
       s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
       pitch_size = align(pitch_size, alignment);
-      REX_ASSERT_X((m_offset + (pitch_size * height)) < m_size, "Upload buffer overflow. Would write more into the upload buffer than is supported");
+      REX_ASSERT_X((m_offset + (pitch_size * height)) <= m_size, "Upload buffer overflow. Would write more into the upload buffer than is supported");
 
       // Texture data needs to get written 1 row at a time
       const char* src = (const char*)data;
@@ -95,6 +110,30 @@ namespace rex
       // m_upload_infos.emplace_back(UploadInfo{ dstResource, m_offset, size });
       m_offset += (pitch_size * height);
     }
+
+    s32 UploadBuffer::prepare_for_new_texture_write(const void* data, s32 width, s32 height, renderer::TextureFormat format, s32 offset)
+    {
+      // Write the data into our mapped memory
+      s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
+      s32 pitch_size = d3d::texture_pitch_size(width, format);
+
+      REX_ASSERT_X((m_offset + (pitch_size * height)) <= m_size, "Upload buffer overflow. Would write more into the upload buffer than is supported");
+
+      // Texture data needs to get written 1 row at a time
+      const char* src = (const char*)data;
+      m_offset = align(m_offset, D3D12_TEXTURE_DATA_PITCH_ALIGNMENT);
+      rsl::byte* dst = (rsl::byte*)m_mapped_data + m_offset; // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+      dst = align(dst, alignment);
+      for (s32 y = 0; y < height; ++y)
+      {
+        rsl::memcpy(dst, src, pitch_size);
+        src += pitch_size;
+        dst += pitch_size;
+      }
+
+      return m_offset;
+    }
+
 
 
     void UploadBuffer::reset()

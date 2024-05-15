@@ -4,6 +4,10 @@ namespace rex
 {
   namespace rhi
   {
+    ResourceStateTracker::ResourceStateTracker(ResourceStateTracker* parentResourceStateTracker)
+      : m_parent_resource_state_tracker(parentResourceStateTracker)
+    {}
+
     ResourceStateTransition ResourceStateTracker::track_resource_transition(Resource2* resource, ResourceState state)
     {
       ResourceStateTransition transition{};
@@ -43,6 +47,13 @@ namespace rex
     {
       if (m_parent_resource_state_tracker)
       {
+        for (auto& transition : m_states_per_resource)
+        {
+          Resource2* resource = transition.key;
+          ResourceState resource_state = transition.value.back();
+
+          m_parent_resource_state_tracker->track_resource_transition(resource, resource_state);
+        }
         // Update parent so it knows the latest resource state of a resource
       }
     }

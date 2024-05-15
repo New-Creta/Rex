@@ -298,7 +298,7 @@ namespace rex
 
 
 
-    rsl::unique_ptr<CommandList> create_commandlist()
+    rsl::unique_ptr<CommandList> create_commandlist(ResourceStateTracker* resourceStateTracker)
     {
       wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
       if (DX_FAILED(internal::get()->device->get()->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, internal::get()->command_allocator->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
@@ -308,7 +308,7 @@ namespace rex
       }
 
       rhi::set_debug_name_for(cmd_list.Get(), "Global Command List");
-      return rsl::make_unique<CommandList>(cmd_list);
+      return rsl::make_unique<CommandList>(cmd_list, resourceStateTracker);
     }
 
     //s32 back_buffer_index()
@@ -560,7 +560,7 @@ namespace rex
       DXGI_FORMAT d3d_format = d3d::to_dx12(format);
       wrl::ComPtr<ID3D12Resource> d3d_texture = internal::get()->heap->create_texture2d(d3d_format, width, height);
       DescriptorHandle desc_handle = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(d3d_texture.Get());
-      return rsl::make_unique<Texture2D>(d3d_texture, desc_handle, width, height);
+      return rsl::make_unique<Texture2D>(d3d_texture, desc_handle, width, height, format);
     }
     rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc)
     {
@@ -602,7 +602,7 @@ namespace rex
       // 3) Create a view to this constant buffer
       DescriptorHandle desc_handle = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(buffer.Get(), aligned_size);
 
-      return rsl::make_unique<ConstantBuffer>(buffer, desc_handle, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, size);
+      return rsl::make_unique<ConstantBuffer>(buffer, desc_handle, size);
     }
     rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc)
     {
@@ -661,6 +661,11 @@ namespace rex
 
       return byte_code;
     }
+    DescriptorHeap* cbv_uav_srv_desc_heap()
+    {
+      return &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    }
+
     rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size)
     {
       // an intermediate upload heap.

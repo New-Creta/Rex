@@ -33,6 +33,15 @@ namespace rex
       return d3d_blob;
     }
 
+    s32 texture_pitch_size(s32 width, renderer::TextureFormat format)
+    {
+      s32 format_size = rex::d3d::format_byte_size(format);
+      s32 pitch_size = width * format_size;
+      s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
+      pitch_size = rex::align(pitch_size, alignment);
+
+      return pitch_size;
+    }
     s32 total_texture_size(s32 width, s32 height, renderer::TextureFormat format)
     {
       const s32 format_size = rex::d3d::format_byte_size(format);
@@ -497,7 +506,7 @@ namespace rex
       case rex::ResourceState::RaytracingAccelerationStructure:         return D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE        ;
       case rex::ResourceState::ShadingRateSource:                       return D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE                      ;
       case rex::ResourceState::GenericRead:                             return D3D12_RESOURCE_STATE_GENERIC_READ                             ;
-      case rex::ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
+      //case rex::ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
       case rex::ResourceState::Predication:                             return D3D12_RESOURCE_STATE_PREDICATION                              ;
       case rex::ResourceState::VideoDecodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_DECODE_READ                        ;
       case rex::ResourceState::VideoDecodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE                       ;

@@ -4,6 +4,7 @@
 #include "rex_renderer_core/resource_management/resource.h"
 
 #include "rex_directx/system/dx_resource.h"
+#include "rex_directx/system/dx_commandlist.h"
 
 namespace rex
 {
@@ -25,6 +26,8 @@ namespace rex
       void write(CommandList* cmdList, Resource2* dstResource, const void* data, s64 size, s32 alignment = 1, s32 offset = 0);
       void write_buffer(CommandList* cmdList, Resource2* dstResource, const void* data, s64 size, s32 alignment = 1, s32 offset = 0);
       void write_texture(ID3D12GraphicsCommandList* cmdList, Resource* dstResource, const void* data, DXGI_FORMAT format, s64 width, s64 height);
+      s32 prepare_for_new_write(const void* data, s64 size, s32 alignment = 1, s32 offset = 0);
+      s32 prepare_for_new_texture_write(const void* data, s32 width, s32 height, renderer::TextureFormat format, s32 offset = 0);
 
       void reset();
 

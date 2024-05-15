@@ -11,16 +11,19 @@ namespace rex
 {
     namespace rhi
     {
-        class InputLayoutResource : public BaseResource<D3D12_INPUT_LAYOUT_DESC>
+        class InputLayoutResource
         {
         public:
-            explicit InputLayoutResource(ResourceID id, const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements)
-                : BaseResource(&m_input_layout_desc, id)
-                , m_input_elements(elements)
+            explicit InputLayoutResource(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements)
+                : m_input_elements(elements)
             {
               m_input_layout_desc = { m_input_elements.data(), static_cast<u32>(m_input_elements.size()) };
             }
-            ~InputLayoutResource() override = default;
+
+            D3D12_INPUT_LAYOUT_DESC* get()
+            {
+              return &m_input_layout_desc;
+            }
 
         private:
             rsl::vector<D3D12_INPUT_ELEMENT_DESC> m_input_elements{};

@@ -90,32 +90,33 @@ namespace rex
       vp.max_depth = 1.0f;
       vp.top_left_x = vp.top_left_y = 0.0f;
 
-      rex::rhi::set_viewport(ctx, vp);
-      rex::rhi::set_vertex_buffer(ctx, fr->vertex_buffer);
-      rex::rhi::set_index_buffer(ctx, fr->index_buffer);
-      rex::rhi::set_primitive_topology(ctx, PrimitiveTopology::TriangleList);
-      rex::rhi::set_pso(ctx, m_pipeline_state);
-      rex::rhi::set_shader(ctx, m_shader_program);
-      rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx->dx_object());
-      rex::rhi::set_constant_buffer(ctx, 0, m_constant_buffer);
+      //rex::rhi::set_viewport(ctx, vp);
+      //rex::rhi::set_vertex_buffer(ctx, fr->vertex_buffer);
+      //rex::rhi::set_index_buffer(ctx, fr->index_buffer);
+      //rex::rhi::set_primitive_topology(ctx, PrimitiveTopology::TriangleList);
+      //rex::rhi::set_pso(ctx, m_pipeline_state);
+      //rex::rhi::set_shader(ctx, m_shader_program);
+      //rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx->dx_object());
+      //rex::rhi::set_constant_buffer(ctx, 0, m_constant_buffer);
 
       ctx->set_viewport(vp);
-      ctx->set_vertex_buffer(fr->vertex_buffer);
-      ctx->set_index_buffer(fr->index_buffer);
+      ctx->set_vertex_buffer(fr->vertex_buffer.get());
+      ctx->set_index_buffer(fr->index_buffer.get());
       ctx->set_primitive_topology(PrimitiveTopology::TriangleList);
       ctx->set_pipeline_state(m_pipeline_state);
       ctx->set_root_signature(m_root_signature);
-      ctx->update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer));
+      ctx->update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), 0);
       ctx->set_constant_buffer(0, m_constant_buffer);
+      const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
       ctx->set_blend_factor(blend_factor);
-
+      ctx->transition_buffer(m_constant_buffer, ResourceState::VertexAndConstantBuffer);
 
 
 
 
       // Setup blend factor
-      const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
-      rex::rhi::set_blend_factor(ctx, blend_factor);
+      //const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
+      //rex::rhi::set_blend_factor(ctx, blend_factor);
     }
     void RexImGuiViewport::render_draw_data(rhi::CommandList* ctx)
     {
@@ -165,15 +166,16 @@ namespace rex
           rect.right = clip_max.x;
           rect.bottom = clip_max.y;
           
-          D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
-          texture_handle.ptr = (UINT64)pcmd->GetTexID();
+          //D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
+          //texture_handle.ptr = (UINT64)pcmd->GetTexID();
 
-          rhi::set_scissor_rect(ctx, rect);
-          rhi::set_graphics_root_descriptor_table(ctx, texture_handle);
-          rhi::draw_indexed_instanced(ctx, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
-
+          //rhi::set_scissor_rect(ctx, rect);
+          //rhi::set_graphics_root_descriptor_table(ctx, texture_handle);
+          //rhi::draw_indexed_instanced(ctx, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
+          
           ctx->set_scissor_rect(rect);
-          ctx->set_graphics_root_descriptor_table(texture_handle);
+          rhi::Texture2D* texture = (rhi::Texture2D*)pcmd->GetTexID();
+          ctx->set_graphics_root_descriptor_table(1, (UINT64)texture->gpu_handle().ptr);
           ctx->draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
         }
         global_idx_offset += cmd_list->IdxBuffer.Size;
@@ -184,7 +186,7 @@ namespace rex
     void RexImGuiViewport::increase_vertex_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
     {
       renderBuffer->VertexBufferSize = drawData->TotalVtxCount + 5000;
-      renderBuffer->vertex_buffer = rex::rhi::create_vertex_buffer(sizeof(ImDrawVert) * renderBuffer->VertexBufferSize, sizeof(ImDrawVert));
+      renderBuffer->vertex_buffer = rex::rhi::create_vertex_buffer(renderBuffer->VertexBufferSize, sizeof(ImDrawVert));
     }
     void RexImGuiViewport::increase_index_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
     {
@@ -192,17 +194,17 @@ namespace rex
         ? rex::renderer::IndexBufferFormat::Uint16
         : rex::renderer::IndexBufferFormat::Uint32;
       renderBuffer->IndexBufferSize = drawData->TotalIdxCount + 10000;
-      renderBuffer->index_buffer = rex::rhi::create_index_buffer(renderBuffer->IndexBufferSize * sizeof(ImDrawIdx), format);
+      renderBuffer->index_buffer = rex::rhi::create_index_buffer(renderBuffer->IndexBufferSize, format);
     }
 
     void RexImGuiViewport::update_render_buffer(rhi::CommandList* ctx, ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer)
     {
       // Create and grow vertex/index buffers if needed
-      if (!renderBuffer->vertex_buffer.is_valid() || renderBuffer->VertexBufferSize < drawData->TotalVtxCount)
+      if (!renderBuffer->vertex_buffer || renderBuffer->VertexBufferSize < drawData->TotalVtxCount)
       {
         increase_vertex_buffer(drawData, renderBuffer);
       }
-      if (!renderBuffer->index_buffer.is_valid() || renderBuffer->IndexBufferSize < drawData->TotalIdxCount)
+      if (!renderBuffer->index_buffer || renderBuffer->IndexBufferSize < drawData->TotalIdxCount)
       {
         increase_index_buffer(drawData, renderBuffer);
       }
@@ -213,11 +215,18 @@ namespace rex
       for (s32 n = 0; n < drawData->CmdListsCount; n++)
       {
         const ImDrawList* cmd_list = drawData->CmdLists[n];
-        rex::rhi::update_buffer(renderBuffer->vertex_buffer, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), ctx->dx_object(), vtx_offset);
-        rex::rhi::update_buffer(renderBuffer->index_buffer, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), ctx->dx_object(), idx_offset);
+        //rex::rhi::update_buffer(renderBuffer->vertex_buffer, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), ctx->dx_object(), vtx_offset);
+        //rex::rhi::update_buffer(renderBuffer->index_buffer, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), ctx->dx_object(), idx_offset);
+
+        ctx->update_buffer(renderBuffer->vertex_buffer.get(), cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), vtx_offset);
+        ctx->update_buffer(renderBuffer->index_buffer.get(), cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), idx_offset);
+       
         vtx_offset += cmd_list->VtxBuffer.Size * sizeof(ImDrawVert);
         idx_offset += cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx);
       }
+
+      ctx->transition_buffer(renderBuffer->vertex_buffer.get(), ResourceState::VertexAndConstantBuffer);
+      ctx->transition_buffer(renderBuffer->index_buffer.get(), ResourceState::IndexBuffer);
     }
 
   }

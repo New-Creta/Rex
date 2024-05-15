@@ -30,7 +30,6 @@ namespace rex
       m_size = rex::d3d::texture_2d_size(format, width, height);
     }
 
-
     s32 Resource::width() const
     {
       return m_width;

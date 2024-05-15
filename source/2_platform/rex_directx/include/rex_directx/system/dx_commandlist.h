@@ -14,6 +14,7 @@
 
 #include "rex_directx/system/dx_resource.h"
 #include "rex_directx/system/dx_render_target.h"
+#include "rex_directx/system/dx_constant_buffer.h"
 #include "rex_directx/system/dx_vertex_buffer.h"
 #include "rex_directx/system/dx_index_buffer.h"
 #include "rex_directx/system/dx_blend_factor.h"
@@ -28,7 +29,7 @@ namespace rex
     class CommandList
     {
     public:
-      CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList);
+      CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList, ResourceStateTracker* parentResourceStateTracker = nullptr);
 
       void start_recording_commands(CommandAllocator* alloc, ID3D12PipelineState* pso = nullptr);
       void stop_recording_commands();
@@ -44,12 +45,15 @@ namespace rex
       //void set_blend_factor(BlendFactor* blendFactor);
       void set_root_signature(RootSignature* rootSignature);
       void set_pipeline_state(PipelineState* pso);
+      void set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id);
+      void set_constant_buffer(s32 paramIdx, ConstantBuffer* cb);
+      void set_blend_factor(const f32 blendFactor[4]);
 
       void draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
       void draw_indexed_instanced(s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
 
-      void update_buffer(Resource2* buffer, void* data, rsl::memory_size size);
-      void update_texture(Resource2* texture, Resource2* updateBuffer, void* data, rsl::memory_size size);
+      void update_buffer(Resource2* buffer, void* data, rsl::memory_size size, s32 dstOffset);
+      void update_texture(Resource2* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format);
 
       ID3D12GraphicsCommandList* dx_object();
 

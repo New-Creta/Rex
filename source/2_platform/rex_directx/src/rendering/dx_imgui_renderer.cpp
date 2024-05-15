@@ -80,6 +80,7 @@ namespace rex
       , m_max_num_frames_in_flight(numFramesInFlight)
       , m_cmd_queue(rhi::create_command_queue())
       , m_cmd_list(rhi::create_commandlist())
+      , m_cmd_allocator(rhi::create_command_allocator())
     {
       REX_ASSERT_X(g_imgui_renderer == nullptr, "You can only have 1 imgui renderer");
       g_imgui_renderer = this;
@@ -100,7 +101,7 @@ namespace rex
       // Create a dummy ImGui_ImplDX12_ViewportData holder for the main viewport,
       // Since this is created and managed by the application, we will only use the ->Resources[] fields.
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-      main_viewport->RendererUserData = IM_NEW(RexImGuiViewport)(main_viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_shader_program, m_pipeline_state, m_constant_buffer);
+      main_viewport->RendererUserData = IM_NEW(RexImGuiViewport)(main_viewport, m_device, m_max_num_frames_in_flight, m_rtv_format, m_root_signature.get(), m_pipeline_state.get(), m_constant_buffer.get());
 
     }
     ImGuiRenderer::~ImGuiRenderer()
@@ -129,7 +130,7 @@ namespace rex
 
       ImGui::NewFrame();
     }
-    void ImGuiRenderer::render()
+    void ImGuiRenderer::render(rhi::CommandList* cmdList)
     {
       ImGui::Render();
 
@@ -137,7 +138,12 @@ namespace rex
       if (RexImGuiViewport* imgui_window = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
         //m_cmd_list->set_desc_heap(m_srv_desc_heap.get());
-        imgui_window->draw(m_cmd_list.get());
+        //m_cmd_list->start_recording_commands(m_cmd_allocator.get());
+        //cmdList->set_render_target(renderTarget);
+        imgui_window->draw(cmdList);
+        //m_cmd_list->stop_recording_commands();
+        //m_cmd_queue->execute(m_cmd_list->dx_object());
+        //m_cmd_queue->flush();
         
         //rhi::CommandList* cmd_list = rhi::cmd_list();
         //ID3D12DescriptorHeap* desc_heap = m_srv_desc_heap->get();
@@ -149,7 +155,7 @@ namespace rex
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
       {
         ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault(nullptr, (void*)rhi::cmd_list());
+        ImGui::RenderPlatformWindowsDefault(nullptr, nullptr);
       }
     }
 
@@ -193,6 +199,8 @@ namespace rex
     {
       Error err = Error::no_error();
 
+      m_cmd_list->start_recording_commands(m_cmd_allocator.get());
+
       //err = init_srv_desc_heap();
       //if (err)
       //{
@@ -228,6 +236,10 @@ namespace rex
       {
         return Error::create_with_log(LogImgui, "Failed to create imgui pso");
       }
+
+      m_cmd_list->stop_recording_commands();
+      m_cmd_queue->execute(m_cmd_list->dx_object());
+      m_cmd_queue->flush();
 
       return err;
     }
@@ -407,10 +419,12 @@ namespace rex
       s32 texture_size = d3d::total_texture_size(width, height, renderer::TextureFormat::Unorm4);
       m_font_texture = rex::rhi::create_texture2d(width, height, renderer::TextureFormat::Unorm4);
       rsl::unique_ptr<rhi::UploadBuffer> upload_buffer = rex::rhi::create_upload_buffer(texture_size);
-      m_cmd_list->update_texture(m_font_texture.get(), upload_buffer.get(), pixels, texture_size);
+      m_cmd_list->update_texture(m_font_texture.get(), upload_buffer.get(), pixels, width, height, format);
 
+      m_cmd_list->stop_recording_commands();
       m_cmd_queue->execute(m_cmd_list->dx_object());
       m_cmd_queue->flush();
+      m_cmd_list->start_recording_commands(m_cmd_allocator.get());
       
       //m_texture = rex::rhi::create_texture2d((const char*)pixels, DXGI_FORMAT_R8G8B8A8_UNORM, width, height);
       //m_texture_handle = rex::rhi::create_texture2d_srv(m_srv_desc_heap.get(), m_texture);
@@ -518,7 +532,7 @@ namespace rex
     {
       ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
 
-      //imgui_window->begin_draw(m_srv_desc_heap.get());
+      imgui_window->begin_draw();
 
       if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
       {

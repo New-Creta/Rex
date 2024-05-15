@@ -112,6 +112,7 @@ namespace rex
     // from our blob to a d3d blob, we need to copy it over.
     // This means that memory will be duplicated.
     wrl::ComPtr<ID3DBlob> create_blob(const memory::Blob& blob);
+    s32 texture_pitch_size(s32 width, renderer::TextureFormat format);
     s32 total_texture_size(s32 width, s32 height, renderer::TextureFormat format);
 
     D3D12_FILL_MODE to_dx12(renderer::FillMode mode);

@@ -34,6 +34,7 @@ namespace rex
     class RasterStateResource;
     class ConstantBuffer;
     class PipelineState;
+    class RenderTarget;
   }
 
   namespace renderer
@@ -60,7 +61,7 @@ namespace rex
       ImGuiRenderer& operator=(ImGuiRenderer&&) = delete;
 
       void new_frame();
-      void render();
+      void render(rhi::CommandList* cmdList);
 
     private:
       void init_imgui(HWND hwnd);
@@ -89,6 +90,7 @@ namespace rex
 
       rsl::unique_ptr<rhi::CommandQueue> m_cmd_queue;
       rsl::unique_ptr<rhi::CommandList> m_cmd_list;
+      rsl::unique_ptr<rhi::CommandAllocator> m_cmd_allocator;
       rsl::unique_ptr<rhi::Texture2D> m_font_texture;
       rsl::unique_ptr<rhi::InputLayoutResource> m_input_layout;
       rsl::unique_ptr<rhi::VertexShader> m_vertex_shader;

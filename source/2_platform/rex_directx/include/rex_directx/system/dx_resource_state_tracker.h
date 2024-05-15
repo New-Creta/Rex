@@ -19,6 +19,7 @@ namespace rex
     class ResourceStateTracker
     {
     public:
+      explicit ResourceStateTracker(ResourceStateTracker* parentResourceStateTracker = nullptr);
       ResourceStateTransition track_resource_transition(Resource2* resource, ResourceState state);
 
       ResourceState current_resource_state(Resource2* resource) const;

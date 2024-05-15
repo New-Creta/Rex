@@ -15,6 +15,12 @@ namespace rex
 {
   namespace rhi
   {
+    class InputLayoutResource;
+    class RootSignature;
+    class VertexShader;
+    class PixelShader;
+    class RasterStateResource;
+
     struct PipelineStateDesc
     {
       InputLayoutResource* input_layout;
@@ -26,10 +32,12 @@ namespace rex
       rsl::optional<DepthStencilDesc> depth_stencil_state;
     };
 
-    class PipelineState : public BaseResource<ID3D12PipelineState>
+    class PipelineState
     {
     public:
-      PipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso, ResourceID id);
+      PipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso);
+
+      ID3D12PipelineState* get();
 
     private:
       wrl::ComPtr<ID3D12PipelineState> m_pso;

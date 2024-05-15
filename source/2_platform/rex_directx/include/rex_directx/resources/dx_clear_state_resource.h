@@ -10,14 +10,17 @@ namespace rex
 {
     namespace rhi
     {
-        class ClearStateResource : public BaseResource<ClearStateDesc>
+        class ClearStateResource
         {
         public:
-            explicit ClearStateResource(ResourceID id, const ClearStateDesc& cs)
-                : BaseResource(&m_clear_state, id)
-                , m_clear_state(cs)
+            explicit ClearStateResource(const ClearStateDesc& cs)
+                : m_clear_state(cs)
             {}
-            ~ClearStateResource() override = default;
+
+            ClearStateDesc* get()
+            {
+              return &m_clear_state;
+            }
 
         private:
             ClearStateDesc m_clear_state;

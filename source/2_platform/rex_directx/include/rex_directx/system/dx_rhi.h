@@ -108,7 +108,7 @@ namespace rex
     // Other constant buffers that are shared between objects, can already sit in memory and therefore
     // Don't need to get added again
 
-    rsl::unique_ptr<CommandList> create_commandlist();
+    rsl::unique_ptr<CommandList> create_commandlist(ResourceStateTracker* resourceStateTracker = nullptr);
 
     s32 back_buffer_index();
 
@@ -131,7 +131,7 @@ namespace rex
     rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
 
     wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
-
+    DescriptorHeap* cbv_uav_srv_desc_heap();
 
     // Resource Creation
     // -----------------------------------------------------------------------

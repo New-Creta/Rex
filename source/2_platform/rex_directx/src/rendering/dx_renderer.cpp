@@ -186,7 +186,7 @@ namespace rex
           , scissor_rect()
           , command_queue(rhi::create_command_queue())
           , swapchain(rhi::create_swapchain(s_max_frames_in_flight, command_queue.get(), userData.primary_display_handle))
-          , command_list(rhi::create_commandlist())
+          , command_list(rhi::create_commandlist(&m_resource_state_tracker))
         {
           // Create a scopeguard so if we exit the renderer too early on
           // We mark it as initialization failed
@@ -208,6 +208,11 @@ namespace rex
 
           // release the scopeguard so that init gets marked successful
           mark_init_failed.release();
+        }
+
+        ~DirectXRenderer()
+        {
+          command_queue->flush();
         }
 
       private:
@@ -326,6 +331,7 @@ namespace rex
         rsl::unique_ptr<rhi::CommandQueue> command_queue;
         rsl::unique_ptr<rhi::Swapchain> swapchain;
         rsl::unique_ptr<rhi::CommandList> command_list;
+        rhi::ResourceStateTracker m_resource_state_tracker;
 
         rsl::array<rsl::unique_ptr<rhi::CommandAllocator>, s_max_frames_in_flight> cmd_allocators;
         rsl::array<rsl::unique_ptr<rhi::RenderTarget>, s_max_frames_in_flight> render_targets;
@@ -341,7 +347,7 @@ namespace rex
       };
 
       rsl::unique_ptr<DirectXRenderer> g_renderer; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
-      //rsl::unique_ptr<ImGuiRenderer> g_imgui_renderer;
+      rsl::unique_ptr<ImGuiRenderer> g_imgui_renderer;
 
       //-------------------------------------------------------------------------
       bool initialize(const OutputWindowUserData& userData)
@@ -374,7 +380,7 @@ namespace rex
 
         // Initialize the imgui renderer if it's needed
         //rhi::reset_command_list(rhi::ResourceSlot::make_invalid());
-        //g_imgui_renderer = rsl::make_unique<ImGuiRenderer>(rhi::get_device(), 3, DXGI_FORMAT_R8G8B8A8_UNORM, (HWND)userData.primary_display_handle);
+        g_imgui_renderer = rsl::make_unique<ImGuiRenderer>(rhi::get_device(), 3, DXGI_FORMAT_R8G8B8A8_UNORM, (HWND)userData.primary_display_handle);
         //rhi::exec_command_list();
         //rhi::flush_command_queue();
 
@@ -391,6 +397,8 @@ namespace rex
 
       void render()
       {
+        rhi::global_upload_buffer()->reset();
+
         // Begin frame
         rhi::CommandAllocator* cmd_alloc = g_renderer->cmd_allocators[g_renderer->swapchain->get()->GetCurrentBackBufferIndex()].get();
         rhi::RenderTarget* render_target = g_renderer->render_targets[g_renderer->swapchain->get()->GetCurrentBackBufferIndex()].get();
@@ -402,6 +410,11 @@ namespace rex
         g_renderer->command_list->transition_buffer(render_target, ResourceState::RenderTarget);
         g_renderer->command_list->set_render_target(render_target);
         g_renderer->command_list->clear_render_target(render_target, g_renderer->clear_state.get());
+        //g_renderer->command_list->stop_recording_commands();
+
+        // End Frame
+        //g_renderer->command_queue->execute(g_renderer->command_list->dx_object());
+        //g_renderer->command_queue->flush();
 
         // Draw
         //g_renderer->command_list->set_primitive_topology();
@@ -410,14 +423,13 @@ namespace rex
         //g_renderer->command_list->set_index_buffer();
         //g_renderer->command_list->draw_indexed_instanced();
 
-        // End draw
-        g_renderer->command_list->transition_buffer(render_target, ResourceState::Present);
-        g_renderer->command_list->stop_recording_commands();
+        //// End draw
+        //g_renderer->command_list->transition_buffer(render_target, ResourceState::Present);
+        //g_renderer->command_list->stop_recording_commands();
 
-        // End Frame
-        g_renderer->command_queue->execute(g_renderer->command_list->dx_object());
-        g_renderer->command_queue->flush();
-        g_renderer->swapchain->present();
+        //// End Frame
+        //g_renderer->command_queue->execute(g_renderer->command_list->dx_object());
+        //g_renderer->command_queue->flush();
 
         //g_renderer->command_queue->exec_commandlist(g_renderer->command_list);
         //g_renderer->swapchain->present();
@@ -446,21 +458,32 @@ namespace rex
         //  rhi::draw_indexed(1, 0, render_item.index_count(), render_item.start_index(), render_item.base_vertex_loc());
         //}
 
-        //g_imgui_renderer->new_frame();
+        g_imgui_renderer->new_frame();
 
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
 
-        //static bool show_another_window = true;
-        //if (show_another_window)
-        //{
-        //  ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        //  ImGui::Text("Hello from another window!");
-        //  if (ImGui::Button("Close Me"))
-        //    show_another_window = false;
-        //  ImGui::End();
-        //}
+        static bool show_another_window = true;
+        if (show_another_window)
+        {
+          ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+          ImGui::Text("Hello from another window!");
+          if (ImGui::Button("Close Me"))
+            show_another_window = false;
+          ImGui::End();
+        }
 
-        //g_imgui_renderer->render();
+        g_imgui_renderer->render(g_renderer->command_list.get());
+
+        // End draw
+        //g_renderer->command_list->start_recording_commands(cmd_alloc);
+        g_renderer->command_list->transition_buffer(render_target, ResourceState::Present);
+        g_renderer->command_list->stop_recording_commands();
+
+        // End Frame
+        g_renderer->command_queue->execute(g_renderer->command_list->dx_object());
+        g_renderer->command_queue->flush();
+
+        g_renderer->swapchain->present();
       }
 
       void shutdown()

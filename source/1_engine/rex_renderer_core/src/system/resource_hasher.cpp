@@ -84,13 +84,13 @@ namespace rex
 
       return hash;
     }
-    ResourceID hash_resource_desc(const PipelineStateDesc& desc)
-    {
-      u32 hash = rsl::type_id<PipelineStateDesc>().hash_code();
+    //ResourceID hash_resource_desc(const PipelineStateDesc& desc)
+    //{
+    //  u32 hash = rsl::type_id<PipelineStateDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)&desc, sizeof(desc))); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+    //  hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)&desc, sizeof(desc))); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
 
-      return hash;
-    }
+    //  return hash;
+    //}
   } // namespace rhi
 } // namespace rex

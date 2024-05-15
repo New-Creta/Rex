@@ -3,6 +3,8 @@
 #include "rex_renderer_core/resource_management/resource_slot.h"
 
 #include "rex_directx/system/dx_command_allocator.h"
+#include "rex_directx/system/dx_vertex_buffer.h"
+#include "rex_directx/system/dx_index_buffer.h"
 #include "rex_directx/utility/dx_util.h"
 
 #include "rex_engine/engine/types.h"

@@ -25,7 +25,7 @@ namespace rex
     public:
       ImGuiWindow(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb);
 
-      void begin_draw(rex::rhi::DescriptorHeap* srvDescHeap);
+      void begin_draw();
       void draw();
       void end_draw();
 

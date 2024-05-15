@@ -4,14 +4,16 @@
 #include "rex_engine/engine/casting.h"
 
 #include "rex_directx/system/dx_rhi.h"
+#include "rex_engine/memory/pointer_math.h"
 
 namespace rex
 {
   namespace rhi
   {
-    CommandList::CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList)
+    CommandList::CommandList(const wrl::ComPtr<ID3D12GraphicsCommandList>& commandList, ResourceStateTracker* parentResourceStateTracker)
       : m_cmd_list(commandList)
       , m_alloc(nullptr)
+      , m_resource_state_tracker(parentResourceStateTracker)
     {
       m_cmd_list->Close();
     }
@@ -25,6 +27,10 @@ namespace rex
 
       alloc->get()->Reset();
       m_cmd_list->Reset(m_alloc->get(), pso);
+
+      DescriptorHeap* cbv_desc_heap = cbv_uav_srv_desc_heap();
+      ID3D12DescriptorHeap* desc_heap = cbv_desc_heap->get();
+      m_cmd_list->SetDescriptorHeaps(1, &desc_heap);
     }
     void CommandList::stop_recording_commands()
     {
@@ -92,8 +98,8 @@ namespace rex
     void CommandList::set_vertex_buffer(VertexBuffer* vb)
     {
       D3D12_VERTEX_BUFFER_VIEW view{};
-      view.BufferLocation = vb->get()->GetGPUVirtualAddress();
-      view.SizeInBytes = narrow_cast<s32>(vb->size());
+      view.BufferLocation = vb->dx_object()->GetGPUVirtualAddress();
+      view.SizeInBytes = narrow_cast<s32>(vb->total_size());
       view.StrideInBytes = vb->stride();
 
       m_cmd_list->IASetVertexBuffers(0, 1, &view);
@@ -101,9 +107,9 @@ namespace rex
     void CommandList::set_index_buffer(IndexBuffer* ib)
     {
       D3D12_INDEX_BUFFER_VIEW view{};
-      view.BufferLocation = ib->get()->GetGPUVirtualAddress();
-      view.Format = ib->format();
-      view.SizeInBytes = narrow_cast<s32>(ib->size());
+      view.BufferLocation = ib->dx_object()->GetGPUVirtualAddress();
+      view.Format = d3d::to_dx12(ib->format());
+      view.SizeInBytes = narrow_cast<s32>(ib->total_size());
 
       m_cmd_list->IASetIndexBuffer(&view);
     }
@@ -124,8 +130,21 @@ namespace rex
     {
       m_cmd_list->SetPipelineState(pso->get());
     }
+    void CommandList::set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id)
+    {
+      D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
+      texture_handle.ptr = id;
 
-    
+      m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, texture_handle);
+    }
+    void CommandList::set_constant_buffer(s32 paramIdx, ConstantBuffer* cb)
+    {
+      m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, cb->dx_object()->GetGPUVirtualAddress());
+    }
+    void CommandList::set_blend_factor(const f32 blendFactor[4])
+    {
+      m_cmd_list->OMSetBlendFactor(blendFactor);
+    }
 
     void CommandList::draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation)
     {
@@ -136,18 +155,34 @@ namespace rex
       m_cmd_list->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
 
-    void CommandList::update_buffer(Resource2* buffer, void* data, rsl::memory_size size)
+    void CommandList::update_buffer(Resource2* buffer, void* data, rsl::memory_size size, s32 dstOffset)
     {
       UploadBuffer* upload_buffer = rhi::global_upload_buffer();
 
       transition_buffer(buffer, ResourceState::CopyDest);
+      s32 write_offset = upload_buffer->prepare_for_new_write(data, size);
+      m_cmd_list->CopyBufferRegion(buffer->dx_object(), dstOffset, upload_buffer->get(), write_offset, size);
       upload_buffer->write(this, buffer, data, size);
     }
-    void CommandList::update_texture(Resource2* texture, Resource2* updateBuffer, void* data, rsl::memory_size size)
+    void CommandList::update_texture(Resource2* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format)
     {
-      // Copy memory into update buffer first
+      transition_buffer(texture, ResourceState::CopyDest);
 
-      // Copy memory into texture after
+      s32 write_offset = updateBuffer->prepare_for_new_texture_write(data, width, height, format);
+
+      CD3DX12_TEXTURE_COPY_LOCATION dst_loc(texture->dx_object(), 0);
+      D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint{};
+      footprint.Footprint.Format = d3d::to_dx12(format);
+      footprint.Footprint.Width = width;
+      footprint.Footprint.Height = height;
+      footprint.Footprint.Depth = 1;
+      footprint.Footprint.RowPitch = d3d::texture_pitch_size(width, format);
+      footprint.Offset = write_offset;
+
+      CD3DX12_TEXTURE_COPY_LOCATION src_loc(updateBuffer->get(), footprint);
+      m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
+
+      transition_buffer(texture, ResourceState::PixelShaderResource);
     }
 
 
