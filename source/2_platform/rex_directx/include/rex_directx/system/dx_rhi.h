@@ -52,47 +52,6 @@ namespace rex
 #endif
     }
 
-    void transition_backbuffer(D3D12_RESOURCE_STATES state);
-    void clear_backbuffer(const ResourceSlot& clearState);
-    void present();
-
-    // Create a 2D texture on the gpu and add the data to the upload buffer
-    // to be uploaded the next time the upload buffer
-    ResourceSlot create_texture2d(const char* data, DXGI_FORMAT format, s32 width, s32 height);
-
-    DescriptorHandle create_texture2d_srv(const ResourceSlot& textureSlot);
-    DescriptorHandle create_texture2d_srv(DescriptorHeap* descriptorHeap, const ResourceSlot& textureSlot);
-
-    class CommandList* cmd_list();
-
-    void set_graphics_root_descriptor_table(CommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE handle);
-    Texture2D* get_texture(const ResourceSlot& slot);
-
-    ID3D12Device1* get_device();
-
-    DescriptorHandle get_rtv();
-
-    // bind the render target of the backbuffer to the pipeline
-    void bind_backbuffer_rendertarget();
-
-    // Reset the upload buffer offset. Should be called at the start of the frame (or after every upload has finished)
-    // So new data can be queued for uploading
-    void reset_upload_buffer();
-
-    // Update a buffer with new data.
-    // Data is always written at the start of the destination resource
-    void update_buffer(const ResourceSlot& slot, const void* data, s64 size, struct ID3D12GraphicsCommandList* cmdList = nullptr, s32 offset = 0);
-
-    UploadBuffer* global_upload_buffer();
-
-
-
-
-
-
-
-
-
     // We dealing with resource creation, we need to do this smart as we don't want to have the same object twice in memory.
     // Eg. if an object is requested for rendering, and an equivalent vertex buffer or index buffer is already in memory,
     // we shouldn't put it in memory again, instead we should use the existing memory for this job
@@ -109,13 +68,8 @@ namespace rex
     // Don't need to get added again
 
     rsl::unique_ptr<CommandList> create_commandlist(ResourceStateTracker* resourceStateTracker = nullptr);
-
-    s32 back_buffer_index();
-
-    void execute_commandlist(CommandList* cmdList);
-
     rsl::unique_ptr<CommandQueue> create_command_queue();
-    rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, CommandQueue* commandQueue, void* primaryDisplayHandle);
+    rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, void* primaryDisplayHandle);
     rsl::unique_ptr<CommandAllocator> create_command_allocator();
     rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource);
     rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
@@ -132,6 +86,11 @@ namespace rex
 
     wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
     DescriptorHeap* cbv_uav_srv_desc_heap();
+    UploadBuffer* global_upload_buffer();
+    ID3D12Device1* get_device();
+
+    void execute_command_list(CommandList* cmdList);
+    void wait_for_gpu(CommandType type);
 
     // Resource Creation
     // -----------------------------------------------------------------------
@@ -180,40 +139,40 @@ namespace rex
     // Compile a shader into binary code
     //ResourceSlot compile_shader(const CompileShaderDesc& desc);
     // Link a vertex and pixel shader together with a root signature.
-    ResourceSlot link_shader(const LinkShaderDesc& desc);
+    //ResourceSlot link_shader(const LinkShaderDesc& desc);
     // Create a shader object from precompiled binary code
-    ResourceSlot load_shader(const ShaderDesc& desc);
+    //ResourceSlot load_shader(const ShaderDesc& desc);
 
     // Graphics Pipeline
     // -----------------------------------------------------------------------
     // Specify the viewport where we'll be drawing in
-    void set_viewport(CommandList* cmdList, const Viewport& viewport);
+    //void set_viewport(CommandList* cmdList, const Viewport& viewport);
     // Speicfy the scissor rect outside of which we clip drawing
-    void set_scissor_rect(CommandList* cmdList, const ScissorRect& rect);
+    //void set_scissor_rect(CommandList* cmdList, const ScissorRect& rect);
 
     // Transition the back buffer into a specified state
-    void transition_backbuffer(CommandList* cmdList, D3D12_RESOURCE_STATES state);
+    //void transition_backbuffer(CommandList* cmdList, D3D12_RESOURCE_STATES state);
     // Clear the back buffer using a clear state
-    void clear_backbuffer(CommandList* cmdList, const ResourceSlot& clearState);
+    //void clear_backbuffer(CommandList* cmdList, const ResourceSlot& clearState);
 
     // Bind the vertex buffer specified at the resource slot to the pipeline
-    void set_vertex_buffer(CommandList* cmdList, const ResourceSlot& vb);
+    //void set_vertex_buffer(CommandList* cmdList, const ResourceSlot& vb);
     // Bind the index buffer specified at the resource slot to the pipeline
-    void set_index_buffer(CommandList* cmdList, const ResourceSlot& ib);
+    //void set_index_buffer(CommandList* cmdList, const ResourceSlot& ib);
     // Bind the constant buffer to the pipeline at the specified index
-    void set_constant_buffer(CommandList* cmdList, s32 idx, const ResourceSlot& cb);
+    //void set_constant_buffer(CommandList* cmdList, s32 idx, const ResourceSlot& cb);
     // Specify the primitive topology of the pipeline
-    void set_primitive_topology(CommandList* cmdList, renderer::PrimitiveTopology topology);
+    //void set_primitive_topology(CommandList* cmdList, renderer::PrimitiveTopology topology);
     // Specify the blend factor of the pipeline
-    void set_blend_factor(CommandList* cmdList, const f32 blendFactor[4]);
+    //void set_blend_factor(CommandList* cmdList, const f32 blendFactor[4]);
     // Bind the shader specified at the resource slot to the pipeline
-    void set_shader(CommandList* cmdList, const ResourceSlot& slot);
+    //void set_shader(CommandList* cmdList, const ResourceSlot& slot);
     // Set the pipeline of the pipeline
-    void set_pso(CommandList* cmdList, const ResourceSlot& slot);
+    //void set_pso(CommandList* cmdList, const ResourceSlot& slot);
 
     // Draw to the screen, using indexed instances
-    void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
+    //void draw_indexed(s32 instanceCount, s32 startInstance, s32 indexCount, s32 startIndex, s32 baseVertexLoc);
     // Draw to the screen, using indexed instances of primitives
-    void draw_indexed_instanced(CommandList* cmdList, s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
+    //void draw_indexed_instanced(CommandList* cmdList, s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
   }
 }

@@ -137,19 +137,7 @@ namespace rex
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (RexImGuiViewport* imgui_window = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
-        //m_cmd_list->set_desc_heap(m_srv_desc_heap.get());
-        //m_cmd_list->start_recording_commands(m_cmd_allocator.get());
-        //cmdList->set_render_target(renderTarget);
         imgui_window->draw(cmdList);
-        //m_cmd_list->stop_recording_commands();
-        //m_cmd_queue->execute(m_cmd_list->dx_object());
-        //m_cmd_queue->flush();
-        
-        //rhi::CommandList* cmd_list = rhi::cmd_list();
-        //ID3D12DescriptorHeap* desc_heap = m_srv_desc_heap->get();
-        //cmd_list->get()->SetDescriptorHeaps(1, &desc_heap);
-
-        //imgui_window->draw(cmd_list);
       }
 
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -201,12 +189,6 @@ namespace rex
 
       m_cmd_list->start_recording_commands(m_cmd_allocator.get());
 
-      //err = init_srv_desc_heap();
-      //if (err)
-      //{
-      //  return Error::create_with_log(LogImgui, "Failed to create desc heap for imgui texture");
-      //}
-
       err = init_font_texture();
       if (err)
       {
@@ -238,7 +220,7 @@ namespace rex
       }
 
       m_cmd_list->stop_recording_commands();
-      m_cmd_queue->execute(m_cmd_list->dx_object());
+      m_cmd_queue->execute(m_cmd_list.get());
       m_cmd_queue->flush();
 
       return err;
@@ -288,14 +270,6 @@ namespace rex
       }";
 
       m_vertex_shader = rex::rhi::create_vertex_shader(vertex_shader);
-      //rex::rhi::CompileShaderDesc compile_vs_desc{};
-      //compile_vs_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(vertex_shader.length()));
-      //compile_vs_desc.shader_code.write(vertex_shader.data(), vertex_shader.length());
-      //compile_vs_desc.shader_entry_point = "main";
-      //compile_vs_desc.shader_feature_target = "vs_5_0";
-      //compile_vs_desc.shader_name = "imgui_vertex_shader";
-      //compile_vs_desc.shader_type = rex::rhi::ShaderType::Vertex;
-      //m_vertex_shader = rex::rhi::compile_shader(compile_vs_desc);
 
       static rsl::string_view pixel_shader =
         "struct PS_INPUT\
@@ -313,47 +287,6 @@ namespace rex
          return out_col; \
        }";
       m_pixel_shader = rex::rhi::create_pixel_shader(pixel_shader);
-
-      //rex::rhi::CompileShaderDesc compile_ps_desc{};
-      //compile_ps_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(pixel_shader.length()));
-      //compile_ps_desc.shader_code.write(pixel_shader.data(), pixel_shader.length());
-      //compile_ps_desc.shader_entry_point = "main";
-      //compile_ps_desc.shader_feature_target = "ps_5_0";
-      //compile_ps_desc.shader_name = "imgui_pixel_shader";
-      //compile_ps_desc.shader_type = rex::rhi::ShaderType::Pixel;
-      //m_pixel_shader = rex::rhi::compile_shader(compile_ps_desc);
-
-      // Link shaders
-      //rex::rhi::LinkShaderDesc link_shader_desc{};
-      //link_shader_desc.vertex_shader = m_vertex_shader;
-      //link_shader_desc.pixel_shader = m_pixel_shader;
-
-      //// We have 2 constants for the shader, 1 in the vertex shader and 1 in the pixel shader
-      //link_shader_desc.views = rsl::make_unique<rex::rhi::ShaderViewDesc[]>(1);
-      //link_shader_desc.views[0] = { "vertexBuffer", rhi::ShaderViewType::ConstantBufferView, 0, 0, rex::renderer::ShaderVisibility::Vertex }; // We have 1 constant buffer in the vertex shader
-
-      //link_shader_desc.desc_tables = rsl::make_unique<rex::rhi::DescriptorTableDesc[]>(1);
-      //link_shader_desc.desc_tables[0].ranges = rsl::make_unique<rex::rhi::DescriptorRangeDesc[]>(1);
-      //link_shader_desc.desc_tables[0].ranges[0] = { rex::rhi::DescriptorRangeType::ShaderResourceView, 1 }; // We have 1 src which points to our font texture
-      //link_shader_desc.desc_tables[0].visibility = rex::renderer::ShaderVisibility::Pixel;
-
-      //// We have 1 sampler, used for sampling the font texture
-      //link_shader_desc.samplers = rsl::make_unique<rex::rhi::ShaderSamplerDesc[]>(1);
-      //link_shader_desc.samplers[0].filtering = rex::renderer::SamplerFiltering::MinMagMipLinear;
-      //link_shader_desc.samplers[0].address_mode_u = rex::renderer::TextureAddressMode::Wrap;
-      //link_shader_desc.samplers[0].address_mode_v = rex::renderer::TextureAddressMode::Wrap;
-      //link_shader_desc.samplers[0].address_mode_w = rex::renderer::TextureAddressMode::Wrap;
-      //link_shader_desc.samplers[0].mip_lod_bias = 0.0f;
-      //link_shader_desc.samplers[0].max_anisotropy = 0;
-      //link_shader_desc.samplers[0].comparison_func = rex::renderer::ComparisonFunc::Always;
-      //link_shader_desc.samplers[0].border_color = rex::renderer::BorderColor::TransparentBlack;
-      //link_shader_desc.samplers[0].min_lod = 0.0f;
-      //link_shader_desc.samplers[0].max_lod = 0.0f;
-      //link_shader_desc.samplers[0].shader_register = 0;
-      //link_shader_desc.samplers[0].register_space = 0;
-      //link_shader_desc.samplers[0].shader_visibility = rex::renderer::ShaderVisibility::Pixel;
-
-      //m_shader_program = rex::rhi::link_shader(link_shader_desc);
 
       rex::rhi::RootSignatureDesc root_sig_desc{};
       // We have 2 constants for the shader, 1 in the vertex shader and 1 in the pixel shader
@@ -385,27 +318,7 @@ namespace rex
 
       return Error::no_error();
     }
-    //Error ImGuiRenderer::init_srv_desc_heap()
-    //{
-    //  D3D12_DESCRIPTOR_HEAP_DESC desc{};
 
-    //  desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    //  desc.NumDescriptors = 1;
-    //  desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    //  desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-
-    //  wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
-    //  if (DX_FAILED(m_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
-    //  {
-    //    return Error::create_with_log(LogImgui, "Failed to create imgui descriptor heap resource");
-    //  }
-
-    //  rhi::set_debug_name_for(desc_heap.Get(), "Imgui's texture descriptor heap");
-
-    //  m_srv_desc_heap = rsl::make_unique<rhi::DescriptorHeap>(desc_heap, m_device);
-
-    //  return Error::no_error();
-    //}
     Error ImGuiRenderer::init_font_texture()
     {
       // Build texture atlas
@@ -422,7 +335,7 @@ namespace rex
       m_cmd_list->update_texture(m_font_texture.get(), upload_buffer.get(), pixels, width, height, format);
 
       m_cmd_list->stop_recording_commands();
-      m_cmd_queue->execute(m_cmd_list->dx_object());
+      m_cmd_queue->execute(m_cmd_list.get());
       m_cmd_queue->flush();
       m_cmd_list->start_recording_commands(m_cmd_allocator.get());
       

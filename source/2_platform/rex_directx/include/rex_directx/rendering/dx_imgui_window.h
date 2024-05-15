@@ -42,10 +42,10 @@ namespace rex
       Error init_swapchain(ID3D12Device1* device, s32 width, s32 height, s32 maxNumFramesInFlight, HWND hwnd, DXGI_FORMAT rtvFormat);
 
     private:
-      rsl::unique_ptr<rhi::CommandList> m_command_list;
+      rsl::unique_ptr<rhi::CommandList> m_command_list; 
       rsl::unique_ptr<rhi::Swapchain> m_swapchain;
-      rsl::unique_ptr<rhi::DescriptorHeap> m_rtv_desc_heap;
-      rsl::unique_ptr<rhi::CommandQueue> m_command_queue;
+      //rsl::unique_ptr<rhi::DescriptorHeap> m_rtv_desc_heap;
+      rsl::unique_ptr<rhi::CommandQueue> m_command_queue; // Check if I need a command queue for this swapchain
       rsl::unique_ptr<rhi::ClearStateResource> m_clear_state;
       rsl::unique_array<rsl::unique_ptr<ImGuiRenderBuffer>> m_render_buffers;
 

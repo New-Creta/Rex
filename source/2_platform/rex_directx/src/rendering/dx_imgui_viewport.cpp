@@ -90,15 +90,6 @@ namespace rex
       vp.max_depth = 1.0f;
       vp.top_left_x = vp.top_left_y = 0.0f;
 
-      //rex::rhi::set_viewport(ctx, vp);
-      //rex::rhi::set_vertex_buffer(ctx, fr->vertex_buffer);
-      //rex::rhi::set_index_buffer(ctx, fr->index_buffer);
-      //rex::rhi::set_primitive_topology(ctx, PrimitiveTopology::TriangleList);
-      //rex::rhi::set_pso(ctx, m_pipeline_state);
-      //rex::rhi::set_shader(ctx, m_shader_program);
-      //rex::rhi::update_buffer(m_constant_buffer, &vertex_constant_buffer, sizeof(vertex_constant_buffer), ctx->dx_object());
-      //rex::rhi::set_constant_buffer(ctx, 0, m_constant_buffer);
-
       ctx->set_viewport(vp);
       ctx->set_vertex_buffer(fr->vertex_buffer.get());
       ctx->set_index_buffer(fr->index_buffer.get());
@@ -110,14 +101,8 @@ namespace rex
       const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
       ctx->set_blend_factor(blend_factor);
       ctx->transition_buffer(m_constant_buffer, ResourceState::VertexAndConstantBuffer);
-
-
-
-
-      // Setup blend factor
-      //const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
-      //rex::rhi::set_blend_factor(ctx, blend_factor);
     }
+
     void RexImGuiViewport::render_draw_data(rhi::CommandList* ctx)
     {
       ImDrawData* draw_data = m_imgui_viewport->DrawData;
@@ -166,13 +151,6 @@ namespace rex
           rect.right = clip_max.x;
           rect.bottom = clip_max.y;
           
-          //D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
-          //texture_handle.ptr = (UINT64)pcmd->GetTexID();
-
-          //rhi::set_scissor_rect(ctx, rect);
-          //rhi::set_graphics_root_descriptor_table(ctx, texture_handle);
-          //rhi::draw_indexed_instanced(ctx, pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
-          
           ctx->set_scissor_rect(rect);
           rhi::Texture2D* texture = (rhi::Texture2D*)pcmd->GetTexID();
           ctx->set_graphics_root_descriptor_table(1, (UINT64)texture->gpu_handle().ptr);
@@ -215,9 +193,6 @@ namespace rex
       for (s32 n = 0; n < drawData->CmdListsCount; n++)
       {
         const ImDrawList* cmd_list = drawData->CmdLists[n];
-        //rex::rhi::update_buffer(renderBuffer->vertex_buffer, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), ctx->dx_object(), vtx_offset);
-        //rex::rhi::update_buffer(renderBuffer->index_buffer, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), ctx->dx_object(), idx_offset);
-
         ctx->update_buffer(renderBuffer->vertex_buffer.get(), cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), vtx_offset);
         ctx->update_buffer(renderBuffer->index_buffer.get(), cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), idx_offset);
        

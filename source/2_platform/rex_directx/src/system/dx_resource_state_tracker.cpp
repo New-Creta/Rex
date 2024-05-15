@@ -54,7 +54,6 @@ namespace rex
 
           m_parent_resource_state_tracker->track_resource_transition(resource, resource_state);
         }
-        // Update parent so it knows the latest resource state of a resource
       }
     }
     void ResourceStateTracker::clear()

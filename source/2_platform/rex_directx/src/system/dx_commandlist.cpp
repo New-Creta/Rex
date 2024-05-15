@@ -118,10 +118,7 @@ namespace rex
       auto d3d_topology = rex::d3d::to_dx12(topology);
       m_cmd_list->IASetPrimitiveTopology(d3d_topology);
     }
-    //void CommandList::set_blend_factor(BlendFactor* blendFactor)
-    //{
-    //  m_cmd_list->OMSetBlendFactor(blendFactor->as_float_array());
-    //}
+
     void CommandList::set_root_signature(RootSignature* rootSignature)
     {
       m_cmd_list->SetGraphicsRootSignature(rootSignature->dx_object());
@@ -155,14 +152,18 @@ namespace rex
       m_cmd_list->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
 
+    void CommandList::send_to_gpu()
+    {
+      rhi::execute_command_list(this);
+    }
+
     void CommandList::update_buffer(Resource2* buffer, void* data, rsl::memory_size size, s32 dstOffset)
     {
       UploadBuffer* upload_buffer = rhi::global_upload_buffer();
 
       transition_buffer(buffer, ResourceState::CopyDest);
-      s32 write_offset = upload_buffer->prepare_for_new_write(data, size);
+      s32 write_offset = upload_buffer->prepare_for_new_buffer_write(data, size);
       m_cmd_list->CopyBufferRegion(buffer->dx_object(), dstOffset, upload_buffer->get(), write_offset, size);
-      upload_buffer->write(this, buffer, data, size);
     }
     void CommandList::update_texture(Resource2* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format)
     {
@@ -189,6 +190,11 @@ namespace rex
     ID3D12GraphicsCommandList* CommandList::dx_object()
     {
       return m_cmd_list.Get();
+    }
+
+    CommandType CommandList::type() const
+    {
+      return d3d::from_dx12(m_cmd_list->GetType());
     }
 
   }

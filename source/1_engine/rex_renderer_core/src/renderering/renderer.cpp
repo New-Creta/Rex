@@ -31,17 +31,6 @@ namespace rex
       return backend::initialize(userData);
     }
 
-    ////-------------------------------------------------------------------------
-    //void set_shader(const rhi::ResourceSlot& slot)
-    //{
-    //  rhi::set_shader(slot);
-    //}
-    ////-------------------------------------------------------------------------
-    //void set_pso(const rhi::ResourceSlot& slot)
-    //{
-    //  rhi::set_pso(slot);
-    //}
-
     //-------------------------------------------------------------------------
     void render()
     {

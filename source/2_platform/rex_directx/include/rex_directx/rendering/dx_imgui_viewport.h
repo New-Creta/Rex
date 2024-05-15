@@ -52,10 +52,6 @@ namespace rex
       rhi::PipelineState* m_pipeline_state;
       rhi::ConstantBuffer* m_constant_buffer;
 
-      //rex::rhi::ResourceSlot m_shader_program;
-      //rex::rhi::ResourceSlot m_pipeline_state;
-      //rex::rhi::ResourceSlot m_constant_buffer;
-
       s32 m_max_num_frames_in_flight;
       s32 m_frame_idx;
     };

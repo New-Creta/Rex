@@ -26,9 +26,10 @@ namespace rex
       m_fence.wait_for_val();
     }
 
-    void CommandQueue::execute(ID3D12CommandList* commandlist)
+    void CommandQueue::execute(CommandList* commandlist)
     {
-      m_command_queue->ExecuteCommandLists(1, &commandlist);
+      ID3D12CommandList* d3d_cmd_list = commandlist->dx_object();
+      m_command_queue->ExecuteCommandLists(1, &d3d_cmd_list);
     }
 
     void CommandQueue::wait()

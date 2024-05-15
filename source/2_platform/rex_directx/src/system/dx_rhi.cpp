@@ -83,12 +83,9 @@ namespace rex
         bool init_d3d_device();
 
         // D3D Command Objects
-        //bool init_command_queue();
-
+        bool init_command_queue(CommandType type);
+        bool init_command_queues();
         bool init_command_list();
-
-        // DXGI Swapchain
-        //bool init_swapchain(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight);
 
         // Resource Heaps
         bool init_resource_heaps();
@@ -117,12 +114,9 @@ namespace rex
         DebugInterface debug_interface;
         rsl::unique_ptr<dxgi::Factory> factory;
         rsl::unique_ptr<DirectXDevice> device;
-        //rsl::unique_ptr<Swapchain> swapchain;
-        //rsl::unique_ptr<CommandQueue> command_queue;
         rsl::unique_ptr<CommandAllocator> command_allocator;
-        //rsl::unique_ptr<CommandList> command_list;
+        rsl::unordered_map<CommandType, rsl::unique_ptr<CommandQueue>> command_queue_pool;
         rsl::unique_ptr<ResourceHeap> heap;
-        //rsl::unique_ptr<Resource> depth_stencil_buffer;
         rsl::unique_ptr<UploadBuffer> upload_buffer;
         rsl::unique_ptr<PipelineLibrary> pso_lib;
         ResourcePool resource_pool;
@@ -349,7 +343,7 @@ namespace rex
       rhi::set_debug_name_for(fence.Get(), "Global Fence");
       return rsl::make_unique<CommandQueue>(d3d_command_queue, fence);
     }
-    rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, CommandQueue* commandQueue, void* primaryDisplayHandle)
+    rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, void* primaryDisplayHandle)
     {
       DXGI_SWAP_CHAIN_DESC1 sd{};
       sd.Width = 0;
@@ -367,7 +361,7 @@ namespace rex
       // Note: swap chain uses queue to perform flush.
       rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = internal::get()->factory->as<IDXGIFactory4>();
       rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
-      if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(commandQueue->get(), (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
+      if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(internal::get()->command_queue_pool.at(CommandType::Direct)->get(), (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
       {
         REX_ERROR(LogRhi, "Failed to create swap chain");
         return false;
@@ -688,6 +682,15 @@ namespace rex
       return internal::get()->upload_buffer.get();
     }
 
+    void execute_command_list(CommandList* cmdList)
+    {
+      CommandType type = cmdList->type();
+      internal::get()->command_queue_pool.at(type)->execute(cmdList);
+    }
+    void wait_for_gpu(CommandType type)
+    {
+      internal::get()->command_queue_pool.at(type)->flush();
+    }
 
 
 
@@ -1366,11 +1369,11 @@ namespace rex
       // 3) we create the command queue.
       // The command queue is used to send commands to the gpu
       // It also holds the fence for syncronysation between cpu and gpu
-      //if (!init_command_queue())
-      //{
-      //  REX_ERROR(LogRhi, "Failed to create command queue");
-      //  return;
-      //}
+      if (!init_command_queues())
+      {
+        REX_ERROR(LogRhi, "Failed to create command queue");
+        return;
+      }
 
       // 4) Create the global command list
       // A gpu works with commands, that get added to a command list.
@@ -1600,34 +1603,45 @@ namespace rex
     }
 
     // D3D Command Objects
-    //bool internal::RenderHardwareInfrastructure::init_command_queue()
-    //{
-    //  // Command Queue
-    //  wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
-    //  D3D12_COMMAND_QUEUE_DESC queue_desc = {};
-    //  queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-    //  queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-    //  if (DX_FAILED(device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
-    //  {
-    //    REX_ERROR(LogRhi, "Failed to create command queue");
-    //    return false;
-    //  }
+    bool internal::RenderHardwareInfrastructure::init_command_queue(CommandType type)
+    {
+      // Command Queue
+      wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
+      D3D12_COMMAND_QUEUE_DESC queue_desc = {};
+      queue_desc.Type = d3d::to_dx12(type);
+      queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+      if (DX_FAILED(device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
+      {
+        REX_ERROR(LogRhi, "Failed to create command queue");
+        return false;
+      }
 
-    //  rhi::set_debug_name_for(d3d_command_queue.Get(), "Global Command Queue");
+      rsl::string_view type_str = rsl::enum_refl::enum_name(type);
+      rhi::set_debug_name_for(d3d_command_queue.Get(), rsl::format("Global Command Queue For {}", type_str));
 
-    //  // Fence
-    //  wrl::ComPtr<ID3D12Fence> fence;
-    //  if (DX_FAILED(device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
-    //  {
-    //    REX_ERROR(LogRhi, "Failed to create DX fence, to synchronize CPU/GPU");
-    //    return false;
-    //  }
+      // Fence
+      wrl::ComPtr<ID3D12Fence> fence;
+      if (DX_FAILED(device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
+      {
+        REX_ERROR(LogRhi, "Failed to create DX fence, to synchronize CPU/GPU");
+        return false;
+      }
 
-    //  rhi::set_debug_name_for(fence.Get(), "Global Fence");
-    //  command_queue = rsl::make_unique<CommandQueue>(d3d_command_queue, fence);
+      rhi::set_debug_name_for(fence.Get(), "Global Fence");
+      command_queue_pool.emplace(type, rsl::make_unique<CommandQueue>(d3d_command_queue, fence));
 
-    //  return true;
-    //}
+      return true;
+    }
+    bool internal::RenderHardwareInfrastructure::init_command_queues()
+    {
+      bool result = true;
+
+      result &= init_command_queue(CommandType::Direct);
+      result &= init_command_queue(CommandType::Copy);
+      result &= init_command_queue(CommandType::Compute);
+
+      return result;
+    }
 
     bool internal::RenderHardwareInfrastructure::init_command_list()
     {
@@ -1657,44 +1671,6 @@ namespace rex
 
       return true;
     }
-
-    // DXGI Swapchain
-    //bool internal::RenderHardwareInfrastructure::init_swapchain(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight)
-    //{
-    //  DXGI_SWAP_CHAIN_DESC1 sd{};
-    //  sd.Width = 0;
-    //  sd.Height = 0;
-    //  sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    //  sd.SampleDesc.Count = 1;
-    //  sd.SampleDesc.Quality = 0;
-    //  sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    //  sd.BufferCount = maxFramesInFlight;
-    //  sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    //  sd.AlphaMode - DXGI_ALPHA_MODE_UNSPECIFIED;
-    //  sd.Stereo = false;
-    //  sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
-
-    //  // Note: swap chain uses queue to perform flush.
-    //  rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = factory->as<IDXGIFactory4>();
-    //  rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
-    //  if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(command_queue->get(), (HWND)userData.primary_display_handle , &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
-    //  {
-    //    REX_ERROR(LogRhi, "Failed to create swap chain");
-    //    return false;
-    //  }
-
-    //  rhi::set_debug_name_for(d3d_swapchain.Get(), "SwapChain");
-    //  wrl::ComPtr<IDXGISwapChain3> d3d_swapchain_3;
-    //  DX_CALL(d3d_swapchain.As(&d3d_swapchain_3));
-
-    //  DescriptorHeap* rtv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    //  DescriptorHeap* dsv_desc_heap = &descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-    //  //swapchain = rsl::make_unique<Swapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount, rtv_desc_heap, dsv_desc_heap, heap.get());
-
-    //  //swapchain->resize_buffers(userData.window_width, userData.window_height, DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
-
-    //  return true;
-    //}
 
     // Resource Heaps
     bool internal::RenderHardwareInfrastructure::init_resource_heaps()
@@ -1802,16 +1778,6 @@ namespace rex
 
       return true;
     }
-
-    //CommandList* cmd_list()
-    //{
-    //  return internal::get()->command_list.get();
-    //}
-
-    //void set_graphics_root_descriptor_table(CommandList* cmdList, D3D12_GPU_DESCRIPTOR_HANDLE handle)
-    //{
-    //  cmdList->get()->SetGraphicsRootDescriptorTable(1, handle);
-    //}
 
     ID3D12Device1* get_device()
     {

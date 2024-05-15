@@ -8,6 +8,7 @@
 #include "rex_renderer_core/rendering/scissor_rect.h"
 #include "rex_renderer_core/rendering/primitive_topology.h"
 #include "rex_renderer_core/rendering/resource_state.h"
+#include "rex_renderer_core/rendering/command_type.h"
 #include "rex_renderer_core/resources/clear_state.h"
 
 #include "rex_directx/resources/dx_clear_state_resource.h"
@@ -52,10 +53,14 @@ namespace rex
       void draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
       void draw_indexed_instanced(s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation);
 
+      void send_to_gpu();
+
       void update_buffer(Resource2* buffer, void* data, rsl::memory_size size, s32 dstOffset);
       void update_texture(Resource2* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format);
 
       ID3D12GraphicsCommandList* dx_object();
+
+      CommandType type() const;
 
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;

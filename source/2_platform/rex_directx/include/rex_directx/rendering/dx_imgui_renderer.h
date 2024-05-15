@@ -84,8 +84,6 @@ namespace rex
     private:
       ID3D12Device1* m_device;                                  // Needed to initialize child windows with their own directx objects
       DXGI_FORMAT                 m_rtv_format;                 // Comes in from the main rendered, to match child windows rtv format with that of the main window
-      //rex::rhi::DescriptorHandle m_texture_handle;              // the handle to the shader resource view of the font texture
-      //rsl::unique_ptr<rex::rhi::DescriptorHeap> m_srv_desc_heap;                // Probably not needed, rex uses single descriptor heaps throughout the process.
       UINT                        m_max_num_frames_in_flight;   // used to store the number of frames we can handle at once.
 
       rsl::unique_ptr<rhi::CommandQueue> m_cmd_queue;
@@ -99,14 +97,6 @@ namespace rex
       rsl::unique_ptr<rhi::RasterStateResource> m_raster_state;
       rsl::unique_ptr<rhi::ConstantBuffer> m_constant_buffer;
       rsl::unique_ptr<rhi::PipelineState> m_pipeline_state;
-
-      //rex::rhi::ResourceSlot m_shader_program;                 // resource slot for the compiled imgui shader as well as its root signature
-      //rex::rhi::ResourceSlot m_pipeline_state;                 // resource slot for the pipeline state of imgui
-      //rex::rhi::ResourceSlot m_constant_buffer;                // resource slot for the constant buffer holding the mvp matrix. This single object is shared between all viewports
-      //rex::rhi::ResourceSlot m_input_layout;                   // resource slot for the input layout of imgui
-      //rex::rhi::ResourceSlot m_vertex_shader;                  // resource slot for the vertex shader of imgui
-      //rex::rhi::ResourceSlot m_pixel_shader;                   // resource slot for the pixel shader of imgui
-      //rex::rhi::ResourceSlot m_texture;                        // resources lot for the fonts texture, used by imgui
 
       rsl::vector<ImGuiWindow> m_imgui_child_windows;          // Child windows of ImGui, spawned by draging a viewport outside of the main window
     };

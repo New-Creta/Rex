@@ -46,9 +46,6 @@ namespace rex
     void set_viewport(const Viewport& viewport);
     void set_scissor_rect(const ScissorRect& rect);
 
-    //void set_shader(const rhi::ResourceSlot& slot);
-    //void set_pso(const rhi::ResourceSlot& slot);
-
     bool new_frame();
     bool end_frame();
 

@@ -506,7 +506,7 @@ namespace rex
       case rex::ResourceState::RaytracingAccelerationStructure:         return D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE        ;
       case rex::ResourceState::ShadingRateSource:                       return D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE                      ;
       case rex::ResourceState::GenericRead:                             return D3D12_RESOURCE_STATE_GENERIC_READ                             ;
-      //case rex::ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
+      case rex::ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
       case rex::ResourceState::Predication:                             return D3D12_RESOURCE_STATE_PREDICATION                              ;
       case rex::ResourceState::VideoDecodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_DECODE_READ                        ;
       case rex::ResourceState::VideoDecodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE                       ;
@@ -519,6 +519,30 @@ namespace rex
       }
 
       return invalid_obj<D3D12_RESOURCE_STATES>();
+    }
+
+    D3D12_COMMAND_LIST_TYPE to_dx12(rhi::CommandType type)
+    {
+      switch (type)
+      {
+      case rex::rhi::CommandType::Direct:   return D3D12_COMMAND_LIST_TYPE_DIRECT;
+      case rex::rhi::CommandType::Copy:     return D3D12_COMMAND_LIST_TYPE_COPY;
+      case rex::rhi::CommandType::Compute:  return D3D12_COMMAND_LIST_TYPE_COMPUTE;
+      }
+
+      return invalid_obj<D3D12_COMMAND_LIST_TYPE>();
+    }
+
+    rhi::CommandType from_dx12(D3D12_COMMAND_LIST_TYPE type)
+    {
+      switch (type)
+      {
+      case D3D12_COMMAND_LIST_TYPE_DIRECT:   return rhi::CommandType::Direct;
+      case D3D12_COMMAND_LIST_TYPE_COMPUTE:  return rhi::CommandType::Compute;
+      case D3D12_COMMAND_LIST_TYPE_COPY:     return rhi::CommandType::Copy;
+      }
+
+      return invalid_obj<rhi::CommandType>();
     }
 
   }

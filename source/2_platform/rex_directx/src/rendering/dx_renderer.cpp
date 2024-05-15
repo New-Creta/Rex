@@ -184,8 +184,8 @@ namespace rex
           , depth_info({ 1.0f, 1000.0f })
           , screen_viewport()
           , scissor_rect()
-          , command_queue(rhi::create_command_queue())
-          , swapchain(rhi::create_swapchain(s_max_frames_in_flight, command_queue.get(), userData.primary_display_handle))
+          //, command_queue(rhi::create_command_queue())
+          , swapchain(rhi::create_swapchain(s_max_frames_in_flight, userData.primary_display_handle))
           , command_list(rhi::create_commandlist(&m_resource_state_tracker))
         {
           // Create a scopeguard so if we exit the renderer too early on
@@ -212,7 +212,9 @@ namespace rex
 
         ~DirectXRenderer()
         {
-          command_queue->flush();
+          rhi::wait_for_gpu(rhi::CommandType::Direct);
+          rhi::wait_for_gpu(rhi::CommandType::Copy);
+          rhi::wait_for_gpu(rhi::CommandType::Compute);
         }
 
       private:
@@ -328,7 +330,7 @@ namespace rex
         //  - command allocator
         // Command list
         
-        rsl::unique_ptr<rhi::CommandQueue> command_queue;
+        //rsl::unique_ptr<rhi::CommandQueue> command_queue;
         rsl::unique_ptr<rhi::Swapchain> swapchain;
         rsl::unique_ptr<rhi::CommandList> command_list;
         rhi::ResourceStateTracker m_resource_state_tracker;
@@ -480,8 +482,8 @@ namespace rex
         g_renderer->command_list->stop_recording_commands();
 
         // End Frame
-        g_renderer->command_queue->execute(g_renderer->command_list->dx_object());
-        g_renderer->command_queue->flush();
+        g_renderer->command_list->send_to_gpu();
+        rhi::wait_for_gpu(rhi::CommandType::Direct);
 
         g_renderer->swapchain->present();
       }

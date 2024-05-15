@@ -102,6 +102,7 @@ namespace rex
 #include "rex_renderer_core/rendering/texture_address_mode.h"
 #include "rex_renderer_core/resources/link_shader.h"
 #include "rex_renderer_core/rendering/resource_state.h"
+#include "rex_renderer_core/rendering/command_type.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -142,5 +143,8 @@ namespace rex
     D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range);
     D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type);
     D3D12_RESOURCE_STATES to_dx12(ResourceState state);
+    D3D12_COMMAND_LIST_TYPE to_dx12(rhi::CommandType type);
+
+    rhi::CommandType from_dx12(D3D12_COMMAND_LIST_TYPE type);
   } // namespace d3d
 } // namespace rex

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_fence.h"
 #include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"
@@ -21,7 +22,7 @@ namespace rex
 
       void inc_fence();
       void flush();
-      void execute(ID3D12CommandList* commandlist);
+      void execute(CommandList* commandlist);
       void wait();
       bool has_reached_latest_fence() const;
 
