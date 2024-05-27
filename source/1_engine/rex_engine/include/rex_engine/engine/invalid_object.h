@@ -10,8 +10,8 @@ namespace rex
   T invalid_obj()
   {
     constexpr s32 invalid_value_marker = 0xDEAD; // == 57005
-    constexpr size_t object_size       = align(sizeof(T), alignof(int));
-    rsl::array<int, object_size / sizeof(invalid_value_marker)> buff;
+    constexpr size_t object_size       = align(sizeof(T), alignof(invalid_value_marker));
+    rsl::array<s32, object_size / sizeof(invalid_value_marker)> buff;
     buff.fill(invalid_value_marker);
     return *reinterpret_cast<T*>(buff.data());
   }

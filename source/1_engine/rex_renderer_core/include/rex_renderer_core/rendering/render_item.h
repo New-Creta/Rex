@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/rendering/primitive_topology.h"
+#include "rex_renderer_core/rhi/primitive_topology.h"
 #include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/resources/vertex_buffer.h"
 #include "rex_renderer_core/resources/index_buffer.h"

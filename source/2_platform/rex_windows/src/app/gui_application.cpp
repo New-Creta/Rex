@@ -7,12 +7,13 @@
 #include "rex_engine/event_system/event_system.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/fps.h"
+#include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/platform/win/win_com_library.h"
 #include "rex_renderer_core/context.h"
 #include "rex_renderer_core/rendering/depth_info.h"
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_renderer_core/system/renderer.h"
-#include "rex_renderer_core/system/rhi.h"
+#include "rex_renderer_core/rhi/rhi.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
@@ -31,7 +32,10 @@
 #include "rex_engine/event_system/events/window/window_resize.h"
 #include "rex_engine/event_system/events/app/quit_app.h"
 
-#include "rex_directx/rendering/dx_renderer.h"
+#include "rex_renderer_core/rendering/scene_renderer.h"
+#include "rex_renderer_core/imgui/imgui_renderer.h"
+
+#include "rex_renderer_core/gfx/graphics.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -94,34 +98,51 @@ namespace rex
       {
         REX_ASSERT_CONTEXT_SCOPE("Application update");
 
+        // At the moment we update and render on the same thread
+        // Meaning we first update all our data
+        // Afterwards we sent this updated data to the renderer
+        // In most cases these will just be object positions
+        // In other cases this will be transition from one level into another
+
         pre_user_update();
 
         m_on_update();
 
         post_user_update();
 
-        // don't render when the application is paused
-        if(!m_app_instance->is_marked_for_destroy())
-        {
-          //pre_user_draw();
-
-          // TODO: this call eventually has to go.
-          // we will query the scenegraph and pull geometry from the scene instead of letting the user
-          // execute draw commands manually. However, for the setup of this framework we will
-          // provide this API to be able to execute draw commands properly
-          //m_on_draw();
-
-          // all command are now queued, let's render
-          renderer::render();
-
-          //post_user_draw();
-        }
-
         // update the timing stats
+
         m_delta_time.update();
         m_fps.update();
 
         cap_frame_rate();
+      }
+      void draw()
+      {
+        // don't render when the application gets destroyed soon
+        if (m_app_instance->is_marked_for_destroy())
+        {
+          return;
+        }
+
+        // m_scene_renderer->render();
+        m_imgui_renderer->render();
+
+        // All renderers have done their work, present their work now.
+        // render_engine().present();
+
+        //pre_user_draw();
+
+        // TODO: this call eventually has to go.
+        // we will query the scenegraph and pull geometry from the scene instead of letting the user
+        // execute draw commands manually. However, for the setup of this framework we will
+        // provide this API to be able to execute draw commands properly
+        //m_on_draw();
+
+        // all command are now queued, let's render
+        renderer::render();
+
+        //post_user_draw();
       }
       void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {
@@ -134,7 +155,7 @@ namespace rex
     private:
       void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
       {
-        rhi::Info info = rhi::info();
+        rhi::Info info = gfx::info();
         REX_INFO(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
         REX_INFO(LogWindows, "Renderer Info - Vendor: {}", info.vendor);
         REX_INFO(LogWindows, "Renderer Info - API Version: {}", info.api_version);
@@ -271,11 +292,11 @@ namespace rex
         // this function does the close
         //
         // eg: on DX12 we require to close the command list and execute them
-        if(!renderer::finish_user_initialization())
-        {
-          REX_ERROR(LogWindows, "Unable to end draw on current frame");
-          return false;
-        }
+        //if(!renderer::finish_user_initialization())
+        //{
+        //  REX_ERROR(LogWindows, "Unable to end draw on current frame");
+        //  return false;
+        //}
 
         // When the renderer is initialized we can show the window
         m_window->show();
@@ -337,10 +358,18 @@ namespace rex
         user_data.window_height          = m_window->height();
         user_data.windowed               = !m_gui_params.fullscreen;
 
-        if(renderer::initialize(user_data) == false) // NOLINT(readability-simplify-boolean-expr)
-        {
-          return false;
-        }
+        gfx::init(user_data);
+
+        // 1) Init rhi here
+        // rhi::init();
+
+        // 2) Create scene renderer here
+        // m_scene_renderer = rsl::make_unique<SceneRenderer>();
+
+        //if(renderer::initialize(user_data) == false) // NOLINT(readability-simplify-boolean-expr)
+        //{
+        //  return false;
+        //}
 
         display_renderer_info();
 
@@ -350,11 +379,13 @@ namespace rex
         // this function does this preparation.
         //
         // eg: on DX12 we require to reset and allow the command list to record commands
-        if(!renderer::prepare_user_initialization())
-        {
-          REX_ERROR(LogWindows, "Unable to start drawing frame");
-          return false;
-        }
+        //if(!renderer::prepare_user_initialization())
+        //{
+        //  REX_ERROR(LogWindows, "Unable to start drawing frame");
+        //  return false;
+        //}
+
+        m_imgui_renderer = rex::make_unique_debug<ImGuiRenderer>(m_window->primary_display_handle());
 
         return true;
       }
@@ -362,10 +393,17 @@ namespace rex
       // Updating
       void pre_user_update()
       {
+        // update timers
+        // m_app_clock.update();
+
         // update the window (this pulls input as well)
         m_window->update();
 
+        // Dispatch the threads that got queued last frame
         event_system().dispatch_queued_events();
+
+        // Set a new frame in imgui so we can start recording imgui commands
+        m_imgui_renderer->new_frame();
       }
       void post_user_update()
       {
@@ -390,6 +428,8 @@ namespace rex
       FPS m_fps;
 
       rsl::unique_ptr<Window> m_window;
+
+      rsl::unique_ptr<ImGuiRenderer> m_imgui_renderer;
 
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;
@@ -421,6 +461,7 @@ namespace rex
     void GuiApplication::platform_update()
     {
       m_internal_ptr->update();
+      m_internal_ptr->draw();
     }
     void GuiApplication::platform_shutdown()
     {

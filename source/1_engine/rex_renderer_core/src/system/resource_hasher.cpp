@@ -8,22 +8,22 @@ namespace rex
 {
   namespace rhi
   {
-    ResourceID hash_resource_desc(const VertexBufferDesc& desc)
-    {
-      u32 hash = rsl::type_id<VertexBufferDesc>().hash_code();
+    //ResourceID hash_resource_desc(const VertexBufferDesc& desc)
+    //{
+    //  u32 hash = rsl::type_id<VertexBufferDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+    //  hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
 
-      return hash;
-    }
-    ResourceID hash_resource_desc(const IndexBufferDesc& desc)
-    {
-      u32 hash = rsl::type_id<IndexBufferDesc>().hash_code();
+    //  return hash;
+    //}
+    //ResourceID hash_resource_desc(const IndexBufferDesc& desc)
+    //{
+    //  u32 hash = rsl::type_id<IndexBufferDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+    //  hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
 
-      return hash;
-    }
+    //  return hash;
+    //}
     ResourceID hash_resource_desc(const ConstantBufferDesc& desc)
     {
       u32 hash = rsl::type_id<ConstantBufferDesc>().hash_code();

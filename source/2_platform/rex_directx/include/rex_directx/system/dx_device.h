@@ -3,7 +3,7 @@
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/utility/dx_util.h"
 #include "rex_renderer_core/resource_management/resource.h"
-#include "rex_renderer_core/system/rhi.h"
+#include "rex_renderer_core/rhi/rhi.h"
 
 namespace rex
 {

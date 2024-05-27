@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/state_controller.h"
-#include "rex_renderer_core/rendering/clear_bits.h"
+#include "rex_renderer_core/rhi/clear_bits.h"
 #include "rex_std/bonus/math/color.h"
 
 namespace rex

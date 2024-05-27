@@ -6,8 +6,8 @@ namespace rex
   {
     enum class ShaderPlatform
     {
-      GLSL,
-      HLSL
+      Glsl,
+      Hlsl
     };
   } // namespace renderer
 } // namespace rex

@@ -36,8 +36,8 @@ namespace rex
       void yield_thread_until_in_sync_with_gpu();
 
     private:
-      Error init_command_queue(ID3D12Device1* device);
-      Error init_desc_heap(ID3D12Device1* device, s32 maxNumFramesInFlight);
+      //Error init_command_queue(ID3D12Device1* device);
+      //Error init_desc_heap(ID3D12Device1* device, s32 maxNumFramesInFlight);
       Error init_cmd_list(ID3D12Device1* device);
       Error init_swapchain(ID3D12Device1* device, s32 width, s32 height, s32 maxNumFramesInFlight, HWND hwnd, DXGI_FORMAT rtvFormat);
 

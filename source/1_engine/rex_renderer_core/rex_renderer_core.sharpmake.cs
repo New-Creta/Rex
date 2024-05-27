@@ -21,5 +21,6 @@ public class RexRendererCore : EngineProject
 
     conf.AddPublicDependency<RexStd>(target);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+    conf.AddPublicDependency<IMGUI>(target, DependencySetting.Default);
   }
 }

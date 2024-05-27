@@ -1,0 +1,11 @@
+#include "rex_renderer_core/resources/buffer.h"
+
+namespace rex
+{
+  namespace rhi
+  {
+    Buffer::Buffer(rsl::memory_size size)
+      : m_size(size)
+    {}
+  }
+}

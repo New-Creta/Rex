@@ -10,7 +10,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "rex_renderer_core/system/rhi.h"
+#include "rex_renderer_core/rhi/rhi.h"
 
 namespace regina
 {

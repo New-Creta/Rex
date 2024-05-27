@@ -1,11 +1,12 @@
 #pragma once
 
+#include "rex_renderer_core/rhi/rhi.h"
+
 #include "rex_directx/dxgi/util.h"
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/utility/dx_util.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_renderer_core/system/gpu_description.h"
-#include "rex_renderer_core/system/rhi.h"
 #include "rex_renderer_core/resource_management/resource_pool.h"
 
 #include "rex_directx/system/dx_device.h"
@@ -67,22 +68,22 @@ namespace rex
     // Other constant buffers that are shared between objects, can already sit in memory and therefore
     // Don't need to get added again
 
-    rsl::unique_ptr<CommandList> create_commandlist(ResourceStateTracker* resourceStateTracker = nullptr);
-    rsl::unique_ptr<CommandQueue> create_command_queue();
-    rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, void* primaryDisplayHandle);
-    rsl::unique_ptr<CommandAllocator> create_command_allocator();
-    rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource);
-    rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
-    rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format);
-    rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
-    rsl::unique_ptr<PipelineState> create_pso(const rex::rhi::PipelineStateDesc& desc);
-    rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format);
-    rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc);
-    rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
-    rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc);
-    rsl::unique_ptr<VertexShader> create_vertex_shader(rsl::string_view sourceCode);
-    rsl::unique_ptr<PixelShader> create_pixel_shader(rsl::string_view sourceCode);
-    rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
+    //rsl::unique_ptr<CommandList> create_commandlist(ResourceStateTracker* resourceStateTracker = nullptr);
+    //rsl::unique_ptr<CommandQueue> create_command_queue();
+    //rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, void* primaryDisplayHandle);
+    //rsl::unique_ptr<CommandAllocator> create_command_allocator();
+    //rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource);
+    //rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
+    //rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format);
+    //rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
+    //rsl::unique_ptr<PipelineState> create_pso(const rex::rhi::PipelineStateDesc& desc);
+    //rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format);
+    //rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc);
+    //rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
+    //rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc);
+    //rsl::unique_ptr<VertexShader> create_vertex_shader(rsl::string_view sourceCode);
+    //rsl::unique_ptr<PixelShader> create_pixel_shader(rsl::string_view sourceCode);
+    //rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
 
     wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
     DescriptorHeap* cbv_uav_srv_desc_heap();

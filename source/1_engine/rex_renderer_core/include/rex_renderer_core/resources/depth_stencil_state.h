@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_renderer_core/rendering/comparison_func.h"
+#include "rex_renderer_core/rhi/comparison_func.h"
 
 namespace rex
 {

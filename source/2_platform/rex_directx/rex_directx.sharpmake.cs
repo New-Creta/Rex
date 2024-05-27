@@ -23,7 +23,6 @@ public class RexDirectX : PlatformProject
     conf.LibraryFiles.Add("dxgi.lib");
 
     conf.AddPublicDependency<RexStd>(target);
-    conf.AddPublicDependency<IMGUI>(target, DependencySetting.Default);
     conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
 

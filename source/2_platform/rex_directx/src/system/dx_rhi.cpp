@@ -7,7 +7,6 @@
 #include "rex_directx/utility/dx_util.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_directx/diagnostics/log.h"
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_command_queue.h"
@@ -64,7 +63,7 @@ namespace rex
       // The RHI class. 
       // This manages rhi initializes and shutdown
       // It owns the lifetime of GPU objects.
-      struct RenderHardwareInfrastructure
+      class RenderHardwareInfrastructure
       {
       public:
         RenderHardwareInfrastructure(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight);
@@ -132,6 +131,9 @@ namespace rex
       }
     }
 
+    namespace api
+    {
+
     const Info& info()
     {
       return internal::get()->device->info();
@@ -158,6 +160,11 @@ namespace rex
     void shutdown()
     {
       internal::g_rhi.reset();
+    }
+
+    renderer::ShaderPlatform shader_platform()
+    {
+      return renderer::ShaderPlatform::Hlsl;
     }
 
     void prepare_user_initialization()
@@ -549,12 +556,19 @@ namespace rex
       return rsl::make_unique<PipelineState>(pso);
     }
 
-    rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format)
+    rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data)
     {
       DXGI_FORMAT d3d_format = d3d::to_dx12(format);
       wrl::ComPtr<ID3D12Resource> d3d_texture = internal::get()->heap->create_texture2d(d3d_format, width, height);
       DescriptorHandle desc_handle = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(d3d_texture.Get());
-      return rsl::make_unique<Texture2D>(d3d_texture, desc_handle, width, height, format);
+
+      auto texture = rsl::make_unique<Texture2D>(d3d_texture, desc_handle, width, height, format);
+      if (data)
+      {
+        gfx_copy_engine->copy_to_texture(texture.get(), data);
+      }
+
+      return texture;
     }
     rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc)
     {
@@ -696,6 +710,7 @@ namespace rex
 
 
 
+    }
 
 
 
@@ -1365,6 +1380,29 @@ namespace rex
       // only get created when the device is created
       init_debug_layer();
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // Everything below this line should be removed
+      // --------------------------------------------
+
+
+
+
 
       // 3) we create the command queue.
       // The command queue is used to send commands to the gpu

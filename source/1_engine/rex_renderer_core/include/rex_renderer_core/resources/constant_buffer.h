@@ -1,14 +1,18 @@
 #pragma once
 
-#include "rex_engine/memory/blob_view.h"
+#include "rex_renderer_core/resources/buffer.h"
 
 namespace rex
 {
   namespace rhi
   {
-    struct ConstantBufferDesc
+    class ConstantBuffer : public Buffer
     {
-      memory::BlobView blob_view;
+    public:
+      ConstantBuffer(rsl::memory_size size);
+
+    private:
+
     };
   } // namespace rhi
 } // namespace rex

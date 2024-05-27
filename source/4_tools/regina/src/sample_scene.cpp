@@ -11,7 +11,7 @@
 #include "rex_renderer_core/rendering/depth_info.h"
 #include "rex_renderer_core/rendering/vertex.h"
 #include "rex_renderer_core/system/renderer.h"
-#include "rex_renderer_core/system/rhi.h"
+#include "rex_renderer_core/rhi/rhi.h"
 #include "rex_std/bonus/math/color.h"
 #include "rex_windows/app/gui_application.h"
 

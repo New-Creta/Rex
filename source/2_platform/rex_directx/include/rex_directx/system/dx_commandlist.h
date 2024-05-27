@@ -43,7 +43,6 @@ namespace rex
       void set_vertex_buffer(VertexBuffer* vb);
       void set_index_buffer(IndexBuffer* ib);
       void set_primitive_topology(renderer::PrimitiveTopology topology);
-      //void set_blend_factor(BlendFactor* blendFactor);
       void set_root_signature(RootSignature* rootSignature);
       void set_pipeline_state(PipelineState* pso);
       void set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id);

@@ -92,10 +92,6 @@
 // All graphics api code is abtracted by the rhi, so in fact, this piece of code should be taken out of the directx project and into the renderer code project
 //
 
-
-
-
-
 namespace rex
 {
   namespace renderer
@@ -103,7 +99,7 @@ namespace rex
     //-------------------------------------------------------------------------
     ShaderPlatform shader_platform()
     {
-      return ShaderPlatform::HLSL;
+      return ShaderPlatform::Hlsl;
     }
 
     //-------------------------------------------------------------------------
@@ -119,59 +115,6 @@ namespace rex
 
     namespace backend
     {
-      //struct PassConstants
-      //{
-      //  glm::mat4 view          = glm::mat4(1.0f);
-      //  glm::mat4 inv_view      = glm::mat4(1.0f);
-      //  glm::mat4 proj          = glm::mat4(1.0f);
-      //  glm::mat4 inv_proj      = glm::mat4(1.0f);
-      //  glm::mat4 view_proj     = glm::mat4(1.0f);
-      //  glm::mat4 inv_view_proj = glm::mat4(1.0f);
-
-      //  glm::vec3 eye_pos_w = {0.0f, 0.0f, 0.0f};
-      //  f32 cb_padding_1    = 0.0f;
-
-      //  glm::vec2 render_target_size     = {0.0f, 0.0f};
-      //  glm::vec2 inv_render_target_size = {0.0f, 0.0f};
-
-      //  f32 near_z = 0.0f;
-      //  f32 far_z  = 0.0f;
-
-      //  f32 total_time = 0.0f;
-      //  f32 delta_time = 0.0f;
-      //};
-
-
-      //class FrameBuffer
-      //{
-      //public:
-      //  void add_render_target(RenderTarget* renderTarget)
-      //  {
-      //    REX_ASSERT_X(m_render_targets.size() + 1 < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT, "Too many render targets bound in a frame buffer. You can only bind {} render targets at a given time", D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT);
-      //
-      //    m_render_targets.push_back(renderTarget);
-      //  }
-      //  void add_depth_stencil_buffer(DepthStencilBuffer* depthStencilBuffer);
-      //
-      //private:
-      //  rsl::vector<RenderTarget*> m_render_targets;
-      //  DepthStencilBuffer* m_depth_stencil_buffer;
-      //};
-
-      //class FrameContext
-      //{
-      //public:
-
-      //private:
-      //  rhi::CommandAllocator m_cmd_allocator;
-      //  RenderTarget* m_render_target;
-      //};
-
-
-
-
-
-
       // The renderer is just a wrapper around resources
       // It does not handle any rendering logic itself
       // This is so the resources the renderer wraps can be deleted
@@ -184,7 +127,6 @@ namespace rex
           , depth_info({ 1.0f, 1000.0f })
           , screen_viewport()
           , scissor_rect()
-          //, command_queue(rhi::create_command_queue())
           , swapchain(rhi::create_swapchain(s_max_frames_in_flight, userData.primary_display_handle))
           , command_list(rhi::create_commandlist(&m_resource_state_tracker))
         {
@@ -204,7 +146,6 @@ namespace rex
 
           init_viewport(userData);
           init_scissor_rect(userData);
-          //init_pass_constants(userData);
 
           // release the scopeguard so that init gets marked successful
           mark_init_failed.release();
@@ -212,12 +153,14 @@ namespace rex
 
         ~DirectXRenderer()
         {
+          // Make sure the gpu is done processing so we can safely shutdown
           rhi::wait_for_gpu(rhi::CommandType::Direct);
           rhi::wait_for_gpu(rhi::CommandType::Copy);
           rhi::wait_for_gpu(rhi::CommandType::Compute);
         }
 
       private:
+
         // the global clear state by the renderer
         // If a clear command doesn't have a clear state defined
         // This will be the clear state that we use, which clears everything
@@ -266,52 +209,6 @@ namespace rex
           }
         }
 
-        // These function should not be here, as it's hardcoded to the shader
-        //void init_pass_constants(const OutputWindowUserData& userData)
-        //{
-        //  const f32 width  = static_cast<f32>(userData.window_width);
-        //  const f32 height = static_cast<f32>(userData.window_height);
-
-        //  pass_constants.eye_pos_w.x = 15.0f * sinf(0.2f * glm::pi<f32>()) * cosf(1.5f * glm::pi<f32>());
-        //  pass_constants.eye_pos_w.y = 15.0f * cosf(0.2f * glm::pi<f32>());
-        //  pass_constants.eye_pos_w.z = 35.0f * sinf(0.2f * glm::pi<f32>()) * sinf(1.5f * glm::pi<f32>());
-
-        //  const glm::vec3 pos    = glm::vec3(pass_constants.eye_pos_w.x, pass_constants.eye_pos_w.y, pass_constants.eye_pos_w.z);
-        //  const glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
-        //  const glm::vec3 up     = glm::vec3(0.0f, 1.0f, 0.0f);
-
-        //  glm::mat4 view = glm::lookAt(pos, target, up);
-        //  view           = glm::transpose(view); // DirectX backend ( so we have to transpose, expects row major matrices )
-
-        //  glm::mat4 proj = glm::perspectiveFov(0.25f * glm::pi<f32>(), width, height, depth_info.near_plane, depth_info.far_plane);
-        //  proj           = glm::transpose(proj); // DirectX backend ( so we have to transpose, expects row major matrices )
-
-        //  const glm::mat4 view_proj = view * proj;
-
-        //  const glm::mat4 inv_view      = glm::inverse(view);
-        //  const glm::mat4 inv_proj      = glm::inverse(proj);
-        //  const glm::mat4 inv_view_proj = glm::inverse(view_proj);
-
-        //  pass_constants.view          = view;
-        //  pass_constants.inv_view      = inv_view;
-        //  pass_constants.proj          = proj;
-        //  pass_constants.inv_proj      = inv_proj;
-        //  pass_constants.view_proj     = view_proj;
-        //  pass_constants.inv_view_proj = inv_view_proj;
-
-        //  pass_constants.render_target_size     = glm::vec2(width, height);
-        //  pass_constants.inv_render_target_size = glm::vec2(1.0f / width, 1.0f / height);
-        //  pass_constants.near_z                 = depth_info.near_plane;
-        //  pass_constants.far_z                  = depth_info.far_plane;
-        //  pass_constants.delta_time             = 0.0f;
-
-        //  rex::memory::Blob pass_cb_blob(rsl::make_unique<rsl::byte[]>(sizeof(pass_constants))); // NOLINT(modernize-avoid-c-arrays)
-        //  pass_cb_blob.write(&pass_constants, sizeof(pass_constants));
-        //  rhi::ConstantBufferDesc desc;
-        //  desc.blob_view       = rex::memory::BlobView(pass_cb_blob);
-        //  pass_constant_buffer = rhi::create_constant_buffer(desc);
-        //}
-
       public:
         static constexpr s32 s_max_frames_in_flight = 2;
 
@@ -322,30 +219,13 @@ namespace rex
         DepthInfo depth_info;                   // Info about the depth settings (eg. near and far plane)
         rhi::ResourceSlot active_pso;           // The currently active pso
         bool init_successful;                   // Boolean indicating initialization was successful
-
-        // To add
-        // Frame resource
-        //  - render target
-        //  - depth stencil buffer
-        //  - command allocator
-        // Command list
         
-        //rsl::unique_ptr<rhi::CommandQueue> command_queue;
         rsl::unique_ptr<rhi::Swapchain> swapchain;
         rsl::unique_ptr<rhi::CommandList> command_list;
         rhi::ResourceStateTracker m_resource_state_tracker;
 
         rsl::array<rsl::unique_ptr<rhi::CommandAllocator>, s_max_frames_in_flight> cmd_allocators;
         rsl::array<rsl::unique_ptr<rhi::RenderTarget>, s_max_frames_in_flight> render_targets;
-        
-
-
-
-        // To be deleted in the future
-        //rhi::ResourceSlot pass_constant_buffer; // Constant buffer used per rendering pass
-        //PassConstants pass_constants;           // The data used for the pass constants
-      
-
       };
 
       rsl::unique_ptr<DirectXRenderer> g_renderer; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
@@ -381,21 +261,12 @@ namespace rex
         }
 
         // Initialize the imgui renderer if it's needed
-        //rhi::reset_command_list(rhi::ResourceSlot::make_invalid());
         g_imgui_renderer = rsl::make_unique<ImGuiRenderer>(rhi::get_device(), 3, DXGI_FORMAT_R8G8B8A8_UNORM, (HWND)userData.primary_display_handle);
-        //rhi::exec_command_list();
-        //rhi::flush_command_queue();
 
         // The renderer is fully initialized from here on out
         // All systems go and rendering can be done.
         return true;
       }
-
-      //void update_pass_constants()
-      //{
-      //  g_renderer->pass_constants.delta_time = globals::frame_info().delta_time().to_milliseconds();
-      //  rhi::update_buffer(g_renderer->pass_constant_buffer, &g_renderer->pass_constants, sizeof(g_renderer->pass_constants));
-      //}
 
       void render()
       {
@@ -412,53 +283,6 @@ namespace rex
         g_renderer->command_list->transition_buffer(render_target, ResourceState::RenderTarget);
         g_renderer->command_list->set_render_target(render_target);
         g_renderer->command_list->clear_render_target(render_target, g_renderer->clear_state.get());
-        //g_renderer->command_list->stop_recording_commands();
-
-        // End Frame
-        //g_renderer->command_queue->execute(g_renderer->command_list->dx_object());
-        //g_renderer->command_queue->flush();
-
-        // Draw
-        //g_renderer->command_list->set_primitive_topology();
-        //g_renderer->command_list->set_root_signature();
-        //g_renderer->command_list->set_vertex_buffer();
-        //g_renderer->command_list->set_index_buffer();
-        //g_renderer->command_list->draw_indexed_instanced();
-
-        //// End draw
-        //g_renderer->command_list->transition_buffer(render_target, ResourceState::Present);
-        //g_renderer->command_list->stop_recording_commands();
-
-        //// End Frame
-        //g_renderer->command_queue->execute(g_renderer->command_list->dx_object());
-        //g_renderer->command_queue->flush();
-
-        //g_renderer->command_queue->exec_commandlist(g_renderer->command_list);
-        //g_renderer->swapchain->present();
-        //g_renderer->command_queue->signal_fence();
-        //g_renderer->s_max_frames_in_flight = g_renderer->swapchain->back_buffer_idx();
-        //g_renderer->wait_for_next_gpu_frame();
-
-
-
-
-
-
-
-
-        //update_pass_constants();
-
-        //for(const auto& render_item: g_renderer->render_items)
-        //{
-        //  //rhi::set_vertex_buffer(render_item.vb());
-        //  //rhi::set_index_buffer(render_item.ib());
-        //  //rhi::set_constant_buffer(0, render_item.cb());
-        //  //rhi::set_constant_buffer(1, g_renderer->pass_constant_buffer);
-
-        //  //rhi::set_primitive_topology(render_item.primtive_topology());
-
-        //  rhi::draw_indexed(1, 0, render_item.index_count(), render_item.start_index(), render_item.base_vertex_loc());
-        //}
 
         g_imgui_renderer->new_frame();
 
@@ -477,7 +301,6 @@ namespace rex
         g_imgui_renderer->render(g_renderer->command_list.get());
 
         // End draw
-        //g_renderer->command_list->start_recording_commands(cmd_alloc);
         g_renderer->command_list->transition_buffer(render_target, ResourceState::Present);
         g_renderer->command_list->stop_recording_commands();
 
@@ -493,23 +316,6 @@ namespace rex
         g_renderer.reset();
         rhi::shutdown();
       }
-
-      //RenderItem* add_render_item(const RenderItemDesc& desc)
-      //{
-      //  // 1) First we need to create the gpu resources for this render item on the gpu
-      //  //rhi::ResourceSlot vb           = rhi::create_vertex_buffer(desc.vb_desc);
-      //  //rhi::ResourceSlot ib           = rhi::create_index_buffer(desc.ib_desc);
-      //  //rhi::ResourceSlot cb           = rhi::create_constant_buffer(desc.cb_desc);
-
-      //  //// 2) Next we need to make sure we have the correct views to these resource, so we can use them for rendering
-      //  //RenderItem* render_item = &g_renderer->render_items.emplace_back(vb, ib, cb, desc.topology, desc.ib_desc.index_count, desc.ib_desc.base_vertex_loc);
-
-      //  //// 3) Make sure the constant buffer gets uploaded
-      //  //rex::rhi::update_buffer(render_item->cb(), desc.cb_desc.blob_view.data(), desc.cb_desc.blob_view.size());
-
-      //  //// 4) return the new added render item
-      //  //return render_item;
-      //}
 
       //-------------------------------------------------------------------------
       s32 max_frames_in_flight()
@@ -529,36 +335,24 @@ namespace rex
       //-------------------------------------------------------------------------
       bool finish_user_initialization()
       {
-        // Nothing to implement
-
         return true;
       }
 
       //-------------------------------------------------------------------------
       bool set_viewport(const Viewport& viewport)
       {
-        //rhi::set_viewport(viewport);
-
         return true;
       }
 
       //-------------------------------------------------------------------------
       bool set_scissor_rect(const ScissorRect& rect)
       {
-        //rhi::set_scissor_rect(rect);
-
         return true;
       }
 
       //-------------------------------------------------------------------------
       bool new_frame()
       {
-        //rhi::reset_command_list(g_renderer->active_pso);
-        //rhi::reset_upload_buffer();
-
-        //set_viewport(g_renderer->screen_viewport);
-        //set_scissor_rect(g_renderer->scissor_rect);
-
         return true;
       }
 
@@ -573,31 +367,18 @@ namespace rex
       //-------------------------------------------------------------------------
       bool begin_draw()
       {
-        //rhi::bind_backbuffer_rendertarget();
-
-        //rhi::transition_backbuffer(D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-        //rhi::clear_backbuffer(g_renderer->clear_state);
-
         return true;
       }
 
       //-------------------------------------------------------------------------
       bool end_draw()
       {
-        //rhi::transition_backbuffer(D3D12_RESOURCE_STATE_PRESENT);
-
-        //rhi::exec_command_list();
-        //rhi::flush_command_queue();
-
         return true;
       }
 
       //-------------------------------------------------------------------------
       bool present()
       {
-        //rhi::present();
-
         return true;
       }
     } // namespace backend

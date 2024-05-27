@@ -49,4 +49,23 @@ namespace rex
 
     return alloc;
   }
+
+  void* alloc(rsl::memory_size size)
+  {
+    return global_allocator().allocate(size);
+  }
+  void dealloc(void* ptr, rsl::memory_size size)
+  {
+    global_allocator().deallocate(ptr, size);
+  }
+
+  void* debug_alloc(rsl::memory_size size)
+  {
+    return global_debug_allocator().allocate(size);
+  }
+  void debug_dealloc(void* ptr, rsl::memory_size size)
+  {
+    global_debug_allocator().deallocate(ptr, size);
+  }
+
 } // namespace rex
