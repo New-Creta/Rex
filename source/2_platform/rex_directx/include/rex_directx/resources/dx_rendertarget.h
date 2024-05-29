@@ -2,18 +2,21 @@
 
 #include "rex_directx/utility/dx_util.h"
 
+#include "rex_renderer_core/resources/render_target.h"
+
 namespace rex
 {
-  namespace resources
+  namespace rhi
   {
-    class RenderTarget
+    class DxRenderTarget : public RenderTarget
     {
     public:
-      RenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, s32 width, s32 height);
+      DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, s32 width, s32 height)
+        : RenderTarget(width, height)
+        , m_resource(resource)
+      {}
 
     private:
-      s32 m_width;
-      s32 m_height;
       wrl::ComPtr<ID3D12Resource> m_resource;
     };
   }

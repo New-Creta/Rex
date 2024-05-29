@@ -74,6 +74,15 @@ namespace rex
       return *this;
     }
 
+    DescriptorHandle::operator D3D12_CPU_DESCRIPTOR_HANDLE() const
+    {
+      return get();
+    }
+    DescriptorHandle::operator D3D12_GPU_DESCRIPTOR_HANDLE() const
+    {
+      return get_gpu();
+    }
+
     const CD3DX12_CPU_DESCRIPTOR_HANDLE& DescriptorHandle::get() const
     {
       return m_handle;

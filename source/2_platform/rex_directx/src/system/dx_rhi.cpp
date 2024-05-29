@@ -30,6 +30,10 @@
 #include "rex_directx/resources/dx_clear_state_resource.h"
 #include "rex_directx/resources/dx_raster_state_resource.h"
 #include "rex_directx/resources/dx_input_layout_resource.h"
+#include "rex_directx/resources/dx_rendertarget.h"
+
+#include "rex_directx/system/dx_copy_context.h"
+#include "rex_renderer_core/gfx/graphics.h"
 
 #include "rex_directx/resources/dx_root_signature.h"
 
@@ -496,11 +500,11 @@ namespace rex
         return rsl::make_unique<rex::rhi::CommandAllocator>(allocator);
       }
 
-      rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource)
-      {
-        DescriptorHandle rtv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(resource->dx_object());
-        return rsl::make_unique<RenderTarget>(resource->dx_object(), rtv);
-      }
+      //rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource)
+      //{
+      //  DescriptorHandle rtv = internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(resource->dx_object());
+      //  return rsl::make_unique<RenderTarget>(resource->dx_object(), rtv);
+      //}
       rsl::unique_ptr<RenderTarget> create_render_target(Texture2D* texture)
       {
         DescriptorHandle rtv = g_gpu_engine->create_rtv(texture);
@@ -670,15 +674,15 @@ namespace rex
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data)
       {
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(format, width, height, data);
-        DescriptorHandle desc_handle = g_gpu_engine->create_srv(d3d_texture.Get());
+        DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
 
         auto texture = rsl::make_unique<Texture2D>(d3d_texture, desc_handle);
 
         if (data)
         {
-          auto copy_context = gfx::new_copy_context();
+          auto copy_context = gfx::new_copy_ctx();
 
-          copy_context.update_texture2d(texture, data);
+          copy_context->update_texture2d(texture.get(), data);
         }
 
         //wrl::ComPtr<ID3D12Resource> d3d_texture = internal::get()->heap->create_texture2d(d3d_format, width, height);
@@ -722,7 +726,7 @@ namespace rex
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size)
       {
         // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-        wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_constant_buffer(size);
+        wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(size);
         DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get());
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
@@ -796,10 +800,10 @@ namespace rex
 
         return byte_code;
       }
-      DescriptorHeap* cbv_uav_srv_desc_heap()
-      {
-        return &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-      }
+      //DescriptorHeap* cbv_uav_srv_desc_heap()
+      //{
+      //  return &internal::get()->descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+      //}
 
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size)
       {
@@ -810,7 +814,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
         if (DX_FAILED(g_rhi_resources->device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
         {
-          REX_ERROR(LogDirectX, "Failed to create committed resource for intermediate upload heap.");
+          REX_ERROR(LogDxRhi, "Failed to create committed resource for intermediate upload heap.");
           return {};
         }
 
@@ -818,20 +822,20 @@ namespace rex
         return rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
       }
 
-      UploadBuffer* global_upload_buffer()
-      {
-        return internal::get()->upload_buffer.get();
-      }
+      //UploadBuffer* global_upload_buffer()
+      //{
+      //  return internal::get()->upload_buffer.get();
+      //}
 
-      void execute_command_list(CommandList* cmdList)
-      {
-        CommandType type = cmdList->type();
-        internal::get()->command_queue_pool.at(type)->execute(cmdList);
-      }
-      void wait_for_gpu(CommandType type)
-      {
-        internal::get()->command_queue_pool.at(type)->flush();
-      }
+      //void execute_command_list(CommandList* cmdList)
+      //{
+      //  CommandType type = cmdList->type();
+      //  internal::get()->command_queue_pool.at(type)->execute(cmdList);
+      //}
+      //void wait_for_gpu(CommandType type)
+      //{
+      //  internal::get()->command_queue_pool.at(type)->flush();
+      //}
 
 
 

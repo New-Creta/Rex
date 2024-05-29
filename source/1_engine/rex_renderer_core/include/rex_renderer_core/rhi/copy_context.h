@@ -10,7 +10,7 @@ namespace rex
     {
     public:
       void update_buffer(rhi::Buffer* buffer, const void* data, rsl::memory_size size, s32 offset);
-      void wait_for_finish();
+      void update_texture2d(rhi::Texture2D* texture, const void* data);
 
       // Copy Buffer
       // Copy Texture

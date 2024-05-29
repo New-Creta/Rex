@@ -12,6 +12,9 @@
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_feature_level.h"
+#include "rex_directx/system/dx_resource_heap.h"
+#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/resources/dx_texture_2d.h"
 
 namespace rex
 {
@@ -93,5 +96,29 @@ namespace rex
 
       m_heap = rsl::make_unique<rhi::ResourceHeap>(d3d_heap, m_device->get());
     }
+
+    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_buffer(rsl::memory_size size)
+    {
+      return m_heap->create_buffer(size);
+    }
+    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_texture2d(renderer::TextureFormat format, s32 width, s32 height)
+    {
+      DXGI_FORMAT d3d_format = d3d::to_dx12(format);
+      return m_heap->create_texture2d(d3d_format, width, height);
+    }
+
+    rhi::DescriptorHandle DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
+    {
+      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(texture.Get());
+    }
+    rhi::DescriptorHandle DxGpuEngine::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
+    {
+      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(texture.Get());
+    }
+    rhi::DescriptorHandle DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource)
+    {
+      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(resource.Get());
+    }
+
   }
 }

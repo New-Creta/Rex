@@ -83,12 +83,14 @@ namespace rex
     class CommandAllocator;
     class RootSignature;
     class Shader;
+    class Texture2D;
 
     // DirectX classes
     class DxCommandQueue;
     class DxCommandAllocator;
     class DxRootSignature;
     class DxShader;
+    class DxTexture2D;
   }
 
 
@@ -135,6 +137,7 @@ namespace rex
     rhi::DxCommandAllocator* to_dx12(rhi::CommandAllocator* cmdAlloc);
     rhi::DxRootSignature* to_dx12(rhi::RootSignature* rootSig);
     rhi::DxShader* to_dx12(rhi::Shader* shader);
+    rhi::DxTexture2D* to_dx12(rhi::Texture2D* texture);
 
     //const rhi::DxCommandQueue* to_dx12(const rhi::CommandQueue* cmdQueue);
     //const rhi::DxCommandAllocator* to_dx12(const rhi::CommandAllocator* cmdAlloc);

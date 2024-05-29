@@ -29,6 +29,9 @@ namespace rex
       DescriptorHandle operator-(s32 offset) const;
       DescriptorHandle& operator-=(s32 offset);
 
+      operator D3D12_CPU_DESCRIPTOR_HANDLE() const;
+      operator D3D12_GPU_DESCRIPTOR_HANDLE() const;
+
       const CD3DX12_CPU_DESCRIPTOR_HANDLE& get() const;
       const D3D12_GPU_DESCRIPTOR_HANDLE& get_gpu() const;
 

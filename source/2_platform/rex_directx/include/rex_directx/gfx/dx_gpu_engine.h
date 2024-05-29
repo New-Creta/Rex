@@ -4,6 +4,10 @@
 
 #include "rex_directx/utility/dx_util.h"
 
+#include "rex_engine/platform/win/win_com_ptr.h"
+
+#include "rex_directx/system/dx_descriptor_heap.h"
+
 struct IDXGIInfoQueue;
 
 namespace rex
@@ -27,8 +31,14 @@ namespace rex
     {
     public:
       DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, rsl::unique_ptr<dxgi::AdapterManager> adapterManager);
+      ~DxGpuEngine() override = default;
 
       wrl::ComPtr<ID3D12Resource> allocate_buffer(rsl::memory_size size);
+      wrl::ComPtr<ID3D12Resource> allocate_texture2d(renderer::TextureFormat, s32 width, s32 height);
+
+      rhi::DescriptorHandle create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
+      rhi::DescriptorHandle create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
+      rhi::DescriptorHandle create_cbv(const wrl::ComPtr<ID3D12Resource>& resource);
 
     private:
       void init_debug_layer();     

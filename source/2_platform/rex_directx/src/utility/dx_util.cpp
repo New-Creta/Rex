@@ -554,6 +554,10 @@ namespace rex
     {
       return static_cast<rhi::DxShader*>(shader);
     }
+    rhi::DxTexture2D* to_dx12(rhi::Texture2D* texture)
+    {
+      return static_cast<rhi::DxTexture2D*>(texture);
+    }
 
     //const rhi::DxCommandQueue* to_dx12(const rhi::CommandQueue* cmdQueue)
     //{
