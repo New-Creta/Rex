@@ -4,7 +4,7 @@ namespace rex
 {
   namespace rhi
   {
-    class RootSignature
+    class Fence
     {
 
     };

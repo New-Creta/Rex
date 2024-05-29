@@ -39,6 +39,8 @@
 
 namespace rex
 {
+  struct GpuDescription;
+
   namespace gfx
   {
     // Create and initialize the graphics engine, rendering is possible from here on out
@@ -46,34 +48,12 @@ namespace rex
     // Shutdown the graphics engine, no rendering support from here on out
     void shutdown();
 
-    // The GPU Engine is the main system driving all other systems that deal with the gpu.
-    // It encapsulates all sub engines (copy, compute, render).
-    class GpuEngine
-    {
-    public:
-      GpuEngine();
+    void new_frame();
+    void begin_draw();
 
-      // Get the command queue of the specified type and check if its internal fence
-      // is higher or equal to the given value
-      bool is_fence_complete(rhi::CommandType cmdType, s32 fenceValue) const;
-      // Get the command queue of the specified type and wait for its internal fence
-      // to be higher or equal to the given value
-      void wait_for_fence(rhi::CommandType cmdType, s32 fenceValue);
-      // Wait for all command queue to have finished executing their current queued commands
-      void wait_for_gpu();
-
-      // Create a new context which is used for copying resources from or to the gpu
-      ScopedPoolObject<rhi::CopyContext> new_copy_ctx();
-      // Create a new context which is used for rendering to render targets
-      ScopedPoolObject<rhi::RenderContext> new_render_ctx();
-      // Create a new context which is used for computing data on the gpu
-      ScopedPoolObject<rhi::ComputeContext> new_compute_ctx();
-
-    private:
-      rsl::unique_ptr<rhi::RenderEngine> m_render_engine;
-      rsl::unique_ptr<rhi::ComputeEngine> m_compute_engine;
-      rsl::unique_ptr<rhi::CopyEngine> m_copy_engine;
-    };
+    void end_draw();
+    void present();
+    void end_frame();
 
     rhi::RenderContext& begin_render_context(rsl::string_view name)
     {

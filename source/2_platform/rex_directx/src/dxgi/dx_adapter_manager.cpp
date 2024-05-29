@@ -78,11 +78,10 @@ namespace rex
       {
         gpus.push_back(adapter.description());
       }
-      const count_t selected_adapter_idx = scorerFn(gpus);
-      if(selected_adapter_idx != -1)
-      {
-        m_selected_adapter = &m_adapters[selected_adapter_idx];
-      }
+
+      auto it = (rsl::max)(m_adapters.cbegin(), m_adapters.cend(), scorerFn);
+      REX_ASSERT_X(it != m_adapters.cend(), "No adapater found with valid score");
+      m_selected_adapter = rsl::iterator_to_pointer(it);      
     }
 
     //-------------------------------------------------------------------------

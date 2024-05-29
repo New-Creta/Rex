@@ -6,26 +6,24 @@
 #include "rex_renderer_core/rendering/msaa_settings.h"
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 
+#include "rex_directx/resources/dx_texture_2d.h"
+
 namespace rex
 {
   namespace rhi
   {
     DEFINE_LOG_CATEGORY(LogSwapchain);
 
-    Swapchain::Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount)
+    DxSwapchain::DxSwapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount)
         : m_swapchain(swapchain)
         , m_format(format)
     {
-      for (s32 i = 0; i < bufferCount; ++i)
-      {
-        wrl::ComPtr<ID3D12Resource> buffer;
-        m_swapchain->GetBuffer(i, IID_PPV_ARGS(&buffer));
-        set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        m_swapchain_buffers.emplace_back(buffer);
-      }
+      store_buffers(bufferCount);
     }
-    void Swapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
+    void DxSwapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
     {
+      on_resize(width, height);
+
       s32 buffer_count = m_swapchain_buffers.size();
       m_swapchain_buffers.clear();
 
@@ -35,35 +33,45 @@ namespace rex
         return;
       }
 
-      for(s32 i = 0; i < buffer_count; ++i)
-      {
-        wrl::ComPtr<ID3D12Resource> buffer;
-        m_swapchain->GetBuffer(i, IID_PPV_ARGS(&buffer));
-        set_debug_name_for(buffer.Get(), rsl::format("Swapchain Back Buffer {}", i));
-        m_swapchain_buffers.emplace_back(buffer);
-      }
+      store_buffers(buffer_count);
     }
 
-    s32 Swapchain::buffer_count() const
+    s32 DxSwapchain::buffer_count() const
     {
       return m_swapchain_buffers.size();
     }
 
-    void Swapchain::present()
+    void DxSwapchain::present()
     {
       m_swapchain->Present(0, rsl::no_flags());
     }
 
-    Resource2* Swapchain::get_buffer(s32 idx)
+    Resource2* DxSwapchain::get_buffer(s32 idx)
     {
       REX_ASSERT_X(idx < m_swapchain_buffers.size(), "Buffer index out of bounds");
       return &m_swapchain_buffers[idx];
     }
 
-    IDXGISwapChain3* Swapchain::get()
+    IDXGISwapChain3* DxSwapchain::get()
     {
       return m_swapchain.Get();
     }
+
+    void DxSwapchain::store_buffers(s32 bufferCount)
+    {
+      for (s32 i = 0; i < bufferCount; ++i)
+      {
+        wrl::ComPtr<ID3D12Resource> d3d_buffer;
+        m_swapchain->GetBuffer(i, IID_PPV_ARGS(&d3d_buffer));
+        set_debug_name_for(d3d_buffer.Get(), rsl::format("DxSwapchain Back Buffer {}", i));
+
+        auto buffer = rsl::make_unique<DxTexture2D>(d3d_buffer);
+        DescriptorHandle handle = gfx::create_rtv(buffer.get());
+
+        m_swapchain_buffers.emplace_back(buffer, handle, width(), height(), format());
+      }
+    }
+
 
   } // namespace rhi
 } // namespace rex

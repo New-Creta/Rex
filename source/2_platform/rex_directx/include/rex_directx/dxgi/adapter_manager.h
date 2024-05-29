@@ -12,12 +12,18 @@ namespace rex
 
     using AdapterVec = rsl::vector<Adapter>;
 
+    struct ScoringFuncs
+    {
+      rsl::function<s32(const GpuDescription&)> calculate_score
+    };
+
     class AdapterManager
     {
     public:
       AdapterManager(const AdapterManager&) = delete;
       AdapterManager(AdapterManager&&)      = delete;
       AdapterManager(Factory* factory, const GpuScorerFn& scorer);
+      AdapterManager();
       ~AdapterManager() = default;
 
       AdapterManager& operator=(const AdapterManager&) = delete;

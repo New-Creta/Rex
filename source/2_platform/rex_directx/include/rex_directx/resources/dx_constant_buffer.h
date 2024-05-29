@@ -3,22 +3,29 @@
 #include "rex_directx/system/dx_resource.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
 
+#include "rex_renderer_core/resources/constant_buffer.h"
+
 namespace rex
 {
   namespace rhi
   {
-    class ConstantBuffer : public Resource2
+    class DxConstantBuffer : public ConstantBuffer
     {
     public:
-      ConstantBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle handle, rsl::memory_size size)
-        : Resource2(resource)
+      DxConstantBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle handle, rsl::memory_size size)
+        : ConstantBuffer(size)
+        , m_resource(resource)
         , m_handle(handle)
-        , m_size(size)
       {}
 
+      ID3D12Resource* dx_object()
+      {
+        return m_resource.Get();
+      }
+
     private:
+      wrl::ComPtr<ID3D12Resource> m_resource;
       DescriptorHandle m_handle;
-      rsl::memory_size m_size;
     };
   } // namespace rhi
 } // namespace rex

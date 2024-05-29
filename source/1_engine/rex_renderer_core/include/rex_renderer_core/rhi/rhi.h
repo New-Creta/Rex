@@ -42,6 +42,11 @@
 
 namespace rex
 {
+  namespace gfx
+  {
+    class GpuEngine;
+  }
+
   namespace rhi
   {
     // Some info about the rendering infrastructure
@@ -53,6 +58,7 @@ namespace rex
       rsl::small_stack_string adaptor;          // eg: NVIDIA GeForce RTX 3060 Ti
       rsl::small_stack_string vendor;           // eg: NVIDIA
       rsl::small_stack_string driver_version;   // eg: 552.85
+      rsl::memory_size available_memory;        // eg: 8 388 608
     };
 
     // All logic inside the "api" namespace is only declared
@@ -64,7 +70,7 @@ namespace rex
       // Initializes the render hardware infrastructure
       // For DirectX, creates the dxgi factory, d3d device, command buffers, heaps and swapchain
       // After this, the rhi is setup to start creating resources (textures, shaders, vertex buffers, ..)
-      bool init(const renderer::OutputWindowUserData& userData, s32 maxFramesInFlight);
+      gfx::GpuEngine* init(const renderer::OutputWindowUserData& userData);
 
       // shutdown the internal rhi, all reference to the rhi are invalidated from here on out
       void shutdown();
@@ -75,14 +81,16 @@ namespace rex
       // Configuration
       renderer::ShaderPlatform shader_platform();
 
+      // Backend Systems
+      rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, CommandType type, ResourceStateTracker* resourceStateTracker = nullptr);
+      rsl::unique_ptr<CommandQueue> create_command_queue(CommandType type);
+      rsl::unique_ptr<Swapchain> create_swapchain(void* apiDevice, s32 bufferCount, void* primaryDisplayHandle);
+      rsl::unique_ptr<CommandAllocator> create_command_allocator();
+
       // Resource creation
       rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, renderer::TextureFormat format);
       rsl::unique_ptr<RenderTarget> create_render_target(Texture2D* texture);
 
-      rsl::unique_ptr<CommandList> create_commandlist(ResourceStateTracker* resourceStateTracker = nullptr);
-      rsl::unique_ptr<CommandQueue> create_command_queue();
-      rsl::unique_ptr<Swapchain> create_swapchain(s32 bufferCount, void* primaryDisplayHandle);
-      rsl::unique_ptr<CommandAllocator> create_command_allocator();
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format);
       rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);

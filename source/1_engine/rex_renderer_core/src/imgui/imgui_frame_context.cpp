@@ -61,16 +61,14 @@ namespace rex
   }
   ScopedPoolObject<rhi::SyncInfo> ImGuiFrameContext::copy_buffer_data(ImDrawData* drawData, rhi::ConstantBuffer* cb)
   {
+    auto copy_context = gfx::new_copy_ctx();
+
     s32 vtx_offset = 0;
     s32 idx_offset = 0;
-
-    auto copy_context = gfx::new_copy_ctx();
 
     for (s32 n = 0; n < drawData->CmdListsCount; n++)
     {
       const ImDrawList* cmd_list = drawData->CmdLists[n];
-      //copy_engine().update_buffer(m_vertex_buffer.get(), cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size, vtx_offset);
-      //copy_engine().update_buffer(m_index_buffer.get(), cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size, idx_offset);
 
       copy_context->update_buffer(m_vertex_buffer.get(), cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size, vtx_offset);
       copy_context->update_buffer(m_index_buffer.get(), cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size, idx_offset);
@@ -95,11 +93,8 @@ namespace rex
       };
       memcpy(&m_constant_buffer_data.mvp, mvp, sizeof(mvp));
     }
-    //copy_engine().update_buffer(cb, &m_constant_buffer_data, sizeof(m_constant_buffer_data), 0);
     copy_context->update_buffer(cb, &m_constant_buffer_data, sizeof(m_constant_buffer_data), 0);
 
     return copy_context->execute_on_gpu();
-    //return copy_context->sync_info();
-    //copy_context.wait_for_finish();
   }
 }

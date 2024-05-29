@@ -2,38 +2,23 @@
 
 #include "rex_directx/system/dx_resource.h"
 
+#include "rex_renderer_core/resources/vertex_buffer.h"
+
 namespace rex
 {
   namespace rhi
   {
-    class VertexBuffer : public Resource2
+    class DxVertexBuffer : public VertexBuffer
     {
     public:
-      VertexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size vertexSize, rsl::memory_size stride)
-        : Resource2(resource)
-        , m_vertex_size(vertexSize)
-        , m_stride(stride)
+      DxVertexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numVertices, rsl::memory_size vertexSize)
+        : VertexBuffer(numVertices, vertexSize)
+        , m_resource(resource)
       {
-      }
-
-      s32 vertex_size() const
-      {
-        return m_vertex_size;
-      }
-
-      s32 stride() const
-      {
-        return m_stride;
-      }
-
-      s32 total_size() const
-      {
-        return m_vertex_size * m_stride;
       }
 
     private:
-      s32 m_vertex_size;
-      s32 m_stride;
+      wrl::ComPtr<ID3D12Resource> m_resource;
     };
   } // namespace rhi
 } // namespace rex

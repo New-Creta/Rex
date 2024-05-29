@@ -77,6 +77,7 @@ namespace rex
     ctx.set_root_signature(m_render_state.root_signature);
     ctx.set_constant_buffer(0, m_render_state.constant_buffer);
     ctx.set_blend_factor(m_render_state.blend_factor.data());
+    ctx.set_render_target(frameCtx.render_target());
 
     //ctx.wait_for_finish();
 

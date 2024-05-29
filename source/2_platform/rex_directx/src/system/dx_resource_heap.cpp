@@ -1,9 +1,9 @@
 #include "rex_directx/system/dx_resource_heap.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_directx/diagnostics/log.h"
 #include "rex_directx/system/dx_resource.h"
 #include "rex_directx/utility/d3dx12.h"
+#include "rex_engine/diagnostics/log.h"
 
 namespace rex
 {

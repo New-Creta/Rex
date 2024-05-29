@@ -17,6 +17,8 @@ namespace rex
       s32 refresh_rate;
 
       bool windowed;
+
+      s32 max_frames_in_flight;
     };
   } // namespace renderer
 } // namespace rex

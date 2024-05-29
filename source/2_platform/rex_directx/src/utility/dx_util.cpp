@@ -10,6 +10,11 @@
 
 #include <d3dcompiler.h>
 
+#include "rex_directx/system/dx_command_queue.h"
+#include "rex_directx/system/dx_shader.h"
+#include "rex_directx/resources/dx_constant_buffer.h"
+#include "rex_directx/resources/dx_root_signature.h"
+
 namespace rex
 {
   namespace renderer
@@ -525,7 +530,7 @@ namespace rex
     {
       switch (type)
       {
-      case rex::rhi::CommandType::Direct:   return D3D12_COMMAND_LIST_TYPE_DIRECT;
+      case rex::rhi::CommandType::Render:   return D3D12_COMMAND_LIST_TYPE_DIRECT;
       case rex::rhi::CommandType::Copy:     return D3D12_COMMAND_LIST_TYPE_COPY;
       case rex::rhi::CommandType::Compute:  return D3D12_COMMAND_LIST_TYPE_COMPUTE;
       }
@@ -533,11 +538,46 @@ namespace rex
       return invalid_obj<D3D12_COMMAND_LIST_TYPE>();
     }
 
+    rhi::DxCommandQueue* to_dx12(rhi::CommandQueue* cmdQueue)
+    {
+      return static_cast<rhi::DxCommandQueue*>(cmdQueue);
+    }
+    rhi::DxCommandAllocator* to_dx12(rhi::CommandAllocator* cmdAlloc)
+    {
+      return static_cast<rhi::DxCommandAllocator*>(cmdAlloc);
+    }
+    rhi::DxRootSignature* to_dx12(rhi::RootSignature* rootSig)
+    {
+      return static_cast<rhi::DxRootSignature*>(rootSig);
+    }
+    rhi::DxShader* to_dx12(rhi::Shader* shader)
+    {
+      return static_cast<rhi::DxShader*>(shader);
+    }
+
+    //const rhi::DxCommandQueue* to_dx12(const rhi::CommandQueue* cmdQueue)
+    //{
+    //  return static_cast<const rhi::DxCommandQueue*>(cmdQueue);
+    //}
+    //const rhi::DxCommandAllocator* to_dx12(const rhi::CommandAllocator* cmdAlloc)
+    //{
+    //  return static_cast<const rhi::DxCommandAllocator*>(cmdAlloc);
+    //}
+    //const rhi::DxRootSignature* to_dx12(const rhi::RootSignature* rootSig)
+    //{
+    //  return static_cast<const rhi::DxRootSignature*>(rootSig);
+    //}
+    //const rhi::DxShader* to_dx12(const rhi::Shader* shader)
+    //{
+    //  return static_cast<const rhi::DxShader*>(shader);
+    //}
+
+
     rhi::CommandType from_dx12(D3D12_COMMAND_LIST_TYPE type)
     {
       switch (type)
       {
-      case D3D12_COMMAND_LIST_TYPE_DIRECT:   return rhi::CommandType::Direct;
+      case D3D12_COMMAND_LIST_TYPE_DIRECT:   return rhi::CommandType::Render;
       case D3D12_COMMAND_LIST_TYPE_COMPUTE:  return rhi::CommandType::Compute;
       case D3D12_COMMAND_LIST_TYPE_COPY:     return rhi::CommandType::Copy;
       }

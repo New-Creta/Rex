@@ -2,15 +2,16 @@
 
 #include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"
+#include "rex_renderer_core/system/fence.h"
 
 namespace rex
 {
   namespace rhi
   {
-    class Fence
+    class DxFence : public Fence
     {
     public:
-      explicit Fence(const wrl::ComPtr<ID3D12Fence>& fence);
+      explicit DxFence(const wrl::ComPtr<ID3D12Fence>& fence);
 
       // Increment the internal target value
       // and signal the command queue to increment the value

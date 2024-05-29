@@ -12,6 +12,8 @@ namespace rex
       Buffer(rsl::memory_size size);
       virtual ~Buffer() = default;
 
+      rsl::memory_size size() const;
+
     private:
       rsl::memory_size m_size;
     };

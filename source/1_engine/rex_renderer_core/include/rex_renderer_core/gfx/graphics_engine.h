@@ -1,32 +1,34 @@
 #pragma once
 
 #include "rex_renderer_core/gfx/command_allocator_pool.h"
+#include "rex_renderer_core/system/command_queue.h"
+#include "rex_renderer_core/rhi/command_type.h"
 
 #include "rex_engine/engine/types.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // A graphics engine is an engine that drives a specific pipeline on the gpu (eg. copy, render or compute)
     class BaseGraphicsEngine
     {
     public:
-      BaseGraphicsEngine(CommandType commandType)
-        : m_command_queue(create_command_queue(commandType))
+      BaseGraphicsEngine(rhi::CommandType commandType)
+        : m_command_queue(rhi::create_command_queue(commandType))
       {
 
       }
 
       // Executes the context and returns the fence value that'll be set when all commands are executed
-      ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* context)
+      ScopedPoolObject<rhi::SyncInfo> execute_context(rhi::GraphicsContext* context)
       {
         return m_command_queue->execute_context(context);
       }
 
-      u64 completed_fence() const
+      u64 last_completed_fence() const
       {
-        return m_command_queue->completed_fence();
+        return m_command_queue->last_completed_fence();
       }
 
       void release_allocator(u64 fenceValue, rhi::CommandAllocator* allocator)
@@ -36,16 +38,21 @@ namespace rex
 
       rhi::CommandAllocator* request_allocator()
       {
-        return m_command_allocator_pool.request_allocator(completed_fence());
+        return m_command_allocator_pool.request_allocator(last_completed_fence());
       }
 
-      void stall(SyncInfo& sync_info)
+      void stall(rhi::SyncInfo& sync_info)
       {
         m_command_queue->gpu_wait(sync_info);
       }
 
+      rhi::CommandQueue* command_queue()
+      {
+        return m_command_queue.get();
+      }
+
     private:
-      rsl::unique_ptr<CommandQueue> m_command_queue;
+      rsl::unique_ptr<rhi::CommandQueue> m_command_queue;
       gfx::CommandAllocatorPool m_command_allocator_pool;
     };
 
@@ -100,17 +107,17 @@ namespace rex
     private:
       rhi::CommandType command_type_for_context()
       {
-        if constexpr (rsl::is_same_v<context_type, RenderContext>)
+        if constexpr (rsl::is_same_v<context_type, rhi::RenderContext>)
         {
-          return rhi::CommandType::Direct;
+          return rhi::CommandType::Render;
         }
 
-        if constexpr (rsl::is_same_v<context_type, CopyContext>)
+        if constexpr (rsl::is_same_v<context_type, rhi::CopyContext>)
         {
           return rhi::CommandType::Copy;
         }
 
-        if constexpr (rsl::is_same_v<context_type, ComputeContext>)
+        if constexpr (rsl::is_same_v<context_type, rhi::ComputeContext>)
         {
           return rhi::CommandType::Compute;
         }
@@ -146,16 +153,5 @@ namespace rex
     };
 
     // These classes will likely have graphics api specific implementations
-    class RenderEngine : public GraphicsEngine<rhi::RenderContext>
-    {
-    };
-
-    class ComputeEngine : public GraphicsEngine<rhi::ComputeContext>
-    {
-    };
-
-    class CopyEngine : public GraphicsEngine<rhi::CopyContext>
-    {
-    };
   }
 }

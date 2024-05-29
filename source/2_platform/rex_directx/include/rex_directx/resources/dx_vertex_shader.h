@@ -6,7 +6,7 @@ namespace rex
 {
   namespace rhi
   {
-    class VertexShader : public Shader
+    class VertexShader : public DxShader
     {
     public:
       VertexShader(const wrl::ComPtr<ID3DBlob> byteCode);

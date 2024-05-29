@@ -3,6 +3,8 @@
 #include "rex_directx/diagnostics/dx_call.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 
+#include "rex_directx/dxgi/includes.h"
+
 namespace rex
 {
   namespace rhi

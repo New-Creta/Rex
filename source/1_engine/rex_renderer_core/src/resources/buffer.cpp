@@ -7,5 +7,10 @@ namespace rex
     Buffer::Buffer(rsl::memory_size size)
       : m_size(size)
     {}
+
+    rsl::memory_size Buffer::size() const
+    {
+      return m_size;
+    }
   }
 }

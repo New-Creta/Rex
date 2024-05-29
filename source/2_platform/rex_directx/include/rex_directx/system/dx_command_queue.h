@@ -16,7 +16,7 @@ namespace rex
     class DxCommandQueue : public CommandQueue
     {
     public:
-      DxCommandQueue(const wrl::ComPtr<ID3D12CommandQueue>& commandQueue, const wrl::ComPtr<ID3D12Fence>& fence);
+      DxCommandQueue(CommandType type, const wrl::ComPtr<ID3D12CommandQueue>& commandQueue, rsl::unique_ptr<DxFence> fence);
       DxCommandQueue(const CommandQueue&) = delete;
       DxCommandQueue(CommandQueue&&) = delete;
       ~DxCommandQueue();

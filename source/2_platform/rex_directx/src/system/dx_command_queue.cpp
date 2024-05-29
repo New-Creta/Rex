@@ -7,8 +7,9 @@ namespace rex
 {
   namespace rhi
   {
-    DxCommandQueue::DxCommandQueue(const wrl::ComPtr<ID3D12CommandQueue>& DxCommandQueue, const wrl::ComPtr<ID3D12Fence>& fence)
-      : m_command_queue(DxCommandQueue)
+    DxCommandQueue::DxCommandQueue(CommandType type, const wrl::ComPtr<ID3D12CommandQueue>& DxCommandQueue, const wrl::ComPtr<ID3D12Fence>& fence)
+      : CommandQueue(type)
+      , m_command_queue(DxCommandQueue)
       , m_fence(fence)
       , m_fence_event()
     {
@@ -72,7 +73,7 @@ namespace rex
       REX_ASSERT_X(ctx->type() == type(), "Trying to execute a context on a command queue that doesn't match its type. ctx: {} queue: {}", rsl::enum_refl::enum_name(ctx->type()), rsl::enum_refl::enum_name(type()));
       switch (type())
       {
-      case CommandType::Direct:   return static_cast<DxRenderContext*>(ctx)->dx_cmdlist();
+      case CommandType::Render:   return static_cast<DxRenderContext*>(ctx)->dx_cmdlist();
       case CommandType::Copy:     return static_cast<DxCopyContext*>(ctx)->dx_cmdlist();
       case CommandType::Compute:  return static_cast<DxComputeContext*>(ctx)->dx_cmdlist();
       }

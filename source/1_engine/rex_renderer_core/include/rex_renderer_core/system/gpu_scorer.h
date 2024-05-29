@@ -7,5 +7,9 @@
 
 namespace rex
 {
-  using GpuScorerFn = rsl::function<count_t(const rsl::vector<GpuDescription>&)>;
+  using GpuScorerFn = rsl::function<s32(const GpuDescription&)>;
+  s32 calc_gpu_score(const GpuDescription& gpu)
+  {
+    return gpu.dedicated_video_memory.size_in_bytes();
+  }
 } // namespace rex

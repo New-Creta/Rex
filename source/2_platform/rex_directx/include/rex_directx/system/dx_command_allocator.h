@@ -1,15 +1,16 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
+#include "rex_renderer_core/system/command_allocator.h"
 
 namespace rex
 {
   namespace rhi
   {
-    class CommandAllocator
+    class DxCommandAllocator : public CommandAllocator
     {
     public:
-      CommandAllocator(const wrl::ComPtr<ID3D12CommandAllocator>& alloc);
+      DxCommandAllocator(const wrl::ComPtr<ID3D12CommandAllocator>& alloc);
 
       ID3D12CommandAllocator* get();
 

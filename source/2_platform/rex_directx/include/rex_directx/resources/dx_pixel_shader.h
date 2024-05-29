@@ -6,7 +6,7 @@ namespace rex
 {
   namespace rhi
   {
-    class PixelShader : public Shader
+    class PixelShader : public DxShader
     {
     public:
       PixelShader(const wrl::ComPtr<ID3DBlob> byteCode);

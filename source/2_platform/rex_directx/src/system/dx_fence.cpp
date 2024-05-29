@@ -7,19 +7,19 @@ namespace rex
 {
   namespace rhi
   {
-    Fence::Fence(const wrl::ComPtr<ID3D12Fence>& fence)
+    DxFence::DxFence(const wrl::ComPtr<ID3D12Fence>& fence)
         : m_fence(fence)
         , m_target_val(0)
     {
     }
 
-    void Fence::inc(ID3D12CommandQueue* commandQueue)
+    void DxFence::inc(ID3D12CommandQueue* commandQueue)
     {
       ++m_target_val;
       commandQueue->Signal(m_fence.Get(), m_target_val);
     }
 
-    void Fence::wait_for_val()
+    void DxFence::wait_for_val()
     {
       if(m_fence->GetCompletedValue() != m_target_val)
       {
@@ -29,11 +29,11 @@ namespace rex
       }
     }
 
-    ID3D12Fence* Fence::get() const
+    ID3D12Fence* DxFence::get() const
     {
       return m_fence.Get();
     }
-    s32 Fence::target_value() const
+    s32 DxFence::target_value() const
     {
       return m_target_val;
     }

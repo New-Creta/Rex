@@ -20,6 +20,8 @@ namespace rex
       virtual void gpu_wait(SyncInfo& sync_info) = 0;
       // Returns true if the fence value has been reached already on the gpu
       virtual bool is_fence_completed(u64 fenceValue) const = 0;
+      // Returns the fence value of the last completed set of commands
+      virtual u64 last_completed_fence() const;
 
       virtual ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx) = 0;
 

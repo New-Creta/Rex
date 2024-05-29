@@ -4,11 +4,11 @@ namespace rex
 {
   namespace rhi
   {
-    Shader::Shader(const wrl::ComPtr<ID3DBlob>& blob)
+    DxShader::DxShader(const wrl::ComPtr<ID3DBlob>& blob)
       : m_shader_bytecode(blob)
     {}
 
-    D3D12_SHADER_BYTECODE Shader::dx_bytecode()
+    D3D12_SHADER_BYTECODE DxShader::dx_bytecode() const
     {
       return { m_shader_bytecode->GetBufferPointer(), m_shader_bytecode->GetBufferSize() };
     }

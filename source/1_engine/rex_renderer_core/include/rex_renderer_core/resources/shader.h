@@ -20,5 +20,10 @@ namespace rex
       memory::Blob shader_byte_code;
       s32 constant_buffer_count;
     };
+
+    class Shader
+    {
+    public:
+    };
   } // namespace rhi
 } // namespace rex

@@ -154,7 +154,7 @@ namespace rex
         ~DirectXRenderer()
         {
           // Make sure the gpu is done processing so we can safely shutdown
-          rhi::wait_for_gpu(rhi::CommandType::Direct);
+          rhi::wait_for_gpu(rhi::CommandType::Render);
           rhi::wait_for_gpu(rhi::CommandType::Copy);
           rhi::wait_for_gpu(rhi::CommandType::Compute);
         }
@@ -306,7 +306,7 @@ namespace rex
 
         // End Frame
         g_renderer->command_list->send_to_gpu();
-        rhi::wait_for_gpu(rhi::CommandType::Direct);
+        rhi::wait_for_gpu(rhi::CommandType::Render);
 
         g_renderer->swapchain->present();
       }

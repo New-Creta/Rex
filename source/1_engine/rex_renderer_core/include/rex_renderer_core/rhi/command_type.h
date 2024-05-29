@@ -6,7 +6,7 @@ namespace rex
   {
     enum class CommandType
     {
-      Direct,
+      Render,
       Copy,
       Compute
     };

@@ -7,6 +7,8 @@
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/resource_management/resource.h"
 
+#include "rex_renderer_core/system/swapchain.h"
+
 #include <dxgi1_4.h>
 
 namespace rex
@@ -16,10 +18,10 @@ namespace rex
     struct OutputWindowUserData;
     struct MsaaSettings;
 
-    class Swapchain
+    class DxSwapchain : public Swapchain
     {
     public:
-      Swapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount);
+      DxSwapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount);
 
       void resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);
 
@@ -29,6 +31,9 @@ namespace rex
 
       Resource2* get_buffer(s32 idx);
       IDXGISwapChain3* get();
+
+    private:
+      void store_buffers(s32 bufferCount);
 
     private:
       wrl::ComPtr<IDXGISwapChain3> m_swapchain;

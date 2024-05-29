@@ -31,6 +31,7 @@
 #include "rex_engine/event_system/events/window/window_end_resize.h"
 #include "rex_engine/event_system/events/window/window_resize.h"
 #include "rex_engine/event_system/events/app/quit_app.h"
+#include "rex_engine/settings/settings.h"
 
 #include "rex_renderer_core/rendering/scene_renderer.h"
 #include "rex_renderer_core/imgui/imgui_renderer.h"
@@ -125,6 +126,10 @@ namespace rex
           return;
         }
 
+        // calling  the graphics pipeline which holds all the renderers needed
+        // these renderers get added to the graphics pipeline by the engine
+        // gfx::render();
+
         // m_scene_renderer->render();
         m_imgui_renderer->render();
 
@@ -153,7 +158,7 @@ namespace rex
       }
 
     private:
-      void display_renderer_info() // NOLINT(readability-convert-member-functions-to-static)
+      void display_gfx_info() // NOLINT(readability-convert-member-functions-to-static)
       {
         rhi::Info info = gfx::info();
         REX_INFO(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
@@ -357,6 +362,7 @@ namespace rex
         user_data.window_width           = m_window->width();
         user_data.window_height          = m_window->height();
         user_data.windowed               = !m_gui_params.fullscreen;
+        user_data.max_frames_in_flight   = settings::get_int("max_frames_in_flight", 3);
 
         gfx::init(user_data);
 
@@ -371,7 +377,7 @@ namespace rex
         //  return false;
         //}
 
-        display_renderer_info();
+        display_gfx_info();
 
         // if the client calls render commands some preparation is required before
         // we can actually execute those commands.
@@ -413,14 +419,21 @@ namespace rex
       // Drawing
       void pre_user_draw() // NOLINT(readability-convert-member-functions-to-static)
       {
-        rex::renderer::new_frame();
-        rex::renderer::begin_draw();
+        gfx::new_frame();
+        gfx::begin_draw();
+
+        //rex::renderer::new_frame();
+        //rex::renderer::begin_draw();
       }
       void post_user_draw() // NOLINT(readability-convert-member-functions-to-static)
       {
-        rex::renderer::end_draw();
-        rex::renderer::present();
-        rex::renderer::end_frame();
+        gfx::end_draw();
+        gfx::present();
+        gfx::end_frame();
+
+        //rex::renderer::end_draw();
+        //rex::renderer::present();
+        //rex::renderer::end_frame();
       }
 
     private:

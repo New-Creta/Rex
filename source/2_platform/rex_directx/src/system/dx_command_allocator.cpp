@@ -4,11 +4,11 @@ namespace rex
 {
   namespace rhi
   {
-    CommandAllocator::CommandAllocator(const wrl::ComPtr<ID3D12CommandAllocator>& alloc)
+    DxCommandAllocator::DxCommandAllocator(const wrl::ComPtr<ID3D12CommandAllocator>& alloc)
       : m_alloc(alloc)
     {}
 
-    ID3D12CommandAllocator* CommandAllocator::get()
+    ID3D12CommandAllocator* DxCommandAllocator::get()
     {
       return m_alloc.Get();
     }

@@ -4,7 +4,7 @@ namespace rex
 {
   namespace rhi
   {
-    Texture2D::Texture2D(const wrl::ComPtr<ID3D12Resource>& texture, DescriptorHandle handle, s32 width, s32 height, renderer::TextureFormat format)
+    DxTexture2D::DxTexture2D(const wrl::ComPtr<ID3D12Resource>& texture, DescriptorHandle handle, s32 width, s32 height, renderer::TextureFormat format)
       : Resource2(texture)
       , m_handle(handle)
       , m_width(width)
@@ -12,7 +12,7 @@ namespace rex
       , m_format(format)
     {}
 
-    D3D12_GPU_DESCRIPTOR_HANDLE Texture2D::gpu_handle()
+    D3D12_GPU_DESCRIPTOR_HANDLE DxTexture2D::gpu_handle()
     {
       return m_handle.get_gpu();
     }

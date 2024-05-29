@@ -40,6 +40,7 @@ namespace rex
 {
   namespace rhi
   {
+    REX_STATIC_WARNING("The following func doesn't belong here and is more a utility/debug functionality");
     // Useful function that assigns a name to a resource.
     // This is useful for debugging
     template<typename TResourceType>

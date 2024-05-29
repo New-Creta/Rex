@@ -14,68 +14,37 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-
-  
-    
-
-    
-  
-
-
 #if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
 #define REX_ENABLE_GFX_DEBUGGING
-#endif
-
-#ifdef REX_ENABLE_GFX_DEBUGGING
-#   define REX_ENABLE_DEBUG_SHADER_COMPILATION 1
-#   define REX_ENABLE_DEBUG_RESOURCE_NAMES 1
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_INFO 0
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_WARNING 0
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_ERROR 1
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_CORRUPTION 1
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_MESSAGE 0
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_INFO 0
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING 0
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR 1
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION 1
-#   define REX_ENABLE_DXGI_DEBUG_LAYER 1
-#   define REX_ENABLE_DXGI_LIVE_OBJECT_REPORT 1
-#   define REX_ENABLE_DX12_DEBUG_LAYER 1
-#   define REX_ENABLE_DX12_LIVE_OBJECT_REPORT 1
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_MESSAGE 1
-# else
-#   define REX_ENABLE_DEBUG_SHADER_COMPILATION 0
-#   define REX_ENABLE_DEBUG_RESOURCE_NAMES 0
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_INFO 0
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_WARNING 0
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_ERROR 0
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_CORRUPTION 0
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_MESSAGE 0
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_INFO 0
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING 0
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR 0
-#   define REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION 0
-#   define REX_ENABLE_DXGI_DEBUG_LAYER 0
-#   define REX_ENABLE_DXGI_LIVE_OBJECT_REPORT 0
-#   define REX_ENABLE_DX12_DEBUG_LAYER 0
-#   define REX_ENABLE_DX12_LIVE_OBJECT_REPORT 0
-#   define REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_MESSAGE 0
 #endif
 
 namespace rex 
 { 
   namespace globals 
   { 
-    constexpr bool g_enable_dx12_severity_message     = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_MESSAGE; 
-    constexpr bool g_enable_dx12_severity_info        = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_INFO;
-    constexpr bool g_enable_dx12_severity_warning     = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_WARNING;
-    constexpr bool g_enable_dx12_severity_error       = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_ERROR;
-    constexpr bool g_enable_dx12_severity_corruption  = REX_ENABLE_DX12_BREAK_SEVERITY_LEVEL_CORRUPTION;
-    constexpr bool g_enable_dxgi_severity_message     = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_MESSAGE;
-    constexpr bool g_enable_dxgi_severity_info        = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_INFO;
-    constexpr bool g_enable_dxgi_severity_warning     = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_WARNING;
-    constexpr bool g_enable_dxgi_severity_error       = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_ERROR;
-    constexpr bool g_enable_dxgi_severity_corruption  = REX_ENABLE_DXGI_BREAK_SEVERITY_LEVEL_CORRUPTION;
+#ifdef REX_ENABLE_GFX_DEBUGGING
+    constexpr bool g_enable_dx12_severity_message     = false;
+    constexpr bool g_enable_dx12_severity_info        = false;
+    constexpr bool g_enable_dx12_severity_warning     = false;
+    constexpr bool g_enable_dx12_severity_error       = true;
+    constexpr bool g_enable_dx12_severity_corruption  = true;
+    constexpr bool g_enable_dxgi_severity_message     = false;
+    constexpr bool g_enable_dxgi_severity_info        = false;
+    constexpr bool g_enable_dxgi_severity_warning     = false;
+    constexpr bool g_enable_dxgi_severity_error       = true;
+    constexpr bool g_enable_dxgi_severity_corruption  = true;
+#else
+    constexpr bool g_enable_dx12_severity_message     = false;
+    constexpr bool g_enable_dx12_severity_info        = false;
+    constexpr bool g_enable_dx12_severity_warning     = false;
+    constexpr bool g_enable_dx12_severity_error       = false;
+    constexpr bool g_enable_dx12_severity_corruption  = false;
+    constexpr bool g_enable_dxgi_severity_message     = false;
+    constexpr bool g_enable_dxgi_severity_info        = false;
+    constexpr bool g_enable_dxgi_severity_warning     = false;
+    constexpr bool g_enable_dxgi_severity_error       = false;
+    constexpr bool g_enable_dxgi_severity_corruption  = false;
+#endif
   } // namespace globals 
 } // namespace rex
 
@@ -107,6 +76,23 @@ namespace rex
 
 namespace rex
 {
+  namespace rhi
+  {
+    // Base classes
+    class CommandQueue;
+    class CommandAllocator;
+    class RootSignature;
+    class Shader;
+
+    // DirectX classes
+    class DxCommandQueue;
+    class DxCommandAllocator;
+    class DxRootSignature;
+    class DxShader;
+  }
+
+
+
   namespace d3d
   {
     // This isn't great as there isn't a way to pass the memory accross
@@ -144,6 +130,19 @@ namespace rex
     D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type);
     D3D12_RESOURCE_STATES to_dx12(ResourceState state);
     D3D12_COMMAND_LIST_TYPE to_dx12(rhi::CommandType type);
+
+    rhi::DxCommandQueue* to_dx12(rhi::CommandQueue* cmdQueue);
+    rhi::DxCommandAllocator* to_dx12(rhi::CommandAllocator* cmdAlloc);
+    rhi::DxRootSignature* to_dx12(rhi::RootSignature* rootSig);
+    rhi::DxShader* to_dx12(rhi::Shader* shader);
+
+    //const rhi::DxCommandQueue* to_dx12(const rhi::CommandQueue* cmdQueue);
+    //const rhi::DxCommandAllocator* to_dx12(const rhi::CommandAllocator* cmdAlloc);
+    //const rhi::DxRootSignature* to_dx12(const rhi::RootSignature* rootSig);
+    //const rhi::DxShader* to_dx12(const rhi::Shader* shader);
+
+
+
 
     rhi::CommandType from_dx12(D3D12_COMMAND_LIST_TYPE type);
   } // namespace d3d
