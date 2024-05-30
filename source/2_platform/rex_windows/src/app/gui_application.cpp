@@ -9,11 +9,10 @@
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/platform/win/win_com_library.h"
-#include "rex_renderer_core/context.h"
 #include "rex_renderer_core/rendering/depth_info.h"
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
-#include "rex_renderer_core/system/renderer.h"
 #include "rex_renderer_core/rhi/rhi.h"
+#include "rex_renderer_core/gfx/graphics.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
@@ -145,7 +144,7 @@ namespace rex
         //m_on_draw();
 
         // all command are now queued, let's render
-        renderer::render();
+        //renderer::render();
 
         //post_user_draw();
       }
@@ -154,13 +153,13 @@ namespace rex
         REX_ASSERT_CONTEXT_SCOPE("Application shutdown");
 
         m_on_shutdown();
-        renderer::shutdown();
+        //renderer::shutdown();
       }
 
     private:
       void display_gfx_info() // NOLINT(readability-convert-member-functions-to-static)
       {
-        rhi::Info info = gfx::info();
+        rhi::Info info = rhi::info();
         REX_INFO(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
         REX_INFO(LogWindows, "Renderer Info - Vendor: {}", info.vendor);
         REX_INFO(LogWindows, "Renderer Info - API Version: {}", info.api_version);

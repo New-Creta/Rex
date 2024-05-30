@@ -10,10 +10,14 @@
 
 namespace rex
 {
+  namespace gfx
+  {
+    class BaseGraphicsEngine;
+  }
+
   namespace rhi
   {
     class CommandAllocator;
-    class BaseGraphicsEngine;
     class Buffer;
 
     // Structure used to syncronise multiple engine with each other
@@ -57,9 +61,9 @@ namespace rex
     {
     public:
       GraphicsContext(CommandType type);
-      ~GraphicsContext();
+      virtual ~GraphicsContext();
 
-      void reset(CommandAllocator* alloc, const SyncInfo& syncInfo);
+      void reset(CommandAllocator* alloc);
       void release_allocator(u64 fenceValue);
       ScopedPoolObject<SyncInfo> execute_on_gpu();
       void flush_render_states();
@@ -73,7 +77,7 @@ namespace rex
 
     private:
       rhi::CommandAllocator* m_allocator;
-      BaseGraphicsEngine* m_owning_engine;
+      gfx::BaseGraphicsEngine* m_owning_engine;
       ResourceStateTracker m_resource_state_tracker;
       CommandType m_type;
     };

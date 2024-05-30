@@ -22,7 +22,7 @@ namespace rex
       }
     }
 
-    void GraphicsContext::reset(CommandAllocator* alloc, const SyncInfo& syncInfo)
+    void GraphicsContext::reset(CommandAllocator* alloc)
     {
       REX_ASSERT_X(m_allocator == nullptr, "Overwriting the allocator of a gfx context is not allowed. You need to execute the commands of the context first");
       REX_ASSERT_X(alloc != nullptr, "Assigning a nullptr as allocator for a gfx context is not allowed.");
@@ -65,11 +65,6 @@ namespace rex
       return m_allocator != nullptr;
     }
 
-    void GraphicsContext::flush_render_states()
-    {
-      m_resource_state_tracker.update_parent();
-      m_resource_state_tracker.clear();
-    }
     ResourceStateTransition GraphicsContext::track_resource_transition(Buffer* buffer, ResourceState state)
     {
       return m_resource_state_tracker.track_resource_transition(buffer, state);

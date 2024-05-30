@@ -16,8 +16,8 @@ namespace rex
     {
       struct PooledAllocator
       {
-        u64 fence_value;
-        rsl::unique_ptr<rhi::CommandAllocator> allocator;
+        u64 fence_value; // the last fence value that got set for commands used by this allocator
+        rsl::unique_ptr<rhi::CommandAllocator> allocator; // the allocator itself
       };
 
     public:

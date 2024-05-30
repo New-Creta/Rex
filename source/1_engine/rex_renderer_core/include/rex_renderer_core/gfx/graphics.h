@@ -55,16 +55,6 @@ namespace rex
     void present();
     void end_frame();
 
-    rhi::RenderContext& begin_render_context(rsl::string_view name)
-    {
-      // Get a graphics context from the gpu engine (allocating a new one if necessary)
-      // ..
-      // Initialize it so it is prepared for rendering (reset the commandlist, assign desc heaps, ..)
-      // ..
-      // Return the context to the user
-      // ..
-    }
-
     ScopedPoolObject<rhi::CopyContext> new_copy_ctx();
     ScopedPoolObject<rhi::RenderContext> new_render_ctx();
   }

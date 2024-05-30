@@ -54,24 +54,24 @@ namespace rex
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/types.h"
 #include "rex_engine/memory/blob.h"
-#include "rex_renderer_core/rendering/cull_mode.h"
-#include "rex_renderer_core/rendering/fill_mode.h"
-#include "rex_renderer_core/rendering/index_buffer_format.h"
-#include "rex_renderer_core/rendering/input_layout_classification.h"
-#include "rex_renderer_core/rendering/primitive_topology.h"
-#include "rex_renderer_core/rendering/texture_format.h"
-#include "rex_renderer_core/rendering/vertex_buffer_format.h"
-#include "rex_renderer_core/rendering/shader_visibility.h"
-#include "rex_renderer_core/rendering/sampler_filtering.h"
-#include "rex_renderer_core/rendering/comparison_func.h"
-#include "rex_renderer_core/rendering/border_color.h"
-#include "rex_renderer_core/rendering/texture_address_mode.h"
+#include "rex_renderer_core/rhi/cull_mode.h"
+#include "rex_renderer_core/rhi/fill_mode.h"
+#include "rex_renderer_core/rhi/index_buffer_format.h"
+#include "rex_renderer_core/rhi/input_layout_classification.h"
+#include "rex_renderer_core/rhi/primitive_topology.h"
+#include "rex_renderer_core/rhi/texture_format.h"
+#include "rex_renderer_core/rhi/vertex_buffer_format.h"
+#include "rex_renderer_core/rhi/shader_visibility.h"
+#include "rex_renderer_core/rhi/sampler_filtering.h"
+#include "rex_renderer_core/rhi/comparison_func.h"
+#include "rex_renderer_core/rhi/border_color.h"
+#include "rex_renderer_core/rhi/texture_address_mode.h"
 #include "rex_renderer_core/resources/blend_state.h"
 #include "rex_renderer_core/resources/depth_stencil_state.h"
-#include "rex_renderer_core/rendering/texture_address_mode.h"
-#include "rex_renderer_core/resources/link_shader.h"
-#include "rex_renderer_core/rendering/resource_state.h"
-#include "rex_renderer_core/rendering/command_type.h"
+#include "rex_renderer_core/rhi/texture_address_mode.h"
+#include "rex_renderer_core/rhi/resource_state.h"
+#include "rex_renderer_core/rhi/command_type.h"
+#include "rex_renderer_core/rhi/resource_state.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -128,9 +128,9 @@ namespace rex
     D3D12_DEPTH_WRITE_MASK to_dx12(rhi::DepthWriteMask mask);
     D3D12_DEPTH_STENCILOP_DESC to_dx12(const rhi::DepthStencilOpDesc& depthStencilOp);
     D3D12_STENCIL_OP to_dx12(rhi::StencilOp stencilOp);
-    D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range);
-    D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type);
-    D3D12_RESOURCE_STATES to_dx12(ResourceState state);
+    //D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range);
+    //D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type);
+    D3D12_RESOURCE_STATES to_dx12(rhi::ResourceState state);
     D3D12_COMMAND_LIST_TYPE to_dx12(rhi::CommandType type);
 
     rhi::DxCommandQueue* to_dx12(rhi::CommandQueue* cmdQueue);

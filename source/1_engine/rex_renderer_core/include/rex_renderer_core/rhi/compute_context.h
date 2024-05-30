@@ -1,10 +1,12 @@
 #pragma once
 
+#include "rex_renderer_core/rhi/graphics_context.h"
+
 namespace rex
 {
   namespace rhi
   {
-    class ComputeContext
+    class ComputeContext : public GraphicsContext
     {
       // Copy Buffer
       // Copy Texture

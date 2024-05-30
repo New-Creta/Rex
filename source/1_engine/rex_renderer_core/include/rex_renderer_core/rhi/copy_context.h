@@ -2,10 +2,16 @@
 
 #include "rex_renderer_core/rhi/graphics_context.h"
 
+#include "rex_std/bonus/memory.h"
+#include "rex_engine/engine/types.h"
+
 namespace rex
 {
   namespace rhi
   {
+    class Buffer;
+    class Texture2D;
+
     class CopyContext : public GraphicsContext
     {
     public:

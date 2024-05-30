@@ -1,4 +1,4 @@
-#include "rex_directx/system/dx_pipeline_library.h"
+#include "rex_directx/resources/dx_pipeline_library.h"
 
 #include "rex_std/bonus/functional.h"
 

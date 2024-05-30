@@ -14,6 +14,7 @@ namespace rex
   {
     class CommandList;
     class ConstantBuffer;
+    class RenderTarget;
   }
 
   struct ImGuiVertexConstantBuffer
@@ -24,6 +25,8 @@ namespace rex
   class ImGuiFrameContext
   {
   public:
+    ImGuiFrameContext();
+
     ScopedPoolObject<rhi::SyncInfo> update_data(ImDrawData* drawData, rhi::ConstantBuffer* cb);
 
     const rhi::Viewport& viewport() const;

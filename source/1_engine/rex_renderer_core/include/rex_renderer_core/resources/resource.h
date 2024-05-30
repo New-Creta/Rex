@@ -2,12 +2,16 @@
 
 namespace rex
 {
-  class Resource
+  namespace rhi
   {
-  public:
-    virtual ~Resource() = default;
 
-  private:
+    class Resource
+    {
+    public:
+      virtual ~Resource() = default;
 
-  };
+    private:
+
+    };
+  }
 }

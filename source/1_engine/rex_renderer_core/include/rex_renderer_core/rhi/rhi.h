@@ -99,8 +99,8 @@ namespace rex
       rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
       rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc);
-      rsl::unique_ptr<VertexShader> create_vertex_shader(rsl::string_view sourceCode);
-      rsl::unique_ptr<PixelShader> create_pixel_shader(rsl::string_view sourceCode);
+      rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);
+      rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
     }
 

@@ -89,7 +89,7 @@ namespace rex
     wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
     DescriptorHeap* cbv_uav_srv_desc_heap();
     UploadBuffer* global_upload_buffer();
-    ID3D12Device1* get_device();
+    //ID3D12Device1* get_device();
 
     void execute_command_list(CommandList* cmdList);
     void wait_for_gpu(CommandType type);

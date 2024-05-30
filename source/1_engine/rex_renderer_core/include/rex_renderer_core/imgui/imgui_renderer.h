@@ -7,13 +7,12 @@ namespace rex
   namespace rhi
   {
     class Texture2D;
-    class VertexShader;
-    class PixelShader;
     class RootSignature;
     class InputLayoutResource;
     class ConstantBuffer;
     class PipelineState;
     class RasterStateResource;
+    class Shader;
   }
 
   class ImGuiRenderer
@@ -39,8 +38,8 @@ namespace rex
 
   private:
     rsl::unique_ptr<rhi::Texture2D> m_fonts_texture;
-    rsl::unique_ptr<rhi::VertexShader> m_vertex_shader;
-    rsl::unique_ptr<rhi::PixelShader> m_pixel_shader;
+    rsl::unique_ptr<rhi::Shader> m_vertex_shader;
+    rsl::unique_ptr<rhi::Shader> m_pixel_shader;
     rsl::unique_ptr<rhi::RootSignature> m_root_signature;
     rsl::unique_ptr<rhi::InputLayoutResource> m_input_layout;
     rsl::unique_ptr<rhi::ConstantBuffer> m_constant_buffer;

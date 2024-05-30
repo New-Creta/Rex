@@ -4,23 +4,17 @@
 
 #include "rex_directx/system/dx_command_allocator.h"
 
-#include "rex_renderer_core/rendering/viewport.h"
-#include "rex_renderer_core/rendering/scissor_rect.h"
-#include "rex_renderer_core/rendering/primitive_topology.h"
-#include "rex_renderer_core/rendering/resource_state.h"
-#include "rex_renderer_core/rendering/command_type.h"
+#include "rex_renderer_core/rhi/viewport.h"
+#include "rex_renderer_core/rhi/scissor_rect.h"
+#include "rex_renderer_core/rhi/primitive_topology.h"
+#include "rex_renderer_core/rhi/resource_state.h"
+#include "rex_renderer_core/rhi/command_type.h"
 #include "rex_renderer_core/resources/clear_state.h"
 
 #include "rex_directx/resources/dx_clear_state_resource.h"
 
 #include "rex_directx/system/dx_resource.h"
-#include "rex_directx/system/dx_render_target.h"
-#include "rex_directx/system/dx_constant_buffer.h"
-#include "rex_directx/system/dx_vertex_buffer.h"
-#include "rex_directx/system/dx_index_buffer.h"
 #include "rex_directx/system/dx_blend_factor.h"
-#include "rex_directx/system/dx_root_signature.h"
-#include "rex_directx/system/dx_pipeline_state.h"
 #include "rex_directx/system/dx_resource_state_tracker.h"
 
 namespace rex

@@ -18,9 +18,9 @@ namespace rex
 {
   namespace rhi
   {
-    ResourceID hash_resource_desc(const VertexBufferDesc& desc);
-    ResourceID hash_resource_desc(const IndexBufferDesc& desc);
-    ResourceID hash_resource_desc(const ConstantBufferDesc& desc);
+    //ResourceID hash_resource_desc(const VertexBufferDesc& desc);
+    //ResourceID hash_resource_desc(const IndexBufferDesc& desc);
+    //ResourceID hash_resource_desc(const ConstantBufferDesc& desc);
     ResourceID hash_resource_desc(const ClearStateDesc& desc);
     ResourceID hash_resource_desc(const CompileShaderDesc& desc);
     ResourceID hash_resource_desc(const InputLayoutDesc& desc);

@@ -32,7 +32,7 @@ namespace rex
 
       PooledAllocator pooled_alloc = rsl::move(*it);
       m_active_allocators.erase(it);
-      m_idle_allocators.emplace_back(pooled_alloc);
+      m_idle_allocators.emplace_back(rsl::move(pooled_alloc));
     }
 
     // Find a free allocator in the pool and return its index

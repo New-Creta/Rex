@@ -25,6 +25,7 @@ namespace rex
 
     struct Viewport;
     struct ScissorRect;
+    class Buffer;
 
     class CommandList
     {

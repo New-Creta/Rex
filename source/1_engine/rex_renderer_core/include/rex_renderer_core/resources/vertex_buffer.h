@@ -4,6 +4,7 @@
 #include "rex_engine/memory/blob_view.h"
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/resources/buffer.h"
+#include "rex_std/bonus/memory.h"
 
 namespace rex
 {

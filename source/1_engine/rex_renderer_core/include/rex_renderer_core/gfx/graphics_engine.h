@@ -85,7 +85,7 @@ namespace rex
         {
           s32 idx = m_idle_contexts.size() - 1;
           context_type* ctx = transfer_context(idx, m_idle_contexts, m_active_contexts);
-          ctx->assign_allocator(alloc);
+          ctx->reset(alloc);
           ScopedPoolObject<context_type> pooled_ctx(ctx, [this](context_type* ctx) { discard_context(ctx); });
           return pooled_ctx;
         }

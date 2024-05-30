@@ -23,5 +23,10 @@ namespace rex
       u8 stencil;
       StateController<renderer::ClearBits> flags {};
     };
+
+    class ClearState
+    {
+
+    };
   } // namespace rhi
 } // namespace rex

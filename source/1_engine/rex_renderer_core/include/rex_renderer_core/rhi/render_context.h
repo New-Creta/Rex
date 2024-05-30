@@ -4,6 +4,7 @@
 #include "rex_renderer_core/rhi/scissor_rect.h"
 #include "rex_renderer_core/rhi/resource_state.h"
 #include "rex_renderer_core/rhi/primitive_topology.h"
+#include "rex_renderer_core/rhi/texture_format.h"
 
 #include "rex_renderer_core/resources/buffer.h"
 #include "rex_renderer_core/resources/render_target.h"
@@ -13,6 +14,7 @@
 #include "rex_renderer_core/resources/root_signature.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/constant_buffer.h"
+#include "rex_renderer_core/resources/clear_state.h"
 
 #include "rex_renderer_core/system/command_allocator.h"
 
@@ -28,26 +30,31 @@ namespace rex
 
   namespace rhi
   {
+    class ClearStateResource;
+    class PipelineState;
+    class UploadBuffer;
+    class Buffer;
+    class Texture2D;
+
     class RenderContext : public GraphicsContext
     {
     public:
-      RenderContext(rhi::CommandAllocator* alloc);
+      RenderContext(gfx::GraphicsEngine<RenderContext>* owningEngine, rhi::CommandAllocator* alloc);
       RenderContext(const RenderContext&) = delete;
       RenderContext(RenderContext&&) = default;
 
-      ~RenderContext();
+      ~RenderContext() override;
 
       RenderContext& operator=(const RenderContext&) = delete;
       RenderContext& operator=(RenderContext&&) = default;
 
-    protected:
       // Implemented by Graphics API specific derived classes
       // ----------------------------------------------------------------
       virtual void set_viewport(const rhi::Viewport& vp) = 0;
       virtual void set_scissor_rect(const ScissorRect& rect) = 0;
       virtual void transition_buffer(rhi::Buffer* resource, ResourceState state) = 0;
       virtual void set_render_target(rhi::RenderTarget* renderTarget) = 0;
-      virtual void clear_render_target(rhi::RenderTarget* renderTarget, rhi::ClearStateResource* clearState) = 0;
+      virtual void clear_render_target(rhi::RenderTarget* renderTarget, rhi::ClearState* clearState) = 0;
       virtual void set_vertex_buffer(rhi::VertexBuffer* vb) = 0;
       virtual void set_index_buffer(rhi::IndexBuffer* ib) = 0;
       virtual void set_primitive_topology(renderer::PrimitiveTopology topology) = 0;

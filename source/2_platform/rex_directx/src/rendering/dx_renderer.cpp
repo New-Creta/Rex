@@ -1,5 +1,4 @@
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_directx/diagnostics/log.h"
 #include "rex_directx/dxgi/adapter.h"
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"

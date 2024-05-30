@@ -1,5 +1,7 @@
 #include "rex_renderer_core/resources/vertex_buffer.h"
 
+#include "rex_engine/engine/casting.h"
+
 namespace rex
 {
   namespace rhi
@@ -7,7 +9,7 @@ namespace rex
     VertexBuffer::VertexBuffer(s32 numVertices, rsl::memory_size vertexSize)
       : Buffer(numVertices * vertexSize)
       , m_num_vertices(numVertices)
-      , m_vertex_size(vertexSize)
+      , m_vertex_size(narrow_cast<s32>(vertexSize.size_in_bytes()))
     {}
 
     s32 VertexBuffer::count() const

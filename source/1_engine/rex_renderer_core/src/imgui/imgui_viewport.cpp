@@ -3,6 +3,7 @@
 #include "rex_renderer_core/rhi/viewport.h"
 #include "rex_renderer_core/rhi/scissor_rect.h"
 #include "rex_renderer_core/rhi/primitive_topology.h"
+#include "rex_renderer_core/rhi/resource_state.h"
 
 #include "rex_renderer_core/system/copy_engine.h"
 #include "rex_renderer_core/system/command_list.h"
@@ -65,9 +66,9 @@ namespace rex
 
   void RexImGuiViewport::setup_render_state(rhi::RenderContext& ctx, ImDrawData* drawData, ImGuiFrameContext& frameCtx)
   {
-    ctx.transition_buffer(frameCtx.vertex_buffer(), ResourceState::VertexAndConstantBuffer);
-    ctx.transition_buffer(frameCtx.index_buffer(), ResourceState::IndexBuffer);
-    ctx.transition_buffer(m_render_state.constant_buffer, ResourceState::VertexAndConstantBuffer);
+    ctx.transition_buffer(frameCtx.vertex_buffer(), rhi::ResourceState::VertexAndConstantBuffer);
+    ctx.transition_buffer(frameCtx.index_buffer(), rhi::ResourceState::IndexBuffer);
+    ctx.transition_buffer(m_render_state.constant_buffer, rhi::ResourceState::VertexAndConstantBuffer);
 
     ctx.set_viewport(frameCtx.viewport());
     ctx.set_vertex_buffer(frameCtx.vertex_buffer());
@@ -77,7 +78,6 @@ namespace rex
     ctx.set_root_signature(m_render_state.root_signature);
     ctx.set_constant_buffer(0, m_render_state.constant_buffer);
     ctx.set_blend_factor(m_render_state.blend_factor.data());
-    ctx.set_render_target(frameCtx.render_target());
 
     //ctx.wait_for_finish();
 
@@ -117,7 +117,7 @@ namespace rex
         }
 
         // Apply Scissor/clipping rectangle, Bind texture, Draw
-        ScissorRect rect{};
+        rhi::ScissorRect rect{};
         rect.left = clip_min.x;
         rect.top = clip_min.y;
         rect.right = clip_max.x;

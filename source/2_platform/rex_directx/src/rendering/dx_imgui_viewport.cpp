@@ -3,14 +3,14 @@
 #include "rex_directx/diagnostics/dx_call.h"
 #include "rex_directx/system/dx_rhi.h"
 #include "rex_directx/resources/dx_shader_program_resource.h"
-#include "rex_renderer_core/rendering/viewport.h"
-#include "rex_renderer_core/rendering/scissor_rect.h"
+#include "rex_renderer_core/rhi/viewport.h"
+#include "rex_renderer_core/rhi/scissor_rect.h"
 
 namespace rex
 {
   namespace renderer
   {
-    RexImGuiViewport::RexImGuiViewport(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb)
+    RexImGuiViewport::RexImGuiViewport(ImGuiViewport* viewport, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb)
       : m_imgui_viewport(viewport)
       , m_max_num_frames_in_flight(maxNumFramesInFlight)
       , m_frame_idx(0)
@@ -23,7 +23,7 @@ namespace rex
       HWND hwnd = viewport->PlatformHandleRaw ? (HWND)viewport->PlatformHandleRaw : (HWND)viewport->PlatformHandle;
       IM_ASSERT(hwnd != 0);
 
-      init_frame_contexts(device);
+      init_frame_contexts();
     }
 
     void RexImGuiViewport::draw(rhi::CommandList* ctx)
@@ -31,14 +31,12 @@ namespace rex
       render_draw_data(ctx);
     }
 
-    Error RexImGuiViewport::init_frame_contexts(ID3D12Device1* device)
+    Error RexImGuiViewport::init_frame_contexts()
     {
       // Create command allocator.
-      m_frame_ctx = rsl::make_unique<rsl::unique_ptr<ImGuiFrameContext>[]>(m_max_num_frames_in_flight);
       m_render_buffers = rsl::make_unique<rsl::unique_ptr<ImGuiRenderBuffer>[]>(m_max_num_frames_in_flight);
       for (UINT i = 0; i < m_max_num_frames_in_flight; ++i)
       {
-        m_frame_ctx[i] = rsl::make_unique<ImGuiFrameContext>(device);
         m_render_buffers[i] = rsl::make_unique<ImGuiRenderBuffer>();
       }
 
@@ -56,10 +54,6 @@ namespace rex
       {
         m_frame_idx = 0;
       }
-    }
-    ImGuiFrameContext* RexImGuiViewport::current_frame_ctx()
-    {
-      return m_frame_ctx[m_frame_idx].get();
     }
 
     void RexImGuiViewport::setup_render_state(ImDrawData* drawData, rhi::CommandList* ctx, class ImGuiRenderBuffer* fr)
@@ -83,7 +77,7 @@ namespace rex
       }
 
       // Setup viewport
-      Viewport vp{};
+      rhi::Viewport vp{};
       vp.width = drawData->DisplaySize.x;
       vp.height = drawData->DisplaySize.y;
       vp.min_depth = 0.0f;
@@ -100,7 +94,7 @@ namespace rex
       ctx->set_constant_buffer(0, m_constant_buffer);
       const f32 blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
       ctx->set_blend_factor(blend_factor);
-      ctx->transition_buffer(m_constant_buffer, ResourceState::VertexAndConstantBuffer);
+      ctx->transition_buffer(m_constant_buffer, rhi::ResourceState::VertexAndConstantBuffer);
     }
 
     void RexImGuiViewport::render_draw_data(rhi::CommandList* ctx)

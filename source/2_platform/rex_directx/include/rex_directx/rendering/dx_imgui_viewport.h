@@ -23,10 +23,9 @@ namespace rex
     class RexImGuiViewport
     {
     public:
-      RexImGuiViewport(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb);
+      RexImGuiViewport(ImGuiViewport* viewport, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb);
 
       void draw(rhi::CommandList* ctx);
-      ImGuiFrameContext* current_frame_ctx();
 
     protected:
       void update_to_next_frame_ctx();
@@ -35,7 +34,7 @@ namespace rex
       void render_draw_data(rhi::CommandList* ctx);
 
     private:
-      Error init_frame_contexts(ID3D12Device1* device);
+      Error init_frame_contexts();
       ImGuiRenderBuffer* current_render_buffer();
 
       void increase_vertex_buffer(ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer);
@@ -44,7 +43,6 @@ namespace rex
       void update_render_buffer(rhi::CommandList* ctx, ImDrawData* drawData, ImGuiRenderBuffer* renderBuffer);
 
     private:
-      rsl::unique_array<rsl::unique_ptr<ImGuiFrameContext>> m_frame_ctx;
       rsl::unique_array<rsl::unique_ptr<ImGuiRenderBuffer>> m_render_buffers;
       ImGuiViewport* m_imgui_viewport;
 

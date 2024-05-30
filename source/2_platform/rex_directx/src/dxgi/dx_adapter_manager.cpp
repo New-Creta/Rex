@@ -1,7 +1,7 @@
 #include "rex_directx/dxgi/adapter.h" // IWYU pragma: keep
 #include "rex_directx/dxgi/adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
-#include "rex_directx/dxgi/util.h"
+#include "rex_directx/dxgi/includes.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/platform/win/win_com_ptr.h"
 #include "rex_renderer_core/system/gpu_description.h"
@@ -79,7 +79,7 @@ namespace rex
         gpus.push_back(adapter.description());
       }
 
-      auto it = (rsl::max)(m_adapters.cbegin(), m_adapters.cend(), scorerFn);
+      auto it = (rsl::max)(m_adapters.cbegin(), m_adapters.cend(), [&scorerFn](const Adapter& adapter) { return scorerFn(adapter.description()); });
       REX_ASSERT_X(it != m_adapters.cend(), "No adapater found with valid score");
       m_selected_adapter = rsl::iterator_to_pointer(it);      
     }

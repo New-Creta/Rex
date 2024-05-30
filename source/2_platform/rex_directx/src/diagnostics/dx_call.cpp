@@ -1,7 +1,7 @@
 #include "rex_directx/diagnostics/dx_call.h"
 
-#include "rex_directx/diagnostics/log.h"
 #include "rex_directx/utility/dx_util.h"
+#include "rex_engine/diagnostics/log.h"
 
 #include <comdef.h>
 
@@ -11,6 +11,8 @@ namespace rex
   {
     namespace directx
     {
+      DEFINE_LOG_CATEGORY(LogDirectX);
+
       //-------------------------------------------------------------------------
       rsl::medium_stack_string report_hr_error(HRESULT hr, const rsl::string_view file, const rsl::string_view function, card32 lineNr)
       {

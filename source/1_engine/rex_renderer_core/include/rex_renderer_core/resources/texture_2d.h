@@ -2,6 +2,7 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/rhi/texture_format.h"
+#include "rex_renderer_core/rhi/vertex_buffer_format.h"
 
 namespace rex
 {
@@ -14,6 +15,7 @@ namespace rex
 
       s32 width() const;
       s32 height() const;
+      renderer::VertexBufferFormat format() const;
 
     private:
       s32 m_width;

@@ -31,7 +31,7 @@ namespace rex
       }
       void discard_sync_info(rhi::SyncInfo* syncInfo)
       {
-        auto it = rsl::find_if(m_active_sync_infos.cbegin(), m_active_sync_infos.cend(), [syncInfo](const rsl::unique_ptr<rhi::SyncInfo> info) { return info.get() == syncInfo; });
+        auto it = rsl::find_if(m_active_sync_infos.cbegin(), m_active_sync_infos.cend(), [syncInfo](const rsl::unique_ptr<rhi::SyncInfo>& info) { return info.get() == syncInfo; });
         REX_ASSERT_X(it != m_active_sync_infos.cend(), "Trying to return sync info to pool that doesn't own it");
         s32 idx = rsl::distance(m_active_sync_infos.cbegin(), it);
         transfer_context(idx, m_active_sync_infos, m_idle_sync_infos);

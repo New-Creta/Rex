@@ -9,6 +9,12 @@
 
 namespace rex
 {
+  ImGuiFrameContext::ImGuiFrameContext()
+  {
+    increase_vertex_buffer(5000);
+    increase_index_buffer(5000);
+  }
+
   ScopedPoolObject<rhi::SyncInfo> ImGuiFrameContext::update_data(ImDrawData* drawData, rhi::ConstantBuffer* cb)
   {
     m_viewport.width = drawData->DisplaySize.x;
@@ -42,6 +48,7 @@ namespace rex
   {
     return m_index_buffer.get();
   }
+
   const ImGuiVertexConstantBuffer& ImGuiFrameContext::cb_data() const
   {
     return m_constant_buffer_data;

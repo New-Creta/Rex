@@ -31,6 +31,8 @@
 #include "rex_directx/resources/dx_raster_state_resource.h"
 #include "rex_directx/resources/dx_input_layout_resource.h"
 #include "rex_directx/resources/dx_rendertarget.h"
+#include "rex_directx/resources/dx_vertex_shader.h"
+#include "rex_directx/resources/dx_pixel_shader.h"
 
 #include "rex_directx/system/dx_copy_context.h"
 #include "rex_renderer_core/gfx/graphics.h"
@@ -288,6 +290,7 @@ namespace rex
       // Destroy all graphics systems
       void shutdown()
       {
+        g_gpu_engine.reset();
         g_rhi_resources.reset();
       }
       // Return the shader platform used for this API.
@@ -673,7 +676,7 @@ namespace rex
 
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data)
       {
-        wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(format, width, height, data);
+        wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(format, width, height);
         DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
 
         auto texture = rsl::make_unique<Texture2D>(d3d_texture, desc_handle);
@@ -761,7 +764,7 @@ namespace rex
 
         return rsl::make_unique<InputLayoutResource>(input_element_descriptions);
       }
-      rsl::unique_ptr<VertexShader> create_vertex_shader(rsl::string_view sourceCode)
+      rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode)
       {
         rex::rhi::CompileShaderDesc compile_vs_desc{};
         compile_vs_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
@@ -774,7 +777,7 @@ namespace rex
 
         return rsl::make_unique<VertexShader>(compiled_vs_blob);
       }
-      rsl::unique_ptr<PixelShader> create_pixel_shader(rsl::string_view sourceCode)
+      rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode)
       {
         rex::rhi::CompileShaderDesc compile_ps_desc{};
         compile_ps_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
@@ -1951,10 +1954,10 @@ namespace rex
 
 
 #pragma endregion
-    ID3D12Device1* get_device()
-    {
-      return g_rhi_resources->device->get();
-    }
+    //ID3D12Device1* get_device()
+    //{
+    //  return g_rhi_resources->device->get();
+    //}
 
     //DescriptorHandle get_rtv()
     //{

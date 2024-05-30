@@ -10,13 +10,6 @@ namespace rex
   {
     class Factory;
 
-    using AdapterVec = rsl::vector<Adapter>;
-
-    struct ScoringFuncs
-    {
-      rsl::function<s32(const GpuDescription&)> calculate_score
-    };
-
     class AdapterManager
     {
     public:
@@ -33,11 +26,11 @@ namespace rex
 
       const Adapter* selected() const;
       const Adapter* first() const;
-      const AdapterVec& all() const;
+      const rsl::vector<Adapter>& all() const;
 
     private:
       const Adapter* m_selected_adapter;
-      AdapterVec m_adapters;
+      rsl::vector<Adapter> m_adapters;
     };
   } // namespace dxgi
 } // namespace rex

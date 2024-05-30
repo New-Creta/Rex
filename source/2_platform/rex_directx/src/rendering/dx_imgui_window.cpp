@@ -6,19 +6,21 @@
 
 #include "rex_directx/system/dx_rhi.h"
 
+#include "rex_renderer_core/gfx/graphics.h"
+#include "rex_renderer_core/rhi/render_context.h"
+
 namespace rex
 {
   namespace renderer
   {
-    ImGuiWindow::ImGuiWindow(ImGuiViewport* viewport, ID3D12Device1* device, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb)
-      : m_viewport(viewport, device, maxNumFramesInFlight, rtvFormat, rootSignature, pso, cb)
-      , m_command_list(rhi::create_commandlist())
+    ImGuiWindow::ImGuiWindow(ImGuiViewport* viewport, ID3D12CommandQueue* commandQueue, s32 maxNumFramesInFlight, DXGI_FORMAT rtvFormat, rhi::RootSignature* rootSignature, rhi::PipelineState* pso, rhi::ConstantBuffer* cb)
+      : m_viewport(viewport, maxNumFramesInFlight, rtvFormat, rootSignature, pso, cb)
     {
       // PlatformHandleRaw should always be a HWND, whereas PlatformHandle might be a higher-level handle (e.g. GLFWWindow*, SDL_Window*).
       // Some backends will leave PlatformHandleRaw == 0, in which case we assume PlatformHandle will contain the HWND.
       HWND hwnd = viewport->PlatformHandleRaw ? (HWND)viewport->PlatformHandleRaw : (HWND)viewport->PlatformHandle;
       IM_ASSERT(hwnd != 0);
-      m_swapchain = rhi::create_swapchain(maxNumFramesInFlight, hwnd);
+      m_swapchain = rhi::create_swapchain(commandQueue, maxNumFramesInFlight, hwnd);
 
       const s32 width = viewport->Size.x;
       const s32 height = viewport->Size.y;
@@ -40,25 +42,18 @@ namespace rex
       m_clear_state = rsl::make_unique<rhi::ClearStateResource>(desc);
     }
 
-    void ImGuiWindow::begin_draw()
+    void ImGuiWindow::render()
     {
-      rhi::RenderTarget* render_target = m_render_targets[m_swapchain->get()->GetCurrentBackBufferIndex()].get();
+      auto render_ctx = gfx::new_render_ctx();
 
-      m_command_list->start_recording_commands(m_viewport.current_frame_ctx()->allocator());
-      m_command_list->transition_buffer(render_target, ResourceState::RenderTarget);
-      m_command_list->set_render_target(render_target);
-    }
-    void ImGuiWindow::draw()
-    {
-      m_viewport.draw(m_command_list.get());
-    }
-    void ImGuiWindow::end_draw()
-    {
-      rhi::RenderTarget* render_target = m_render_targets[m_swapchain->get()->GetCurrentBackBufferIndex()].get();
-      
-      m_command_list->transition_buffer(render_target, ResourceState::Present);
-      m_command_list->stop_recording_commands();
-      m_command_list->send_to_gpu();
+      rhi::RenderTarget* render_target = current_render_target();
+
+      render_ctx->transition_buffer(render_target, rhi::ResourceState::RenderTarget);
+      render_ctx->set_render_target(render_target);
+      m_viewport.draw(render_ctx.get());
+      render_ctx->transition_buffer(render_target, rhi::ResourceState::Present);
+
+      advance_to_next_frame();
     }
 
     void ImGuiWindow::clear_render_target(const ImVec4& clearColor)

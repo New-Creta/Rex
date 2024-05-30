@@ -13,16 +13,15 @@ namespace rex
   {
     class InputLayoutResource;
     class RootSignature;
-    class VertexShader;
-    class PixelShader;
+    class Shader;
     class RasterStateResource;
 
     struct PipelineStateDesc
     {
       InputLayoutResource* input_layout;
       RootSignature* root_signature;
-      VertexShader* vertex_shader;
-      PixelShader* pixel_shader;
+      Shader* vertex_shader;
+      Shader* pixel_shader;
       RasterStateResource* raster_state;
       rsl::optional<BlendDesc> blend_state;
       rsl::optional<DepthStencilDesc> depth_stencil_state;

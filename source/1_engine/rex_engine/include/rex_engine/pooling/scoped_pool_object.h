@@ -47,6 +47,15 @@ namespace rex
       return *m_object;
     }
 
+    T* get()
+    {
+      return m_object;
+    }
+    const T* get() const
+    {
+      return m_object;
+    }
+
   private:
     return_to_pool_func m_callable; // This callable is meant to return this object back to the pool it came from.
     T* m_object;

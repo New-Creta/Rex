@@ -45,8 +45,6 @@ namespace rex
     }
     void shutdown()
     {
-      g_gpu_engine.reset();
-
       rhi::shutdown();
     }
 
