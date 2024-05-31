@@ -12,7 +12,7 @@ namespace rex
 
   public:
     ScopedPoolObject(T* object, return_to_pool_func&& callable)
-      : T(object)
+      : m_object(object)
       , m_callable(rsl::move(callable))
     {}
 

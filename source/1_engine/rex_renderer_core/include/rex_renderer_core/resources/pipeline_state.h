@@ -26,6 +26,11 @@ namespace rex
       rsl::optional<BlendDesc> blend_state;
       rsl::optional<DepthStencilDesc> depth_stencil_state;
     };
+
+    class PipelineState
+    {
+
+    };
   } // namespace rhi
 } // namespace rex
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_engine/diagnostics/error.h"
+#include "rex_renderer_core/resources/pipeline_state.h"
 
 namespace rex
 {
