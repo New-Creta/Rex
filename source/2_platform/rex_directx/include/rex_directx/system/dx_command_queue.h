@@ -45,7 +45,7 @@ namespace rex
 
     private:
       wrl::ComPtr<ID3D12CommandQueue> m_command_queue;
-      wrl::ComPtr<ID3D12Fence> m_fence;
+      rsl::unique_ptr<DxFence> m_fence;
       Event m_fence_event;
       //Fence m_fence;
     };

@@ -1,13 +1,22 @@
 #include "rex_directx/system/dx_render_context.h"
 
 #include "rex_directx/utility/d3dx12.h"
+#include "rex_directx/resources/dx_constant_buffer.h"
+#include "rex_directx/resources/dx_vertex_buffer.h"
+#include "rex_directx/resources/dx_index_buffer.h"
+#include "rex_directx/resources/dx_rendertarget.h"
+#include "rex_directx/resources/dx_root_signature.h"
+#include "rex_directx/resources/dx_pipeline_state.h"
+#include "rex_renderer_core/resources/clear_state.h"
+#include "rex_engine/engine/casting.h"
+#include "rex_directx/system/dx_command_allocator.h"
 
 namespace rex
 {
   namespace rhi
   {
-    DxRenderContext::DxRenderContext(const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList, CommandAllocator* alloc)
-      : RenderContext(alloc)
+    DxRenderContext::DxRenderContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList, CommandAllocator* alloc)
+      : RenderContext(owningEngine, alloc)
       , m_cmd_list(cmdList)
     {
       start_recording_commands();
@@ -39,27 +48,33 @@ namespace rex
 
       m_cmd_list->RSSetScissorRects(1, &scissor_rect);
     }
-    void DxRenderContext::transition_buffer(Buffer* resource, ResourceState state)
+    void DxRenderContext::transition_buffer(ConstantBuffer* resource, ResourceState state)
     {
-      ResourceStateTransition transition = track_resource_transition(resource, state);
-      if (transition.before != transition.after)
-      {
-        D3D12_RESOURCE_STATES before_state = d3d::to_dx12(transition.before);
-        D3D12_RESOURCE_STATES after_state = d3d::to_dx12(transition.after);
-        D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource->dx_object(), before_state, after_state);
-        m_cmd_list->ResourceBarrier(1, &barrier);
-      }
+      DxConstantBuffer* dx_constant_buffer = static_cast<DxConstantBuffer*>(resource);
+      transition_buffer(resource, dx_constant_buffer->dx_object(), state);
+    }
+    void DxRenderContext::transition_buffer(VertexBuffer* resource, ResourceState state)
+    {
+      DxVertexBuffer* dx_vertex_buffer = static_cast<DxVertexBuffer*>(resource);
+      transition_buffer(resource, dx_vertex_buffer->dx_object(), state);
+    }
+    void DxRenderContext::transition_buffer(IndexBuffer* resource, ResourceState state)
+    {
+      DxIndexBuffer* dx_index_buffer = static_cast<DxIndexBuffer*>(resource);
+      transition_buffer(resource, dx_index_buffer->dx_object(), state);
     }
     void DxRenderContext::set_render_target(RenderTarget* renderTarget)
     {
-      m_cmd_list->OMSetRenderTargets(1, &renderTarget->cpu_handle(), true, nullptr);
+      DxRenderTarget* dx_render_target = static_cast<DxRenderTarget*>(renderTarget);
+      m_cmd_list->OMSetRenderTargets(1, &dx_render_target->handle().get(), true, nullptr);
     }
     void DxRenderContext::clear_render_target(RenderTarget* renderTarget, ClearStateResource* clearState)
     {
       auto& clear_flags = clearState->get()->flags;
       if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))
       {
-        m_cmd_list->ClearRenderTargetView(renderTarget->cpu_handle(), clearState->get()->rgba.data(), 0, nullptr);
+        DxRenderTarget* dx_render_target = static_cast<DxRenderTarget*>(renderTarget);
+        m_cmd_list->ClearRenderTargetView(dx_render_target->handle(), clearState->get()->rgba.data(), 0, nullptr);
       }
 
       if (clear_flags.has_state(renderer::ClearBits::ClearDepthBuffer) || clear_flags.has_state(renderer::ClearBits::ClearStencilBuffer))
@@ -74,17 +89,21 @@ namespace rex
     }
     void DxRenderContext::set_vertex_buffer(VertexBuffer* vb)
     {
+      DxVertexBuffer* dx_vb = static_cast<DxVertexBuffer*>(vb);
+
       D3D12_VERTEX_BUFFER_VIEW view{};
-      view.BufferLocation = vb->dx_object()->GetGPUVirtualAddress();
-      view.SizeInBytes = narrow_cast<s32>(vb->total_size());
-      view.StrideInBytes = vb->stride();
+      view.BufferLocation = dx_vb->dx_object()->GetGPUVirtualAddress();
+      view.SizeInBytes = narrow_cast<s32>(vb->total_size().size_in_bytes());
+      view.StrideInBytes = vb->vertex_size();
 
       m_cmd_list->IASetVertexBuffers(0, 1, &view);
     }
     void DxRenderContext::set_index_buffer(IndexBuffer* ib)
     {
+      DxIndexBuffer* dx_ib = static_cast<DxIndexBuffer*>(ib);
+
       D3D12_INDEX_BUFFER_VIEW view{};
-      view.BufferLocation = ib->dx_object()->GetGPUVirtualAddress();
+      view.BufferLocation = dx_ib->dx_object()->GetGPUVirtualAddress();
       view.Format = d3d::to_dx12(ib->format());
       view.SizeInBytes = narrow_cast<s32>(ib->total_size());
 
@@ -98,11 +117,13 @@ namespace rex
 
     void DxRenderContext::set_root_signature(RootSignature* rootSignature)
     {
-      m_cmd_list->SetGraphicsRootSignature(rootSignature->dx_object());
+      DxRootSignature* dx_root_signature = static_cast<DxRootSignature*>(rootSignature);
+      m_cmd_list->SetGraphicsRootSignature(dx_root_signature->dx_object());
     }
     void DxRenderContext::set_pipeline_state(PipelineState* pso)
     {
-      m_cmd_list->SetPipelineState(pso->get());
+      DxPipelineState* dx_pso = static_cast<DxPipelineState*>(pso);
+      m_cmd_list->SetPipelineState(dx_pso->get());
     }
     void DxRenderContext::set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id)
     {
@@ -113,7 +134,8 @@ namespace rex
     }
     void DxRenderContext::set_constant_buffer(s32 paramIdx, ConstantBuffer* cb)
     {
-      m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, cb->dx_object()->GetGPUVirtualAddress());
+      DxConstantBuffer* dx_cb = static_cast<DxConstantBuffer*>(cb);
+      m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, dx_cb->dx_object()->GetGPUVirtualAddress());
     }
     void DxRenderContext::set_blend_factor(const f32 blendFactor[4])
     {
@@ -131,14 +153,39 @@ namespace rex
 
     void DxRenderContext::start_recording_commands()
     {
-      CommandAllocator* alloc = resource_cast(allocator());
+      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(allocator());
 
-      REX_ASSERT_X(alloc != nullptr, "The command allocator for a context cannot be null");
+      REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
 
-      alloc->dx_object()->Reset();
-      m_cmd_list->Reset(alloc->dx_object(), nullptr);
+      dx_alloc->get()->Reset();
+      m_cmd_list->Reset(dx_alloc->get(), nullptr);
 
       bind_descriptor_heaps();
+    }
+    void DxRenderContext::transition_buffer(Buffer* resource, ID3D12Resource* d3d_resource, ResourceState state)
+    {
+      ResourceStateTransition transition = track_resource_transition(resource, state);
+      if (transition.before != transition.after)
+      {
+        D3D12_RESOURCE_STATES before_state = d3d::to_dx12(transition.before);
+        D3D12_RESOURCE_STATES after_state = d3d::to_dx12(transition.after);
+        D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(d3d_resource, before_state, after_state);
+        m_cmd_list->ResourceBarrier(1, &barrier);
+      }
+    }
+
+    void DxRenderContext::bind_descriptor_heaps()
+    {
+      REX_ASSERT("This function is not yet implemented");
+    }
+
+    void DxRenderContext::update_buffer(Buffer* buffer, UploadBuffer* updateBuffer, void* data, rsl::memory_size size, s32 dstOffset)
+    {
+      REX_ASSERT("Not yet implemented");
+    }
+    void DxRenderContext::update_texture2d(Texture2D* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format)
+    {
+      REX_ASSERT("Not yet implemented");
     }
 
     ID3D12GraphicsCommandList* DxRenderContext::dx_cmdlist()

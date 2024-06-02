@@ -31,6 +31,7 @@ namespace rex
     {
     public:
       explicit CommandList(rhi::CommandType type, rhi::ResourceStateTracker* resourceStateTracker = nullptr);
+      virtual ~CommandList();
 
       rhi::CommandType type() const;
 

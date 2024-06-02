@@ -15,5 +15,9 @@ namespace rex
       return m_handle.get_gpu();
     }
 
+    ID3D12Resource* DxTexture2D::dx_object()
+    {
+      return m_resource.Get();
+    }
   }
 }

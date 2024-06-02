@@ -224,7 +224,7 @@ namespace rex
 
     rex::rhi::PipelineStateDesc pso_desc{};
     pso_desc.input_layout = m_input_layout.get();
-    pso_desc.raster_state = m_raster_state.get(); ;
+    pso_desc.raster_state = *m_raster_state.get();
     pso_desc.vertex_shader = m_vertex_shader.get();
     pso_desc.pixel_shader = m_pixel_shader.get();
     pso_desc.root_signature = m_root_signature.get();

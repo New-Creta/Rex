@@ -27,7 +27,7 @@ namespace rex
           return use_existing_sync_info(fenceValue, fenceObject);
         }
 
-        return create_new_active_sync_info(fenceValue, fenceObject);
+        return create_new_active_sync_info<SyncInfoClass>(fenceValue, fenceObject);
       }
       void discard_sync_info(rhi::SyncInfo* syncInfo)
       {

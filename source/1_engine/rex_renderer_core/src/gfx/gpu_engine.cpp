@@ -9,10 +9,10 @@ namespace rex
   {
     // Make sure to not try and initialize any gpu resources in the constructor.
     // The derived class of the gpu engine is responsible for making sure the gpu is ready.
-    GpuEngine::GpuEngine(const renderer::OutputWindowUserData& userData)
-      : m_render_engine(rsl::make_unique<RenderEngine>())
-      , m_compute_engine(rsl::make_unique<ComputeEngine>())
-      , m_copy_engine(rsl::make_unique<CopyEngine>())
+    GpuEngine::GpuEngine(rsl::unique_ptr<RenderEngine> renderEngine, rsl::unique_ptr<ComputeEngine> computeEngine, rsl::unique_ptr<CopyEngine> copyEngine, const renderer::OutputWindowUserData& userData)
+      : m_render_engine(rsl::move(renderEngine))
+      , m_compute_engine(rsl::move(computeEngine))
+      , m_copy_engine(rsl::move(copyEngine))
       , m_swapchain(rhi::create_swapchain(m_render_engine->command_queue(), userData.max_frames_in_flight, userData.primary_display_handle))
       , m_init_successfully(true)
     {
@@ -93,17 +93,17 @@ namespace rex
 
     ScopedPoolObject<rhi::CopyContext> GpuEngine::new_copy_ctx()
     {
-      return m_copy_engine->new_context();
+      return m_copy_engine->new_context<rhi::CopyContext>();
     }
 
     ScopedPoolObject<rhi::RenderContext> GpuEngine::new_render_ctx()
     {
-      return m_render_engine->new_context();
+      return m_render_engine->new_context<rhi::RenderContext>();
     }
 
     ScopedPoolObject<rhi::ComputeContext> GpuEngine::new_compute_ctx()
     {
-      return m_compute_engine->new_context();
+      return m_compute_engine->new_context<rhi::ComputeContext>();
     }
 
   }

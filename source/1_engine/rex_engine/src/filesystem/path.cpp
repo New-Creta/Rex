@@ -20,7 +20,7 @@ namespace rex
     namespace internal
     {
       // concat the arg to the string in filepath format
-      void join_impl(rsl::string& str, rsl::string_view arg)
+      void join_string_view(rsl::string& str, rsl::string_view arg)
       {
         if(arg.empty())
         {

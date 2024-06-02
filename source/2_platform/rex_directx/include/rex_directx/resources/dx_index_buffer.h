@@ -18,6 +18,12 @@ namespace rex
         , m_resource(resource)
       {}
 
+
+      ID3D12Resource* dx_object()
+      {
+        return m_resource.Get();
+      }
+
     private:
       wrl::ComPtr<ID3D12Resource> m_resource;
     };

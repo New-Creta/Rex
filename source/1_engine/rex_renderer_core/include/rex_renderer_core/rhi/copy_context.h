@@ -5,6 +5,8 @@
 #include "rex_std/bonus/memory.h"
 #include "rex_engine/engine/types.h"
 
+#include "rex_engine/diagnostics/assert.h"
+
 namespace rex
 {
   namespace rhi
@@ -15,8 +17,20 @@ namespace rex
     class CopyContext : public GraphicsContext
     {
     public:
-      void update_buffer(rhi::Buffer* buffer, const void* data, rsl::memory_size size, s32 offset);
-      void update_texture2d(rhi::Texture2D* texture, const void* data);
+      CopyContext()
+        : GraphicsContext(CommandType::Copy)
+      {
+
+      }
+
+      void update_buffer(rhi::Buffer* buffer, const void* data, rsl::memory_size size, s32 offset)
+      {
+        REX_ASSERT("Not implement yet");
+      }
+      void update_texture2d(rhi::Texture2D* texture, const void* data)
+      {
+        REX_ASSERT("Not implement yet");
+      }
 
       // Copy Buffer
       // Copy Texture

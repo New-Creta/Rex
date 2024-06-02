@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_directx/dxgi/util.h"
+#include "rex_directx/dxgi/includes.h"
 #include "rex_directx/utility/dx_util.h"
 
 namespace rex

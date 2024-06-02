@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_directx/system/dx_pipeline_state.h"
+#include "rex_directx/resources/dx_pipeline_state.h"
 #include "rex_directx/utility/dx_util.h"
 
 namespace rex

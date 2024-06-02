@@ -10,6 +10,7 @@ namespace rex
     class Swapchain
     {
     public:
+      virtual ~Swapchain() = default;
       virtual void present() = 0;
 
       s32 width() const;

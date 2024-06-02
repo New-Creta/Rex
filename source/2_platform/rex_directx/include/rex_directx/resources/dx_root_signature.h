@@ -13,7 +13,7 @@ namespace rex
     public:
       DxRootSignature(const wrl::ComPtr<ID3D12RootSignature>& rootSignature);
 
-      ID3D12RootSignature* dx_object() const;
+      ID3D12RootSignature* dx_object();
 
     private:
       wrl::ComPtr<ID3D12RootSignature> m_root_signature;

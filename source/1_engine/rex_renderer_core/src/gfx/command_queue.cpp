@@ -21,6 +21,11 @@ namespace rex
       return m_next_fence_value++;
     }
 
+    u64 CommandQueue::last_completed_fence() const
+    {
+      return m_next_fence_value - 1;
+    }
+
     CommandType CommandQueue::type() const
     {
       return m_type;

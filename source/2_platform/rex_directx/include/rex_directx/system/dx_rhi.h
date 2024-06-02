@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/rhi/rhi.h"
 
-#include "rex_directx/dxgi/util.h"
+#include "rex_directx/dxgi/includes.h"
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/utility/dx_util.h"
 #include "rex_renderer_core/resource_management/resource_slot.h"
@@ -16,16 +16,16 @@
 #include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_swapchain.h"
-#include "rex_directx/system/dx_pipeline_library.h"
-#include "rex_directx/system/dx_texture_2d.h"
+//#include "rex_directx/system/dx_pipeline_library.h"
+//#include "rex_directx/system/dx_texture_2d.h"
 #include "rex_directx/system/dx_resource.h"
 #include "rex_directx/resources/dx_upload_buffer.h"
-#include "rex_directx/system/dx_constant_buffer.h"
+//#include "rex_directx/system/dx_constant_buffer.h"
 
-#include "rex_directx/system/dx_vertex_buffer.h"
-#include "rex_directx/system/dx_index_buffer.h"
-#include "rex_directx/system/dx_root_signature.h"
-#include "rex_directx/system/dx_pipeline_state.h"
+//#include "rex_directx/system/dx_vertex_buffer.h"
+//#include "rex_directx/system/dx_index_buffer.h"
+//#include "rex_directx/system/dx_root_signature.h"
+//#include "rex_directx/system/dx_pipeline_state.h"
 
 
 
@@ -49,10 +49,11 @@ namespace rex
 #ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
       resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length(), name.data());
 #else
-      UNUSED_PARAM(resource);
-      UNUSED_PARAM(name);
+      REX_UNUSED_PARAM(resource);
+      REX_UNUSED_PARAM(name);
 #endif
     }
+
 
     // We dealing with resource creation, we need to do this smart as we don't want to have the same object twice in memory.
     // Eg. if an object is requested for rendering, and an equivalent vertex buffer or index buffer is already in memory,
@@ -81,12 +82,18 @@ namespace rex
     //rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format);
     //rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc);
     //rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
-    //rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc);
+    //rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
     //rsl::unique_ptr<VertexShader> create_vertex_shader(rsl::string_view sourceCode);
     //rsl::unique_ptr<PixelShader> create_pixel_shader(rsl::string_view sourceCode);
     //rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
 
-    wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
+    namespace api
+    {
+      wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
+      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::CommandType type);
+      rsl::unique_ptr<Texture2D> create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource);
+    }
+
     DescriptorHeap* cbv_uav_srv_desc_heap();
     UploadBuffer* global_upload_buffer();
     //ID3D12Device1* get_device();

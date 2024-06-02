@@ -8,6 +8,11 @@ namespace rex
   {
     class ComputeContext : public GraphicsContext
     {
+    public:
+      ComputeContext()
+        : GraphicsContext(CommandType::Compute)
+      {}
+
       // Copy Buffer
       // Copy Texture
       // Copy Resource (any that's not a buffer or a texture)

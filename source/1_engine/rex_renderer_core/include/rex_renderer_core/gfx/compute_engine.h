@@ -7,8 +7,12 @@ namespace rex
 {
   namespace gfx
   {
-    class ComputeEngine : public GraphicsEngine<rhi::ComputeContext>
+    class ComputeEngine : public GraphicsEngine
     {
+    public:
+      ComputeEngine()
+        : GraphicsEngine(rhi::CommandType::Compute)
+      {}
     };
   }
 }

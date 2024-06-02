@@ -7,8 +7,12 @@ namespace rex
 {
   namespace gfx
   {
-    class CopyEngine : public GraphicsEngine<rhi::CopyContext>
+    class CopyEngine : public GraphicsEngine
     {
+    public:
+      CopyEngine()
+        : GraphicsEngine(rhi::CommandType::Copy)
+      {}
     };
   }
 }

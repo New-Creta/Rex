@@ -126,8 +126,9 @@ namespace rex
         rhi::Texture2D* texture = (rhi::Texture2D*)pcmd->GetTexID();
 
         ctx.set_scissor_rect(rect);
-        ctx.bind_texture(texture);
-        ctx.set_graphics_root_descriptor_table(1, (UINT64)texture->gpu_handle().ptr);
+        REX_STATIC_WARNING("Bind the font texture here");
+        //ctx.bind_texture(texture);
+        //ctx.set_graphics_root_descriptor_table(1, (UINT64)texture->gpu_handle().ptr);
         ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
 
         //cmdList->set_scissor_rect(rect);

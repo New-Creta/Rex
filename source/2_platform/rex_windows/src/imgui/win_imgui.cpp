@@ -10,11 +10,13 @@ namespace rex
 
     // Maybe these can be done in the ImGui renderer
     ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
-    platform_io.Renderer_CreateWindow = create_window_callback;   
-    platform_io.Renderer_DestroyWindow = destroy_window_callback;
-    platform_io.Renderer_SetWindowSize = set_window_size_callback;
-    platform_io.Renderer_RenderWindow = render_window_callback;
-    platform_io.Renderer_SwapBuffers = swap_buffers_callback;
+    //platform_io.Renderer_CreateWindow = create_window_callback;   
+    //platform_io.Renderer_DestroyWindow = destroy_window_callback;
+    //platform_io.Renderer_SetWindowSize = set_window_size_callback;
+    //platform_io.Renderer_RenderWindow = render_window_callback;
+    //platform_io.Renderer_SwapBuffers = swap_buffers_callback;
+
+    return true;
   }
   void imgui_platform_new_frame()
   {

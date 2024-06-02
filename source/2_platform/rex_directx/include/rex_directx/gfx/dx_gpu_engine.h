@@ -38,7 +38,7 @@ namespace rex
 
       rhi::DescriptorHandle create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
       rhi::DescriptorHandle create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
-      rhi::DescriptorHandle create_cbv(const wrl::ComPtr<ID3D12Resource>& resource);
+      rhi::DescriptorHandle create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
 
     private:
       void init_debug_layer();     

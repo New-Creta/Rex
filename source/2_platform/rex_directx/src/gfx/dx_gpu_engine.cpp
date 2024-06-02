@@ -16,6 +16,10 @@
 #include "rex_directx/system/dx_descriptor_heap.h"
 #include "rex_directx/resources/dx_texture_2d.h"
 
+#include "rex_directx/gfx/dx_render_engine.h"
+#include "rex_directx/gfx/dx_compute_engine.h"
+#include "rex_directx/gfx/dx_copy_engine.h"
+
 namespace rex
 {
   namespace gfx
@@ -23,7 +27,7 @@ namespace rex
     DEFINE_LOG_CATEGORY(LogDxGpuEngine);
 
     DxGpuEngine::DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, rsl::unique_ptr<dxgi::AdapterManager> adapterManager)
-      : GpuEngine(userData)
+      : GpuEngine(rsl::make_unique<rhi::DxRenderEngine>(), rsl::make_unique<rhi::DxComputeEngine>(), rsl::make_unique<rhi::DxCopyEngine>(), userData)
       , m_device(rsl::move(device))
       , m_heap()
       , m_descriptor_heap_pool()
@@ -115,9 +119,9 @@ namespace rex
     {
       return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(texture.Get());
     }
-    rhi::DescriptorHandle DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource)
+    rhi::DescriptorHandle DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
     {
-      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(resource.Get());
+      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(resource.Get(), size);
     }
 
   }

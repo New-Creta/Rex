@@ -2,6 +2,9 @@
 
 #include "rex_engine/diagnostics/error.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
+#include "rex_renderer_core/resources/input_layout.h"
+#include "rex_renderer_core/system/resource_state_tracker.h"
+#include "rex_renderer_core/resources/raster_state.h"
 
 namespace rex
 {
@@ -9,7 +12,7 @@ namespace rex
   {
     class Texture2D;
     class RootSignature;
-    class InputLayoutResource;
+    class InputLayout;
     class ConstantBuffer;
     class PipelineState;
     class RasterStateResource;
@@ -42,7 +45,7 @@ namespace rex
     rsl::unique_ptr<rhi::Shader> m_vertex_shader;
     rsl::unique_ptr<rhi::Shader> m_pixel_shader;
     rsl::unique_ptr<rhi::RootSignature> m_root_signature;
-    rsl::unique_ptr<rhi::InputLayoutResource> m_input_layout;
+    rsl::unique_ptr<rhi::InputLayout> m_input_layout;
     rsl::unique_ptr<rhi::ConstantBuffer> m_constant_buffer;
     rsl::unique_ptr<rhi::RasterStateResource> m_raster_state;
     rsl::unique_ptr<rhi::PipelineState> m_pipeline_state;

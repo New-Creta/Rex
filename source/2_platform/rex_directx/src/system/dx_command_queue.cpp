@@ -2,15 +2,17 @@
 #include "rex_directx/diagnostics/dx_call.h"
 
 #include "rex_directx/system/dx_render_context.h"
+#include "rex_directx/system/dx_compute_context.h"
+#include "rex_directx/system/dx_copy_context.h"
 
 namespace rex
 {
   namespace rhi
   {
-    DxCommandQueue::DxCommandQueue(CommandType type, const wrl::ComPtr<ID3D12CommandQueue>& DxCommandQueue, const wrl::ComPtr<ID3D12Fence>& fence)
+    DxCommandQueue::DxCommandQueue(CommandType type, const wrl::ComPtr<ID3D12CommandQueue>& DxCommandQueue, rsl::unique_ptr<DxFence> fence)
       : CommandQueue(type)
       , m_command_queue(DxCommandQueue)
-      , m_fence(fence)
+      , m_fence(rsl::move(fence))
       , m_fence_event()
     {
     }
@@ -43,7 +45,7 @@ namespace rex
 
     bool DxCommandQueue::is_fence_completed(u64 fenceValue) const
     {
-      return fenceValue > m_fence->GetCompletedValue();
+      return fenceValue > m_fence->get()->GetCompletedValue();
     }
 
     ScopedPoolObject<SyncInfo> DxCommandQueue::execute_context(GraphicsContext* ctx)
@@ -53,17 +55,17 @@ namespace rex
       cmdlist->Close();
       ID3D12CommandList* base_cmdlist = cmdlist;
       m_command_queue->ExecuteCommandLists(1, &base_cmdlist);
-      m_command_queue->Signal(m_fence.Get(), next_fence_value());
+      m_command_queue->Signal(m_fence->get(), next_fence_value());
 
       u64 old_fence_val = inc_fence();
-      return create_sync_info<SyncInfo>(old_fence_val, m_fence.Get());
+      return create_sync_info<SyncInfo>(old_fence_val, m_fence->get());
     }
 
     void DxCommandQueue::wait_for_fence(u64 fenceValue)
     {
-      if (m_fence->GetCompletedValue() < fenceValue)
+      if (m_fence->get()->GetCompletedValue() < fenceValue)
       {
-        DX_CALL(m_fence->SetEventOnCompletion(fenceValue, m_fence_event.get()));
+        DX_CALL(m_fence->get()->SetEventOnCompletion(fenceValue, m_fence_event.get()));
         m_fence_event.wait_for_me();
       }
     }

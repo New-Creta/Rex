@@ -4,6 +4,7 @@
 #include "rex_std/functional.h"
 #include "rex_std/optional.h"
 
+#include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/resources/blend_state.h"
 #include "rex_renderer_core/resources/depth_stencil_state.h"
 
@@ -11,18 +12,17 @@ namespace rex
 {
   namespace rhi
   {
-    class InputLayoutResource;
+    class InputLayout;
     class RootSignature;
     class Shader;
-    class RasterStateResource;
 
     struct PipelineStateDesc
     {
-      InputLayoutResource* input_layout;
+      InputLayout* input_layout;
       RootSignature* root_signature;
       Shader* vertex_shader;
       Shader* pixel_shader;
-      RasterStateResource* raster_state;
+      rsl::optional<RasterStateResource> raster_state;
       rsl::optional<BlendDesc> blend_state;
       rsl::optional<DepthStencilDesc> depth_stencil_state;
     };

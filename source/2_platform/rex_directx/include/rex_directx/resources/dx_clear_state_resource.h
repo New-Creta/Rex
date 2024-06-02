@@ -10,20 +10,20 @@ namespace rex
 {
     namespace rhi
     {
-        class ClearStateResource
-        {
-        public:
-            explicit ClearStateResource(const ClearStateDesc& cs)
-                : m_clear_state(cs)
-            {}
+        //class ClearStateResource
+        //{
+        //public:
+        //    explicit ClearStateResource(const ClearStateDesc& cs)
+        //        : m_clear_state(cs)
+        //    {}
 
-            ClearStateDesc* get()
-            {
-              return &m_clear_state;
-            }
+        //    ClearStateDesc* get()
+        //    {
+        //      return &m_clear_state;
+        //    }
 
-        private:
-            ClearStateDesc m_clear_state;
-        };
+        //private:
+        //    ClearStateDesc m_clear_state;
+        //};
     } // namespace renderer
 } // namespace rex

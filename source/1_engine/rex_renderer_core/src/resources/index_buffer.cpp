@@ -25,5 +25,13 @@ namespace rex
 
       return -1;
     }
+    s32 IndexBuffer::total_size() const
+    {
+      return count() * index_byte_size();
+    }
+    renderer::IndexBufferFormat IndexBuffer::format() const
+    {
+      return m_format;
+    }
   }
 }

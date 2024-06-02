@@ -7,8 +7,6 @@
 
 #include "rex_engine/memory/pointer_math.h"
 
-#include "rex_directx/diagnostics/log.h"
-
 namespace rex
 {
   namespace rhi

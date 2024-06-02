@@ -12,10 +12,12 @@ namespace rex
 
   namespace gfx
   {
-    class RenderEngine : public GraphicsEngine<rhi::RenderContext>
+    class RenderEngine : public GraphicsEngine
     {
     public:
-      virtual void init_swapchain_render_targets(rhi::Swapchain* swapchain);
+      RenderEngine()
+        : GraphicsEngine(rhi::CommandType::Render)
+      {}
     };
   }
 }

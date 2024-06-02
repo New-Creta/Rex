@@ -1,8 +1,8 @@
 #include "rex_directx/system/dx_shader_compiler.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_directx/diagnostics/log.h"
-#include "rex_renderer_core/resources/compile_shader.h"
+#include "rex_renderer_core/system/compile_shader.h"
+#include "rex_engine/diagnostics/log.h"
 
 #include <d3dcompiler.h>
 

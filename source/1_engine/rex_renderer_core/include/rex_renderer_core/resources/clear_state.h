@@ -24,9 +24,20 @@ namespace rex
       StateController<renderer::ClearBits> flags {};
     };
 
-    class ClearState
+    class ClearStateResource
     {
+    public:
+      explicit ClearStateResource(const ClearStateDesc& cs)
+        : m_clear_state(cs)
+      {}
 
+      ClearStateDesc* get()
+      {
+        return &m_clear_state;
+      }
+
+    private:
+      ClearStateDesc m_clear_state;
     };
   } // namespace rhi
 } // namespace rex

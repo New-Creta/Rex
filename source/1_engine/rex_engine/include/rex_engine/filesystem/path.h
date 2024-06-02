@@ -3,6 +3,7 @@
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/vector.h"
+#include "rex_std/bonus/utility.h"
 
 namespace rex
 {
@@ -10,17 +11,43 @@ namespace rex
   {
     namespace internal
     {
-      void join_impl(rsl::string& str, rsl::string_view arg);
-
-      template <typename PathLikeType, typename... Args>
-      void join_impl(rsl::string& str, PathLikeType&& arg)
+      void join_string_view(rsl::string& str, rsl::string_view arg);
+      template <typename Enum, rsl::enable_if_t<rsl::is_enum_v<Enum>, bool> = true>
+      void join_enum(rsl::string& str, Enum e)
       {
-        join_impl(str, rsl::string_view(rsl::forward<PathLikeType>(arg))); // NOLINT(google-readability-casting)
+        rsl::string_view enum_name = rsl::enum_refl::enum_name(e);
+        join_impl(str, enum_name);
       }
+      template <typename PathLikeType>
+      void join_path_like(rsl::string& str, PathLikeType&& arg)
+      {
+        join_string_view(str, rsl::string_view(rsl::forward<PathLikeType>(arg))); // NOLINT(google-readability-casting)
+      }
+
+      template <typename PathLikeType>
+      void join_impl(rsl::string& str, PathLikeType&& firstArg)
+      {
+        if constexpr (rsl::is_same_v<rsl::string_view, PathLikeType>)
+        {
+          join_string_view(str, firstArg);
+        }
+        else if constexpr (rsl::is_enum_v<PathLikeType>)
+        {
+          join_enum(str, firstArg);
+        }
+        else
+        {
+          join_path_like(str, firstArg);
+        }
+      }
+
       template <typename PathLikeType, typename... Args>
       void join_impl(rsl::string& str, PathLikeType&& firstArg, Args&&... args)
       {
-        join_impl(str, rsl::forward<PathLikeType>(firstArg)); // append the first arg
+        using type = rsl::remove_extent_t<PathLikeType>;
+
+        //join_impl(str, rsl::forward<PathLikeType>(firstArg)); // append the first arg
+        join_impl(str, rsl::forward<PathLikeType>(firstArg));
         join_impl(str, rsl::forward<Args>(args)...);          // append the rest
       }
     }                                                         // namespace internal

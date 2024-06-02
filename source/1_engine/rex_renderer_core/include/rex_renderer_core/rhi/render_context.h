@@ -24,7 +24,6 @@ namespace rex
 {
   namespace gfx
   {
-    template <typename Context>
     class GraphicsEngine;
   }
 
@@ -39,7 +38,7 @@ namespace rex
     class RenderContext : public GraphicsContext
     {
     public:
-      RenderContext(gfx::GraphicsEngine<RenderContext>* owningEngine, rhi::CommandAllocator* alloc);
+      RenderContext(gfx::GraphicsEngine* owningEngine, rhi::CommandAllocator* alloc);
       RenderContext(const RenderContext&) = delete;
       RenderContext(RenderContext&&) = default;
 
@@ -52,9 +51,11 @@ namespace rex
       // ----------------------------------------------------------------
       virtual void set_viewport(const rhi::Viewport& vp) = 0;
       virtual void set_scissor_rect(const ScissorRect& rect) = 0;
-      virtual void transition_buffer(rhi::Buffer* resource, ResourceState state) = 0;
+      virtual void transition_buffer(rhi::ConstantBuffer* resource, ResourceState state) = 0;
+      virtual void transition_buffer(rhi::VertexBuffer* resource, ResourceState state) = 0;
+      virtual void transition_buffer(rhi::IndexBuffer* resource, ResourceState state) = 0;
       virtual void set_render_target(rhi::RenderTarget* renderTarget) = 0;
-      virtual void clear_render_target(rhi::RenderTarget* renderTarget, rhi::ClearState* clearState) = 0;
+      virtual void clear_render_target(rhi::RenderTarget* renderTarget, rhi::ClearStateResource* clearState) = 0;
       virtual void set_vertex_buffer(rhi::VertexBuffer* vb) = 0;
       virtual void set_index_buffer(rhi::IndexBuffer* ib) = 0;
       virtual void set_primitive_topology(renderer::PrimitiveTopology topology) = 0;
@@ -70,8 +71,11 @@ namespace rex
       virtual void update_buffer(Buffer* buffer, UploadBuffer* updateBuffer, void* data, rsl::memory_size size, s32 dstOffset) = 0;
       virtual void update_texture2d(Texture2D* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format) = 0;
 
+    protected:
+      CommandAllocator* allocator();
+
     private:
-      gfx::GraphicsEngine<RenderContext>* m_owning_engine;
+      gfx::GraphicsEngine* m_owning_engine;
       CommandAllocator* m_cmd_allocator;
     };
   }

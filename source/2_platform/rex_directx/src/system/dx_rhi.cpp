@@ -20,6 +20,7 @@
 #include "rex_directx/system/dx_shader_compiler.h"
 #include "rex_directx/resources/dx_vertex_buffer.h"
 #include "rex_directx/resources/dx_index_buffer.h"
+#include "rex_directx/resources/dx_texture_2d.h"
 #include "rex_directx/system/dx_feature_shader_model.h"
 #include "rex_directx/system/dx_fence.h"
 #include "rex_directx/resources/dx_constant_buffer.h"
@@ -33,6 +34,7 @@
 #include "rex_directx/resources/dx_rendertarget.h"
 #include "rex_directx/resources/dx_vertex_shader.h"
 #include "rex_directx/resources/dx_pixel_shader.h"
+#include "rex_directx/resources/dx_pipeline_state.h"
 
 #include "rex_directx/system/dx_copy_context.h"
 #include "rex_renderer_core/gfx/graphics.h"
@@ -275,7 +277,7 @@ namespace rex
         if (!device)
         {
           REX_ERROR(LogDxRhi, "Failed to create D3D Device");
-          return;
+          return nullptr;
         }
 
         // Initialize the device to be used by the rhi
@@ -420,9 +422,7 @@ namespace rex
       //}
 
 
-
-
-      rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, CommandType type, ResourceStateTracker* resourceStateTracker)
+      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::CommandType type)
       {
         DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
 
@@ -433,8 +433,25 @@ namespace rex
           return nullptr;
         }
 
-        return rsl::make_unique<CommandList>(cmd_list, resourceStateTracker);
+        return cmd_list;
+        //return rsl::make_unique<DxCommandList>(cmd_list, resourceStateTracker);
       }
+
+
+      //rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, CommandType type, ResourceStateTracker* resourceStateTracker)
+      //{
+        //DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
+
+        //wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
+        //if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandList(0, d3d::to_dx12(type), dx_alloc->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
+        //{
+        //  REX_ERROR(LogDxRhi, "Failed to create command list");
+        //  return nullptr;
+        //}
+
+        //return rsl::make_unique<DxCommandList>(cmd_list, resourceStateTracker);
+        //return nullptr;
+      //}
       rsl::unique_ptr<DxFence> create_fence()
       {
         wrl::ComPtr<ID3D12Fence> fence;
@@ -500,7 +517,7 @@ namespace rex
           REX_ERROR(LogDxRhi, "Failed to create command allocator");
           return false;
         }
-        return rsl::make_unique<rex::rhi::CommandAllocator>(allocator);
+        return rsl::make_unique<rex::rhi::DxCommandAllocator>(allocator);
       }
 
       //rsl::unique_ptr<RenderTarget> create_render_target_from_backbuffer(Resource2* resource)
@@ -510,8 +527,10 @@ namespace rex
       //}
       rsl::unique_ptr<RenderTarget> create_render_target(Texture2D* texture)
       {
-        DescriptorHandle rtv = g_gpu_engine->create_rtv(texture);
-        return rsl::make_unique<DxRenderTarget>(texture, rtv);
+        DxTexture2D* dx_texture = static_cast<DxTexture2D*>(texture);
+
+        DescriptorHandle rtv = g_gpu_engine->create_rtv(dx_texture->dx_object());
+        return rsl::make_unique<DxRenderTarget>(dx_texture->dx_object(), rtv);
       }
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize)
       {
@@ -627,16 +646,16 @@ namespace rex
 
         //rhi::set_debug_name_for(root_signature.Get(), "Root Signature");
 
-        return rsl::make_unique<RootSignature>(root_signature);
+        return rsl::make_unique<DxRootSignature>(root_signature);
       }
 
       rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc)
       {
         // 1) Load the resources from the resource pool
         D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-        if (desc.raster_state)
+        if (desc.raster_state.has_value())
         {
-          d3d_raster_state = *desc.raster_state->get();
+          d3d_raster_state = d3d::to_dx12(desc.raster_state->get());
         }
 
         D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -653,7 +672,7 @@ namespace rex
 
         // 2) Fill in the PSO desc
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
-        pso_desc.InputLayout = *desc.input_layout->get();
+        pso_desc.InputLayout = *d3d::to_dx12(desc.input_layout)->get();
         pso_desc.pRootSignature = d3d::to_dx12(desc.root_signature)->dx_object();
         pso_desc.VS = d3d::to_dx12(desc.vertex_shader)->dx_bytecode();
         pso_desc.PS = d3d::to_dx12(desc.pixel_shader)->dx_bytecode();
@@ -671,7 +690,7 @@ namespace rex
         wrl::ComPtr<ID3D12PipelineState> pso;
         g_rhi_resources->device->get()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso));
 
-        return rsl::make_unique<PipelineState>(pso);
+        return rsl::make_unique<DxPipelineState>(pso);
       }
 
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data)
@@ -679,7 +698,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(format, width, height);
         DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
 
-        auto texture = rsl::make_unique<Texture2D>(d3d_texture, desc_handle);
+        auto texture = rsl::make_unique<DxTexture2D>(d3d_texture, desc_handle, width, height, format);
 
         if (data)
         {
@@ -699,38 +718,53 @@ namespace rex
 
         return texture;
       }
+      rsl::unique_ptr<Texture2D> create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource)
+      {
+        DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
+
+        s32 width = resource->GetDesc().Width;
+        s32 height = resource->GetDesc().Height;
+        renderer::TextureFormat format = d3d::from_dx12(resource->GetDesc().Format);
+
+        auto texture = rsl::make_unique<DxTexture2D>(resource, desc_handle, width, height, format);
+        return texture;
+      }
+
       rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc)
       {
-        D3D12_RASTERIZER_DESC d3d_rs;
+        return rsl::make_unique<RasterStateResource>(desc);
 
-        d3d_rs.FillMode = rex::d3d::to_dx12(desc.fill_mode);
-        d3d_rs.CullMode = rex::d3d::to_dx12(desc.cull_mode);
-        d3d_rs.FrontCounterClockwise = desc.front_ccw;
-        d3d_rs.DepthBias = desc.depth_bias;
-        d3d_rs.DepthBiasClamp = desc.depth_bias_clamp;
-        d3d_rs.SlopeScaledDepthBias = desc.sloped_scale_depth_bias;
-        d3d_rs.DepthClipEnable = desc.depth_clip_enable;
-        d3d_rs.ForcedSampleCount = desc.forced_sample_count;
 
-        /**
-         * Conservative rasterization means that all pixels that are at least partially covered by a rendered primitive are rasterized, which means that the pixel shader is invoked.
-         * Normal behavior is sampling, which is not used if conservative rasterization is enabled.
-         *
-         * Conservative rasterization is useful in a number of situations outside of rendering (collision detection, occlusion culling, and visibility detection).
-         *
-         * https://learn.microsoft.com/en-us/windows/win32/direct3d11/conservative-rasterization
-         */
-        d3d_rs.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-        d3d_rs.MultisampleEnable = desc.multisample;
-        d3d_rs.AntialiasedLineEnable = desc.aa_lines;
+        //D3D12_RASTERIZER_DESC d3d_rs;
 
-        return rsl::make_unique<RasterStateResource>(d3d_rs);
+        //d3d_rs.FillMode = rex::d3d::to_dx12(desc.fill_mode);
+        //d3d_rs.CullMode = rex::d3d::to_dx12(desc.cull_mode);
+        //d3d_rs.FrontCounterClockwise = desc.front_ccw;
+        //d3d_rs.DepthBias = desc.depth_bias;
+        //d3d_rs.DepthBiasClamp = desc.depth_bias_clamp;
+        //d3d_rs.SlopeScaledDepthBias = desc.sloped_scale_depth_bias;
+        //d3d_rs.DepthClipEnable = desc.depth_clip_enable;
+        //d3d_rs.ForcedSampleCount = desc.forced_sample_count;
+
+        ///**
+        // * Conservative rasterization means that all pixels that are at least partially covered by a rendered primitive are rasterized, which means that the pixel shader is invoked.
+        // * Normal behavior is sampling, which is not used if conservative rasterization is enabled.
+        // *
+        // * Conservative rasterization is useful in a number of situations outside of rendering (collision detection, occlusion culling, and visibility detection).
+        // *
+        // * https://learn.microsoft.com/en-us/windows/win32/direct3d11/conservative-rasterization
+        // */
+        //d3d_rs.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+        //d3d_rs.MultisampleEnable = desc.multisample;
+        //d3d_rs.AntialiasedLineEnable = desc.aa_lines;
+
+        //return rsl::make_unique<RasterStateResource>(d3d_rs);
       }
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size)
       {
         // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(size);
-        DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get());
+        DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), size);
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
 
@@ -746,7 +780,7 @@ namespace rex
 
         //return rsl::make_unique<ConstantBuffer>(buffer, desc_handle, size);
       }
-      rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc)
+      rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc)
       {
         rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
         REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
@@ -762,7 +796,7 @@ namespace rex
           input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
         }
 
-        return rsl::make_unique<InputLayoutResource>(input_element_descriptions);
+        return rsl::make_unique<DxInputLayoutResource>(input_element_descriptions);
       }
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode)
       {
@@ -929,7 +963,7 @@ namespace rex
     //    input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
     //  }
 
-    //  return internal::get()->resource_pool.insert(rsl::make_unique<InputLayoutResource>(id, input_element_descriptions));
+    //  return internal::get()->resource_pool.insert(rsl::make_unique<InputLayout>(id, input_element_descriptions));
     //}
     //// A vertex buffer is a buffer holding vertices of 1 or more objects
     //ResourceSlot create_vertex_buffer(const VertexBufferDesc& desc)
@@ -1059,7 +1093,7 @@ namespace rex
     //ResourceSlot create_pso(const PipelineStateDesc& desc)
     //{
     //  // 1) Load the resources from the resource pool
-    //  InputLayoutResource* input_layout = internal::get()->resource_pool.as<InputLayoutResource>(desc.input_layout);
+    //  InputLayout* input_layout = internal::get()->resource_pool.as<InputLayout>(desc.input_layout);
     //  ShaderProgramResource* shader = internal::get()->resource_pool.as<ShaderProgramResource>(desc.shader);
 
     //  D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);

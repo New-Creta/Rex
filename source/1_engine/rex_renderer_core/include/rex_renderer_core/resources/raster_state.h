@@ -35,5 +35,21 @@ namespace rex
       s32 aa_lines;
       s32 forced_sample_count;
     };
+
+    class RasterStateResource
+    {
+    public:
+      RasterStateResource(const RasterStateDesc& desc)
+        : m_desc(desc)
+      {}
+
+      const RasterStateDesc& get() const
+      {
+        return m_desc;
+      }
+
+    private:
+      RasterStateDesc m_desc;
+    };
   }
 }

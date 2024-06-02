@@ -2,7 +2,6 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/rhi/texture_format.h"
-#include "rex_renderer_core/rhi/vertex_buffer_format.h"
 
 namespace rex
 {
@@ -11,16 +10,16 @@ namespace rex
     class Texture2D
     {
     public:
-      Texture2D(s32 width, s32 height, renderer::VertexBufferFormat format);
+      Texture2D(s32 width, s32 height, renderer::TextureFormat format);
 
       s32 width() const;
       s32 height() const;
-      renderer::VertexBufferFormat format() const;
+      renderer::TextureFormat format() const;
 
     private:
       s32 m_width;
       s32 m_height;
-      renderer::VertexBufferFormat m_format;
+      renderer::TextureFormat m_format;
     };
   }
 }

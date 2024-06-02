@@ -24,5 +24,10 @@ namespace rex
     {
       rsl::vector<InputLayoutElementDesc> input_layout {};
     };
+
+    class InputLayout
+    {
+
+    };
   } // namespace rhi
 } // namespace rex

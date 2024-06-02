@@ -4,7 +4,7 @@ namespace rex
 {
   namespace rhi
   {
-    Texture2D::Texture2D(s32 width, s32 height, renderer::VertexBufferFormat format)
+    Texture2D::Texture2D(s32 width, s32 height, renderer::TextureFormat format)
       : m_width(width)
       , m_height(height)
       , m_format(format)
@@ -18,7 +18,7 @@ namespace rex
     {
       return m_height;
     }
-    renderer::VertexBufferFormat Texture2D::format() const
+    renderer::TextureFormat Texture2D::format() const
     {
       return m_format;
     }

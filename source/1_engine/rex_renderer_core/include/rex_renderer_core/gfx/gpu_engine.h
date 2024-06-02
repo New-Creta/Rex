@@ -21,7 +21,7 @@ namespace rex
     class GpuEngine
     {
     public:
-      GpuEngine(const renderer::OutputWindowUserData& userData);
+      GpuEngine(rsl::unique_ptr<RenderEngine> renderEngine, rsl::unique_ptr<ComputeEngine> computeEngine, rsl::unique_ptr<CopyEngine> copyEngine, const renderer::OutputWindowUserData& userData);
       GpuEngine(const GpuEngine&) = delete;
       GpuEngine(GpuEngine&&) = delete;
 

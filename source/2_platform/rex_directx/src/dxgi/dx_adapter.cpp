@@ -54,7 +54,7 @@ namespace
     auto result            = wcstombs_s(&converted_chars, buffer.data(), size, wideCharacterBuffer, size);
     if(result != 0)
     {
-      REX_ERROR(LogDirectX, "Failed to convert wide character string to multi byte character string.");
+      //REX_ERROR(LogDirectX, "Failed to convert wide character string to multi byte character string.");
       return rsl::small_stack_string("Invalid String");
     }
 

@@ -82,7 +82,7 @@ namespace rex
       renderer::ShaderPlatform shader_platform();
 
       // Backend Systems
-      rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, CommandType type, ResourceStateTracker* resourceStateTracker = nullptr);
+      //rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, CommandType type, ResourceStateTracker* resourceStateTracker = nullptr);
       rsl::unique_ptr<CommandQueue> create_command_queue(CommandType type);
       rsl::unique_ptr<Swapchain> create_swapchain(void* apiDevice, s32 bufferCount, void* primaryDisplayHandle);
       rsl::unique_ptr<CommandAllocator> create_command_allocator();
@@ -98,7 +98,7 @@ namespace rex
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data = nullptr);
       rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
-      rsl::unique_ptr<InputLayoutResource> create_input_layout(const InputLayoutDesc& desc);
+      rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);

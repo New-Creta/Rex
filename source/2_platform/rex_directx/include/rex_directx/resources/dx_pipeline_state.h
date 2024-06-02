@@ -7,35 +7,34 @@
 #include "rex_renderer_core/resources/depth_stencil_state.h"
 
 #include "rex_directx/resources/dx_input_layout_resource.h"
-#include "rex_directx/system/dx_vertex_shader.h"
-#include "rex_directx/system/dx_pixel_shader.h"
+#include "rex_directx/resources/dx_vertex_shader.h"
+#include "rex_directx/resources/dx_pixel_shader.h"
 #include "rex_directx/resources/dx_raster_state_resource.h"
+#include "rex_renderer_core/resources/pipeline_state.h"
 
 namespace rex
 {
   namespace rhi
   {
-    class InputLayoutResource;
+    class InputLayout;
     class RootSignature;
-    class VertexShader;
-    class PixelShader;
     class RasterStateResource;
 
-    struct PipelineStateDesc
-    {
-      InputLayoutResource* input_layout;
-      RootSignature* root_signature;
-      VertexShader* vertex_shader;
-      PixelShader* pixel_shader;
-      RasterStateResource* raster_state;
-      rsl::optional<BlendDesc> blend_state;
-      rsl::optional<DepthStencilDesc> depth_stencil_state;
-    };
+    //struct PipelineStateDesc
+    //{
+    //  InputLayout* input_layout;
+    //  RootSignature* root_signature;
+    //  Shader* vertex_shader;
+    //  Shader* pixel_shader;
+    //  RasterStateResource* raster_state;
+    //  rsl::optional<BlendDesc> blend_state;
+    //  rsl::optional<DepthStencilDesc> depth_stencil_state;
+    //};
 
-    class PipelineState
+    class DxPipelineState : public PipelineState
     {
     public:
-      PipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso);
+      DxPipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso);
 
       ID3D12PipelineState* get();
 

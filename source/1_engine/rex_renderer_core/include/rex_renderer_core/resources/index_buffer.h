@@ -16,6 +16,8 @@ namespace rex
 
       s32 count() const;
       s32 index_byte_size() const;
+      s32 total_size() const;
+      renderer::IndexBufferFormat format() const;
 
     private:
       s32 m_index_count;

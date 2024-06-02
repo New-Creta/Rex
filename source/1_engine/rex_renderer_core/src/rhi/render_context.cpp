@@ -6,7 +6,7 @@ namespace rex
 {
   namespace rhi
   {
-    RenderContext::RenderContext(gfx::GraphicsEngine<RenderContext>* owningEngine, rhi::CommandAllocator* alloc)
+    RenderContext::RenderContext(gfx::GraphicsEngine* owningEngine, rhi::CommandAllocator* alloc)
       : GraphicsContext(CommandType::Render)
       , m_owning_engine(owningEngine)
       , m_cmd_allocator(alloc)
@@ -17,5 +17,11 @@ namespace rex
     RenderContext::~RenderContext()
     {
     }
+
+    CommandAllocator* RenderContext::allocator()
+    {
+      return m_cmd_allocator;
+    }
+
   }
 }

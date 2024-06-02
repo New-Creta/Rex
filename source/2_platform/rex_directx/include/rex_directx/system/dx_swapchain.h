@@ -29,7 +29,7 @@ namespace rex
 
       void present();
 
-      Resource2* get_buffer(s32 idx);
+      //Resource2* get_buffer(s32 idx);
       IDXGISwapChain3* get();
 
     private:
@@ -38,7 +38,7 @@ namespace rex
     private:
       wrl::ComPtr<IDXGISwapChain3> m_swapchain;
       DXGI_FORMAT m_format;
-      rsl::vector<Resource2> m_swapchain_buffers; // swapchain render target buffer indices
+      //rsl::vector<Resource2> m_swapchain_buffers; // swapchain render target buffer indices
     };
   } // namespace rhi
 } // namespace rex

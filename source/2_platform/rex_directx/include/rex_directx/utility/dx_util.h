@@ -72,6 +72,7 @@ namespace rex
 #include "rex_renderer_core/rhi/resource_state.h"
 #include "rex_renderer_core/rhi/command_type.h"
 #include "rex_renderer_core/rhi/resource_state.h"
+#include "rex_renderer_core/system/link_shader.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -84,6 +85,8 @@ namespace rex
     class RootSignature;
     class Shader;
     class Texture2D;
+    class InputLayout;
+    struct RasterStateDesc;
 
     // DirectX classes
     class DxCommandQueue;
@@ -91,6 +94,7 @@ namespace rex
     class DxRootSignature;
     class DxShader;
     class DxTexture2D;
+    class DxInputLayoutResource;
   }
 
 
@@ -120,6 +124,7 @@ namespace rex
     D3D12_STATIC_BORDER_COLOR to_dx12(renderer::BorderColor borderColor);
     D3D12_TEXTURE_ADDRESS_MODE to_dx12(renderer::TextureAddressMode addressMode);
 
+    D3D12_RASTERIZER_DESC to_dx12(const rhi::RasterStateDesc& rasterState);
     D3D12_BLEND_DESC to_dx12(const rhi::BlendDesc& blendState);
     D3D12_BLEND to_dx12(rhi::Blend blend);
     D3D12_BLEND_OP to_dx12(rhi::BlendOp blendOp);
@@ -128,8 +133,8 @@ namespace rex
     D3D12_DEPTH_WRITE_MASK to_dx12(rhi::DepthWriteMask mask);
     D3D12_DEPTH_STENCILOP_DESC to_dx12(const rhi::DepthStencilOpDesc& depthStencilOp);
     D3D12_STENCIL_OP to_dx12(rhi::StencilOp stencilOp);
-    //D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range);
-    //D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type);
+    D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range);
+    D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type);
     D3D12_RESOURCE_STATES to_dx12(rhi::ResourceState state);
     D3D12_COMMAND_LIST_TYPE to_dx12(rhi::CommandType type);
 
@@ -138,6 +143,7 @@ namespace rex
     rhi::DxRootSignature* to_dx12(rhi::RootSignature* rootSig);
     rhi::DxShader* to_dx12(rhi::Shader* shader);
     rhi::DxTexture2D* to_dx12(rhi::Texture2D* texture);
+    rhi::DxInputLayoutResource* to_dx12(rhi::InputLayout* inputLayout);
 
     //const rhi::DxCommandQueue* to_dx12(const rhi::CommandQueue* cmdQueue);
     //const rhi::DxCommandAllocator* to_dx12(const rhi::CommandAllocator* cmdAlloc);
@@ -148,5 +154,6 @@ namespace rex
 
 
     rhi::CommandType from_dx12(D3D12_COMMAND_LIST_TYPE type);
+    renderer::TextureFormat from_dx12(DXGI_FORMAT type);
   } // namespace d3d
 } // namespace rex

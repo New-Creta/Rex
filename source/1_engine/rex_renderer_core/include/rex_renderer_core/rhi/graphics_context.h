@@ -6,7 +6,6 @@
 #include "rex_renderer_core/system/resource_state_tracker.h"
 #include "rex_renderer_core/rhi/command_type.h"
 #include "rex_engine/pooling/scoped_pool_object.h"
-#include "rex_renderer_core/rhi/graphics_context.h"
 
 namespace rex
 {

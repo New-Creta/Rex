@@ -23,9 +23,8 @@ namespace rex
     void DxSwapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
     {
       on_resize(width, height);
-
-      s32 buffer_count = m_swapchain_buffers.size();
-      m_swapchain_buffers.clear();
+      s32 buffer_count = num_buffers();
+      clear_buffers();
 
       if(DX_FAILED(m_swapchain->ResizeBuffers(buffer_count, width, height, m_format, flags)))
       {
@@ -36,20 +35,9 @@ namespace rex
       store_buffers(buffer_count);
     }
 
-    s32 DxSwapchain::buffer_count() const
-    {
-      return m_swapchain_buffers.size();
-    }
-
     void DxSwapchain::present()
     {
       m_swapchain->Present(0, rsl::no_flags());
-    }
-
-    Resource2* DxSwapchain::get_buffer(s32 idx)
-    {
-      REX_ASSERT_X(idx < m_swapchain_buffers.size(), "Buffer index out of bounds");
-      return &m_swapchain_buffers[idx];
     }
 
     IDXGISwapChain3* DxSwapchain::get()
@@ -64,11 +52,8 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_buffer;
         m_swapchain->GetBuffer(i, IID_PPV_ARGS(&d3d_buffer));
         set_debug_name_for(d3d_buffer.Get(), rsl::format("DxSwapchain Back Buffer {}", i));
-
-        auto buffer = rsl::make_unique<DxTexture2D>(d3d_buffer);
-        DescriptorHandle handle = gfx::create_rtv(buffer.get());
-
-        m_swapchain_buffers.emplace_back(buffer, handle, width(), height(), format());
+        auto texture = rhi::create_texture2d(d3d_buffer);
+        store_buffer(rsl::move(texture));
       }
     }
 
