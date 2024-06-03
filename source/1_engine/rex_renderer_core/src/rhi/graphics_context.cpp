@@ -8,8 +8,11 @@ namespace rex
 {
   namespace rhi
   {
-    GraphicsContext::GraphicsContext(CommandType type)
-      : m_type(type)
+    GraphicsContext::GraphicsContext(gfx::GraphicsEngine* owningEngine, CommandType type)
+      : m_allocator()
+      , m_owning_engine(owningEngine)
+      , m_resource_state_tracker()
+      , m_type(type)
     {
 
     }
@@ -63,6 +66,11 @@ namespace rex
     bool GraphicsContext::has_executed() const
     {
       return m_allocator != nullptr;
+    }
+
+    gfx::BaseGraphicsEngine* GraphicsContext::owning_engine()
+    {
+      return m_owning_engine;
     }
 
     ResourceStateTransition GraphicsContext::track_resource_transition(Buffer* buffer, ResourceState state)

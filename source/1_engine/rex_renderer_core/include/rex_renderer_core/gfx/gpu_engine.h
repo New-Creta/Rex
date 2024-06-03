@@ -30,6 +30,8 @@ namespace rex
       GpuEngine& operator=(const GpuEngine&) = delete;
       GpuEngine& operator=(GpuEngine&&) = delete;
 
+      void post_init();
+
       // Did the gpu engine initialize successfully?
       bool init_successful() const;
 
@@ -71,6 +73,8 @@ namespace rex
       rsl::unique_ptr<CopyEngine> m_copy_engine;
       rsl::unique_ptr<rhi::Swapchain> m_swapchain;
       rsl::vector<rsl::unique_ptr<rhi::RenderTarget>> m_swapchain_render_targets;
+      s32 m_max_frames_in_flight;
+      void* m_primary_display_handle;
       bool m_init_successfully;
     };
 

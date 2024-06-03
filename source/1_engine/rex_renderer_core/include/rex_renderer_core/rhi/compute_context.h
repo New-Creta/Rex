@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_renderer_core/rhi/graphics_context.h"
+#include "rex_renderer_core/gfx/compute_engine.h"
 
 namespace rex
 {
@@ -9,9 +10,7 @@ namespace rex
     class ComputeContext : public GraphicsContext
     {
     public:
-      ComputeContext()
-        : GraphicsContext(CommandType::Compute)
-      {}
+      ComputeContext(gfx::GraphicsEngine* owningEngine);
 
       // Copy Buffer
       // Copy Texture

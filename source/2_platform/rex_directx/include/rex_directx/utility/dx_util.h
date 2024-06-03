@@ -88,6 +88,11 @@ namespace rex
     class InputLayout;
     struct RasterStateDesc;
 
+    class ConstantBuffer;
+    class IndexBuffer;
+    class VertexBuffer;
+    class UploadBuffer;
+
     // DirectX classes
     class DxCommandQueue;
     class DxCommandAllocator;
@@ -150,7 +155,11 @@ namespace rex
     //const rhi::DxRootSignature* to_dx12(const rhi::RootSignature* rootSig);
     //const rhi::DxShader* to_dx12(const rhi::Shader* shader);
 
-
+    ID3D12Resource* dx12_resource(rhi::ConstantBuffer* buffer);
+    ID3D12Resource* dx12_resource(rhi::VertexBuffer* buffer);
+    ID3D12Resource* dx12_resource(rhi::IndexBuffer* buffer);
+    ID3D12Resource* dx12_resource(rhi::UploadBuffer* buffer);
+    ID3D12Resource* dx12_resource(rhi::Texture2D* texture);
 
 
     rhi::CommandType from_dx12(D3D12_COMMAND_LIST_TYPE type);

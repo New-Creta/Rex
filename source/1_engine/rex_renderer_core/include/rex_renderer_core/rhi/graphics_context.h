@@ -12,6 +12,7 @@ namespace rex
   namespace gfx
   {
     class BaseGraphicsEngine;
+    class GraphicsEngine;
   }
 
   namespace rhi
@@ -59,7 +60,7 @@ namespace rex
     class GraphicsContext
     {
     public:
-      GraphicsContext(CommandType type);
+      GraphicsContext(gfx::GraphicsEngine* owningEngine, CommandType type);
       virtual ~GraphicsContext();
 
       void reset(CommandAllocator* alloc);
@@ -73,6 +74,7 @@ namespace rex
 
     protected:
       bool has_executed() const;
+      gfx::BaseGraphicsEngine* owning_engine();
 
     private:
       rhi::CommandAllocator* m_allocator;

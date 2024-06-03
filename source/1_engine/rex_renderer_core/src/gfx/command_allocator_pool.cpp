@@ -10,6 +10,10 @@ namespace rex
 {
   namespace gfx
   {
+    CommandAllocatorPool::CommandAllocatorPool(rhi::CommandType type)
+      : m_type(type)
+    {}
+
     // Request a new allocator from the pool, create a new one if one isn't found
     rhi::CommandAllocator* CommandAllocatorPool::request_allocator(u64 fenceValue)
     {
@@ -63,7 +67,7 @@ namespace rex
     {
       // Simply create a new allocator from the rhi and put it in the pool
       u64 fence_value = 0;
-      PooledAllocator& pooled_alloc = m_active_allocators.emplace_back(PooledAllocator{ fence_value, rhi::create_command_allocator() });
+      PooledAllocator& pooled_alloc = m_active_allocators.emplace_back(PooledAllocator{ fence_value, rhi::create_command_allocator(m_type) });
       return pooled_alloc.allocator.get();
     }
 

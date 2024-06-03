@@ -75,7 +75,6 @@ namespace rex
       CommandAllocator* allocator();
 
     private:
-      gfx::GraphicsEngine* m_owning_engine;
       CommandAllocator* m_cmd_allocator;
     };
   }

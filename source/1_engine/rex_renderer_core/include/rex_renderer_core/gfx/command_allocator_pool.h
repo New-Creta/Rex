@@ -21,6 +21,8 @@ namespace rex
       };
 
     public:
+      CommandAllocatorPool(rhi::CommandType type);
+
       // Request a new allocator from the pool, create a new one if one isn't found
       rhi::CommandAllocator* request_allocator(u64 fenceValue);
       // Return an allocator back to the pool
@@ -36,6 +38,7 @@ namespace rex
     private:
       rsl::vector<PooledAllocator> m_idle_allocators;
       rsl::vector<PooledAllocator> m_active_allocators;
+      rhi::CommandType m_type;
     };
 
   }

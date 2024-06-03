@@ -37,6 +37,8 @@ namespace rex
 
       ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx) override;
 
+      ID3D12CommandQueue* dx_object();
+
     private:
       // Halts this thread until the internal fence has reached or surpassed the given fence value
       void wait_for_fence(u64 fenceValue);

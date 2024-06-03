@@ -19,6 +19,7 @@ namespace rex
     public:
       BaseGraphicsEngine(rhi::CommandType commandType)
         : m_command_queue(rhi::create_command_queue(commandType))
+        , m_command_allocator_pool(commandType)
       {
 
       }
@@ -112,6 +113,8 @@ namespace rex
         s32 idx = rsl::distance(m_active_contexts.cbegin(), it);
         transfer_context(idx, m_active_contexts, m_idle_contexts);
       }
+
+      virtual void post_init() = 0;
 
     protected:
       // Creates a new context and adds it to the active list

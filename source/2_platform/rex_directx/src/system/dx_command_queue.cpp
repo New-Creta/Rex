@@ -61,6 +61,11 @@ namespace rex
       return create_sync_info<SyncInfo>(old_fence_val, m_fence->get());
     }
 
+    ID3D12CommandQueue* DxCommandQueue::dx_object()
+    {
+      return m_command_queue.Get();
+    }
+
     void DxCommandQueue::wait_for_fence(u64 fenceValue)
     {
       if (m_fence->get()->GetCompletedValue() < fenceValue)

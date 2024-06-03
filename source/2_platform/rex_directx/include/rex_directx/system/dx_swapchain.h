@@ -24,9 +24,6 @@ namespace rex
       DxSwapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount);
 
       void resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);
-
-      s32 buffer_count() const;
-
       void present();
 
       //Resource2* get_buffer(s32 idx);

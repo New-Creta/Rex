@@ -61,6 +61,8 @@
 #include <D3Dcompiler.h>
 #include "rex_directx/dxgi/includes.h"
 
+#include "rex_engine/platform/win/diagnostics/hr_call.h"
+
 namespace rex
 {
   namespace rhi
@@ -286,6 +288,8 @@ namespace rex
         // Now create the gpu engine which the backend of all our graphics systems
         g_gpu_engine = rsl::make_unique<gfx::DxGpuEngine>(userData, rsl::move(device), rsl::move(adapter_manager));
 
+        g_gpu_engine->post_init();
+
         return g_gpu_engine.get();
       }
 
@@ -426,6 +430,7 @@ namespace rex
       {
         DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
 
+        // copy context is not working at the moment
         wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
         if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandList(0, d3d::to_dx12(type), dx_alloc->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
         {
@@ -437,6 +442,49 @@ namespace rex
         //return rsl::make_unique<DxCommandList>(cmd_list, resourceStateTracker);
       }
 
+      rsl::unique_ptr<ResourceHeap> create_resource_heap()
+      {
+        CD3DX12_HEAP_DESC desc(100_mib, D3D12_HEAP_TYPE_DEFAULT);
+
+        wrl::ComPtr<ID3D12Heap> d3d_heap;
+        if (DX_FAILED(g_rhi_resources->device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
+        {
+          REX_ERROR(LogDxRhi, "Failed to create global resource heap");
+          return false;
+        }
+
+        return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->get());
+
+      }
+      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
+      {
+        D3D12_DESCRIPTOR_HEAP_DESC desc{};
+        
+        s32 num_descriptors = 128;
+
+        desc.Type = type;
+        desc.NumDescriptors = num_descriptors;
+        desc.Flags = type != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+          ? D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+          : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+
+        wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
+        rsl::string_view type_str = rsl::enum_refl::enum_name(type);
+        if (DX_FAILED(g_rhi_resources->device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
+        {
+          REX_ERROR(LogDxRhi, "Failed to create descriptor heap for type: {}", type_str);
+          return false;
+        }
+
+        rhi::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap Element - {}", type_str));
+        s32 desc_size = g_rhi_resources->device->get()->GetDescriptorHandleIncrementSize(type);
+        s32 total_size = desc_size * num_descriptors;
+
+        REX_INFO(LogDxRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, num_descriptors, desc_size, total_size);
+
+        return rsl::make_unique<DescriptorHeap>(desc_heap, g_rhi_resources->device->get());
+      }
 
       //rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, CommandType type, ResourceStateTracker* resourceStateTracker)
       //{
@@ -497,8 +545,9 @@ namespace rex
         // Note: swap chain uses queue to perform flush.
         rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = g_rhi_resources->factory->as<IDXGIFactory4>();
         rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
-        IUnknown* d3d_device = (IUnknown*)apiDevice;
-        if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(d3d_device, (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
+        CommandQueue* cmd_queue = (CommandQueue*)apiDevice;
+        DxCommandQueue* dx_cmd_queue = static_cast<DxCommandQueue*>(cmd_queue);
+        if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(dx_cmd_queue->dx_object(), (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
         {
           REX_ERROR(LogDxRhi, "Failed to create swap chain");
           return false;
@@ -509,10 +558,10 @@ namespace rex
 
         return rsl::make_unique<DxSwapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount);
       }
-      rsl::unique_ptr<CommandAllocator> create_command_allocator()
+      rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::CommandType type)
       {
         wrl::ComPtr<ID3D12CommandAllocator> allocator;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(allocator.GetAddressOf()))))
+        if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandAllocator(d3d::to_dx12(type), IID_PPV_ARGS(allocator.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create command allocator");
           return false;
@@ -640,6 +689,7 @@ namespace rex
         wrl::ComPtr<ID3D12RootSignature> root_signature;
         if (DX_FAILED(g_rhi_resources->device->get()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
         {
+          HR_CALL(g_rhi_resources->device->get()->GetDeviceRemovedReason());
           REX_ERROR(LogDxRhi, "Failed to create root signature");
           return nullptr;
         }

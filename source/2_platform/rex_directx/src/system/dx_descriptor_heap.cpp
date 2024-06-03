@@ -3,6 +3,7 @@
 #include "rex_directx/system/dx_resource.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/casting.h"
+#include "rex_engine/memory/pointer_math.h"
 
 namespace rex
 {
@@ -139,9 +140,11 @@ namespace rex
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a constant buffer view from a descriptor heap that's not configured to create constant buffers views");
 
       // Create a new constant buffer view given the offsetted GPU address and the size of the constant buffer in bytes
+      rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+
       D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
       cbv_desc.BufferLocation = resource->GetGPUVirtualAddress();
-      cbv_desc.SizeInBytes    = narrow_cast<s32>(size.size_in_bytes());
+      cbv_desc.SizeInBytes = aligned_size;
 
       DescriptorHandle cbv_handle = new_free_handle();
       m_device->CreateConstantBufferView(&cbv_desc, cbv_handle.get());

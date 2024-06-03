@@ -13,6 +13,10 @@ namespace rex
     class DxComputeEngine : public gfx::ComputeEngine
     {
     public:
+      void post_init() override
+      {
+
+      }
 
     protected:
       rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override

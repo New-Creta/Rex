@@ -18,6 +18,11 @@
 #include "rex_directx/resources/dx_input_layout_resource.h"
 #include "rex_directx/resources/dx_raster_state_resource.h"
 
+#include "rex_directx/resources/dx_constant_buffer.h"
+#include "rex_directx/resources/dx_vertex_buffer.h"
+#include "rex_directx/resources/dx_index_buffer.h"
+#include "rex_directx/resources/dx_upload_buffer.h"
+
 namespace rex
 {
   namespace renderer
@@ -744,6 +749,30 @@ namespace rex
       default:
         REX_ASSERT("Unknown DX12 texture format, cannot convert to rex texture format");
       }
+    }
+
+
+
+
+    ID3D12Resource* dx12_resource(rhi::ConstantBuffer* buffer)
+    {
+      return static_cast<rhi::DxConstantBuffer*>(buffer)->dx_object();
+    }
+    ID3D12Resource* dx12_resource(rhi::VertexBuffer* buffer)
+    {
+      return static_cast<rhi::DxVertexBuffer*>(buffer)->dx_object();
+    }
+    ID3D12Resource* dx12_resource(rhi::IndexBuffer* buffer)
+    {
+      return static_cast<rhi::DxIndexBuffer*>(buffer)->dx_object();
+    }
+    ID3D12Resource* dx12_resource(rhi::UploadBuffer* buffer)
+    {
+      return buffer->get();
+    }
+    ID3D12Resource* dx12_resource(rhi::Texture2D* texture)
+    {
+      return static_cast<rhi::DxTexture2D*>(texture)->dx_object();
     }
   }
 } // namespace rex

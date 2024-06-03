@@ -43,13 +43,15 @@ namespace rex
     private:
       void init_debug_layer();     
       void init_resource_heap();
+      void init_desc_heap_pool();
+      void init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE type);
 
     private:
       wrl::ComPtr<IDXGIInfoQueue> m_debug_info_queue;
       rsl::unique_ptr<rhi::DxDevice> m_device;
       rsl::unique_ptr<dxgi::AdapterManager> m_adapter_manager;
       rsl::unique_ptr<rhi::ResourceHeap> m_heap;
-      rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, rhi::DescriptorHeap> m_descriptor_heap_pool;
+      rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, rsl::unique_ptr<rhi::DescriptorHeap>> m_descriptor_heap_pool;
     };
   }
 }

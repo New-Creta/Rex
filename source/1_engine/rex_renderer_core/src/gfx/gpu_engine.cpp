@@ -13,10 +13,19 @@ namespace rex
       : m_render_engine(rsl::move(renderEngine))
       , m_compute_engine(rsl::move(computeEngine))
       , m_copy_engine(rsl::move(copyEngine))
-      , m_swapchain(rhi::create_swapchain(m_render_engine->command_queue(), userData.max_frames_in_flight, userData.primary_display_handle))
+      , m_swapchain()
+      , m_max_frames_in_flight(userData.max_frames_in_flight)
+      , m_primary_display_handle(userData.primary_display_handle)
       , m_init_successfully(true)
     {
+    }
+
+    void GpuEngine::post_init()
+    {
+      m_swapchain = rhi::create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
       init_swapchain_render_targets();
+
+      m_copy_engine->post_init();
     }
 
     bool GpuEngine::init_successful() const

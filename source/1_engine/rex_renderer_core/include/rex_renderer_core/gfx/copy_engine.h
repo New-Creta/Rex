@@ -13,6 +13,11 @@ namespace rex
       CopyEngine()
         : GraphicsEngine(rhi::CommandType::Copy)
       {}
+
+
+
+    private:
+
     };
   }
 }

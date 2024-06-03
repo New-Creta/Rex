@@ -100,6 +100,7 @@ namespace rex
     init_shader();
     init_input_layout();
     init_constant_buffer();
+    init_root_signature();
     init_pso();
   }
 

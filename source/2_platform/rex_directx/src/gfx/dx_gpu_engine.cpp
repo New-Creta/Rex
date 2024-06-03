@@ -29,7 +29,7 @@ namespace rex
     DxGpuEngine::DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, rsl::unique_ptr<dxgi::AdapterManager> adapterManager)
       : GpuEngine(rsl::make_unique<rhi::DxRenderEngine>(), rsl::make_unique<rhi::DxComputeEngine>(), rsl::make_unique<rhi::DxCopyEngine>(), userData)
       , m_device(rsl::move(device))
-      , m_heap()
+      , m_heap(rhi::create_resource_heap())
       , m_descriptor_heap_pool()
     {
       // Create a scopeguard that automatically marks initialization as failed
@@ -43,6 +43,8 @@ namespace rex
       // only get created when the device is created
       init_debug_layer();
 #endif
+
+      init_desc_heap_pool();
 
       mark_init_failed.release();
     }
@@ -113,15 +115,27 @@ namespace rex
 
     rhi::DescriptorHandle DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
-      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV).create_rtv(texture.Get());
+      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)->create_rtv(texture.Get());
     }
     rhi::DescriptorHandle DxGpuEngine::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
-      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_texture2d_srv(texture.Get());
+      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->create_texture2d_srv(texture.Get());
     }
     rhi::DescriptorHandle DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
     {
-      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV).create_cbv(resource.Get(), size);
+      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->create_cbv(resource.Get(), size);
+    }
+
+    void DxGpuEngine::init_desc_heap_pool()
+    {
+      init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+      init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+      init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+      init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+    }
+    void DxGpuEngine::init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
+    {
+      m_descriptor_heap_pool.emplace(type, rhi::create_descriptor_heap(type));
     }
 
   }
