@@ -8,18 +8,12 @@ namespace rex
   {
     RenderContext::RenderContext(gfx::GraphicsEngine* owningEngine, rhi::CommandAllocator* alloc)
       : GraphicsContext(owningEngine, CommandType::Render)
-      , m_cmd_allocator(alloc)
     {
-            
+      reset(alloc);
     }
 
     RenderContext::~RenderContext()
     {
-    }
-
-    CommandAllocator* RenderContext::allocator()
-    {
-      return m_cmd_allocator;
     }
 
   }

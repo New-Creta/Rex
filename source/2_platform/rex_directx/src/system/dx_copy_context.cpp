@@ -19,7 +19,7 @@ namespace rex
       : CopyContext(owningEngine)
       , m_cmd_list(cmdList)
     {
-
+      reset(alloc);
     }
 
     ID3D12GraphicsCommandList* DxCopyContext::dx_cmdlist()
@@ -52,7 +52,8 @@ namespace rex
       CD3DX12_TEXTURE_COPY_LOCATION src_loc(upload_buffer->get(), footprint);
       m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
 
-      transition_buffer(texture, ResourceState::PixelShaderResource);
+      // Not allowed to transition to pixel shader resource in a copy command list
+      //transition_buffer(texture, ResourceState::PixelShaderResource);
 
       api_engine()->unlock_upload_buffer();
     }

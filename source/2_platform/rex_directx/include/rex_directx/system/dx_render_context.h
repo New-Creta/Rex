@@ -20,9 +20,13 @@ namespace rex
 
       void set_viewport(const Viewport& vp) override;
       void set_scissor_rect(const ScissorRect& rect) override;
+
       void transition_buffer(ConstantBuffer* resource, ResourceState state) override;
       void transition_buffer(VertexBuffer* resource, ResourceState state) override;
       void transition_buffer(IndexBuffer* resource, ResourceState state) override;
+      void transition_buffer(UploadBuffer* resource, ResourceState state) override;
+      void transition_buffer(Texture2D* resource, ResourceState state) override;
+
       void set_render_target(RenderTarget* renderTarget) override;
       void clear_render_target(RenderTarget* renderTarget, ClearStateResource* clearState) override;
       void set_vertex_buffer(VertexBuffer* vb) override;
@@ -41,6 +45,9 @@ namespace rex
       void update_texture2d(Texture2D* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format) override;
 
       ID3D12GraphicsCommandList* dx_cmdlist();
+
+    protected:
+      void platform_reset() override;
 
     private:
       void start_recording_commands();

@@ -30,6 +30,8 @@ namespace rex
       REX_ASSERT_X(m_allocator == nullptr, "Overwriting the allocator of a gfx context is not allowed. You need to execute the commands of the context first");
       REX_ASSERT_X(alloc != nullptr, "Assigning a nullptr as allocator for a gfx context is not allowed.");
       m_allocator = alloc;
+
+      platform_reset();
     }
 
     void GraphicsContext::release_allocator(u64 fenceValue)
@@ -65,12 +67,17 @@ namespace rex
 
     bool GraphicsContext::has_executed() const
     {
-      return m_allocator != nullptr;
+      return m_allocator == nullptr;
     }
 
     gfx::BaseGraphicsEngine* GraphicsContext::owning_engine()
     {
       return m_owning_engine;
+    }
+
+    rhi::CommandAllocator* GraphicsContext::allocator()
+    {
+      return m_allocator;
     }
 
     ResourceStateTransition GraphicsContext::track_resource_transition(Buffer* buffer, ResourceState state)

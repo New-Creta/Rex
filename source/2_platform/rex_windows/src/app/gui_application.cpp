@@ -132,6 +132,8 @@ namespace rex
         // m_scene_renderer->render();
         m_imgui_renderer->render();
 
+        gfx::present();
+
         // All renderers have done their work, present their work now.
         // render_engine().present();
 

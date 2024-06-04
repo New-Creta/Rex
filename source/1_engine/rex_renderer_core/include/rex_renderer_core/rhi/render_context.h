@@ -33,6 +33,10 @@ namespace rex
     class PipelineState;
     class UploadBuffer;
     class Buffer;
+    class ConstantBuffer;
+    class VertexBuffer;
+    class IndexBuffer;
+    class UploadBuffer;
     class Texture2D;
 
     class RenderContext : public GraphicsContext
@@ -51,9 +55,11 @@ namespace rex
       // ----------------------------------------------------------------
       virtual void set_viewport(const rhi::Viewport& vp) = 0;
       virtual void set_scissor_rect(const ScissorRect& rect) = 0;
-      virtual void transition_buffer(rhi::ConstantBuffer* resource, ResourceState state) = 0;
-      virtual void transition_buffer(rhi::VertexBuffer* resource, ResourceState state) = 0;
-      virtual void transition_buffer(rhi::IndexBuffer* resource, ResourceState state) = 0;
+      virtual void transition_buffer(ConstantBuffer* resource, ResourceState state) = 0;
+      virtual void transition_buffer(VertexBuffer* resource, ResourceState state) = 0;
+      virtual void transition_buffer(IndexBuffer* resource, ResourceState state) = 0;
+      virtual void transition_buffer(UploadBuffer* resource, ResourceState state) = 0;
+      virtual void transition_buffer(Texture2D* resource, ResourceState state) = 0;
       virtual void set_render_target(rhi::RenderTarget* renderTarget) = 0;
       virtual void clear_render_target(rhi::RenderTarget* renderTarget, rhi::ClearStateResource* clearState) = 0;
       virtual void set_vertex_buffer(rhi::VertexBuffer* vb) = 0;
@@ -71,11 +77,6 @@ namespace rex
       virtual void update_buffer(Buffer* buffer, UploadBuffer* updateBuffer, void* data, rsl::memory_size size, s32 dstOffset) = 0;
       virtual void update_texture2d(Texture2D* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format) = 0;
 
-    protected:
-      CommandAllocator* allocator();
-
-    private:
-      CommandAllocator* m_cmd_allocator;
     };
   }
 }

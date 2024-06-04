@@ -71,10 +71,12 @@ namespace rex
 
       CommandType type() const;
       void stall(SyncInfo& syncInfo);
+      bool has_executed() const;
 
     protected:
-      bool has_executed() const;
       gfx::BaseGraphicsEngine* owning_engine();
+      rhi::CommandAllocator* allocator();
+      virtual void platform_reset() {};
 
     private:
       rhi::CommandAllocator* m_allocator;

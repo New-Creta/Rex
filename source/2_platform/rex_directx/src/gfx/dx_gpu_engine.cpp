@@ -126,6 +126,17 @@ namespace rex
       return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->create_cbv(resource.Get(), size);
     }
 
+    rsl::vector<ID3D12DescriptorHeap*> DxGpuEngine::desc_heaps()
+    {
+      rsl::vector<ID3D12DescriptorHeap*> heaps;
+      //heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)->get());
+      heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->get());
+      //heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV)->get());
+      //heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)->get());
+
+      return heaps;
+    }
+
     void DxGpuEngine::init_desc_heap_pool()
     {
       init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);

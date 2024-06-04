@@ -98,7 +98,15 @@ namespace rex
           rhi::GraphicsContext* ctx = transfer_context(idx, m_idle_contexts, m_active_contexts);
           ctx->reset(alloc);
           Context* derived_context = static_cast<Context*>(ctx);
-          ScopedPoolObject<Context> pooled_ctx(derived_context, [this](Context* ctx) { discard_context(ctx); });
+          ScopedPoolObject<Context> pooled_ctx(derived_context, 
+            [this](Context* ctx) 
+            { 
+              if (!ctx->has_executed())
+              {
+                ctx->execute_on_gpu();
+              }
+              discard_context(ctx); 
+            });
           return pooled_ctx;
         }
 
@@ -137,7 +145,14 @@ namespace rex
         m_active_contexts.emplace_back(allocate_new_context(alloc));
         rhi::GraphicsContext* ctx = m_active_contexts.back().get();
         Context* derived_context = static_cast<Context*>(ctx);
-        return ScopedPoolObject<Context>(derived_context, [this](rhi::GraphicsContext* ctx) { discard_context(ctx); });
+        return ScopedPoolObject<Context>(derived_context, [this](rhi::GraphicsContext* ctx) 
+          { 
+            if (!ctx->has_executed())
+            {
+              ctx->execute_on_gpu();
+            }
+            discard_context(ctx); 
+          });
       }
 
     private:

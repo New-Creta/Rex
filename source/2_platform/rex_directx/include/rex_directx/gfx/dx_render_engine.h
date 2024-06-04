@@ -22,6 +22,7 @@ namespace rex
         DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
         wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::CommandType::Render);
 
+        cmdlist->Close();
         return rsl::make_unique<rhi::DxRenderContext>(this, cmdlist, alloc);
       }
 

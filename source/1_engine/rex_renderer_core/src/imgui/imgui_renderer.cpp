@@ -43,6 +43,13 @@ namespace rex
 
     auto render_ctx = gfx::new_render_ctx();
 
+    static bool has_transitioned = false;
+    if (!has_transitioned)
+    {
+      has_transitioned = true;
+      render_ctx->transition_buffer(m_fonts_texture.get(), rhi::ResourceState::PixelShaderResource);
+    }
+
     ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     if (RexImGuiViewport* imgui_window = (RexImGuiViewport*)main_viewport->RendererUserData)
     {

@@ -7,9 +7,11 @@
 #include "rex_directx/resources/dx_rendertarget.h"
 #include "rex_directx/resources/dx_root_signature.h"
 #include "rex_directx/resources/dx_pipeline_state.h"
+#include "rex_directx/resources/dx_texture_2d.h"
 #include "rex_renderer_core/resources/clear_state.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_directx/system/dx_command_allocator.h"
+#include "rex_directx/system/dx_rhi.h"
 
 namespace rex
 {
@@ -62,6 +64,17 @@ namespace rex
     {
       DxIndexBuffer* dx_index_buffer = static_cast<DxIndexBuffer*>(resource);
       transition_buffer(resource, dx_index_buffer->dx_object(), state);
+    }
+    void DxRenderContext::transition_buffer(UploadBuffer* resource, ResourceState state)
+    {
+      Buffer* buff = (Buffer*)resource;
+      transition_buffer(buff, resource->get(), state);
+    }
+    void DxRenderContext::transition_buffer(Texture2D* resource, ResourceState state)
+    {
+      Buffer* buff = (Buffer*)resource;
+      DxTexture2D* dx_texture = static_cast<DxTexture2D*>(resource);
+      transition_buffer(buff, dx_texture->dx_object(), state);
     }
     void DxRenderContext::set_render_target(RenderTarget* renderTarget)
     {
@@ -151,6 +164,11 @@ namespace rex
       m_cmd_list->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
 
+    void DxRenderContext::platform_reset()
+    {
+      start_recording_commands();
+    }
+
     void DxRenderContext::start_recording_commands()
     {
       DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(allocator());
@@ -176,7 +194,8 @@ namespace rex
 
     void DxRenderContext::bind_descriptor_heaps()
     {
-      REX_ASSERT("This function is not yet implemented");
+      rsl::vector<ID3D12DescriptorHeap*> heaps = rhi::get_desc_heaps();
+      m_cmd_list->SetDescriptorHeaps(heaps.size(), heaps.data());
     }
 
     void DxRenderContext::update_buffer(Buffer* buffer, UploadBuffer* updateBuffer, void* data, rsl::memory_size size, s32 dstOffset)

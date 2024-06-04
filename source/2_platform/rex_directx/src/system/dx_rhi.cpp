@@ -222,6 +222,7 @@ namespace rex
       {
         s32 dxgi_factory_flags = 0;
 
+#define REX_ENABLE_DXGI_DEBUG_LAYER
 #ifdef REX_ENABLE_DXGI_DEBUG_LAYER
         dxgi_factory_flags = init_debug_interface();
 #endif
@@ -263,6 +264,7 @@ namespace rex
         // This is the system we use to create most other systems.
         g_rhi_resources->factory = create_dxgi_factory();
 
+#define REX_ENABLE_DX12_DEBUG_LAYER
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // 1.1) Create the debug controller before the device gets created
         // This way we can have some additional debugging information if something goes wrong
@@ -454,7 +456,10 @@ namespace rex
         }
 
         return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->get());
-
+      }
+      rsl::vector<ID3D12DescriptorHeap*> get_desc_heaps()
+      {
+        return g_gpu_engine->desc_heaps();
       }
       rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
       {
@@ -813,8 +818,10 @@ namespace rex
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size)
       {
         // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-        wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(size);
-        DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), size);
+        rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+
+        wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
+        DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
 
