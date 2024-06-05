@@ -207,6 +207,14 @@ namespace rex
       REX_ASSERT("Not yet implemented");
     }
 
+    void DxRenderContext::bind_texture(Texture2D* texture)
+    {
+      DxTexture2D* dx_texture = static_cast<DxTexture2D*>(texture);
+      m_cmd_list->SetGraphicsRootDescriptorTable(1, dx_texture->gpu_handle());
+      //ctx.set_graphics_root_descriptor_table(1, (UINT64)texture->gpu_handle().ptr);
+    
+    }
+
     ID3D12GraphicsCommandList* DxRenderContext::dx_cmdlist()
     {
       return m_cmd_list.Get();

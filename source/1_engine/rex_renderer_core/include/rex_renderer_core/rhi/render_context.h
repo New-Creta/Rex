@@ -77,6 +77,7 @@ namespace rex
       virtual void update_buffer(Buffer* buffer, UploadBuffer* updateBuffer, void* data, rsl::memory_size size, s32 dstOffset) = 0;
       virtual void update_texture2d(Texture2D* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format) = 0;
 
+      virtual void bind_texture(Texture2D* texture) = 0;
     };
   }
 }

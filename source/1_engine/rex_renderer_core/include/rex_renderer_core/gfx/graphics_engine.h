@@ -123,6 +123,7 @@ namespace rex
       }
 
       virtual void post_init() = 0;
+      virtual void new_frame() {}
 
     protected:
       // Creates a new context and adds it to the active list

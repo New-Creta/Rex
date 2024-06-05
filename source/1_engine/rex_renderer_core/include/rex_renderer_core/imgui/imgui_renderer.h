@@ -1,5 +1,6 @@
 #pragma once
 
+#include "rex_engine/engine/types.h"
 #include "rex_engine/diagnostics/error.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/input_layout.h"

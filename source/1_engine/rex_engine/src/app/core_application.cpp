@@ -12,6 +12,8 @@
 #include "rex_engine/settings/settings.h"
 #include "rex_std/bonus/utility.h"
 
+#include "rex_engine/diagnostics/log.h"
+
 #include <cstdlib>
 
 namespace rex
@@ -20,6 +22,8 @@ namespace rex
   namespace globals
   {
     FrameInfo g_frame_info; // NOLINT(fuchsia-statically-constructed-objects, cppcoreguidelines-avoid-non-const-global-variables)
+
+    DEFINE_LOG_CATEGORY(LogEngine);
 
     //-------------------------------------------------------------------------
     const FrameInfo& frame_info()

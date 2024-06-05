@@ -29,6 +29,8 @@ namespace rex
       //Resource2* get_buffer(s32 idx);
       IDXGISwapChain3* get();
 
+      s32 current_buffer_idx() const override;
+
     private:
       void store_buffers(s32 bufferCount);
 

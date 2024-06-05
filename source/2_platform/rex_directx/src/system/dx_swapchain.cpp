@@ -57,6 +57,10 @@ namespace rex
       }
     }
 
+    s32 DxSwapchain::current_buffer_idx() const
+    {
+      return m_swapchain->GetCurrentBackBufferIndex();
+    }
 
   } // namespace rhi
 } // namespace rex

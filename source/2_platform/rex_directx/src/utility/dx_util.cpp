@@ -536,7 +536,7 @@ namespace rex
       case rhi::ResourceState::RaytracingAccelerationStructure:         return D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE        ;
       case rhi::ResourceState::ShadingRateSource:                       return D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE                      ;
       case rhi::ResourceState::GenericRead:                             return D3D12_RESOURCE_STATE_GENERIC_READ                             ;
-      case rhi::ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
+      //case rhi::ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
       case rhi::ResourceState::Predication:                             return D3D12_RESOURCE_STATE_PREDICATION                              ;
       case rhi::ResourceState::VideoDecodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_DECODE_READ                        ;
       case rhi::ResourceState::VideoDecodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE                       ;
@@ -556,7 +556,7 @@ namespace rex
       switch (type)
       {
       case rex::rhi::CommandType::Render:   return D3D12_COMMAND_LIST_TYPE_DIRECT;
-      case rex::rhi::CommandType::Copy:     return D3D12_COMMAND_LIST_TYPE_COPY;
+      case rex::rhi::CommandType::Copy:     return D3D12_COMMAND_LIST_TYPE_DIRECT;
       case rex::rhi::CommandType::Compute:  return D3D12_COMMAND_LIST_TYPE_COMPUTE;
       }
 

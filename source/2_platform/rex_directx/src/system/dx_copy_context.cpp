@@ -88,16 +88,19 @@ namespace rex
     void DxCopyContext::update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxConstantBuffer* dx_constant_buffer = static_cast<DxConstantBuffer*>(buffer);
+      transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(buffer, dx_constant_buffer->dx_object(), data, size, offset);
     }
     void DxCopyContext::update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxVertexBuffer* dx_vertex_buffer = static_cast<DxVertexBuffer*>(buffer);
+      transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(buffer, dx_vertex_buffer->dx_object(), data, size, offset);
     }
     void DxCopyContext::update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxIndexBuffer* dx_index_buffer = static_cast<DxIndexBuffer*>(buffer);
+      transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(buffer, dx_index_buffer->dx_object(), data, size, offset);
     }
 
@@ -121,12 +124,21 @@ namespace rex
     {
       UploadBuffer* upload_buffer = api_engine()->lock_upload_buffer();
 
-      transition_buffer(upload_buffer, ResourceState::CopyDest);
+      //transition_buffer(upload_buffer, ResourceState::CopySource);
+
       s32 write_offset = upload_buffer->prepare_for_new_buffer_write(data, size);
       m_cmd_list->CopyBufferRegion(resource, offset, upload_buffer->get(), write_offset, size);
 
       api_engine()->unlock_upload_buffer();
     }
+    void DxCopyContext::platform_reset()
+    {
+      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(allocator());
 
+      REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
+
+      dx_alloc->get()->Reset();
+      m_cmd_list->Reset(dx_alloc->get(), nullptr);
+    }
   }
 }

@@ -19,6 +19,8 @@ namespace rex
       s32 num_buffers() const;
       Texture2D* buffer(s32 idx);
 
+      virtual s32 current_buffer_idx() const = 0;
+
     protected:
       void clear_buffers();
       void store_buffer(rsl::unique_ptr<Texture2D> buffer);

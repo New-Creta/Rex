@@ -14,8 +14,6 @@ namespace rex
         : GraphicsEngine(rhi::CommandType::Copy)
       {}
 
-
-
     private:
 
     };

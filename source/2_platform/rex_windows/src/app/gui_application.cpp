@@ -128,6 +128,7 @@ namespace rex
         // calling  the graphics pipeline which holds all the renderers needed
         // these renderers get added to the graphics pipeline by the engine
         // gfx::render();
+        gfx::new_frame();
 
         // m_scene_renderer->render();
         m_imgui_renderer->render();

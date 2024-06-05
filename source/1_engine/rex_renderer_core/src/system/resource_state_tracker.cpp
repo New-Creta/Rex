@@ -4,9 +4,21 @@ namespace rex
 {
   namespace rhi
   {
+    rsl::unique_ptr<ResourceStateTracker> ResourceStateTracker::s_global_resource_state_tracker = nullptr;
+
     ResourceStateTracker::ResourceStateTracker(ResourceStateTracker* parentResourceStateTracker)
       : m_parent_resource_state_tracker(parentResourceStateTracker)
-    {}
+    {
+      if (!m_parent_resource_state_tracker)
+      {
+        if (!s_global_resource_state_tracker)
+        {
+          init_global();
+        }
+
+        m_parent_resource_state_tracker = s_global_resource_state_tracker.get();
+      }
+    }
 
     ResourceStateTransition ResourceStateTracker::track_resource_transition(Resource* resource, ResourceState state)
     {
@@ -60,5 +72,16 @@ namespace rex
     {
       m_states_per_resource.clear();
     }
+
+    ResourceStateTracker::ResourceStateTracker(const PrivateHandle&)
+      : m_parent_resource_state_tracker()
+    {}
+
+    void ResourceStateTracker::init_global()
+    {
+      PrivateHandle h{};
+      s_global_resource_state_tracker = rsl::make_unique<ResourceStateTracker>(h);
+    }
+
   }
 }

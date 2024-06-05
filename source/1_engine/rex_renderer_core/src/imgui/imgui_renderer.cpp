@@ -39,6 +39,9 @@ namespace rex
 
   void ImGuiRenderer::render()
   {
+    // Test rendering something
+    ImGui::ShowDemoWindow();
+
     ImGui::Render();
 
     auto render_ctx = gfx::new_render_ctx();
@@ -49,6 +52,8 @@ namespace rex
       has_transitioned = true;
       render_ctx->transition_buffer(m_fonts_texture.get(), rhi::ResourceState::PixelShaderResource);
     }
+
+    render_ctx->set_render_target(rhi::get_render_target());
 
     ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     if (RexImGuiViewport* imgui_window = (RexImGuiViewport*)main_viewport->RendererUserData)
@@ -133,6 +138,8 @@ namespace rex
     renderer::TextureFormat format = renderer::TextureFormat::Unorm4;
 
     m_fonts_texture = rhi::create_texture2d(width, height, format, pixels);
+
+    ImGui::GetIO().Fonts->SetTexID((ImTextureID)m_fonts_texture.get());
   }
   void ImGuiRenderer::init_shader()
   {

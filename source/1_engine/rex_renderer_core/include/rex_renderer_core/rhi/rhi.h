@@ -102,6 +102,8 @@ namespace rex
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
+
+      RenderTarget* get_render_target();
     }
 
     // the api namespace isn't needed to access these functions

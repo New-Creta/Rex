@@ -26,6 +26,7 @@ namespace rex
 
     UsagePerTag usage_per_tag;
     rsl::vector<MemoryHeader*, DebugAllocator<UntrackedAllocator>> allocation_headers;
+    rsl::memory_size tracked_mem_usage;
   };
 
   class MemoryTracker

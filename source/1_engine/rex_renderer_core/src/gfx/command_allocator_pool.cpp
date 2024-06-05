@@ -35,6 +35,7 @@ namespace rex
       REX_ASSERT_X(it != m_active_allocators.end(), "Command allocator to discard is not found in active allocators. This is usually caused because the command allocator didn't come from this pool.");
 
       PooledAllocator pooled_alloc = rsl::move(*it);
+      pooled_alloc.fence_value = fenceValue;
       m_active_allocators.erase(it);
       m_idle_allocators.emplace_back(rsl::move(pooled_alloc));
     }
@@ -43,7 +44,7 @@ namespace rex
     s32 CommandAllocatorPool::find_free_allocator(u64 fenceValue)
     {
       // Find an allocator in the idle allocators list that for sure has had its last command executed (this is determined by the fence value)
-      auto it = rsl::find_if(m_idle_allocators.cbegin(), m_idle_allocators.cend(), [fenceValue](const PooledAllocator& pooledAlloc) { return pooledAlloc.fence_value >= fenceValue; });
+      auto it = rsl::find_if(m_idle_allocators.cbegin(), m_idle_allocators.cend(), [fenceValue](const PooledAllocator& pooledAlloc) { return pooledAlloc.fence_value <= fenceValue; });
       if (it != m_idle_allocators.cend())
       {
         return rsl::distance(m_idle_allocators.cbegin(), it);

@@ -25,6 +25,11 @@ namespace rex
         m_upload_buffer = rhi::create_upload_buffer(100_mib);
       }
 
+      void new_frame() override
+      {
+        m_upload_buffer->reset();
+      }
+
       UploadBuffer* lock_upload_buffer()
       {
         return m_upload_buffer.get();
@@ -38,7 +43,7 @@ namespace rex
       rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override
       {
         wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::CommandType::Copy);
-
+        cmdlist->Close();
         return rsl::make_unique<rhi::DxCopyContext>(this, cmdlist, alloc);
       }
 

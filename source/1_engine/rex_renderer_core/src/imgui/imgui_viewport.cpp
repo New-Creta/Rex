@@ -18,7 +18,10 @@ namespace rex
     : m_imgui_viewport(imguiViewport)
     , m_render_state(renderState)
   {
-
+    for (s32 i = 0; i < 3; ++i)
+    {
+      m_frame_contexts.emplace_back();
+    }
   }
 
   void RexImGuiViewport::render(rhi::RenderContext& renderContext)
@@ -126,9 +129,7 @@ namespace rex
         rhi::Texture2D* texture = (rhi::Texture2D*)pcmd->GetTexID();
 
         ctx.set_scissor_rect(rect);
-        REX_STATIC_WARNING("Bind the font texture here");
-        //ctx.bind_texture(texture);
-        //ctx.set_graphics_root_descriptor_table(1, (UINT64)texture->gpu_handle().ptr);
+        ctx.bind_texture(texture);
         ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
 
         //cmdList->set_scissor_rect(rect);

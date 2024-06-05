@@ -44,6 +44,8 @@ namespace rex
       void update_buffer(Buffer* buffer, UploadBuffer* updateBuffer, void* data, rsl::memory_size size, s32 dstOffset) override;
       void update_texture2d(Texture2D* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format) override;
 
+      void bind_texture(Texture2D* texture) override;
+
       ID3D12GraphicsCommandList* dx_cmdlist();
 
     protected:

@@ -440,6 +440,13 @@ namespace rex
           return nullptr;
         }
 
+        switch (type)
+        {
+        case rex::rhi::CommandType::Render: set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
+        case rex::rhi::CommandType::Copy:   set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
+        case rex::rhi::CommandType::Compute: break;
+        };
+
         return cmd_list;
         //return rsl::make_unique<DxCommandList>(cmd_list, resourceStateTracker);
       }
@@ -933,6 +940,10 @@ namespace rex
 
 
 
+      RenderTarget* get_render_target()
+      {
+        return g_gpu_engine->render_target();
+      }
 
 
     }

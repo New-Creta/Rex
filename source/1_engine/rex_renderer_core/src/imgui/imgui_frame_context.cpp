@@ -76,9 +76,8 @@ namespace rex
     for (s32 n = 0; n < drawData->CmdListsCount; n++)
     {
       const ImDrawList* cmd_list = drawData->CmdLists[n];
-
-      copy_context->update_buffer(m_vertex_buffer.get(), cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size, vtx_offset);
-      copy_context->update_buffer(m_index_buffer.get(), cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size, idx_offset);
+      copy_context->update_buffer(m_vertex_buffer.get(), cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), vtx_offset);
+      copy_context->update_buffer(m_index_buffer.get(), cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), idx_offset);
 
       vtx_offset += cmd_list->VtxBuffer.Size * sizeof(ImDrawVert);
       idx_offset += cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx);

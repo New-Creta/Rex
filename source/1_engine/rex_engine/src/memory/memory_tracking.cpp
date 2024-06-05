@@ -267,6 +267,7 @@ namespace rex
     MemoryUsageStats stats {};
     stats.usage_per_tag      = m_usage_per_tag;
     stats.allocation_headers = allocation_headers();
+    stats.tracked_mem_usage  = m_mem_usage.value();
     return stats;
   }
 

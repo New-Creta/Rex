@@ -18,6 +18,10 @@ namespace rex
       , m_primary_display_handle(userData.primary_display_handle)
       , m_init_successfully(true)
     {
+      rhi::ClearStateDesc desc{};
+      desc.rgba = rsl::colors::LightSteelBlue;
+      desc.flags.add_state(renderer::ClearBits::ClearColorBuffer);
+      m_clear_state_resource = rsl::make_unique<rhi::ClearStateResource>(desc);
     }
 
     void GpuEngine::post_init()
@@ -35,7 +39,8 @@ namespace rex
 
     void GpuEngine::new_frame()
     {
-      // Nothing to implement
+      auto render_ctx = new_render_ctx();
+      render_ctx->clear_render_target(render_target(), m_clear_state_resource.get());
     }
     void GpuEngine::begin_draw()
     {
@@ -48,7 +53,22 @@ namespace rex
     }
     void GpuEngine::present()
     {
+      {
+        auto render_ctx = new_render_ctx();
+        render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::Present);
+      }
+
       m_swapchain->present();
+
+      m_render_engine->new_frame();
+      m_compute_engine->new_frame();
+      m_copy_engine->new_frame();
+
+      {
+        auto render_ctx = new_render_ctx();
+        render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::RenderTarget);
+      }
+
     }
     void GpuEngine::end_frame()
     {
@@ -65,6 +85,10 @@ namespace rex
       }
     }
 
+    rhi::RenderTarget* GpuEngine::render_target()
+    {
+      return m_swapchain_render_targets[m_swapchain->current_buffer_idx()].get();
+    }
 
 
 

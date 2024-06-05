@@ -11,6 +11,7 @@
 #include "rex_renderer_core/gfx/render_engine.h"
 #include "rex_renderer_core/gfx/copy_engine.h"
 #include "rex_renderer_core/gfx/compute_engine.h"
+#include "rex_renderer_core/resources/clear_state.h"
 
 namespace rex
 {
@@ -60,6 +61,8 @@ namespace rex
       // Wait for all command queue to have finished executing their current queued commands
       void wait_for_gpu();
 
+      rhi::RenderTarget* render_target();
+
     protected:
       s32 calc_gpu_score(const GpuDescription& gpu);
       void init_failed();
@@ -73,6 +76,7 @@ namespace rex
       rsl::unique_ptr<CopyEngine> m_copy_engine;
       rsl::unique_ptr<rhi::Swapchain> m_swapchain;
       rsl::vector<rsl::unique_ptr<rhi::RenderTarget>> m_swapchain_render_targets;
+      rsl::unique_ptr<rhi::ClearStateResource> m_clear_state_resource;
       s32 m_max_frames_in_flight;
       void* m_primary_display_handle;
       bool m_init_successfully;

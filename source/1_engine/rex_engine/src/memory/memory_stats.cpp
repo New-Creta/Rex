@@ -2,6 +2,8 @@
 
 #include "rex_engine/diagnostics/debug.h"
 
+#include "rex_engine/memory/memory_tracking.h"
+
 namespace rex
 {
   void log_mem_usage()

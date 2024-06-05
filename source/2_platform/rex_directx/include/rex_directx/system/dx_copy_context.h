@@ -31,6 +31,9 @@ namespace rex
       void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
       void update_texture2d(rhi::Texture2D* texture, const void* data) override;
 
+    protected:
+      void platform_reset() override;
+
     private:
       DxCopyEngine* api_engine();
       void transition_buffer(Buffer* resource, ID3D12Resource* d3d_resource, ResourceState state);
