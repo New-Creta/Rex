@@ -27,13 +27,15 @@ namespace rex
 
       u64 last_completed_fence() const;
       CommandType type() const;
-
-    protected:
       // Returns the next fence value. This is the fence value that'll be signaled
       // the next time an commandlist is executed
       u64 next_fence_value() const;
+
+    protected:
       // Increases the next fence value and returns the old value
       u64 inc_fence();
+
+      virtual u64 gpu_fence_value() const = 0;
 
       template <typename SyncInfoClass>
       ScopedPoolObject<SyncInfo> create_sync_info(u64 fenceValue, void* fenceObject)

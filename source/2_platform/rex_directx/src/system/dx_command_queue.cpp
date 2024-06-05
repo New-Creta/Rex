@@ -27,10 +27,10 @@ namespace rex
     {
       // If our fence value if higher or equal to the given fence value
       // we don't need to do anything
-      if (is_fence_completed(fenceValue))
-      {
-        return;
-      }
+      //if (is_fence_completed(fenceValue))
+      //{
+      //  return;
+      //}
 
       // If the fence isn't completed yet, we halt this thread until it is
       wait_for_fence(fenceValue);
@@ -39,13 +39,14 @@ namespace rex
     void DxCommandQueue::gpu_wait(SyncInfo& sync_info)
     {
       ID3D12Fence* fence = static_cast<ID3D12Fence*>(sync_info.fence_object());
-
+      u64 fence_gpu_val = fence->GetCompletedValue();
       m_command_queue->Wait(fence, sync_info.fence_val());
     }
 
     bool DxCommandQueue::is_fence_completed(u64 fenceValue) const
     {
-      return fenceValue > m_fence->get()->GetCompletedValue();
+      u64 gpu_fence_value = m_fence->get()->GetCompletedValue();
+      return fenceValue <= gpu_fence_value;
     }
 
     ScopedPoolObject<SyncInfo> DxCommandQueue::execute_context(GraphicsContext* ctx)
@@ -58,7 +59,13 @@ namespace rex
       m_command_queue->Signal(m_fence->get(), next_fence_value());
 
       u64 old_fence_val = inc_fence();
+      wait_for_fence(old_fence_val);
       return create_sync_info<SyncInfo>(old_fence_val, m_fence->get());
+    }
+
+    u64 DxCommandQueue::gpu_fence_value() const
+    {
+      return m_fence->get()->GetCompletedValue();
     }
 
     ID3D12CommandQueue* DxCommandQueue::dx_object()
@@ -68,11 +75,11 @@ namespace rex
 
     void DxCommandQueue::wait_for_fence(u64 fenceValue)
     {
-      if (m_fence->get()->GetCompletedValue() < fenceValue)
-      {
+      //if (m_fence->get()->GetCompletedValue() < fenceValue)
+      //{
         DX_CALL(m_fence->get()->SetEventOnCompletion(fenceValue, m_fence_event.get()));
         m_fence_event.wait_for_me();
-      }
+      //}
     }
 
     ID3D12GraphicsCommandList* DxCommandQueue::cmdlist_from_ctx(GraphicsContext* ctx) const

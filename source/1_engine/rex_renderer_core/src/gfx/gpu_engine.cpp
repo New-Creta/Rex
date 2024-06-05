@@ -40,6 +40,7 @@ namespace rex
     void GpuEngine::new_frame()
     {
       auto render_ctx = new_render_ctx();
+      render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::RenderTarget);
       render_ctx->clear_render_target(render_target(), m_clear_state_resource.get());
     }
     void GpuEngine::begin_draw()
@@ -63,12 +64,6 @@ namespace rex
       m_render_engine->new_frame();
       m_compute_engine->new_frame();
       m_copy_engine->new_frame();
-
-      {
-        auto render_ctx = new_render_ctx();
-        render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::RenderTarget);
-      }
-
     }
     void GpuEngine::end_frame()
     {

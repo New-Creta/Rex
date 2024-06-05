@@ -23,7 +23,7 @@ namespace rex
 
     u64 CommandQueue::last_completed_fence() const
     {
-      return m_next_fence_value - 1;
+      return gpu_fence_value();
     }
 
     CommandType CommandQueue::type() const

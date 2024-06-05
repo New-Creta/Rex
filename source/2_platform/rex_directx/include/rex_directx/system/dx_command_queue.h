@@ -37,6 +37,8 @@ namespace rex
 
       ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx) override;
 
+      u64 gpu_fence_value() const;
+
       ID3D12CommandQueue* dx_object();
 
     private:

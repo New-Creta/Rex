@@ -12,8 +12,12 @@
 
 #include "rex_renderer_core/gfx/graphics.h"
 
+#include "rex_engine/diagnostics/log.h"
+
 namespace rex
 {
+  DEFINE_LOG_CATEGORY(LogImGui2);
+
   RexImGuiViewport::RexImGuiViewport(ImGuiViewport* imguiViewport, ImGuiRenderState renderState)
     : m_imgui_viewport(imguiViewport)
     , m_render_state(renderState)
@@ -130,6 +134,7 @@ namespace rex
 
         ctx.set_scissor_rect(rect);
         ctx.bind_texture(texture);
+
         ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
 
         //cmdList->set_scissor_rect(rect);

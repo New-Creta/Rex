@@ -46,6 +46,7 @@ namespace rex
     template<typename TResourceType>
     void set_debug_name_for(TResourceType* resource, rsl::string_view name)
     {
+#define REX_ENABLE_DEBUG_RESOURCE_NAMES
 #ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
       resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length(), name.data());
 #else

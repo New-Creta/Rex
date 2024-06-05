@@ -123,7 +123,10 @@ namespace rex
       }
 
       virtual void post_init() = 0;
-      virtual void new_frame() {}
+      virtual void new_frame() 
+      {
+        command_queue()->cpu_wait(command_queue()->last_completed_fence());
+      }
 
     protected:
       // Creates a new context and adds it to the active list

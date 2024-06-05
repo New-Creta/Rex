@@ -536,6 +536,13 @@ namespace rex
           return false;
         }
 
+        switch (type)
+        {
+        case rex::rhi::CommandType::Render: set_debug_name_for(d3d_command_queue.Get(), "Render Command Queue"); break;
+        case rex::rhi::CommandType::Copy:     set_debug_name_for(d3d_command_queue.Get(), "Copy Command Queue"); break;
+        case rex::rhi::CommandType::Compute: break;
+        }
+
         rsl::unique_ptr<DxFence> fence = create_fence();
         return rsl::make_unique<DxCommandQueue>(type, d3d_command_queue, rsl::move(fence));
       }
@@ -578,6 +585,14 @@ namespace rex
           REX_ERROR(LogDxRhi, "Failed to create command allocator");
           return false;
         }
+
+        switch (type)
+        {
+        case rex::rhi::CommandType::Render: set_debug_name_for(allocator.Get(), "Render Command Allocator"); break;
+        case rex::rhi::CommandType::Copy:     set_debug_name_for(allocator.Get(), "Copy Command Allocator"); break;
+        case rex::rhi::CommandType::Compute: break;
+        }
+
         return rsl::make_unique<rex::rhi::DxCommandAllocator>(allocator);
       }
 
@@ -597,6 +612,9 @@ namespace rex
       {
         s32 total_size = numVertices * vertexSize;
         wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_buffer(total_size);
+
+        set_debug_name_for(d3d_buffer.Get(), "Vertex Buffer");
+
         return rsl::make_unique<DxVertexBuffer>(d3d_buffer, numVertices, vertexSize);
 
         //wrl::ComPtr<ID3D12Resource> buffer = internal::get()->heap->create_buffer(total_size);
@@ -608,7 +626,7 @@ namespace rex
         s32 index_size = renderer::index_format_size(format);
         s32 total_size = numIndices * index_size;
         wrl::ComPtr<ID3D12Resource> buffer = g_gpu_engine->allocate_buffer(total_size);
-        //set_debug_name_for(buffer.Get(), "Index Buffer");
+        set_debug_name_for(buffer.Get(), "Index Buffer");
         return rsl::make_unique<DxIndexBuffer>(buffer, numIndices, format);
       }
       rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc)
@@ -829,6 +847,8 @@ namespace rex
 
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
         DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
+
+        set_debug_name_for(d3d_constant_buffer.Get(), "Constant Buffer");
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
 
