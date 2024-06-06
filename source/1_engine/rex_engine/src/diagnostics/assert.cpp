@@ -25,16 +25,19 @@ namespace rex
       is_processing_assert = true;
       REX_ERROR(LogAssert, "Assert Raised: {}", msg);
 
-      REX_ERROR(LogAssert, "Assert contexts:");
-      REX_ERROR(LogAssert, "----------------");
-
-      for(const AssertContext& context: contexts())
+      if (contexts().size() > 0)
       {
-        REX_ERROR(LogAssert, "{}", context.msg());
-        REX_ERROR(LogAssert, "[traceback] {}", rsl::to_string(context.source_location()));
-      }
+        REX_ERROR(LogAssert, "Assert contexts:");
+        REX_ERROR(LogAssert, "----------------");
 
-      REX_ERROR(LogAssert, "----------------");
+        for (const AssertContext& context : contexts())
+        {
+          REX_ERROR(LogAssert, "{}", context.msg());
+          REX_ERROR(LogAssert, "[traceback] {}", rsl::to_string(context.source_location()));
+        }
+
+        REX_ERROR(LogAssert, "----------------");
+      }
 
       const ResolvedCallstack callstack(current_callstack());
 

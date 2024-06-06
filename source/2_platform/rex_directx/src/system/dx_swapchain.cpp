@@ -14,8 +14,9 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogSwapchain);
 
-    DxSwapchain::DxSwapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount)
-        : m_swapchain(swapchain)
+    DxSwapchain::DxSwapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, s32 width, s32 height, DXGI_FORMAT format, s32 bufferCount)
+      : Swapchain(width, height, d3d::from_dx12(format))
+        , m_swapchain(swapchain)
         , m_format(format)
     {
       store_buffers(bufferCount);

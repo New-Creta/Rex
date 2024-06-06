@@ -10,6 +10,7 @@ namespace rex
     class Swapchain
     {
     public:
+      Swapchain(s32 width, s32 height, renderer::TextureFormat format);
       virtual ~Swapchain() = default;
       virtual void present() = 0;
 

@@ -47,6 +47,7 @@ namespace rex
       void init_resource_heap();
       void init_desc_heap_pool();
       void init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE type);
+      void init_imgui() override;
 
     private:
       wrl::ComPtr<IDXGIInfoQueue> m_debug_info_queue;

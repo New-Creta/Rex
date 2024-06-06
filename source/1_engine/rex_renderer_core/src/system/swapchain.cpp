@@ -4,6 +4,12 @@ namespace rex
 {
   namespace rhi
   {
+    Swapchain::Swapchain(s32 width, s32 height, renderer::TextureFormat format)
+      : m_width(width)
+      , m_height(height)
+      , m_format(format)
+    {}
+
     s32 Swapchain::width() const
     {
       return m_width;

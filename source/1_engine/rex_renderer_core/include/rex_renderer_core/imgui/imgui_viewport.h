@@ -3,6 +3,7 @@
 #include "imgui/imgui.h"
 
 #include "rex_renderer_core/imgui/imgui_frame_context.h"
+#include "rex_renderer_core/imgui/imgui_render_state.h"
 #include "rex_renderer_core/rhi/primitive_topology.h"
 
 namespace rex
@@ -16,19 +17,10 @@ namespace rex
     class RenderContext;
   };
 
-  struct ImGuiRenderState
-  {
-    rhi::RootSignature* root_signature;
-    rhi::PipelineState* pso;
-    rhi::ConstantBuffer* constant_buffer;
-    renderer::PrimitiveTopology primitive_topology;
-    rsl::array<f32, 4> blend_factor;
-  };
-
   class RexImGuiViewport
   {
   public:
-    RexImGuiViewport(ImGuiViewport* imguiViewport, ImGuiRenderState renderState);
+    RexImGuiViewport(ImGuiViewport* imguiViewport);
 
     void render(rhi::RenderContext& renderContext);
 
@@ -43,6 +35,5 @@ namespace rex
     ImGuiViewport* m_imgui_viewport;
     rsl::vector<ImGuiFrameContext> m_frame_contexts;
     s32 m_frame_idx;
-    ImGuiRenderState m_render_state;
   };
 }

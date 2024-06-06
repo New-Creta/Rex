@@ -21,7 +21,7 @@ namespace rex
     class DxSwapchain : public Swapchain
     {
     public:
-      DxSwapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, DXGI_FORMAT format, s32 bufferCount);
+      DxSwapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, s32 width, s32 height, DXGI_FORMAT format, s32 bufferCount);
 
       void resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);
       void present();

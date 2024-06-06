@@ -40,6 +40,7 @@ namespace rex
     void init_input_layout();
     void init_constant_buffer();
     void init_pso();
+    void init_imgui_renderstate();
 
   private:
     rsl::unique_ptr<rhi::Texture2D> m_fonts_texture;

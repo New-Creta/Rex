@@ -14,11 +14,15 @@
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/resources/dx_texture_2d.h"
 
 #include "rex_directx/gfx/dx_render_engine.h"
 #include "rex_directx/gfx/dx_compute_engine.h"
 #include "rex_directx/gfx/dx_copy_engine.h"
+
+#include "rex_directx/imgui/dx_imgui.h"
+#include "rex_directx/rendering/dx_imgui_window.h"
 
 namespace rex
 {
@@ -148,6 +152,13 @@ namespace rex
     {
       m_descriptor_heap_pool.emplace(type, rhi::create_descriptor_heap(type));
     }
-
+    void DxGpuEngine::init_imgui()
+    {
+      ImGuiDevice imgui_device{};
+      imgui_device.command_queue = render_command_queue();
+      imgui_device.max_num_frames_in_flight = max_frames_in_flight();
+      imgui_device.rtv_format = d3d::to_dx12(swapchain_format());
+      init_dx_imgui_device(imgui_device);
+    }
   }
 }

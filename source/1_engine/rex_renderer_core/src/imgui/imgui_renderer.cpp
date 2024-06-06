@@ -11,6 +11,7 @@
 
 #include "rex_renderer_core/imgui/imgui_frame_context.h"
 #include "rex_renderer_core/imgui/imgui_viewport.h"
+#include "rex_renderer_core/imgui/imgui_resources.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
 
@@ -56,9 +57,9 @@ namespace rex
     render_ctx->set_render_target(rhi::get_render_target());
 
     ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-    if (RexImGuiViewport* imgui_window = (RexImGuiViewport*)main_viewport->RendererUserData)
+    if (RexImGuiViewport* rex_viewport = (RexImGuiViewport*)main_viewport->RendererUserData)
     {
-      imgui_window->render(*render_ctx);
+      rex_viewport->render(*render_ctx);
     }
 
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -114,18 +115,23 @@ namespace rex
     init_constant_buffer();
     init_root_signature();
     init_pso();
+    init_imgui_renderstate();
+  }
+
+  void ImGuiRenderer::init_imgui_renderstate()
+  {
+    ImGuiResources resources{};
+
+    resources.root_signature = m_root_signature.get();
+    resources.pso = m_pipeline_state.get();
+    resources.cb = m_constant_buffer.get();
+    imgui_init_resources(resources);
   }
 
   void ImGuiRenderer::init_main_imgui_viewport()
   {
     ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-    ImGuiRenderState render_state{};
-    render_state.root_signature = m_root_signature.get();
-    render_state.pso = m_pipeline_state.get();
-    render_state.constant_buffer = m_constant_buffer.get();
-    render_state.primitive_topology = renderer::PrimitiveTopology::TriangleList;
-    render_state.blend_factor = { 0.0f, 0.0f, 0.0f, 0.0f };
-    main_viewport->RendererUserData = rex::debug_alloc<RexImGuiViewport>(main_viewport, render_state);
+    main_viewport->RendererUserData = rex::debug_alloc<RexImGuiViewport>(main_viewport);
   }
 
   void ImGuiRenderer::init_font_texture()
@@ -272,4 +278,5 @@ namespace rex
 
     m_pipeline_state = rex::rhi::create_pso(pso_desc);
   }
+
 }

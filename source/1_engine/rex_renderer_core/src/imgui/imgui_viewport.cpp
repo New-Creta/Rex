@@ -9,6 +9,7 @@
 #include "rex_renderer_core/system/command_list.h"
 
 #include "rex_renderer_core/resources/constant_buffer.h"
+#include "rex_renderer_core/imgui/imgui_resources.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
 
@@ -18,9 +19,8 @@ namespace rex
 {
   DEFINE_LOG_CATEGORY(LogImGui2);
 
-  RexImGuiViewport::RexImGuiViewport(ImGuiViewport* imguiViewport, ImGuiRenderState renderState)
+  RexImGuiViewport::RexImGuiViewport(ImGuiViewport* imguiViewport)
     : m_imgui_viewport(imguiViewport)
-    , m_render_state(renderState)
   {
     for (s32 i = 0; i < 3; ++i)
     {
@@ -42,7 +42,7 @@ namespace rex
 
     // Update the current frame context with the data for this frame
     ImGuiFrameContext& frame_ctx = current_frame_ctx();
-    ScopedPoolObject<rhi::SyncInfo> sync_info = frame_ctx.update_data(draw_data, m_render_state.constant_buffer);
+    ScopedPoolObject<rhi::SyncInfo> sync_info = frame_ctx.update_data(draw_data, imgui_renderstate().constant_buffer);
 
     // Wait for the data to be updated on the gpu before we start executing render commands
     renderContext.stall(*sync_info);
@@ -75,16 +75,16 @@ namespace rex
   {
     ctx.transition_buffer(frameCtx.vertex_buffer(), rhi::ResourceState::VertexAndConstantBuffer);
     ctx.transition_buffer(frameCtx.index_buffer(), rhi::ResourceState::IndexBuffer);
-    ctx.transition_buffer(m_render_state.constant_buffer, rhi::ResourceState::VertexAndConstantBuffer);
+    ctx.transition_buffer(imgui_renderstate().constant_buffer, rhi::ResourceState::VertexAndConstantBuffer);
 
     ctx.set_viewport(frameCtx.viewport());
     ctx.set_vertex_buffer(frameCtx.vertex_buffer());
     ctx.set_index_buffer(frameCtx.index_buffer());
-    ctx.set_primitive_topology(m_render_state.primitive_topology);
-    ctx.set_pipeline_state(m_render_state.pso);
-    ctx.set_root_signature(m_render_state.root_signature);
-    ctx.set_constant_buffer(0, m_render_state.constant_buffer);
-    ctx.set_blend_factor(m_render_state.blend_factor.data());
+    ctx.set_primitive_topology(imgui_renderstate().primitive_topology);
+    ctx.set_pipeline_state(imgui_renderstate().pso);
+    ctx.set_root_signature(imgui_renderstate().root_signature);
+    ctx.set_constant_buffer(0, imgui_renderstate().constant_buffer);
+    ctx.set_blend_factor(imgui_renderstate().blend_factor.data());
 
     //ctx.wait_for_finish();
 

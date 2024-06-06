@@ -66,6 +66,10 @@ namespace rex
     protected:
       s32 calc_gpu_score(const GpuDescription& gpu);
       void init_failed();
+      rhi::CommandQueue* render_command_queue();
+      s32 max_frames_in_flight() const;
+      renderer::TextureFormat swapchain_format() const;
+      virtual void init_imgui() = 0;
 
     private:
       void init_swapchain_render_targets();

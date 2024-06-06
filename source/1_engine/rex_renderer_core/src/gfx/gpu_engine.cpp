@@ -30,6 +30,7 @@ namespace rex
       init_swapchain_render_targets();
 
       m_copy_engine->post_init();
+      init_imgui();
     }
 
     bool GpuEngine::init_successful() const
@@ -117,6 +118,20 @@ namespace rex
     void GpuEngine::init_failed()
     {
       m_init_successfully = false;
+    }
+
+    rhi::CommandQueue* GpuEngine::render_command_queue()
+    {
+      return m_render_engine->command_queue();
+    }
+
+    s32 GpuEngine::max_frames_in_flight() const
+    {
+      return m_swapchain->num_buffers();
+    }
+    renderer::TextureFormat GpuEngine::swapchain_format() const
+    {
+      return m_swapchain->format();
     }
 
     ScopedPoolObject<rhi::CopyContext> GpuEngine::new_copy_ctx()

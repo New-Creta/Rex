@@ -575,7 +575,11 @@ namespace rex
         wrl::ComPtr<IDXGISwapChain3> d3d_swapchain_3;
         DX_CALL(d3d_swapchain.As(&d3d_swapchain_3));
 
-        return rsl::make_unique<DxSwapchain>(d3d_swapchain_3, sd.Format, sd.BufferCount);
+        d3d_swapchain_3->GetDesc1(&sd);
+        s32 width = sd.Width;
+        s32 height = sd.Height;
+
+        return rsl::make_unique<DxSwapchain>(d3d_swapchain_3, width, height, sd.Format, sd.BufferCount);
       }
       rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::CommandType type)
       {

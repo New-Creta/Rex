@@ -2,6 +2,8 @@
 
 #include "imgui/platform/win/imgui_impl_win32.h"
 
+#include "rex_renderer_core/imgui/imgui_window.h"
+
 namespace rex
 {
   bool imgui_platform_init(void* platformWindowHandle)
@@ -10,11 +12,11 @@ namespace rex
 
     // Maybe these can be done in the ImGui renderer
     ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
-    //platform_io.Renderer_CreateWindow = create_window_callback;   
-    //platform_io.Renderer_DestroyWindow = destroy_window_callback;
-    //platform_io.Renderer_SetWindowSize = set_window_size_callback;
-    //platform_io.Renderer_RenderWindow = render_window_callback;
-    //platform_io.Renderer_SwapBuffers = swap_buffers_callback;
+    platform_io.Renderer_CreateWindow = imgui_create_window;
+    platform_io.Renderer_DestroyWindow = imgui_destroy_window;
+    platform_io.Renderer_SetWindowSize = imgui_set_window_size;
+    platform_io.Renderer_RenderWindow = imgui_render_window;
+    platform_io.Renderer_SwapBuffers = imgui_swap_buffers;
 
     return true;
   }
