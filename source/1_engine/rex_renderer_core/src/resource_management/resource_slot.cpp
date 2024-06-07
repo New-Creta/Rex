@@ -1,7 +1,5 @@
 #include "rex_renderer_core/resource_management/resource_slot.h"
 
-#include "rex_renderer_core/rendering/renderer.h"
-
 namespace rex
 {
   namespace rhi

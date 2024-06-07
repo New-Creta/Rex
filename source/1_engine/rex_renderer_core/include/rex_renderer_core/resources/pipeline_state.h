@@ -36,15 +36,5 @@ namespace rex
 
 namespace rsl
 {
-  //template <>
-  //struct hash<rex::rhi::PipelineStateDesc>
-  //{
-  //  rsl::hash_result operator()(const rex::rhi::PipelineStateDesc& psoDesc) const
-  //  {
-  //    const char* buffer       = reinterpret_cast<const char*>(&psoDesc); // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
-  //    const size_t buffer_size = sizeof(psoDesc);
 
-  //    return rsl::internal::hash(buffer, buffer_size);
-  //  }
-  //};
 } // namespace rsl

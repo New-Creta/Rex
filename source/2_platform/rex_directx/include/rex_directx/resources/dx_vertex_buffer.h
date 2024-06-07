@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rex_directx/system/dx_resource.h"
-
 #include "rex_renderer_core/resources/vertex_buffer.h"
 
 namespace rex

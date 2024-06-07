@@ -9,7 +9,6 @@
 #include "rex_directx/resources/dx_input_layout_resource.h"
 #include "rex_directx/resources/dx_vertex_shader.h"
 #include "rex_directx/resources/dx_pixel_shader.h"
-#include "rex_directx/resources/dx_raster_state_resource.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
 
 namespace rex
@@ -19,17 +18,6 @@ namespace rex
     class InputLayout;
     class RootSignature;
     class RasterStateResource;
-
-    //struct PipelineStateDesc
-    //{
-    //  InputLayout* input_layout;
-    //  RootSignature* root_signature;
-    //  Shader* vertex_shader;
-    //  Shader* pixel_shader;
-    //  RasterStateResource* raster_state;
-    //  rsl::optional<BlendDesc> blend_state;
-    //  rsl::optional<DepthStencilDesc> depth_stencil_state;
-    //};
 
     class DxPipelineState : public PipelineState
     {

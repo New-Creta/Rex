@@ -9,7 +9,6 @@
 #include "rex_renderer_core/resources/index_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/system/link_shader.h"
-#include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/resources/shader.h"
@@ -34,11 +33,6 @@
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
-#include "rex_renderer_core/resources/vertex_shader.h"
-#include "rex_renderer_core/resources/upload_buffer.h"
-
-
-
 
 namespace rex
 {
@@ -88,7 +82,6 @@ namespace rex
       rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::CommandType type);
 
       // Resource creation
-      rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, renderer::TextureFormat format);
       rsl::unique_ptr<RenderTarget> create_render_target(Texture2D* texture);
 
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);

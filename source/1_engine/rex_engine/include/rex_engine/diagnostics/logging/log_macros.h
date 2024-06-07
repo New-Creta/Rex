@@ -114,4 +114,22 @@ namespace rex
       return false;                                                                                                                                                                                                                                      \
     }()
 
+#include "rex_engine/engine/defines.h"
+
+// Only log once during the doration of the program
+#define REX_FATAL_ONCE(CategoryName, ...)       REX_EXECUTE_ONCE(REX_FATAL(CategoryName, __VA_ARGS__))
+#define REX_ERROR_ONCE(CategoryName, ...)       REX_EXECUTE_ONCE(REX_ERROR(CategoryName, __VA_ARGS__))
+#define REX_WARN_ONCE(CategoryName, ...)        REX_EXECUTE_ONCE(REX_WARN(CategoryName, __VA_ARGS__))
+#define REX_INFO_ONCE(CategoryName, ...)        REX_EXECUTE_ONCE(REX_INFO(CategoryName, __VA_ARGS__))
+#define REX_VERBOSE_ONCE(CategoryName, ...)     REX_EXECUTE_ONCE(REX_VERBOSE(CategoryName, __VA_ARGS__))
+#define REX_VERYVERBOSE_ONCE(CategoryName, ...) REX_EXECUTE_ONCE(REX_VERYVERBOSE(CategoryName, __VA_ARGS__))
+
+// Only log once during the duration of the program, on the first time the condition is true
+#define REX_FATAL_ONCE_X(CategoryName, cond, ...)       if (cond) { REX_EXECUTE_ONCE(REX_FATAL(CategoryName, __VA_ARGS__)); }
+#define REX_ERROR_ONCE_X(CategoryName, cond, ...)       if (cond) { REX_EXECUTE_ONCE(REX_ERROR(CategoryName, __VA_ARGS__)); }
+#define REX_WARN_ONCE_X(CategoryName, cond, ...)        if (cond) { REX_EXECUTE_ONCE(REX_WARN(CategoryName, __VA_ARGS__)); }
+#define REX_INFO_ONCE_X(CategoryName, cond, ...)        if (cond) { REX_EXECUTE_ONCE(REX_INFO(CategoryName, __VA_ARGS__)); }
+#define REX_VERBOSE_ONCE_X(CategoryName, cond, ...)     if (cond) { REX_EXECUTE_ONCE(REX_VERBOSE(CategoryName, __VA_ARGS__)); }
+#define REX_VERYVERBOSE_ONCE_X(CategoryName, cond, ...) if (cond) { REX_EXECUTE_ONCE(REX_VERYVERBOSE(CategoryName, __VA_ARGS__)); }
+
 #endif

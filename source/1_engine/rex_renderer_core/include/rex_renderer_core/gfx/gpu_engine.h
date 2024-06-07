@@ -17,6 +17,10 @@ namespace rex
 {
   namespace gfx
   {
+#ifdef REX_BUILD_DEBUG
+#define REX_ENABLE_IMGUI
+#endif
+
     // The GPU Engine is the main system driving all other systems that deal with the gpu.
     // It encapsulates all sub engines (copy, compute, render).
     class GpuEngine
@@ -31,16 +35,16 @@ namespace rex
       GpuEngine& operator=(const GpuEngine&) = delete;
       GpuEngine& operator=(GpuEngine&&) = delete;
 
+      // Because some objects have a dependency on the gpu engine itself
+      // We need to wait for the gpu engine to be constructed, only then we 
+      // we can initialize the rest of the objects
       void post_init();
 
-      // Did the gpu engine initialize successfully?
-      bool init_successful() const;
-
+      // Prepare a new frame by incrementing the frame index and clearing the backbuffer
       void new_frame();
-      void begin_draw();
-
-      void end_draw();
+      // Present the new frame to the main window
       void present();
+      // Finish off the last frame
       void end_frame();
 
       // Create a new context which is used for copying resources from or to the gpu
@@ -50,40 +54,22 @@ namespace rex
       // Create a new context which is used for computing data on the gpu
       ScopedPoolObject<rhi::ComputeContext> new_compute_ctx();
 
-
-
-      // Get the command queue of the specified type and check if its internal fence
-      // is higher or equal to the given value
-      bool is_fence_complete(rhi::CommandType cmdType, s32 fenceValue) const;
-      // Get the command queue of the specified type and wait for its internal fence
-      // to be higher or equal to the given value
-      void wait_for_fence(rhi::CommandType cmdType, s32 fenceValue);
-      // Wait for all command queue to have finished executing their current queued commands
-      void wait_for_gpu();
-
       rhi::RenderTarget* render_target();
 
-    protected:
-      s32 calc_gpu_score(const GpuDescription& gpu);
-      void init_failed();
-      rhi::CommandQueue* render_command_queue();
-      s32 max_frames_in_flight() const;
-      renderer::TextureFormat swapchain_format() const;
-      virtual void init_imgui() = 0;
-
     private:
+      void init_clear_state();
+      void init_imgui();
       void init_swapchain_render_targets();
 
     private:
-      rsl::unique_ptr<RenderEngine> m_render_engine;
-      rsl::unique_ptr<ComputeEngine> m_compute_engine;
-      rsl::unique_ptr<CopyEngine> m_copy_engine;
-      rsl::unique_ptr<rhi::Swapchain> m_swapchain;
-      rsl::vector<rsl::unique_ptr<rhi::RenderTarget>> m_swapchain_render_targets;
-      rsl::unique_ptr<rhi::ClearStateResource> m_clear_state_resource;
-      s32 m_max_frames_in_flight;
-      void* m_primary_display_handle;
-      bool m_init_successfully;
+      rsl::unique_ptr<RenderEngine> m_render_engine;    // The render engine is the high level graphics engine responsible for queueing render commands
+      rsl::unique_ptr<ComputeEngine> m_compute_engine;  // The render engine is the high level graphics engine responsible for queueing compute commands
+      rsl::unique_ptr<CopyEngine> m_copy_engine;        // The render engine is the high level graphics engine responsible for queueing copy commands
+      rsl::unique_ptr<rhi::Swapchain> m_swapchain;      // The swapchain is responsible for swapping the backbuffer with the front buffer
+      rsl::vector<rsl::unique_ptr<rhi::RenderTarget>> m_swapchain_render_targets; // The render targets that point to the buffers of the swapchain
+      rsl::unique_ptr<rhi::ClearStateResource> m_clear_state_resource; // The clear state resource that's used to clear the backbuffer with
+      s32 m_max_frames_in_flight;                       // The maximum number of we can have in flight for rendering.
+      void* m_primary_display_handle;                   // The display handle to render to (HWND on Windows)
     };
 
   }

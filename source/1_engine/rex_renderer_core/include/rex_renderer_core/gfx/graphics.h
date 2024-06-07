@@ -48,14 +48,15 @@ namespace rex
     // Shutdown the graphics engine, no rendering support from here on out
     void shutdown();
 
-    void new_frame();
-    void begin_draw();
+    // Render a single frame
+    void render();
 
-    void end_draw();
+    // Present the last renderer frame to the main window
     void present();
-    void end_frame();
 
+    // Create a new context used for copying data to the gpu
     ScopedPoolObject<rhi::CopyContext> new_copy_ctx();
+    // Create a new context used for queueing rendering commands on the gpu
     ScopedPoolObject<rhi::RenderContext> new_render_ctx();
   }
 }

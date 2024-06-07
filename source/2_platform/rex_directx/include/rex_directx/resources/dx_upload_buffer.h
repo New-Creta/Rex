@@ -3,9 +3,6 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_renderer_core/resource_management/resource.h"
 
-#include "rex_directx/system/dx_resource.h"
-#include "rex_directx/system/dx_commandlist.h"
-
 namespace rex
 {
   namespace rhi

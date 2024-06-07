@@ -48,26 +48,17 @@ namespace rex
       rhi::shutdown();
     }
 
-    void new_frame()
+    void render()
     {
       g_gpu_engine->new_frame();
-    }
-    void begin_draw()
-    {
       g_gpu_engine->begin_draw();
+      g_gpu_engine->end_draw();
+      g_gpu_engine->end_frame();
     }
 
-    void end_draw()
-    {
-      g_gpu_engine->end_draw();
-    }
     void present()
     {
       g_gpu_engine->present();
-    }
-    void end_frame()
-    {
-      g_gpu_engine->end_frame();
     }
 
     ScopedPoolObject<rhi::CopyContext> new_copy_ctx()

@@ -150,11 +150,6 @@ namespace rex
     rhi::DxTexture2D* to_dx12(rhi::Texture2D* texture);
     rhi::DxInputLayoutResource* to_dx12(rhi::InputLayout* inputLayout);
 
-    //const rhi::DxCommandQueue* to_dx12(const rhi::CommandQueue* cmdQueue);
-    //const rhi::DxCommandAllocator* to_dx12(const rhi::CommandAllocator* cmdAlloc);
-    //const rhi::DxRootSignature* to_dx12(const rhi::RootSignature* rootSig);
-    //const rhi::DxShader* to_dx12(const rhi::Shader* shader);
-
     ID3D12Resource* dx12_resource(rhi::ConstantBuffer* buffer);
     ID3D12Resource* dx12_resource(rhi::VertexBuffer* buffer);
     ID3D12Resource* dx12_resource(rhi::IndexBuffer* buffer);

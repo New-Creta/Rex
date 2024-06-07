@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_fence.h"
 #include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"

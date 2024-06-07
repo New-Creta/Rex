@@ -36,12 +36,7 @@ namespace rex
       , m_heap(rhi::create_resource_heap())
       , m_descriptor_heap_pool()
     {
-      // Create a scopeguard that automatically marks initialization as failed
-      // This is to make it easy to extend initialization where needed with only
-      // needing 1 place where we mark initialization as successful.
-      rsl::scopeguard mark_init_failed = [this]() { init_failed(); };
-
-#ifdef REX_ENABLE_DX12_DEBUG_LAYER
+#ifdef REX_ENABLE_DEBUG_GPU_ENGINE
       // 2.1) Create the debug layer aftet device gets created
       // The debug layer is linked to the device and can therefore
       // only get created when the device is created
@@ -49,8 +44,6 @@ namespace rex
 #endif
 
       init_desc_heap_pool();
-
-      mark_init_failed.release();
     }
 
     void DxGpuEngine::init_debug_layer()

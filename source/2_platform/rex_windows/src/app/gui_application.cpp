@@ -32,7 +32,6 @@
 #include "rex_engine/event_system/events/app/quit_app.h"
 #include "rex_engine/settings/settings.h"
 
-#include "rex_renderer_core/rendering/scene_renderer.h"
 #include "rex_renderer_core/imgui/imgui_renderer.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
@@ -125,31 +124,13 @@ namespace rex
           return;
         }
 
-        // calling  the graphics pipeline which holds all the renderers needed
-        // these renderers get added to the graphics pipeline by the engine
-        // gfx::render();
-        gfx::new_frame();
-
-        // m_scene_renderer->render();
+        // Call into our graphics API to render everything
+        gfx::render();
+        
         m_imgui_renderer->render();
 
+        // Present the newly rendered image to the main window
         gfx::present();
-
-        // All renderers have done their work, present their work now.
-        // render_engine().present();
-
-        //pre_user_draw();
-
-        // TODO: this call eventually has to go.
-        // we will query the scenegraph and pull geometry from the scene instead of letting the user
-        // execute draw commands manually. However, for the setup of this framework we will
-        // provide this API to be able to execute draw commands properly
-        //m_on_draw();
-
-        // all command are now queued, let's render
-        //renderer::render();
-
-        //post_user_draw();
       }
       void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {

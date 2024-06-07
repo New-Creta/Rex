@@ -1,8 +1,5 @@
 #pragma once
 
-#include "rex_directx/rendering/dx_imgui_viewport.h"
-
-#include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_swapchain.h"
 #include "rex_renderer_core/resources/root_signature.h"
 #include "rex_renderer_core/resources/pipeline_state.h"

@@ -16,7 +16,6 @@ namespace rex
       AdapterManager(const AdapterManager&) = delete;
       AdapterManager(AdapterManager&&)      = delete;
       AdapterManager(Factory* factory, const GpuScorerFn& scorer);
-      AdapterManager();
       ~AdapterManager() = default;
 
       AdapterManager& operator=(const AdapterManager&) = delete;
