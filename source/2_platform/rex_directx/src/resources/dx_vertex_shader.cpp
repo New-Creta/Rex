@@ -4,7 +4,7 @@ namespace rex
 {
   namespace rhi
   {
-    VertexShader::VertexShader(const wrl::ComPtr<ID3DBlob> byteCode)
+    DxVertexShader::DxVertexShader(const wrl::ComPtr<ID3DBlob> byteCode)
       : DxShader(byteCode)
     {}
   }

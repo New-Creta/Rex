@@ -124,8 +124,6 @@ namespace rex
     {
       UploadBuffer* upload_buffer = api_engine()->lock_upload_buffer();
 
-      //transition_buffer(upload_buffer, ResourceState::CopySource);
-
       s32 write_offset = upload_buffer->prepare_for_new_buffer_write(data, size);
       m_cmd_list->CopyBufferRegion(resource, offset, upload_buffer->dx_object(), write_offset, size);
 

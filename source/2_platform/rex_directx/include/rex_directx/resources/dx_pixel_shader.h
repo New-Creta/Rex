@@ -6,10 +6,10 @@ namespace rex
 {
   namespace rhi
   {
-    class PixelShader : public DxShader
+    class DxPixelShader : public DxShader
     {
     public:
-      PixelShader(const wrl::ComPtr<ID3DBlob> byteCode);
+      DxPixelShader(const wrl::ComPtr<ID3DBlob> byteCode);
 
     private:
 

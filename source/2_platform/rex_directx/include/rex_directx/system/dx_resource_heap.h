@@ -4,6 +4,8 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/memory.h"
 
+struct D3D12_RESOURCE_ALLOCATION_INFO;
+
 namespace rex
 {
   namespace rhi

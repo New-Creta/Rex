@@ -18,6 +18,11 @@ namespace rex
         , m_desc_handle(descHandle)
       {}
 
+      ID3D12Resource* dx_object()
+      {
+        return m_resource.Get();
+      }
+
       DescriptorHandle handle() const
       {
         return m_desc_handle;

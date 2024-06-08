@@ -10,13 +10,13 @@ namespace rex
     {
         namespace resources
         {
-            struct VertexShader
+            struct DxVertexShader
             {
                 wrl::ComPtr<ID3DBlob> vertex_shader{};
             };
         } // namespace resources
 
-        class VertexShaderResource : public BaseResource<resources::VertexShader>
+        class VertexShaderResource : public BaseResource<resources::DxVertexShader>
         {
         public:
             explicit VertexShaderResource(ResourceID id, const wrl::ComPtr<ID3DBlob>& vs)
@@ -26,7 +26,7 @@ namespace rex
             ~VertexShaderResource() override = default;
 
         private:
-            resources::VertexShader m_vertex_shader;
+            resources::DxVertexShader m_vertex_shader;
         };
     } // namespace renderer
 } // namespace rex

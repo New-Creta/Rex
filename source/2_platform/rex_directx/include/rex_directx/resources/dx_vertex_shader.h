@@ -6,10 +6,10 @@ namespace rex
 {
   namespace rhi
   {
-    class VertexShader : public DxShader
+    class DxVertexShader : public DxShader
     {
     public:
-      VertexShader(const wrl::ComPtr<ID3DBlob> byteCode);
+      DxVertexShader(const wrl::ComPtr<ID3DBlob> byteCode);
 
     private:
 

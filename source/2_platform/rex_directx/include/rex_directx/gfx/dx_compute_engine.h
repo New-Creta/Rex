@@ -13,18 +13,10 @@ namespace rex
     class DxComputeEngine : public gfx::ComputeEngine
     {
     public:
-      void init() override
-      {
-
-      }
+      void init() override;
 
     protected:
-      rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override
-      {
-        wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::CommandType::Compute);
-
-        return rsl::make_unique<rhi::DxComputeContext>(this, cmdlist, alloc);
-      }
+      rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override;
 
     };
   }
