@@ -2,6 +2,7 @@
 
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_feature_shader_model.h"
+#include "rex_directx/dxgi/includes.h"
 
 namespace rex
 {

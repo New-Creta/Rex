@@ -30,7 +30,7 @@ namespace rex
     class DxGpuEngine : public GpuEngine
     {
     public:
-      DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, rsl::unique_ptr<dxgi::AdapterManager> adapterManager);
+      DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, dxgi::AdapterManager* adapterManager);
       ~DxGpuEngine() override = default;
 
       wrl::ComPtr<ID3D12Resource> allocate_buffer(rsl::memory_size size);
@@ -51,7 +51,7 @@ namespace rex
     private:
       wrl::ComPtr<IDXGIInfoQueue> m_debug_info_queue;
       rsl::unique_ptr<rhi::DxDevice> m_device;
-      rsl::unique_ptr<dxgi::AdapterManager> m_adapter_manager;
+      dxgi::AdapterManager* m_adapter_manager;
       rsl::unique_ptr<rhi::ResourceHeap> m_heap;
       rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, rsl::unique_ptr<rhi::DescriptorHeap>> m_descriptor_heap_pool;
     };

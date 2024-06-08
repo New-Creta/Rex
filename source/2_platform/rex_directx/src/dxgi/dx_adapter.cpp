@@ -1,5 +1,7 @@
-#include "rex_directx/dxgi/adapter.h"
+#include "rex_directx/dxgi/dx_adapter.h"
 #include "rex_directx/dxgi/includes.h"
+#include "rex_directx/diagnostics/dx_call.h"
+#include "rex_directx/system/dx_device.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/memory/memory_size.h"
@@ -12,6 +14,25 @@
 namespace
 {
   const uint32 g_adapter_description_size = rsl::small_stack_string::max_size();
+  const rsl::array g_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
+
+  //-------------------------------------------------------------------------
+  rsl::string_view feature_level_name(D3D_FEATURE_LEVEL level)
+  {
+    switch (level)
+    {
+    case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0: return rsl::string_view("D3D_FEATURE_LEVEL_12_0");
+    case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1: return rsl::string_view("D3D_FEATURE_LEVEL_12_1");
+    case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_1_0_CORE: return rsl::string_view("D3D_FEATURE_LEVEL_1_0_CORE");
+    default: return rsl::string_view("Unknown feature level");
+    }
+  }
+
+  //-------------------------------------------------------------------------
+  bool is_correct_feature_level(D3D_FEATURE_LEVEL level)
+  {
+    return rsl::cend(g_expected_feature_levels) != rsl::find(rsl::cbegin(g_expected_feature_levels), rsl::cend(g_expected_feature_levels), level);
+  }
 
   //-------------------------------------------------------------------------
   /**
@@ -113,11 +134,14 @@ namespace rex
 {
   namespace dxgi
   {
+    DEFINE_LOG_CATEGORY(LogDxAdapter);
+
     //-------------------------------------------------------------------------
     Adapter::Adapter(wrl::ComPtr<IDXGIAdapter>&& adapter, u32 version)
         : DxgiObject(rsl::move(adapter), version)
         , m_description(::get_description(com_ptr()))
     {
+      m_highest_feature_level = query_highest_feature_level();
     }
 
     //-------------------------------------------------------------------------
@@ -125,5 +149,37 @@ namespace rex
     {
       return m_description;
     }
+
+    rsl::unique_ptr<rhi::DxDevice> Adapter::create_device() const
+    {
+      wrl::ComPtr<ID3D12Device1> d3d_device;
+      if (DX_FAILED(D3D12CreateDevice(c_ptr(), static_cast<D3D_FEATURE_LEVEL>(m_highest_feature_level), IID_PPV_ARGS(&d3d_device))))
+      {
+        REX_ERROR(LogDxAdapter, "Failed to create DX12 Device on {}", description().name);
+        return nullptr;
+      }
+
+      return rsl::make_unique<rhi::DxDevice>(d3d_device, m_highest_feature_level, this);
+    }
+
+    D3D_FEATURE_LEVEL Adapter::query_highest_feature_level()
+    {
+      // backwards looping as it's checking for a minimum feature level
+      for (auto it = g_expected_feature_levels.crbegin(); it != g_expected_feature_levels.crend(); ++it)
+      {
+        const D3D_FEATURE_LEVEL feature_level = *it;
+        if (SUCCEEDED(D3D12CreateDevice(c_ptr(), feature_level, __uuidof(ID3D12Device), nullptr)))
+        {
+          return feature_level;
+        }
+      }
+
+      REX_ASSERT("At least D3D_FEATURE_LEVEL_12_0 has to be supported for DirectX 12!");
+
+      // If the compiler doesn't recognise D3D_FEATURE_LEVEL_1_0_CORE
+      // Make sure you're using windows SDK 10.0.18362.0 or later
+      return D3D_FEATURE_LEVEL_1_0_CORE;
+    }
+
   } // namespace dxgi
 } // namespace rex

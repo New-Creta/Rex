@@ -1,8 +1,8 @@
 #include "rex_directx/system/dx_rhi.h"
 
 #include "rex_directx/dxgi/factory.h"
-#include "rex_directx/dxgi/adapter_manager.h"
-#include "rex_directx/dxgi/adapter.h"
+#include "rex_directx/dxgi/dx_adapter_manager.h"
+#include "rex_directx/dxgi/dx_adapter.h"
 
 #include "rex_directx/utility/dx_util.h"
 
@@ -75,6 +75,7 @@ namespace rex
         DxDevice* device = nullptr;                           // Used as the factory object to create gpu resources
         DxCommandQueue* render_command_queue = nullptr;       // Used as the object the swapchain speaks to queue a present command
         rsl::unique_ptr<dxgi::Factory> factory;
+        rsl::unique_ptr<dxgi::AdapterManager> adapter_manager; // The manager holding all the adapters on this machine
       };
 
       // Resources needed to create objects
@@ -88,10 +89,11 @@ namespace rex
         return g_rhi_resources->device->info();
       }
 
-      rsl::unique_ptr<dxgi::Factory> create_dxgi_factory()
+      DEFINE_YES_NO_ENUM(EnableDebugFactory);
+      rsl::unique_ptr<dxgi::Factory> create_dxgi_factory(EnableDebugFactory enableDebugFactory)
       {
         s32 dxgi_factory_flags = 0;
-        if (g_rhi_resources->debug_interface)
+        if (enableDebugFactory)
         {
           dxgi_factory_flags |= DXGI_CREATE_FACTORY_DEBUG;
         }
@@ -101,22 +103,17 @@ namespace rex
 
       rsl::unique_ptr<DxDevice> create_d3d_device(dxgi::AdapterManager* adapterManager)
       {
-        // Find highest scoring gpu
+        // Select highest scoring gpu
         const dxgi::Adapter* selected_gpu = adapterManager->selected();
-        IDXGIAdapter* adapter = selected_gpu->c_ptr();
+        rsl::unique_ptr<DxDevice> device = selected_gpu->create_device();
 
-        // Create device
-        const D3D_FEATURE_LEVEL feature_level = query_feature_level(adapter);
-
-        wrl::ComPtr<ID3D12Device1> d3d_device;
-        if (DX_FAILED(D3D12CreateDevice(adapter, static_cast<D3D_FEATURE_LEVEL>(feature_level), IID_PPV_ARGS(&d3d_device))))
+        if (!device)
         {
-          REX_ERROR(LogDxRhi, "Software adapter not supported");
           REX_ERROR(LogDxRhi, "Failed to create DX12 Device");
           return nullptr;
         }
 
-        return rsl::make_unique<rhi::DxDevice>(d3d_device, feature_level, selected_gpu);
+        return device;
       }
 
       // Initialize graphics systems and create a gpu engine
@@ -133,15 +130,19 @@ namespace rex
 
         // 1) we need to init the dxgi factory.
         // This is the system we use to create most other systems.
-        g_rhi_resources->factory = create_dxgi_factory();
+        bool enable_debug_factory = g_rhi_resources->debug_interface != nullptr;
+        g_rhi_resources->factory = create_dxgi_factory(enable_debug_factory);
 
-        // 2) we need to init the device.
+        // 2) Create the adapter manager
+        // It'll go over all found GPUs in the system and score them
+        g_rhi_resources->adapter_manager = rsl::make_unique<dxgi::AdapterManager>(g_rhi_resources->factory.get(), [](const GpuDescription& gpu) { return calc_gpu_score(gpu); });
+
+        // 3) we need to init the device.
         // A DirectX Device is used for creation of other resources
         // You can think of it as an abstraction of the GPU,
         // but just an abstraction over resource creation,
         // not an abstraction of the gpu itself, that's what an IDXGIAdapter is for.
-        auto adapter_manager = rsl::make_unique<dxgi::AdapterManager>(g_rhi_resources->factory.get(), [](const GpuDescription& gpu) { return calc_gpu_score(gpu); });
-        rsl::unique_ptr<rhi::DxDevice> device = create_d3d_device(adapter_manager.get());
+        rsl::unique_ptr<rhi::DxDevice> device = create_d3d_device(g_rhi_resources->adapter_manager.get());
         if (!device)
         {
           REX_ERROR(LogDxRhi, "Failed to create D3D Device");
@@ -152,7 +153,7 @@ namespace rex
         g_rhi_resources->device = device.get();
 
         // Now create the gpu engine which the backend of all our graphics systems
-        g_gpu_engine = rsl::make_unique<gfx::DxGpuEngine>(userData, rsl::move(device), rsl::move(adapter_manager));
+        g_gpu_engine = rsl::make_unique<gfx::DxGpuEngine>(userData, rsl::move(device), g_rhi_resources->adapter_manager.get());
 
         g_gpu_engine->post_init();
 

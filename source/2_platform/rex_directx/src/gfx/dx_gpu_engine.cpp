@@ -8,8 +8,8 @@
 #include "rex_directx/utility/d3dx12.h"
 #include "rex_directx/dxgi/includes.h"
 #include "rex_directx/dxgi/factory.h"
-#include "rex_directx/dxgi/adapter.h"
-#include "rex_directx/dxgi/adapter_manager.h"
+#include "rex_directx/dxgi/dx_adapter.h"
+#include "rex_directx/dxgi/dx_adapter_manager.h"
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_resource_heap.h"
@@ -30,11 +30,12 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogDxGpuEngine);
 
-    DxGpuEngine::DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, rsl::unique_ptr<dxgi::AdapterManager> adapterManager)
+    DxGpuEngine::DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, dxgi::AdapterManager* adapterManager)
       : GpuEngine(rsl::make_unique<rhi::DxRenderEngine>(), rsl::make_unique<rhi::DxComputeEngine>(), rsl::make_unique<rhi::DxCopyEngine>(), userData)
       , m_device(rsl::move(device))
       , m_heap(rhi::create_resource_heap())
       , m_descriptor_heap_pool()
+      , m_adapter_manager(adapterManager)
     {
 #ifdef REX_ENABLE_DEBUG_GPU_ENGINE
       // 2.1) Create the debug layer aftet device gets created

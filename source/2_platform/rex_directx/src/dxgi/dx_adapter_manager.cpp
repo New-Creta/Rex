@@ -1,5 +1,5 @@
-#include "rex_directx/dxgi/adapter.h" // IWYU pragma: keep
-#include "rex_directx/dxgi/adapter_manager.h"
+#include "rex_directx/dxgi/dx_adapter.h" // IWYU pragma: keep
+#include "rex_directx/dxgi/dx_adapter_manager.h"
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/dxgi/includes.h"
 #include "rex_engine/diagnostics/assert.h"
