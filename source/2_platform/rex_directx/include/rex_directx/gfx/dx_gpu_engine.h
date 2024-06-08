@@ -7,6 +7,7 @@
 #include "rex_engine/platform/win/win_com_ptr.h"
 
 #include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_shader_compiler.h"
 
 struct IDXGIInfoQueue;
 
@@ -18,6 +19,7 @@ namespace rex
     class DxCommandQueue;
     class ResourceHeap;
     class DescriptorHeap;
+    struct CompileShaderDesc;
   }
   namespace dxgi
   {
@@ -31,21 +33,25 @@ namespace rex
     {
     public:
       DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, dxgi::AdapterManager* adapterManager);
-      ~DxGpuEngine() override = default;
 
       wrl::ComPtr<ID3D12Resource> allocate_buffer(rsl::memory_size size);
-      wrl::ComPtr<ID3D12Resource> allocate_texture2d(renderer::TextureFormat, s32 width, s32 height);
+      wrl::ComPtr<ID3D12Resource> allocate_texture2d(s32 width, s32 height, renderer::TextureFormat format);
 
       rhi::DescriptorHandle create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
       rhi::DescriptorHandle create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
       rhi::DescriptorHandle create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
 
+      wrl::ComPtr<ID3DBlob> compile_shader(const rhi::CompileShaderDesc& desc);
+
       rsl::vector<ID3D12DescriptorHeap*> desc_heaps();
 
+    protected:
+      // Initialize the resource heap which keeps track of all gpu resources
+      void init_resource_heap() override;
+      // Initialize the descriptor heaps which keep track of all descriptors to various resources
+      void init_descriptor_heaps() override;
+
     private:
-      void init_debug_layer();     
-      void init_resource_heap();
-      void init_desc_heap_pool();
       void init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE type);
 
     private:
@@ -54,6 +60,7 @@ namespace rex
       dxgi::AdapterManager* m_adapter_manager;
       rsl::unique_ptr<rhi::ResourceHeap> m_heap;
       rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, rsl::unique_ptr<rhi::DescriptorHeap>> m_descriptor_heap_pool;
+      rhi::ShaderCompiler m_shader_compiler;
     };
   }
 }

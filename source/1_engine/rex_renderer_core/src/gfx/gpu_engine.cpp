@@ -24,17 +24,18 @@ namespace rex
       , m_max_frames_in_flight(userData.max_frames_in_flight)
       , m_primary_display_handle(userData.primary_display_handle)
     {
-      init_clear_state();
     }
 
     void GpuEngine::init()
     {
       REX_WARN_ONCE(LogGpuEngine, "Verify if we can't remove GpuEngine's post init function");
-      m_swapchain = rhi::create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
-      init_swapchain_render_targets();
-      init_imgui();
 
-      m_copy_engine->init();
+      init_resource_heap();
+      init_descriptor_heaps();
+      init_clear_state();
+      init_swapchain();
+      init_sub_engines();
+      init_imgui();
     }
 
     // Prepare a new frame
@@ -42,7 +43,7 @@ namespace rex
     {
       auto render_ctx = new_render_ctx();
       render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::RenderTarget);
-      render_ctx->clear_render_target(render_target(), m_clear_state_resource.get());
+      render_ctx->clear_render_target(m_swapchain_render_targets[m_swapchain->current_buffer_idx()].get(), m_clear_state_resource.get());
     }
     void GpuEngine::present()
     {
@@ -90,6 +91,23 @@ namespace rex
       desc.flags.add_state(renderer::ClearBits::ClearColorBuffer);
       m_clear_state_resource = rsl::make_unique<rhi::ClearStateResource>(desc);
     }
+    void GpuEngine::init_swapchain()
+    {
+      m_swapchain = rhi::create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
+
+      for (s32 i = 0; i < m_swapchain->num_buffers(); ++i)
+      {
+        rhi::Texture2D* texture = m_swapchain->buffer(i);
+        rsl::unique_ptr<rhi::RenderTarget> render_target = rhi::create_render_target(texture);
+        m_swapchain_render_targets.emplace_back(rsl::move(render_target));
+      }
+    }
+    void GpuEngine::init_sub_engines()
+    {
+      m_render_engine->init();
+      m_copy_engine->init();
+      m_compute_engine->init();
+    }
     void GpuEngine::init_imgui()
     {
       ImGuiDevice imgui_device{};
@@ -97,15 +115,6 @@ namespace rex
       imgui_device.max_num_frames_in_flight = m_max_frames_in_flight;
       imgui_device.rtv_format = m_swapchain->format();
       init_imgui_device(imgui_device);
-    }
-    void GpuEngine::init_swapchain_render_targets()
-    {
-      for (s32 i = 0; i < m_swapchain->num_buffers(); ++i)
-      {
-        rhi::Texture2D* texture = m_swapchain->buffer(i);
-        rsl::unique_ptr<rhi::RenderTarget> render_target = rhi::create_render_target(texture);
-        m_swapchain_render_targets.emplace_back(rsl::move(render_target));
-      }
     }
   }
 }

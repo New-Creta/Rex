@@ -496,7 +496,7 @@ namespace rex
 
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data)
       {
-        wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(format, width, height);
+        wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
 
         auto texture = rsl::make_unique<DxTexture2D>(d3d_texture, desc_handle, width, height, format);

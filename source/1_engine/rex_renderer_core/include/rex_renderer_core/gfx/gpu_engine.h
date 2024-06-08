@@ -32,8 +32,8 @@ namespace rex
       GpuEngine& operator=(GpuEngine&&) = delete;
 
       // Because some objects have a dependency on the gpu engine itself
-      // We need to wait for the gpu engine to be constructed, only then we 
-      // we can initialize the rest of the objects
+      // We need to wait for the gpu engine to be constructed, only then 
+      // can we initialize the rest of the objects
       void init();
 
       // Prepare a new frame by incrementing the frame index and clearing the backbuffer
@@ -53,10 +53,21 @@ namespace rex
       // Return the render target pointing to the current backbuffer of the swapchain
       rhi::RenderTarget* render_target();
 
+    protected:
+      // Initialize the resource heap which keeps track of all gpu resources
+      virtual void init_resource_heap() = 0;
+      // Initialize the descriptor heaps which keep track of all descriptors to various resources
+      virtual void init_descriptor_heaps() = 0;
+
     private:
+      // Initialize the clear state which is used to clear the backbuffer with
       void init_clear_state();
+      // Initialize the swapchain which is used for presenting to the main window
+      void init_swapchain();
+      // Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
+      void init_sub_engines();
+      // Initialize imgui so it can create its own windows if necessary
       void init_imgui();
-      void init_swapchain_render_targets();
 
     private:
       rsl::unique_ptr<RenderEngine> m_render_engine;    // The render engine is the high level graphics engine responsible for queueing render commands

@@ -37,75 +37,13 @@ namespace rex
       , m_descriptor_heap_pool()
       , m_adapter_manager(adapterManager)
     {
-#ifdef REX_ENABLE_DEBUG_GPU_ENGINE
-      // 2.1) Create the debug layer aftet device gets created
-      // The debug layer is linked to the device and can therefore
-      // only get created when the device is created
-      init_debug_layer();
-#endif
-
-      init_desc_heap_pool();
-    }
-
-    void DxGpuEngine::init_debug_layer()
-    {
-      // Device needs to exist before we can query this
-      rex::wrl::ComPtr<ID3D12InfoQueue> dx12_info_queue;
-      if (DX_SUCCESS(m_device->get()->QueryInterface(IID_PPV_ARGS(dx12_info_queue.GetAddressOf()))))
-      {
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dx12_severity_message);
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_INFO, globals::g_enable_dx12_severity_info);
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, globals::g_enable_dx12_severity_warning);
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, globals::g_enable_dx12_severity_error);
-        dx12_info_queue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dx12_severity_corruption);
-
-        /*
-         * Bug in the DX12 Debug Layer interaction with the DX12 Debug Layer w/ Windows 11.
-         * There's a simple workaround which is to suppress D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE.
-         * The bug itself will be fixed in a future Windows update.
-         *
-         * The Debug Layer has always had quirks when it comes to dealing with 'hybrid graphics' systems
-         * (i.e. laptops with both Intel Integrated and discrete GPUs)
-         *
-         * https://stackoverflow.com/questions/69805245/directx-12-application-is-crashing-in-windows-11
-         * https://github.com/walbourn/directx-vs-templates/commit/2b34dcf9ac764153699058cdc9d4dbc4e837224c
-         */
-        rsl::array<D3D12_MESSAGE_ID, 7> dx12_hide = { D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
-                           D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
-                           D3D12_MESSAGE_ID_EXECUTECOMMANDLISTS_WRONGSWAPCHAINBUFFERREFERENCE,
-                           D3D12_MESSAGE_ID_RESOURCE_BARRIER_BEFORE_AFTER_MISMATCH,
-                           D3D12_MESSAGE_ID_RESOURCE_BARRIER_MISMATCHING_COMMAND_LIST_TYPE,
-                           D3D12_MESSAGE_ID_COMMAND_LIST_DRAW_VERTEX_BUFFER_NOT_SET,
-                           D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE };
-
-        D3D12_INFO_QUEUE_FILTER dx12_filter = {};
-        dx12_filter.DenyList.NumIDs = rsl::safe_numeric_cast<u32>(dx12_hide.size());
-        dx12_filter.DenyList.pIDList = dx12_hide.data();
-        dx12_info_queue->AddStorageFilterEntries(&dx12_filter);
-      }
-      else
-      {
-        REX_WARN(LogDxGpuEngine, "Unable to get D3D12 Debug Interface");
-      }
-    }
-    void DxGpuEngine::init_resource_heap()
-    {
-      CD3DX12_HEAP_DESC desc(100_mib, D3D12_HEAP_TYPE_DEFAULT);
-
-      wrl::ComPtr<ID3D12Heap> d3d_heap;
-      if (DX_FAILED(m_device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
-      {
-        REX_ERROR(LogDxGpuEngine, "Failed to create global resource heap");
-      }
-
-      m_heap = rsl::make_unique<rhi::ResourceHeap>(d3d_heap, m_device->get());
     }
 
     wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_buffer(rsl::memory_size size)
     {
       return m_heap->create_buffer(size);
     }
-    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_texture2d(renderer::TextureFormat format, s32 width, s32 height)
+    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_texture2d(s32 width, s32 height, renderer::TextureFormat format)
     {
       DXGI_FORMAT d3d_format = d3d::to_dx12(format);
       return m_heap->create_texture2d(d3d_format, width, height);
@@ -123,25 +61,40 @@ namespace rex
     {
       return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->create_cbv(resource.Get(), size);
     }
+    wrl::ComPtr<ID3DBlob> DxGpuEngine::compile_shader(const rhi::CompileShaderDesc& desc)
+    {
+      return m_shader_compiler.compile_shader(desc);
+    }
 
     rsl::vector<ID3D12DescriptorHeap*> DxGpuEngine::desc_heaps()
     {
       rsl::vector<ID3D12DescriptorHeap*> heaps;
-      //heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)->get());
       heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->get());
-      //heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_DSV)->get());
-      //heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)->get());
 
       return heaps;
     }
 
-    void DxGpuEngine::init_desc_heap_pool()
+    void DxGpuEngine::init_resource_heap()
+    {
+      rsl::memory_size resource_heap_size = 100_mib;
+      CD3DX12_HEAP_DESC desc(resource_heap_size, D3D12_HEAP_TYPE_DEFAULT);
+
+      wrl::ComPtr<ID3D12Heap> d3d_heap;
+      if (DX_FAILED(m_device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
+      {
+        REX_ERROR(LogDxGpuEngine, "Failed to create global resource heap");
+      }
+
+      m_heap = rsl::make_unique<rhi::ResourceHeap>(d3d_heap, m_device->get());
+    }
+    void DxGpuEngine::init_descriptor_heaps()
     {
       init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
       init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
       init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
       init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
     }
+
     void DxGpuEngine::init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
     {
       m_descriptor_heap_pool.emplace(type, rhi::create_descriptor_heap(type));
