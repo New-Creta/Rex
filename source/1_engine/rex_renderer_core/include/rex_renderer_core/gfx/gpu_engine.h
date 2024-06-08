@@ -34,7 +34,7 @@ namespace rex
       // Because some objects have a dependency on the gpu engine itself
       // We need to wait for the gpu engine to be constructed, only then we 
       // we can initialize the rest of the objects
-      void post_init();
+      void init();
 
       // Prepare a new frame by incrementing the frame index and clearing the backbuffer
       void new_frame();

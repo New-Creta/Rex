@@ -20,7 +20,7 @@ namespace rex
 
       }
 
-      void post_init() override
+      void init() override
       {
         m_upload_buffer = rhi::create_upload_buffer(100_mib);
       }

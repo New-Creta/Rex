@@ -4,7 +4,7 @@ namespace rex
 {
   namespace rhi
   {
-    void DxRenderEngine::post_init()
+    void DxRenderEngine::init()
     {
       // Nothing to implement
     }

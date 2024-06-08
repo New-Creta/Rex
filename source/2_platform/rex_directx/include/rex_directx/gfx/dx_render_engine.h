@@ -11,7 +11,7 @@ namespace rex
     class DxRenderEngine : public gfx::RenderEngine
     {
     public:
-      void post_init() override;
+      void init() override;
 
     protected:
       rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override;

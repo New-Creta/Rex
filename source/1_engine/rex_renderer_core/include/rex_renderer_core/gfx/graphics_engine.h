@@ -45,7 +45,7 @@ namespace rex
       rhi::CommandQueue* command_queue();
       rhi::CommandType type() const;
 
-      virtual void post_init() = 0;
+      virtual void init() = 0;
       virtual void new_frame();
 
       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

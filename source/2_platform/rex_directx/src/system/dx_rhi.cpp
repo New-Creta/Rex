@@ -155,7 +155,7 @@ namespace rex
         // Now create the gpu engine which the backend of all our graphics systems
         g_gpu_engine = rsl::make_unique<gfx::DxGpuEngine>(userData, rsl::move(device), g_rhi_resources->adapter_manager.get());
 
-        g_gpu_engine->post_init();
+        g_gpu_engine->init();
 
         return g_gpu_engine.get();
       }

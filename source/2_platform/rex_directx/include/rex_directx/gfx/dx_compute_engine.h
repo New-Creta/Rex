@@ -13,7 +13,7 @@ namespace rex
     class DxComputeEngine : public gfx::ComputeEngine
     {
     public:
-      void post_init() override
+      void init() override
       {
 
       }

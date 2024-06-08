@@ -27,14 +27,14 @@ namespace rex
       init_clear_state();
     }
 
-    void GpuEngine::post_init()
+    void GpuEngine::init()
     {
       REX_WARN_ONCE(LogGpuEngine, "Verify if we can't remove GpuEngine's post init function");
       m_swapchain = rhi::create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
       init_swapchain_render_targets();
       init_imgui();
 
-      m_copy_engine->post_init();
+      m_copy_engine->init();
     }
 
     // Prepare a new frame
