@@ -60,6 +60,7 @@ namespace rex
       virtual void transition_buffer(IndexBuffer* resource, ResourceState state) = 0;
       virtual void transition_buffer(UploadBuffer* resource, ResourceState state) = 0;
       virtual void transition_buffer(Texture2D* resource, ResourceState state) = 0;
+      virtual void transition_buffer(RenderTarget* resource, ResourceState state) = 0;
       virtual void set_render_target(rhi::RenderTarget* renderTarget) = 0;
       virtual void clear_render_target(rhi::RenderTarget* renderTarget, rhi::ClearStateResource* clearState) = 0;
       virtual void set_vertex_buffer(rhi::VertexBuffer* vb) = 0;

@@ -67,14 +67,17 @@ namespace rex
     }
     void DxRenderContext::transition_buffer(UploadBuffer* resource, ResourceState state)
     {
-      Buffer* buff = (Buffer*)resource;
-      transition_buffer(buff, resource->dx_object(), state);
+      transition_buffer(resource, resource->dx_object(), state);
     }
     void DxRenderContext::transition_buffer(Texture2D* resource, ResourceState state)
     {
-      Buffer* buff = (Buffer*)resource;
       DxTexture2D* dx_texture = static_cast<DxTexture2D*>(resource);
-      transition_buffer(buff, dx_texture->dx_object(), state);
+      transition_buffer(resource, dx_texture->dx_object(), state);
+    }
+    void DxRenderContext::transition_buffer(RenderTarget* resource, ResourceState state)
+    {
+      DxRenderTarget* dx_rt = static_cast<DxRenderTarget*>(resource);
+      transition_buffer(resource, dx_rt->dx_object(), state);
     }
     void DxRenderContext::set_render_target(RenderTarget* renderTarget)
     {
@@ -180,7 +183,7 @@ namespace rex
 
       bind_descriptor_heaps();
     }
-    void DxRenderContext::transition_buffer(Buffer* resource, ID3D12Resource* d3d_resource, ResourceState state)
+    void DxRenderContext::transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state)
     {
       ResourceStateTransition transition = track_resource_transition(resource, state);
       if (transition.before != transition.after)

@@ -26,6 +26,7 @@ namespace rex
       void transition_buffer(IndexBuffer* resource, ResourceState state) override;
       void transition_buffer(UploadBuffer* resource, ResourceState state) override;
       void transition_buffer(Texture2D* resource, ResourceState state) override;
+      void transition_buffer(RenderTarget* resource, ResourceState state) override;
 
       void set_render_target(RenderTarget* renderTarget) override;
       void clear_render_target(RenderTarget* renderTarget, ClearStateResource* clearState) override;
@@ -53,7 +54,7 @@ namespace rex
 
     private:
       void start_recording_commands();
-      void transition_buffer(Buffer* resource, ID3D12Resource* d3d_resource, ResourceState state);
+      void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
       void bind_descriptor_heaps();
       
     private:
