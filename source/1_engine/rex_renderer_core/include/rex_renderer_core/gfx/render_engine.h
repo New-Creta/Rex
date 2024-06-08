@@ -15,9 +15,10 @@ namespace rex
     class RenderEngine : public GraphicsEngine
     {
     public:
-      RenderEngine()
-        : GraphicsEngine(rhi::CommandType::Render)
-      {}
+      RenderEngine();
+
+    private:
+
     };
   }
 }

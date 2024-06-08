@@ -376,7 +376,7 @@ namespace rex
 
       rsl::unique_ptr<Window> m_window;
 
-      rsl::unique_ptr<ImGuiRenderer> m_imgui_renderer;
+      rex::unique_debug_ptr<ImGuiRenderer> m_imgui_renderer;
 
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;

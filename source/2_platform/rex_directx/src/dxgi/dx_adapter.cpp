@@ -7,6 +7,7 @@
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/string.h"
+#include "rex_directx/system/dx_feature_level.h"
 
 #include <cstdlib>
 #include <wrl/client.h>
@@ -15,18 +16,6 @@ namespace
 {
   const uint32 g_adapter_description_size = rsl::small_stack_string::max_size();
   const rsl::array g_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
-
-  //-------------------------------------------------------------------------
-  rsl::string_view feature_level_name(D3D_FEATURE_LEVEL level)
-  {
-    switch (level)
-    {
-    case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0: return rsl::string_view("D3D_FEATURE_LEVEL_12_0");
-    case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1: return rsl::string_view("D3D_FEATURE_LEVEL_12_1");
-    case D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_1_0_CORE: return rsl::string_view("D3D_FEATURE_LEVEL_1_0_CORE");
-    default: return rsl::string_view("Unknown feature level");
-    }
-  }
 
   //-------------------------------------------------------------------------
   bool is_correct_feature_level(D3D_FEATURE_LEVEL level)
@@ -150,6 +139,7 @@ namespace rex
       return m_description;
     }
 
+    //-------------------------------------------------------------------------
     rsl::unique_ptr<rhi::DxDevice> Adapter::create_device() const
     {
       wrl::ComPtr<ID3D12Device1> d3d_device;
@@ -162,6 +152,7 @@ namespace rex
       return rsl::make_unique<rhi::DxDevice>(d3d_device, m_highest_feature_level, this);
     }
 
+    //-------------------------------------------------------------------------
     D3D_FEATURE_LEVEL Adapter::query_highest_feature_level()
     {
       // backwards looping as it's checking for a minimum feature level

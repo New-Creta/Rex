@@ -18,6 +18,7 @@ namespace rex
 
   RexImGuiViewport::RexImGuiViewport(ImGuiViewport* imguiViewport)
     : m_imgui_viewport(imguiViewport)
+    , m_frame_idx(0)
   {
     for (s32 i = 0; i < 3; ++i)
     {

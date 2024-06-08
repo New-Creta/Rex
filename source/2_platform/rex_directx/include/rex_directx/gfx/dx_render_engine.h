@@ -11,19 +11,10 @@ namespace rex
     class DxRenderEngine : public gfx::RenderEngine
     {
     public:
-      void post_init() override
-      {
-
-      }
+      void post_init() override;
 
     protected:
-      rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override
-      {
-        wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::CommandType::Render);
-
-        cmdlist->Close();
-        return rsl::make_unique<rhi::DxRenderContext>(this, cmdlist, alloc);
-      }
+      rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override;
 
     private:
 

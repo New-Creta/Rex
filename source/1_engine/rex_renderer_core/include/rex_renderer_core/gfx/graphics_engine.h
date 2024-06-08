@@ -13,6 +13,11 @@ namespace rex
 {
   namespace gfx
   {
+    // A graphics engine is an engine responsible for their own respective field of the graphics pipeline.
+    // Each graphics engine owns the command queue used for their part of the graphics pipeline.
+    // They also hold a list of active and idle contexts which are used to queue up gpu commands
+    // Lastly they also hold a command allocator pool which is used to allocate new command allocators from
+    // and pool them up when they're not used.
     class GraphicsEngine
     {
     public:
@@ -46,7 +51,7 @@ namespace rex
       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     protected:
-      // Creates a new context and adds it to the active list
+      // Allocates a new API specific graphics context
       virtual rsl::unique_ptr<rhi::GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) = 0;
 
     private:

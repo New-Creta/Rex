@@ -176,7 +176,6 @@ namespace rex
       {
         DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
 
-        // copy context is not working at the moment
         wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
         if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandList(0, d3d::to_dx12(type), dx_alloc->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
         {
