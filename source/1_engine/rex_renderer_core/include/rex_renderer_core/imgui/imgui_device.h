@@ -12,9 +12,9 @@ namespace rex
 
   struct ImGuiDevice
   {
-    rhi::CommandQueue* command_queue;
-    s32 max_num_frames_in_flight;
-    renderer::TextureFormat rtv_format;
+    rhi::CommandQueue* command_queue; // This is needed to create swapchains on imgui spawned windows
+    s32 max_num_frames_in_flight;     // This is needed to initialize the swapchain on imgui spawned windows
+    renderer::TextureFormat rtv_format; // This is needed to initialize the swapchain on imgui spawned windows
   };
 
   void init_imgui_device(const ImGuiDevice& imguiDevice);

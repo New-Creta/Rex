@@ -12,8 +12,7 @@ namespace rex
   namespace rhi
   {
     UploadBuffer::UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState)
-        : BaseResource(uploadBuffer.Get(), make_new_hash())
-        , m_upload_buffer(uploadBuffer)
+        : m_upload_buffer(uploadBuffer)
         , m_mapped_data(nullptr)
         , m_resource_state(startState)
         , m_offset(0)
@@ -70,6 +69,12 @@ namespace rex
     {
       m_offset = 0;
     }
+
+    ID3D12Resource* UploadBuffer::dx_object()
+    {
+      return m_upload_buffer.Get();
+    }
+
 
   } // namespace rhi
 } // namespace rex

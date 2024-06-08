@@ -17,6 +17,9 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> create_texture2d(DXGI_FORMAT format, s32 width, s32 height);
 
     private:
+      bool can_fit_allocation(const D3D12_RESOURCE_ALLOCATION_INFO& alloc_info) const;
+
+    private:
       wrl::ComPtr<ID3D12Heap> m_heap;
       wrl::ComPtr<ID3D12Device> m_device;
       rsl::memory_size m_used_memory;

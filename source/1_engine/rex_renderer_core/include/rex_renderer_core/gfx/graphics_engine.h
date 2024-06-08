@@ -32,6 +32,8 @@ namespace rex
       // Returns a context object back to the engine
       void discard_context(rhi::GraphicsContext* context);
 
+      // Fully initialize the engine, allocating all required resources etc
+      virtual void init() = 0;
 
 
 
@@ -45,7 +47,6 @@ namespace rex
       rhi::CommandQueue* command_queue();
       rhi::CommandType type() const;
 
-      virtual void init() = 0;
       virtual void new_frame();
 
       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

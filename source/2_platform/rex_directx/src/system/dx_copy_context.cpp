@@ -49,7 +49,7 @@ namespace rex
       footprint.Footprint.RowPitch = d3d::texture_pitch_size(width, format);
       footprint.Offset = write_offset;
 
-      CD3DX12_TEXTURE_COPY_LOCATION src_loc(upload_buffer->get(), footprint);
+      CD3DX12_TEXTURE_COPY_LOCATION src_loc(upload_buffer->dx_object(), footprint);
       m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
 
       // Not allowed to transition to pixel shader resource in a copy command list
@@ -76,7 +76,7 @@ namespace rex
     void DxCopyContext::transition_buffer(UploadBuffer* resource, ResourceState state)
     {
       Buffer* buff = (Buffer*)resource;
-      transition_buffer(buff, resource->get(), state);
+      transition_buffer(buff, resource->dx_object(), state);
     }
     void DxCopyContext::transition_buffer(Texture2D* resource, ResourceState state)
     {
@@ -127,7 +127,7 @@ namespace rex
       //transition_buffer(upload_buffer, ResourceState::CopySource);
 
       s32 write_offset = upload_buffer->prepare_for_new_buffer_write(data, size);
-      m_cmd_list->CopyBufferRegion(resource, offset, upload_buffer->get(), write_offset, size);
+      m_cmd_list->CopyBufferRegion(resource, offset, upload_buffer->dx_object(), write_offset, size);
 
       api_engine()->unlock_upload_buffer();
     }

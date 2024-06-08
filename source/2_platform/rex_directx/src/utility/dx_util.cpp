@@ -768,7 +768,7 @@ namespace rex
     }
     ID3D12Resource* dx12_resource(rhi::UploadBuffer* buffer)
     {
-      return buffer->get();
+      return buffer->dx_object();
     }
     ID3D12Resource* dx12_resource(rhi::Texture2D* texture)
     {

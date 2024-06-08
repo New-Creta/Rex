@@ -6,7 +6,8 @@ namespace rex
   {
     class Fence
     {
-
+    public:
+      virtual ~Fence() = default;
     };
   }
 }

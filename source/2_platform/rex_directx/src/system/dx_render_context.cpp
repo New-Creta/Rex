@@ -68,7 +68,7 @@ namespace rex
     void DxRenderContext::transition_buffer(UploadBuffer* resource, ResourceState state)
     {
       Buffer* buff = (Buffer*)resource;
-      transition_buffer(buff, resource->get(), state);
+      transition_buffer(buff, resource->dx_object(), state);
     }
     void DxRenderContext::transition_buffer(Texture2D* resource, ResourceState state)
     {

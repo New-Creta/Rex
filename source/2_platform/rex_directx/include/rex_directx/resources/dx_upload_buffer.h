@@ -9,7 +9,7 @@ namespace rex
   {
     class Resource;
 
-    class UploadBuffer : public BaseResource<ID3D12Resource>
+    class UploadBuffer : public Resource
     {
     public:
       explicit UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState = D3D12_RESOURCE_STATE_COMMON);
@@ -24,6 +24,7 @@ namespace rex
       s32 prepare_for_new_texture_write(const void* data, s32 width, s32 height, renderer::TextureFormat format, s32 offset = 0);
 
       void reset();
+      ID3D12Resource* dx_object();
 
     private:
       wrl::ComPtr<ID3D12Resource> m_upload_buffer;

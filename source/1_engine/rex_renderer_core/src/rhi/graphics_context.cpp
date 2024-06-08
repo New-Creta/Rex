@@ -80,7 +80,7 @@ namespace rex
       return m_allocator;
     }
 
-    ResourceStateTransition GraphicsContext::track_resource_transition(Buffer* buffer, ResourceState state)
+    ResourceStateTransition GraphicsContext::track_resource_transition(Resource* buffer, ResourceState state)
     {
       return m_resource_state_tracker.track_resource_transition(buffer, state);
     }

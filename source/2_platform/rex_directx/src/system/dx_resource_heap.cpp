@@ -24,6 +24,8 @@ namespace rex
     wrl::ComPtr<ID3D12Resource> ResourceHeap::create_buffer(rsl::memory_size size, s32 alignment)
     {
       auto desc = CD3DX12_RESOURCE_DESC::Buffer(size, D3D12_RESOURCE_FLAG_NONE, alignment);
+      const D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
+      REX_ASSERT_X(can_fit_allocation(alloc_info), "Trying to allocate {} bytes which would overrun resource heap of {} bytes", alloc_info.SizeInBytes, m_memory_limit);
 
       wrl::ComPtr<ID3D12Resource> buffer;
       if(DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&buffer))))
@@ -32,7 +34,6 @@ namespace rex
         return nullptr;
       }
 
-      const D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
       m_used_memory += static_cast<s64>(alloc_info.SizeInBytes);
       return buffer;
     }
@@ -40,6 +41,9 @@ namespace rex
     wrl::ComPtr<ID3D12Resource> ResourceHeap::create_texture2d(DXGI_FORMAT format, s32 width, s32 height)
     {
       CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
+      const D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
+      REX_ASSERT_X(can_fit_allocation(alloc_info), "Trying to allocate {} bytes which would overrun resource heap of {} bytes", alloc_info.SizeInBytes, m_memory_limit);
+
       wrl::ComPtr<ID3D12Resource> texture;
       if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&texture))))
       {
@@ -47,9 +51,13 @@ namespace rex
         return nullptr;
       }
 
-      const D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
       m_used_memory += static_cast<s64>(alloc_info.SizeInBytes);
       return texture;
+    }
+
+    bool ResourceHeap::can_fit_allocation(const D3D12_RESOURCE_ALLOCATION_INFO& alloc_info) const
+    {
+      return m_used_memory.size_in_bytes() + alloc_info.SizeInBytes < m_memory_limit;
     }
 
   } // namespace rhi

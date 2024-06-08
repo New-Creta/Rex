@@ -17,7 +17,7 @@ namespace rex
   namespace rhi
   {
     class CommandAllocator;
-    class Buffer;
+    class Resource;
 
     // Structure used to syncronise multiple engine with each other
     // eg: If the compute engine needs to wait for the copy engine to finish
@@ -66,7 +66,7 @@ namespace rex
       void release_allocator(u64 fenceValue);
       ScopedPoolObject<SyncInfo> execute_on_gpu();
       void flush_render_states();
-      ResourceStateTransition track_resource_transition(Buffer* buffer, ResourceState state);
+      ResourceStateTransition track_resource_transition(Resource* buffer, ResourceState state);
 
       CommandType type() const;
       void stall(SyncInfo& syncInfo);

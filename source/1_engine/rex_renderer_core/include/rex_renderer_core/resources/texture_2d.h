@@ -2,12 +2,13 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/rhi/texture_format.h"
+#include "rex_renderer_core/resources/resource.h"
 
 namespace rex
 {
   namespace rhi
   {
-    class Texture2D
+    class Texture2D : public Resource
     {
     public:
       Texture2D(s32 width, s32 height, renderer::TextureFormat format);

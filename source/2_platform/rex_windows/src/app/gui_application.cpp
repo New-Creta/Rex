@@ -131,6 +131,9 @@ namespace rex
         REX_ASSERT_CONTEXT_SCOPE("Application shutdown");
 
         m_on_shutdown();
+
+        gfx::shutdown();
+
         //renderer::shutdown();
       }
 

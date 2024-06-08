@@ -7,6 +7,7 @@ namespace rex
     class CommandAllocator
     {
     public:
+      virtual ~CommandAllocator() = default;
 
     private:
 
