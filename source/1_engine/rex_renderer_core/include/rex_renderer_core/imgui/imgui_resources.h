@@ -11,7 +11,6 @@ namespace rex
   {
     rhi::RootSignature* root_signature;
     rhi::PipelineState* pso;
-    rhi::ConstantBuffer* cb;
   };
 
   void imgui_init_resources(const ImGuiResources& resources);

@@ -74,7 +74,6 @@ namespace rex
       rsl::unique_ptr<ComputeEngine> m_compute_engine;  // The render engine is the high level graphics engine responsible for queueing compute commands
       rsl::unique_ptr<CopyEngine> m_copy_engine;        // The render engine is the high level graphics engine responsible for queueing copy commands
       rsl::unique_ptr<rhi::Swapchain> m_swapchain;      // The swapchain is responsible for swapping the backbuffer with the front buffer
-      rsl::vector<rsl::unique_ptr<rhi::RenderTarget>> m_swapchain_render_targets; // The render targets that point to the buffers of the swapchain
       rsl::unique_ptr<rhi::ClearStateResource> m_clear_state_resource; // The clear state resource that's used to clear the backbuffer with
       s32 m_max_frames_in_flight;                       // The maximum number of we can have in flight for rendering.
       void* m_primary_display_handle;                   // The display handle to render to (HWND on Windows)

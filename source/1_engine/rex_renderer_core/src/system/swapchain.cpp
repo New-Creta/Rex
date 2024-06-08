@@ -26,10 +26,6 @@ namespace rex
     {
       return m_swapchain_buffers.size();
     }
-    RenderTarget* Swapchain::buffer(s32 idx)
-    {
-      return m_swapchain_buffers[idx].get();
-    }
     RenderTarget* Swapchain::current_buffer()
     {
       return m_swapchain_buffers[current_buffer_idx()].get();

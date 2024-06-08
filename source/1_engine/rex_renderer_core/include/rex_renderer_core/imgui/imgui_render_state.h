@@ -13,7 +13,6 @@ namespace rex
   {
     rhi::RootSignature* root_signature;
     rhi::PipelineState* pso;
-    rhi::ConstantBuffer* constant_buffer;
     renderer::PrimitiveTopology primitive_topology;
     rsl::array<f32, 4> blend_factor;
   };

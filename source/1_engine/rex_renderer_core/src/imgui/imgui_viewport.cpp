@@ -40,7 +40,7 @@ namespace rex
 
     // Update the current frame context with the data for this frame
     ImGuiFrameContext& frame_ctx = current_frame_ctx();
-    ScopedPoolObject<rhi::SyncInfo> sync_info = frame_ctx.update_data(draw_data, imgui_renderstate().constant_buffer);
+    ScopedPoolObject<rhi::SyncInfo> sync_info = frame_ctx.update_data(draw_data);
 
     // Wait for the data to be updated on the gpu before we start executing render commands
     renderContext.stall(*sync_info);
@@ -73,7 +73,7 @@ namespace rex
   {
     ctx.transition_buffer(frameCtx.vertex_buffer(), rhi::ResourceState::VertexAndConstantBuffer);
     ctx.transition_buffer(frameCtx.index_buffer(), rhi::ResourceState::IndexBuffer);
-    ctx.transition_buffer(imgui_renderstate().constant_buffer, rhi::ResourceState::VertexAndConstantBuffer);
+    ctx.transition_buffer(frameCtx.constant_buffer(), rhi::ResourceState::VertexAndConstantBuffer);
 
     ctx.set_viewport(frameCtx.viewport());
     ctx.set_vertex_buffer(frameCtx.vertex_buffer());
@@ -81,7 +81,7 @@ namespace rex
     ctx.set_primitive_topology(imgui_renderstate().primitive_topology);
     ctx.set_pipeline_state(imgui_renderstate().pso);
     ctx.set_root_signature(imgui_renderstate().root_signature);
-    ctx.set_constant_buffer(0, imgui_renderstate().constant_buffer);
+    ctx.set_constant_buffer(0, frameCtx.constant_buffer());
     ctx.set_blend_factor(imgui_renderstate().blend_factor.data());
   }
 

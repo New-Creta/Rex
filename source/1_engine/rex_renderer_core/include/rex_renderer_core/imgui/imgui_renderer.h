@@ -38,7 +38,6 @@ namespace rex
     void init_shader();
     void init_root_signature();
     void init_input_layout();
-    void init_constant_buffer();
     void init_pso();
     void init_imgui_renderstate();
 
@@ -48,7 +47,6 @@ namespace rex
     rsl::unique_ptr<rhi::Shader> m_pixel_shader;
     rsl::unique_ptr<rhi::RootSignature> m_root_signature;
     rsl::unique_ptr<rhi::InputLayout> m_input_layout;
-    rsl::unique_ptr<rhi::ConstantBuffer> m_constant_buffer;
     rsl::unique_ptr<rhi::RasterStateResource> m_raster_state;
     rsl::unique_ptr<rhi::PipelineState> m_pipeline_state;
   };

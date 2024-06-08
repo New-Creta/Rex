@@ -112,7 +112,6 @@ namespace rex
     init_font_texture();
     init_shader();
     init_input_layout();
-    init_constant_buffer();
     init_root_signature();
     init_pso();
     init_imgui_renderstate();
@@ -124,7 +123,6 @@ namespace rex
 
     resources.root_signature = m_root_signature.get();
     resources.pso = m_pipeline_state.get();
-    resources.cb = m_constant_buffer.get();
     imgui_init_resources(resources);
   }
 
@@ -215,15 +213,7 @@ namespace rex
     };
     m_input_layout = rex::rhi::create_input_layout(input_layout_desc);
   }
-  void ImGuiRenderer::init_constant_buffer()
-  {
-    // The following should be auto generated from the shaders using reflection
-    // That'd allow code to look like this
-    //
-    // m_constant_buffer = rex::rhi::create_constant_buffer(shader_object, "constant_buffer_name");
 
-    m_constant_buffer = rex::rhi::create_constant_buffer(sizeof(ImGuiVertexConstantBuffer));
-  }
   void ImGuiRenderer::init_pso()
   {
     // The following should be generated from a material.

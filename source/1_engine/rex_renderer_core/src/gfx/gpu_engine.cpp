@@ -42,13 +42,13 @@ namespace rex
     void GpuEngine::new_frame()
     {
       auto render_ctx = new_render_ctx();
-      render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::RenderTarget);
+      render_ctx->transition_buffer(m_swapchain->current_buffer(), rhi::ResourceState::RenderTarget);
       render_ctx->clear_render_target(render_target(), m_clear_state_resource.get());
     }
     void GpuEngine::present()
     {
       auto render_ctx = new_render_ctx();
-      render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::Present);
+      render_ctx->transition_buffer(m_swapchain->current_buffer(), rhi::ResourceState::Present);
       render_ctx->execute_on_gpu();
 
       m_swapchain->present();

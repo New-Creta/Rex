@@ -18,7 +18,6 @@ namespace rex
       s32 height() const;
       renderer::TextureFormat format() const;
       s32 num_buffers() const;
-      RenderTarget* buffer(s32 idx);
       RenderTarget* current_buffer();
 
       virtual s32 current_buffer_idx() const = 0;

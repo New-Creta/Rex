@@ -12,9 +12,11 @@ namespace rex
   {
     increase_vertex_buffer(5000);
     increase_index_buffer(5000);
+
+    m_constant_buffer = rhi::create_constant_buffer(sizeof(ImGuiVertexConstantBuffer));
   }
 
-  ScopedPoolObject<rhi::SyncInfo> ImGuiFrameContext::update_data(ImDrawData* drawData, rhi::ConstantBuffer* cb)
+  ScopedPoolObject<rhi::SyncInfo> ImGuiFrameContext::update_data(ImDrawData* drawData)
   {
     m_viewport.width = drawData->DisplaySize.x;
     m_viewport.height = drawData->DisplaySize.y;
@@ -32,7 +34,7 @@ namespace rex
       increase_index_buffer(drawData->TotalIdxCount);
     }
 
-    return copy_buffer_data(drawData, cb);
+    return copy_buffer_data(drawData);
   }
 
   const rhi::Viewport& ImGuiFrameContext::viewport() const
@@ -47,7 +49,11 @@ namespace rex
   {
     return m_index_buffer.get();
   }
-
+  rhi::ConstantBuffer* ImGuiFrameContext::constant_buffer()
+  {
+    return m_constant_buffer.get();
+  }
+  
   const ImGuiVertexConstantBuffer& ImGuiFrameContext::cb_data() const
   {
     return m_constant_buffer_data;
@@ -65,7 +71,7 @@ namespace rex
 
     m_index_buffer = rhi::create_index_buffer(newSize + s_buffer_increment_size, format);
   }
-  ScopedPoolObject<rhi::SyncInfo> ImGuiFrameContext::copy_buffer_data(ImDrawData* drawData, rhi::ConstantBuffer* cb)
+  ScopedPoolObject<rhi::SyncInfo> ImGuiFrameContext::copy_buffer_data(ImDrawData* drawData)
   {
     auto copy_context = gfx::new_copy_ctx();
 
@@ -98,7 +104,7 @@ namespace rex
       };
       memcpy(&m_constant_buffer_data.mvp, mvp, sizeof(mvp));
     }
-    copy_context->update_buffer(cb, &m_constant_buffer_data, sizeof(m_constant_buffer_data), 0);
+    copy_context->update_buffer(m_constant_buffer.get(), &m_constant_buffer_data, sizeof(m_constant_buffer_data), 0);
 
     return copy_context->execute_on_gpu();
   }
