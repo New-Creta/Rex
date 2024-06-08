@@ -81,14 +81,13 @@ namespace rex
       rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::CommandType type);
 
       // Resource creation
-      rsl::unique_ptr<RenderTarget> create_render_target(Texture2D* texture);
+      rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, renderer::TextureFormat format);
 
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format);
       rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
       rsl::unique_ptr<PipelineState> create_pso(const rhi::PipelineStateDesc& desc);
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data = nullptr);
-      rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);

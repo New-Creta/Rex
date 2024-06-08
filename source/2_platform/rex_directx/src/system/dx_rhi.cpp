@@ -89,6 +89,7 @@ namespace rex
         return g_rhi_resources->device->info();
       }
 
+      // Startup initialization
       DEFINE_YES_NO_ENUM(EnableDebugFactory);
       rsl::unique_ptr<dxgi::Factory> create_dxgi_factory(EnableDebugFactory enableDebugFactory)
       {
@@ -100,7 +101,6 @@ namespace rex
         
         return dxgi::Factory::create(dxgi_factory_flags);
       }
-
       rsl::unique_ptr<DxDevice> create_d3d_device(dxgi::AdapterManager* adapterManager)
       {
         // Select highest scoring gpu
@@ -154,7 +154,6 @@ namespace rex
 
         // Now create the gpu engine which the backend of all our graphics systems
         g_gpu_engine = rsl::make_unique<gfx::DxGpuEngine>(userData, rsl::move(device), g_rhi_resources->adapter_manager.get());
-
         g_gpu_engine->init();
 
         return g_gpu_engine.get();
@@ -166,81 +165,16 @@ namespace rex
         g_gpu_engine.reset();
         g_rhi_resources.reset();
       }
+      
       // Return the shader platform used for this API.
       renderer::ShaderPlatform shader_platform()
       {
         return renderer::ShaderPlatform::Hlsl;
       }
 
-      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::CommandType type)
-      {
-        DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
-
-        wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandList(0, d3d::to_dx12(type), dx_alloc->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
-        {
-          REX_ERROR(LogDxRhi, "Failed to create command list");
-          return nullptr;
-        }
-
-        switch (type)
-        {
-        case rex::rhi::CommandType::Render: set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
-        case rex::rhi::CommandType::Copy:   set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
-        case rex::rhi::CommandType::Compute: break;
-        };
-
-        return cmd_list;
-      }
-
-      rsl::unique_ptr<ResourceHeap> create_resource_heap()
-      {
-        CD3DX12_HEAP_DESC desc(100_mib, D3D12_HEAP_TYPE_DEFAULT);
-
-        wrl::ComPtr<ID3D12Heap> d3d_heap;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
-        {
-          REX_ERROR(LogDxRhi, "Failed to create global resource heap");
-          return false;
-        }
-
-        return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->get());
-      }
-      rsl::vector<ID3D12DescriptorHeap*> get_desc_heaps()
-      {
-        return g_gpu_engine->desc_heaps();
-      }
-      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
-      {
-        D3D12_DESCRIPTOR_HEAP_DESC desc{};
-        
-        s32 num_descriptors = 128;
-
-        desc.Type = type;
-        desc.NumDescriptors = num_descriptors;
-        desc.Flags = type != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-          ? D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-          : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
-
-        wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
-        rsl::string_view type_str = rsl::enum_refl::enum_name(type);
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
-        {
-          REX_ERROR(LogDxRhi, "Failed to create descriptor heap for type: {}", type_str);
-          return false;
-        }
-
-        rhi::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap Element - {}", type_str));
-        s32 desc_size = g_rhi_resources->device->get()->GetDescriptorHandleIncrementSize(type);
-        s32 total_size = desc_size * num_descriptors;
-
-        REX_INFO(LogDxRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, num_descriptors, desc_size, total_size);
-
-        return rsl::make_unique<DescriptorHeap>(desc_heap, g_rhi_resources->device->get());
-      }
-
-      rsl::unique_ptr<DxFence> create_fence()
+      // Generic functions, coming from rhi.h
+      // -------------------------------------------
+      rsl::unique_ptr<DxFence>          create_fence()
       {
         wrl::ComPtr<ID3D12Fence> fence;
         if (DX_FAILED(g_rhi_resources->device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
@@ -251,7 +185,7 @@ namespace rex
 
         return rsl::make_unique<DxFence>(fence);
       }
-      rsl::unique_ptr<CommandQueue> create_command_queue(CommandType type)
+      rsl::unique_ptr<CommandQueue>     create_command_queue(CommandType type)
       {
         // Command Queue
         wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
@@ -274,7 +208,7 @@ namespace rex
         rsl::unique_ptr<DxFence> fence = create_fence();
         return rsl::make_unique<DxCommandQueue>(type, d3d_command_queue, rsl::move(fence));
       }
-      rsl::unique_ptr<Swapchain> create_swapchain(void* apiDevice, s32 bufferCount, void* primaryDisplayHandle)
+      rsl::unique_ptr<Swapchain>        create_swapchain(void* apiDevice, s32 bufferCount, void* primaryDisplayHandle)
       {
         DXGI_SWAP_CHAIN_DESC1 sd{};
         sd.Width = 0;
@@ -297,7 +231,7 @@ namespace rex
         if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(dx_cmd_queue->dx_object(), (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
         {
           REX_ERROR(LogDxRhi, "Failed to create swap chain");
-          return false;
+          return nullptr;
         }
 
         wrl::ComPtr<IDXGISwapChain3> d3d_swapchain_3;
@@ -328,14 +262,9 @@ namespace rex
         return rsl::make_unique<rex::rhi::DxCommandAllocator>(allocator);
       }
 
-      rsl::unique_ptr<RenderTarget> create_render_target(Texture2D* texture)
-      {
-        DxTexture2D* dx_texture = static_cast<DxTexture2D*>(texture);
-
-        DescriptorHandle rtv = g_gpu_engine->create_rtv(dx_texture->dx_object());
-        return rsl::make_unique<DxRenderTarget>(dx_texture->dx_object(), rtv);
-      }
-      rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize)
+      // Resource creation
+      // -------------------------------------------
+      rsl::unique_ptr<VertexBuffer>         create_vertex_buffer(s32 numVertices, s32 vertexSize)
       {
         s32 total_size = numVertices * vertexSize;
         wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_buffer(total_size);
@@ -344,7 +273,7 @@ namespace rex
 
         return rsl::make_unique<DxVertexBuffer>(d3d_buffer, numVertices, vertexSize);
       }
-      rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format)
+      rsl::unique_ptr<IndexBuffer>          create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format)
       {
         s32 index_size = renderer::index_format_size(format);
         s32 total_size = numIndices * index_size;
@@ -352,7 +281,7 @@ namespace rex
         set_debug_name_for(buffer.Get(), "Index Buffer");
         return rsl::make_unique<DxIndexBuffer>(buffer, numIndices, format);
       }
-      rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc)
+      rsl::unique_ptr<RootSignature>        create_root_signature(const RootSignatureDesc& desc)
       {
         // Root parameter can be a table, root descriptor or root constants.
         auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(desc.views.count()));
@@ -449,8 +378,12 @@ namespace rex
 
         return rsl::make_unique<DxRootSignature>(root_signature);
       }
-
-      rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc)
+      rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, renderer::TextureFormat format)
+      {
+        wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
+        return create_render_target(d3d_texture);
+      }
+      rsl::unique_ptr<PipelineState>        create_pso(const PipelineStateDesc& desc)
       {
         // 1) Load the resources from the resource pool
         D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
@@ -493,8 +426,7 @@ namespace rex
 
         return rsl::make_unique<DxPipelineState>(pso);
       }
-
-      rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data)
+      rsl::unique_ptr<Texture2D>            create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data)
       {
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
@@ -510,7 +442,7 @@ namespace rex
 
         return texture;
       }
-      rsl::unique_ptr<Texture2D> create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource)
+      rsl::unique_ptr<Texture2D>            create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource)
       {
         DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
 
@@ -521,12 +453,7 @@ namespace rex
         auto texture = rsl::make_unique<DxTexture2D>(resource, desc_handle, width, height, format);
         return texture;
       }
-
-      rsl::unique_ptr<RasterStateResource> create_raster_state(const RasterStateDesc& desc)
-      {
-        return rsl::make_unique<RasterStateResource>(desc);
-      }
-      rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size)
+      rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size)
       {
         // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
         rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
@@ -538,25 +465,25 @@ namespace rex
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
       }
-      rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc)
+      rsl::unique_ptr<InputLayout>          create_input_layout(const InputLayoutDesc& desc)
       {
         rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
         REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
 
         for (s32 i = 0; i < desc.input_layout.size(); ++i)
         {
-          input_element_descriptions[i].SemanticName = desc.input_layout[i].semantic_name.data();
-          input_element_descriptions[i].SemanticIndex = desc.input_layout[i].semantic_index;
-          input_element_descriptions[i].Format = rex::d3d::to_dx12(desc.input_layout[i].format);
-          input_element_descriptions[i].InputSlot = desc.input_layout[i].input_slot;
-          input_element_descriptions[i].AlignedByteOffset = desc.input_layout[i].aligned_byte_offset;
-          input_element_descriptions[i].InputSlotClass = rex::d3d::to_dx12(desc.input_layout[i].input_slot_class);
-          input_element_descriptions[i].InstanceDataStepRate = desc.input_layout[i].instance_data_step_rate;
+          input_element_descriptions[i].SemanticName          = desc.input_layout[i].semantic_name.data();
+          input_element_descriptions[i].SemanticIndex         = desc.input_layout[i].semantic_index;
+          input_element_descriptions[i].Format                = rex::d3d::to_dx12(desc.input_layout[i].format);
+          input_element_descriptions[i].InputSlot             = desc.input_layout[i].input_slot;
+          input_element_descriptions[i].AlignedByteOffset     = desc.input_layout[i].aligned_byte_offset;
+          input_element_descriptions[i].InputSlotClass        = rex::d3d::to_dx12(desc.input_layout[i].input_slot_class);
+          input_element_descriptions[i].InstanceDataStepRate  = desc.input_layout[i].instance_data_step_rate;
         }
 
         return rsl::make_unique<DxInputLayoutResource>(input_element_descriptions);
       }
-      rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode)
+      rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode)
       {
         rex::rhi::CompileShaderDesc compile_vs_desc{};
         compile_vs_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
@@ -569,7 +496,7 @@ namespace rex
 
         return rsl::make_unique<DxVertexShader>(compiled_vs_blob);
       }
-      rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode)
+      rsl::unique_ptr<Shader>               create_pixel_shader(rsl::string_view sourceCode)
       {
         rex::rhi::CompileShaderDesc compile_ps_desc{};
         compile_ps_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
@@ -582,10 +509,9 @@ namespace rex
 
         return rsl::make_unique<DxPixelShader>(compiled_ps_blob);
       }
-      wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc)
+      wrl::ComPtr<ID3DBlob>                 compile_shader(const CompileShaderDesc& desc)
       {
-        ShaderCompiler compiler;
-        wrl::ComPtr<ID3DBlob> byte_code = compiler.compile_shader(desc);
+        wrl::ComPtr<ID3DBlob> byte_code = g_gpu_engine->compile_shader(desc);
 
         if (!byte_code)
         {
@@ -595,8 +521,7 @@ namespace rex
 
         return byte_code;
       }
-
-      rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size)
+      rsl::unique_ptr<UploadBuffer>         create_upload_buffer(rsl::memory_size size)
       {
         // an intermediate upload heap.
         CD3DX12_HEAP_PROPERTIES heap_properties_upload(D3D12_HEAP_TYPE_UPLOAD);
@@ -613,12 +538,86 @@ namespace rex
         return rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
       }
 
+      // API Specific functions
+      // -------------------------------------------
+      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::CommandType type)
+      {
+        DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
+
+        wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
+        if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandList(0, d3d::to_dx12(type), dx_alloc->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
+        {
+          REX_ERROR(LogDxRhi, "Failed to create command list");
+          return nullptr;
+        }
+
+        switch (type)
+        {
+        case rex::rhi::CommandType::Render: set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
+        case rex::rhi::CommandType::Copy:   set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
+        case rex::rhi::CommandType::Compute: set_debug_name_for(cmd_list.Get(), "Compute Command List"); break;
+        };
+
+        return cmd_list;
+      }
+      rsl::unique_ptr<ResourceHeap> create_resource_heap()
+      {
+        CD3DX12_HEAP_DESC desc(100_mib, D3D12_HEAP_TYPE_DEFAULT);
+
+        wrl::ComPtr<ID3D12Heap> d3d_heap;
+        if (DX_FAILED(g_rhi_resources->device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
+        {
+          REX_ERROR(LogDxRhi, "Failed to create global resource heap");
+          return false;
+        }
+
+        return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->get());
+      }
+      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
+      {
+        D3D12_DESCRIPTOR_HEAP_DESC desc{};
+        
+        s32 num_descriptors = 128;
+
+        desc.Type = type;
+        desc.NumDescriptors = num_descriptors;
+        desc.Flags = type != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+          ? D3D12_DESCRIPTOR_HEAP_FLAG_NONE
+          : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
+
+        wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
+        rsl::string_view type_str = rsl::enum_refl::enum_name(type);
+        if (DX_FAILED(g_rhi_resources->device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
+        {
+          REX_ERROR(LogDxRhi, "Failed to create descriptor heap for type: {}", type_str);
+          return false;
+        }
+
+        rhi::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {}", type_str));
+        s32 desc_size = g_rhi_resources->device->get()->GetDescriptorHandleIncrementSize(type);
+        s32 total_size = desc_size * num_descriptors;
+
+        REX_INFO(LogDxRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, num_descriptors, desc_size, total_size);
+
+        return rsl::make_unique<DescriptorHeap>(desc_heap, g_rhi_resources->device->get());
+      }
       rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource)
       {
         DescriptorHandle rtv = g_gpu_engine->create_rtv(resource.Get());
         return rsl::make_unique<DxRenderTarget>(resource, rtv);
       }
 
+
+
+
+
+      // To Remove
+      // -------------------------------------------
+      rsl::vector<ID3D12DescriptorHeap*> get_desc_heaps()
+      {
+        return g_gpu_engine->desc_heaps();
+      }
       RenderTarget* get_render_target()
       {
         return g_gpu_engine->render_target();
