@@ -30,6 +30,8 @@ namespace rex
       // Returns the next fence value. This is the fence value that'll be signaled
       // the next time an commandlist is executed
       u64 next_fence_value() const;
+      // Flush all gpu commands and halt the current thread until they're executed
+      void flush();
 
     protected:
       // Increases the next fence value and returns the old value

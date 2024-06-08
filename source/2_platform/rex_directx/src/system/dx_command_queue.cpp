@@ -19,7 +19,7 @@ namespace rex
 
     DxCommandQueue::~DxCommandQueue()
     {
-      cpu_wait(next_fence_value() - 1);
+      flush();
     }
 
     // Halt the cpu until the fence value is reached

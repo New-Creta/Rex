@@ -31,5 +31,10 @@ namespace rex
       return m_type;
     }
 
+    void CommandQueue::flush()
+    {
+      cpu_wait(next_fence_value() - 1);
+    }
+
   }
 }

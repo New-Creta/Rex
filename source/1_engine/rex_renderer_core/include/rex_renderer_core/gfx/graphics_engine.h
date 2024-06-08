@@ -35,7 +35,8 @@ namespace rex
       // Fully initialize the engine, allocating all required resources etc
       virtual void init() = 0;
 
-
+      // Flush all commands on the gpu and halt the current thread untill all commands are executed
+      void flush();
 
       // LEFT TO CLEANUP
       // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

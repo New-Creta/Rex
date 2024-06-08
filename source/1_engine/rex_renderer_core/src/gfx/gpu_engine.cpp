@@ -26,6 +26,13 @@ namespace rex
     {
     }
 
+    GpuEngine::~GpuEngine()
+    {
+      m_render_engine->flush();
+      m_compute_engine->flush();
+      m_copy_engine->flush();
+    }
+
     void GpuEngine::init()
     {
       REX_WARN_ONCE(LogGpuEngine, "Verify if we can't remove GpuEngine's post init function");
