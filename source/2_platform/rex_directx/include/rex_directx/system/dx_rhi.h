@@ -13,10 +13,10 @@
 #include "rex_directx/system/dx_debug_interface.h"
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
-#include "rex_directx/system/dx_commandlist.h"
+
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_swapchain.h"
-#include "rex_directx/system/dx_resource.h"
+
 #include "rex_directx/resources/dx_upload_buffer.h"
 
 #include "rex_std/string_view.h"
@@ -35,7 +35,6 @@ namespace rex
     template<typename TResourceType>
     void set_debug_name_for(TResourceType* resource, rsl::string_view name)
     {
-#define REX_ENABLE_DEBUG_RESOURCE_NAMES
 #ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
       resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length(), name.data());
 #else
@@ -52,6 +51,7 @@ namespace rex
       rsl::unique_ptr<Texture2D> create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource);
       rsl::unique_ptr<ResourceHeap> create_resource_heap();
       rsl::vector<ID3D12DescriptorHeap*> get_desc_heaps();
+      rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
     }
   }
 }

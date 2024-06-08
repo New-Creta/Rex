@@ -97,12 +97,6 @@ namespace rex
       {
         REX_ASSERT_CONTEXT_SCOPE("Application update");
 
-        // At the moment we update and render on the same thread
-        // Meaning we first update all our data
-        // Afterwards we sent this updated data to the renderer
-        // In most cases these will just be object positions
-        // In other cases this will be transition from one level into another
-
         pre_user_update();
 
         m_on_update();
@@ -274,18 +268,6 @@ namespace rex
       }
       bool post_user_init()
       {
-        // if the client had called render commands some closing up has to be done before
-        // we can actually execute these commands.
-        //
-        // this function does the close
-        //
-        // eg: on DX12 we require to close the command list and execute them
-        //if(!renderer::finish_user_initialization())
-        //{
-        //  REX_ERROR(LogWindows, "Unable to end draw on current frame");
-        //  return false;
-        //}
-
         // When the renderer is initialized we can show the window
         m_window->show();
 
@@ -349,30 +331,9 @@ namespace rex
 
         gfx::init(user_data);
 
-        // 1) Init rhi here
-        // rhi::init();
-
-        // 2) Create scene renderer here
-        // m_scene_renderer = rsl::make_unique<SceneRenderer>();
-
-        //if(renderer::initialize(user_data) == false) // NOLINT(readability-simplify-boolean-expr)
-        //{
-        //  return false;
-        //}
-
         display_gfx_info();
 
-        // if the client calls render commands some preparation is required before
-        // we can actually execute those commands.
-        //
-        // this function does this preparation.
-        //
-        // eg: on DX12 we require to reset and allow the command list to record commands
-        //if(!renderer::prepare_user_initialization())
-        //{
-        //  REX_ERROR(LogWindows, "Unable to start drawing frame");
-        //  return false;
-        //}
+        REX_WARN_ONCE(LogWindows, "Create the window manager here");
 
         m_imgui_renderer = rex::make_unique_debug<ImGuiRenderer>(m_window->primary_display_handle());
 
@@ -383,7 +344,7 @@ namespace rex
       void pre_user_update()
       {
         // update timers
-        // m_app_clock.update();
+        REX_WARN_ONCE(LogWindows, "Create an app clock");
 
         // update the window (this pulls input as well)
         m_window->update();
@@ -402,21 +363,11 @@ namespace rex
       // Drawing
       void pre_user_draw() // NOLINT(readability-convert-member-functions-to-static)
       {
-        gfx::new_frame();
-        gfx::begin_draw();
-
-        //rex::renderer::new_frame();
-        //rex::renderer::begin_draw();
+        // Nothing to implement
       }
       void post_user_draw() // NOLINT(readability-convert-member-functions-to-static)
       {
-        gfx::end_draw();
-        gfx::present();
-        gfx::end_frame();
-
-        //rex::renderer::end_draw();
-        //rex::renderer::present();
-        //rex::renderer::end_frame();
+        // Nothing to implement
       }
 
     private:
@@ -456,6 +407,12 @@ namespace rex
     }
     void GuiApplication::platform_update()
     {
+      // At the moment we update and render on the same thread
+      // Meaning we first update all our data
+      // Afterwards we sent this updated data to the renderer
+      // In most cases these will just be object positions
+      // In other cases this will be transition from one level into another
+
       m_internal_ptr->update();
       m_internal_ptr->draw();
     }

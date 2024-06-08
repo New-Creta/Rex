@@ -28,7 +28,7 @@ namespace rex
         void run(rsl::function<int(void*)>&& callable, void* arg = nullptr);
 
       private:
-        Event m_event;
+        ThreadEvent m_event;
         rsl::atomic<bool> m_should_join;
         rsl::function<int(void*)> m_callable;
         void* m_arg;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_directx/system/dx_resource.h"
+
 
 #include "rex_renderer_core/rhi/index_buffer_format.h"
 

@@ -10,9 +10,7 @@ namespace rex
     class CopyEngine : public GraphicsEngine
     {
     public:
-      CopyEngine()
-        : GraphicsEngine(rhi::CommandType::Copy)
-      {}
+      CopyEngine();
 
     private:
 

@@ -1,8 +1,6 @@
 #include "rex_directx/rendering/dx_imgui_window.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_directx/rendering/dx_imgui_viewport.h"
-#include "rex_directx/resources/dx_clear_state_resource.h"
 
 #include "rex_directx/system/dx_rhi.h"
 #include "rex_directx/system/dx_render_context.h"

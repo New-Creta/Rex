@@ -146,7 +146,7 @@ namespace rex
       private:
         threading::ThreadHandle m_thread_handle;
         rsl::shared_ptr<Job> m_job;
-        Event m_wait_for_start_event;
+        ThreadEvent m_wait_for_start_event;
       };
 
       // Use the given thread and assign a job to it

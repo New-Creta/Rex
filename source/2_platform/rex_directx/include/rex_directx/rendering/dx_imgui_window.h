@@ -7,9 +7,10 @@
 #include "rex_renderer_core/resources/clear_state.h"
 #include "rex_renderer_core/imgui/imgui_viewport.h"
 #include "rex_renderer_core/imgui/imgui_resources.h"
+#include "rex_renderer_core/imgui/imgui_device.h"
 
 #include "imgui/imgui.h"
-#include "rex_directx/imgui/dx_imgui.h"
+
 
 #include "rex_std/bonus/utility.h"
 

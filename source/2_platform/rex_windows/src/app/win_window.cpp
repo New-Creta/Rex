@@ -102,7 +102,7 @@ namespace rex
             static_cast<HWND>(CreateWindowA(info.title.data(),
                 info.title.data(),
                 WS_OVERLAPPEDWINDOW,
-              100, 100, 1280, 800,
+                x, y, width, height,
                 nullptr,
                 nullptr,
                 static_cast<HINSTANCE>(hInstance),

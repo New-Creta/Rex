@@ -1,6 +1,6 @@
 #include "rex_directx/system/dx_descriptor_heap.h"
 
-#include "rex_directx/system/dx_resource.h"
+
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_engine/memory/pointer_math.h"

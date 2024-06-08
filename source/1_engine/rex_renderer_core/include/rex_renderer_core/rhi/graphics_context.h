@@ -11,7 +11,6 @@ namespace rex
 {
   namespace gfx
   {
-    class BaseGraphicsEngine;
     class GraphicsEngine;
   }
 
@@ -74,13 +73,13 @@ namespace rex
       bool has_executed() const;
 
     protected:
-      gfx::BaseGraphicsEngine* owning_engine();
+      gfx::GraphicsEngine* owning_engine();
       rhi::CommandAllocator* allocator();
       virtual void platform_reset() {};
 
     private:
       rhi::CommandAllocator* m_allocator;
-      gfx::BaseGraphicsEngine* m_owning_engine;
+      gfx::GraphicsEngine* m_owning_engine;
       ResourceStateTracker m_resource_state_tracker;
       CommandType m_type;
     };

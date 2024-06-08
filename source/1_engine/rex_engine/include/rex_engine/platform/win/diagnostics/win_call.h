@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_engine/platform/win/diagnostics/win_error.h" // IWYU pragma: keep
 #include "rex_engine/platform/win/win_types.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/bonus/types.h"
@@ -10,7 +9,6 @@ namespace rex
 {
   namespace win
   {
-
     RSL_CREATE_STRONG_TYPE(ErrorSuccess, DWord);
 
     class WinCall
@@ -50,9 +48,9 @@ namespace rex
 // Wrapper around a Win API call.
 // It'll verify internally if the call was successful.
 // Used for Win API calls that do NOT return HRESULT
-  #define WIN_CALL(function)    rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, static_cast<rex::win::DWord>(rex::win::Error::Success), #function, __FILE__, __FUNCTION__, __LINE__)
-  #define WIN_SUCCESS(function) rex::win::WinCall(function, rex::win::ErrorSuccess(static_cast<rex::win::DWord>(rex::win::Error::Success)), #function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
-  #define WIN_FAILED(function)  rex::win::WinCall(function, rex::win::ErrorSuccess(static_cast<rex::win::DWord>(rex::win::Error::Success)), #function, __FILE__, __FUNCTION__, __LINE__).has_failed()
+  #define WIN_CALL(function)    rex::win::call_to_win32_api<decltype(function)>([&]() { return function; }, rex::win::ErrorSuccess(0).get(), #function, __FILE__, __FUNCTION__, __LINE__)
+  #define WIN_SUCCESS(function) rex::win::WinCall(function, rex::win::ErrorSuccess(0), #function, __FILE__, __FUNCTION__, __LINE__).has_succeeded()
+  #define WIN_FAILED(function)  rex::win::WinCall(function, rex::win::ErrorSuccess(0), #function, __FILE__, __FUNCTION__, __LINE__).has_failed()
 
 // Same as the above but the user is able to provide an error value to be ignored.
 // This is usefull as some Win API functions can succeed while still returning an error code

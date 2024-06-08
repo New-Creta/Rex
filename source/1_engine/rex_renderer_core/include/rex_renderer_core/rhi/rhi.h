@@ -23,7 +23,6 @@
 #include "rex_renderer_core/resources/resource.h"
 #include "rex_renderer_core/resources/render_target.h"
 #include "rex_renderer_core/resources/texture_2d.h"
-#include "rex_renderer_core/system/command_list.h"
 #include "rex_renderer_core/system/command_queue.h"
 #include "rex_renderer_core/system/swapchain.h"
 #include "rex_renderer_core/resources/vertex_buffer.h"
@@ -94,7 +93,6 @@ namespace rex
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode);
-      rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
 
       RenderTarget* get_render_target();
     }

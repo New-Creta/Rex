@@ -17,10 +17,6 @@ namespace rex
 {
   namespace gfx
   {
-#ifdef REX_BUILD_DEBUG
-#define REX_ENABLE_IMGUI
-#endif
-
     // The GPU Engine is the main system driving all other systems that deal with the gpu.
     // It encapsulates all sub engines (copy, compute, render).
     class GpuEngine
@@ -54,6 +50,7 @@ namespace rex
       // Create a new context which is used for computing data on the gpu
       ScopedPoolObject<rhi::ComputeContext> new_compute_ctx();
 
+      // Return the render target pointing to the current backbuffer of the swapchain
       rhi::RenderTarget* render_target();
 
     private:

@@ -70,7 +70,7 @@ namespace rex
       return m_allocator == nullptr;
     }
 
-    gfx::BaseGraphicsEngine* GraphicsContext::owning_engine()
+    gfx::GraphicsEngine* GraphicsContext::owning_engine()
     {
       return m_owning_engine;
     }

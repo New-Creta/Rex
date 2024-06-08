@@ -2,7 +2,6 @@
 
 #include "rex_renderer_core/rhi/rhi.h"
 
-#include "rex_renderer_core/system/copy_engine.h"
 #include "rex_renderer_core/gfx/graphics.h"
 
 #include "imgui/imgui.h"

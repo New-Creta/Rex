@@ -21,7 +21,7 @@
 #include "rex_directx/gfx/dx_compute_engine.h"
 #include "rex_directx/gfx/dx_copy_engine.h"
 
-#include "rex_directx/imgui/dx_imgui.h"
+
 #include "rex_directx/rendering/dx_imgui_window.h"
 
 namespace rex
@@ -144,14 +144,6 @@ namespace rex
     void DxGpuEngine::init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
     {
       m_descriptor_heap_pool.emplace(type, rhi::create_descriptor_heap(type));
-    }
-    void DxGpuEngine::init_imgui()
-    {
-      ImGuiDevice imgui_device{};
-      imgui_device.command_queue = render_command_queue();
-      imgui_device.max_num_frames_in_flight = max_frames_in_flight();
-      imgui_device.rtv_format = d3d::to_dx12(swapchain_format());
-      init_dx_imgui_device(imgui_device);
     }
   }
 }

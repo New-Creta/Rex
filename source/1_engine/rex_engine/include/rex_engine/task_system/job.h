@@ -36,7 +36,7 @@ namespace rex
     private:
       rsl::unique_array<rsl::byte> m_result_buffer;
       job_callable m_callable;
-      Event m_finished_event;
+      ThreadEvent m_finished_event;
     };
   } // namespace task_system
 } // namespace rex

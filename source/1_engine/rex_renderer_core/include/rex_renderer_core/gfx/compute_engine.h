@@ -7,12 +7,14 @@ namespace rex
 {
   namespace gfx
   {
+    // The compute engine is responsible for all compute commands on the gpu
     class ComputeEngine : public GraphicsEngine
     {
     public:
-      ComputeEngine()
-        : GraphicsEngine(rhi::CommandType::Compute)
-      {}
+      ComputeEngine();
+
+    private:
+
     };
   }
 }

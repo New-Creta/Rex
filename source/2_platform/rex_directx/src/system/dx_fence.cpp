@@ -23,7 +23,7 @@ namespace rex
     {
       if(m_fence->GetCompletedValue() != m_target_val)
       {
-        Event evt;
+        ThreadEvent evt;
         DX_CALL(m_fence->SetEventOnCompletion(m_target_val, evt.get()));
         evt.wait_for_me();
       }

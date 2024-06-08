@@ -11,11 +11,8 @@
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_command_allocator.h"
-#include "rex_directx/system/dx_commandlist.h"
-#include "rex_directx/system/dx_commandlist.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
 #include "rex_directx/system/dx_resource_heap.h"
-#include "rex_directx/system/dx_resource.h"
 #include "rex_directx/system/dx_swapchain.h"
 #include "rex_directx/system/dx_shader_compiler.h"
 #include "rex_directx/resources/dx_vertex_buffer.h"
@@ -27,14 +24,11 @@
 
 #include "rex_directx/resources/dx_vertex_shader_resource.h"
 #include "rex_directx/resources/dx_pixel_shader_resource.h"
-#include "rex_directx/resources/dx_shader_program_resource.h"
-#include "rex_directx/resources/dx_clear_state_resource.h"
-#include "rex_directx/resources/dx_raster_state_resource.h"
 #include "rex_directx/resources/dx_input_layout_resource.h"
-#include "rex_directx/resources/dx_rendertarget.h"
 #include "rex_directx/resources/dx_vertex_shader.h"
 #include "rex_directx/resources/dx_pixel_shader.h"
 #include "rex_directx/resources/dx_pipeline_state.h"
+#include "rex_directx/resources/dx_render_target.h"
 
 #include "rex_directx/system/dx_copy_context.h"
 #include "rex_renderer_core/gfx/graphics.h"
@@ -158,7 +152,6 @@ namespace rex
       {
         s32 dxgi_factory_flags = 0;
 
-#define REX_ENABLE_DXGI_DEBUG_LAYER
 #ifdef REX_ENABLE_DXGI_DEBUG_LAYER
         dxgi_factory_flags = init_debug_interface();
 #endif
@@ -200,7 +193,6 @@ namespace rex
         // This is the system we use to create most other systems.
         g_rhi_resources->factory = create_dxgi_factory();
 
-#define REX_ENABLE_DX12_DEBUG_LAYER
 #ifdef REX_ENABLE_DX12_DEBUG_LAYER
         // 1.1) Create the debug controller before the device gets created
         // This way we can have some additional debugging information if something goes wrong

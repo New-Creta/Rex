@@ -8,8 +8,6 @@ namespace rex
 {
   namespace rhi
   {
-    class Resource;
-
     class ResourceHeap
     {
     public:
@@ -17,7 +15,6 @@ namespace rex
 
       wrl::ComPtr<ID3D12Resource> create_buffer(rsl::memory_size size, s32 alignment = 0);
       wrl::ComPtr<ID3D12Resource> create_texture2d(DXGI_FORMAT format, s32 width, s32 height);
-      rsl::unique_ptr<Resource> create_depth_stencil_resource(s32 width, s32 height, s32 alignment = 0);
 
     private:
       wrl::ComPtr<ID3D12Heap> m_heap;

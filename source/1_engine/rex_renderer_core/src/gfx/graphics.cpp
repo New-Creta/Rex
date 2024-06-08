@@ -32,13 +32,6 @@ namespace rex
         return Error("Failed to create GPU Engine");
       }
 
-      // If the gpu engine itself failed to initialize, we also exit immediately.
-      // This can be caused by many different reasons, best to look at the log for more info.
-      if (!g_gpu_engine->init_successful())
-      {
-        return Error("Initialization of the gpu engine has failed");
-      }
-
       // Make sure we release the scopeguard which would shutdown our graphics systems otherwise
       shutdown_on_failure.release();
       return Error::no_error();
@@ -51,8 +44,9 @@ namespace rex
     void render()
     {
       g_gpu_engine->new_frame();
-      g_gpu_engine->begin_draw();
-      g_gpu_engine->end_draw();
+      
+      // Render
+
       g_gpu_engine->end_frame();
     }
 
@@ -68,6 +62,10 @@ namespace rex
     ScopedPoolObject<rhi::RenderContext> new_render_ctx()
     {
       return g_gpu_engine->new_render_ctx();
+    }
+    ScopedPoolObject<rhi::ComputeContext> new_compute_ctx()
+    {
+      return g_gpu_engine->new_compute_ctx();
     }
   }
 }

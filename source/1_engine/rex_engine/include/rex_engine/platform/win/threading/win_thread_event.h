@@ -9,10 +9,10 @@ namespace rex
   // A thread event can be used to signal a state on one thread
   // and wait for the that signal on another thread
   // Note: Waiting for a signal is blocking.
-  class Event
+  class ThreadEvent
   {
   public:
-    explicit Event(rsl::string_view name = "");
+    explicit ThreadEvent(rsl::string_view name = "");
 
     // Destroy this event
     // Useful in case it's held by a thread and needs to get manually destroyed

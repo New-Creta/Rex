@@ -1,8 +1,8 @@
 #include "rex_directx/resources/dx_upload_buffer.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_directx/system/dx_commandlist.h"
-#include "rex_directx/system/dx_resource.h"
+
+
 #include "rex_directx/utility/d3dx12.h"
 
 #include "rex_engine/memory/pointer_math.h"

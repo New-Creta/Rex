@@ -4,7 +4,7 @@
 #include "rex_directx/resources/dx_constant_buffer.h"
 #include "rex_directx/resources/dx_vertex_buffer.h"
 #include "rex_directx/resources/dx_index_buffer.h"
-#include "rex_directx/resources/dx_rendertarget.h"
+#include "rex_directx/resources/dx_render_target.h"
 #include "rex_directx/resources/dx_root_signature.h"
 #include "rex_directx/resources/dx_pipeline_state.h"
 #include "rex_directx/resources/dx_texture_2d.h"

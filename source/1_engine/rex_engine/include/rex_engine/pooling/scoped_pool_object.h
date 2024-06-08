@@ -56,6 +56,15 @@ namespace rex
       return m_object;
     }
 
+    // Converts this object into an object holding U instead of T
+    // The new object is returned, this object becomes empty
+    template <typename U>
+    ScopedPoolObject<U> convert()
+    {
+      U* u_ptr = static_cast<U*>(m_object);
+      return ScopedPoolObject<U>(u_ptr, rsl::move(m_callable));
+    }
+
   private:
     return_to_pool_func m_callable; // This callable is meant to return this object back to the pool it came from.
     T* m_object;

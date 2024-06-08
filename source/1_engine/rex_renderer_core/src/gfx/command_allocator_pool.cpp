@@ -6,6 +6,8 @@
 #include "rex_renderer_core/system/command_allocator.h"
 #include "rex_renderer_core/rhi/rhi.h"
 
+#include "rex_engine/containers/vector_utils.h"
+
 namespace rex
 {
   namespace gfx
@@ -34,16 +36,18 @@ namespace rex
       auto it = rsl::find_if(m_active_allocators.begin(), m_active_allocators.end(), [cmdAlloc](const PooledAllocator& pooledAlloc) { return pooledAlloc.allocator.get() == cmdAlloc; });
       REX_ASSERT_X(it != m_active_allocators.end(), "Command allocator to discard is not found in active allocators. This is usually caused because the command allocator didn't come from this pool.");
 
-      PooledAllocator pooled_alloc = rsl::move(*it);
+      s32 idx = rsl::distance(m_active_allocators.begin(), it);
+      PooledAllocator& pooled_alloc = rex::transfer_object(idx, m_active_allocators, m_idle_allocators);
       pooled_alloc.fence_value = fenceValue;
-      m_active_allocators.erase(it);
-      m_idle_allocators.emplace_back(rsl::move(pooled_alloc));
     }
 
     // Find a free allocator in the pool and return its index
     s32 CommandAllocatorPool::find_free_allocator(u64 fenceValue)
     {
-      // Find an allocator in the idle allocators list that for sure has had its last command executed (this is determined by the fence value)
+      // Allocators are added back to the ready queue in CPU time.
+      // This means the last commandlist that used the allocator might not have finished executing yet.
+      // Therefore we need to check the fence value of our command queue and request a command allocator
+      // that's finished on the GPU.
       auto it = rsl::find_if(m_idle_allocators.cbegin(), m_idle_allocators.cend(), [fenceValue](const PooledAllocator& pooledAlloc) { return pooledAlloc.fence_value <= fenceValue; });
       if (it != m_idle_allocators.cend())
       {
@@ -57,11 +61,7 @@ namespace rex
     {
       // Move the allocator from the idle allocators and put it in the active allocators
       REX_ASSERT_X(idx != -1, "Invalid iterator used for allocator");
-      auto it = m_idle_allocators.begin() + idx;
-      m_active_allocators.emplace_back(rsl::move(*it));
-      m_idle_allocators.erase(it);
-
-      return m_active_allocators.back().allocator.get();
+      return rex::transfer_object(idx, m_idle_allocators, m_active_allocators).allocator.get();
     }
     // Create a new allocator and add it to the active allocators
     rhi::CommandAllocator* CommandAllocatorPool::create_new_active_alloc()

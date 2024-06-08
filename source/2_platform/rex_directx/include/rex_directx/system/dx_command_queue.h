@@ -49,7 +49,7 @@ namespace rex
     private:
       wrl::ComPtr<ID3D12CommandQueue> m_command_queue;
       rsl::unique_ptr<DxFence> m_fence;
-      Event m_fence_event;
+      ThreadEvent m_fence_event;
       //Fence m_fence;
     };
   } // namespace rhi

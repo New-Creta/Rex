@@ -14,10 +14,6 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
-#if defined(REX_BUILD_DEBUG) || defined(REX_BUILD_DEBUG_OPT)
-#define REX_ENABLE_GFX_DEBUGGING
-#endif
-
 namespace rex 
 { 
   namespace globals 

@@ -5,9 +5,6 @@
 #include "rex_renderer_core/rhi/primitive_topology.h"
 #include "rex_renderer_core/rhi/resource_state.h"
 
-#include "rex_renderer_core/system/copy_engine.h"
-#include "rex_renderer_core/system/command_list.h"
-
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/imgui/imgui_resources.h"
 
@@ -85,22 +82,6 @@ namespace rex
     ctx.set_root_signature(imgui_renderstate().root_signature);
     ctx.set_constant_buffer(0, imgui_renderstate().constant_buffer);
     ctx.set_blend_factor(imgui_renderstate().blend_factor.data());
-
-    //ctx.wait_for_finish();
-
-
-    //cmdList->transition_buffer(frameCtx.vertex_buffer(), ResourceState::VertexAndConstantBuffer);
-    //cmdList->transition_buffer(frameCtx.index_buffer(), ResourceState::IndexBuffer);
-    //cmdList->transition_buffer(m_render_state.constant_buffer, ResourceState::VertexAndConstantBuffer);
-
-    //cmdList->set_viewport(frameCtx.viewport());
-    //cmdList->set_vertex_buffer(frameCtx.vertex_buffer());
-    //cmdList->set_index_buffer(frameCtx.index_buffer());
-    //cmdList->set_primitive_topology(m_render_state.primitive_topology);
-    //cmdList->set_pipeline_state(m_render_state.pso);
-    //cmdList->set_root_signature(m_render_state.root_signature);
-    //cmdList->set_constant_buffer(0, m_render_state.constant_buffer);
-    //cmdList->set_blend_factor(m_render_state.blend_factor.data());
   }
 
   void RexImGuiViewport::draw(rhi::RenderContext& ctx, ImDrawData* drawData)
@@ -136,11 +117,6 @@ namespace rex
         ctx.bind_texture(texture);
 
         ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
-
-        //cmdList->set_scissor_rect(rect);
-        //cmdList->bind_texture(texture);
-        //cmdList->set_graphics_root_descriptor_table(1, (UINT64)texture->gpu_handle().ptr);
-        //cmdList->draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
       }
       global_idx_offset += cmd_list->IdxBuffer.Size;
       global_vtx_offset += cmd_list->VtxBuffer.Size;
