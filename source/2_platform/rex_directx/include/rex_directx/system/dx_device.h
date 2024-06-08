@@ -24,6 +24,7 @@ namespace rex
 
     private:
       void init_shader_model();
+      rsl::small_stack_string query_driver_version() const;
 
     private:
       wrl::ComPtr<ID3D12Device1> m_device;

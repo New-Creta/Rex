@@ -15,10 +15,13 @@ namespace rex
     {
       const D3D_SHADER_MODEL shader_model = query_shader_model_version(m_device.Get());
 
+      m_info.api            = "DirectX";
+      m_info.api_version    = feature_level_name(m_feature_level);
+      m_info.shader_version = shader_model_name(shader_model);
       m_info.adaptor        = m_adapter->description().name;
       m_info.vendor         = m_adapter->description().vendor_name;
-      m_info.shader_version = shader_model_name(shader_model);
-      m_info.api_version    = feature_level_name(m_feature_level);
+      m_info.driver_version = query_driver_version();
+      m_info.available_memory = m_adapter->description().dedicated_video_memory;
     }
 
     ID3D12Device1* DxDevice::get()
@@ -58,6 +61,11 @@ namespace rex
 
       m_shader_version = shader_model_name(shader_model);
       m_api_version    = feature_level_name(m_feature_level);
+    }
+
+    rsl::small_stack_string DxDevice::query_driver_version() const
+    {
+      return "Unknown"_small;
     }
   } // namespace rhi
 } // namespace rex
