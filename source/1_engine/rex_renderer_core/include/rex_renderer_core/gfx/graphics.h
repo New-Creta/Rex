@@ -16,6 +16,7 @@
 #include "rex_renderer_core/rhi/copy_context.h"
 
 #include "rex_renderer_core/gfx/graphics_engine.h"
+#include "rex_renderer_core/rendering/renderer.h"
 
 #include "rex_std/bonus/utility.h"
 
@@ -33,6 +34,10 @@ namespace rex
     Error init(const renderer::OutputWindowUserData& userData);
     // Shutdown the graphics engine, no rendering support from here on out
     void shutdown();
+
+    // Add a renderer to the queue.
+    // All renderers get processed when render() is called
+    void add_renderer(rsl::unique_ptr<Renderer> renderer);
 
     // Render a single frame
     void render();

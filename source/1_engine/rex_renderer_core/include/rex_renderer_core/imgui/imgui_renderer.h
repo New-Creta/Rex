@@ -6,6 +6,7 @@
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/system/resource_state_tracker.h"
 #include "rex_renderer_core/resources/raster_state.h"
+#include "rex_renderer_core/rendering/renderer.h"
 
 namespace rex
 {
@@ -20,13 +21,13 @@ namespace rex
     class Shader;
   }
 
-  class ImGuiRenderer
+  class ImGuiRenderer : public Renderer
   {
   public:
     ImGuiRenderer(void* platformWindowHandle);
 
-    void new_frame();
-    void render();
+    void new_frame() override;
+    void render() override;
 
   private:
     void init_imgui();

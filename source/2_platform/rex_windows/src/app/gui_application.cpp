@@ -121,8 +121,6 @@ namespace rex
         // Call into our graphics API to render everything
         gfx::render();
         
-        m_imgui_renderer->render();
-
         // Present the newly rendered image to the main window
         gfx::present();
       }
@@ -338,7 +336,7 @@ namespace rex
 
         REX_WARN_ONCE(LogWindows, "Create the window manager here");
 
-        m_imgui_renderer = rex::make_unique_debug<ImGuiRenderer>(m_window->primary_display_handle());
+        gfx::add_renderer(rsl::make_unique<ImGuiRenderer>(m_window->primary_display_handle()));
 
         return true;
       }
@@ -354,21 +352,8 @@ namespace rex
 
         // Dispatch the threads that got queued last frame
         event_system().dispatch_queued_events();
-
-        // Set a new frame in imgui so we can start recording imgui commands
-        m_imgui_renderer->new_frame();
       }
       void post_user_update()
-      {
-        // Nothing to implement
-      }
-
-      // Drawing
-      void pre_user_draw() // NOLINT(readability-convert-member-functions-to-static)
-      {
-        // Nothing to implement
-      }
-      void post_user_draw() // NOLINT(readability-convert-member-functions-to-static)
       {
         // Nothing to implement
       }
@@ -378,8 +363,6 @@ namespace rex
       FPS m_fps;
 
       rsl::unique_ptr<Window> m_window;
-
-      rex::unique_debug_ptr<ImGuiRenderer> m_imgui_renderer;
 
       rsl::function<bool()> m_on_initialize;
       rsl::function<void()> m_on_update;

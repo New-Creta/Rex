@@ -12,6 +12,7 @@ namespace rex
   {
     // We can access it in the high level graphics api, but the gpu engine is owned by the rhi
     GpuEngine* g_gpu_engine;
+    rsl::vector<rsl::unique_ptr<Renderer>> g_renderers;
 
     REX_STATIC_WARNING("Currently we have 2 graphics systems that are too similar, namely the gpu engine and the rhi.");
     REX_STATIC_WARNING("Define the responsibility of each of these or merge them together if possible, otherwise they'll just cause confusion");
@@ -38,14 +39,24 @@ namespace rex
     }
     void shutdown()
     {
+      g_renderers.clear();
+
       rhi::shutdown();
+    }
+
+    void add_renderer(rsl::unique_ptr<Renderer> renderer)
+    {
+      g_renderers.emplace_back(rsl::move(renderer));
     }
 
     void render()
     {
       g_gpu_engine->new_frame();
       
-      // Render
+      for (auto& renderer : g_renderers)
+      {
+        renderer->render();
+      }
 
       g_gpu_engine->end_frame();
     }

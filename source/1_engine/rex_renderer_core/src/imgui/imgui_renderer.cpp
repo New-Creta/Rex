@@ -27,6 +27,9 @@ namespace rex
     init_platform(platformWindowHandle);
     init_gpu_resources();
     init_main_imgui_viewport();
+
+    // Open imgui to accept commands
+    new_frame();
   }
 
   void ImGuiRenderer::new_frame()
@@ -67,6 +70,9 @@ namespace rex
       ImGui::UpdatePlatformWindows();
       ImGui::RenderPlatformWindowsDefault(nullptr, nullptr);
     }
+
+    // Open imgui to accept new commands again
+    new_frame();
   }
 
   void ImGuiRenderer::init_imgui()

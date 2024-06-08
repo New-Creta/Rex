@@ -91,7 +91,10 @@ namespace rex
       return pooled_ctx;
     }
 
-
+    void GraphicsEngine::flush()
+    {
+      m_command_queue->flush();
+    }
 
 
     u64 GraphicsEngine::last_completed_fence() const
