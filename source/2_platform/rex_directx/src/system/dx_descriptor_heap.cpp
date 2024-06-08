@@ -9,91 +9,6 @@ namespace rex
 {
   namespace rhi
   {
-    DescriptorHandle::DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_GPU_DESCRIPTOR_HANDLE handleGpu, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size)
-        : m_handle(handle)
-      , m_handle_gpu(handleGpu)
-        , m_type(type)
-        , m_size(size)
-    {
-    }
-
-    DescriptorHandle& DescriptorHandle::operator++()
-    {
-      m_handle.Offset(1, m_size);
-      return *this;
-    }
-    DescriptorHandle DescriptorHandle::operator++(int)
-    {
-      const CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_handle);
-      m_handle.Offset(1, m_size);
-      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_handle_gpu);
-      handle_gpu.InitOffsetted(m_handle_gpu, m_size);
-      return DescriptorHandle(handle, handle_gpu, m_type, m_size);
-    }
-
-    DescriptorHandle& DescriptorHandle::operator--()
-    {
-      m_handle.Offset(-1, m_size);
-      return *this;
-    }
-    DescriptorHandle DescriptorHandle::operator--(int)
-    {
-      const CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_handle);
-      m_handle.Offset(-1, m_size);
-      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_handle_gpu);
-      handle_gpu.InitOffsetted(m_handle_gpu, -m_size);
-      return DescriptorHandle(handle, handle_gpu, m_type, m_size);
-    }
-
-    DescriptorHandle DescriptorHandle::operator+(s32 offset) const
-    {
-      DescriptorHandle handle = *this;
-      handle += offset;
-      return handle;
-    }
-    DescriptorHandle& DescriptorHandle::operator+=(s32 offset)
-    {
-      m_handle.Offset(offset, m_size);
-      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_handle_gpu);
-      handle_gpu.InitOffsetted(m_handle_gpu, m_size * offset);
-      m_handle_gpu = handle_gpu;
-      return *this;
-    }
-
-    DescriptorHandle DescriptorHandle::operator-(s32 offset) const
-    {
-      DescriptorHandle handle = *this;
-      handle -= offset;
-      return handle;
-    }
-    DescriptorHandle& DescriptorHandle::operator-=(s32 offset)
-    {
-      m_handle.Offset(-offset, m_size);
-      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_handle_gpu);
-      handle_gpu.InitOffsetted(m_handle_gpu, m_size * -offset);
-      m_handle_gpu = handle_gpu;
-      return *this;
-    }
-
-    DescriptorHandle::operator D3D12_CPU_DESCRIPTOR_HANDLE() const
-    {
-      return get();
-    }
-    DescriptorHandle::operator D3D12_GPU_DESCRIPTOR_HANDLE() const
-    {
-      return get_gpu();
-    }
-
-    const CD3DX12_CPU_DESCRIPTOR_HANDLE& DescriptorHandle::get() const
-    {
-      return m_handle;
-    }
-
-    const D3D12_GPU_DESCRIPTOR_HANDLE& DescriptorHandle::get_gpu() const
-    {
-      return m_handle_gpu;
-    }
-
     DescriptorHeap::DescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device)
         : m_descriptor_heap(descHeap)
         , m_device(device)
@@ -115,7 +30,7 @@ namespace rex
       rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
       DescriptorHandle rtv_handle = new_free_handle();
-      m_device->CreateRenderTargetView(resource, &rtv_desc, rtv_handle.get());
+      m_device->CreateRenderTargetView(resource, &rtv_desc, rtv_handle);
 
       return rtv_handle;
     }
@@ -130,7 +45,7 @@ namespace rex
       dsv_desc.Format        = format;
 
       DescriptorHandle dsv_handle = new_free_handle();
-      m_device->CreateDepthStencilView(resource, &dsv_desc, dsv_handle.get());
+      m_device->CreateDepthStencilView(resource, &dsv_desc, dsv_handle);
 
       return dsv_handle;
     }
@@ -145,7 +60,7 @@ namespace rex
       cbv_desc.SizeInBytes = size.size_in_bytes();
 
       DescriptorHandle cbv_handle = new_free_handle();
-      m_device->CreateConstantBufferView(&cbv_desc, cbv_handle.get());
+      m_device->CreateConstantBufferView(&cbv_desc, cbv_handle);
 
       return cbv_handle;
     }
@@ -163,7 +78,7 @@ namespace rex
       desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
       DescriptorHandle desc_handle = new_free_handle();
-      m_device->CreateShaderResourceView(resource, &desc, desc_handle.get());
+      m_device->CreateShaderResourceView(resource, &desc, desc_handle);
       return desc_handle;
     }
 

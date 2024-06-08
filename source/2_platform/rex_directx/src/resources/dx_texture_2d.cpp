@@ -12,7 +12,7 @@ namespace rex
 
     D3D12_GPU_DESCRIPTOR_HANDLE DxTexture2D::gpu_handle()
     {
-      return m_handle.get_gpu();
+      return m_handle.gpu_handle();
     }
 
     ID3D12Resource* DxTexture2D::dx_object()

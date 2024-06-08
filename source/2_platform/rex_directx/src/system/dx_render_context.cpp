@@ -79,7 +79,7 @@ namespace rex
     void DxRenderContext::set_render_target(RenderTarget* renderTarget)
     {
       DxRenderTarget* dx_render_target = static_cast<DxRenderTarget*>(renderTarget);
-      m_cmd_list->OMSetRenderTargets(1, &dx_render_target->handle().get(), true, nullptr);
+      m_cmd_list->OMSetRenderTargets(1, &dx_render_target->handle().cpu_handle(), true, nullptr);
     }
     void DxRenderContext::clear_render_target(RenderTarget* renderTarget, ClearStateResource* clearState)
     {

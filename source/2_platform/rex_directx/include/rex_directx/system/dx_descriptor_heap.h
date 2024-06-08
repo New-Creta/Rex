@@ -1,8 +1,6 @@
 #pragma once
 
-#include "rex_directx/utility/d3dx12.h"
-#include "rex_directx/utility/dx_util.h"
-#include "rex_engine/engine/types.h"
+#include "rex_directx/system/dx_descriptor_handle.h"
 #include "rex_std/bonus/memory.h"
 
 namespace rex
@@ -10,37 +8,6 @@ namespace rex
   namespace rhi
   {
     class Resource;
-
-    class DescriptorHandle
-    {
-    public:
-      DescriptorHandle() = default;
-      DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_GPU_DESCRIPTOR_HANDLE handleGpu, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size);
-
-      DescriptorHandle& operator++();
-      DescriptorHandle operator++(int);
-
-      DescriptorHandle& operator--();
-      DescriptorHandle operator--(int);
-
-      DescriptorHandle operator+(s32 offset) const;
-      DescriptorHandle& operator+=(s32 offset);
-
-      DescriptorHandle operator-(s32 offset) const;
-      DescriptorHandle& operator-=(s32 offset);
-
-      operator D3D12_CPU_DESCRIPTOR_HANDLE() const;
-      operator D3D12_GPU_DESCRIPTOR_HANDLE() const;
-
-      const CD3DX12_CPU_DESCRIPTOR_HANDLE& get() const;
-      const D3D12_GPU_DESCRIPTOR_HANDLE& get_gpu() const;
-
-    private:
-      CD3DX12_CPU_DESCRIPTOR_HANDLE m_handle;
-      D3D12_GPU_DESCRIPTOR_HANDLE m_handle_gpu;
-      D3D12_DESCRIPTOR_HEAP_TYPE m_type;
-      s32 m_size;
-    };
 
     class DescriptorHeap
     {
