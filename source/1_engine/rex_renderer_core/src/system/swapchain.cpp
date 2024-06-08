@@ -26,16 +26,20 @@ namespace rex
     {
       return m_swapchain_buffers.size();
     }
-    Texture2D* Swapchain::buffer(s32 idx)
+    RenderTarget* Swapchain::buffer(s32 idx)
     {
       return m_swapchain_buffers[idx].get();
+    }
+    RenderTarget* Swapchain::current_buffer()
+    {
+      return m_swapchain_buffers[current_buffer_idx()].get();
     }
 
     void Swapchain::clear_buffers()
     {
       m_swapchain_buffers.clear();
     }
-    void Swapchain::store_buffer(rsl::unique_ptr<Texture2D> buffer)
+    void Swapchain::store_render_target(rsl::unique_ptr<RenderTarget> buffer)
     {
       m_swapchain_buffers.emplace_back(rsl::move(buffer));
     }

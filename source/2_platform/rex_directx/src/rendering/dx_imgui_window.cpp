@@ -24,14 +24,6 @@ namespace rex
       const s32 width = viewport->Size.x;
       const s32 height = viewport->Size.y;
 
-      m_render_targets = rsl::make_unique<rsl::unique_ptr<rhi::RenderTarget>[]>(creationInfo.max_num_frames_in_flight);
-      for (s32 i = 0; i < m_swapchain->num_buffers(); ++i)
-      {
-        rhi::Texture2D* texture = m_swapchain->buffer(i);
-        rsl::unique_ptr<rhi::RenderTarget> render_target = rhi::create_render_target(texture);
-        m_render_targets[i] = rsl::move(render_target);
-      }
-
       rhi::ClearStateDesc desc{};
       desc.rgba = rsl::colors::LightSteelBlue;
       desc.flags.add_state(ClearBits::ClearColorBuffer);
@@ -43,12 +35,12 @@ namespace rex
     {
       auto render_ctx = gfx::new_render_ctx();
 
-      rhi::RenderTarget* render_target = m_render_targets[m_swapchain->current_buffer_idx()].get();
+      rhi::RenderTarget* render_target = m_swapchain->current_buffer();
 
-      render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::RenderTarget);
+      render_ctx->transition_buffer(render_target, rhi::ResourceState::RenderTarget);
       render_ctx->set_render_target(render_target);
       m_viewport.render(*render_ctx.get());
-      render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::Present);
+      render_ctx->transition_buffer(render_target, rhi::ResourceState::Present);
 
       //advance_to_next_frame();
     }

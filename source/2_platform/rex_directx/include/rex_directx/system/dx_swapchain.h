@@ -26,7 +26,6 @@ namespace rex
       void resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);
       void present();
 
-      //Resource2* get_buffer(s32 idx);
       IDXGISwapChain3* get();
 
       s32 current_buffer_idx() const override;

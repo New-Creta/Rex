@@ -52,6 +52,9 @@ namespace rex
       rsl::unique_ptr<ResourceHeap> create_resource_heap();
       rsl::vector<ID3D12DescriptorHeap*> get_desc_heaps();
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
+
+      rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource);
+
     }
   }
 }

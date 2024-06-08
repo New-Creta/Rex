@@ -43,7 +43,7 @@ namespace rex
     {
       auto render_ctx = new_render_ctx();
       render_ctx->transition_buffer(m_swapchain->buffer(m_swapchain->current_buffer_idx()), rhi::ResourceState::RenderTarget);
-      render_ctx->clear_render_target(m_swapchain_render_targets[m_swapchain->current_buffer_idx()].get(), m_clear_state_resource.get());
+      render_ctx->clear_render_target(render_target(), m_clear_state_resource.get());
     }
     void GpuEngine::present()
     {
@@ -81,7 +81,7 @@ namespace rex
     rhi::RenderTarget* GpuEngine::render_target()
     {
       REX_WARN_ONCE(LogGpuEngine, "Remove render target getter of gpu engine");
-      return m_swapchain_render_targets[m_swapchain->current_buffer_idx()].get();
+      return m_swapchain->current_buffer();
     }
 
     void GpuEngine::init_clear_state()
@@ -94,13 +94,6 @@ namespace rex
     void GpuEngine::init_swapchain()
     {
       m_swapchain = rhi::create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
-
-      for (s32 i = 0; i < m_swapchain->num_buffers(); ++i)
-      {
-        rhi::Texture2D* texture = m_swapchain->buffer(i);
-        rsl::unique_ptr<rhi::RenderTarget> render_target = rhi::create_render_target(texture);
-        m_swapchain_render_targets.emplace_back(rsl::move(render_target));
-      }
     }
     void GpuEngine::init_sub_engines()
     {

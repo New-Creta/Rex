@@ -613,6 +613,12 @@ namespace rex
         return rsl::make_unique<UploadBuffer>(d3d_upload_buffer, D3D12_RESOURCE_STATE_COMMON);
       }
 
+      rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource)
+      {
+        DescriptorHandle rtv = g_gpu_engine->create_rtv(resource.Get());
+        return rsl::make_unique<DxRenderTarget>(resource, rtv);
+      }
+
       RenderTarget* get_render_target()
       {
         return g_gpu_engine->render_target();

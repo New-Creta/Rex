@@ -43,7 +43,6 @@ namespace rex
     private:
       rsl::unique_ptr<rhi::Swapchain> m_swapchain;
       rsl::unique_ptr<rhi::ClearStateResource> m_clear_state;
-      rsl::unique_array<rsl::unique_ptr<rhi::RenderTarget>> m_render_targets;
       RexImGuiViewport m_viewport;
     };
   }
