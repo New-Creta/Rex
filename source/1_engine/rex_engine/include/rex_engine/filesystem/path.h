@@ -44,9 +44,6 @@ namespace rex
       template <typename PathLikeType, typename... Args>
       void join_impl(rsl::string& str, PathLikeType&& firstArg, Args&&... args)
       {
-        using type = rsl::remove_extent_t<PathLikeType>;
-
-        //join_impl(str, rsl::forward<PathLikeType>(firstArg)); // append the first arg
         join_impl(str, rsl::forward<PathLikeType>(firstArg));
         join_impl(str, rsl::forward<Args>(args)...);          // append the rest
       }
