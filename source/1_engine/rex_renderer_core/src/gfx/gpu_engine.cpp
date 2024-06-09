@@ -35,8 +35,6 @@ namespace rex
 
     void GpuEngine::init()
     {
-      REX_WARN_ONCE(LogGpuEngine, "Verify if we can't remove GpuEngine's post init function");
-
       init_resource_heap();
       init_descriptor_heaps();
       init_clear_state();
@@ -85,7 +83,7 @@ namespace rex
       return base_ctx.convert<rhi::ComputeContext>();
     }
 
-    rhi::RenderTarget* GpuEngine::render_target()
+    rhi::RenderTarget* GpuEngine::current_backbuffer_rt()
     {
       REX_WARN_ONCE(LogGpuEngine, "Remove render target getter of gpu engine");
       return m_swapchain->current_buffer();

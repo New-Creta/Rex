@@ -15,6 +15,8 @@ namespace rex
 {
   namespace rhi
   {
+    DEFINE_LOG_CATEGORY(LogDxCopyContext);
+
     DxCopyContext::DxCopyContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList, CommandAllocator* alloc)
       : CopyContext(owningEngine)
       , m_cmd_list(cmdList)
@@ -112,6 +114,7 @@ namespace rex
     void DxCopyContext::transition_buffer(Buffer* resource, ID3D12Resource* d3d_resource, ResourceState state)
     {
       ResourceStateTransition transition = track_resource_transition(resource, state);
+
       if (transition.before != transition.after)
       {
         D3D12_RESOURCE_STATES before_state = d3d::to_dx12(transition.before);

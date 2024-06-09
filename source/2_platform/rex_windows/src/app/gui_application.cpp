@@ -136,15 +136,6 @@ namespace rex
       }
 
     private:
-      void display_gfx_info() // NOLINT(readability-convert-member-functions-to-static)
-      {
-        rhi::Info info = rhi::info();
-        REX_INFO(LogWindows, "Renderer Info - Adaptor: {}", info.adaptor);
-        REX_INFO(LogWindows, "Renderer Info - Vendor: {}", info.vendor);
-        REX_INFO(LogWindows, "Renderer Info - API Version: {}", info.api_version);
-        REX_INFO(LogWindows, "Renderer Info - Shader Version: {}", info.shader_version);
-      }
-
       void cap_frame_rate()
       {
         //
@@ -332,9 +323,7 @@ namespace rex
 
         gfx::init(user_data);
 
-        display_gfx_info();
-
-        REX_WARN_ONCE(LogWindows, "Create the window manager here");
+        REX_WARN_ONCE(LogWindows, "Create the viewport manager here");
 
         gfx::add_renderer(rsl::make_unique<ImGuiRenderer>(m_window->primary_display_handle()));
 

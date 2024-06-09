@@ -43,21 +43,13 @@ namespace rex
 
   void ImGuiRenderer::render()
   {
-    // Test rendering something
-    ImGui::ShowDemoWindow();
-
     ImGui::Render();
 
     auto render_ctx = gfx::new_render_ctx();
 
-    static bool has_transitioned = false;
-    if (!has_transitioned)
-    {
-      has_transitioned = true;
-      render_ctx->transition_buffer(m_fonts_texture.get(), rhi::ResourceState::PixelShaderResource);
-    }
-
-    render_ctx->set_render_target(rhi::get_render_target());
+    // As the imgui renderer main viewport is the main window of the application
+    // it needs to set its render target to the one pointing to the current back buffer
+    render_ctx->set_render_target(rhi::current_backbuffer_rt());
 
     ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     if (RexImGuiViewport* rex_viewport = (RexImGuiViewport*)main_viewport->RendererUserData)

@@ -79,7 +79,12 @@ namespace rex
         gpus.push_back(adapter.description());
       }
 
-      auto it = rsl::max_element(m_adapters.cbegin(), m_adapters.cend(), [&scorerFn](const Adapter& lhs, const Adapter& rhs) { return scorerFn(lhs.description()) < scorerFn(rhs.description()); });
+      auto it = rsl::max_element(m_adapters.cbegin(), m_adapters.cend(), 
+        [&scorerFn](const Adapter& lhs, const Adapter& rhs) 
+        { 
+          return scorerFn(lhs.description()) < scorerFn(rhs.description()); 
+        });
+
       REX_ASSERT_X(it != m_adapters.cend(), "No adapater found with valid score");
       m_selected_adapter = rsl::iterator_to_pointer(it);      
     }

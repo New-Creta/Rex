@@ -79,6 +79,7 @@ namespace rex
       DxRenderTarget* dx_rt = static_cast<DxRenderTarget*>(resource);
       transition_buffer(resource, dx_rt->dx_object(), state);
     }
+
     void DxRenderContext::set_render_target(RenderTarget* renderTarget)
     {
       DxRenderTarget* dx_render_target = static_cast<DxRenderTarget*>(renderTarget);

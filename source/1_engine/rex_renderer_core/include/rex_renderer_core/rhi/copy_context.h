@@ -34,9 +34,6 @@ namespace rex
 
     protected:
       gfx::CopyEngine* typed_owning_engine();
-
-    private:
-
     };
   }
 }

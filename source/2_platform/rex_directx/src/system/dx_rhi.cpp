@@ -21,6 +21,7 @@
 #include "rex_directx/system/dx_feature_shader_model.h"
 #include "rex_directx/system/dx_fence.h"
 #include "rex_directx/resources/dx_constant_buffer.h"
+#include "rex_renderer_core/rhi/graphics_context.h"
 
 #include "rex_directx/resources/dx_vertex_shader_resource.h"
 #include "rex_directx/resources/dx_pixel_shader_resource.h"
@@ -151,6 +152,9 @@ namespace rex
 
         // Initialize the device to be used by the rhi
         g_rhi_resources->device = device.get();
+
+        // Log the info in case anything goes wrong after this.
+        log_info();
 
         // Now create the gpu engine which the backend of all our graphics systems
         g_gpu_engine = rsl::make_unique<gfx::DxGpuEngine>(userData, rsl::move(device), g_rhi_resources->adapter_manager.get());
@@ -433,11 +437,16 @@ namespace rex
 
         auto texture = rsl::make_unique<DxTexture2D>(d3d_texture, desc_handle, width, height, format);
 
+        // Upload data to gpu and transition to pixel shader resource
         if (data)
         {
           auto copy_context = gfx::new_copy_ctx();
-
           copy_context->update_texture2d(texture.get(), data);
+          auto sync_info = copy_context->execute_on_gpu();
+          
+          auto render_context = gfx::new_render_ctx();
+          render_context->stall(*sync_info.get());
+          render_context->transition_buffer(texture.get(), ResourceState::PixelShaderResource);
         }
 
         return texture;
@@ -618,9 +627,9 @@ namespace rex
       {
         return g_gpu_engine->desc_heaps();
       }
-      RenderTarget* get_render_target()
+      RenderTarget* current_backbuffer_rt()
       {
-        return g_gpu_engine->render_target();
+        return g_gpu_engine->current_backbuffer_rt();
       }
     }
   }

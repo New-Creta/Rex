@@ -51,7 +51,7 @@ namespace rex
       ScopedPoolObject<rhi::ComputeContext> new_compute_ctx();
 
       // Return the render target pointing to the current backbuffer of the swapchain
-      rhi::RenderTarget* render_target();
+      rhi::RenderTarget* current_backbuffer_rt();
 
     protected:
       // Initialize the resource heap which keeps track of all gpu resources
@@ -70,10 +70,10 @@ namespace rex
       void init_imgui();
 
     private:
+      rsl::unique_ptr<rhi::Swapchain> m_swapchain;      // The swapchain is responsible for swapping the backbuffer with the front buffer
       rsl::unique_ptr<RenderEngine> m_render_engine;    // The render engine is the high level graphics engine responsible for queueing render commands
       rsl::unique_ptr<ComputeEngine> m_compute_engine;  // The render engine is the high level graphics engine responsible for queueing compute commands
       rsl::unique_ptr<CopyEngine> m_copy_engine;        // The render engine is the high level graphics engine responsible for queueing copy commands
-      rsl::unique_ptr<rhi::Swapchain> m_swapchain;      // The swapchain is responsible for swapping the backbuffer with the front buffer
       rsl::unique_ptr<rhi::ClearStateResource> m_clear_state_resource; // The clear state resource that's used to clear the backbuffer with
       s32 m_max_frames_in_flight;                       // The maximum number of we can have in flight for rendering.
       void* m_primary_display_handle;                   // The display handle to render to (HWND on Windows)

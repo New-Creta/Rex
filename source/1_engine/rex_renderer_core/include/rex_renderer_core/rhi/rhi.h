@@ -53,6 +53,8 @@ namespace rex
       rsl::small_stack_string driver_version;   // eg: 552.85
       rsl::memory_size available_memory;        // eg: 8 388 608
     };
+    // Log the basic info about the graphics hardware of the current machine
+    void log_info();
 
     // All logic inside the "api" namespace is only declared
     // The definition of these functions and/or classes are found in the graphics API specific rhi code.
@@ -93,7 +95,7 @@ namespace rex
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode);
 
-      RenderTarget* get_render_target();
+      RenderTarget* current_backbuffer_rt();
     }
 
     // the api namespace isn't needed to access these functions

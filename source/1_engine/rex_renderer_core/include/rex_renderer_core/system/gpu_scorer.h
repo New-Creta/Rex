@@ -7,6 +7,6 @@
 
 namespace rex
 {
-  using GpuScorerFn = rsl::function<s32(const GpuDescription&)>;
-  s32 calc_gpu_score(const GpuDescription& gpu);
+  using GpuScorerFn = rsl::function<s64(const GpuDescription&)>;
+  s64 calc_gpu_score(const GpuDescription& gpu);
 } // namespace rex

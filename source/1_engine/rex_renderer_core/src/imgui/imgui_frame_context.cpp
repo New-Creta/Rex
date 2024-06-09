@@ -78,6 +78,7 @@ namespace rex
     s32 vtx_offset = 0;
     s32 idx_offset = 0;
 
+    // Update the vertex and constant buffer
     for (s32 n = 0; n < drawData->CmdListsCount; n++)
     {
       const ImDrawList* cmd_list = drawData->CmdLists[n];

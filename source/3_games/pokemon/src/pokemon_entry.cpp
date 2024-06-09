@@ -4,6 +4,8 @@
 
 #include "pokemon/game_session.h"
 
+#include "imgui/imgui.h"
+
 namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogPokemon);
@@ -21,7 +23,7 @@ namespace pokemon
 
   void update()
   {
-
+    ImGui::ShowDemoWindow();
   }
 
   void shutdown()
