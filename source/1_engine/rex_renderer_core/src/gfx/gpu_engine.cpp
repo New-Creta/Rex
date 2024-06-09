@@ -23,6 +23,7 @@ namespace rex
       , m_swapchain()
       , m_max_frames_in_flight(userData.max_frames_in_flight)
       , m_primary_display_handle(userData.primary_display_handle)
+      , m_frame_idx(0)
     {
     }
 
@@ -46,6 +47,8 @@ namespace rex
     // Prepare a new frame
     void GpuEngine::new_frame()
     {
+      ++m_frame_idx;
+
       auto render_ctx = new_render_ctx();
       render_ctx->transition_buffer(current_backbuffer_rt(), rhi::ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());

@@ -54,9 +54,9 @@ namespace rex
       rhi::RenderTarget* current_backbuffer_rt();
 
     protected:
-      // Initialize the resource heap which keeps track of all gpu resources
+      // Initialize the resource heap which allocates track of all gpu resources
       virtual void init_resource_heap() = 0;
-      // Initialize the descriptor heaps which keep track of all descriptors to various resources
+      // Initialize the descriptor heaps which allocates all descriptors to various resources
       virtual void init_descriptor_heaps() = 0;
 
     private:
@@ -77,6 +77,7 @@ namespace rex
       rsl::unique_ptr<rhi::ClearStateResource> m_clear_state_resource; // The clear state resource that's used to clear the backbuffer with
       s32 m_max_frames_in_flight;                       // The maximum number of we can have in flight for rendering.
       void* m_primary_display_handle;                   // The display handle to render to (HWND on Windows)
+      s32 m_frame_idx;                                  // The current frame index
     };
 
   }
