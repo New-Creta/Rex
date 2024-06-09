@@ -16,5 +16,13 @@ namespace rex
       return rsl::make_unique<rhi::DxComputeContext>(this, cmdlist, alloc);
     }
 
+    void DxComputeEngine::new_frame()
+    {
+      // Nothing to implement
+    }
+    void DxComputeEngine::end_frame()
+    {
+      flush();
+    }
   }
 }

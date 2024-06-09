@@ -96,22 +96,18 @@ namespace rex
       m_command_queue->flush();
     }
 
-
-    u64 GraphicsEngine::last_completed_fence() const
-    {
-      return m_command_queue->last_completed_fence();
-    }
     void GraphicsEngine::release_allocator(u64 fenceValue, rhi::CommandAllocator* allocator)
     {
       m_command_allocator_pool.discard_allocator(allocator, fenceValue);
     }
     rhi::CommandAllocator* GraphicsEngine::request_allocator()
     {
-      return m_command_allocator_pool.request_allocator(last_completed_fence());
+      u64 last_completed_fence = m_command_queue->last_completed_fence();
+      return m_command_allocator_pool.request_allocator(last_completed_fence);
     }
-    void GraphicsEngine::stall(rhi::SyncInfo& sync_info)
+    void GraphicsEngine::stall(rhi::SyncInfo& syncInfo)
     {
-      m_command_queue->gpu_wait(sync_info);
+      m_command_queue->gpu_wait(syncInfo);
     }
     rhi::CommandQueue* GraphicsEngine::command_queue()
     {
@@ -121,13 +117,5 @@ namespace rex
     {
       return m_command_queue->type();
     }
-    void GraphicsEngine::new_frame()
-    {
-      command_queue()->cpu_wait(command_queue()->last_completed_fence());
-    }
-
-
-
-
   }
 }

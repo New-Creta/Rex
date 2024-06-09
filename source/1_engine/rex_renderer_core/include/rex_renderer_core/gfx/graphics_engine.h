@@ -24,6 +24,9 @@ namespace rex
       GraphicsEngine(rhi::CommandType type);
       virtual ~GraphicsEngine() = default;
 
+      // Fully initialize the engine, allocating all required resources etc
+      virtual void init() = 0;
+
       // Executes the context and returns the fence value that'll be set when all commands are executed
       ScopedPoolObject<rhi::SyncInfo> execute_context(rhi::GraphicsContext* context);
       
@@ -32,31 +35,31 @@ namespace rex
       // Returns a context object back to the engine
       void discard_context(rhi::GraphicsContext* context);
 
-      // Fully initialize the engine, allocating all required resources etc
-      virtual void init() = 0;
+      // Prepare the engine for executing a new frame
+      virtual void new_frame() = 0;
+      // End the engine for executing the last frame
+      virtual void end_frame() = 0;
 
-      // Flush all commands on the gpu and halt the current thread untill all commands are executed
-      void flush();
-
-      // LEFT TO CLEANUP
-      // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-      u64 last_completed_fence() const;
+      // Release an allocator back to the engine so it can be used for another context
       void release_allocator(u64 fenceValue, rhi::CommandAllocator* allocator);
-      rhi::CommandAllocator* request_allocator();
-      void stall(rhi::SyncInfo& sync_info);
+      // Halt gpu commands from being executed until the sync info object is triggered
+      void stall(rhi::SyncInfo& syncInfo);
+
+      // Return the command queue owned by the graphics engine
+      // This is needed for the swapchain
       rhi::CommandQueue* command_queue();
+      // Return the command type of the engine
       rhi::CommandType type() const;
 
-      virtual void new_frame();
-
-      // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
     protected:
+      // Flush all commands on the gpu and halt the current thread untill all commands are executed
+      void flush();
       // Allocates a new API specific graphics context
       virtual rsl::unique_ptr<rhi::GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) = 0;
 
     private:
+      // Request a new allocator from the command allocator pool
+      rhi::CommandAllocator* request_allocator();
       // Creates a new context and adds it to the active list
       ScopedPoolObject<rhi::GraphicsContext> create_new_active_ctx(rhi::CommandAllocator* alloc);
       // Check if we have any idle contexts

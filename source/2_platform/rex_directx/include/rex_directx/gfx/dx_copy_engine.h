@@ -19,6 +19,7 @@ namespace rex
 
       void init() override;
       void new_frame() override;
+      void end_frame() override;
 
       UploadBuffer* lock_upload_buffer();
       void unlock_upload_buffer();

@@ -16,5 +16,15 @@ namespace rex
       cmdlist->Close();
       return rsl::make_unique<rhi::DxRenderContext>(this, cmdlist, alloc);
     }
+
+    void DxRenderEngine::new_frame()
+    {
+      // Nothing to implement
+    }
+    void DxRenderEngine::end_frame()
+    {
+      flush();
+    }
+
   }
 }

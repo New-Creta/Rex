@@ -49,6 +49,10 @@ namespace rex
     {
       ++m_frame_idx;
 
+      m_render_engine->new_frame();
+      m_compute_engine->new_frame();
+      m_copy_engine->new_frame();
+
       auto render_ctx = new_render_ctx();
       render_ctx->transition_buffer(current_backbuffer_rt(), rhi::ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
@@ -60,14 +64,12 @@ namespace rex
       render_ctx->execute_on_gpu();
 
       m_swapchain->present();
-
-      m_render_engine->new_frame();
-      m_compute_engine->new_frame();
-      m_copy_engine->new_frame();
     }
     void GpuEngine::end_frame()
     {
-      // Nothing to implement
+      m_render_engine->end_frame();
+      m_compute_engine->end_frame();
+      m_copy_engine->end_frame();
     }
 
     ScopedPoolObject<rhi::CopyContext> GpuEngine::new_copy_ctx()

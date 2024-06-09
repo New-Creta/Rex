@@ -18,6 +18,8 @@ namespace rex
     protected:
       rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override;
 
+      void new_frame() override;
+      void end_frame() override;
     };
   }
 }

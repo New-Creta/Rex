@@ -19,6 +19,11 @@ namespace rex
       m_upload_buffer->reset();
     }
 
+    void DxCopyEngine::end_frame()
+    {
+      flush();
+    }
+
     UploadBuffer* DxCopyEngine::lock_upload_buffer()
     {
       return m_upload_buffer.get();
