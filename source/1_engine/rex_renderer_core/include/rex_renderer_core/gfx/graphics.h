@@ -39,7 +39,7 @@ namespace rex
     // All renderers get processed when render() is called
     void add_renderer(rsl::unique_ptr<Renderer> renderer);
 
-    // Render a single frame
+    // Render a single frame by going over all the renderers
     void render();
 
     // Present the last renderer frame to the main window
