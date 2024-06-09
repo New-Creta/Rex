@@ -7,6 +7,7 @@ namespace rex
 {
   namespace gfx
   {
+    // The copy engine is responsible for all copy commands on the gpu
     class CopyEngine : public GraphicsEngine
     {
     public:
