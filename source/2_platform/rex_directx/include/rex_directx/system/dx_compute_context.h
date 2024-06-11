@@ -13,7 +13,7 @@ namespace rex
     class DxComputeContext : public ComputeContext
     {
     public:
-      DxComputeContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList, CommandAllocator* alloc);
+      DxComputeContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList);
 
       ID3D12GraphicsCommandList* dx_cmdlist();
 

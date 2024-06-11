@@ -4,6 +4,7 @@
 #include "rex_renderer_core/system/command_queue.h"
 #include "rex_renderer_core/rhi/command_type.h"
 #include "rex_renderer_core/rhi/graphics_context.h"
+#include "rex_renderer_core/rhi/graphics_context_pool.h"
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/engine/invalid_object.h"
@@ -22,7 +23,7 @@ namespace rex
     {
     public:
       GraphicsEngine(rhi::CommandType type);
-      virtual ~GraphicsEngine() = default;
+      virtual ~GraphicsEngine();
 
       // Fully initialize the engine, allocating all required resources etc
       virtual void init() = 0;
@@ -32,16 +33,12 @@ namespace rex
       
       // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
       ScopedPoolObject<rhi::GraphicsContext> new_context();
-      // Returns a context object back to the engine
-      void discard_context(rhi::GraphicsContext* context);
 
       // Prepare the engine for executing a new frame
       virtual void new_frame() = 0;
       // End the engine for executing the last frame
       virtual void end_frame() = 0;
 
-      // Release an allocator back to the engine so it can be used for another context
-      void release_allocator(u64 fenceValue, rhi::CommandAllocator* allocator);
       // Halt gpu commands from being executed until the sync info object is triggered
       void stall(rhi::SyncInfo& syncInfo);
 
@@ -59,22 +56,21 @@ namespace rex
 
     private:
       // Request a new allocator from the command allocator pool
-      rhi::CommandAllocator* request_allocator();
+      ScopedPoolObject<PooledAllocator> request_allocator();
       // Creates a new context and adds it to the active list
-      ScopedPoolObject<rhi::GraphicsContext> create_new_active_ctx(rhi::CommandAllocator* alloc);
+      ScopedPoolObject<rhi::GraphicsContext> create_new_active_ctx(ScopedPoolObject<PooledAllocator>&& alloc);
       // Check if we have any idle contexts
       bool has_idle_contexts() const;
       // Pop the last idle context from the queue
       rhi::GraphicsContext* pop_idle_context(rhi::CommandAllocator* alloc);
       // Create a new context object using the idle contexts list
-      ScopedPoolObject<rhi::GraphicsContext> create_from_idle_context(rhi::CommandAllocator* alloc);
+      ScopedPoolObject<rhi::GraphicsContext> create_from_idle_context(ScopedPoolObject<PooledAllocator>&& alloc);
 
     private:
-      //rsl::unique_ptr<rhi::CommandQueue> m_command_queue;
-      //gfx::CommandAllocatorPool m_command_allocator_pool;
       rsl::vector<rsl::unique_ptr<rhi::GraphicsContext>> m_idle_contexts;
       rsl::vector<rsl::unique_ptr<rhi::GraphicsContext>> m_active_contexts;
       rsl::unique_ptr<rhi::CommandQueue> m_command_queue;
+      rhi::GraphicsContextPool m_context_pool;
       gfx::CommandAllocatorPool m_command_allocator_pool;
 
     };

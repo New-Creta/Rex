@@ -32,7 +32,7 @@ namespace rex
       void update_texture2d(rhi::Texture2D* texture, const void* data) override;
 
     protected:
-      void platform_reset() override;
+      void platform_reset(rhi::CommandAllocator* alloc) override;
 
     private:
       DxCopyEngine* api_engine();

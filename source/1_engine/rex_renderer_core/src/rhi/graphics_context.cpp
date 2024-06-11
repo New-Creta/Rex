@@ -19,33 +19,31 @@ namespace rex
 
     GraphicsContext::~GraphicsContext()
     {
-      if (!has_executed())
-      {
-        execute_on_gpu();
-      }
+      execute_on_gpu();
     }
 
-    void GraphicsContext::reset(CommandAllocator* alloc)
+    void GraphicsContext::reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc)
     {
-      REX_ASSERT_X(m_allocator == nullptr, "Overwriting the allocator of a gfx context is not allowed. You need to execute the commands of the context first");
-      REX_ASSERT_X(alloc != nullptr, "Assigning a nullptr as allocator for a gfx context is not allowed.");
-      m_allocator = alloc;
+      REX_ASSERT_X(m_allocator.has_object() == false, "Overwriting the allocator of a gfx context is not allowed. You need to execute the commands of the context first");
+      REX_ASSERT_X(alloc.has_object(), "Assigning a nullptr as allocator for a gfx context is not allowed.");
+      m_allocator = rsl::move(alloc);
 
-      platform_reset();
-    }
-
-    void GraphicsContext::release_allocator(u64 fenceValue)
-    {
-      m_owning_engine->release_allocator(fenceValue, m_allocator);
-      m_allocator = nullptr;
+      platform_reset(alloc->allocator.get());
     }
 
     ScopedPoolObject<SyncInfo> GraphicsContext::execute_on_gpu()
     {
+      if (has_executed())
+      {
+        return {};
+      }
+
       flush_render_states();
 
       ScopedPoolObject<SyncInfo> sync_info = m_owning_engine->execute_context(this);
-      release_allocator(sync_info->fence_val());
+      m_allocator->fence_value = sync_info->fence_val();
+      m_allocator.return_to_pool();
+
       return sync_info;
     }
 
@@ -67,17 +65,12 @@ namespace rex
 
     bool GraphicsContext::has_executed() const
     {
-      return m_allocator == nullptr;
+      return !m_allocator.has_object();
     }
 
     gfx::GraphicsEngine* GraphicsContext::owning_engine()
     {
       return m_owning_engine;
-    }
-
-    rhi::CommandAllocator* GraphicsContext::allocator()
-    {
-      return m_allocator;
     }
 
     ResourceStateTransition GraphicsContext::track_resource_transition(Resource* buffer, ResourceState state)

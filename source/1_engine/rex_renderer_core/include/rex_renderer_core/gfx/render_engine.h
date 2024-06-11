@@ -5,11 +5,6 @@
 
 namespace rex
 {
-  namespace rhi
-  {
-    class Swapchain;
-  }
-
   namespace gfx
   {
     class RenderEngine : public GraphicsEngine

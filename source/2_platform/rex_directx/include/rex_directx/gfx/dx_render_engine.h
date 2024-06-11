@@ -14,7 +14,7 @@ namespace rex
       void init() override;
 
     protected:
-      rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override;
+      rsl::unique_ptr<GraphicsContext> allocate_new_context(CommandAllocator* alloc) override;
       void new_frame() override;
       void end_frame() override;
 

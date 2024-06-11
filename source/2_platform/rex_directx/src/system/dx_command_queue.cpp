@@ -60,7 +60,7 @@ namespace rex
 
       u64 old_fence_val = inc_fence();
       wait_for_fence(old_fence_val);
-      return create_sync_info<SyncInfo>(old_fence_val, m_fence->get());
+      return create_sync_info(old_fence_val, m_fence->get());
     }
 
     u64 DxCommandQueue::gpu_fence_value() const

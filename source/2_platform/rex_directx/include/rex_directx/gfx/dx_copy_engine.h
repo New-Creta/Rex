@@ -25,7 +25,7 @@ namespace rex
       void unlock_upload_buffer();
 
     protected:
-      rsl::unique_ptr<GraphicsContext> allocate_new_context(rhi::CommandAllocator* alloc) override;
+      rsl::unique_ptr<GraphicsContext> allocate_new_context(CommandAllocator* alloc) override;
     private:
       rsl::unique_ptr<UploadBuffer> m_upload_buffer;
     };

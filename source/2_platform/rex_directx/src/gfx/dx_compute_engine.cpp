@@ -9,11 +9,11 @@ namespace rex
       // Nothing to implement
     }
 
-    rsl::unique_ptr<GraphicsContext> DxComputeEngine::allocate_new_context(rhi::CommandAllocator* alloc)
+    rsl::unique_ptr<GraphicsContext> DxComputeEngine::allocate_new_context(CommandAllocator* alloc)
     {
       wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::CommandType::Compute);
 
-      return rsl::make_unique<rhi::DxComputeContext>(this, cmdlist, alloc);
+      return rsl::make_unique<rhi::DxComputeContext>(this, cmdlist);
     }
 
     void DxComputeEngine::new_frame()

@@ -17,11 +17,10 @@ namespace rex
 {
   namespace rhi
   {
-    DxRenderContext::DxRenderContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList, CommandAllocator* alloc)
-      : RenderContext(owningEngine, alloc)
+    DxRenderContext::DxRenderContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList)
+      : RenderContext(owningEngine)
       , m_cmd_list(cmdList)
     {
-      start_recording_commands();
     }
 
     DxRenderContext::~DxRenderContext()
@@ -168,14 +167,14 @@ namespace rex
       m_cmd_list->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
 
-    void DxRenderContext::platform_reset()
+    void DxRenderContext::platform_reset(rhi::CommandAllocator* alloc)
     {
-      start_recording_commands();
+      start_recording_commands(alloc);
     }
 
-    void DxRenderContext::start_recording_commands()
+    void DxRenderContext::start_recording_commands(rhi::CommandAllocator* alloc)
     {
-      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(allocator());
+      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
 
       REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
 

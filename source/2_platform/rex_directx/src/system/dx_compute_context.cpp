@@ -4,7 +4,7 @@ namespace rex
 {
   namespace rhi
   {
-    DxComputeContext::DxComputeContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList, CommandAllocator* alloc)
+    DxComputeContext::DxComputeContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList)
       : ComputeContext(owningEngine)
       , m_cmd_list(cmdList)
     {

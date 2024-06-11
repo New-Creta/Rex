@@ -15,7 +15,7 @@ namespace rex
     class DxRenderContext : public RenderContext
     {
     public:
-      DxRenderContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList, CommandAllocator* alloc);
+      DxRenderContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList);
       ~DxRenderContext();
 
       void set_viewport(const Viewport& vp) override;
@@ -50,10 +50,10 @@ namespace rex
       ID3D12GraphicsCommandList* dx_cmdlist();
 
     protected:
-      void platform_reset() override;
+      void platform_reset(rhi::CommandAllocator* alloc) override;
 
     private:
-      void start_recording_commands();
+      void start_recording_commands(rhi::CommandAllocator* alloc);
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
       void bind_descriptor_heaps();
       

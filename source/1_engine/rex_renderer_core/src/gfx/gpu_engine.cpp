@@ -27,13 +27,6 @@ namespace rex
     {
     }
 
-    GpuEngine::~GpuEngine()
-    {
-      m_render_engine->flush();
-      m_compute_engine->flush();
-      m_copy_engine->flush();
-    }
-
     void GpuEngine::init()
     {
       init_resource_heap();

@@ -9,6 +9,7 @@ namespace rex
 {
   namespace rhi
   {
+    class GraphicsContext;
     class CommandQueue
     {
     public:
@@ -39,11 +40,7 @@ namespace rex
 
       virtual u64 gpu_fence_value() const = 0;
 
-      template <typename SyncInfoClass>
-      ScopedPoolObject<SyncInfo> create_sync_info(u64 fenceValue, void* fenceObject)
-      {
-        return m_sync_info_pool.request_sync_info<SyncInfoClass>(fenceValue, fenceObject);
-      }
+      ScopedPoolObject<SyncInfo> create_sync_info(u64 fenceValue, void* fenceObject);
 
     private:
       u64 m_next_fence_value; // this fence value gets increment each time the command queue executes a commandlist

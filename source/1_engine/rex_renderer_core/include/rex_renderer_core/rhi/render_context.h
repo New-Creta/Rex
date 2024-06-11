@@ -42,7 +42,7 @@ namespace rex
     class RenderContext : public GraphicsContext
     {
     public:
-      RenderContext(gfx::GraphicsEngine* owningEngine, rhi::CommandAllocator* alloc);
+      RenderContext(gfx::GraphicsEngine* owningEngine);
       RenderContext(const RenderContext&) = delete;
       RenderContext(RenderContext&&) = default;
 

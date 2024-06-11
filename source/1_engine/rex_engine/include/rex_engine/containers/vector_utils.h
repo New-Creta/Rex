@@ -8,7 +8,7 @@ namespace rex
 {
   // Removes an element from src at given and index and adds it to the end of dst
   template <typename T>
-  T& transfer_object(s32 idx, rsl::vector<T>& src, rsl::vector<T>& dst)
+  T& transfer_object_between_vectors(s32 idx, rsl::vector<T>& src, rsl::vector<T>& dst)
   {
     auto ctx = rsl::move(src[idx]);
     auto it = src.begin() + idx;

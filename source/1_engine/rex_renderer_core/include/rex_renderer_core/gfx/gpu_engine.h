@@ -26,7 +26,7 @@ namespace rex
       GpuEngine(const GpuEngine&) = delete;
       GpuEngine(GpuEngine&&) = delete;
 
-      virtual ~GpuEngine();
+      virtual ~GpuEngine() = default;
 
       GpuEngine& operator=(const GpuEngine&) = delete;
       GpuEngine& operator=(GpuEngine&&) = delete;

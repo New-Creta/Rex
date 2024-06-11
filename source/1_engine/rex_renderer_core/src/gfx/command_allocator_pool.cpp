@@ -14,63 +14,26 @@ namespace rex
   {
     CommandAllocatorPool::CommandAllocatorPool(rhi::CommandType type)
       : m_type(type)
+      , m_pool([this]() { return rsl::make_unique<PooledAllocator>(0, rhi::create_command_allocator(m_type)); })
     {}
 
     // Request a new allocator from the pool, create a new one if one isn't found
-    rhi::CommandAllocator* CommandAllocatorPool::request_allocator(u64 fenceValue)
+    ScopedPoolObject<PooledAllocator> CommandAllocatorPool::request_allocator(u64 fenceValue)
     {
-      // First try to find if we have any idle allocators right now, if so, use one of those
-      s32 free_alloc_idx = find_free_allocator(fenceValue);
-      if (free_alloc_idx != -1)
-      {
-        return use_existing_allocator(free_alloc_idx);
-      }
+      // Find an allocator who's fence value is equal or higher than the given fence value
+      PooledAllocator* alloc = m_pool.request(
+        [fenceValue](const rsl::unique_ptr<PooledAllocator>& alloc)
+        {
+          return alloc->fence_value <= fenceValue;
+        });
 
-      // If not, create a new allocator and return that.
-      return create_new_active_alloc();
+      // Return a scoped pool object with the knowledge how to add it back to the pool
+      return ScopedPoolObject<PooledAllocator>(alloc,
+        [this, fenceValue](PooledAllocator* alloc)
+        {
+          REX_ASSERT_X(fenceValue < alloc->fence_value, "Make sure you increase an allocator's fence value before you return it back to the pool");
+          m_pool.discard(alloc);
+        });
     }
-    // Return an allocator back to the pool
-    void CommandAllocatorPool::discard_allocator(rhi::CommandAllocator* cmdAlloc, u64 fenceValue)
-    {
-      // Move the allocator from the active allocators and put it in the idle allocators
-      auto it = rsl::find_if(m_active_allocators.begin(), m_active_allocators.end(), [cmdAlloc](const PooledAllocator& pooledAlloc) { return pooledAlloc.allocator.get() == cmdAlloc; });
-      REX_ASSERT_X(it != m_active_allocators.end(), "Command allocator to discard is not found in active allocators. This is usually caused because the command allocator didn't come from this pool.");
-
-      s32 idx = rsl::distance(m_active_allocators.begin(), it);
-      PooledAllocator& pooled_alloc = rex::transfer_object(idx, m_active_allocators, m_idle_allocators);
-      pooled_alloc.fence_value = fenceValue;
-    }
-
-    // Find a free allocator in the pool and return its index
-    s32 CommandAllocatorPool::find_free_allocator(u64 fenceValue)
-    {
-      // Allocators are added back to the ready queue in CPU time.
-      // This means the last commandlist that used the allocator might not have finished executing yet.
-      // Therefore we need to check the fence value of our command queue and request a command allocator
-      // that's finished on the GPU.
-      auto it = rsl::find_if(m_idle_allocators.cbegin(), m_idle_allocators.cend(), [fenceValue](const PooledAllocator& pooledAlloc) { return pooledAlloc.fence_value <= fenceValue; });
-      if (it != m_idle_allocators.cend())
-      {
-        return rsl::distance(m_idle_allocators.cbegin(), it);
-      }
-
-      return -1;
-    }
-    // Return the free allocator found at the index
-    rhi::CommandAllocator* CommandAllocatorPool::use_existing_allocator(s32 idx)
-    {
-      // Move the allocator from the idle allocators and put it in the active allocators
-      REX_ASSERT_X(idx != -1, "Invalid iterator used for allocator");
-      return rex::transfer_object(idx, m_idle_allocators, m_active_allocators).allocator.get();
-    }
-    // Create a new allocator and add it to the active allocators
-    rhi::CommandAllocator* CommandAllocatorPool::create_new_active_alloc()
-    {
-      // Simply create a new allocator from the rhi and put it in the pool
-      u64 fence_value = 0;
-      PooledAllocator& pooled_alloc = m_active_allocators.emplace_back(PooledAllocator{ fence_value, rhi::create_command_allocator(m_type) });
-      return pooled_alloc.allocator.get();
-    }
-
   }
 }

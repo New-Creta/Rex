@@ -21,7 +21,6 @@ namespace rex
       : CopyContext(owningEngine)
       , m_cmd_list(cmdList)
     {
-      reset(alloc);
     }
 
     ID3D12GraphicsCommandList* DxCopyContext::dx_cmdlist()
@@ -132,9 +131,9 @@ namespace rex
 
       api_engine()->unlock_upload_buffer();
     }
-    void DxCopyContext::platform_reset()
+    void DxCopyContext::platform_reset(rhi::CommandAllocator* alloc)
     {
-      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(allocator());
+      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
 
       REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
 
