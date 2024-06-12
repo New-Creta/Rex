@@ -4,7 +4,7 @@ namespace rex
 {
   namespace rhi
   {
-    CommandQueue::CommandQueue(CommandType type)
+    CommandQueue::CommandQueue(GraphicsEngineType type)
       : m_next_fence_value(1)
       , m_type(type)
     {
@@ -26,7 +26,7 @@ namespace rex
       return gpu_fence_value();
     }
 
-    CommandType CommandQueue::type() const
+    GraphicsEngineType CommandQueue::type() const
     {
       return m_type;
     }

@@ -8,6 +8,9 @@ namespace rex
 {
   namespace rhi
   {
+    // A base class for a 2D texture.
+    // It only holds the width, height and format
+    // The actual resource is implemented in a api specific derived class
     class Texture2D : public Resource
     {
     public:

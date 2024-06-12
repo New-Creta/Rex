@@ -8,8 +8,8 @@ namespace rex
     enum class InputLayoutClassification
     {
       None = 0,
-      PerVertexData,
-      PerInstanceData
+      PerVertexData,  // Input data is per-vertex data
+      PerInstanceData // Input data is per-instance data
     };
   } // namespace renderer
 } // namespace rex

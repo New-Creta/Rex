@@ -8,7 +8,7 @@ namespace rex
 {
   namespace rhi
   {
-    GraphicsContext::GraphicsContext(gfx::GraphicsEngine* owningEngine, CommandType type)
+    GraphicsContext::GraphicsContext(gfx::GraphicsEngine* owningEngine, GraphicsEngineType type)
       : m_allocator()
       , m_owning_engine(owningEngine)
       , m_resource_state_tracker()
@@ -22,6 +22,7 @@ namespace rex
       execute_on_gpu();
     }
 
+    // Reset the context, freeing up any previously allocated commands
     void GraphicsContext::reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc)
     {
       REX_ASSERT_X(m_allocator.has_object() == false, "Overwriting the allocator of a gfx context is not allowed. You need to execute the commands of the context first");
@@ -30,7 +31,8 @@ namespace rex
 
       platform_reset(alloc->underlying_alloc());
     }
-
+    // Execute the commands on the gpu.
+    // A sync info is returned so the user can use it to sync with other contexts
     ScopedPoolObject<SyncInfo> GraphicsContext::execute_on_gpu()
     {
       if (has_executed())
@@ -46,36 +48,38 @@ namespace rex
 
       return sync_info;
     }
-
+    // Flush all render states set in this command lists and notify the parent
     void GraphicsContext::flush_render_states()
     {
       m_resource_state_tracker.update_parent();
       m_resource_state_tracker.clear();
     }
-
-    CommandType GraphicsContext::type() const
-    {
-      return m_type;
-    }
-
+    // Stall the gpu from executing this context until the commands the sync info represents has completed
     void GraphicsContext::stall(SyncInfo& syncInfo)
     {
       m_owning_engine->stall(syncInfo);
     }
-
+    // Return if this context has executed on the gpu already
     bool GraphicsContext::has_executed() const
     {
       return !m_allocator.has_object();
     }
-
-    gfx::GraphicsEngine* GraphicsContext::owning_engine()
+  
+    // Return the type of this context
+    GraphicsEngineType GraphicsContext::type() const
     {
-      return m_owning_engine;
+      return m_type;
     }
 
+    // track a transition of a resource
     ResourceStateTransition GraphicsContext::track_resource_transition(Resource* buffer, ResourceState state)
     {
       return m_resource_state_tracker.track_resource_transition(buffer, state);
+    }
+    // Return the owning gpu engine of this context
+    gfx::GraphicsEngine* GraphicsContext::owning_engine()
+    {
+      return m_owning_engine;
     }
   }
 }

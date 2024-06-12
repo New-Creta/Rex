@@ -201,15 +201,6 @@ namespace rex
       m_cmd_list->SetDescriptorHeaps(heaps.size(), heaps.data());
     }
 
-    void DxRenderContext::update_buffer(Buffer* buffer, UploadBuffer* updateBuffer, void* data, rsl::memory_size size, s32 dstOffset)
-    {
-      REX_ASSERT("Not yet implemented");
-    }
-    void DxRenderContext::update_texture2d(Texture2D* texture, UploadBuffer* updateBuffer, void* data, s32 width, s32 height, renderer::TextureFormat format)
-    {
-      REX_ASSERT("Not yet implemented");
-    }
-
     void DxRenderContext::bind_texture(Texture2D* texture)
     {
       DxTexture2D* dx_texture = static_cast<DxTexture2D*>(texture);

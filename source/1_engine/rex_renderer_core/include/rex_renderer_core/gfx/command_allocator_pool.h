@@ -42,14 +42,14 @@ namespace rex
     class CommandAllocatorPool
     {
     public:
-      CommandAllocatorPool(rhi::CommandType type);
+      CommandAllocatorPool(rhi::GraphicsEngineType type);
 
       // Request a new allocator from the pool, create a new one if one isn't found
       ScopedPoolObject<PooledAllocator> request_allocator(u64 fenceValue);
 
     private:
       GrowingPool<PooledAllocator> m_pool;
-      rhi::CommandType m_type;
+      rhi::GraphicsEngineType m_type;
     };
   }
 }

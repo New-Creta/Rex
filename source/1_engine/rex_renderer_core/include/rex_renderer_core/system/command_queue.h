@@ -2,7 +2,7 @@
 
 #include "rex_engine/engine/types.h"
 
-#include "rex_renderer_core/rhi/command_type.h"
+#include "rex_renderer_core/rhi/graphics_engine_type.h"
 #include "rex_renderer_core/gfx/sync_info_pool.h"
 
 namespace rex
@@ -13,7 +13,7 @@ namespace rex
     class CommandQueue
     {
     public:
-      CommandQueue(CommandType type);
+      CommandQueue(GraphicsEngineType type);
       virtual ~CommandQueue() = default;
 
       // Halt the cpu until the fence value is reached
@@ -27,7 +27,7 @@ namespace rex
       virtual ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx) = 0;
 
       u64 last_completed_fence() const;
-      CommandType type() const;
+      GraphicsEngineType type() const;
       // Returns the next fence value. This is the fence value that'll be signaled
       // the next time an commandlist is executed
       u64 next_fence_value() const;
@@ -44,7 +44,7 @@ namespace rex
 
     private:
       u64 m_next_fence_value; // this fence value gets increment each time the command queue executes a commandlist
-      CommandType m_type;
+      GraphicsEngineType m_type;
       gfx::SyncInfoPool m_sync_info_pool;
     };
   }

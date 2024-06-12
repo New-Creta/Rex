@@ -17,7 +17,7 @@ namespace rex
   {
     class InputLayout;
     class RootSignature;
-    class RasterStateResource;
+    class RasterState;
 
     class DxPipelineState : public PipelineState
     {

@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/gfx/command_allocator_pool.h"
 #include "rex_renderer_core/system/command_queue.h"
-#include "rex_renderer_core/rhi/command_type.h"
+#include "rex_renderer_core/rhi/graphics_engine_type.h"
 #include "rex_renderer_core/rhi/graphics_context.h"
 #include "rex_renderer_core/rhi/graphics_context_pool.h"
 
@@ -22,7 +22,7 @@ namespace rex
     class GraphicsEngine
     {
     public:
-      GraphicsEngine(rhi::CommandType type);
+      GraphicsEngine(rhi::GraphicsEngineType type);
       virtual ~GraphicsEngine();
 
       // Executes the context and returns the fence value that'll be set when all commands are executed
@@ -37,7 +37,7 @@ namespace rex
       // Return the command queue owned by the graphics engine, this is needed for the swapchain
       rhi::CommandQueue* command_queue();
       // Return the command type of the engine
-      rhi::CommandType type() const;
+      rhi::GraphicsEngineType type() const;
 
       // Fully initialize the engine, allocating all required resources etc
       virtual void init() = 0;

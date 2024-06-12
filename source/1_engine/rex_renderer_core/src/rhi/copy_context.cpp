@@ -7,12 +7,7 @@ namespace rex
   namespace rhi
   {
     CopyContext::CopyContext(gfx::GraphicsEngine* owningEngine)
-      : GraphicsContext(owningEngine, CommandType::Copy)
+      : GraphicsContext(owningEngine, GraphicsEngineType::Copy)
     {}
-
-    gfx::CopyEngine* CopyContext::typed_owning_engine()
-    {
-      return static_cast<gfx::CopyEngine*>(owning_engine());
-    }
   }
 }

@@ -7,11 +7,11 @@ namespace rex
     enum class PrimitiveTopology
     {
       None = 0,
-      PointList,
-      LineList,
-      LineStrip,
-      TriangleList,
-      TriangleStrip
+      PointList,    // A list of points
+      LineList,     // A list of isolated straight line segments
+      LineStrip,    // A primitive composed of connected line segments
+      TriangleList, // A primitive of isolated triangles
+      TriangleStrip // A primitive of connected triangles
     };
   } // namespace renderer
 } // namespace rex

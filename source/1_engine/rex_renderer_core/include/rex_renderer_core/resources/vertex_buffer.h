@@ -10,14 +10,17 @@ namespace rex
 {
   namespace rhi
   {
+    // A class representing a vertex buffer
+    // the api specific buffer will be implemented in a derived class
     class VertexBuffer : public Buffer
     {
     public:
       VertexBuffer(s32 numVertices, rsl::memory_size vertexSize);
 
+      // The number of vertices in the buffer
       s32 count() const;
+      // The size of a single vertex
       rsl::memory_size vertex_size() const;
-      rsl::memory_size total_size() const;
 
     private:
       s32 m_num_vertices;

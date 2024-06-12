@@ -7,8 +7,8 @@ namespace rex
     // Graphics api abstraction of the fill mode
     enum class FillMode
     {
-      Solid,
-      Wireframe
+      Solid,      // Fill the triangles formed by vertices
+      Wireframe   // Draw lines connecting the vertices
     };
   } // namespace renderer
 } // namespace rex

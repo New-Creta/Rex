@@ -4,7 +4,7 @@ namespace rex
 {
   namespace rhi
   {
-    GraphicsContextPool::GraphicsContextPool(rhi::CommandType type, alloc_context_func&& allocContextFunc)
+    GraphicsContextPool::GraphicsContextPool(rhi::GraphicsEngineType type, alloc_context_func&& allocContextFunc)
       : m_context_pool(rsl::move(allocContextFunc))
     {}
 

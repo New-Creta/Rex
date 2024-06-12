@@ -7,7 +7,7 @@ namespace rex
   namespace rhi
   {
     RenderContext::RenderContext(gfx::GraphicsEngine* owningEngine)
-      : GraphicsContext(owningEngine, CommandType::Render)
+      : GraphicsContext(owningEngine, GraphicsEngineType::Render)
     {
     }
 

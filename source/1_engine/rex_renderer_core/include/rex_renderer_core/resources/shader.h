@@ -7,23 +7,10 @@ namespace rex
 {
   namespace rhi
   {
-    struct ShaderDesc
-    {
-      ShaderDesc()
-          : shader_type(ShaderType::None)
-          , shader_byte_code()
-          , constant_buffer_count(0)
-      {
-      }
-
-      ShaderType shader_type;
-      memory::Blob shader_byte_code;
-      s32 constant_buffer_count;
-    };
-
+    // Base class for a shader
     class Shader
     {
-    public:
+      // Nothing to implement
     };
   } // namespace rhi
 } // namespace rex

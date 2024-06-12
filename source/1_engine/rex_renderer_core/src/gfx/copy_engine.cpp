@@ -5,7 +5,7 @@ namespace rex
   namespace gfx
   {
     CopyEngine::CopyEngine()
-      : GraphicsEngine(rhi::CommandType::Copy)
+      : GraphicsEngine(rhi::GraphicsEngineType::Copy)
     {}
   }
 }

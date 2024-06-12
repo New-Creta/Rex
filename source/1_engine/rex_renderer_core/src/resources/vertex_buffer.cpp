@@ -20,10 +20,6 @@ namespace rex
     {
       return m_vertex_size;
     }
-    rsl::memory_size VertexBuffer::total_size() const
-    {
-      return m_vertex_size * static_cast<s64>(m_num_vertices);
-    }
 
   }
 }

@@ -16,7 +16,7 @@ namespace rex
     class RootSignature;
     class InputLayout;
     class PipelineState;
-    class RasterStateResource;
+    class RasterState;
     class Shader;
   }
 
@@ -53,7 +53,7 @@ namespace rex
     rsl::unique_ptr<rhi::Shader> m_pixel_shader;              // The pixel shader used by imgui
     rsl::unique_ptr<rhi::RootSignature> m_root_signature;     // The root signature used by imgui, this will become a material in the future
     rsl::unique_ptr<rhi::InputLayout> m_input_layout;         // The input layout used by imgui
-    rsl::unique_ptr<rhi::RasterStateResource> m_raster_state; // The render state used by imgui
+    rsl::unique_ptr<rhi::RasterState> m_raster_state; // The render state used by imgui
     rsl::unique_ptr<rhi::PipelineState> m_pipeline_state;     // The pipeline state used by imgui
   };
 

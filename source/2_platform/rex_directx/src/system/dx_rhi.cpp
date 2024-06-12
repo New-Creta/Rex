@@ -189,7 +189,7 @@ namespace rex
 
         return rsl::make_unique<DxFence>(fence);
       }
-      rsl::unique_ptr<CommandQueue>     create_command_queue(CommandType type)
+      rsl::unique_ptr<CommandQueue>     create_command_queue(GraphicsEngineType type)
       {
         // Command Queue
         wrl::ComPtr<ID3D12CommandQueue> d3d_command_queue;
@@ -204,9 +204,9 @@ namespace rex
 
         switch (type)
         {
-        case rex::rhi::CommandType::Render: set_debug_name_for(d3d_command_queue.Get(), "Render Command Queue"); break;
-        case rex::rhi::CommandType::Copy:     set_debug_name_for(d3d_command_queue.Get(), "Copy Command Queue"); break;
-        case rex::rhi::CommandType::Compute: break;
+        case rex::rhi::GraphicsEngineType::Render: set_debug_name_for(d3d_command_queue.Get(), "Render Command Queue"); break;
+        case rex::rhi::GraphicsEngineType::Copy:     set_debug_name_for(d3d_command_queue.Get(), "Copy Command Queue"); break;
+        case rex::rhi::GraphicsEngineType::Compute: break;
         }
 
         rsl::unique_ptr<DxFence> fence = create_fence();
@@ -247,7 +247,7 @@ namespace rex
 
         return rsl::make_unique<DxSwapchain>(d3d_swapchain_3, width, height, sd.Format, sd.BufferCount);
       }
-      rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::CommandType type)
+      rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::GraphicsEngineType type)
       {
         wrl::ComPtr<ID3D12CommandAllocator> allocator;
         if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandAllocator(d3d::to_dx12(type), IID_PPV_ARGS(allocator.GetAddressOf()))))
@@ -258,9 +258,9 @@ namespace rex
 
         switch (type)
         {
-        case rex::rhi::CommandType::Render: set_debug_name_for(allocator.Get(), "Render Command Allocator"); break;
-        case rex::rhi::CommandType::Copy:     set_debug_name_for(allocator.Get(), "Copy Command Allocator"); break;
-        case rex::rhi::CommandType::Compute: break;
+        case rex::rhi::GraphicsEngineType::Render: set_debug_name_for(allocator.Get(), "Render Command Allocator"); break;
+        case rex::rhi::GraphicsEngineType::Copy:     set_debug_name_for(allocator.Get(), "Copy Command Allocator"); break;
+        case rex::rhi::GraphicsEngineType::Compute: break;
         }
 
         return rsl::make_unique<rex::rhi::DxCommandAllocator>(allocator);
@@ -549,7 +549,7 @@ namespace rex
 
       // API Specific functions
       // -------------------------------------------
-      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::CommandType type)
+      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::GraphicsEngineType type)
       {
         DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
 
@@ -562,9 +562,9 @@ namespace rex
 
         switch (type)
         {
-        case rex::rhi::CommandType::Render: set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
-        case rex::rhi::CommandType::Copy:   set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
-        case rex::rhi::CommandType::Compute: set_debug_name_for(cmd_list.Get(), "Compute Command List"); break;
+        case rex::rhi::GraphicsEngineType::Render: set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
+        case rex::rhi::GraphicsEngineType::Copy:   set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
+        case rex::rhi::GraphicsEngineType::Compute: set_debug_name_for(cmd_list.Get(), "Compute Command List"); break;
         };
 
         return cmd_list;

@@ -5,7 +5,7 @@ namespace rex
   namespace rhi
   {
     ComputeContext::ComputeContext(gfx::GraphicsEngine* owningEngine)
-      : GraphicsContext(owningEngine, CommandType::Compute)
+      : GraphicsContext(owningEngine, GraphicsEngineType::Compute)
     {}
   }
 }

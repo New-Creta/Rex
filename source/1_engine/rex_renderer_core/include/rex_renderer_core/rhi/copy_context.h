@@ -16,24 +16,25 @@ namespace rex
 
   namespace rhi
   {
-    class Buffer;
     class ConstantBuffer;
     class VertexBuffer;
     class IndexBuffer;
     class Texture2D;
 
+    // A copy context is used for copying commands but cannot be used for other commands
     class CopyContext : public GraphicsContext
     {
     public:
       CopyContext(gfx::GraphicsEngine* owningEngine);
 
+      // Update a constant buffer's data
       virtual void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
+      // Update a vertex buffer's data
       virtual void update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
+      // Update a index buffer's data
       virtual void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
-      virtual void update_texture2d(rhi::Texture2D* texture, const void* data) = 0;
-
-    protected:
-      gfx::CopyEngine* typed_owning_engine();
+      // Update a texture's data
+      virtual void update_texture2d(Texture2D* texture, const void* data) = 0;
     };
   }
 }

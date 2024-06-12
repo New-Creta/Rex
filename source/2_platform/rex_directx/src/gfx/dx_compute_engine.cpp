@@ -11,7 +11,7 @@ namespace rex
 
     rsl::unique_ptr<GraphicsContext> DxComputeEngine::allocate_new_context(CommandAllocator* alloc)
     {
-      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::CommandType::Compute);
+      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::GraphicsEngineType::Compute);
 
       return rsl::make_unique<rhi::DxComputeContext>(this, cmdlist);
     }

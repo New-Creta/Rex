@@ -551,13 +551,13 @@ namespace rex
       return invalid_obj<D3D12_RESOURCE_STATES>();
     }
 
-    D3D12_COMMAND_LIST_TYPE to_dx12(rhi::CommandType type)
+    D3D12_COMMAND_LIST_TYPE to_dx12(rhi::GraphicsEngineType type)
     {
       switch (type)
       {
-      case rex::rhi::CommandType::Render:   return D3D12_COMMAND_LIST_TYPE_DIRECT;
-      case rex::rhi::CommandType::Copy:     return D3D12_COMMAND_LIST_TYPE_DIRECT;
-      case rex::rhi::CommandType::Compute:  return D3D12_COMMAND_LIST_TYPE_COMPUTE;
+      case rex::rhi::GraphicsEngineType::Render:   return D3D12_COMMAND_LIST_TYPE_DIRECT;
+      case rex::rhi::GraphicsEngineType::Copy:     return D3D12_COMMAND_LIST_TYPE_DIRECT;
+      case rex::rhi::GraphicsEngineType::Compute:  return D3D12_COMMAND_LIST_TYPE_COMPUTE;
       }
 
       return invalid_obj<D3D12_COMMAND_LIST_TYPE>();
@@ -606,16 +606,16 @@ namespace rex
     //}
 
 
-    rhi::CommandType from_dx12(D3D12_COMMAND_LIST_TYPE type)
+    rhi::GraphicsEngineType from_dx12(D3D12_COMMAND_LIST_TYPE type)
     {
       switch (type)
       {
-      case D3D12_COMMAND_LIST_TYPE_DIRECT:   return rhi::CommandType::Render;
-      case D3D12_COMMAND_LIST_TYPE_COMPUTE:  return rhi::CommandType::Compute;
-      case D3D12_COMMAND_LIST_TYPE_COPY:     return rhi::CommandType::Copy;
+      case D3D12_COMMAND_LIST_TYPE_DIRECT:   return rhi::GraphicsEngineType::Render;
+      case D3D12_COMMAND_LIST_TYPE_COMPUTE:  return rhi::GraphicsEngineType::Compute;
+      case D3D12_COMMAND_LIST_TYPE_COPY:     return rhi::GraphicsEngineType::Copy;
       }
 
-      return invalid_obj<rhi::CommandType>();
+      return invalid_obj<rhi::GraphicsEngineType>();
     }
 
     renderer::TextureFormat from_dx12(DXGI_FORMAT type)

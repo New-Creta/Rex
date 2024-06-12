@@ -66,7 +66,7 @@ namespace rex
 #include "rex_renderer_core/resources/depth_stencil_state.h"
 #include "rex_renderer_core/rhi/texture_address_mode.h"
 #include "rex_renderer_core/rhi/resource_state.h"
-#include "rex_renderer_core/rhi/command_type.h"
+#include "rex_renderer_core/rhi/graphics_engine_type.h"
 #include "rex_renderer_core/rhi/resource_state.h"
 #include "rex_renderer_core/system/link_shader.h"
 #include "rex_std/bonus/utility.h"
@@ -137,7 +137,7 @@ namespace rex
     D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range);
     D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type);
     D3D12_RESOURCE_STATES to_dx12(rhi::ResourceState state);
-    D3D12_COMMAND_LIST_TYPE to_dx12(rhi::CommandType type);
+    D3D12_COMMAND_LIST_TYPE to_dx12(rhi::GraphicsEngineType type);
 
     rhi::DxCommandQueue* to_dx12(rhi::CommandQueue* cmdQueue);
     rhi::DxCommandAllocator* to_dx12(rhi::CommandAllocator* cmdAlloc);
@@ -153,7 +153,7 @@ namespace rex
     ID3D12Resource* dx12_resource(rhi::Texture2D* texture);
 
 
-    rhi::CommandType from_dx12(D3D12_COMMAND_LIST_TYPE type);
+    rhi::GraphicsEngineType from_dx12(D3D12_COMMAND_LIST_TYPE type);
     renderer::TextureFormat from_dx12(DXGI_FORMAT type);
   } // namespace d3d
 } // namespace rex

@@ -5,7 +5,7 @@ namespace rex
   namespace gfx
   {
     ComputeEngine::ComputeEngine()
-      : GraphicsEngine(rhi::CommandType::Compute)
+      : GraphicsEngine(rhi::GraphicsEngineType::Compute)
     {}
   }
 }

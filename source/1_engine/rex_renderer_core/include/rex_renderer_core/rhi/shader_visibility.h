@@ -10,7 +10,7 @@ namespace rex
     enum class ShaderVisibility
     {
       Vertex = BIT(0), // only the vertex shader has access to this resource
-      Pixel = BIT(1), // only the vertex shader has access to this resource
+      Pixel = BIT(1), // only the pixel shader has access to this resource
 
       All = Vertex | Pixel // all shaders have access to this resource
     };

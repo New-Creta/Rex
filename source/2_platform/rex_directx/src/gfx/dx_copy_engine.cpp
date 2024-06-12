@@ -35,7 +35,7 @@ namespace rex
 
     rsl::unique_ptr<GraphicsContext> DxCopyEngine::allocate_new_context(CommandAllocator* alloc)
     {
-      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::CommandType::Copy);
+      wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, rhi::GraphicsEngineType::Copy);
       cmdlist->Close();
       return rsl::make_unique<rhi::DxCopyContext>(this, cmdlist, rsl::move(alloc));
     }

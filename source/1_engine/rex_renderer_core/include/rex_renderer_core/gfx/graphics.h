@@ -5,7 +5,7 @@
 #include "rex_engine/engine/invalid_object.h"
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 
-#include "rex_renderer_core/rhi/command_type.h"
+#include "rex_renderer_core/rhi/graphics_engine_type.h"
 
 #include "rex_renderer_core/system/command_allocator.h"
 #include "rex_renderer_core/system/command_queue.h"

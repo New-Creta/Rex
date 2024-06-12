@@ -4,7 +4,7 @@
 
 #include "rex_renderer_core/system/command_allocator.h"
 #include "rex_renderer_core/system/resource_state_tracker.h"
-#include "rex_renderer_core/rhi/command_type.h"
+#include "rex_renderer_core/rhi/graphics_engine_type.h"
 #include "rex_engine/pooling/scoped_pool_object.h"
 #include "rex_renderer_core/gfx/command_allocator_pool.h"
 #include "rex_renderer_core/gfx/sync_info.h"
@@ -22,30 +22,41 @@ namespace rex
     class CommandAllocator;
     class Resource;
 
+    // A graphics context acts as the base class for the interface into queueing gpu commands
     class GraphicsContext
     {
     public:
-      GraphicsContext(gfx::GraphicsEngine* owningEngine, CommandType type);
+      GraphicsContext(gfx::GraphicsEngine* owningEngine, GraphicsEngineType type);
       virtual ~GraphicsContext();
 
+      // Reset the context, freeing up any previously allocated commands
       void reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc);
+      // Execute the commands on the gpu.
+      // A sync info is returned so the user can use it to sync with other contexts
       ScopedPoolObject<SyncInfo> execute_on_gpu();
+      // Flush all render states set in this command lists and notify the parent
       void flush_render_states();
-      ResourceStateTransition track_resource_transition(Resource* buffer, ResourceState state);
-
-      CommandType type() const;
+      // Stall the gpu from executing this context until the commands the sync info represents has completed
       void stall(SyncInfo& syncInfo);
+      // Return if this context has executed on the gpu already
       bool has_executed() const;
 
+      // Return the type of this context
+      GraphicsEngineType type() const;
+
     protected:
+      // track a transition of a resource
+      ResourceStateTransition track_resource_transition(Resource* buffer, ResourceState state);
+      // Return the owning gpu engine of this context
       gfx::GraphicsEngine* owning_engine();
-      virtual void platform_reset(rhi::CommandAllocator* alloc) {};
+      // Reset the platform specific context
+      virtual void platform_reset(rhi::CommandAllocator* alloc) = 0;
 
     private:
-      ScopedPoolObject<gfx::PooledAllocator> m_allocator;
-      gfx::GraphicsEngine* m_owning_engine;
-      ResourceStateTracker m_resource_state_tracker;
-      CommandType m_type;
+      ScopedPoolObject<gfx::PooledAllocator> m_allocator; // The allocator to use for allocating gpu commands
+      gfx::GraphicsEngine* m_owning_engine;               // The owning engine of this context
+      ResourceStateTracker m_resource_state_tracker;      // The tracker for resource states
+      GraphicsEngineType m_type;                          // The type of this context
     };
   }
 }

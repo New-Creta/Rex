@@ -77,10 +77,10 @@ namespace rex
       renderer::ShaderPlatform shader_platform();
 
       // Backend Systems
-      //rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, CommandType type, ResourceStateTracker* resourceStateTracker = nullptr);
-      rsl::unique_ptr<CommandQueue> create_command_queue(CommandType type);
+      //rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, GraphicsEngineType type, ResourceStateTracker* resourceStateTracker = nullptr);
+      rsl::unique_ptr<CommandQueue> create_command_queue(GraphicsEngineType type);
       rsl::unique_ptr<Swapchain> create_swapchain(void* apiDevice, s32 bufferCount, void* primaryDisplayHandle);
-      rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::CommandType type);
+      rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::GraphicsEngineType type);
 
       // Resource creation
       rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, renderer::TextureFormat format);

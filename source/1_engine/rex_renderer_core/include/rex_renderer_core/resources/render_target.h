@@ -7,6 +7,8 @@ namespace rex
 {
   namespace rhi
   {
+    // A render target resource, only holding its width and height
+    // The actual resource is implemented in an API specific class
     class RenderTarget : public Resource
     {
     public:

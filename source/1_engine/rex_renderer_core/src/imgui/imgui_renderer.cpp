@@ -226,7 +226,7 @@ namespace rex
     rasterizer_desc.multisample = false;
     rasterizer_desc.aa_lines = false;
     rasterizer_desc.forced_sample_count = 0;
-    m_raster_state = rsl::make_unique<rhi::RasterStateResource>(rasterizer_desc);;
+    m_raster_state = rsl::make_unique<rhi::RasterState>(rasterizer_desc);;
 
     rex::rhi::PipelineStateDesc pso_desc{};
     pso_desc.input_layout = m_input_layout.get();

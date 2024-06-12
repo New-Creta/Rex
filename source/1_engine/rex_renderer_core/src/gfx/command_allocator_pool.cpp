@@ -46,7 +46,7 @@ namespace rex
     }
 
 
-    CommandAllocatorPool::CommandAllocatorPool(rhi::CommandType type)
+    CommandAllocatorPool::CommandAllocatorPool(rhi::GraphicsEngineType type)
       : m_type(type)
       , m_pool([this]() { return rsl::make_unique<PooledAllocator>(0, rhi::create_command_allocator(m_type)); })
     {}

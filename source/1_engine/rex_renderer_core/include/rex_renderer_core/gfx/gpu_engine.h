@@ -2,7 +2,7 @@
 
 #include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
 #include "rex_engine/pooling/scoped_pool_object.h"
-#include "rex_renderer_core/rhi/command_type.h"
+#include "rex_renderer_core/rhi/graphics_engine_type.h"
 #include "rex_renderer_core/rhi/copy_context.h"
 #include "rex_renderer_core/rhi/compute_context.h"
 #include "rex_renderer_core/rhi/render_context.h"

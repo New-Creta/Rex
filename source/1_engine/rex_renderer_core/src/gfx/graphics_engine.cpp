@@ -6,7 +6,7 @@ namespace rex
 {
   namespace gfx
   {
-    GraphicsEngine::GraphicsEngine(rhi::CommandType type)
+    GraphicsEngine::GraphicsEngine(rhi::GraphicsEngineType type)
       : m_command_queue(rhi::create_command_queue(type))
       , m_command_allocator_pool(type)
       , m_context_pool(type, [this](rhi::CommandAllocator* alloc) { return allocate_new_context(alloc); })
@@ -46,7 +46,7 @@ namespace rex
       return m_command_queue.get();
     }
     // Return the command type of the engine
-    rhi::CommandType GraphicsEngine::type() const
+    rhi::GraphicsEngineType GraphicsEngine::type() const
     {
       return m_command_queue->type();
     }
