@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rex_renderer_core/resource_management/resource_slot.h"
-#include "rex_std/functional.h"
 #include "rex_std/optional.h"
 
 #include "rex_renderer_core/resources/raster_state.h"
@@ -16,6 +14,7 @@ namespace rex
     class RootSignature;
     class Shader;
 
+    // A descriptor describing the pipeline state to be constructed
     struct PipelineStateDesc
     {
       InputLayout* input_layout;
@@ -27,9 +26,10 @@ namespace rex
       rsl::optional<DepthStencilDesc> depth_stencil_state;
     };
 
+    // Base class for the pipeline state, just acts as an interface
     class PipelineState
     {
-
+      // Nothing to implement
     };
   } // namespace rhi
 } // namespace rex

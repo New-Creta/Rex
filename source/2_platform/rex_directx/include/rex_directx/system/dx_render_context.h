@@ -29,7 +29,7 @@ namespace rex
       void transition_buffer(RenderTarget* resource, ResourceState state) override;
 
       void set_render_target(RenderTarget* renderTarget) override;
-      void clear_render_target(RenderTarget* renderTarget, ClearStateResource* clearState) override;
+      void clear_render_target(RenderTarget* renderTarget, ClearState* clearState) override;
       void set_vertex_buffer(VertexBuffer* vb) override;
       void set_index_buffer(IndexBuffer* ib) override;
       void set_primitive_topology(renderer::PrimitiveTopology topology) override;

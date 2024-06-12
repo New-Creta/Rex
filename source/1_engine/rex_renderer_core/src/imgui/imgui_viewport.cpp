@@ -26,6 +26,7 @@ namespace rex
     }
   }
 
+  // Render the viewport using the given render context to queue gpu commands to
   void RexImGuiViewport::render(rhi::RenderContext& renderContext)
   {
     ImDrawData* draw_data = m_imgui_viewport->DrawData;
@@ -55,11 +56,12 @@ namespace rex
     advance_frame_ctx();
   }
 
+  // Get the current frame context to use to render the viewport
   ImGuiFrameContext& RexImGuiViewport::current_frame_ctx()
   {
     return m_frame_contexts[m_frame_idx];
   }
-
+  // Advance the index so it points to the next frame context
   void RexImGuiViewport::advance_frame_ctx()
   {
     ++m_frame_idx;
@@ -69,6 +71,7 @@ namespace rex
     }
   }
 
+  // Setup the render state of the viewport, it for rendering
   void RexImGuiViewport::setup_render_state(rhi::RenderContext& ctx, ImDrawData* drawData, ImGuiFrameContext& frameCtx)
   {
     ctx.transition_buffer(frameCtx.vertex_buffer(), rhi::ResourceState::VertexAndConstantBuffer);
@@ -85,6 +88,7 @@ namespace rex
     ctx.set_blend_factor(imgui_renderstate().blend_factor.data());
   }
 
+  // Draw the current viewport
   void RexImGuiViewport::draw(rhi::RenderContext& ctx, ImDrawData* drawData)
   {
     s32 global_vtx_offset = 0;

@@ -88,9 +88,9 @@ namespace rex
     // Describes the blend state
     struct BlendDesc
     {
+      RenderTargetBlendDesc render_target[8]; // an array that specifies the blend states for each render target. if "independent_blend_state" is true, only the first is used and shared between all render targets, the rest is ignored.
       bool enable_alpha_to_coverage; // Specifies whether to use alpha-to-coverage as a multisampling technique when setting a pixel to a render target (https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-blend-state#alpha-to-coverage)
       bool independent_blend_state; // Specifies whether to enable independent blending in simultaneous render targets. If false, only render_target[0] members are used, render_target[1,7] are ignored
-      RenderTargetBlendDesc render_target[8]; // an array that specifies the blend states for each render target. if "independent_blend_state" is true, only the first is used and shared between all render targets, the rest is ignored.
     };
   }
 }

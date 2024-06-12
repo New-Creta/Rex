@@ -28,7 +28,7 @@ namespace rex
       desc.rgba = rsl::colors::LightSteelBlue;
       desc.flags.add_state(ClearBits::ClearColorBuffer);
 
-      m_clear_state = rsl::make_unique<rhi::ClearStateResource>(desc);
+      m_clear_state = rsl::make_unique<rhi::ClearState>(desc);
     }
 
     void ImGuiWindow::render(ClearRenderTarget clearRenderTarget)

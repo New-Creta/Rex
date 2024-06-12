@@ -24,10 +24,11 @@ namespace rex
       StateController<renderer::ClearBits> flags {};
     };
 
-    class ClearStateResource
+    // A resource representing which buffers to clear and how to clear them
+    class ClearState
     {
     public:
-      explicit ClearStateResource(const ClearStateDesc& cs)
+      explicit ClearState(const ClearStateDesc& cs)
         : m_clear_state(cs)
       {}
 

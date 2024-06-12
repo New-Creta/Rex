@@ -84,7 +84,7 @@ namespace rex
       DxRenderTarget* dx_render_target = static_cast<DxRenderTarget*>(renderTarget);
       m_cmd_list->OMSetRenderTargets(1, &dx_render_target->handle().cpu_handle(), true, nullptr);
     }
-    void DxRenderContext::clear_render_target(RenderTarget* renderTarget, ClearStateResource* clearState)
+    void DxRenderContext::clear_render_target(RenderTarget* renderTarget, ClearState* clearState)
     {
       auto& clear_flags = clearState->get()->flags;
       if (clear_flags.has_state(renderer::ClearBits::ClearColorBuffer))

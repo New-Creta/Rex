@@ -8,6 +8,7 @@ namespace rex
 {
   namespace rhi
   {
+    // A 1D array on the gpu
     class Buffer : public Resource
     {
     public:

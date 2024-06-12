@@ -10,17 +10,14 @@
 
 namespace rex
 {
-  namespace rhi
-  {
-    class CommandAllocator;
-  }
-
   namespace gfx
   {
+    // The pool managed per command queue that manages sync info objects
     class SyncInfoPool
     {
     public:
       SyncInfoPool();
+      // Returns a new sync info object or create a new one if none can be found
       ScopedPoolObject<rhi::SyncInfo> request(u64 fenceValue, void* fenceObject);
 
     private:

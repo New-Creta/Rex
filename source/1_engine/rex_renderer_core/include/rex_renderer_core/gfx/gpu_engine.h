@@ -54,7 +54,7 @@ namespace rex
       rhi::RenderTarget* current_backbuffer_rt();
 
     protected:
-      // Initialize the resource heap which allocates track of all gpu resources
+      // Initialize the resource heap which allocates all gpu resources
       virtual void init_resource_heap() = 0;
       // Initialize the descriptor heaps which allocates all descriptors to various resources
       virtual void init_descriptor_heaps() = 0;
@@ -74,7 +74,7 @@ namespace rex
       rsl::unique_ptr<RenderEngine> m_render_engine;    // The render engine is the high level graphics engine responsible for queueing render commands
       rsl::unique_ptr<ComputeEngine> m_compute_engine;  // The render engine is the high level graphics engine responsible for queueing compute commands
       rsl::unique_ptr<CopyEngine> m_copy_engine;        // The render engine is the high level graphics engine responsible for queueing copy commands
-      rsl::unique_ptr<rhi::ClearStateResource> m_clear_state_resource; // The clear state resource that's used to clear the backbuffer with
+      rsl::unique_ptr<rhi::ClearState> m_clear_state_resource; // The clear state resource that's used to clear the backbuffer with
       s32 m_max_frames_in_flight;                       // The maximum number of we can have in flight for rendering.
       void* m_primary_display_handle;                   // The display handle to render to (HWND on Windows)
       s32 m_frame_idx;                                  // The current frame index

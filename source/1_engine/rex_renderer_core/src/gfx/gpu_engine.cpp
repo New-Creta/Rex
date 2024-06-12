@@ -27,6 +27,9 @@ namespace rex
     {
     }
 
+    // Because some objects have a dependency on the gpu engine itself
+    // We need to wait for the gpu engine to be constructed, only then 
+    // can we initialize the rest of the objects
     void GpuEngine::init()
     {
       init_resource_heap();
@@ -37,7 +40,7 @@ namespace rex
       init_imgui();
     }
 
-    // Prepare a new frame
+    // Prepare a new frame by incrementing the frame index and clearing the backbuffer
     void GpuEngine::new_frame()
     {
       ++m_frame_idx;
@@ -50,6 +53,7 @@ namespace rex
       render_ctx->transition_buffer(current_backbuffer_rt(), rhi::ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
     }
+    // Present the new frame to the main window
     void GpuEngine::present()
     {
       auto render_ctx = new_render_ctx();
@@ -58,6 +62,7 @@ namespace rex
 
       m_swapchain->present();
     }
+    // Finish off the last frame
     void GpuEngine::end_frame()
     {
       m_render_engine->end_frame();
@@ -65,44 +70,52 @@ namespace rex
       m_copy_engine->end_frame();
     }
 
+    // Create a new context which is used for copying resources from or to the gpu
     ScopedPoolObject<rhi::CopyContext> GpuEngine::new_copy_ctx()
     {
       auto base_ctx = m_copy_engine->new_context();
       return base_ctx.convert<rhi::CopyContext>();
     }
+    // Create a new context which is used for rendering to render targets
     ScopedPoolObject<rhi::RenderContext> GpuEngine::new_render_ctx()
     {
       auto base_ctx = m_render_engine->new_context();
       return base_ctx.convert<rhi::RenderContext>();
     }
+    // Create a new context which is used for computing data on the gpu
     ScopedPoolObject<rhi::ComputeContext> GpuEngine::new_compute_ctx()
     {
       auto base_ctx = m_compute_engine->new_context();
       return base_ctx.convert<rhi::ComputeContext>();
     }
 
+    // Return the render target pointing to the current backbuffer of the swapchain
     rhi::RenderTarget* GpuEngine::current_backbuffer_rt()
     {
       return m_swapchain->current_buffer();
     }
 
+    // Initialize the clear state which is used to clear the backbuffer with
     void GpuEngine::init_clear_state()
     {
       rhi::ClearStateDesc desc{};
       desc.rgba = rsl::colors::LightSteelBlue;
       desc.flags.add_state(renderer::ClearBits::ClearColorBuffer);
-      m_clear_state_resource = rsl::make_unique<rhi::ClearStateResource>(desc);
+      m_clear_state_resource = rsl::make_unique<rhi::ClearState>(desc);
     }
+    // Initialize the swapchain which is used for presenting to the main window
     void GpuEngine::init_swapchain()
     {
       m_swapchain = rhi::create_swapchain(m_render_engine->command_queue(), m_max_frames_in_flight, m_primary_display_handle);
     }
+    // Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
     void GpuEngine::init_sub_engines()
     {
       m_render_engine->init();
       m_copy_engine->init();
       m_compute_engine->init();
     }
+    // Initialize imgui so it can create its own windows if necessary
     void GpuEngine::init_imgui()
     {
       ImGuiDevice imgui_device{};

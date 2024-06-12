@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rex_renderer_core/resources/vertex_buffer.h"
-#include "rex_renderer_core/resources/index_buffer.h"
 #include "rex_renderer_core/rhi/viewport.h"
 
 #include "rex_renderer_core/rhi/copy_context.h"
@@ -12,32 +10,41 @@ namespace rex
 {
   namespace rhi
   {
-    class CommandList;
     class ConstantBuffer;
-    class RenderTarget;
+    class VertexBuffer;
+    class IndexBuffer;
   }
 
+  // ImGui only needs to pass the mvp matrix to the shader
   struct ImGuiVertexConstantBuffer
   {
     f32 mvp[4][4];
   };
 
+  // An frame context holds all the objects needed to render an imgui object for a frame
   class ImGuiFrameContext
   {
   public:
     ImGuiFrameContext();
 
+    // Update the frame context's data based on the draw data and upload this to the gpu.
     ScopedPoolObject<rhi::SyncInfo> update_data(ImDrawData* drawData);
 
+    // Return the viewport used for the frame const
     const rhi::Viewport& viewport() const;
+    // Return the vertex buffer of the frame context
     rhi::VertexBuffer* vertex_buffer();
+    // Return the index buffer of the frame context
     rhi::IndexBuffer* index_buffer();
+    // Return the constant buffer of the frame context
     rhi::ConstantBuffer* constant_buffer();
-    const ImGuiVertexConstantBuffer& cb_data() const;
 
   private:
+    // Increase the vertex buffer to a new size
     void increase_vertex_buffer(s32 newSize);
+    // Incrase the index buffer to a new size
     void increase_index_buffer(s32 newSize);
+    // Update the frame context's data to the gpu
     ScopedPoolObject<rhi::SyncInfo> copy_buffer_data(ImDrawData* drawData);
 
   private:

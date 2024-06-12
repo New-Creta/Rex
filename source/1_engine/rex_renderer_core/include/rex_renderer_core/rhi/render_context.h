@@ -29,7 +29,7 @@ namespace rex
 
   namespace rhi
   {
-    class ClearStateResource;
+    class ClearState;
     class PipelineState;
     class UploadBuffer;
     class Buffer;
@@ -62,7 +62,7 @@ namespace rex
       virtual void transition_buffer(Texture2D* resource, ResourceState state) = 0;
       virtual void transition_buffer(RenderTarget* resource, ResourceState state) = 0;
       virtual void set_render_target(rhi::RenderTarget* renderTarget) = 0;
-      virtual void clear_render_target(rhi::RenderTarget* renderTarget, rhi::ClearStateResource* clearState) = 0;
+      virtual void clear_render_target(rhi::RenderTarget* renderTarget, rhi::ClearState* clearState) = 0;
       virtual void set_vertex_buffer(rhi::VertexBuffer* vb) = 0;
       virtual void set_index_buffer(rhi::IndexBuffer* ib) = 0;
       virtual void set_primitive_topology(renderer::PrimitiveTopology topology) = 0;

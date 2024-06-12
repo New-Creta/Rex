@@ -7,6 +7,7 @@ namespace rex
 {
   namespace gfx
   {
+    // The base graphics engine type used for submitting render commands
     class RenderEngine : public GraphicsEngine
     {
     public:

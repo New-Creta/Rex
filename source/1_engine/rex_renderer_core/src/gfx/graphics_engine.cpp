@@ -9,11 +9,8 @@ namespace rex
     GraphicsEngine::GraphicsEngine(rhi::CommandType type)
       : m_command_queue(rhi::create_command_queue(type))
       , m_command_allocator_pool(type)
-      , m_idle_contexts()
-      , m_active_contexts()
       , m_context_pool(type, [this](rhi::CommandAllocator* alloc) { return allocate_new_context(alloc); })
     {}
-
     GraphicsEngine::~GraphicsEngine()
     {
       flush();
@@ -37,27 +34,34 @@ namespace rex
       return ctx;
     }
 
+    // Halt gpu commands from being executed until the sync info object is triggered
+    void GraphicsEngine::stall(rhi::SyncInfo& syncInfo)
+    {
+      m_command_queue->gpu_wait(syncInfo);
+    }
+
+    // Return the command queue owned by the graphics engine, this is needed for the swapchain
+    rhi::CommandQueue* GraphicsEngine::command_queue()
+    {
+      return m_command_queue.get();
+    }
+    // Return the command type of the engine
+    rhi::CommandType GraphicsEngine::type() const
+    {
+      return m_command_queue->type();
+    }
+
+    // Flush all commands on the gpu and halt the current thread untill all commands are executed
     void GraphicsEngine::flush()
     {
       m_command_queue->flush();
     }
 
+    // Request a new allocator from the command allocator pool
     ScopedPoolObject<PooledAllocator> GraphicsEngine::request_allocator()
     {
       u64 last_completed_fence = m_command_queue->last_completed_fence();
       return m_command_allocator_pool.request_allocator(last_completed_fence);
-    }
-    void GraphicsEngine::stall(rhi::SyncInfo& syncInfo)
-    {
-      m_command_queue->gpu_wait(syncInfo);
-    }
-    rhi::CommandQueue* GraphicsEngine::command_queue()
-    {
-      return m_command_queue.get();
-    }
-    rhi::CommandType GraphicsEngine::type() const
-    {
-      return m_command_queue->type();
     }
   }
 }

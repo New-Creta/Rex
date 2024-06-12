@@ -6,6 +6,8 @@ namespace rex
 {
   namespace rhi
   {
+    // A constant buffer is a buffer holding data that's consistent for a draw call of an object
+    // It often has various data to use in different shaders (eg. mwp matrix)
     class ConstantBuffer : public Buffer
     {
     public:

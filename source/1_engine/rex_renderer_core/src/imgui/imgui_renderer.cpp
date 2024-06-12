@@ -23,8 +23,7 @@ namespace rex
 
   ImGuiRenderer::ImGuiRenderer(void* platformWindowHandle)
   {
-    init_imgui();
-    init_platform(platformWindowHandle);
+    init_imgui(platformWindowHandle);
     init_gpu_resources();
     init_main_imgui_viewport();
 
@@ -67,7 +66,7 @@ namespace rex
     new_frame();
   }
 
-  void ImGuiRenderer::init_imgui()
+  void ImGuiRenderer::init_imgui(void* platformWindowHandle)
   {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -98,10 +97,8 @@ namespace rex
     io.BackendRendererName = "ImGui Renderer";
     io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
     io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;  // We can create multi-viewports on the Renderer side (optional)
-  }
 
-  void ImGuiRenderer::init_platform(void* platformWindowHandle)
-  {
+    // Perform platform specific imgui initialization
     imgui_platform_init(platformWindowHandle);
   }
 

@@ -17,6 +17,8 @@ namespace rex
     renderer::TextureFormat rtv_format; // This is needed to initialize the swapchain on imgui spawned windows
   };
 
+  // Initialize the imgui device so imgui can use it to create its own windows
   void init_imgui_device(const ImGuiDevice& imguiDevice);
+  // Retrieve the imgui device to initialize an imgui window
   const ImGuiDevice& imgui_device();
 }

@@ -3,7 +3,8 @@
 #include "rex_renderer_core/rhi/rhi.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
-
+#include "rex_renderer_core/resources/vertex_buffer.h"
+#include "rex_renderer_core/resources/index_buffer.h"
 #include "imgui/imgui.h"
 
 namespace rex
@@ -16,6 +17,7 @@ namespace rex
     m_constant_buffer = rhi::create_constant_buffer(sizeof(ImGuiVertexConstantBuffer));
   }
 
+  // Update the frame context's data based on the draw data and upload this to the gpu.
   ScopedPoolObject<rhi::SyncInfo> ImGuiFrameContext::update_data(ImDrawData* drawData)
   {
     m_viewport.width = drawData->DisplaySize.x;
@@ -37,32 +39,33 @@ namespace rex
     return copy_buffer_data(drawData);
   }
 
+  // Return the viewport used for the frame const
   const rhi::Viewport& ImGuiFrameContext::viewport() const
   {
     return m_viewport;
   }
+  // Return the vertex buffer of the frame context
   rhi::VertexBuffer* ImGuiFrameContext::vertex_buffer()
   {
     return m_vertex_buffer.get();
   }
+  // Return the index buffer of the frame context
   rhi::IndexBuffer* ImGuiFrameContext::index_buffer()
   {
     return m_index_buffer.get();
   }
+  // Return the constant buffer of the frame context
   rhi::ConstantBuffer* ImGuiFrameContext::constant_buffer()
   {
     return m_constant_buffer.get();
   }
   
-  const ImGuiVertexConstantBuffer& ImGuiFrameContext::cb_data() const
-  {
-    return m_constant_buffer_data;
-  }
-
+  // Increase the vertex buffer to a new size
   void ImGuiFrameContext::increase_vertex_buffer(s32 newSize)
   {
     m_vertex_buffer = rhi::create_vertex_buffer(newSize + s_buffer_increment_size, sizeof(ImDrawVert));
   }
+  // Incrase the index buffer to a new size
   void ImGuiFrameContext::increase_index_buffer(s32 newSize)
   {
     rex::renderer::IndexBufferFormat format = sizeof(ImDrawIdx) == 2
@@ -71,6 +74,7 @@ namespace rex
 
     m_index_buffer = rhi::create_index_buffer(newSize + s_buffer_increment_size, format);
   }
+  // Update the frame context's data to the gpu
   ScopedPoolObject<rhi::SyncInfo> ImGuiFrameContext::copy_buffer_data(ImDrawData* drawData)
   {
     auto copy_context = gfx::new_copy_ctx();

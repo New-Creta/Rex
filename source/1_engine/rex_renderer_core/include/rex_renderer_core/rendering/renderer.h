@@ -2,6 +2,7 @@
 
 namespace rex
 {
+  // Renderer interface, very basic implementation and will likely be extended in the future
   class Renderer
   {
   public:

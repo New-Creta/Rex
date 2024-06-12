@@ -16,27 +16,12 @@ namespace rex
     class SyncInfo
     {
     public:
-      SyncInfo()
-        : m_fence_value()
-        , m_fence_object()
-      {
-      }
+      SyncInfo();
 
-      u64 fence_val() const
-      {
-        return m_fence_value;
-      }
-      void* fence_object()
-      {
-        return m_fence_object;
-      }
+      u64 fence_val() const;
+      void* fence_object();
 
-      void reset(u64 fenceValue, void* fenceObject)
-      {
-        m_fence_value = fenceValue;
-        m_fence_object = fenceObject;
-      }
-
+      void reset(u64 fenceValue, void* fenceObject);
     private:
       u64 m_fence_value; // The fence value on the gpu after the owning context has executed
       void* m_fence_object; // the graphics API specific fence object

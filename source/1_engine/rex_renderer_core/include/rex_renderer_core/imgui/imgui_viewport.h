@@ -10,25 +10,27 @@ namespace rex
 {
   namespace rhi
   {
-    class RootSignature;
-    class PipelineState;
-    class ConstantBuffer;
-    class CommandList;
     class RenderContext;
   };
 
+  // A viewport is a single standalone imgui widget with one or more widgets inside of it. (eg. the demo window is a viewport)
   class RexImGuiViewport
   {
   public:
     RexImGuiViewport(ImGuiViewport* imguiViewport);
 
+    // Render the viewport using the given render context to queue gpu commands to
     void render(rhi::RenderContext& renderContext);
 
   private:
+    // Get the current frame context to use to render the viewport
     ImGuiFrameContext& current_frame_ctx();
+    // Advance the index so it points to the next frame context
     void advance_frame_ctx();
 
+    // Setup the render state of the viewport, it for rendering
     void setup_render_state(rhi::RenderContext& ctx, ImDrawData* drawData, ImGuiFrameContext& frameCtx);
+    // Draw the current viewport
     void draw(rhi::RenderContext& ctx, ImDrawData* drawData);
 
   private:
