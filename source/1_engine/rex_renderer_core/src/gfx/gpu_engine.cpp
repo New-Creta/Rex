@@ -83,7 +83,6 @@ namespace rex
 
     rhi::RenderTarget* GpuEngine::current_backbuffer_rt()
     {
-      REX_WARN_ONCE(LogGpuEngine, "Remove render target getter of gpu engine");
       return m_swapchain->current_buffer();
     }
 

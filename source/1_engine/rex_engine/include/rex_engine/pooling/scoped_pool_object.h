@@ -5,6 +5,9 @@
 
 namespace rex
 {
+  // Wrapper around an object belonging to the pool
+  // It'll automatically return it back to the pool when it goes out of scope
+  // The pool is responsible of creating the callable to return this object back to itself.
   template <typename T>
   class ScopedPoolObject
   {
@@ -63,13 +66,16 @@ namespace rex
       return ScopedPoolObject<U>(u_ptr, rsl::move(m_return_to_pool_callable));
     }
 
+    // Return if we still have an object.
+    // We can lose an object after moving
     bool has_object() const
     {
       return m_object != nullptr;
     }
+    // Return the wrapped object back to the pool it came from
     void return_to_pool()
     {
-      if (m_return_to_pool_callable)
+      if (has_object())
       {
         m_return_to_pool_callable(m_object);
         m_object = nullptr;

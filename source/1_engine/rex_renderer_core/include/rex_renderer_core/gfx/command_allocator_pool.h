@@ -15,16 +15,30 @@ namespace rex
   {
     // A structure combining an idle allocator and the fence value that's required
     // to have been reached to free up the allocator
-    struct PooledAllocator
+    // When it's returned to the pool it's fence value is checked, making sure it's higher
+    // than when originally allocated.
+    class PooledAllocator
     {
-      PooledAllocator(u64 fenceValue, rsl::unique_ptr<rhi::CommandAllocator> alloc)
-        : fence_value(fenceValue)
-        , allocator(rsl::move(alloc))
-      {}
+    public:
+      PooledAllocator(u64 fenceValue, rsl::unique_ptr<rhi::CommandAllocator> alloc);
 
-      u64 fence_value;
-      rsl::unique_ptr<rhi::CommandAllocator> allocator;
+      // Reset the fence value to a new value
+      void reset_fence(u64 fenceValue);
+      // Return the fence value
+      u64 fence_value() const;
+
+      // Easy access to underlying allocator object
+      rhi::CommandAllocator* underlying_alloc();
+      const rhi::CommandAllocator* underlying_alloc() const;
+
+      rhi::CommandAllocator* operator->();
+      const rhi::CommandAllocator* operator->() const;
+
+    private:
+      u64 m_fence_value; // The fence value required to be achieved in order to use the allocator
+      rsl::unique_ptr<rhi::CommandAllocator> m_allocator;
     };
+    // The pool holding all command allocators
     class CommandAllocatorPool
     {
     public:

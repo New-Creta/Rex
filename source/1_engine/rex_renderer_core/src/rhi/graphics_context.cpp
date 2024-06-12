@@ -28,7 +28,7 @@ namespace rex
       REX_ASSERT_X(alloc.has_object(), "Assigning a nullptr as allocator for a gfx context is not allowed.");
       m_allocator = rsl::move(alloc);
 
-      platform_reset(alloc->allocator.get());
+      platform_reset(alloc->underlying_alloc());
     }
 
     ScopedPoolObject<SyncInfo> GraphicsContext::execute_on_gpu()
@@ -41,7 +41,7 @@ namespace rex
       flush_render_states();
 
       ScopedPoolObject<SyncInfo> sync_info = m_owning_engine->execute_context(this);
-      m_allocator->fence_value = sync_info->fence_val();
+      m_allocator->reset_fence(sync_info->fence_val());
       m_allocator.return_to_pool();
 
       return sync_info;

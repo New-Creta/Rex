@@ -31,7 +31,7 @@ namespace rex
       // Find a command alloctor to be used for the context
       ScopedPoolObject<PooledAllocator> alloc = request_allocator();
 
-      ScopedPoolObject<rhi::GraphicsContext> ctx = m_context_pool.request(m_command_queue->last_completed_fence(), alloc->allocator.get());
+      ScopedPoolObject<rhi::GraphicsContext> ctx = m_context_pool.request(m_command_queue->last_completed_fence(), alloc->underlying_alloc());
       ctx->reset(rsl::move(alloc));
 
       return ctx;
