@@ -14,27 +14,38 @@ namespace rex
   {
     class Resource;
 
+    // Describes the resource transition taking place, with the before and after state
     struct ResourceStateTransition
     {
       ResourceState before;
       ResourceState after;
     };
 
+    // Each context has a resource tracker to track the transitions of resources that are changed by the context
     class ResourceStateTracker
     {
     public:
+      // The private handle to indicate that this is the root resource tracker
       struct PrivateHandle {};
 
-      explicit ResourceStateTracker(ResourceStateTracker* parentResourceStateTracker = nullptr);
+      // The resource state tracker accepting the private handle
+      // This means it doesn't have a parent tracker
       explicit ResourceStateTracker(const PrivateHandle&); // passing int to indicate a difference from the default ctor
+      explicit ResourceStateTracker(ResourceStateTracker* parentResourceStateTracker = nullptr);
+
+      // Track a resource state internally
       ResourceStateTransition track_resource_transition(Resource* resource, ResourceState state);
 
+      // Get the current resource state of a resource
       ResourceState current_resource_state(Resource* resource) const;
 
+      // Update the parent with out resource states
       void update_parent();
+      // Clear our resource states, all trackings are cleared
       void clear();
 
     private:
+      // init the global resource state tracker who holds final resource tracking states
       void init_global();
 
     private:

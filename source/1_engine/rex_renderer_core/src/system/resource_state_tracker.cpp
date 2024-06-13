@@ -20,6 +20,7 @@ namespace rex
       }
     }
 
+    // Track a resource state internally
     ResourceStateTransition ResourceStateTracker::track_resource_transition(Resource* resource, ResourceState state)
     {
       ResourceStateTransition transition{};
@@ -35,6 +36,7 @@ namespace rex
       return transition;
     }
 
+    // Get the current resource state of a resource
     ResourceState ResourceStateTracker::current_resource_state(Resource* resource) const
     {
       ResourceState resource_state{};
@@ -55,6 +57,7 @@ namespace rex
       return resource_state;
     }
 
+    // Update the parent with out resource states
     void ResourceStateTracker::update_parent()
     {
       if (m_parent_resource_state_tracker)
@@ -68,15 +71,19 @@ namespace rex
         }
       }
     }
+    // Clear our resource states, all trackings are cleared
     void ResourceStateTracker::clear()
     {
       m_states_per_resource.clear();
     }
 
+    // The resource state tracker accepting the private handle
+    // This means it doesn't have a parent tracker
     ResourceStateTracker::ResourceStateTracker(const PrivateHandle&)
       : m_parent_resource_state_tracker()
     {}
 
+    // init the global resource state tracker who holds final resource tracking states
     void ResourceStateTracker::init_global()
     {
       PrivateHandle h{};

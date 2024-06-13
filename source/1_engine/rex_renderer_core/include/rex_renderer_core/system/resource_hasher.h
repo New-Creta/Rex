@@ -20,8 +20,6 @@ namespace rex
     ResourceID hash_resource_desc(const ClearStateDesc& desc);
     ResourceID hash_resource_desc(const CompileShaderDesc& desc);
     ResourceID hash_resource_desc(const InputLayoutDesc& desc);
-    ResourceID hash_resource_desc(const LinkShaderDesc& desc);
-    ResourceID hash_resource_desc(const ShaderDesc& desc);
     ResourceID hash_resource_desc(const RasterStateDesc& desc);
   }
 }

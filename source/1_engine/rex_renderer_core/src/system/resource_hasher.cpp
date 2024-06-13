@@ -8,30 +8,6 @@ namespace rex
 {
   namespace rhi
   {
-    //ResourceID hash_resource_desc(const VertexBufferDesc& desc)
-    //{
-    //  u32 hash = rsl::type_id<VertexBufferDesc>().hash_code();
-
-    //  hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
-
-    //  return hash;
-    //}
-    //ResourceID hash_resource_desc(const IndexBufferDesc& desc)
-    //{
-    //  u32 hash = rsl::type_id<IndexBufferDesc>().hash_code();
-
-    //  hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
-
-    //  return hash;
-    //}
-    //ResourceID hash_resource_desc(const ConstantBufferDesc& desc)
-    //{
-    //  u32 hash = rsl::type_id<ConstantBufferDesc>().hash_code();
-
-    //  hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.blob_view.data(), desc.blob_view.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
-
-    //  return hash;
-    //}
     ResourceID hash_resource_desc(const ClearStateDesc& desc)
     {
       u32 hash = rsl::type_id<ClearStateDesc>().hash_code();
@@ -57,25 +33,6 @@ namespace rex
 
       return hash;
     }
-    ResourceID hash_resource_desc(const LinkShaderDesc& desc)
-    {
-      u32 hash = rsl::type_id<LinkShaderDesc>().hash_code();
-
-      hash = rsl::internal::hash_combine(hash, desc.vertex_shader.slot_id());
-      hash = rsl::internal::hash_combine(hash, desc.pixel_shader.slot_id());
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.constants.get(), desc.constants.byte_size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
-
-      return hash;
-    }
-    ResourceID hash_resource_desc(const ShaderDesc& desc)
-    {
-      u32 hash = rsl::type_id<ShaderDesc>().hash_code();
-
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.shader_byte_code.data(), desc.shader_byte_code.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
-      hash = rsl::internal::hash_combine(hash, static_cast<rsl::hash_result>(desc.shader_type));
-
-      return hash;
-    }
     ResourceID hash_resource_desc(const RasterStateDesc& desc)
     {
       u32 hash = rsl::type_id<RasterStateDesc>().hash_code();
@@ -84,13 +41,5 @@ namespace rex
 
       return hash;
     }
-    //ResourceID hash_resource_desc(const PipelineStateDesc& desc)
-    //{
-    //  u32 hash = rsl::type_id<PipelineStateDesc>().hash_code();
-
-    //  hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)&desc, sizeof(desc))); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
-
-    //  return hash;
-    //}
   } // namespace rhi
 } // namespace rex

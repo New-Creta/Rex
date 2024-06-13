@@ -77,14 +77,12 @@ namespace rex
       renderer::ShaderPlatform shader_platform();
 
       // Backend Systems
-      //rsl::unique_ptr<CommandList> create_commandlist(CommandAllocator* alloc, GraphicsEngineType type, ResourceStateTracker* resourceStateTracker = nullptr);
       rsl::unique_ptr<CommandQueue> create_command_queue(GraphicsEngineType type);
       rsl::unique_ptr<Swapchain> create_swapchain(void* apiDevice, s32 bufferCount, void* primaryDisplayHandle);
       rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::GraphicsEngineType type);
 
       // Resource creation
       rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, renderer::TextureFormat format);
-
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format);
       rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
@@ -95,6 +93,7 @@ namespace rex
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode);
 
+      // Return the render target pointing to the current swapchain's backbuffer
       RenderTarget* current_backbuffer_rt();
     }
 

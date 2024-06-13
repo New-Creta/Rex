@@ -4,6 +4,7 @@ namespace rex
 {
   namespace rhi
   {
+    // Base interface for a fence object
     class Fence
     {
     public:

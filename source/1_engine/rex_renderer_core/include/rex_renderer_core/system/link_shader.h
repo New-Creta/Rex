@@ -14,6 +14,7 @@ namespace rex
 {
   namespace rhi
   {
+    // The type of view for a resource tied to a shader
     enum class ShaderViewType
     {
       ConstantBufferView,
@@ -21,6 +22,7 @@ namespace rex
       UnorderedAccessView
     };
 
+    // The type of views that are defined in the range
     enum class DescriptorRangeType
     {
       ConstantBufferView,
@@ -82,19 +84,6 @@ namespace rex
       s32 shader_register = 0; // the shader register of the sampler
       s32 register_space = 0; // the shader register space of the sampler
       renderer::ShaderVisibility shader_visibility = renderer::ShaderVisibility::All; // the shaders this sampler is visible in
-    };
-
-    // Describe what is needed to link the shader together
-    // This is probably deprecated as it's too much focused on OpenGL.
-    // modern graphics APIs use things like root signatures
-    struct LinkShaderDesc
-    {
-      rhi::ResourceSlot vertex_shader; // the vertex shader of the "shader program"
-      rhi::ResourceSlot pixel_shader; // the pixel shader of the "shader program"
-      rsl::unique_array<ShaderConstantDesc> constants; // all the constants of the shaders
-      rsl::unique_array<ShaderViewDesc> views; // All the views of the shaders
-      rsl::unique_array<DescriptorTableDesc> desc_tables; // all the descriptor tables describing the various views and samplers of the shaders
-      rsl::unique_array<rhi::ShaderSamplerDesc> samplers; // All the samplers of the shaders
     };
 
     // Describe the root signature for all the shaders

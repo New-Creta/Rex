@@ -6,8 +6,8 @@ namespace rex
   {
     enum class ShaderPlatform
     {
-      Glsl,
-      Hlsl
+      Glsl, // GLSL shader platform (used for OpenGL and Vulkan)
+      Hlsl  // HLSL shader platform (used for DirectX)
     };
   } // namespace renderer
 } // namespace rex

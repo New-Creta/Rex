@@ -4,6 +4,7 @@
 
 #include "rex_renderer_core/rhi/graphics_engine_type.h"
 #include "rex_renderer_core/gfx/sync_info_pool.h"
+#include "rex_renderer_core/system/fence.h"
 
 namespace rex
 {
@@ -22,11 +23,12 @@ namespace rex
       virtual void gpu_wait(SyncInfo& sync_info) = 0;
       // Returns true if the fence value has been reached already on the gpu
       virtual bool is_fence_completed(u64 fenceValue) const = 0;
-      // Returns the fence value of the last completed set of commands
-
+      // Submit all queued commands to the gpu and execute for execution
       virtual ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx) = 0;
 
+      // All commands before this fence value have executed
       u64 last_completed_fence() const;
+      // Return the command queue's type
       GraphicsEngineType type() const;
       // Returns the next fence value. This is the fence value that'll be signaled
       // the next time an commandlist is executed
@@ -37,10 +39,10 @@ namespace rex
     protected:
       // Increases the next fence value and returns the old value
       u64 inc_fence();
-
+      // Return the value of the fence, on the gpu
       virtual u64 gpu_fence_value() const = 0;
-
-      ScopedPoolObject<SyncInfo> create_sync_info(u64 fenceValue, void* fenceObject);
+      // Create a sync info object with that needs to have the specified fence value for the given fence object
+      ScopedPoolObject<SyncInfo> create_sync_info(u64 fenceValue, Fence* fenceObject);
 
     private:
       u64 m_next_fence_value; // this fence value gets increment each time the command queue executes a commandlist
