@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxConstantBuffer : public ConstantBuffer
     {
@@ -20,5 +20,5 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> m_resource; // the actual constant buffer resource
       DescriptorHandle m_handle; // A handle for both the cpu and gpu descriptor
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

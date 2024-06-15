@@ -4,7 +4,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     struct CompileShaderDesc;
 
@@ -13,5 +13,5 @@ namespace rex
     public:
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

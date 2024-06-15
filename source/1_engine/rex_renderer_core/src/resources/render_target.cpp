@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     RenderTarget::RenderTarget(s32 width, s32 height)
       : m_width(width)

@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxRenderTarget::DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle descHandle)
       : RenderTarget(resource->GetDesc().Width, resource->GetDesc().Height)

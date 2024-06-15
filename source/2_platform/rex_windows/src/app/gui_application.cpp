@@ -9,9 +9,9 @@
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/platform/win/win_com_library.h"
-#include "rex_renderer_core/rendering/depth_info.h"
-#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
-#include "rex_renderer_core/rhi/rhi.h"
+#include "rex_renderer_core/gfx/depth_info.h"
+#include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
+#include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/gfx/graphics.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
@@ -308,7 +308,7 @@ namespace rex
       // to start using the graphics pipeline.
       bool init_gfx()
       {
-        renderer::OutputWindowUserData user_data {};
+        gfx::OutputWindowUserData user_data {};
         user_data.primary_display_handle = m_window->primary_display_handle();
         user_data.refresh_rate           = m_gui_params.max_fps;
         user_data.window_width           = m_window->width();
@@ -321,7 +321,7 @@ namespace rex
         REX_WARN_ONCE(LogWindows, "Create the viewport manager here");
 
         // Add the imgui renderer, which is our main UI renderer for the moment
-        gfx::add_renderer(rsl::make_unique<ImGuiRenderer>(m_window->primary_display_handle()));
+        gfx::add_renderer(rsl::make_unique<gfx::ImGuiRenderer>(m_window->primary_display_handle()));
 
         return true;
       }

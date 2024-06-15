@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     using ResourceID = s32;
 
@@ -50,7 +50,7 @@ namespace rex
       static constexpr ResourceID s_invalid_slot = static_cast<ResourceID>(-1);
     };
 
-  } // namespace renderer
+  } // namespace gfx
 } // namespace rex
 
 namespace rsl
@@ -58,9 +58,9 @@ namespace rsl
   inline namespace v1
   {
     template <>
-    struct hash<rex::rhi::ResourceSlot>
+    struct hash<rex::gfx::ResourceSlot>
     {
-      rsl::hash_result operator()(const rex::rhi::ResourceSlot& resourceSlot) const
+      rsl::hash_result operator()(const rex::gfx::ResourceSlot& resourceSlot) const
       {
         return resourceSlot.slot_id();
       }

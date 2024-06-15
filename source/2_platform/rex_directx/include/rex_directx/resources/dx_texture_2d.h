@@ -6,12 +6,12 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxTexture2D : public Texture2D
     {
     public:
-      DxTexture2D(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle handle, s32 width, s32 height, renderer::TextureFormat format);
+      DxTexture2D(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle handle, s32 width, s32 height, TextureFormat format);
 
       ID3D12Resource* dx_object();
       D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle();

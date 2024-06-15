@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/rhi/primitive_topology.h"
+#include "rex_renderer_core/gfx/primitive_topology.h"
 #include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/resources/vertex_buffer.h"
 #include "rex_renderer_core/resources/index_buffer.h"
@@ -11,14 +11,14 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace gfx
   {
     // Descriptor holding all the data needed to create a render item
     struct RenderItemDesc
     {
-      rhi::VertexBufferDesc vb_desc;
-      rhi::IndexBufferDesc ib_desc;
-      rhi::ConstantBufferDesc cb_desc;
+      VertexBufferDesc vb_desc;
+      IndexBufferDesc ib_desc;
+      ConstantBufferDesc cb_desc;
       PrimitiveTopology topology;
     };
 
@@ -28,14 +28,14 @@ namespace rex
     {
     public:
       // Construct the render item object
-      RenderItem(const rhi::ResourceSlot& vb, const rhi::ResourceSlot& ib, const rhi::ResourceSlot& cb, PrimitiveTopology topology, s32 indexCount, s32 baseVertexLocation = 0);
+      RenderItem(const ResourceSlot& vb, const ResourceSlot& ib, const ResourceSlot& cb, PrimitiveTopology topology, s32 indexCount, s32 baseVertexLocation = 0);
 
       // return the slot of the vertex buffer
-      rhi::ResourceSlot vb() const;
+      ResourceSlot vb() const;
       // return the slot of the index buffer
-      rhi::ResourceSlot ib() const;
+      ResourceSlot ib() const;
       // return the slot of the constantbuffer
-      rhi::ResourceSlot cb() const;
+      ResourceSlot cb() const;
       // return the primitive topology
       PrimitiveTopology primtive_topology() const;
 
@@ -50,14 +50,14 @@ namespace rex
       s32 base_vertex_loc() const;
 
     private:
-      rhi::ResourceSlot m_vb;
-      rhi::ResourceSlot m_ib;
-      rhi::ResourceSlot m_cb;
+      ResourceSlot m_vb;
+      ResourceSlot m_ib;
+      ResourceSlot m_cb;
       PrimitiveTopology m_topology;
 
       s32 m_index_count {};
       s32 m_start_index_location {};
       s32 m_base_vertex_location {};
     };
-  } // namespace renderer
+  } // namespace gfx
 } // namespace rex

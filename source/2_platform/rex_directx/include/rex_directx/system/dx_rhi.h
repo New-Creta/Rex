@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_renderer_core/rhi/rhi.h"
+#include "rex_renderer_core/gfx/rhi.h"
 
 #include "rex_directx/dxgi/includes.h"
 #include "rex_directx/dxgi/factory.h"
@@ -27,9 +27,9 @@ struct ID3D12GraphicsCommandList;
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
-    namespace api
+    namespace rhi
     {
       // All functions here are DirectX specific
 
@@ -39,7 +39,7 @@ namespace rex
       // Compile a shader and return its binary blob
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
       // Create a DirectX commandlist
-      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::GraphicsEngineType type);
+      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(CommandAllocator* alloc, GraphicsEngineType type);
       // Create a DirectX descriptor heap
       rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type);
       // Create a DirectX resource heap

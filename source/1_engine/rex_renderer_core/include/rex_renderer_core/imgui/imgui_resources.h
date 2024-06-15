@@ -7,16 +7,19 @@
 
 namespace rex
 {
-  // Wrapper around imgui resources that are shared between all imgui viewports
-  // This will become a material in the future
-  struct ImGuiResources
+  namespace gfx
   {
-    rhi::RootSignature* root_signature;
-    rhi::PipelineState* pso;
-  };
+    // Wrapper around imgui resources that are shared between all imgui viewports
+    // This will become a material in the future
+    struct ImGuiResources
+    {
+      RootSignature* root_signature;
+      PipelineState* pso;
+    };
 
-  // Initialize the global imgui resources so they can be used by viewports
-  void imgui_init_resources(const ImGuiResources& resources);
-  // Retrieve the global imgui resources
-  const ImGuiRenderState& imgui_renderstate();
+    // Initialize the global imgui resources so they can be used by viewports
+    void imgui_init_resources(const ImGuiResources& resources);
+    // Retrieve the global imgui resources
+    const ImGuiRenderState& imgui_renderstate();
+  }
 }

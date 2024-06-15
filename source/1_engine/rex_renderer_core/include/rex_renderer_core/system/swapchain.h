@@ -1,16 +1,16 @@
 #pragma once
 
 #include "rex_renderer_core/resources/render_target.h"
-#include "rex_renderer_core/rhi/texture_format.h"
+#include "rex_renderer_core/gfx/texture_format.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class Swapchain
     {
     public:
-      Swapchain(s32 width, s32 height, renderer::TextureFormat format);
+      Swapchain(s32 width, s32 height, TextureFormat format);
       virtual ~Swapchain() = default;
 
       // Swap the back with the front buffer
@@ -21,7 +21,7 @@ namespace rex
       // Return the height of the buffers of the swapchain
       s32 height() const;
       // Return the format of the buffers of the swapchain
-      renderer::TextureFormat format() const;
+      TextureFormat format() const;
       // Return the number of buffers of the swapchain
       s32 num_buffers() const;
       // Return the current backbuffer as a render target
@@ -42,7 +42,7 @@ namespace rex
       rsl::vector<rsl::unique_ptr<RenderTarget>> m_swapchain_buffers;
       s32 m_width;
       s32 m_height;
-      renderer::TextureFormat m_format;
+      TextureFormat m_format;
     };
   }
 }

@@ -9,7 +9,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxUploadBuffer::DxUploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer)
       : UploadBuffer(uploadBuffer->GetDesc().Width)
@@ -39,7 +39,7 @@ namespace rex
     }
 
     // Write data on cpu side, it returns the offset into the upload buffer where data was written to
-    s32 DxUploadBuffer::write_texture_data_from_cpu(const void* data, s32 width, s32 height, renderer::TextureFormat format)
+    s32 DxUploadBuffer::write_texture_data_from_cpu(const void* data, s32 width, s32 height, TextureFormat format)
     {
       // Write the data into our mapped memory
       s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
@@ -67,5 +67,5 @@ namespace rex
     }
 
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxPixelShader::DxPixelShader(const wrl::ComPtr<ID3DBlob> byteCode)
       : DxShader(byteCode)

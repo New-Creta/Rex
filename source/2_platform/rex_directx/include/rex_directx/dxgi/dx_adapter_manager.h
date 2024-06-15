@@ -6,30 +6,33 @@
 
 namespace rex
 {
-  namespace dxgi
+  namespace gfx
   {
-    class Factory;
-
-    class AdapterManager
+    namespace dxgi
     {
-    public:
-      AdapterManager(const AdapterManager&) = delete;
-      AdapterManager(AdapterManager&&)      = delete;
-      AdapterManager(Factory* factory, const GpuScorerFn& scorer);
-      ~AdapterManager() = default;
+      class Factory;
 
-      AdapterManager& operator=(const AdapterManager&) = delete;
-      AdapterManager& operator=(AdapterManager&&)      = delete;
+      class AdapterManager
+      {
+      public:
+        AdapterManager(const AdapterManager&) = delete;
+        AdapterManager(AdapterManager&&) = delete;
+        AdapterManager(Factory* factory, const GpuScorerFn& scorer);
+        ~AdapterManager() = default;
 
-      bool load_adapters(Factory* factory);
+        AdapterManager& operator=(const AdapterManager&) = delete;
+        AdapterManager& operator=(AdapterManager&&) = delete;
 
-      const Adapter* selected() const;
-      const Adapter* first() const;
-      const rsl::vector<Adapter>& all() const;
+        bool load_adapters(Factory* factory);
 
-    private:
-      const Adapter* m_selected_adapter;
-      rsl::vector<Adapter> m_adapters;
-    };
+        const Adapter* selected() const;
+        const Adapter* first() const;
+        const rsl::vector<Adapter>& all() const;
+
+      private:
+        const Adapter* m_selected_adapter;
+        rsl::vector<Adapter> m_adapters;
+      };
+    }
   } // namespace dxgi
 } // namespace rex

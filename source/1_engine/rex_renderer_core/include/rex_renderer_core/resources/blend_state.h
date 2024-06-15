@@ -5,7 +5,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // Specifies blend factors, which modulate values for the pixel shader and render target.
     enum class Blend

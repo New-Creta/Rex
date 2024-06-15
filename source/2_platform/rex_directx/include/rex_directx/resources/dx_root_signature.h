@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxRootSignature : public RootSignature
     {

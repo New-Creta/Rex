@@ -2,9 +2,9 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
-    DxTexture2D::DxTexture2D(const wrl::ComPtr<ID3D12Resource>& texture, DescriptorHandle handle, s32 width, s32 height, renderer::TextureFormat format)
+    DxTexture2D::DxTexture2D(const wrl::ComPtr<ID3D12Resource>& texture, DescriptorHandle handle, s32 width, s32 height, TextureFormat format)
       : Texture2D(width, height, format)
       , m_resource(texture)
       , m_desc_handle(handle)

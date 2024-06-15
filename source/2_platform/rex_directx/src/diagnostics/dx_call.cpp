@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  namespace renderer
+  namespace gfx
   {
     namespace directx
     {
@@ -55,5 +55,5 @@ namespace rex
         return m_error_message.to_view();
       }
     } // namespace directx
-  }   // namespace renderer
+  }   // namespace gfx
 } // namespace rex

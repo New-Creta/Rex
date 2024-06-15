@@ -21,7 +21,7 @@
 #include "rex_directx/system/dx_feature_shader_model.h"
 #include "rex_directx/system/dx_fence.h"
 #include "rex_directx/resources/dx_constant_buffer.h"
-#include "rex_renderer_core/rhi/graphics_context.h"
+#include "rex_renderer_core/gfx/graphics_context.h"
 
 #include "rex_directx/resources/dx_input_layout.h"
 #include "rex_directx/resources/dx_vertex_shader.h"
@@ -29,7 +29,7 @@
 #include "rex_directx/resources/dx_pipeline_state.h"
 #include "rex_directx/resources/dx_render_target.h"
 
-#include "rex_directx/system/dx_copy_context.h"
+#include "rex_directx/gfx/dx_copy_context.h"
 #include "rex_renderer_core/gfx/graphics.h"
 
 #include "rex_directx/resources/dx_root_signature.h"
@@ -42,14 +42,14 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/casting.h"
 
-#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
-#include "rex_renderer_core/rhi/viewport.h"
-#include "rex_renderer_core/rhi/scissor_rect.h"
+#include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
+#include "rex_renderer_core/gfx/viewport.h"
+#include "rex_renderer_core/gfx/scissor_rect.h"
 #include "rex_renderer_core/system/resource_hasher.h"
 
 #include "rex_std/bonus/utility.h"
 
-#include "rex_directx/gfx/dx_gpu_engine.h"
+#include "rex_directx/system/dx_gpu_engine.h"
 
 #include <D3Dcompiler.h>
 #include "rex_directx/dxgi/includes.h"
@@ -58,11 +58,11 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DEFINE_LOG_CATEGORY(LogDxRhi);
 
-    namespace api
+    namespace rhi
     {
       // Some resources need to be accessible directly by the rhi.
       // We could defer all resource creation to the gpu engine as well, but that'd 
@@ -70,7 +70,7 @@ namespace rex
       // To avoid this we have direct access to the resources required by the rhi to create gpu resources
       struct RhiResources
       {
-        rsl::unique_ptr<rhi::DebugInterface> debug_interface; // Used to determine if we have any leaking resource on shutdown
+        rsl::unique_ptr<DebugInterface> debug_interface; // Used to determine if we have any leaking resource on shutdown
         DxDevice* device = nullptr;                           // Used as the factory object to create gpu resources
         DxCommandQueue* render_command_queue = nullptr;       // Used as the object the swapchain speaks to queue a present command
         rsl::unique_ptr<dxgi::Factory> factory;
@@ -116,7 +116,7 @@ namespace rex
       }
 
       // Initialize graphics systems and create a gpu engine
-      gfx::GpuEngine* init(const renderer::OutputWindowUserData& userData)
+      gfx::GpuEngine* init(const OutputWindowUserData& userData)
       {
         g_rhi_resources = rsl::make_unique<RhiResources>();
 
@@ -141,7 +141,7 @@ namespace rex
         // You can think of it as an abstraction of the GPU,
         // but just an abstraction over resource creation,
         // not an abstraction of the gpu itself, that's what an IDXGIAdapter is for.
-        rsl::unique_ptr<rhi::DxDevice> device = create_d3d_device(g_rhi_resources->adapter_manager.get());
+        rsl::unique_ptr<DxDevice> device = create_d3d_device(g_rhi_resources->adapter_manager.get());
         if (!device)
         {
           REX_ERROR(LogDxRhi, "Failed to create D3D Device");
@@ -169,9 +169,9 @@ namespace rex
       }
       
       // Return the shader platform used for this API.
-      renderer::ShaderPlatform shader_platform()
+      ShaderPlatform shader_platform()
       {
-        return renderer::ShaderPlatform::Hlsl;
+        return ShaderPlatform::Hlsl;
       }
 
       RenderTarget* current_backbuffer_rt()
@@ -207,9 +207,9 @@ namespace rex
 
         switch (type)
         {
-        case rex::rhi::GraphicsEngineType::Render: set_debug_name_for(d3d_command_queue.Get(), "Render Command Queue"); break;
-        case rex::rhi::GraphicsEngineType::Copy:     set_debug_name_for(d3d_command_queue.Get(), "Copy Command Queue"); break;
-        case rex::rhi::GraphicsEngineType::Compute: set_debug_name_for(d3d_command_queue.Get(), "Compute Command Queue"); break;
+        case GraphicsEngineType::Render: set_debug_name_for(d3d_command_queue.Get(), "Render Command Queue"); break;
+        case GraphicsEngineType::Copy:     set_debug_name_for(d3d_command_queue.Get(), "Copy Command Queue"); break;
+        case GraphicsEngineType::Compute: set_debug_name_for(d3d_command_queue.Get(), "Compute Command Queue"); break;
         }
 
         rsl::unique_ptr<DxFence> fence = create_fence();
@@ -231,8 +231,8 @@ namespace rex
         sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
 
         // Note: swap chain uses queue to perform flush.
-        rex::wrl::ComPtr<IDXGIFactory4> dxgi_factory = g_rhi_resources->factory->as<IDXGIFactory4>();
-        rex::wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
+        wrl::ComPtr<IDXGIFactory4> dxgi_factory = g_rhi_resources->factory->as<IDXGIFactory4>();
+        wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
         CommandQueue* cmd_queue = (CommandQueue*)apiDevice;
         DxCommandQueue* dx_cmd_queue = static_cast<DxCommandQueue*>(cmd_queue);
         if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(dx_cmd_queue->dx_object(), (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
@@ -250,7 +250,7 @@ namespace rex
 
         return rsl::make_unique<DxSwapchain>(d3d_swapchain_3, width, height, sd.Format, sd.BufferCount);
       }
-      rsl::unique_ptr<CommandAllocator> create_command_allocator(rhi::GraphicsEngineType type)
+      rsl::unique_ptr<CommandAllocator> create_command_allocator(GraphicsEngineType type)
       {
         wrl::ComPtr<ID3D12CommandAllocator> allocator;
         if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandAllocator(d3d::to_dx12(type), IID_PPV_ARGS(allocator.GetAddressOf()))))
@@ -261,12 +261,12 @@ namespace rex
 
         switch (type)
         {
-        case rex::rhi::GraphicsEngineType::Render: set_debug_name_for(allocator.Get(), "Render Command Allocator"); break;
-        case rex::rhi::GraphicsEngineType::Copy:     set_debug_name_for(allocator.Get(), "Copy Command Allocator"); break;
-        case rex::rhi::GraphicsEngineType::Compute: set_debug_name_for(allocator.Get(), "Compute Command Allocator"); break;
+        case GraphicsEngineType::Render: set_debug_name_for(allocator.Get(), "Render Command Allocator"); break;
+        case GraphicsEngineType::Copy:     set_debug_name_for(allocator.Get(), "Copy Command Allocator"); break;
+        case GraphicsEngineType::Compute: set_debug_name_for(allocator.Get(), "Compute Command Allocator"); break;
         }
 
-        return rsl::make_unique<rex::rhi::DxCommandAllocator>(allocator);
+        return rsl::make_unique<DxCommandAllocator>(allocator);
       }
 
       // Resource creation
@@ -280,9 +280,9 @@ namespace rex
 
         return rsl::make_unique<DxVertexBuffer>(d3d_buffer, numVertices, vertexSize);
       }
-      rsl::unique_ptr<IndexBuffer>          create_index_buffer(s32 numIndices, renderer::IndexBufferFormat format)
+      rsl::unique_ptr<IndexBuffer>          create_index_buffer(s32 numIndices, IndexBufferFormat format)
       {
-        s32 index_size = renderer::index_format_size(format);
+        s32 index_size = index_format_size(format);
         s32 total_size = numIndices * index_size;
         wrl::ComPtr<ID3D12Resource> buffer = g_gpu_engine->allocate_buffer(total_size);
         set_debug_name_for(buffer.Get(), "Index Buffer");
@@ -298,7 +298,7 @@ namespace rex
         {
           const auto& param = desc.constants[i];
 
-          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(param.visibility);
+          D3D12_SHADER_VISIBILITY visibility = d3d::to_dx12(param.visibility);
           root_parameters.emplace_back().InitAsConstants(param.num_32bits, param.reg, param.reg_space, visibility);
         }
 
@@ -307,7 +307,7 @@ namespace rex
         {
           const auto& param = desc.views[i];
 
-          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(param.visibility);
+          D3D12_SHADER_VISIBILITY visibility = d3d::to_dx12(param.visibility);
           switch (param.type)
           {
           case ShaderViewType::ConstantBufferView: root_parameters.emplace_back().InitAsConstantBufferView(param.reg, param.reg_space, visibility); break;
@@ -321,10 +321,10 @@ namespace rex
         for (s32 i = 0; i < desc.desc_tables.count(); ++i)
         {
           const auto& table = desc.desc_tables[i];
-          D3D12_SHADER_VISIBILITY visibility = rex::d3d::to_dx12(table.visibility);
+          D3D12_SHADER_VISIBILITY visibility = d3d::to_dx12(table.visibility);
           for (s32 range_idx = 0; range_idx < table.ranges.count(); ++range_idx)
           {
-            ranges.push_back(rex::d3d::to_dx12(table.ranges[range_idx]));
+            ranges.push_back(d3d::to_dx12(table.ranges[range_idx]));
           }
 
           root_parameters.emplace_back().InitAsDescriptorTable(ranges.size(), ranges.data(), visibility);
@@ -337,19 +337,19 @@ namespace rex
           const auto& sampler = desc.samplers[i];
 
           D3D12_STATIC_SAMPLER_DESC desc{};
-          desc.Filter = rex::d3d::to_dx12(sampler.filtering);
-          desc.AddressU = rex::d3d::to_dx12(sampler.address_mode_u);
-          desc.AddressV = rex::d3d::to_dx12(sampler.address_mode_v);
-          desc.AddressW = rex::d3d::to_dx12(sampler.address_mode_w);
+          desc.Filter = d3d::to_dx12(sampler.filtering);
+          desc.AddressU = d3d::to_dx12(sampler.address_mode_u);
+          desc.AddressV = d3d::to_dx12(sampler.address_mode_v);
+          desc.AddressW = d3d::to_dx12(sampler.address_mode_w);
           desc.MipLODBias = sampler.mip_lod_bias;
           desc.MaxAnisotropy = sampler.max_anisotropy;
-          desc.ComparisonFunc = rex::d3d::to_dx12(sampler.comparison_func);
-          desc.BorderColor = rex::d3d::to_dx12(sampler.border_color);
+          desc.ComparisonFunc = d3d::to_dx12(sampler.comparison_func);
+          desc.BorderColor = d3d::to_dx12(sampler.border_color);
           desc.MinLOD = sampler.min_lod;
           desc.MaxLOD = sampler.max_lod;
           desc.ShaderRegister = sampler.shader_register;
           desc.RegisterSpace = sampler.register_space;
-          desc.ShaderVisibility = rex::d3d::to_dx12(sampler.shader_visibility);
+          desc.ShaderVisibility = d3d::to_dx12(sampler.shader_visibility);
           root_samplers.emplace_back(desc);
         }
 
@@ -388,7 +388,7 @@ namespace rex
 
         return rsl::make_unique<DxRootSignature>(root_signature);
       }
-      rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, renderer::TextureFormat format)
+      rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, TextureFormat format)
       {
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         return create_render_target(d3d_texture);
@@ -405,13 +405,13 @@ namespace rex
         D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         if (desc.blend_state.has_value())
         {
-          d3d_blend_state = rex::d3d::to_dx12(desc.blend_state.value());
+          d3d_blend_state = d3d::to_dx12(desc.blend_state.value());
         }
 
         D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
         if (desc.depth_stencil_state.has_value())
         {
-          d3d_depth_stencil_state = rex::d3d::to_dx12(desc.depth_stencil_state.value());
+          d3d_depth_stencil_state = d3d::to_dx12(desc.depth_stencil_state.value());
         }
 
         // 2) Fill in the PSO desc
@@ -436,7 +436,7 @@ namespace rex
 
         return rsl::make_unique<DxPipelineState>(pso);
       }
-      rsl::unique_ptr<Texture2D>            create_texture2d(s32 width, s32 height, renderer::TextureFormat format, const void* data)
+      rsl::unique_ptr<Texture2D>            create_texture2d(s32 width, s32 height, TextureFormat format, const void* data)
       {
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
@@ -463,7 +463,7 @@ namespace rex
 
         s32 width = resource->GetDesc().Width;
         s32 height = resource->GetDesc().Height;
-        renderer::TextureFormat format = d3d::from_dx12(resource->GetDesc().Format);
+        TextureFormat format = d3d::from_dx12(resource->GetDesc().Format);
 
         auto texture = rsl::make_unique<DxTexture2D>(resource, desc_handle, width, height, format);
         return texture;
@@ -471,7 +471,7 @@ namespace rex
       rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size)
       {
         // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
-        rsl::memory_size aligned_size = rex::align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+        rsl::memory_size aligned_size = align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
         DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
@@ -489,10 +489,10 @@ namespace rex
         {
           input_element_descriptions[i].SemanticName          = desc.input_layout[i].semantic_name.data();
           input_element_descriptions[i].SemanticIndex         = desc.input_layout[i].semantic_index;
-          input_element_descriptions[i].Format                = rex::d3d::to_dx12(desc.input_layout[i].format);
+          input_element_descriptions[i].Format                = d3d::to_dx12(desc.input_layout[i].format);
           input_element_descriptions[i].InputSlot             = desc.input_layout[i].input_slot;
           input_element_descriptions[i].AlignedByteOffset     = desc.input_layout[i].aligned_byte_offset;
-          input_element_descriptions[i].InputSlotClass        = rex::d3d::to_dx12(desc.input_layout[i].input_slot_class);
+          input_element_descriptions[i].InputSlotClass        = d3d::to_dx12(desc.input_layout[i].input_slot_class);
           input_element_descriptions[i].InstanceDataStepRate  = desc.input_layout[i].instance_data_step_rate;
         }
 
@@ -500,27 +500,27 @@ namespace rex
       }
       rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode)
       {
-        rex::rhi::CompileShaderDesc compile_vs_desc{};
-        compile_vs_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
+        CompileShaderDesc compile_vs_desc{};
+        compile_vs_desc.shader_code = memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
         compile_vs_desc.shader_code.write(sourceCode.data(), sourceCode.length());
         compile_vs_desc.shader_entry_point = "main";
         compile_vs_desc.shader_feature_target = "vs_5_0";
         compile_vs_desc.shader_name = "imgui_vertex_shader";
-        compile_vs_desc.shader_type = rex::rhi::ShaderType::Vertex;
-        wrl::ComPtr<ID3DBlob> compiled_vs_blob = rex::rhi::compile_shader(compile_vs_desc);
+        compile_vs_desc.shader_type = ShaderType::Vertex;
+        wrl::ComPtr<ID3DBlob> compiled_vs_blob = compile_shader(compile_vs_desc);
 
         return rsl::make_unique<DxVertexShader>(compiled_vs_blob);
       }
       rsl::unique_ptr<Shader>               create_pixel_shader(rsl::string_view sourceCode)
       {
-        rex::rhi::CompileShaderDesc compile_ps_desc{};
-        compile_ps_desc.shader_code = rex::memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
+        CompileShaderDesc compile_ps_desc{};
+        compile_ps_desc.shader_code = memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
         compile_ps_desc.shader_code.write(sourceCode.data(), sourceCode.length());
         compile_ps_desc.shader_entry_point = "main";
         compile_ps_desc.shader_feature_target = "ps_5_0";
         compile_ps_desc.shader_name = "imgui_pixel_shader";
-        compile_ps_desc.shader_type = rex::rhi::ShaderType::Pixel;
-        wrl::ComPtr<ID3DBlob> compiled_ps_blob = rex::rhi::compile_shader(compile_ps_desc);
+        compile_ps_desc.shader_type = ShaderType::Pixel;
+        wrl::ComPtr<ID3DBlob> compiled_ps_blob = compile_shader(compile_ps_desc);
 
         return rsl::make_unique<DxPixelShader>(compiled_ps_blob);
       }
@@ -560,7 +560,7 @@ namespace rex
 
         return byte_code;
       }
-      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::GraphicsEngineType type)
+      wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(CommandAllocator* alloc, GraphicsEngineType type)
       {
         DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
 
@@ -573,9 +573,9 @@ namespace rex
 
         switch (type)
         {
-        case rex::rhi::GraphicsEngineType::Render: set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
-        case rex::rhi::GraphicsEngineType::Copy:   set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
-        case rex::rhi::GraphicsEngineType::Compute: set_debug_name_for(cmd_list.Get(), "Compute Command List"); break;
+        case GraphicsEngineType::Render: set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
+        case GraphicsEngineType::Copy:   set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
+        case GraphicsEngineType::Compute: set_debug_name_for(cmd_list.Get(), "Compute Command List"); break;
         };
 
         return cmd_list;
@@ -601,7 +601,7 @@ namespace rex
           return false;
         }
 
-        rhi::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {}", type_str));
+        set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {}", type_str));
         s32 desc_size = g_rhi_resources->device->get()->GetDescriptorHandleIncrementSize(type);
         s32 total_size = desc_size * num_descriptors;
 

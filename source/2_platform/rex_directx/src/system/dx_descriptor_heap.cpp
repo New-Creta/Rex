@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxDescriptorHeap::DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device)
         : m_descriptor_heap(descHeap)
@@ -112,5 +112,5 @@ namespace rex
       return DescriptorHandle(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), m_descriptor_heap->GetGPUDescriptorHandleForHeapStart(), m_desc_heap_type, m_descriptor_size);
     }
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

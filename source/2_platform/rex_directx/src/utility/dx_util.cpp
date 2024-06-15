@@ -1,7 +1,7 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_directx/utility/d3dx12.h"
 
-#include "rex_renderer_core/rhi/index_buffer_format.h"
+#include "rex_renderer_core/gfx/index_buffer_format.h"
 #include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/engine/invalid_object.h"
 
@@ -17,7 +17,6 @@
 #include "rex_directx/resources/dx_texture_2d.h"
 #include "rex_directx/resources/dx_input_layout.h"
 
-
 #include "rex_directx/resources/dx_constant_buffer.h"
 #include "rex_directx/resources/dx_vertex_buffer.h"
 #include "rex_directx/resources/dx_index_buffer.h"
@@ -25,7 +24,9 @@
 
 namespace rex
 {
-  namespace d3d
+  namespace gfx
+  {
+    namespace d3d
   {
     // This isn't great as there isn't a way to pass the memory accross
     // from our blob to a d3d blob, we need to copy it over.
@@ -38,25 +39,25 @@ namespace rex
       return d3d_blob;
     }
 
-    s32 texture_pitch_size(s32 width, renderer::TextureFormat format)
+    s32 texture_pitch_size(s32 width, TextureFormat format)
     {
-      s32 format_size = rex::d3d::format_byte_size(format);
+      s32 format_size = d3d::format_byte_size(format);
       s32 pitch_size = width * format_size;
       s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
-      pitch_size = rex::align(pitch_size, alignment);
+      pitch_size = align(pitch_size, alignment);
 
       return pitch_size;
     }
-    s32 total_texture_size(s32 width, s32 height, renderer::TextureFormat format)
+    s32 total_texture_size(s32 width, s32 height, TextureFormat format)
     {
-      const s32 format_size = rex::d3d::format_byte_size(format);
+      const s32 format_size = d3d::format_byte_size(format);
       const s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
       s32 pitch_size = width * format_size;
       pitch_size = align(pitch_size, alignment);
 
       return pitch_size * height;
     }
-    s32 format_byte_size(renderer::TextureFormat format)
+    s32 format_byte_size(TextureFormat format)
     {
       DXGI_FORMAT d3d_format = to_dx12(format);
       return format_byte_size(d3d_format);
@@ -124,196 +125,196 @@ namespace rex
     // ------------------------------------
     // Convertors from REX -> DirectX
     // ------------------------------------
-    D3D12_FILL_MODE to_dx12(renderer::FillMode mode)
+    D3D12_FILL_MODE to_dx12(FillMode mode)
     {
       switch (mode)
       {
-      case renderer::FillMode::Solid: return D3D12_FILL_MODE_SOLID;
-      case renderer::FillMode::Wireframe: return D3D12_FILL_MODE_WIREFRAME;
+      case FillMode::Solid: return D3D12_FILL_MODE_SOLID;
+      case FillMode::Wireframe: return D3D12_FILL_MODE_WIREFRAME;
       default: break;
       }
 
       REX_ASSERT("Unsupported fill mode given");
       return D3D12_FILL_MODE_SOLID;
     }
-    D3D12_CULL_MODE to_dx12(renderer::CullMode mode)
+    D3D12_CULL_MODE to_dx12(CullMode mode)
     {
       switch (mode)
       {
-      case renderer::CullMode::None: return D3D12_CULL_MODE_NONE;
-      case renderer::CullMode::Front: return D3D12_CULL_MODE_FRONT;
-      case renderer::CullMode::Back: return D3D12_CULL_MODE_BACK;
+      case CullMode::None: return D3D12_CULL_MODE_NONE;
+      case CullMode::Front: return D3D12_CULL_MODE_FRONT;
+      case CullMode::Back: return D3D12_CULL_MODE_BACK;
       default: break;
       }
 
       REX_ASSERT("Unsupported cull mode given");
       return D3D12_CULL_MODE_NONE;
     }
-    DXGI_FORMAT to_dx12(renderer::VertexBufferFormat format)
+    DXGI_FORMAT to_dx12(VertexBufferFormat format)
     {
       switch (format)
       {
-      case renderer::VertexBufferFormat::Float1: return DXGI_FORMAT_R32_FLOAT;
-      case renderer::VertexBufferFormat::Float2: return DXGI_FORMAT_R32G32_FLOAT;
-      case renderer::VertexBufferFormat::Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
-      case renderer::VertexBufferFormat::Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
-      case renderer::VertexBufferFormat::UNorm1: return DXGI_FORMAT_R8_UNORM;
-      case renderer::VertexBufferFormat::UNorm2: return DXGI_FORMAT_R8G8_UNORM;
-      case renderer::VertexBufferFormat::UNorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
+      case VertexBufferFormat::Float1: return DXGI_FORMAT_R32_FLOAT;
+      case VertexBufferFormat::Float2: return DXGI_FORMAT_R32G32_FLOAT;
+      case VertexBufferFormat::Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
+      case VertexBufferFormat::Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+      case VertexBufferFormat::UNorm1: return DXGI_FORMAT_R8_UNORM;
+      case VertexBufferFormat::UNorm2: return DXGI_FORMAT_R8G8_UNORM;
+      case VertexBufferFormat::UNorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
       default: break;
       }
       REX_ASSERT("Unsupported vertex buffer format given");
       return DXGI_FORMAT_UNKNOWN;
     }
-    DXGI_FORMAT to_dx12(renderer::IndexBufferFormat format)
+    DXGI_FORMAT to_dx12(IndexBufferFormat format)
     {
       switch (format)
       {
-      case renderer::IndexBufferFormat::Uint16: return DXGI_FORMAT_R16_UINT;
-      case renderer::IndexBufferFormat::Uint32: return DXGI_FORMAT_R32_UINT;
+      case IndexBufferFormat::Uint16: return DXGI_FORMAT_R16_UINT;
+      case IndexBufferFormat::Uint32: return DXGI_FORMAT_R32_UINT;
       default: break;
       }
       REX_ASSERT("Unsupported index buffer format given");
       return DXGI_FORMAT_UNKNOWN;
     }
-    DXGI_FORMAT to_dx12(renderer::TextureFormat format)
+    DXGI_FORMAT to_dx12(TextureFormat format)
     {
       switch (format)
       {
-      case renderer::TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-      case renderer::TextureFormat::Unorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
+      case TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+      case TextureFormat::Unorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
       default: break;
       }
       REX_ASSERT("Unsupported vertex buffer format given");
       return DXGI_FORMAT_UNKNOWN;
     }
-    D3D12_PRIMITIVE_TOPOLOGY to_dx12(renderer::PrimitiveTopology topology)
+    D3D12_PRIMITIVE_TOPOLOGY to_dx12(PrimitiveTopology topology)
     {
       switch (topology)
       {
-      case renderer::PrimitiveTopology::LineList: return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-      case renderer::PrimitiveTopology::LineStrip: return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
-      case renderer::PrimitiveTopology::PointList: return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
-      case renderer::PrimitiveTopology::TriangleList: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-      case renderer::PrimitiveTopology::TriangleStrip: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+      case PrimitiveTopology::LineList: return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+      case PrimitiveTopology::LineStrip: return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+      case PrimitiveTopology::PointList: return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+      case PrimitiveTopology::TriangleList: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+      case PrimitiveTopology::TriangleStrip: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
       default: break;
       }
       REX_ASSERT("Unsupported primitive topology given");
       return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
     }
-    D3D12_INPUT_CLASSIFICATION to_dx12(renderer::InputLayoutClassification classification)
+    D3D12_INPUT_CLASSIFICATION to_dx12(InputLayoutClassification classification)
     {
       switch (classification)
       {
-      case renderer::InputLayoutClassification::PerVertexData: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-      case renderer::InputLayoutClassification::PerInstanceData: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+      case InputLayoutClassification::PerVertexData: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+      case InputLayoutClassification::PerInstanceData: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
       default: break;
       }
 
       REX_ASSERT("Unsupported input layout classification given");
       return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
     }
-    D3D12_SHADER_VISIBILITY to_dx12(renderer::ShaderVisibility visibility)
+    D3D12_SHADER_VISIBILITY to_dx12(ShaderVisibility visibility)
     {
       switch (visibility)
       {
-      case rex::renderer::ShaderVisibility::Vertex: return D3D12_SHADER_VISIBILITY_VERTEX;
-      case rex::renderer::ShaderVisibility::Pixel: return D3D12_SHADER_VISIBILITY_PIXEL;
-      case rex::renderer::ShaderVisibility::All: return D3D12_SHADER_VISIBILITY_ALL;
+      case ShaderVisibility::Vertex: return D3D12_SHADER_VISIBILITY_VERTEX;
+      case ShaderVisibility::Pixel: return D3D12_SHADER_VISIBILITY_PIXEL;
+      case ShaderVisibility::All: return D3D12_SHADER_VISIBILITY_ALL;
       }
 
       REX_ASSERT("Unsupported shader visibility for directx 12: {}", rsl::enum_refl::enum_name(visibility));
       return invalid_obj<D3D12_SHADER_VISIBILITY>();
     }
-    D3D12_FILTER to_dx12(renderer::SamplerFiltering filter)
+    D3D12_FILTER to_dx12(SamplerFiltering filter)
     {
       switch (filter)
       {
-      case rex::renderer::SamplerFiltering::MinMagMipPoint:                                      return D3D12_FILTER_MIN_MAG_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MinMagPointMipLinear:                                return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MinPointMagLinearMipPoint:                           return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MinPointMagMipLinear:                                return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MinLinearMagMipPoint:                                return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MinLinearMagPointMipLinear:                          return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MinMagLinearMipPoint:                                return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MinMagMipLinear:                                     return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::Anisotropic:                                         return D3D12_FILTER_ANISOTROPIC;
-      case rex::renderer::SamplerFiltering::ComparisonMinMagMipPoint:                            return D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
-      case rex::renderer::SamplerFiltering::ComparisonMinMagPointMipLinear:                      return D3D12_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::ComparisonMinPointMagLinearMipPoint:                 return D3D12_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
-      case rex::renderer::SamplerFiltering::ComparisonMinPointMagMipLinear:                      return D3D12_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::ComparisonMinLinearMagMipPoint:                      return D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT;
-      case rex::renderer::SamplerFiltering::ComparisonMinLinearMagPointMipLinear:                return D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::ComparisonMinMagLinearMipPoint:                      return D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-      case rex::renderer::SamplerFiltering::ComparisonMinMagMipLinear:                           return D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::ComparisonAnisotropic:                               return D3D12_FILTER_COMPARISON_ANISOTROPIC;
-      case rex::renderer::SamplerFiltering::MinimumMinMagMipPoint:                               return D3D12_FILTER_MINIMUM_MIN_MAG_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MinimumMinMagPointMipLinear:                         return D3D12_FILTER_MINIMUM_MIN_MAG_POINT_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MinimumMinPointMagLinearMipPoint:                    return D3D12_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MinimumMinPointMagMipLinear:                         return D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MinimumMinLinearMagMipPoint:                         return D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MinimumMinLinearMagPointMipLinear:                   return D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MinimumMinMagLinearMipPoint:                         return D3D12_FILTER_MINIMUM_MIN_MAG_LINEAR_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MinimumMinMagMipLinear:                              return D3D12_FILTER_MINIMUM_MIN_MAG_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MinimumAnisotropic:                                  return D3D12_FILTER_MINIMUM_ANISOTROPIC;
-      case rex::renderer::SamplerFiltering::MaximumMinMagMipPoint:                               return D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MaximumMinMagPointMipLinear:                         return D3D12_FILTER_MAXIMUM_MIN_MAG_POINT_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MaximumMinPointMagLinearMipPoint:                    return D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MaximumMinPointMagMipLinear:                         return D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MaximumMinLinearMagMipPoint:                         return D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MaximumMinLinearMagPointMipLinear:                   return D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MaximumMinMagLinearMipPoint:                         return D3D12_FILTER_MAXIMUM_MIN_MAG_LINEAR_MIP_POINT;
-      case rex::renderer::SamplerFiltering::MaximumMinMagMipLinear:                              return D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR;
-      case rex::renderer::SamplerFiltering::MaximumAnisotropic:                                  return D3D12_FILTER_MAXIMUM_ANISOTROPIC;
+      case SamplerFiltering::MinMagMipPoint:                                      return D3D12_FILTER_MIN_MAG_MIP_POINT;
+      case SamplerFiltering::MinMagPointMipLinear:                                return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+      case SamplerFiltering::MinPointMagLinearMipPoint:                           return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+      case SamplerFiltering::MinPointMagMipLinear:                                return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+      case SamplerFiltering::MinLinearMagMipPoint:                                return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+      case SamplerFiltering::MinLinearMagPointMipLinear:                          return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+      case SamplerFiltering::MinMagLinearMipPoint:                                return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+      case SamplerFiltering::MinMagMipLinear:                                     return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+      case SamplerFiltering::Anisotropic:                                         return D3D12_FILTER_ANISOTROPIC;
+      case SamplerFiltering::ComparisonMinMagMipPoint:                            return D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+      case SamplerFiltering::ComparisonMinMagPointMipLinear:                      return D3D12_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR;
+      case SamplerFiltering::ComparisonMinPointMagLinearMipPoint:                 return D3D12_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
+      case SamplerFiltering::ComparisonMinPointMagMipLinear:                      return D3D12_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR;
+      case SamplerFiltering::ComparisonMinLinearMagMipPoint:                      return D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT;
+      case SamplerFiltering::ComparisonMinLinearMagPointMipLinear:                return D3D12_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+      case SamplerFiltering::ComparisonMinMagLinearMipPoint:                      return D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+      case SamplerFiltering::ComparisonMinMagMipLinear:                           return D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+      case SamplerFiltering::ComparisonAnisotropic:                               return D3D12_FILTER_COMPARISON_ANISOTROPIC;
+      case SamplerFiltering::MinimumMinMagMipPoint:                               return D3D12_FILTER_MINIMUM_MIN_MAG_MIP_POINT;
+      case SamplerFiltering::MinimumMinMagPointMipLinear:                         return D3D12_FILTER_MINIMUM_MIN_MAG_POINT_MIP_LINEAR;
+      case SamplerFiltering::MinimumMinPointMagLinearMipPoint:                    return D3D12_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT;
+      case SamplerFiltering::MinimumMinPointMagMipLinear:                         return D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR;
+      case SamplerFiltering::MinimumMinLinearMagMipPoint:                         return D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT;
+      case SamplerFiltering::MinimumMinLinearMagPointMipLinear:                   return D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+      case SamplerFiltering::MinimumMinMagLinearMipPoint:                         return D3D12_FILTER_MINIMUM_MIN_MAG_LINEAR_MIP_POINT;
+      case SamplerFiltering::MinimumMinMagMipLinear:                              return D3D12_FILTER_MINIMUM_MIN_MAG_MIP_LINEAR;
+      case SamplerFiltering::MinimumAnisotropic:                                  return D3D12_FILTER_MINIMUM_ANISOTROPIC;
+      case SamplerFiltering::MaximumMinMagMipPoint:                               return D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_POINT;
+      case SamplerFiltering::MaximumMinMagPointMipLinear:                         return D3D12_FILTER_MAXIMUM_MIN_MAG_POINT_MIP_LINEAR;
+      case SamplerFiltering::MaximumMinPointMagLinearMipPoint:                    return D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT;
+      case SamplerFiltering::MaximumMinPointMagMipLinear:                         return D3D12_FILTER_MAXIMUM_MIN_POINT_MAG_MIP_LINEAR;
+      case SamplerFiltering::MaximumMinLinearMagMipPoint:                         return D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_MIP_POINT;
+      case SamplerFiltering::MaximumMinLinearMagPointMipLinear:                   return D3D12_FILTER_MAXIMUM_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+      case SamplerFiltering::MaximumMinMagLinearMipPoint:                         return D3D12_FILTER_MAXIMUM_MIN_MAG_LINEAR_MIP_POINT;
+      case SamplerFiltering::MaximumMinMagMipLinear:                              return D3D12_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR;
+      case SamplerFiltering::MaximumAnisotropic:                                  return D3D12_FILTER_MAXIMUM_ANISOTROPIC;
       }
 
       REX_ASSERT("Unsupported sampler filter for directx 12: {}", rsl::enum_refl::enum_name(filter));
       return invalid_obj<D3D12_FILTER>();
     }
-    D3D12_COMPARISON_FUNC to_dx12(renderer::ComparisonFunc comparisonFunc)
+    D3D12_COMPARISON_FUNC to_dx12(ComparisonFunc comparisonFunc)
     {
       switch (comparisonFunc)
       {
-      case rex::renderer::ComparisonFunc::Never: return D3D12_COMPARISON_FUNC_NEVER;
-      case rex::renderer::ComparisonFunc::Always: return D3D12_COMPARISON_FUNC_ALWAYS;
-      case rex::renderer::ComparisonFunc::Less: return D3D12_COMPARISON_FUNC_LESS;
-      case rex::renderer::ComparisonFunc::LessEqual: return D3D12_COMPARISON_FUNC_LESS_EQUAL;
-      case rex::renderer::ComparisonFunc::Equal: return D3D12_COMPARISON_FUNC_EQUAL;
-      case rex::renderer::ComparisonFunc::Greater: return D3D12_COMPARISON_FUNC_GREATER;
-      case rex::renderer::ComparisonFunc::GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
-      case rex::renderer::ComparisonFunc::NotEqual: return D3D12_COMPARISON_FUNC_NOT_EQUAL;
+      case ComparisonFunc::Never: return D3D12_COMPARISON_FUNC_NEVER;
+      case ComparisonFunc::Always: return D3D12_COMPARISON_FUNC_ALWAYS;
+      case ComparisonFunc::Less: return D3D12_COMPARISON_FUNC_LESS;
+      case ComparisonFunc::LessEqual: return D3D12_COMPARISON_FUNC_LESS_EQUAL;
+      case ComparisonFunc::Equal: return D3D12_COMPARISON_FUNC_EQUAL;
+      case ComparisonFunc::Greater: return D3D12_COMPARISON_FUNC_GREATER;
+      case ComparisonFunc::GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+      case ComparisonFunc::NotEqual: return D3D12_COMPARISON_FUNC_NOT_EQUAL;
       }
 
       REX_ASSERT("Unsupported comparison func for directx 12: {}", rsl::enum_refl::enum_name(comparisonFunc));
       return invalid_obj<D3D12_COMPARISON_FUNC>();
     }
-    D3D12_STATIC_BORDER_COLOR to_dx12(renderer::BorderColor borderColor)
+    D3D12_STATIC_BORDER_COLOR to_dx12(BorderColor borderColor)
     {
       switch (borderColor)
       {
-      case rex::renderer::BorderColor::TransparentBlack: return D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-      case rex::renderer::BorderColor::OpaqueBlack: return D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
-      case rex::renderer::BorderColor::OpaqueWhite: return D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
+      case BorderColor::TransparentBlack: return D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+      case BorderColor::OpaqueBlack: return D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+      case BorderColor::OpaqueWhite: return D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
       }
 
       REX_ASSERT("Unsupported border color for directx 12: {}", rsl::enum_refl::enum_name(borderColor));
       return invalid_obj<D3D12_STATIC_BORDER_COLOR>();
     }
-    D3D12_TEXTURE_ADDRESS_MODE to_dx12(renderer::TextureAddressMode addressMode)
+    D3D12_TEXTURE_ADDRESS_MODE to_dx12(TextureAddressMode addressMode)
     {
       switch (addressMode)
       {
-      case rex::renderer::TextureAddressMode::Wrap: return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-      case rex::renderer::TextureAddressMode::Mirror: return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
-      case rex::renderer::TextureAddressMode::Clamp: return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-      case rex::renderer::TextureAddressMode::Border: return D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-      case rex::renderer::TextureAddressMode::MirrorOnce: return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE;
+      case TextureAddressMode::Wrap: return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+      case TextureAddressMode::Mirror: return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
+      case TextureAddressMode::Clamp: return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+      case TextureAddressMode::Border: return D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+      case TextureAddressMode::MirrorOnce: return D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE;
       }
 
       REX_ASSERT("Unsupported addressmode for directx 12: {}", rsl::enum_refl::enum_name(addressMode));
       return invalid_obj<D3D12_TEXTURE_ADDRESS_MODE>();
     }
-    D3D12_RASTERIZER_DESC to_dx12(const rhi::RasterStateDesc& rasterState)
+    D3D12_RASTERIZER_DESC to_dx12(const RasterStateDesc& rasterState)
     {
       D3D12_RASTERIZER_DESC desc{};
       desc.FillMode = to_dx12(rasterState.fill_mode);
@@ -330,7 +331,7 @@ namespace rex
 
       return desc;
     }
-    D3D12_BLEND_DESC to_dx12(const rhi::BlendDesc& blendState)
+    D3D12_BLEND_DESC to_dx12(const BlendDesc& blendState)
     {
       D3D12_BLEND_DESC desc{};
       desc.AlphaToCoverageEnable = blendState.enable_alpha_to_coverage;
@@ -352,71 +353,71 @@ namespace rex
 
       return desc;
     }
-    D3D12_BLEND to_dx12(rhi::Blend blend)
+    D3D12_BLEND to_dx12(Blend blend)
     {
       switch (blend)
       {
-      case rex::rhi::Blend::Zero:           return D3D12_BLEND_ZERO;
-      case rex::rhi::Blend::One:            return D3D12_BLEND_ONE;
-      case rex::rhi::Blend::SrcColor:       return D3D12_BLEND_SRC_COLOR;
-      case rex::rhi::Blend::InvSrcColor:    return D3D12_BLEND_INV_SRC_COLOR;
-      case rex::rhi::Blend::SrcAlpha:       return D3D12_BLEND_SRC_ALPHA;
-      case rex::rhi::Blend::InvSrcAlpha:    return D3D12_BLEND_INV_SRC_ALPHA;
-      case rex::rhi::Blend::DestAlpha:      return D3D12_BLEND_DEST_ALPHA;
-      case rex::rhi::Blend::InvDestAlpha:   return D3D12_BLEND_INV_DEST_ALPHA;
-      case rex::rhi::Blend::DestColor:      return D3D12_BLEND_DEST_COLOR;
-      case rex::rhi::Blend::InvDestColor:   return D3D12_BLEND_INV_DEST_COLOR;
-      case rex::rhi::Blend::SrcAlphaSat:    return D3D12_BLEND_SRC_ALPHA_SAT;
-      case rex::rhi::Blend::BlendFactor:    return D3D12_BLEND_BLEND_FACTOR;
-      case rex::rhi::Blend::InvBlendFactor: return D3D12_BLEND_INV_BLEND_FACTOR;
-      case rex::rhi::Blend::Src1Color:      return D3D12_BLEND_SRC1_COLOR;
-      case rex::rhi::Blend::InvSrc1Color:   return D3D12_BLEND_INV_SRC1_COLOR;
-      case rex::rhi::Blend::Src1Alpha:      return D3D12_BLEND_SRC1_ALPHA;
-      case rex::rhi::Blend::InvSrc1Alpha:   return D3D12_BLEND_INV_SRC1_ALPHA;
+      case Blend::Zero:           return D3D12_BLEND_ZERO;
+      case Blend::One:            return D3D12_BLEND_ONE;
+      case Blend::SrcColor:       return D3D12_BLEND_SRC_COLOR;
+      case Blend::InvSrcColor:    return D3D12_BLEND_INV_SRC_COLOR;
+      case Blend::SrcAlpha:       return D3D12_BLEND_SRC_ALPHA;
+      case Blend::InvSrcAlpha:    return D3D12_BLEND_INV_SRC_ALPHA;
+      case Blend::DestAlpha:      return D3D12_BLEND_DEST_ALPHA;
+      case Blend::InvDestAlpha:   return D3D12_BLEND_INV_DEST_ALPHA;
+      case Blend::DestColor:      return D3D12_BLEND_DEST_COLOR;
+      case Blend::InvDestColor:   return D3D12_BLEND_INV_DEST_COLOR;
+      case Blend::SrcAlphaSat:    return D3D12_BLEND_SRC_ALPHA_SAT;
+      case Blend::BlendFactor:    return D3D12_BLEND_BLEND_FACTOR;
+      case Blend::InvBlendFactor: return D3D12_BLEND_INV_BLEND_FACTOR;
+      case Blend::Src1Color:      return D3D12_BLEND_SRC1_COLOR;
+      case Blend::InvSrc1Color:   return D3D12_BLEND_INV_SRC1_COLOR;
+      case Blend::Src1Alpha:      return D3D12_BLEND_SRC1_ALPHA;
+      case Blend::InvSrc1Alpha:   return D3D12_BLEND_INV_SRC1_ALPHA;
       default:
         break;
       }
      
       return invalid_obj<D3D12_BLEND>();
     }
-    D3D12_BLEND_OP to_dx12(rhi::BlendOp blendOp)
+    D3D12_BLEND_OP to_dx12(BlendOp blendOp)
     {
       switch (blendOp)
       {
-      case rex::rhi::BlendOp::Add:          return D3D12_BLEND_OP_ADD;
-      case rex::rhi::BlendOp::Subtract:     return D3D12_BLEND_OP_SUBTRACT;
-      case rex::rhi::BlendOp::RevSubtract:  return D3D12_BLEND_OP_REV_SUBTRACT;
-      case rex::rhi::BlendOp::Min:          return D3D12_BLEND_OP_MIN;
-      case rex::rhi::BlendOp::Max:          return D3D12_BLEND_OP_MAX;
+      case BlendOp::Add:          return D3D12_BLEND_OP_ADD;
+      case BlendOp::Subtract:     return D3D12_BLEND_OP_SUBTRACT;
+      case BlendOp::RevSubtract:  return D3D12_BLEND_OP_REV_SUBTRACT;
+      case BlendOp::Min:          return D3D12_BLEND_OP_MIN;
+      case BlendOp::Max:          return D3D12_BLEND_OP_MAX;
       }
 
       return invalid_obj<D3D12_BLEND_OP>();
     }
-    D3D12_LOGIC_OP to_dx12(rhi::LogicOp logicOp)
+    D3D12_LOGIC_OP to_dx12(LogicOp logicOp)
     {
       switch (logicOp)
       {
-      case rex::rhi::LogicOp::Clear:          return D3D12_LOGIC_OP_CLEAR;
-      case rex::rhi::LogicOp::Set:            return D3D12_LOGIC_OP_SET;
-      case rex::rhi::LogicOp::Copy:           return D3D12_LOGIC_OP_COPY;
-      case rex::rhi::LogicOp::CopyInverted:   return D3D12_LOGIC_OP_COPY_INVERTED;
-      case rex::rhi::LogicOp::Noop:           return D3D12_LOGIC_OP_NOOP;
-      case rex::rhi::LogicOp::Invert:            return D3D12_LOGIC_OP_INVERT;
-      case rex::rhi::LogicOp::And:            return D3D12_LOGIC_OP_AND;
-      case rex::rhi::LogicOp::Nand:           return D3D12_LOGIC_OP_NAND;
-      case rex::rhi::LogicOp::Or:             return D3D12_LOGIC_OP_OR;
-      case rex::rhi::LogicOp::Nor:            return D3D12_LOGIC_OP_NOR;
-      case rex::rhi::LogicOp::Xor:            return D3D12_LOGIC_OP_XOR;
-      case rex::rhi::LogicOp::Equiv:          return D3D12_LOGIC_OP_EQUIV;
-      case rex::rhi::LogicOp::AndReverse:     return D3D12_LOGIC_OP_AND_REVERSE;
-      case rex::rhi::LogicOp::AndInverted:    return D3D12_LOGIC_OP_AND_INVERTED;
-      case rex::rhi::LogicOp::OrReverse:      return D3D12_LOGIC_OP_OR_REVERSE;
-      case rex::rhi::LogicOp::OrInverted:     return D3D12_LOGIC_OP_OR_INVERTED;
+      case LogicOp::Clear:          return D3D12_LOGIC_OP_CLEAR;
+      case LogicOp::Set:            return D3D12_LOGIC_OP_SET;
+      case LogicOp::Copy:           return D3D12_LOGIC_OP_COPY;
+      case LogicOp::CopyInverted:   return D3D12_LOGIC_OP_COPY_INVERTED;
+      case LogicOp::Noop:           return D3D12_LOGIC_OP_NOOP;
+      case LogicOp::Invert:            return D3D12_LOGIC_OP_INVERT;
+      case LogicOp::And:            return D3D12_LOGIC_OP_AND;
+      case LogicOp::Nand:           return D3D12_LOGIC_OP_NAND;
+      case LogicOp::Or:             return D3D12_LOGIC_OP_OR;
+      case LogicOp::Nor:            return D3D12_LOGIC_OP_NOR;
+      case LogicOp::Xor:            return D3D12_LOGIC_OP_XOR;
+      case LogicOp::Equiv:          return D3D12_LOGIC_OP_EQUIV;
+      case LogicOp::AndReverse:     return D3D12_LOGIC_OP_AND_REVERSE;
+      case LogicOp::AndInverted:    return D3D12_LOGIC_OP_AND_INVERTED;
+      case LogicOp::OrReverse:      return D3D12_LOGIC_OP_OR_REVERSE;
+      case LogicOp::OrInverted:     return D3D12_LOGIC_OP_OR_INVERTED;
       }
 
       return invalid_obj<D3D12_LOGIC_OP>();
     }
-    D3D12_DEPTH_STENCIL_DESC to_dx12(const rhi::DepthStencilDesc& depthStencilState)
+    D3D12_DEPTH_STENCIL_DESC to_dx12(const DepthStencilDesc& depthStencilState)
     {
       D3D12_DEPTH_STENCIL_DESC desc{};
 
@@ -431,17 +432,17 @@ namespace rex
 
       return desc;
     }
-    D3D12_DEPTH_WRITE_MASK to_dx12(rhi::DepthWriteMask mask)
+    D3D12_DEPTH_WRITE_MASK to_dx12(DepthWriteMask mask)
     {
       switch (mask)
       {
-      case rex::rhi::DepthWriteMask::DepthWriteMaskZero: return D3D12_DEPTH_WRITE_MASK_ZERO;
-      case rex::rhi::DepthWriteMask::DepthWriteMaskAll: return D3D12_DEPTH_WRITE_MASK_ALL;
+      case DepthWriteMask::DepthWriteMaskZero: return D3D12_DEPTH_WRITE_MASK_ZERO;
+      case DepthWriteMask::DepthWriteMaskAll: return D3D12_DEPTH_WRITE_MASK_ALL;
       }
 
       return invalid_obj<D3D12_DEPTH_WRITE_MASK>();
     }
-    D3D12_DEPTH_STENCILOP_DESC to_dx12(const rhi::DepthStencilOpDesc& depthStencilOp)
+    D3D12_DEPTH_STENCILOP_DESC to_dx12(const DepthStencilOpDesc& depthStencilOp)
     {
       D3D12_DEPTH_STENCILOP_DESC desc{};
 
@@ -452,23 +453,23 @@ namespace rex
 
       return desc;
     }
-    D3D12_STENCIL_OP to_dx12(rhi::StencilOp stencilOp)
+    D3D12_STENCIL_OP to_dx12(StencilOp stencilOp)
     {
       switch (stencilOp)
       {
-      case rex::rhi::StencilOp::Keep:     return D3D12_STENCIL_OP_KEEP;
-      case rex::rhi::StencilOp::Zero:     return D3D12_STENCIL_OP_ZERO;
-      case rex::rhi::StencilOp::Replace:  return D3D12_STENCIL_OP_REPLACE;
-      case rex::rhi::StencilOp::IncrSat:  return D3D12_STENCIL_OP_INCR_SAT;
-      case rex::rhi::StencilOp::DecrSat:  return D3D12_STENCIL_OP_DECR_SAT;
-      case rex::rhi::StencilOp::Invert:   return D3D12_STENCIL_OP_INVERT;
-      case rex::rhi::StencilOp::Incr:     return D3D12_STENCIL_OP_INCR;
-      case rex::rhi::StencilOp::Decr:     return D3D12_STENCIL_OP_DECR;
+      case StencilOp::Keep:     return D3D12_STENCIL_OP_KEEP;
+      case StencilOp::Zero:     return D3D12_STENCIL_OP_ZERO;
+      case StencilOp::Replace:  return D3D12_STENCIL_OP_REPLACE;
+      case StencilOp::IncrSat:  return D3D12_STENCIL_OP_INCR_SAT;
+      case StencilOp::DecrSat:  return D3D12_STENCIL_OP_DECR_SAT;
+      case StencilOp::Invert:   return D3D12_STENCIL_OP_INVERT;
+      case StencilOp::Incr:     return D3D12_STENCIL_OP_INCR;
+      case StencilOp::Decr:     return D3D12_STENCIL_OP_DECR;
       }
 
       return invalid_obj<D3D12_STENCIL_OP>();
     }
-    D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range)
+    D3D12_DESCRIPTOR_RANGE to_dx12(DescriptorRangeDesc range)
     {
       D3D12_DESCRIPTOR_RANGE range_desc{};
       range_desc.BaseShaderRegister = range.base_shader_register;
@@ -479,73 +480,73 @@ namespace rex
 
       return range_desc;
     }
-    D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type)
+    D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(DescriptorRangeType type)
     {
       switch (type)
       {
-      case rex::rhi::DescriptorRangeType::ConstantBufferView:   return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-      case rex::rhi::DescriptorRangeType::ShaderResourceView:   return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-      case rex::rhi::DescriptorRangeType::UnorderedAccessView:  return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-      case rex::rhi::DescriptorRangeType::Sampler:              return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+      case DescriptorRangeType::ConstantBufferView:   return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+      case DescriptorRangeType::ShaderResourceView:   return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+      case DescriptorRangeType::UnorderedAccessView:  return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+      case DescriptorRangeType::Sampler:              return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
       }
 
       return invalid_obj<D3D12_DESCRIPTOR_RANGE_TYPE>();
     }
-    D3D12_RESOURCE_STATES to_dx12(rhi::ResourceState state)
+    D3D12_RESOURCE_STATES to_dx12(ResourceState state)
     {
       switch (state)
       {
-      case rhi::ResourceState::Common:                                  return D3D12_RESOURCE_STATE_COMMON                                   ;
-      case rhi::ResourceState::VertexAndConstantBuffer:                 return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER               ;
-      case rhi::ResourceState::IndexBuffer:                             return D3D12_RESOURCE_STATE_INDEX_BUFFER                             ;
-      case rhi::ResourceState::RenderTarget:                            return D3D12_RESOURCE_STATE_RENDER_TARGET                            ;
-      case rhi::ResourceState::UnorderedAccess:                         return D3D12_RESOURCE_STATE_UNORDERED_ACCESS                         ;
-      case rhi::ResourceState::DepthWrite:                              return D3D12_RESOURCE_STATE_DEPTH_WRITE                              ;
-      case rhi::ResourceState::DepthRead:                               return D3D12_RESOURCE_STATE_DEPTH_READ                               ;
-      case rhi::ResourceState::NonPixelShaderResource:                  return D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE                ;
-      case rhi::ResourceState::PixelShaderResource:                     return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE                    ;
-      case rhi::ResourceState::StreamOut:                               return D3D12_RESOURCE_STATE_STREAM_OUT                               ;
-      case rhi::ResourceState::IndirectArgument:                        return D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT                        ;
-      case rhi::ResourceState::CopyDest:                                return D3D12_RESOURCE_STATE_COPY_DEST                                ;
-      case rhi::ResourceState::CopySource:                              return D3D12_RESOURCE_STATE_COPY_SOURCE                              ;
-      case rhi::ResourceState::ResolveDest:                             return D3D12_RESOURCE_STATE_RESOLVE_DEST                             ;
-      case rhi::ResourceState::ResolveSource:                           return D3D12_RESOURCE_STATE_RESOLVE_SOURCE                           ;
-      case rhi::ResourceState::RaytracingAccelerationStructure:         return D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE        ;
-      case rhi::ResourceState::ShadingRateSource:                       return D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE                      ;
-      case rhi::ResourceState::GenericRead:                             return D3D12_RESOURCE_STATE_GENERIC_READ                             ;
-      //case rhi::ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
-      case rhi::ResourceState::Predication:                             return D3D12_RESOURCE_STATE_PREDICATION                              ;
-      case rhi::ResourceState::VideoDecodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_DECODE_READ                        ;
-      case rhi::ResourceState::VideoDecodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE                       ;
-      case rhi::ResourceState::VideoProcessRead:                        return D3D12_RESOURCE_STATE_VIDEO_PROCESS_READ                       ;
-      case rhi::ResourceState::VideoProcessWrite:                       return D3D12_RESOURCE_STATE_VIDEO_PROCESS_WRITE                      ;
-      case rhi::ResourceState::VideoEncodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_ENCODE_READ                        ;
-      case rhi::ResourceState::VideoEncodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_ENCODE_WRITE                       ;
+      case ResourceState::Common:                                  return D3D12_RESOURCE_STATE_COMMON                                   ;
+      case ResourceState::VertexAndConstantBuffer:                 return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER               ;
+      case ResourceState::IndexBuffer:                             return D3D12_RESOURCE_STATE_INDEX_BUFFER                             ;
+      case ResourceState::RenderTarget:                            return D3D12_RESOURCE_STATE_RENDER_TARGET                            ;
+      case ResourceState::UnorderedAccess:                         return D3D12_RESOURCE_STATE_UNORDERED_ACCESS                         ;
+      case ResourceState::DepthWrite:                              return D3D12_RESOURCE_STATE_DEPTH_WRITE                              ;
+      case ResourceState::DepthRead:                               return D3D12_RESOURCE_STATE_DEPTH_READ                               ;
+      case ResourceState::NonPixelShaderResource:                  return D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE                ;
+      case ResourceState::PixelShaderResource:                     return D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE                    ;
+      case ResourceState::StreamOut:                               return D3D12_RESOURCE_STATE_STREAM_OUT                               ;
+      case ResourceState::IndirectArgument:                        return D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT                        ;
+      case ResourceState::CopyDest:                                return D3D12_RESOURCE_STATE_COPY_DEST                                ;
+      case ResourceState::CopySource:                              return D3D12_RESOURCE_STATE_COPY_SOURCE                              ;
+      case ResourceState::ResolveDest:                             return D3D12_RESOURCE_STATE_RESOLVE_DEST                             ;
+      case ResourceState::ResolveSource:                           return D3D12_RESOURCE_STATE_RESOLVE_SOURCE                           ;
+      case ResourceState::RaytracingAccelerationStructure:         return D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE        ;
+      case ResourceState::ShadingRateSource:                       return D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE                      ;
+      case ResourceState::GenericRead:                             return D3D12_RESOURCE_STATE_GENERIC_READ                             ;
+      //case ResourceState::Present:                                 return D3D12_RESOURCE_STATE_PRESENT                                  ;
+      case ResourceState::Predication:                             return D3D12_RESOURCE_STATE_PREDICATION                              ;
+      case ResourceState::VideoDecodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_DECODE_READ                        ;
+      case ResourceState::VideoDecodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_DECODE_WRITE                       ;
+      case ResourceState::VideoProcessRead:                        return D3D12_RESOURCE_STATE_VIDEO_PROCESS_READ                       ;
+      case ResourceState::VideoProcessWrite:                       return D3D12_RESOURCE_STATE_VIDEO_PROCESS_WRITE                      ;
+      case ResourceState::VideoEncodeRead:                         return D3D12_RESOURCE_STATE_VIDEO_ENCODE_READ                        ;
+      case ResourceState::VideoEncodeWrite:                        return D3D12_RESOURCE_STATE_VIDEO_ENCODE_WRITE                       ;
       default:
         break;
       }
 
       return invalid_obj<D3D12_RESOURCE_STATES>();
     }
-    D3D12_COMMAND_LIST_TYPE to_dx12(rhi::GraphicsEngineType type)
+    D3D12_COMMAND_LIST_TYPE to_dx12(GraphicsEngineType type)
     {
       switch (type)
       {
-      case rex::rhi::GraphicsEngineType::Render:   return D3D12_COMMAND_LIST_TYPE_DIRECT;
-      case rex::rhi::GraphicsEngineType::Copy:     return D3D12_COMMAND_LIST_TYPE_DIRECT;
-      case rex::rhi::GraphicsEngineType::Compute:  return D3D12_COMMAND_LIST_TYPE_COMPUTE;
+      case GraphicsEngineType::Render:   return D3D12_COMMAND_LIST_TYPE_DIRECT;
+      case GraphicsEngineType::Copy:     return D3D12_COMMAND_LIST_TYPE_DIRECT;
+      case GraphicsEngineType::Compute:  return D3D12_COMMAND_LIST_TYPE_COMPUTE;
       }
 
       return invalid_obj<D3D12_COMMAND_LIST_TYPE>();
     }
-    D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(rhi::DescriptorHeapType type)
+    D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(DescriptorHeapType type)
     {
       switch (type)
       {
-      case rex::rhi::DescriptorHeapType::ConstantBufferView:  return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-      case rex::rhi::DescriptorHeapType::RenderTargetView:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-      case rex::rhi::DescriptorHeapType::DepthStencilView:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-      case rex::rhi::DescriptorHeapType::Sampler:             return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+      case DescriptorHeapType::ConstantBufferView:  return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+      case DescriptorHeapType::RenderTargetView:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+      case DescriptorHeapType::DepthStencilView:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+      case DescriptorHeapType::Sampler:             return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
       }
 
       return invalid_obj<D3D12_DESCRIPTOR_HEAP_TYPE>();
@@ -554,70 +555,70 @@ namespace rex
     // ------------------------------------
     // Converts from generic REX classes -> DirectX REX classes
     // ------------------------------------
-    rhi::DxCommandQueue* to_dx12(rhi::CommandQueue* cmdQueue)
+    DxCommandQueue* to_dx12(CommandQueue* cmdQueue)
     {
-      return static_cast<rhi::DxCommandQueue*>(cmdQueue);
+      return static_cast<DxCommandQueue*>(cmdQueue);
     }
-    rhi::DxCommandAllocator* to_dx12(rhi::CommandAllocator* cmdAlloc)
+    DxCommandAllocator* to_dx12(CommandAllocator* cmdAlloc)
     {
-      return static_cast<rhi::DxCommandAllocator*>(cmdAlloc);
+      return static_cast<DxCommandAllocator*>(cmdAlloc);
     }
-    rhi::DxRootSignature* to_dx12(rhi::RootSignature* rootSig)
+    DxRootSignature* to_dx12(RootSignature* rootSig)
     {
-      return static_cast<rhi::DxRootSignature*>(rootSig);
+      return static_cast<DxRootSignature*>(rootSig);
     }
-    rhi::DxShader* to_dx12(rhi::Shader* shader)
+    DxShader* to_dx12(Shader* shader)
     {
-      return static_cast<rhi::DxShader*>(shader);
+      return static_cast<DxShader*>(shader);
     }
-    rhi::DxTexture2D* to_dx12(rhi::Texture2D* texture)
+    DxTexture2D* to_dx12(Texture2D* texture)
     {
-      return static_cast<rhi::DxTexture2D*>(texture);
+      return static_cast<DxTexture2D*>(texture);
     }
-    rhi::DxInputLayout* to_dx12(rhi::InputLayout* inputLayout)
+    DxInputLayout* to_dx12(InputLayout* inputLayout)
     {
-      return static_cast<rhi::DxInputLayout*>(inputLayout);
+      return static_cast<DxInputLayout*>(inputLayout);
     }
-    rhi::DxDescriptorHeap* to_dx12(rhi::DescriptorHeap* descHeap)
+    DxDescriptorHeap* to_dx12(DescriptorHeap* descHeap)
     {
-      return static_cast<rhi::DxDescriptorHeap*>(descHeap);
+      return static_cast<DxDescriptorHeap*>(descHeap);
     }
 
     // ------------------------------------
     // Returned the wrapped dx12 resource of a class
     // ------------------------------------
-    ID3D12Resource* dx12_resource(rhi::ConstantBuffer* buffer)
+    ID3D12Resource* dx12_resource(ConstantBuffer* buffer)
     {
-      return static_cast<rhi::DxConstantBuffer*>(buffer)->dx_object();
+      return static_cast<DxConstantBuffer*>(buffer)->dx_object();
     }
-    ID3D12Resource* dx12_resource(rhi::VertexBuffer* buffer)
+    ID3D12Resource* dx12_resource(VertexBuffer* buffer)
     {
-      return static_cast<rhi::DxVertexBuffer*>(buffer)->dx_object();
+      return static_cast<DxVertexBuffer*>(buffer)->dx_object();
     }
-    ID3D12Resource* dx12_resource(rhi::IndexBuffer* buffer)
+    ID3D12Resource* dx12_resource(IndexBuffer* buffer)
     {
-      return static_cast<rhi::DxIndexBuffer*>(buffer)->dx_object();
+      return static_cast<DxIndexBuffer*>(buffer)->dx_object();
     }
-    ID3D12Resource* dx12_resource(rhi::UploadBuffer* buffer)
+    ID3D12Resource* dx12_resource(UploadBuffer* buffer)
     {
-      return static_cast<rhi::DxUploadBuffer*>(buffer)->dx_object();
+      return static_cast<DxUploadBuffer*>(buffer)->dx_object();
     }
-    ID3D12Resource* dx12_resource(rhi::Texture2D* texture)
+    ID3D12Resource* dx12_resource(Texture2D* texture)
     {
-      return static_cast<rhi::DxTexture2D*>(texture)->dx_object();
+      return static_cast<DxTexture2D*>(texture)->dx_object();
     }
 
     // ------------------------------------
     // Return from Directx -> REX
     // ------------------------------------
-    renderer::TextureFormat from_dx12(DXGI_FORMAT type)
+    TextureFormat from_dx12(DXGI_FORMAT type)
     {
       switch (type)
       {
-      case DXGI_FORMAT_UNKNOWN: return renderer::TextureFormat::None;
+      case DXGI_FORMAT_UNKNOWN: return TextureFormat::None;
 
-      case DXGI_FORMAT_R8G8B8A8_UNORM:        return renderer::TextureFormat::Unorm4;
-      case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:   return renderer::TextureFormat::Unorm4Srgb;
+      case DXGI_FORMAT_R8G8B8A8_UNORM:        return TextureFormat::Unorm4;
+      case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:   return TextureFormat::Unorm4Srgb;
 
       case DXGI_FORMAT_R32G32B32A32_TYPELESS:
       case DXGI_FORMAT_R32G32B32A32_FLOAT:
@@ -742,5 +743,6 @@ namespace rex
         REX_ASSERT("Unknown DX12 texture format, cannot convert to rex texture format");
       }
     }
+  }
   }
 } // namespace rex

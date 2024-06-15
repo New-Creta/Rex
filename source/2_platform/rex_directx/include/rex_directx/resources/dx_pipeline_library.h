@@ -5,7 +5,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class PipelineLibrary
     {
@@ -25,5 +25,5 @@ namespace rex
       wrl::ComPtr<ID3D12PipelineLibrary> m_pipeline_library;
       wrl::ComPtr<ID3D12Device1> m_device;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

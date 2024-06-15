@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     Buffer::Buffer(rsl::memory_size size)
       : m_size(size)

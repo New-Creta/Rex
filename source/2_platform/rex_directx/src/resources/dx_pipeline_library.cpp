@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     PipelineLibrary::PipelineLibrary(const wrl::ComPtr<ID3D12PipelineLibrary>& pipelineLibrary, const wrl::ComPtr<ID3D12Device1>& device)
       : m_pipeline_library(pipelineLibrary)

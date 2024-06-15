@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxRootSignature::DxRootSignature(const wrl::ComPtr<ID3D12RootSignature>& rootSignature)
       : m_root_signature(rootSignature)

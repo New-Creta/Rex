@@ -2,9 +2,9 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
-    DxIndexBuffer::DxIndexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numIndices, renderer::IndexBufferFormat format)
+    DxIndexBuffer::DxIndexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numIndices, IndexBufferFormat format)
       : IndexBuffer(numIndices, format)
       , m_resource(resource)
     {}

@@ -5,7 +5,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxFence::DxFence(const wrl::ComPtr<ID3D12Fence>& fence)
         : m_fence(fence)
@@ -17,5 +17,5 @@ namespace rex
       return m_fence.Get();
     }
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

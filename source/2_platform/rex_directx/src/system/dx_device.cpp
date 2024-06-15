@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxDevice::DxDevice(const wrl::ComPtr<ID3D12Device1>& device, D3D_FEATURE_LEVEL featureLevel, const dxgi::Adapter* adapter)
         : m_device(device)
@@ -72,5 +72,5 @@ namespace rex
     {
       return "Unknown"_small;
     }
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

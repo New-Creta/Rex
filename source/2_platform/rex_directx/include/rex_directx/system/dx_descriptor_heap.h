@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class Resource;
 
@@ -47,5 +47,5 @@ namespace rex
       s32 m_num_descriptors;
       s32 m_num_used_descriptors;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

@@ -1,19 +1,19 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/rhi/fill_mode.h"
-#include "rex_renderer_core/rhi/cull_mode.h"
+#include "rex_renderer_core/gfx/fill_mode.h"
+#include "rex_renderer_core/gfx/cull_mode.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // A descriptor describing the raster state to be constructed
     struct RasterStateDesc
     {
       RasterStateDesc()
-        : fill_mode(renderer::FillMode::Solid)
-        , cull_mode(renderer::CullMode::Back)
+        : fill_mode(FillMode::Solid)
+        , cull_mode(CullMode::Back)
         , depth_bias(0)
         , depth_bias_clamp(0.0f)
         , sloped_scale_depth_bias(0.0f)
@@ -25,8 +25,8 @@ namespace rex
       {
       }
 
-      renderer::FillMode fill_mode; // Describe the fill mode of a primitive
-      renderer::CullMode cull_mode; // Describe the cull mode of a primitive
+      FillMode fill_mode; // Describe the fill mode of a primitive
+      CullMode cull_mode; // Describe the cull mode of a primitive
       s32 depth_bias;               // Depth value added to a given pixel
       f32 depth_bias_clamp;         // Maximum depth bias of a pixel
       f32 sloped_scale_depth_bias;  // scalar on a given pixel's slope

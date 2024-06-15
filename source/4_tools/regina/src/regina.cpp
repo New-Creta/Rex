@@ -6,13 +6,11 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_renderer_core/rendering/depth_info.h"
-#include "rex_renderer_core/system/renderer.h"
-#include "rex_renderer_core/rendering/scene.h"
-#include "rex_renderer_core/resources/mesh.h"
-#include "rex_renderer_core/rendering/vertex.h"
-#include "rex_renderer_core/rendering/scissor_rect.h"
-#include "rex_renderer_core/rendering/viewport.h"
+#include "rex_renderer_core/gfx/depth_info.h"
+#include "rex_renderer_core/rendering/renderer.h"
+#include "rex_renderer_core/gfx/vertex.h"
+#include "rex_renderer_core/gfx/scissor_rect.h"
+#include "rex_renderer_core/gfx/viewport.h"
 #include "rex_std/bonus/math/color.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/string.h"
@@ -33,7 +31,7 @@ namespace regina
   public:
     Regina()
     {
-      m_scene = rsl::make_unique<regina::CubeScene>();
+      //m_scene = rsl::make_unique<regina::CubeScene>();
     }
 
     void update()
@@ -43,11 +41,11 @@ namespace regina
 
     void draw()
     {
-      m_scene->update();
+      //m_scene->update();
     }
 
   private:
-    rsl::unique_ptr<rex::renderer::Scene> m_scene;
+    //rsl::unique_ptr<rex::Scene> m_scene;
   };
 
   rsl::unique_ptr<Regina> g_regina;

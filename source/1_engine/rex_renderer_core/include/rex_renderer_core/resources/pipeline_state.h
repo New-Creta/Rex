@@ -8,7 +8,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class InputLayout;
     class RootSignature;
@@ -31,7 +31,7 @@ namespace rex
     {
       // Nothing to implement
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex
 
 namespace rsl

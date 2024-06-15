@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // A wrapper around both the cpu and gpu descriptor handle of a resource
     // Both are accessible through this object

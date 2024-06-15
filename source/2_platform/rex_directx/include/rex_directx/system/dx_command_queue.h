@@ -6,11 +6,11 @@
 #include "rex_engine/threading/thread_event.h"
 
 #include "rex_renderer_core/system/command_queue.h"
-#include "rex_renderer_core/rhi/graphics_context.h"
+#include "rex_renderer_core/gfx/graphics_context.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxCommandQueue : public CommandQueue
     {
@@ -55,5 +55,5 @@ namespace rex
       rsl::unique_ptr<DxFence> m_fence;
       ThreadEvent m_fence_event;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

@@ -3,14 +3,14 @@
 #include "rex_std/unordered_map.h"
 #include "rex_std/vector.h"
 
-#include "rex_renderer_core/rhi/resource_state.h"
+#include "rex_renderer_core/gfx/resource_state.h"
 #include "rex_renderer_core/resources/resource.h"
 
 #include "rex_engine/engine/types.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class Resource;
 

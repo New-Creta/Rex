@@ -3,19 +3,20 @@
 #include "rex_engine/diagnostics/error.h"
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/invalid_object.h"
-#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
+#include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
 
-#include "rex_renderer_core/rhi/graphics_engine_type.h"
+#include "rex_renderer_core/gfx/graphics_engine_type.h"
 
 #include "rex_renderer_core/system/command_allocator.h"
 #include "rex_renderer_core/system/command_queue.h"
 
 
-#include "rex_renderer_core/rhi/render_context.h"
-#include "rex_renderer_core/rhi/compute_context.h"
-#include "rex_renderer_core/rhi/copy_context.h"
+#include "rex_renderer_core/gfx/render_context.h"
+#include "rex_renderer_core/gfx/compute_context.h"
+#include "rex_renderer_core/gfx/copy_context.h"
+#include "rex_renderer_core/gfx/info.h"
 
-#include "rex_renderer_core/gfx/graphics_engine.h"
+#include "rex_renderer_core/system/graphics_engine.h"
 #include "rex_renderer_core/rendering/renderer.h"
 
 #include "rex_std/bonus/utility.h"
@@ -30,8 +31,11 @@ namespace rex
 
   namespace gfx
   {
+    // Log the basic info about the graphics hardware of the current machine
+    void log_info();
+
     // Create and initialize the graphics engine, rendering is possible from here on out
-    Error init(const renderer::OutputWindowUserData& userData);
+    Error init(const OutputWindowUserData& userData);
     // Shutdown the graphics engine, no rendering support from here on out
     void shutdown();
 
@@ -43,10 +47,10 @@ namespace rex
     void render();
 
     // Create a new context used for copying data to the gpu
-    ScopedPoolObject<rhi::CopyContext> new_copy_ctx();
+    ScopedPoolObject<CopyContext> new_copy_ctx();
     // Create a new context used for queueing rendering commands on the gpu
-    ScopedPoolObject<rhi::RenderContext> new_render_ctx();
+    ScopedPoolObject<RenderContext> new_render_ctx();
     // Create a new context used for queueing compute commands on the gpu
-    ScopedPoolObject<rhi::ComputeContext> new_compute_ctx();
+    ScopedPoolObject<ComputeContext> new_compute_ctx();
   }
 }

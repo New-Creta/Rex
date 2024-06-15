@@ -1,11 +1,11 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/system/upload_buffer.h"
+#include "rex_renderer_core/resources/upload_buffer.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class Resource;
 
@@ -28,7 +28,7 @@ namespace rex
       // Write data on cpu side, it returns the offset into the upload buffer where data was written to
       s32 write_buffer_data_from_cpu(const void* data, s64 size, s32 alignment = 1);
       // Write data on cpu side, it returns the offset into the upload buffer where data was written to
-      s32 write_texture_data_from_cpu(const void* data, s32 width, s32 height, renderer::TextureFormat format);
+      s32 write_texture_data_from_cpu(const void* data, s32 width, s32 height, TextureFormat format);
 
       ID3D12Resource* dx_object();
 
@@ -36,5 +36,5 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> m_upload_buffer; // The gpu resource where data will be written in to
       void* m_mapped_data;                         // A pointed pointing to the bit of memory that's mapped between cpu and gpu
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

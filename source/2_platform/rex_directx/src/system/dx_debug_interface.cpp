@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DEFINE_LOG_CATEGORY(LogDebugInterface);
 
@@ -113,5 +113,5 @@ namespace rex
     }
 
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

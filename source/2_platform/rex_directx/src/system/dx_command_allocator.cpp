@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxCommandAllocator::DxCommandAllocator(const wrl::ComPtr<ID3D12CommandAllocator>& alloc)
       : m_alloc(alloc)

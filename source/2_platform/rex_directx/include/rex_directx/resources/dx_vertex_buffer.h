@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxVertexBuffer : public VertexBuffer
     {
@@ -18,5 +18,5 @@ namespace rex
     private:
       wrl::ComPtr<ID3D12Resource> m_resource;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

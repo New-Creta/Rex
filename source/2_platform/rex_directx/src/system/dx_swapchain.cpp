@@ -3,14 +3,14 @@
 #include "rex_directx/diagnostics/dx_call.h"
 #include "rex_directx/system/dx_rhi.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
-#include "rex_renderer_core/rendering/msaa_settings.h"
-#include "rex_renderer_core/rendering/renderer_output_window_user_data.h"
+#include "rex_renderer_core/gfx/msaa_settings.h"
+#include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
 
 #include "rex_directx/resources/dx_texture_2d.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DEFINE_LOG_CATEGORY(LogSwapchain);
 
@@ -68,5 +68,5 @@ namespace rex
       return m_swapchain->GetCurrentBackBufferIndex();
     }
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

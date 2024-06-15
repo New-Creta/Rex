@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     ResourceID hash_resource_desc(const ClearStateDesc& desc)
     {
@@ -41,5 +41,5 @@ namespace rex
 
       return hash;
     }
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

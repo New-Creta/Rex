@@ -15,7 +15,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     ResourceID hash_resource_desc(const ClearStateDesc& desc);
     ResourceID hash_resource_desc(const CompileShaderDesc& desc);

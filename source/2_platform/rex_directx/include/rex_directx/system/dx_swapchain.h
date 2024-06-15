@@ -5,7 +5,7 @@
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/resource_management/resource.h"
+
 
 #include "rex_renderer_core/system/swapchain.h"
 
@@ -13,7 +13,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     struct OutputWindowUserData;
     struct MsaaSettings;
@@ -42,5 +42,5 @@ namespace rex
       wrl::ComPtr<IDXGISwapChain3> m_swapchain;
       DXGI_FORMAT m_format;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

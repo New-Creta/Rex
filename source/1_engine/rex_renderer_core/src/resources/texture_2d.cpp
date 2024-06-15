@@ -2,9 +2,9 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
-    Texture2D::Texture2D(s32 width, s32 height, renderer::TextureFormat format)
+    Texture2D::Texture2D(s32 width, s32 height, TextureFormat format)
       : m_width(width)
       , m_height(height)
       , m_format(format)
@@ -18,7 +18,7 @@ namespace rex
     {
       return m_height;
     }
-    renderer::TextureFormat Texture2D::format() const
+    TextureFormat Texture2D::format() const
     {
       return m_format;
     }

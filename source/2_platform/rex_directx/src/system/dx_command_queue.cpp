@@ -1,13 +1,13 @@
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/diagnostics/dx_call.h"
 
-#include "rex_directx/system/dx_render_context.h"
-#include "rex_directx/system/dx_compute_context.h"
-#include "rex_directx/system/dx_copy_context.h"
+#include "rex_directx/gfx/dx_render_context.h"
+#include "rex_directx/gfx/dx_compute_context.h"
+#include "rex_directx/gfx/dx_copy_context.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxCommandQueue::DxCommandQueue(GraphicsEngineType type, const wrl::ComPtr<ID3D12CommandQueue>& DxCommandQueue, rsl::unique_ptr<DxFence> fence)
       : CommandQueue(type)
@@ -90,5 +90,5 @@ namespace rex
       return nullptr;
     }
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

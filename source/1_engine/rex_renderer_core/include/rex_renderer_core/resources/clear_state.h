@@ -1,12 +1,12 @@
 #pragma once
 
 #include "rex_engine/engine/state_controller.h"
-#include "rex_renderer_core/rhi/clear_bits.h"
+#include "rex_renderer_core/gfx/clear_bits.h"
 #include "rex_std/bonus/math/color.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     struct ClearStateDesc
     {
@@ -21,7 +21,7 @@ namespace rex
       rsl::Color4f rgba;
       f32 depth;
       u8 stencil;
-      StateController<renderer::ClearBits> flags {};
+      StateController<ClearBits> flags {};
     };
 
     // A resource representing which buffers to clear and how to clear them
@@ -40,5 +40,5 @@ namespace rex
     private:
       ClearStateDesc m_clear_state;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

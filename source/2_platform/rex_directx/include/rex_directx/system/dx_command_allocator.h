@@ -5,7 +5,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxCommandAllocator : public CommandAllocator
     {

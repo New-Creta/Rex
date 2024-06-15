@@ -8,7 +8,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DEFINE_LOG_CATEGORY(LogShaderCompiler);
 
@@ -49,5 +49,5 @@ namespace rex
       return byte_code;
     }
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

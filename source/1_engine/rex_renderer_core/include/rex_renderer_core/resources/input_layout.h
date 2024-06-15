@@ -1,19 +1,19 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/rhi/input_layout_classification.h"
-#include "rex_renderer_core/rhi/vertex_buffer_format.h"
+#include "rex_renderer_core/gfx/input_layout_classification.h"
+#include "rex_renderer_core/gfx/vertex_buffer_format.h"
 #include "rex_std/string_view.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     struct InputLayoutElementDesc
     {
       rsl::string_view semantic_name;                       // The HLSL semantic name associated with the element (will change when we support glsl)
-      renderer::VertexBufferFormat format;                  // The format of the element data
-      renderer::InputLayoutClassification input_slot_class; // A value that identifies the input data class for a single input. 
+      VertexBufferFormat format;                  // The format of the element data
+      InputLayoutClassification input_slot_class; // A value that identifies the input data class for a single input. 
       s32 semantic_index;                                   // The semantic index for the element. A semantic index modifies a semantic, with an integer index number.
       s32 input_slot;                                       // An integer that identifies the input-assembler.
       s32 aligned_byte_offset;                              // This is optional. Offset, in bytes, to this element from the start of the vertex.
@@ -31,5 +31,5 @@ namespace rex
     {
       // Nothing to implement
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

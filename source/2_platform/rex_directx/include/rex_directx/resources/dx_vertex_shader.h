@@ -4,7 +4,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxVertexShader : public DxShader
     {

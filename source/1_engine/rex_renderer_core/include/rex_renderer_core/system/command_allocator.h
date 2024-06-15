@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // A base interface for an allocator used for queueing gpu commands
     class CommandAllocator

@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     ResourceID make_new_hash()
     {
@@ -139,7 +139,7 @@ namespace rex
         {
           m_about_to_be_removed = true;
 
-          // renderer::release_resource(*this);
+          // release_resource(*this);
 
           m_about_to_be_removed = false;
           m_slot_id             = s_invalid_slot;
@@ -164,5 +164,5 @@ namespace rex
       return s_invalid_slot;
     }
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

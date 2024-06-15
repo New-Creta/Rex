@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     ResourceStateTracker::ResourceStateTracker(ResourceStateTracker* parentResourceStateTracker)
       : m_parent_resource_state_tracker(parentResourceStateTracker)

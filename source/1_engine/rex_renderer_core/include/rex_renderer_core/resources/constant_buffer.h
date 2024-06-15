@@ -4,7 +4,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // A constant buffer is a buffer holding data that's consistent for a draw call of an object
     // It often has various data to use in different shaders (eg. mwp matrix)
@@ -16,5 +16,5 @@ namespace rex
     private:
 
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

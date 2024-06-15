@@ -5,7 +5,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // DirectX debug interface
     // It enables all debug levels when constructed
@@ -31,5 +31,5 @@ namespace rex
       wrl::ComPtr<ID3D12Debug> m_debug_controller;
       wrl::ComPtr<IDXGIInfoQueue> m_debug_info_queue;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

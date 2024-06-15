@@ -8,7 +8,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // A class representing a vertex buffer
     // the api specific buffer will be implemented in a derived class
@@ -27,5 +27,5 @@ namespace rex
       s32 m_vertex_size;
     };
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

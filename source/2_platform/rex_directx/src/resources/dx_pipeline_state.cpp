@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DxPipelineState::DxPipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso)
       : m_pso(pso)

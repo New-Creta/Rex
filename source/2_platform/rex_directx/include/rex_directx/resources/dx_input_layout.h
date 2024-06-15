@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/resource_management/resource.h"
 #include "rex_renderer_core/resources/input_layout.h"
 
 #include "rex_engine/engine/types.h"
@@ -10,7 +9,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxInputLayout : public InputLayout
     {
@@ -23,5 +22,5 @@ namespace rex
       rsl::vector<D3D12_INPUT_ELEMENT_DESC> m_input_elements{};
       D3D12_INPUT_LAYOUT_DESC m_input_layout_desc;
     };
-  } // namespace renderer
+  } // namespace gfx
 } // namespace rex

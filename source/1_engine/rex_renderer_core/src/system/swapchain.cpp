@@ -2,9 +2,9 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
-    Swapchain::Swapchain(s32 width, s32 height, renderer::TextureFormat format)
+    Swapchain::Swapchain(s32 width, s32 height, TextureFormat format)
       : m_width(width)
       , m_height(height)
       , m_format(format)
@@ -21,7 +21,7 @@ namespace rex
       return m_height;
     }
     // Return the format of the buffers of the swapchain
-    renderer::TextureFormat Swapchain::format() const
+    TextureFormat Swapchain::format() const
     {
       return m_format;
     }

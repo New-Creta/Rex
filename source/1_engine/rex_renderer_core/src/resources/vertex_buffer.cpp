@@ -4,7 +4,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     VertexBuffer::VertexBuffer(s32 numVertices, rsl::memory_size vertexSize)
       : Buffer(numVertices * vertexSize)

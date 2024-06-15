@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     DEFINE_LOG_CATEGORY(LogResourceHeap);
 
@@ -60,5 +60,5 @@ namespace rex
       return m_used_memory.size_in_bytes() + alloc_info.SizeInBytes < m_memory_limit;
     }
 
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

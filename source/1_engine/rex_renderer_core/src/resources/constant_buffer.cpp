@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     ConstantBuffer::ConstantBuffer(rsl::memory_size size)
       : Buffer(size)

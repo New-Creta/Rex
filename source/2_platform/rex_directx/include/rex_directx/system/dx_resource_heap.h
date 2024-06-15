@@ -8,7 +8,7 @@ struct D3D12_RESOURCE_ALLOCATION_INFO;
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class ResourceHeap
     {
@@ -30,5 +30,5 @@ namespace rex
       rsl::memory_size m_used_memory;
       rsl::memory_size m_memory_limit;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

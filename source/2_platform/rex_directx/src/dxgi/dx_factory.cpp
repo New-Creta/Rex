@@ -49,41 +49,44 @@ namespace
 
 namespace rex
 {
-  namespace dxgi
+  namespace gfx
   {
-    //-------------------------------------------------------------------------
-    rsl::unique_ptr<Factory> Factory::create(s32 flags)
+    namespace dxgi
     {
-      if(wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory7>(flags))
-        return rsl::make_unique<Factory>(rsl::move(factory), 7);
-      if(wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory6>(flags))
-        return rsl::make_unique<Factory>(rsl::move(factory), 6);
-      if(wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory5>(flags))
-        return rsl::make_unique<Factory>(rsl::move(factory), 5);
-      if(wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory4>(flags))
-        return rsl::make_unique<Factory>(rsl::move(factory), 4);
-      if(wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory3>(flags))
-        return rsl::make_unique<Factory>(rsl::move(factory), 3);
-      if(wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory2>(flags))
-        return rsl::make_unique<Factory>(rsl::move(factory), 2);
-      if(wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory1>())
-        return rsl::make_unique<Factory>(rsl::move(factory), 1);
-      if(wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory())
-        return rsl::make_unique<Factory>(rsl::move(factory), 0);
+      //-------------------------------------------------------------------------
+      rsl::unique_ptr<Factory> Factory::create(s32 flags)
+      {
+        if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory7>(flags))
+          return rsl::make_unique<Factory>(rsl::move(factory), 7);
+        if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory6>(flags))
+          return rsl::make_unique<Factory>(rsl::move(factory), 6);
+        if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory5>(flags))
+          return rsl::make_unique<Factory>(rsl::move(factory), 5);
+        if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory4>(flags))
+          return rsl::make_unique<Factory>(rsl::move(factory), 4);
+        if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory3>(flags))
+          return rsl::make_unique<Factory>(rsl::move(factory), 3);
+        if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory2>(flags))
+          return rsl::make_unique<Factory>(rsl::move(factory), 2);
+        if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory<IDXGIFactory1>())
+          return rsl::make_unique<Factory>(rsl::move(factory), 1);
+        if (wrl::ComPtr<IDXGIFactory> factory = create_dxgi_factory())
+          return rsl::make_unique<Factory>(rsl::move(factory), 0);
 
-      REX_ASSERT("Couldn't create dxgi factory!");
-      return nullptr;
-    }
+        REX_ASSERT("Couldn't create dxgi factory!");
+        return nullptr;
+      }
 
-    Factory::Factory()
+      Factory::Factory()
         : DxgiObject(nullptr, 0)
-    {
-    }
+      {
+      }
 
-    //-------------------------------------------------------------------------
-    Factory::Factory(wrl::ComPtr<IDXGIFactory>&& object, u32 version)
+      //-------------------------------------------------------------------------
+      Factory::Factory(wrl::ComPtr<IDXGIFactory>&& object, u32 version)
         : DxgiObject(rsl::move(object), version)
-    {
-    }
-  } // namespace dxgi
+      {
+      }
+    } // namespace dxgi
+  }
 } // namespace rex

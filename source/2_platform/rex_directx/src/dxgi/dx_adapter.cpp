@@ -27,9 +27,9 @@ namespace
   enum class Vendor
   {
     UNKNOWN = 0,
-    AMD     = 0x1002,
-    NVIDIA  = 0x10DE,
-    INTEL   = 0x163C
+    AMD = 0x1002,
+    NVIDIA = 0x10DE,
+    INTEL = 0x163C
   };
 
   //-------------------------------------------------------------------------
@@ -37,12 +37,12 @@ namespace
   {
     // Enum reflection is not possible here as the integer values are
     // outside the valid range of values [0, 127] for this enumeration type
-    switch(static_cast<Vendor>(vendor))
+    switch (static_cast<Vendor>(vendor))
     {
-      case Vendor::AMD: return rsl::small_stack_string("AMD");
-      case Vendor::NVIDIA: return rsl::small_stack_string("NVIDIA");
-      case Vendor::INTEL: return rsl::small_stack_string("INTEL");
-      default: return rsl::small_stack_string("Unknown Vendor");
+    case Vendor::AMD: return rsl::small_stack_string("AMD");
+    case Vendor::NVIDIA: return rsl::small_stack_string("NVIDIA");
+    case Vendor::INTEL: return rsl::small_stack_string("INTEL");
+    default: return rsl::small_stack_string("Unknown Vendor");
     }
   }
 
@@ -52,15 +52,15 @@ namespace
   {
     rex::GpuDescription desc;
 
-    desc.name        = rsl::small_stack_string(rex::to_multibyte(dxgiDesc.Description, desc.name.max_size()));
+    desc.name = rsl::small_stack_string(rex::to_multibyte(dxgiDesc.Description, desc.name.max_size()));
     desc.vendor_name = vendor_to_string(dxgiDesc.VendorId);
 
     desc.vendor_id = dxgiDesc.VendorId;
     desc.device_id = dxgiDesc.DeviceId;
 
-    desc.dedicated_video_memory  = rsl::memory_size(dxgiDesc.DedicatedVideoMemory);
+    desc.dedicated_video_memory = rsl::memory_size(dxgiDesc.DedicatedVideoMemory);
     desc.dedicated_system_memory = rsl::memory_size(dxgiDesc.DedicatedSystemMemory);
-    desc.shared_system_memory    = rsl::memory_size(dxgiDesc.SharedSystemMemory);
+    desc.shared_system_memory = rsl::memory_size(dxgiDesc.SharedSystemMemory);
 
     return desc;
   }
@@ -75,7 +75,7 @@ namespace
     // so if the version is 1 or higher, we use dxgi 1.1
     rex::wrl::ComPtr<IDXGIAdapter1> adapter_1;
     adapter.As<IDXGIAdapter1>(&adapter_1);
-    if(adapter_1)
+    if (adapter_1)
     {
       DXGI_ADAPTER_DESC1 dxgi_desc;
       adapter_1->GetDesc1(&dxgi_desc);
@@ -94,56 +94,59 @@ namespace
 
 namespace rex
 {
-  namespace dxgi
+  namespace gfx
   {
-    DEFINE_LOG_CATEGORY(LogDxAdapter);
+    namespace dxgi
+    {
+      DEFINE_LOG_CATEGORY(LogDxAdapter);
 
-    //-------------------------------------------------------------------------
-    Adapter::Adapter(wrl::ComPtr<IDXGIAdapter>&& adapter, u32 version)
+      //-------------------------------------------------------------------------
+      Adapter::Adapter(wrl::ComPtr<IDXGIAdapter>&& adapter, u32 version)
         : DxgiObject(rsl::move(adapter), version)
         , m_description(::get_description(com_ptr()))
-    {
-      m_highest_feature_level = query_highest_feature_level();
-    }
-
-    //-------------------------------------------------------------------------
-    const GpuDescription& Adapter::description() const
-    {
-      return m_description;
-    }
-
-    //-------------------------------------------------------------------------
-    rsl::unique_ptr<rhi::DxDevice> Adapter::create_device() const
-    {
-      wrl::ComPtr<ID3D12Device1> d3d_device;
-      if (DX_FAILED(D3D12CreateDevice(c_ptr(), static_cast<D3D_FEATURE_LEVEL>(m_highest_feature_level), IID_PPV_ARGS(&d3d_device))))
       {
-        REX_ERROR(LogDxAdapter, "Failed to create DX12 Device on {}", description().name);
-        return nullptr;
+        m_highest_feature_level = query_highest_feature_level();
       }
 
-      return rsl::make_unique<rhi::DxDevice>(d3d_device, m_highest_feature_level, this);
-    }
-
-    //-------------------------------------------------------------------------
-    D3D_FEATURE_LEVEL Adapter::query_highest_feature_level()
-    {
-      // backwards looping as it's checking for a minimum feature level
-      for (auto it = g_expected_feature_levels.crbegin(); it != g_expected_feature_levels.crend(); ++it)
+      //-------------------------------------------------------------------------
+      const GpuDescription& Adapter::description() const
       {
-        const D3D_FEATURE_LEVEL feature_level = *it;
-        if (SUCCEEDED(D3D12CreateDevice(c_ptr(), feature_level, __uuidof(ID3D12Device), nullptr)))
+        return m_description;
+      }
+
+      //-------------------------------------------------------------------------
+      rsl::unique_ptr<DxDevice> Adapter::create_device() const
+      {
+        wrl::ComPtr<ID3D12Device1> d3d_device;
+        if (DX_FAILED(D3D12CreateDevice(c_ptr(), static_cast<D3D_FEATURE_LEVEL>(m_highest_feature_level), IID_PPV_ARGS(&d3d_device))))
         {
-          return feature_level;
+          REX_ERROR(LogDxAdapter, "Failed to create DX12 Device on {}", description().name);
+          return nullptr;
         }
+
+        return rsl::make_unique<DxDevice>(d3d_device, m_highest_feature_level, this);
       }
 
-      REX_ASSERT("At least D3D_FEATURE_LEVEL_12_0 has to be supported for DirectX 12!");
+      //-------------------------------------------------------------------------
+      D3D_FEATURE_LEVEL Adapter::query_highest_feature_level()
+      {
+        // backwards looping as it's checking for a minimum feature level
+        for (auto it = g_expected_feature_levels.crbegin(); it != g_expected_feature_levels.crend(); ++it)
+        {
+          const D3D_FEATURE_LEVEL feature_level = *it;
+          if (SUCCEEDED(D3D12CreateDevice(c_ptr(), feature_level, __uuidof(ID3D12Device), nullptr)))
+          {
+            return feature_level;
+          }
+        }
 
-      // If the compiler doesn't recognise D3D_FEATURE_LEVEL_1_0_CORE
-      // Make sure you're using windows SDK 10.0.18362.0 or later
-      return D3D_FEATURE_LEVEL_1_0_CORE;
-    }
+        REX_ASSERT("At least D3D_FEATURE_LEVEL_12_0 has to be supported for DirectX 12!");
 
-  } // namespace dxgi
+        // If the compiler doesn't recognise D3D_FEATURE_LEVEL_1_0_CORE
+        // Make sure you're using windows SDK 10.0.18362.0 or later
+        return D3D_FEATURE_LEVEL_1_0_CORE;
+      }
+
+    } // namespace dxgi
+  }
 } // namespace rex

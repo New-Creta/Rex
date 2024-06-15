@@ -2,9 +2,9 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
-    IndexBuffer::IndexBuffer(s32 indexCount, renderer::IndexBufferFormat format)
+    IndexBuffer::IndexBuffer(s32 indexCount, IndexBufferFormat format)
       : Buffer(indexCount * index_byte_size())
       , m_index_count(indexCount)
       , m_format(format)
@@ -21,8 +21,8 @@ namespace rex
     {
       switch (m_format)
       {
-      case rex::renderer::IndexBufferFormat::Uint16: return 2;
-      case rex::renderer::IndexBufferFormat::Uint32: return 4;
+      case IndexBufferFormat::Uint16: return 2;
+      case IndexBufferFormat::Uint32: return 4;
       }
 
       return -1;
@@ -33,7 +33,7 @@ namespace rex
       return count() * index_byte_size();
     }
     // Return the format of an index in the buffer
-    renderer::IndexBufferFormat IndexBuffer::format() const
+    IndexBufferFormat IndexBuffer::format() const
     {
       return m_format;
     }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/resource_management/resource.h"
+
 
 #include "rex_renderer_core/resources/blend_state.h"
 #include "rex_renderer_core/resources/depth_stencil_state.h"
@@ -13,7 +13,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class InputLayout;
     class RootSignature;
@@ -29,5 +29,5 @@ namespace rex
     private:
       wrl::ComPtr<ID3D12PipelineState> m_pso;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

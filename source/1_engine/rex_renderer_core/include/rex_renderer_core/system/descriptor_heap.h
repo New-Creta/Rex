@@ -2,7 +2,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     // Base interface for a descriptor heap
     class DescriptorHeap

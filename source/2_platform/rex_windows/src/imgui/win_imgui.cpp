@@ -11,23 +11,27 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace rex
 {
-  bool imgui_platform_init(void* platformWindowHandle)
+  namespace gfx
   {
-    ImGui_ImplWin32_Init(platformWindowHandle);
+    bool imgui_platform_init(void* platformWindowHandle)
+    {
+      ImGui_ImplWin32_Init(platformWindowHandle);
 
-    // Maybe these can be done in the ImGui renderer
-    ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
-    platform_io.Renderer_CreateWindow = imgui_create_window;
-    platform_io.Renderer_DestroyWindow = imgui_destroy_window;
-    platform_io.Renderer_SetWindowSize = imgui_set_window_size;
-    platform_io.Renderer_RenderWindow = imgui_render_window;
-    platform_io.Renderer_SwapBuffers = imgui_swap_buffers;
+      // Maybe these can be done in the ImGui renderer
+      ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+      platform_io.Renderer_CreateWindow = gfx::imgui_create_window;
+      platform_io.Renderer_DestroyWindow = gfx::imgui_destroy_window;
+      platform_io.Renderer_SetWindowSize = gfx::imgui_set_window_size;
+      platform_io.Renderer_RenderWindow = gfx::imgui_render_window;
+      platform_io.Renderer_SwapBuffers = gfx::imgui_swap_buffers;
 
-    return true;
-  }
-  void imgui_platform_new_frame()
-  {
-    ImGui_ImplWin32_NewFrame();
+      return true;
+    }
+    void imgui_platform_new_frame()
+    {
+      ImGui_ImplWin32_NewFrame();
+    }
+
   }
 
   bool imgui_main_window_update(win::Hwnd hwnd, card32 msg, win::WParam wparam, win::LParam lparam)

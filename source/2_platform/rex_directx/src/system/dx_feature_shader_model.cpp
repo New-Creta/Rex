@@ -5,7 +5,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     //-------------------------------------------------------------------------
     rsl::string_view shader_model_name(D3D_SHADER_MODEL shaderModel)
@@ -76,5 +76,5 @@ namespace rex
 
       return shader_model.HighestShaderModel;
     }
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

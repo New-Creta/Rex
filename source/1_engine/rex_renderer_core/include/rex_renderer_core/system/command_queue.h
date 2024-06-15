@@ -2,13 +2,13 @@
 
 #include "rex_engine/engine/types.h"
 
-#include "rex_renderer_core/rhi/graphics_engine_type.h"
-#include "rex_renderer_core/gfx/sync_info_pool.h"
+#include "rex_renderer_core/gfx/graphics_engine_type.h"
+#include "rex_renderer_core/system/sync_info_pool.h"
 #include "rex_renderer_core/system/fence.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class GraphicsContext;
     class CommandQueue

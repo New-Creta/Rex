@@ -1,7 +1,7 @@
 #include "rex_renderer_core/gfx/graphics.h"
-#include "rex_renderer_core/gfx/gpu_engine.h"
+#include "rex_renderer_core/system/gpu_engine.h"
 
-#include "rex_renderer_core/rhi/rhi.h"
+#include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/system/gpu_description.h"
 
 #include "rex_std/bonus/utility.h"
@@ -21,16 +21,16 @@ namespace rex
 
     void log_info()
     {
-      auto& info = rhi::info();
-      REX_INFO(LogGraphics, "Renderer Info - Adaptor: {}", info.adaptor);
-      REX_INFO(LogGraphics, "Renderer Info - Vendor: {}", info.vendor);
-      REX_INFO(LogGraphics, "Renderer Info - API: {}", info.api);
-      REX_INFO(LogGraphics, "Renderer Info - API Version: {}", info.api_version);
-      REX_INFO(LogGraphics, "Renderer Info - Shader Version: {}", info.shader_version);
-      REX_INFO(LogGraphics, "Renderer Info - Driver Version: {}", info.driver_version);
+      auto& gfx_info = rhi::info();
+      REX_INFO(LogGraphics, "Renderer Info - Adaptor: {}", gfx_info.adaptor);
+      REX_INFO(LogGraphics, "Renderer Info - Vendor: {}", gfx_info.vendor);
+      REX_INFO(LogGraphics, "Renderer Info - API: {}", gfx_info.api);
+      REX_INFO(LogGraphics, "Renderer Info - API Version: {}", gfx_info.api_version);
+      REX_INFO(LogGraphics, "Renderer Info - Shader Version: {}", gfx_info.shader_version);
+      REX_INFO(LogGraphics, "Renderer Info - Driver Version: {}", gfx_info.driver_version);
     }
 
-    Error init(const renderer::OutputWindowUserData& userData)
+    Error init(const OutputWindowUserData& userData)
     {
       // Initialize the gpu engine, it's responsible for the entire graphics pipeline.
       // The gpu engine gets created by the rhi as some of the objects wrapped by the gpu engine
@@ -54,7 +54,7 @@ namespace rex
     {
       g_renderers.clear();
 
-      rhi::shutdown();
+      shutdown();
     }
 
     void add_renderer(rsl::unique_ptr<Renderer> renderer)
@@ -90,17 +90,17 @@ namespace rex
     }
 
     // Create a new copy context that automatically gets added back to the pool when it goes out of scope
-    ScopedPoolObject<rhi::CopyContext> new_copy_ctx()
+    ScopedPoolObject<CopyContext> new_copy_ctx()
     {
       return g_gpu_engine->new_copy_ctx();
     }
     // Create a new render context that automatically gets added back to the pool when it goes out of scope
-    ScopedPoolObject<rhi::RenderContext> new_render_ctx()
+    ScopedPoolObject<RenderContext> new_render_ctx()
     {
       return g_gpu_engine->new_render_ctx();
     }
     // Create a new compute context that automatically gets added back to the pool when it goes out of scope
-    ScopedPoolObject<rhi::ComputeContext> new_compute_ctx()
+    ScopedPoolObject<ComputeContext> new_compute_ctx()
     {
       return g_gpu_engine->new_compute_ctx();
     }

@@ -6,7 +6,7 @@
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxFence : public Fence
     {
@@ -19,5 +19,5 @@ namespace rex
     private:
       wrl::ComPtr<ID3D12Fence> m_fence;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

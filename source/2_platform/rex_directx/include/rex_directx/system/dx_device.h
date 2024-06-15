@@ -2,12 +2,12 @@
 
 #include "rex_directx/dxgi/dx_adapter.h"
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/resource_management/resource.h"
-#include "rex_renderer_core/rhi/rhi.h"
+#include "rex_renderer_core/gfx/rhi.h"
+#include "rex_renderer_core/gfx/info.h"
 
 namespace rex
 {
-  namespace rhi
+  namespace gfx
   {
     class DxDevice
     {
@@ -44,5 +44,5 @@ namespace rex
       rsl::small_stack_string m_shader_version;
       rsl::small_stack_string m_api_version;
     };
-  } // namespace rhi
+  } // namespace gfx
 } // namespace rex

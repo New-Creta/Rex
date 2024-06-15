@@ -6,7 +6,7 @@
 
 namespace regina
 {
-  class CubeScene : public rex::renderer::Scene
+  class CubeScene : public rex::Scene
   {
   public:
     CubeScene();
@@ -18,8 +18,8 @@ namespace regina
     void build_geometry();
 
   private:
-    rsl::unique_ptr<rex::renderer::Mesh> m_mesh_cube;
-    rex::renderer::RenderItem* m_cube_render_item;
+    rsl::unique_ptr<rex::Mesh> m_mesh_cube;
+    rex::RenderItem* m_cube_render_item;
     glm::mat4 m_cube_world;
     ;
   };
