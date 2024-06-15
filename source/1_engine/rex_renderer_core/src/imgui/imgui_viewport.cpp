@@ -47,7 +47,7 @@ namespace rex
       renderContext.stall(*sync_info);
 
       // Setup the render state, prepare it for rendering
-      setup_render_state(renderContext, draw_data, frame_ctx);
+      setup_render_state(renderContext, frame_ctx);
 
       // Draw all the primitives
       draw(renderContext, draw_data);
@@ -72,7 +72,7 @@ namespace rex
     }
 
     // Setup the render state of the viewport, it for rendering
-    void RexImGuiViewport::setup_render_state(RenderContext& ctx, ImDrawData* drawData, ImGuiFrameContext& frameCtx)
+    void RexImGuiViewport::setup_render_state(RenderContext& ctx, ImGuiFrameContext& frameCtx)
     {
       ctx.transition_buffer(frameCtx.vertex_buffer(), ResourceState::VertexAndConstantBuffer);
       ctx.transition_buffer(frameCtx.index_buffer(), ResourceState::IndexBuffer);

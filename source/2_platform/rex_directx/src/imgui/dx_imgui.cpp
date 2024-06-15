@@ -39,7 +39,7 @@ namespace rex
     {
       ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
       imgui_window->wait_for_pending_operations();
-      imgui_window->resize_buffers(size.x, size.y);
+      imgui_window->resize_buffers(static_cast<s32>(size.x), static_cast<s32>(size.y));
     }
     // Present an imgui window, swapping the back with front buffer
     void imgui_swap_buffers(ImGuiViewport* viewport, void*)

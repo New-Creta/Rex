@@ -226,7 +226,7 @@ namespace rex
         sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         sd.BufferCount = bufferCount;
         sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-        sd.AlphaMode - DXGI_ALPHA_MODE_UNSPECIFIED;
+        sd.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
         sd.Stereo = false;
         sd.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
 
@@ -336,21 +336,21 @@ namespace rex
         {
           const auto& sampler = desc.samplers[i];
 
-          D3D12_STATIC_SAMPLER_DESC desc{};
-          desc.Filter = d3d::to_dx12(sampler.filtering);
-          desc.AddressU = d3d::to_dx12(sampler.address_mode_u);
-          desc.AddressV = d3d::to_dx12(sampler.address_mode_v);
-          desc.AddressW = d3d::to_dx12(sampler.address_mode_w);
-          desc.MipLODBias = sampler.mip_lod_bias;
-          desc.MaxAnisotropy = sampler.max_anisotropy;
-          desc.ComparisonFunc = d3d::to_dx12(sampler.comparison_func);
-          desc.BorderColor = d3d::to_dx12(sampler.border_color);
-          desc.MinLOD = sampler.min_lod;
-          desc.MaxLOD = sampler.max_lod;
-          desc.ShaderRegister = sampler.shader_register;
-          desc.RegisterSpace = sampler.register_space;
-          desc.ShaderVisibility = d3d::to_dx12(sampler.shader_visibility);
-          root_samplers.emplace_back(desc);
+          D3D12_STATIC_SAMPLER_DESC sampler_desc{};
+          sampler_desc.Filter = d3d::to_dx12(sampler.filtering);
+          sampler_desc.AddressU = d3d::to_dx12(sampler.address_mode_u);
+          sampler_desc.AddressV = d3d::to_dx12(sampler.address_mode_v);
+          sampler_desc.AddressW = d3d::to_dx12(sampler.address_mode_w);
+          sampler_desc.MipLODBias = sampler.mip_lod_bias;
+          sampler_desc.MaxAnisotropy = sampler.max_anisotropy;
+          sampler_desc.ComparisonFunc = d3d::to_dx12(sampler.comparison_func);
+          sampler_desc.BorderColor = d3d::to_dx12(sampler.border_color);
+          sampler_desc.MinLOD = sampler.min_lod;
+          sampler_desc.MaxLOD = sampler.max_lod;
+          sampler_desc.ShaderRegister = sampler.shader_register;
+          sampler_desc.RegisterSpace = sampler.register_space;
+          sampler_desc.ShaderVisibility = d3d::to_dx12(sampler.shader_visibility);
+          root_samplers.emplace_back(sampler_desc);
         }
 
         // A root signature is an array of root parameters.
@@ -461,8 +461,8 @@ namespace rex
       {
         DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
 
-        s32 width = resource->GetDesc().Width;
-        s32 height = resource->GetDesc().Height;
+        s32 width = static_cast<s32>(resource->GetDesc().Width);
+        s32 height = static_cast<s32>(resource->GetDesc().Height);
         TextureFormat format = d3d::from_dx12(resource->GetDesc().Format);
 
         auto texture = rsl::make_unique<DxTexture2D>(resource, desc_handle, width, height, format);

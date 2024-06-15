@@ -28,7 +28,7 @@ namespace rex
       void advance_frame_ctx();
 
       // Setup the render state of the viewport, it for rendering
-      void setup_render_state(RenderContext& ctx, ImDrawData* drawData, ImGuiFrameContext& frameCtx);
+      void setup_render_state(RenderContext& ctx, ImGuiFrameContext& frameCtx);
       // Draw the current viewport
       void draw(RenderContext& ctx, ImDrawData* drawData);
 

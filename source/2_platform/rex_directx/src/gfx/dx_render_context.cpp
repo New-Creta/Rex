@@ -119,7 +119,7 @@ namespace rex
       D3D12_VERTEX_BUFFER_VIEW view{};
       view.BufferLocation = dx_vb->dx_object()->GetGPUVirtualAddress();
       view.SizeInBytes = narrow_cast<s32>(vb->size().size_in_bytes());
-      view.StrideInBytes = vb->vertex_size();
+      view.StrideInBytes = static_cast<UINT>(vb->vertex_size());
 
       m_cmd_list->IASetVertexBuffers(0, 1, &view);
     }

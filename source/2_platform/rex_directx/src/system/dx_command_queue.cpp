@@ -39,7 +39,6 @@ namespace rex
     void DxCommandQueue::gpu_wait(SyncInfo& sync_info)
     {
       ID3D12Fence* fence = static_cast<DxFence*>(sync_info.fence_object())->get();
-      u64 fence_gpu_val = fence->GetCompletedValue();
       m_command_queue->Wait(fence, sync_info.fence_val());
     }
 

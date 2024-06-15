@@ -21,8 +21,8 @@ namespace rex
       IM_ASSERT(hwnd != 0);
       m_swapchain = rhi::create_swapchain(creationInfo.command_queue, creationInfo.max_num_frames_in_flight, hwnd);
 
-      const s32 width = viewport->Size.x;
-      const s32 height = viewport->Size.y;
+      const s32 width = static_cast<s32>(viewport->Size.x);
+      const s32 height = static_cast<s32>(viewport->Size.y);
 
       ClearStateDesc desc{};
       desc.rgba = rsl::colors::LightSteelBlue;
@@ -40,6 +40,12 @@ namespace rex
 
       render_ctx->transition_buffer(render_target, ResourceState::RenderTarget);
       render_ctx->set_render_target(render_target);
+
+      if (clearRenderTarget)
+      {
+        render_ctx->clear_render_target(render_target, m_clear_state.get());
+      }
+
       m_viewport.render(*render_ctx.get());
       render_ctx->transition_buffer(render_target, ResourceState::Present);
     }
@@ -48,7 +54,7 @@ namespace rex
     {
       // Implementation pending
     }
-    void ImGuiWindow::resize_buffers(s32 width, s32 height)
+    void ImGuiWindow::resize_buffers(s32 /*width*/, s32 /*height*/)
     {
       //m_swapchain->resize_buffers(width, height, (DXGI_SWAP_CHAIN_FLAG)0);
 

@@ -54,7 +54,7 @@ namespace rex
     {
       g_renderers.clear();
 
-      shutdown();
+      rhi::shutdown();
     }
 
     void add_renderer(rsl::unique_ptr<Renderer> renderer)

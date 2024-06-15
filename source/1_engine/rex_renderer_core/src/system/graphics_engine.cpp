@@ -9,7 +9,7 @@ namespace rex
     GraphicsEngine::GraphicsEngine(GraphicsEngineType type, ResourceStateTracker* globalResourceStateTracker)
       : m_command_queue(rhi::create_command_queue(type))
       , m_command_allocator_pool(type)
-      , m_context_pool(type, [this](CommandAllocator* alloc) { return allocate_new_context(alloc); })
+      , m_context_pool([this](CommandAllocator* alloc) { return allocate_new_context(alloc); })
       , m_resource_state_tracker(globalResourceStateTracker)
     {}
     GraphicsEngine::~GraphicsEngine()
@@ -30,7 +30,7 @@ namespace rex
     {
       // Find a command alloctor to be used for the context
       ScopedPoolObject<PooledAllocator> alloc = request_allocator();
-      ScopedPoolObject<GraphicsContext> ctx = m_context_pool.request(m_command_queue->last_completed_fence(), alloc->underlying_alloc());
+      ScopedPoolObject<GraphicsContext> ctx = m_context_pool.request(alloc->underlying_alloc());
 
       // Always reset a context, making it ready to be used by a user
       ctx->reset(rsl::move(alloc), &m_resource_state_tracker, descHeap);

@@ -1,17 +1,17 @@
-#include "rex_renderer_core/gfx/graphics_context_pool.h"
+#include "rex_renderer_core/system/graphics_context_pool.h"
 
 namespace rex
 {
   namespace gfx
   {
-    GraphicsContextPool::GraphicsContextPool(GraphicsEngineType type, alloc_context_func&& allocContextFunc)
+    GraphicsContextPool::GraphicsContextPool(alloc_context_func&& allocContextFunc)
       : m_context_pool(rsl::move(allocContextFunc))
     {}
 
-    ScopedPoolObject<GraphicsContext> GraphicsContextPool::request(u64 lastCompletedFence, CommandAllocator* alloc)
+    ScopedPoolObject<GraphicsContext> GraphicsContextPool::request(CommandAllocator* alloc)
     {
       // We don't care which one we get, so we'll just get first we can find
-      auto find_free_ctx = [](const rsl::unique_ptr<GraphicsContext>& ctx) { return true; }; // any idle one will do
+      auto find_free_ctx = [](const rsl::unique_ptr<GraphicsContext>&) { return true; }; // any idle one will do
       GraphicsContext* ctx = m_context_pool.request(find_free_ctx, alloc);
 
       ScopedPoolObject<GraphicsContext> pooled_ctx(ctx,

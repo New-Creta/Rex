@@ -19,11 +19,11 @@ namespace rex
       using alloc_context_func = rsl::function<rsl::unique_ptr<GraphicsContext>(CommandAllocator*)>;
 
     public:
-      GraphicsContextPool(GraphicsEngineType type, alloc_context_func&& allocContextFunc);
+      GraphicsContextPool(alloc_context_func&& allocContextFunc);
 
       // Request a new graphics context, which has for sure finished its commands.
       // If none is found, create a new one
-      ScopedPoolObject<GraphicsContext> request(u64 lastCompletedFence, CommandAllocator* alloc);
+      ScopedPoolObject<GraphicsContext> request(CommandAllocator* alloc);
 
     private:
       GrowingPool<GraphicsContext, CommandAllocator*> m_context_pool;

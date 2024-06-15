@@ -65,7 +65,7 @@ namespace rex
     {
       wrl::ComPtr<ID3D12GraphicsCommandList> cmdlist = rhi::create_commandlist(alloc, GraphicsEngineType::Copy);
       cmdlist->Close();
-      return rsl::make_unique<DxCopyContext>(this, cmdlist, rsl::move(alloc));
+      return rsl::make_unique<DxCopyContext>(this, cmdlist);
     }
 
   }

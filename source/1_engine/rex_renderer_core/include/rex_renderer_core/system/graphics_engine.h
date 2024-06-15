@@ -4,7 +4,7 @@
 #include "rex_renderer_core/system/command_queue.h"
 #include "rex_renderer_core/gfx/graphics_engine_type.h"
 #include "rex_renderer_core/gfx/graphics_context.h"
-#include "rex_renderer_core/gfx/graphics_context_pool.h"
+#include "rex_renderer_core/system/graphics_context_pool.h"
 #include "rex_renderer_core/system/resource_state_tracker.h"
 
 #include "rex_engine/engine/types.h"

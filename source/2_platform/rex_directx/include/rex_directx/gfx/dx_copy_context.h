@@ -16,7 +16,7 @@ namespace rex
     class DxCopyContext : public CopyContext
     {
     public:
-      DxCopyContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList, CommandAllocator* alloc);
+      DxCopyContext(gfx::GraphicsEngine* owningEngine, const wrl::ComPtr<ID3D12GraphicsCommandList> cmdList);
 
       // Return the wrapped directx commandlist object
       ID3D12GraphicsCommandList* dx_cmdlist();
@@ -52,7 +52,7 @@ namespace rex
       // Transition a buffer object into a new resource state
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
       // Update a buffer on the gpu
-      void update_buffer(Buffer* buffer, ID3D12Resource* d3dResource, const void* data, rsl::memory_size size, s32 offset);
+      void update_buffer(ID3D12Resource* d3dResource, const void* data, rsl::memory_size size, s32 offset);
 
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;

@@ -57,7 +57,7 @@ namespace rex
 
     bool ResourceHeap::can_fit_allocation(const D3D12_RESOURCE_ALLOCATION_INFO& alloc_info) const
     {
-      return m_used_memory.size_in_bytes() + alloc_info.SizeInBytes < m_memory_limit;
+      return static_cast<s64>(m_used_memory.size_in_bytes() + alloc_info.SizeInBytes) < m_memory_limit;
     }
 
   } // namespace gfx

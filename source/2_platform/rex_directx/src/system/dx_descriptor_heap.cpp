@@ -58,7 +58,7 @@ namespace rex
       // Create a new constant buffer view given the offsetted GPU address and the size of the constant buffer in bytes
       D3D12_CONSTANT_BUFFER_VIEW_DESC cbv_desc;
       cbv_desc.BufferLocation = resource->GetGPUVirtualAddress();
-      cbv_desc.SizeInBytes = size.size_in_bytes();
+      cbv_desc.SizeInBytes = static_cast<UINT>(size.size_in_bytes());
 
       DescriptorHandle cbv_handle = new_free_handle();
       m_device->CreateConstantBufferView(&cbv_desc, cbv_handle);

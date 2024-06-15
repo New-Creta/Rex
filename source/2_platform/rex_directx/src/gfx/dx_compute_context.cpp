@@ -28,7 +28,7 @@ namespace rex
       dx_alloc->get()->Reset();
       m_cmd_list->Reset(dx_alloc->get(), nullptr);
       ID3D12DescriptorHeap* d3d_desc_heap = d3d::to_dx12(descHeap)->get();
-      //m_cmd_list->SetDescriptorHeaps(1, &d3d_desc_heap);
+      m_cmd_list->SetDescriptorHeaps(1, &d3d_desc_heap);
     }
 
   }
