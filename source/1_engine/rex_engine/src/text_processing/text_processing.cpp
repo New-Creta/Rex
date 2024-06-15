@@ -134,4 +134,23 @@ namespace rex
 
     return path;
   }
+
+  // Converst a wide character string to a multi byte character string
+  rsl::string to_multibyte(const tchar* wideCharacterBuffer, count_t size)
+  {
+    rsl::string buffer;
+    buffer.resize(size);
+
+    // Convert wide character string to multi byte character string.
+    // size_t converted_chars => The amount of converted characters.
+    // 0 terminate the string afterwards.
+    size_t converted_chars = 0;
+    auto result = wcstombs_s(&converted_chars, buffer.data(), size, wideCharacterBuffer, size);
+    if (result != 0)
+    {
+      return rsl::string("Error converting wide string to multi byte string");
+    }
+
+    return rsl::string(buffer.data(), static_cast<count_t>(converted_chars)); // NOLINT(readability-redundant-string-cstr)
+  }
 } // namespace rex

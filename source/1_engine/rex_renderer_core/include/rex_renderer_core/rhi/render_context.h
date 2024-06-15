@@ -46,8 +46,6 @@ namespace rex
       RenderContext(const RenderContext&) = delete;
       RenderContext(RenderContext&&) = default;
 
-      ~RenderContext() override;
-
       RenderContext& operator=(const RenderContext&) = delete;
       RenderContext& operator=(RenderContext&&) = default;
 
@@ -96,7 +94,7 @@ namespace rex
       virtual void draw_indexed_instanced(s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation) = 0;
 
       // Bind a texture to the context
-      virtual void bind_texture(Texture2D* texture) = 0;
+      virtual void bind_texture(s32 rootParamIdx, Texture2D* texture) = 0;
     };
   }
 }

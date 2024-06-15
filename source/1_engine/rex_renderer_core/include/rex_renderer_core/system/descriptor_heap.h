@@ -4,11 +4,11 @@ namespace rex
 {
   namespace rhi
   {
-    class BlendFactor
+    // Base interface for a descriptor heap
+    class DescriptorHeap
     {
     public:
 
-    private:
 
     };
   }

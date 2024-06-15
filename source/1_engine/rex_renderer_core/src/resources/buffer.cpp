@@ -8,6 +8,7 @@ namespace rex
       : m_size(size)
     {}
 
+    // The total size of the buffer
     rsl::memory_size Buffer::size() const
     {
       return m_size;

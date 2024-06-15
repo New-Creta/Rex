@@ -7,22 +7,24 @@
 
 namespace rex
 {
+  // Create a new imgui window object
   void imgui_create_window(ImGuiViewport* viewport)
   {
-    void* mem = rex::global_debug_allocator().allocate<renderer::ImGuiWindow>();
-    renderer::ImGuiWindow* imgui_window = new (mem)(renderer::ImGuiWindow)(viewport, imgui_device());
+    renderer::ImGuiWindow* imgui_window = rex::debug_alloc<renderer::ImGuiWindow>(viewport, imgui_device());
     viewport->RendererUserData = imgui_window;
   }
+  // Destroy an imgui window object
   void imgui_destroy_window(ImGuiViewport* viewport)
   {
     if (renderer::ImGuiWindow* imgui_window = (renderer::ImGuiWindow*)viewport->RendererUserData)
     {
       imgui_window->wait_for_pending_operations();
-      rex::global_debug_allocator().destroy(imgui_window);
-      rex::global_debug_allocator().deallocate(imgui_window);
+      rsl::destroy_at(imgui_window);
+      rex::debug_dealloc(imgui_window, sizeof(renderer::ImGuiWindow));
     }
     viewport->RendererUserData = nullptr;
   }
+  // Render a given imgui window
   void imgui_render_window(ImGuiViewport* viewport, void*)
   {
     renderer::ImGuiWindow* imgui_window = (renderer::ImGuiWindow*)viewport->RendererUserData;
@@ -30,12 +32,14 @@ namespace rex
 
     imgui_window->render(clear_render_target);
   }
+  // Resize a imgui window
   void imgui_set_window_size(ImGuiViewport* viewport, ImVec2 size)
   {
     renderer::ImGuiWindow* imgui_window = (renderer::ImGuiWindow*)viewport->RendererUserData;
     imgui_window->wait_for_pending_operations();
     imgui_window->resize_buffers(size.x, size.y);
   }
+  // Present an imgui window, swapping the back with front buffer
   void imgui_swap_buffers(ImGuiViewport* viewport, void*)
   {
     renderer::ImGuiWindow* imgui_window = (renderer::ImGuiWindow*)viewport->RendererUserData;

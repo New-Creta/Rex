@@ -6,13 +6,16 @@ namespace rex
 {
   namespace gfx
   {
-    GraphicsEngine::GraphicsEngine(rhi::GraphicsEngineType type)
+    GraphicsEngine::GraphicsEngine(rhi::GraphicsEngineType type, rhi::ResourceStateTracker* globalResourceStateTracker)
       : m_command_queue(rhi::create_command_queue(type))
       , m_command_allocator_pool(type)
       , m_context_pool(type, [this](rhi::CommandAllocator* alloc) { return allocate_new_context(alloc); })
+      , m_resource_state_tracker(globalResourceStateTracker)
     {}
     GraphicsEngine::~GraphicsEngine()
     {
+      // Flush all pending operations on the gpu
+      // We cannot destroy until all queued operations are executed
       flush();
     }
 
@@ -23,14 +26,14 @@ namespace rex
     }
     
     // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
-    ScopedPoolObject<rhi::GraphicsContext> GraphicsEngine::new_context()
+    ScopedPoolObject<rhi::GraphicsContext> GraphicsEngine::new_context(rhi::DescriptorHeap* descHeap)
     {
       // Find a command alloctor to be used for the context
       ScopedPoolObject<PooledAllocator> alloc = request_allocator();
-
       ScopedPoolObject<rhi::GraphicsContext> ctx = m_context_pool.request(m_command_queue->last_completed_fence(), alloc->underlying_alloc());
-      ctx->reset(rsl::move(alloc));
 
+      // Always reset a context, making it ready to be used by a user
+      ctx->reset(rsl::move(alloc), &m_resource_state_tracker, descHeap);
       return ctx;
     }
 
@@ -49,6 +52,11 @@ namespace rex
     rhi::GraphicsEngineType GraphicsEngine::type() const
     {
       return m_command_queue->type();
+    }
+    // Return the resource tracker of this engine
+    rhi::ResourceStateTracker* GraphicsEngine::resource_state_tracker()
+    {
+      return &m_resource_state_tracker;
     }
 
     // Flush all commands on the gpu and halt the current thread untill all commands are executed

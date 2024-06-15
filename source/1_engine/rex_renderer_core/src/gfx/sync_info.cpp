@@ -18,7 +18,7 @@ namespace rex
       return m_fence_value;
     }
     // Return the fence object itself that needs to be checked for the fence value
-    void* SyncInfo::fence_object()
+    Fence* SyncInfo::fence_object()
     {
       return m_fence_object;
     }

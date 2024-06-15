@@ -82,7 +82,7 @@ namespace rex
     s32 vtx_offset = 0;
     s32 idx_offset = 0;
 
-    // Update the vertex and constant buffer
+    // Update the vertex and index buffer on the gpu
     for (s32 n = 0; n < drawData->CmdListsCount; n++)
     {
       const ImDrawList* cmd_list = drawData->CmdLists[n];
@@ -109,6 +109,7 @@ namespace rex
       };
       memcpy(&m_constant_buffer_data.mvp, mvp, sizeof(mvp));
     }
+    // Send the data to the gpu
     copy_context->update_buffer(m_constant_buffer.get(), &m_constant_buffer_data, sizeof(m_constant_buffer_data), 0);
 
     return copy_context->execute_on_gpu();

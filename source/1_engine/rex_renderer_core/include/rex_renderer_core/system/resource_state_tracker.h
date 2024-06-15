@@ -25,12 +25,6 @@ namespace rex
     class ResourceStateTracker
     {
     public:
-      // The private handle to indicate that this is the root resource tracker
-      struct PrivateHandle {};
-
-      // The resource state tracker accepting the private handle
-      // This means it doesn't have a parent tracker
-      explicit ResourceStateTracker(const PrivateHandle&); // passing int to indicate a difference from the default ctor
       explicit ResourceStateTracker(ResourceStateTracker* parentResourceStateTracker = nullptr);
 
       // Track a resource state internally
@@ -45,14 +39,8 @@ namespace rex
       void clear();
 
     private:
-      // init the global resource state tracker who holds final resource tracking states
-      void init_global();
-
-    private:
       rsl::unordered_map<Resource*, rsl::vector<ResourceState>> m_states_per_resource;
       ResourceStateTracker* m_parent_resource_state_tracker;
-
-      static rsl::unique_ptr<ResourceStateTracker> s_global_resource_state_tracker;
     };
   }
 }

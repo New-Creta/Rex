@@ -38,15 +38,9 @@ namespace rex
     // Halt the gpu until the fence value is reached
     void DxCommandQueue::gpu_wait(SyncInfo& sync_info)
     {
-      ID3D12Fence* fence = static_cast<ID3D12Fence*>(sync_info.fence_object());
+      ID3D12Fence* fence = static_cast<DxFence*>(sync_info.fence_object())->get();
       u64 fence_gpu_val = fence->GetCompletedValue();
       m_command_queue->Wait(fence, sync_info.fence_val());
-    }
-
-    bool DxCommandQueue::is_fence_completed(u64 fenceValue) const
-    {
-      u64 gpu_fence_value = m_fence->get()->GetCompletedValue();
-      return fenceValue <= gpu_fence_value;
     }
 
     ScopedPoolObject<SyncInfo> DxCommandQueue::execute_context(GraphicsContext* ctx)
@@ -60,7 +54,7 @@ namespace rex
 
       u64 old_fence_val = inc_fence();
       wait_for_fence(old_fence_val);
-      return create_sync_info(old_fence_val, m_fence->get());
+      return create_sync_info(old_fence_val, m_fence.get());
     }
 
     u64 DxCommandQueue::gpu_fence_value() const

@@ -5,6 +5,7 @@
 #include "rex_renderer_core/rhi/graphics_engine_type.h"
 #include "rex_renderer_core/rhi/graphics_context.h"
 #include "rex_renderer_core/rhi/graphics_context_pool.h"
+#include "rex_renderer_core/system/resource_state_tracker.h"
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/engine/invalid_object.h"
@@ -12,6 +13,11 @@
 
 namespace rex
 {
+  namespace rhi
+  {
+    class DescriptorHeap;
+  }
+
   namespace gfx
   {
     // A graphics engine is an engine responsible for their own respective field of the graphics pipeline.
@@ -22,14 +28,14 @@ namespace rex
     class GraphicsEngine
     {
     public:
-      GraphicsEngine(rhi::GraphicsEngineType type);
+      GraphicsEngine(rhi::GraphicsEngineType type, rhi::ResourceStateTracker* globalResourceStateTracker);
       virtual ~GraphicsEngine();
 
       // Executes the context and returns the fence value that'll be set when all commands are executed
       ScopedPoolObject<rhi::SyncInfo> execute_context(rhi::GraphicsContext* context);
       
       // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
-      ScopedPoolObject<rhi::GraphicsContext> new_context();
+      ScopedPoolObject<rhi::GraphicsContext> new_context(rhi::DescriptorHeap* descHeap);
 
       // Halt gpu commands from being executed until the sync info object is triggered
       void stall(rhi::SyncInfo& syncInfo);
@@ -38,6 +44,8 @@ namespace rex
       rhi::CommandQueue* command_queue();
       // Return the command type of the engine
       rhi::GraphicsEngineType type() const;
+      // Return the resource tracker of this engine
+      rhi::ResourceStateTracker* resource_state_tracker();
 
       // Fully initialize the engine, allocating all required resources etc
       virtual void init() = 0;
@@ -60,7 +68,7 @@ namespace rex
       rsl::unique_ptr<rhi::CommandQueue> m_command_queue; // the command queue to submit gpu commands
       rhi::GraphicsContextPool m_context_pool; // the pool for graphics contexts of this type of graphics engine
       gfx::CommandAllocatorPool m_command_allocator_pool; // the pool for command allocators
-
+      rhi::ResourceStateTracker m_resource_state_tracker; // the resource state tracker of this engine
     };
 
     // These classes will likely have graphics api specific implementations

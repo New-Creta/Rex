@@ -21,7 +21,11 @@ namespace rex
     {}
 
     ScopedPoolObject(const ScopedPoolObject&) = delete;
-    ScopedPoolObject(ScopedPoolObject&& other) = default;
+    ScopedPoolObject(ScopedPoolObject&& other)
+    {
+      m_object = rsl::exchange(other.m_object, nullptr);
+      m_return_to_pool_callable = rsl::move(other.m_return_to_pool_callable);
+    }
 
     ~ScopedPoolObject()
     {
@@ -75,12 +79,18 @@ namespace rex
     // Return the wrapped object back to the pool it came from
     void return_to_pool()
     {
-      if (has_object())
+      if (has_object() && m_return_to_pool_callable)
       {
         m_return_to_pool_callable(m_object);
-        m_object = nullptr;
-        m_return_to_pool_callable = [](T*) {}; // do nothing
+        clear();
       }
+    }
+
+  private:
+    void clear()
+    {
+      m_object = nullptr;
+      m_return_to_pool_callable = [](T*) {}; // do nothing
     }
 
   private:

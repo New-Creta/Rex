@@ -7,6 +7,9 @@ namespace rex
 {
   namespace rhi
   {
+    // DirectX debug interface
+    // It enables all debug levels when constructed
+    // Reports remaining live objects on destruction
     class DebugInterface
     {
     public:

@@ -19,21 +19,26 @@ namespace rex
         , m_swapchain(swapchain)
         , m_format(format)
     {
-      store_buffers(bufferCount);
+      query_buffers(bufferCount);
     }
     void DxSwapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
     {
+      // Update the cached width and height
       on_resize(width, height);
+
+      // Empty the cached buffers
       s32 buffer_count = num_buffers();
       clear_buffers();
 
+      // Resize the DirectX buffers
       if(DX_FAILED(m_swapchain->ResizeBuffers(buffer_count, width, height, m_format, flags)))
       {
         REX_ERROR(LogSwapchain, "Failed to resize swapchain buffers");
         return;
       }
 
-      store_buffers(buffer_count);
+      // Cache the new resized buffers
+      query_buffers(buffer_count);
     }
 
     void DxSwapchain::present()
@@ -46,7 +51,7 @@ namespace rex
       return m_swapchain.Get();
     }
 
-    void DxSwapchain::store_buffers(s32 bufferCount)
+    void DxSwapchain::query_buffers(s32 bufferCount)
     {
       for (s32 i = 0; i < bufferCount; ++i)
       {

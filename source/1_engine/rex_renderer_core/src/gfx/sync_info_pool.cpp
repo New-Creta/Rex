@@ -8,7 +8,8 @@ namespace rex
       : m_sync_info_pool([]() { return rsl::make_unique<rhi::SyncInfo>(); })
     {}
 
-    ScopedPoolObject<rhi::SyncInfo> SyncInfoPool::request(u64 fenceValue, void* fenceObject)
+    // Returns a new sync info object or create a new one if none can be found
+    ScopedPoolObject<rhi::SyncInfo> SyncInfoPool::request(u64 fenceValue, rhi::Fence* fenceObject)
     {
       auto find_free_sync_info = [](const rsl::unique_ptr<rhi::SyncInfo>& ctx) { return true; }; // any idle one will do
       rhi::SyncInfo* sync_info = m_sync_info_pool.request(find_free_sync_info);

@@ -64,29 +64,42 @@ namespace rex
 
     void render()
     {
+      // The render loop is very simple
+      // - Prepare a new frame
+      // - Loop over all the renderers
+      // - Finalize the frame
+      // - Present
+
+      // Prepare all resources that are needed for a new frame
       g_gpu_engine->new_frame();
       
+      // Loop over all renderers and call into them
+      // Performing all required gpu operations needed on resources those renderers need
+      // The resources are owned by the renderers, they're responsible for creating and destroying them
+      // However in the backend, the gpu manager controls when these resources actually get deallocated
       for (auto& renderer : g_renderers)
       {
         renderer->render();
       }
 
+      // Finalize the frame and bringing it ready for presentation
       g_gpu_engine->end_frame();
-    }
 
-    void present()
-    {
+      // Present the last rendered frame to the screen
       g_gpu_engine->present();
     }
 
+    // Create a new copy context that automatically gets added back to the pool when it goes out of scope
     ScopedPoolObject<rhi::CopyContext> new_copy_ctx()
     {
       return g_gpu_engine->new_copy_ctx();
     }
+    // Create a new render context that automatically gets added back to the pool when it goes out of scope
     ScopedPoolObject<rhi::RenderContext> new_render_ctx()
     {
       return g_gpu_engine->new_render_ctx();
     }
+    // Create a new compute context that automatically gets added back to the pool when it goes out of scope
     ScopedPoolObject<rhi::ComputeContext> new_compute_ctx()
     {
       return g_gpu_engine->new_compute_ctx();

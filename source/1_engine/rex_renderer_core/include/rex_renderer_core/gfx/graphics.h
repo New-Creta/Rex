@@ -42,9 +42,6 @@ namespace rex
     // Render a single frame by going over all the renderers
     void render();
 
-    // Present the last renderer frame to the main window
-    void present();
-
     // Create a new context used for copying data to the gpu
     ScopedPoolObject<rhi::CopyContext> new_copy_ctx();
     // Create a new context used for queueing rendering commands on the gpu

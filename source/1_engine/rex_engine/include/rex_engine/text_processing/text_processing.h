@@ -36,4 +36,7 @@ namespace rex
   // removes leading and trailing quotes from a path
   rsl::string_view remove_quotes(rsl::string_view path);
 
+  // Converst a wide character string to a multi byte character string
+  rsl::string to_multibyte(const tchar* wideCharacterBuffer, count_t size);
+
 } // namespace rex

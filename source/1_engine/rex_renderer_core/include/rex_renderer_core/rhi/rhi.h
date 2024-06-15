@@ -24,6 +24,7 @@
 #include "rex_renderer_core/resources/render_target.h"
 #include "rex_renderer_core/resources/texture_2d.h"
 #include "rex_renderer_core/system/command_queue.h"
+#include "rex_renderer_core/system/command_allocator.h"
 #include "rex_renderer_core/system/swapchain.h"
 #include "rex_renderer_core/resources/vertex_buffer.h"
 #include "rex_renderer_core/resources/index_buffer.h"
@@ -32,6 +33,7 @@
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
+#include "rex_renderer_core/system/upload_buffer.h"
 
 namespace rex
 {
@@ -92,6 +94,7 @@ namespace rex
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode);
+      rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
 
       // Return the render target pointing to the current swapchain's backbuffer
       RenderTarget* current_backbuffer_rt();

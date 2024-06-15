@@ -11,7 +11,7 @@ namespace rex
     class CopyEngine : public GraphicsEngine
     {
     public:
-      CopyEngine();
+      CopyEngine(rhi::ResourceStateTracker* globalResourceStateTracker);
 
     private:
 

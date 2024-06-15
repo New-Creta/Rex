@@ -11,9 +11,5 @@ namespace rex
     {
     }
 
-    RenderContext::~RenderContext()
-    {
-    }
-
   }
 }

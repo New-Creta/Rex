@@ -15,7 +15,7 @@
 #include "rex_directx/resources/dx_constant_buffer.h"
 #include "rex_directx/resources/dx_root_signature.h"
 #include "rex_directx/resources/dx_texture_2d.h"
-#include "rex_directx/resources/dx_input_layout_resource.h"
+#include "rex_directx/resources/dx_input_layout.h"
 
 
 #include "rex_directx/resources/dx_constant_buffer.h"
@@ -25,19 +25,11 @@
 
 namespace rex
 {
-  namespace renderer
-  {
-    namespace directx
-    {
-
-    } // namespace directx
-  }   // namespace renderer
-
   namespace d3d
   {
     // This isn't great as there isn't a way to pass the memory accross
-// from our blob to a d3d blob, we need to copy it over.
-// This means that memory will be duplicated.
+    // from our blob to a d3d blob, we need to copy it over.
+    // This means that memory will be duplicated.
     wrl::ComPtr<ID3DBlob> create_blob(const memory::Blob& blob)
     {
       wrl::ComPtr<ID3DBlob> d3d_blob;
@@ -63,104 +55,6 @@ namespace rex
       pitch_size = align(pitch_size, alignment);
 
       return pitch_size * height;
-    }
-
-    //-------------------------------------------------------------------------
-    D3D12_FILL_MODE to_dx12(renderer::FillMode mode)
-    {
-      switch (mode)
-      {
-      case renderer::FillMode::Solid: return D3D12_FILL_MODE_SOLID;
-      case renderer::FillMode::Wireframe: return D3D12_FILL_MODE_WIREFRAME;
-      default: break;
-      }
-
-      REX_ASSERT("Unsupported fill mode given");
-      return D3D12_FILL_MODE_SOLID;
-    }
-    //-------------------------------------------------------------------------
-    D3D12_CULL_MODE to_dx12(renderer::CullMode mode)
-    {
-      switch (mode)
-      {
-      case renderer::CullMode::None: return D3D12_CULL_MODE_NONE;
-      case renderer::CullMode::Front: return D3D12_CULL_MODE_FRONT;
-      case renderer::CullMode::Back: return D3D12_CULL_MODE_BACK;
-      default: break;
-      }
-
-      REX_ASSERT("Unsupported cull mode given");
-      return D3D12_CULL_MODE_NONE;
-    }
-    //-------------------------------------------------------------------------
-    DXGI_FORMAT to_dx12(renderer::VertexBufferFormat format)
-    {
-      switch (format)
-      {
-      case renderer::VertexBufferFormat::Float1: return DXGI_FORMAT_R32_FLOAT;
-      case renderer::VertexBufferFormat::Float2: return DXGI_FORMAT_R32G32_FLOAT;
-      case renderer::VertexBufferFormat::Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
-      case renderer::VertexBufferFormat::Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
-      case renderer::VertexBufferFormat::UNorm1: return DXGI_FORMAT_R8_UNORM;
-      case renderer::VertexBufferFormat::UNorm2: return DXGI_FORMAT_R8G8_UNORM;
-      case renderer::VertexBufferFormat::UNorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
-      default: break;
-      }
-      REX_ASSERT("Unsupported vertex buffer format given");
-      return DXGI_FORMAT_UNKNOWN;
-    }
-    //-------------------------------------------------------------------------
-    DXGI_FORMAT to_dx12(renderer::IndexBufferFormat format)
-    {
-      switch (format)
-      {
-      case renderer::IndexBufferFormat::Uint16: return DXGI_FORMAT_R16_UINT;
-      case renderer::IndexBufferFormat::Uint32: return DXGI_FORMAT_R32_UINT;
-      default: break;
-      }
-      REX_ASSERT("Unsupported index buffer format given");
-      return DXGI_FORMAT_UNKNOWN;
-    }
-    //-------------------------------------------------------------------------
-    DXGI_FORMAT to_dx12(renderer::TextureFormat format)
-    {
-      switch (format)
-      {
-      case renderer::TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-      case renderer::TextureFormat::Unorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
-      default: break;
-      }
-      REX_ASSERT("Unsupported vertex buffer format given");
-      return DXGI_FORMAT_UNKNOWN;
-    }
-
-    //-------------------------------------------------------------------------
-    D3D12_PRIMITIVE_TOPOLOGY to_dx12(renderer::PrimitiveTopology topology)
-    {
-      switch (topology)
-      {
-      case renderer::PrimitiveTopology::LineList: return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-      case renderer::PrimitiveTopology::LineStrip: return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
-      case renderer::PrimitiveTopology::PointList: return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
-      case renderer::PrimitiveTopology::TriangleList: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-      case renderer::PrimitiveTopology::TriangleStrip: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-      default: break;
-      }
-      REX_ASSERT("Unsupported primitive topology given");
-      return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
-    }
-    //-------------------------------------------------------------------------
-    D3D12_INPUT_CLASSIFICATION to_dx12(renderer::InputLayoutClassification classification)
-    {
-      switch (classification)
-      {
-      case renderer::InputLayoutClassification::PerVertexData: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-      case renderer::InputLayoutClassification::PerInstanceData: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
-      default: break;
-      }
-
-      REX_ASSERT("Unsupported input layout classification given");
-      return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
     }
     s32 format_byte_size(renderer::TextureFormat format)
     {
@@ -222,15 +116,103 @@ namespace rex
         return 0;
       }
     }
-    s32 texture_2d_size(DXGI_FORMAT format, s32 width, s32 height)
+
+    //-------------------------------------------------------------------------
+    // CONVERTORS
+    //-------------------------------------------------------------------------
+
+    // ------------------------------------
+    // Convertors from REX -> DirectX
+    // ------------------------------------
+    D3D12_FILL_MODE to_dx12(renderer::FillMode mode)
     {
-      s32 format_size = d3d::format_byte_size(format);
-      s32 upload_pitch = align(width * format_size, D3D12_TEXTURE_DATA_PITCH_ALIGNMENT);
-      s32 total_size = height * upload_pitch;
-      return total_size;
+      switch (mode)
+      {
+      case renderer::FillMode::Solid: return D3D12_FILL_MODE_SOLID;
+      case renderer::FillMode::Wireframe: return D3D12_FILL_MODE_WIREFRAME;
+      default: break;
+      }
+
+      REX_ASSERT("Unsupported fill mode given");
+      return D3D12_FILL_MODE_SOLID;
     }
+    D3D12_CULL_MODE to_dx12(renderer::CullMode mode)
+    {
+      switch (mode)
+      {
+      case renderer::CullMode::None: return D3D12_CULL_MODE_NONE;
+      case renderer::CullMode::Front: return D3D12_CULL_MODE_FRONT;
+      case renderer::CullMode::Back: return D3D12_CULL_MODE_BACK;
+      default: break;
+      }
 
+      REX_ASSERT("Unsupported cull mode given");
+      return D3D12_CULL_MODE_NONE;
+    }
+    DXGI_FORMAT to_dx12(renderer::VertexBufferFormat format)
+    {
+      switch (format)
+      {
+      case renderer::VertexBufferFormat::Float1: return DXGI_FORMAT_R32_FLOAT;
+      case renderer::VertexBufferFormat::Float2: return DXGI_FORMAT_R32G32_FLOAT;
+      case renderer::VertexBufferFormat::Float3: return DXGI_FORMAT_R32G32B32_FLOAT;
+      case renderer::VertexBufferFormat::Float4: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+      case renderer::VertexBufferFormat::UNorm1: return DXGI_FORMAT_R8_UNORM;
+      case renderer::VertexBufferFormat::UNorm2: return DXGI_FORMAT_R8G8_UNORM;
+      case renderer::VertexBufferFormat::UNorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
+      default: break;
+      }
+      REX_ASSERT("Unsupported vertex buffer format given");
+      return DXGI_FORMAT_UNKNOWN;
+    }
+    DXGI_FORMAT to_dx12(renderer::IndexBufferFormat format)
+    {
+      switch (format)
+      {
+      case renderer::IndexBufferFormat::Uint16: return DXGI_FORMAT_R16_UINT;
+      case renderer::IndexBufferFormat::Uint32: return DXGI_FORMAT_R32_UINT;
+      default: break;
+      }
+      REX_ASSERT("Unsupported index buffer format given");
+      return DXGI_FORMAT_UNKNOWN;
+    }
+    DXGI_FORMAT to_dx12(renderer::TextureFormat format)
+    {
+      switch (format)
+      {
+      case renderer::TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+      case renderer::TextureFormat::Unorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
+      default: break;
+      }
+      REX_ASSERT("Unsupported vertex buffer format given");
+      return DXGI_FORMAT_UNKNOWN;
+    }
+    D3D12_PRIMITIVE_TOPOLOGY to_dx12(renderer::PrimitiveTopology topology)
+    {
+      switch (topology)
+      {
+      case renderer::PrimitiveTopology::LineList: return D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+      case renderer::PrimitiveTopology::LineStrip: return D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+      case renderer::PrimitiveTopology::PointList: return D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+      case renderer::PrimitiveTopology::TriangleList: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+      case renderer::PrimitiveTopology::TriangleStrip: return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+      default: break;
+      }
+      REX_ASSERT("Unsupported primitive topology given");
+      return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+    }
+    D3D12_INPUT_CLASSIFICATION to_dx12(renderer::InputLayoutClassification classification)
+    {
+      switch (classification)
+      {
+      case renderer::InputLayoutClassification::PerVertexData: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+      case renderer::InputLayoutClassification::PerInstanceData: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+      default: break;
+      }
 
+      REX_ASSERT("Unsupported input layout classification given");
+      return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+    }
     D3D12_SHADER_VISIBILITY to_dx12(renderer::ShaderVisibility visibility)
     {
       switch (visibility)
@@ -341,8 +323,8 @@ namespace rex
       desc.DepthBiasClamp = rasterState.depth_bias_clamp;
       desc.SlopeScaledDepthBias = rasterState.sloped_scale_depth_bias;
       desc.DepthClipEnable = rasterState.depth_clip_enable;
-      desc.MultisampleEnable = rasterState.multisample;
-      desc.AntialiasedLineEnable = rasterState.aa_lines;
+      desc.MultisampleEnable = rasterState.multisample_enable;
+      desc.AntialiasedLineEnable = rasterState.aa_lines_enable;
       desc.ForcedSampleCount = rasterState.forced_sample_count;
       desc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
 
@@ -449,7 +431,6 @@ namespace rex
 
       return desc;
     }
-
     D3D12_DEPTH_WRITE_MASK to_dx12(rhi::DepthWriteMask mask)
     {
       switch (mask)
@@ -460,7 +441,6 @@ namespace rex
 
       return invalid_obj<D3D12_DEPTH_WRITE_MASK>();
     }
-
     D3D12_DEPTH_STENCILOP_DESC to_dx12(const rhi::DepthStencilOpDesc& depthStencilOp)
     {
       D3D12_DEPTH_STENCILOP_DESC desc{};
@@ -488,7 +468,6 @@ namespace rex
 
       return invalid_obj<D3D12_STENCIL_OP>();
     }
-
     D3D12_DESCRIPTOR_RANGE to_dx12(rhi::DescriptorRangeDesc range)
     {
       D3D12_DESCRIPTOR_RANGE range_desc{};
@@ -500,7 +479,6 @@ namespace rex
 
       return range_desc;
     }
-
     D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(rhi::DescriptorRangeType type)
     {
       switch (type)
@@ -513,7 +491,6 @@ namespace rex
 
       return invalid_obj<D3D12_DESCRIPTOR_RANGE_TYPE>();
     }
-
     D3D12_RESOURCE_STATES to_dx12(rhi::ResourceState state)
     {
       switch (state)
@@ -550,7 +527,6 @@ namespace rex
 
       return invalid_obj<D3D12_RESOURCE_STATES>();
     }
-
     D3D12_COMMAND_LIST_TYPE to_dx12(rhi::GraphicsEngineType type)
     {
       switch (type)
@@ -562,7 +538,22 @@ namespace rex
 
       return invalid_obj<D3D12_COMMAND_LIST_TYPE>();
     }
+    D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(rhi::DescriptorHeapType type)
+    {
+      switch (type)
+      {
+      case rex::rhi::DescriptorHeapType::ConstantBufferView:  return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+      case rex::rhi::DescriptorHeapType::RenderTargetView:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+      case rex::rhi::DescriptorHeapType::DepthStencilView:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+      case rex::rhi::DescriptorHeapType::Sampler:             return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+      }
 
+      return invalid_obj<D3D12_DESCRIPTOR_HEAP_TYPE>();
+    }
+
+    // ------------------------------------
+    // Converts from generic REX classes -> DirectX REX classes
+    // ------------------------------------
     rhi::DxCommandQueue* to_dx12(rhi::CommandQueue* cmdQueue)
     {
       return static_cast<rhi::DxCommandQueue*>(cmdQueue);
@@ -583,41 +574,42 @@ namespace rex
     {
       return static_cast<rhi::DxTexture2D*>(texture);
     }
-    rhi::DxInputLayoutResource* to_dx12(rhi::InputLayout* inputLayout)
+    rhi::DxInputLayout* to_dx12(rhi::InputLayout* inputLayout)
     {
-      return static_cast<rhi::DxInputLayoutResource*>(inputLayout);
+      return static_cast<rhi::DxInputLayout*>(inputLayout);
+    }
+    rhi::DxDescriptorHeap* to_dx12(rhi::DescriptorHeap* descHeap)
+    {
+      return static_cast<rhi::DxDescriptorHeap*>(descHeap);
     }
 
-    //const rhi::DxCommandQueue* to_dx12(const rhi::CommandQueue* cmdQueue)
-    //{
-    //  return static_cast<const rhi::DxCommandQueue*>(cmdQueue);
-    //}
-    //const rhi::DxCommandAllocator* to_dx12(const rhi::CommandAllocator* cmdAlloc)
-    //{
-    //  return static_cast<const rhi::DxCommandAllocator*>(cmdAlloc);
-    //}
-    //const rhi::DxRootSignature* to_dx12(const rhi::RootSignature* rootSig)
-    //{
-    //  return static_cast<const rhi::DxRootSignature*>(rootSig);
-    //}
-    //const rhi::DxShader* to_dx12(const rhi::Shader* shader)
-    //{
-    //  return static_cast<const rhi::DxShader*>(shader);
-    //}
-
-
-    rhi::GraphicsEngineType from_dx12(D3D12_COMMAND_LIST_TYPE type)
+    // ------------------------------------
+    // Returned the wrapped dx12 resource of a class
+    // ------------------------------------
+    ID3D12Resource* dx12_resource(rhi::ConstantBuffer* buffer)
     {
-      switch (type)
-      {
-      case D3D12_COMMAND_LIST_TYPE_DIRECT:   return rhi::GraphicsEngineType::Render;
-      case D3D12_COMMAND_LIST_TYPE_COMPUTE:  return rhi::GraphicsEngineType::Compute;
-      case D3D12_COMMAND_LIST_TYPE_COPY:     return rhi::GraphicsEngineType::Copy;
-      }
-
-      return invalid_obj<rhi::GraphicsEngineType>();
+      return static_cast<rhi::DxConstantBuffer*>(buffer)->dx_object();
+    }
+    ID3D12Resource* dx12_resource(rhi::VertexBuffer* buffer)
+    {
+      return static_cast<rhi::DxVertexBuffer*>(buffer)->dx_object();
+    }
+    ID3D12Resource* dx12_resource(rhi::IndexBuffer* buffer)
+    {
+      return static_cast<rhi::DxIndexBuffer*>(buffer)->dx_object();
+    }
+    ID3D12Resource* dx12_resource(rhi::UploadBuffer* buffer)
+    {
+      return static_cast<rhi::DxUploadBuffer*>(buffer)->dx_object();
+    }
+    ID3D12Resource* dx12_resource(rhi::Texture2D* texture)
+    {
+      return static_cast<rhi::DxTexture2D*>(texture)->dx_object();
     }
 
+    // ------------------------------------
+    // Return from Directx -> REX
+    // ------------------------------------
     renderer::TextureFormat from_dx12(DXGI_FORMAT type)
     {
       switch (type)
@@ -749,30 +741,6 @@ namespace rex
       default:
         REX_ASSERT("Unknown DX12 texture format, cannot convert to rex texture format");
       }
-    }
-
-
-
-
-    ID3D12Resource* dx12_resource(rhi::ConstantBuffer* buffer)
-    {
-      return static_cast<rhi::DxConstantBuffer*>(buffer)->dx_object();
-    }
-    ID3D12Resource* dx12_resource(rhi::VertexBuffer* buffer)
-    {
-      return static_cast<rhi::DxVertexBuffer*>(buffer)->dx_object();
-    }
-    ID3D12Resource* dx12_resource(rhi::IndexBuffer* buffer)
-    {
-      return static_cast<rhi::DxIndexBuffer*>(buffer)->dx_object();
-    }
-    ID3D12Resource* dx12_resource(rhi::UploadBuffer* buffer)
-    {
-      return buffer->dx_object();
-    }
-    ID3D12Resource* dx12_resource(rhi::Texture2D* texture)
-    {
-      return static_cast<rhi::DxTexture2D*>(texture)->dx_object();
     }
   }
 } // namespace rex

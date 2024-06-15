@@ -3,6 +3,11 @@
 #include "imgui/platform/win/imgui_impl_win32.h"
 
 #include "rex_renderer_core/imgui/imgui_window.h"
+#include "rex_windows/imgui/win_imgui.h"
+
+#include <Windows.h>
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace rex
 {
@@ -23,5 +28,10 @@ namespace rex
   void imgui_platform_new_frame()
   {
     ImGui_ImplWin32_NewFrame();
+  }
+
+  bool imgui_main_window_update(win::Hwnd hwnd, card32 msg, win::WParam wparam, win::LParam lparam)
+  {
+    return ImGui_ImplWin32_WndProcHandler((HWND)hwnd, msg, wparam, lparam);
   }
 }

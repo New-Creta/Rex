@@ -13,21 +13,11 @@ namespace rex
     public:
       explicit DxFence(const wrl::ComPtr<ID3D12Fence>& fence);
 
-      // Increment the internal target value
-      // and signal the command queue to increment the value
-      // on the gpu as well
-      void inc(ID3D12CommandQueue* commandQueue);
-
-      // wait for the cpu value and the gpu value to be the same
-      // this is a blocking call
-      void wait_for_val();
-
+      // Return the wrapped fence object
       ID3D12Fence* get() const;
-      s32 target_value() const;
 
     private:
       wrl::ComPtr<ID3D12Fence> m_fence;
-      s32 m_target_val;
     };
   } // namespace rhi
 } // namespace rex

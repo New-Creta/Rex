@@ -11,7 +11,7 @@ namespace rex
     class ComputeEngine : public GraphicsEngine
     {
     public:
-      ComputeEngine();
+      ComputeEngine(rhi::ResourceStateTracker* globalResourceStateTracker);
 
     private:
 

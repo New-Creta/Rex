@@ -19,8 +19,6 @@
 
 namespace rex
 {
-  DEFINE_LOG_CATEGORY(LogImgui);
-
   ImGuiRenderer::ImGuiRenderer(void* platformWindowHandle)
   {
     init_imgui(platformWindowHandle);
@@ -56,6 +54,7 @@ namespace rex
       rex_viewport->render(*render_ctx);
     }
 
+    // Update and render the imgui windows if any
     if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
       ImGui::UpdatePlatformWindows();
@@ -223,8 +222,8 @@ namespace rex
     rasterizer_desc.depth_bias_clamp = 0.0f;
     rasterizer_desc.sloped_scale_depth_bias = 0.0f;
     rasterizer_desc.depth_clip_enable = true;
-    rasterizer_desc.multisample = false;
-    rasterizer_desc.aa_lines = false;
+    rasterizer_desc.multisample_enable = false;
+    rasterizer_desc.aa_lines_enable = false;
     rasterizer_desc.forced_sample_count = 0;
     m_raster_state = rsl::make_unique<rhi::RasterState>(rasterizer_desc);;
 

@@ -4,8 +4,8 @@ namespace rex
 {
   namespace gfx
   {
-    CopyEngine::CopyEngine()
-      : GraphicsEngine(rhi::GraphicsEngineType::Copy)
+    CopyEngine::CopyEngine(rhi::ResourceStateTracker* globalResourceStateTracker)
+      : GraphicsEngine(rhi::GraphicsEngineType::Copy, globalResourceStateTracker)
     {}
   }
 }

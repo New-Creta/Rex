@@ -21,11 +21,12 @@ namespace rex
       virtual void cpu_wait(u64 fenceValue) = 0;
       // Halt the gpu until the fence value is reached
       virtual void gpu_wait(SyncInfo& sync_info) = 0;
-      // Returns true if the fence value has been reached already on the gpu
-      virtual bool is_fence_completed(u64 fenceValue) const = 0;
       // Submit all queued commands to the gpu and execute for execution
       virtual ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx) = 0;
 
+      // Returns if the last completed fence is equal or lower than the given fence value
+      // Meaning that the commands before the given fence value got signaled have executed
+      bool is_fence_completed(u64 fenceValue) const;
       // All commands before this fence value have executed
       u64 last_completed_fence() const;
       // Return the command queue's type

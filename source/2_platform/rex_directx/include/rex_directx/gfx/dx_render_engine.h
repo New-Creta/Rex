@@ -11,15 +11,19 @@ namespace rex
     class DxRenderEngine : public gfx::RenderEngine
     {
     public:
+      DxRenderEngine(ResourceStateTracker* globalResourceStateTracker);
+
+      // Initialize all the resources required for the compute engine
       void init() override;
 
-    protected:
-      rsl::unique_ptr<GraphicsContext> allocate_new_context(CommandAllocator* alloc) override;
+      // Prepare a new frame
       void new_frame() override;
+      // Finalise the frame
       void end_frame() override;
 
-    private:
-
+    protected:
+      // Allocate a render context
+      rsl::unique_ptr<GraphicsContext> allocate_new_context(CommandAllocator* alloc) override;
     };
   }
 }

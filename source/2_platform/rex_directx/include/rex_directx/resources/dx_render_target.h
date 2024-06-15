@@ -12,25 +12,14 @@ namespace rex
     class DxRenderTarget : public RenderTarget
     {
     public:
-      DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle descHandle)
-        : RenderTarget(resource->GetDesc().Width, resource->GetDesc().Height)
-        , m_resource(resource)
-        , m_desc_handle(descHandle)
-      {}
+      DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle descHandle);
 
-      ID3D12Resource* dx_object()
-      {
-        return m_resource.Get();
-      }
-
-      DescriptorHandle handle() const
-      {
-        return m_desc_handle;
-      }
+      ID3D12Resource* dx_object();
+      DescriptorHandle handle() const;
 
     private:
-      wrl::ComPtr<ID3D12Resource> m_resource;
-      DescriptorHandle m_desc_handle;
+      wrl::ComPtr<ID3D12Resource> m_resource; // The resource itself
+      DescriptorHandle m_desc_handle;         // A handle to the cpu and gpu descriptor
     };
   }
 }

@@ -29,38 +29,43 @@ namespace rex
 
   namespace gfx
   {
+    // A gpu engine for a system running on DirectX 12
     class DxGpuEngine : public GpuEngine
     {
     public:
       DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, dxgi::AdapterManager* adapterManager);
 
+      // Allocate a 1D buffer on the gpu, returning a DirectX resource
       wrl::ComPtr<ID3D12Resource> allocate_buffer(rsl::memory_size size);
+      // Allocate a 2D buffer on the gpu, returning a DirectX resource
       wrl::ComPtr<ID3D12Resource> allocate_texture2d(s32 width, s32 height, renderer::TextureFormat format);
 
+      // Create a render target view for a given resource
       rhi::DescriptorHandle create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
+      // Create a shader resource view pointing to a 2D texture
       rhi::DescriptorHandle create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
+      // Create a constant buffer view pointing for a given resource
       rhi::DescriptorHandle create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
 
+      // Compile a shader written in HLSL
       wrl::ComPtr<ID3DBlob> compile_shader(const rhi::CompileShaderDesc& desc);
 
-      rsl::vector<ID3D12DescriptorHeap*> desc_heaps();
-
     protected:
+      // Initialize the various sub engines
+      rsl::unique_ptr<RenderEngine> init_render_engine(rhi::ResourceStateTracker* resourceStateTracker) override;
+      rsl::unique_ptr<CopyEngine> init_copy_engine(rhi::ResourceStateTracker* resourceStateTracker) override;
+      rsl::unique_ptr<ComputeEngine> init_compute_engine(rhi::ResourceStateTracker* resourceStateTracker) override;
+
       // Initialize the resource heap which keeps track of all gpu resources
       void init_resource_heap() override;
-      // Initialize the descriptor heaps which keep track of all descriptors to various resources
-      void init_descriptor_heaps() override;
+      // Allocate a new descriptor heap of a given type
+      rsl::unique_ptr<rhi::DescriptorHeap> allocate_desc_heap(rhi::DescriptorHeapType descHeapType) override;
 
     private:
-      void init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE type);
-
-    private:
-      wrl::ComPtr<IDXGIInfoQueue> m_debug_info_queue;
-      rsl::unique_ptr<rhi::DxDevice> m_device;
-      dxgi::AdapterManager* m_adapter_manager;
-      rsl::unique_ptr<rhi::ResourceHeap> m_heap;
-      rsl::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, rsl::unique_ptr<rhi::DescriptorHeap>> m_descriptor_heap_pool;
-      rhi::ShaderCompiler m_shader_compiler;
+      rsl::unique_ptr<rhi::DxDevice> m_device;    // The DirectX device
+      dxgi::AdapterManager* m_adapter_manager;    // The list of adapters (aka gpus)
+      rsl::unique_ptr<rhi::ResourceHeap> m_heap;  // The heap we use to allocate gpu resources
+      rhi::ShaderCompiler m_shader_compiler;      // A shader compiler with internal caching
     };
   }
 }

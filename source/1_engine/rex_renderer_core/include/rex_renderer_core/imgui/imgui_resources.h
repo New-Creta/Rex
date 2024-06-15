@@ -8,6 +8,7 @@
 namespace rex
 {
   // Wrapper around imgui resources that are shared between all imgui viewports
+  // This will become a material in the future
   struct ImGuiResources
   {
     rhi::RootSignature* root_signature;

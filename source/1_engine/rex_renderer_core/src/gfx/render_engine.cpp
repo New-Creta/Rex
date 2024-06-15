@@ -4,8 +4,8 @@ namespace rex
 {
   namespace gfx
   {
-    RenderEngine::RenderEngine()
-      : GraphicsEngine(rhi::GraphicsEngineType::Render)
+    RenderEngine::RenderEngine(rhi::ResourceStateTracker* globalResourceStateTracker)
+      : GraphicsEngine(rhi::GraphicsEngineType::Render, globalResourceStateTracker)
     {}
   }
 }

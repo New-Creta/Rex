@@ -2,6 +2,8 @@
 
 #include "rex_renderer_core/resources/vertex_buffer.h"
 
+#include "rex_directx/utility/dx_util.h"
+
 namespace rex
 {
   namespace rhi
@@ -9,16 +11,9 @@ namespace rex
     class DxVertexBuffer : public VertexBuffer
     {
     public:
-      DxVertexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numVertices, rsl::memory_size vertexSize)
-        : VertexBuffer(numVertices, vertexSize)
-        , m_resource(resource)
-      {
-      }
+      DxVertexBuffer(const wrl::ComPtr<ID3D12Resource>& resource, s32 numVertices, rsl::memory_size vertexSize);
 
-      ID3D12Resource* dx_object()
-      {
-        return m_resource.Get();
-      }
+      ID3D12Resource* dx_object();
 
     private:
       wrl::ComPtr<ID3D12Resource> m_resource;

@@ -9,10 +9,10 @@ namespace rex
 {
   namespace rhi
   {
-    DescriptorHeap::DescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device)
+    DxDescriptorHeap::DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device)
         : m_descriptor_heap(descHeap)
         , m_device(device)
-        , m_used_descriptors(0)
+        , m_num_used_descriptors(0)
         , m_descriptor_size(0)
     {
       const D3D12_DESCRIPTOR_HEAP_DESC desc = m_descriptor_heap->GetDesc();
@@ -21,7 +21,8 @@ namespace rex
       m_descriptor_size               = static_cast<s32>(m_device->GetDescriptorHandleIncrementSize(m_desc_heap_type)); // NOLINT(cppcoreguidelines-prefer-member-initializer)
     }
 
-    DescriptorHandle DescriptorHeap::create_rtv(ID3D12Resource* resource)
+    // Create a render target view and return a handle pointing to it
+    DescriptorHandle DxDescriptorHeap::create_rtv(ID3D12Resource* resource)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_RTV, "Trying to create a render target view from a descriptor heap that's not configured to create render target views");
 
@@ -34,8 +35,8 @@ namespace rex
 
       return rtv_handle;
     }
-
-    DescriptorHandle DescriptorHeap::create_dsv(ID3D12Resource* resource, DXGI_FORMAT format)
+    // Create a depth stencil view and return a handle pointing to it
+    DescriptorHandle DxDescriptorHeap::create_dsv(ID3D12Resource* resource, DXGI_FORMAT format)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_DSV, "Trying to create a depth stencil view from a descriptor heap that's not configured to create depth stencil views");
 
@@ -49,8 +50,8 @@ namespace rex
 
       return dsv_handle;
     }
-
-    DescriptorHandle DescriptorHeap::create_cbv(ID3D12Resource* resource, rsl::memory_size size)
+    // Create a constant buffer view and return a handle pointing to it
+    DescriptorHandle DxDescriptorHeap::create_cbv(ID3D12Resource* resource, rsl::memory_size size)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a constant buffer view from a descriptor heap that's not configured to create constant buffers views");
 
@@ -64,8 +65,8 @@ namespace rex
 
       return cbv_handle;
     }
-
-    DescriptorHandle DescriptorHeap::create_texture2d_srv(ID3D12Resource* resource)
+    // Create a shader resource view pointing to a texture and return a handle pointing to this view
+    DescriptorHandle DxDescriptorHeap::create_texture2d_srv(ID3D12Resource* resource)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a constant buffer view from a descriptor heap that's not configured to create constant buffers views");
 
@@ -82,32 +83,33 @@ namespace rex
       return desc_handle;
     }
 
-    D3D12_GPU_DESCRIPTOR_HANDLE DescriptorHeap::gpu_heap_start()
-    {
-      return m_descriptor_heap->GetGPUDescriptorHandleForHeapStart();
-    }
-
-    DescriptorHandle DescriptorHeap::my_start_handle()
-    {
-      return DescriptorHandle(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), m_descriptor_heap->GetGPUDescriptorHandleForHeapStart(), m_desc_heap_type, m_descriptor_size);
-    }
-
-    DescriptorHandle DescriptorHeap::new_free_handle()
-    {
-      DescriptorHandle handle = my_start_handle();
-      handle += m_used_descriptors;
-      ++m_used_descriptors;
-      return handle;
-    }
-
-    void DescriptorHeap::reset()
-    {
-      m_used_descriptors = 0;
-    }
-
-    ID3D12DescriptorHeap* DescriptorHeap::get()
+    // Return the internal wrapped descriptor heap
+    ID3D12DescriptorHeap* DxDescriptorHeap::get()
     {
       return m_descriptor_heap.Get();
+    }
+
+    // Reset the descriptor heap
+    // This will cause new descriptor to be allocated from the beginning of the heap
+    // this does not destroy existing descriptors, 
+    // it only repoints the allocating start back to the beginning of the heap
+    void DxDescriptorHeap::reset()
+    {
+      m_num_used_descriptors = 0;
+    }
+
+    // Return a handle pointing to the start of the descriptor heap
+    DescriptorHandle DxDescriptorHeap::new_free_handle()
+    {
+      DescriptorHandle handle = my_start_handle();
+      handle += m_num_used_descriptors;
+      ++m_num_used_descriptors;
+      return handle;
+    }
+    // Return a handle pointing to a free bit of memory in the descriptor heap
+    DescriptorHandle DxDescriptorHeap::my_start_handle()
+    {
+      return DescriptorHandle(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), m_descriptor_heap->GetGPUDescriptorHandleForHeapStart(), m_desc_heap_type, m_descriptor_size);
     }
 
   } // namespace rhi

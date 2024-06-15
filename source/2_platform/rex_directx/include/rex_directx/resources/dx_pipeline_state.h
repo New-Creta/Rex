@@ -6,7 +6,7 @@
 #include "rex_renderer_core/resources/blend_state.h"
 #include "rex_renderer_core/resources/depth_stencil_state.h"
 
-#include "rex_directx/resources/dx_input_layout_resource.h"
+#include "rex_directx/resources/dx_input_layout.h"
 #include "rex_directx/resources/dx_vertex_shader.h"
 #include "rex_directx/resources/dx_pixel_shader.h"
 #include "rex_renderer_core/resources/pipeline_state.h"

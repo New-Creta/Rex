@@ -35,24 +35,18 @@ namespace rex
     {
       auto render_ctx = gfx::new_render_ctx();
 
+      // Render the imgui viewport directly on the back buffer
       rhi::RenderTarget* render_target = m_swapchain->current_buffer();
 
       render_ctx->transition_buffer(render_target, rhi::ResourceState::RenderTarget);
       render_ctx->set_render_target(render_target);
       m_viewport.render(*render_ctx.get());
       render_ctx->transition_buffer(render_target, rhi::ResourceState::Present);
-
-      //advance_to_next_frame();
     }
-
-    //void ImGuiWindow::clear_render_target(const ImVec4& clearColor)
-    //{
-    //  rhi::RenderTarget* render_target = m_render_targets[m_swapchain->get()->GetCurrentBackBufferIndex()].get();
-    //  m_command_list->clear_render_target(render_target, m_clear_state.get());
-    //}
 
     void ImGuiWindow::wait_for_pending_operations()
     {
+      // Implementation pending
     }
     void ImGuiWindow::resize_buffers(s32 width, s32 height)
     {

@@ -14,8 +14,6 @@
 
 namespace rex
 {
-  DEFINE_LOG_CATEGORY(LogImGui2);
-
   RexImGuiViewport::RexImGuiViewport(ImGuiViewport* imguiViewport)
     : m_imgui_viewport(imguiViewport)
     , m_frame_idx(0)
@@ -119,7 +117,7 @@ namespace rex
         rhi::Texture2D* texture = (rhi::Texture2D*)pcmd->GetTexID();
 
         ctx.set_scissor_rect(rect);
-        ctx.bind_texture(texture);
+        ctx.bind_texture(1, texture);
 
         ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
       }

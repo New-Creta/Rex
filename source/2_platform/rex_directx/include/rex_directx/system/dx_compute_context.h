@@ -17,6 +17,9 @@ namespace rex
 
       ID3D12GraphicsCommandList* dx_cmdlist();
 
+    protected:
+      void platform_reset(rhi::CommandAllocator* alloc, DescriptorHeap* descHeap) override;
+
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;
     };

@@ -33,11 +33,16 @@ namespace rex
     public:
       ImGuiWindow(ImGuiViewport* viewport, const ImGuiDevice& creationInfo);
 
+      // Render the imgui window
       void render(ClearRenderTarget clearRenderTarget);
 
+      // Wait for gpu commands to complete, this is blocking
       void wait_for_pending_operations();
+      // Resize the swapchains buffers
       void resize_buffers(s32 width, s32 height);
+      // Present the backbuffer by swapping it with the front buffer
       void present();
+      // Yield the thread until all gpu commands have finished executing
       void yield_thread_until_in_sync_with_gpu();
 
     private:

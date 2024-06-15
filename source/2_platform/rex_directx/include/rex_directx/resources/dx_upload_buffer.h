@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/resource_management/resource.h"
+#include "rex_renderer_core/system/upload_buffer.h"
 
 namespace rex
 {
@@ -9,29 +9,32 @@ namespace rex
   {
     class Resource;
 
-    class UploadBuffer : public Resource
+    // An upload buffer is a heap specifically used for uploading data to the gpu
+    // it has a gpu resource with read acces
+    // on the other hand tt has an internal mapped buffer into this gpu resource
+    // so data can be written from the cpu
+    // The upload buffer acts as a stack allocator
+    class DxUploadBuffer : public UploadBuffer
     {
     public:
-      explicit UploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer, D3D12_RESOURCE_STATES startState = D3D12_RESOURCE_STATE_COMMON);
-      UploadBuffer(const UploadBuffer&) = delete;
-      UploadBuffer(UploadBuffer&&) = delete;
-      ~UploadBuffer() override;
+      explicit DxUploadBuffer(const wrl::ComPtr<ID3D12Resource>& uploadBuffer);
+      DxUploadBuffer(const DxUploadBuffer&) = delete;
+      DxUploadBuffer(DxUploadBuffer&&) = delete;
+      ~DxUploadBuffer() override;
 
-      UploadBuffer& operator=(const UploadBuffer&) = delete;
-      UploadBuffer& operator=(UploadBuffer&&) = delete;
+      DxUploadBuffer& operator=(const DxUploadBuffer&) = delete;
+      DxUploadBuffer& operator=(DxUploadBuffer&&) = delete;
 
-      s32 prepare_for_new_buffer_write(const void* data, s64 size, s32 alignment = 1, s32 offset = 0);
-      s32 prepare_for_new_texture_write(const void* data, s32 width, s32 height, renderer::TextureFormat format, s32 offset = 0);
+      // Write data on cpu side, it returns the offset into the upload buffer where data was written to
+      s32 write_buffer_data_from_cpu(const void* data, s64 size, s32 alignment = 1);
+      // Write data on cpu side, it returns the offset into the upload buffer where data was written to
+      s32 write_texture_data_from_cpu(const void* data, s32 width, s32 height, renderer::TextureFormat format);
 
-      void reset();
       ID3D12Resource* dx_object();
 
     private:
-      wrl::ComPtr<ID3D12Resource> m_upload_buffer;
-      void* m_mapped_data;
-      s64 m_offset;
-      s64 m_size;
-      D3D12_RESOURCE_STATES m_resource_state;
+      wrl::ComPtr<ID3D12Resource> m_upload_buffer; // The gpu resource where data will be written in to
+      void* m_mapped_data;                         // A pointed pointing to the bit of memory that's mapped between cpu and gpu
     };
   } // namespace rhi
 } // namespace rex

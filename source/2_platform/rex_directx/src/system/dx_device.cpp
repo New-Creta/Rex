@@ -55,6 +55,10 @@ namespace rex
       m_adapter->as<IDXGIAdapter3>()->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info);
       return static_cast<s64>(info.Budget);
     }
+    s64 DxDevice::memory_total() const
+    {
+      return m_adapter->description().dedicated_video_memory;
+    }
 
     void DxDevice::init_shader_model()
     {

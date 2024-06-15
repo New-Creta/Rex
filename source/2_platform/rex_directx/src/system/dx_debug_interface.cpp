@@ -11,6 +11,30 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogDebugInterface);
 
+#ifdef REX_ENABLE_GFX_DEBUGGING
+    constexpr bool g_enable_dx12_severity_message     = false;
+    constexpr bool g_enable_dx12_severity_info        = false;
+    constexpr bool g_enable_dx12_severity_warning     = false;
+    constexpr bool g_enable_dx12_severity_error       = true;
+    constexpr bool g_enable_dx12_severity_corruption  = true;
+    constexpr bool g_enable_dxgi_severity_message     = false;
+    constexpr bool g_enable_dxgi_severity_info        = false;
+    constexpr bool g_enable_dxgi_severity_warning     = false;
+    constexpr bool g_enable_dxgi_severity_error       = true;
+    constexpr bool g_enable_dxgi_severity_corruption  = true;
+#else
+    constexpr bool g_enable_dx12_severity_message     = false;
+    constexpr bool g_enable_dx12_severity_info        = false;
+    constexpr bool g_enable_dx12_severity_warning     = false;
+    constexpr bool g_enable_dx12_severity_error       = false;
+    constexpr bool g_enable_dx12_severity_corruption  = false;
+    constexpr bool g_enable_dxgi_severity_message     = false;
+    constexpr bool g_enable_dxgi_severity_info        = false;
+    constexpr bool g_enable_dxgi_severity_warning     = false;
+    constexpr bool g_enable_dxgi_severity_error       = false;
+    constexpr bool g_enable_dxgi_severity_corruption  = false;
+#endif
+
     DebugInterface::DebugInterface()
     {
       init_dxgi_debug_interface();
@@ -65,11 +89,11 @@ namespace rex
 
       if (DX_SUCCESS(DXGIGetDebugInterface1(0, IID_PPV_ARGS(m_debug_info_queue.GetAddressOf()))))
       {
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE, globals::g_enable_dxgi_severity_message);
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_INFO, globals::g_enable_dxgi_severity_info);
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, globals::g_enable_dxgi_severity_warning);
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, globals::g_enable_dxgi_severity_error);
-        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, globals::g_enable_dxgi_severity_corruption);
+        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_MESSAGE,     g_enable_dxgi_severity_message);
+        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_INFO,        g_enable_dxgi_severity_info);
+        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING,     g_enable_dxgi_severity_warning);
+        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR,       g_enable_dxgi_severity_error);
+        m_debug_info_queue->SetBreakOnSeverity(DXGI_DEBUG_DXGI, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION,  g_enable_dxgi_severity_corruption);
 
         rsl::array<DXGI_INFO_QUEUE_MESSAGE_ID, 1> dxgi_hide =
         {

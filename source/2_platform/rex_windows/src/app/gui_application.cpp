@@ -119,10 +119,7 @@ namespace rex
         }
 
         // Call into our graphics API to render everything
-        gfx::render();
-        
-        // Present the newly rendered image to the main window
-        gfx::present();
+        gfx::render();        
       }
       void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {
@@ -131,8 +128,6 @@ namespace rex
         m_on_shutdown();
 
         gfx::shutdown();
-
-        //renderer::shutdown();
       }
 
     private:
@@ -325,6 +320,7 @@ namespace rex
 
         REX_WARN_ONCE(LogWindows, "Create the viewport manager here");
 
+        // Add the imgui renderer, which is our main UI renderer for the moment
         gfx::add_renderer(rsl::make_unique<ImGuiRenderer>(m_window->primary_display_handle()));
 
         return true;
@@ -339,7 +335,7 @@ namespace rex
         // update the window (this pulls input as well)
         m_window->update();
 
-        // Dispatch the threads that got queued last frame
+        // Dispatch the events that got queued last frame
         event_system().dispatch_queued_events();
       }
       void post_user_update()

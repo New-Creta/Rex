@@ -12,6 +12,11 @@
 #include "rex_renderer_core/gfx/copy_engine.h"
 #include "rex_renderer_core/gfx/compute_engine.h"
 #include "rex_renderer_core/resources/clear_state.h"
+#include "rex_renderer_core/rhi/descriptor_heap_type.h"
+#include "rex_renderer_core/system/descriptor_heap.h"
+#include "rex_renderer_core/system/resource_state_tracker.h"
+
+#include "rex_std/unordered_map.h"
 
 namespace rex
 {
@@ -22,7 +27,7 @@ namespace rex
     class GpuEngine
     {
     public:
-      GpuEngine(rsl::unique_ptr<RenderEngine> renderEngine, rsl::unique_ptr<ComputeEngine> computeEngine, rsl::unique_ptr<CopyEngine> copyEngine, const renderer::OutputWindowUserData& userData);
+      GpuEngine(const renderer::OutputWindowUserData& userData);
       GpuEngine(const GpuEngine&) = delete;
       GpuEngine(GpuEngine&&) = delete;
 
@@ -54,10 +59,18 @@ namespace rex
       rhi::RenderTarget* current_backbuffer_rt();
 
     protected:
+      // Initialize the various sub engines
+      virtual rsl::unique_ptr<RenderEngine> init_render_engine(rhi::ResourceStateTracker* resourceStateTracker) = 0;
+      virtual rsl::unique_ptr<CopyEngine> init_copy_engine(rhi::ResourceStateTracker* resourceStateTracker) = 0;
+      virtual rsl::unique_ptr<ComputeEngine> init_compute_engine(rhi::ResourceStateTracker* resourceStateTracker) = 0;
+
       // Initialize the resource heap which allocates all gpu resources
       virtual void init_resource_heap() = 0;
-      // Initialize the descriptor heaps which allocates all descriptors to various resources
-      virtual void init_descriptor_heaps() = 0;
+      // Allocate a new descriptor heap of a given type
+      virtual rsl::unique_ptr<rhi::DescriptorHeap> allocate_desc_heap(rhi::DescriptorHeapType descHeapType) = 0;
+
+      // Returns a specific descriptor heap based on type
+      rhi::DescriptorHeap* desc_heap(rhi::DescriptorHeapType descHeapType);
 
     private:
       // Initialize the clear state which is used to clear the backbuffer with
@@ -68,6 +81,9 @@ namespace rex
       void init_sub_engines();
       // Initialize imgui so it can create its own windows if necessary
       void init_imgui();
+      // Initialize the descriptor heaps which keep track of all descriptors to various resources
+      void init_desc_heaps();
+      void init_desc_heap(rhi::DescriptorHeapType descHeapType);
 
     private:
       rsl::unique_ptr<rhi::Swapchain> m_swapchain;      // The swapchain is responsible for swapping the backbuffer with the front buffer
@@ -78,6 +94,9 @@ namespace rex
       s32 m_max_frames_in_flight;                       // The maximum number of we can have in flight for rendering.
       void* m_primary_display_handle;                   // The display handle to render to (HWND on Windows)
       s32 m_frame_idx;                                  // The current frame index
+      rsl::unordered_map<rhi::DescriptorHeapType, rsl::unique_ptr<rhi::DescriptorHeap>> m_descriptor_heap_pool; // Pool of descriptor heaps per type
+      rhi::ResourceStateTracker m_resource_state_tracker; // The global tracker of resource states
+      
     };
 
   }

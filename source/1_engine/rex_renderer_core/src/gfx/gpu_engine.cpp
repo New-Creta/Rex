@@ -16,10 +16,10 @@ namespace rex
 
     // Make sure to not try and initialize any gpu resources in the constructor.
     // The derived class of the gpu engine is responsible for making sure the gpu is ready.
-    GpuEngine::GpuEngine(rsl::unique_ptr<RenderEngine> renderEngine, rsl::unique_ptr<ComputeEngine> computeEngine, rsl::unique_ptr<CopyEngine> copyEngine, const renderer::OutputWindowUserData& userData)
-      : m_render_engine(rsl::move(renderEngine))
-      , m_compute_engine(rsl::move(computeEngine))
-      , m_copy_engine(rsl::move(copyEngine))
+    GpuEngine::GpuEngine(const renderer::OutputWindowUserData& userData)
+      : m_render_engine()
+      , m_compute_engine()
+      , m_copy_engine()
       , m_swapchain()
       , m_max_frames_in_flight(userData.max_frames_in_flight)
       , m_primary_display_handle(userData.primary_display_handle)
@@ -33,10 +33,10 @@ namespace rex
     void GpuEngine::init()
     {
       init_resource_heap();
-      init_descriptor_heaps();
+      init_desc_heaps();
+      init_sub_engines();
       init_clear_state();
       init_swapchain();
-      init_sub_engines();
       init_imgui();
     }
 
@@ -73,19 +73,19 @@ namespace rex
     // Create a new context which is used for copying resources from or to the gpu
     ScopedPoolObject<rhi::CopyContext> GpuEngine::new_copy_ctx()
     {
-      auto base_ctx = m_copy_engine->new_context();
+      auto base_ctx = m_copy_engine->new_context(desc_heap(rhi::DescriptorHeapType::ShaderResourceView));
       return base_ctx.convert<rhi::CopyContext>();
     }
     // Create a new context which is used for rendering to render targets
     ScopedPoolObject<rhi::RenderContext> GpuEngine::new_render_ctx()
     {
-      auto base_ctx = m_render_engine->new_context();
+      auto base_ctx = m_render_engine->new_context(desc_heap(rhi::DescriptorHeapType::ShaderResourceView));
       return base_ctx.convert<rhi::RenderContext>();
     }
     // Create a new context which is used for computing data on the gpu
     ScopedPoolObject<rhi::ComputeContext> GpuEngine::new_compute_ctx()
     {
-      auto base_ctx = m_compute_engine->new_context();
+      auto base_ctx = m_compute_engine->new_context(desc_heap(rhi::DescriptorHeapType::ShaderResourceView));
       return base_ctx.convert<rhi::ComputeContext>();
     }
 
@@ -93,6 +93,12 @@ namespace rex
     rhi::RenderTarget* GpuEngine::current_backbuffer_rt()
     {
       return m_swapchain->current_buffer();
+    }
+
+    // Returns a specific descriptor heap based on type
+    rhi::DescriptorHeap* GpuEngine::desc_heap(rhi::DescriptorHeapType descHeapType)
+    {
+      return m_descriptor_heap_pool.at(descHeapType).get();
     }
 
     // Initialize the clear state which is used to clear the backbuffer with
@@ -111,6 +117,10 @@ namespace rex
     // Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
     void GpuEngine::init_sub_engines()
     {
+      m_render_engine = init_render_engine(&m_resource_state_tracker);
+      m_copy_engine = init_copy_engine(&m_resource_state_tracker);
+      m_compute_engine = init_compute_engine(&m_resource_state_tracker);
+
       m_render_engine->init();
       m_copy_engine->init();
       m_compute_engine->init();
@@ -124,5 +134,19 @@ namespace rex
       imgui_device.rtv_format = m_swapchain->format();
       init_imgui_device(imgui_device);
     }
+    // Initialize the descriptor heaps which keep track of all descriptors to various resources
+    void GpuEngine::init_desc_heaps()
+    {
+      init_desc_heap(rhi::DescriptorHeapType::RenderTargetView);
+      init_desc_heap(rhi::DescriptorHeapType::DepthStencilView);
+      init_desc_heap(rhi::DescriptorHeapType::ConstantBufferView);
+      init_desc_heap(rhi::DescriptorHeapType::Sampler);
+    }
+    void GpuEngine::init_desc_heap(rhi::DescriptorHeapType descHeapType)
+    {
+      m_descriptor_heap_pool.emplace(descHeapType, allocate_desc_heap(descHeapType));
+
+    }
+
   }
 }

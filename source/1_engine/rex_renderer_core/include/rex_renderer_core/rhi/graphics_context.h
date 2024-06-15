@@ -21,6 +21,7 @@ namespace rex
   {
     class CommandAllocator;
     class Resource;
+    class DescriptorHeap;
 
     // A graphics context acts as the base class for the interface into queueing gpu commands
     class GraphicsContext
@@ -30,7 +31,7 @@ namespace rex
       virtual ~GraphicsContext();
 
       // Reset the context, freeing up any previously allocated commands
-      void reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc);
+      void reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc, ResourceStateTracker* resourceStateTracker, DescriptorHeap* descHeap);
       // Execute the commands on the gpu.
       // A sync info is returned so the user can use it to sync with other contexts
       ScopedPoolObject<SyncInfo> execute_on_gpu();
@@ -50,12 +51,12 @@ namespace rex
       // Return the owning gpu engine of this context
       gfx::GraphicsEngine* owning_engine();
       // Reset the platform specific context
-      virtual void platform_reset(rhi::CommandAllocator* alloc) = 0;
+      virtual void platform_reset(rhi::CommandAllocator* alloc, DescriptorHeap* descHeap) = 0;
 
     private:
       ScopedPoolObject<gfx::PooledAllocator> m_allocator; // The allocator to use for allocating gpu commands
       gfx::GraphicsEngine* m_owning_engine;               // The owning engine of this context
-      ResourceStateTracker m_resource_state_tracker;      // The tracker for resource states
+      ResourceStateTracker* m_resource_state_tracker;      // The tracker for resource states
       GraphicsEngineType m_type;                          // The type of this context
     };
   }

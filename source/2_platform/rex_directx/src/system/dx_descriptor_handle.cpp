@@ -15,6 +15,9 @@ namespace rex
     DescriptorHandle& DescriptorHandle::operator++()
     {
       m_cpu_handle.Offset(1, m_size);
+      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_gpu_handle);
+      handle_gpu.InitOffsetted(m_gpu_handle, m_size);
+      m_gpu_handle = handle_gpu;
       return *this;
     }
     DescriptorHandle DescriptorHandle::operator++(int)
@@ -29,6 +32,9 @@ namespace rex
     DescriptorHandle& DescriptorHandle::operator--()
     {
       m_cpu_handle.Offset(-1, m_size);
+      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_gpu_handle);
+      handle_gpu.InitOffsetted(m_gpu_handle, -m_size);
+      m_gpu_handle = handle_gpu;
       return *this;
     }
     DescriptorHandle DescriptorHandle::operator--(int)

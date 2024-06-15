@@ -31,52 +31,65 @@ namespace rex
     DEFINE_LOG_CATEGORY(LogDxGpuEngine);
 
     DxGpuEngine::DxGpuEngine(const renderer::OutputWindowUserData& userData, rsl::unique_ptr<rhi::DxDevice> device, dxgi::AdapterManager* adapterManager)
-      : GpuEngine(rsl::make_unique<rhi::DxRenderEngine>(), rsl::make_unique<rhi::DxComputeEngine>(), rsl::make_unique<rhi::DxCopyEngine>(), userData)
+      : GpuEngine(userData)
       , m_device(rsl::move(device))
-      , m_heap(rhi::create_resource_heap())
-      , m_descriptor_heap_pool()
       , m_adapter_manager(adapterManager)
+      , m_heap(rhi::create_resource_heap())
+      , m_shader_compiler()
     {
     }
 
+    // Allocate a 1D buffer on the gpu, returning a DirectX resource
     wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_buffer(rsl::memory_size size)
     {
       return m_heap->create_buffer(size);
     }
+    // Allocate a 2D buffer on the gpu, returning a DirectX resource
     wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_texture2d(s32 width, s32 height, renderer::TextureFormat format)
     {
       DXGI_FORMAT d3d_format = d3d::to_dx12(format);
       return m_heap->create_texture2d(d3d_format, width, height);
     }
 
+    // Create a render target view for a given resource
     rhi::DescriptorHandle DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
-      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_RTV)->create_rtv(texture.Get());
+      return d3d::to_dx12(desc_heap(rhi::DescriptorHeapType::RenderTargetView))->create_rtv(texture.Get());
     }
+    // Create a shader resource view pointing to a 2D texture
     rhi::DescriptorHandle DxGpuEngine::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
-      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->create_texture2d_srv(texture.Get());
+      return d3d::to_dx12(desc_heap(rhi::DescriptorHeapType::ShaderResourceView))->create_texture2d_srv(texture.Get());
     }
+    // Create a constant buffer view pointing for a given resource
     rhi::DescriptorHandle DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
     {
-      return m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->create_cbv(resource.Get(), size);
+      return d3d::to_dx12(desc_heap(rhi::DescriptorHeapType::ConstantBufferView))->create_cbv(resource.Get(), size);
     }
+    // Compile a shader written in HLSL
     wrl::ComPtr<ID3DBlob> DxGpuEngine::compile_shader(const rhi::CompileShaderDesc& desc)
     {
       return m_shader_compiler.compile_shader(desc);
     }
 
-    rsl::vector<ID3D12DescriptorHeap*> DxGpuEngine::desc_heaps()
+    // Initialize the various sub engines
+    rsl::unique_ptr<RenderEngine> DxGpuEngine::init_render_engine(rhi::ResourceStateTracker* resourceStateTracker)
     {
-      rsl::vector<ID3D12DescriptorHeap*> heaps;
-      heaps.emplace_back(m_descriptor_heap_pool.at(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)->get());
-
-      return heaps;
+      return rsl::make_unique<rhi::DxRenderEngine>(resourceStateTracker);
+    }
+    rsl::unique_ptr<CopyEngine> DxGpuEngine::init_copy_engine(rhi::ResourceStateTracker* resourceStateTracker)
+    {
+      return rsl::make_unique<rhi::DxCopyEngine>(resourceStateTracker);
+    }
+    rsl::unique_ptr<ComputeEngine> DxGpuEngine::init_compute_engine(rhi::ResourceStateTracker* resourceStateTracker)
+    {
+      return rsl::make_unique<rhi::DxComputeEngine>(resourceStateTracker);
     }
 
+    // Initialize the resource heap which keeps track of all gpu resources
     void DxGpuEngine::init_resource_heap()
     {
-      rsl::memory_size resource_heap_size = 100_mib;
+      rsl::memory_size resource_heap_size = 100_mib; // hardcoded for now, will become a setting in the future
       CD3DX12_HEAP_DESC desc(resource_heap_size, D3D12_HEAP_TYPE_DEFAULT);
 
       wrl::ComPtr<ID3D12Heap> d3d_heap;
@@ -87,17 +100,11 @@ namespace rex
 
       m_heap = rsl::make_unique<rhi::ResourceHeap>(d3d_heap, m_device->get());
     }
-    void DxGpuEngine::init_descriptor_heaps()
-    {
-      init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-      init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-      init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-      init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-    }
 
-    void DxGpuEngine::init_desc_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
+    // Allocate a new descriptor heap of a given type
+    rsl::unique_ptr<rhi::DescriptorHeap> DxGpuEngine::allocate_desc_heap(rhi::DescriptorHeapType descHeapType)
     {
-      m_descriptor_heap_pool.emplace(type, rhi::create_descriptor_heap(type));
+      return rhi::create_descriptor_heap(d3d::to_dx12(descHeapType));
     }
   }
 }

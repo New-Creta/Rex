@@ -29,34 +29,21 @@ namespace rex
 {
   namespace rhi
   {
-    REX_STATIC_WARNING("The following func doesn't belong here and is more a utility/debug functionality");
-    // Useful function that assigns a name to a resource.
-    // This is useful for debugging
-    template<typename TResourceType>
-    void set_debug_name_for(TResourceType* resource, rsl::string_view name)
-    {
-#ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
-      resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length(), name.data());
-#else
-      REX_UNUSED_PARAM(resource);
-      REX_UNUSED_PARAM(name);
-#endif
-    }
-
     namespace api
     {
+      // All functions here are DirectX specific
+
+      // Return a new render target constructed from a given gpu resource (usefull for swapchains)
       rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource);
 
+      // Compile a shader and return its binary blob
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
+      // Create a DirectX commandlist
       wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(rhi::CommandAllocator* alloc, rhi::GraphicsEngineType type);
+      // Create a DirectX descriptor heap
       rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type);
-      rsl::unique_ptr<Texture2D> create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource);
+      // Create a DirectX resource heap
       rsl::unique_ptr<ResourceHeap> create_resource_heap();
-      rsl::vector<ID3D12DescriptorHeap*> get_desc_heaps();
-      rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
-
-      rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource);
-
     }
   }
 }

@@ -17,6 +17,7 @@ namespace rex
       REX_INFO(LogRhi, "API Version: {}", info.api_version);
       REX_INFO(LogRhi, "Shader Version: {}", info.shader_version);
       REX_INFO(LogRhi, "Driver Version: {}", info.driver_version);
+      REX_INFO(LogRhi, "Available Memory: {}", info.available_memory);
     }
   }
 

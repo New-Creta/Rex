@@ -4,6 +4,7 @@
 #include "rex_directx/system/dx_device.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
 #include "rex_engine/engine/types.h"
+#include "rex_engine/text_processing/text_processing.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/bonus/string.h"
 #include "rex_std/string.h"
@@ -14,14 +15,7 @@
 
 namespace
 {
-  const uint32 g_adapter_description_size = rsl::small_stack_string::max_size();
   const rsl::array g_expected_feature_levels = { D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1 };
-
-  //-------------------------------------------------------------------------
-  bool is_correct_feature_level(D3D_FEATURE_LEVEL level)
-  {
-    return rsl::cend(g_expected_feature_levels) != rsl::find(rsl::cbegin(g_expected_feature_levels), rsl::cend(g_expected_feature_levels), level);
-  }
 
   //-------------------------------------------------------------------------
   /**
@@ -53,33 +47,12 @@ namespace
   }
 
   //-------------------------------------------------------------------------
-  rsl::small_stack_string to_multibyte(const tchar* wideCharacterBuffer, count_t size)
-  {
-    rsl::small_stack_string buffer;
-
-    // Convert wide character string to multi byte character string.
-    // size_t converted_chars => The amount of converted characters.
-    // 0 terminate the string afterwards.
-    size_t converted_chars = 0;
-    auto result            = wcstombs_s(&converted_chars, buffer.data(), size, wideCharacterBuffer, size);
-    if(result != 0)
-    {
-      //REX_ERROR(LogDirectX, "Failed to convert wide character string to multi byte character string.");
-      return rsl::small_stack_string("Invalid String");
-    }
-
-    buffer.reset_null_termination_offset();
-
-    return rsl::small_stack_string(buffer.data(), static_cast<count_t>(converted_chars)); // NOLINT(readability-redundant-string-cstr)
-  }
-
-  //-------------------------------------------------------------------------
   template <typename DXGIAdapterDesc>
   rex::GpuDescription convert_description(const DXGIAdapterDesc& dxgiDesc)
   {
     rex::GpuDescription desc;
 
-    desc.name        = to_multibyte(dxgiDesc.Description, g_adapter_description_size);
+    desc.name        = rsl::small_stack_string(rex::to_multibyte(dxgiDesc.Description, desc.name.max_size()));
     desc.vendor_name = vendor_to_string(dxgiDesc.VendorId);
 
     desc.vendor_id = dxgiDesc.VendorId;

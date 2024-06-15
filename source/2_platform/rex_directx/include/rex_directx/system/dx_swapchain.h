@@ -23,20 +23,24 @@ namespace rex
     public:
       DxSwapchain(const wrl::ComPtr<IDXGISwapChain3>& swapchain, s32 width, s32 height, DXGI_FORMAT format, s32 bufferCount);
 
+      // Resize the internal buffers of the swapchain to a new width and height
       void resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);
+      // Swap the current back buffer with the front buffer
       void present();
 
+      // Return the internal wrapped swapchain object
       IDXGISwapChain3* get();
 
+      // Return the index of the current back buffer
       s32 current_buffer_idx() const override;
 
     private:
-      void store_buffers(s32 bufferCount);
+      // Query the buffers from the swapped swapchain object and cache them
+      void query_buffers(s32 bufferCount);
 
     private:
       wrl::ComPtr<IDXGISwapChain3> m_swapchain;
       DXGI_FORMAT m_format;
-      //rsl::vector<Resource2> m_swapchain_buffers; // swapchain render target buffer indices
     };
   } // namespace rhi
 } // namespace rex
