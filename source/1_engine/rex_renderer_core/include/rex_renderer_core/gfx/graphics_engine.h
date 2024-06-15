@@ -70,7 +70,5 @@ namespace rex
       gfx::CommandAllocatorPool m_command_allocator_pool; // the pool for command allocators
       rhi::ResourceStateTracker m_resource_state_tracker; // the resource state tracker of this engine
     };
-
-    // These classes will likely have graphics api specific implementations
   }
 }
