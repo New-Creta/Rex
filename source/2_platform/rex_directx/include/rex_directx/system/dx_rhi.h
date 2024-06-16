@@ -44,6 +44,9 @@ namespace rex
       rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type);
       // Create a DirectX resource heap
       rsl::unique_ptr<ResourceHeap> create_resource_heap();
+
+      // Log live gpu objects using DirectX api
+      void report_live_objects();
     }
   }
 }

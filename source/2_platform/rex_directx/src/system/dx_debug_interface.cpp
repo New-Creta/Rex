@@ -44,10 +44,15 @@ namespace rex
 
     DebugInterface::~DebugInterface()
     {
+      report_live_objects();
+    }
+
+    void DebugInterface::report_live_objects()
+    {
       // DXGI - Live Objects
-      if(m_debug_interface)
+      if (m_debug_interface)
       {
-        if(DX_FAILED(m_debug_interface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL)))) // NOLINT(hicpp-signed-bitwise)
+        if (DX_FAILED(m_debug_interface->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL)))) // NOLINT(hicpp-signed-bitwise)
         {
           REX_ERROR(LogDebugInterface, "Cannot ReportLiveDeviceObjects of DXGI");
           return;
@@ -111,7 +116,5 @@ namespace rex
         REX_ERROR(LogDebugInterface, "Unable to get DXGI Debug Info Queue");
       }
     }
-
-
   } // namespace gfx
 } // namespace rex

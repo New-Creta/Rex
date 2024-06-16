@@ -21,6 +21,8 @@ namespace rex
       DebugInterface& operator=(const DebugInterface&) = delete;
       DebugInterface& operator=(DebugInterface&&) = delete;
 
+      void report_live_objects();
+
     private:
       void init_dxgi_debug_interface();
       void init_debug_controller();

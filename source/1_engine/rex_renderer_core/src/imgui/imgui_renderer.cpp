@@ -31,6 +31,12 @@ namespace rex
       // Open imgui to accept commands
       new_frame();
     }
+    ImGuiRenderer::~ImGuiRenderer()
+    {
+      destroy_viewports();
+      imgui_platform_shutdown();
+      ImGui::DestroyContext();
+    }
 
     void ImGuiRenderer::new_frame()
     {
@@ -157,7 +163,7 @@ namespace rex
       //
       // RootSignatureDesc root_sig_desc;
       // root_sig_desc.vertex_shader = ..;
-      // root_sig_desc.pixel_shader = ..l
+      // root_sig_desc.pixel_shader = ..;
       // ..
       // m_root_signature = create_root_signature(root_sig_desc);
       //
@@ -265,6 +271,25 @@ namespace rex
 
       m_pipeline_state = rhi::create_pso(pso_desc);
     }
+
+    void ImGuiRenderer::destroy_viewports()
+    {
+      ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+      if (RexImGuiViewport* vd = (RexImGuiViewport*)main_viewport->RendererUserData)
+      {
+        rsl::destroy_at(vd);
+        debug_dealloc(vd, sizeof(RexImGuiViewport));
+
+        main_viewport->RendererUserData = nullptr;
+      }
+
+      ImGui::DestroyPlatformWindows();
+
+      ImGuiIO& io = ImGui::GetIO();
+      io.BackendRendererName = nullptr;
+      io.BackendRendererUserData = nullptr;
+    }
+
 
   }
 }

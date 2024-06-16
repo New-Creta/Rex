@@ -23,6 +23,7 @@ namespace rex
     {
     public:
       ImGuiRenderer(void* platformWindowHandle);
+      ~ImGuiRenderer();
 
       // Prepare a new frame for imgui, enabling users to queue imgui objects
       void new_frame() override;
@@ -46,6 +47,9 @@ namespace rex
       void init_pso();
       void init_imgui_renderstate();
 
+      // destroy imgui
+      void destroy_viewports();
+
     private:
       rsl::unique_ptr<Texture2D> m_fonts_texture;          // The fonts texture, the data comes from imgui
       rsl::unique_ptr<Shader> m_vertex_shader;             // The vertex shader used by imgui
@@ -58,6 +62,8 @@ namespace rex
 
     // Perform platform specific imgui initialization, this is not defined here.
     bool imgui_platform_init(void* platformWindowHandle);
+    // destroy all platform specific imgui data
+    void imgui_platform_shutdown();
     // Perform platform specific preparations for a new frame
     void imgui_platform_new_frame();
   }

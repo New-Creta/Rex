@@ -46,6 +46,12 @@ void rex::win::check_for_win_errors(rsl::string_view file, rsl::string_view func
 #ifdef REX_SUPRESS_PRE_CHECK_WINDOWS_ERRORS
   clear_win_errors();
 #else
+  // To check for windows error, follow the path of GetLastError.
+  // It'll try to fetch a pointer to an 32bit int and put it into RAX
+  // Afterwards It'll add an offset of 0x68 bytes.
+  // Put a data breakpoint on this address on the range of 4 bytes
+  // When it triggers, last error is set
+
   const DWord err = GetLastError();
   clear_win_errors();
 

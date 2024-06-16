@@ -27,6 +27,11 @@ namespace rex
 
       return true;
     }
+    void imgui_platform_shutdown()
+    {
+      ImGui_ImplWin32_Shutdown();
+    }
+
     void imgui_platform_new_frame()
     {
       ImGui_ImplWin32_NewFrame();

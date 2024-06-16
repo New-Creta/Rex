@@ -8,7 +8,7 @@ namespace rex
     class DescriptorHeap
     {
     public:
-
+      virtual ~DescriptorHeap() = default;
 
     };
   }
