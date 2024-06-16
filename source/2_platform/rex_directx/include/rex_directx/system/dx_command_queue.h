@@ -26,7 +26,7 @@ namespace rex
       // Halt the cpu until the fence value is reached
       // This is often used to block cpu from adding more commands
       // Which gives the gpu some time to catch up
-      void cpu_wait(u64 fenceValue) override;
+      void cpu_wait() override;
       // Halt the gpu until the fence value is reached
       // Example: This is so the compute queue can wait for the copy queue to have finished.
       void gpu_wait(SyncInfo& sync_info) override;
@@ -34,7 +34,7 @@ namespace rex
       // Execute a context on this command queue
       // Returning a sync object that can be used to make sure
       // another context cannot execute until this context has finished executing
-      ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx) override;
+      ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx, WaitForFinish waitForFinish) override;
 
       // Return the wrapped directx object
       ID3D12CommandQueue* dx_object();
@@ -44,9 +44,6 @@ namespace rex
       u64 gpu_fence_value() const;
 
     private:
-      // Halts this thread until the internal fence has reached or surpassed the given fence value
-      void wait_for_fence(u64 fenceValue);
-
       // Retrieve the DirectX commandlist from a context object
       ID3D12GraphicsCommandList* cmdlist_from_ctx(GraphicsContext* ctx) const;
 

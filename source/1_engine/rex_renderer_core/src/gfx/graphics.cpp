@@ -16,9 +16,6 @@ namespace rex
     GpuEngine* g_gpu_engine;
     rsl::vector<rsl::unique_ptr<Renderer>> g_renderers;
 
-    REX_STATIC_WARNING("Currently we have 2 graphics systems that are too similar, namely the gpu engine and the rhi.");
-    REX_STATIC_WARNING("Define the responsibility of each of these or merge them together if possible, otherwise they'll just cause confusion");
-
     void log_info()
     {
       auto& gfx_info = rhi::info();

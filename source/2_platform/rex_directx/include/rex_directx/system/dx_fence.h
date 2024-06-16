@@ -3,6 +3,7 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/system/fence.h"
+#include "rex_engine/threading/thread_event.h"
 
 namespace rex
 {
@@ -16,8 +17,16 @@ namespace rex
       // Return the wrapped fence object
       ID3D12Fence* get() const;
 
+      // Get the fence value on the gpu
+      u64 gpu_value() const override;
+      // Incrase the fence value, both on the cpu and the gpu
+      u64 inc(CommandQueue* cmdQueue) override;
+      // Wait for the cpu value to be in sync with the gpu value
+      void wait_for_me() override;
+
     private:
       wrl::ComPtr<ID3D12Fence> m_fence;
+      ThreadEvent m_sync_object;
     };
   } // namespace gfx
 } // namespace rex

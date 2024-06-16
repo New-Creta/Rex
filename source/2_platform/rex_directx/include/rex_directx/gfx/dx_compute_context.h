@@ -19,6 +19,9 @@ namespace rex
 
     protected:
       void platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap) override;
+      // profiling events
+      void begin_profile_event(rsl::string_view eventName) override;
+      void end_profile_event() override;
 
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;

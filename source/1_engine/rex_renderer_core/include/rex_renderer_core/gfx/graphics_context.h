@@ -7,7 +7,10 @@
 #include "rex_renderer_core/gfx/graphics_engine_type.h"
 #include "rex_engine/pooling/scoped_pool_object.h"
 #include "rex_renderer_core/system/command_allocator_pool.h"
+#include "rex_renderer_core/system/command_queue.h"
 #include "rex_renderer_core/system/sync_info.h"
+
+#include "rex_std/bonus/utility.h"
 
 namespace rex
 {
@@ -34,7 +37,7 @@ namespace rex
       void reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc, ResourceStateTracker* resourceStateTracker, DescriptorHeap* descHeap);
       // Execute the commands on the gpu.
       // A sync info is returned so the user can use it to sync with other contexts
-      ScopedPoolObject<SyncInfo> execute_on_gpu();
+      ScopedPoolObject<SyncInfo> execute_on_gpu(WaitForFinish waitForFinish = WaitForFinish::no);
       // Flush all render states set in this command lists and notify the parent
       void flush_render_states();
       // Stall the gpu from executing this context until the commands the sync info represents has completed
@@ -44,6 +47,10 @@ namespace rex
 
       // Return the type of this context
       GraphicsEngineType type() const;
+
+      // Profiling events
+      virtual void begin_profile_event(rsl::string_view eventName) = 0;
+      virtual void end_profile_event() = 0;
 
     protected:
       // track a transition of a resource

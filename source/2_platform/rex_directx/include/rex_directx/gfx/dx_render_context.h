@@ -71,6 +71,10 @@ namespace rex
       // Reset the wrapped commandlist and its allocater
       void platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap) override;
 
+      // profiling events
+      void begin_profile_event(rsl::string_view eventName) override;
+      void end_profile_event() override;
+
     private:
       // Open the commandlist for recording of gpu commands
       void start_recording_commands(CommandAllocator* alloc, DescriptorHeap* descHeap);
@@ -79,6 +83,7 @@ namespace rex
       
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;
+      rsl::string_view m_profile_event_name;
     };
   }
 }

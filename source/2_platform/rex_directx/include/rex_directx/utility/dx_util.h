@@ -83,6 +83,32 @@ namespace rex
 #endif
     }
 
+    // Return the ref count of a DirectX object
+    template <typename TResourceType>
+    s32 resource_ref_count(TResourceType* resource)
+    {
+      if (resource)
+      {
+        resource->AddRef();
+        return resource->Release();
+      }
+
+      return 0;
+    }
+
+    // Return the ref count of a DirectX object
+    template <typename TResourceType>
+    s32 resource_ref_count(const wrl::ComPtr<TResourceType>& resource)
+    {
+      if (resource)
+      {
+        resource->AddRef();
+        return resource->Release();
+      }
+
+      return 0;
+    }
+
     namespace d3d
     {
       // This isn't great as there isn't a way to pass the memory accross

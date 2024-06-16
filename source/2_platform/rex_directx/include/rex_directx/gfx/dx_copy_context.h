@@ -46,6 +46,10 @@ namespace rex
       // Also bind the descriptor heap
       void platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap) override;
 
+      // profiling events
+      void begin_profile_event(rsl::string_view eventName) override;
+      void end_profile_event() override;
+
     private:
       // Return the graphics engine casted into the directx class
       DxCopyEngine* api_engine();

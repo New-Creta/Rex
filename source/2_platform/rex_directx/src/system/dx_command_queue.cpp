@@ -19,21 +19,15 @@ namespace rex
 
     DxCommandQueue::~DxCommandQueue()
     {
+      auto ref = resource_ref_count(m_command_queue);
       flush();
     }
 
     // Halt the cpu until the fence value is reached
-    void DxCommandQueue::cpu_wait(u64 fenceValue)
+    void DxCommandQueue::cpu_wait()
     {
-      // If our fence value if higher or equal to the given fence value
-      // we don't need to do anything
-      //if (is_fence_completed(fenceValue))
-      //{
-      //  return;
-      //}
-
-      // If the fence isn't completed yet, we halt this thread until it is
-      wait_for_fence(fenceValue);
+      m_fence->inc(this);
+      m_fence->wait_for_me();
     }
     // Halt the gpu until the fence value is reached
     void DxCommandQueue::gpu_wait(SyncInfo& sync_info)
@@ -42,37 +36,33 @@ namespace rex
       m_command_queue->Wait(fence, sync_info.fence_val());
     }
 
-    ScopedPoolObject<SyncInfo> DxCommandQueue::execute_context(GraphicsContext* ctx)
+    ScopedPoolObject<SyncInfo> DxCommandQueue::execute_context(GraphicsContext* ctx, WaitForFinish waitForFinish)
     {
       ID3D12GraphicsCommandList* cmdlist = cmdlist_from_ctx(ctx);
 
       cmdlist->Close();
       ID3D12CommandList* base_cmdlist = cmdlist;
       m_command_queue->ExecuteCommandLists(1, &base_cmdlist);
-      m_command_queue->Signal(m_fence->get(), next_fence_value());
+      ctx->end_profile_event();
 
-      u64 old_fence_val = inc_fence();
-      wait_for_fence(old_fence_val);
+      u64 old_fence_val = m_fence->inc(this);
+
+      if (waitForFinish)
+      {
+        flush();
+      }
+
       return create_sync_info(old_fence_val, m_fence.get());
     }
 
     u64 DxCommandQueue::gpu_fence_value() const
     {
-      return m_fence->get()->GetCompletedValue();
+      return m_fence->gpu_value();
     }
 
     ID3D12CommandQueue* DxCommandQueue::dx_object()
     {
       return m_command_queue.Get();
-    }
-
-    void DxCommandQueue::wait_for_fence(u64 fenceValue)
-    {
-      //if (m_fence->get()->GetCompletedValue() < fenceValue)
-      //{
-        DX_CALL(m_fence->get()->SetEventOnCompletion(fenceValue, m_fence_event.get()));
-        m_fence_event.wait_for_me();
-      //}
     }
 
     ID3D12GraphicsCommandList* DxCommandQueue::cmdlist_from_ctx(GraphicsContext* ctx) const

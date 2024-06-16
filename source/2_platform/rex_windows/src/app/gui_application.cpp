@@ -119,7 +119,7 @@ namespace rex
         }
 
         // Call into our graphics API to render everything
-        gfx::render();        
+        gfx::render();
       }
       void shutdown() // NOLINT (readability-make-member-function-const,-warnings-as-errors)
       {

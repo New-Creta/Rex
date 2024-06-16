@@ -33,7 +33,14 @@ namespace rex
     }
 
     ScopedPoolObject& operator=(const ScopedPoolObject&) = delete;
-    ScopedPoolObject& operator=(ScopedPoolObject&&) = default;
+    ScopedPoolObject& operator=(ScopedPoolObject&& other)
+    {
+      return_to_pool();
+      m_object = rsl::exchange(other.m_object, nullptr);
+      m_return_to_pool_callable = rsl::move(other.m_return_to_pool_callable);
+
+      return *this;
+    }
 
     T* operator->()
     {

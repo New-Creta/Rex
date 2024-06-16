@@ -5,20 +5,9 @@ namespace rex
   namespace gfx
   {
     CommandQueue::CommandQueue(GraphicsEngineType type)
-      : m_next_fence_value(1)
-      , m_type(type)
+      : m_type(type)
     {
 
-    }
-
-    u64 CommandQueue::next_fence_value() const
-    {
-      return m_next_fence_value;
-    }
-
-    u64 CommandQueue::inc_fence()
-    {
-      return m_next_fence_value++;
     }
 
     bool CommandQueue::is_fence_completed(u64 fenceValue) const
@@ -39,7 +28,7 @@ namespace rex
 
     void CommandQueue::flush()
     {
-      cpu_wait(next_fence_value() - 1);
+      cpu_wait();
     }
 
     ScopedPoolObject<SyncInfo> CommandQueue::create_sync_info(u64 fenceValue, Fence* fenceObject)

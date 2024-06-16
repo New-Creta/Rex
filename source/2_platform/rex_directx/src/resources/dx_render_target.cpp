@@ -1,5 +1,7 @@
 #include "rex_directx/resources/dx_render_target.h"
 
+#include "rex_directx/utility/dx_util.h"
+
 namespace rex
 {
   namespace gfx

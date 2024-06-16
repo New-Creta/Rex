@@ -25,6 +25,7 @@ public class RexDirectX : PlatformProject
     conf.AddPublicDependency<RexStd>(target);
     conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
     conf.AddPublicDependency<RexEngine>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
+    conf.AddPublicDependency<RexPIX>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);
 
     switch (target.Config)
     {

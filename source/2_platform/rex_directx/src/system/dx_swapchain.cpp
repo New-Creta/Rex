@@ -7,6 +7,7 @@
 #include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
 
 #include "rex_directx/resources/dx_texture_2d.h"
+#include "rex_engine/platform/win/diagnostics/win_call.h"
 
 namespace rex
 {
@@ -21,6 +22,7 @@ namespace rex
     {
       query_buffers(bufferCount);
     }
+
     void DxSwapchain::resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags)
     {
       // Update the cached width and height
@@ -44,6 +46,9 @@ namespace rex
     void DxSwapchain::present()
     {
       m_swapchain->Present(0, rsl::no_flags());
+      
+      // It's possible a windows error gets set because the driver wants to do something weird
+      win::clear_win_errors();
     }
 
     IDXGISwapChain3* DxSwapchain::get()

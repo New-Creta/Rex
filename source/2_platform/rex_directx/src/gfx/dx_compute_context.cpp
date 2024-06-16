@@ -3,6 +3,8 @@
 #include "rex_directx/system/dx_command_allocator.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
 
+#include "WinPixEventRuntime/pix3.h"
+
 namespace rex
 {
   namespace gfx
@@ -31,5 +33,14 @@ namespace rex
       m_cmd_list->SetDescriptorHeaps(1, &d3d_desc_heap);
     }
 
+    // Profiling events
+    void DxComputeContext::begin_profile_event(rsl::string_view eventName)
+    {
+      ::PIXBeginEvent(m_cmd_list.Get(), 0, eventName.data());
+    }
+    void DxComputeContext::end_profile_event()
+    {
+      ::PIXEndEvent(m_cmd_list.Get());
+    }
   }
 }

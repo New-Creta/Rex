@@ -6,10 +6,14 @@
 #include "rex_renderer_core/system/sync_info_pool.h"
 #include "rex_renderer_core/system/fence.h"
 
+#include "rex_std/bonus/utility.h"
+
 namespace rex
 {
   namespace gfx
   {
+    DEFINE_YES_NO_ENUM(WaitForFinish);
+
     class GraphicsContext;
     class CommandQueue
     {
@@ -18,11 +22,11 @@ namespace rex
       virtual ~CommandQueue() = default;
 
       // Halt the cpu until the fence value is reached
-      virtual void cpu_wait(u64 fenceValue) = 0;
+      virtual void cpu_wait() = 0;
       // Halt the gpu until the fence value is reached
       virtual void gpu_wait(SyncInfo& sync_info) = 0;
       // Submit all queued commands to the gpu and execute for execution
-      virtual ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx) = 0;
+      virtual ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* ctx, WaitForFinish waitForFinish) = 0;
 
       // Returns if the last completed fence is equal or lower than the given fence value
       // Meaning that the commands before the given fence value got signaled have executed
@@ -31,22 +35,16 @@ namespace rex
       u64 last_completed_fence() const;
       // Return the command queue's type
       GraphicsEngineType type() const;
-      // Returns the next fence value. This is the fence value that'll be signaled
-      // the next time an commandlist is executed
-      u64 next_fence_value() const;
       // Flush all gpu commands and halt the current thread until they're executed
       void flush();
 
     protected:
-      // Increases the next fence value and returns the old value
-      u64 inc_fence();
       // Return the value of the fence, on the gpu
       virtual u64 gpu_fence_value() const = 0;
       // Create a sync info object with that needs to have the specified fence value for the given fence object
       ScopedPoolObject<SyncInfo> create_sync_info(u64 fenceValue, Fence* fenceObject);
 
     private:
-      u64 m_next_fence_value; // this fence value gets increment each time the command queue executes a commandlist
       GraphicsEngineType m_type;
       gfx::SyncInfoPool m_sync_info_pool;
     };

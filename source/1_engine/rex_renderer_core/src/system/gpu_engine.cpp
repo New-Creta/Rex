@@ -12,8 +12,6 @@ namespace rex
 {
   namespace gfx
   {
-    DEFINE_LOG_CATEGORY(LogGpuEngine);
-
     // Make sure to not try and initialize any gpu resources in the constructor.
     // The derived class of the gpu engine is responsible for making sure the gpu is ready.
     GpuEngine::GpuEngine(const OutputWindowUserData& userData)
@@ -49,16 +47,16 @@ namespace rex
       m_compute_engine->new_frame();
       m_copy_engine->new_frame();
 
-      auto render_ctx = new_render_ctx();
+      auto render_ctx = new_render_ctx("New Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
     }
     // Present the new frame to the main window
     void GpuEngine::present()
     {
-      auto render_ctx = new_render_ctx();
+      auto render_ctx = new_render_ctx("End Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::Present);
-      render_ctx->execute_on_gpu();
+      render_ctx->execute_on_gpu(WaitForFinish::yes);
 
       m_swapchain->present();
     }
@@ -71,21 +69,21 @@ namespace rex
     }
 
     // Create a new context which is used for copying resources from or to the gpu
-    ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx()
+    ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(rsl::string_view eventName)
     {
-      auto base_ctx = m_copy_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView));
+      auto base_ctx = m_copy_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
       return base_ctx.convert<CopyContext>();
     }
     // Create a new context which is used for rendering to render targets
-    ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx()
+    ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(rsl::string_view eventName)
     {
-      auto base_ctx = m_render_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView));
+      auto base_ctx = m_render_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
       return base_ctx.convert<RenderContext>();
     }
     // Create a new context which is used for computing data on the gpu
-    ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx()
+    ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(rsl::string_view eventName)
     {
-      auto base_ctx = m_compute_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView));
+      auto base_ctx = m_compute_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
       return base_ctx.convert<ComputeContext>();
     }
 

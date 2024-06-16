@@ -30,11 +30,11 @@ namespace rex
       m_allocator = rsl::move(alloc);
       m_resource_state_tracker = resourceStateTracker;
 
-      platform_reset(alloc->underlying_alloc(), descHeap);
+      platform_reset(m_allocator->underlying_alloc(), descHeap);
     }
     // Execute the commands on the gpu.
     // A sync info is returned so the user can use it to sync with other contexts
-    ScopedPoolObject<SyncInfo> GraphicsContext::execute_on_gpu()
+    ScopedPoolObject<SyncInfo> GraphicsContext::execute_on_gpu(WaitForFinish waitForFinish)
     {
       // If we've already executed this context, we don't need to execute it again
       if (has_executed())
@@ -46,7 +46,7 @@ namespace rex
       flush_render_states();
 
       // Execute the context and return the command allocator back to the pool
-      ScopedPoolObject<SyncInfo> sync_info = m_owning_engine->execute_context(this);
+      ScopedPoolObject<SyncInfo> sync_info = m_owning_engine->execute_context(this, waitForFinish);
       m_allocator->reset_fence(sync_info->fence_val());
       m_allocator.return_to_pool();
 

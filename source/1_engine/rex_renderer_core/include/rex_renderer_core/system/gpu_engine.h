@@ -31,8 +31,6 @@ namespace rex
       GpuEngine(const GpuEngine&) = delete;
       GpuEngine(GpuEngine&&) = delete;
 
-      virtual ~GpuEngine() = default;
-
       GpuEngine& operator=(const GpuEngine&) = delete;
       GpuEngine& operator=(GpuEngine&&) = delete;
 
@@ -49,11 +47,11 @@ namespace rex
       void end_frame();
 
       // Create a new context which is used for copying resources from or to the gpu
-      ScopedPoolObject<CopyContext> new_copy_ctx();
+      ScopedPoolObject<CopyContext> new_copy_ctx(rsl::string_view eventName = "");
       // Create a new context which is used for rendering to render targets
-      ScopedPoolObject<RenderContext> new_render_ctx();
+      ScopedPoolObject<RenderContext> new_render_ctx(rsl::string_view eventName = "");
       // Create a new context which is used for computing data on the gpu
-      ScopedPoolObject<ComputeContext> new_compute_ctx();
+      ScopedPoolObject<ComputeContext> new_compute_ctx(rsl::string_view eventName = "");
 
       // Return the render target pointing to the current backbuffer of the swapchain
       RenderTarget* current_backbuffer_rt();
@@ -96,7 +94,6 @@ namespace rex
       s32 m_frame_idx;                                  // The current frame index
       rsl::unordered_map<DescriptorHeapType, rsl::unique_ptr<DescriptorHeap>> m_descriptor_heap_pool; // Pool of descriptor heaps per type
       ResourceStateTracker m_resource_state_tracker; // The global tracker of resource states
-      
     };
 
   }

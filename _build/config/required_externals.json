@@ -22,5 +22,11 @@
     "url": "https://gitlab.com/rex-externals/rex-imgui/",
     "tag": "v1.0.6",
     "storage": "~/source/0_thirdparty"
+  },
+  "rex_pix": {
+    "name": "rex_pix",
+    "url": "https://github.com/RisingLiberty/RexPix/",
+    "tag": "v1.0.0",
+    "storage": "~/source/0_thirdparty"
   }
 }

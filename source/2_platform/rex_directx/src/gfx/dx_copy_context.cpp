@@ -11,6 +11,8 @@
 #include "rex_directx/resources/dx_index_buffer.h"
 #include "rex_directx/resources/dx_texture_2d.h"
 
+#include "WinPixEventRuntime/pix3.h"
+
 namespace rex
 {
   namespace gfx
@@ -150,6 +152,16 @@ namespace rex
 
       s64 write_offset = upload_buffer_lock.upload_buffer()->write_buffer_data_from_cpu(data, size);
       m_cmd_list->CopyBufferRegion(resource, offset, upload_buffer_lock.upload_buffer()->dx_object(), write_offset, size);
+    }
+
+    // Profiling events
+    void DxCopyContext::begin_profile_event(rsl::string_view eventName)
+    {
+      ::PIXBeginEvent(m_cmd_list.Get(), 0, eventName.data());
+    }
+    void DxCopyContext::end_profile_event()
+    {
+      ::PIXEndEvent(m_cmd_list.Get());
     }
   }
 }

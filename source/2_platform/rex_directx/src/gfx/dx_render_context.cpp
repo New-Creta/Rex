@@ -13,6 +13,8 @@
 #include "rex_directx/system/dx_command_allocator.h"
 #include "rex_directx/system/dx_rhi.h"
 
+#include "WinPixEventRuntime/pix3.h"
+
 namespace rex
 {
   namespace gfx
@@ -203,6 +205,23 @@ namespace rex
     void DxRenderContext::platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap)
     {
       start_recording_commands(alloc, descHeap);
+    }
+
+    // Profiling events
+    void DxRenderContext::begin_profile_event(rsl::string_view eventName)
+    {
+      m_profile_event_name = eventName;
+      if (m_profile_event_name.size())
+      {
+        ::PIXBeginEvent(m_cmd_list.Get(), 0, eventName.data());
+      }
+    }
+    void DxRenderContext::end_profile_event()
+    {
+      if (m_profile_event_name.size())
+      {
+        ::PIXEndEvent(m_cmd_list.Get());
+      }
     }
 
     // Open the commandlist for recording of gpu commands
