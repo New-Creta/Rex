@@ -29,7 +29,8 @@ namespace rex
     // Base class for the pipeline state, just acts as an interface
     class PipelineState
     {
-      // Nothing to implement
+    public:
+      virtual ~PipelineState() = default;
     };
   } // namespace gfx
 } // namespace rex

@@ -7,7 +7,8 @@ namespace rex
     // Base class for a root signature, this will likely change in the future
     class RootSignature
     {
-      // Nothing to implement
+    public:
+      virtual ~RootSignature() = default;
     };
   }
 }
