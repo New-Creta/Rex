@@ -174,8 +174,8 @@ namespace rex
       root_sig_desc.views = rsl::make_unique<ShaderViewDesc[]>(1);
       root_sig_desc.views[0] = { "vertexBuffer", ShaderViewType::ConstantBufferView, 0, 0, ShaderVisibility::Vertex }; // We have 1 constant buffer in the vertex shader
 
-      root_sig_desc.desc_tables = rsl::make_unique<DescriptorTableDesc[]>(1);
-      root_sig_desc.desc_tables[0].ranges = rsl::make_unique<DescriptorRangeDesc[]>(1);
+      root_sig_desc.desc_tables = rsl::make_unique<ViewTableDesc[]>(1);
+      root_sig_desc.desc_tables[0].ranges = rsl::make_unique<ViewRangeDesc[]>(1);
       root_sig_desc.desc_tables[0].ranges[0] = { DescriptorRangeType::ShaderResourceView, 1 }; // We have 1 src which points to our font texture
       root_sig_desc.desc_tables[0].visibility = ShaderVisibility::Pixel;
 

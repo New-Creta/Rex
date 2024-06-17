@@ -3,7 +3,7 @@
 #include "rex_renderer_core/resources/clear_state.h"
 #include "rex_renderer_core/system/compile_shader.h"
 #include "rex_renderer_core/resources/input_layout.h"
-#include "rex_renderer_core/system/link_shader.h"
+#include "rex_renderer_core/system/shader_elements.h"
 #include "rex_renderer_core/resources/shader.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/raster_state.h"

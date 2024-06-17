@@ -8,7 +8,7 @@
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/index_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
-#include "rex_renderer_core/system/link_shader.h"
+#include "rex_renderer_core/system/shader_elements.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/resources/shader.h"

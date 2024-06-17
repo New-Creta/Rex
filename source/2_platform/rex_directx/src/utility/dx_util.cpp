@@ -469,7 +469,7 @@ namespace rex
 
       return invalid_obj<D3D12_STENCIL_OP>();
     }
-    D3D12_DESCRIPTOR_RANGE to_dx12(DescriptorRangeDesc range)
+    D3D12_DESCRIPTOR_RANGE to_dx12(ViewRangeDesc range)
     {
       D3D12_DESCRIPTOR_RANGE range_desc{};
       range_desc.BaseShaderRegister = range.base_shader_register;

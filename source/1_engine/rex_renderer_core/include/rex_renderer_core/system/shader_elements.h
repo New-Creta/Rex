@@ -52,7 +52,7 @@ namespace rex
     };
 
     // Describe a descriptor/view range (2 constant buffer views)
-    struct ViewRangeDesc
+    struct DescriptorRangeDesc // Perhaps rename to view range desc
     {
       DescriptorRangeType type{}; // The type of descriptor/view we have a range over
       s32 num_descriptors{}; // the number of descriptors/views in the range
@@ -64,7 +64,7 @@ namespace rex
     // Describe a descriptor table, which is a list of descriptor ranges
     struct ViewTableDesc
     {
-      rsl::unique_array<ViewRangeDesc> ranges; // All the ranges of the descriptor table
+      rsl::unique_array<DescriptorRangeDesc> ranges; // All the ranges of the descriptor table
       ShaderVisibility visibility; // The shader types where the ranges are visible
     };
 

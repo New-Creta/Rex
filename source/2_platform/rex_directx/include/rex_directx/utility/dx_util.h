@@ -39,7 +39,7 @@
 #include "rex_renderer_core/gfx/graphics_engine_type.h"
 #include "rex_renderer_core/gfx/resource_state.h"
 #include "rex_renderer_core/gfx/descriptor_heap_type.h"
-#include "rex_renderer_core/system/link_shader.h"
+#include "rex_renderer_core/system/shader_elements.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -149,7 +149,7 @@ namespace rex
       D3D12_DEPTH_WRITE_MASK to_dx12(DepthWriteMask mask);
       D3D12_DEPTH_STENCILOP_DESC to_dx12(const DepthStencilOpDesc& depthStencilOp);
       D3D12_STENCIL_OP to_dx12(StencilOp stencilOp);
-      D3D12_DESCRIPTOR_RANGE to_dx12(DescriptorRangeDesc range);
+      D3D12_DESCRIPTOR_RANGE to_dx12(ViewRangeDesc range);
       D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(DescriptorRangeType type);
       D3D12_RESOURCE_STATES to_dx12(ResourceState state);
       D3D12_COMMAND_LIST_TYPE to_dx12(GraphicsEngineType type);
