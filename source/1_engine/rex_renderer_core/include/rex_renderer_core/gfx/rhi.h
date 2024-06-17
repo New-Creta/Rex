@@ -80,8 +80,10 @@ namespace rex
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, TextureFormat format, const void* data = nullptr);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
-      rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode);
-      rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode);
+      rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
+      rsl::unique_ptr<Shader> create_vertex_shader(const memory::Blob& byteBlob);
+      rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
+      rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
 
       // Return the render target pointing to the current swapchain's backbuffer

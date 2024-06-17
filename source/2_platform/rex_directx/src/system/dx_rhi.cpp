@@ -498,31 +498,39 @@ namespace rex
 
         return rsl::make_unique<DxInputLayout>(input_element_descriptions);
       }
-      rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode)
+      rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName)
       {
         CompileShaderDesc compile_vs_desc{};
-        compile_vs_desc.shader_code = memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
-        compile_vs_desc.shader_code.write(sourceCode.data(), sourceCode.length());
+        compile_vs_desc.shader_source_code = sourceCode;
         compile_vs_desc.shader_entry_point = "main";
         compile_vs_desc.shader_feature_target = "vs_5_0";
-        compile_vs_desc.shader_name = "imgui_vertex_shader";
+        compile_vs_desc.shader_name = shaderName;
         compile_vs_desc.shader_type = ShaderType::Vertex;
         wrl::ComPtr<ID3DBlob> compiled_vs_blob = compile_shader(compile_vs_desc);
 
         return rsl::make_unique<DxVertexShader>(compiled_vs_blob);
       }
-      rsl::unique_ptr<Shader>               create_pixel_shader(rsl::string_view sourceCode)
+      rsl::unique_ptr<Shader>               create_vertex_shader(const memory::Blob& byteBlob)
+      {
+        wrl::ComPtr<ID3DBlob> d3d_blob = d3d::create_blob(byteBlob);
+        return rsl::make_unique<DxVertexShader>(d3d_blob);
+      }
+      rsl::unique_ptr<Shader>               create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName)
       {
         CompileShaderDesc compile_ps_desc{};
-        compile_ps_desc.shader_code = memory::Blob(rsl::make_unique<char[]>(sourceCode.length()));
-        compile_ps_desc.shader_code.write(sourceCode.data(), sourceCode.length());
+        compile_ps_desc.shader_source_code = sourceCode;
         compile_ps_desc.shader_entry_point = "main";
         compile_ps_desc.shader_feature_target = "ps_5_0";
-        compile_ps_desc.shader_name = "imgui_pixel_shader";
+        compile_ps_desc.shader_name = shaderName;
         compile_ps_desc.shader_type = ShaderType::Pixel;
         wrl::ComPtr<ID3DBlob> compiled_ps_blob = compile_shader(compile_ps_desc);
 
         return rsl::make_unique<DxPixelShader>(compiled_ps_blob);
+      }
+      rsl::unique_ptr<Shader>               create_pixel_shader(const memory::Blob& byteBlob)
+      {
+        wrl::ComPtr<ID3DBlob> d3d_blob = d3d::create_blob(byteBlob);
+        return rsl::make_unique<DxPixelShader>(d3d_blob);
       }
       rsl::unique_ptr<UploadBuffer>         create_upload_buffer(rsl::memory_size size)
       {
@@ -621,6 +629,10 @@ namespace rex
         }
 
         return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->get());
+      }
+      void report_live_objects()
+      {
+        g_rhi_resources->debug_interface->report_live_objects();
       }
     }
   }

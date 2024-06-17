@@ -153,8 +153,8 @@ namespace rex
       memory::Blob vertex_shader_content = vfs::read_file(path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl"));
       memory::Blob pixel_shader_content = vfs::read_file(path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_pixel.hlsl"));
 
-      m_vertex_shader = rhi::create_vertex_shader(blob_to_string_view(vertex_shader_content));
-      m_pixel_shader = rhi::create_pixel_shader(blob_to_string_view(pixel_shader_content));
+      m_vertex_shader = rhi::create_vertex_shader(blob_to_string_view(vertex_shader_content), "imgui_vertex_shader");
+      m_pixel_shader = rhi::create_pixel_shader(blob_to_string_view(pixel_shader_content), "imgui_pixel_shader");
     }
     void ImGuiRenderer::init_root_signature()
     {

@@ -26,8 +26,8 @@ namespace rex
 
       // clang-format off
       hr = D3DCompile2(
-        desc.shader_code.data(),
-        desc.shader_code.size(),
+        desc.shader_source_code.data(),
+        desc.shader_source_code.size(),
         desc.shader_name.c_str(),
         nullptr,
         D3D_COMPILE_STANDARD_FILE_INCLUDE,
