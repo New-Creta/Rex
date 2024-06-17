@@ -75,7 +75,7 @@
   },
   "disable-unity-builds": {
     "Description": "Disable unity builds (aka jumbo builds, combi builds)",
-    "Value": true
+    "Value": false
   }
 }
 }
