@@ -35,6 +35,8 @@
 #include "rex_renderer_core/imgui/imgui_renderer.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
+#include "rex_engine/diagnostics/debug.h"
+#include "rex_engine/memory/tracked_allocator.h"
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 // NOLINTBEGIN(modernize-use-nullptr)
@@ -245,11 +247,17 @@ namespace rex
 
         subscribe_window_events();
 
+        output_debug_string("Memory usage before graphics initialization");
+        log_mem_usage();
+
         if(!init_gfx())
         {
           REX_ERROR(LogWindows, "Failed to initialize graphics");
           return false;
         }
+
+        output_debug_string("Memory usage after graphics initialization");
+        log_mem_usage();
 
         return true;
       }
