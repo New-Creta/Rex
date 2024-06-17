@@ -24,7 +24,7 @@ namespace rex
     public:
       DxPipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso);
 
-      ID3D12PipelineState* get();
+      ID3D12PipelineState* dx_object();
 
     private:
       wrl::ComPtr<ID3D12PipelineState> m_pso;

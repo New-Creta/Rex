@@ -10,7 +10,7 @@ namespace rex
       m_input_layout_desc = { m_input_elements.data(), static_cast<u32>(m_input_elements.size()) };
     }
 
-    D3D12_INPUT_LAYOUT_DESC* DxInputLayout::get()
+    D3D12_INPUT_LAYOUT_DESC* DxInputLayout::dx_object()
     {
       return &m_input_layout_desc;
     }

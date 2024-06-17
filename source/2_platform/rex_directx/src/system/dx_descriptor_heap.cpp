@@ -84,7 +84,7 @@ namespace rex
     }
 
     // Return the internal wrapped descriptor heap
-    ID3D12DescriptorHeap* DxDescriptorHeap::get()
+    ID3D12DescriptorHeap* DxDescriptorHeap::dx_object()
     {
       return m_descriptor_heap.Get();
     }

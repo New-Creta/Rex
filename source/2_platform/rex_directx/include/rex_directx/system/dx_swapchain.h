@@ -29,7 +29,7 @@ namespace rex
       void present();
 
       // Return the internal wrapped swapchain object
-      IDXGISwapChain3* get();
+      IDXGISwapChain3* dx_object();
 
       // Return the index of the current back buffer
       s32 current_buffer_idx() const override;

@@ -13,7 +13,7 @@ namespace rex
     {
     }
 
-    ID3D12Fence* DxFence::get() const
+    ID3D12Fence* DxFence::dx_object() const
     {
       return m_fence.Get();
     }

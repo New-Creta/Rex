@@ -8,7 +8,7 @@ namespace rex
       : m_alloc(alloc)
     {}
 
-    ID3D12CommandAllocator* DxCommandAllocator::get()
+    ID3D12CommandAllocator* DxCommandAllocator::dx_object()
     {
       return m_alloc.Get();
     }

@@ -25,7 +25,7 @@ namespace rex
       m_info.available_memory = m_adapter->description().dedicated_video_memory;
     }
 
-    ID3D12Device1* DxDevice::get()
+    ID3D12Device1* DxDevice::dx_object()
     {
       return m_device.Get();
     }

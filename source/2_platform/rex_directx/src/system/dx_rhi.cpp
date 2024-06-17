@@ -184,7 +184,7 @@ namespace rex
       rsl::unique_ptr<DxFence>          create_fence()
       {
         wrl::ComPtr<ID3D12Fence> fence;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence))))
         {
           REX_ERROR(LogDxRhi, "Failed to create DX fence, to synchronize CPU/GPU");
           return nullptr;
@@ -199,7 +199,7 @@ namespace rex
         D3D12_COMMAND_QUEUE_DESC queue_desc = {};
         queue_desc.Type = d3d::to_dx12(type);
         queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create command queue");
           return false;
@@ -253,7 +253,7 @@ namespace rex
       rsl::unique_ptr<CommandAllocator> create_command_allocator(GraphicsEngineType type)
       {
         wrl::ComPtr<ID3D12CommandAllocator> allocator;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandAllocator(d3d::to_dx12(type), IID_PPV_ARGS(allocator.GetAddressOf()))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateCommandAllocator(d3d::to_dx12(type), IID_PPV_ARGS(allocator.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create command allocator");
           return false;
@@ -379,9 +379,9 @@ namespace rex
         }
 
         wrl::ComPtr<ID3D12RootSignature> root_signature;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
         {
-          HR_CALL(g_rhi_resources->device->get()->GetDeviceRemovedReason());
+          HR_CALL(g_rhi_resources->device->dx_object()->GetDeviceRemovedReason());
           REX_ERROR(LogDxRhi, "Failed to create root signature");
           return nullptr;
         }
@@ -416,7 +416,7 @@ namespace rex
 
         // 2) Fill in the PSO desc
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
-        pso_desc.InputLayout = *d3d::to_dx12(desc.input_layout)->get();
+        pso_desc.InputLayout = *d3d::to_dx12(desc.input_layout)->dx_object();
         pso_desc.pRootSignature = d3d::to_dx12(desc.root_signature)->dx_object();
         pso_desc.VS = d3d::to_dx12(desc.vertex_shader)->dx_bytecode();
         pso_desc.PS = d3d::to_dx12(desc.pixel_shader)->dx_bytecode();
@@ -432,7 +432,7 @@ namespace rex
         pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
         wrl::ComPtr<ID3D12PipelineState> pso;
-        g_rhi_resources->device->get()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso));
+        g_rhi_resources->device->dx_object()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso));
 
         return rsl::make_unique<DxPipelineState>(pso);
       }
@@ -539,7 +539,7 @@ namespace rex
         auto buffer_upload = CD3DX12_RESOURCE_DESC::Buffer(size);
 
         wrl::ComPtr<ID3D12Resource> d3d_upload_buffer;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateCommittedResource(&heap_properties_upload, D3D12_HEAP_FLAG_NONE, &buffer_upload, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(d3d_upload_buffer.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create committed resource for intermediate upload heap.");
           return {};
@@ -573,7 +573,7 @@ namespace rex
         DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
 
         wrl::ComPtr<ID3D12GraphicsCommandList> cmd_list;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateCommandList(0, d3d::to_dx12(type), dx_alloc->get(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateCommandList(0, d3d::to_dx12(type), dx_alloc->dx_object(), nullptr, IID_PPV_ARGS(cmd_list.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create command list");
           return nullptr;
@@ -603,32 +603,32 @@ namespace rex
 
         wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
         rsl::string_view type_str = rsl::enum_refl::enum_name(type);
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
         {
           REX_ERROR(LogDxRhi, "Failed to create descriptor heap for type: {}", type_str);
           return false;
         }
 
         d3d::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {}", type_str));
-        s32 desc_size = g_rhi_resources->device->get()->GetDescriptorHandleIncrementSize(type);
+        s32 desc_size = g_rhi_resources->device->dx_object()->GetDescriptorHandleIncrementSize(type);
         s32 total_size = desc_size * num_descriptors;
 
         REX_INFO(LogDxRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, num_descriptors, desc_size, total_size);
 
-        return rsl::make_unique<DxDescriptorHeap>(desc_heap, g_rhi_resources->device->get());
+        return rsl::make_unique<DxDescriptorHeap>(desc_heap, g_rhi_resources->device->dx_object());
       }
       rsl::unique_ptr<ResourceHeap> create_resource_heap()
       {
         CD3DX12_HEAP_DESC desc(100_mib, D3D12_HEAP_TYPE_DEFAULT);
 
         wrl::ComPtr<ID3D12Heap> d3d_heap;
-        if (DX_FAILED(g_rhi_resources->device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
         {
           REX_ERROR(LogDxRhi, "Failed to create global resource heap");
           return false;
         }
 
-        return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->get());
+        return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->dx_object());
       }
       void report_live_objects()
       {

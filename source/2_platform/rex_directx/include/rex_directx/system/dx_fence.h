@@ -15,7 +15,7 @@ namespace rex
       explicit DxFence(const wrl::ComPtr<ID3D12Fence>& fence);
 
       // Return the wrapped fence object
-      ID3D12Fence* get() const;
+      ID3D12Fence* dx_object() const;
 
       // Get the fence value on the gpu
       u64 gpu_value() const override;

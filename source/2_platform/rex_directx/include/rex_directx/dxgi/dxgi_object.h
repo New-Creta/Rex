@@ -41,7 +41,7 @@ namespace rex
 
         // In order to pass along " const " objects to DirectX we are able to remove the " const " with this function.
         // Since DirectX has a C API it does not know what " const " is.
-        T* get() const
+        T* dx_object() const
         {
           static_assert(rsl::is_base_of_v<IUnknown, T>, "T is not a com object!");
           return const_cast<T*>(m_object.Get()); // NOLINT(cppcoreguidelines-pro-type-const-cast)

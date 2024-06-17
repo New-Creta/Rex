@@ -44,8 +44,6 @@ namespace rex
       imgui_platform_new_frame();
 
       ImGui::NewFrame();
-
-      REX_STATIC_WARNING("Get a new render target for the renderer to render to");
     }
 
     void ImGuiRenderer::render()

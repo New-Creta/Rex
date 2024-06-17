@@ -15,7 +15,7 @@ namespace rex
       DxDevice(const wrl::ComPtr<ID3D12Device1>& device, D3D_FEATURE_LEVEL featureLevel, const dxgi::Adapter* adapter);
 
       // Return the wrapped directx device
-      ID3D12Device1* get();
+      ID3D12Device1* dx_object();
       // Return the adapter this device is used for
       const dxgi::Adapter* adapter() const;
       // Return the feature level of this device

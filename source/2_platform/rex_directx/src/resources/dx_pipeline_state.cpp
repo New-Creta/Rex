@@ -10,7 +10,7 @@ namespace rex
 
     }
 
-    ID3D12PipelineState* DxPipelineState::get()
+    ID3D12PipelineState* DxPipelineState::dx_object()
     {
       return m_pso.Get();
     }

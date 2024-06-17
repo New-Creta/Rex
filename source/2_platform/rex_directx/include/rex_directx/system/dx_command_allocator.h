@@ -12,7 +12,7 @@ namespace rex
     public:
       DxCommandAllocator(const wrl::ComPtr<ID3D12CommandAllocator>& alloc);
 
-      ID3D12CommandAllocator* get();
+      ID3D12CommandAllocator* dx_object();
 
     private:
       wrl::ComPtr<ID3D12CommandAllocator> m_alloc;

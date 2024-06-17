@@ -25,7 +25,7 @@ namespace rex
       DescriptorHandle create_texture2d_srv(ID3D12Resource* resource);
 
       // Return the internal wrapped descriptor heap
-      ID3D12DescriptorHeap* get();
+      ID3D12DescriptorHeap* dx_object();
 
       // Reset the descriptor heap
       // This will cause new descriptor to be allocated from the beginning of the heap

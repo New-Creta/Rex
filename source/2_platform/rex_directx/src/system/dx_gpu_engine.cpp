@@ -93,12 +93,12 @@ namespace rex
       CD3DX12_HEAP_DESC desc(resource_heap_size, D3D12_HEAP_TYPE_DEFAULT);
 
       wrl::ComPtr<ID3D12Heap> d3d_heap;
-      if (DX_FAILED(m_device->get()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
+      if (DX_FAILED(m_device->dx_object()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
       {
         REX_ERROR(LogDxGpuEngine, "Failed to create global resource heap");
       }
 
-      m_heap = rsl::make_unique<ResourceHeap>(d3d_heap, m_device->get());
+      m_heap = rsl::make_unique<ResourceHeap>(d3d_heap, m_device->dx_object());
     }
 
     // Allocate a new descriptor heap of a given type

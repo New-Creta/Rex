@@ -16,7 +16,7 @@ namespace rex
     public:
       explicit DxInputLayout(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements);
 
-      D3D12_INPUT_LAYOUT_DESC* get();
+      D3D12_INPUT_LAYOUT_DESC* dx_object();
 
     private:
       rsl::vector<D3D12_INPUT_ELEMENT_DESC> m_input_elements{};

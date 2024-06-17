@@ -154,7 +154,7 @@ namespace rex
     void DxRenderContext::set_pipeline_state(PipelineState* pso)
     {
       DxPipelineState* dx_pso = static_cast<DxPipelineState*>(pso);
-      m_cmd_list->SetPipelineState(dx_pso->get());
+      m_cmd_list->SetPipelineState(dx_pso->dx_object());
     }
     // Set the graphics root descriptor table of the context
     void DxRenderContext::set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id)
@@ -231,9 +231,9 @@ namespace rex
 
       REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
 
-      dx_alloc->get()->Reset();
-      m_cmd_list->Reset(dx_alloc->get(), nullptr);
-      ID3D12DescriptorHeap* d3d_desc_heap = d3d::to_dx12(descHeap)->get();
+      dx_alloc->dx_object()->Reset();
+      m_cmd_list->Reset(dx_alloc->dx_object(), nullptr);
+      ID3D12DescriptorHeap* d3d_desc_heap = d3d::to_dx12(descHeap)->dx_object();
       m_cmd_list->SetDescriptorHeaps(1, &d3d_desc_heap);
     }
     // Transition a buffer into a new resource state

@@ -51,7 +51,7 @@ namespace rex
       win::clear_win_errors();
     }
 
-    IDXGISwapChain3* DxSwapchain::get()
+    IDXGISwapChain3* DxSwapchain::dx_object()
     {
       return m_swapchain.Get();
     }
