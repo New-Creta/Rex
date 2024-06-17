@@ -8,6 +8,7 @@
 #include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/resources/texture_2d.h"
 #include "rex_renderer_core/gfx/texture_format.h"
+#include "rex_renderer_core/system/shader_elements.h"
 
 #include "rex_renderer_core/imgui/imgui_frame_context.h"
 #include "rex_renderer_core/imgui/imgui_viewport.h"
@@ -150,8 +151,11 @@ namespace rex
     }
     void ImGuiRenderer::init_shader()
     {
-      memory::Blob vertex_shader_content = vfs::read_file(path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl"));
-      memory::Blob pixel_shader_content = vfs::read_file(path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_pixel.hlsl"));
+      rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
+      rsl::string pixel_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_pixel.hlsl");
+
+      memory::Blob vertex_shader_content = vfs::read_file(vertex_shader_path);
+      memory::Blob pixel_shader_content = vfs::read_file(pixel_shader_path);
 
       m_vertex_shader = rhi::create_vertex_shader(blob_to_string_view(vertex_shader_content), "imgui_vertex_shader");
       m_pixel_shader = rhi::create_pixel_shader(blob_to_string_view(pixel_shader_content), "imgui_pixel_shader");

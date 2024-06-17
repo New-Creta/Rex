@@ -20,7 +20,7 @@ namespace rex
     {
       u32 hash = rsl::type_id<CompileShaderDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.shader_code.data(), desc.shader_code.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+      hash = rsl::internal::hash_combine(hash, rsl::crc32c::Crc32c((const char*)desc.shader_source_code.data(), desc.shader_source_code.size())); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
       hash = rsl::internal::hash_combine(hash, static_cast<u64>(desc.shader_type));
 
       return hash;

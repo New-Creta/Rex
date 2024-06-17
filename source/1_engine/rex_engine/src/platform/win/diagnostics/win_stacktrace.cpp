@@ -114,7 +114,7 @@ namespace rex
         {
           stack_entry = get_stack_pointer_line_info(process, addr, &displacement, symbol_info->Name);
 
-          // hack to check for an address we couldn't resolve
+          // Check for an address we couldn't resolve
           if(addr != 0xcccccccc)
           {
             m_resolved_stacktrace[i] = stack_entry;
