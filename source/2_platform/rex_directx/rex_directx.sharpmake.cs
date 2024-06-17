@@ -21,6 +21,8 @@ public class RexDirectX : PlatformProject
 
     conf.LibraryFiles.Add("d3d12.lib");
     conf.LibraryFiles.Add("dxgi.lib");
+    conf.LibraryFiles.Add("d3dcompiler.lib");
+    conf.LibraryFiles.Add("dxguid.lib");
 
     conf.AddPublicDependency<RexStd>(target);
     conf.AddPublicDependency<RexRendererCore>(target, DependencySetting.Default | DependencySetting.IncludeHeadersForClangtools);

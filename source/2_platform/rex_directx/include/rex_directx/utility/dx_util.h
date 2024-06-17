@@ -8,12 +8,6 @@
 #include <d3d12.h>
 #include <d3d11on12.h>
 
-// Link necessary d3d12 libraries.
-#pragma comment(lib,"d3dcompiler.lib")
-#pragma comment(lib, "D3D12.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "dxguid.lib")
-
 // clang-format on
 // NOLINTEND(llvm-include-order)
 
@@ -70,47 +64,47 @@ namespace rex
     class DxInputLayout;
     class DxDescriptorHeap;
 
-    // Useful function that assigns a name to a resource.
-    // This is useful for debugging
-    template<typename TResourceType>
-    void set_debug_name_for(TResourceType* resource, rsl::string_view name)
+    namespace d3d
     {
+      // Useful function that assigns a name to a resource.
+      // This is useful for debugging
+      template<typename TResourceType>
+      void set_debug_name_for(TResourceType* resource, rsl::string_view name)
+      {
 #ifdef REX_ENABLE_DEBUG_RESOURCE_NAMES
-      resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length(), name.data());
+        resource->SetPrivateData(WKPDID_D3DDebugObjectName, name.length(), name.data());
 #else
-      REX_UNUSED_PARAM(resource);
-      REX_UNUSED_PARAM(name);
+        REX_UNUSED_PARAM(resource);
+        REX_UNUSED_PARAM(name);
 #endif
     }
 
-    // Return the ref count of a DirectX object
-    template <typename TResourceType>
-    s32 resource_ref_count(TResourceType* resource)
-    {
-      if (resource)
+      // Return the ref count of a DirectX object
+      template <typename TResourceType>
+      s32 resource_ref_count(TResourceType* resource)
       {
-        resource->AddRef();
-        return resource->Release();
+        if (resource)
+        {
+          resource->AddRef();
+          return resource->Release();
+        }
+
+        return 0;
       }
 
-      return 0;
-    }
-
-    // Return the ref count of a DirectX object
-    template <typename TResourceType>
-    s32 resource_ref_count(const wrl::ComPtr<TResourceType>& resource)
-    {
-      if (resource)
+      // Return the ref count of a DirectX object
+      template <typename TResourceType>
+      s32 resource_ref_count(const wrl::ComPtr<TResourceType>& resource)
       {
-        resource->AddRef();
-        return resource->Release();
+        if (resource)
+        {
+          resource->AddRef();
+          return resource->Release();
+        }
+
+        return 0;
       }
-
-      return 0;
-    }
-
-    namespace d3d
-    {
+      
       // This isn't great as there isn't a way to pass the memory accross
       // from our blob to a d3d blob, we need to copy it over.
       // This means that memory will be duplicated.

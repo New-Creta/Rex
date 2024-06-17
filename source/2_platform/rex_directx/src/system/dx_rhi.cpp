@@ -207,9 +207,9 @@ namespace rex
 
         switch (type)
         {
-        case GraphicsEngineType::Render: set_debug_name_for(d3d_command_queue.Get(), "Render Command Queue"); break;
-        case GraphicsEngineType::Copy:     set_debug_name_for(d3d_command_queue.Get(), "Copy Command Queue"); break;
-        case GraphicsEngineType::Compute: set_debug_name_for(d3d_command_queue.Get(), "Compute Command Queue"); break;
+        case GraphicsEngineType::Render: d3d::set_debug_name_for(d3d_command_queue.Get(), "Render Command Queue"); break;
+        case GraphicsEngineType::Copy:     d3d::set_debug_name_for(d3d_command_queue.Get(), "Copy Command Queue"); break;
+        case GraphicsEngineType::Compute: d3d::set_debug_name_for(d3d_command_queue.Get(), "Compute Command Queue"); break;
         }
 
         rsl::unique_ptr<DxFence> fence = create_fence();
@@ -261,9 +261,9 @@ namespace rex
 
         switch (type)
         {
-        case GraphicsEngineType::Render: set_debug_name_for(allocator.Get(), "Render Command Allocator"); break;
-        case GraphicsEngineType::Copy:     set_debug_name_for(allocator.Get(), "Copy Command Allocator"); break;
-        case GraphicsEngineType::Compute: set_debug_name_for(allocator.Get(), "Compute Command Allocator"); break;
+        case GraphicsEngineType::Render: d3d::set_debug_name_for(allocator.Get(), "Render Command Allocator"); break;
+        case GraphicsEngineType::Copy:     d3d::set_debug_name_for(allocator.Get(), "Copy Command Allocator"); break;
+        case GraphicsEngineType::Compute: d3d::set_debug_name_for(allocator.Get(), "Compute Command Allocator"); break;
         }
 
         return rsl::make_unique<DxCommandAllocator>(allocator);
@@ -276,7 +276,7 @@ namespace rex
         s32 total_size = numVertices * vertexSize;
         wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_buffer(total_size);
 
-        set_debug_name_for(d3d_buffer.Get(), "Vertex Buffer");
+        d3d::set_debug_name_for(d3d_buffer.Get(), "Vertex Buffer");
 
         return rsl::make_unique<DxVertexBuffer>(d3d_buffer, numVertices, vertexSize);
       }
@@ -285,7 +285,7 @@ namespace rex
         s32 index_size = index_format_size(format);
         s32 total_size = numIndices * index_size;
         wrl::ComPtr<ID3D12Resource> buffer = g_gpu_engine->allocate_buffer(total_size);
-        set_debug_name_for(buffer.Get(), "Index Buffer");
+        d3d::set_debug_name_for(buffer.Get(), "Index Buffer");
         return rsl::make_unique<DxIndexBuffer>(buffer, numIndices, format);
       }
       rsl::unique_ptr<RootSignature>        create_root_signature(const RootSignatureDesc& desc)
@@ -476,7 +476,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
         DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
 
-        set_debug_name_for(d3d_constant_buffer.Get(), "Constant Buffer");
+        d3d::set_debug_name_for(d3d_constant_buffer.Get(), "Constant Buffer");
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
       }
@@ -545,7 +545,7 @@ namespace rex
           return {};
         }
 
-        set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
+        d3d::set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
         return rsl::make_unique<DxUploadBuffer>(d3d_upload_buffer);
       }
 
@@ -581,9 +581,9 @@ namespace rex
 
         switch (type)
         {
-        case GraphicsEngineType::Render: set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
-        case GraphicsEngineType::Copy:   set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
-        case GraphicsEngineType::Compute: set_debug_name_for(cmd_list.Get(), "Compute Command List"); break;
+        case GraphicsEngineType::Render: d3d::set_debug_name_for(cmd_list.Get(), "Render Command List"); break;
+        case GraphicsEngineType::Copy:   d3d::set_debug_name_for(cmd_list.Get(), "Copy Command List"); break;
+        case GraphicsEngineType::Compute: d3d::set_debug_name_for(cmd_list.Get(), "Compute Command List"); break;
         };
 
         return cmd_list;
@@ -609,7 +609,7 @@ namespace rex
           return false;
         }
 
-        set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {}", type_str));
+        d3d::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {}", type_str));
         s32 desc_size = g_rhi_resources->device->get()->GetDescriptorHandleIncrementSize(type);
         s32 total_size = desc_size * num_descriptors;
 

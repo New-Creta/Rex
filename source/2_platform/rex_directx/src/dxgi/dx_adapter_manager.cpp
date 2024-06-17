@@ -36,7 +36,7 @@ namespace
   {
     REX_ASSERT_X(factory, "DXGIFactory does not exist");
 
-    return [factory = factory->c_ptr()](UINT index, rex::wrl::ComPtr<IDXGIAdapter>* adapter) { return factory->EnumAdapters(index, (*adapter).GetAddressOf()); };
+    return [factory = factory->get()](UINT index, rex::wrl::ComPtr<IDXGIAdapter>* adapter) { return factory->EnumAdapters(index, (*adapter).GetAddressOf()); };
   }
 
   //-------------------------------------------------------------------------

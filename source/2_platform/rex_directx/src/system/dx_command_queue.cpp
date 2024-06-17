@@ -19,7 +19,6 @@ namespace rex
 
     DxCommandQueue::~DxCommandQueue()
     {
-      auto ref = resource_ref_count(m_command_queue);
       flush();
     }
 
