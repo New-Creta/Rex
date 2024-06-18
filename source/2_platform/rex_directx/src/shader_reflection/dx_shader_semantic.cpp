@@ -1,4 +1,4 @@
-#include "rex_directx/shader_reflection/shader_semantic.h"
+#include "rex_directx/shader_reflection/dx_shader_semantic.h"
 
 #include "rex_engine/diagnostics/assert.h"
 

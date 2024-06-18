@@ -561,7 +561,7 @@ namespace rex
         wrl::ComPtr<ID3DBlob> byte_code = g_gpu_engine->compile_shader(desc);
 
         if (!byte_code)
-        {
+        { 
           REX_ERROR(LogDxRhi, "Failed to compile shader");
           return nullptr;
         }
