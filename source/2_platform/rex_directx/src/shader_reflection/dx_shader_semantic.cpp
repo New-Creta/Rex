@@ -11,7 +11,7 @@ namespace rex
   {
     constexpr rsl::string_view g_Model = "Model";
     constexpr rsl::string_view g_View = "View";
-    constexpr rsl::string_view g_Proj = "Proj";
+    constexpr rsl::string_view g_Proj = "ProjectionMatrix";
     constexpr rsl::string_view g_MVP = "ModelViewProj";
 
     Semantic var_name_to_semantic(rsl::string_view name)

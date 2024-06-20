@@ -42,6 +42,7 @@ namespace rex
       // GPU resource initialization
       void init_font_texture();
       void init_shader();
+      void init_material();
       void init_root_signature();
       void init_input_layout();
       void init_pso();

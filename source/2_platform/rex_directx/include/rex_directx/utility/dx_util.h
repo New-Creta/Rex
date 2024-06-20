@@ -7,6 +7,7 @@
 
 #include <d3d12.h>
 #include <d3d11on12.h>
+#include <d3d12shader.h>
 
 // clang-format on
 // NOLINTEND(llvm-include-order)
@@ -34,6 +35,8 @@
 #include "rex_renderer_core/gfx/resource_state.h"
 #include "rex_renderer_core/gfx/descriptor_heap_type.h"
 #include "rex_renderer_core/system/shader_elements.h"
+#include "rex_renderer_core/shader_reflection/shader_class_type.h"
+#include "rex_renderer_core/shader_reflection/shader_variable_type.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -173,6 +176,8 @@ namespace rex
       // Return from Directx -> REX
       // ------------------------------------
       TextureFormat from_dx12(DXGI_FORMAT type);
+      ShaderClassType from_dx12(D3D_SHADER_VARIABLE_CLASS type);
+      ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type);
     } // namespace d3d
   }
 } // namespace rex

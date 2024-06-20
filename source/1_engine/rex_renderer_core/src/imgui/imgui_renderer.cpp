@@ -113,6 +113,7 @@ namespace rex
     {
       init_font_texture();
       init_shader();
+      init_material();
       init_input_layout();
       init_root_signature();
       init_pso();
@@ -157,6 +158,10 @@ namespace rex
 
       m_vertex_shader = rhi::create_vertex_shader(blob_to_string_view(vertex_shader_content), "imgui_vertex_shader");
       m_pixel_shader = rhi::create_pixel_shader(blob_to_string_view(pixel_shader_content), "imgui_pixel_shader");
+    }
+    void ImGuiRenderer::init_material()
+    {
+
     }
     void ImGuiRenderer::init_root_signature()
     {

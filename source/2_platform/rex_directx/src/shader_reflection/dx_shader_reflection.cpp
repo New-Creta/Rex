@@ -19,9 +19,9 @@ namespace rex
     using D3D_SHADER_INPUT_BIND_DESC = D3D12_SHADER_INPUT_BIND_DESC;
     using D3D_SIGNATURE_PARAMETER_DESC = D3D12_SIGNATURE_PARAMETER_DESC;
 
-    DxShaderReflection::DxShaderReflection(rsl::string_view shaderCode)
+    DxShaderReflection::DxShaderReflection(const wrl::ComPtr<ID3DBlob>& shaderCompiledCode)
     {
-      DX_CALL(D3DReflect(shaderCode.data(), shaderCode.length(), IID_PPV_ARGS(m_reflection_object.GetAddressOf())));
+      DX_CALL(D3DReflect(shaderCompiledCode->GetBufferPointer(), shaderCompiledCode->GetBufferSize(), IID_PPV_ARGS(m_reflection_object.GetAddressOf())));
       D3D12_SHADER_DESC shader_desc;
       DX_CALL(m_reflection_object->GetDesc(&shader_desc));
 

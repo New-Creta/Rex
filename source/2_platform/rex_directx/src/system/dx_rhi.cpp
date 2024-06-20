@@ -55,6 +55,7 @@
 #include "rex_directx/dxgi/includes.h"
 
 #include "rex_engine/platform/win/diagnostics/hr_call.h"
+#include "rex_directx/shader_reflection/dx_shader_reflection.h"
 
 namespace rex
 {
@@ -565,6 +566,8 @@ namespace rex
           REX_ERROR(LogDxRhi, "Failed to compile shader");
           return nullptr;
         }
+
+        DxShaderReflection refl(byte_code);
 
         return byte_code;
       }

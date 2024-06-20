@@ -21,7 +21,6 @@
 #include "rex_directx/system/dx_compute_engine.h"
 #include "rex_directx/system/dx_copy_engine.h"
 
-
 #include "rex_directx/imgui/dx_imgui_window.h"
 
 namespace rex

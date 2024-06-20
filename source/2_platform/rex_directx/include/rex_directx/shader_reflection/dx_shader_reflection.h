@@ -2,6 +2,7 @@
 
 #include "rex_directx/utility/dx_util.h"
 #include "rex_std/string_view.h"
+#include "rex_std/bonus/string.h"
 #include <d3d12shader.h>
 
 #include "rex_directx/shader_reflection/dx_bound_resource_reflection.h"
@@ -16,7 +17,7 @@ namespace rex
     class DxShaderReflection
     {
     public:
-      DxShaderReflection(rsl::string_view sourceCode);
+      DxShaderReflection(const wrl::ComPtr<ID3DBlob>& shaderCompiledCode);
 
     private:
       void reflect_constant_buffers(s32 numConstantBuffers);
@@ -24,7 +25,7 @@ namespace rex
       void reflect_output_params(s32 numOutputParams);
       void reflect_bound_resources(s32 numBoundResources);
       s32 get_constant_buffer_register(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cb_refl);
-      rsl::tiny_stack_string convert_version_to_string()
+      rsl::tiny_stack_string convert_version_to_string(UINT version);
 
     private:
       wrl::ComPtr<ID3D12ShaderReflection> m_reflection_object;

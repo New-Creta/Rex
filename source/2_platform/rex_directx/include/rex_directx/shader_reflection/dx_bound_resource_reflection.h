@@ -8,10 +8,10 @@ namespace rex
 {
   namespace gfx
   {
-    class BoundResourceReflection
+    class DxBoundResourceReflection
     {
     public:
-      BoundResourceReflection(const D3D12_SHADER_INPUT_BIND_DESC& resource_desc);
+      DxBoundResourceReflection(const D3D12_SHADER_INPUT_BIND_DESC& resource_desc);
 
       rsl::string_view name() const;
       card32 shader_register() const;

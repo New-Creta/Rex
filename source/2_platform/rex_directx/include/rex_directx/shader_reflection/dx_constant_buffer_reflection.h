@@ -11,10 +11,10 @@ namespace rex
 {
   namespace gfx
   {
-    class ConstantBufferReflection
+    class DxConstantBufferReflection
     {
     public:
-      ConstantBufferReflection(ID3D12ShaderReflectionConstantBuffer* cb_refl, s32 shader_register);
+      DxConstantBufferReflection(ID3D12ShaderReflectionConstantBuffer* cb_refl, s32 shader_register);
 
       rsl::string_view name() const;
       s32 size() const;
