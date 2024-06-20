@@ -19,7 +19,8 @@ namespace rex
     using D3D_SHADER_INPUT_BIND_DESC = D3D12_SHADER_INPUT_BIND_DESC;
     using D3D_SIGNATURE_PARAMETER_DESC = D3D12_SIGNATURE_PARAMETER_DESC;
 
-    DxShaderReflection::DxShaderReflection(const wrl::ComPtr<ID3DBlob>& shaderCompiledCode)
+    DxShaderReflection::DxShaderReflection(const wrl::ComPtr<ID3DBlob>& shaderCompiledCode, ShaderType type)
+      : ShaderSignature(type)
     {
       DX_CALL(D3DReflect(shaderCompiledCode->GetBufferPointer(), shaderCompiledCode->GetBufferSize(), IID_PPV_ARGS(m_reflection_object.GetAddressOf())));
       D3D12_SHADER_DESC shader_desc;
@@ -40,34 +41,50 @@ namespace rex
 
     void DxShaderReflection::reflect_constant_buffers(s32 numConstantBuffers)
     {
-      m_cb_reflections.reserve(numConstantBuffers);
+      rsl::vector<ConstantBufferReflection> constant_buffers;
+      constant_buffers.reserve(numConstantBuffers);
 
       for (card32 i = 0; i < numConstantBuffers; ++i)
       {
         ID3D12ShaderReflectionConstantBuffer* cb = m_reflection_object->GetConstantBufferByIndex(i);
-        m_cb_reflections.emplace_back(cb, get_constant_buffer_register(m_reflection_object.Get(), cb));
+        constant_buffers.emplace_back(cb, get_constant_buffer_register(m_reflection_object.Get(), cb));
       }
+
+      init_constant_buffers(rsl::move(constant_buffers));
     }
     void DxShaderReflection::reflect_input_params(s32 numInputParams)
     {
+      rsl::vector<ShaderParamReflection> input_params;
+      input_params.reserve(numInputParams);
+
       for (card32 i = 0; i < numInputParams; ++i)
       {
         D3D12_SIGNATURE_PARAMETER_DESC param_desc;
         DX_CALL(m_reflection_object->GetInputParameterDesc(i, &param_desc));
-        m_input_params.emplace_back(param_desc);
+        input_params.emplace_back(param_desc);
       }
+
+      init_input_params(rsl::move(input_params));
     }
     void DxShaderReflection::reflect_output_params(s32 numOutputParams)
     {
+      rsl::vector<ShaderParamReflection> output_params;
+      output_params.reserve(numOutputParams);
+
       for (card32 i = 0; i < numOutputParams; ++i)
       {
         D3D12_SIGNATURE_PARAMETER_DESC param_desc;
         DX_CALL(m_reflection_object->GetOutputParameterDesc(i, &param_desc));
-        m_output_params.emplace_back(param_desc);
+        output_params.emplace_back(param_desc);
       }
+
+      init_output_params(rsl::move(output_params));
     }
     void DxShaderReflection::reflect_bound_resources(s32 numBoundResources)
     {
+      rsl::vector<BoundResourceReflection> textures;
+      rsl::vector<BoundResourceReflection> samplers;
+
       for (card32 i = 0; i < numBoundResources; ++i)
       {
         D3D12_SHADER_INPUT_BIND_DESC resource_desc;
@@ -76,10 +93,13 @@ namespace rex
         switch (resource_desc.Type)
         {
         case D3D_SIT_CBUFFER: continue;
-        case D3D_SIT_TEXTURE: m_textures.emplace_back(resource_desc); break;
-        case D3D_SIT_SAMPLER: m_samplers.emplace_back(resource_desc); break;
+        case D3D_SIT_TEXTURE: textures.emplace_back(resource_desc); break;
+        case D3D_SIT_SAMPLER: samplers.emplace_back(resource_desc); break;
         default: REX_ASSERT("Invalid bound resource type");
         }
+
+        init_textures(rsl::move(textures));
+        init_samplers(rsl::move(samplers));
       }
     }
     card32 DxShaderReflection::get_constant_buffer_register(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cb_refl)

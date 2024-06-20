@@ -161,7 +161,46 @@ namespace rex
     }
     void ImGuiRenderer::init_material()
     {
+      // Init vertex shader and reflect its resources
+      rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
+      memory::Blob vertex_shader_content = vfs::read_file(vertex_shader_path);
+      m_vertex_shader = rhi::create_vertex_shader(blob_to_string_view(vertex_shader_content), "imgui_vertex_shader");
 
+      // Init pixel shader and reflect its resources
+      rsl::string pixel_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_pixel.hlsl");
+      memory::Blob pixel_shader_content = vfs::read_file(pixel_shader_path);
+      m_pixel_shader = rhi::create_pixel_shader(blob_to_string_view(pixel_shader_content), "imgui_pixel_shader");
+
+      // Create a desc holding the collection of shaders that will be used for the material
+      MaterialDesc desc{};
+      desc.vs = shader_lib::load_shader(vertex_shader_path);
+      desc.ps = shader_lib::load_shader(pixel_shader_path);
+
+      // Create the material instance from the descriptor, creating a new material if needed
+      Material* imgui_mat = rhi::create_material_instance(desc);
+
+      // create_material_instance implementation
+      ShaderSignature vs_signature = create_shader_signature(desc.vs);
+      ShaderSignature ps_signature = create_shader_signature(desc.ps);
+
+      MaterialSignature mat_signature{};
+      mat_signature.vs = vs_signature;
+      mat_signature.ps = ps_signature;
+
+      Material* mat = rsl::make_unique<Material>(mat_signature);
+
+      // Material constructor
+      store_shader_params(signature.vs);
+      store_shader_params(signature.ps);
+
+      // store_shader_params implementation
+      store_constants(signature.constants);
+      store_views(signature.views);
+      store_samplers(signature.samplers);
+
+      // Create an input layout from the above
+
+      // Create pipeline state from the above
     }
     void ImGuiRenderer::init_root_signature()
     {

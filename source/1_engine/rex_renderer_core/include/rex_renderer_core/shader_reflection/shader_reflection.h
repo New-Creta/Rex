@@ -1,1 +1,58 @@
 #pragma once
+
+#include "rex_renderer_core/system/shader_type.h"
+
+#include "rex_renderer_core/shader_reflection/bound_resource_reflection.h"
+#include "rex_renderer_core/shader_reflection/constant_buffer_reflection.h"
+#include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
+
+namespace rex
+{
+	namespace gfx
+	{
+		class ShaderSignature
+		{
+		public:
+			ShaderSignature(ShaderType type)
+				: m_shader_type(type)
+			{}
+
+			const rsl::vector<ConstantBufferReflection>& constant_buffers() const;
+			const rsl::vector<ShaderParamReflection>& input_params() const;
+			const rsl::vector<ShaderParamReflection>& output_params() const;
+			const rsl::vector<BoundResourceReflection>& textures() const;
+			const rsl::vector<BoundResourceReflection>& samplers() const;
+
+		protected:
+			void init_constant_buffers(rsl::vector<ConstantBufferReflection>&& constantBuffers)
+			{
+				m_constant_buffers = rsl::move(constantBuffers);
+			}
+			void init_input_params(rsl::vector<ShaderParamReflection>&& inputParams)
+			{
+				m_input_params = rsl::move(inputParams);
+			}
+			void init_output_params(rsl::vector<ShaderParamReflection>&& outputParams)
+			{
+				m_output_params = rsl::move(outputParams);
+			}
+			void init_samplers(rsl::vector<BoundResourceReflection>&& samplers)
+			{
+				m_samplers = rsl::move(samplers);
+			}
+			void init_textures(rsl::vector<BoundResourceReflection>&& textures)
+			{
+				m_textures = rsl::move(textures);
+			}
+
+		private:
+			rsl::vector<ConstantBufferReflection> m_constant_buffers;
+			rsl::vector<ShaderParamReflection>   m_input_params;
+			rsl::vector<ShaderParamReflection>   m_output_params;
+			rsl::vector<BoundResourceReflection> m_samplers;
+			rsl::vector<BoundResourceReflection> m_textures;
+
+			ShaderType m_shader_type;
+		};
+	}
+}
