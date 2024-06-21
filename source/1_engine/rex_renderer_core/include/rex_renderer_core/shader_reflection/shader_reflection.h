@@ -17,11 +17,26 @@ namespace rex
 				: m_shader_type(type)
 			{}
 
-			const rsl::vector<ConstantBufferReflection>& constant_buffers() const;
-			const rsl::vector<ShaderParamReflection>& input_params() const;
-			const rsl::vector<ShaderParamReflection>& output_params() const;
-			const rsl::vector<BoundResourceReflection>& textures() const;
-			const rsl::vector<BoundResourceReflection>& samplers() const;
+			const rsl::vector<ConstantBufferReflection>& constant_buffers() const
+			{
+				return m_constant_buffers;
+			}
+			const rsl::vector<ShaderParamReflection>& input_params() const
+			{
+				return m_input_params;
+			}
+			const rsl::vector<ShaderParamReflection>& output_params() const
+			{
+				return m_output_params;
+			}
+			const rsl::vector<BoundResourceReflection>& textures() const
+			{
+				return m_textures;
+			}
+			const rsl::vector<BoundResourceReflection>& samplers() const
+			{
+				return m_samplers;
+			}
 
 		protected:
 			void init_constant_buffers(rsl::vector<ConstantBufferReflection>&& constantBuffers)
