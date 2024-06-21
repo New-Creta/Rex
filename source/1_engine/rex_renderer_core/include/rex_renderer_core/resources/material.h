@@ -14,6 +14,7 @@ namespace rex
   {
     // NOTE: A parameter with the same name and size between shaders
     // is treated as a parameters that's shared between these shaders
+    // In DirectX a param can be visible in 1 shader or in all of them, you can't mask combine
 
     // A signature describes all the resources that need to be bound for a shader
     struct MaterialSignature
