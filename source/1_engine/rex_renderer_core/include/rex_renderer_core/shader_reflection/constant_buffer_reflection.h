@@ -19,6 +19,10 @@ namespace rex
 		public:
 			ConstantBufferReflection(CBufferReflDesc&& desc);
 
+			rsl::string_view name() const;
+			s32 size() const;
+			s32 shader_register() const;
+
 		private:
 			rsl::tiny_stack_string m_name;
 			s32 m_size;

@@ -1,6 +1,7 @@
 #include "rex_directx/shader_reflection/dx_shader_reflection.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
+#include "rex_directx/system/dx_shader.h"
 
 #include <d3dcompiler.h>
 
@@ -132,6 +133,13 @@ namespace rex
       version_str += rsl::format("{}_{}", major, minor);
 
       return version_str;
+    }
+
+    rsl::unique_ptr<ShaderSignature> reflect_shader(const Shader* shader)
+    {
+      const DxShader* dx_shader = static_cast<const DxShader*>(shader);
+      
+      return rsl::make_unique<DxShaderReflection>(dx_shader->dx_bytecode());
     }
   }
 }

@@ -6,6 +6,8 @@
 #include "rex_renderer_core/shader_reflection/constant_buffer_reflection.h"
 #include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
 
+#include "rex_renderer_core/system/shader_pipeline.h"
+
 namespace rex
 {
 	namespace gfx
@@ -69,5 +71,17 @@ namespace rex
 
 			ShaderType m_shader_type;
 		};
+
+		struct ShaderPipelineReflection
+		{
+			rsl::unique_ptr<ShaderSignature> vs;
+			rsl::unique_ptr<ShaderSignature> ps;
+		};
+		ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline);
+		
+		namespace rhi
+		{
+			rsl::unique_ptr<ShaderSignature> reflect_shader(const Shader* shader);
+		}
 	}
 }

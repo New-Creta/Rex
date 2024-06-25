@@ -36,6 +36,7 @@ namespace rex
     rex::Error process();
 
     rsl::string_view get(rsl::string_view header, rsl::string_view key, rsl::string_view default = "") const;
+    rsl::string_view get(rsl::string_view key, rsl::string_view default = "") const;
     rsl::unordered_map<rsl::string_view, IniHeaderWithItems> all_items() const;
 
   private:

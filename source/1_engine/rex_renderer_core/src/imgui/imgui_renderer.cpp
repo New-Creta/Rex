@@ -150,6 +150,12 @@ namespace rex
     }
     void ImGuiRenderer::init_shader()
     {
+      rsl::string material_path = path::join(vfs::engine_root(), "materials", "imgui.material");
+      m_material = load_material(material_path);
+
+
+
+
       rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
       rsl::string pixel_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_pixel.hlsl");
 

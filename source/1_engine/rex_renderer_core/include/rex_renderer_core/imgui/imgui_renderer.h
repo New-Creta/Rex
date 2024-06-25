@@ -59,6 +59,7 @@ namespace rex
       rsl::unique_ptr<InputLayout> m_input_layout;         // The input layout used by imgui
       rsl::unique_ptr<RasterState> m_raster_state; // The render state used by imgui
       rsl::unique_ptr<PipelineState> m_pipeline_state;     // The pipeline state used by imgui
+      rsl::unique_ptr<Material> m_material;                // The material used by imgui
     };
 
     // Perform platform specific imgui initialization, this is not defined here.
