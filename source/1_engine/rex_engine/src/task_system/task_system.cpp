@@ -119,7 +119,7 @@ namespace rex
                 rsl::shared_ptr<Job> job                    = rsl::move(m_job);
 
                 // signal that this job thread has started
-                // After this, the this point can be invalid, so we can't access it anymore
+                // After this, the this pointer can be invalid, so we can't access it anymore
                 m_wait_for_start_event.signal();
 
                 // Keep running jobs until there are none left

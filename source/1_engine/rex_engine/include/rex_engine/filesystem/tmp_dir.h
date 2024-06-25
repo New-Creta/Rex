@@ -7,7 +7,7 @@
 
 namespace rex
 {
-  // A file that's only in existance as long as the object is alive
+  // A directory that's only in existance as long as the object is alive
   class TempDirectory
   {
   public:

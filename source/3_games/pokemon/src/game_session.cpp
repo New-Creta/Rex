@@ -28,6 +28,7 @@ namespace pokemon
 
     // the levels directory is the root directory containing all the levels.
     // The content of these levels is not located here, only the information of what's needed to load these levels
+    // rsl::string levels_directory = rex::vfs::mount(rex::path::join(rex::vfs::project_root(), rex::MountingPoint::Levels), "levels");
     rsl::string levels_directory = rex::path::join(rex::vfs::project_root(), "levels");
 
     // the levels file is the root file listing all the levels of the game together with a bit of information on how to initialize them
