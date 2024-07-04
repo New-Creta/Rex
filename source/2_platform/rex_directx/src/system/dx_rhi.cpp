@@ -586,8 +586,6 @@ namespace rex
           return nullptr;
         }
 
-        DxShaderReflection refl(byte_code);
-
         return byte_code;
       }
       wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(CommandAllocator* alloc, GraphicsEngineType type)
