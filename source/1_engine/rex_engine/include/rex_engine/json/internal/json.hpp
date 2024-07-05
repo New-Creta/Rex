@@ -21,6 +21,10 @@
 #include "rex_std/streambuf.h"
 #include "rex_std/functional.h"
 
+#include "rex_engine/diagnostics/log.h"
+
+DEFINE_LOG_CATEGORY(LogJson);
+
 /****************************************************************************\
  * Note on documentation: The source files contain links to the online      *
  * documentation of the public API at https://json.nlohmann.me. This URL    *
@@ -6970,10 +6974,11 @@ class json_sax_dom_parser
     }
 
     template<class Exception>
-    bool parse_error(rsl::size_t /*unused*/, const rsl::string& /*unused*/,
+    bool parse_error(rsl::size_t num, const rsl::string& err,
                      const Exception& ex)
     {
         errored = true;
+        REX_ERROR(LogJson, ex.what());
         static_cast<void>(ex);
         if (allow_exceptions)
         {
@@ -13210,7 +13215,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
             case value_t::object:
             {
                 JSON_ASSERT(m_it.object_iterator != m_object->m_data.m_value.object->end());
-                return m_it.object_iterator->second;
+                return m_it.object_iterator->value;
             }
 
             case value_t::array:
@@ -21525,7 +21530,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         {
             auto it = m_data.m_value.object->find(key);
             JSON_ASSERT(it != m_data.m_value.object->end());
-            return it->second;
+            return it->value;
         }
 
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a string argument with ", type_name()), this));
