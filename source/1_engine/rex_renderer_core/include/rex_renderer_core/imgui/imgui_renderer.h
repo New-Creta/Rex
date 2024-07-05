@@ -7,6 +7,7 @@
 #include "rex_renderer_core/system/resource_state_tracker.h"
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/rendering/renderer.h"
+#include "rex_renderer_core/materials/material.h"
 
 namespace rex
 {

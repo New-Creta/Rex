@@ -34,7 +34,9 @@
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/resources/upload_buffer.h"
-#include "rex_renderer_core/resources/material.h"
+#include "rex_renderer_core/materials/material.h"
+#include "rex_renderer_core/system/shader_pipeline.h"
+#include "rex_renderer_core/shader_reflection/shader_reflection.h"
 
 namespace rex
 {
@@ -86,6 +88,8 @@ namespace rex
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, ShaderPipelineReflection&& shaderPipelineReflection);
+
       rsl::unique_ptr<MaterialInstance> create_material_instance(const MaterialDesc& desc);
 
       // Return the render target pointing to the current swapchain's backbuffer
