@@ -23,9 +23,9 @@ namespace rex
 		class ConstantBufferVariableReflection
 		{
 		public:
-			ConstantBufferVariableReflection(CBufferVarReflDesc&& desc);
+			ConstantBufferVariableReflection(CBufferVarReflDesc&& desc) {}
 
-			rsl::string_view name() const;
+			rsl::string_view name() const { return m_name; }
 
 		private:
 			rsl::tiny_stack_string m_name;

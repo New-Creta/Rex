@@ -10,7 +10,6 @@
 
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/texture_2d.h"
-#include "rex_renderer_core/resources/sampler.h"
 
 namespace rex
 {
@@ -46,7 +45,7 @@ namespace rex
       // Bind a texture resource to a particular texture parameter of the material
       void bind_texture2d(rsl::string_view name, Texture2D* texture);
       // Bind a sampler resource to a particular sampler parameter of the material
-      void bind_sampler(rsl::string_view name, Sampler* sampler);
+      //void bind_sampler(rsl::string_view name, Sampler* sampler);
 
       // Update a bound constant buffer's data
       void set_constant_buffer_data(rsl::string_view name, const void* data, s32 size);

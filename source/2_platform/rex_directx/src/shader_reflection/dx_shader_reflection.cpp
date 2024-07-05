@@ -48,7 +48,7 @@ namespace rex
       for (card32 i = 0; i < numConstantBuffers; ++i)
       {
         ID3D12ShaderReflectionConstantBuffer* cb = m_reflection_object->GetConstantBufferByIndex(i);
-        constant_buffers.emplace_back(cb, get_constant_buffer_register(m_reflection_object.Get(), cb));
+        //constant_buffers.emplace_back(cb, get_constant_buffer_register(m_reflection_object.Get(), cb));
       }
 
       init_constant_buffers(rsl::move(constant_buffers));
@@ -62,7 +62,7 @@ namespace rex
       {
         D3D12_SIGNATURE_PARAMETER_DESC param_desc;
         DX_CALL(m_reflection_object->GetInputParameterDesc(i, &param_desc));
-        input_params.emplace_back(param_desc);
+        //input_params.emplace_back(param_desc);
       }
 
       init_input_params(rsl::move(input_params));
@@ -76,7 +76,7 @@ namespace rex
       {
         D3D12_SIGNATURE_PARAMETER_DESC param_desc;
         DX_CALL(m_reflection_object->GetOutputParameterDesc(i, &param_desc));
-        output_params.emplace_back(param_desc);
+        //output_params.emplace_back(param_desc);
       }
 
       init_output_params(rsl::move(output_params));
@@ -94,8 +94,8 @@ namespace rex
         switch (resource_desc.Type)
         {
         case D3D_SIT_CBUFFER: continue;
-        case D3D_SIT_TEXTURE: textures.emplace_back(resource_desc); break;
-        case D3D_SIT_SAMPLER: samplers.emplace_back(resource_desc); break;
+        case D3D_SIT_TEXTURE: /*textures.emplace_back(resource_desc);*/ break;
+        case D3D_SIT_SAMPLER: /*samplers.emplace_back(resource_desc);*/ break;
         default: REX_ASSERT("Invalid bound resource type");
         }
 
@@ -135,11 +135,15 @@ namespace rex
       return version_str;
     }
 
-    rsl::unique_ptr<ShaderSignature> reflect_shader(const Shader* shader)
-    {
-      const DxShader* dx_shader = static_cast<const DxShader*>(shader);
-      
-      return rsl::make_unique<DxShaderReflection>(dx_shader->dx_bytecode());
-    }
+		namespace rhi
+		{
+			rsl::unique_ptr<gfx::ShaderSignature> reflect_shader(const gfx::Shader* shader)
+			{
+				const gfx::DxShader* dx_shader = static_cast<const gfx::DxShader*>(shader);
+
+				return nullptr;
+				//return rsl::make_unique<DxShaderReflection>(dx_shader->dx_bytecode());
+			}
+		}
   }
 }

@@ -78,10 +78,10 @@ namespace rex
 			rsl::unique_ptr<ShaderSignature> ps;
 		};
 		ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline);
-		
+
 		namespace rhi
 		{
-			rsl::unique_ptr<ShaderSignature> reflect_shader(const Shader* shader);
+			rsl::unique_ptr<gfx::ShaderSignature> reflect_shader(const gfx::Shader* shader);
 		}
 	}
 }

@@ -549,24 +549,28 @@ namespace rex
         d3d::set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
         return rsl::make_unique<DxUploadBuffer>(d3d_upload_buffer);
       }
-      rsl::unique_ptr<MaterialInstance>     create_material_instance(const MaterialDesc& desc)
+      //rsl::unique_ptr<MaterialInstance>     create_material_instance(const MaterialDesc& desc)
+      //{
+      //  // create_material_instance implementation
+      //  MaterialSignature mat_signature{};
+      //  mat_signature.vs = rsl::make_unique<DxShaderReflection>(static_cast<DxShader*>(desc.vs)->dx_bytecode());
+      //  mat_signature.ps = rsl::make_unique<DxShaderReflection>(static_cast<DxShader*>(desc.ps)->dx_bytecode());
+
+      //  rsl::unique_ptr<Material> mat = rsl::make_unique<Material>(mat_signature);
+
+      //  // Material constructor
+      //  store_shader_params(signature.vs);
+      //  store_shader_params(signature.ps);
+
+      //  // store_shader_params implementation
+      //  store_constants(signature.constants);
+      //  store_views(signature.views);
+      //  store_samplers(signature.samplers);
+
+      //}
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, ShaderPipelineReflection&& shaderPipelineReflection)
       {
-        // create_material_instance implementation
-        MaterialSignature mat_signature{};
-        mat_signature.vs = rsl::make_unique<DxShaderReflection>(static_cast<DxShader*>(desc.vs)->dx_bytecode());
-        mat_signature.ps = rsl::make_unique<DxShaderReflection>(static_cast<DxShader*>(desc.ps)->dx_bytecode());
-
-        rsl::unique_ptr<Material> mat = rsl::make_unique<Material>(mat_signature);
-
-        // Material constructor
-        store_shader_params(signature.vs);
-        store_shader_params(signature.ps);
-
-        // store_shader_params implementation
-        store_constants(signature.constants);
-        store_views(signature.views);
-        store_samplers(signature.samplers);
-
+        return nullptr;
       }
 
       // API Specific functions

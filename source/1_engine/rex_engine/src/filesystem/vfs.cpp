@@ -625,7 +625,7 @@ namespace rex
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
       return file::exists(filepath);
     }
-    bool is_file(MountingPoint root, rsl::string_view path)
+    bool is_file(rsl::string_view path)
     {
       path = path::remove_quotes(path);
       rsl::string fullpath = create_full_path(path);
