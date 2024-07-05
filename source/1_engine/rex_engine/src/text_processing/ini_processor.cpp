@@ -20,14 +20,14 @@ namespace rex
   {
     return m_header;
   }
-  rsl::string_view IniHeaderWithItems::get(rsl::string_view key, rsl::string_view default) const
+  rsl::string_view IniHeaderWithItems::get(rsl::string_view key, rsl::string_view def) const
   {
     if (m_items.contains(key))
     {
       return m_items.at(key);
     }
 
-    return default;
+    return def;
   }
 
   const rsl::unordered_map<rsl::string_view, rsl::string_view>& IniHeaderWithItems::all_items() const
@@ -98,19 +98,14 @@ namespace rex
     return error;
   }
 
-  rsl::string_view IniProcessor::get(rsl::string_view header, rsl::string_view key, rsl::string_view default) const
+  rsl::string_view IniProcessor::get(rsl::string_view header, rsl::string_view key, rsl::string_view def) const
   {
     if (m_headers_with_items.contains(header))
     {
-      return m_headers_with_items.at(header).get(key, default);
+      return m_headers_with_items.at(header).get(key, def);
     }
 
-    return default;
-  }
-
-  rsl::string_view IniProcessor::get(rsl::string_view key, rsl::string_view default) const
-  {
-    return get("", key, default);
+    return def;
   }
 
   rsl::unordered_map<rsl::string_view, IniHeaderWithItems> IniProcessor::all_items() const
