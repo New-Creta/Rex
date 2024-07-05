@@ -6974,7 +6974,7 @@ class json_sax_dom_parser
     }
 
     template<class Exception>
-    bool parse_error(rsl::size_t num, const rsl::string& err,
+    bool parse_error(rsl::size_t /*num*/, const rsl::string& /*err*/,
                      const Exception& ex)
     {
         errored = true;

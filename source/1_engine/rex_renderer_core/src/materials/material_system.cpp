@@ -13,11 +13,19 @@
 
 #include "rex_engine/json/json.h"
 
+#include "rex_engine/string/stringid.h"
+
 namespace rex
 {
 	namespace gfx
 	{
 		DEFINE_LOG_CATEGORY(LogMaterialSystem);
+
+		enum class MaterialParameterType
+		{
+			Texture,
+			Sampler
+		};
 
 		rsl::unique_ptr<Material> load_material(rsl::string_view filepath)
 		{
@@ -58,9 +66,15 @@ namespace rex
 			for (const auto& param : parameters_array)
 			{
 				rsl::string_view type = param["type"];
-				constexpr rsl::string_view s = "spo";
-				constexpr auto res = rsl::hash<rsl::string_view>{}(s);
+				rsl::hash_result type_hash = rsl::comp_hash(type);
 				
+				MaterialParameterType param_type;
+
+				switch (type_hash)
+				{
+				case "texture"_sid: param_type = MaterialParameterType::Texture; break;
+				case "sampler"_sid: param_type = MaterialParameterType::Sampler; break;
+				}
 
 				rsl::string_view name = param["name"];
 				rsl::string_view path = param["path"];
