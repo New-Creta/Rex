@@ -55,6 +55,8 @@ namespace rex
       void set_constant_buffer(s32 paramIdx, ConstantBuffer* cb) override;
       // Set the blend factor of the context
       void set_blend_factor(const f32 blendFactor[4]) override;
+      // Set the blend factor of the context
+      void set_blend_factor(const BlendFactor& blendFactor) override;
 
       // Draw an indexed primitive
       void draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation) override;
@@ -63,6 +65,8 @@ namespace rex
 
       // Bind a texture to the context
       void bind_texture(s32 rootParamIdx, Texture2D* texture) override;
+      // Bind a material to the context
+      void bind_material(Material* material) override;
 
       // Return the wrapped directx commandlist
       ID3D12GraphicsCommandList* dx_cmdlist();

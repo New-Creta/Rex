@@ -11,6 +11,14 @@
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/texture_2d.h"
 
+#include "rex_renderer_core/materials/material_parameter.h"
+
+#include "rex_renderer_core/gfx/primitive_topology.h"
+#include "rex_renderer_core/resources/pipeline_state.h"
+#include "rex_renderer_core/resources/root_signature.h"
+#include "rex_renderer_core/resources/blend_state.h"
+#include "rex_renderer_core/gfx/render_context.h"
+
 namespace rex
 {
   namespace gfx
@@ -38,28 +46,27 @@ namespace rex
     class Material
     {
     public:
-      Material(ShaderPipeline&& shaderPipeline, const ShaderPipelineReflection& shaderPipelineRefl);
+      Material(ShaderPipeline&& shaderPipeline);
 
-      // Bind a constant buffer resource to a particular constant buffer parameter of the material
-      void bind_constant_buffer(rsl::string_view name, ConstantBuffer* cb);
-      // Bind a texture resource to a particular texture parameter of the material
-      void bind_texture2d(rsl::string_view name, Texture2D* texture);
-      // Bind a sampler resource to a particular sampler parameter of the material
-      //void bind_sampler(rsl::string_view name, Sampler* sampler);
+      void set_texture(rsl::string_view name, Texture2D* texture);
+      void set_sampler(rsl::string_view name, Sampler2D* sampler);
 
-      // Update a bound constant buffer's data
-      void set_constant_buffer_data(rsl::string_view name, const void* data, s32 size);
+      PrimitiveTopology primitive_topology() const;
+      PipelineState* pso();
+      RootSignature* root_signature();
+      BlendFactor blend_factor();
 
     private:
-      void store_shader_params(const ShaderSignature* signature);
+      void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature);
 
     private:
-      rsl::unordered_map<rsl::string_view, ConstantBufferReflection> m_constant_buffers;
-      rsl::unordered_map<rsl::string_view, ShaderParamReflection>   m_input_params;
-      rsl::unordered_map<rsl::string_view, ShaderParamReflection>   m_output_params;
-      rsl::unordered_map<rsl::string_view, BoundResourceReflection> m_samplers;
-      rsl::unordered_map<rsl::string_view, BoundResourceReflection> m_textures;
+      rsl::unordered_map<rsl::string_view, TextureMaterialParameter> m_textures;
+      rsl::unordered_map<rsl::string_view, SamplerMaterialParameter> m_samplers;
 
+      PrimitiveTopology m_primitive_topology;
+      rsl::unique_ptr<PipelineState> m_pso;
+      rsl::unique_ptr<RootSignature> m_root_signature;
+      BlendFactor m_blend_factor;
 
       ShaderPipeline m_shader_pipeline;
     };

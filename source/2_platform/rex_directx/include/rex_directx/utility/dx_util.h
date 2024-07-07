@@ -8,6 +8,7 @@
 #include <d3d12.h>
 #include <d3d11on12.h>
 #include <d3d12shader.h>
+#include "rex_directx/utility/d3dx12.h"
 
 // clang-format on
 // NOLINTEND(llvm-include-order)
@@ -57,6 +58,7 @@ namespace rex
     class VertexBuffer;
     class UploadBuffer;
     class DescriptorHeap;
+    class ShaderSignature;
 
     // DirectX classes
     class DxCommandQueue;
@@ -121,6 +123,12 @@ namespace rex
       s32 format_byte_size(TextureFormat format);
       // Get the byte size of a given format
       s32 format_byte_size(DXGI_FORMAT format);
+
+      // Root signature construction
+      void add_shader_signature_parameters(rsl::Out<rsl::vector<CD3DX12_ROOT_PARAMETER>> parameters, const ShaderSignature* signature, ShaderVisibility shaderVis);
+
+
+
 
       // ------------------------------------
       // Convertors from REX -> DirectX

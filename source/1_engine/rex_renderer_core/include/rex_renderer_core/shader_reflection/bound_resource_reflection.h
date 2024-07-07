@@ -7,16 +7,13 @@ namespace rex
 {
 	namespace gfx
 	{
-		struct BoundResourceReflDesc
-		{
-			rsl::tiny_stack_string name;
-			s32 shader_register;
-		};
-
 		class BoundResourceReflection
 		{
 		public:
-			BoundResourceReflection(BoundResourceReflDesc&& desc);
+			BoundResourceReflection(const rsl::tiny_stack_string& name, s32 shaderRegister);
+
+			rsl::string_view name() const;
+			s32 shader_register() const;
 
 		private:
 			rsl::tiny_stack_string m_name;

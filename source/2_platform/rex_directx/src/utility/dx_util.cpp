@@ -118,6 +118,93 @@ namespace rex
         }
       }
 
+      void add_to_view_range(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, s32 startRegister, s32 lastRegister, D3D12_DESCRIPTOR_RANGE_TYPE type)
+      {
+        s32 num_views_in_range = lastRegister - startRegister;
+
+        ranges.emplace_back();
+        ranges.back().BaseShaderRegister = startRegister;
+        ranges.back().NumDescriptors = numViews;
+        ranges.back().OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+        ranges.back().RangeType = type;
+        ranges.back().RegisterSpace = 0;
+      }
+
+      void add_shader_signature_parameters(rsl::Out<rsl::vector<CD3DX12_ROOT_PARAMETER>> parameters, const ShaderSignature* signature, ShaderVisibility shaderVis)
+      {
+        D3D12_SHADER_VISIBILITY visibility = to_dx12(shaderVis);
+        rsl::vector<CD3DX12_ROOT_PARAMETER>& root_parameters = parameters.get();
+
+        // 1. Constants (not able to retrieve this from reflection yet)
+        // 2. View 
+        // - constant buffer, 
+        // - SRV/UAV pointing to structured buffers or byte address buffers, 
+        // - raytracing acceleration structures
+        // 3. View Table
+        // - textures
+        // - samplers
+
+        UINT register_space = 0;
+
+        // 2. Sort out all the views
+        for (const auto& cb : signature->constant_buffers())
+        {
+          root_parameters.emplace_back().InitAsConstantBufferView(cb.shader_register(), register_space, visibility);
+        }
+
+        // 3. Sort out all the view tables
+        s32 start_register = 0;
+        s32 current_register = start_register;
+        s32 resource_register = -1;
+
+
+        // Put all textures in a view table
+        // We need to make sure the shader registers are continious
+
+        // Textures
+        rsl::vector<D3D12_DESCRIPTOR_RANGE> texture_ranges;
+        for (const auto& texture : signature->textures())
+        {
+          resource_register = texture.shader_register();
+          if (resource_register != current_register)
+          {
+            // Submit new range
+            add_to_view_range(texture_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+            start_register = resource_register;
+          }
+        }
+        add_to_view_range(texture_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+
+        // Reset registers to prep for samplers
+        rsl::vector<D3D12_DESCRIPTOR_RANGE> sampler_ranges;
+        start_register = 0;
+        current_register = 0;
+        resource_register = -1;
+
+        // Samplers
+        for (const auto& sampler : signature->samplers())
+        {
+          resource_register = sampler.shader_register();
+          if (resource_register != current_register)
+          {
+            // Submit new range
+            add_to_view_range(sampler_ranges, resource_register, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+            start_register = resource_register;
+          }
+        }
+        add_to_view_range(sampler_ranges, resource_register, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+
+        // Submit the ranges to the descriptor table
+        if (texture_ranges.size() > 0)
+        {
+          root_parameters.emplace_back().InitAsDescriptorTable(texture_ranges.size(), texture_ranges.data(), visibility);
+        }
+        if (sampler_ranges.size() > 0)
+        {
+          root_parameters.emplace_back().InitAsDescriptorTable(sampler_ranges.size(), sampler_ranges.data(), visibility);
+        }
+      }
+
       //-------------------------------------------------------------------------
       // CONVERTORS
       //-------------------------------------------------------------------------

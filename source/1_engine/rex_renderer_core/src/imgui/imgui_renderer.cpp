@@ -61,6 +61,7 @@ namespace rex
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (RexImGuiViewport* rex_viewport = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
+        render_ctx->bind_material(m_material.get());
         rex_viewport->render(*render_ctx);
       }
 
@@ -114,11 +115,14 @@ namespace rex
     void ImGuiRenderer::init_gpu_resources()
     {
       init_font_texture();
-      init_shader();
+      init_font_sampler();
       init_material();
       init_input_layout();
-      init_root_signature();
       init_pso();
+
+      // Below should no longer be necessary
+      init_shader();
+      init_root_signature();
       init_imgui_renderstate();
     }
 
@@ -126,7 +130,7 @@ namespace rex
     {
       ImGuiResources resources{};
 
-      resources.root_signature = m_root_signature.get();
+      resources.root_signature = m_material->root_signature();
       resources.pso = m_pipeline_state.get();
       imgui_init_resources(resources);
     }
@@ -139,16 +143,33 @@ namespace rex
 
     void ImGuiRenderer::init_font_texture()
     {
-      // Build texture atlas
-      ImGuiIO& io = ImGui::GetIO();
+      // Build texture atlas, by default this sits in memory in imgui
       unsigned char* pixels;
       s32 width, height;
+      ImGuiIO& io = ImGui::GetIO();
       io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
       TextureFormat format = TextureFormat::Unorm4;
 
       m_fonts_texture = rhi::create_texture2d(width, height, format, pixels);
 
       ImGui::GetIO().Fonts->SetTexID((ImTextureID)m_fonts_texture.get());
+    }
+    void ImGuiRenderer::init_font_sampler()
+    {
+      // Sampler is currently hardcoded
+      m_fonts_sampler.filtering = SamplerFiltering::MinMagMipLinear;
+      m_fonts_sampler.address_mode_u = TextureAddressMode::Wrap;
+      m_fonts_sampler.address_mode_v = TextureAddressMode::Wrap;
+      m_fonts_sampler.address_mode_w = TextureAddressMode::Wrap;
+      m_fonts_sampler.mip_lod_bias = 0.0f;
+      m_fonts_sampler.max_anisotropy = 0;
+      m_fonts_sampler.comparison_func = ComparisonFunc::Always;
+      m_fonts_sampler.border_color = BorderColor::TransparentBlack;
+      m_fonts_sampler.min_lod = 0.0f;
+      m_fonts_sampler.max_lod = 0.0f;
+      m_fonts_sampler.shader_register = 0;
+      m_fonts_sampler.register_space = 0;
+      m_fonts_sampler.shader_visibility = ShaderVisibility::Pixel;
     }
     void ImGuiRenderer::init_shader()
     {
@@ -169,6 +190,14 @@ namespace rex
     }
     void ImGuiRenderer::init_material()
     {
+      // Currently the imgui material doesn't load any parameters and they're set at runtime instead
+      rsl::string material_path = path::join(vfs::engine_root(), "materials", "imgui.material");
+      m_material = load_material(material_path);
+
+      m_material->set_texture("fonts_texture", m_fonts_texture.get());
+      m_material->set_sampler("fonts_sampler", &m_fonts_sampler);
+
+
       // Init vertex shader and reflect its resources
       rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
       memory::Blob vertex_shader_content = vfs::read_file(vertex_shader_path);
@@ -235,21 +264,9 @@ namespace rex
 
       // We have 1 sampler, used for sampling the font texture
       root_sig_desc.samplers = rsl::make_unique<ShaderSamplerDesc[]>(1);
-      root_sig_desc.samplers[0].filtering = SamplerFiltering::MinMagMipLinear;
-      root_sig_desc.samplers[0].address_mode_u = TextureAddressMode::Wrap;
-      root_sig_desc.samplers[0].address_mode_v = TextureAddressMode::Wrap;
-      root_sig_desc.samplers[0].address_mode_w = TextureAddressMode::Wrap;
-      root_sig_desc.samplers[0].mip_lod_bias = 0.0f;
-      root_sig_desc.samplers[0].max_anisotropy = 0;
-      root_sig_desc.samplers[0].comparison_func = ComparisonFunc::Always;
-      root_sig_desc.samplers[0].border_color = BorderColor::TransparentBlack;
-      root_sig_desc.samplers[0].min_lod = 0.0f;
-      root_sig_desc.samplers[0].max_lod = 0.0f;
-      root_sig_desc.samplers[0].shader_register = 0;
-      root_sig_desc.samplers[0].register_space = 0;
-      root_sig_desc.samplers[0].shader_visibility = ShaderVisibility::Pixel;
+      root_sig_desc.samplers[0] = m_fonts_sampler;
 
-      m_root_signature = rhi::create_root_signature(root_sig_desc);
+      //m_root_signature = rhi::create_root_signature(root_sig_desc);
     }
     void ImGuiRenderer::init_input_layout()
     {
@@ -295,7 +312,7 @@ namespace rex
       pso_desc.raster_state = *m_raster_state.get();
       pso_desc.vertex_shader = m_vertex_shader.get();
       pso_desc.pixel_shader = m_pixel_shader.get();
-      pso_desc.root_signature = m_root_signature.get();
+      pso_desc.root_signature = m_material->root_signature();
 
       // Blend State
       pso_desc.blend_state = BlendDesc();

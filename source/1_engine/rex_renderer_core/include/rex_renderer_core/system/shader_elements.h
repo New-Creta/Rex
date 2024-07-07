@@ -57,7 +57,7 @@ namespace rex
       DescriptorRangeType type{}; // The type of descriptor/view we have a range over
       s32 num_descriptors{}; // the number of descriptors/views in the range
       s32 base_shader_register{}; // The register of the first descriptor/view in the range.
-      s32 offset_in_descriptors_from_table_start{}; // The index in the descriptor table of the first descriptor the range covers
+      s32 offset_in_descriptors_from_table_start{}; // The offset of the first descriptor in this range from the descriptor that was set as the root param
       s32 register_space{}; // the register space for every descriptor/view in the range, this is often 0
     };
 

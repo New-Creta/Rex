@@ -10,6 +10,8 @@ namespace rex
 {
 	namespace json
 	{
+		using namespace nlohmann;
+
 		auto parse(memory::BlobView blob)
 		{
 			auto start = blob.data();

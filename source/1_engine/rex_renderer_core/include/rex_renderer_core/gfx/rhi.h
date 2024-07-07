@@ -37,12 +37,14 @@
 #include "rex_renderer_core/materials/material.h"
 #include "rex_renderer_core/system/shader_pipeline.h"
 #include "rex_renderer_core/shader_reflection/shader_reflection.h"
+#include "rex_renderer_core/materials/material_parameter.h"
 
 namespace rex
 {
   namespace gfx
   {
     class GpuEngine;
+    class Material;
   }
 
   namespace gfx
@@ -78,9 +80,11 @@ namespace rex
       rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, TextureFormat format);
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format);
+      rsl::unique_ptr<RootSignature> create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection);
       rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
       rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc);
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, TextureFormat format, const void* data = nullptr);
+      rsl::unique_ptr<Texture2D> create_texture2d(rsl::string_view filepath);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
@@ -88,11 +92,14 @@ namespace rex
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
-      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, ShaderPipelineReflection&& shaderPipelineReflection);
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline);
+      rsl::unique_ptr<Sampler2D> create_sampler2d(rsl::string_view path);
 
-      rsl::unique_ptr<MaterialInstance> create_material_instance(const MaterialDesc& desc);
+      //rsl::unique_ptr<MaterialInstance> create_material_instance(const MaterialDesc& desc);
 
       // Return the render target pointing to the current swapchain's backbuffer
+      // This can be put on the render context itself on construction, it doesn't have to be globally accessible
+      REX_STATIC_WARNING("Put the current backbuffer in the graphics context");
       RenderTarget* current_backbuffer_rt();
     }
   } // namespace gfx

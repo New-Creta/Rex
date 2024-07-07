@@ -175,6 +175,11 @@ namespace rex
     {
       m_cmd_list->OMSetBlendFactor(blendFactor);
     }
+    // Set the blend factor of the context
+    void DxRenderContext::set_blend_factor(const BlendFactor& blendFactor)
+    {
+      set_blend_factor(blendFactor.data());
+    }
 
     // Draw an indexed primitive
     void DxRenderContext::draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation)
@@ -193,6 +198,121 @@ namespace rex
       DxTexture2D* dx_texture = static_cast<DxTexture2D*>(texture);
       m_cmd_list->SetGraphicsRootDescriptorTable(rootParamIdx, dx_texture->gpu_handle());
     
+    }
+    // Bind a material to the context
+    void DxRenderContext::bind_material(Material* material)
+    {
+      // The following is stored in a material and should be bound when a material gets bound
+      // Primitive topology
+      set_primitive_topology(material->primitive_topology());
+      // Pipeline state
+      set_pipeline_state(material->pso());
+      // Root signature
+      set_root_signature(material->root_signature());
+      // Blend settings
+      set_blend_factor(material->blend_factor());
+
+      // All textures and samplers descriptors for a material are expected to be continuously stored in memory
+      // This means that the following needs to be true
+      // Let's say we need to bind 5 textures, with the first texture being at address 0x0000 (start of the descriptor heap)
+      // If a SRV descriptor is 128 bytes in memory, then the textures need to have the following layout in the descriptor heap
+      // texture 0 - 0x0000 == 000
+      // texture 1 - 0x0080 == 128
+      // texture 2 - 0x0100 == 256
+      // texture 3 - 0x0180 == 384
+      // texture 4 - 0x0200 == 512
+
+      // A root signature can have 2 kinds of parameters
+      // 1. constants
+      // Constants are NOT bound by materials, but are bound by the renderer instead
+      // Constants themselves have different categories as well (per scene, per view, per object, per instance, ..)
+      // I won't go into much detail here as it's explained in the renderer
+      // 
+      // 2. resources
+      // Resources are bound by materials. These are mostly textures and samplers.
+      // textures and samplers need to be put in descriptor tables in DirectX.
+      // A material can have multiple descriptor tables as they're often tied to shader type
+      // Therefore we need to loop over all the material's descriptor tables aka "tied resources"
+      // and bind them, linking them to the root parameter idx they were originally created for
+
+      // Textures
+      // Samplers
+
+      auto bind_resources_for_shader = [](ShaderType type)
+      {
+				// 1. Split textures and samplers of material based on shader visibility
+				ShaderResources shader_resources = material->resources_for_shader(type);
+
+				// 2. Copy textures and samplers into descriptor heap that's visible in shaders, make sure they're sorted based on shader register
+				rsl::vector<MaterialTexture> textures;
+				rsl::vector<D3D12_GPU_DESCRIPTOR_HANDLE> texture_handles;
+				for (auto& textures_of_shader : material_resources.textures)
+				{
+					// Sort the textures based on their shader register
+					rsl::sort(textures_of_shader.begin(), textures_of_shader.end(),
+						[](const ShaderTexture& lhs, const ShaderTexture& rhs)
+						{
+							return lhs.shader_register() < rhs.shader_register();
+						});
+
+					// copy the texture gpu handles into a separate array
+					texture_handles.resize(texture_handles.size() + textures_of_shader.size());
+					rsl::transform(textures_of_shader.cbegin(), textures_of_shader.cend(), texture_handles.end(),
+						[](const auto& texture)
+						{
+							DxTexture2D* dx_texture = static_cast<DxTexture2D*>(texture.texture());
+							return dx_texture->gpu_handle();
+						});
+
+				}
+
+				rsl::vector<D3D12_GPU_DESCRIPTOR_HANDLE> sampler_handles;
+				for (const auto& samplers_of_shader : material_resources.samplers)
+				{
+					// Sort the samplers based on their shader register
+					rsl::sort(samplers_of_shader.begin(), samplers_of_shader.end(),
+						[](const ShaderSampler& lhs, const ShaderSampler& rhs)
+						{
+							return lhs.shader_register() < rhs.shader_register();
+						});
+
+					// copy the sampler gpu handles into a separate array
+					sampler_handles.resize(sampler_handles.size() + samplers_of_shader.size());
+					rsl::transform(sampler_handles.cbegin(), sampler_handles.cend(), texture_handles.end(),
+						[](const auto& sampler)
+						{
+							DxSampler2D* dx_sampler = static_cast<DxSampler2D*>(sampler.sampler());
+							return dx_sampler->gpu_handle();
+						});
+				}
+
+				// Copy the earlier cached gpu handle descriptors into the shader visible heap
+				auto copy_ctx = new_copy_ctx();
+				D3D12_GPU_DESCRIPTOR_HANDLE start_texture_handle = copy_ctx.copy_descriptors(copy_ctx.shader_visible_srv_heap(), copy_ctx.global_srv_heap(), texture_handles.data(), texture_handles.size());
+				D3D12_GPU_DESCRIPTOR_HANDLE start_sampler_handle = copy_ctx.copy_descriptors(copy_ctx.shader_visible_srv_heap(), copy_ctx.global_srv_heap(), sampler_handles.data(), sampler_handles.size());
+
+				// 3. Bind the descriptor table based on the descriptors in this shader visible descriptor heap
+				m_cmd_list->SetGraphicsRootDescriptorTable(shader_resources.textures_root_param_idx, start_texture_handle);
+				m_cmd_list->SetGraphicsRootDescriptorTable(shader_resources.samplers_root_param_idx, start_sampler_handle);
+
+      }
+
+      // To bind the root signature
+        // m_cmd_list->SetGraphicsRootSignature();
+      // To bind constants
+        // m_cmd_list->SetGraphicsRoot32BitConstant();
+        // m_cmd_list->SetGraphicsRoot32BitConstants();
+      // To bind views
+        // m_cmd_list->SetGraphicsRootConstantBufferView();
+        // m_cmd_list->SetGraphicsRootShaderResourceView();
+        // m_cmd_list->SetGraphicsRootUnorderedAccessView();
+      // To bind view tables
+        // m_cmd_list->SetGraphicsRootDescriptorTable();
+
+      // bind all views and view tables
+
+      material->bind_textures(this);
+      material->bind_samplers(this);
     }
 
     // Return the wrapped directx commandlist

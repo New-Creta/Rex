@@ -57,6 +57,8 @@
 #include "rex_engine/platform/win/diagnostics/hr_call.h"
 #include "rex_directx/shader_reflection/dx_shader_reflection.h"
 
+#include "rex_engine/images/stb_image.h"
+
 namespace rex
 {
   namespace gfx
@@ -289,6 +291,58 @@ namespace rex
         d3d::set_debug_name_for(buffer.Get(), "Index Buffer");
         return rsl::make_unique<DxIndexBuffer>(buffer, numIndices, format);
       }
+      rsl::unique_ptr<RootSignature>        create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection)
+      {
+        // 1. Constants (not able to retrieve this from reflection yet)
+        // 2. View 
+        // - constant buffer, 
+        // - SRV/UAV pointing to structured buffers or byte address buffers, 
+        // - raytracing acceleration structures
+        // 3. View Table
+        // - textures
+        // - samplers
+        rsl::vector<CD3DX12_ROOT_PARAMETER> root_parameters;
+
+        d3d::add_shader_signature_parameters(rsl::Out(root_parameters), shaderPipelineReflection.vs.get(), ShaderVisibility::Vertex);
+        d3d::add_shader_signature_parameters(rsl::Out(root_parameters), shaderPipelineReflection.ps.get(), ShaderVisibility::Pixel);
+
+        // A root signature is an array of root parameters.
+        REX_WARN(LogDxRhi, "Use versioned root signature here");
+        REX_WARN(LogDxRhi, "Investigate if we can use static samplers here as well..");
+        CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
+          root_parameters.size(),
+          root_parameters.data(),
+          0,          // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
+          nullptr,    // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
+          D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+        // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+        wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
+        wrl::ComPtr<ID3DBlob> error_blob = nullptr;
+
+        HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
+        if (error_blob != nullptr)
+        {
+          REX_ERROR(LogDxRhi, "{}", (char*)error_blob->GetBufferPointer());
+          return nullptr;
+        }
+
+        if (DX_FAILED(hr))
+        {
+          REX_ERROR(LogDxRhi, "Failed to serialize root signature");
+          return nullptr;
+        }
+
+        wrl::ComPtr<ID3D12RootSignature> root_signature;
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+        {
+          HR_CALL(g_rhi_resources->device->dx_object()->GetDeviceRemovedReason());
+          REX_ERROR(LogDxRhi, "Failed to create root signature");
+          return nullptr;
+        }
+
+        return rsl::make_unique<DxRootSignature>(root_signature, rsl::move(root_parameters));
+      }
       rsl::unique_ptr<RootSignature>        create_root_signature(const RootSignatureDesc& desc)
       {
         // Root parameter can be a table, root descriptor or root constants.
@@ -355,6 +409,7 @@ namespace rex
         }
 
         // A root signature is an array of root parameters.
+        REX_WARN(LogDxRhi, "Use versioned root signature here");
         CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
           root_parameters.size(),
           root_parameters.data(),
@@ -450,13 +505,32 @@ namespace rex
           auto copy_context = gfx::new_copy_ctx();
           copy_context->update_texture2d(texture.get(), data);
           auto sync_info = copy_context->execute_on_gpu();
-          
+
           auto render_context = gfx::new_render_ctx();
           render_context->stall(*sync_info.get());
           render_context->transition_buffer(texture.get(), ResourceState::PixelShaderResource);
         }
 
         return texture;
+      }
+      rsl::unique_ptr<Texture2D>            create_texture2d(rsl::string_view filepath)
+      {
+        s32 width = 0;
+        s32 height = 0;
+        s32 channels = 0;
+        TextureFormat format = TextureFormat::Unorm4;
+
+        stbi_set_flip_vertically_on_load(false);
+        stbi_uc* data = stbi_load(filepath.data(), &width, &height, &channels, 0);
+
+        if (!data)
+        {
+          REX_ERROR(LogDxRhi, "Failed to load texture at {}", filepath);
+        }
+
+        REX_ASSERT_X(channels == 4, "textures must have 4 channels");
+
+        return create_texture2d(width, height, format, data);
       }
       rsl::unique_ptr<Texture2D>            create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource)
       {
@@ -568,7 +642,11 @@ namespace rex
       //  store_samplers(signature.samplers);
 
       //}
-      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, ShaderPipelineReflection&& shaderPipelineReflection)
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline)
+      {
+        return rsl::make_unique<Material>(rsl::move(shaderPipeline));
+      }
+      rsl::unique_ptr<Sampler2D> create_sampler2d(rsl::string_view path)
       {
         return nullptr;
       }
