@@ -141,8 +141,7 @@ namespace rex
 			{
 				const gfx::DxShader* dx_shader = static_cast<const gfx::DxShader*>(shader);
 
-				return nullptr;
-				//return rsl::make_unique<DxShaderReflection>(dx_shader->dx_bytecode());
+				return rsl::make_unique<DxShaderReflection>(dx_shader->dx_bytecode(), dx_shader->type());
 			}
 		}
   }

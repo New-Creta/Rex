@@ -42,11 +42,11 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> allocate_texture2d(s32 width, s32 height, TextureFormat format);
 
       // Create a render target view for a given resource
-      DescriptorHandle create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
+      DxResourceView create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
       // Create a shader resource view pointing to a 2D texture
-      DescriptorHandle create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
+      DxResourceView create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
       // Create a constant buffer view pointing for a given resource
-      DescriptorHandle create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
+      DxResourceView create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
 
       // Compile a shader written in HLSL
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);

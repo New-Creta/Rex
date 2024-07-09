@@ -12,6 +12,8 @@ namespace rex
 {
   namespace gfx
   {
+    class Material;
+
     class DxRenderContext : public RenderContext
     {
     public:
@@ -84,6 +86,8 @@ namespace rex
       void start_recording_commands(CommandAllocator* alloc, DescriptorHeap* descHeap);
       // Transition a buffer into a new resource state
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
+      // Bind resources for a specific shader type
+      void bind_resources_for_shader(Material* material, ShaderType type);
       
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;

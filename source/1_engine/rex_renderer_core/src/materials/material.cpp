@@ -42,6 +42,13 @@ namespace rex
       init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps.get());
 
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
+
+      PipelineStateDesc pso_desc{};
+      pso_desc.vertex_shader = m_shader_pipeline.vs.get();
+      pso_desc.pixel_shader = m_shader_pipeline.ps.get();
+      pso_desc.root_signature = m_root_signature.get();
+      pso_desc.input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params());
+      m_pso = rhi::create_pso(pso_desc);
     }
 
     void Material::init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature)
@@ -85,6 +92,24 @@ namespace rex
       return m_blend_factor;
     }
 
+    ShaderResources Material::resources_for_shader(ShaderType type)
+    {
+      ShaderResources resources{};
+
+      for (auto& texture : m_textures)
+      {
+        resources.textures.push_back(&texture.value);
+      }
+      for (auto& sampler : m_samplers)
+      {
+        resources.samplers.push_back(&sampler.value);
+      }
+
+      resources.textures_root_param_idx = m_root_signature->param_idx_for_textures(type);
+      resources.samplers_root_param_idx = m_root_signature->param_idx_for_samplers(type);
+
+      return resources;
+    }
 
 
 

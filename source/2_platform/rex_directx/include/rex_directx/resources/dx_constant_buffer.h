@@ -12,13 +12,13 @@ namespace rex
     class DxConstantBuffer : public ConstantBuffer
     {
     public:
-      DxConstantBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle handle, rsl::memory_size size);
+      DxConstantBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView handle, rsl::memory_size size);
 
       ID3D12Resource* dx_object();
 
     private:
       wrl::ComPtr<ID3D12Resource> m_resource; // the actual constant buffer resource
-      DescriptorHandle m_handle; // A handle for both the cpu and gpu descriptor
+      DxResourceView m_handle; // A handle for both the cpu and gpu descriptor
     };
   } // namespace gfx
 } // namespace rex

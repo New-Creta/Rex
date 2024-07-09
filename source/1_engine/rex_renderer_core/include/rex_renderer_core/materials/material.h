@@ -40,6 +40,15 @@ namespace rex
       Shader* ps;
     };
 
+    struct ShaderResources
+    {
+      s32 textures_root_param_idx;
+      s32 samplers_root_param_idx;
+
+      rsl::vector<TextureMaterialParameter*> textures;
+      rsl::vector<SamplerMaterialParameter*> samplers;
+    };
+
     // A material is an object combining all shaders and the parameters that can be set on them
     // A material cannot be used directly, an instance needs to be created instead which can
     // set a shader's parameters at runtime
@@ -55,6 +64,8 @@ namespace rex
       PipelineState* pso();
       RootSignature* root_signature();
       BlendFactor blend_factor();
+
+      ShaderResources resources_for_shader(ShaderType type);
 
     private:
       void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature);

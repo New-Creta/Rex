@@ -51,17 +51,17 @@ namespace rex
     }
 
     // Create a render target view for a given resource
-    DescriptorHandle DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
+    DxResourceView DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
       return d3d::to_dx12(desc_heap(DescriptorHeapType::RenderTargetView))->create_rtv(texture.Get());
     }
     // Create a shader resource view pointing to a 2D texture
-    DescriptorHandle DxGpuEngine::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
+    DxResourceView DxGpuEngine::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
       return d3d::to_dx12(desc_heap(DescriptorHeapType::ShaderResourceView))->create_texture2d_srv(texture.Get());
     }
     // Create a constant buffer view pointing for a given resource
-    DescriptorHandle DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
+    DxResourceView DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
     {
       return d3d::to_dx12(desc_heap(DescriptorHeapType::ConstantBufferView))->create_cbv(resource.Get(), size);
     }

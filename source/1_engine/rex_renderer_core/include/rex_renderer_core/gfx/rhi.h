@@ -38,6 +38,7 @@
 #include "rex_renderer_core/system/shader_pipeline.h"
 #include "rex_renderer_core/shader_reflection/shader_reflection.h"
 #include "rex_renderer_core/materials/material_parameter.h"
+#include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
 
 namespace rex
 {
@@ -87,6 +88,7 @@ namespace rex
       rsl::unique_ptr<Texture2D> create_texture2d(rsl::string_view filepath);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
+      rsl::unique_ptr<InputLayout> create_input_layout(const rsl::vector<ShaderParamReflection>& shaderInputParams);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_vertex_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");

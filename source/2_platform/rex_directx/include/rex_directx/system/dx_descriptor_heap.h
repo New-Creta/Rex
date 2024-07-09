@@ -16,13 +16,13 @@ namespace rex
       DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device);
 
       // Create a render target view and return a handle pointing to it
-      DescriptorHandle create_rtv(ID3D12Resource* resource);
+      DxResourceView create_rtv(ID3D12Resource* resource);
       // Create a depth stencil view and return a handle pointing to it
-      DescriptorHandle create_dsv(ID3D12Resource* resource, DXGI_FORMAT format);
+      DxResourceView create_dsv(ID3D12Resource* resource, DXGI_FORMAT format);
       // Create a constant buffer view and return a handle pointing to it
-      DescriptorHandle create_cbv(ID3D12Resource* resource, rsl::memory_size size);
+      DxResourceView create_cbv(ID3D12Resource* resource, rsl::memory_size size);
       // Create a shader resource view pointing to a texture and return a handle pointing to this view
-      DescriptorHandle create_texture2d_srv(ID3D12Resource* resource);
+      DxResourceView create_texture2d_srv(ID3D12Resource* resource);
 
       // Return the internal wrapped descriptor heap
       ID3D12DescriptorHeap* dx_object();
@@ -35,9 +35,9 @@ namespace rex
 
     private:
       // Return a handle pointing to a free bit of memory in the descriptor heap
-      DescriptorHandle new_free_handle();
+      DxResourceView new_free_handle();
       // Return a handle pointing to the start of the descriptor heap
-      DescriptorHandle my_start_handle();
+      DxResourceView my_start_handle();
 
     private:
       wrl::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;

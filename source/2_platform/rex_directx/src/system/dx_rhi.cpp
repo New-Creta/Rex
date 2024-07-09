@@ -451,7 +451,12 @@ namespace rex
       }
       rsl::unique_ptr<PipelineState>        create_pso(const PipelineStateDesc& desc)
       {
-        // 1) Load the resources from the resource pool
+        // Make sure our critical required parameters are specified
+        REX_ASSERT_X(desc.input_layout, "No input layout specified for the pso");
+        REX_ASSERT_X(desc.root_signature, "No root signature specified for the pso");
+        REX_ASSERT_X(desc.vertex_shader, "No vertex shader specified for the pso");
+        REX_ASSERT_X(desc.pixel_shader, "No pixel shader specified for the pso");
+
         D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         if (desc.raster_state.has_value())
         {
@@ -470,7 +475,6 @@ namespace rex
           d3d_depth_stencil_state = d3d::to_dx12(desc.depth_stencil_state.value());
         }
 
-        // 2) Fill in the PSO desc
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
         pso_desc.InputLayout = *d3d::to_dx12(desc.input_layout)->dx_object();
         pso_desc.pRootSignature = d3d::to_dx12(desc.root_signature)->dx_object();
@@ -495,7 +499,7 @@ namespace rex
       rsl::unique_ptr<Texture2D>            create_texture2d(s32 width, s32 height, TextureFormat format, const void* data)
       {
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
-        DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
+        DxResourceView desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
 
         auto texture = rsl::make_unique<DxTexture2D>(d3d_texture, desc_handle, width, height, format);
 
@@ -534,7 +538,7 @@ namespace rex
       }
       rsl::unique_ptr<Texture2D>            create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource)
       {
-        DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
+        DxResourceView desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
 
         s32 width = static_cast<s32>(resource->GetDesc().Width);
         s32 height = static_cast<s32>(resource->GetDesc().Height);
@@ -549,7 +553,7 @@ namespace rex
         rsl::memory_size aligned_size = align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
-        DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
+        DxResourceView desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
 
         d3d::set_debug_name_for(d3d_constant_buffer.Get(), "Constant Buffer");
 
@@ -572,6 +576,23 @@ namespace rex
         }
 
         return rsl::make_unique<DxInputLayout>(input_element_descriptions);
+      }
+      rsl::unique_ptr<InputLayout> create_input_layout(const rsl::vector<ShaderParamReflection>& shaderInputParams)
+      {
+        rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_description(rsl::Size(shaderInputParams.size()));
+        REX_ASSERT_X(!input_element_description.empty(), "No input elements provided for input layout");
+
+        for (s32 i = 0; i < shaderInputParams.size(); ++i)
+        {
+          input_element_description[i].SemanticName         = shaderInputParams[i].semantic_name.data();
+          input_element_description[i].Format               = d3d::to_format(shaderInputParams[i].component_type, shaderInputParams[i].component_mask);
+          input_element_description[i].InputSlotClass       = d3d::to_dx12(InputLayoutClassification::PerVertexData);
+          input_element_description[i].SemanticIndex        = shaderInputParams[i].semantic_index;
+          input_element_description[i].InputSlot            = 0;
+          input_element_description[i].AlignedByteOffset    = shaderInputParams[i].semantic_name;
+          input_element_description[i].InstanceDataStepRate = 0;
+
+        }
       }
       rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName)
       {
@@ -655,7 +676,7 @@ namespace rex
       // -------------------------------------------
       rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource)
       {
-        DescriptorHandle rtv = g_gpu_engine->create_rtv(resource.Get());
+        DxResourceView rtv = g_gpu_engine->create_rtv(resource.Get());
         return rsl::make_unique<DxRenderTarget>(resource, rtv);
       }
       wrl::ComPtr<ID3DBlob>                 compile_shader(const CompileShaderDesc& desc)

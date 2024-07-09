@@ -19,5 +19,10 @@ namespace rex
 		{
 			return m_shader_register;
 		}
+		ShaderType BoundResourceReflection::shader_type() const
+		{
+			return m_shader_type;
+		}
+
 	}
 }

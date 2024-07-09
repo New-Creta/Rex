@@ -9,24 +9,23 @@ namespace rex
 {
 	namespace gfx
 	{
+		enum class ShaderParamComponentMask
+		{
+			X = 1,
+			Y = 2,
+			Z = 4,
+			W = 8
+		};
+
 		struct ShaderParamReflDesc
 		{
 			rsl::tiny_stack_string semantic_name;
 			s32 semantic_index;
-			ShaderParameterType param_type;
+			ShaderComponentType component_type;
+			ShaderParamComponentMask component_mask;
 			s32 size;
 		};
 
-		class ShaderParamReflection
-		{
-		public:
-			ShaderParamReflection(ShaderParamReflDesc&& desc);
-
-		private:
-			rsl::tiny_stack_string m_semantic_name;
-			s32 m_semantic_index;
-			ShaderParameterType m_type;
-			s32 m_size;
-		};
+		using ShaderParamReflection = ShaderParamReflDesc;
 	}
 }

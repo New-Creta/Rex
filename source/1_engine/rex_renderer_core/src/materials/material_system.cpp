@@ -61,9 +61,11 @@ namespace rex
 			}
 
 			// Extract its content so that it's processable
+			// Materials are saved in json format, so we use a json parser
 			rex::memory::Blob file_content = vfs::read_file(filepath);
 			auto json_blob = json::parse(file_content);
 			
+			// If the json blob is discarded, that means an error occurred during json parsing
 			if (json_blob.is_discarded())
 			{
 				REX_WARN(LogMaterialSystem, "Failed to process material at {}.", filepath);

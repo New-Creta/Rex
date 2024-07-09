@@ -50,6 +50,7 @@ namespace rex
     class RootSignature;
     class Shader;
     class Texture2D;
+    class Sampler2D;
     class InputLayout;
     struct RasterStateDesc;
 
@@ -59,6 +60,7 @@ namespace rex
     class UploadBuffer;
     class DescriptorHeap;
     class ShaderSignature;
+    class ResourceView;
 
     // DirectX classes
     class DxCommandQueue;
@@ -68,6 +70,8 @@ namespace rex
     class DxTexture2D;
     class DxInputLayout;
     class DxDescriptorHeap;
+    class DxSampler2D;
+    class DxResourceView;
 
     namespace d3d
     {
@@ -127,7 +131,7 @@ namespace rex
       // Root signature construction
       void add_shader_signature_parameters(rsl::Out<rsl::vector<CD3DX12_ROOT_PARAMETER>> parameters, const ShaderSignature* signature, ShaderVisibility shaderVis);
 
-
+      DXGI_FORMAT to_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
 
 
       // ------------------------------------
@@ -159,6 +163,7 @@ namespace rex
       D3D12_RESOURCE_STATES to_dx12(ResourceState state);
       D3D12_COMMAND_LIST_TYPE to_dx12(GraphicsEngineType type);
       D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(DescriptorHeapType type);
+      DXGI_FORMAT to_dx12(ShaderParameterType paramType);
 
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes
@@ -170,6 +175,8 @@ namespace rex
       DxTexture2D* to_dx12(Texture2D* texture);
       DxInputLayout* to_dx12(InputLayout* inputLayout);
       DxDescriptorHeap* to_dx12(DescriptorHeap* descHeap);
+      DxSampler2D* to_dx12(Sampler2D* sampler);
+      DxResourceView* to_dx12(ResourceView* resourceView);
 
       // ------------------------------------
       // Returned the wrapped dx12 resource of a class

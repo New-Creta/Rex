@@ -22,7 +22,7 @@ namespace rex
     }
 
     // Create a render target view and return a handle pointing to it
-    DescriptorHandle DxDescriptorHeap::create_rtv(ID3D12Resource* resource)
+    DxResourceView DxDescriptorHeap::create_rtv(ID3D12Resource* resource)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_RTV, "Trying to create a render target view from a descriptor heap that's not configured to create render target views");
 
@@ -30,13 +30,13 @@ namespace rex
       rtv_desc.Format        = DXGI_FORMAT_R8G8B8A8_UNORM;
       rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
-      DescriptorHandle rtv_handle = new_free_handle();
+      DxResourceView rtv_handle = new_free_handle();
       m_device->CreateRenderTargetView(resource, &rtv_desc, rtv_handle);
 
       return rtv_handle;
     }
     // Create a depth stencil view and return a handle pointing to it
-    DescriptorHandle DxDescriptorHeap::create_dsv(ID3D12Resource* resource, DXGI_FORMAT format)
+    DxResourceView DxDescriptorHeap::create_dsv(ID3D12Resource* resource, DXGI_FORMAT format)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_DSV, "Trying to create a depth stencil view from a descriptor heap that's not configured to create depth stencil views");
 
@@ -45,13 +45,13 @@ namespace rex
       dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
       dsv_desc.Format        = format;
 
-      DescriptorHandle dsv_handle = new_free_handle();
+      DxResourceView dsv_handle = new_free_handle();
       m_device->CreateDepthStencilView(resource, &dsv_desc, dsv_handle);
 
       return dsv_handle;
     }
     // Create a constant buffer view and return a handle pointing to it
-    DescriptorHandle DxDescriptorHeap::create_cbv(ID3D12Resource* resource, rsl::memory_size size)
+    DxResourceView DxDescriptorHeap::create_cbv(ID3D12Resource* resource, rsl::memory_size size)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a constant buffer view from a descriptor heap that's not configured to create constant buffers views");
 
@@ -60,13 +60,13 @@ namespace rex
       cbv_desc.BufferLocation = resource->GetGPUVirtualAddress();
       cbv_desc.SizeInBytes = static_cast<UINT>(size.size_in_bytes());
 
-      DescriptorHandle cbv_handle = new_free_handle();
+      DxResourceView cbv_handle = new_free_handle();
       m_device->CreateConstantBufferView(&cbv_desc, cbv_handle);
 
       return cbv_handle;
     }
     // Create a shader resource view pointing to a texture and return a handle pointing to this view
-    DescriptorHandle DxDescriptorHeap::create_texture2d_srv(ID3D12Resource* resource)
+    DxResourceView DxDescriptorHeap::create_texture2d_srv(ID3D12Resource* resource)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a constant buffer view from a descriptor heap that's not configured to create constant buffers views");
 
@@ -78,7 +78,7 @@ namespace rex
       desc.Texture2D.MostDetailedMip = 0;
       desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 
-      DescriptorHandle desc_handle = new_free_handle();
+      DxResourceView desc_handle = new_free_handle();
       m_device->CreateShaderResourceView(resource, &desc, desc_handle);
       return desc_handle;
     }
@@ -99,17 +99,17 @@ namespace rex
     }
 
     // Return a handle pointing to the start of the descriptor heap
-    DescriptorHandle DxDescriptorHeap::new_free_handle()
+    DxResourceView DxDescriptorHeap::new_free_handle()
     {
-      DescriptorHandle handle = my_start_handle();
+      DxResourceView handle = my_start_handle();
       handle += m_num_used_descriptors;
       ++m_num_used_descriptors;
       return handle;
     }
     // Return a handle pointing to a free bit of memory in the descriptor heap
-    DescriptorHandle DxDescriptorHeap::my_start_handle()
+    DxResourceView DxDescriptorHeap::my_start_handle()
     {
-      return DescriptorHandle(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), m_descriptor_heap->GetGPUDescriptorHandleForHeapStart(), m_desc_heap_type, m_descriptor_size);
+      return DxResourceView(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), m_descriptor_heap->GetGPUDescriptorHandleForHeapStart(), m_desc_heap_type, m_descriptor_size);
     }
 
   } // namespace gfx

@@ -12,9 +12,9 @@ namespace rex
     struct InputLayoutElementDesc
     {
       rsl::string_view semantic_name;                       // The HLSL semantic name associated with the element (will change when we support glsl)
-      VertexBufferFormat format;                  // The format of the element data
-      InputLayoutClassification input_slot_class; // A value that identifies the input data class for a single input. 
-      s32 semantic_index;                                   // The semantic index for the element. A semantic index modifies a semantic, with an integer index number.
+      VertexBufferFormat format;                            // The format of the element data
+      InputLayoutClassification input_slot_class;           // A value that identifies the input data class for a single input. 
+      s32 semantic_index;                                   // The semantic index for the element. A semantic index modifies a semantic, with an integer index number. eg NORMAL1
       s32 input_slot;                                       // An integer that identifies the input-assembler.
       s32 aligned_byte_offset;                              // This is optional. Offset, in bytes, to this element from the start of the vertex.
       s32 instance_data_step_rate;                          // The number of instances to draw using the same per-instance-data before advancing in the buffer by one element.

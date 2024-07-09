@@ -4,6 +4,8 @@
 
 #include "rex_renderer_core/resources/texture_2d.h"
 
+#include "rex_renderer_core/system/resource_view.h"
+
 namespace rex
 {
   namespace gfx
@@ -11,14 +13,15 @@ namespace rex
     class DxTexture2D : public Texture2D
     {
     public:
-      DxTexture2D(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle handle, s32 width, s32 height, TextureFormat format);
+      DxTexture2D(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView handle, s32 width, s32 height, TextureFormat format);
 
       ID3D12Resource* dx_object();
       D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle();
 
+
     private:
       wrl::ComPtr<ID3D12Resource> m_resource; // The resource itself
-      DescriptorHandle m_desc_handle;         // A handle to the cpu and gpu descriptor
+      DxResourceView m_desc_handle;         // A handle to the cpu and gpu descriptor
     };
   }
 }

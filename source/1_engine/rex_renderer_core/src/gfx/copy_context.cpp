@@ -9,5 +9,14 @@ namespace rex
     CopyContext::CopyContext(gfx::GraphicsEngine* owningEngine)
       : GraphicsContext(owningEngine, GraphicsEngineType::Copy)
     {}
+
+    DescriptorHeap* CopyContext::global_srv_heap()
+    {
+      return m_global_srv_heap;
+    }
+    DescriptorHeap* CopyContext::shader_visible_srv_heap()
+    {
+      return m_shader_visible_srv_heap;
+    }
   }
 }
