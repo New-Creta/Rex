@@ -27,7 +27,7 @@ namespace rex
     }
     
     // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
-    ScopedPoolObject<GraphicsContext> GraphicsEngine::new_context(DescriptorHeap* descHeap, rsl::string_view eventName)
+    ScopedPoolObject<GraphicsContext> GraphicsEngine::new_context(const ContextRestartData& resetData, rsl::string_view eventName)
     {
       // Find a command alloctor to be used for the context
       ScopedPoolObject<PooledAllocator> alloc = request_allocator();
@@ -35,7 +35,7 @@ namespace rex
 
       // Always reset a context, making it ready to be used by a user
       ctx->begin_profile_event(eventName);
-      ctx->reset(rsl::move(alloc), &m_resource_state_tracker, descHeap);
+      ctx->reset(rsl::move(alloc), &m_resource_state_tracker, resetData);
       return ctx;
     }
 

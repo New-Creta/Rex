@@ -21,6 +21,7 @@ namespace rex
       RootSignature* root_signature;
       Shader* vertex_shader;
       Shader* pixel_shader;
+      PrimitiveTopologyType primitive_topology = PrimitiveTopologyType::Triangle;
       rsl::optional<RasterState> raster_state;
       rsl::optional<BlendDesc> blend_state;
       rsl::optional<DepthStencilDesc> depth_stencil_state;

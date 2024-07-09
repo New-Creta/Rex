@@ -484,7 +484,7 @@ namespace rex
         pso_desc.BlendState = d3d_blend_state;
         pso_desc.DepthStencilState = d3d_depth_stencil_state;
         pso_desc.SampleMask = UINT_MAX;
-        pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        pso_desc.PrimitiveTopologyType = d3d::to_dx12(desc.primitive_topology);
         pso_desc.NumRenderTargets = 1;
         pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
         pso_desc.SampleDesc.Count = 1;
@@ -582,6 +582,7 @@ namespace rex
         rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_description(rsl::Size(shaderInputParams.size()));
         REX_ASSERT_X(!input_element_description.empty(), "No input elements provided for input layout");
 
+        s32 byte_offset = 0;
         for (s32 i = 0; i < shaderInputParams.size(); ++i)
         {
           input_element_description[i].SemanticName         = shaderInputParams[i].semantic_name.data();
@@ -589,8 +590,10 @@ namespace rex
           input_element_description[i].InputSlotClass       = d3d::to_dx12(InputLayoutClassification::PerVertexData);
           input_element_description[i].SemanticIndex        = shaderInputParams[i].semantic_index;
           input_element_description[i].InputSlot            = 0;
-          input_element_description[i].AlignedByteOffset    = shaderInputParams[i].semantic_name;
+          input_element_description[i].AlignedByteOffset    = byte_offset;
           input_element_description[i].InstanceDataStepRate = 0;
+
+          byte_offset = d3d::format_byte_size(input_element_description[i].Format);
 
         }
       }

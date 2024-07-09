@@ -42,12 +42,14 @@ namespace rex
       init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps.get());
 
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
+      m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params());
 
       PipelineStateDesc pso_desc{};
+      pso_desc.primitive_topology = to_topology_type(m_primitive_topology);
       pso_desc.vertex_shader = m_shader_pipeline.vs.get();
       pso_desc.pixel_shader = m_shader_pipeline.ps.get();
       pso_desc.root_signature = m_root_signature.get();
-      pso_desc.input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params());
+      pso_desc.input_layout = m_input_layout.get();
       m_pso = rhi::create_pso(pso_desc);
     }
 

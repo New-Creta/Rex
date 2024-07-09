@@ -21,6 +21,17 @@ namespace rex
 
   namespace gfx
   {
+    struct ContextRestartData
+    {
+      // The desciptor heap holding all the decsriptors for all the resources currently allocated on the gpu
+      // The descriptors in this heap are not accessible by shaders
+      DescriptorHeap* global_srv_desc_heap;
+
+      // The descriptor heap holding the descriptors for all resources that are needed to perform a queued draw command
+      // the descriptors in this heap are accessible by shaders
+      DescriptorHeap* shader_visible_srv_desc_heap;
+    };
+
     // A graphics engine is an engine responsible for their own respective field of the graphics pipeline.
     // Each graphics engine owns the command queue used for their part of the graphics pipeline.
     // They also hold a list of active and idle contexts which are used to queue up gpu commands
@@ -36,7 +47,7 @@ namespace rex
       ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* context, WaitForFinish waitForFinish);
       
       // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
-      ScopedPoolObject<GraphicsContext> new_context(DescriptorHeap* descHeap, rsl::string_view eventName = "");
+      ScopedPoolObject<GraphicsContext> new_context(const ContextRestartData& resetData, rsl::string_view eventName = "");
 
       // Halt gpu commands from being executed until the sync info object is triggered
       void stall(SyncInfo& syncInfo);

@@ -132,7 +132,7 @@ namespace rex
       void add_shader_signature_parameters(rsl::Out<rsl::vector<CD3DX12_ROOT_PARAMETER>> parameters, const ShaderSignature* signature, ShaderVisibility shaderVis);
 
       DXGI_FORMAT to_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
-
+      PrimitiveTopologyType to_primitive_topology_type(PrimitiveTopology topology);
 
       // ------------------------------------
       // Convertors from REX -> DirectX
@@ -163,7 +163,7 @@ namespace rex
       D3D12_RESOURCE_STATES to_dx12(ResourceState state);
       D3D12_COMMAND_LIST_TYPE to_dx12(GraphicsEngineType type);
       D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(DescriptorHeapType type);
-      DXGI_FORMAT to_dx12(ShaderParameterType paramType);
+      D3D12_PRIMITIVE_TOPOLOGY_TYPE to_dx12(PrimitiveTopologyType type);
 
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes

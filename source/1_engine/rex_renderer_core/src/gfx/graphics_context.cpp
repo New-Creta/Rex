@@ -23,14 +23,14 @@ namespace rex
     }
 
     // Reset the context, freeing up any previously allocated commands
-    void GraphicsContext::reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc, ResourceStateTracker* resourceStateTracker, DescriptorHeap* descHeap)
+    void GraphicsContext::reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc, ResourceStateTracker* resourceStateTracker, const ContextRestartData& resetData)
     {
       REX_ASSERT_X(m_allocator.has_object() == false, "Overwriting the allocator of a gfx context is not allowed. You need to execute the commands of the context first");
       REX_ASSERT_X(alloc.has_object(), "Assigning a nullptr as allocator for a gfx context is not allowed.");
       m_allocator = rsl::move(alloc);
       m_resource_state_tracker = resourceStateTracker;
 
-      platform_reset(m_allocator->underlying_alloc(), descHeap);
+      platform_reset(m_allocator->underlying_alloc(), resetData);
     }
     // Execute the commands on the gpu.
     // A sync info is returned so the user can use it to sync with other contexts

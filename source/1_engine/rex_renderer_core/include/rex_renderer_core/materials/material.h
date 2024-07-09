@@ -77,6 +77,7 @@ namespace rex
       PrimitiveTopology m_primitive_topology;
       rsl::unique_ptr<PipelineState> m_pso;
       rsl::unique_ptr<RootSignature> m_root_signature;
+      rsl::unique_ptr<InputLayout> m_input_layout;
       BlendFactor m_blend_factor;
 
       ShaderPipeline m_shader_pipeline;

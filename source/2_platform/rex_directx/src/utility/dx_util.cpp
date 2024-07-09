@@ -743,6 +743,18 @@ namespace rex
 
         return invalid_obj<D3D12_DESCRIPTOR_HEAP_TYPE>();
       }
+      D3D12_PRIMITIVE_TOPOLOGY_TYPE to_dx12(PrimitiveTopologyType type)
+      {
+        switch (type)
+        {
+        case rex::gfx::PrimitiveTopologyType::Point:      return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+        case rex::gfx::PrimitiveTopologyType::Line:       return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+        case rex::gfx::PrimitiveTopologyType::Triangle:   return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        case rex::gfx::PrimitiveTopologyType::Patch:      return D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH;
+        }
+
+        return invalid_obj<D3D12_PRIMITIVE_TOPOLOGY_TYPE>();
+      }
 
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes
