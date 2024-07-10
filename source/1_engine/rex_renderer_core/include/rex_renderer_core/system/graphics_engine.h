@@ -21,7 +21,7 @@ namespace rex
 
   namespace gfx
   {
-    struct ContextRestartData
+    struct ContextResetData
     {
       // The desciptor heap holding all the decsriptors for all the resources currently allocated on the gpu
       // The descriptors in this heap are not accessible by shaders
@@ -47,7 +47,7 @@ namespace rex
       ScopedPoolObject<SyncInfo> execute_context(GraphicsContext* context, WaitForFinish waitForFinish);
       
       // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
-      ScopedPoolObject<GraphicsContext> new_context(const ContextRestartData& resetData, rsl::string_view eventName = "");
+      ScopedPoolObject<GraphicsContext> new_context(const ContextResetData& resetData, rsl::string_view eventName = "");
 
       // Halt gpu commands from being executed until the sync info object is triggered
       void stall(SyncInfo& syncInfo);

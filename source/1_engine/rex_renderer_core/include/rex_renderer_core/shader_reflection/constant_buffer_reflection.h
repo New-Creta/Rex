@@ -14,20 +14,22 @@ namespace rex
 			rsl::vector<ConstantBufferVariableReflection> variables;
 		};
 
-		class ConstantBufferReflection
-		{
-		public:
-			ConstantBufferReflection(CBufferReflDesc&& desc);
+		using ConstantBufferReflection = CBufferReflDesc;
 
-			rsl::string_view name() const;
-			s32 size() const;
-			s32 shader_register() const;
+		//class ConstantBufferReflection
+		//{
+		//public:
+		//	ConstantBufferReflection(CBufferReflDesc&& desc);
 
-		private:
-			rsl::tiny_stack_string m_name;
-			s32 m_size;
-			s32 m_shader_register;
-			rsl::vector<ConstantBufferVariableReflection> m_variables;
-		};
+		//	rsl::string_view name() const;
+		//	s32 size() const;
+		//	s32 shader_register() const;
+
+		//private:
+		//	rsl::tiny_stack_string m_name;
+		//	s32 m_size;
+		//	s32 m_shader_register;
+		//	rsl::vector<ConstantBufferVariableReflection> m_variables;
+		//};
 	}
 }

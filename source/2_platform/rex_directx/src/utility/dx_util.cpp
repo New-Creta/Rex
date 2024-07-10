@@ -23,6 +23,8 @@
 #include "rex_directx/resources/dx_index_buffer.h"
 #include "rex_directx/resources/dx_upload_buffer.h"
 
+#include "rex_renderer_core/shader_reflection/shader_reflection.h"
+
 namespace rex
 {
   namespace gfx
@@ -150,7 +152,7 @@ namespace rex
         // 2. Sort out all the views
         for (const auto& cb : signature->constant_buffers())
         {
-          root_parameters.emplace_back().InitAsConstantBufferView(cb.shader_register(), register_space, visibility);
+          root_parameters.emplace_back().InitAsConstantBufferView(cb.shader_register, register_space, visibility);
         }
 
         // 3. Sort out all the view tables
@@ -206,6 +208,14 @@ namespace rex
         }
       }
 
+      DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask)
+      {
+        ShaderParamComponentType dx_type = from_dx12(type);
+        ShaderParamComponentMask dx_mask = from_dx12(mask);
+
+        return to_vertex_format(dx_type, dx_mask);
+      }
+
       DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask)
       {
         switch (type)
@@ -225,23 +235,6 @@ namespace rex
           }
           return DXGI_FORMAT_R32_UINT;
 
-        case rex::gfx::ShaderParamComponentType::Uint16:
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-          {
-            return DXGI_FORMAT_R16G16B16A16_UINT;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-          {
-            break; // Not supported
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-          {
-            return DXGI_FORMAT_R16G16_UINT;
-          }
-          return DXGI_FORMAT_R16_UINT;
-
-        case rex::gfx::ShaderParamComponentType::Uint64:            break; // Not supported
-
         case rex::gfx::ShaderParamComponentType::Sint:
           if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
           {
@@ -257,23 +250,6 @@ namespace rex
           }
           return DXGI_FORMAT_R32_SINT;
 
-        case rex::gfx::ShaderParamComponentType::Sint16:
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-          {
-            return DXGI_FORMAT_R16G16B16A16_SINT;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-          {
-            break; // Not supported
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-          {
-            return DXGI_FORMAT_R16G16_SINT;
-          }
-          return DXGI_FORMAT_R16_SINT;
-
-        case rex::gfx::ShaderParamComponentType::Sint64: break; // Not supported
-
         case rex::gfx::ShaderParamComponentType::Float:
           if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
           {
@@ -288,21 +264,6 @@ namespace rex
             return DXGI_FORMAT_R32G32_FLOAT;
           }
           return DXGI_FORMAT_R32_FLOAT;
-
-        case rex::gfx::ShaderParamComponentType::Float16:
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-          {
-            return DXGI_FORMAT_R16G16B16A16_UNORM;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-          {
-            break; // Not supported
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-          {
-            return DXGI_FORMAT_R16G16_UNORM;
-          }
-          return DXGI_FORMAT_R16_UNORM;
 
         }
 
@@ -1037,6 +998,29 @@ namespace rex
 					REX_ASSERT("Unknown DX12 shader variable type, cannot convert to rex shader variable type");
 				}
 			}
+      ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type)
+      {
+        switch (type)
+        {
+        case D3D_REGISTER_COMPONENT_UINT32:   return ShaderParamComponentType::Uint;
+        case D3D_REGISTER_COMPONENT_SINT32:   return ShaderParamComponentType::Sint;
+        case D3D_REGISTER_COMPONENT_FLOAT32:  return ShaderParamComponentType::Float;
+        }
+
+        return invalid_obj<ShaderParamComponentType>();
+      }
+      ShaderParamComponentMask from_dx12(BYTE mask)
+      {
+        switch (mask)
+        {
+        case D3D_COMPONENT_MASK_X: return ShaderParamComponentMask::X;
+        case D3D_COMPONENT_MASK_Y: return ShaderParamComponentMask::Y;
+        case D3D_COMPONENT_MASK_Z: return ShaderParamComponentMask::Z;
+        case D3D_COMPONENT_MASK_W: return ShaderParamComponentMask::W;
+        }
+
+        return invalid_obj<ShaderParamComponentMask>();
+      }
     }
   }
 } // namespace rex

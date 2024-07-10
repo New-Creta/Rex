@@ -6,6 +6,8 @@
 #include "rex_renderer_core/resources/blend_state.h"
 #include "rex_renderer_core/resources/depth_stencil_state.h"
 
+#include "rex_renderer_core/gfx/primitive_topology.h"
+
 namespace rex
 {
   namespace gfx

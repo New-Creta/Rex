@@ -442,7 +442,7 @@ namespace rex
           return nullptr;
         }
 
-        return rsl::make_unique<DxRootSignature>(root_signature);
+        return rsl::make_unique<DxRootSignature>(root_signature, rsl::move(root_parameters));
       }
       rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, TextureFormat format)
       {
@@ -579,23 +579,24 @@ namespace rex
       }
       rsl::unique_ptr<InputLayout> create_input_layout(const rsl::vector<ShaderParamReflection>& shaderInputParams)
       {
-        rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_description(rsl::Size(shaderInputParams.size()));
-        REX_ASSERT_X(!input_element_description.empty(), "No input elements provided for input layout");
+        rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(shaderInputParams.size()));
+        REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
 
         s32 byte_offset = 0;
         for (s32 i = 0; i < shaderInputParams.size(); ++i)
         {
-          input_element_description[i].SemanticName         = shaderInputParams[i].semantic_name.data();
-          input_element_description[i].Format               = d3d::to_format(shaderInputParams[i].component_type, shaderInputParams[i].component_mask);
-          input_element_description[i].InputSlotClass       = d3d::to_dx12(InputLayoutClassification::PerVertexData);
-          input_element_description[i].SemanticIndex        = shaderInputParams[i].semantic_index;
-          input_element_description[i].InputSlot            = 0;
-          input_element_description[i].AlignedByteOffset    = byte_offset;
-          input_element_description[i].InstanceDataStepRate = 0;
+          input_element_descriptions[i].SemanticName         = shaderInputParams[i].semantic_name.data();
+          input_element_descriptions[i].Format               = d3d::to_vertex_format(shaderInputParams[i].component_type, shaderInputParams[i].component_mask);
+          input_element_descriptions[i].InputSlotClass       = d3d::to_dx12(InputLayoutClassification::PerVertexData);
+          input_element_descriptions[i].SemanticIndex        = shaderInputParams[i].semantic_index;
+          input_element_descriptions[i].InputSlot            = 0;
+          input_element_descriptions[i].AlignedByteOffset    = byte_offset;
+          input_element_descriptions[i].InstanceDataStepRate = 0;
 
-          byte_offset = d3d::format_byte_size(input_element_description[i].Format);
-
+          byte_offset = d3d::format_byte_size(input_element_descriptions[i].Format);
         }
+
+        return rsl::make_unique<DxInputLayout>(input_element_descriptions);
       }
       rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName)
       {
@@ -671,6 +672,10 @@ namespace rex
         return rsl::make_unique<Material>(rsl::move(shaderPipeline));
       }
       rsl::unique_ptr<Sampler2D> create_sampler2d(rsl::string_view path)
+      {
+        return nullptr;
+      }
+      rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc)
       {
         return nullptr;
       }

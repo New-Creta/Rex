@@ -4,9 +4,9 @@ namespace rex
 {
 	namespace gfx
 	{
-		DxResourceView DxSampler2D::gpu_handle()
+		DxResourceView* DxSampler2D::gpu_handle()
 		{
-			return m_resource_view;
+			return &m_resource_view;
 		}
 	}
 }

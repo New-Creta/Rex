@@ -14,6 +14,7 @@
 #include "rex_renderer_core/resources/clear_state.h"
 #include "rex_renderer_core/gfx/descriptor_heap_type.h"
 #include "rex_renderer_core/system/descriptor_heap.h"
+#include "rex_renderer_core/system/swapchain.h"
 #include "rex_renderer_core/system/resource_state_tracker.h"
 
 #include "rex_std/unordered_map.h"

@@ -81,7 +81,7 @@ namespace rex
       // Set the blend factor of the context
       virtual void set_blend_factor(const f32 blendFactor[4]) = 0;
       // Set the blend factor of the context
-      virtual void set_blend_factor(const BlendFactor& blendFactor);
+      virtual void set_blend_factor(const BlendFactor& blendFactor) = 0;
       // Set the root signature of the context
       virtual void set_root_signature(RootSignature* rootSignature) = 0;
       // Set the pipeline state of the context
@@ -99,7 +99,7 @@ namespace rex
       // Bind a texture to the context
       virtual void bind_texture(s32 rootParamIdx, Texture2D* texture) = 0;
       // Bind a material to the context
-      virtual void bind_material(Material* material);
+      virtual void bind_material(Material* material) = 0;
     };
   }
 }

@@ -195,7 +195,9 @@ namespace rex
       m_material = load_material(material_path);
 
       m_material->set_texture("fonts_texture", m_fonts_texture.get());
-      m_material->set_sampler("fonts_sampler", &m_fonts_sampler);
+
+      // The sampler is statically defined in the root signature so we don't need to set the shader parameter
+      //m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
 
 
       // Init vertex shader and reflect its resources

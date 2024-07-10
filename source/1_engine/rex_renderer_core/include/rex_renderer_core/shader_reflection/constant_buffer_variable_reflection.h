@@ -20,19 +20,21 @@ namespace rex
 			ShaderVariableType var_type;
 		};
 
-		class ConstantBufferVariableReflection
-		{
-		public:
-			ConstantBufferVariableReflection(CBufferVarReflDesc&& desc) {}
+		using ConstantBufferVariableReflection = CBufferVarReflDesc;
 
-			rsl::string_view name() const { return m_name; }
+		//class ConstantBufferVariableReflection
+		//{
+		//public:
+		//	ConstantBufferVariableReflection(CBufferVarReflDesc&& desc) {}
 
-		private:
-			rsl::tiny_stack_string m_name;
-			s32 m_offset;
-			s32 m_size;
-			ShaderClassType m_class_type;
-			ShaderVariableType m_variable_type;
-		};
+		//	rsl::string_view name() const { return m_name; }
+
+		//private:
+		//	rsl::tiny_stack_string m_name;
+		//	s32 m_offset;
+		//	s32 m_size;
+		//	ShaderClassType m_class_type;
+		//	ShaderVariableType m_variable_type;
+		//};
 	}
 }

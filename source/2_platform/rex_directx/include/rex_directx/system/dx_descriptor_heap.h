@@ -24,6 +24,8 @@ namespace rex
       // Create a shader resource view pointing to a texture and return a handle pointing to this view
       DxResourceView create_texture2d_srv(ID3D12Resource* resource);
 
+      rsl::unique_ptr<ResourceView> copy_descriptors(const rsl::vector<ResourceView*>& descriptors) override;
+
       // Return the internal wrapped descriptor heap
       ID3D12DescriptorHeap* dx_object();
 
@@ -35,7 +37,7 @@ namespace rex
 
     private:
       // Return a handle pointing to a free bit of memory in the descriptor heap
-      DxResourceView new_free_handle();
+      DxResourceView new_free_handle(s32 numDescriptors = 1);
       // Return a handle pointing to the start of the descriptor heap
       DxResourceView my_start_handle();
 

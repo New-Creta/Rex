@@ -18,7 +18,7 @@ namespace rex
       ID3D12GraphicsCommandList* dx_cmdlist();
 
     protected:
-      void platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap) override;
+      void platform_reset(CommandAllocator* alloc, const ContextResetData& resetData) override;
       // profiling events
       void begin_profile_event(rsl::string_view eventName) override;
       void end_profile_event() override;

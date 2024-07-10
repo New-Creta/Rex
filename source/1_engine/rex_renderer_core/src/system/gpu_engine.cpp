@@ -8,6 +8,8 @@
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/diagnostics/log.h"
 
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
@@ -71,19 +73,28 @@ namespace rex
     // Create a new context which is used for copying resources from or to the gpu
     ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(rsl::string_view eventName)
     {
-      auto base_ctx = m_copy_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
+      ContextResetData reset_data{};
+      reset_data.global_srv_desc_heap = desc_heap(DescriptorHeapType::ShaderResourceView);
+
+      auto base_ctx = m_copy_engine->new_context(reset_data, eventName);
       return base_ctx.convert<CopyContext>();
     }
     // Create a new context which is used for rendering to render targets
     ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(rsl::string_view eventName)
     {
-      auto base_ctx = m_render_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
+      ContextResetData reset_data{};
+      reset_data.global_srv_desc_heap = desc_heap(DescriptorHeapType::ShaderResourceView);
+
+      auto base_ctx = m_render_engine->new_context(reset_data, eventName);
       return base_ctx.convert<RenderContext>();
     }
     // Create a new context which is used for computing data on the gpu
     ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(rsl::string_view eventName)
     {
-      auto base_ctx = m_compute_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
+      ContextResetData reset_data{};
+      reset_data.global_srv_desc_heap = desc_heap(DescriptorHeapType::ShaderResourceView);
+
+      auto base_ctx = m_compute_engine->new_context(reset_data, eventName);
       return base_ctx.convert<ComputeContext>();
     }
 

@@ -83,6 +83,20 @@ namespace rex
       return desc_handle;
     }
 
+    rsl::unique_ptr<ResourceView> DxDescriptorHeap::copy_descriptors(const rsl::vector<ResourceView*>& descriptors)
+    {
+      rsl::unique_ptr<DxResourceView> free_handle = rsl::make_unique<DxResourceView>(new_free_handle(descriptors.size()));
+
+      for (ResourceView* view : descriptors)
+      {
+        DxResourceView* src_handle = d3d::to_dx12(view);
+        m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), src_handle->cpu_handle(), m_desc_heap_type);
+        (*free_handle)++;
+      }
+
+      return free_handle;
+    }
+
     // Return the internal wrapped descriptor heap
     ID3D12DescriptorHeap* DxDescriptorHeap::dx_object()
     {
@@ -99,11 +113,11 @@ namespace rex
     }
 
     // Return a handle pointing to the start of the descriptor heap
-    DxResourceView DxDescriptorHeap::new_free_handle()
+    DxResourceView DxDescriptorHeap::new_free_handle(s32 numDescriptors)
     {
       DxResourceView handle = my_start_handle();
       handle += m_num_used_descriptors;
-      ++m_num_used_descriptors;
+      m_num_used_descriptors += numDescriptors;
       return handle;
     }
     // Return a handle pointing to a free bit of memory in the descriptor heap

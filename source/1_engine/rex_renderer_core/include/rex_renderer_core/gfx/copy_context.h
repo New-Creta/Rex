@@ -30,7 +30,7 @@ namespace rex
     public:
       CopyContext(gfx::GraphicsEngine* owningEngine);
 
-      virtual rsl::unique_ptr<ResourceView> copy_descriptors(DescriptorHeap* dstHeap, DescriptorHeap* srcHeap, ResourceView* descriptors, s32 numDescriptors) = 0;
+      virtual rsl::unique_ptr<ResourceView> copy_descriptors(DescriptorHeap* srcHeap, const rsl::vector<ResourceView*>& descriptors) = 0;
 
       // Update a constant buffer's data
       virtual void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;

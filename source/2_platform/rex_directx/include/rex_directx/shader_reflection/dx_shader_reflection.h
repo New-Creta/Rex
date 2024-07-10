@@ -20,6 +20,7 @@ namespace rex
     {
     public:
       DxShaderReflection(const wrl::ComPtr<ID3DBlob>& shaderCompiledCode, ShaderType type);
+      DxShaderReflection(const D3D12_SHADER_BYTECODE& shaderCompiledCode, ShaderType type);
 
     private:
       void reflect_constant_buffers(s32 numConstantBuffers);
@@ -28,6 +29,9 @@ namespace rex
       void reflect_bound_resources(s32 numBoundResources);
       s32 get_constant_buffer_register(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cb_refl);
       rsl::tiny_stack_string convert_version_to_string(UINT version);
+
+    private:
+      DxShaderReflection(const void* byteCode, s32 byteCount, ShaderType type);
 
     private:
       wrl::ComPtr<ID3D12ShaderReflection> m_reflection_object;

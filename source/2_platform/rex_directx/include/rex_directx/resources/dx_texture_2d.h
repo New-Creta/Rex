@@ -17,7 +17,7 @@ namespace rex
 
       ID3D12Resource* dx_object();
       D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle();
-
+      DxResourceView* handle();
 
     private:
       wrl::ComPtr<ID3D12Resource> m_resource; // The resource itself

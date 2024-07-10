@@ -75,7 +75,7 @@ namespace rex
 
     protected:
       // Reset the wrapped commandlist and its allocater
-      void platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap) override;
+      void platform_reset(CommandAllocator* alloc, const ContextResetData& data) override;
 
       // profiling events
       void begin_profile_event(rsl::string_view eventName) override;

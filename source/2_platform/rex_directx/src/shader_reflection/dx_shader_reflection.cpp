@@ -21,18 +21,25 @@ namespace rex
     using D3D_SIGNATURE_PARAMETER_DESC = D3D12_SIGNATURE_PARAMETER_DESC;
 
     DxShaderReflection::DxShaderReflection(const wrl::ComPtr<ID3DBlob>& shaderCompiledCode, ShaderType type)
+      : DxShaderReflection(shaderCompiledCode->GetBufferPointer(), static_cast<s32>(shaderCompiledCode->GetBufferSize()), type)
+    {}
+    DxShaderReflection::DxShaderReflection(const D3D12_SHADER_BYTECODE& shaderCompiledCode, ShaderType type)
+      : DxShaderReflection(shaderCompiledCode.pShaderBytecode, static_cast<s32>(shaderCompiledCode.BytecodeLength), type)
+    {}
+
+    DxShaderReflection::DxShaderReflection(const void* byteCode, s32 byteCount, ShaderType type)
       : ShaderSignature(type)
     {
-      DX_CALL(D3DReflect(shaderCompiledCode->GetBufferPointer(), shaderCompiledCode->GetBufferSize(), IID_PPV_ARGS(m_reflection_object.GetAddressOf())));
+      DX_CALL(D3DReflect(byteCode, byteCount, IID_PPV_ARGS(m_reflection_object.GetAddressOf())));
       D3D12_SHADER_DESC shader_desc;
       DX_CALL(m_reflection_object->GetDesc(&shader_desc));
 
       m_shader_version = convert_version_to_string(shader_desc.Version);
 
-      s32 num_constant_buffers  = shader_desc.ConstantBuffers;
-      s32 num_input_params      = shader_desc.InputParameters;
-      s32 num_output_params     = shader_desc.OutputParameters;
-      s32 num_bound_resources   = shader_desc.BoundResources;
+      s32 num_constant_buffers = shader_desc.ConstantBuffers;
+      s32 num_input_params = shader_desc.InputParameters;
+      s32 num_output_params = shader_desc.OutputParameters;
+      s32 num_bound_resources = shader_desc.BoundResources;
 
       reflect_constant_buffers(num_constant_buffers);
       reflect_input_params(num_input_params);

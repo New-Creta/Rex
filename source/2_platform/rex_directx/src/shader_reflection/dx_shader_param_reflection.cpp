@@ -2,6 +2,8 @@
 
 #include "rex_engine/diagnostics/assert.h"
 
+#include "rex_directx/utility/dx_util.h"
+
 namespace rex
 {
 	namespace gfx
@@ -9,7 +11,7 @@ namespace rex
     DxShaderParameterReflection::DxShaderParameterReflection(const D3D12_SIGNATURE_PARAMETER_DESC& paramDesc)
       : m_semantic_name()
       , m_semantic_index(-1)
-      , m_type(ShaderParameterType::Unknown)
+      , m_type()
       , m_size(0)
     {
       m_semantic_name = paramDesc.SemanticName;

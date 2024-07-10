@@ -31,7 +31,7 @@ namespace rex
     {
       D3D12_SHADER_VARIABLE_DESC cb_var_desc;
       m_var_relf->GetDesc(&cb_var_desc);
-      m_semantic = var_name_to_semantic(name());
+      m_semantic = var_name_to_semantic(name);
     }
 
     Semantic DxConstantBufferVariableReflection::semantic() const

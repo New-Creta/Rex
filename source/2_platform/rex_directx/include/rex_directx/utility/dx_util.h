@@ -38,6 +38,9 @@
 #include "rex_renderer_core/system/shader_elements.h"
 #include "rex_renderer_core/shader_reflection/shader_class_type.h"
 #include "rex_renderer_core/shader_reflection/shader_variable_type.h"
+#include "rex_renderer_core/shader_reflection/shader_param_type.h"
+#include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
+#include "rex_renderer_core/resources/raster_state.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
@@ -131,7 +134,8 @@ namespace rex
       // Root signature construction
       void add_shader_signature_parameters(rsl::Out<rsl::vector<CD3DX12_ROOT_PARAMETER>> parameters, const ShaderSignature* signature, ShaderVisibility shaderVis);
 
-      DXGI_FORMAT to_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
+      DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask);
+      DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
       PrimitiveTopologyType to_primitive_topology_type(PrimitiveTopology topology);
 
       // ------------------------------------
@@ -193,6 +197,8 @@ namespace rex
       TextureFormat from_dx12(DXGI_FORMAT type);
       ShaderClassType from_dx12(D3D_SHADER_VARIABLE_CLASS type);
       ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type);
+      ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type);
+      ShaderParamComponentMask from_dx12(BYTE mask);
     } // namespace d3d
   }
 } // namespace rex

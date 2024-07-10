@@ -2,6 +2,8 @@
 
 #include "rex_engine/containers/vector_utils.h"
 
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
@@ -27,7 +29,7 @@ namespace rex
     }
     
     // Get a new context object from the engine, using an idle one or creating a new one if no idle one is found
-    ScopedPoolObject<GraphicsContext> GraphicsEngine::new_context(const ContextRestartData& resetData, rsl::string_view eventName)
+    ScopedPoolObject<GraphicsContext> GraphicsEngine::new_context(const ContextResetData& resetData, rsl::string_view eventName)
     {
       // Find a command alloctor to be used for the context
       ScopedPoolObject<PooledAllocator> alloc = request_allocator();

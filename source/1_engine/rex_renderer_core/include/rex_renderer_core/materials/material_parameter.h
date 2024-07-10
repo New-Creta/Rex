@@ -5,6 +5,9 @@
 
 #include "rex_engine/engine/types.h"
 
+#include "rex_renderer_core/resources/texture_2d.h"
+#include "rex_renderer_core/resources/sampler_2d.h"
+
 namespace rex
 {
 	namespace gfx

@@ -11,7 +11,7 @@ namespace rex
 		class DxSampler2D : public Sampler2D
 		{
 		public:
-			DxResourceView gpu_handle();
+			DxResourceView* gpu_handle();
 
 		private:
 			DxResourceView m_resource_view;

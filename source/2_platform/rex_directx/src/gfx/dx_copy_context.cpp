@@ -112,9 +112,16 @@ namespace rex
       // Not allowed to transition to pixel shader resource in a copy command list
       //transition_buffer(texture, ResourceState::PixelShaderResource);
     }
+
+    // Update a texture's data on the gpu
+    rsl::unique_ptr<ResourceView> DxCopyContext::copy_descriptors(DescriptorHeap* srcHeap, const rsl::vector<ResourceView*>& descriptors)
+    {
+      return srcHeap->copy_descriptors(descriptors);
+    }
+
     // Reset this context by resetting the commandlist and its allocator
     // Also bind the descriptor heap
-    void DxCopyContext::platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap)
+    void DxCopyContext::platform_reset(CommandAllocator* alloc, const ContextResetData& resetData)
     {
       DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
 
@@ -122,7 +129,7 @@ namespace rex
 
       dx_alloc->dx_object()->Reset();
       m_cmd_list->Reset(dx_alloc->dx_object(), nullptr);
-      ID3D12DescriptorHeap* d3d_desc_heap = d3d::to_dx12(descHeap)->dx_object();
+      ID3D12DescriptorHeap* d3d_desc_heap = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();
       m_cmd_list->SetDescriptorHeaps(1, &d3d_desc_heap);
     }
     

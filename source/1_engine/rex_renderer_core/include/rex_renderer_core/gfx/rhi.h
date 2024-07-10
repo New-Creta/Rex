@@ -96,6 +96,7 @@ namespace rex
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
       rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline);
       rsl::unique_ptr<Sampler2D> create_sampler2d(rsl::string_view path);
+      rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
 
       //rsl::unique_ptr<MaterialInstance> create_material_instance(const MaterialDesc& desc);
 

@@ -253,9 +253,9 @@ namespace rex
     }
 
     // Reset the wrapped commandlist and its allocater
-    void DxRenderContext::platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap)
+    void DxRenderContext::platform_reset(CommandAllocator* alloc, const ContextResetData& data)
     {
-      start_recording_commands(alloc, descHeap);
+      start_recording_commands(alloc, data.shader_visible_srv_desc_heap);
     }
 
     // Profiling events
@@ -305,7 +305,7 @@ namespace rex
       ShaderResources shader_resources = material->resources_for_shader(type);
 
       // 2. Copy textures and samplers into descriptor heap that's visible in shaders, make sure they're sorted based on shader register
-      rsl::vector<ResourceView> texture_handles;
+      rsl::vector<ResourceView*> texture_handles;
 			// Sort the textures based on their shader register
 			rsl::sort(shader_resources.textures.begin(), shader_resources.textures.end(),
 				[](const TextureMaterialParameter* lhs, const TextureMaterialParameter* rhs)
@@ -319,10 +319,10 @@ namespace rex
 				[](TextureMaterialParameter* texture)
 				{
 					DxTexture2D* dx_texture = static_cast<DxTexture2D*>(texture->texture());
-					return dx_texture->gpu_handle();
+					return dx_texture->handle();
 				});
 
-      rsl::vector<ResourceView> sampler_handles;
+      rsl::vector<ResourceView*> sampler_handles;
 			// Sort the samplers based on their shader register
 			rsl::sort(shader_resources.samplers.begin(), shader_resources.samplers.end(),
 				[](const SamplerMaterialParameter* lhs, const SamplerMaterialParameter* rhs)
@@ -341,8 +341,8 @@ namespace rex
 
       // Copy the earlier cached gpu handle descriptors into the shader visible heap
       auto copy_ctx = new_copy_ctx();
-      rsl::unique_ptr<ResourceView> start_texture_handle = copy_ctx->copy_descriptors(copy_ctx->shader_visible_srv_heap(), copy_ctx->global_srv_heap(), texture_handles.data(), texture_handles.size());
-      rsl::unique_ptr<ResourceView> start_sampler_handle = copy_ctx->copy_descriptors(copy_ctx->shader_visible_srv_heap(), copy_ctx->global_srv_heap(), sampler_handles.data(), sampler_handles.size());
+      rsl::unique_ptr<ResourceView> start_texture_handle = copy_ctx->copy_descriptors(copy_ctx->shader_visible_srv_heap(), texture_handles);
+      rsl::unique_ptr<ResourceView> start_sampler_handle = copy_ctx->copy_descriptors(copy_ctx->shader_visible_srv_heap(), sampler_handles);
 
       // 3. Bind the descriptor table based on the descriptors in this shader visible descriptor heap
       m_cmd_list->SetGraphicsRootDescriptorTable(shader_resources.textures_root_param_idx, d3d::to_dx12(start_texture_handle.get())->gpu_handle());
