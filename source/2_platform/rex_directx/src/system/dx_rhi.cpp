@@ -608,6 +608,11 @@ namespace rex
         compile_vs_desc.shader_type = ShaderType::Vertex;
         wrl::ComPtr<ID3DBlob> compiled_vs_blob = compile_shader(compile_vs_desc);
 
+        if (!compiled_vs_blob)
+        {
+          return nullptr;
+        }
+
         return rsl::make_unique<DxVertexShader>(compiled_vs_blob);
       }
       rsl::unique_ptr<Shader>               create_vertex_shader(const memory::Blob& byteBlob)
@@ -624,6 +629,11 @@ namespace rex
         compile_ps_desc.shader_name = shaderName;
         compile_ps_desc.shader_type = ShaderType::Pixel;
         wrl::ComPtr<ID3DBlob> compiled_ps_blob = compile_shader(compile_ps_desc);
+
+        if (!compiled_ps_blob)
+        {
+          return nullptr;
+        }
 
         return rsl::make_unique<DxPixelShader>(compiled_ps_blob);
       }

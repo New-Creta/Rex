@@ -74,7 +74,8 @@ namespace rex
     ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(rsl::string_view eventName)
     {
       ContextResetData reset_data{};
-      reset_data.global_srv_desc_heap = desc_heap(DescriptorHeapType::ShaderResourceView);
+      reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
+      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);
 
       auto base_ctx = m_copy_engine->new_context(reset_data, eventName);
       return base_ctx.convert<CopyContext>();
@@ -83,7 +84,8 @@ namespace rex
     ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(rsl::string_view eventName)
     {
       ContextResetData reset_data{};
-      reset_data.global_srv_desc_heap = desc_heap(DescriptorHeapType::ShaderResourceView);
+      reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
+      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);
 
       auto base_ctx = m_render_engine->new_context(reset_data, eventName);
       return base_ctx.convert<RenderContext>();
@@ -92,7 +94,8 @@ namespace rex
     ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(rsl::string_view eventName)
     {
       ContextResetData reset_data{};
-      reset_data.global_srv_desc_heap = desc_heap(DescriptorHeapType::ShaderResourceView);
+      reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
+      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);
 
       auto base_ctx = m_compute_engine->new_context(reset_data, eventName);
       return base_ctx.convert<ComputeContext>();
@@ -105,9 +108,14 @@ namespace rex
     }
 
     // Returns a specific descriptor heap based on type
-    DescriptorHeap* GpuEngine::desc_heap(DescriptorHeapType descHeapType)
+    DescriptorHeap* GpuEngine::cpu_desc_heap(DescriptorHeapType descHeapType)
     {
-      return m_descriptor_heap_pool.at(descHeapType).get();
+      return m_cpu_descriptor_heap_pool.at(descHeapType).get();
+    }
+    // Returns a specific descriptor heap based on type that's visible to shaders
+    DescriptorHeap* GpuEngine::shader_visible_desc_heap(DescriptorHeapType descHeapType)
+    {
+      return m_shader_visible_descriptor_heap_pool.at(descHeapType).get();
     }
 
     // Initialize the clear state which is used to clear the backbuffer with
@@ -146,14 +154,19 @@ namespace rex
     // Initialize the descriptor heaps which keep track of all descriptors to various resources
     void GpuEngine::init_desc_heaps()
     {
-      init_desc_heap(DescriptorHeapType::RenderTargetView);
-      init_desc_heap(DescriptorHeapType::DepthStencilView);
-      init_desc_heap(DescriptorHeapType::ConstantBufferView);
-      init_desc_heap(DescriptorHeapType::Sampler);
+      init_desc_heap(m_cpu_descriptor_heap_pool, DescriptorHeapType::RenderTargetView, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, DescriptorHeapType::DepthStencilView, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, DescriptorHeapType::ConstantBufferView, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, DescriptorHeapType::Sampler, IsShaderVisible::no);
+
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, DescriptorHeapType::RenderTargetView, IsShaderVisible::no);
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, DescriptorHeapType::DepthStencilView, IsShaderVisible::no);
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, DescriptorHeapType::ConstantBufferView, IsShaderVisible::no);
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, DescriptorHeapType::Sampler, IsShaderVisible::no);
     }
-    void GpuEngine::init_desc_heap(DescriptorHeapType descHeapType)
+    void GpuEngine::init_desc_heap(DescriptorHeapPool& descHeapPool, DescriptorHeapType descHeapType, IsShaderVisible isShaderVisible)
     {
-      m_descriptor_heap_pool.emplace(descHeapType, allocate_desc_heap(descHeapType));
+      descHeapPool.emplace(descHeapType, allocate_desc_heap(descHeapType, isShaderVisible));
 
     }
 

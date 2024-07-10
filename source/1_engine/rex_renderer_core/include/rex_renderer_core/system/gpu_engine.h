@@ -66,12 +66,16 @@ namespace rex
       // Initialize the resource heap which allocates all gpu resources
       virtual void init_resource_heap() = 0;
       // Allocate a new descriptor heap of a given type
-      virtual rsl::unique_ptr<DescriptorHeap> allocate_desc_heap(DescriptorHeapType descHeapType) = 0;
+      DEFINE_YES_NO_ENUM(IsShaderVisible);
+      virtual rsl::unique_ptr<DescriptorHeap> allocate_desc_heap(DescriptorHeapType descHeapType, IsShaderVisible isShaderVisible) = 0;
 
       // Returns a specific descriptor heap based on type
-      DescriptorHeap* desc_heap(DescriptorHeapType descHeapType);
+      DescriptorHeap* cpu_desc_heap(DescriptorHeapType descHeapType);
+      DescriptorHeap* shader_visible_desc_heap(DescriptorHeapType descHeapType);
 
     private:
+      using DescriptorHeapPool = rsl::unordered_map<DescriptorHeapType, rsl::unique_ptr<DescriptorHeap>>;
+
       // Initialize the clear state which is used to clear the backbuffer with
       void init_clear_state();
       // Initialize the swapchain which is used for presenting to the main window
@@ -82,7 +86,7 @@ namespace rex
       void init_imgui();
       // Initialize the descriptor heaps which keep track of all descriptors to various resources
       void init_desc_heaps();
-      void init_desc_heap(DescriptorHeapType descHeapType);
+      void init_desc_heap(DescriptorHeapPool& descHeapPool, DescriptorHeapType descHeapType, IsShaderVisible isShaderVisible);
 
     private:
       rsl::unique_ptr<Swapchain> m_swapchain;      // The swapchain is responsible for swapping the backbuffer with the front buffer
@@ -93,7 +97,8 @@ namespace rex
       s32 m_max_frames_in_flight;                       // The maximum number of we can have in flight for rendering.
       void* m_primary_display_handle;                   // The display handle to render to (HWND on Windows)
       s32 m_frame_idx;                                  // The current frame index
-      rsl::unordered_map<DescriptorHeapType, rsl::unique_ptr<DescriptorHeap>> m_descriptor_heap_pool; // Pool of descriptor heaps per type
+      DescriptorHeapPool m_cpu_descriptor_heap_pool; // Pool of descriptor heaps per type
+      DescriptorHeapPool m_shader_visible_descriptor_heap_pool; // Pool of descriptor heaps per type
       ResourceStateTracker m_resource_state_tracker; // The global tracker of resource states
     };
 

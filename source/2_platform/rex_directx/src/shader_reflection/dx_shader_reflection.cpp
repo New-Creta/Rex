@@ -146,6 +146,8 @@ namespace rex
 		{
 			rsl::unique_ptr<gfx::ShaderSignature> reflect_shader(const gfx::Shader* shader)
 			{
+        REX_ASSERT_X(shader, "Cannot create reflection data on a null shader");
+
 				const gfx::DxShader* dx_shader = static_cast<const gfx::DxShader*>(shader);
 
 				return rsl::make_unique<DxShaderReflection>(dx_shader->dx_bytecode(), dx_shader->type());
