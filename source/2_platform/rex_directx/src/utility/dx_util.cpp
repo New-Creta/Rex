@@ -25,6 +25,9 @@
 
 #include "rex_renderer_core/shader_reflection/shader_reflection.h"
 
+#include "rex_renderer_core/materials/material_system.h"
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
@@ -124,21 +127,40 @@ namespace rex
         }
       }
 
-      DXGI_FORMAT to_vertex_input_format(ShaderParameterType type)
+      DXGI_FORMAT to_vertex_input_format(rsl::string_view semanticName, ShaderParameterType type, IsColorNormalized isColorNormalized)
       {
+        DXGI_FORMAT format;
+
         switch (type)
         {
-        case rex::gfx::ShaderParameterType::Uint:       return DXGI_FORMAT_R32_UINT;
-        case rex::gfx::ShaderParameterType::Uint2:      return DXGI_FORMAT_R32G32_UINT;
-        case rex::gfx::ShaderParameterType::Uint16_2:   return DXGI_FORMAT_R16G16_UINT;
-        case rex::gfx::ShaderParameterType::Float:      return DXGI_FORMAT_R32_FLOAT;
-        case rex::gfx::ShaderParameterType::Float2:     return DXGI_FORMAT_R32G32_FLOAT;
-        case rex::gfx::ShaderParameterType::Float3:     return DXGI_FORMAT_R32G32B32_FLOAT;
-        case rex::gfx::ShaderParameterType::Float4:     return DXGI_FORMAT_R8G8B8A8_UNORM;
+        case rex::gfx::ShaderParameterType::Uint:       format = DXGI_FORMAT_R32_UINT;           break;
+        case rex::gfx::ShaderParameterType::Uint2:      format = DXGI_FORMAT_R32G32_UINT;        break;
+        case rex::gfx::ShaderParameterType::Uint16_2:   format = DXGI_FORMAT_R16G16_UINT;        break;
+        case rex::gfx::ShaderParameterType::Float:      format = DXGI_FORMAT_R32_FLOAT;          break;
+        case rex::gfx::ShaderParameterType::Float2:     format = DXGI_FORMAT_R32G32_FLOAT;       break;
+        case rex::gfx::ShaderParameterType::Float3:     format = DXGI_FORMAT_R32G32B32_FLOAT;    break;
+        case rex::gfx::ShaderParameterType::Float4:     format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
+        default: return invalid_obj<DXGI_FORMAT>();
+        }
+
+        if (semanticName.contains("COLOR"))
+        {
+          return normalize_format(format);
+        }
+
+        return format;
+      }
+      DXGI_FORMAT normalize_format(DXGI_FORMAT format)
+      {
+        switch (format)
+        {
+        case DXGI_FORMAT_R32_FLOAT: return DXGI_FORMAT_R8_UNORM;
+        case DXGI_FORMAT_R32G32B32A32_FLOAT: return DXGI_FORMAT_R8G8B8A8_UNORM;
         }
 
         return invalid_obj<DXGI_FORMAT>();
       }
+
       DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask)
       {
         ShaderParamComponentType dx_type = from_dx12(type);

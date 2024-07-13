@@ -23,6 +23,8 @@ namespace rex
 {
   namespace gfx
   {
+    struct MaterialConstructSettings;
+
     // NOTE: A parameter with the same name and size between shaders
     // is treated as a parameters that's shared between these shaders
     // In DirectX a param can be visible in 1 shader or in all of them, you can't mask combine
@@ -55,7 +57,7 @@ namespace rex
     class Material
     {
     public:
-      Material(ShaderPipeline&& shaderPipeline);
+      Material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings);
 
       void set_texture(rsl::string_view name, Texture2D* texture);
       void set_sampler(rsl::string_view name, Sampler2D* sampler);
@@ -64,6 +66,7 @@ namespace rex
       PipelineState* pso();
       RootSignature* root_signature();
       BlendFactor blend_factor();
+      InputLayout* input_layout();
 
       ShaderResources resources_for_shader(ShaderType type);
 

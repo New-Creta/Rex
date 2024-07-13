@@ -118,11 +118,7 @@ namespace rex
           rect.right = clip_max.x;
           rect.bottom = clip_max.y;
 
-          Texture2D* texture = (Texture2D*)pcmd->GetTexID();
-
           ctx.set_scissor_rect(rect);
-          //ctx.bind_texture(1, texture);
-
           ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
         }
         global_idx_offset += cmd_list->IdxBuffer.Size;

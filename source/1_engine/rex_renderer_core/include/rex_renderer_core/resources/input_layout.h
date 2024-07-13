@@ -29,7 +29,18 @@ namespace rex
     // Base class for the input layout, only used as an interface
     class InputLayout
     {
-      // Nothing to implement
+    public:
+      InputLayout(s32 vertexSize)
+        : m_vertex_size(vertexSize)
+      {}
+
+      s32 vertex_size() const
+      {
+        return m_vertex_size;
+      }
+
+    private:
+      s32 m_vertex_size;
     };
   } // namespace gfx
 } // namespace rex

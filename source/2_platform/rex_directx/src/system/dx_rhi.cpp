@@ -60,6 +60,7 @@
 #include "rex_directx/resources/dx_sampler_2d.h"
 
 #include "rex_engine/images/stb_image.h"
+#include "rex_renderer_core/materials/material_system.h"
 
 namespace rex
 {
@@ -616,7 +617,7 @@ namespace rex
 
         return rsl::make_unique<DxInputLayout>(input_element_descriptions);
       }
-      rsl::unique_ptr<InputLayout>          create_input_layout(const rsl::vector<ShaderParamReflection>& shaderInputParams)
+      rsl::unique_ptr<InputLayout>          create_input_layout(const rsl::vector<ShaderParamReflection>& shaderInputParams, IsColorNormalized isColorNormalized)
       {
         rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(shaderInputParams.size()));
         REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
@@ -625,7 +626,7 @@ namespace rex
         for (s32 i = 0; i < shaderInputParams.size(); ++i)
         {
           input_element_descriptions[i].SemanticName         = shaderInputParams[i].semantic_name.data();
-          input_element_descriptions[i].Format               = d3d::to_vertex_input_format(shaderInputParams[i].type);
+          input_element_descriptions[i].Format               = d3d::to_vertex_input_format(shaderInputParams[i].semantic_name, shaderInputParams[i].type, isColorNormalized);
           input_element_descriptions[i].InputSlotClass       = d3d::to_dx12(InputLayoutClassification::PerVertexData);
           input_element_descriptions[i].SemanticIndex        = shaderInputParams[i].semantic_index;
           input_element_descriptions[i].InputSlot            = 0;
@@ -716,9 +717,9 @@ namespace rex
       //  store_samplers(signature.samplers);
 
       //}
-      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline)
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
       {
-        return rsl::make_unique<Material>(rsl::move(shaderPipeline));
+        return rsl::make_unique<Material>(rsl::move(shaderPipeline), matConstructSettings);
       }
       rsl::unique_ptr<Sampler2D> create_sampler2d(rsl::string_view path)
       {

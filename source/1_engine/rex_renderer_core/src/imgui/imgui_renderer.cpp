@@ -201,6 +201,8 @@ namespace rex
       m_material->set_texture("fonts_texture", m_fonts_texture.get());
       //m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
 
+      REX_ASSERT_X(m_material->input_layout()->vertex_size() == sizeof(ImDrawVert), "ImGui's input layout size does not match the size of a single ImGui vertex");
+
       // Init vertex shader and reflect its resources
       rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
       memory::Blob vertex_shader_content = vfs::read_file(vertex_shader_path);

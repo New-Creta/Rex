@@ -7,6 +7,11 @@ namespace rex
 {
 	namespace gfx
 	{
+		struct MaterialConstructSettings
+		{
+			bool color_normalized; // Is the color vertex input expected to be normalized or not?
+		};
+
 		rsl::unique_ptr<Material> load_material(rsl::string_view filepath);
 	}
 }

@@ -51,6 +51,9 @@ namespace rex
   namespace gfx
   {
     struct Info;
+    struct MaterialConstructSettings;
+    DEFINE_YES_NO_ENUM(IsColorNormalized);
+
     // All logic inside the "api" namespace is only declared
     // The definition of these functions and/or classes are found in the graphics API specific rhi code.
     // eg. rhi::shader_platform for DirectX is defined in dx_rhi.cpp
@@ -88,13 +91,13 @@ namespace rex
       rsl::unique_ptr<Texture2D> create_texture2d(rsl::string_view filepath);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
-      rsl::unique_ptr<InputLayout> create_input_layout(const rsl::vector<ShaderParamReflection>& shaderInputParams);
+      rsl::unique_ptr<InputLayout> create_input_layout(const rsl::vector<ShaderParamReflection>& shaderInputParams, IsColorNormalized isColorNormalized);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_vertex_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
-      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline);
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings);
       rsl::unique_ptr<Sampler2D> create_sampler2d(rsl::string_view path);
       rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
 

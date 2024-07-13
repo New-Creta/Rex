@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_renderer_core/gfx/rhi.h"
+#include "rex_renderer_core/materials/material_system.h"
 
 namespace rex
 {
@@ -26,7 +27,7 @@ namespace rex
     // Contains data that's separate per instance. For example a world view projection matrix
     //
 
-    Material::Material(ShaderPipeline&& shaderPipeline)
+    Material::Material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
       : m_shader_pipeline(rsl::move(shaderPipeline))
       , m_primitive_topology(PrimitiveTopology::TriangleList)
       , m_pso()
@@ -40,7 +41,7 @@ namespace rex
       init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps.get());
 
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
-      m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params());
+      m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params(), matConstructSettings.color_normalized);
       //InputLayoutDesc input_layout_desc;
       //input_layout_desc.input_layout =
       //{
@@ -141,6 +142,10 @@ namespace rex
     BlendFactor Material::blend_factor()
     {
       return m_blend_factor;
+    }
+    InputLayout* Material::input_layout()
+    {
+      return m_input_layout.get();
     }
 
     ShaderResources Material::resources_for_shader(ShaderType type)
