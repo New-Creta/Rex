@@ -44,6 +44,9 @@ namespace rex
       DescriptorHeap* global_srv_heap();
       DescriptorHeap* shader_visible_srv_heap();
 
+    protected:
+      void engine_reset(const ContextResetData& resetData) override;
+
     private:
       DescriptorHeap* m_global_srv_heap;
       DescriptorHeap* m_shader_visible_srv_heap;

@@ -173,20 +173,20 @@ namespace rex
     }
     void ImGuiRenderer::init_shader()
     {
-      rsl::string material_path = path::join(vfs::engine_root(), "materials", "imgui.material");
-      m_material = load_material(material_path);
+      //rsl::string material_path = path::join(vfs::engine_root(), "materials", "imgui.material");
+      //m_material = load_material(material_path);
 
 
 
 
-      rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
-      rsl::string pixel_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_pixel.hlsl");
+      //rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
+      //rsl::string pixel_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_pixel.hlsl");
 
-      memory::Blob vertex_shader_content = vfs::read_file(vertex_shader_path);
-      memory::Blob pixel_shader_content = vfs::read_file(pixel_shader_path);
+      //memory::Blob vertex_shader_content = vfs::read_file(vertex_shader_path);
+      //memory::Blob pixel_shader_content = vfs::read_file(pixel_shader_path);
 
-      m_vertex_shader = rhi::create_vertex_shader(blob_to_string_view(vertex_shader_content), "imgui_vertex_shader");
-      m_pixel_shader = rhi::create_pixel_shader(blob_to_string_view(pixel_shader_content), "imgui_pixel_shader");
+      //m_vertex_shader = rhi::create_vertex_shader(blob_to_string_view(vertex_shader_content), "imgui_vertex_shader");
+      //m_pixel_shader = rhi::create_pixel_shader(blob_to_string_view(pixel_shader_content), "imgui_pixel_shader");
     }
     void ImGuiRenderer::init_material()
     {

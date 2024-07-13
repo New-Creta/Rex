@@ -121,7 +121,7 @@ namespace rex
           Texture2D* texture = (Texture2D*)pcmd->GetTexID();
 
           ctx.set_scissor_rect(rect);
-          ctx.bind_texture(1, texture);
+          //ctx.bind_texture(1, texture);
 
           ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
         }

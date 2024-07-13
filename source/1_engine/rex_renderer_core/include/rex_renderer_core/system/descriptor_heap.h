@@ -15,6 +15,7 @@ namespace rex
       virtual ~DescriptorHeap() = default;
 
       virtual rsl::unique_ptr<ResourceView> copy_descriptors(const rsl::vector<ResourceView*>& descriptors) = 0;
+      virtual void clear() = 0;
     };
   }
 }

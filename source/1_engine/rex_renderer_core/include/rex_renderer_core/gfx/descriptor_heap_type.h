@@ -9,6 +9,7 @@ namespace rex
       ConstantBufferView,
       ShaderResourceView = ConstantBufferView,
       UnorderedAccessView = ConstantBufferView,
+      ShaderResources = ConstantBufferView,
       RenderTargetView,
       DepthStencilView,
       Sampler

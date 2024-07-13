@@ -23,6 +23,8 @@ namespace rex
 {
   namespace gfx
   {
+    DEFINE_YES_NO_ENUM(IsShaderVisible);
+
     // The GPU Engine is the main system driving all other systems that deal with the gpu.
     // It encapsulates all sub engines (copy, compute, render).
     class GpuEngine
@@ -66,7 +68,6 @@ namespace rex
       // Initialize the resource heap which allocates all gpu resources
       virtual void init_resource_heap() = 0;
       // Allocate a new descriptor heap of a given type
-      DEFINE_YES_NO_ENUM(IsShaderVisible);
       virtual rsl::unique_ptr<DescriptorHeap> allocate_desc_heap(DescriptorHeapType descHeapType, IsShaderVisible isShaderVisible) = 0;
 
       // Returns a specific descriptor heap based on type

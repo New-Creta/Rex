@@ -10,6 +10,21 @@ namespace rex
   {
     class Resource;
 
+    // CPU writeable/readable table based on shader visible flag
+    // For more info, visit: https://learn.microsoft.com/en-us/windows/win32/direct3d12/non-shader-visible-descriptor-heaps?redirectedfrom=MSDN
+    // Note: table is at the bottom of the page
+    // +---------------------+---------------------+----------------------+
+    // |      View Type      |    Shader Visible 	 |   Non-Shader visible |
+    // +---------------------+---------------------+----------------------+
+    // |    CBV, SRV, UAV    |         Write       |       Read/Write     |
+    // +---------------------+---------------------+----------------------+
+    // |       SAMPLER       |         Write       |       Read/Write     |
+    // +---------------------+---------------------+----------------------+
+    // |        RTV          |      Read/Write     |       Read/Write     |
+    // +---------------------+---------------------+----------------------+
+    // |        DSV          |      Read/Write     |       Read/Write     |
+    // +---------------------+---------------------+----------------------+
+
     class DxDescriptorHeap : public DescriptorHeap
     {
     public:
@@ -33,7 +48,7 @@ namespace rex
       // This will cause new descriptor to be allocated from the beginning of the heap
       // this does not destroy existing descriptors, 
       // it only repoints the allocating start back to the beginning of the heap
-      void reset();
+      void clear() override;
 
     private:
       // Return a handle pointing to a free bit of memory in the descriptor heap

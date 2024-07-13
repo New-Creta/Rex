@@ -21,8 +21,7 @@ namespace rex
 		{
 			rsl::tiny_stack_string semantic_name;
 			s32 semantic_index;
-			ShaderParamComponentType component_type;
-			ShaderParamComponentMask component_mask;
+			ShaderParameterType type;
 			s32 size;
 		};
 

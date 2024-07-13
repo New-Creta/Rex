@@ -31,6 +31,7 @@ namespace rex
       m_allocator = rsl::move(alloc);
       m_resource_state_tracker = resourceStateTracker;
 
+      engine_reset(resetData);
       platform_reset(m_allocator->underlying_alloc(), resetData);
     }
     // Execute the commands on the gpu.

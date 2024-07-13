@@ -85,6 +85,11 @@ namespace rex
 
     rsl::unique_ptr<ResourceView> DxDescriptorHeap::copy_descriptors(const rsl::vector<ResourceView*>& descriptors)
     {
+      if (descriptors.empty())
+      {
+        return nullptr;
+      }
+
       rsl::unique_ptr<DxResourceView> free_handle = rsl::make_unique<DxResourceView>(new_free_handle(descriptors.size()));
 
       for (ResourceView* view : descriptors)
@@ -107,7 +112,7 @@ namespace rex
     // This will cause new descriptor to be allocated from the beginning of the heap
     // this does not destroy existing descriptors, 
     // it only repoints the allocating start back to the beginning of the heap
-    void DxDescriptorHeap::reset()
+    void DxDescriptorHeap::clear()
     {
       m_num_used_descriptors = 0;
     }

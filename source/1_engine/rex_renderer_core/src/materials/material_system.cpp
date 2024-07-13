@@ -89,6 +89,8 @@ namespace rex
 
 			// Load in the parameters values from the material
 			init_material_parameters(material.get(), json_blob["parameters"]);
+
+			return material;
 		}
 	}
 }

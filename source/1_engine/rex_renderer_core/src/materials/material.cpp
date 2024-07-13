@@ -3,6 +3,8 @@
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/assert.h"
 
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
@@ -57,14 +59,14 @@ namespace rex
     {
       for (const BoundResourceReflection& texture : signature->textures())
       {
-        TextureMaterialParameter tex_param(texture.name(), texture.shader_register());
-        m_textures.emplace(texture.name(), rsl::move(tex_param));
+        TextureMaterialParameter tex_param(texture.name, type, texture.shader_register);
+        m_textures.emplace(texture.name, rsl::move(tex_param));
       }
 
       for (const BoundResourceReflection& sampler : signature->samplers())
       {
-        SamplerMaterialParameter tex_param(sampler.name(), sampler.shader_register());
-        m_samplers.emplace(sampler.name(), rsl::move(tex_param));
+        SamplerMaterialParameter sampler_param(sampler.name, type, sampler.shader_register);
+        m_samplers.emplace(sampler.name, rsl::move(sampler_param));
       }
     }
 
@@ -100,11 +102,25 @@ namespace rex
 
       for (auto& texture : m_textures)
       {
+        if (texture.value.shader_type() != type)
+        {
+          continue;
+        }
+
         resources.textures.push_back(&texture.value);
       }
       for (auto& sampler : m_samplers)
       {
-        resources.samplers.push_back(&sampler.value);
+        if (sampler.value.shader_type() != type)
+        {
+          continue;
+        }
+
+        // It's possible a static sampler was provided and its therefore not a member of the material
+        if (sampler.value.sampler())
+        {
+          resources.samplers.push_back(&sampler.value);
+        }
       }
 
       resources.textures_root_param_idx = m_root_signature->param_idx_for_textures(type);

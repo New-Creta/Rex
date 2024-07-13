@@ -19,6 +19,11 @@ namespace rex
 				: m_shader_type(type)
 			{}
 
+			ShaderType shader_type() const
+			{
+				return m_shader_type;
+			}
+
 			const rsl::vector<ConstantBufferReflection>& constant_buffers() const
 			{
 				return m_constant_buffers;

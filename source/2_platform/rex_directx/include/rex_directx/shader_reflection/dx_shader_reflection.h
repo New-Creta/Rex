@@ -33,10 +33,20 @@ namespace rex
     private:
       DxShaderReflection(const void* byteCode, s32 byteCount, ShaderType type);
 
+      ConstantBufferReflection reflect_constant_buffer(ID3D12ShaderReflectionConstantBuffer* cbReflection);
+      ShaderParamReflection reflect_shader_input_parameter(s32 idx);
+      ShaderParamReflection reflect_shader_output_parameter(s32 idx);
+      BoundResourceReflection reflect_bound_resource(s32 idx);
+
     private:
       wrl::ComPtr<ID3D12ShaderReflection> m_reflection_object;
 
       rsl::tiny_stack_string m_shader_version;
     };
+
+    ShaderParameterType shader_param_type(D3D_REGISTER_COMPONENT_TYPE componentType, s32 componentMask, D3D_MIN_PRECISION precision);
+    ShaderParameterType component_mask_to_float(s32 componentMask);
+    ShaderParameterType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision);
+    s32 param_type_to_size(ShaderParameterType type);
   }
 }

@@ -103,7 +103,7 @@ namespace rex
     // Allocate a new descriptor heap of a given type
     rsl::unique_ptr<DescriptorHeap> DxGpuEngine::allocate_desc_heap(DescriptorHeapType descHeapType, IsShaderVisible isShaderVisible)
     {
-      return rhi::create_descriptor_heap(d3d::to_dx12(descHeapType));
+      return rhi::create_descriptor_heap(d3d::to_dx12(descHeapType), isShaderVisible);
     }
   }
 }

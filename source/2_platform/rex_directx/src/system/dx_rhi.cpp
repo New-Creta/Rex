@@ -56,6 +56,7 @@
 
 #include "rex_engine/platform/win/diagnostics/hr_call.h"
 #include "rex_directx/shader_reflection/dx_shader_reflection.h"
+#include "rex_directx/system/dx_shader_root_parameters.h"
 
 #include "rex_engine/images/stb_image.h"
 
@@ -301,10 +302,13 @@ namespace rex
         // 3. View Table
         // - textures
         // - samplers
-        rsl::vector<CD3DX12_ROOT_PARAMETER> root_parameters;
 
-        d3d::add_shader_signature_parameters(rsl::Out(root_parameters), shaderPipelineReflection.vs.get(), ShaderVisibility::Vertex);
-        d3d::add_shader_signature_parameters(rsl::Out(root_parameters), shaderPipelineReflection.ps.get(), ShaderVisibility::Pixel);
+        DxShaderRootParameters vs_root_params(shaderPipelineReflection.vs.get(), ShaderVisibility::Vertex);
+        DxShaderRootParameters ps_root_params(shaderPipelineReflection.ps.get(), ShaderVisibility::Pixel);
+
+        rsl::vector<CD3DX12_ROOT_PARAMETER> root_parameters(rsl::Capacity(vs_root_params.count() + ps_root_params.count()));
+        rsl::copy(vs_root_params.params().cbegin(), vs_root_params.params().cend(), rsl::back_inserter(root_parameters));
+        rsl::copy(ps_root_params.params().cbegin(), ps_root_params.params().cend(), rsl::back_inserter(root_parameters));
 
         // A root signature is an array of root parameters.
         REX_WARN(LogDxRhi, "Use versioned root signature here");
@@ -489,10 +493,14 @@ namespace rex
         pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
         pso_desc.SampleDesc.Count = 1;
         pso_desc.SampleDesc.Quality = 0;
-        pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        pso_desc.DSVFormat = DXGI_FORMAT_UNKNOWN; // DXGI_FORMAT_D24_UNORM_S8_UINT;
 
         wrl::ComPtr<ID3D12PipelineState> pso;
-        g_rhi_resources->device->dx_object()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso));
+        DX_CALL(g_rhi_resources->device->dx_object()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso)));
+        if (!pso)
+        {
+          return nullptr;
+        }
 
         return rsl::make_unique<DxPipelineState>(pso);
       }
@@ -586,7 +594,7 @@ namespace rex
         for (s32 i = 0; i < shaderInputParams.size(); ++i)
         {
           input_element_descriptions[i].SemanticName         = shaderInputParams[i].semantic_name.data();
-          input_element_descriptions[i].Format               = d3d::to_vertex_format(shaderInputParams[i].component_type, shaderInputParams[i].component_mask);
+          input_element_descriptions[i].Format               = d3d::to_vertex_format(shaderInputParams[i].type);
           input_element_descriptions[i].InputSlotClass       = d3d::to_dx12(InputLayoutClassification::PerVertexData);
           input_element_descriptions[i].SemanticIndex        = shaderInputParams[i].semantic_index;
           input_element_descriptions[i].InputSlot            = 0;
@@ -729,7 +737,7 @@ namespace rex
 
         return cmd_list;
       }
-      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
+      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible)
       {
         D3D12_DESCRIPTOR_HEAP_DESC desc{};
         
@@ -737,9 +745,9 @@ namespace rex
 
         desc.Type = type;
         desc.NumDescriptors = num_descriptors;
-        desc.Flags = type != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-          ? D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-          : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        desc.Flags = isShaderVisible
+          ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
+          : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
 
         wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
@@ -750,7 +758,7 @@ namespace rex
           return false;
         }
 
-        d3d::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {}", type_str));
+        d3d::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {} - {}", type_str, isShaderVisible ? "Shader Visible" : "Not Shader Visible"));
         s32 desc_size = g_rhi_resources->device->dx_object()->GetDescriptorHandleIncrementSize(type);
         s32 total_size = desc_size * num_descriptors;
 

@@ -9,19 +9,20 @@ namespace rex
 {
 	namespace gfx
 	{
-		class BoundResourceReflection
+		enum class BoundResourceType
+		{
+			ConstantBuffer,
+			Texture,
+			Sampler
+		};
+
+		struct BoundResourceReflection
 		{
 		public:
-			BoundResourceReflection(const rsl::tiny_stack_string& name, s32 shaderRegister);
-
-			rsl::string_view name() const;
-			s32 shader_register() const;
-			ShaderType shader_type() const;
-
-		private:
-			rsl::tiny_stack_string m_name;
-			s32 m_shader_register;
-			ShaderType m_shader_type;
+			rsl::tiny_stack_string name;
+			s32 shader_register;
+			BoundResourceType resource_type;
+			ShaderType shader_type;
 		};
 	}
 }

@@ -8,9 +8,10 @@ namespace rex
 {
 	namespace gfx
 	{
-		MaterialParameter::MaterialParameter(rsl::string_view name, s32 shaderRegister, MaterialParameterType type)
+		MaterialParameter::MaterialParameter(rsl::string_view name, ShaderType shaderType, s32 shaderRegister, MaterialParameterType type)
 			: m_name(name)
 			, m_shader_register(shaderRegister)
+			, m_shader_type(shaderType)
 			, m_type(type)
 		{
 		}
@@ -27,10 +28,14 @@ namespace rex
 		{
 			return m_type;
 		}
+		ShaderType MaterialParameter::shader_type() const
+		{
+			return m_shader_type;
+		}
 
 
-		TextureMaterialParameter::TextureMaterialParameter(rsl::string_view name, s32 shaderRegister, Texture2D* texture)
-			: MaterialParameter(name, shaderRegister, MaterialParameterType::Texture)
+		TextureMaterialParameter::TextureMaterialParameter(rsl::string_view name, ShaderType shaderType, s32 shaderRegister, Texture2D* texture)
+			: MaterialParameter(name, shaderType, shaderRegister, MaterialParameterType::Texture)
 			, m_texture(rsl::move(texture))
 		{
 
@@ -38,15 +43,15 @@ namespace rex
 
 		void TextureMaterialParameter::set(Texture2D* texture)
 		{
-			m_texture = rsl::move(texture);
+			m_texture = texture;
 		}
 		Texture2D* TextureMaterialParameter::texture()
 		{
 			return m_texture;
 		}
 
-		SamplerMaterialParameter::SamplerMaterialParameter(rsl::string_view name, s32 shaderRegister, Sampler2D* sampler)
-			: MaterialParameter(name, shaderRegister, MaterialParameterType::Sampler)
+		SamplerMaterialParameter::SamplerMaterialParameter(rsl::string_view name, ShaderType shaderType, s32 shaderRegister, Sampler2D* sampler)
+			: MaterialParameter(name, shaderType, shaderRegister, MaterialParameterType::Sampler)
 			, m_sampler(rsl::move(sampler))
 		{
 
@@ -54,7 +59,7 @@ namespace rex
 
 		void SamplerMaterialParameter::set(Sampler2D* sampler)
 		{
-			m_sampler = rsl::move(sampler);
+			m_sampler = sampler;
 		}
 		Sampler2D* SamplerMaterialParameter::sampler()
 		{

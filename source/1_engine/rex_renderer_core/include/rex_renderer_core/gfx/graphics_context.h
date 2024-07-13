@@ -58,6 +58,8 @@ namespace rex
       ResourceStateTransition track_resource_transition(Resource* buffer, ResourceState state);
       // Return the owning gpu engine of this context
       gfx::GraphicsEngine* owning_engine();
+      // Reset the engine speicifc context
+      virtual void engine_reset(const ContextResetData& resetData) {}
       // Reset the platform specific context
       virtual void platform_reset(CommandAllocator* alloc, const ContextResetData& resetData) = 0;
 

@@ -8,6 +8,8 @@
 #include "rex_renderer_core/resources/texture_2d.h"
 #include "rex_renderer_core/resources/sampler_2d.h"
 
+#include "rex_renderer_core/system/shader_type.h"
+
 namespace rex
 {
 	namespace gfx
@@ -24,22 +26,24 @@ namespace rex
 		class MaterialParameter
 		{
 		public:
-			MaterialParameter(rsl::string_view name, s32 shaderRegister, MaterialParameterType type);
+			MaterialParameter(rsl::string_view name, ShaderType shaderType, s32 shaderRegister, MaterialParameterType type);
 
 			rsl::string_view name() const;
 			s32 shader_register() const;
 			MaterialParameterType type() const;
+			ShaderType shader_type() const;
 
 		private:
 			rsl::string m_name;
 			s32 m_shader_register;
+			ShaderType m_shader_type;
 			MaterialParameterType m_type;
 		};
 
 		class TextureMaterialParameter : public MaterialParameter
 		{
 		public:
-			TextureMaterialParameter(rsl::string_view name, s32 shaderRegister, Texture2D* texture = nullptr);
+			TextureMaterialParameter(rsl::string_view name, ShaderType shaderType, s32 shaderRegister, Texture2D* texture = nullptr);
 
 			void set(Texture2D* texture);
 			Texture2D* texture();
@@ -51,7 +55,7 @@ namespace rex
 		class SamplerMaterialParameter : public MaterialParameter
 		{
 		public:
-			SamplerMaterialParameter(rsl::string_view name, s32 shaderRegister, Sampler2D* sampler = nullptr);
+			SamplerMaterialParameter(rsl::string_view name, ShaderType shaderType, s32 shaderRegister, Sampler2D* sampler = nullptr);
 
 			void set(Sampler2D* sampler);
 			Sampler2D* sampler();

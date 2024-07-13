@@ -56,6 +56,8 @@ namespace rex
     class Sampler2D;
     class InputLayout;
     struct RasterStateDesc;
+    enum class ShaderType;
+    enum class ShaderVisibility;
 
     class ConstantBuffer;
     class IndexBuffer;
@@ -131,12 +133,11 @@ namespace rex
       // Get the byte size of a given format
       s32 format_byte_size(DXGI_FORMAT format);
 
-      // Root signature construction
-      void add_shader_signature_parameters(rsl::Out<rsl::vector<CD3DX12_ROOT_PARAMETER>> parameters, const ShaderSignature* signature, ShaderVisibility shaderVis);
-
+      DXGI_FORMAT to_vertex_format(ShaderParameterType type);
       DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask);
       DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
       PrimitiveTopologyType to_primitive_topology_type(PrimitiveTopology topology);
+      ShaderType shader_visibility_to_type(ShaderVisibility visibility);
 
       // ------------------------------------
       // Convertors from REX -> DirectX
@@ -199,6 +200,8 @@ namespace rex
       ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type);
       ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type);
       ShaderParamComponentMask from_dx12(BYTE mask);
+      ShaderVisibility from_dx12(D3D12_SHADER_VISIBILITY visibility);
+
     } // namespace d3d
   }
 } // namespace rex

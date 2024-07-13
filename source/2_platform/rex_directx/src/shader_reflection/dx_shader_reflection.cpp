@@ -55,7 +55,7 @@ namespace rex
       for (card32 i = 0; i < numConstantBuffers; ++i)
       {
         ID3D12ShaderReflectionConstantBuffer* cb = m_reflection_object->GetConstantBufferByIndex(i);
-        //constant_buffers.emplace_back(cb, get_constant_buffer_register(m_reflection_object.Get(), cb));
+        constant_buffers.push_back(reflect_constant_buffer(cb));
       }
 
       init_constant_buffers(rsl::move(constant_buffers));
@@ -67,9 +67,7 @@ namespace rex
 
       for (card32 i = 0; i < numInputParams; ++i)
       {
-        D3D12_SIGNATURE_PARAMETER_DESC param_desc;
-        DX_CALL(m_reflection_object->GetInputParameterDesc(i, &param_desc));
-        //input_params.emplace_back(param_desc);
+        input_params.emplace_back(reflect_shader_input_parameter(i));
       }
 
       init_input_params(rsl::move(input_params));
@@ -81,9 +79,7 @@ namespace rex
 
       for (card32 i = 0; i < numOutputParams; ++i)
       {
-        D3D12_SIGNATURE_PARAMETER_DESC param_desc;
-        DX_CALL(m_reflection_object->GetOutputParameterDesc(i, &param_desc));
-        //output_params.emplace_back(param_desc);
+        output_params.emplace_back(reflect_shader_output_parameter(i));
       }
 
       init_output_params(rsl::move(output_params));
@@ -95,20 +91,19 @@ namespace rex
 
       for (card32 i = 0; i < numBoundResources; ++i)
       {
-        D3D12_SHADER_INPUT_BIND_DESC resource_desc;
-        DX_CALL(m_reflection_object->GetResourceBindingDesc(i, &resource_desc));
-
-        switch (resource_desc.Type)
+        auto bound_resource = reflect_bound_resource(i);
+        if (bound_resource.resource_type == BoundResourceType::Texture)
         {
-        case D3D_SIT_CBUFFER: continue;
-        case D3D_SIT_TEXTURE: /*textures.emplace_back(resource_desc);*/ break;
-        case D3D_SIT_SAMPLER: /*samplers.emplace_back(resource_desc);*/ break;
-        default: REX_ASSERT("Invalid bound resource type");
+          textures.push_back(bound_resource);
         }
-
-        init_textures(rsl::move(textures));
-        init_samplers(rsl::move(samplers));
+        else if (bound_resource.resource_type == BoundResourceType::Sampler)
+        {
+          samplers.push_back(bound_resource);
+        }
       }
+
+			init_textures(rsl::move(textures));
+			init_samplers(rsl::move(samplers));
     }
     card32 DxShaderReflection::get_constant_buffer_register(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cb_refl)
     {
@@ -142,6 +137,99 @@ namespace rex
       return version_str;
     }
 
+    ConstantBufferReflection DxShaderReflection::reflect_constant_buffer(ID3D12ShaderReflectionConstantBuffer* cbReflection)
+    {
+      D3D12_SHADER_BUFFER_DESC shader_buffer_desc{};
+      cbReflection->GetDesc(&shader_buffer_desc);
+
+      ConstantBufferReflection cb_ref{};
+      cb_ref.name = shader_buffer_desc.Name;
+      cb_ref.shader_register = get_constant_buffer_register(m_reflection_object.Get(), cbReflection);
+      cb_ref.size = shader_buffer_desc.Size;
+      s32 num_vars = shader_buffer_desc.Variables;
+      for (s32 var_idx = 0; var_idx < num_vars; ++var_idx)
+      {
+        ID3D12ShaderReflectionVariable* var = cbReflection->GetVariableByIndex(var_idx);
+        D3D12_SHADER_VARIABLE_DESC cb_var_desc;
+        var->GetDesc(&cb_var_desc);
+
+        CBufferVarReflDesc& desc = cb_ref.variables.emplace_back();
+        desc.name = cb_var_desc.Name;
+        desc.offset = cb_var_desc.StartOffset;
+        desc.size = cb_var_desc.Size;
+        ID3D12ShaderReflectionType* type = var->GetType();
+        D3D12_SHADER_TYPE_DESC type_desc;
+        DX_CALL(type->GetDesc(&type_desc));
+        desc.class_type = d3d::from_dx12(type_desc.Class);
+        desc.var_type = d3d::from_dx12(type_desc.Type);
+      }
+
+      return cb_ref;
+    }
+    ShaderParamReflection DxShaderReflection::reflect_shader_input_parameter(s32 idx)
+    {
+      D3D12_SIGNATURE_PARAMETER_DESC param_desc;
+      DX_CALL(m_reflection_object->GetInputParameterDesc(idx, &param_desc));
+      ShaderParamReflection input_param{};
+
+      input_param.semantic_name = param_desc.SemanticName;
+      input_param.semantic_index = param_desc.SemanticIndex;
+      input_param.type = shader_param_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
+      input_param.size = param_type_to_size(input_param.type);
+
+      return input_param;
+    }
+    ShaderParamReflection DxShaderReflection::reflect_shader_output_parameter(s32 idx)
+    {
+      D3D12_SIGNATURE_PARAMETER_DESC param_desc;
+      DX_CALL(m_reflection_object->GetOutputParameterDesc(idx, &param_desc));
+      ShaderParamReflection output_param{};
+
+      output_param.semantic_name = param_desc.SemanticName;
+      output_param.semantic_index = param_desc.SemanticIndex;
+      output_param.type = shader_param_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
+      output_param.size = param_type_to_size(output_param.type);
+
+      return output_param;
+    }
+
+    BoundResourceReflection DxShaderReflection::reflect_bound_resource(s32 idx)
+    {
+      D3D12_SHADER_INPUT_BIND_DESC resource_desc;
+      DX_CALL(m_reflection_object->GetResourceBindingDesc(idx, &resource_desc));
+
+      BoundResourceReflection bound_resource{};
+
+      switch (resource_desc.Type)
+      {
+      case D3D_SIT_CBUFFER:
+        bound_resource.name = resource_desc.Name;
+        bound_resource.shader_register = resource_desc.BindPoint;
+        bound_resource.shader_type = shader_type();
+        bound_resource.resource_type = BoundResourceType::ConstantBuffer;
+        break;
+      case D3D_SIT_TEXTURE:
+      {
+        bound_resource.name = resource_desc.Name;
+        bound_resource.shader_register = resource_desc.BindPoint;
+        bound_resource.shader_type = shader_type();
+        bound_resource.resource_type = BoundResourceType::Texture;
+        break;
+      }
+      case D3D_SIT_SAMPLER:
+      {
+        bound_resource.name = resource_desc.Name;
+        bound_resource.shader_register = resource_desc.BindPoint;
+        bound_resource.shader_type = shader_type();
+        bound_resource.resource_type = BoundResourceType::Sampler;
+        break;
+      }
+      default: REX_ASSERT("Invalid bound resource type");
+      }
+
+      return bound_resource;
+    }
+
 		namespace rhi
 		{
 			rsl::unique_ptr<gfx::ShaderSignature> reflect_shader(const gfx::Shader* shader)
@@ -153,5 +241,68 @@ namespace rex
 				return rsl::make_unique<DxShaderReflection>(dx_shader->dx_bytecode(), dx_shader->type());
 			}
 		}
+
+    ShaderParameterType shader_param_type(D3D_REGISTER_COMPONENT_TYPE componentType, s32 componentMask, D3D_MIN_PRECISION precision)
+    {
+      switch (componentType)
+      {
+      default: REX_ASSERT("Invalid component type"); break;
+      case D3D_REGISTER_COMPONENT_UINT32:  return component_mask_to_uint(componentType, precision); break;
+      case D3D_REGISTER_COMPONENT_FLOAT32: return component_mask_to_float(componentMask); break;
+      }
+    }
+    ShaderParameterType component_mask_to_float(s32 componentMask)
+    {
+      if (componentMask & 8)
+        return ShaderParameterType::Float4;
+      if (componentMask & 4)
+        return ShaderParameterType::Float3;
+      if (componentMask & 2)
+        return ShaderParameterType::Float2;
+      if (componentMask & 1)
+        return ShaderParameterType::Float;
+
+      REX_ASSERT("Invalid component mask");
+      return ShaderParameterType::Unknown;
+    }
+    ShaderParameterType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision)
+    {
+      if (componentMask & 3)
+      {
+        if (precision == D3D_MIN_PRECISION_UINT_16)
+        {
+          return ShaderParameterType::Uint16_2;
+        }
+        else if (precision == D3D_MIN_PRECISION_DEFAULT)
+        {
+          return ShaderParameterType::Uint2;
+        }
+      }
+      if (componentMask & 1)
+      {
+        return ShaderParameterType::Uint;
+      }
+
+      REX_ASSERT("Invalid component mask");
+      return ShaderParameterType::Unknown;
+    }
+
+    s32 param_type_to_size(ShaderParameterType type)
+    {
+      switch (type)
+      {
+      case ShaderParameterType::Uint:        return 1 * sizeof(uint32);
+      case ShaderParameterType::Uint2:       return 2 * sizeof(uint32);
+      case ShaderParameterType::Uint16_2:    return 2 * sizeof(uint16);
+      case ShaderParameterType::Float:       return 1 * sizeof(float32);
+      case ShaderParameterType::Float2:      return 2 * sizeof(float32);
+      case ShaderParameterType::Float3:      return 3 * sizeof(float32);
+      case ShaderParameterType::Float4:      return 4 * sizeof(float32);
+      }
+
+      REX_ASSERT("Invalid parameter type");
+      return 0;
+    }
+
   }
 }
