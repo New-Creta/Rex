@@ -46,6 +46,9 @@ namespace rex
         render_ctx->clear_render_target(render_target, m_clear_state.get());
       }
 
+      render_ctx->bind_material(imgui_renderstate().material);
+      render_ctx->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
+
       m_viewport.render(*render_ctx.get());
       render_ctx->transition_buffer(render_target, ResourceState::Present);
     }

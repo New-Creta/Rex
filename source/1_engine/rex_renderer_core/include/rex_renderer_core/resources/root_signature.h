@@ -2,6 +2,8 @@
 
 #include "rex_renderer_core/system/shader_type.h"
 
+#include "rex_engine/engine/types.h"
+
 namespace rex
 {
   namespace gfx

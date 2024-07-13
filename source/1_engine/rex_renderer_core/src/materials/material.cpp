@@ -41,6 +41,14 @@ namespace rex
 
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
       m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params());
+      //InputLayoutDesc input_layout_desc;
+      //input_layout_desc.input_layout =
+      //{
+      //  InputLayoutElementDesc { "POSITION",  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
+      //  InputLayoutElementDesc { "TEXCOORD",  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
+      //  InputLayoutElementDesc { "COLOR", VertexBufferFormat::UNorm4, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
+      //};
+      //m_input_layout = rhi::create_input_layout(input_layout_desc);
 
 
       PipelineStateDesc pso_desc{};

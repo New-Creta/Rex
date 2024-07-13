@@ -62,6 +62,7 @@ namespace rex
       if (RexImGuiViewport* rex_viewport = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
         render_ctx->bind_material(m_material.get());
+        render_ctx->set_blend_factor({0.0f, 0.0f, 0.0f, 0.0f});
         rex_viewport->render(*render_ctx);
       }
 
@@ -132,6 +133,7 @@ namespace rex
 
       resources.root_signature = m_material->root_signature();
       resources.pso = m_pipeline_state.get();
+      resources.material = m_material.get();
       imgui_init_resources(resources);
     }
 

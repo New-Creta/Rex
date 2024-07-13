@@ -4,6 +4,7 @@
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/imgui/imgui_render_state.h"
+#include "rex_renderer_core/materials/material.h"
 
 namespace rex
 {
@@ -15,6 +16,7 @@ namespace rex
     {
       RootSignature* root_signature;
       PipelineState* pso;
+      Material* material;
     };
 
     // Initialize the global imgui resources so they can be used by viewports

@@ -7,6 +7,7 @@ namespace rex
     ImGuiRenderState g_imgui_render_state;
     void imgui_init_resources(const ImGuiResources& resources)
     {
+      g_imgui_render_state.material = resources.material;
       g_imgui_render_state.root_signature = resources.root_signature;
       g_imgui_render_state.pso = resources.pso;
       g_imgui_render_state.primitive_topology = PrimitiveTopology::TriangleList;

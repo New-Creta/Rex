@@ -133,7 +133,7 @@ namespace rex
       // Get the byte size of a given format
       s32 format_byte_size(DXGI_FORMAT format);
 
-      DXGI_FORMAT to_vertex_format(ShaderParameterType type);
+      DXGI_FORMAT to_vertex_input_format(ShaderParameterType type);
       DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask);
       DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
       PrimitiveTopologyType to_primitive_topology_type(PrimitiveTopology topology);

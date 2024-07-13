@@ -124,7 +124,7 @@ namespace rex
         }
       }
 
-      DXGI_FORMAT to_vertex_format(ShaderParameterType type)
+      DXGI_FORMAT to_vertex_input_format(ShaderParameterType type)
       {
         switch (type)
         {
@@ -134,7 +134,7 @@ namespace rex
         case rex::gfx::ShaderParameterType::Float:      return DXGI_FORMAT_R32_FLOAT;
         case rex::gfx::ShaderParameterType::Float2:     return DXGI_FORMAT_R32G32_FLOAT;
         case rex::gfx::ShaderParameterType::Float3:     return DXGI_FORMAT_R32G32B32_FLOAT;
-        case rex::gfx::ShaderParameterType::Float4:     return DXGI_FORMAT_R32G32B32A32_FLOAT;
+        case rex::gfx::ShaderParameterType::Float4:     return DXGI_FORMAT_R8G8B8A8_UNORM;
         }
 
         return invalid_obj<DXGI_FORMAT>();

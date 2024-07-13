@@ -4,6 +4,7 @@
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/gfx/primitive_topology.h"
+#include "rex_renderer_core/materials/material.h"
 
 #include "rex_std/array.h"
 
@@ -13,6 +14,7 @@ namespace rex
   {
     struct ImGuiRenderState
     {
+      Material* material;             // The material to be used by all imgui rendering
       RootSignature* root_signature;             // Root signature used for the imgui rendering, this will later become a material
       PipelineState* pso;                        // The pipeline state used for imgui rendering
       PrimitiveTopology primitive_topology; // The primitive topology used for imgui rendering

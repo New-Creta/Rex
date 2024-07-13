@@ -625,14 +625,14 @@ namespace rex
         for (s32 i = 0; i < shaderInputParams.size(); ++i)
         {
           input_element_descriptions[i].SemanticName         = shaderInputParams[i].semantic_name.data();
-          input_element_descriptions[i].Format               = d3d::to_vertex_format(shaderInputParams[i].type);
+          input_element_descriptions[i].Format               = d3d::to_vertex_input_format(shaderInputParams[i].type);
           input_element_descriptions[i].InputSlotClass       = d3d::to_dx12(InputLayoutClassification::PerVertexData);
           input_element_descriptions[i].SemanticIndex        = shaderInputParams[i].semantic_index;
           input_element_descriptions[i].InputSlot            = 0;
           input_element_descriptions[i].AlignedByteOffset    = byte_offset;
           input_element_descriptions[i].InstanceDataStepRate = 0;
 
-          byte_offset = d3d::format_byte_size(input_element_descriptions[i].Format);
+          byte_offset += d3d::format_byte_size(input_element_descriptions[i].Format);
         }
 
         return rsl::make_unique<DxInputLayout>(input_element_descriptions);
