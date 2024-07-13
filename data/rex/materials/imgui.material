@@ -1,4 +1,7 @@
 {
     "vertex_shader": "rex/shaders/imgui/hlsl/imgui_vertex.hlsl",
-    "pixel_shader": "rex/shaders/imgui/hlsl/imgui_pixel.hlsl"
+    "pixel_shader": "rex/shaders/imgui/hlsl/imgui_pixel.hlsl",
+    "input_layout_settings": {
+        "color_normalized": true
+    }
 }
