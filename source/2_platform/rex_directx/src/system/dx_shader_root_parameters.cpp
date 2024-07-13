@@ -56,18 +56,18 @@ namespace rex
       resource_register = -1;
 
       // Samplers
-      for (const auto& sampler : signature->samplers())
-      {
-        resource_register = sampler.shader_register;
-        if (resource_register != current_register)
-        {
-          // Submit new range
-          add_to_view_range(m_sampler_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
-          start_register = resource_register;
-        }
-        ++current_register;
-      }
-      add_to_view_range(m_sampler_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+      //for (const auto& sampler : signature->samplers())
+      //{
+      //  resource_register = sampler.shader_register;
+      //  if (resource_register != current_register)
+      //  {
+      //    // Submit new range
+      //    add_to_view_range(m_sampler_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+      //    start_register = resource_register;
+      //  }
+      //  ++current_register;
+      //}
+      //add_to_view_range(m_sampler_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
 
       // Submit the ranges to the descriptor table
       if (m_texture_ranges.size() > 0)

@@ -13,16 +13,27 @@ namespace rex
     void CopyContext::engine_reset(const ContextResetData& resetData)
     {
       m_global_srv_heap = resetData.global_srv_desc_heap;
+      m_global_sampler_heap = resetData.global_sampler_desc_heap;
       m_shader_visible_srv_heap = resetData.shader_visible_srv_desc_heap;
+      m_shader_visible_sampler_heap = resetData.shader_visible_sampler_desc_heap;
     }
 
     DescriptorHeap* CopyContext::global_srv_heap()
     {
       return m_global_srv_heap;
     }
+    DescriptorHeap* CopyContext::global_sampler_heap()
+    {
+      return m_global_sampler_heap;
+    }
+
     DescriptorHeap* CopyContext::shader_visible_srv_heap()
     {
       return m_shader_visible_srv_heap;
+    }
+    DescriptorHeap* CopyContext::shader_visible_sampler_heap()
+    {
+      return m_shader_visible_sampler_heap;
     }
   }
 }

@@ -71,13 +71,15 @@ namespace rex
       void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature);
 
     private:
-      rsl::unordered_map<rsl::string_view, TextureMaterialParameter> m_textures;
-      rsl::unordered_map<rsl::string_view, SamplerMaterialParameter> m_samplers;
+      rsl::unordered_map<rsl::string, TextureMaterialParameter> m_textures;
+      rsl::unordered_map<rsl::string, SamplerMaterialParameter> m_samplers;
 
       PrimitiveTopology m_primitive_topology;
       rsl::unique_ptr<PipelineState> m_pso;
       rsl::unique_ptr<RootSignature> m_root_signature;
       rsl::unique_ptr<InputLayout> m_input_layout;
+      rsl::unique_ptr<RasterState> m_raster_state; // The render state used by imgui
+
       BlendFactor m_blend_factor;
 
       ShaderPipeline m_shader_pipeline;

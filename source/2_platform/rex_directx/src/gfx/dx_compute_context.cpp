@@ -29,8 +29,11 @@ namespace rex
 
       dx_alloc->dx_object()->Reset();
       m_cmd_list->Reset(dx_alloc->dx_object(), nullptr);
-      ID3D12DescriptorHeap* d3d_desc_heap = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();
-      m_cmd_list->SetDescriptorHeaps(1, &d3d_desc_heap);
+
+      rsl::array<ID3D12DescriptorHeap*, 2> d3d_desc_heaps{};
+      d3d_desc_heaps[0] = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();
+      d3d_desc_heaps[1] = d3d::to_dx12(resetData.shader_visible_sampler_desc_heap)->dx_object();
+      m_cmd_list->SetDescriptorHeaps(d3d_desc_heaps.size(), d3d_desc_heaps.data());
     }
 
     // Profiling events

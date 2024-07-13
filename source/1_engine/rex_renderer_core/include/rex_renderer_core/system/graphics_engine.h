@@ -27,9 +27,17 @@ namespace rex
       // The descriptors in this heap are not accessible by shaders
       DescriptorHeap* global_srv_desc_heap;
 
+      // The desciptor heap holding all the decsriptors for all the samplers currently allocated on the gpu
+      // The descriptors in this heap are not accessible by shaders
+      DescriptorHeap* global_sampler_desc_heap;
+
       // The descriptor heap holding the descriptors for all resources that are needed to perform a queued draw command
       // the descriptors in this heap are accessible by shaders
       DescriptorHeap* shader_visible_srv_desc_heap;
+
+      // The descriptor heap holding the descriptors for all samplers that are needed to perform a queued draw command
+      // the descriptors in this heap are accessible by shaders
+      DescriptorHeap* shader_visible_sampler_desc_heap;
     };
 
     // A graphics engine is an engine responsible for their own respective field of the graphics pipeline.

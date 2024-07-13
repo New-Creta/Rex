@@ -59,7 +59,7 @@ namespace rex
 
     private:
       CD3DX12_CPU_DESCRIPTOR_HANDLE m_cpu_handle; // The descriptor handle of the cpu addressible address
-      D3D12_GPU_DESCRIPTOR_HANDLE m_gpu_handle; // The descriptor handle of the gpu addressible address
+      CD3DX12_GPU_DESCRIPTOR_HANDLE m_gpu_handle; // The descriptor handle of the gpu addressible address
       D3D12_DESCRIPTOR_HEAP_TYPE m_type; // The typeo of the descriptor it points to
       s32 m_size; // The size of the descriptor it points to
     };

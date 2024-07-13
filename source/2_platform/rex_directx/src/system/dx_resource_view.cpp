@@ -15,9 +15,7 @@ namespace rex
     DxResourceView& DxResourceView::operator++()
     {
       m_cpu_handle.Offset(1, m_size);
-      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_gpu_handle);
-      handle_gpu.InitOffsetted(m_gpu_handle, m_size);
-      m_gpu_handle = handle_gpu;
+      m_gpu_handle.Offset(1, m_size);
       return *this;
     }
     DxResourceView DxResourceView::operator++(int)
@@ -25,16 +23,14 @@ namespace rex
       const CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_cpu_handle);
       m_cpu_handle.Offset(1, m_size);
       CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_gpu_handle);
-      handle_gpu.InitOffsetted(m_gpu_handle, m_size);
+      handle_gpu.Offset(1, m_size);
       return DxResourceView(handle, handle_gpu, m_type, m_size);
     }
 
     DxResourceView& DxResourceView::operator--()
     {
       m_cpu_handle.Offset(-1, m_size);
-      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_gpu_handle);
-      handle_gpu.InitOffsetted(m_gpu_handle, -m_size);
-      m_gpu_handle = handle_gpu;
+      m_gpu_handle.Offset(-1, m_size);
       return *this;
     }
     DxResourceView DxResourceView::operator--(int)
@@ -42,7 +38,7 @@ namespace rex
       const CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_cpu_handle);
       m_cpu_handle.Offset(-1, m_size);
       CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_gpu_handle);
-      handle_gpu.InitOffsetted(m_gpu_handle, -m_size);
+      handle_gpu.Offset(-1, m_size);
       return DxResourceView(handle, handle_gpu, m_type, m_size);
     }
 
@@ -55,9 +51,7 @@ namespace rex
     DxResourceView& DxResourceView::operator+=(s32 offset)
     {
       m_cpu_handle.Offset(offset, m_size);
-      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_gpu_handle);
-      handle_gpu.InitOffsetted(m_gpu_handle, m_size * offset);
-      m_gpu_handle = handle_gpu;
+      m_gpu_handle.Offset(offset, m_size);
       return *this;
     }
 
@@ -70,9 +64,7 @@ namespace rex
     DxResourceView& DxResourceView::operator-=(s32 offset)
     {
       m_cpu_handle.Offset(-offset, m_size);
-      CD3DX12_GPU_DESCRIPTOR_HANDLE handle_gpu(m_gpu_handle);
-      handle_gpu.InitOffsetted(m_gpu_handle, m_size * -offset);
-      m_gpu_handle = handle_gpu;
+      m_gpu_handle.Offset(-offset, m_size);
       return *this;
     }
 

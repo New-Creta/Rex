@@ -16,6 +16,7 @@
 #include "rex_directx/system/dx_descriptor_heap.h"
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/resources/dx_texture_2d.h"
+#include "rex_directx/resources/dx_sampler_2d.h"
 
 #include "rex_directx/system/dx_render_engine.h"
 #include "rex_directx/system/dx_compute_engine.h"
@@ -65,6 +66,11 @@ namespace rex
     {
       return d3d::to_dx12(cpu_desc_heap(DescriptorHeapType::ConstantBufferView))->create_cbv(resource.Get(), size);
     }
+    rsl::unique_ptr<DxSampler2D> DxGpuEngine::create_sampler2d(const ShaderSamplerDesc& desc)
+    {
+      return d3d::to_dx12(cpu_desc_heap(DescriptorHeapType::Sampler))->create_sampler2d(desc);
+    }
+
     // Compile a shader written in HLSL
     wrl::ComPtr<ID3DBlob> DxGpuEngine::compile_shader(const CompileShaderDesc& desc)
     {

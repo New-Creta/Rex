@@ -76,9 +76,7 @@ namespace rex
     // Create a new context which is used for copying resources from or to the gpu
     ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(rsl::string_view eventName)
     {
-      ContextResetData reset_data{};
-      reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
-      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);
+      ContextResetData reset_data = create_context_reset_data();
 
       auto base_ctx = m_copy_engine->new_context(reset_data, eventName);
       return base_ctx.convert<CopyContext>();
@@ -86,9 +84,7 @@ namespace rex
     // Create a new context which is used for rendering to render targets
     ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(rsl::string_view eventName)
     {
-      ContextResetData reset_data{};
-      reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
-      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);
+      ContextResetData reset_data = create_context_reset_data();
 
       auto base_ctx = m_render_engine->new_context(reset_data, eventName);
       return base_ctx.convert<RenderContext>();
@@ -96,9 +92,7 @@ namespace rex
     // Create a new context which is used for computing data on the gpu
     ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(rsl::string_view eventName)
     {
-      ContextResetData reset_data{};
-      reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
-      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);
+      ContextResetData reset_data = create_context_reset_data();
 
       auto base_ctx = m_compute_engine->new_context(reset_data, eventName);
       return base_ctx.convert<ComputeContext>();
@@ -170,6 +164,18 @@ namespace rex
       descHeapPool.emplace(descHeapType, allocate_desc_heap(descHeapType, isShaderVisible));
 
     }
+
+    ContextResetData GpuEngine::create_context_reset_data()
+    {
+      ContextResetData reset_data{};
+      reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
+      reset_data.global_sampler_desc_heap = cpu_desc_heap(DescriptorHeapType::Sampler);
+      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);
+      reset_data.shader_visible_sampler_desc_heap = shader_visible_desc_heap(DescriptorHeapType::Sampler);
+
+      return reset_data;
+    }
+
 
   }
 }

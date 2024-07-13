@@ -30,7 +30,7 @@ namespace rex
     public:
       CopyContext(gfx::GraphicsEngine* owningEngine);
 
-      virtual rsl::unique_ptr<ResourceView> copy_descriptors(DescriptorHeap* srcHeap, const rsl::vector<ResourceView*>& descriptors) = 0;
+      virtual rsl::unique_ptr<ResourceView> copy_descriptors(DescriptorHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors) = 0;
 
       // Update a constant buffer's data
       virtual void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
@@ -42,14 +42,18 @@ namespace rex
       virtual void update_texture2d(Texture2D* texture, const void* data) = 0;
 
       DescriptorHeap* global_srv_heap();
+      DescriptorHeap* global_sampler_heap();
       DescriptorHeap* shader_visible_srv_heap();
+      DescriptorHeap* shader_visible_sampler_heap();
 
     protected:
       void engine_reset(const ContextResetData& resetData) override;
 
     private:
       DescriptorHeap* m_global_srv_heap;
+      DescriptorHeap* m_global_sampler_heap;
       DescriptorHeap* m_shader_visible_srv_heap;
+      DescriptorHeap* m_shader_visible_sampler_heap;
     };
   }
 }

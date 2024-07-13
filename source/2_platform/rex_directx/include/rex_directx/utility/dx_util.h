@@ -169,6 +169,7 @@ namespace rex
       D3D12_COMMAND_LIST_TYPE to_dx12(GraphicsEngineType type);
       D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(DescriptorHeapType type);
       D3D12_PRIMITIVE_TOPOLOGY_TYPE to_dx12(PrimitiveTopologyType type);
+      D3D12_SAMPLER_DESC to_dx12(const ShaderSamplerDesc& desc);
 
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes

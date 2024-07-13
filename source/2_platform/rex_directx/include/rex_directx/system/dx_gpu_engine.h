@@ -20,6 +20,7 @@ namespace rex
     class ResourceHeap;
     class DescriptorHeap;
     struct CompileShaderDesc;
+    class DxSampler2D;
     
     namespace dxgi
     {
@@ -47,6 +48,8 @@ namespace rex
       DxResourceView create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
       // Create a constant buffer view pointing for a given resource
       DxResourceView create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
+      // Create a sampler2D and store it on the gpu
+      rsl::unique_ptr<DxSampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
 
       // Compile a shader written in HLSL
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);

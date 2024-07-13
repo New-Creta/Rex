@@ -664,6 +664,26 @@ namespace rex
 
         return invalid_obj<D3D12_PRIMITIVE_TOPOLOGY_TYPE>();
       }
+      D3D12_SAMPLER_DESC to_dx12(const ShaderSamplerDesc& desc)
+      {
+        D3D12_SAMPLER_DESC sampler_desc{};
+        sampler_desc.Filter = d3d::to_dx12(desc.filtering);
+        sampler_desc.AddressU = d3d::to_dx12(desc.address_mode_u);
+        sampler_desc.AddressV = d3d::to_dx12(desc.address_mode_v);
+        sampler_desc.AddressW = d3d::to_dx12(desc.address_mode_w);
+        sampler_desc.MipLODBias = desc.mip_lod_bias;
+        sampler_desc.MaxAnisotropy = desc.max_anisotropy;
+        sampler_desc.ComparisonFunc = d3d::to_dx12(desc.comparison_func);
+        //sampler_desc.BorderColor = d3d::to_dx12(desc.border_color);
+        sampler_desc.MinLOD = desc.min_lod;
+        sampler_desc.MaxLOD = desc.max_lod;
+        //sampler_desc.ShaderRegister = desc.shader_register;
+        //sampler_desc.RegisterSpace = desc.register_space;
+        //sampler_desc.ShaderVisibility = d3d::to_dx12(desc.shader_visibility);
+
+        return sampler_desc;
+      }
+
 
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes

@@ -5,6 +5,8 @@
 #include "rex_engine/engine/casting.h"
 #include "rex_engine/memory/pointer_math.h"
 
+#include "rex_directx/resources/dx_sampler_2d.h"
+
 namespace rex
 {
   namespace gfx
@@ -81,6 +83,17 @@ namespace rex
       DxResourceView desc_handle = new_free_handle();
       m_device->CreateShaderResourceView(resource, &desc, desc_handle);
       return desc_handle;
+    }
+
+    rsl::unique_ptr<DxSampler2D> DxDescriptorHeap::create_sampler2d(const ShaderSamplerDesc& desc)
+    {
+      REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, "Trying to create a sampler from a descriptor heap that's not configured to create samplers");
+
+      D3D12_SAMPLER_DESC sampler_desc = d3d::to_dx12(desc);
+      DxResourceView desc_handle = new_free_handle();
+      m_device->CreateSampler(&sampler_desc, desc_handle.cpu_handle());
+
+      return rsl::make_unique<DxSampler2D>(desc_handle);
     }
 
     rsl::unique_ptr<ResourceView> DxDescriptorHeap::copy_descriptors(const rsl::vector<ResourceView*>& descriptors)

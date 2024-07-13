@@ -253,9 +253,14 @@ namespace rex
     }
 
     // Reset the wrapped commandlist and its allocater
-    void DxRenderContext::platform_reset(CommandAllocator* alloc, const ContextResetData& data)
+    void DxRenderContext::platform_reset(CommandAllocator* alloc, const ContextResetData& resetData)
     {
-      start_recording_commands(alloc, data.shader_visible_srv_desc_heap);
+      start_recording_commands(alloc);
+
+      rsl::array<ID3D12DescriptorHeap*, 2> d3d_desc_heaps{};
+      d3d_desc_heaps[0] = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();
+      d3d_desc_heaps[1] = d3d::to_dx12(resetData.shader_visible_sampler_desc_heap)->dx_object();
+      m_cmd_list->SetDescriptorHeaps(d3d_desc_heaps.size(), d3d_desc_heaps.data());
     }
 
     // Profiling events
@@ -276,7 +281,7 @@ namespace rex
     }
 
     // Open the commandlist for recording of gpu commands
-    void DxRenderContext::start_recording_commands(CommandAllocator* alloc, DescriptorHeap* descHeap)
+    void DxRenderContext::start_recording_commands(CommandAllocator* alloc)
     {
       DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
 
@@ -284,8 +289,6 @@ namespace rex
 
       dx_alloc->dx_object()->Reset();
       m_cmd_list->Reset(dx_alloc->dx_object(), nullptr);
-      ID3D12DescriptorHeap* d3d_desc_heap = d3d::to_dx12(descHeap)->dx_object();
-      m_cmd_list->SetDescriptorHeaps(1, &d3d_desc_heap);
     }
     // Transition a buffer into a new resource state
     void DxRenderContext::transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state)
@@ -353,7 +356,7 @@ namespace rex
 
       if (!sampler_handles.empty())
       {
-        rsl::unique_ptr<ResourceView> start_sampler_handle = copy_ctx->copy_descriptors(copy_ctx->shader_visible_srv_heap(), sampler_handles);
+        rsl::unique_ptr<ResourceView> start_sampler_handle = copy_ctx->copy_descriptors(copy_ctx->shader_visible_sampler_heap(), sampler_handles);
         if (shader_resources.samplers_root_param_idx != -1)
         {
           m_cmd_list->SetGraphicsRootDescriptorTable(shader_resources.samplers_root_param_idx, d3d::to_dx12(start_sampler_handle.get())->gpu_handle());

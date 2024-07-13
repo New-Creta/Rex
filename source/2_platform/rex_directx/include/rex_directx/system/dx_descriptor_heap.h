@@ -39,6 +39,9 @@ namespace rex
       // Create a shader resource view pointing to a texture and return a handle pointing to this view
       DxResourceView create_texture2d_srv(ID3D12Resource* resource);
 
+      // Create a 2D texture sampler
+      rsl::unique_ptr<DxSampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
+
       rsl::unique_ptr<ResourceView> copy_descriptors(const rsl::vector<ResourceView*>& descriptors) override;
 
       // Return the internal wrapped descriptor heap

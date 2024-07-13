@@ -89,6 +89,8 @@ namespace rex
       void init_desc_heaps();
       void init_desc_heap(DescriptorHeapPool& descHeapPool, DescriptorHeapType descHeapType, IsShaderVisible isShaderVisible);
 
+      ContextResetData create_context_reset_data();
+
     private:
       rsl::unique_ptr<Swapchain> m_swapchain;      // The swapchain is responsible for swapping the backbuffer with the front buffer
       rsl::unique_ptr<RenderEngine> m_render_engine;    // The render engine is the high level graphics engine responsible for queueing render commands

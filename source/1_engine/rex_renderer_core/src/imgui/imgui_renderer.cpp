@@ -157,19 +157,21 @@ namespace rex
     void ImGuiRenderer::init_font_sampler()
     {
       // Sampler is currently hardcoded
-      m_fonts_sampler.filtering = SamplerFiltering::MinMagMipLinear;
-      m_fonts_sampler.address_mode_u = TextureAddressMode::Wrap;
-      m_fonts_sampler.address_mode_v = TextureAddressMode::Wrap;
-      m_fonts_sampler.address_mode_w = TextureAddressMode::Wrap;
-      m_fonts_sampler.mip_lod_bias = 0.0f;
-      m_fonts_sampler.max_anisotropy = 0;
-      m_fonts_sampler.comparison_func = ComparisonFunc::Always;
-      m_fonts_sampler.border_color = BorderColor::TransparentBlack;
-      m_fonts_sampler.min_lod = 0.0f;
-      m_fonts_sampler.max_lod = 0.0f;
-      m_fonts_sampler.shader_register = 0;
-      m_fonts_sampler.register_space = 0;
-      m_fonts_sampler.shader_visibility = ShaderVisibility::Pixel;
+      m_fonts_sampler_desc.filtering = SamplerFiltering::MinMagMipLinear;
+      m_fonts_sampler_desc.address_mode_u = TextureAddressMode::Wrap;
+      m_fonts_sampler_desc.address_mode_v = TextureAddressMode::Wrap;
+      m_fonts_sampler_desc.address_mode_w = TextureAddressMode::Wrap;
+      m_fonts_sampler_desc.mip_lod_bias = 0.0f;
+      m_fonts_sampler_desc.max_anisotropy = 0;
+      m_fonts_sampler_desc.comparison_func = ComparisonFunc::Always;
+      m_fonts_sampler_desc.border_color = BorderColor::TransparentBlack;
+      m_fonts_sampler_desc.min_lod = 0.0f;
+      m_fonts_sampler_desc.max_lod = 0.0f;
+      m_fonts_sampler_desc.shader_register = 0;
+      m_fonts_sampler_desc.register_space = 0;
+      m_fonts_sampler_desc.shader_visibility = ShaderVisibility::Pixel;
+
+      m_fonts_sampler = rhi::create_sampler2d(m_fonts_sampler_desc);
     }
     void ImGuiRenderer::init_shader()
     {
@@ -195,10 +197,7 @@ namespace rex
       m_material = load_material(material_path);
 
       m_material->set_texture("fonts_texture", m_fonts_texture.get());
-
-      // The sampler is statically defined in the root signature so we don't need to set the shader parameter
       //m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
-
 
       // Init vertex shader and reflect its resources
       rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
@@ -266,7 +265,7 @@ namespace rex
 
       // We have 1 sampler, used for sampling the font texture
       root_sig_desc.samplers = rsl::make_unique<ShaderSamplerDesc[]>(1);
-      root_sig_desc.samplers[0] = m_fonts_sampler;
+      root_sig_desc.samplers[0] = m_fonts_sampler_desc;
 
       //m_root_signature = rhi::create_root_signature(root_sig_desc);
     }
