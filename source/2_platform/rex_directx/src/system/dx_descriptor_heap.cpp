@@ -6,16 +6,18 @@
 #include "rex_engine/memory/pointer_math.h"
 
 #include "rex_directx/resources/dx_sampler_2d.h"
+#include "rex_renderer_core/system/gpu_engine.h"
 
 namespace rex
 {
   namespace gfx
   {
-    DxDescriptorHeap::DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device)
-        : m_descriptor_heap(descHeap)
-        , m_device(device)
-        , m_num_used_descriptors(0)
-        , m_descriptor_size(0)
+    DxDescriptorHeap::DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device, IsShaderVisible isShaderVisible)
+			: m_descriptor_heap(descHeap)
+			, m_device(device)
+			, m_num_used_descriptors(0)
+			, m_descriptor_size(0)
+      , m_is_shader_visible(isShaderVisible)
     {
       const D3D12_DESCRIPTOR_HEAP_DESC desc = m_descriptor_heap->GetDesc();
       m_desc_heap_type                = desc.Type;
@@ -141,7 +143,15 @@ namespace rex
     // Return a handle pointing to a free bit of memory in the descriptor heap
     DxResourceView DxDescriptorHeap::my_start_handle()
     {
-      return DxResourceView(m_descriptor_heap->GetCPUDescriptorHandleForHeapStart(), m_descriptor_heap->GetGPUDescriptorHandleForHeapStart(), m_desc_heap_type, m_descriptor_size);
+      D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle = m_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
+      D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle{};
+
+      if (m_is_shader_visible)
+      {
+        gpu_handle = m_descriptor_heap->GetGPUDescriptorHandleForHeapStart();
+      }
+
+      return DxResourceView(cpu_handle, gpu_handle, m_desc_heap_type, m_descriptor_size);
     }
 
   } // namespace gfx

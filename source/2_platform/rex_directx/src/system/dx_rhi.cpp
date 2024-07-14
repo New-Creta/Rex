@@ -766,7 +766,7 @@ namespace rex
 
         REX_INFO(LogDxRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, num_descriptors, desc_size, total_size);
 
-        return rsl::make_unique<DxDescriptorHeap>(desc_heap, g_rhi_resources->device->dx_object());
+        return rsl::make_unique<DxDescriptorHeap>(desc_heap, g_rhi_resources->device->dx_object(), isShaderVisible);
       }
       rsl::unique_ptr<ResourceHeap> create_resource_heap()
       {
