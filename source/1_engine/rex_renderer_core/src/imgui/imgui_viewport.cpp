@@ -79,11 +79,6 @@ namespace rex
       ctx.transition_buffer(frameCtx.index_buffer(), ResourceState::IndexBuffer);
       ctx.transition_buffer(frameCtx.constant_buffer(), ResourceState::VertexAndConstantBuffer);
 
-      //ctx.set_primitive_topology(imgui_renderstate().primitive_topology);
-      //ctx.set_pipeline_state(imgui_renderstate().pso);
-      //ctx.set_root_signature(imgui_renderstate().root_signature);
-      //ctx.set_blend_factor(imgui_renderstate().blend_factor.data());
-
       ctx.set_viewport(frameCtx.viewport());
       ctx.set_vertex_buffer(frameCtx.vertex_buffer());
       ctx.set_index_buffer(frameCtx.index_buffer());

@@ -15,10 +15,6 @@ namespace rex
     struct ImGuiRenderState
     {
       Material* material;             // The material to be used by all imgui rendering
-      RootSignature* root_signature;             // Root signature used for the imgui rendering, this will later become a material
-      PipelineState* pso;                        // The pipeline state used for imgui rendering
-      PrimitiveTopology primitive_topology; // The primitive topology used for imgui rendering
-      rsl::array<f32, 4> blend_factor;                // The blend factor used for imgui rendering
     };
   }
 }

@@ -312,44 +312,14 @@ namespace rex
         rsl::copy(vs_root_params.params().cbegin(), vs_root_params.params().cend(), rsl::back_inserter(root_parameters));
         rsl::copy(ps_root_params.params().cbegin(), ps_root_params.params().cend(), rsl::back_inserter(root_parameters));
 
-        ShaderSamplerDesc sampler_desc{};
-        sampler_desc.filtering = SamplerFiltering::MinMagMipLinear;
-        sampler_desc.address_mode_u = TextureAddressMode::Wrap;
-        sampler_desc.address_mode_v = TextureAddressMode::Wrap;
-        sampler_desc.address_mode_w = TextureAddressMode::Wrap;
-        sampler_desc.mip_lod_bias = 0.0f;
-        sampler_desc.max_anisotropy = 0;
-        sampler_desc.comparison_func = ComparisonFunc::Always;
-        sampler_desc.border_color = BorderColor::TransparentBlack;
-        sampler_desc.min_lod = 0.0f;
-        sampler_desc.max_lod = 0.0f;
-        sampler_desc.shader_register = 0;
-        sampler_desc.register_space = 0;
-        sampler_desc.shader_visibility = ShaderVisibility::Pixel;
-
-        D3D12_STATIC_SAMPLER_DESC d3d_sampler_desc{};
-        d3d_sampler_desc.Filter = d3d::to_dx12(sampler_desc.filtering);
-        d3d_sampler_desc.AddressU = d3d::to_dx12(sampler_desc.address_mode_u);
-        d3d_sampler_desc.AddressV = d3d::to_dx12(sampler_desc.address_mode_v);
-        d3d_sampler_desc.AddressW = d3d::to_dx12(sampler_desc.address_mode_w);
-        d3d_sampler_desc.MipLODBias = sampler_desc.mip_lod_bias;
-        d3d_sampler_desc.MaxAnisotropy = sampler_desc.max_anisotropy;
-        d3d_sampler_desc.ComparisonFunc = d3d::to_dx12(sampler_desc.comparison_func);
-        d3d_sampler_desc.BorderColor = d3d::to_dx12(sampler_desc.border_color);
-        d3d_sampler_desc.MinLOD = sampler_desc.min_lod;
-        d3d_sampler_desc.MaxLOD = sampler_desc.max_lod;
-        d3d_sampler_desc.ShaderRegister = sampler_desc.shader_register;
-        d3d_sampler_desc.RegisterSpace = sampler_desc.register_space;
-        d3d_sampler_desc.ShaderVisibility = d3d::to_dx12(sampler_desc.shader_visibility);
-
         // A root signature is an array of root parameters.
         REX_WARN(LogDxRhi, "Use versioned root signature here");
         REX_WARN(LogDxRhi, "Investigate if we can use static samplers here as well..");
         CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
           root_parameters.size(),
           root_parameters.data(),
-          1,          // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
-          &d3d_sampler_desc,    // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
+          0,          // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
+          nullptr,    // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
           D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
         // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer

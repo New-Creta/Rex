@@ -41,6 +41,9 @@ namespace rex
       init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps.get());
 
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
+
+      
+
       m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params(), matConstructSettings.color_normalized);
       //InputLayoutDesc input_layout_desc;
       //input_layout_desc.input_layout =

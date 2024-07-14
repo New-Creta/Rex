@@ -27,12 +27,13 @@ namespace rex
       viewport->RendererUserData = nullptr;
     }
     // Render a given imgui window
-    void imgui_render_window(ImGuiViewport* viewport, void*)
+    void imgui_render_window(ImGuiViewport* viewport, void* materialAsvoid)
     {
+      Material* material = static_cast<Material*>(materialAsvoid);
       ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
       const bool clear_render_target = !(viewport->Flags & ImGuiViewportFlags_NoRendererClear);
 
-      imgui_window->render(clear_render_target);
+      imgui_window->render(clear_render_target, material);
     }
     // Resize a imgui window
     void imgui_set_window_size(ImGuiViewport* viewport, ImVec2 size)

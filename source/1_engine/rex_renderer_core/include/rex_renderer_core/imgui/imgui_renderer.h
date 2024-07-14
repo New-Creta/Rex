@@ -44,20 +44,15 @@ namespace rex
       // GPU resource initialization
       void init_font_texture();
       void init_font_sampler();
-      void init_shader();
       void init_material();
-      void init_root_signature();
       void init_input_layout();
-      void init_pso();
-      void init_imgui_renderstate();
 
       // destroy imgui
       void destroy_viewports();
 
     private:
       rsl::unique_ptr<Texture2D> m_fonts_texture;          // The fonts texture, the data comes from imgui
-      ShaderSamplerDesc m_fonts_sampler_desc;                   // The sampler for the fonts texture
-      rsl::unique_ptr<Sampler2D> m_fonts_sampler;
+      rsl::unique_ptr<Sampler2D> m_fonts_sampler;          // The sampler for the fonts texture
       rsl::unique_ptr<Shader> m_vertex_shader;             // The vertex shader used by imgui
       rsl::unique_ptr<Shader> m_pixel_shader;              // The pixel shader used by imgui
       //rsl::unique_ptr<RootSignature> m_root_signature;     // The root signature used by imgui, this will become a material in the future

@@ -207,12 +207,16 @@ namespace rex
     void DxRenderContext::bind_material(Material* material)
     {
       // The following is stored in a material and should be bound when a material gets bound
+
       // Primitive topology
       set_primitive_topology(material->primitive_topology());
+      
       // Pipeline state
       set_pipeline_state(material->pso());
+      
       // Root signature
       set_root_signature(material->root_signature());
+      
       // Blend settings
       set_blend_factor(material->blend_factor());
 
@@ -241,7 +245,6 @@ namespace rex
 
       // Textures
       // Samplers
-
       bind_resources_for_shader(material, ShaderType::Vertex);
       bind_resources_for_shader(material, ShaderType::Pixel);
     }

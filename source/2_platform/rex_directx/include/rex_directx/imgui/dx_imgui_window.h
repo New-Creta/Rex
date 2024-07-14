@@ -34,7 +34,7 @@ namespace rex
       ImGuiWindow(ImGuiViewport* viewport, const ImGuiDevice& creationInfo);
 
       // Render the imgui window
-      void render(ClearRenderTarget clearRenderTarget);
+      void render(ClearRenderTarget clearRenderTarget, Material* material);
 
       // Wait for gpu commands to complete, this is blocking
       void wait_for_pending_operations();
