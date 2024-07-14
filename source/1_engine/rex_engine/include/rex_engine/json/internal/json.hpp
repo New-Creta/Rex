@@ -21585,7 +21585,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         {
             auto it = m_data.m_value.object->find(rsl::forward<KeyType>(key));
             JSON_ASSERT(it != m_data.m_value.object->end());
-            return it->second;
+            return it->value;
         }
 
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a string argument with ", type_name()), this));

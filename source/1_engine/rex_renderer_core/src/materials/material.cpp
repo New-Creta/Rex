@@ -30,7 +30,7 @@ namespace rex
     Material::Material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
       : m_shader_pipeline(rsl::move(shaderPipeline))
       , m_primitive_topology(PrimitiveTopology::TriangleList)
-      , m_pso()
+      //, m_pso()
       , m_root_signature()
       , m_blend_factor()
     {
@@ -44,7 +44,7 @@ namespace rex
 
       
 
-      m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params(), matConstructSettings.color_normalized);
+      //m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params(), matConstructSettings.color_normalized);
       //InputLayoutDesc input_layout_desc;
       //input_layout_desc.input_layout =
       //{
@@ -55,55 +55,55 @@ namespace rex
       //m_input_layout = rhi::create_input_layout(input_layout_desc);
 
 
-      PipelineStateDesc pso_desc{};
-      pso_desc.primitive_topology = to_topology_type(m_primitive_topology);
-      pso_desc.vertex_shader = m_shader_pipeline.vs.get();
-      pso_desc.pixel_shader = m_shader_pipeline.ps.get();
-      pso_desc.root_signature = m_root_signature.get();
-      pso_desc.input_layout = m_input_layout.get();
+      //PipelineStateDesc pso_desc{};
+      //pso_desc.primitive_topology = to_topology_type(m_primitive_topology);
+      //pso_desc.vertex_shader = m_shader_pipeline.vs.get();
+      //pso_desc.pixel_shader = m_shader_pipeline.ps.get();
+      //pso_desc.root_signature = m_root_signature.get();
+      //pso_desc.input_layout = m_input_layout.get();
 
-      // Raster state
-      RasterStateDesc rasterizer_desc{};
-      rasterizer_desc.fill_mode = FillMode::Solid;
-      rasterizer_desc.cull_mode = CullMode::None;
-      rasterizer_desc.front_ccw = false;
-      rasterizer_desc.depth_bias = 0;
-      rasterizer_desc.depth_bias_clamp = 0.0f;
-      rasterizer_desc.sloped_scale_depth_bias = 0.0f;
-      rasterizer_desc.depth_clip_enable = true;
-      rasterizer_desc.multisample_enable = false;
-      rasterizer_desc.aa_lines_enable = false;
-      rasterizer_desc.forced_sample_count = 0;
-      m_raster_state = rsl::make_unique<RasterState>(rasterizer_desc);;
-      pso_desc.raster_state = *m_raster_state.get();
+      //// Raster state
+      //RasterStateDesc rasterizer_desc{};
+      //rasterizer_desc.fill_mode = FillMode::Solid;
+      //rasterizer_desc.cull_mode = CullMode::None;
+      //rasterizer_desc.front_ccw = false;
+      //rasterizer_desc.depth_bias = 0;
+      //rasterizer_desc.depth_bias_clamp = 0.0f;
+      //rasterizer_desc.sloped_scale_depth_bias = 0.0f;
+      //rasterizer_desc.depth_clip_enable = true;
+      //rasterizer_desc.multisample_enable = false;
+      //rasterizer_desc.aa_lines_enable = false;
+      //rasterizer_desc.forced_sample_count = 0;
+      //m_raster_state = rsl::make_unique<RasterState>(rasterizer_desc);;
+      //pso_desc.raster_state = *m_raster_state.get();
 
-      // Blend State
-      pso_desc.blend_state = BlendDesc();
-      BlendDesc& blend_state = pso_desc.blend_state.value();
-      blend_state.enable_alpha_to_coverage = false;
-      blend_state.render_target[0].blend_enable = true;
-      blend_state.render_target[0].src_blend = Blend::SrcAlpha;
-      blend_state.render_target[0].dst_blend = Blend::InvSrcAlpha;
-      blend_state.render_target[0].blend_op = BlendOp::Add;
-      blend_state.render_target[0].src_blend_alpha = Blend::One;
-      blend_state.render_target[0].dst_blend_alpha = Blend::InvSrcAlpha;
-      blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
-      blend_state.render_target[0].render_target_write_mask = RenderTargetWriteMask::All;
+      //// Blend State
+      //pso_desc.blend_state = BlendDesc();
+      //BlendDesc& blend_state = pso_desc.blend_state.value();
+      //blend_state.enable_alpha_to_coverage = false;
+      //blend_state.render_target[0].blend_enable = true;
+      //blend_state.render_target[0].src_blend = Blend::SrcAlpha;
+      //blend_state.render_target[0].dst_blend = Blend::InvSrcAlpha;
+      //blend_state.render_target[0].blend_op = BlendOp::Add;
+      //blend_state.render_target[0].src_blend_alpha = Blend::One;
+      //blend_state.render_target[0].dst_blend_alpha = Blend::InvSrcAlpha;
+      //blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
+      //blend_state.render_target[0].render_target_write_mask = RenderTargetWriteMask::All;
 
-      // depth stencil state
-      pso_desc.depth_stencil_state = DepthStencilDesc();
-      DepthStencilDesc& depth_stencil_desc = pso_desc.depth_stencil_state.value();
-      depth_stencil_desc.depth_enable = false;
-      depth_stencil_desc.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
-      depth_stencil_desc.depth_func = ComparisonFunc::Always;
-      depth_stencil_desc.stencil_enable = false;
-      depth_stencil_desc.front_face.stencil_fail_op = StencilOp::Keep;
-      depth_stencil_desc.front_face.stencil_depth_fail_op = StencilOp::Keep;
-      depth_stencil_desc.front_face.stencil_pass_op = StencilOp::Keep;
-      depth_stencil_desc.front_face.stencil_func = ComparisonFunc::Always;
-      depth_stencil_desc.back_face = depth_stencil_desc.front_face;
+      //// depth stencil state
+      //pso_desc.depth_stencil_state = DepthStencilDesc();
+      //DepthStencilDesc& depth_stencil_desc = pso_desc.depth_stencil_state.value();
+      //depth_stencil_desc.depth_enable = false;
+      //depth_stencil_desc.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
+      //depth_stencil_desc.depth_func = ComparisonFunc::Always;
+      //depth_stencil_desc.stencil_enable = false;
+      //depth_stencil_desc.front_face.stencil_fail_op = StencilOp::Keep;
+      //depth_stencil_desc.front_face.stencil_depth_fail_op = StencilOp::Keep;
+      //depth_stencil_desc.front_face.stencil_pass_op = StencilOp::Keep;
+      //depth_stencil_desc.front_face.stencil_func = ComparisonFunc::Always;
+      //depth_stencil_desc.back_face = depth_stencil_desc.front_face;
 
-      m_pso = rhi::create_pso(pso_desc);
+      //m_pso = rhi::create_pso(pso_desc);
     }
 
     void Material::init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature)
@@ -134,10 +134,10 @@ namespace rex
     {
       return m_primitive_topology;
     }
-    PipelineState* Material::pso()
-    {
-      return m_pso.get();
-    }
+    //PipelineState* Material::pso()
+    //{
+    //  return m_pso.get();
+    //}
     RootSignature* Material::root_signature()
     {
       return m_root_signature.get();
@@ -146,10 +146,10 @@ namespace rex
     {
       return m_blend_factor;
     }
-    InputLayout* Material::input_layout()
-    {
-      return m_input_layout.get();
-    }
+    //InputLayout* Material::input_layout()
+    //{
+    //  return m_input_layout.get();
+    //}
 
     ShaderResources Material::resources_for_shader(ShaderType type)
     {
@@ -184,47 +184,14 @@ namespace rex
       return resources;
     }
 
+    void Material::fill_pso_desc(PipelineStateDesc& desc)
+    {
+      desc.primitive_topology = to_topology_type(m_primitive_topology);
+      desc.vertex_shader = m_shader_pipeline.vs.get();
+      desc.pixel_shader = m_shader_pipeline.ps.get();
+      desc.root_signature = m_root_signature.get();
+      //desc.input_layout = m_input_layout.get();
+    }
 
-
-    //void Material::bind_constant_buffer(rsl::string_view name, ConstantBuffer* cb)
-    //{
-    //  REX_ASSERT_X(m_constant_buffers.contains(name), "Trying to bind a constant buffer to a name that doesn't exist: {}", name);
-    //}
-    //void Material::bind_texture2d(rsl::string_view name, Texture2D* texture)
-    //{
-
-    //}
-    ////void Material::bind_sampler(rsl::string_view name, Sampler* sampler)
-    ////{
-
-    ////}
-
-    //void Material::set_constant_buffer_data(rsl::string_view name, const void* data, s32 size)
-    //{
-
-    //}
-
-    //void Material::store_shader_params(const ShaderSignature* signature)
-    //{
-    //  if (!signature)
-    //  {
-    //    return;
-    //  }
-
-    //  // Constant buffers
-    //  //const auto& new_constant_buffers = signature->constant_buffers();
-    //  //m_constant_buffers.reserve(m_constant_buffers.capacity() + new_constant_buffers.size());
-    //  //rsl::copy(new_constant_buffers.cbegin(), new_constant_buffers.cend(), m_constant_buffers.end());
-
-    //  // Textures
-    //  //const auto& new_textures = signature->textures();
-    //  //m_textures.reserve(m_textures.capacity() + new_textures.size());
-    //  //rsl::copy(new_textures.cbegin(), new_textures.cend(), m_textures.end());
-
-    //  // Samplers
-    //  //const auto& new_samplers = signature->samplers();
-    //  //m_samplers.reserve(m_samplers.capacity() + new_samplers.size());
-    //  //rsl::copy(new_samplers.cbegin(), new_samplers.cend(), m_samplers.end());
-    //}
   }
 }

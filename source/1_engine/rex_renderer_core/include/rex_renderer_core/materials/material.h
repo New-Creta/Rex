@@ -63,12 +63,14 @@ namespace rex
       void set_sampler(rsl::string_view name, Sampler2D* sampler);
 
       PrimitiveTopology primitive_topology() const;
-      PipelineState* pso();
+      //PipelineState* pso();
       RootSignature* root_signature();
       BlendFactor blend_factor();
-      InputLayout* input_layout();
+      //InputLayout* input_layout();
 
       ShaderResources resources_for_shader(ShaderType type);
+
+      void fill_pso_desc(PipelineStateDesc& desc);
 
     private:
       void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature);
@@ -78,9 +80,9 @@ namespace rex
       rsl::unordered_map<rsl::string, SamplerMaterialParameter> m_samplers;
 
       PrimitiveTopology m_primitive_topology;
-      rsl::unique_ptr<PipelineState> m_pso;
+      //rsl::unique_ptr<PipelineState> m_pso;
       rsl::unique_ptr<RootSignature> m_root_signature;
-      rsl::unique_ptr<InputLayout> m_input_layout;
+      //rsl::unique_ptr<InputLayout> m_input_layout;
       rsl::unique_ptr<RasterState> m_raster_state; // The render state used by imgui
 
       BlendFactor m_blend_factor;

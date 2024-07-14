@@ -6,6 +6,7 @@ namespace rex
 {
   namespace gfx
   {
+    // We expect that all elements are packed together without alignment between them
     s32 calc_size(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements)
     {
       s32 total_size = 0;

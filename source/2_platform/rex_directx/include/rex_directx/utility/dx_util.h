@@ -67,6 +67,7 @@ namespace rex
     class DescriptorHeap;
     class ShaderSignature;
     class ResourceView;
+    class PipelineState;
 
     // DirectX classes
     class DxCommandQueue;
@@ -194,6 +195,7 @@ namespace rex
       ID3D12Resource* dx12_resource(IndexBuffer* buffer);
       ID3D12Resource* dx12_resource(UploadBuffer* buffer);
       ID3D12Resource* dx12_resource(Texture2D* texture);
+      ID3D12PipelineState* dx12_pso(PipelineState* pso);
 
       // ------------------------------------
       // Return from Directx -> REX

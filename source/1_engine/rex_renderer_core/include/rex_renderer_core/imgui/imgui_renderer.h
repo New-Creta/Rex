@@ -46,6 +46,7 @@ namespace rex
       void init_font_sampler();
       void init_material();
       void init_input_layout();
+      void init_pso();
 
       // destroy imgui
       void destroy_viewports();

@@ -455,6 +455,15 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         return create_render_target(d3d_texture);
       }
+      rsl::unique_ptr<PipelineState>        create_pso(InputLayout* inputLayout, Material* material)
+      {
+        PipelineStateDesc desc{};
+
+        material->fill_pso_desc(desc);
+        desc.input_layout = inputLayout;
+        
+        return create_pso(desc);
+      }
       rsl::unique_ptr<PipelineState>        create_pso(const PipelineStateDesc& desc)
       {
         // Make sure our critical required parameters are specified

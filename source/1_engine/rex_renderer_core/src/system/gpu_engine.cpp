@@ -49,7 +49,7 @@ namespace rex
       m_compute_engine->new_frame();
       m_copy_engine->new_frame();
 
-      auto render_ctx = new_render_ctx("New Frame");
+      auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "New Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
 
@@ -59,7 +59,7 @@ namespace rex
     // Present the new frame to the main window
     void GpuEngine::present()
     {
-      auto render_ctx = new_render_ctx("End Frame");
+      auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "End Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::Present);
       render_ctx->execute_on_gpu(WaitForFinish::yes);
 
@@ -74,25 +74,25 @@ namespace rex
     }
 
     // Create a new context which is used for copying resources from or to the gpu
-    ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(rsl::string_view eventName)
+    ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      ContextResetData reset_data = create_context_reset_data();
+      ContextResetData reset_data = create_context_reset_data(pso);
 
       auto base_ctx = m_copy_engine->new_context(reset_data, eventName);
       return base_ctx.convert<CopyContext>();
     }
     // Create a new context which is used for rendering to render targets
-    ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(rsl::string_view eventName)
+    ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      ContextResetData reset_data = create_context_reset_data();
+      ContextResetData reset_data = create_context_reset_data(pso);
 
       auto base_ctx = m_render_engine->new_context(reset_data, eventName);
       return base_ctx.convert<RenderContext>();
     }
     // Create a new context which is used for computing data on the gpu
-    ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(rsl::string_view eventName)
+    ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      ContextResetData reset_data = create_context_reset_data();
+      ContextResetData reset_data = create_context_reset_data(pso);
 
       auto base_ctx = m_compute_engine->new_context(reset_data, eventName);
       return base_ctx.convert<ComputeContext>();
@@ -165,9 +165,10 @@ namespace rex
 
     }
 
-    ContextResetData GpuEngine::create_context_reset_data()
+    ContextResetData GpuEngine::create_context_reset_data(PipelineState* pso)
     {
       ContextResetData reset_data{};
+      reset_data.pso = pso;
       reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
       reset_data.global_sampler_desc_heap = cpu_desc_heap(DescriptorHeapType::Sampler);
       reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);

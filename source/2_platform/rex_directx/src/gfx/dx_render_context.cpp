@@ -210,10 +210,7 @@ namespace rex
 
       // Primitive topology
       set_primitive_topology(material->primitive_topology());
-      
-      // Pipeline state
-      set_pipeline_state(material->pso());
-      
+            
       // Root signature
       set_root_signature(material->root_signature());
       
@@ -258,7 +255,7 @@ namespace rex
     // Reset the wrapped commandlist and its allocater
     void DxRenderContext::platform_reset(CommandAllocator* alloc, const ContextResetData& resetData)
     {
-      start_recording_commands(alloc);
+      start_recording_commands(alloc, resetData.pso);
 
       rsl::array<ID3D12DescriptorHeap*, 2> d3d_desc_heaps{};
       d3d_desc_heaps[0] = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();
@@ -284,14 +281,14 @@ namespace rex
     }
 
     // Open the commandlist for recording of gpu commands
-    void DxRenderContext::start_recording_commands(CommandAllocator* alloc)
+    void DxRenderContext::start_recording_commands(CommandAllocator* alloc, PipelineState* pso)
     {
       DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
 
       REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
 
       dx_alloc->dx_object()->Reset();
-      m_cmd_list->Reset(dx_alloc->dx_object(), nullptr);
+      m_cmd_list->Reset(dx_alloc->dx_object(), d3d::dx12_pso(pso));
     }
     // Transition a buffer into a new resource state
     void DxRenderContext::transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state)

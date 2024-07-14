@@ -83,7 +83,7 @@ namespace rex
 
     private:
       // Open the commandlist for recording of gpu commands
-      void start_recording_commands(CommandAllocator* alloc);
+      void start_recording_commands(CommandAllocator* alloc, PipelineState* pso);
       // Transition a buffer into a new resource state
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
       // Bind resources for a specific shader type

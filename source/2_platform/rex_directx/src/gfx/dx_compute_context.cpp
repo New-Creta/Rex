@@ -3,6 +3,8 @@
 #include "rex_directx/system/dx_command_allocator.h"
 #include "rex_directx/system/dx_descriptor_heap.h"
 
+#include "rex_directx/resources/dx_pipeline_state.h"
+
 #include "WinPixEventRuntime/pix3.h"
 
 namespace rex
@@ -28,7 +30,7 @@ namespace rex
       REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
 
       dx_alloc->dx_object()->Reset();
-      m_cmd_list->Reset(dx_alloc->dx_object(), nullptr);
+      m_cmd_list->Reset(dx_alloc->dx_object(), d3d::dx12_pso(resetData.pso));
 
       rsl::array<ID3D12DescriptorHeap*, 2> d3d_desc_heaps{};
       d3d_desc_heaps[0] = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();

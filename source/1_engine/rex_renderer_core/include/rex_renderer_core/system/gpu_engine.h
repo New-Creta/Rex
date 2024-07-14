@@ -50,11 +50,11 @@ namespace rex
       void end_frame();
 
       // Create a new context which is used for copying resources from or to the gpu
-      ScopedPoolObject<CopyContext> new_copy_ctx(rsl::string_view eventName = "");
+      ScopedPoolObject<CopyContext> new_copy_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
       // Create a new context which is used for rendering to render targets
-      ScopedPoolObject<RenderContext> new_render_ctx(rsl::string_view eventName = "");
+      ScopedPoolObject<RenderContext> new_render_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
       // Create a new context which is used for computing data on the gpu
-      ScopedPoolObject<ComputeContext> new_compute_ctx(rsl::string_view eventName = "");
+      ScopedPoolObject<ComputeContext> new_compute_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
 
       // Return the render target pointing to the current backbuffer of the swapchain
       RenderTarget* current_backbuffer_rt();
@@ -89,7 +89,7 @@ namespace rex
       void init_desc_heaps();
       void init_desc_heap(DescriptorHeapPool& descHeapPool, DescriptorHeapType descHeapType, IsShaderVisible isShaderVisible);
 
-      ContextResetData create_context_reset_data();
+      ContextResetData create_context_reset_data(PipelineState* pso);
 
     private:
       rsl::unique_ptr<Swapchain> m_swapchain;      // The swapchain is responsible for swapping the backbuffer with the front buffer

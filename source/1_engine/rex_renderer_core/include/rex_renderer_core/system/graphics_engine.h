@@ -17,12 +17,16 @@ namespace rex
   {
     class DescriptorHeap;
     class WaitForFinish;
+    class PipelineState;
   }
 
   namespace gfx
   {
     struct ContextResetData
     {
+      // The pipeline state to reset the context with, this can be nullptr
+      PipelineState* pso;
+      
       // The desciptor heap holding all the decsriptors for all the resources currently allocated on the gpu
       // The descriptors in this heap are not accessible by shaders
       DescriptorHeap* global_srv_desc_heap;

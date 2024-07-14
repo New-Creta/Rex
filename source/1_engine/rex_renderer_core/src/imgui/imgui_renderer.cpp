@@ -54,7 +54,7 @@ namespace rex
     {
       ImGui::Render();
 
-      auto render_ctx = gfx::new_render_ctx();
+      auto render_ctx = gfx::new_render_ctx(m_pipeline_state.get());
 
       // As the imgui renderer main viewport is the main window of the application
       // it needs to set its render target to the one pointing to the current back buffer
@@ -121,8 +121,9 @@ namespace rex
     {
       init_font_texture();
       init_font_sampler();
-      init_material();
       init_input_layout();
+      init_material();
+      init_pso();
     }
 
     // Initialize the main imgui viewport, which is pointing to the application's main window
@@ -167,19 +168,7 @@ namespace rex
 
       m_fonts_sampler = rhi::create_sampler2d(desc);
     }
-    // Initialize the material that'll be used by all ImGui rendering
-    void ImGuiRenderer::init_material()
-    {
-      // Currently the imgui material doesn't load any parameters and they're set at runtime instead
-      rsl::string material_path = path::join(vfs::engine_root(), "materials", "imgui.material");
-      m_material = load_material(material_path);
-      REX_ASSERT_X(m_material != nullptr, "Failed to load imgui material");
-
-      m_material->set_texture("fonts_texture", m_fonts_texture.get());
-      m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
-
-      REX_ASSERT_X(m_material->input_layout()->vertex_size() == sizeof(ImDrawVert), "ImGui's input layout size does not match the size of a single ImGui vertex");
-    }
+    // Initialize the input layout that'll be used by all ImGui rendering
     void ImGuiRenderer::init_input_layout()
     {
       // Input layout is hardcoded as the vertices are also hardcoded
@@ -193,6 +182,24 @@ namespace rex
         InputLayoutElementDesc { "COLOR", VertexBufferFormat::UNorm4, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
       };
       m_input_layout = rhi::create_input_layout(input_layout_desc);
+    }
+    // Initialize the material that'll be used by all ImGui rendering
+    void ImGuiRenderer::init_material()
+    {
+      // Load the material from disk and initialize it with the parameters loaded at runtime
+      rsl::string material_path = path::join(vfs::engine_root(), "materials", "imgui.material");
+      m_material = load_material(material_path);
+      REX_ASSERT_X(m_material != nullptr, "Failed to load imgui material");
+
+      m_material->set_texture("fonts_texture", m_fonts_texture.get());
+      m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
+
+      //REX_ASSERT_X(m_material->input_layout()->vertex_size() == sizeof(ImDrawVert), "ImGui's input layout size does not match the size of a single ImGui vertex");
+    }
+    // Initialize the pso based on the the gpu resources
+    void ImGuiRenderer::init_pso()
+    {
+      m_pipeline_state = rhi::create_pso(m_input_layout.get(), m_material.get());
     }
 
     // Destroy all viewports used by ImGui

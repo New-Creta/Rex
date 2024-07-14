@@ -22,6 +22,7 @@
 #include "rex_directx/resources/dx_vertex_buffer.h"
 #include "rex_directx/resources/dx_index_buffer.h"
 #include "rex_directx/resources/dx_upload_buffer.h"
+#include "rex_directx/resources/dx_pipeline_state.h"
 
 #include "rex_renderer_core/shader_reflection/shader_reflection.h"
 
@@ -770,6 +771,16 @@ namespace rex
       {
         return static_cast<DxTexture2D*>(texture)->dx_object();
       }
+      ID3D12PipelineState* dx12_pso(PipelineState* pso)
+      {
+        if (!pso)
+        {
+          return nullptr;
+        }
+
+        return static_cast<DxPipelineState*>(pso)->dx_object();
+      }
+
 
       // ------------------------------------
       // Return from Directx -> REX
