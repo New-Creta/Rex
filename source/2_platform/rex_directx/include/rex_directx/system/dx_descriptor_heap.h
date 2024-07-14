@@ -9,6 +9,7 @@ namespace rex
   namespace gfx
   {
     class Resource;
+    class IsShaderVisible;
 
     // CPU writeable/readable table based on shader visible flag
     // For more info, visit: https://learn.microsoft.com/en-us/windows/win32/direct3d12/non-shader-visible-descriptor-heaps?redirectedfrom=MSDN
@@ -28,7 +29,7 @@ namespace rex
     class DxDescriptorHeap : public DescriptorHeap
     {
     public:
-      DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device);
+      DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device, IsShaderVisible isShaderVisible);
 
       // Create a render target view and return a handle pointing to it
       DxResourceView create_rtv(ID3D12Resource* resource);
@@ -66,6 +67,7 @@ namespace rex
       s32 m_descriptor_size;
       s32 m_num_descriptors;
       s32 m_num_used_descriptors;
+      bool m_is_shader_visible;
     };
   } // namespace gfx
 } // namespace rex
