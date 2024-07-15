@@ -13,6 +13,7 @@
 #include "rex_renderer_core/imgui/imgui_frame_context.h"
 #include "rex_renderer_core/imgui/imgui_viewport.h"
 #include "rex_renderer_core/imgui/imgui_resources.h"
+#include "rex_renderer_core/imgui/imgui_window_render_params.h"
 
 #include "rex_renderer_core/materials/material_system.h"
 
@@ -71,8 +72,12 @@ namespace rex
       // Update and render the imgui windows if any
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
       {
+        ImGuiWindowRenderParams render_params{};
+        render_params.pso = m_pipeline_state.get();
+        render_params.material = m_material.get();
+
         ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault(nullptr, m_material.get());
+        ImGui::RenderPlatformWindowsDefault(nullptr, &render_params);
       }
 
       // Open imgui to accept new commands again

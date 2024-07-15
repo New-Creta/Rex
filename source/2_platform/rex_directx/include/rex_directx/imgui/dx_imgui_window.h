@@ -8,6 +8,7 @@
 #include "rex_renderer_core/imgui/imgui_viewport.h"
 #include "rex_renderer_core/imgui/imgui_resources.h"
 #include "rex_renderer_core/imgui/imgui_device.h"
+#include "rex_renderer_core/imgui/imgui_window_render_params.h"
 
 #include "imgui/imgui.h"
 
@@ -34,7 +35,7 @@ namespace rex
       ImGuiWindow(ImGuiViewport* viewport, const ImGuiDevice& creationInfo);
 
       // Render the imgui window
-      void render(ClearRenderTarget clearRenderTarget, Material* material);
+      void render(ClearRenderTarget clearRenderTarget, ImGuiWindowRenderParams* material);
 
       // Wait for gpu commands to complete, this is blocking
       void wait_for_pending_operations();

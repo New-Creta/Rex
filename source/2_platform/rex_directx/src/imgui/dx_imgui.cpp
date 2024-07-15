@@ -4,6 +4,7 @@
 #include "rex_engine/memory/global_allocator.h"
 
 #include "rex_renderer_core/imgui/imgui_device.h"
+#include "rex_renderer_core/imgui/imgui_window_render_params.h"
 
 namespace rex
 {
@@ -27,13 +28,13 @@ namespace rex
       viewport->RendererUserData = nullptr;
     }
     // Render a given imgui window
-    void imgui_render_window(ImGuiViewport* viewport, void* materialAsvoid)
+    void imgui_render_window(ImGuiViewport* viewport, void* windowParamsAsVoid)
     {
-      Material* material = static_cast<Material*>(materialAsvoid);
+      ImGuiWindowRenderParams* render_params = static_cast<ImGuiWindowRenderParams*>(windowParamsAsVoid);
       ImGuiWindow* imgui_window = (ImGuiWindow*)viewport->RendererUserData;
       const bool clear_render_target = !(viewport->Flags & ImGuiViewportFlags_NoRendererClear);
 
-      imgui_window->render(clear_render_target, material);
+      imgui_window->render(clear_render_target, render_params);
     }
     // Resize a imgui window
     void imgui_set_window_size(ImGuiViewport* viewport, ImVec2 size)

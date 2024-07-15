@@ -31,9 +31,9 @@ namespace rex
       m_clear_state = rsl::make_unique<ClearState>(desc);
     }
 
-    void ImGuiWindow::render(ClearRenderTarget clearRenderTarget, Material* material)
+    void ImGuiWindow::render(ClearRenderTarget clearRenderTarget, ImGuiWindowRenderParams* params)
     {
-      auto render_ctx = gfx::new_render_ctx();
+      auto render_ctx = gfx::new_render_ctx(params->pso);
 
       // Render the imgui viewport directly on the back buffer
       RenderTarget* render_target = m_swapchain->current_buffer();
@@ -46,7 +46,7 @@ namespace rex
         render_ctx->clear_render_target(render_target, m_clear_state.get());
       }
 
-      render_ctx->bind_material(material);
+      render_ctx->bind_material(params->material);
       render_ctx->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
 
       m_viewport.render(*render_ctx.get());
