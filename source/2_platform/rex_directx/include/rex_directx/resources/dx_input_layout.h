@@ -17,6 +17,7 @@ namespace rex
       explicit DxInputLayout(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements);
 
       D3D12_INPUT_LAYOUT_DESC* dx_object();
+      bool validate_desc(const InputLayoutDesc& desc) override;
 
     private:
       rsl::vector<D3D12_INPUT_ELEMENT_DESC> m_input_elements{};

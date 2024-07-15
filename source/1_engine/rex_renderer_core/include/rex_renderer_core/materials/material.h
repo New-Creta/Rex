@@ -72,6 +72,8 @@ namespace rex
 
       void fill_pso_desc(PipelineStateDesc& desc);
 
+      void validate_input_layout(InputLayout* inputLayout);
+
     private:
       void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature);
 
@@ -88,7 +90,7 @@ namespace rex
       RasterStateDesc m_raster_state;
       BlendDesc m_blend;
       DepthStencilDesc m_depth_stencil;
-
+      InputLayoutDesc m_input_layout_desc; // used for validation
 
       BlendFactor m_blend_factor;
 

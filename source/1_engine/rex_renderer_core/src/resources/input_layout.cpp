@@ -1,0 +1,47 @@
+#include "rex_renderer_core/resources/input_layout.h"
+
+#include "rex_engine/diagnostics/assert.h"
+
+#include "rex_engine/engine/invalid_object.h"
+
+namespace rex
+{
+	namespace gfx
+	{
+    VertexBufferFormat to_vertex_input_format(ShaderParameterType type)
+    {
+      switch (type)
+      {
+      case rex::gfx::ShaderParameterType::Uint:       return VertexBufferFormat::Uint1;
+      case rex::gfx::ShaderParameterType::Float:      return VertexBufferFormat::Float1;
+      case rex::gfx::ShaderParameterType::Float2:     return VertexBufferFormat::Float2;
+      case rex::gfx::ShaderParameterType::Float3:     return VertexBufferFormat::Float3;
+      case rex::gfx::ShaderParameterType::Float4:     return VertexBufferFormat::Float4;
+      }
+
+      invalid_obj<VertexBufferFormat>();
+    }
+
+		InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderParamReflection>& shaderInputParams)
+		{
+      rsl::vector<InputLayoutElementDesc> input_element_descriptions(rsl::Size(shaderInputParams.size()));
+      REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
+
+      s32 byte_offset = 0;
+      for (s32 i = 0; i < shaderInputParams.size(); ++i)
+      {
+        input_element_descriptions[i].semantic_name = shaderInputParams[i].semantic_name;
+        input_element_descriptions[i].format = to_vertex_input_format(shaderInputParams[i].type);
+        input_element_descriptions[i].input_slot_class = InputLayoutClassification::PerVertexData; // This is hardcoded, I wonder if there's a way around that..
+        input_element_descriptions[i].semantic_index = shaderInputParams[i].semantic_index;
+        input_element_descriptions[i].input_slot = 0;
+        input_element_descriptions[i].aligned_byte_offset = byte_offset;
+        input_element_descriptions[i].instance_data_step_rate = 0;
+
+        byte_offset += format_byte_size(input_element_descriptions[i].format);
+      }
+
+
+		}
+	}
+}

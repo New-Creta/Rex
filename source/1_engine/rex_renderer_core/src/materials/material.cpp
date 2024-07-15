@@ -40,72 +40,12 @@ namespace rex
       init_parameters_from_shader_signature(ShaderType::Vertex, shader_pipeline_reflection.vs.get());
       init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps.get());
 
+
+
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
       m_raster_state = matConstructSettings.raster_state;
       m_blend = matConstructSettings.blend;
       m_depth_stencil = matConstructSettings.depth_stencil;
-      
-
-      //m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params(), matConstructSettings.color_normalized);
-      //InputLayoutDesc input_layout_desc;
-      //input_layout_desc.input_layout =
-      //{
-      //  InputLayoutElementDesc { "POSITION",  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
-      //  InputLayoutElementDesc { "TEXCOORD",  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
-      //  InputLayoutElementDesc { "COLOR", VertexBufferFormat::UNorm4, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
-      //};
-      //m_input_layout = rhi::create_input_layout(input_layout_desc);
-
-
-      //PipelineStateDesc pso_desc{};
-      //pso_desc.primitive_topology = to_topology_type(m_primitive_topology);
-      //pso_desc.vertex_shader = m_shader_pipeline.vs.get();
-      //pso_desc.pixel_shader = m_shader_pipeline.ps.get();
-      //pso_desc.root_signature = m_root_signature.get();
-      //pso_desc.input_layout = m_input_layout.get();
-
-      //// Raster state
-      //RasterStateDesc rasterizer_desc{};
-      //rasterizer_desc.fill_mode = FillMode::Solid;
-      //rasterizer_desc.cull_mode = CullMode::None;
-      //rasterizer_desc.front_ccw = false;
-      //rasterizer_desc.depth_bias = 0;
-      //rasterizer_desc.depth_bias_clamp = 0.0f;
-      //rasterizer_desc.sloped_scale_depth_bias = 0.0f;
-      //rasterizer_desc.depth_clip_enable = true;
-      //rasterizer_desc.multisample_enable = false;
-      //rasterizer_desc.aa_lines_enable = false;
-      //rasterizer_desc.forced_sample_count = 0;
-      //m_raster_state = rsl::make_unique<RasterState>(rasterizer_desc);;
-      //pso_desc.raster_state = *m_raster_state.get();
-
-      //// Blend State
-      //pso_desc.blend_state = BlendDesc();
-      //BlendDesc& blend_state = pso_desc.blend_state.value();
-      //blend_state.enable_alpha_to_coverage = false;
-      //blend_state.render_target[0].blend_enable = true;
-      //blend_state.render_target[0].src_blend = Blend::SrcAlpha;
-      //blend_state.render_target[0].dst_blend = Blend::InvSrcAlpha;
-      //blend_state.render_target[0].blend_op = BlendOp::Add;
-      //blend_state.render_target[0].src_blend_alpha = Blend::One;
-      //blend_state.render_target[0].dst_blend_alpha = Blend::InvSrcAlpha;
-      //blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
-      //blend_state.render_target[0].render_target_write_mask = RenderTargetWriteMask::All;
-
-      //// depth stencil state
-      //pso_desc.depth_stencil_state = DepthStencilDesc();
-      //DepthStencilDesc& depth_stencil_desc = pso_desc.depth_stencil_state.value();
-      //depth_stencil_desc.depth_enable = false;
-      //depth_stencil_desc.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
-      //depth_stencil_desc.depth_func = ComparisonFunc::Always;
-      //depth_stencil_desc.stencil_enable = false;
-      //depth_stencil_desc.front_face.stencil_fail_op = StencilOp::Keep;
-      //depth_stencil_desc.front_face.stencil_depth_fail_op = StencilOp::Keep;
-      //depth_stencil_desc.front_face.stencil_pass_op = StencilOp::Keep;
-      //depth_stencil_desc.front_face.stencil_func = ComparisonFunc::Always;
-      //depth_stencil_desc.back_face = depth_stencil_desc.front_face;
-
-      //m_pso = rhi::create_pso(pso_desc);
     }
 
     void Material::init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature)
@@ -136,10 +76,6 @@ namespace rex
     {
       return m_primitive_topology;
     }
-    //PipelineState* Material::pso()
-    //{
-    //  return m_pso.get();
-    //}
     RootSignature* Material::root_signature()
     {
       return m_root_signature.get();
@@ -148,10 +84,6 @@ namespace rex
     {
       return m_blend_factor;
     }
-    //InputLayout* Material::input_layout()
-    //{
-    //  return m_input_layout.get();
-    //}
 
     ShaderResources Material::resources_for_shader(ShaderType type)
     {
@@ -197,6 +129,14 @@ namespace rex
       desc.depth_stencil_state = m_depth_stencil;
       //desc.input_layout = m_input_layout.get();
     }
+
+    void Material::validate_input_layout(InputLayout* inputLayout)
+    {
+      
+
+      m_input_layout_desc;
+    }
+
 
   }
 }

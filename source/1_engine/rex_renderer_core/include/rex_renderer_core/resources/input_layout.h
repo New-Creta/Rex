@@ -3,6 +3,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/gfx/input_layout_classification.h"
 #include "rex_renderer_core/gfx/vertex_buffer_format.h"
+#include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
 #include "rex_std/string_view.h"
 
 namespace rex
@@ -26,6 +27,8 @@ namespace rex
       rsl::vector<InputLayoutElementDesc> input_layout {};
     };
 
+    InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderParamReflection>& shaderInputParams);
+
     // Base class for the input layout, only used as an interface
     class InputLayout
     {
@@ -38,6 +41,8 @@ namespace rex
       {
         return m_vertex_size;
       }
+
+      virtual void validate_desc(const InputLayoutDesc& desc) = 0;
 
     private:
       s32 m_vertex_size;

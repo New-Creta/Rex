@@ -48,7 +48,7 @@ namespace rex
 
       s32 texture_pitch_size(s32 width, TextureFormat format)
       {
-        s32 format_size = d3d::format_byte_size(format);
+        s32 format_size = format_byte_size(format);
         s32 pitch_size = width * format_size;
         s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
         pitch_size = align(pitch_size, alignment);
@@ -57,17 +57,12 @@ namespace rex
       }
       s32 total_texture_size(s32 width, s32 height, TextureFormat format)
       {
-        const s32 format_size = d3d::format_byte_size(format);
+        const s32 format_size = format_byte_size(format);
         const s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
         s32 pitch_size = width * format_size;
         pitch_size = align(pitch_size, alignment);
 
         return pitch_size * height;
-      }
-      s32 format_byte_size(TextureFormat format)
-      {
-        DXGI_FORMAT d3d_format = to_dx12(format);
-        return format_byte_size(d3d_format);
       }
       s32 format_byte_size(DXGI_FORMAT format)
       {
@@ -135,8 +130,6 @@ namespace rex
         switch (type)
         {
         case rex::gfx::ShaderParameterType::Uint:       format = DXGI_FORMAT_R32_UINT;           break;
-        case rex::gfx::ShaderParameterType::Uint2:      format = DXGI_FORMAT_R32G32_UINT;        break;
-        case rex::gfx::ShaderParameterType::Uint16_2:   format = DXGI_FORMAT_R16G16_UINT;        break;
         case rex::gfx::ShaderParameterType::Float:      format = DXGI_FORMAT_R32_FLOAT;          break;
         case rex::gfx::ShaderParameterType::Float2:     format = DXGI_FORMAT_R32G32_FLOAT;       break;
         case rex::gfx::ShaderParameterType::Float3:     format = DXGI_FORMAT_R32G32B32_FLOAT;    break;

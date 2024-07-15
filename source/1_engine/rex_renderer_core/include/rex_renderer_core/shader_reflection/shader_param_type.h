@@ -16,8 +16,6 @@ namespace rex
 		{
 			Unknown,
 			Uint,
-			Uint2,
-			Uint16_2,
 			Float,
 			Float2,
 			Float3,

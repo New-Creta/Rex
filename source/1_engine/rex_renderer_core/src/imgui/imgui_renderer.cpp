@@ -194,6 +194,8 @@ namespace rex
       m_material->set_texture("fonts_texture", m_fonts_texture.get());
       m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
 
+      m_material->validate_input_layout(m_input_layout.get());
+
       //REX_ASSERT_X(m_material->input_layout()->vertex_size() == sizeof(ImDrawVert), "ImGui's input layout size does not match the size of a single ImGui vertex");
     }
     // Initialize the pso based on the the gpu resources

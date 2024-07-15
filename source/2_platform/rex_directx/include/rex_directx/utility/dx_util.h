@@ -131,8 +131,6 @@ namespace rex
       // Get the total texture size in memory
       s32 total_texture_size(s32 width, s32 height, TextureFormat format);
       // Get the byte size of a given format
-      s32 format_byte_size(TextureFormat format);
-      // Get the byte size of a given format
       s32 format_byte_size(DXGI_FORMAT format);
 
       DXGI_FORMAT to_vertex_input_format(rsl::string_view semanticName, ShaderParameterType type, IsColorNormalized isColorNormalized);
