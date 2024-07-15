@@ -12,8 +12,8 @@ namespace rex
     {
       switch (type)
       {
-      case rex::gfx::ShaderParameterType::Uint:       return VertexBufferFormat::Uint1;
-      case rex::gfx::ShaderParameterType::Float:      return VertexBufferFormat::Float1;
+      case rex::gfx::ShaderParameterType::Uint:       return VertexBufferFormat::Uint;
+      case rex::gfx::ShaderParameterType::Float:      return VertexBufferFormat::Float;
       case rex::gfx::ShaderParameterType::Float2:     return VertexBufferFormat::Float2;
       case rex::gfx::ShaderParameterType::Float3:     return VertexBufferFormat::Float3;
       case rex::gfx::ShaderParameterType::Float4:     return VertexBufferFormat::Float4;
@@ -38,10 +38,10 @@ namespace rex
         input_element_descriptions[i].aligned_byte_offset = byte_offset;
         input_element_descriptions[i].instance_data_step_rate = 0;
 
-        byte_offset += format_byte_size(input_element_descriptions[i].format);
+        byte_offset += format_size(input_element_descriptions[i].format);
       }
 
-
+      return InputLayoutDesc{ input_element_descriptions };
 		}
 	}
 }

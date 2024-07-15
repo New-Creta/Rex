@@ -32,13 +32,18 @@ namespace rex
 
     bool DxInputLayout::validate_desc(const InputLayoutDesc& desc)
     {
+      if (desc.input_layout.size() != m_input_elements.size())
+      {
+        return false;
+      }
+
       for (const auto& elem : desc.input_layout)
       {
         auto it = rsl::find_if(m_input_elements.cbegin(), m_input_elements.cend(),
           [&](const D3D12_INPUT_ELEMENT_DESC& d3dElem)
           {
             rsl::string_view semantic_name(d3dElem.SemanticName);
-            return semantic_name == elem.semantic_name;
+            return semantic_name == elem.semantic_name && static_cast<s32>(d3dElem.SemanticIndex) == elem.semantic_index;
           });
 
         if (it == m_input_elements.cend())
@@ -46,8 +51,8 @@ namespace rex
           return false;
         }
 
-        VertexBufferFormat format = d3d::from_dx12(it->Format);
-        if (is_mappable_vertex_format(format, it->Format))
+        ShaderParameterType format = d3d::from_dx12_shader_param_type(it->Format);
+        if (!is_mappable_vertex_format(format, elem.format))
         {
           return false;
         }

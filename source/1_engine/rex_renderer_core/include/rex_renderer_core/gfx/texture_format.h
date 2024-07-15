@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rex_engine/engine/invalid_object.h"
+
 namespace rex
 {
   namespace gfx

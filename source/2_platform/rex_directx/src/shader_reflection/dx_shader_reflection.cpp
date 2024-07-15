@@ -175,7 +175,7 @@ namespace rex
       input_param.semantic_name = param_desc.SemanticName;
       input_param.semantic_index = param_desc.SemanticIndex;
       input_param.type = shader_param_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
-      input_param.size = param_type_to_size(input_param.type);
+      input_param.size = format_size(input_param.type);
 
       return input_param;
     }
@@ -188,7 +188,7 @@ namespace rex
       output_param.semantic_name = param_desc.SemanticName;
       output_param.semantic_index = param_desc.SemanticIndex;
       output_param.type = shader_param_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
-      output_param.size = param_type_to_size(output_param.type);
+      output_param.size = format_size(output_param.type);
 
       return output_param;
     }
@@ -271,7 +271,7 @@ namespace rex
       {
         if (precision == D3D_MIN_PRECISION_UINT_16)
         {
-          return ShaderParameterType::Uint16_2;
+          return ShaderParameterType::Ushort2;
         }
         else if (precision == D3D_MIN_PRECISION_DEFAULT)
         {
@@ -286,23 +286,5 @@ namespace rex
       REX_ASSERT("Invalid component mask");
       return ShaderParameterType::Unknown;
     }
-
-    s32 param_type_to_size(ShaderParameterType type)
-    {
-      switch (type)
-      {
-      case ShaderParameterType::Uint:        return 1 * sizeof(uint32);
-      case ShaderParameterType::Uint2:       return 2 * sizeof(uint32);
-      case ShaderParameterType::Uint16_2:    return 2 * sizeof(uint16);
-      case ShaderParameterType::Float:       return 1 * sizeof(float32);
-      case ShaderParameterType::Float2:      return 2 * sizeof(float32);
-      case ShaderParameterType::Float3:      return 3 * sizeof(float32);
-      case ShaderParameterType::Float4:      return 4 * sizeof(float32);
-      }
-
-      REX_ASSERT("Invalid parameter type");
-      return 0;
-    }
-
   }
 }

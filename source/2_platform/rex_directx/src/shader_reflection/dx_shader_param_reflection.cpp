@@ -49,7 +49,7 @@ namespace rex
     }
     void DxShaderParameterReflection::init_size()
     {
-      m_size = param_type_to_size();
+      m_size = format_size(m_type);
     }
 
     ShaderParameterType DxShaderParameterReflection::component_mask_to_float(s32 componentMask) const
@@ -72,7 +72,7 @@ namespace rex
       {
         if (precision == D3D_MIN_PRECISION_UINT_16)
         {
-          return ShaderParameterType::Uint16_2;
+          return ShaderParameterType::Ushort2;
         }
         else if (precision == D3D_MIN_PRECISION_DEFAULT)
         {
@@ -87,23 +87,5 @@ namespace rex
       REX_ASSERT("Invalid component mask");
       return ShaderParameterType::Unknown;
     }
-
-    s32 DxShaderParameterReflection::param_type_to_size() const
-    {
-      switch (m_type)
-      {
-      case ShaderParameterType::Uint:        return 1 * sizeof(uint32);
-      case ShaderParameterType::Uint2:       return 2 * sizeof(uint32);
-      case ShaderParameterType::Uint16_2:    return 2 * sizeof(uint16);
-      case ShaderParameterType::Float:       return 1 * sizeof(float32);
-      case ShaderParameterType::Float2:      return 2 * sizeof(float32);
-      case ShaderParameterType::Float3:      return 3 * sizeof(float32);
-      case ShaderParameterType::Float4:      return 4 * sizeof(float32);
-      }
-
-      REX_ASSERT("Invalid parameter type");
-      return 0;
-    }
-
 	}
 }

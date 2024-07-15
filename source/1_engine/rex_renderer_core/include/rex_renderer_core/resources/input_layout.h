@@ -42,7 +42,7 @@ namespace rex
         return m_vertex_size;
       }
 
-      virtual void validate_desc(const InputLayoutDesc& desc) = 0;
+      virtual bool validate_desc(const InputLayoutDesc& desc) = 0;
 
     private:
       s32 m_vertex_size;

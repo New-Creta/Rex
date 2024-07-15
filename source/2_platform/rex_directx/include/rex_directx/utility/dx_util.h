@@ -133,6 +133,7 @@ namespace rex
       // Get the byte size of a given format
       s32 format_byte_size(DXGI_FORMAT format);
 
+
       DXGI_FORMAT to_vertex_input_format(rsl::string_view semanticName, ShaderParameterType type, IsColorNormalized isColorNormalized);
       DXGI_FORMAT normalize_format(DXGI_FORMAT format);
       DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask);
@@ -198,6 +199,7 @@ namespace rex
       // ------------------------------------
       // Return from Directx -> REX
       // ------------------------------------
+      ShaderParameterType from_dx12_shader_param_type(DXGI_FORMAT format);
       TextureFormat from_dx12(DXGI_FORMAT type);
       ShaderClassType from_dx12(D3D_SHADER_VARIABLE_CLASS type);
       ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type);

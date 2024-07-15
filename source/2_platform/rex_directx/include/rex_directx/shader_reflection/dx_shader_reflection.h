@@ -47,6 +47,5 @@ namespace rex
     ShaderParameterType shader_param_type(D3D_REGISTER_COMPONENT_TYPE componentType, s32 componentMask, D3D_MIN_PRECISION precision);
     ShaderParameterType component_mask_to_float(s32 componentMask);
     ShaderParameterType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision);
-    s32 param_type_to_size(ShaderParameterType type);
   }
 }

@@ -28,8 +28,6 @@ namespace rex
       ShaderParameterType component_mask_to_float(s32 componentMask) const;
       ShaderParameterType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision) const;
 
-      s32 param_type_to_size() const;
-
     private:
       rsl::tiny_stack_string m_semantic_name;
       s32 m_semantic_index;

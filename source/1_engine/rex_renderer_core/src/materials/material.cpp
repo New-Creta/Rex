@@ -40,7 +40,7 @@ namespace rex
       init_parameters_from_shader_signature(ShaderType::Vertex, shader_pipeline_reflection.vs.get());
       init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps.get());
 
-
+      m_input_layout_desc = create_input_layout_desc_from_reflection(shader_pipeline_reflection.vs->input_params());
 
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
       m_raster_state = matConstructSettings.raster_state;
@@ -132,9 +132,7 @@ namespace rex
 
     void Material::validate_input_layout(InputLayout* inputLayout)
     {
-      
-
-      m_input_layout_desc;
+      REX_ASSERT_X(inputLayout->validate_desc(m_input_layout_desc), "Input layout is not compatible with material");
     }
 
 
