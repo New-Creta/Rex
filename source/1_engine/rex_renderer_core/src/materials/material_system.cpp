@@ -73,15 +73,15 @@ namespace rex
 			desc.depth_func = rsl::enum_refl::enum_cast<ComparisonFunc>(rsl::string_view(depthStencil["depth_func"])).value();
 			desc.stencil_enable = depthStencil["stencil_enable"];
 
-			desc.front_face.stencil_depth_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["stencil_depth_fail_op"])).value();
-			desc.front_face.stencil_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["stencil_fail_op"])).value();
-			desc.front_face.stencil_func = rsl::enum_refl::enum_cast<ComparisonFunc>(rsl::string_view(depthStencil["stencil_func"])).value();
-			desc.front_face.stencil_pass_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["stencil_pass_op"])).value();
+			desc.front_face.stencil_depth_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["front_face"]["depth_fail_op"])).value();
+			desc.front_face.stencil_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["front_face"]["stencil_fail_op"])).value();
+			desc.front_face.stencil_func = rsl::enum_refl::enum_cast<ComparisonFunc>(rsl::string_view(depthStencil["front_face"]["stencil_func"])).value();
+			desc.front_face.stencil_pass_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["front_face"]["stencil_pass_op"])).value();
 
-			desc.back_face.stencil_depth_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["stencil_depth_fail_op"])).value();
-			desc.back_face.stencil_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["stencil_fail_op"])).value();
-			desc.back_face.stencil_func = rsl::enum_refl::enum_cast<ComparisonFunc>(rsl::string_view(depthStencil["stencil_func"])).value();
-			desc.back_face.stencil_pass_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["stencil_pass_op"])).value();
+			desc.back_face.stencil_depth_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["back_face"]["depth_fail_op"])).value();
+			desc.back_face.stencil_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["back_face"]["stencil_fail_op"])).value();
+			desc.back_face.stencil_func = rsl::enum_refl::enum_cast<ComparisonFunc>(rsl::string_view(depthStencil["back_face"]["stencil_func"])).value();
+			desc.back_face.stencil_pass_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["back_face"]["stencil_pass_op"])).value();
 
 
 			return desc;

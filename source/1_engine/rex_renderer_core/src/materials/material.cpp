@@ -41,7 +41,9 @@ namespace rex
       init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps.get());
 
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
-
+      m_raster_state = matConstructSettings.raster_state;
+      m_blend = matConstructSettings.blend;
+      m_depth_stencil = matConstructSettings.depth_stencil;
       
 
       //m_input_layout = rhi::create_input_layout(shader_pipeline_reflection.vs->input_params(), matConstructSettings.color_normalized);
@@ -190,6 +192,9 @@ namespace rex
       desc.vertex_shader = m_shader_pipeline.vs.get();
       desc.pixel_shader = m_shader_pipeline.ps.get();
       desc.root_signature = m_root_signature.get();
+      desc.raster_state = m_raster_state;
+      desc.blend_state = m_blend;
+      desc.depth_stencil_state = m_depth_stencil;
       //desc.input_layout = m_input_layout.get();
     }
 

@@ -83,7 +83,12 @@ namespace rex
       //rsl::unique_ptr<PipelineState> m_pso;
       rsl::unique_ptr<RootSignature> m_root_signature;
       //rsl::unique_ptr<InputLayout> m_input_layout;
-      rsl::unique_ptr<RasterState> m_raster_state; // The render state used by imgui
+      //rsl::unique_ptr<RasterState> m_raster_state; // The render state used by imgui
+
+      RasterStateDesc m_raster_state;
+      BlendDesc m_blend;
+      DepthStencilDesc m_depth_stencil;
+
 
       BlendFactor m_blend_factor;
 
