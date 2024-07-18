@@ -100,6 +100,9 @@ namespace rex
       virtual void bind_texture(s32 rootParamIdx, Texture2D* texture) = 0;
       // Bind a material to the context
       virtual void bind_material(Material* material) = 0;
+
+    protected:
+      void type_specific_reset(const ContextResetData& resetData);
     };
   }
 }

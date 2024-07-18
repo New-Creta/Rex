@@ -14,7 +14,7 @@ namespace rex
     public:
       DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView descHandle);
 
-      // Return the wraped DirectX object
+      // Return the wrapped DirectX object
       ID3D12Resource* dx_object();
       // Return a view to the object
       DxResourceView view() const;

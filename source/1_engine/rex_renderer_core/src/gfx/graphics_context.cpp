@@ -31,8 +31,6 @@ namespace rex
       m_allocator = rsl::move(alloc);
       m_resource_state_tracker = resourceStateTracker;
 
-      m_current_backbuffer_rt = resetData.current_backbuffer_rt;
-
       type_specific_reset(resetData);
       platform_reset(m_allocator->underlying_alloc(), resetData);
     }

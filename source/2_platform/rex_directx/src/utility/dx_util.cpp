@@ -1037,29 +1037,7 @@ namespace rex
 					REX_ASSERT("Unknown DX12 shader variable type, cannot convert to rex shader variable type");
 				}
 			}
-      //ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type)
-      //{
-      //  switch (type)
-      //  {
-      //  case D3D_REGISTER_COMPONENT_UINT32:   return ShaderParamComponentType::Uint;
-      //  case D3D_REGISTER_COMPONENT_SINT32:   return ShaderParamComponentType::Sint;
-      //  case D3D_REGISTER_COMPONENT_FLOAT32:  return ShaderParamComponentType::Float;
-      //  }
 
-      //  return invalid_obj<ShaderParamComponentType>();
-      //}
-      //ShaderParamComponentMask from_dx12(BYTE mask)
-      //{
-      //  switch (mask)
-      //  {
-      //  case D3D_COMPONENT_MASK_X: return ShaderParamComponentMask::X;
-      //  case D3D_COMPONENT_MASK_Y: return ShaderParamComponentMask::Y;
-      //  case D3D_COMPONENT_MASK_Z: return ShaderParamComponentMask::Z;
-      //  case D3D_COMPONENT_MASK_W: return ShaderParamComponentMask::W;
-      //  }
-
-      //  return invalid_obj<ShaderParamComponentMask>();
-      //}
       ShaderVisibility from_dx12(D3D12_SHADER_VISIBILITY visibility)
       {
         switch (visibility)
