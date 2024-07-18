@@ -10,6 +10,26 @@ namespace rex
 {
   namespace gfx
   {
+    // NOTE: To keep in mind when abstracting constant buffer data upload
+    //
+    // Shaders take multiple levels of data
+    // 1. Per View Data
+    // This data is shared by all materials used in a view. Should contain all information like camera matrices, light directions, time, ..
+    // 
+    // 2. Per Pass Data
+    // This data is shared by all materials within the same pass. This is only relevant once we have multiple render passes
+    // 
+    // 3. Per material data
+    // This data contains information per material like textures
+    // 
+    // 4. Per instance data
+    // Contains data that's separate per instance. For example a world view projection matrix
+    //
+
+
+
+
+
     DEFINE_LOG_CATEGORY(LogGraphics);
 
     // We can access it in the high level graphics api, but the gpu engine is owned by the rhi

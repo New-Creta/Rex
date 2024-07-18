@@ -13,7 +13,7 @@
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_resource_heap.h"
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/resources/dx_texture_2d.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
@@ -106,10 +106,10 @@ namespace rex
       m_heap = rsl::make_unique<ResourceHeap>(d3d_heap, m_device->dx_object());
     }
 
-    // Allocate a new descriptor heap of a given type
-    rsl::unique_ptr<ViewHeap> DxGpuEngine::allocate_desc_heap(ViewHeapType descHeapType, IsShaderVisible isShaderVisible)
+    // Allocate a new view heap of a given type
+    rsl::unique_ptr<ViewHeap> DxGpuEngine::allocate_view_heap(ViewHeapType viewHeapType, IsShaderVisible isShaderVisible)
     {
-      return rhi::create_descriptor_heap(d3d::to_dx12(descHeapType), isShaderVisible);
+      return rhi::create_view_heap(d3d::to_dx12(viewHeapType), isShaderVisible);
     }
   }
 }

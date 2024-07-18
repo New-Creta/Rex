@@ -41,9 +41,6 @@ namespace rex
       // Update a texture's data on the gpu
       void update_texture2d(Texture2D* texture, const void* data) override;
 
-      // Copy descriptors from one heap to another
-      rsl::unique_ptr<ResourceView> copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors) override;
-
     protected:
       // Reset this context by resetting the commandlist and its allocator
       // Also bind the descriptor heap

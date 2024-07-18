@@ -2,6 +2,8 @@
 
 #include "rex_renderer_core/system/copy_engine.h"
 
+#include "rex_renderer_core/system/view_heap.h"
+
 namespace rex
 {
   namespace gfx
@@ -24,5 +26,11 @@ namespace rex
       m_shader_visible_srv_heap = resetData.shader_visible_srv_desc_heap;
       m_shader_visible_sampler_heap = resetData.shader_visible_sampler_desc_heap;
     }
+
+    rsl::unique_ptr<ResourceView> CopyContext::copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors)
+    {
+      return dstHeap->copy_views(descriptors);
+    }
+
   }
 }

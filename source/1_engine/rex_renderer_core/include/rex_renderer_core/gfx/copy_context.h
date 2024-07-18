@@ -50,7 +50,7 @@ namespace rex
 
     private:
       // Copy views into a heap that's accessible to shaders
-      virtual rsl::unique_ptr<ResourceView> copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors) = 0;
+      rsl::unique_ptr<ResourceView> copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors);
 
     private:
       ViewHeap* m_shader_visible_srv_heap;      // the srv view heap that's accessible to shaders

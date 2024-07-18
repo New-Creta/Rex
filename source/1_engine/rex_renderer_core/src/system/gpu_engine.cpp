@@ -53,6 +53,7 @@ namespace rex
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
 
+      // EMpty out the view heaps so that new views can be copied into it
       m_shader_visible_descriptor_heap_pool.at(ViewHeapType::AllShaderResources)->clear();
       m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Sampler)->clear();
     }
@@ -161,7 +162,7 @@ namespace rex
     }
     void GpuEngine::init_desc_heap(ViewHeapPool& descHeapPool, ViewHeapType descHeapType, IsShaderVisible isShaderVisible)
     {
-      descHeapPool.emplace(descHeapType, allocate_desc_heap(descHeapType, isShaderVisible));
+      descHeapPool.emplace(descHeapType, allocate_view_heap(descHeapType, isShaderVisible));
     }
 
     ContextResetData GpuEngine::create_context_reset_data(PipelineState* pso)

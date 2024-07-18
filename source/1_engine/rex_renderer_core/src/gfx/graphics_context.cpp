@@ -79,12 +79,6 @@ namespace rex
       return m_type;
     }
 
-    // Return the render target pointing to the current backbuffer
-    RenderTarget* GraphicsContext::current_backbuffer_rt()
-    {
-      return m_current_backbuffer_rt;
-    }
-
     // track a transition of a resource
     ResourceStateTransition GraphicsContext::track_resource_transition(Resource* buffer, ResourceState state)
     {

@@ -19,10 +19,6 @@ namespace rex
       : m_imgui_viewport(imguiViewport)
       , m_frame_idx(0)
     {
-      for (s32 i = 0; i < 3; ++i)
-      {
-        m_frame_contexts.emplace_back();
-      }
     }
 
     // Render the viewport using the given render context to queue gpu commands to
@@ -81,7 +77,7 @@ namespace rex
       ctx.set_viewport(frameCtx.viewport());
       ctx.set_vertex_buffer(frameCtx.vertex_buffer());
       ctx.set_index_buffer(frameCtx.index_buffer());
-      ctx.set_constant_buffer(0, frameCtx.constant_buffer());
+      ctx.set_constant_buffer(s_constant_buffer_param_idx, frameCtx.constant_buffer());
     }
 
     // Draw the current viewport

@@ -48,8 +48,8 @@ namespace rex
 
       s32 texture_pitch_size(s32 width, TextureFormat format)
       {
-        s32 format_byte_size = format_byte_size(format);
-        s32 pitch_size = width * format_byte_size;
+        s32 format_size = format_byte_size(format);
+        s32 pitch_size = width * format_size;
         s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
         pitch_size = align(pitch_size, alignment);
 
@@ -57,9 +57,9 @@ namespace rex
       }
       s32 total_texture_size(s32 width, s32 height, TextureFormat format)
       {
-        const s32 format_byte_size = format_byte_size(format);
+        const s32 format_size = format_byte_size(format);
         const s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
-        s32 pitch_size = width * format_byte_size;
+        s32 pitch_size = width * format_size;
         pitch_size = align(pitch_size, alignment);
 
         return pitch_size * height;
@@ -129,101 +129,6 @@ namespace rex
         }
       }
 
-      DXGI_FORMAT to_vertex_input_format(rsl::string_view semanticName, ShaderParameterType type, IsColorNormalized isColorNormalized)
-      {
-        DXGI_FORMAT format;
-
-        switch (type)
-        {
-        case rex::gfx::ShaderParameterType::Uint:       format = DXGI_FORMAT_R32_UINT;           break;
-        case rex::gfx::ShaderParameterType::Float:      format = DXGI_FORMAT_R32_FLOAT;          break;
-        case rex::gfx::ShaderParameterType::Float2:     format = DXGI_FORMAT_R32G32_FLOAT;       break;
-        case rex::gfx::ShaderParameterType::Float3:     format = DXGI_FORMAT_R32G32B32_FLOAT;    break;
-        case rex::gfx::ShaderParameterType::Float4:     format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
-        default: return invalid_obj<DXGI_FORMAT>();
-        }
-
-        if (semanticName.contains("COLOR"))
-        {
-          return normalize_format(format);
-        }
-
-        return format;
-      }
-      DXGI_FORMAT normalize_format(DXGI_FORMAT format)
-      {
-        switch (format)
-        {
-        case DXGI_FORMAT_R32_FLOAT: return DXGI_FORMAT_R8_UNORM;
-        case DXGI_FORMAT_R32G32B32A32_FLOAT: return DXGI_FORMAT_R8G8B8A8_UNORM;
-        }
-
-        return invalid_obj<DXGI_FORMAT>();
-      }
-
-      //DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask)
-      //{
-      //  ShaderParamComponentType dx_type = from_dx12(type);
-      //  ShaderParamComponentMask dx_mask = from_dx12(mask);
-
-      //  return to_vertex_format(dx_type, dx_mask);
-      //}
-
-      //DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask)
-      //{
-      //  switch (type)
-      //  {
-      //  case rex::gfx::ShaderParamComponentType::Uint:
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-      //    {
-      //      return DXGI_FORMAT_R32G32B32A32_UINT;
-      //    }
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-      //    {
-      //      return DXGI_FORMAT_R32G32B32_UINT;
-      //    }
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-      //    {
-      //      return DXGI_FORMAT_R32G32_UINT;
-      //    }
-      //    return DXGI_FORMAT_R32_UINT;
-
-      //  case rex::gfx::ShaderParamComponentType::Sint:
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-      //    {
-      //      return DXGI_FORMAT_R32G32B32A32_SINT;
-      //    }
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-      //    {
-      //      return DXGI_FORMAT_R32G32B32_SINT;
-      //    }
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-      //    {
-      //      return DXGI_FORMAT_R32G32_SINT;
-      //    }
-      //    return DXGI_FORMAT_R32_SINT;
-
-      //  case rex::gfx::ShaderParamComponentType::Float:
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-      //    {
-      //      return DXGI_FORMAT_R32G32B32A32_FLOAT;
-      //    }
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-      //    {
-      //      return DXGI_FORMAT_R32G32B32_FLOAT;
-      //    }
-      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-      //    {
-      //      return DXGI_FORMAT_R32G32_FLOAT;
-      //    }
-      //    return DXGI_FORMAT_R32_FLOAT;
-
-      //  }
-
-      //  REX_ASSERT("Unsupported component type with component mask. {} - {}", rsl::enum_refl::enum_name(type), rsl::enum_refl::enum_name(mask));
-      //  return invalid_obj<DXGI_FORMAT>();
-      //}
-
       ShaderType shader_visibility_to_type(ShaderVisibility visibility)
       {
         switch (visibility)
@@ -240,6 +145,20 @@ namespace rex
 
         return invalid_obj<ShaderType>();
       }
+
+      void reset_cmdlist(ID3D12GraphicsCommandList* cmdList, DxCommandAllocator* alloc, const ContextResetData& resetData)
+      {
+        REX_ASSERT_X(alloc != nullptr, "The command allocator for a context cannot be null");
+
+        alloc->dx_object()->Reset();
+        m_cmd_list->Reset(alloc->dx_object(), d3d::dx12_pso(resetData.pso));
+
+        rsl::array<ID3D12DescriptorHeap*, 2> d3d_desc_heaps{};
+        d3d_desc_heaps[0] = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();
+        d3d_desc_heaps[1] = d3d::to_dx12(resetData.shader_visible_sampler_desc_heap)->dx_object();
+        cmdList->SetDescriptorHeaps(d3d_desc_heaps.size(), d3d_desc_heaps.data());
+      }
+
 
       //-------------------------------------------------------------------------
       // CONVERTORS

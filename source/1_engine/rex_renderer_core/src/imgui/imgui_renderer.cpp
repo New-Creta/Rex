@@ -57,14 +57,13 @@ namespace rex
       auto render_ctx = gfx::new_render_ctx(m_pipeline_state.get());
 
       // As the imgui renderer main viewport is the main window of the application
-      // it needs to set its render target to the one pointing to the current back buffer
-      render_ctx->set_render_target(render_ctx->current_backbuffer_rt());
+      // we use the main window as render target, which is the default render target
+      // We don't have to set this manually as it gets set when a context gets reset
 
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (RexImGuiViewport* rex_viewport = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
         render_ctx->bind_material(m_material.get());
-        render_ctx->set_blend_factor({0.0f, 0.0f, 0.0f, 0.0f});
         rex_viewport->render(*render_ctx);
       }
 
@@ -149,7 +148,7 @@ namespace rex
 
       m_fonts_texture = rhi::create_texture2d(width, height, format, pixels);
 
-      ImGui::GetIO().Fonts->SetTexID((ImTextureID)m_fonts_texture.get());
+      io.Fonts->SetTexID((ImTextureID)m_fonts_texture.get());
     }
     // Create the sampler, used by ImGui
     void ImGuiRenderer::init_font_sampler()
@@ -197,6 +196,7 @@ namespace rex
 
       m_material->set_texture("fonts_texture", m_fonts_texture.get());
       m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
+      m_material->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
 
       m_material->validate_input_layout(m_input_layout.get());
     }

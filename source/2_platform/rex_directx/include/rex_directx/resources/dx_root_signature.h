@@ -21,15 +21,18 @@ namespace rex
     public:
       DxRootSignature(const wrl::ComPtr<ID3D12RootSignature>& rootSignature, rsl::vector<CD3DX12_ROOT_PARAMETER>&& rootParameters);
 
+      // Return the parameter index in the root signature for the textures of the shader
       s32 param_idx_for_textures(ShaderType type) override;
+      // Return the parameter index in the root signature for the samplers of the shader
       s32 param_idx_for_samplers(ShaderType type) override;
 
+      // Return the wrapped DirectX object
       ID3D12RootSignature* dx_object();
 
     private:
       wrl::ComPtr<ID3D12RootSignature> m_root_signature;
       rsl::vector<CD3DX12_ROOT_PARAMETER> m_root_parameters;
-      rsl::unordered_map<ShaderType, ShaderParameter> m_shader_parameter_idx;
+      rsl::unordered_map<ShaderType, ShaderParameter> m_shader_parameter_idx_cache;
     };
   }
 }

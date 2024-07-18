@@ -11,10 +11,10 @@ namespace rex
 		// Reflection of a constant buffer, specified in a shader
 		struct CBufferReflDesc
 		{
-			rsl::tiny_stack_string name;
-			s32 size;
-			s32 shader_register;
-			rsl::vector<CBufferVarReflDesc> variables;
+			rsl::tiny_stack_string name;								// The name of the constant buffer in the shader
+			s32 size;																		// The size in bytes of the constant buffer
+			s32 shader_register;												// The register the constant buffer is tied to
+			rsl::vector<CBufferVarReflDesc> variables;	// The list of variables within the constant buffer
 		};
 	}
 }

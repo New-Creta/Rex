@@ -51,8 +51,6 @@ namespace rex
       // Return the type of this context
       GraphicsContextType type() const;
 
-      // Return the render target pointing to the current backbuffer
-      RenderTarget* current_backbuffer_rt();
 
       // Profiling events
       virtual void begin_profile_event(rsl::string_view eventName) = 0;
@@ -73,7 +71,6 @@ namespace rex
       gfx::GraphicsEngine* m_owning_engine;                // The owning engine of this context
       ResourceStateTracker* m_resource_state_tracker;      // The tracker for resource states
       GraphicsContextType m_type;                          // The type of this context
-      RenderTarget* m_current_backbuffer_rt;               // The rendertarget pointing to the current backbuffer
     };
   }
 }

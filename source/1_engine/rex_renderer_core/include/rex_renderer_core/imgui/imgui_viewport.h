@@ -33,7 +33,13 @@ namespace rex
 
     private:
       ImGuiViewport* m_imgui_viewport;
-      rsl::vector<ImGuiFrameContext> m_frame_contexts;
+      // The constant buffer is the first parameter in the root signature
+      constexpr static s32 s_constant_buffer_param_idx = 0;
+
+      // There's no special reason for using 3, it's mainly because the main window is also tripple buffered
+      // If this causes any issus, just change it
+      constexpr static s32 s_number_of_contexts = 3;
+      rsl::vector<ImGuiFrameContext, s_number_of_contexts> m_frame_contexts;
       s32 m_frame_idx;
     };
   }

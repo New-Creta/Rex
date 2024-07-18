@@ -35,11 +35,15 @@ namespace rex
     {
     public:
       InputLayout(s32 vertexSize);
+      virtual ~InputLayout() = default;
 
       // As an input layout stores data per vertex (at least at the moment)
       // We can store the size of a single vertex using the input layout
       s32 vertex_size() const;
 
+      // Validate an description to see if it can be used with this input layout
+      // It's possible some elements do not match directly but can be converted
+      // eg: an 4 component normalized byte type can be converted to a 4 component float type
       virtual bool validate_desc(const InputLayoutDesc& desc) = 0;
 
     private:

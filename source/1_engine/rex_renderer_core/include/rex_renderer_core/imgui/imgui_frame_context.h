@@ -4,6 +4,9 @@
 
 #include "rex_renderer_core/gfx/copy_context.h"
 
+#include "rex_renderer_core/resources/index_buffer.h"
+#include "rex_renderer_core/resources/vertex_buffer.h"
+
 struct ImDrawData;
 
 namespace rex

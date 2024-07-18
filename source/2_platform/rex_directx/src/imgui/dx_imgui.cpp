@@ -1,6 +1,5 @@
 #include "rex_directx/imgui/dx_imgui_window.h"
 #include "rex_renderer_core/imgui/imgui_window.h"
-#include "rex_renderer_core/imgui/imgui_resources.h"
 #include "rex_engine/memory/global_allocator.h"
 
 #include "rex_renderer_core/imgui/imgui_device.h"

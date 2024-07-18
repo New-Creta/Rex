@@ -133,13 +133,11 @@ namespace rex
       // Get the byte size of a given format
       s32 format_byte_size(DXGI_FORMAT format);
 
-
-      DXGI_FORMAT to_vertex_input_format(rsl::string_view semanticName, ShaderParameterType type, IsColorNormalized isColorNormalized);
-      DXGI_FORMAT normalize_format(DXGI_FORMAT format);
-      //DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask);
-      //DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
-      PrimitiveTopologyType to_primitive_topology_type(PrimitiveTopology topology);
+      // Based on the shader visibility flag, get the shader type
       ShaderType shader_visibility_to_type(ShaderVisibility visibility);
+
+      // Reset a Direct X commandlist
+      void reset_cmdlist(ID3D12GraphicsCommandList* cmdList, DxCommandAllocator* alloc, const ContextResetData& resetData);
 
       // ------------------------------------
       // Convertors from REX -> DirectX
@@ -203,8 +201,6 @@ namespace rex
       TextureFormat from_dx12(DXGI_FORMAT type);
       ShaderClassType from_dx12(D3D_SHADER_VARIABLE_CLASS type);
       ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type);
-      //ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type);
-      //ShaderParamComponentMask from_dx12(BYTE mask);
       ShaderVisibility from_dx12(D3D12_SHADER_VISIBILITY visibility);
 
     } // namespace d3d

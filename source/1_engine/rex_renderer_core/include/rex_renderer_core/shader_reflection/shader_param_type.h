@@ -4,14 +4,6 @@ namespace rex
 {
 	namespace gfx
 	{
-		//enum class ShaderParamComponentType
-		//{
-		//	Unknown,
-		//	Uint,				// A single unsigned integer of 32 bits
-		//	Sint,				// A single signed integer of 32 bits
-		//	Float,			// A single float of 32 bits
-		//};
-
 		// The following scalar types are supported, each of which are supported up to 4 components
 		// - bool
 		// - signed int (32 bits)

@@ -28,46 +28,8 @@ namespace rex
       }
 
       // 3. Sort out all the view tables
-      s32 start_register = 0;
-      s32 current_register = start_register;
-      s32 resource_register = -1;
-
-
-      // Put all textures in a view table
-      // We need to make sure the shader registers are continious
-
-      // Textures
-      for (const auto& texture : signature->textures())
-      {
-        resource_register = texture.shader_register;
-        if (resource_register != current_register)
-        {
-          // Submit new range
-          add_to_view_range(m_texture_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
-          start_register = resource_register;
-        }
-        ++current_register;
-      }
-      add_to_view_range(m_texture_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
-
-      // Reset registers to prep for samplers
-      start_register = 0;
-      current_register = 0;
-      resource_register = -1;
-
-      // Samplers
-      for (const auto& sampler : signature->samplers())
-      {
-        resource_register = sampler.shader_register;
-        if (resource_register != current_register)
-        {
-          // Submit new range
-          add_to_view_range(m_sampler_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
-          start_register = resource_register;
-        }
-        ++current_register;
-      }
-      add_to_view_range(m_sampler_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+      init_ranges(m_texture_ranges, signature->textures());
+      init_ranges(m_sampler_ranges, signature->samplers());
 
       // Submit the ranges to the descriptor table
       if (m_texture_ranges.size() > 0)
@@ -103,5 +65,26 @@ namespace rex
         ranges.back().RegisterSpace = 0;
       }
     }
+
+    void DxShaderRootParameters::init_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources)
+    {
+      s32 start_register = 0;
+      s32 current_register = start_register;
+      s32 resource_register = -1;
+
+      for (const auto& resource : resources)
+      {
+        resource_register = resource.shader_register;
+        if (resource_register != current_register)
+        {
+          // Submit new range
+          add_to_view_range(m_texture_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+          start_register = resource_register;
+        }
+        ++current_register;
+      }
+      add_to_view_range(m_texture_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+    }
+
 	}
 }

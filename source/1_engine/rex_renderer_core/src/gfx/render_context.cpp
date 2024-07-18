@@ -10,6 +10,11 @@ namespace rex
       : GraphicsContext(owningEngine, GraphicsEngineType::Render)
     {
     }
-
+    // Reset the engine speicifc context
+    void RenderContext::type_specific_reset(const ContextResetData& resetData)
+    {
+      // By default we set the current backbuffer as render target
+      set_render_target(resetData.current_backbuffer_rt);
+    }
   }
 }

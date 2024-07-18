@@ -10,19 +10,16 @@ namespace rex
       , m_desc_handle(handle)
     {}
 
-    D3D12_GPU_DESCRIPTOR_HANDLE DxTexture2D::gpu_handle()
-    {
-      return m_desc_handle.gpu_handle();
-    }
-
-    DxResourceView* DxTexture2D::handle()
-    {
-      return &m_desc_handle;
-    }
-
+    // Return a view to the object on the gpu
     ID3D12Resource* DxTexture2D::dx_object()
     {
       return m_resource.Get();
     }
+    // Return the wrapped DirectX object
+    DxResourceView* DxTexture2D::view()
+    {
+      return &m_desc_handle;
+    }
+
   }
 }

@@ -13,6 +13,7 @@ namespace rex
   namespace gfx
   {
     class Material;
+    class CopyContext;
 
     class DxRenderContext : public RenderContext
     {
@@ -82,13 +83,39 @@ namespace rex
       void end_profile_event() override;
 
     private:
-      // Open the commandlist for recording of gpu commands
-      void start_recording_commands(CommandAllocator* alloc, PipelineState* pso);
       // Transition a buffer into a new resource state
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
       // Bind resources for a specific shader type
       void bind_resources_for_shader(Material* material, ShaderType type);
-      
+
+      // Sort the resources of a material based on their shader register and stored their views in an array
+      template <typename Resource, typename Param>
+      rsl::vector<ResourceView*> sort_material_parameters(const rsl::vector<Param*>& params)
+      {
+        rsl::vector<ResourceView*> views;
+
+        // Sort the textures based on their shader register
+        rsl::sort(params.begin(), params.end(),
+          [](const TextureMaterialParameter* lhs, const TextureMaterialParameter* rhs)
+          {
+            return lhs->shader_register() < rhs->shader_register();
+          });
+
+        // copy the texture gpu handles into a separate array
+        views.resize(params.size());
+        rsl::transform(params.cbegin(), params.cend(), views.begin(),
+          [](Param* resource)
+          {
+            Resource* dx_resource = static_cast<Resource*>(resource->resource());
+            return dx_resource->view();
+          });
+
+        // Return the result
+        return views;
+      }
+      // Bind material resources to the root signature parameter index provided
+      void bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, s32 paramIdx);
+
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;
       rsl::string_view m_profile_event_name;

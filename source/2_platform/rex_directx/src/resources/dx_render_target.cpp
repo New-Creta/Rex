@@ -17,7 +17,7 @@ namespace rex
       return m_resource.Get();
     }
 
-    DxResourceView DxRenderTarget::handle() const
+    DxResourceView DxRenderTarget::view() const
     {
       return m_desc_handle;
     }

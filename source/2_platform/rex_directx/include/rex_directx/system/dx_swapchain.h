@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/utility/dx_util.h"

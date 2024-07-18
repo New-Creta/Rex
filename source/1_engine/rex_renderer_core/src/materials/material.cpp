@@ -12,25 +12,9 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogMaterial);
 
-    //
-    // Shaders take multiple levels of data
-    // 1. Per View Data
-    // This data is shared by all materials used in a view. Should contain all information like camera matrices, light directions, time, ..
-    // 
-    // 2. Per Pass Data
-    // This data is shared by all materials within the same pass. This is only relevant once we have multiple render passes
-    // 
-    // 3. Per material data
-    // This data contains information per material like textures
-    // 
-    // 4. Per instance data
-    // Contains data that's separate per instance. For example a world view projection matrix
-    //
-
     Material::Material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
       : m_shader_pipeline(rsl::move(shaderPipeline))
       , m_primitive_topology(PrimitiveTopology::TriangleList)
-      //, m_pso()
       , m_root_signature()
       , m_blend_factor()
     {
@@ -133,7 +117,6 @@ namespace rex
       desc.raster_state = m_raster_state;
       desc.blend_state = m_blend;
       desc.depth_stencil_state = m_depth_stencil;
-      //desc.input_layout = m_input_layout.get();
     }
 
     void Material::validate_input_layout(InputLayout* inputLayout)

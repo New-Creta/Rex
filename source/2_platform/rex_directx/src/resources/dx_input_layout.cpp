@@ -25,11 +25,13 @@ namespace rex
       m_input_layout_desc = { m_input_elements.data(), static_cast<u32>(m_input_elements.size()) };
     }
 
+    // Return the wraped Direct X object
     D3D12_INPUT_LAYOUT_DESC* DxInputLayout::dx_object()
     {
       return &m_input_layout_desc;
     }
 
+    // Validate a given descriptor and see if it can be used with this input layout
     bool DxInputLayout::validate_desc(const InputLayoutDesc& desc)
     {
       if (desc.input_layout.size() != m_input_elements.size())

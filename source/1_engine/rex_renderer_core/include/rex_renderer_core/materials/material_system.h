@@ -11,14 +11,6 @@ namespace rex
 {
 	namespace gfx
 	{
-		// Material construct settings are a wrapper around all the settings a material needs to store
-		struct MaterialConstructSettings
-		{
-			RasterStateDesc raster_state;   // the rasterizer settings that'll be stored inside the material
-			BlendDesc blend;								// the blend settings that'll be stored inside the material
-			DepthStencilDesc depth_stencil;	// the depth stencil settings that'll be stored inside the material
-		};
-
 		// Load a material from disk, given a filepath
 		rsl::unique_ptr<Material> load_material(rsl::string_view filepath);
 	}

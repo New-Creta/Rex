@@ -8,7 +8,8 @@ namespace rex
 			: m_resource_view(resourceView)
 		{}
 
-		DxResourceView* DxSampler2D::gpu_handle()
+		// Return a view to the object on the gpu
+		DxResourceView* DxSampler2D::view()
 		{
 			return &m_resource_view;
 		}

@@ -109,15 +109,6 @@ namespace rex
 
       CD3DX12_TEXTURE_COPY_LOCATION src_loc(upload_buffer_lock.upload_buffer()->dx_object(), footprint);
       m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
-
-      // Not allowed to transition to pixel shader resource in a copy command list
-      //transition_buffer(texture, ResourceState::PixelShaderResource);
-    }
-
-    // Update a texture's data on the gpu
-    rsl::unique_ptr<ResourceView> DxCopyContext::copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors)
-    {
-      return dstHeap->copy_views(descriptors);
     }
 
     // Reset this context by resetting the commandlist and its allocator
@@ -125,16 +116,7 @@ namespace rex
     void DxCopyContext::platform_reset(CommandAllocator* alloc, const ContextResetData& resetData)
     {
       DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
-
-      REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
-
-      dx_alloc->dx_object()->Reset();
-      m_cmd_list->Reset(dx_alloc->dx_object(), d3d::dx12_pso(resetData.pso));
-
-      rsl::array<ID3D12ViewHeap*, 2> d3d_desc_heaps{};
-      d3d_desc_heaps[0] = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();
-      d3d_desc_heaps[1] = d3d::to_dx12(resetData.shader_visible_sampler_desc_heap)->dx_object();
-      m_cmd_list->SetViewHeaps(d3d_desc_heaps.size(), d3d_desc_heaps.data());
+      d3d::reset_cmdlist(m_cmd_list.Get(), dx_alloc, resetData);
     }
     
     // Return the graphics engine casted into the directx class

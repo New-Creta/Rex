@@ -68,7 +68,7 @@ namespace rex
       // Initialize the resource heap which allocates all gpu resources
       virtual void init_resource_heap() = 0;
       // Allocate a new descriptor heap of a given type
-      virtual rsl::unique_ptr<ViewHeap> allocate_desc_heap(ViewHeapType descHeapType, IsShaderVisible isShaderVisible) = 0;
+      virtual rsl::unique_ptr<ViewHeap> allocate_view_heap(ViewHeapType descHeapType, IsShaderVisible isShaderVisible) = 0;
 
       // Returns a specific descriptor heap based on type
       ViewHeap* cpu_desc_heap(ViewHeapType descHeapType);
@@ -89,6 +89,7 @@ namespace rex
       void init_desc_heaps();
       void init_desc_heap(ViewHeapPool& descHeapPool, ViewHeapType descHeapType, IsShaderVisible isShaderVisible);
 
+      // Create a context reset structure, filling it in with all the data it needs to reset a context
       ContextResetData create_context_reset_data(PipelineState* pso);
 
     private:

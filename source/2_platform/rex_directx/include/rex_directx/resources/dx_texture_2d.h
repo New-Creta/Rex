@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 
 #include "rex_renderer_core/resources/texture_2d.h"
 
@@ -15,9 +15,10 @@ namespace rex
     public:
       DxTexture2D(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView handle, s32 width, s32 height, TextureFormat format);
 
+      // Return the wrapped DirectX object
       ID3D12Resource* dx_object();
-      D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle();
-      DxResourceView* handle();
+      // Return a view to the object on the gpu
+      DxResourceView* view();
 
     private:
       wrl::ComPtr<ID3D12Resource> m_resource; // The resource itself

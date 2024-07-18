@@ -11,7 +11,8 @@
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/texture_2d.h"
 
-#include "rex_renderer_core/materials/material_parameter.h"
+#include "rex_renderer_core/materials/parameters/mat_sampler_parameter.h"
+#include "rex_renderer_core/materials/parameters/mat_texture_parameter.h"
 
 #include "rex_renderer_core/gfx/primitive_topology.h"
 #include "rex_renderer_core/resources/pipeline_state.h"
@@ -25,13 +26,6 @@ namespace rex
   {
     struct MaterialConstructSettings;
 
-    // A material signature is simply a collection of every signature of every shader
-    struct MaterialSignature
-    {
-      rsl::unique_ptr<ShaderSignature> vs;
-      rsl::unique_ptr<ShaderSignature> ps;
-    };
-
     // Holds the collection of all the resources for a single shader
     struct AllShaderResources
     {
@@ -40,6 +34,14 @@ namespace rex
 
       rsl::vector<TextureMaterialParameter*> textures;  // All the texture parameters for this shader
       rsl::vector<SamplerMaterialParameter*> samplers;  // All the sampler parameters for this shader
+    };
+
+    // Material construct settings are a wrapper around all the settings a material needs to store
+    struct MaterialConstructSettings
+    {
+      RasterStateDesc raster_state;   // the rasterizer settings that'll be stored inside the material
+      BlendDesc blend;								// the blend settings that'll be stored inside the material
+      DepthStencilDesc depth_stencil;	// the depth stencil settings that'll be stored inside the material
     };
 
     // A material is an object combining all shaders and the parameters that can be set on them

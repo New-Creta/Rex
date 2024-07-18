@@ -6,7 +6,7 @@
 
 #include "rex_engine/platform/win/win_com_ptr.h"
 
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 #include "rex_directx/system/dx_shader_compiler.h"
 
 struct IDXGIInfoQueue;
@@ -62,8 +62,8 @@ namespace rex
 
       // Initialize the resource heap which keeps track of all gpu resources
       void init_resource_heap() override;
-      // Allocate a new descriptor heap of a given type
-      rsl::unique_ptr<ViewHeap> allocate_desc_heap(ViewHeapType descHeapType, IsShaderVisible isShaderVisible) override;
+      // Allocate a new view heap of a given type
+      rsl::unique_ptr<ViewHeap> allocate_view_heap(ViewHeapType viewHeapType, IsShaderVisible isShaderVisible) override;
 
     private:
       rsl::unique_ptr<DxDevice> m_device;    // The DirectX device

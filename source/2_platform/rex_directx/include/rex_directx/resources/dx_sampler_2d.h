@@ -13,7 +13,8 @@ namespace rex
 		public:
 			DxSampler2D(const DxResourceView& resourceView);
 
-			DxResourceView* gpu_handle();
+			// Return a view to the object on the gpu
+			DxResourceView* view();
 
 		private:
 			DxResourceView m_resource_view;

@@ -11,7 +11,7 @@
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_command_allocator.h"
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/system/dx_swapchain.h"
 #include "rex_directx/system/dx_shader_compiler.h"
@@ -536,25 +536,6 @@ namespace rex
 
         return texture;
       }
-      rsl::unique_ptr<Texture2D>            create_texture2d(rsl::string_view filepath)
-      {
-        s32 width = 0;
-        s32 height = 0;
-        s32 channels = 0;
-        TextureFormat format = TextureFormat::Unorm4;
-
-        stbi_set_flip_vertically_on_load(false);
-        stbi_uc* data = stbi_load(filepath.data(), &width, &height, &channels, 0);
-
-        if (!data)
-        {
-          REX_ERROR(LogDxRhi, "Failed to load texture at {}", filepath);
-        }
-
-        REX_ASSERT_X(channels == 4, "textures must have 4 channels");
-
-        return create_texture2d(width, height, format, data);
-      }
       rsl::unique_ptr<Texture2D>            create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource)
       {
         DxResourceView desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
@@ -596,27 +577,7 @@ namespace rex
 
         return rsl::make_unique<DxInputLayout>(input_element_descriptions);
       }
-      rsl::unique_ptr<InputLayout>          create_input_layout(const rsl::vector<ShaderParamReflection>& shaderInputParams, IsColorNormalized isColorNormalized)
-      {
-        rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(shaderInputParams.size()));
-        REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
 
-        s32 byte_offset = 0;
-        for (s32 i = 0; i < shaderInputParams.size(); ++i)
-        {
-          input_element_descriptions[i].SemanticName         = shaderInputParams[i].semantic_name.data();
-          input_element_descriptions[i].Format               = d3d::to_vertex_input_format(shaderInputParams[i].semantic_name, shaderInputParams[i].type, isColorNormalized);
-          input_element_descriptions[i].InputSlotClass       = d3d::to_dx12(InputLayoutClassification::PerVertexData);
-          input_element_descriptions[i].SemanticIndex        = shaderInputParams[i].semantic_index;
-          input_element_descriptions[i].InputSlot            = 0;
-          input_element_descriptions[i].AlignedByteOffset    = byte_offset;
-          input_element_descriptions[i].InstanceDataStepRate = 0;
-
-          byte_offset += d3d::format_byte_size(input_element_descriptions[i].Format);
-        }
-
-        return rsl::make_unique<DxInputLayout>(input_element_descriptions);
-      }
       rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName)
       {
         CompileShaderDesc compile_vs_desc{};
@@ -677,32 +638,10 @@ namespace rex
         d3d::set_debug_name_for(d3d_upload_buffer.Get(), "Upload Buffer");
         return rsl::make_unique<DxUploadBuffer>(d3d_upload_buffer);
       }
-      //rsl::unique_ptr<MaterialInstance>     create_material_instance(const MaterialDesc& desc)
-      //{
-      //  // create_material_instance implementation
-      //  MaterialSignature mat_signature{};
-      //  mat_signature.vs = rsl::make_unique<DxShaderReflection>(static_cast<DxShader*>(desc.vs)->dx_bytecode());
-      //  mat_signature.ps = rsl::make_unique<DxShaderReflection>(static_cast<DxShader*>(desc.ps)->dx_bytecode());
 
-      //  rsl::unique_ptr<Material> mat = rsl::make_unique<Material>(mat_signature);
-
-      //  // Material constructor
-      //  store_shader_params(signature.vs);
-      //  store_shader_params(signature.ps);
-
-      //  // store_shader_params implementation
-      //  store_constants(signature.constants);
-      //  store_views(signature.views);
-      //  store_samplers(signature.samplers);
-
-      //}
       rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
       {
         return rsl::make_unique<Material>(rsl::move(shaderPipeline), matConstructSettings);
-      }
-      rsl::unique_ptr<Sampler2D> create_sampler2d(rsl::string_view path)
-      {
-        return nullptr;
       }
       rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc)
       {
@@ -748,7 +687,7 @@ namespace rex
 
         return cmd_list;
       }
-      rsl::unique_ptr<ViewHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible)
+      rsl::unique_ptr<ViewHeap> create_view_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible)
       {
         D3D12_DESCRIPTOR_HEAP_DESC desc{};
         
@@ -761,9 +700,9 @@ namespace rex
           : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
 
-        wrl::ComPtr<ID3D12ViewHeap> desc_heap;
+        wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
         rsl::string_view type_str = rsl::enum_refl::enum_name(type);
-        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateViewHeap(&desc, IID_PPV_ARGS(&desc_heap))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
         {
           REX_ERROR(LogDxRhi, "Failed to create descriptor heap for type: {}", type_str);
           return false;
