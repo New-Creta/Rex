@@ -31,7 +31,9 @@ namespace rex
       m_allocator = rsl::move(alloc);
       m_resource_state_tracker = resourceStateTracker;
 
-      engine_reset(resetData);
+      m_current_backbuffer_rt = resetData.current_backbuffer_rt;
+
+      type_specific_reset(resetData);
       platform_reset(m_allocator->underlying_alloc(), resetData);
     }
     // Execute the commands on the gpu.
@@ -72,9 +74,15 @@ namespace rex
     }
   
     // Return the type of this context
-    GraphicsEngineType GraphicsContext::type() const
+    GraphicsContextType GraphicsContext::type() const
     {
       return m_type;
+    }
+
+    // Return the render target pointing to the current backbuffer
+    RenderTarget* GraphicsContext::current_backbuffer_rt()
+    {
+      return m_current_backbuffer_rt;
     }
 
     // track a transition of a resource
@@ -86,6 +94,11 @@ namespace rex
     gfx::GraphicsEngine* GraphicsContext::owning_engine()
     {
       return m_owning_engine;
+    }
+    // Reset the engine speicifc context
+    void GraphicsContext::type_specific_reset(const ContextResetData& resetData)
+    {
+      // Nothing to implement
     }
   }
 }

@@ -49,7 +49,7 @@ namespace rex
 
     void DxShaderReflection::reflect_constant_buffers(s32 numConstantBuffers)
     {
-      rsl::vector<ConstantBufferReflection> constant_buffers;
+      rsl::vector<CBufferReflDesc> constant_buffers;
       constant_buffers.reserve(numConstantBuffers);
 
       for (card32 i = 0; i < numConstantBuffers; ++i)
@@ -137,12 +137,12 @@ namespace rex
       return version_str;
     }
 
-    ConstantBufferReflection DxShaderReflection::reflect_constant_buffer(ID3D12ShaderReflectionConstantBuffer* cbReflection)
+    CBufferReflDesc DxShaderReflection::reflect_constant_buffer(ID3D12ShaderReflectionConstantBuffer* cbReflection)
     {
       D3D12_SHADER_BUFFER_DESC shader_buffer_desc{};
       cbReflection->GetDesc(&shader_buffer_desc);
 
-      ConstantBufferReflection cb_ref{};
+      CBufferReflDesc cb_ref{};
       cb_ref.name = shader_buffer_desc.Name;
       cb_ref.shader_register = get_constant_buffer_register(m_reflection_object.Get(), cbReflection);
       cb_ref.size = shader_buffer_desc.Size;
@@ -175,7 +175,7 @@ namespace rex
       input_param.semantic_name = param_desc.SemanticName;
       input_param.semantic_index = param_desc.SemanticIndex;
       input_param.type = shader_param_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
-      input_param.size = format_size(input_param.type);
+      input_param.size = format_byte_size(input_param.type);
 
       return input_param;
     }
@@ -188,7 +188,7 @@ namespace rex
       output_param.semantic_name = param_desc.SemanticName;
       output_param.semantic_index = param_desc.SemanticIndex;
       output_param.type = shader_param_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
-      output_param.size = format_size(output_param.type);
+      output_param.size = format_byte_size(output_param.type);
 
       return output_param;
     }

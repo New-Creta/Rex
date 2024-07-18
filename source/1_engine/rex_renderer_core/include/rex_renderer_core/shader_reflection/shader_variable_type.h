@@ -4,6 +4,7 @@ namespace rex
 {
 	namespace gfx
 	{
+    // The type a variable in a shader can be
 		enum class ShaderVariableType
 		{
       Void = 0,

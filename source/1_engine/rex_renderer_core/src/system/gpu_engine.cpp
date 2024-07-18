@@ -53,8 +53,8 @@ namespace rex
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
 
-      m_shader_visible_descriptor_heap_pool.at(DescriptorHeapType::ShaderResources)->clear();
-      m_shader_visible_descriptor_heap_pool.at(DescriptorHeapType::Sampler)->clear();
+      m_shader_visible_descriptor_heap_pool.at(ViewHeapType::AllShaderResources)->clear();
+      m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Sampler)->clear();
     }
     // Present the new frame to the main window
     void GpuEngine::present()
@@ -105,12 +105,12 @@ namespace rex
     }
 
     // Returns a specific descriptor heap based on type
-    DescriptorHeap* GpuEngine::cpu_desc_heap(DescriptorHeapType descHeapType)
+    ViewHeap* GpuEngine::cpu_desc_heap(ViewHeapType descHeapType)
     {
       return m_cpu_descriptor_heap_pool.at(descHeapType).get();
     }
     // Returns a specific descriptor heap based on type that's visible to shaders
-    DescriptorHeap* GpuEngine::shader_visible_desc_heap(DescriptorHeapType descHeapType)
+    ViewHeap* GpuEngine::shader_visible_desc_heap(ViewHeapType descHeapType)
     {
       return m_shader_visible_descriptor_heap_pool.at(descHeapType).get();
     }
@@ -151,28 +151,25 @@ namespace rex
     // Initialize the descriptor heaps which keep track of all descriptors to various resources
     void GpuEngine::init_desc_heaps()
     {
-      init_desc_heap(m_cpu_descriptor_heap_pool, DescriptorHeapType::RenderTargetView, IsShaderVisible::no);
-      init_desc_heap(m_cpu_descriptor_heap_pool, DescriptorHeapType::DepthStencilView, IsShaderVisible::no);
-      init_desc_heap(m_cpu_descriptor_heap_pool, DescriptorHeapType::ShaderResources, IsShaderVisible::no);
-      init_desc_heap(m_cpu_descriptor_heap_pool, DescriptorHeapType::Sampler, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::RenderTargetView, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::DepthStencilView, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::AllShaderResources, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::Sampler, IsShaderVisible::no);
 
-      init_desc_heap(m_shader_visible_descriptor_heap_pool, DescriptorHeapType::ShaderResources, IsShaderVisible::yes);
-      init_desc_heap(m_shader_visible_descriptor_heap_pool, DescriptorHeapType::Sampler, IsShaderVisible::yes);
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::AllShaderResources, IsShaderVisible::yes);
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::Sampler, IsShaderVisible::yes);
     }
-    void GpuEngine::init_desc_heap(DescriptorHeapPool& descHeapPool, DescriptorHeapType descHeapType, IsShaderVisible isShaderVisible)
+    void GpuEngine::init_desc_heap(ViewHeapPool& descHeapPool, ViewHeapType descHeapType, IsShaderVisible isShaderVisible)
     {
       descHeapPool.emplace(descHeapType, allocate_desc_heap(descHeapType, isShaderVisible));
-
     }
 
     ContextResetData GpuEngine::create_context_reset_data(PipelineState* pso)
     {
       ContextResetData reset_data{};
       reset_data.pso = pso;
-      reset_data.global_srv_desc_heap = cpu_desc_heap(DescriptorHeapType::ShaderResourceView);
-      reset_data.global_sampler_desc_heap = cpu_desc_heap(DescriptorHeapType::Sampler);
-      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(DescriptorHeapType::ShaderResourceView);
-      reset_data.shader_visible_sampler_desc_heap = shader_visible_desc_heap(DescriptorHeapType::Sampler);
+      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(ViewHeapType::ShaderResourceView);
+      reset_data.shader_visible_sampler_desc_heap = shader_visible_desc_heap(ViewHeapType::Sampler);
 
       return reset_data;
     }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rex_engine/engine/invalid_object.h"
+
 namespace rex
 {
   namespace gfx
@@ -16,12 +18,13 @@ namespace rex
 
     enum class PrimitiveTopologyType
     {
-      Point,
+      Point,        
       Line,
       Triangle,
       Patch
     };
 
+    // Convert primitive topology to its underlying type. This is used for the pso
     constexpr PrimitiveTopologyType to_topology_type(PrimitiveTopology topology)
     {
       switch (topology)
@@ -32,6 +35,8 @@ namespace rex
       case rex::gfx::PrimitiveTopology::TriangleList:    return PrimitiveTopologyType::Triangle;
       case rex::gfx::PrimitiveTopology::TriangleStrip:   return PrimitiveTopologyType::Triangle;
       }
+
+      return invalid_obj<PrimitiveTopologyType>();
     }
   } // namespace gfx
 } // namespace rex

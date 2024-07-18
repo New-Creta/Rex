@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- * * * * * * * * AUTO-GENERATED FILE  * * * * * * * * -->
-<!-- Edit ./tools/generate_natvis/nlohmann_json.natvis.j2 -->
-<!-- * * * * * * * * AUTO-GENERATED FILE  * * * * * * * * -->
-
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
     <!-- Namespace nlohmann -->
     <Type Name="nlohmann::json_abi_v3_11_3::basic_json&lt;*&gt;">

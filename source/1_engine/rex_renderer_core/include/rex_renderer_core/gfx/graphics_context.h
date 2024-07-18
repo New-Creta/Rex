@@ -18,28 +18,30 @@ namespace rex
   {
     class GraphicsEngine;
     class PooledAllocator;
+    class RenderTarget;
   }
 
   namespace gfx
   {
     class CommandAllocator;
     class Resource;
-    class DescriptorHeap;
+    class ViewHeap;
     struct ContextResetData;
 
     // A graphics context acts as the base class for the interface into queueing gpu commands
     class GraphicsContext
     {
     public:
-      GraphicsContext(gfx::GraphicsEngine* owningEngine, GraphicsEngineType type);
+      GraphicsContext(gfx::GraphicsEngine* owningEngine, GraphicsContextType type);
       virtual ~GraphicsContext();
 
       // Reset the context, freeing up any previously allocated commands
+      // After this call, the context is in the same state as it was just constructed
       void reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc, ResourceStateTracker* resourceStateTracker, const ContextResetData& resetData);
       // Execute the commands on the gpu.
       // A sync info is returned so the user can use it to sync with other contexts
       ScopedPoolObject<SyncInfo> execute_on_gpu(WaitForFinish waitForFinish = WaitForFinish::no);
-      // Flush all render states set in this command lists and notify the parent
+      // Flush all render states set in this command lists and notify the parent tracker
       void flush_render_states();
       // Stall the gpu from executing this context until the commands the sync info represents has completed
       void stall(SyncInfo& syncInfo);
@@ -47,7 +49,10 @@ namespace rex
       bool has_executed() const;
 
       // Return the type of this context
-      GraphicsEngineType type() const;
+      GraphicsContextType type() const;
+
+      // Return the render target pointing to the current backbuffer
+      RenderTarget* current_backbuffer_rt();
 
       // Profiling events
       virtual void begin_profile_event(rsl::string_view eventName) = 0;
@@ -59,7 +64,7 @@ namespace rex
       // Return the owning gpu engine of this context
       gfx::GraphicsEngine* owning_engine();
       // Reset the engine speicifc context
-      virtual void engine_reset(const ContextResetData& resetData) {}
+      virtual void type_specific_reset(const ContextResetData& resetData);
       // Reset the platform specific context
       virtual void platform_reset(CommandAllocator* alloc, const ContextResetData& resetData) = 0;
 
@@ -67,7 +72,8 @@ namespace rex
       ScopedPoolObject<gfx::PooledAllocator> m_allocator;  // The allocator to use for allocating gpu commands
       gfx::GraphicsEngine* m_owning_engine;                // The owning engine of this context
       ResourceStateTracker* m_resource_state_tracker;      // The tracker for resource states
-      GraphicsEngineType m_type;                           // The type of this context
+      GraphicsContextType m_type;                          // The type of this context
+      RenderTarget* m_current_backbuffer_rt;               // The rendertarget pointing to the current backbuffer
     };
   }
 }

@@ -12,7 +12,7 @@ namespace rex
 {
   namespace gfx
   {
-    DxDescriptorHeap::DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device, IsShaderVisible isShaderVisible)
+    DxViewHeap::DxViewHeap(const wrl::ComPtr<ID3D12ViewHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device, IsShaderVisible isShaderVisible)
 			: m_descriptor_heap(descHeap)
 			, m_device(device)
 			, m_num_used_descriptors(0)
@@ -26,7 +26,7 @@ namespace rex
     }
 
     // Create a render target view and return a handle pointing to it
-    DxResourceView DxDescriptorHeap::create_rtv(ID3D12Resource* resource)
+    DxResourceView DxViewHeap::create_rtv(ID3D12Resource* resource)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_RTV, "Trying to create a render target view from a descriptor heap that's not configured to create render target views");
 
@@ -40,7 +40,7 @@ namespace rex
       return rtv_handle;
     }
     // Create a depth stencil view and return a handle pointing to it
-    DxResourceView DxDescriptorHeap::create_dsv(ID3D12Resource* resource, DXGI_FORMAT format)
+    DxResourceView DxViewHeap::create_dsv(ID3D12Resource* resource, DXGI_FORMAT format)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_DSV, "Trying to create a depth stencil view from a descriptor heap that's not configured to create depth stencil views");
 
@@ -55,7 +55,7 @@ namespace rex
       return dsv_handle;
     }
     // Create a constant buffer view and return a handle pointing to it
-    DxResourceView DxDescriptorHeap::create_cbv(ID3D12Resource* resource, rsl::memory_size size)
+    DxResourceView DxViewHeap::create_cbv(ID3D12Resource* resource, rsl::memory_size size)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a constant buffer view from a descriptor heap that's not configured to create constant buffers views");
 
@@ -70,7 +70,7 @@ namespace rex
       return cbv_handle;
     }
     // Create a shader resource view pointing to a texture and return a handle pointing to this view
-    DxResourceView DxDescriptorHeap::create_texture2d_srv(ID3D12Resource* resource)
+    DxResourceView DxViewHeap::create_texture2d_srv(ID3D12Resource* resource)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a constant buffer view from a descriptor heap that's not configured to create constant buffers views");
 
@@ -87,7 +87,7 @@ namespace rex
       return desc_handle;
     }
 
-    rsl::unique_ptr<DxSampler2D> DxDescriptorHeap::create_sampler2d(const ShaderSamplerDesc& desc)
+    rsl::unique_ptr<DxSampler2D> DxViewHeap::create_sampler2d(const ShaderSamplerDesc& desc)
     {
       REX_ASSERT_X(m_desc_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, "Trying to create a sampler from a descriptor heap that's not configured to create samplers");
 
@@ -98,7 +98,7 @@ namespace rex
       return rsl::make_unique<DxSampler2D>(desc_handle);
     }
 
-    rsl::unique_ptr<ResourceView> DxDescriptorHeap::copy_descriptors(const rsl::vector<ResourceView*>& descriptors)
+    rsl::unique_ptr<ResourceView> DxViewHeap::copy_views(const rsl::vector<ResourceView*>& descriptors)
     {
       if (descriptors.empty())
       {
@@ -118,7 +118,7 @@ namespace rex
     }
 
     // Return the internal wrapped descriptor heap
-    ID3D12DescriptorHeap* DxDescriptorHeap::dx_object()
+    ID3D12ViewHeap* DxViewHeap::dx_object()
     {
       return m_descriptor_heap.Get();
     }
@@ -127,13 +127,13 @@ namespace rex
     // This will cause new descriptor to be allocated from the beginning of the heap
     // this does not destroy existing descriptors, 
     // it only repoints the allocating start back to the beginning of the heap
-    void DxDescriptorHeap::clear()
+    void DxViewHeap::clear()
     {
       m_num_used_descriptors = 0;
     }
 
     // Return a handle pointing to the start of the descriptor heap
-    DxResourceView DxDescriptorHeap::new_free_handle(s32 numDescriptors)
+    DxResourceView DxViewHeap::new_free_handle(s32 numDescriptors)
     {
       DxResourceView handle = my_start_handle();
       handle += m_num_used_descriptors;
@@ -141,7 +141,7 @@ namespace rex
       return handle;
     }
     // Return a handle pointing to a free bit of memory in the descriptor heap
-    DxResourceView DxDescriptorHeap::my_start_handle()
+    DxResourceView DxViewHeap::my_start_handle()
     {
       D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle = m_descriptor_heap->GetCPUDescriptorHandleForHeapStart();
       D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle{};

@@ -49,7 +49,7 @@ namespace rex
     }
     void DxShaderParameterReflection::init_size()
     {
-      m_size = format_size(m_type);
+      m_size = format_byte_size(m_type);
     }
 
     ShaderParameterType DxShaderParameterReflection::component_mask_to_float(s32 componentMask) const

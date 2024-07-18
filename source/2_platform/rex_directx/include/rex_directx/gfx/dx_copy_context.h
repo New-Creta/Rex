@@ -42,7 +42,7 @@ namespace rex
       void update_texture2d(Texture2D* texture, const void* data) override;
 
       // Copy descriptors from one heap to another
-      rsl::unique_ptr<ResourceView> copy_descriptors(DescriptorHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors) override;
+      rsl::unique_ptr<ResourceView> copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors) override;
 
     protected:
       // Reset this context by resetting the commandlist and its allocator

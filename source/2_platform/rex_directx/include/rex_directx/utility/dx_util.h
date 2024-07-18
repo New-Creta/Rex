@@ -64,7 +64,7 @@ namespace rex
     class IndexBuffer;
     class VertexBuffer;
     class UploadBuffer;
-    class DescriptorHeap;
+    class ViewHeap;
     class ShaderSignature;
     class ResourceView;
     class PipelineState;
@@ -76,7 +76,7 @@ namespace rex
     class DxShader;
     class DxTexture2D;
     class DxInputLayout;
-    class DxDescriptorHeap;
+    class DxViewHeap;
     class DxSampler2D;
     class DxResourceView;
 
@@ -136,8 +136,8 @@ namespace rex
 
       DXGI_FORMAT to_vertex_input_format(rsl::string_view semanticName, ShaderParameterType type, IsColorNormalized isColorNormalized);
       DXGI_FORMAT normalize_format(DXGI_FORMAT format);
-      DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask);
-      DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
+      //DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask);
+      //DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask);
       PrimitiveTopologyType to_primitive_topology_type(PrimitiveTopology topology);
       ShaderType shader_visibility_to_type(ShaderVisibility visibility);
 
@@ -169,7 +169,7 @@ namespace rex
       D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(DescriptorRangeType type);
       D3D12_RESOURCE_STATES to_dx12(ResourceState state);
       D3D12_COMMAND_LIST_TYPE to_dx12(GraphicsEngineType type);
-      D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(DescriptorHeapType type);
+      D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(ViewHeapType type);
       D3D12_PRIMITIVE_TOPOLOGY_TYPE to_dx12(PrimitiveTopologyType type);
       D3D12_SAMPLER_DESC to_dx12(const ShaderSamplerDesc& desc);
 
@@ -182,7 +182,7 @@ namespace rex
       DxShader* to_dx12(Shader* shader);
       DxTexture2D* to_dx12(Texture2D* texture);
       DxInputLayout* to_dx12(InputLayout* inputLayout);
-      DxDescriptorHeap* to_dx12(DescriptorHeap* descHeap);
+      DxViewHeap* to_dx12(ViewHeap* descHeap);
       DxSampler2D* to_dx12(Sampler2D* sampler);
       DxResourceView* to_dx12(ResourceView* resourceView);
 
@@ -203,8 +203,8 @@ namespace rex
       TextureFormat from_dx12(DXGI_FORMAT type);
       ShaderClassType from_dx12(D3D_SHADER_VARIABLE_CLASS type);
       ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type);
-      ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type);
-      ShaderParamComponentMask from_dx12(BYTE mask);
+      //ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type);
+      //ShaderParamComponentMask from_dx12(BYTE mask);
       ShaderVisibility from_dx12(D3D12_SHADER_VISIBILITY visibility);
 
     } // namespace d3d

@@ -15,6 +15,7 @@ namespace rex
         : m_type(type)
       {}
 
+      // Return the type of the shader
       ShaderType type() const
       {
         return m_type;

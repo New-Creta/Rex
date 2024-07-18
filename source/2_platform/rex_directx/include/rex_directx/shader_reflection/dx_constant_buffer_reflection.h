@@ -19,7 +19,7 @@ namespace rex
       rsl::string_view name() const;
       s32 size() const;
       s32 shader_register() const;
-      rsl::vector<ConstantBufferVariableReflection> variables() const;
+      rsl::vector<CBufferVarReflDesc> variables() const;
 
     private:
       void reflect_variables(s32 numVariables);
@@ -30,7 +30,7 @@ namespace rex
       rsl::tiny_stack_string m_name;
       s32 m_size;
       s32 m_shader_register;
-      rsl::vector<ConstantBufferVariableReflection> m_variables_reflection;
+      rsl::vector<CBufferVarReflDesc> m_variables_reflection;
     };
 
   }

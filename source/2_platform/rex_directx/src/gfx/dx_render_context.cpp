@@ -257,10 +257,10 @@ namespace rex
     {
       start_recording_commands(alloc, resetData.pso);
 
-      rsl::array<ID3D12DescriptorHeap*, 2> d3d_desc_heaps{};
+      rsl::array<ID3D12ViewHeap*, 2> d3d_desc_heaps{};
       d3d_desc_heaps[0] = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();
       d3d_desc_heaps[1] = d3d::to_dx12(resetData.shader_visible_sampler_desc_heap)->dx_object();
-      m_cmd_list->SetDescriptorHeaps(d3d_desc_heaps.size(), d3d_desc_heaps.data());
+      m_cmd_list->SetViewHeaps(d3d_desc_heaps.size(), d3d_desc_heaps.data());
     }
 
     // Profiling events
@@ -305,7 +305,7 @@ namespace rex
     void DxRenderContext::bind_resources_for_shader(Material* material, ShaderType type)
     {
       // 1. Split textures and samplers of material based on shader visibility
-      ShaderResources shader_resources = material->resources_for_shader(type);
+      AllShaderResources shader_resources = material->resources_for_shader(type);
 
       // 2. Copy textures and samplers into descriptor heap that's visible in shaders, make sure they're sorted based on shader register
       rsl::vector<ResourceView*> texture_handles;
@@ -346,7 +346,7 @@ namespace rex
       auto copy_ctx = new_copy_ctx();
       if (!texture_handles.empty())
       {
-				rsl::unique_ptr<ResourceView> start_texture_handle = copy_ctx->copy_descriptors(copy_ctx->shader_visible_srv_heap(), texture_handles);
+				rsl::unique_ptr<ResourceView> start_texture_handle = copy_ctx->copy_views(copy_ctx->shader_visible_srv_heap(), texture_handles);
 				// 3. Bind the descriptor table based on the descriptors in this shader visible descriptor heap
 				if (shader_resources.textures_root_param_idx != -1)
 				{
@@ -356,7 +356,7 @@ namespace rex
 
       if (!sampler_handles.empty())
       {
-        rsl::unique_ptr<ResourceView> start_sampler_handle = copy_ctx->copy_descriptors(copy_ctx->shader_visible_sampler_heap(), sampler_handles);
+        rsl::unique_ptr<ResourceView> start_sampler_handle = copy_ctx->copy_views(copy_ctx->shader_visible_sampler_heap(), sampler_handles);
         if (shader_resources.samplers_root_param_idx != -1)
         {
           m_cmd_list->SetGraphicsRootDescriptorTable(shader_resources.samplers_root_param_idx, d3d::to_dx12(start_sampler_handle.get())->gpu_handle());

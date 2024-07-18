@@ -10,5 +10,7 @@ namespace rex
       Copy,   // Type used to specify for copy commands
       Compute // Type used to specify for compute commands
     };
+
+    using GraphicsContextType = GraphicsEngineType;
   }
 }

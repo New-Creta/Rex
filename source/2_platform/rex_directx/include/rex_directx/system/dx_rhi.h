@@ -43,7 +43,7 @@ namespace rex
       // Create a DirectX commandlist
       wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(CommandAllocator* alloc, GraphicsEngineType type);
       // Create a DirectX descriptor heap
-      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible);
+      rsl::unique_ptr<ViewHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible);
       // Create a DirectX resource heap
       rsl::unique_ptr<ResourceHeap> create_resource_heap();
 

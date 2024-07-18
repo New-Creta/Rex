@@ -4,13 +4,13 @@ namespace rex
 {
 	namespace gfx
 	{
-		enum class ShaderParamComponentType
-		{
-			Unknown,
-			Uint,				// A single unsigned integer of 32 bits
-			Sint,				// A single signed integer of 32 bits
-			Float,			// A single float of 32 bits
-		};
+		//enum class ShaderParamComponentType
+		//{
+		//	Unknown,
+		//	Uint,				// A single unsigned integer of 32 bits
+		//	Sint,				// A single signed integer of 32 bits
+		//	Float,			// A single float of 32 bits
+		//};
 
 		// The following scalar types are supported, each of which are supported up to 4 components
 		// - bool
@@ -106,6 +106,7 @@ namespace rex
 			Bool,
 		};
 
+		// Return the size in bytes of the scalar type
 		constexpr s32 scalar_size(ScalarType type)
 		{
 			switch (type)
@@ -125,6 +126,7 @@ namespace rex
 			return 0;
 		}
 
+		// Return the component count of a shader parameter type
 		constexpr s32 component_count(ShaderParameterType type)
 		{
 			switch (type)
@@ -194,6 +196,7 @@ namespace rex
 			return 0;
 		}
 
+		// Return the scalar type of a shader parameter type
 		constexpr ScalarType scalar_type(ShaderParameterType type)
 		{
 			switch (type)
@@ -265,11 +268,13 @@ namespace rex
 			return ScalarType::Unknown;
 		}
 
-		constexpr s32 format_size(ShaderParameterType type)
+		// Return byte size of a shader parameter type
+		constexpr s32 format_byte_size(ShaderParameterType type)
 		{
 			return component_count(type) * scalar_size(scalar_type(type));
 		}
 
+		// Return if the shader parameter type is normalized or not
 		constexpr bool is_normalized_format(ShaderParameterType type)
 		{
 			switch (type)
@@ -300,7 +305,7 @@ namespace rex
 		}
 
 		// Determine if the gpu will be able to convert one format to the other
-		constexpr bool is_mappable_vertex_format(ShaderParameterType from, ShaderParameterType to)
+		constexpr bool is_convertible_shader_param_type(ShaderParameterType from, ShaderParameterType to)
 		{
 			if (from == to)
 			{

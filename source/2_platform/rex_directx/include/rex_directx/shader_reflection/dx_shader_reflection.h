@@ -10,7 +10,7 @@
 #include "rex_directx/shader_reflection/dx_constant_buffer_variable_reflection.h"
 #include "rex_directx/shader_reflection/dx_shader_param_reflection.h"
 
-#include "rex_renderer_core/shader_reflection/shader_reflection.h"
+#include "rex_renderer_core/shader_reflection/shader_signature.h"
 
 namespace rex
 {
@@ -33,7 +33,7 @@ namespace rex
     private:
       DxShaderReflection(const void* byteCode, s32 byteCount, ShaderType type);
 
-      ConstantBufferReflection reflect_constant_buffer(ID3D12ShaderReflectionConstantBuffer* cbReflection);
+      CBufferReflDesc reflect_constant_buffer(ID3D12ShaderReflectionConstantBuffer* cbReflection);
       ShaderParamReflection reflect_shader_input_parameter(s32 idx);
       ShaderParamReflection reflect_shader_output_parameter(s32 idx);
       BoundResourceReflection reflect_bound_resource(s32 idx);

@@ -3,7 +3,6 @@
 #include "imgui/imgui.h"
 
 #include "rex_renderer_core/imgui/imgui_frame_context.h"
-#include "rex_renderer_core/imgui/imgui_render_state.h"
 #include "rex_renderer_core/gfx/primitive_topology.h"
 
 namespace rex

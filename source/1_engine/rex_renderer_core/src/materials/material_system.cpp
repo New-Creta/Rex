@@ -9,7 +9,7 @@
 
 #include "rex_renderer_core/system/shader_pipeline.h"
 #include "rex_renderer_core/gfx/rhi.h"
-#include "rex_renderer_core/shader_reflection/shader_reflection.h"
+#include "rex_renderer_core/shader_reflection/shader_signature.h"
 
 #include "rex_engine/string/stringid.h"
 #include "rex_engine/json/json.h"

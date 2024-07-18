@@ -6,7 +6,7 @@
 
 #include "rex_renderer_core/system/shader_type.h"
 #include "rex_renderer_core/resources/shader.h"
-#include "rex_renderer_core/shader_reflection/shader_reflection.h"
+#include "rex_renderer_core/shader_reflection/shader_signature.h"
 
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/texture_2d.h"
@@ -25,81 +25,79 @@ namespace rex
   {
     struct MaterialConstructSettings;
 
-    // NOTE: A parameter with the same name and size between shaders
-    // is treated as a parameters that's shared between these shaders
-    // In DirectX a param can be visible in 1 shader or in all of them, you can't mask combine
-
-    // A signature describes all the resources that need to be bound for a shader
+    // A material signature is simply a collection of every signature of every shader
     struct MaterialSignature
     {
       rsl::unique_ptr<ShaderSignature> vs;
       rsl::unique_ptr<ShaderSignature> ps;
     };
 
-    struct MaterialDesc
+    // Holds the collection of all the resources for a single shader
+    struct AllShaderResources
     {
-      Shader* vs;
-      Shader* ps;
-    };
+      s32 textures_root_param_idx; // The param index in the root signature for the textures in this shader
+      s32 samplers_root_param_idx; // The param index in the root signature for the samplers in this shader
 
-    struct ShaderResources
-    {
-      s32 textures_root_param_idx;
-      s32 samplers_root_param_idx;
-
-      rsl::vector<TextureMaterialParameter*> textures;
-      rsl::vector<SamplerMaterialParameter*> samplers;
+      rsl::vector<TextureMaterialParameter*> textures;  // All the texture parameters for this shader
+      rsl::vector<SamplerMaterialParameter*> samplers;  // All the sampler parameters for this shader
     };
 
     // A material is an object combining all shaders and the parameters that can be set on them
-    // A material cannot be used directly, an instance needs to be created instead which can
-    // set a shader's parameters at runtime
     class Material
     {
     public:
       Material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings);
 
+      // Set a texture parameter of the material
       void set_texture(rsl::string_view name, Texture2D* texture);
+      // Set a sampler parameter of the material
       void set_sampler(rsl::string_view name, Sampler2D* sampler);
+      // Set the blend factor of the material
+      void set_blend_factor(const BlendFactor& blendFactor);
 
+      // Return the primitive topology of this material
       PrimitiveTopology primitive_topology() const;
-      //PipelineState* pso();
+      // Return the root signature of this material
       RootSignature* root_signature();
+      // Return the blend factor of this material
       BlendFactor blend_factor();
-      //InputLayout* input_layout();
 
-      ShaderResources resources_for_shader(ShaderType type);
+      // Return all the shader resources for a given shader type
+      AllShaderResources resources_for_shader(ShaderType type);
 
+      // Fill in the pso desc with data that's stored in the material
       void fill_pso_desc(PipelineStateDesc& desc);
 
+      // Validate an input layout if it can be used with this material
       void validate_input_layout(InputLayout* inputLayout);
 
     private:
+      // Initialize the parameters of the material based on the resources of a shader signature
       void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature);
 
     private:
+      // All texture parameters of the material
       rsl::unordered_map<rsl::string, TextureMaterialParameter> m_textures;
+      // All sampler parameters of the material
       rsl::unordered_map<rsl::string, SamplerMaterialParameter> m_samplers;
 
+      // The primitive topology of the material
       PrimitiveTopology m_primitive_topology;
-      //rsl::unique_ptr<PipelineState> m_pso;
+      // The root signature of the material
       rsl::unique_ptr<RootSignature> m_root_signature;
-      //rsl::unique_ptr<InputLayout> m_input_layout;
-      //rsl::unique_ptr<RasterState> m_raster_state; // The render state used by imgui
 
+      // The rasterizer settings of the material
       RasterStateDesc m_raster_state;
+      // The blend settings of the material
       BlendDesc m_blend;
+      // The depth stencil settings of the material
       DepthStencilDesc m_depth_stencil;
-      InputLayoutDesc m_input_layout_desc; // used for validation
-
+      // The input layout desc of the material, used for validating other input layouts
+      InputLayoutDesc m_input_layout_desc;
+      // The blend factor of the material
       BlendFactor m_blend_factor;
-
+      // The shader pipeline of the material
       ShaderPipeline m_shader_pipeline;
-    };
-
-    class MaterialInstance
-    {
-
     };
   }
 }

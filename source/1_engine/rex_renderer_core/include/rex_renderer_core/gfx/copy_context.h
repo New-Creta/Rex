@@ -30,7 +30,10 @@ namespace rex
     public:
       CopyContext(gfx::GraphicsEngine* owningEngine);
 
-      virtual rsl::unique_ptr<ResourceView> copy_descriptors(DescriptorHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors) = 0;
+      // Copy texture views into a heap that's accessible to shaders
+      rsl::unique_ptr<ResourceView> copy_texture_views_to_shaders(const rsl::vector<ResourceView*>& views);
+      // Copy sampler views into a heap that's accessible to shaders
+      rsl::unique_ptr<ResourceView> copy_sampler_views_to_shaders(const rsl::vector<ResourceView*>& views);
 
       // Update a constant buffer's data
       virtual void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
@@ -41,19 +44,17 @@ namespace rex
       // Update a texture's data
       virtual void update_texture2d(Texture2D* texture, const void* data) = 0;
 
-      DescriptorHeap* global_srv_heap();
-      DescriptorHeap* global_sampler_heap();
-      DescriptorHeap* shader_visible_srv_heap();
-      DescriptorHeap* shader_visible_sampler_heap();
-
     protected:
-      void engine_reset(const ContextResetData& resetData) override;
+      // Perform a reset, specific to the type of context
+      void type_specific_reset(const ContextResetData& resetData) override;
 
     private:
-      DescriptorHeap* m_global_srv_heap;
-      DescriptorHeap* m_global_sampler_heap;
-      DescriptorHeap* m_shader_visible_srv_heap;
-      DescriptorHeap* m_shader_visible_sampler_heap;
+      // Copy views into a heap that's accessible to shaders
+      virtual rsl::unique_ptr<ResourceView> copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors) = 0;
+
+    private:
+      ViewHeap* m_shader_visible_srv_heap;      // the srv view heap that's accessible to shaders
+      ViewHeap* m_shader_visible_sampler_heap;  // the sampler view heap that's accessible to shaders
     };
   }
 }

@@ -6,6 +6,8 @@ namespace rex
 {
 	namespace gfx
 	{
+		class Shader;
+
 		struct ShaderPipeline
 		{
 			rsl::unique_ptr<Shader> vs;

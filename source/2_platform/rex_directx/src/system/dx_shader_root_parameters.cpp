@@ -1,6 +1,6 @@
 #include "rex_directx/system/dx_shader_root_parameters.h"
 
-#include "rex_renderer_core/shader_reflection/shader_reflection.h"
+#include "rex_renderer_core/shader_reflection/shader_signature.h"
 
 namespace rex
 {

@@ -15,10 +15,8 @@ namespace rex
   namespace gfx
   {
     class Texture2D;
-    class RootSignature;
     class InputLayout;
     class PipelineState;
-    class RasterState;
     class Shader;
 
     class ImGuiRenderer : public Renderer
@@ -54,11 +52,7 @@ namespace rex
     private:
       rsl::unique_ptr<Texture2D> m_fonts_texture;          // The fonts texture, the data comes from imgui
       rsl::unique_ptr<Sampler2D> m_fonts_sampler;          // The sampler for the fonts texture
-      rsl::unique_ptr<Shader> m_vertex_shader;             // The vertex shader used by imgui
-      rsl::unique_ptr<Shader> m_pixel_shader;              // The pixel shader used by imgui
-      //rsl::unique_ptr<RootSignature> m_root_signature;     // The root signature used by imgui, this will become a material in the future
       rsl::unique_ptr<InputLayout> m_input_layout;         // The input layout used by imgui
-      rsl::unique_ptr<RasterState> m_raster_state; // The render state used by imgui
       rsl::unique_ptr<PipelineState> m_pipeline_state;     // The pipeline state used by imgui
       rsl::unique_ptr<Material> m_material;                // The material used by imgui
     };

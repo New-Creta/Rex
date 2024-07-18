@@ -26,10 +26,10 @@ namespace rex
     // |        DSV          |      Read/Write     |       Read/Write     |
     // +---------------------+---------------------+----------------------+
 
-    class DxDescriptorHeap : public DescriptorHeap
+    class DxViewHeap : public ViewHeap
     {
     public:
-      DxDescriptorHeap(const wrl::ComPtr<ID3D12DescriptorHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device, IsShaderVisible isShaderVisible);
+      DxViewHeap(const wrl::ComPtr<ID3D12ViewHeap>& descHeap, const wrl::ComPtr<ID3D12Device1>& device, IsShaderVisible isShaderVisible);
 
       // Create a render target view and return a handle pointing to it
       DxResourceView create_rtv(ID3D12Resource* resource);
@@ -43,10 +43,10 @@ namespace rex
       // Create a 2D texture sampler
       rsl::unique_ptr<DxSampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
 
-      rsl::unique_ptr<ResourceView> copy_descriptors(const rsl::vector<ResourceView*>& descriptors) override;
+      rsl::unique_ptr<ResourceView> copy_views(const rsl::vector<ResourceView*>& descriptors) override;
 
       // Return the internal wrapped descriptor heap
-      ID3D12DescriptorHeap* dx_object();
+      ID3D12ViewHeap* dx_object();
 
       // Reset the descriptor heap
       // This will cause new descriptor to be allocated from the beginning of the heap
@@ -61,7 +61,7 @@ namespace rex
       DxResourceView my_start_handle();
 
     private:
-      wrl::ComPtr<ID3D12DescriptorHeap> m_descriptor_heap;
+      wrl::ComPtr<ID3D12ViewHeap> m_descriptor_heap;
       wrl::ComPtr<ID3D12Device1> m_device;
       D3D12_DESCRIPTOR_HEAP_TYPE m_desc_heap_type;
       s32 m_descriptor_size;

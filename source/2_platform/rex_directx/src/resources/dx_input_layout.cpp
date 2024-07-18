@@ -52,7 +52,7 @@ namespace rex
         }
 
         ShaderParameterType format = d3d::from_dx12_shader_param_type(it->Format);
-        if (!is_mappable_vertex_format(format, elem.format))
+        if (!is_convertible_shader_param_type(format, elem.format))
         {
           return false;
         }

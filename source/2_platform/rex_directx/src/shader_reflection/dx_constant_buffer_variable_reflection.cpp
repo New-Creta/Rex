@@ -26,7 +26,7 @@ namespace rex
     }
 
     DxConstantBufferVariableReflection::DxConstantBufferVariableReflection(ID3D12ShaderReflectionVariable* varRefl)
-      : ConstantBufferVariableReflection(create_desc(varRefl))
+      : CBufferVarReflDesc(create_desc(varRefl))
       , m_var_relf(varRefl)
     {
       D3D12_SHADER_VARIABLE_DESC cb_var_desc;

@@ -52,12 +52,14 @@ namespace rex
     {
       for (const BoundResourceReflection& texture : signature->textures())
       {
+        REX_ASSERT_X(!m_textures.contains(texture.name), "{} is already found in the material parameters, you like have a parameter in your shader with the same name, this is not supported. Shader: {}", rsl::enum_refl::enum_name(type));
         TextureMaterialParameter tex_param(texture.name, type, texture.shader_register);
         m_textures.emplace(texture.name, rsl::move(tex_param));
       }
 
       for (const BoundResourceReflection& sampler : signature->samplers())
       {
+        REX_ASSERT_X(!m_samplers.contains(sampler.name), "{} is already found in the material parameters, you like have a parameter in your shader with the same name, this is not supported. Shader: {}", rsl::enum_refl::enum_name(type));
         SamplerMaterialParameter sampler_param(sampler.name, type, sampler.shader_register);
         m_samplers.emplace(sampler.name, rsl::move(sampler_param));
       }
@@ -70,6 +72,10 @@ namespace rex
     void Material::set_sampler(rsl::string_view name, Sampler2D* sampler)
     {
       m_samplers.at(name).set(sampler);
+    }
+    void Material::set_blend_factor(const BlendFactor& blendFactor)
+    {
+      m_blend_factor = blendFactor;
     }
 
     PrimitiveTopology Material::primitive_topology() const
@@ -85,9 +91,9 @@ namespace rex
       return m_blend_factor;
     }
 
-    ShaderResources Material::resources_for_shader(ShaderType type)
+    AllShaderResources Material::resources_for_shader(ShaderType type)
     {
-      ShaderResources resources{};
+      AllShaderResources resources{};
 
       for (auto& texture : m_textures)
       {

@@ -29,7 +29,7 @@ namespace rex
     {
       return m_shader_register;
     }
-    rsl::vector<ConstantBufferVariableReflection> DxConstantBufferReflection::variables() const
+    rsl::vector<CBufferVarReflDesc> DxConstantBufferReflection::variables() const
     {
       return m_variables_reflection;
     }

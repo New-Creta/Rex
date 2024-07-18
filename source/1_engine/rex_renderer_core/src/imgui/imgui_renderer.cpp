@@ -12,7 +12,6 @@
 
 #include "rex_renderer_core/imgui/imgui_frame_context.h"
 #include "rex_renderer_core/imgui/imgui_viewport.h"
-#include "rex_renderer_core/imgui/imgui_resources.h"
 #include "rex_renderer_core/imgui/imgui_window_render_params.h"
 
 #include "rex_renderer_core/materials/material_system.h"
@@ -59,7 +58,7 @@ namespace rex
 
       // As the imgui renderer main viewport is the main window of the application
       // it needs to set its render target to the one pointing to the current back buffer
-      render_ctx->set_render_target(rhi::current_backbuffer_rt());
+      render_ctx->set_render_target(render_ctx->current_backbuffer_rt());
 
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (RexImGuiViewport* rex_viewport = (RexImGuiViewport*)main_viewport->RendererUserData)
@@ -200,8 +199,6 @@ namespace rex
       m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
 
       m_material->validate_input_layout(m_input_layout.get());
-
-      //REX_ASSERT_X(m_material->input_layout()->vertex_size() == sizeof(ImDrawVert), "ImGui's input layout size does not match the size of a single ImGui vertex");
     }
     // Initialize the pso based on the the gpu resources
     void ImGuiRenderer::init_pso()

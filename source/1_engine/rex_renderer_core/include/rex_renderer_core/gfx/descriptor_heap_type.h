@@ -4,12 +4,12 @@ namespace rex
 {
   namespace gfx
   {
-    enum class DescriptorHeapType
+    enum class ViewHeapType
     {
       ConstantBufferView,
       ShaderResourceView = ConstantBufferView,
       UnorderedAccessView = ConstantBufferView,
-      ShaderResources = ConstantBufferView,
+      AllShaderResources = ConstantBufferView,
       RenderTargetView,
       DepthStencilView,
       Sampler

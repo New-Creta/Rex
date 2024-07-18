@@ -24,7 +24,7 @@
 #include "rex_directx/resources/dx_upload_buffer.h"
 #include "rex_directx/resources/dx_pipeline_state.h"
 
-#include "rex_renderer_core/shader_reflection/shader_reflection.h"
+#include "rex_renderer_core/shader_reflection/shader_signature.h"
 
 #include "rex_renderer_core/materials/material_system.h"
 #include "rex_renderer_core/gfx/rhi.h"
@@ -48,8 +48,8 @@ namespace rex
 
       s32 texture_pitch_size(s32 width, TextureFormat format)
       {
-        s32 format_size = format_byte_size(format);
-        s32 pitch_size = width * format_size;
+        s32 format_byte_size = format_byte_size(format);
+        s32 pitch_size = width * format_byte_size;
         s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
         pitch_size = align(pitch_size, alignment);
 
@@ -57,9 +57,9 @@ namespace rex
       }
       s32 total_texture_size(s32 width, s32 height, TextureFormat format)
       {
-        const s32 format_size = format_byte_size(format);
+        const s32 format_byte_size = format_byte_size(format);
         const s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
-        s32 pitch_size = width * format_size;
+        s32 pitch_size = width * format_byte_size;
         pitch_size = align(pitch_size, alignment);
 
         return pitch_size * height;
@@ -161,68 +161,68 @@ namespace rex
         return invalid_obj<DXGI_FORMAT>();
       }
 
-      DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask)
-      {
-        ShaderParamComponentType dx_type = from_dx12(type);
-        ShaderParamComponentMask dx_mask = from_dx12(mask);
+      //DXGI_FORMAT to_vertex_format(D3D_REGISTER_COMPONENT_TYPE type, BYTE mask)
+      //{
+      //  ShaderParamComponentType dx_type = from_dx12(type);
+      //  ShaderParamComponentMask dx_mask = from_dx12(mask);
 
-        return to_vertex_format(dx_type, dx_mask);
-      }
+      //  return to_vertex_format(dx_type, dx_mask);
+      //}
 
-      DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask)
-      {
-        switch (type)
-        {
-        case rex::gfx::ShaderParamComponentType::Uint:
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-          {
-            return DXGI_FORMAT_R32G32B32A32_UINT;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-          {
-            return DXGI_FORMAT_R32G32B32_UINT;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-          {
-            return DXGI_FORMAT_R32G32_UINT;
-          }
-          return DXGI_FORMAT_R32_UINT;
+      //DXGI_FORMAT to_vertex_format(ShaderParamComponentType type, ShaderParamComponentMask mask)
+      //{
+      //  switch (type)
+      //  {
+      //  case rex::gfx::ShaderParamComponentType::Uint:
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
+      //    {
+      //      return DXGI_FORMAT_R32G32B32A32_UINT;
+      //    }
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
+      //    {
+      //      return DXGI_FORMAT_R32G32B32_UINT;
+      //    }
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
+      //    {
+      //      return DXGI_FORMAT_R32G32_UINT;
+      //    }
+      //    return DXGI_FORMAT_R32_UINT;
 
-        case rex::gfx::ShaderParamComponentType::Sint:
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-          {
-            return DXGI_FORMAT_R32G32B32A32_SINT;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-          {
-            return DXGI_FORMAT_R32G32B32_SINT;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-          {
-            return DXGI_FORMAT_R32G32_SINT;
-          }
-          return DXGI_FORMAT_R32_SINT;
+      //  case rex::gfx::ShaderParamComponentType::Sint:
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
+      //    {
+      //      return DXGI_FORMAT_R32G32B32A32_SINT;
+      //    }
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
+      //    {
+      //      return DXGI_FORMAT_R32G32B32_SINT;
+      //    }
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
+      //    {
+      //      return DXGI_FORMAT_R32G32_SINT;
+      //    }
+      //    return DXGI_FORMAT_R32_SINT;
 
-        case rex::gfx::ShaderParamComponentType::Float:
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
-          {
-            return DXGI_FORMAT_R32G32B32A32_FLOAT;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
-          {
-            return DXGI_FORMAT_R32G32B32_FLOAT;
-          }
-          if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
-          {
-            return DXGI_FORMAT_R32G32_FLOAT;
-          }
-          return DXGI_FORMAT_R32_FLOAT;
+      //  case rex::gfx::ShaderParamComponentType::Float:
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::W)
+      //    {
+      //      return DXGI_FORMAT_R32G32B32A32_FLOAT;
+      //    }
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Z)
+      //    {
+      //      return DXGI_FORMAT_R32G32B32_FLOAT;
+      //    }
+      //    if ((s32)mask & (s32)rex::gfx::ShaderParamComponentMask::Y)
+      //    {
+      //      return DXGI_FORMAT_R32G32_FLOAT;
+      //    }
+      //    return DXGI_FORMAT_R32_FLOAT;
 
-        }
+      //  }
 
-        REX_ASSERT("Unsupported component type with component mask. {} - {}", rsl::enum_refl::enum_name(type), rsl::enum_refl::enum_name(mask));
-        return invalid_obj<DXGI_FORMAT>();
-      }
+      //  REX_ASSERT("Unsupported component type with component mask. {} - {}", rsl::enum_refl::enum_name(type), rsl::enum_refl::enum_name(mask));
+      //  return invalid_obj<DXGI_FORMAT>();
+      //}
 
       ShaderType shader_visibility_to_type(ShaderVisibility visibility)
       {
@@ -708,14 +708,14 @@ namespace rex
 
         return invalid_obj<D3D12_COMMAND_LIST_TYPE>();
       }
-      D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(DescriptorHeapType type)
+      D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(ViewHeapType type)
       {
         switch (type)
         {
-        case DescriptorHeapType::ConstantBufferView:  return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        case DescriptorHeapType::RenderTargetView:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        case DescriptorHeapType::DepthStencilView:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-        case DescriptorHeapType::Sampler:             return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        case ViewHeapType::ConstantBufferView:  return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        case ViewHeapType::RenderTargetView:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        case ViewHeapType::DepthStencilView:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        case ViewHeapType::Sampler:             return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
         }
 
         return invalid_obj<D3D12_DESCRIPTOR_HEAP_TYPE>();
@@ -780,9 +780,9 @@ namespace rex
       {
         return static_cast<DxInputLayout*>(inputLayout);
       }
-      DxDescriptorHeap* to_dx12(DescriptorHeap* descHeap)
+      DxViewHeap* to_dx12(ViewHeap* descHeap)
       {
-        return static_cast<DxDescriptorHeap*>(descHeap);
+        return static_cast<DxViewHeap*>(descHeap);
       }
       DxSampler2D* to_dx12(Sampler2D* sampler)
       {
@@ -1118,29 +1118,29 @@ namespace rex
 					REX_ASSERT("Unknown DX12 shader variable type, cannot convert to rex shader variable type");
 				}
 			}
-      ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type)
-      {
-        switch (type)
-        {
-        case D3D_REGISTER_COMPONENT_UINT32:   return ShaderParamComponentType::Uint;
-        case D3D_REGISTER_COMPONENT_SINT32:   return ShaderParamComponentType::Sint;
-        case D3D_REGISTER_COMPONENT_FLOAT32:  return ShaderParamComponentType::Float;
-        }
+      //ShaderParamComponentType from_dx12(D3D_REGISTER_COMPONENT_TYPE type)
+      //{
+      //  switch (type)
+      //  {
+      //  case D3D_REGISTER_COMPONENT_UINT32:   return ShaderParamComponentType::Uint;
+      //  case D3D_REGISTER_COMPONENT_SINT32:   return ShaderParamComponentType::Sint;
+      //  case D3D_REGISTER_COMPONENT_FLOAT32:  return ShaderParamComponentType::Float;
+      //  }
 
-        return invalid_obj<ShaderParamComponentType>();
-      }
-      ShaderParamComponentMask from_dx12(BYTE mask)
-      {
-        switch (mask)
-        {
-        case D3D_COMPONENT_MASK_X: return ShaderParamComponentMask::X;
-        case D3D_COMPONENT_MASK_Y: return ShaderParamComponentMask::Y;
-        case D3D_COMPONENT_MASK_Z: return ShaderParamComponentMask::Z;
-        case D3D_COMPONENT_MASK_W: return ShaderParamComponentMask::W;
-        }
+      //  return invalid_obj<ShaderParamComponentType>();
+      //}
+      //ShaderParamComponentMask from_dx12(BYTE mask)
+      //{
+      //  switch (mask)
+      //  {
+      //  case D3D_COMPONENT_MASK_X: return ShaderParamComponentMask::X;
+      //  case D3D_COMPONENT_MASK_Y: return ShaderParamComponentMask::Y;
+      //  case D3D_COMPONENT_MASK_Z: return ShaderParamComponentMask::Z;
+      //  case D3D_COMPONENT_MASK_W: return ShaderParamComponentMask::W;
+      //  }
 
-        return invalid_obj<ShaderParamComponentMask>();
-      }
+      //  return invalid_obj<ShaderParamComponentMask>();
+      //}
       ShaderVisibility from_dx12(D3D12_SHADER_VISIBILITY visibility)
       {
         switch (visibility)

@@ -748,7 +748,7 @@ namespace rex
 
         return cmd_list;
       }
-      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible)
+      rsl::unique_ptr<ViewHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible)
       {
         D3D12_DESCRIPTOR_HEAP_DESC desc{};
         
@@ -761,9 +761,9 @@ namespace rex
           : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
 
-        wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
+        wrl::ComPtr<ID3D12ViewHeap> desc_heap;
         rsl::string_view type_str = rsl::enum_refl::enum_name(type);
-        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateViewHeap(&desc, IID_PPV_ARGS(&desc_heap))))
         {
           REX_ERROR(LogDxRhi, "Failed to create descriptor heap for type: {}", type_str);
           return false;
@@ -775,7 +775,7 @@ namespace rex
 
         REX_INFO(LogDxRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, num_descriptors, desc_size, total_size);
 
-        return rsl::make_unique<DxDescriptorHeap>(desc_heap, g_rhi_resources->device->dx_object(), isShaderVisible);
+        return rsl::make_unique<DxViewHeap>(desc_heap, g_rhi_resources->device->dx_object(), isShaderVisible);
       }
       rsl::unique_ptr<ResourceHeap> create_resource_heap()
       {

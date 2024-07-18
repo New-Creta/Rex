@@ -15,9 +15,10 @@ namespace rex
 {
   namespace gfx
   {
-    class DescriptorHeap;
+    class ViewHeap;
     class WaitForFinish;
     class PipelineState;
+    class RenderTarget;
   }
 
   namespace gfx
@@ -27,21 +28,16 @@ namespace rex
       // The pipeline state to reset the context with, this can be nullptr
       PipelineState* pso;
       
-      // The desciptor heap holding all the decsriptors for all the resources currently allocated on the gpu
-      // The descriptors in this heap are not accessible by shaders
-      DescriptorHeap* global_srv_desc_heap;
-
-      // The desciptor heap holding all the decsriptors for all the samplers currently allocated on the gpu
-      // The descriptors in this heap are not accessible by shaders
-      DescriptorHeap* global_sampler_desc_heap;
-
       // The descriptor heap holding the descriptors for all resources that are needed to perform a queued draw command
       // the descriptors in this heap are accessible by shaders
-      DescriptorHeap* shader_visible_srv_desc_heap;
+      ViewHeap* shader_visible_srv_desc_heap;
 
       // The descriptor heap holding the descriptors for all samplers that are needed to perform a queued draw command
       // the descriptors in this heap are accessible by shaders
-      DescriptorHeap* shader_visible_sampler_desc_heap;
+      ViewHeap* shader_visible_sampler_desc_heap;
+
+      // The render target pointing to the current back buffer in the swapchain
+      RenderTarget* current_backbuffer_rt;
     };
 
     // A graphics engine is an engine responsible for their own respective field of the graphics pipeline.

@@ -10,7 +10,7 @@ namespace rex
 {
   namespace gfx
   {
-    class DxConstantBufferVariableReflection : public ConstantBufferVariableReflection
+    class DxConstantBufferVariableReflection : public CBufferVarReflDesc
     {
     public:
       DxConstantBufferVariableReflection(ID3D12ShaderReflectionVariable* varRefl);

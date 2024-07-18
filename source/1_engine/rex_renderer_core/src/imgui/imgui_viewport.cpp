@@ -6,7 +6,6 @@
 #include "rex_renderer_core/gfx/resource_state.h"
 
 #include "rex_renderer_core/resources/constant_buffer.h"
-#include "rex_renderer_core/imgui/imgui_resources.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
 

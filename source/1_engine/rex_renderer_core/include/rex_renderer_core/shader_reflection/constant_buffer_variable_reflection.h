@@ -11,30 +11,14 @@ namespace rex
 {
 	namespace gfx
 	{
+		// Reflection of a constant buffer variable, specified in a shader
 		struct CBufferVarReflDesc
 		{
-			rsl::tiny_stack_string name;
-			s32 offset;
-			s32 size;
-			ShaderClassType class_type;
-			ShaderVariableType var_type;
+			rsl::tiny_stack_string name;		// The name of the variable in the constant buffer
+			s32 offset;											// The offset in bytes from the start of the constant buffer where the var is located
+			s32 size;												// The size of the var, in bytes
+			ShaderClassType class_type;			// The class type of the var
+			ShaderVariableType var_type;		// The var type of the var
 		};
-
-		using ConstantBufferVariableReflection = CBufferVarReflDesc;
-
-		//class ConstantBufferVariableReflection
-		//{
-		//public:
-		//	ConstantBufferVariableReflection(CBufferVarReflDesc&& desc) {}
-
-		//	rsl::string_view name() const { return m_name; }
-
-		//private:
-		//	rsl::tiny_stack_string m_name;
-		//	s32 m_offset;
-		//	s32 m_size;
-		//	ShaderClassType m_class_type;
-		//	ShaderVariableType m_variable_type;
-		//};
 	}
 }

@@ -27,20 +27,18 @@ namespace rex
       rsl::vector<InputLayoutElementDesc> input_layout {};
     };
 
+    // Using shader reflection's input parameters, create an input layout description.
     InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderParamReflection>& shaderInputParams);
 
     // Base class for the input layout, only used as an interface
     class InputLayout
     {
     public:
-      InputLayout(s32 vertexSize)
-        : m_vertex_size(vertexSize)
-      {}
+      InputLayout(s32 vertexSize);
 
-      s32 vertex_size() const
-      {
-        return m_vertex_size;
-      }
+      // As an input layout stores data per vertex (at least at the moment)
+      // We can store the size of a single vertex using the input layout
+      s32 vertex_size() const;
 
       virtual bool validate_desc(const InputLayoutDesc& desc) = 0;
 

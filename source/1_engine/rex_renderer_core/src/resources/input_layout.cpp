@@ -38,10 +38,19 @@ namespace rex
         input_element_descriptions[i].aligned_byte_offset = byte_offset;
         input_element_descriptions[i].instance_data_step_rate = 0;
 
-        byte_offset += format_size(input_element_descriptions[i].format);
+        byte_offset += format_byte_size(input_element_descriptions[i].format);
       }
 
       return InputLayoutDesc{ input_element_descriptions };
 		}
+
+    InputLayout::InputLayout(s32 vertexSize)
+      : m_vertex_size(vertexSize)
+    {}
+
+    s32 InputLayout::vertex_size() const
+    {
+      return m_vertex_size;
+    }
 	}
 }
