@@ -12,7 +12,7 @@ namespace rex
   {
     struct InputLayoutElementDesc
     {
-      rsl::string_view semantic_name;                       // The HLSL semantic name associated with the element (will change when we support glsl)
+      rsl::tiny_stack_string semantic_name;                 // The HLSL semantic name associated with the element (will change when we support glsl)
       VertexBufferFormat format;                            // The format of the element data
       InputLayoutClassification input_slot_class;           // A value that identifies the input data class for a single input. 
       s32 semantic_index;                                   // The semantic index for the element. A semantic index modifies a semantic, with an integer index number. eg NORMAL1
@@ -34,7 +34,7 @@ namespace rex
     class InputLayout
     {
     public:
-      InputLayout(s32 vertexSize);
+      InputLayout(s32 vertexSize, InputLayoutDesc&& desc);
       virtual ~InputLayout() = default;
 
       // As an input layout stores data per vertex (at least at the moment)
@@ -44,10 +44,11 @@ namespace rex
       // Validate an description to see if it can be used with this input layout
       // It's possible some elements do not match directly but can be converted
       // eg: an 4 component normalized byte type can be converted to a 4 component float type
-      virtual bool validate_desc(const InputLayoutDesc& desc) = 0;
+      bool validate_desc(const InputLayoutDesc& desc);
 
     private:
       s32 m_vertex_size;
+      InputLayoutDesc m_desc;
     };
   } // namespace gfx
 } // namespace rex

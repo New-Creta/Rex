@@ -7,7 +7,8 @@
 
 #include "rex_engine/diagnostics/assert.h"
 
-#include "rex_renderer_core/system/descriptor_heap.h"
+#include "rex_renderer_core/system/view_heap.h"
+#include "rex_renderer_core/gfx/view_heap_type.h"
 #include "rex_renderer_core/system/resource_view.h"
 
 namespace rex
@@ -34,6 +35,8 @@ namespace rex
       rsl::unique_ptr<ResourceView> copy_texture_views_to_shaders(const rsl::vector<ResourceView*>& views);
       // Copy sampler views into a heap that's accessible to shaders
       rsl::unique_ptr<ResourceView> copy_sampler_views_to_shaders(const rsl::vector<ResourceView*>& views);
+      // Copy views into a heap that's accessible to shaders
+      rsl::unique_ptr<ResourceView> copy_views(ViewHeapType heapType, const rsl::vector<ResourceView*>& views);
 
       // Update a constant buffer's data
       virtual void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;

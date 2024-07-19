@@ -21,10 +21,10 @@ namespace rex
       // We calculate the shader reflection so we know which parameters this material needs
       ShaderPipelineReflection shader_pipeline_reflection = reflect_shader_pipeline(m_shader_pipeline);
 
-      init_parameters_from_shader_signature(ShaderType::Vertex, shader_pipeline_reflection.vs.get());
-      init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps.get());
+      init_parameters_from_shader_signature(ShaderType::Vertex, shader_pipeline_reflection.vs);
+      init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps);
 
-      m_input_layout_desc = create_input_layout_desc_from_reflection(shader_pipeline_reflection.vs->input_params());
+      m_input_layout_desc = create_input_layout_desc_from_reflection(shader_pipeline_reflection.vs.input_params());
 
       m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
       m_raster_state = matConstructSettings.raster_state;
@@ -32,16 +32,16 @@ namespace rex
       m_depth_stencil = matConstructSettings.depth_stencil;
     }
 
-    void Material::init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature)
+    void Material::init_parameters_from_shader_signature(ShaderType type, const ShaderSignature& signature)
     {
-      for (const BoundResourceReflection& texture : signature->textures())
+      for (const BoundResourceReflection& texture : signature.textures())
       {
         REX_ASSERT_X(!m_textures.contains(texture.name), "{} is already found in the material parameters, you like have a parameter in your shader with the same name, this is not supported. Shader: {}", rsl::enum_refl::enum_name(type));
         TextureMaterialParameter tex_param(texture.name, type, texture.shader_register);
         m_textures.emplace(texture.name, rsl::move(tex_param));
       }
 
-      for (const BoundResourceReflection& sampler : signature->samplers())
+      for (const BoundResourceReflection& sampler : signature.samplers())
       {
         REX_ASSERT_X(!m_samplers.contains(sampler.name), "{} is already found in the material parameters, you like have a parameter in your shader with the same name, this is not supported. Shader: {}", rsl::enum_refl::enum_name(type));
         SamplerMaterialParameter sampler_param(sampler.name, type, sampler.shader_register);

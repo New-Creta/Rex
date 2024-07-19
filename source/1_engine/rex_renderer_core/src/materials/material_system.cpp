@@ -130,8 +130,8 @@ namespace rex
 				// However, to get around the compiler errors, we implement it as this for now
 				switch (param_type)
 				{
-				case rex::gfx::MaterialParameterType::Texture: material->set_texture(name, rhi::create_texture2d(path).get());
-				case rex::gfx::MaterialParameterType::Sampler: material->set_sampler(name, rhi::create_sampler2d(path).get());
+				case rex::gfx::MaterialParameterType::Texture: break; // material->set_texture(name, rhi::create_texture2d(path).get());
+				case rex::gfx::MaterialParameterType::Sampler: break; // material->set_sampler(name, rhi::create_sampler2d(path).get());
 				}
 			}
 		}

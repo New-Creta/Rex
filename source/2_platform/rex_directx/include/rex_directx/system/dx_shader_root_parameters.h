@@ -18,7 +18,7 @@ namespace rex
 		class DxShaderRootParameters
 		{
 		public:
-			DxShaderRootParameters(const ShaderSignature* signature, ShaderVisibility shaderVis);
+			DxShaderRootParameters(const ShaderSignature& signature, ShaderVisibility shaderVis);
 
 			// The wrapped root signature params
 			const rsl::vector<CD3DX12_ROOT_PARAMETER>& params() const;
@@ -29,7 +29,7 @@ namespace rex
 			// Add a new range to a list of ranges
 			void add_to_view_range(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, s32 startRegister, s32 lastRegister, D3D12_DESCRIPTOR_RANGE_TYPE type);
 			// Initializes rangees for specific resource type
-			void init_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources);
+			void init_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources, D3D12_DESCRIPTOR_RANGE_TYPE type);
 
 		private:
 			// Cached root signature parameters

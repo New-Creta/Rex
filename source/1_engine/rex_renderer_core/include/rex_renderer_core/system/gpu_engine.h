@@ -12,8 +12,8 @@
 #include "rex_renderer_core/system/copy_engine.h"
 #include "rex_renderer_core/system/compute_engine.h"
 #include "rex_renderer_core/resources/clear_state.h"
-#include "rex_renderer_core/gfx/descriptor_heap_type.h"
-#include "rex_renderer_core/system/descriptor_heap.h"
+#include "rex_renderer_core/gfx/view_heap_type.h"
+#include "rex_renderer_core/system/view_heap.h"
 #include "rex_renderer_core/system/swapchain.h"
 #include "rex_renderer_core/system/resource_state_tracker.h"
 

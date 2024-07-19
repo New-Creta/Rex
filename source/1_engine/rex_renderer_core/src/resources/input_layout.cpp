@@ -44,13 +44,45 @@ namespace rex
       return InputLayoutDesc{ input_element_descriptions };
 		}
 
-    InputLayout::InputLayout(s32 vertexSize)
+    InputLayout::InputLayout(s32 vertexSize, InputLayoutDesc&& desc)
       : m_vertex_size(vertexSize)
+      , m_desc(rsl::move(desc))
     {}
 
     s32 InputLayout::vertex_size() const
     {
       return m_vertex_size;
+    }
+
+    // Validate a given descriptor and see if it can be used with this input layout
+    bool InputLayout::validate_desc(const InputLayoutDesc& desc)
+    {
+      if (desc.input_layout.size() != m_desc.input_layout.size())
+      {
+        return false;
+      }
+
+      for (const auto& elem : desc.input_layout)
+      {
+        auto it = rsl::find_if(m_desc.input_layout.cbegin(), m_desc.input_layout.cend(),
+          [&](const InputLayoutElementDesc& myElem)
+          {
+            return elem.semantic_name == myElem.semantic_name;
+          });
+
+        if (it == m_desc.input_layout.cend())
+        {
+          return false;
+        }
+
+        ShaderParameterType format = it->format;
+        if (!is_convertible_shader_param_type(format, elem.format))
+        {
+          return false;
+        }
+      }
+
+      return true;
     }
 	}
 }

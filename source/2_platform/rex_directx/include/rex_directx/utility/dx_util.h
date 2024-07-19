@@ -34,7 +34,7 @@
 #include "rex_renderer_core/gfx/resource_state.h"
 #include "rex_renderer_core/gfx/graphics_engine_type.h"
 #include "rex_renderer_core/gfx/resource_state.h"
-#include "rex_renderer_core/gfx/descriptor_heap_type.h"
+#include "rex_renderer_core/gfx/view_heap_type.h"
 #include "rex_renderer_core/system/shader_elements.h"
 #include "rex_renderer_core/shader_reflection/shader_class_type.h"
 #include "rex_renderer_core/shader_reflection/shader_variable_type.h"
@@ -47,6 +47,8 @@ namespace rex
 {
   namespace gfx
   {
+    struct ContextResetData;
+
     // Base classes
     class CommandQueue;
     class CommandAllocator;

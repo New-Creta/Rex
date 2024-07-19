@@ -75,7 +75,7 @@ namespace rex
 
     private:
       // Initialize the parameters of the material based on the resources of a shader signature
-      void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature* signature);
+      void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature& signature);
 
     private:
       // All texture parameters of the material

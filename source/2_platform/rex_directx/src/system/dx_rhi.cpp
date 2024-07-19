@@ -305,8 +305,8 @@ namespace rex
         // - textures
         // - samplers
 
-        DxShaderRootParameters vs_root_params(shaderPipelineReflection.vs.get(), ShaderVisibility::Vertex);
-        DxShaderRootParameters ps_root_params(shaderPipelineReflection.ps.get(), ShaderVisibility::Pixel);
+        DxShaderRootParameters vs_root_params(shaderPipelineReflection.vs, ShaderVisibility::Vertex);
+        DxShaderRootParameters ps_root_params(shaderPipelineReflection.ps, ShaderVisibility::Pixel);
 
         rsl::vector<CD3DX12_ROOT_PARAMETER> root_parameters(rsl::Capacity(vs_root_params.count() + ps_root_params.count()));
         rsl::copy(vs_root_params.params().cbegin(), vs_root_params.params().cend(), rsl::back_inserter(root_parameters));
@@ -559,7 +559,7 @@ namespace rex
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
       }
-      rsl::unique_ptr<InputLayout>          create_input_layout(const InputLayoutDesc& desc)
+      rsl::unique_ptr<InputLayout>          create_input_layout(InputLayoutDesc&& desc)
       {
         rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
         REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
@@ -575,7 +575,7 @@ namespace rex
           input_element_descriptions[i].InstanceDataStepRate  = desc.input_layout[i].instance_data_step_rate;
         }
 
-        return rsl::make_unique<DxInputLayout>(input_element_descriptions);
+        return rsl::make_unique<DxInputLayout>(input_element_descriptions, rsl::move(desc));
       }
 
       rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName)

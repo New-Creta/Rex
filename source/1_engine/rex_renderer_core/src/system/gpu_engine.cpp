@@ -171,6 +171,7 @@ namespace rex
       reset_data.pso = pso;
       reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(ViewHeapType::ShaderResourceView);
       reset_data.shader_visible_sampler_desc_heap = shader_visible_desc_heap(ViewHeapType::Sampler);
+      reset_data.current_backbuffer_rt = m_swapchain->current_buffer();
 
       return reset_data;
     }

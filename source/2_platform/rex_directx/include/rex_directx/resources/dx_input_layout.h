@@ -14,12 +14,10 @@ namespace rex
     class DxInputLayout : public InputLayout
     {
     public:
-      explicit DxInputLayout(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements);
+      explicit DxInputLayout(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements, InputLayoutDesc&& desc);
 
       // Return the wrapped Direct X object
       D3D12_INPUT_LAYOUT_DESC* dx_object();
-      // Validate a given descriptor and see if it can be used with this input layout
-      bool validate_desc(const InputLayoutDesc& desc) override;
 
     private:
       rsl::vector<D3D12_INPUT_ELEMENT_DESC> m_input_elements{};

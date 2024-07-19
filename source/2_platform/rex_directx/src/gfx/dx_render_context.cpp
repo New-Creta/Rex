@@ -300,15 +300,15 @@ namespace rex
 
       // 3. Copy the earlier cached gpu handle descriptors into the shader visible heap
       auto copy_ctx = new_copy_ctx();
-      bind_material_resources(copy_ctx.get(), texture_views, shader_resources.textures_root_param_idx);
-      bind_material_resources(copy_ctx.get(), sampler_views, shader_resources.samplers_root_param_idx);
+      bind_material_resources(copy_ctx.get(), texture_views, ViewHeapType::AllShaderResources, shader_resources.textures_root_param_idx);
+      bind_material_resources(copy_ctx.get(), sampler_views, ViewHeapType::Sampler, shader_resources.samplers_root_param_idx);
     }
     // Bind material resources to the root signature parameter index provided
-    void DxRenderContext::bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, s32 paramIdx)
+    void DxRenderContext::bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, ViewHeapType type, s32 paramIdx)
     {
       if (!views.empty())
       {
-        rsl::unique_ptr<ResourceView> start_sampler_handle = copyCtx->copy_sampler_views_to_shaders(views);
+        rsl::unique_ptr<ResourceView> start_sampler_handle = copyCtx->copy_views(type, views);
         if (paramIdx != -1)
         {
           m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, d3d::to_dx12(start_sampler_handle.get())->gpu_handle());

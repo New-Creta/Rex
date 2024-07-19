@@ -31,8 +31,8 @@ namespace rex
       m_allocator = rsl::move(alloc);
       m_resource_state_tracker = resourceStateTracker;
 
-      type_specific_reset(resetData);
       platform_reset(m_allocator->underlying_alloc(), resetData);
+      type_specific_reset(resetData);
     }
     // Execute the commands on the gpu.
     // A sync info is returned so the user can use it to sync with other contexts

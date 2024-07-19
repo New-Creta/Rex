@@ -7,7 +7,7 @@ namespace rex
     DxTexture2D::DxTexture2D(const wrl::ComPtr<ID3D12Resource>& texture, DxResourceView handle, s32 width, s32 height, TextureFormat format)
       : Texture2D(width, height, format)
       , m_resource(texture)
-      , m_desc_handle(handle)
+      , m_view(handle)
     {}
 
     // Return a view to the object on the gpu
@@ -18,7 +18,7 @@ namespace rex
     // Return the wrapped DirectX object
     DxResourceView* DxTexture2D::view()
     {
-      return &m_desc_handle;
+      return &m_view;
     }
 
   }

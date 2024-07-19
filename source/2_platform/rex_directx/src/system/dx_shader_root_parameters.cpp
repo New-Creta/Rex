@@ -6,7 +6,7 @@ namespace rex
 {
 	namespace gfx
 	{
-		DxShaderRootParameters::DxShaderRootParameters(const ShaderSignature* signature, ShaderVisibility shaderVis)
+		DxShaderRootParameters::DxShaderRootParameters(const ShaderSignature& signature, ShaderVisibility shaderVis)
 		{
       D3D12_SHADER_VISIBILITY visibility = d3d::to_dx12(shaderVis);
 
@@ -22,14 +22,14 @@ namespace rex
       UINT register_space = 0;
 
       // 2. Sort out all the views
-      for (const auto& cb : signature->constant_buffers())
+      for (const auto& cb : signature.constant_buffers())
       {
         m_root_parameters.emplace_back().InitAsConstantBufferView(cb.shader_register, register_space, visibility);
       }
 
       // 3. Sort out all the view tables
-      init_ranges(m_texture_ranges, signature->textures());
-      init_ranges(m_sampler_ranges, signature->samplers());
+      init_ranges(m_texture_ranges, signature.textures(), D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+      init_ranges(m_sampler_ranges, signature.samplers(), D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
 
       // Submit the ranges to the descriptor table
       if (m_texture_ranges.size() > 0)
@@ -66,7 +66,7 @@ namespace rex
       }
     }
 
-    void DxShaderRootParameters::init_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources)
+    void DxShaderRootParameters::init_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources, D3D12_DESCRIPTOR_RANGE_TYPE type)
     {
       s32 start_register = 0;
       s32 current_register = start_register;
@@ -78,12 +78,12 @@ namespace rex
         if (resource_register != current_register)
         {
           // Submit new range
-          add_to_view_range(m_texture_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+          add_to_view_range(ranges, start_register, current_register, type);
           start_register = resource_register;
         }
         ++current_register;
       }
-      add_to_view_range(m_texture_ranges, start_register, current_register, D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+      add_to_view_range(ranges, start_register, current_register, type);
     }
 
 	}

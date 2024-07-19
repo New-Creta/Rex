@@ -180,6 +180,8 @@ namespace rex
       {
         input_params.emplace_back(reflect_shader_input_parameter(refl, i));
       }
+
+      return input_params;
     }
     rsl::vector<ShaderParamReflection> reflect_output_params(ID3D12ShaderReflection* refl, s32 numOutputParams)
     {
@@ -190,6 +192,8 @@ namespace rex
       {
         output_params.emplace_back(reflect_shader_output_parameter(refl, i));
       }
+
+      return output_params;
     }
 
     BoundResources reflect_bound_resources(ID3D12ShaderReflection* refl, s32 numBoundResources, ShaderType type)
@@ -266,7 +270,7 @@ namespace rex
         // Create the shader reflection object
         const gfx::DxShader* dx_shader = static_cast<const gfx::DxShader*>(shader);
         const void* byte_code = dx_shader->dx_bytecode().pShaderBytecode;
-        s32 byte_count = dx_shader->dx_bytecode().BytecodeLength;
+        s32 byte_count = static_cast<s32>(dx_shader->dx_bytecode().BytecodeLength);
         wrl::ComPtr<ID3D12ShaderReflection> reflection_object;
         DX_CALL(D3DReflect(byte_code, byte_count, IID_PPV_ARGS(reflection_object.GetAddressOf())));
 

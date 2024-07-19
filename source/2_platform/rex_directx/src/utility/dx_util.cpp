@@ -23,11 +23,13 @@
 #include "rex_directx/resources/dx_index_buffer.h"
 #include "rex_directx/resources/dx_upload_buffer.h"
 #include "rex_directx/resources/dx_pipeline_state.h"
+#include "rex_directx/system/dx_view_heap.h"
 
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
 
 #include "rex_renderer_core/materials/material_system.h"
 #include "rex_renderer_core/gfx/rhi.h"
+#include "rex_renderer_core/system/graphics_engine.h"
 
 namespace rex
 {
@@ -151,7 +153,7 @@ namespace rex
         REX_ASSERT_X(alloc != nullptr, "The command allocator for a context cannot be null");
 
         alloc->dx_object()->Reset();
-        m_cmd_list->Reset(alloc->dx_object(), d3d::dx12_pso(resetData.pso));
+        cmdList->Reset(alloc->dx_object(), d3d::dx12_pso(resetData.pso));
 
         rsl::array<ID3D12DescriptorHeap*, 2> d3d_desc_heaps{};
         d3d_desc_heaps[0] = d3d::to_dx12(resetData.shader_visible_srv_desc_heap)->dx_object();

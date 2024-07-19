@@ -4,14 +4,14 @@ namespace rex
 {
 	namespace gfx
 	{
-		ShaderSignature(ShaderSignatureDesc&& desc);
+		ShaderSignature::ShaderSignature(ShaderSignatureDesc&& desc)
 		: m_desc(rsl::move(desc))
 		{}
 
 		// The shader type this signature belongs to
 		ShaderType ShaderSignature::shader_type() const
 		{
-			return m_desc.shader_type;
+			return m_desc.type;
 		}
 
 		// The constant buffers of the shader
@@ -32,12 +32,12 @@ namespace rex
 		// The textures of the shader
 		const rsl::vector<BoundResourceReflection>& ShaderSignature::textures() const
 		{
-			return m_desc.textures;
+			return m_desc.bound_resources.textures;
 		}
 		// The samplers of the shader
 		const rsl::vector<BoundResourceReflection>& ShaderSignature::samplers() const
 		{
-			return m_desc.samplers;
+			return m_desc.bound_resources.samplers;
 		}
 
 		ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline)

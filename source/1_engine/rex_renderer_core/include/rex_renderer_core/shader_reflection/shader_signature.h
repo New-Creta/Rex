@@ -31,6 +31,7 @@ namespace rex
 		class ShaderSignature
 		{
 		public:
+			ShaderSignature() = default;
 			ShaderSignature(ShaderType type);
 			ShaderSignature(ShaderSignatureDesc&& desc);
 
@@ -55,8 +56,8 @@ namespace rex
 		// Holds shader reflection data of each shader in the pipeleine
 		struct ShaderPipelineReflection
 		{
-			rsl::unique_ptr<ShaderSignature> vs;
-			rsl::unique_ptr<ShaderSignature> ps;
+			ShaderSignature vs;
+			ShaderSignature ps;
 		};
 		// Given a shader pipeline, create reflection data for each shader within the pipeline
 		ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline);

@@ -9,7 +9,7 @@ namespace rex
     DxRenderTarget::DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView descHandle)
       : RenderTarget(static_cast<s32>(resource->GetDesc().Width), static_cast<s32>(resource->GetDesc().Height))
       , m_resource(resource)
-      , m_desc_handle(descHandle)
+      , m_view(descHandle)
     {}
 
     ID3D12Resource* DxRenderTarget::dx_object()
@@ -19,7 +19,7 @@ namespace rex
 
     DxResourceView DxRenderTarget::view() const
     {
-      return m_desc_handle;
+      return m_view;
     }
   }
 }

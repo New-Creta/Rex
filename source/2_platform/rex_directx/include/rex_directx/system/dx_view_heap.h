@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_renderer_core/system/descriptor_heap.h"
-#include "rex_directx/system/dx_descriptor_handle.h"
+#include "rex_renderer_core/system/view_heap.h"
+#include "rex_directx/system/dx_resource_view.h"
 #include "rex_std/bonus/memory.h"
 
 namespace rex

@@ -20,6 +20,16 @@ namespace rex
     {
       return copy_views(m_shader_visible_sampler_heap, views);
     }
+    rsl::unique_ptr<ResourceView> CopyContext::copy_views(ViewHeapType heapType, const rsl::vector<ResourceView*>& views)
+    {
+      switch (heapType)
+      {
+      case rex::gfx::ViewHeapType::AllShaderResources:    return copy_texture_views_to_shaders(views);
+      case rex::gfx::ViewHeapType::Sampler:               return copy_sampler_views_to_shaders(views);
+      }
+
+      return nullptr;
+    }
 
     void CopyContext::type_specific_reset(const ContextResetData& resetData)
     {

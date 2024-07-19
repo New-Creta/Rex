@@ -90,13 +90,13 @@ namespace rex
 
       // Sort the resources of a material based on their shader register and stored their views in an array
       template <typename Resource, typename Param>
-      rsl::vector<ResourceView*> sort_material_parameters(const rsl::vector<Param*>& params)
+      rsl::vector<ResourceView*> sort_material_parameters(rsl::vector<Param*>& params)
       {
         rsl::vector<ResourceView*> views;
 
         // Sort the textures based on their shader register
         rsl::sort(params.begin(), params.end(),
-          [](const TextureMaterialParameter* lhs, const TextureMaterialParameter* rhs)
+          [](const Param* lhs, const Param* rhs)
           {
             return lhs->shader_register() < rhs->shader_register();
           });
@@ -114,7 +114,7 @@ namespace rex
         return views;
       }
       // Bind material resources to the root signature parameter index provided
-      void bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, s32 paramIdx);
+      void bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, ViewHeapType type, s32 paramIdx);
 
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;
