@@ -9,6 +9,7 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_std/string_view.h"
 #include "rex_std/bonus/string.h"
+#include "rex_engine/diagnostics/assert.h"
 
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
 namespace rex
@@ -112,6 +113,7 @@ namespace rex
       case D3D12_SHVER_HULL_SHADER:      version_str = "hs_"; break;
       case D3D12_SHVER_DOMAIN_SHADER:    version_str = "ds_"; break;
       case D3D12_SHVER_COMPUTE_SHADER:   version_str = "cs_"; break;
+      default: REX_ASSERT("Invalid shader type"); break;
       }
 
       version_str += rsl::format("{}_{}", major, minor);

@@ -41,7 +41,7 @@ namespace rex
 
     protected:
       // Return the value of our fence on the gpu
-      u64 gpu_fence_value() const;
+      u64 gpu_fence_value() const override;
 
     private:
       // Retrieve the DirectX commandlist from a context object

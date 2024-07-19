@@ -44,11 +44,6 @@ namespace rex
     {
     public:
       RenderContext(gfx::GraphicsEngine* owningEngine);
-      RenderContext(const RenderContext&) = delete;
-      RenderContext(RenderContext&&) = default;
-
-      RenderContext& operator=(const RenderContext&) = delete;
-      RenderContext& operator=(RenderContext&&) = default;
 
       // Implemented by Graphics API specific derived classes
       // ----------------------------------------------------------------

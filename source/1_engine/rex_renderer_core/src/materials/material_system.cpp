@@ -108,7 +108,7 @@ namespace rex
 			return mat_construct_settings;
 		}
 
-		void init_material_parameters(Material* material, const json& parametersBlob)
+		void init_material_parameters(Material* /*material*/, const json& parametersBlob)
 		{
 			for (const auto& param : parametersBlob)
 			{

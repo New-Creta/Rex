@@ -138,11 +138,11 @@ namespace rex
         case rex::gfx::ShaderVisibility::Vertex:          return ShaderType::Vertex;
         case rex::gfx::ShaderVisibility::Pixel:           return ShaderType::Pixel;
         case rex::gfx::ShaderVisibility::Geometry:        return ShaderType::Geometry;
-        case rex::gfx::ShaderVisibility::Compute:         return ShaderType::Compute;
         case rex::gfx::ShaderVisibility::Hull:            return ShaderType::Hull;
         case rex::gfx::ShaderVisibility::Domain:          return ShaderType::Domain;
         case rex::gfx::ShaderVisibility::Amplification:   return ShaderType::Amplification;
         case rex::gfx::ShaderVisibility::Mesh:            return ShaderType::Mesh;
+        default: break;
         }
 
         return invalid_obj<ShaderType>();
@@ -251,6 +251,7 @@ namespace rex
 
         case ShaderParameterType::Bool:          return DXGI_FORMAT_R1_UNORM;
 
+        default: break;
         }
 
         REX_ASSERT("Unsupported vertex buffer format given");
@@ -310,6 +311,11 @@ namespace rex
         {
         case ShaderVisibility::Vertex: return D3D12_SHADER_VISIBILITY_VERTEX;
         case ShaderVisibility::Pixel: return D3D12_SHADER_VISIBILITY_PIXEL;
+        case ShaderVisibility::Amplification: return D3D12_SHADER_VISIBILITY_AMPLIFICATION;
+        case ShaderVisibility::Domain: return D3D12_SHADER_VISIBILITY_DOMAIN;
+        case ShaderVisibility::Geometry: return D3D12_SHADER_VISIBILITY_GEOMETRY;
+        case ShaderVisibility::Hull: return D3D12_SHADER_VISIBILITY_HULL;
+        case ShaderVisibility::Mesh: return D3D12_SHADER_VISIBILITY_MESH;
         case ShaderVisibility::All: return D3D12_SHADER_VISIBILITY_ALL;
         }
 
@@ -820,6 +826,8 @@ namespace rex
         case DXGI_FORMAT_R8_SINT:                 return ShaderParameterType::Char;
         case DXGI_FORMAT_A8_UNORM:                return ShaderParameterType::CharNorm;
         case DXGI_FORMAT_R1_UNORM:                return ShaderParameterType::Bool;
+
+        default: break;
         }
 
         return invalid_obj<ShaderParameterType>();

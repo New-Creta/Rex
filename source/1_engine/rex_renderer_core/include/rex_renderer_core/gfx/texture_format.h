@@ -21,6 +21,7 @@ namespace rex
       {
       case rex::gfx::TextureFormat::Unorm4:       return 4 * sizeof(char8);
       case rex::gfx::TextureFormat::Unorm4Srgb:   return 4 * sizeof(char8);
+      default: break;
       }
 
       return invalid_obj<s32>();

@@ -23,6 +23,7 @@ namespace rex
       {
       case IndexBufferFormat::Uint16: return 2;
       case IndexBufferFormat::Uint32: return 4;
+      default: break;
       }
 
       return -1;

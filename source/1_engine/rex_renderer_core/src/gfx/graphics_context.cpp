@@ -88,7 +88,7 @@ namespace rex
       return m_owning_engine;
     }
     // Reset the engine speicifc context
-    void GraphicsContext::type_specific_reset(const ContextResetData& resetData)
+    void GraphicsContext::type_specific_reset(const ContextResetData& /*resetData*/)
     {
       // Nothing to implement
     }

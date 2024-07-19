@@ -180,9 +180,9 @@ namespace rex
       InputLayoutDesc input_layout_desc;
       input_layout_desc.input_layout =
       {
-        InputLayoutElementDesc { "POSITION",  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
-        InputLayoutElementDesc { "TEXCOORD",  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
-        InputLayoutElementDesc { "COLOR", VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
+        InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
+        InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
+        InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
       };
       m_input_layout = rhi::create_input_layout(rsl::move(input_layout_desc));
     }

@@ -208,7 +208,7 @@ namespace rex
         if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create command queue");
-          return false;
+          return nullptr;
         }
 
         switch (type)
@@ -262,7 +262,7 @@ namespace rex
         if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateCommandAllocator(d3d::to_dx12(type), IID_PPV_ARGS(allocator.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create command allocator");
-          return false;
+          return nullptr;
         }
 
         switch (type)
@@ -566,7 +566,7 @@ namespace rex
 
         for (s32 i = 0; i < desc.input_layout.size(); ++i)
         {
-          input_element_descriptions[i].SemanticName          = desc.input_layout[i].semantic_name.data();
+          input_element_descriptions[i].SemanticName          = shader_semantic_name(desc.input_layout[i].semantic).data();
           input_element_descriptions[i].SemanticIndex         = desc.input_layout[i].semantic_index;
           input_element_descriptions[i].Format                = d3d::to_dx12(desc.input_layout[i].format);
           input_element_descriptions[i].InputSlot             = desc.input_layout[i].input_slot;
@@ -705,7 +705,7 @@ namespace rex
         if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
         {
           REX_ERROR(LogDxRhi, "Failed to create descriptor heap for type: {}", type_str);
-          return false;
+          return nullptr;
         }
 
         d3d::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {} - {}", type_str, isShaderVisible ? "Shader Visible" : "Not Shader Visible"));
@@ -724,7 +724,7 @@ namespace rex
         if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
         {
           REX_ERROR(LogDxRhi, "Failed to create global resource heap");
-          return false;
+          return nullptr;
         }
 
         return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->dx_object());

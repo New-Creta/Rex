@@ -109,17 +109,17 @@ namespace rex
     // Create a new copy context that automatically gets added back to the pool when it goes out of scope
     ScopedPoolObject<CopyContext> new_copy_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      return g_gpu_engine->new_copy_ctx(pso);
+      return g_gpu_engine->new_copy_ctx(pso, eventName);
     }
     // Create a new render context that automatically gets added back to the pool when it goes out of scope
     ScopedPoolObject<RenderContext> new_render_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      return g_gpu_engine->new_render_ctx(pso);
+      return g_gpu_engine->new_render_ctx(pso, eventName);
     }
     // Create a new compute context that automatically gets added back to the pool when it goes out of scope
     ScopedPoolObject<ComputeContext> new_compute_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      return g_gpu_engine->new_compute_ctx(pso);
+      return g_gpu_engine->new_compute_ctx(pso, eventName);
     }
   }
 }

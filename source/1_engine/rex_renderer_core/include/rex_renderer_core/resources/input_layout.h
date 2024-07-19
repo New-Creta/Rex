@@ -10,9 +10,33 @@ namespace rex
 {
   namespace gfx
   {
+    enum class ShaderSemantic
+    {
+      // Shader between vertex and pixel shader
+      Color,                  // Diffuse or specular color
+      Position,               // Position of a vertex
+      PSize,                  // Point size
+
+      // Vertex shader
+      BiNormal,               // Binormal
+      BlendIndices,           // Binormal indices
+      BlendWeight,            // Blend weights
+      Normal,                 // Normal
+      PositionT,              // Transformed vertex position
+      Tangent,                // Tangent
+      TexCoord,               // Texture coordinates
+
+      // Pixel shader
+      Fog,                    // Vertex fog
+      TessFactor              // Tesselation factor
+    };
+
+    rsl::string_view shader_semantic_name(ShaderSemantic semantic);
+    ShaderSemantic shader_semantic_type(rsl::string_view semantic);
+
     struct InputLayoutElementDesc
     {
-      rsl::tiny_stack_string semantic_name;                 // The HLSL semantic name associated with the element (will change when we support glsl)
+      ShaderSemantic semantic;
       VertexBufferFormat format;                            // The format of the element data
       InputLayoutClassification input_slot_class;           // A value that identifies the input data class for a single input. 
       s32 semantic_index;                                   // The semantic index for the element. A semantic index modifies a semantic, with an integer index number. eg NORMAL1

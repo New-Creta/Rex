@@ -6,7 +6,6 @@
 // SPDX-FileCopyrightText: 2013-2023 Niels Lohmann <https://nlohmann.me>
 // SPDX-License-Identifier: MIT
 
-#include "rex_std/any.h"
 #include "rex_std/string.h"
 #include "rex_std/string_view.h"
 #include "rex_std/map.h"
@@ -9368,8 +9367,8 @@ class binary_reader
     */
     bool parse_bson_internal()
     {
-        rsl::int32_t document_size{};
-        get_number<rsl::int32_t, true>(input_format_t::bson, document_size);
+        rsl::int32 document_size{};
+        get_number<rsl::int32, true>(input_format_t::bson, document_size);
 
         if (JSON_HEDLEY_UNLIKELY(!sax->start_object(static_cast<rsl::size_t>(-1))))
         {
@@ -9483,9 +9482,9 @@ class binary_reader
 
             case 0x02: // string
             {
-                rsl::int32_t len{};
+                rsl::int32 len{};
                 string_t value;
-                return get_number<rsl::int32_t, true>(input_format_t::bson, len) && get_bson_string(len, value) && sax->string(value);
+                return get_number<rsl::int32, true>(input_format_t::bson, len) && get_bson_string(len, value) && sax->string(value);
             }
 
             case 0x03: // object
@@ -9500,9 +9499,9 @@ class binary_reader
 
             case 0x05: // binary
             {
-                rsl::int32_t len{};
+                rsl::int32 len{};
                 binary_t value;
-                return get_number<rsl::int32_t, true>(input_format_t::bson, len) && get_bson_binary(len, value) && sax->binary(value);
+                return get_number<rsl::int32, true>(input_format_t::bson, len) && get_bson_binary(len, value) && sax->binary(value);
             }
 
             case 0x08: // boolean
@@ -9517,8 +9516,8 @@ class binary_reader
 
             case 0x10: // int32
             {
-                rsl::int32_t value{};
-                return get_number<rsl::int32_t, true>(input_format_t::bson, value) && sax->number_integer(value);
+                rsl::int32 value{};
+                return get_number<rsl::int32, true>(input_format_t::bson, value) && sax->number_integer(value);
             }
 
             case 0x12: // int64
@@ -9590,8 +9589,8 @@ class binary_reader
     */
     bool parse_bson_array()
     {
-        rsl::int32_t document_size{};
-        get_number<rsl::int32_t, true>(input_format_t::bson, document_size);
+        rsl::int32 document_size{};
+        get_number<rsl::int32, true>(input_format_t::bson, document_size);
 
         if (JSON_HEDLEY_UNLIKELY(!sax->start_array(static_cast<rsl::size_t>(-1))))
         {
@@ -10687,7 +10686,7 @@ class binary_reader
 
             case 0xD2: // int 32
             {
-                rsl::int32_t number{};
+                rsl::int32 number{};
                 return get_number(input_format_t::msgpack, number) && sax->number_integer(number);
             }
 
@@ -11081,7 +11080,7 @@ class binary_reader
 
             case 'l':
             {
-                rsl::int32_t len{};
+                rsl::int32 len{};
                 return get_number(input_format, len) && get_string(input_format, len, result);
             }
 
@@ -11261,7 +11260,7 @@ class binary_reader
 
             case 'l':
             {
-                rsl::int32_t number{};
+                rsl::int32 number{};
                 if (JSON_HEDLEY_UNLIKELY(!get_number(input_format, number)))
                 {
                     return false;
@@ -11532,7 +11531,7 @@ class binary_reader
 
             case 'l':
             {
-                rsl::int32_t number{};
+                rsl::int32 number{};
                 return get_number(input_format, number) && sax->number_integer(number);
             }
 
@@ -13244,6 +13243,8 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
                 JSON_THROW(invalid_iterator::create(214, "cannot get value", m_object));
             }
         }
+
+        return *m_object;
     }
 
     /*!
@@ -13286,6 +13287,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
                 JSON_THROW(invalid_iterator::create(214, "cannot get value", m_object));
             }
         }
+        return m_object;
     }
 
     /*!
@@ -15591,12 +15593,12 @@ class binary_writer
                         oa->write_character(to_char_type(0xD1));
                         write_number(static_cast<rsl::int16_t>(j.m_data.m_value.number_integer));
                     }
-                    else if (j.m_data.m_value.number_integer >= (rsl::numeric_limits<rsl::int32_t>::min)() &&
-                             j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int32_t>::max)())
+                    else if (j.m_data.m_value.number_integer >= (rsl::numeric_limits<rsl::int32>::min)() &&
+                             j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int32>::max)())
                     {
                         // int 32
                         oa->write_character(to_char_type(0xD2));
-                        write_number(static_cast<rsl::int32_t>(j.m_data.m_value.number_integer));
+                        write_number(static_cast<rsl::int32>(j.m_data.m_value.number_integer));
                     }
                     else if (j.m_data.m_value.number_integer >= (rsl::numeric_limits<rsl::int64>::min)() &&
                              j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int64>::max)())
@@ -16111,7 +16113,7 @@ class binary_writer
     */
     static rsl::size_t calc_bson_string_size(const string_t& value)
     {
-        return sizeof(rsl::int32_t) + value.size() + 1ul;
+        return sizeof(rsl::int32) + value.size() + 1ul;
     }
 
     /*!
@@ -16122,7 +16124,7 @@ class binary_writer
     {
         write_bson_entry_header(name, 0x02);
 
-        write_number<rsl::int32_t>(static_cast<rsl::int32_t>(value.size() + 1ul), true);
+        write_number<rsl::int32>(static_cast<rsl::int32>(value.size() + 1ul), true);
         oa->write_characters(
             reinterpret_cast<const CharType*>(value.c_str()),
             value.size() + 1);
@@ -16141,8 +16143,8 @@ class binary_writer
     */
     static rsl::size_t calc_bson_integer_size(const rsl::int64 value)
     {
-        return (rsl::numeric_limits<rsl::int32_t>::min)() <= value && value <= (rsl::numeric_limits<rsl::int32_t>::max)()
-               ? sizeof(rsl::int32_t)
+        return (rsl::numeric_limits<rsl::int32>::min)() <= value && value <= (rsl::numeric_limits<rsl::int32>::max)()
+               ? sizeof(rsl::int32)
                : sizeof(rsl::int64);
     }
 
@@ -16152,10 +16154,10 @@ class binary_writer
     void write_bson_integer(const string_t& name,
                             const rsl::int64 value)
     {
-        if ((rsl::numeric_limits<rsl::int32_t>::min)() <= value && value <= (rsl::numeric_limits<rsl::int32_t>::max)())
+        if ((rsl::numeric_limits<rsl::int32>::min)() <= value && value <= (rsl::numeric_limits<rsl::int32>::max)())
         {
             write_bson_entry_header(name, 0x10); // int32
-            write_number<rsl::int32_t>(static_cast<rsl::int32_t>(value), true);
+            write_number<rsl::int32>(static_cast<rsl::int32>(value), true);
         }
         else
         {
@@ -16169,8 +16171,8 @@ class binary_writer
     */
     static constexpr rsl::size_t calc_bson_unsigned_size(const rsl::uint64 value) noexcept
     {
-        return (value <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32_t>::max)()))
-               ? sizeof(rsl::int32_t)
+        return (value <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32>::max)()))
+               ? sizeof(rsl::int32)
                : sizeof(rsl::int64);
     }
 
@@ -16180,10 +16182,10 @@ class binary_writer
     void write_bson_unsigned(const string_t& name,
                              const BasicJsonType& j)
     {
-        if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32_t>::max)()))
+        if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32>::max)()))
         {
             write_bson_entry_header(name, 0x10 /* int32 */);
-            write_number<rsl::int32_t>(static_cast<rsl::int32_t>(j.m_data.m_value.number_unsigned), true);
+            write_number<rsl::int32>(static_cast<rsl::int32>(j.m_data.m_value.number_unsigned), true);
         }
         else if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int64>::max)()))
         {
@@ -16218,7 +16220,7 @@ class binary_writer
             return result + calc_bson_element_size(rsl::to_string(array_index++), el);
         });
 
-        return sizeof(rsl::int32_t) + embedded_document_size + 1ul;
+        return sizeof(rsl::int32) + embedded_document_size + 1ul;
     }
 
     /*!
@@ -16226,7 +16228,7 @@ class binary_writer
     */
     static rsl::size_t calc_bson_binary_size(const typename BasicJsonType::binary_t& value)
     {
-        return sizeof(rsl::int32_t) + value.size() + 1ul;
+        return sizeof(rsl::int32) + value.size() + 1ul;
     }
 
     /*!
@@ -16236,7 +16238,7 @@ class binary_writer
                           const typename BasicJsonType::array_t& value)
     {
         write_bson_entry_header(name, 0x04); // array
-        write_number<rsl::int32_t>(static_cast<rsl::int32_t>(calc_bson_array_size(value)), true);
+        write_number<rsl::int32>(static_cast<rsl::int32>(calc_bson_array_size(value)), true);
 
         rsl::size_t array_index = 0ul;
 
@@ -16256,7 +16258,7 @@ class binary_writer
     {
         write_bson_entry_header(name, 0x05);
 
-        write_number<rsl::int32_t>(static_cast<rsl::int32_t>(value.size()), true);
+        write_number<rsl::int32>(static_cast<rsl::int32>(value.size()), true);
         write_number(value.has_subtype() ? static_cast<rsl::uint8>(value.subtype()) : static_cast<rsl::uint8>(0x00));
 
         oa->write_characters(reinterpret_cast<const CharType*>(value.data()), value.size());
@@ -16369,7 +16371,7 @@ class binary_writer
             return result += calc_bson_element_size(el.first, el.second);
         });
 
-        return sizeof(rsl::int32_t) + document_size + 1ul;
+        return sizeof(rsl::int32) + document_size + 1ul;
     }
 
     /*!
@@ -16378,7 +16380,7 @@ class binary_writer
     */
     void write_bson_object(const typename BasicJsonType::object_t& value)
     {
-        write_number<rsl::int32_t>(static_cast<rsl::int32_t>(calc_bson_object_size(value)), true);
+        write_number<rsl::int32>(static_cast<rsl::int32>(calc_bson_object_size(value)), true);
 
         for (const auto& el : value)
         {
@@ -16473,13 +16475,13 @@ class binary_writer
             }
             write_number(static_cast<rsl::uint16_t>(n), use_bjdata);
         }
-        else if (n <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32_t>::max)()))
+        else if (n <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32>::max)()))
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('l'));  // int32
             }
-            write_number(static_cast<rsl::int32_t>(n), use_bjdata);
+            write_number(static_cast<rsl::int32>(n), use_bjdata);
         }
         else if (use_bjdata && n <= static_cast<uint64>((rsl::numeric_limits<uint32>::max)()))
         {
@@ -16561,13 +16563,13 @@ class binary_writer
             }
             write_number(static_cast<uint16_t>(n), use_bjdata);
         }
-        else if ((rsl::numeric_limits<rsl::int32_t>::min)() <= n && n <= (rsl::numeric_limits<rsl::int32_t>::max)())
+        else if ((rsl::numeric_limits<rsl::int32>::min)() <= n && n <= (rsl::numeric_limits<rsl::int32>::max)())
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('l'));  // int32
             }
-            write_number(static_cast<rsl::int32_t>(n), use_bjdata);
+            write_number(static_cast<rsl::int32>(n), use_bjdata);
         }
         else if (use_bjdata && (static_cast<rsl::int64>((rsl::numeric_limits<rsl::uint32>::min)()) <= n && n <= static_cast<rsl::int64>((rsl::numeric_limits<rsl::uint32>::max)())))
         {
@@ -16634,7 +16636,7 @@ class binary_writer
                 {
                     return 'u';
                 }
-                if ((rsl::numeric_limits<rsl::int32_t>::min)() <= j.m_data.m_value.number_integer && j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int32_t>::max)())
+                if ((rsl::numeric_limits<rsl::int32>::min)() <= j.m_data.m_value.number_integer && j.m_data.m_value.number_integer <= (rsl::numeric_limits<rsl::int32>::max)())
                 {
                     return 'l';
                 }
@@ -16668,7 +16670,7 @@ class binary_writer
                 {
                     return 'u';
                 }
-                if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32_t>::max)()))
+                if (j.m_data.m_value.number_unsigned <= static_cast<rsl::uint64>((rsl::numeric_limits<rsl::int32>::max)()))
                 {
                     return 'l';
                 }
@@ -16795,7 +16797,7 @@ class binary_writer
         {
             for (const auto& el : value.at(key))
             {
-                write_number(static_cast<rsl::int32_t>(el.m_data.m_value.number_integer), true);
+                write_number(static_cast<rsl::int32>(el.m_data.m_value.number_integer), true);
             }
         }
         else if (dtype == 'M')
@@ -19040,7 +19042,7 @@ class serializer
     rsl::array<char, 64> number_buffer{{}};
 
     /// the locale
-    const rsl::lconv* loc = nullptr;
+    const std::lconv* loc = nullptr;
     /// the locale's thousand separator character
     const char thousands_sep = '\0';
     /// the locale's decimal point character
@@ -19431,7 +19433,7 @@ NLOHMANN_JSON_NAMESPACE_END
 
 #if defined(JSON_HAS_CPP_17)
     #if JSON_HAS_STATIC_RTTI
-        #include <any>
+#include "rex_std/any.h"
     #endif
     #include <string_view>
 #endif
@@ -21519,6 +21521,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a string argument with ", type_name()), this));
+        return m_data.m_value.object->end()->value;
     }
 
     /// @brief access specified object element
@@ -21534,6 +21537,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         JSON_THROW(type_error::create(305, detail::concat("cannot use operator[] with a string argument with ", type_name()), this));
+        return m_data.m_value.object->end()->value;
     }
 
     // these two functions resolve a (const) char * ambiguity affecting Clang and MSVC

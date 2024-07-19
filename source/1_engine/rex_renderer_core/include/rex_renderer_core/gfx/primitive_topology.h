@@ -34,6 +34,7 @@ namespace rex
       case rex::gfx::PrimitiveTopology::LineStrip:       return PrimitiveTopologyType::Line;
       case rex::gfx::PrimitiveTopology::TriangleList:    return PrimitiveTopologyType::Triangle;
       case rex::gfx::PrimitiveTopology::TriangleStrip:   return PrimitiveTopologyType::Triangle;
+      default: break;
       }
 
       return invalid_obj<PrimitiveTopologyType>();

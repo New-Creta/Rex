@@ -113,6 +113,7 @@ namespace rex
 			case rex::gfx::ScalarType::Uchar:		return 1;
 			case rex::gfx::ScalarType::Char:		return 1;
 			case rex::gfx::ScalarType::Bool:		return 1;
+			default: break;
 			}
 
 			return 0;
@@ -183,6 +184,9 @@ namespace rex
 			case rex::gfx::ShaderParameterType::Float4:
 			case rex::gfx::ShaderParameterType::Double4:
 				return 4;
+
+			default: break;
+
 			}
 
 			return 0;
@@ -255,6 +259,9 @@ namespace rex
 			case rex::gfx::ShaderParameterType::Double2:					return ScalarType::Double;
 			case rex::gfx::ShaderParameterType::Double3:					return ScalarType::Double;
 			case rex::gfx::ShaderParameterType::Double4:					return ScalarType::Double;
+
+			default: break;
+
 			}
 
 			return ScalarType::Unknown;
@@ -291,6 +298,9 @@ namespace rex
 			case rex::gfx::ShaderParameterType::Char3Norm:
 			case rex::gfx::ShaderParameterType::Char4Norm:
 				return true;
+
+			default: break;
+
 			}
 
 			return false;
