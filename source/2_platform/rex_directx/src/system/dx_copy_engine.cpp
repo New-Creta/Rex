@@ -52,7 +52,7 @@ namespace rex
     UploadBufferLock DxCopyEngine::lock_upload_buffer()
     {
       m_upload_buffer_access_mtx.lock();
-      return UploadBufferLock(this, static_cast<DxUploadBuffer*>(m_upload_buffer.get()));
+      return UploadBufferLock(this, d3d::to_dx12(m_upload_buffer.get()));
     }
     // Unlock the upload buffer, other threads can write to it again
     void DxCopyEngine::unlock_upload_buffer()

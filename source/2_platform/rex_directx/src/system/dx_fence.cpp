@@ -26,7 +26,7 @@ namespace rex
     {
       inc_cpu_val();
       
-      ID3D12CommandQueue* dx_cmd_queue = static_cast<DxCommandQueue*>(cmdQueue)->dx_object();
+      ID3D12CommandQueue* dx_cmd_queue = d3d::to_dx12(cmdQueue)->dx_object();
       dx_cmd_queue->Signal(m_fence.Get(), cpu_value());
 
       return cpu_value();

@@ -25,7 +25,7 @@ namespace rex
 
     void DxComputeContext::platform_reset(CommandAllocator* alloc, const ContextResetData& resetData)
     {
-      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
+      DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
       d3d::reset_cmdlist(m_cmd_list.Get(), dx_alloc, resetData);
     }
 

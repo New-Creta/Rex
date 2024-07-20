@@ -57,44 +57,44 @@ namespace rex
     // Transition a constant buffer's resource state
     void DxRenderContext::transition_buffer(ConstantBuffer* resource, ResourceState state)
     {
-      DxConstantBuffer* dx_constant_buffer = static_cast<DxConstantBuffer*>(resource);
+      DxConstantBuffer* dx_constant_buffer = d3d::to_dx12(resource);
       transition_buffer(resource, dx_constant_buffer->dx_object(), state);
     }
     // Transition a vertex buffer's resource state
     void DxRenderContext::transition_buffer(VertexBuffer* resource, ResourceState state)
     {
-      DxVertexBuffer* dx_vertex_buffer = static_cast<DxVertexBuffer*>(resource);
+      DxVertexBuffer* dx_vertex_buffer = d3d::to_dx12(resource);
       transition_buffer(resource, dx_vertex_buffer->dx_object(), state);
     }
     // Transition an index buffer's resource state
     void DxRenderContext::transition_buffer(IndexBuffer* resource, ResourceState state)
     {
-      DxIndexBuffer* dx_index_buffer = static_cast<DxIndexBuffer*>(resource);
+      DxIndexBuffer* dx_index_buffer = d3d::to_dx12(resource);
       transition_buffer(resource, dx_index_buffer->dx_object(), state);
     }
     // Transition a upload buffer's resource state
     void DxRenderContext::transition_buffer(UploadBuffer* resource, ResourceState state)
     {
-      DxUploadBuffer* dx_upload_buffer = static_cast<DxUploadBuffer*>(resource);
+      DxUploadBuffer* dx_upload_buffer = d3d::to_dx12(resource);
       transition_buffer(resource, dx_upload_buffer->dx_object(), state);
     }
     // Transition a texture's resource state
     void DxRenderContext::transition_buffer(Texture2D* resource, ResourceState state)
     {
-      DxTexture2D* dx_texture = static_cast<DxTexture2D*>(resource);
+      DxTexture2D* dx_texture = d3d::to_dx12(resource);
       transition_buffer(resource, dx_texture->dx_object(), state);
     }
     // Transition a render target's resource state
     void DxRenderContext::transition_buffer(RenderTarget* resource, ResourceState state)
     {
-      DxRenderTarget* dx_rt = static_cast<DxRenderTarget*>(resource);
+      DxRenderTarget* dx_rt = d3d::to_dx12(resource);
       transition_buffer(resource, dx_rt->dx_object(), state);
     }
 
     // Set the render target of the context
     void DxRenderContext::set_render_target(RenderTarget* renderTarget)
     {
-      DxRenderTarget* dx_render_target = static_cast<DxRenderTarget*>(renderTarget);
+      DxRenderTarget* dx_render_target = d3d::to_dx12(renderTarget);
       m_cmd_list->OMSetRenderTargets(1, &dx_render_target->view().cpu_handle(), true, nullptr);
     }
     // Clear the render target of the context
@@ -103,7 +103,7 @@ namespace rex
       auto& clear_flags = clearState->get()->flags;
       if (clear_flags.has_state(ClearBits::ClearColorBuffer))
       {
-        DxRenderTarget* dx_render_target = static_cast<DxRenderTarget*>(renderTarget);
+        DxRenderTarget* dx_render_target = d3d::to_dx12(renderTarget);
         m_cmd_list->ClearRenderTargetView(dx_render_target->view(), clearState->get()->rgba.data(), 0, nullptr);
       }
 
@@ -120,7 +120,7 @@ namespace rex
     // Set the vertex buffer of the context
     void DxRenderContext::set_vertex_buffer(VertexBuffer* vb)
     {
-      DxVertexBuffer* dx_vb = static_cast<DxVertexBuffer*>(vb);
+      DxVertexBuffer* dx_vb = d3d::to_dx12(vb);
 
       D3D12_VERTEX_BUFFER_VIEW view{};
       view.BufferLocation = dx_vb->dx_object()->GetGPUVirtualAddress();
@@ -132,7 +132,7 @@ namespace rex
     // Set the index buffer of the context
     void DxRenderContext::set_index_buffer(IndexBuffer* ib)
     {
-      DxIndexBuffer* dx_ib = static_cast<DxIndexBuffer*>(ib);
+      DxIndexBuffer* dx_ib = d3d::to_dx12(ib);
 
       D3D12_INDEX_BUFFER_VIEW view{};
       view.BufferLocation = dx_ib->dx_object()->GetGPUVirtualAddress();
@@ -151,13 +151,13 @@ namespace rex
     // Set the root signature of the context
     void DxRenderContext::set_root_signature(RootSignature* rootSignature)
     {
-      DxRootSignature* dx_root_signature = static_cast<DxRootSignature*>(rootSignature);
+      DxRootSignature* dx_root_signature = d3d::to_dx12(rootSignature);
       m_cmd_list->SetGraphicsRootSignature(dx_root_signature->dx_object());
     }
     // Set the pipeline state of the context
     void DxRenderContext::set_pipeline_state(PipelineState* pso)
     {
-      DxPipelineState* dx_pso = static_cast<DxPipelineState*>(pso);
+      DxPipelineState* dx_pso = d3d::to_dx12(pso);
       m_cmd_list->SetPipelineState(dx_pso->dx_object());
     }
     // Set the graphics root descriptor table of the context
@@ -171,7 +171,7 @@ namespace rex
     // Set the constant buffer of the context at a given index
     void DxRenderContext::set_constant_buffer(s32 paramIdx, ConstantBuffer* cb)
     {
-      DxConstantBuffer* dx_cb = static_cast<DxConstantBuffer*>(cb);
+      DxConstantBuffer* dx_cb = d3d::to_dx12(cb);
       m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, dx_cb->dx_object()->GetGPUVirtualAddress());
     }
     // Set the blend factor of the context
@@ -199,7 +199,7 @@ namespace rex
     // Bind a texture to the context
     void DxRenderContext::bind_texture(s32 rootParamIdx, Texture2D* texture)
     {
-      DxTexture2D* dx_texture = static_cast<DxTexture2D*>(texture);
+      DxTexture2D* dx_texture = d3d::to_dx12(texture);
       m_cmd_list->SetGraphicsRootDescriptorTable(rootParamIdx, dx_texture->view()->gpu_handle());
     
     }
@@ -255,7 +255,7 @@ namespace rex
     // Reset the wrapped commandlist and its allocater
     void DxRenderContext::platform_reset(CommandAllocator* alloc, const ContextResetData& resetData)
     {
-      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
+      DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
       d3d::reset_cmdlist(m_cmd_list.Get(), dx_alloc, resetData);
     }
 

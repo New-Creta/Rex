@@ -70,6 +70,9 @@ namespace rex
     class ShaderSignature;
     class ResourceView;
     class PipelineState;
+    class Fence;
+    class ConstantBuffer;
+    class RenderTarget;
 
     // DirectX classes
     class DxCommandQueue;
@@ -81,6 +84,13 @@ namespace rex
     class DxViewHeap;
     class DxSampler2D;
     class DxResourceView;
+    class DxFence;
+    class DxConstantBuffer;
+    class DxVertexBuffer;
+    class DxIndexBuffer;
+    class DxUploadBuffer;
+    class DxRenderTarget;
+    class DxPipelineState;
 
     namespace d3d
     {
@@ -185,6 +195,15 @@ namespace rex
       DxViewHeap* to_dx12(ViewHeap* descHeap);
       DxSampler2D* to_dx12(Sampler2D* sampler);
       DxResourceView* to_dx12(ResourceView* resourceView);
+      DxFence* to_dx12(Fence* fence);
+      DxConstantBuffer* to_dx12(ConstantBuffer* constantBuffer);
+      DxVertexBuffer* to_dx12(VertexBuffer* vertexBuffer);
+      DxIndexBuffer* to_dx12(IndexBuffer* indexBuffer);
+      DxUploadBuffer* to_dx12(UploadBuffer* uploadBuffer);
+      DxRenderTarget* to_dx12(RenderTarget* renderTarget);
+      DxPipelineState* to_dx12(PipelineState* pso);
+
+      const DxShader* to_dx12(const Shader* shader);
 
       // ------------------------------------
       // Returned the wrapped dx12 resource of a class

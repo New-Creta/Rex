@@ -272,7 +272,7 @@ namespace rex
         REX_ASSERT_X(shader, "Cannot create reflection data on a null shader");
 
         // Create the shader reflection object
-        const gfx::DxShader* dx_shader = static_cast<const gfx::DxShader*>(shader);
+        const gfx::DxShader* dx_shader = d3d::to_dx12(shader);
         const void* byte_code = dx_shader->dx_bytecode().pShaderBytecode;
         s32 byte_count = static_cast<s32>(dx_shader->dx_bytecode().BytecodeLength);
         wrl::ComPtr<ID3D12ShaderReflection> reflection_object;

@@ -240,7 +240,7 @@ namespace rex
         wrl::ComPtr<IDXGIFactory4> dxgi_factory = g_rhi_resources->factory->as<IDXGIFactory4>();
         wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
         CommandQueue* cmd_queue = (CommandQueue*)apiDevice;
-        DxCommandQueue* dx_cmd_queue = static_cast<DxCommandQueue*>(cmd_queue);
+        DxCommandQueue* dx_cmd_queue = d3d::to_dx12(cmd_queue);
         if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(dx_cmd_queue->dx_object(), (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
         {
           REX_ERROR(LogDxRhi, "Failed to create swap chain");

@@ -23,6 +23,8 @@
 #include "rex_directx/resources/dx_index_buffer.h"
 #include "rex_directx/resources/dx_upload_buffer.h"
 #include "rex_directx/resources/dx_pipeline_state.h"
+#include "rex_directx/resources/dx_render_target.h"
+#include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/system/dx_view_heap.h"
 
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
@@ -718,6 +720,39 @@ namespace rex
       DxResourceView* to_dx12(ResourceView* resourceView)
       {
         return static_cast<DxResourceView*>(resourceView);
+      }
+      DxFence* to_dx12(Fence* fence)
+      {
+        return static_cast<DxFence*>(fence);
+      }
+      DxConstantBuffer* to_dx12(ConstantBuffer* constantBuffer)
+      {
+        return static_cast<DxConstantBuffer*>(constantBuffer);
+      }
+      DxVertexBuffer* to_dx12(VertexBuffer* vertexBuffer)
+      {
+        return static_cast<DxVertexBuffer*>(vertexBuffer);
+      }
+      DxIndexBuffer* to_dx12(IndexBuffer* indexBuffer)
+      {
+        return static_cast<DxIndexBuffer*>(indexBuffer);
+      }
+      DxUploadBuffer* to_dx12(UploadBuffer* uploadBuffer)
+      {
+        return static_cast<DxUploadBuffer*>(uploadBuffer);
+      }
+      DxRenderTarget* to_dx12(RenderTarget* renderTarget)
+      {
+        return static_cast<DxRenderTarget*>(renderTarget);
+      }
+      DxPipelineState* to_dx12(PipelineState* pso)
+      {
+        return static_cast<DxPipelineState*>(pso);
+      }
+
+      const DxShader* to_dx12(const Shader* shader)
+      {
+        return static_cast<const DxShader*>(shader);
       }
 
       // ------------------------------------
