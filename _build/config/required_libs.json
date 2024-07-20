@@ -26,5 +26,12 @@
     "paths": ["MSVC/14.29.30133/lib/x64", "MSVC/14.29.30133/atlmfc/lib/x64"],
     "config_name": "msvc_libs",
     "version" : "msvc-14.29.30133"
+  },
+  "clang_sanitizers" : {
+    "archive_name": "LLVM",
+    "num_zip_files": 9,
+    "paths": ["LLVM/lib/clang/18/lib/windows"],
+    "config_name": "clang_sanitizers",
+    "version": "llvm-18.1.8"
   }
 }

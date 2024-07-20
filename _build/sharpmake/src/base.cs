@@ -231,9 +231,27 @@ public abstract class BasicCPPProject : Project
     }
 
     // Add the dependency to the regenerate project for all C++ projects.
-    if (target.DevEnv == DevEnv.vs2019)
+    if (target.DevEnv.IsVisualStudio())
     {
       conf.AddPublicDependency<RegenerateProjects>(target, DependencySetting.OnlyBuildOrder);
+    }
+
+    // Clang adds default library paths from the toolchain
+    // It gets the Visual Studio toolchain from the setup configuration
+    // This will point to the last installed Visual Studio
+    // These are added to an internal search list where to look for library files
+    // The tool chain's paths are added first, meaning our own paths are not searched first
+    // As Visual Studio adds its own clang libraries, which do not always work without our compiler version
+    // We provide the full path to clang libraries that'd otherwise confuse the linker
+    // Absolute paths to library files are looked at before a path is constructed with search paths
+    // Which means it'll solve our issue
+    if (ProjectGen.Settings.UbsanEnabled)
+    {
+      string sanitizersPath = ToolPaths["clang_sanitizers"].ToList()[0];
+      string ubsanStandalonePath = Path.Combine(sanitizersPath, "clang_rt.ubsan_standalone_cxx-x86_64.lib");
+      string ubsanStandaloneCxxPath = Path.Combine(sanitizersPath, "clang_rt.ubsan_standalone-x86_64.lib");
+      conf.LibraryFiles.Add(ubsanStandalonePath);
+      conf.LibraryFiles.Add(ubsanStandaloneCxxPath);
     }
   }
 
@@ -300,6 +318,7 @@ public abstract class BasicCPPProject : Project
     if (target.Compiler == Compiler.Clang)
     {
       conf.AdditionalCompilerOptions.Add("-msse4.2");
+      conf.AdditionalCompilerOptions.Add("-Wno-nonportable-include-path"); // We really don't care about this..
     }
 
     if (conf.Output == Configuration.OutputType.Exe)
@@ -401,13 +420,13 @@ public abstract class BasicCPPProject : Project
     switch (target.Optimization)
     {
       case Optimization.FullOptWithPdb:
+      case Optimization.FullOpt:
         conf.Options.Add(Options.Vc.General.DebugInformation.ProgramDatabase);   
         conf.Options.Add(Options.Vc.Compiler.OmitFramePointers.Disable);         // Disable so we can have a stack trace
         break;
-      case Optimization.FullOpt:
-        conf.Options.Add(Options.Vc.General.DebugInformation.Disable);
-        conf.Options.Add(Options.Vc.Compiler.OmitFramePointers.Enable);
-        break;
+        //conf.Options.Add(Options.Vc.General.DebugInformation.Disable);
+        //conf.Options.Add(Options.Vc.Compiler.OmitFramePointers.Enable);
+        //break;
     }
   }
   // Setup rules that need to be defined based on the platform
@@ -467,6 +486,7 @@ public abstract class BasicCPPProject : Project
         conf.add_public_define("REX_ENABLE_ASSERTS");
         break;
       case Config.release:
+        conf.add_public_define("REX_NO_LOGGING");
         break;
       case Config.coverage:
       case Config.sanitization:

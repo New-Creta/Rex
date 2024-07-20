@@ -97,7 +97,7 @@ public class RexTarget : ITarget
     // Thse checks do not work with Visual Studio and are only supported through the rex pipeline.
     if (ProjectGen.Settings.CoverageEnabled)
     {
-      targets.Add(new RexTarget(Platform.win64, devEnv, Config.sanitization, Compiler.Clang));
+      targets.Add(new RexTarget(Platform.win64, devEnv, Config.coverage, Compiler.Clang));
     }
     if (ProjectGen.Settings.AsanEnabled)
     {
