@@ -30,6 +30,8 @@ namespace rex
     template <typename ... Args>
     static Error create_with_log(LogCategory category, rsl::string_view msg, Args&& ... args)
     {
+      REX_UNUSED_PARAM(category);
+
       auto fmt_string = rsl::format(msg, rsl::forward<Args>(args)...);
       REX_ERROR(category, fmt_string);
       return Error(fmt_string);

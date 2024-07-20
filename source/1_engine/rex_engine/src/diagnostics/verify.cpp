@@ -11,6 +11,8 @@ namespace rex
   //-------------------------------------------------------------------------
   void rex_verify(rsl::string_view condition, rsl::string_view msg)
   {
+    REX_UNUSED_PARAM(condition);
+
     REX_ERROR(LogVerify, "Verification Failed: {}", condition);
     REX_ERROR(LogVerify, msg);
 

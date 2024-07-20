@@ -964,6 +964,8 @@ namespace rex
         default:
           REX_ASSERT("Unknown DX12 texture format, cannot convert to rex texture format");
         }
+
+        return invalid_obj<TextureFormat>();
       }
 			ShaderClassType from_dx12(D3D_SHADER_VARIABLE_CLASS type)
 			{
@@ -980,6 +982,8 @@ namespace rex
 				default:
 					REX_ASSERT("Unknown DX12 shader class type, cannot convert to rex shader class type");
 				}
+
+        return invalid_obj<ShaderClassType>();
 			}
 			ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type)
 			{
@@ -1046,6 +1050,8 @@ namespace rex
 				default:
 					REX_ASSERT("Unknown DX12 shader variable type, cannot convert to rex shader variable type");
 				}
+
+        return invalid_obj<ShaderVariableType>();
 			}
 
       ShaderVisibility from_dx12(D3D12_SHADER_VISIBILITY visibility)

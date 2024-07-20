@@ -108,7 +108,7 @@ namespace rex
     return def;
   }
 
-  rsl::unordered_map<rsl::string_view, IniHeaderWithItems> IniProcessor::all_items() const
+  const rsl::unordered_map<rsl::string_view, IniHeaderWithItems>& IniProcessor::all_items() const
   {
     return m_headers_with_items;
   }

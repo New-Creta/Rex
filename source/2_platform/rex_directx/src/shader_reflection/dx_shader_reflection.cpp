@@ -226,6 +226,8 @@ namespace rex
       case D3D_REGISTER_COMPONENT_UINT32:  return component_mask_to_uint(componentType, precision); break;
       case D3D_REGISTER_COMPONENT_FLOAT32: return component_mask_to_float(componentMask); break;
       }
+
+      return invalid_obj<ShaderParameterType>();
     }
     ShaderParameterType component_mask_to_float(s32 componentMask)
     {

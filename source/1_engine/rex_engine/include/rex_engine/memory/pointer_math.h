@@ -2,6 +2,7 @@
 
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_std/bonus/types.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {

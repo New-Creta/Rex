@@ -98,6 +98,8 @@ namespace rex
     // but the data is the same
     void dispatch_from_data(void* data, rsl::memory_size size) override
     {
+      REX_UNUSED_PARAM(size);
+
       REX_ASSERT_X(size == sizeof(EventType), "Trying to dispatch an event from data but size doesn't match");
       EventType* ev = reinterpret_cast<EventType*>(data);
       dispatch(*ev);

@@ -121,6 +121,8 @@ namespace rex
 
     void Material::validate_input_layout(InputLayout* inputLayout)
     {
+      REX_UNUSED_PARAM(inputLayout);
+
       REX_ASSERT_X(inputLayout->validate_desc(m_input_layout_desc), "Input layout is not compatible with material");
     }
 
