@@ -8,6 +8,8 @@
 #include "rex_engine/text_processing/ini_processor.h"
 #include "rex_engine/filesystem/vfs.h"
 
+#include "pokemon/map.h"
+
 namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogLevel);
@@ -43,6 +45,9 @@ namespace pokemon
     }
 
     REX_INFO(LogLevel, "Starting map: {}", rex::quoted(*it));
+
+    m_current_map = rsl::make_unique<Map>(*it);
+    m_current_map->load_hardcoded_scene();
   }
 
   void Level::load_map_names(rsl::string_view iniFilePath)
