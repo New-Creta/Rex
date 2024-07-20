@@ -11,7 +11,7 @@
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_command_allocator.h"
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/system/dx_swapchain.h"
 #include "rex_directx/system/dx_shader_compiler.h"
@@ -55,6 +55,12 @@
 #include "rex_directx/dxgi/includes.h"
 
 #include "rex_engine/platform/win/diagnostics/hr_call.h"
+#include "rex_directx/shader_reflection/dx_shader_reflection.h"
+#include "rex_directx/system/dx_shader_root_parameters.h"
+#include "rex_directx/resources/dx_sampler_2d.h"
+
+#include "rex_engine/images/stb_image.h"
+#include "rex_renderer_core/materials/material_system.h"
 
 namespace rex
 {
@@ -202,7 +208,7 @@ namespace rex
         if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateCommandQueue(&queue_desc, IID_PPV_ARGS(d3d_command_queue.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create command queue");
-          return false;
+          return nullptr;
         }
 
         switch (type)
@@ -234,7 +240,7 @@ namespace rex
         wrl::ComPtr<IDXGIFactory4> dxgi_factory = g_rhi_resources->factory->as<IDXGIFactory4>();
         wrl::ComPtr<IDXGISwapChain1> d3d_swapchain;
         CommandQueue* cmd_queue = (CommandQueue*)apiDevice;
-        DxCommandQueue* dx_cmd_queue = static_cast<DxCommandQueue*>(cmd_queue);
+        DxCommandQueue* dx_cmd_queue = d3d::to_dx12(cmd_queue);
         if (DX_FAILED(dxgi_factory->CreateSwapChainForHwnd(dx_cmd_queue->dx_object(), (HWND)primaryDisplayHandle, &sd, nullptr, nullptr, d3d_swapchain.GetAddressOf())))
         {
           REX_ERROR(LogDxRhi, "Failed to create swap chain");
@@ -256,7 +262,7 @@ namespace rex
         if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateCommandAllocator(d3d::to_dx12(type), IID_PPV_ARGS(allocator.GetAddressOf()))))
         {
           REX_ERROR(LogDxRhi, "Failed to create command allocator");
-          return false;
+          return nullptr;
         }
 
         switch (type)
@@ -287,6 +293,61 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> buffer = g_gpu_engine->allocate_buffer(total_size);
         d3d::set_debug_name_for(buffer.Get(), "Index Buffer");
         return rsl::make_unique<DxIndexBuffer>(buffer, numIndices, format);
+      }
+      rsl::unique_ptr<RootSignature>        create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection)
+      {
+        // 1. Constants (not able to retrieve this from reflection yet)
+        // 2. View 
+        // - constant buffer, 
+        // - SRV/UAV pointing to structured buffers or byte address buffers, 
+        // - raytracing acceleration structures
+        // 3. View Table
+        // - textures
+        // - samplers
+
+        DxShaderRootParameters vs_root_params(shaderPipelineReflection.vs, ShaderVisibility::Vertex);
+        DxShaderRootParameters ps_root_params(shaderPipelineReflection.ps, ShaderVisibility::Pixel);
+
+        rsl::vector<CD3DX12_ROOT_PARAMETER> root_parameters(rsl::Capacity(vs_root_params.count() + ps_root_params.count()));
+        rsl::copy(vs_root_params.params().cbegin(), vs_root_params.params().cend(), rsl::back_inserter(root_parameters));
+        rsl::copy(ps_root_params.params().cbegin(), ps_root_params.params().cend(), rsl::back_inserter(root_parameters));
+
+        // A root signature is an array of root parameters.
+        REX_WARN(LogDxRhi, "Use versioned root signature here");
+        REX_WARN(LogDxRhi, "Investigate if we can use static samplers here as well..");
+        CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
+          root_parameters.size(),
+          root_parameters.data(),
+          0,          // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
+          nullptr,    // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
+          D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+        // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+        wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
+        wrl::ComPtr<ID3DBlob> error_blob = nullptr;
+
+        HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
+        if (error_blob != nullptr)
+        {
+          REX_ERROR(LogDxRhi, "{}", (char*)error_blob->GetBufferPointer());
+          return nullptr;
+        }
+
+        if (DX_FAILED(hr))
+        {
+          REX_ERROR(LogDxRhi, "Failed to serialize root signature");
+          return nullptr;
+        }
+
+        wrl::ComPtr<ID3D12RootSignature> root_signature;
+        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
+        {
+          HR_CALL(g_rhi_resources->device->dx_object()->GetDeviceRemovedReason());
+          REX_ERROR(LogDxRhi, "Failed to create root signature");
+          return nullptr;
+        }
+
+        return rsl::make_unique<DxRootSignature>(root_signature, rsl::move(root_parameters));
       }
       rsl::unique_ptr<RootSignature>        create_root_signature(const RootSignatureDesc& desc)
       {
@@ -354,6 +415,7 @@ namespace rex
         }
 
         // A root signature is an array of root parameters.
+        REX_WARN(LogDxRhi, "Use versioned root signature here");
         CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
           root_parameters.size(),
           root_parameters.data(),
@@ -386,16 +448,30 @@ namespace rex
           return nullptr;
         }
 
-        return rsl::make_unique<DxRootSignature>(root_signature);
+        return rsl::make_unique<DxRootSignature>(root_signature, rsl::move(root_parameters));
       }
       rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, TextureFormat format)
       {
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         return create_render_target(d3d_texture);
       }
+      rsl::unique_ptr<PipelineState>        create_pso(InputLayout* inputLayout, Material* material)
+      {
+        PipelineStateDesc desc{};
+
+        material->fill_pso_desc(desc);
+        desc.input_layout = inputLayout;
+        
+        return create_pso(desc);
+      }
       rsl::unique_ptr<PipelineState>        create_pso(const PipelineStateDesc& desc)
       {
-        // 1) Load the resources from the resource pool
+        // Make sure our critical required parameters are specified
+        REX_ASSERT_X(desc.input_layout, "No input layout specified for the pso");
+        REX_ASSERT_X(desc.root_signature, "No root signature specified for the pso");
+        REX_ASSERT_X(desc.vertex_shader, "No vertex shader specified for the pso");
+        REX_ASSERT_X(desc.pixel_shader, "No pixel shader specified for the pso");
+
         D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         if (desc.raster_state.has_value())
         {
@@ -414,7 +490,6 @@ namespace rex
           d3d_depth_stencil_state = d3d::to_dx12(desc.depth_stencil_state.value());
         }
 
-        // 2) Fill in the PSO desc
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
         pso_desc.InputLayout = *d3d::to_dx12(desc.input_layout)->dx_object();
         pso_desc.pRootSignature = d3d::to_dx12(desc.root_signature)->dx_object();
@@ -424,22 +499,26 @@ namespace rex
         pso_desc.BlendState = d3d_blend_state;
         pso_desc.DepthStencilState = d3d_depth_stencil_state;
         pso_desc.SampleMask = UINT_MAX;
-        pso_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        pso_desc.PrimitiveTopologyType = d3d::to_dx12(desc.primitive_topology);
         pso_desc.NumRenderTargets = 1;
         pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
         pso_desc.SampleDesc.Count = 1;
         pso_desc.SampleDesc.Quality = 0;
-        pso_desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        pso_desc.DSVFormat = DXGI_FORMAT_UNKNOWN; // DXGI_FORMAT_D24_UNORM_S8_UINT;
 
         wrl::ComPtr<ID3D12PipelineState> pso;
-        g_rhi_resources->device->dx_object()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso));
+        DX_CALL(g_rhi_resources->device->dx_object()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso)));
+        if (!pso)
+        {
+          return nullptr;
+        }
 
         return rsl::make_unique<DxPipelineState>(pso);
       }
       rsl::unique_ptr<Texture2D>            create_texture2d(s32 width, s32 height, TextureFormat format, const void* data)
       {
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
-        DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
+        DxResourceView desc_handle = g_gpu_engine->create_texture2d_srv(d3d_texture.Get());
 
         auto texture = rsl::make_unique<DxTexture2D>(d3d_texture, desc_handle, width, height, format);
 
@@ -449,7 +528,7 @@ namespace rex
           auto copy_context = gfx::new_copy_ctx();
           copy_context->update_texture2d(texture.get(), data);
           auto sync_info = copy_context->execute_on_gpu();
-          
+
           auto render_context = gfx::new_render_ctx();
           render_context->stall(*sync_info.get());
           render_context->transition_buffer(texture.get(), ResourceState::PixelShaderResource);
@@ -459,7 +538,7 @@ namespace rex
       }
       rsl::unique_ptr<Texture2D>            create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource)
       {
-        DescriptorHandle desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
+        DxResourceView desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
 
         s32 width = static_cast<s32>(resource->GetDesc().Width);
         s32 height = static_cast<s32>(resource->GetDesc().Height);
@@ -474,20 +553,20 @@ namespace rex
         rsl::memory_size aligned_size = align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
-        DescriptorHandle desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
+        DxResourceView desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
 
         d3d::set_debug_name_for(d3d_constant_buffer.Get(), "Constant Buffer");
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
       }
-      rsl::unique_ptr<InputLayout>          create_input_layout(const InputLayoutDesc& desc)
+      rsl::unique_ptr<InputLayout>          create_input_layout(InputLayoutDesc&& desc)
       {
         rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
         REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
 
         for (s32 i = 0; i < desc.input_layout.size(); ++i)
         {
-          input_element_descriptions[i].SemanticName          = desc.input_layout[i].semantic_name.data();
+          input_element_descriptions[i].SemanticName          = shader_semantic_name(desc.input_layout[i].semantic).data();
           input_element_descriptions[i].SemanticIndex         = desc.input_layout[i].semantic_index;
           input_element_descriptions[i].Format                = d3d::to_dx12(desc.input_layout[i].format);
           input_element_descriptions[i].InputSlot             = desc.input_layout[i].input_slot;
@@ -496,8 +575,9 @@ namespace rex
           input_element_descriptions[i].InstanceDataStepRate  = desc.input_layout[i].instance_data_step_rate;
         }
 
-        return rsl::make_unique<DxInputLayout>(input_element_descriptions);
+        return rsl::make_unique<DxInputLayout>(input_element_descriptions, rsl::move(desc));
       }
+
       rsl::unique_ptr<Shader>               create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName)
       {
         CompileShaderDesc compile_vs_desc{};
@@ -507,6 +587,11 @@ namespace rex
         compile_vs_desc.shader_name = shaderName;
         compile_vs_desc.shader_type = ShaderType::Vertex;
         wrl::ComPtr<ID3DBlob> compiled_vs_blob = compile_shader(compile_vs_desc);
+
+        if (!compiled_vs_blob)
+        {
+          return nullptr;
+        }
 
         return rsl::make_unique<DxVertexShader>(compiled_vs_blob);
       }
@@ -524,6 +609,11 @@ namespace rex
         compile_ps_desc.shader_name = shaderName;
         compile_ps_desc.shader_type = ShaderType::Pixel;
         wrl::ComPtr<ID3DBlob> compiled_ps_blob = compile_shader(compile_ps_desc);
+
+        if (!compiled_ps_blob)
+        {
+          return nullptr;
+        }
 
         return rsl::make_unique<DxPixelShader>(compiled_ps_blob);
       }
@@ -549,11 +639,20 @@ namespace rex
         return rsl::make_unique<DxUploadBuffer>(d3d_upload_buffer);
       }
 
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
+      {
+        return rsl::make_unique<Material>(rsl::move(shaderPipeline), matConstructSettings);
+      }
+      rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc)
+      {
+        return g_gpu_engine->create_sampler2d(desc);
+      }
+
       // API Specific functions
       // -------------------------------------------
       rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource)
       {
-        DescriptorHandle rtv = g_gpu_engine->create_rtv(resource.Get());
+        DxResourceView rtv = g_gpu_engine->create_rtv(resource.Get());
         return rsl::make_unique<DxRenderTarget>(resource, rtv);
       }
       wrl::ComPtr<ID3DBlob>                 compile_shader(const CompileShaderDesc& desc)
@@ -561,7 +660,7 @@ namespace rex
         wrl::ComPtr<ID3DBlob> byte_code = g_gpu_engine->compile_shader(desc);
 
         if (!byte_code)
-        {
+        { 
           REX_ERROR(LogDxRhi, "Failed to compile shader");
           return nullptr;
         }
@@ -588,7 +687,7 @@ namespace rex
 
         return cmd_list;
       }
-      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type)
+      rsl::unique_ptr<ViewHeap> create_view_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible)
       {
         D3D12_DESCRIPTOR_HEAP_DESC desc{};
         
@@ -596,9 +695,9 @@ namespace rex
 
         desc.Type = type;
         desc.NumDescriptors = num_descriptors;
-        desc.Flags = type != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-          ? D3D12_DESCRIPTOR_HEAP_FLAG_NONE
-          : D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        desc.Flags = isShaderVisible
+          ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE
+          : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         desc.NodeMask = 0; // For single-adapter operation, set this to zero. ( https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_descriptor_heap_desc )
 
         wrl::ComPtr<ID3D12DescriptorHeap> desc_heap;
@@ -606,16 +705,17 @@ namespace rex
         if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&desc_heap))))
         {
           REX_ERROR(LogDxRhi, "Failed to create descriptor heap for type: {}", type_str);
-          return false;
+          return nullptr;
         }
 
-        d3d::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {}", type_str));
+        d3d::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {} - {}", type_str, isShaderVisible ? "Shader Visible" : "Not Shader Visible"));
         s32 desc_size = g_rhi_resources->device->dx_object()->GetDescriptorHandleIncrementSize(type);
         s32 total_size = desc_size * num_descriptors;
+        REX_UNUSED_PARAM(total_size);
 
         REX_INFO(LogDxRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, num_descriptors, desc_size, total_size);
 
-        return rsl::make_unique<DxDescriptorHeap>(desc_heap, g_rhi_resources->device->dx_object());
+        return rsl::make_unique<DxViewHeap>(desc_heap, g_rhi_resources->device->dx_object(), isShaderVisible);
       }
       rsl::unique_ptr<ResourceHeap> create_resource_heap()
       {
@@ -625,7 +725,7 @@ namespace rex
         if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateHeap(&desc, IID_PPV_ARGS(&d3d_heap))))
         {
           REX_ERROR(LogDxRhi, "Failed to create global resource heap");
-          return false;
+          return nullptr;
         }
 
         return rsl::make_unique<ResourceHeap>(d3d_heap, g_rhi_resources->device->dx_object());

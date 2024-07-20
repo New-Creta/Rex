@@ -7,6 +7,8 @@
 
 #include <d3d12.h>
 #include <d3d11on12.h>
+#include <d3d12shader.h>
+#include "rex_directx/utility/d3dx12.h"
 
 // clang-format on
 // NOLINTEND(llvm-include-order)
@@ -32,28 +34,45 @@
 #include "rex_renderer_core/gfx/resource_state.h"
 #include "rex_renderer_core/gfx/graphics_engine_type.h"
 #include "rex_renderer_core/gfx/resource_state.h"
-#include "rex_renderer_core/gfx/descriptor_heap_type.h"
+#include "rex_renderer_core/gfx/view_heap_type.h"
 #include "rex_renderer_core/system/shader_elements.h"
+#include "rex_renderer_core/shader_reflection/shader_class_type.h"
+#include "rex_renderer_core/shader_reflection/shader_variable_type.h"
+#include "rex_renderer_core/shader_reflection/shader_param_type.h"
+#include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
+#include "rex_renderer_core/resources/raster_state.h"
 #include "rex_std/bonus/utility.h"
 
 namespace rex
 {
   namespace gfx
   {
+    struct ContextResetData;
+
     // Base classes
     class CommandQueue;
     class CommandAllocator;
     class RootSignature;
     class Shader;
     class Texture2D;
+    class Sampler2D;
     class InputLayout;
     struct RasterStateDesc;
+    enum class ShaderType;
+    enum class ShaderVisibility;
+    class IsColorNormalized;
 
     class ConstantBuffer;
     class IndexBuffer;
     class VertexBuffer;
     class UploadBuffer;
-    class DescriptorHeap;
+    class ViewHeap;
+    class ShaderSignature;
+    class ResourceView;
+    class PipelineState;
+    class Fence;
+    class ConstantBuffer;
+    class RenderTarget;
 
     // DirectX classes
     class DxCommandQueue;
@@ -62,7 +81,16 @@ namespace rex
     class DxShader;
     class DxTexture2D;
     class DxInputLayout;
-    class DxDescriptorHeap;
+    class DxViewHeap;
+    class DxSampler2D;
+    class DxResourceView;
+    class DxFence;
+    class DxConstantBuffer;
+    class DxVertexBuffer;
+    class DxIndexBuffer;
+    class DxUploadBuffer;
+    class DxRenderTarget;
+    class DxPipelineState;
 
     namespace d3d
     {
@@ -115,9 +143,13 @@ namespace rex
       // Get the total texture size in memory
       s32 total_texture_size(s32 width, s32 height, TextureFormat format);
       // Get the byte size of a given format
-      s32 format_byte_size(TextureFormat format);
-      // Get the byte size of a given format
       s32 format_byte_size(DXGI_FORMAT format);
+
+      // Based on the shader visibility flag, get the shader type
+      ShaderType shader_visibility_to_type(ShaderVisibility visibility);
+
+      // Reset a Direct X commandlist
+      void reset_cmdlist(ID3D12GraphicsCommandList* cmdList, DxCommandAllocator* alloc, const ContextResetData& resetData);
 
       // ------------------------------------
       // Convertors from REX -> DirectX
@@ -147,7 +179,9 @@ namespace rex
       D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(DescriptorRangeType type);
       D3D12_RESOURCE_STATES to_dx12(ResourceState state);
       D3D12_COMMAND_LIST_TYPE to_dx12(GraphicsEngineType type);
-      D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(DescriptorHeapType type);
+      D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(ViewHeapType type);
+      D3D12_PRIMITIVE_TOPOLOGY_TYPE to_dx12(PrimitiveTopologyType type);
+      D3D12_SAMPLER_DESC to_dx12(const ShaderSamplerDesc& desc);
 
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes
@@ -158,7 +192,18 @@ namespace rex
       DxShader* to_dx12(Shader* shader);
       DxTexture2D* to_dx12(Texture2D* texture);
       DxInputLayout* to_dx12(InputLayout* inputLayout);
-      DxDescriptorHeap* to_dx12(DescriptorHeap* descHeap);
+      DxViewHeap* to_dx12(ViewHeap* descHeap);
+      DxSampler2D* to_dx12(Sampler2D* sampler);
+      DxResourceView* to_dx12(ResourceView* resourceView);
+      DxFence* to_dx12(Fence* fence);
+      DxConstantBuffer* to_dx12(ConstantBuffer* constantBuffer);
+      DxVertexBuffer* to_dx12(VertexBuffer* vertexBuffer);
+      DxIndexBuffer* to_dx12(IndexBuffer* indexBuffer);
+      DxUploadBuffer* to_dx12(UploadBuffer* uploadBuffer);
+      DxRenderTarget* to_dx12(RenderTarget* renderTarget);
+      DxPipelineState* to_dx12(PipelineState* pso);
+
+      const DxShader* to_dx12(const Shader* shader);
 
       // ------------------------------------
       // Returned the wrapped dx12 resource of a class
@@ -168,11 +213,17 @@ namespace rex
       ID3D12Resource* dx12_resource(IndexBuffer* buffer);
       ID3D12Resource* dx12_resource(UploadBuffer* buffer);
       ID3D12Resource* dx12_resource(Texture2D* texture);
+      ID3D12PipelineState* dx12_pso(PipelineState* pso);
 
       // ------------------------------------
       // Return from Directx -> REX
       // ------------------------------------
+      ShaderParameterType from_dx12_shader_param_type(DXGI_FORMAT format);
       TextureFormat from_dx12(DXGI_FORMAT type);
+      ShaderClassType from_dx12(D3D_SHADER_VARIABLE_CLASS type);
+      ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type);
+      ShaderVisibility from_dx12(D3D12_SHADER_VISIBILITY visibility);
+
     } // namespace d3d
   }
 } // namespace rex

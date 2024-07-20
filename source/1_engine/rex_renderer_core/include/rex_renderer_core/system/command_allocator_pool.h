@@ -4,10 +4,11 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_engine/pooling/growing_pool.h"
+#include "rex_engine/pooling/scoped_pool_object.h"
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_renderer_core/system/command_allocator.h"
-#include "rex_renderer_core/gfx/rhi.h"
+#include "rex_renderer_core/gfx/graphics_engine_type.h"
 
 namespace rex
 {
@@ -38,6 +39,7 @@ namespace rex
       u64 m_fence_value; // The fence value required to be achieved in order to use the allocator
       rsl::unique_ptr<CommandAllocator> m_allocator;
     };
+
     // The pool holding all command allocators
     class CommandAllocatorPool
     {

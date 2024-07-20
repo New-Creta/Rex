@@ -13,14 +13,14 @@
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_feature_level.h"
 #include "rex_directx/system/dx_resource_heap.h"
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/resources/dx_texture_2d.h"
+#include "rex_directx/resources/dx_sampler_2d.h"
 
 #include "rex_directx/system/dx_render_engine.h"
 #include "rex_directx/system/dx_compute_engine.h"
 #include "rex_directx/system/dx_copy_engine.h"
-
 
 #include "rex_directx/imgui/dx_imgui_window.h"
 
@@ -52,20 +52,25 @@ namespace rex
     }
 
     // Create a render target view for a given resource
-    DescriptorHandle DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
+    DxResourceView DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
-      return d3d::to_dx12(desc_heap(DescriptorHeapType::RenderTargetView))->create_rtv(texture.Get());
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::RenderTargetView))->create_rtv(texture.Get());
     }
     // Create a shader resource view pointing to a 2D texture
-    DescriptorHandle DxGpuEngine::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
+    DxResourceView DxGpuEngine::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
-      return d3d::to_dx12(desc_heap(DescriptorHeapType::ShaderResourceView))->create_texture2d_srv(texture.Get());
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::ShaderResourceView))->create_texture2d_srv(texture.Get());
     }
     // Create a constant buffer view pointing for a given resource
-    DescriptorHandle DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
+    DxResourceView DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
     {
-      return d3d::to_dx12(desc_heap(DescriptorHeapType::ConstantBufferView))->create_cbv(resource.Get(), size);
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::ConstantBufferView))->create_cbv(resource.Get(), size);
     }
+    rsl::unique_ptr<DxSampler2D> DxGpuEngine::create_sampler2d(const ShaderSamplerDesc& desc)
+    {
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::Sampler))->create_sampler2d(desc);
+    }
+
     // Compile a shader written in HLSL
     wrl::ComPtr<ID3DBlob> DxGpuEngine::compile_shader(const CompileShaderDesc& desc)
     {
@@ -101,10 +106,10 @@ namespace rex
       m_heap = rsl::make_unique<ResourceHeap>(d3d_heap, m_device->dx_object());
     }
 
-    // Allocate a new descriptor heap of a given type
-    rsl::unique_ptr<DescriptorHeap> DxGpuEngine::allocate_desc_heap(DescriptorHeapType descHeapType)
+    // Allocate a new view heap of a given type
+    rsl::unique_ptr<ViewHeap> DxGpuEngine::allocate_view_heap(ViewHeapType viewHeapType, IsShaderVisible isShaderVisible)
     {
-      return rhi::create_descriptor_heap(d3d::to_dx12(descHeapType));
+      return rhi::create_view_heap(d3d::to_dx12(viewHeapType), isShaderVisible);
     }
   }
 }

@@ -6,7 +6,7 @@
 
 #include "rex_engine/platform/win/win_com_ptr.h"
 
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 #include "rex_directx/system/dx_shader_compiler.h"
 
 struct IDXGIInfoQueue;
@@ -18,8 +18,9 @@ namespace rex
     class DxDevice;
     class DxCommandQueue;
     class ResourceHeap;
-    class DescriptorHeap;
+    class ViewHeap;
     struct CompileShaderDesc;
+    class DxSampler2D;
     
     namespace dxgi
     {
@@ -42,11 +43,13 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> allocate_texture2d(s32 width, s32 height, TextureFormat format);
 
       // Create a render target view for a given resource
-      DescriptorHandle create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
+      DxResourceView create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);
       // Create a shader resource view pointing to a 2D texture
-      DescriptorHandle create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
+      DxResourceView create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
       // Create a constant buffer view pointing for a given resource
-      DescriptorHandle create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
+      DxResourceView create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
+      // Create a sampler2D and store it on the gpu
+      rsl::unique_ptr<DxSampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
 
       // Compile a shader written in HLSL
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
@@ -59,8 +62,8 @@ namespace rex
 
       // Initialize the resource heap which keeps track of all gpu resources
       void init_resource_heap() override;
-      // Allocate a new descriptor heap of a given type
-      rsl::unique_ptr<DescriptorHeap> allocate_desc_heap(DescriptorHeapType descHeapType) override;
+      // Allocate a new view heap of a given type
+      rsl::unique_ptr<ViewHeap> allocate_view_heap(ViewHeapType viewHeapType, IsShaderVisible isShaderVisible) override;
 
     private:
       rsl::unique_ptr<DxDevice> m_device;    // The DirectX device

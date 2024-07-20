@@ -6,7 +6,6 @@
 #include "rex_renderer_core/gfx/resource_state.h"
 
 #include "rex_renderer_core/resources/constant_buffer.h"
-#include "rex_renderer_core/imgui/imgui_resources.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
 
@@ -20,10 +19,6 @@ namespace rex
       : m_imgui_viewport(imguiViewport)
       , m_frame_idx(0)
     {
-      for (s32 i = 0; i < 3; ++i)
-      {
-        m_frame_contexts.emplace_back();
-      }
     }
 
     // Render the viewport using the given render context to queue gpu commands to
@@ -74,6 +69,7 @@ namespace rex
     // Setup the render state of the viewport, it for rendering
     void RexImGuiViewport::setup_render_state(RenderContext& ctx, ImGuiFrameContext& frameCtx)
     {
+      // Transition our buffers into a state so they can be used by the render pipeline
       ctx.transition_buffer(frameCtx.vertex_buffer(), ResourceState::VertexAndConstantBuffer);
       ctx.transition_buffer(frameCtx.index_buffer(), ResourceState::IndexBuffer);
       ctx.transition_buffer(frameCtx.constant_buffer(), ResourceState::VertexAndConstantBuffer);
@@ -81,11 +77,7 @@ namespace rex
       ctx.set_viewport(frameCtx.viewport());
       ctx.set_vertex_buffer(frameCtx.vertex_buffer());
       ctx.set_index_buffer(frameCtx.index_buffer());
-      ctx.set_primitive_topology(imgui_renderstate().primitive_topology);
-      ctx.set_pipeline_state(imgui_renderstate().pso);
-      ctx.set_root_signature(imgui_renderstate().root_signature);
-      ctx.set_constant_buffer(0, frameCtx.constant_buffer());
-      ctx.set_blend_factor(imgui_renderstate().blend_factor.data());
+      ctx.set_constant_buffer(s_constant_buffer_param_idx, frameCtx.constant_buffer());
     }
 
     // Draw the current viewport
@@ -116,11 +108,7 @@ namespace rex
           rect.right = clip_max.x;
           rect.bottom = clip_max.y;
 
-          Texture2D* texture = (Texture2D*)pcmd->GetTexID();
-
           ctx.set_scissor_rect(rect);
-          ctx.bind_texture(1, texture);
-
           ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
         }
         global_idx_offset += cmd_list->IdxBuffer.Size;

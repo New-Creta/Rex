@@ -5,7 +5,7 @@ namespace rex
   namespace gfx
   {
     DxVertexShader::DxVertexShader(const wrl::ComPtr<ID3DBlob> byteCode)
-      : DxShader(byteCode)
+      : DxShader(byteCode, ShaderType::Vertex)
     {}
   }
 }

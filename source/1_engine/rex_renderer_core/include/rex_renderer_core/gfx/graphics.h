@@ -31,6 +31,8 @@ namespace rex
 
   namespace gfx
   {
+    class PipelineState;
+
     // Log the basic info about the graphics hardware of the current machine
     void log_info();
 
@@ -47,10 +49,10 @@ namespace rex
     void render();
 
     // Create a new context used for copying data to the gpu
-    ScopedPoolObject<CopyContext> new_copy_ctx();
+    ScopedPoolObject<CopyContext> new_copy_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
     // Create a new context used for queueing rendering commands on the gpu
-    ScopedPoolObject<RenderContext> new_render_ctx();
+    ScopedPoolObject<RenderContext> new_render_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
     // Create a new context used for queueing compute commands on the gpu
-    ScopedPoolObject<ComputeContext> new_compute_ctx();
+    ScopedPoolObject<ComputeContext> new_compute_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
   }
 }

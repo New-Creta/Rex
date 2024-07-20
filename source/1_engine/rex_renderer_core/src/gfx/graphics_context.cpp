@@ -3,6 +3,7 @@
 #include "rex_engine/diagnostics/assert.h"
 
 #include "rex_renderer_core/system/graphics_engine.h"
+#include "rex_renderer_core/system/gpu_engine.h"
 
 namespace rex
 {
@@ -23,14 +24,15 @@ namespace rex
     }
 
     // Reset the context, freeing up any previously allocated commands
-    void GraphicsContext::reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc, ResourceStateTracker* resourceStateTracker, DescriptorHeap* descHeap)
+    void GraphicsContext::reset(ScopedPoolObject<gfx::PooledAllocator>&& alloc, ResourceStateTracker* resourceStateTracker, const ContextResetData& resetData)
     {
       REX_ASSERT_X(m_allocator.has_object() == false, "Overwriting the allocator of a gfx context is not allowed. You need to execute the commands of the context first");
       REX_ASSERT_X(alloc.has_object(), "Assigning a nullptr as allocator for a gfx context is not allowed.");
       m_allocator = rsl::move(alloc);
       m_resource_state_tracker = resourceStateTracker;
 
-      platform_reset(m_allocator->underlying_alloc(), descHeap);
+      platform_reset(m_allocator->underlying_alloc(), resetData);
+      type_specific_reset(resetData);
     }
     // Execute the commands on the gpu.
     // A sync info is returned so the user can use it to sync with other contexts
@@ -70,7 +72,7 @@ namespace rex
     }
   
     // Return the type of this context
-    GraphicsEngineType GraphicsContext::type() const
+    GraphicsContextType GraphicsContext::type() const
     {
       return m_type;
     }
@@ -84,6 +86,11 @@ namespace rex
     gfx::GraphicsEngine* GraphicsContext::owning_engine()
     {
       return m_owning_engine;
+    }
+    // Reset the engine speicifc context
+    void GraphicsContext::type_specific_reset(const ContextResetData& /*resetData*/)
+    {
+      // Nothing to implement
     }
   }
 }

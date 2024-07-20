@@ -4,6 +4,8 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"
 
+#include "rex_renderer_core/system/resource_view.h"
+
 namespace rex
 {
   namespace gfx
@@ -11,39 +13,39 @@ namespace rex
     // A wrapper around both the cpu and gpu descriptor handle of a resource
     // Both are accessible through this object
     // For convenience this object also converts into one of these handles implicitely
-    class DescriptorHandle
+    class DxResourceView : public ResourceView
     {
     public:
-      DescriptorHandle() = default;
-      DescriptorHandle(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_GPU_DESCRIPTOR_HANDLE handleGpu, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size);
+      DxResourceView() = default;
+      DxResourceView(D3D12_CPU_DESCRIPTOR_HANDLE handle, D3D12_GPU_DESCRIPTOR_HANDLE handleGpu, D3D12_DESCRIPTOR_HEAP_TYPE type, s32 size);
 
       // Increment the internal handle value by 1
       // It'll hold the address of the next descriptor
-      DescriptorHandle& operator++();
+      DxResourceView& operator++();
       // Create a copy of this handle
       // Increment its internal handle value by 1
       // It'll hold the address of the next descriptor
-      DescriptorHandle operator++(int);
+      DxResourceView operator++(int);
 
       // Decrement the internal handle value by 1
       // It'll hold the address of the next descriptor
-      DescriptorHandle& operator--();
+      DxResourceView& operator--();
       // Create a copy of this handle
       // Decrement its internal handle value by 1
       // It'll hold the address of the next descriptor
-      DescriptorHandle operator--(int);
+      DxResourceView operator--(int);
 
       // Create a copy of this handle
       // Increment its internal handle value by a given offset
-      DescriptorHandle operator+(s32 offset) const;
+      DxResourceView operator+(s32 offset) const;
       // Increment the internal handle value by a given offset
-      DescriptorHandle& operator+=(s32 offset);
+      DxResourceView& operator+=(s32 offset);
 
       // Create a copy of this handle
       // Decrement its internal handle value by a given offset
-      DescriptorHandle operator-(s32 offset) const;
+      DxResourceView operator-(s32 offset) const;
       // Decrement the internal handle value by a given offset
-      DescriptorHandle& operator-=(s32 offset);
+      DxResourceView& operator-=(s32 offset);
 
       // Return the descriptor handle pointing to a cpu accessible address
       operator D3D12_CPU_DESCRIPTOR_HANDLE() const;
@@ -57,7 +59,7 @@ namespace rex
 
     private:
       CD3DX12_CPU_DESCRIPTOR_HANDLE m_cpu_handle; // The descriptor handle of the cpu addressible address
-      D3D12_GPU_DESCRIPTOR_HANDLE m_gpu_handle; // The descriptor handle of the gpu addressible address
+      CD3DX12_GPU_DESCRIPTOR_HANDLE m_gpu_handle; // The descriptor handle of the gpu addressible address
       D3D12_DESCRIPTOR_HEAP_TYPE m_type; // The typeo of the descriptor it points to
       s32 m_size; // The size of the descriptor it points to
     };

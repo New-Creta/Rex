@@ -121,7 +121,7 @@ TEST_CASE("Read File")
 TEST_CASE("Save To File")
 {
   rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string_view dummy_file = rex::path::random_filename();
+  rsl::string dummy_file = rex::path::random_filename();
   rex::file::save_to_file(dummy_file, dummy_content.data(), dummy_content.length());
 
   const rex::memory::Blob file_data = rex::file::read_file(dummy_file);
@@ -138,7 +138,7 @@ TEST_CASE("Append Lines")
   rsl::vector<rsl::string> lines;
   lines.emplace_back(dummy_content);
 
-  rsl::string_view dummy_file = rex::path::random_filename();
+  rsl::string dummy_file = rex::path::random_filename();
   rex::file::append_lines(dummy_file, lines);
 
   rex::memory::Blob blob = rex::file::read_file(dummy_file);
@@ -177,7 +177,7 @@ TEST_CASE("Append Lines")
 TEST_CASE("Append Line")
 {
   rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string_view dummy_file = rex::path::random_filename();
+  rsl::string dummy_file = rex::path::random_filename();
   rex::file::append_line(dummy_file, dummy_content);
 
   rex::memory::Blob blob = rex::file::read_file(dummy_file);
@@ -185,7 +185,7 @@ TEST_CASE("Append Line")
   rsl::vector<rsl::string_view> file_lines = rsl::split(file_content, rex::endline());
 
   REX_CHECK(file_lines.size() == 1);
-  REX_CHECK(file_lines[0] == "this is some dummy content");
+  REX_CHECK(file_lines[0] == "this is some dummy content"); 
 
   rex::file::append_line(dummy_file, dummy_content);
 
@@ -203,7 +203,7 @@ TEST_CASE("Append Line")
 TEST_CASE("Append Text")
 {
   rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string_view dummy_file = rex::path::random_filename();
+  rsl::string dummy_file = rex::path::random_filename();
   rex::file::append_text(dummy_file, dummy_content);
 
   rex::memory::Blob blob = rex::file::read_file(dummy_file);
@@ -224,7 +224,7 @@ TEST_CASE("Append Text")
 TEST_CASE("Trunc File")
 {
   rsl::string_view dummy_content = "this is some dummy content";
-  rsl::string_view dummy_file = rex::path::random_filename();
+  rsl::string dummy_file = rex::path::random_filename();
   rex::file::append_text(dummy_file, dummy_content);
 
   rex::memory::Blob blob = rex::file::read_file(dummy_file);

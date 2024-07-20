@@ -118,7 +118,7 @@ namespace rex
       rsl::unique_ptr<DxDevice> Adapter::create_device() const
       {
         wrl::ComPtr<ID3D12Device1> d3d_device;
-        if (DX_FAILED(D3D12CreateDevice(dx_object(), static_cast<D3D_FEATURE_LEVEL>(m_highest_feature_level), IID_PPV_ARGS(&d3d_device))))
+        if (DX_FAILED(D3D12CreateDevice(dx_object(), m_highest_feature_level, IID_PPV_ARGS(&d3d_device))))
         {
           REX_ERROR(LogDxAdapter, "Failed to create DX12 Device on {}", description().name);
           return nullptr;

@@ -12,7 +12,9 @@
 
 #include "rex_renderer_core/imgui/imgui_frame_context.h"
 #include "rex_renderer_core/imgui/imgui_viewport.h"
-#include "rex_renderer_core/imgui/imgui_resources.h"
+#include "rex_renderer_core/imgui/imgui_window_render_params.h"
+
+#include "rex_renderer_core/materials/material_system.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
 
@@ -39,6 +41,7 @@ namespace rex
       ImGui::DestroyContext();
     }
 
+    // Setup imgui to accept new render commands
     void ImGuiRenderer::new_frame()
     {
       imgui_platform_new_frame();
@@ -46,33 +49,40 @@ namespace rex
       ImGui::NewFrame();
     }
 
+    // Render a single frame of imgui widgets
     void ImGuiRenderer::render()
     {
       ImGui::Render();
 
-      auto render_ctx = gfx::new_render_ctx();
+      auto render_ctx = gfx::new_render_ctx(m_pipeline_state.get());
 
       // As the imgui renderer main viewport is the main window of the application
-      // it needs to set its render target to the one pointing to the current back buffer
-      render_ctx->set_render_target(rhi::current_backbuffer_rt());
+      // we use the main window as render target, which is the default render target
+      // We don't have to set this manually as it gets set when a context gets reset
 
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (RexImGuiViewport* rex_viewport = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
+        render_ctx->bind_material(m_material.get());
         rex_viewport->render(*render_ctx);
       }
 
       // Update and render the imgui windows if any
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
       {
+        ImGuiWindowRenderParams render_params{};
+        render_params.pso = m_pipeline_state.get();
+        render_params.material = m_material.get();
+
         ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault(nullptr, nullptr);
+        ImGui::RenderPlatformWindowsDefault(nullptr, &render_params);
       }
 
       // Open imgui to accept new commands again
       new_frame();
     }
 
+    // Initialize ImGui library
     void ImGuiRenderer::init_imgui(void* platformWindowHandle)
     {
       IMGUI_CHECKVERSION();
@@ -109,171 +119,94 @@ namespace rex
       imgui_platform_init(platformWindowHandle);
     }
 
+    // Initialize all gpu resources needed for imgui rendering
     void ImGuiRenderer::init_gpu_resources()
     {
       init_font_texture();
-      init_shader();
+      init_font_sampler();
       init_input_layout();
-      init_root_signature();
+      init_material();
       init_pso();
-      init_imgui_renderstate();
     }
 
-    void ImGuiRenderer::init_imgui_renderstate()
-    {
-      ImGuiResources resources{};
-
-      resources.root_signature = m_root_signature.get();
-      resources.pso = m_pipeline_state.get();
-      imgui_init_resources(resources);
-    }
-
+    // Initialize the main imgui viewport, which is pointing to the application's main window
     void ImGuiRenderer::init_main_imgui_viewport()
     {
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       main_viewport->RendererUserData = debug_alloc<RexImGuiViewport>(main_viewport);
     }
 
+    // Load the fonts texture from ImGui backend and create a texture resource on the GPU for it
     void ImGuiRenderer::init_font_texture()
     {
-      // Build texture atlas
-      ImGuiIO& io = ImGui::GetIO();
+      // Build texture atlas, by default this sits in memory in imgui
       unsigned char* pixels;
       s32 width, height;
+      ImGuiIO& io = ImGui::GetIO();
       io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
       TextureFormat format = TextureFormat::Unorm4;
 
       m_fonts_texture = rhi::create_texture2d(width, height, format, pixels);
 
-      ImGui::GetIO().Fonts->SetTexID((ImTextureID)m_fonts_texture.get());
+      io.Fonts->SetTexID((ImTextureID)m_fonts_texture.get());
     }
-    void ImGuiRenderer::init_shader()
+    // Create the sampler, used by ImGui
+    void ImGuiRenderer::init_font_sampler()
     {
-      rsl::string vertex_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_vertex.hlsl");
-      rsl::string pixel_shader_path = path::join(vfs::engine_root(), "shaders", "imgui", rhi::shader_platform(), "imgui_pixel.hlsl");
+      // Sampler is currently hardcoded
+      ShaderSamplerDesc desc{};
+      desc.filtering = SamplerFiltering::MinMagMipLinear;
+      desc.address_mode_u = TextureAddressMode::Wrap;
+      desc.address_mode_v = TextureAddressMode::Wrap;
+      desc.address_mode_w = TextureAddressMode::Wrap;
+      desc.mip_lod_bias = 0.0f;
+      desc.max_anisotropy = 0;
+      desc.comparison_func = ComparisonFunc::Always;
+      desc.border_color = BorderColor::TransparentBlack;
+      desc.min_lod = 0.0f;
+      desc.max_lod = 0.0f;
+      desc.shader_register = 0;
+      desc.register_space = 0;
+      desc.shader_visibility = ShaderVisibility::Pixel;
 
-      memory::Blob vertex_shader_content = vfs::read_file(vertex_shader_path);
-      memory::Blob pixel_shader_content = vfs::read_file(pixel_shader_path);
-
-      m_vertex_shader = rhi::create_vertex_shader(blob_to_string_view(vertex_shader_content), "imgui_vertex_shader");
-      m_pixel_shader = rhi::create_pixel_shader(blob_to_string_view(pixel_shader_content), "imgui_pixel_shader");
+      m_fonts_sampler = rhi::create_sampler2d(desc);
     }
-    void ImGuiRenderer::init_root_signature()
-    {
-      // The following should be auto generated from the shaders using reflection
-      // That'd allow code to look like this
-      //
-      // RootSignatureDesc root_sig_desc;
-      // root_sig_desc.vertex_shader = ..;
-      // root_sig_desc.pixel_shader = ..;
-      // ..
-      // m_root_signature = create_root_signature(root_sig_desc);
-      //
-      // Which makes it much simpler to use
-
-      RootSignatureDesc root_sig_desc{};
-      // We have 2 constants for the shader, 1 in the vertex shader and 1 in the pixel shader
-      root_sig_desc.views = rsl::make_unique<ShaderViewDesc[]>(1);
-      root_sig_desc.views[0] = { "vertexBuffer", ShaderViewType::ConstantBufferView, 0, 0, ShaderVisibility::Vertex }; // We have 1 constant buffer in the vertex shader
-
-      root_sig_desc.desc_tables = rsl::make_unique<ViewTableDesc[]>(1);
-      root_sig_desc.desc_tables[0].ranges = rsl::make_unique<ViewRangeDesc[]>(1);
-      root_sig_desc.desc_tables[0].ranges[0] = { DescriptorRangeType::ShaderResourceView, 1 }; // We have 1 src which points to our font texture
-      root_sig_desc.desc_tables[0].visibility = ShaderVisibility::Pixel;
-
-      // We have 1 sampler, used for sampling the font texture
-      root_sig_desc.samplers = rsl::make_unique<ShaderSamplerDesc[]>(1);
-      root_sig_desc.samplers[0].filtering = SamplerFiltering::MinMagMipLinear;
-      root_sig_desc.samplers[0].address_mode_u = TextureAddressMode::Wrap;
-      root_sig_desc.samplers[0].address_mode_v = TextureAddressMode::Wrap;
-      root_sig_desc.samplers[0].address_mode_w = TextureAddressMode::Wrap;
-      root_sig_desc.samplers[0].mip_lod_bias = 0.0f;
-      root_sig_desc.samplers[0].max_anisotropy = 0;
-      root_sig_desc.samplers[0].comparison_func = ComparisonFunc::Always;
-      root_sig_desc.samplers[0].border_color = BorderColor::TransparentBlack;
-      root_sig_desc.samplers[0].min_lod = 0.0f;
-      root_sig_desc.samplers[0].max_lod = 0.0f;
-      root_sig_desc.samplers[0].shader_register = 0;
-      root_sig_desc.samplers[0].register_space = 0;
-      root_sig_desc.samplers[0].shader_visibility = ShaderVisibility::Pixel;
-
-      m_root_signature = rhi::create_root_signature(root_sig_desc);
-    }
+    // Initialize the input layout that'll be used by all ImGui rendering
     void ImGuiRenderer::init_input_layout()
     {
-      // The following should be auto genrated from the shaders using reflection
-      // That'd allow code to look like this
-      //
-      // InputLayoutDesc input_layout_desc;
-      // input_layout_desc.vertex_shader = ..;
-      // ..
-      // m_input_layout = create_input_layout(input_layout_desc);
+      // Input layout is hardcoded as the vertices are also hardcoded
+      // The material is responsible for validating that the input layout is correct with the shader
 
       InputLayoutDesc input_layout_desc;
       input_layout_desc.input_layout =
       {
-        InputLayoutElementDesc { "POSITION",  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
-        InputLayoutElementDesc { "TEXCOORD",  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
-        InputLayoutElementDesc { "COLOR", VertexBufferFormat::UNorm4, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
+        InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
+        InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
+        InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
       };
-      m_input_layout = rhi::create_input_layout(input_layout_desc);
+      m_input_layout = rhi::create_input_layout(rsl::move(input_layout_desc));
     }
+    // Initialize the material that'll be used by all ImGui rendering
+    void ImGuiRenderer::init_material()
+    {
+      // Load the material from disk and initialize it with the parameters loaded at runtime
+      rsl::string material_path = path::join(vfs::engine_root(), "materials", "imgui.material");
+      m_material = load_material(material_path);
+      REX_ASSERT_X(m_material != nullptr, "Failed to load imgui material");
 
+      m_material->set_texture("fonts_texture", m_fonts_texture.get());
+      m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
+      m_material->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
+
+      m_material->validate_input_layout(m_input_layout.get());
+    }
+    // Initialize the pso based on the the gpu resources
     void ImGuiRenderer::init_pso()
     {
-      // The following should be generated from a material.
-      // The material gets loaded from disk, which then initializes the pso
-
-       // Raster State
-      RasterStateDesc rasterizer_desc{};
-      rasterizer_desc.fill_mode = FillMode::Solid;
-      rasterizer_desc.cull_mode = CullMode::None;
-      rasterizer_desc.front_ccw = false;
-      rasterizer_desc.depth_bias = 0;
-      rasterizer_desc.depth_bias_clamp = 0.0f;
-      rasterizer_desc.sloped_scale_depth_bias = 0.0f;
-      rasterizer_desc.depth_clip_enable = true;
-      rasterizer_desc.multisample_enable = false;
-      rasterizer_desc.aa_lines_enable = false;
-      rasterizer_desc.forced_sample_count = 0;
-      m_raster_state = rsl::make_unique<RasterState>(rasterizer_desc);;
-
-      PipelineStateDesc pso_desc{};
-      pso_desc.input_layout = m_input_layout.get();
-      pso_desc.raster_state = *m_raster_state.get();
-      pso_desc.vertex_shader = m_vertex_shader.get();
-      pso_desc.pixel_shader = m_pixel_shader.get();
-      pso_desc.root_signature = m_root_signature.get();
-
-      // Blend State
-      pso_desc.blend_state = BlendDesc();
-      BlendDesc& blend_state = pso_desc.blend_state.value();
-      blend_state.enable_alpha_to_coverage = false;
-      blend_state.render_target[0].blend_enable = true;
-      blend_state.render_target[0].src_blend = Blend::SrcAlpha;
-      blend_state.render_target[0].dst_blend = Blend::InvSrcAlpha;
-      blend_state.render_target[0].blend_op = BlendOp::Add;
-      blend_state.render_target[0].src_blend_alpha = Blend::One;
-      blend_state.render_target[0].dst_blend_alpha = Blend::InvSrcAlpha;
-      blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
-      blend_state.render_target[0].render_target_write_mask = RenderTargetWriteMask::All;
-
-      // depth stencil state
-      pso_desc.depth_stencil_state = DepthStencilDesc();
-      DepthStencilDesc& depth_stencil_desc = pso_desc.depth_stencil_state.value();
-      depth_stencil_desc.depth_enable = false;
-      depth_stencil_desc.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
-      depth_stencil_desc.depth_func = ComparisonFunc::Always;
-      depth_stencil_desc.stencil_enable = false;
-      depth_stencil_desc.front_face.stencil_fail_op = StencilOp::Keep;
-      depth_stencil_desc.front_face.stencil_depth_fail_op = StencilOp::Keep;
-      depth_stencil_desc.front_face.stencil_pass_op = StencilOp::Keep;
-      depth_stencil_desc.front_face.stencil_func = ComparisonFunc::Always;
-      depth_stencil_desc.back_face = depth_stencil_desc.front_face;
-
-      m_pipeline_state = rhi::create_pso(pso_desc);
+      m_pipeline_state = rhi::create_pso(m_input_layout.get(), m_material.get());
     }
 
+    // Destroy all viewports used by ImGui
     void ImGuiRenderer::destroy_viewports()
     {
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();

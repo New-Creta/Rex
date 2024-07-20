@@ -31,7 +31,7 @@ namespace rex
     // Halt the gpu until the fence value is reached
     void DxCommandQueue::gpu_wait(SyncInfo& sync_info)
     {
-      ID3D12Fence* fence = static_cast<DxFence*>(sync_info.fence_object())->dx_object();
+      ID3D12Fence* fence = d3d::to_dx12(sync_info.fence_object())->dx_object();
       m_command_queue->Wait(fence, sync_info.fence_val());
     }
 

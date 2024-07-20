@@ -14,8 +14,9 @@ namespace rex
     class DxInputLayout : public InputLayout
     {
     public:
-      explicit DxInputLayout(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements);
+      explicit DxInputLayout(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements, InputLayoutDesc&& desc);
 
+      // Return the wrapped Direct X object
       D3D12_INPUT_LAYOUT_DESC* dx_object();
 
     private:

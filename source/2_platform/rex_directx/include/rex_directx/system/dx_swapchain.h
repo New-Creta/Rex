@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 
 #include "rex_directx/system/dx_resource_heap.h"
 #include "rex_directx/utility/dx_util.h"
@@ -26,7 +26,7 @@ namespace rex
       // Resize the internal buffers of the swapchain to a new width and height
       void resize_buffers(s32 width, s32 height, DXGI_SWAP_CHAIN_FLAG flags);
       // Swap the current back buffer with the front buffer
-      void present();
+      void present() override;
 
       // Return the internal wrapped swapchain object
       IDXGISwapChain3* dx_object();

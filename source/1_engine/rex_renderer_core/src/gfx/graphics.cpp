@@ -10,6 +10,26 @@ namespace rex
 {
   namespace gfx
   {
+    // NOTE: To keep in mind when abstracting constant buffer data upload
+    //
+    // Shaders take multiple levels of data
+    // 1. Per View Data
+    // This data is shared by all materials used in a view. Should contain all information like camera matrices, light directions, time, ..
+    // 
+    // 2. Per Pass Data
+    // This data is shared by all materials within the same pass. This is only relevant once we have multiple render passes
+    // 
+    // 3. Per material data
+    // This data contains information per material like textures
+    // 
+    // 4. Per instance data
+    // Contains data that's separate per instance. For example a world view projection matrix
+    //
+
+
+
+
+
     DEFINE_LOG_CATEGORY(LogGraphics);
 
     // We can access it in the high level graphics api, but the gpu engine is owned by the rhi
@@ -19,6 +39,8 @@ namespace rex
     void log_info()
     {
       auto& gfx_info = rhi::info();
+      REX_UNUSED_PARAM(gfx_info);
+
       REX_INFO(LogGraphics, "Renderer Info - Adaptor: {}", gfx_info.adaptor);
       REX_INFO(LogGraphics, "Renderer Info - Vendor: {}", gfx_info.vendor);
       REX_INFO(LogGraphics, "Renderer Info - API: {}", gfx_info.api);
@@ -87,19 +109,19 @@ namespace rex
     }
 
     // Create a new copy context that automatically gets added back to the pool when it goes out of scope
-    ScopedPoolObject<CopyContext> new_copy_ctx()
+    ScopedPoolObject<CopyContext> new_copy_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      return g_gpu_engine->new_copy_ctx();
+      return g_gpu_engine->new_copy_ctx(pso, eventName);
     }
     // Create a new render context that automatically gets added back to the pool when it goes out of scope
-    ScopedPoolObject<RenderContext> new_render_ctx()
+    ScopedPoolObject<RenderContext> new_render_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      return g_gpu_engine->new_render_ctx();
+      return g_gpu_engine->new_render_ctx(pso, eventName);
     }
     // Create a new compute context that automatically gets added back to the pool when it goes out of scope
-    ScopedPoolObject<ComputeContext> new_compute_ctx()
+    ScopedPoolObject<ComputeContext> new_compute_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      return g_gpu_engine->new_compute_ctx();
+      return g_gpu_engine->new_compute_ctx(pso, eventName);
     }
   }
 }

@@ -45,6 +45,11 @@ namespace rex
     {
       const rsl::string full_path = path::abs_path(path);
 
+      if (!exists(full_path))
+      {
+        REX_ERROR(LogFile, "Failed to read file as it doesn't exist: {}", quoted(full_path));
+      }
+
       const rsl::win::handle handle(WIN_CALL_IGNORE(CreateFileA(full_path.data(),               // Path to file
         GENERIC_READ,              // General read and write access
         FILE_SHARE_READ,           // Other processes can also read the file
@@ -57,7 +62,7 @@ namespace rex
 
       if (!handle.is_valid())
       {
-        REX_ERROR(LogFile, "Failed to open file {}", full_path);
+        REX_ERROR(LogFile, "Failed to open file {}", quoted(full_path));
         return {};
       }
 
@@ -86,7 +91,7 @@ namespace rex
         GENERIC_WRITE,             // General read and write access
         FILE_SHARE_READ,           // Other processes can also read the file
         NULL,                      // No SECURITY_ATTRIBUTES
-        OPEN_ALWAYS,               // Create a new file, error when it already exists
+        OPEN_ALWAYS,               // Open existing file, create new if one doesn't exist
         FILE_FLAG_SEQUENTIAL_SCAN, // Files will be read from beginning to end
         NULL                       // No template file
       ), ERROR_ALREADY_EXISTS));

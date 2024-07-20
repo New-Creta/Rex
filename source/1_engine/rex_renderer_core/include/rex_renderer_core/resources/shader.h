@@ -10,7 +10,19 @@ namespace rex
     // Base class for a shader
     class Shader
     {
-      // Nothing to implement
+    public:
+      Shader(ShaderType type)
+        : m_type(type)
+      {}
+
+      // Return the type of the shader
+      ShaderType type() const
+      {
+        return m_type;
+      }
+
+    private:
+      ShaderType m_type;
     };
   } // namespace gfx
 } // namespace rex

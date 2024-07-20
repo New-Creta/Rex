@@ -1,7 +1,9 @@
 #include "rex_directx/gfx/dx_compute_context.h"
 
 #include "rex_directx/system/dx_command_allocator.h"
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
+
+#include "rex_directx/resources/dx_pipeline_state.h"
 
 #include "WinPixEventRuntime/pix3.h"
 
@@ -21,16 +23,10 @@ namespace rex
       return m_cmd_list.Get();
     }
 
-    void DxComputeContext::platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap)
+    void DxComputeContext::platform_reset(CommandAllocator* alloc, const ContextResetData& resetData)
     {
-      DxCommandAllocator* dx_alloc = static_cast<DxCommandAllocator*>(alloc);
-
-      REX_ASSERT_X(dx_alloc != nullptr, "The command allocator for a context cannot be null");
-
-      dx_alloc->dx_object()->Reset();
-      m_cmd_list->Reset(dx_alloc->dx_object(), nullptr);
-      ID3D12DescriptorHeap* d3d_desc_heap = d3d::to_dx12(descHeap)->dx_object();
-      m_cmd_list->SetDescriptorHeaps(1, &d3d_desc_heap);
+      DxCommandAllocator* dx_alloc = d3d::to_dx12(alloc);
+      d3d::reset_cmdlist(m_cmd_list.Get(), dx_alloc, resetData);
     }
 
     // Profiling events

@@ -74,7 +74,7 @@ namespace rex
   #define WIN_FAILED(function)  function && false
 
   #define WIN_CALL_IGNORE(function, errorSuccess)    function
-  #define WIN_SUCCESS_IGNORE(function, errorSuccess) function, true
-  #define WIN_FAILED_IGNORE(function, errorSuccess)  function, false
+  #define WIN_SUCCESS_IGNORE(function, errorSuccess) function || true
+  #define WIN_FAILED_IGNORE(function, errorSuccess)  function && false
 
 #endif

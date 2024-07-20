@@ -184,7 +184,7 @@ namespace rsl
       auto format(const rex::StringID& sid, FormatContext& ctx)
       {
         // Format your type's output here
-        return rsl::format_to(ctx.out(), "{}", rex::restore_sid(sid));
+        return rsl::format_to(ctx.out(), "{}", sid.string());
       }
     };
   } // namespace v1

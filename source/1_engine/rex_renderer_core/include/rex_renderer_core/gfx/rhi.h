@@ -34,17 +34,26 @@
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/resources/upload_buffer.h"
+#include "rex_renderer_core/materials/material.h"
+#include "rex_renderer_core/system/shader_pipeline.h"
+#include "rex_renderer_core/shader_reflection/shader_signature.h"
+#include "rex_renderer_core/materials/parameters/material_parameter.h"
+#include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
 
 namespace rex
 {
   namespace gfx
   {
     class GpuEngine;
+    class Material;
   }
 
   namespace gfx
   {
     struct Info;
+    struct MaterialConstructSettings;
+    DEFINE_YES_NO_ENUM(IsColorNormalized);
+
     // All logic inside the "api" namespace is only declared
     // The definition of these functions and/or classes are found in the graphics API specific rhi code.
     // eg. rhi::shader_platform for DirectX is defined in dx_rhi.cpp
@@ -75,19 +84,20 @@ namespace rex
       rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, TextureFormat format);
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format);
+      rsl::unique_ptr<RootSignature> create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection);
       rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
+      rsl::unique_ptr<PipelineState> create_pso(InputLayout* inputLayout, Material* material);
       rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc);
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, TextureFormat format, const void* data = nullptr);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
-      rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
+      rsl::unique_ptr<InputLayout> create_input_layout(InputLayoutDesc&& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_vertex_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
-
-      // Return the render target pointing to the current swapchain's backbuffer
-      RenderTarget* current_backbuffer_rt();
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings);
+      rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
     }
   } // namespace gfx
 } // namespace rex

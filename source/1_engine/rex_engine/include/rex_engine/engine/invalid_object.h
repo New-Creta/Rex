@@ -7,7 +7,7 @@
 namespace rex
 {
   template <typename T>
-  T invalid_obj()
+  constexpr T invalid_obj()
   {
     constexpr s32 invalid_value_marker = 0xDEAD; // == 57005
     constexpr size_t object_size       = align(sizeof(T), alignof(s32));

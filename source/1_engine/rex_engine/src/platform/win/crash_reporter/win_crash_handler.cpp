@@ -95,6 +95,7 @@ namespace rex
       REX_ERROR(CrashHandlingLog, "Error occurred!");
       for(const rsl::stacktrace_entry& line: stack)
       {
+        REX_UNUSED_PARAM(line);
         REX_ERROR(CrashHandlingLog, line.description());
       }
 

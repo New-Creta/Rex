@@ -8,6 +8,8 @@
 #include "rex_engine/engine/defines.h"
 #include "rex_engine/diagnostics/log.h"
 
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
@@ -47,14 +49,18 @@ namespace rex
       m_compute_engine->new_frame();
       m_copy_engine->new_frame();
 
-      auto render_ctx = new_render_ctx("New Frame");
+      auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "New Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
+
+      // EMpty out the view heaps so that new views can be copied into it
+      m_shader_visible_descriptor_heap_pool.at(ViewHeapType::AllShaderResources)->clear();
+      m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Sampler)->clear();
     }
     // Present the new frame to the main window
     void GpuEngine::present()
     {
-      auto render_ctx = new_render_ctx("End Frame");
+      auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "End Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::Present);
       render_ctx->execute_on_gpu(WaitForFinish::yes);
 
@@ -69,21 +75,27 @@ namespace rex
     }
 
     // Create a new context which is used for copying resources from or to the gpu
-    ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(rsl::string_view eventName)
+    ScopedPoolObject<CopyContext> GpuEngine::new_copy_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      auto base_ctx = m_copy_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
+      ContextResetData reset_data = create_context_reset_data(pso);
+
+      auto base_ctx = m_copy_engine->new_context(reset_data, eventName);
       return base_ctx.convert<CopyContext>();
     }
     // Create a new context which is used for rendering to render targets
-    ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(rsl::string_view eventName)
+    ScopedPoolObject<RenderContext> GpuEngine::new_render_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      auto base_ctx = m_render_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
+      ContextResetData reset_data = create_context_reset_data(pso);
+
+      auto base_ctx = m_render_engine->new_context(reset_data, eventName);
       return base_ctx.convert<RenderContext>();
     }
     // Create a new context which is used for computing data on the gpu
-    ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(rsl::string_view eventName)
+    ScopedPoolObject<ComputeContext> GpuEngine::new_compute_ctx(PipelineState* pso, rsl::string_view eventName)
     {
-      auto base_ctx = m_compute_engine->new_context(desc_heap(DescriptorHeapType::ShaderResourceView), eventName);
+      ContextResetData reset_data = create_context_reset_data(pso);
+
+      auto base_ctx = m_compute_engine->new_context(reset_data, eventName);
       return base_ctx.convert<ComputeContext>();
     }
 
@@ -94,9 +106,14 @@ namespace rex
     }
 
     // Returns a specific descriptor heap based on type
-    DescriptorHeap* GpuEngine::desc_heap(DescriptorHeapType descHeapType)
+    ViewHeap* GpuEngine::cpu_desc_heap(ViewHeapType descHeapType)
     {
-      return m_descriptor_heap_pool.at(descHeapType).get();
+      return m_cpu_descriptor_heap_pool.at(descHeapType).get();
+    }
+    // Returns a specific descriptor heap based on type that's visible to shaders
+    ViewHeap* GpuEngine::shader_visible_desc_heap(ViewHeapType descHeapType)
+    {
+      return m_shader_visible_descriptor_heap_pool.at(descHeapType).get();
     }
 
     // Initialize the clear state which is used to clear the backbuffer with
@@ -135,16 +152,30 @@ namespace rex
     // Initialize the descriptor heaps which keep track of all descriptors to various resources
     void GpuEngine::init_desc_heaps()
     {
-      init_desc_heap(DescriptorHeapType::RenderTargetView);
-      init_desc_heap(DescriptorHeapType::DepthStencilView);
-      init_desc_heap(DescriptorHeapType::ConstantBufferView);
-      init_desc_heap(DescriptorHeapType::Sampler);
-    }
-    void GpuEngine::init_desc_heap(DescriptorHeapType descHeapType)
-    {
-      m_descriptor_heap_pool.emplace(descHeapType, allocate_desc_heap(descHeapType));
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::RenderTargetView, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::DepthStencilView, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::AllShaderResources, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::Sampler, IsShaderVisible::no);
 
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::AllShaderResources, IsShaderVisible::yes);
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::Sampler, IsShaderVisible::yes);
     }
+    void GpuEngine::init_desc_heap(ViewHeapPool& descHeapPool, ViewHeapType descHeapType, IsShaderVisible isShaderVisible)
+    {
+      descHeapPool.emplace(descHeapType, allocate_view_heap(descHeapType, isShaderVisible));
+    }
+
+    ContextResetData GpuEngine::create_context_reset_data(PipelineState* pso)
+    {
+      ContextResetData reset_data{};
+      reset_data.pso = pso;
+      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(ViewHeapType::ShaderResourceView);
+      reset_data.shader_visible_sampler_desc_heap = shader_visible_desc_heap(ViewHeapType::Sampler);
+      reset_data.current_backbuffer_rt = m_swapchain->current_buffer();
+
+      return reset_data;
+    }
+
 
   }
 }

@@ -12,6 +12,9 @@ namespace rex
 {
   namespace gfx
   {
+    class Material;
+    class CopyContext;
+
     class DxRenderContext : public RenderContext
     {
     public:
@@ -55,6 +58,8 @@ namespace rex
       void set_constant_buffer(s32 paramIdx, ConstantBuffer* cb) override;
       // Set the blend factor of the context
       void set_blend_factor(const f32 blendFactor[4]) override;
+      // Set the blend factor of the context
+      void set_blend_factor(const BlendFactor& blendFactor) override;
 
       // Draw an indexed primitive
       void draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation) override;
@@ -63,24 +68,54 @@ namespace rex
 
       // Bind a texture to the context
       void bind_texture(s32 rootParamIdx, Texture2D* texture) override;
+      // Bind a material to the context
+      void bind_material(Material* material) override;
 
       // Return the wrapped directx commandlist
       ID3D12GraphicsCommandList* dx_cmdlist();
 
     protected:
       // Reset the wrapped commandlist and its allocater
-      void platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap) override;
+      void platform_reset(CommandAllocator* alloc, const ContextResetData& data) override;
 
       // profiling events
       void begin_profile_event(rsl::string_view eventName) override;
       void end_profile_event() override;
 
     private:
-      // Open the commandlist for recording of gpu commands
-      void start_recording_commands(CommandAllocator* alloc, DescriptorHeap* descHeap);
       // Transition a buffer into a new resource state
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
-      
+      // Bind resources for a specific shader type
+      void bind_resources_for_shader(Material* material, ShaderType type);
+
+      // Sort the resources of a material based on their shader register and stored their views in an array
+      template <typename Resource, typename Param>
+      rsl::vector<ResourceView*> sort_material_parameters(rsl::vector<Param*>& params)
+      {
+        rsl::vector<ResourceView*> views;
+
+        // Sort the textures based on their shader register
+        rsl::sort(params.begin(), params.end(),
+          [](const Param* lhs, const Param* rhs)
+          {
+            return lhs->shader_register() < rhs->shader_register();
+          });
+
+        // copy the texture gpu handles into a separate array
+        views.resize(params.size());
+        rsl::transform(params.cbegin(), params.cend(), views.begin(),
+          [](Param* resource)
+          {
+            Resource* dx_resource = static_cast<Resource*>(resource->resource());
+            return dx_resource->view();
+          });
+
+        // Return the result
+        return views;
+      }
+      // Bind material resources to the root signature parameter index provided
+      void bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, ViewHeapType type, s32 paramIdx);
+
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;
       rsl::string_view m_profile_event_name;

@@ -12,7 +12,7 @@
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_debug_interface.h"
 #include "rex_directx/system/dx_resource_heap.h"
-#include "rex_directx/system/dx_descriptor_heap.h"
+#include "rex_directx/system/dx_view_heap.h"
 
 #include "rex_directx/system/dx_command_queue.h"
 #include "rex_directx/system/dx_swapchain.h"
@@ -29,6 +29,8 @@ namespace rex
 {
   namespace gfx
   {
+    class IsShaderVisible;
+
     namespace rhi
     {
       // All functions here are DirectX specific
@@ -41,7 +43,7 @@ namespace rex
       // Create a DirectX commandlist
       wrl::ComPtr<ID3D12GraphicsCommandList> create_commandlist(CommandAllocator* alloc, GraphicsEngineType type);
       // Create a DirectX descriptor heap
-      rsl::unique_ptr<DescriptorHeap> create_descriptor_heap(D3D12_DESCRIPTOR_HEAP_TYPE type);
+      rsl::unique_ptr<ViewHeap> create_view_heap(D3D12_DESCRIPTOR_HEAP_TYPE type, IsShaderVisible isShaderVisible);
       // Create a DirectX resource heap
       rsl::unique_ptr<ResourceHeap> create_resource_heap();
 

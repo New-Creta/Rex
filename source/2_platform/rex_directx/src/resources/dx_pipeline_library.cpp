@@ -39,7 +39,7 @@ namespace rex
     {
       const char* data = reinterpret_cast<const char*>(&desc);
       const size_t size = sizeof(desc);
-      u32 hash = rsl::crc32c::Crc32c(data, size);
+      u32 hash = rsl::crc32::compute(data, size);
       return rsl::to_wstring(hash);
     }
 

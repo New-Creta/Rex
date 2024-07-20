@@ -611,6 +611,13 @@ namespace rex
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
       return directory::exists(filepath);
     }
+    bool is_dir(rsl::string_view path)
+    {
+      path = path::remove_quotes(path);
+      rsl::string fullpath = create_full_path(path);
+      
+      return directory::exists(fullpath);
+    }
     bool is_file(MountingPoint root, rsl::string_view path)
     {
       path = path::remove_quotes(path);
@@ -618,7 +625,13 @@ namespace rex
       const rsl::string filepath = path::join(g_mounted_roots.at(root), path);
       return file::exists(filepath);
     }
+    bool is_file(rsl::string_view path)
+    {
+      path = path::remove_quotes(path);
+      rsl::string fullpath = create_full_path(path);
 
+      return file::exists(fullpath);
+    }
     rsl::string create_full_path(MountingPoint root, rsl::string_view path)
     {
       REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");

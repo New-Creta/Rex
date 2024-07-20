@@ -28,7 +28,9 @@ namespace rex
       hr = D3DCompile2(
         desc.shader_source_code.data(),
         desc.shader_source_code.size(),
-        desc.shader_name.c_str(),
+        desc.shader_name.size()  // Need to check here as an empty string results in an compiler error
+        ? desc.shader_name.data()
+        : nullptr,
         nullptr,
         D3D_COMPILE_STANDARD_FILE_INCLUDE,
         desc.shader_entry_point.data(),

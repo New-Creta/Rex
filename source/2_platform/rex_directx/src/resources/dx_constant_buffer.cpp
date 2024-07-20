@@ -4,7 +4,7 @@ namespace rex
 {
   namespace gfx
   {
-    DxConstantBuffer::DxConstantBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DescriptorHandle handle, rsl::memory_size size)
+    DxConstantBuffer::DxConstantBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView handle, rsl::memory_size size)
       : ConstantBuffer(size)
       , m_resource(resource)
       , m_handle(handle)

@@ -1,8 +1,25 @@
 #pragma once
 
-#if REX_NO_LOGGING
+#include "rex_engine/diagnostics/logging/log_category.h"                                             // IWYU pragma: keep
+#include "rex_engine/diagnostics/logging/log_functions.h"                                            // IWYU pragma: keep
+#include "rex_engine/diagnostics/logging/log_verbosity.h"                                            // IWYU pragma: keep
 
-  #define DEFINE_LOG_CATEGORY(CategoryName, ...) FNoLoggingCategory CategoryName;
+namespace rex
+{
+  namespace internal
+  {
+    template <int VerbosityToCheck, typename CategoryType>
+    inline bool is_log_active(const CategoryType& category)
+    {
+      return !category.is_suppressed((LogVerbosity)VerbosityToCheck);
+    }
+  } // namespace internal
+
+#define DEFINE_LOG_CATEGORY(Name)       inline const rex::LogCategory Name(#Name, rex::IsAsync::no)  // NOLINT(fuchsia-statically-constructed-objects)
+#define DEFINE_LOG_CATEGORY_ASYNC(Name) inline const rex::LogCategory Name(#Name, rex::IsAsync::yes) // NOLINT(fuchsia-statically-constructed-objects)
+} // namespace rex
+
+#if REX_NO_LOGGING
 
 //-------------------------------------------------------------------------
 // Logging features
@@ -21,26 +38,22 @@
   #define REX_VERBOSE_X(...)     (0)
   #define REX_VERYVERBOSE_X(...) (0)
 
+  #define REX_FATAL_ONCE(CategoryName, ...)    
+  #define REX_ERROR_ONCE(CategoryName, ...)   
+  #define REX_WARN_ONCE(CategoryName, ...)    
+  #define REX_INFO_ONCE(CategoryName, ...)    
+  #define REX_VERBOSE_ONCE(CategoryName, ...) 
+  #define REX_VERYVERBOSE_ONCE(CategoryName, ...)
+  
+  // Only log once during the duration of the program, on the first time the condition is true
+  #define REX_FATAL_ONCE_X(CategoryName, cond, ...)       false
+  #define REX_ERROR_ONCE_X(CategoryName, cond, ...)       false
+  #define REX_WARN_ONCE_X(CategoryName, cond, ...)        false
+  #define REX_INFO_ONCE_X(CategoryName, cond, ...)        false
+  #define REX_VERBOSE_ONCE_X(CategoryName, cond, ...)     false
+  #define REX_VERYVERBOSE_ONCE_X(CategoryName, cond, ...) false
+
 #else
-
-  #include "rex_engine/diagnostics/logging/log_category.h"                                             // IWYU pragma: keep
-  #include "rex_engine/diagnostics/logging/log_functions.h"                                            // IWYU pragma: keep
-  #include "rex_engine/diagnostics/logging/log_verbosity.h"                                            // IWYU pragma: keep
-
-namespace rex
-{
-  namespace internal
-  {
-    template <int VerbosityToCheck, typename CategoryType>
-    inline bool is_log_active(const CategoryType& category)
-    {
-      return !category.is_suppressed((LogVerbosity)VerbosityToCheck);
-    }
-  } // namespace internal
-
-  #define DEFINE_LOG_CATEGORY(Name)       inline const rex::LogCategory Name(#Name, rex::IsAsync::no)  // NOLINT(fuchsia-statically-constructed-objects)
-  #define DEFINE_LOG_CATEGORY_ASYNC(Name) inline const rex::LogCategory Name(#Name, rex::IsAsync::yes) // NOLINT(fuchsia-statically-constructed-objects)
-} // namespace rex
 
   //-------------------------------------------------------------------------
 // Logging features

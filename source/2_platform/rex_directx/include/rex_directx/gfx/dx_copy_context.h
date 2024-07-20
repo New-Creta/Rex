@@ -44,7 +44,7 @@ namespace rex
     protected:
       // Reset this context by resetting the commandlist and its allocator
       // Also bind the descriptor heap
-      void platform_reset(CommandAllocator* alloc, DescriptorHeap* descHeap) override;
+      void platform_reset(CommandAllocator* alloc, const ContextResetData& resetData) override;
 
       // profiling events
       void begin_profile_event(rsl::string_view eventName) override;
@@ -60,7 +60,6 @@ namespace rex
 
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;
-
     };
   }
 }

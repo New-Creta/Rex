@@ -11,7 +11,7 @@ namespace rex
     class DxShader : public Shader
     {
     public:
-      DxShader(const wrl::ComPtr<ID3DBlob>& blob);
+      DxShader(const wrl::ComPtr<ID3DBlob>& blob, ShaderType type);
 
       // Return the compiled byte code of the shader
       D3D12_SHADER_BYTECODE dx_bytecode() const;

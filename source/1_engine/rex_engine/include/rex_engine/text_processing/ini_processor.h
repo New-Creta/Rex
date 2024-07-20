@@ -17,7 +17,7 @@ namespace rex
     IniHeaderWithItems(rsl::string_view header, const rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>& items);
 
     rsl::string_view header() const;
-    rsl::string_view get(rsl::string_view key, rsl::string_view default = "") const;
+    rsl::string_view get(rsl::string_view key, rsl::string_view def = "") const;
     const rsl::unordered_map<rsl::string_view, rsl::string_view>& all_items() const;
 
   private:
@@ -35,8 +35,8 @@ namespace rex
 
     rex::Error process();
 
-    rsl::string_view get(rsl::string_view header, rsl::string_view key, rsl::string_view default = "") const;
-    rsl::unordered_map<rsl::string_view, IniHeaderWithItems> all_items() const;
+    rsl::string_view get(rsl::string_view header, rsl::string_view key, rsl::string_view def = "") const;
+    const rsl::unordered_map<rsl::string_view, IniHeaderWithItems>& all_items() const;
 
   private:
     void add_new_header_with_items(rsl::string_view header, const rsl::vector<rsl::key_value<rsl::string_view, rsl::string_view>>& items);
