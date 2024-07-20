@@ -106,8 +106,9 @@ namespace rex
         while(start_pos != -1)
         {
           const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
-          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
-             false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          const bool starts_with_prefix = full_argument.starts_with(arg_prefix);
+          REX_ERROR_X(LogEngine, !starts_with_prefix, "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix);
+          if(starts_with_prefix) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
@@ -119,8 +120,9 @@ namespace rex
         if(start_pos != -1)
         {
           const rsl::string_view full_argument = find_next_full_argument(cmdLine, start_pos);
-          if(REX_ERROR_X(LogEngine, full_argument.starts_with(arg_prefix), "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix) ==
-             false) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
+          const bool starts_with_prefix = full_argument.starts_with(arg_prefix);
+          REX_ERROR_X(LogEngine, starts_with_prefix, "argument '{}' doesn't start with '{}'. all arguments should start with '{}'", full_argument, arg_prefix, arg_prefix);
+          if(starts_with_prefix) // NOLINT(readability-simplify-boolean-expr, readability-implicit-bool-conversion)
           {
             const rsl::string_view argument = full_argument.substr(arg_prefix.size());
             add_argument(argument);
@@ -226,6 +228,7 @@ namespace rex
 
     void print_args()
     {
+#ifndef REX_NO_LOGGING
       REX_INFO(LogEngine, "Listing Command line arguments");
 
       rsl::unordered_map<rsl::string_view, rsl::vector<Argument>> project_to_arguments;
@@ -246,6 +249,7 @@ namespace rex
           REX_INFO(LogEngine, "\"{}\" - {}", cmd.name, cmd.desc);
         }
       }
+#endif
     }
 
     void log_cmdline()

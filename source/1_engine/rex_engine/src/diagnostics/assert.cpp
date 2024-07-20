@@ -19,6 +19,9 @@ namespace rex
 
   void rex_assert(const rsl::fmt_stack_string& msg)
   {
+    REX_UNUSED_PARAM(msg);
+
+#ifndef REX_NO_LOGGING
     thread_local static bool is_processing_assert = false;
     if(!is_processing_assert)
     {
@@ -52,6 +55,7 @@ namespace rex
       // to avoid circular dependency, we break here if there's a debugger attached
       REX_DEBUG_BREAK();
     }
+#endif
   }
 
   void push_assert_context(const rsl::fmt_stack_string& msg, rsl::source_location sourceLoc)
