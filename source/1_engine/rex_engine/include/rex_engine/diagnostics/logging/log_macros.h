@@ -38,6 +38,21 @@ namespace rex
   #define REX_VERBOSE_X(...)     (0)
   #define REX_VERYVERBOSE_X(...) (0)
 
+  #define REX_FATAL_ONCE(CategoryName, ...)    
+  #define REX_ERROR_ONCE(CategoryName, ...)   
+  #define REX_WARN_ONCE(CategoryName, ...)    
+  #define REX_INFO_ONCE(CategoryName, ...)    
+  #define REX_VERBOSE_ONCE(CategoryName, ...) 
+  #define REX_VERYVERBOSE_ONCE(CategoryName, ...)
+  
+  // Only log once during the duration of the program, on the first time the condition is true
+  #define REX_FATAL_ONCE_X(CategoryName, cond, ...)       false
+  #define REX_ERROR_ONCE_X(CategoryName, cond, ...)       false
+  #define REX_WARN_ONCE_X(CategoryName, cond, ...)        false
+  #define REX_INFO_ONCE_X(CategoryName, cond, ...)        false
+  #define REX_VERBOSE_ONCE_X(CategoryName, cond, ...)     false
+  #define REX_VERYVERBOSE_ONCE_X(CategoryName, cond, ...) false
+
 #else
 
   //-------------------------------------------------------------------------

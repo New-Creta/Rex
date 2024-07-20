@@ -16,6 +16,7 @@ namespace rex
 	{
 		enum class MaterialParameterType
 		{
+			Undefined,
 			Texture,
 			Sampler
 		};

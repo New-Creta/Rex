@@ -39,6 +39,8 @@ namespace rex
     void log_info()
     {
       auto& gfx_info = rhi::info();
+      REX_UNUSED_PARAM(gfx_info);
+
       REX_INFO(LogGraphics, "Renderer Info - Adaptor: {}", gfx_info.adaptor);
       REX_INFO(LogGraphics, "Renderer Info - Vendor: {}", gfx_info.vendor);
       REX_INFO(LogGraphics, "Renderer Info - API: {}", gfx_info.api);

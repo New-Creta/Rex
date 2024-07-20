@@ -16,6 +16,10 @@ namespace rex
       //-------------------------------------------------------------------------
       rsl::medium_stack_string report_hr_error(HRESULT hr, const rsl::string_view file, const rsl::string_view function, card32 lineNr)
       {
+        REX_UNUSED_PARAM(file);
+        REX_UNUSED_PARAM(function);
+        REX_UNUSED_PARAM(lineNr);
+
         const _com_error err(hr);
         rsl::medium_stack_string error_message(err.ErrorMessage());
         REX_ERROR(LogDirectX, "DirectX Error");

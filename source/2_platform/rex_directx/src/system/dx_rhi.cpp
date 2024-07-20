@@ -711,6 +711,7 @@ namespace rex
         d3d::set_debug_name_for(desc_heap.Get(), rsl::format("Descriptor Heap - {} - {}", type_str, isShaderVisible ? "Shader Visible" : "Not Shader Visible"));
         s32 desc_size = g_rhi_resources->device->dx_object()->GetDescriptorHandleIncrementSize(type);
         s32 total_size = desc_size * num_descriptors;
+        REX_UNUSED_PARAM(total_size);
 
         REX_INFO(LogDxRhi, "Created {0} ( num: {1} descriptors, desc size: {2} bytes, total size: {3} bytes) ", type_str, num_descriptors, desc_size, total_size);
 
