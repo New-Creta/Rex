@@ -1,12 +1,14 @@
 #include "rex_renderer_core/primitives/box.h"
 
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
   {
     namespace mesh_factory
     {
-      MeshData16 create_box(f32 width, f32 height, f32 depth)
+      StaticMesh create_box(f32 width, f32 height, f32 depth)
       {
         //
         // Create the vertices.
@@ -36,11 +38,10 @@ namespace rex
             4, 0, 3, 4, 3, 7
         };
 
-        MeshData16 mesh_data;
-        mesh_data.assign_vertices(v.data(), v.size());
-        mesh_data.assign_indices(i.data(), i.size());
+        rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(v.data(), v.size(), sizeof(v[0]));
+        rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(i.data(), i.size(), IndexBufferFormat::Uint16);
 
-        return mesh_data;
+        return StaticMesh(rsl::move(vb), rsl::move(ib));
       }
     } // namespace mesh_factory
   }

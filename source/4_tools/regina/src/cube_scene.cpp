@@ -3,6 +3,7 @@
 #include "rex_renderer_core/primitives/mesh_factory.h"
 #include "rex_renderer_core/primitives/box.h"
 #include "rex_renderer_core/gfx/vertex.h"
+#include "rex_renderer_core/components/transform_component.h"
 
 #include "rex_engine/memory/blob_writer.h"
 
@@ -11,6 +12,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "rex_renderer_core/gfx/rhi.h"
+#include "rex_renderer_core/scenegraph/entity.h"
+#include "rex_renderer_core/components/mesh_component.h"
 
 namespace regina
 {
@@ -29,8 +32,16 @@ namespace regina
 
   void CubeScene::build_geometry()
   {
-    // Create the box geometry
-    auto box = rex::mesh_factory::create_box(1.5f, 1.5f, 1.5f);
+    // The cube scene is hardcoded, only holding a single cube
+
+    // 1. Create an empty actor
+    rex::gfx::Entity cube_entity = create_empty_entity();
+
+    // 2. Add a mesh to the cube
+    StaticMesh box = rex::gfx::mesh_factory::create_box(1.5f, 1.5f, 1.5f);
+    cube_entity.add_component<rex::gfx::StaticMeshComponent>(box);
+
+    // 2. 
 
     // Create the vertex buffer
     rex::memory::Blob vb(rsl::make_unique<rex::VertexPosNormCol[]>(box.vertices().size()));

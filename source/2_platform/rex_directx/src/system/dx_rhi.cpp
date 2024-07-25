@@ -286,6 +286,26 @@ namespace rex
 
         return rsl::make_unique<DxVertexBuffer>(d3d_buffer, numVertices, vertexSize);
       }
+      rsl::unique_ptr<VertexBuffer> create_vertex_buffer(const void* data, s32 numVertices, s32 vertexSize)
+      {
+        s32 total_size = numVertices * vertexSize;
+        wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_buffer(total_size);
+        auto vb = rsl::make_unique<DxVertexBuffer>(d3d_buffer, numVertices, vertexSize);
+
+        if (data)
+        {
+          auto copy_context = gfx::new_copy_ctx();
+          copy_context->update_buffer(vb.get(), data, total_size, 0);
+          auto sync_info = copy_context->execute_on_gpu();
+
+          auto render_context = gfx::new_render_ctx();
+          render_context->stall(*sync_info.get());
+          render_context->transition_buffer(vb.get(), ResourceState::VertexAndConstantBuffer);
+        }
+
+        return vb;
+      }
+
       rsl::unique_ptr<IndexBuffer>          create_index_buffer(s32 numIndices, IndexBufferFormat format)
       {
         s32 index_size = index_format_size(format);
@@ -293,6 +313,27 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> buffer = g_gpu_engine->allocate_buffer(total_size);
         d3d::set_debug_name_for(buffer.Get(), "Index Buffer");
         return rsl::make_unique<DxIndexBuffer>(buffer, numIndices, format);
+      }
+      rsl::unique_ptr<IndexBuffer> create_index_buffer(const void* data, s32 numIndices, IndexBufferFormat format)
+      {
+        s32 index_size = index_format_size(format);
+        s32 total_size = numIndices * index_size;
+        wrl::ComPtr<ID3D12Resource> buffer = g_gpu_engine->allocate_buffer(total_size);
+        d3d::set_debug_name_for(buffer.Get(), "Index Buffer");
+
+        auto ib = rsl::make_unique<DxIndexBuffer>(buffer, numIndices, format);
+        if (data)
+        {
+          auto copy_context = gfx::new_copy_ctx();
+          copy_context->update_buffer(ib.get(), data, total_size, 0);
+          auto sync_info = copy_context->execute_on_gpu();
+
+          auto render_context = gfx::new_render_ctx();
+          render_context->stall(*sync_info.get());
+          render_context->transition_buffer(ib.get(), ResourceState::IndexBuffer);
+        }
+
+        return ib;
       }
       rsl::unique_ptr<RootSignature>        create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection)
       {

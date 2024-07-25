@@ -83,7 +83,9 @@ namespace rex
       // Resource creation
       rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, TextureFormat format);
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
+      rsl::unique_ptr<VertexBuffer> create_vertex_buffer(const void* data, s32 numVertices, s32 vertexSize);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format);
+      rsl::unique_ptr<IndexBuffer> create_index_buffer(const void* data, s32 numIndices, IndexBufferFormat format);
       rsl::unique_ptr<RootSignature> create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection);
       rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
       rsl::unique_ptr<PipelineState> create_pso(InputLayout* inputLayout, Material* material);
