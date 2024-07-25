@@ -28,5 +28,11 @@
     "url": "https://github.com/RisingLiberty/RexPix/",
     "tag": "v1.0.0",
     "storage": "~/source/0_thirdparty"
+  },
+  "entt": {
+    "name": "rex_entt",
+    "url": "https://github.com/skypjack/entt",
+    "tag": "v3.13.2",
+    "storage": "~/source/0_thirdparty"
   }
 }
