@@ -1,7 +1,7 @@
 #pragma once
 
 #define JSON_NOEXCEPTION
-#include "rex_engine/json/internal/json.hpp"
+#include "rex_engine/text_processing/internal/json.hpp"
 
 #include "rex_engine/memory/blob.h"
 #include "rex_engine/memory/blob_view.h"

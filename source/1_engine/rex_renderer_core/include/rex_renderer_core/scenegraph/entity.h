@@ -6,6 +6,8 @@
 #include "rex_std/string_view.h"
 #include "rex_std/utility.h"
 
+#include "rex_engine/diagnostics/assert.h"
+
 namespace rex
 {
 	namespace gfx
@@ -17,11 +19,11 @@ namespace rex
 			Entity(entt::registry& registry, entt::entity entity, rsl::string_view name);
 
 			template <typename Component, typename ... Args>
-			void add_component(Args&&... args)
+			Component& add_component(Args&&... args)
 			{
-				REX_ASSERT_X(m_entity_handle, "Entity does not have a entt handle and therefore cannot have a component");
+				REX_ASSERT_X(m_entity_handle != entt::null, "Entity does not have a entt handle and therefore cannot have a component");
 				REX_ASSERT_X(m_registry, "No registry assigned to this entity, therefore cannot add a component");
-				m_registry->emplace(m_entity_handle, rsl::forward<Args>(args)...);
+				return m_registry->emplace<Component>(m_entity_handle, rsl::forward<Args>(args)...);
 			}
 
 		private:

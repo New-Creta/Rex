@@ -8,8 +8,9 @@ namespace rex
 			: m_entity_handle(entt::null)
 		{}
 
-		Entity::Entity(entt::entity entityHandle, rsl::string_view name)
+		Entity::Entity(entt::registry& registry, entt::entity entityHandle, rsl::string_view name)
 			: m_entity_handle(entityHandle)
+			, m_registry(&registry)
 			, m_name(name)
 		{}
 	}

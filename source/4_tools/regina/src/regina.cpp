@@ -31,21 +31,25 @@ namespace regina
   public:
     Regina()
     {
-      //m_scene = rsl::make_unique<regina::CubeScene>();
+      m_scene = rsl::make_unique<regina::CubeScene>();
     }
 
     void update()
     {
-      // Nothing to implement
+      // Based on the input, move the camera
     }
 
     void draw()
     {
-      //m_scene->update();
+      m_scene->render(m_scene_renderer, m_scene_camera);
+      m_editor_renderer.render();
     }
 
   private:
-    //rsl::unique_ptr<rex::Scene> m_scene;
+    rsl::unique_ptr<rex::gfx::Scene> m_scene;
+    SceneRenderer m_scene_renderer;
+    EditorRenderer m_editor_renderer;
+    Camera m_scene_camera;
   };
 
   rsl::unique_ptr<Regina> g_regina;
@@ -63,7 +67,6 @@ namespace regina
   //-------------------------------------------------------------------------
   void update()
   {
-    // Update the editor
     g_regina->update();
   }
   //-------------------------------------------------------------------------
@@ -102,11 +105,11 @@ namespace regina
 
 namespace rex
 {
-  rsl::string_view project_name()
-  {
-    static rsl::string_view project_name = rex::cmdline::get_argument("project").value_or("editor_project");
-    return project_name;
-  }
+  //rsl::string_view project_name()
+  //{
+  //  static rsl::string_view project_name = rex::cmdline::get_argument("project").value_or("editor_project");
+  //  return project_name;
+  //}
 
 #ifndef REX_ENABLE_AUTO_TESTS
   //-------------------------------------------------------------------------

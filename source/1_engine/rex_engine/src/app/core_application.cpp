@@ -114,7 +114,7 @@ namespace rex
     // Loads the mounts of the engine
     // this will make it easier to access files under these paths
     // in the future
-    mount_paths();
+    mount_engine_paths();
 
     // load the settings of the engine as early as possible
     // however it does have a few dependencies that need to be set up first
@@ -170,9 +170,12 @@ namespace rex
   }
 
   //--------------------------------------------------------------------------------------------
-  void CoreApplication::mount_paths() // NOLINT(readability-convert-member-functions-to-static)
+  void CoreApplication::mount_engine_paths() // NOLINT(readability-convert-member-functions-to-static)
   {
+    vfs::mount(MountingPoint::EngineRoot, vfs::engine_root());
+
     vfs::mount(MountingPoint::EngineSettings, path::join(vfs::engine_root(), "settings"));
+    vfs::mount(MountingPoint::EngineMaterials, path::join(vfs::engine_root(), "materials"));
   }
 
   //--------------------------------------------------------------------------------------------

@@ -680,6 +680,11 @@ namespace rex
         return rsl::make_unique<DxUploadBuffer>(d3d_upload_buffer);
       }
 
+      rsl::unique_ptr<Material> create_material(rsl::string_view path)
+      {
+        return nullptr;
+      }
+
       rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
       {
         return rsl::make_unique<Material>(rsl::move(shaderPipeline), matConstructSettings);

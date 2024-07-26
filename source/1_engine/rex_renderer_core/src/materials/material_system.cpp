@@ -12,7 +12,7 @@
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
 
 #include "rex_engine/string/stringid.h"
-#include "rex_engine/json/json.h"
+#include "rex_engine/text_processing/json.h"
 
 #include "rex_std/string.h"
 
