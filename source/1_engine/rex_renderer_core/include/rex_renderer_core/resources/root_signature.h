@@ -8,6 +8,14 @@ namespace rex
 {
   namespace gfx
   {
+    class Shader;
+
+    struct RootSignatureDesc2
+    {
+      Shader* vs;
+      Shader* ps;
+    };
+
     // Base class for a root signature, this will likely change in the future
     class RootSignature
     {

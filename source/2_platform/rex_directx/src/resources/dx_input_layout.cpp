@@ -18,17 +18,17 @@ namespace rex
       return total_size;
     }
 
-    DxInputLayout::DxInputLayout(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements, InputLayoutDesc&& desc)
-      : InputLayout(calc_size(elements), rsl::move(desc))
+    DxInputLayout::DxInputLayout(const rsl::vector<D3D12_INPUT_ELEMENT_DESC>& elements, const InputLayoutDesc& desc)
+      : InputLayout(calc_size(elements), desc)
       , m_input_elements(elements)
     {
       m_input_layout_desc = { m_input_elements.data(), static_cast<u32>(m_input_elements.size()) };
     }
 
     // Return the wrapped Direct X object
-    D3D12_INPUT_LAYOUT_DESC* DxInputLayout::dx_object()
+    D3D12_INPUT_LAYOUT_DESC& DxInputLayout::dx_object()
     {
-      return &m_input_layout_desc;
+      return m_input_layout_desc;
     }
   }
 }

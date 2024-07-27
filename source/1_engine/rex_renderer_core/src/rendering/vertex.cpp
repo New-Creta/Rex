@@ -35,12 +35,11 @@ namespace rex
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPos::layout()
     {
-      InputLayoutDesc desc;
-      desc.input_layout =
+      InputLayoutDesc desc =
       {
         InputLayoutElementDesc
         {
-          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 0, 0
         }
       };
 
@@ -93,16 +92,15 @@ namespace rex
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosCol::layout()
     {
-      InputLayoutDesc desc;
-      desc.input_layout =
+      InputLayoutDesc desc
       {
         InputLayoutElementDesc
         {
-          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 0, 0
         },
         InputLayoutElementDesc
         {
-          ShaderSemantic::Color, VertexBufferFormat::Float4, InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+          ShaderSemantic::Color, VertexBufferFormat::Float4, InputLayoutClassification::PerVertex, 0, 0, 12, 0
         }
       };
 
@@ -163,20 +161,19 @@ namespace rex
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosNormCol::layout()
     {
-      InputLayoutDesc desc;
-      desc.input_layout =
+      InputLayoutDesc desc
       {
         InputLayoutElementDesc
         {
-          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 0, 0
         },
         InputLayoutElementDesc
         {
-          ShaderSemantic::Normal,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+          ShaderSemantic::Normal,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 12, 0
         },
         InputLayoutElementDesc
         {
-          ShaderSemantic::Color, VertexBufferFormat::Float4, InputLayoutClassification::PerVertexData, 0, 0, 24, 0
+          ShaderSemantic::Color, VertexBufferFormat::Float4, InputLayoutClassification::PerVertex, 0, 0, 24, 0
         }
       };
 
@@ -229,16 +226,15 @@ namespace rex
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosTex::layout()
     {
-      InputLayoutDesc desc;
-      desc.input_layout =
+      InputLayoutDesc desc
       {
         InputLayoutElementDesc
         {
-          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 0, 0
         },
         InputLayoutElementDesc
         {
-          ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+          ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 12, 0
         },
       };
 
@@ -299,20 +295,19 @@ namespace rex
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosColTex::layout()
     {
-      InputLayoutDesc desc;
-      desc.input_layout =
+      InputLayoutDesc desc
       {
         InputLayoutElementDesc
         {
-          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 0, 0
         },
         InputLayoutElementDesc
         {
-          ShaderSemantic::Color,  VertexBufferFormat::Float4, InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+          ShaderSemantic::Color,  VertexBufferFormat::Float4, InputLayoutClassification::PerVertex, 0, 0, 12, 0
         },
         InputLayoutElementDesc
         {
-          ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 28, 0
+          ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 28, 0
         },
       };
 
@@ -373,20 +368,19 @@ namespace rex
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosNormTex::layout()
     {
-      InputLayoutDesc desc;
-      desc.input_layout =
+      InputLayoutDesc desc
       {
         InputLayoutElementDesc
         {
-          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertexData, 0, 0, 0, 0
+          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 0, 0
         },
         InputLayoutElementDesc
         {
-          ShaderSemantic::Normal,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertexData, 0, 0, 12, 0
+          ShaderSemantic::Normal,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 12, 0
         },
         InputLayoutElementDesc
         {
-          ShaderSemantic::TexCoord, VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 24, 0
+          ShaderSemantic::TexCoord, VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 24, 0
         }
       };
 

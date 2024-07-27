@@ -29,7 +29,7 @@ namespace rex
     {
       u32 hash = rsl::type_id<InputLayoutDesc>().hash_code();
 
-      hash = rsl::internal::hash_combine(hash, rsl::crc32::compute((const char*)desc.input_layout.data(), desc.input_layout.size() * sizeof(InputLayoutElementDesc))); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+      hash = rsl::internal::hash_combine(hash, rsl::crc32::compute((const char*)desc.data(), desc.size() * sizeof(InputLayoutElementDesc))); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
 
       return hash;
     }

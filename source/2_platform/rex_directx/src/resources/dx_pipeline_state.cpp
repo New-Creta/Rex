@@ -4,8 +4,9 @@ namespace rex
 {
   namespace gfx
   {
-    DxPipelineState::DxPipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso)
-      : m_pso(pso)
+    DxPipelineState::DxPipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso, RootSignature* rootSignature)
+      : PipelineState(rootSignature)
+      , m_pso(pso)
     {
 
     }

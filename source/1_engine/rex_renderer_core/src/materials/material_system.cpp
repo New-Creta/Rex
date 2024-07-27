@@ -10,6 +10,7 @@
 #include "rex_renderer_core/system/shader_pipeline.h"
 #include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
+#include "rex_renderer_core/system/shader_library.h"
 
 #include "rex_engine/string/stringid.h"
 #include "rex_engine/text_processing/json.h"
@@ -169,8 +170,8 @@ namespace rex
 
 			// Process material content so we can create a material object out of it
 			ShaderPipeline shader_pipeline{};
-			shader_pipeline.vs = rhi::create_vertex_shader(memory::blob_to_string_view(vfs::read_file(vertex_shader)));
-			shader_pipeline.ps = rhi::create_pixel_shader(memory::blob_to_string_view(vfs::read_file(pixel_shader)));
+			shader_pipeline.vs = shader_lib::load(vertex_shader, ShaderType::Vertex);
+			shader_pipeline.ps = shader_lib::load(pixel_shader, ShaderType::Pixel);
 
 			// Load additional settings for the material's initialization if they're available
 			MaterialConstructSettings mat_construct_settings = load_mat_construct_settings_from_json(json_blob);

@@ -12,5 +12,14 @@ namespace rex
 			, m_index_buffer(rsl::move(ib))
 		{
 		}
+
+		VertexBuffer* StaticMesh::vb() const
+		{
+			return const_cast<VertexBuffer*>(m_vertex_buffer.get());
+		}
+		IndexBuffer* StaticMesh::ib() const
+		{
+			return const_cast<IndexBuffer*>(m_index_buffer.get());
+		}
 	}
 }

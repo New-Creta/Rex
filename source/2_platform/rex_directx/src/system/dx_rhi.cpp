@@ -61,6 +61,8 @@
 
 #include "rex_engine/images/stb_image.h"
 #include "rex_renderer_core/materials/material_system.h"
+#include "rex_renderer_core/system/input_layout_cache.h"
+#include "rex_renderer_core/system/root_signature_cache.h"
 
 namespace rex
 {
@@ -335,6 +337,12 @@ namespace rex
 
         return ib;
       }
+      rsl::unique_ptr<RootSignature>        create_root_signature(const ShaderPipeline& pipeline)
+      {
+        ShaderPipelineReflection reflection = reflect_shader_pipeline(pipeline);
+        return create_root_signature(reflection);
+      }
+
       rsl::unique_ptr<RootSignature>        create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection)
       {
         // 1. Constants (not able to retrieve this from reflection yet)
@@ -496,56 +504,42 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         return create_render_target(d3d_texture);
       }
-      rsl::unique_ptr<PipelineState>        create_pso(InputLayout* inputLayout, Material* material)
+      rsl::unique_ptr<PipelineState>        create_pso(const InputLayoutDesc& inputLayoutDesc, Material* material)
       {
         PipelineStateDesc desc{};
 
         material->fill_pso_desc(desc);
-        desc.input_layout = inputLayout;
-        
+        desc.input_layout = inputLayoutDesc;
+
         return create_pso(desc);
       }
       rsl::unique_ptr<PipelineState>        create_pso(const PipelineStateDesc& desc)
       {
+        REX_ASSERT_X(desc.shader_pipeline.vs, "No vertex shader specified for the pso");
+        REX_ASSERT_X(desc.shader_pipeline.ps, "No pixel shader specified for the pso");
+
+        InputLayout* input_layout = input_layout_cache::load(desc.input_layout);
+        RootSignature* root_signature = root_signature_cache::load(desc.shader_pipeline);
+
         // Make sure our critical required parameters are specified
-        REX_ASSERT_X(desc.input_layout, "No input layout specified for the pso");
-        REX_ASSERT_X(desc.root_signature, "No root signature specified for the pso");
-        REX_ASSERT_X(desc.vertex_shader, "No vertex shader specified for the pso");
-        REX_ASSERT_X(desc.pixel_shader, "No pixel shader specified for the pso");
-
-        D3D12_RASTERIZER_DESC d3d_raster_state = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-        if (desc.raster_state.has_value())
-        {
-          d3d_raster_state = d3d::to_dx12(desc.raster_state->get());
-        }
-
-        D3D12_BLEND_DESC d3d_blend_state = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        if (desc.blend_state.has_value())
-        {
-          d3d_blend_state = d3d::to_dx12(desc.blend_state.value());
-        }
-
-        D3D12_DEPTH_STENCIL_DESC d3d_depth_stencil_state = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-        if (desc.depth_stencil_state.has_value())
-        {
-          d3d_depth_stencil_state = d3d::to_dx12(desc.depth_stencil_state.value());
-        }
+        REX_ASSERT_X(input_layout, "No input layout for the pso");
+        REX_ASSERT_X(root_signature, "No root signature for the pso");
 
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pso_desc{};
-        pso_desc.InputLayout = *d3d::to_dx12(desc.input_layout)->dx_object();
-        pso_desc.pRootSignature = d3d::to_dx12(desc.root_signature)->dx_object();
-        pso_desc.VS = d3d::to_dx12(desc.vertex_shader)->dx_bytecode();
-        pso_desc.PS = d3d::to_dx12(desc.pixel_shader)->dx_bytecode();
-        pso_desc.RasterizerState = d3d_raster_state;
-        pso_desc.BlendState = d3d_blend_state;
-        pso_desc.DepthStencilState = d3d_depth_stencil_state;
-        pso_desc.SampleMask = UINT_MAX;
-        pso_desc.PrimitiveTopologyType = d3d::to_dx12(desc.primitive_topology);
-        pso_desc.NumRenderTargets = 1;
-        pso_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-        pso_desc.SampleDesc.Count = 1;
-        pso_desc.SampleDesc.Quality = 0;
-        pso_desc.DSVFormat = DXGI_FORMAT_UNKNOWN; // DXGI_FORMAT_D24_UNORM_S8_UINT;
+        pso_desc.InputLayout            = d3d::to_dx12(input_layout)->dx_object();
+        pso_desc.pRootSignature         = d3d::to_dx12(root_signature)->dx_object();
+        pso_desc.VS                     = d3d::to_dx12(desc.shader_pipeline.vs)->dx_bytecode();
+        pso_desc.PS                     = d3d::to_dx12(desc.shader_pipeline.ps)->dx_bytecode();
+        pso_desc.RasterizerState        = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT); d3d::to_dx12(desc.raster_state);
+        pso_desc.BlendState             = CD3DX12_BLEND_DESC(D3D12_DEFAULT); //d3d::to_dx12(desc.blend_state);
+        pso_desc.DepthStencilState      = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); //d3d::to_dx12(desc.depth_stencil_state);
+        pso_desc.SampleMask             = UINT_MAX;
+        pso_desc.PrimitiveTopologyType  = d3d::to_dx12(desc.primitive_topology);
+        pso_desc.NumRenderTargets       = 1;
+        pso_desc.RTVFormats[0]          = DXGI_FORMAT_R8G8B8A8_UNORM;
+        pso_desc.SampleDesc.Count       = 1;
+        pso_desc.SampleDesc.Quality     = 0;
+        pso_desc.DSVFormat              = DXGI_FORMAT_UNKNOWN; // DXGI_FORMAT_D24_UNORM_S8_UINT;
 
         wrl::ComPtr<ID3D12PipelineState> pso;
         DX_CALL(g_rhi_resources->device->dx_object()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso)));
@@ -554,7 +548,7 @@ namespace rex
           return nullptr;
         }
 
-        return rsl::make_unique<DxPipelineState>(pso);
+        return rsl::make_unique<DxPipelineState>(pso, root_signature);
       }
       rsl::unique_ptr<Texture2D>            create_texture2d(s32 width, s32 height, TextureFormat format, const void* data)
       {
@@ -600,20 +594,20 @@ namespace rex
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
       }
-      rsl::unique_ptr<InputLayout>          create_input_layout(InputLayoutDesc&& desc)
+      rsl::unique_ptr<InputLayout>          create_input_layout(const InputLayoutDesc& desc)
       {
-        rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.input_layout.size()));
+        rsl::vector<D3D12_INPUT_ELEMENT_DESC> input_element_descriptions(rsl::Size(desc.size()));
         REX_ASSERT_X(!input_element_descriptions.empty(), "No input elements provided for input layout");
 
-        for (s32 i = 0; i < desc.input_layout.size(); ++i)
+        for (s32 i = 0; i < desc.size(); ++i)
         {
-          input_element_descriptions[i].SemanticName          = shader_semantic_name(desc.input_layout[i].semantic).data();
-          input_element_descriptions[i].SemanticIndex         = desc.input_layout[i].semantic_index;
-          input_element_descriptions[i].Format                = d3d::to_dx12(desc.input_layout[i].format);
-          input_element_descriptions[i].InputSlot             = desc.input_layout[i].input_slot;
-          input_element_descriptions[i].AlignedByteOffset     = desc.input_layout[i].aligned_byte_offset;
-          input_element_descriptions[i].InputSlotClass        = d3d::to_dx12(desc.input_layout[i].input_slot_class);
-          input_element_descriptions[i].InstanceDataStepRate  = desc.input_layout[i].instance_data_step_rate;
+          input_element_descriptions[i].SemanticName          = shader_semantic_name(desc[i].semantic).data();
+          input_element_descriptions[i].SemanticIndex         = desc[i].semantic_index;
+          input_element_descriptions[i].Format                = d3d::to_dx12(desc[i].format);
+          input_element_descriptions[i].InputSlot             = desc[i].input_slot;
+          input_element_descriptions[i].AlignedByteOffset     = desc[i].aligned_byte_offset;
+          input_element_descriptions[i].InputSlotClass        = d3d::to_dx12(desc[i].input_slot_class);
+          input_element_descriptions[i].InstanceDataStepRate  = desc[i].instance_data_step_rate;
         }
 
         return rsl::make_unique<DxInputLayout>(input_element_descriptions, rsl::move(desc));

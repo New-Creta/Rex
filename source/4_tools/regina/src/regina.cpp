@@ -17,6 +17,9 @@
 #include "rex_windows/app/gui_application.h"
 #include "rex_windows/engine/platform_creation_params.h"
 
+#include "rex_renderer_core/rendering/scene_renderer.h"
+#include "rex_renderer_core/rendering/camera.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "regina/sample_scene.h"
@@ -30,26 +33,33 @@ namespace regina
   {
   public:
     Regina()
+      : m_scene_camera(rsl::DegAngle(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f)
     {
       m_scene = rsl::make_unique<regina::CubeScene>();
+      m_scene_renderer = rsl::make_unique<rex::gfx::SceneRenderer>();
+      m_scene_renderer->set_scene(m_scene.get());
+      m_scene_renderer->set_camera(&m_scene_camera);
+
+      rex::gfx::add_renderer(rsl::move(m_scene_renderer));
     }
 
     void update()
     {
       // Based on the input, move the camera
+
+      //draw();
     }
 
     void draw()
     {
-      m_scene->render(m_scene_renderer, m_scene_camera);
-      m_editor_renderer.render();
+      //m_scene->render(*m_scene_renderer, m_scene_camera);
+      //m_editor_renderer.render();
     }
 
   private:
     rsl::unique_ptr<rex::gfx::Scene> m_scene;
-    SceneRenderer m_scene_renderer;
-    EditorRenderer m_editor_renderer;
-    Camera m_scene_camera;
+    rsl::unique_ptr<rex::gfx::SceneRenderer> m_scene_renderer;
+    rex::gfx::Camera m_scene_camera;
   };
 
   rsl::unique_ptr<Regina> g_regina;

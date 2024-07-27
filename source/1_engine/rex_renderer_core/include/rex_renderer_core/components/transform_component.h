@@ -13,9 +13,9 @@ namespace rex
 		{
 			glm::vec3 translation;
 			glm::vec3 rotation;
-			glm::vec3 scale;
+			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-			glm::mat4 transform()
+			glm::mat4 world_mat() const
 			{
 				glm::mat4 rotation_mat = glm::toMat4(glm::quat(rotation));
 

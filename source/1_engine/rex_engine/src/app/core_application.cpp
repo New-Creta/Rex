@@ -176,6 +176,7 @@ namespace rex
 
     vfs::mount(MountingPoint::EngineSettings, path::join(vfs::engine_root(), "settings"));
     vfs::mount(MountingPoint::EngineMaterials, path::join(vfs::engine_root(), "materials"));
+    vfs::mount(MountingPoint::EngineShaders, path::join(vfs::engine_root(), "shaders"));
   }
 
   //--------------------------------------------------------------------------------------------

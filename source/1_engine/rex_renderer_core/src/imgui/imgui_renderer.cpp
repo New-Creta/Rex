@@ -177,14 +177,14 @@ namespace rex
       // Input layout is hardcoded as the vertices are also hardcoded
       // The material is responsible for validating that the input layout is correct with the shader
 
-      InputLayoutDesc input_layout_desc;
-      input_layout_desc.input_layout =
-      {
-        InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
-        InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
-        InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
-      };
-      m_input_layout = rhi::create_input_layout(rsl::move(input_layout_desc));
+      //InputLayoutDesc input_layout_desc;
+      //input_layout_desc.input_layout =
+      //{
+      //  InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 0, 0 },
+      //  InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 8, 0 },
+      //  InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertex, 0, 0, 16, 0 }
+      //};
+      //m_input_layout = rhi::create_input_layout(rsl::move(input_layout_desc));
     }
     // Initialize the material that'll be used by all ImGui rendering
     void ImGuiRenderer::init_material()
@@ -198,12 +198,18 @@ namespace rex
       m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
       m_material->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
 
-      m_material->validate_input_layout(m_input_layout.get());
+      //m_material->validate_input_layout(m_input_layout.get());
     }
     // Initialize the pso based on the the gpu resources
     void ImGuiRenderer::init_pso()
     {
-      m_pipeline_state = rhi::create_pso(m_input_layout.get(), m_material.get());
+      InputLayoutDesc input_layout_desc =
+      {
+        InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 0, 0 },
+        InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 8, 0 },
+        InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertex, 0, 0, 16, 0 }
+      };
+      m_pipeline_state = rhi::create_pso(input_layout_desc, m_material.get());
     }
 
     // Destroy all viewports used by ImGui

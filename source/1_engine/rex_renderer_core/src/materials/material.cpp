@@ -111,9 +111,7 @@ namespace rex
     void Material::fill_pso_desc(PipelineStateDesc& desc)
     {
       desc.primitive_topology = to_topology_type(m_primitive_topology);
-      desc.vertex_shader = m_shader_pipeline.vs.get();
-      desc.pixel_shader = m_shader_pipeline.ps.get();
-      desc.root_signature = m_root_signature.get();
+      desc.shader_pipeline = m_shader_pipeline;
       desc.raster_state = m_raster_state;
       desc.blend_state = m_blend;
       desc.depth_stencil_state = m_depth_stencil;

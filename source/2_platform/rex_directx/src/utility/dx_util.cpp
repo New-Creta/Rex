@@ -299,8 +299,8 @@ namespace rex
       {
         switch (classification)
         {
-        case InputLayoutClassification::PerVertexData: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-        case InputLayoutClassification::PerInstanceData: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+        case InputLayoutClassification::PerVertex: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+        case InputLayoutClassification::PerInstance: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
         default: break;
         }
 

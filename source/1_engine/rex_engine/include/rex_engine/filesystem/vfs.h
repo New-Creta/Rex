@@ -116,8 +116,8 @@ namespace rex
     bool is_dir(rsl::string_view path);
     bool is_file(MountingPoint root, rsl::string_view path);
     bool is_file(rsl::string_view path);
-    rsl::string create_full_path(rsl::string_view path);
-    rsl::string create_full_path(MountingPoint root, rsl::string_view path);
+    rsl::string abs_path(rsl::string_view path);
+    rsl::string abs_path(MountingPoint root, rsl::string_view path);
 
     rsl::string_view mount_path(MountingPoint mount);
     rsl::string_view no_mount_path();

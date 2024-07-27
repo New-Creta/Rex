@@ -10,7 +10,7 @@ float4 PS(VertexOut pin) : SV_Target
   float3 light_direction = float3(-0.577f, -0.577f, 0.577f);
 
   float diffuseStrength = dot(pin.normal, -light_direction);
-  diffuseStrength = saturate(diffuseStrength);
+  diffuseStrength = saturate(diffuseStrength + 1.3f);
 
   float3 color_rgb = pin.Color.rgb * diffuseStrength;
 

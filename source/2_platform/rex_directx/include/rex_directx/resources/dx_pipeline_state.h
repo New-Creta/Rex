@@ -22,7 +22,7 @@ namespace rex
     class DxPipelineState : public PipelineState
     {
     public:
-      DxPipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso);
+      DxPipelineState(const wrl::ComPtr<ID3D12PipelineState>& pso, RootSignature* rootSignature);
 
       ID3D12PipelineState* dx_object();
 

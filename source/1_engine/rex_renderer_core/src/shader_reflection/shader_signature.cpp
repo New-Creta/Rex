@@ -44,8 +44,8 @@ namespace rex
 		{
 			ShaderPipelineReflection refl{};
 
-			refl.vs = rex::gfx::rhi::reflect_shader(shaderPipeline.vs.get());
-			refl.ps = rex::gfx::rhi::reflect_shader(shaderPipeline.ps.get());
+			refl.vs = rex::gfx::rhi::reflect_shader(shaderPipeline.vs);
+			refl.ps = rex::gfx::rhi::reflect_shader(shaderPipeline.ps);
 
 			return refl;
 		}

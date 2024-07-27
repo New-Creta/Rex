@@ -37,19 +37,18 @@ namespace rex
     struct InputLayoutElementDesc
     {
       ShaderSemantic semantic;
-      VertexBufferFormat format;                            // The format of the element data
-      InputLayoutClassification input_slot_class;           // A value that identifies the input data class for a single input. 
-      s32 semantic_index;                                   // The semantic index for the element. A semantic index modifies a semantic, with an integer index number. eg NORMAL1
-      s32 input_slot;                                       // An integer that identifies the input-assembler.
-      s32 aligned_byte_offset;                              // This is optional. Offset, in bytes, to this element from the start of the vertex.
-      s32 instance_data_step_rate;                          // The number of instances to draw using the same per-instance-data before advancing in the buffer by one element.
+      VertexBufferFormat format;                                                            // The format of the element data
+      InputLayoutClassification input_slot_class = InputLayoutClassification::PerVertex;    // A value that identifies the input data class for a single input. 
+      s32 semantic_index = 0;                                                               // The semantic index for the element. A semantic index modifies a semantic, with an integer index number. eg NORMAL1
+      s32 input_slot = 0;                                                                   // An integer that identifies the input-assembler.
+      s32 aligned_byte_offset = -1;                                                         // This is optional. Offset, in bytes, to this element from the start of the vertex.
+      s32 instance_data_step_rate = 0;                                                      // The number of instances to draw using the same per-instance-data before advancing in the buffer by one element.
     };
 
     // A descriptor describing the input layout to construct
-    struct InputLayoutDesc
-    {
-      rsl::vector<InputLayoutElementDesc> input_layout {};
-    };
+    using InputLayoutDesc = rsl::vector<InputLayoutElementDesc>;
+    bool operator==(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs);
+    bool operator!=(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs);
 
     // Using shader reflection's input parameters, create an input layout description.
     InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderParamReflection>& shaderInputParams);
@@ -58,7 +57,7 @@ namespace rex
     class InputLayout
     {
     public:
-      InputLayout(s32 vertexSize, InputLayoutDesc&& desc);
+      InputLayout(s32 vertexSize, const InputLayoutDesc& desc);
       virtual ~InputLayout() = default;
 
       // As an input layout stores data per vertex (at least at the moment)
@@ -76,3 +75,18 @@ namespace rex
     };
   } // namespace gfx
 } // namespace rex
+
+namespace rsl
+{
+  inline namespace v1
+  {
+    template<>
+    struct hash<rex::gfx::InputLayoutDesc>
+    {
+      hash_result operator()(const rex::gfx::InputLayoutDesc& desc) const
+      {
+        return rsl::crc32::compute(desc.data(), desc.size() * sizeof(desc[0]));
+      }
+    };
+  }
+}

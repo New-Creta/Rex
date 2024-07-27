@@ -22,6 +22,9 @@ namespace rex
 			Entity create_empty_entity(rsl::string_view name = "Empty");
 
 		private:
+			void render_static_meshes(SceneRenderer& renderer);
+
+		private:
 			entt::registry m_registry;
 		};
 	}

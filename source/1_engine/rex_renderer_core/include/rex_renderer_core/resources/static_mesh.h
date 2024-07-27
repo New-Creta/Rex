@@ -14,6 +14,9 @@ namespace rex
 		public:
 			StaticMesh(rsl::unique_ptr<VertexBuffer> vb, rsl::unique_ptr<IndexBuffer> ib);
 
+			VertexBuffer* vb() const;
+			IndexBuffer* ib() const;
+
 		private:
 			rsl::unique_ptr<VertexBuffer> m_vertex_buffer;
 			rsl::unique_ptr<IndexBuffer> m_index_buffer;

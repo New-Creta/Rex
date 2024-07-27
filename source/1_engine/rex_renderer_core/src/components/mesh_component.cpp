@@ -13,6 +13,9 @@ namespace rex
 			m_material = material;
 		}
 
-
+		const StaticMesh& StaticMeshComponent::static_mesh() const
+		{
+			return m_mesh;
+		}
 	}
 }

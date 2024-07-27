@@ -5,8 +5,12 @@
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/resources/blend_state.h"
 #include "rex_renderer_core/resources/depth_stencil_state.h"
+#include "rex_renderer_core/resources/input_layout.h"
+#include "rex_renderer_core/system/shader_pipeline.h"
 
 #include "rex_renderer_core/gfx/primitive_topology.h"
+
+#include "rex_std/vector.h"
 
 namespace rex
 {
@@ -19,21 +23,30 @@ namespace rex
     // A descriptor describing the pipeline state to be constructed
     struct PipelineStateDesc
     {
-      InputLayout* input_layout;
-      RootSignature* root_signature;
-      Shader* vertex_shader;
-      Shader* pixel_shader;
+      InputLayoutDesc input_layout;
+      ShaderPipeline shader_pipeline;
       PrimitiveTopologyType primitive_topology = PrimitiveTopologyType::Triangle;
-      rsl::optional<RasterState> raster_state;
-      rsl::optional<BlendDesc> blend_state;
-      rsl::optional<DepthStencilDesc> depth_stencil_state;
+      RasterStateDesc raster_state;
+      BlendDesc blend_state;
+      DepthStencilDesc depth_stencil_state;
     };
 
     // Base class for the pipeline state, just acts as an interface
     class PipelineState
     {
     public:
+      PipelineState(RootSignature* rootSignatre)
+        : m_root_signature(rootSignatre)
+      {}
       virtual ~PipelineState() = default;
+
+      RootSignature* root_signature()
+      {
+        return m_root_signature;
+      }
+
+    private:
+      RootSignature* m_root_signature;
     };
   } // namespace gfx
 } // namespace rex

@@ -152,16 +152,19 @@ public static class CodeGeneration
     string filepath = typeDefine.RootElement.GetProperty("Filepath").GetString();
 
     // Create the type that needs to get generated
-    TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));    
+    TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));
 
     // Add remaining unknown types with the same key to the enum settings
-    if (UnknownTypesToGenerate.ContainsKey(key))
+    lock (MemberAccessLock)
     {
-      CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
-      foreach (string project in unknownType.ProjectToContent.Keys)
+      if (UnknownTypesToGenerate.ContainsKey(key))
       {
-        List<string> unknownTypeContent = unknownType.ProjectToContent[project];
-        TypesToGenerate[key].AddContent(project, unknownTypeContent);
+        CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
+        foreach (string project in unknownType.ProjectToContent.Keys)
+        {
+          List<string> unknownTypeContent = unknownType.ProjectToContent[project];
+          TypesToGenerate[key].AddContent(project, unknownTypeContent);
+        }
       }
     }
   }
@@ -184,13 +187,16 @@ public static class CodeGeneration
     TypesToGenerate.Add(key, new CodeGen.ArrayToGenerate(elementType, name, filepath, includes, projectName, content));
 
     // Add remaining unknown types with the same key to the enum settings
-    if (UnknownTypesToGenerate.ContainsKey(key))
+    lock (MemberAccessLock)
     {
-      CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
-      foreach (string project in unknownType.ProjectToContent.Keys)
+      if (UnknownTypesToGenerate.ContainsKey(key))
       {
-        List<string> unknownTypeContent = unknownType.ProjectToContent[project];
-        TypesToGenerate[key].AddContent(project, unknownTypeContent);
+        CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
+        foreach (string project in unknownType.ProjectToContent.Keys)
+        {
+          List<string> unknownTypeContent = unknownType.ProjectToContent[project];
+          TypesToGenerate[key].AddContent(project, unknownTypeContent);
+        }
       }
     }
   }

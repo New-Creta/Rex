@@ -86,13 +86,14 @@ namespace rex
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(const void* data, s32 numVertices, s32 vertexSize);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(const void* data, s32 numIndices, IndexBufferFormat format);
+      rsl::unique_ptr<RootSignature> create_root_signature(const ShaderPipeline& shaderPipeline);
       rsl::unique_ptr<RootSignature> create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection);
       rsl::unique_ptr<RootSignature> create_root_signature(const RootSignatureDesc& desc);
-      rsl::unique_ptr<PipelineState> create_pso(InputLayout* inputLayout, Material* material);
+      rsl::unique_ptr<PipelineState> create_pso(const InputLayoutDesc& inputLayoutDesc, Material* material);
       rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc);
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, TextureFormat format, const void* data = nullptr);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
-      rsl::unique_ptr<InputLayout> create_input_layout(InputLayoutDesc&& desc);
+      rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_vertex_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");

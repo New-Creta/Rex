@@ -15,6 +15,8 @@ namespace rex
 
 			void set_material(Material* material);
 
+			const StaticMesh& static_mesh() const;
+
 		private:
 			StaticMesh m_mesh;
 			Material* m_material;

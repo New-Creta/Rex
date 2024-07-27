@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_std/string_view.h"
+#include "rex_renderer_core/scenegraph/scene.h"
 
 namespace rex
 {
