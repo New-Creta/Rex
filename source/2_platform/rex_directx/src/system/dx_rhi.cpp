@@ -530,9 +530,9 @@ namespace rex
         pso_desc.pRootSignature         = d3d::to_dx12(root_signature)->dx_object();
         pso_desc.VS                     = d3d::to_dx12(desc.shader_pipeline.vs)->dx_bytecode();
         pso_desc.PS                     = d3d::to_dx12(desc.shader_pipeline.ps)->dx_bytecode();
-        pso_desc.RasterizerState        = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT); d3d::to_dx12(desc.raster_state);
-        pso_desc.BlendState             = CD3DX12_BLEND_DESC(D3D12_DEFAULT); //d3d::to_dx12(desc.blend_state);
-        pso_desc.DepthStencilState      = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); //d3d::to_dx12(desc.depth_stencil_state);
+        pso_desc.RasterizerState        = d3d::to_dx12(desc.raster_state);
+        pso_desc.BlendState             = d3d::to_dx12(desc.blend_state);
+        pso_desc.DepthStencilState      = d3d::to_dx12(desc.depth_stencil_state);
         pso_desc.SampleMask             = UINT_MAX;
         pso_desc.PrimitiveTopologyType  = d3d::to_dx12(desc.primitive_topology);
         pso_desc.NumRenderTargets       = 1;

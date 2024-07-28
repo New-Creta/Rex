@@ -49,20 +49,16 @@ namespace rex
     {
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
-          : m_platform_creation_params(*appCreationParams.platform_params)
-          , m_gui_params(rsl::move(appCreationParams.gui_params))
-          , m_engine_params(rsl::move(appCreationParams.engine_params))
+          : m_app_creation_params(rsl::move(appCreationParams))
           , m_app_instance(appInstance)
       {
         // we're always assigning something to the pointers here to avoid branch checking every update
         // I've profiled this and always having a function wins here.
-        m_on_initialize = m_engine_params.app_init_func ? rsl::move(m_engine_params.app_init_func) : [&]() { return true; };
+        m_on_initialize = m_app_creation_params.engine_params.app_init_func ? rsl::move(m_app_creation_params.engine_params.app_init_func) : [&](const ApplicationCreationParams&) { return true; };
 
-        m_on_update = m_engine_params.app_update_func ? rsl::move(m_engine_params.app_update_func) : [&]() {};
+        m_on_update = m_app_creation_params.engine_params.app_update_func ? rsl::move(m_app_creation_params.engine_params.app_update_func) : [&]() {};
 
-        m_on_draw = m_engine_params.app_draw_func ? rsl::move(m_engine_params.app_draw_func) : [&]() {};
-
-        m_on_shutdown = m_engine_params.app_shutdown_func ? rsl::move(m_engine_params.app_shutdown_func) : [&]() {};
+        m_on_shutdown = m_app_creation_params.engine_params.app_shutdown_func ? rsl::move(m_app_creation_params.engine_params.app_shutdown_func) : [&]() {};
       }
 
       bool initialize()
@@ -78,7 +74,7 @@ namespace rex
         }
 
         // call client code so it can get initialized
-        result = m_on_initialize();
+        result = m_on_initialize(m_app_creation_params);
 
         if(!result)
         {
@@ -140,7 +136,7 @@ namespace rex
         // Safe resources of the machine we are running on.
         //
         const rsl::chrono::milliseconds actual_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_fps.get()))));
-        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_gui_params.max_fps))));
+        const rsl::chrono::milliseconds desired_time(static_cast<int64>(rsl::lrint(1000.0f / static_cast<f32>(m_app_creation_params.gui_params.max_fps))));
 
         const rsl::chrono::duration<float> elapsed_time = desired_time - actual_time;
         using namespace rsl::chrono_literals; // NOLINT(google-build-using-namespace)
@@ -273,10 +269,10 @@ namespace rex
         auto wnd = rsl::make_unique<Window>();
 
         WindowInfo window_info;
-        window_info.title    = m_gui_params.window_title;
-        window_info.viewport = {0, 0, m_gui_params.window_width, m_gui_params.window_height};
+        window_info.title    = m_app_creation_params.gui_params.window_title;
+        window_info.viewport = {0, 0, m_app_creation_params.gui_params.window_width, m_app_creation_params.gui_params.window_height};
 
-        if(wnd->create(m_platform_creation_params.instance, m_platform_creation_params.show_cmd, window_info))
+        if(wnd->create(m_app_creation_params.platform_params->instance, m_app_creation_params.platform_params->show_cmd, window_info))
         {
           return wnd;
         }
@@ -318,10 +314,10 @@ namespace rex
       {
         gfx::OutputWindowUserData user_data {};
         user_data.primary_display_handle = m_window->primary_display_handle();
-        user_data.refresh_rate           = m_gui_params.max_fps;
+        user_data.refresh_rate           = m_app_creation_params.gui_params.max_fps;
         user_data.window_width           = m_window->width();
         user_data.window_height          = m_window->height();
-        user_data.windowed               = !m_gui_params.fullscreen;
+        user_data.windowed               = !m_app_creation_params.gui_params.fullscreen;
         user_data.max_frames_in_flight   = settings::get_int("max_frames_in_flight", 3);
 
         gfx::init(user_data);
@@ -357,14 +353,12 @@ namespace rex
 
       rsl::unique_ptr<Window> m_window;
 
-      rsl::function<bool()> m_on_initialize;
+      rsl::function<bool(const ApplicationCreationParams&)> m_on_initialize;
       rsl::function<void()> m_on_update;
       rsl::function<void()> m_on_draw;
       rsl::function<void()> m_on_shutdown;
 
-      PlatformCreationParams m_platform_creation_params;
-      GuiParams m_gui_params;
-      EngineParams m_engine_params;
+      ApplicationCreationParams m_app_creation_params;
       CoreApplication* m_app_instance;
       win::com_lib::WinComLibHandle m_win_com_lib_handle;
     };

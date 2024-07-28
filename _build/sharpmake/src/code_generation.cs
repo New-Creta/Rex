@@ -151,12 +151,12 @@ public static class CodeGeneration
     string className = typeDefine.RootElement.GetProperty("ClassName").GetString();
     string filepath = typeDefine.RootElement.GetProperty("Filepath").GetString();
 
-    // Create the type that needs to get generated
-    TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));
-
     // Add remaining unknown types with the same key to the enum settings
     lock (MemberAccessLock)
     {
+      // Create the type that needs to get generated
+      TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));
+
       if (UnknownTypesToGenerate.ContainsKey(key))
       {
         CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
@@ -183,12 +183,12 @@ public static class CodeGeneration
       includes = JsonSerializer.Deserialize<List<string>>(includesElement.ToString());
     }
 
-    // Create the type that needs to get generated
-    TypesToGenerate.Add(key, new CodeGen.ArrayToGenerate(elementType, name, filepath, includes, projectName, content));
-
     // Add remaining unknown types with the same key to the enum settings
     lock (MemberAccessLock)
     {
+      // Create the type that needs to get generated
+      TypesToGenerate.Add(key, new CodeGen.ArrayToGenerate(elementType, name, filepath, includes, projectName, content));
+
       if (UnknownTypesToGenerate.ContainsKey(key))
       {
         CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
