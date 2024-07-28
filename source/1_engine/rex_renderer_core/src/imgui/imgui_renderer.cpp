@@ -92,9 +92,10 @@ namespace rex
       io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable gamepad controls
       io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
       io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewport / Platform windows
+      io.ConfigFlags |= ImGuiConfigFlags_IsSRGB; // We're rendering in sRGBs
 
       // Enable dark mode
-      ImGui::StyleColorsDark();
+      ImGui::StyleColorsDarkSRGB();
 
       // We support multiple viewport, having imgui widget in their own windows when dragged outside of the main window
       ImGuiStyle& style = ImGui::GetStyle();

@@ -38,33 +38,40 @@ namespace regina
       : m_scene_camera(rsl::DegAngle(45.0f), windowWidth, windowHeight, 0.1f, 1000.0f)
     {
       m_scene = rsl::make_unique<regina::CubeScene>();
-      m_scene_renderer = rsl::make_unique<rex::gfx::SceneRenderer>();
-      m_scene_renderer->set_scene(m_scene.get());
-      m_scene_renderer->set_camera(&m_scene_camera);
-
-      rex::gfx::add_renderer(rsl::move(m_scene_renderer));
+      
+      init_scene_renderer();
     }
 
     void update()
     {
-      // Based on the input, move the camera
       ImGui::ShowDemoWindow();
     }
 
   private:
+    void init_scene_renderer()
+    {
+      auto scene_renderer = rsl::make_unique<rex::gfx::SceneRenderer>();
+      scene_renderer->set_scene(m_scene.get());
+      scene_renderer->set_camera(&m_scene_camera);
+
+      // Pass of the render to the graphics framework so it can manage it
+      m_scene_renderer = rex::gfx::add_renderer(rsl::move(scene_renderer));
+    }
+
+  private:
     rsl::unique_ptr<rex::gfx::Scene> m_scene;
-    rsl::unique_ptr<rex::gfx::SceneRenderer> m_scene_renderer;
+    rex::gfx::SceneRenderer* m_scene_renderer;
     rex::gfx::Camera m_scene_camera;
   };
 
   rsl::unique_ptr<Regina> g_regina;
 
   //-------------------------------------------------------------------------
-  bool initialize(const rex::ApplicationCreationParams& appCreationParams)
+  bool create_editor(const rex::ApplicationCreationParams& appCreationParams)
   {
     REX_INFO(LogRegina, "Initializing Regina");
 
-    // Create the editor object which will initialize it.
+    // Create the editor object which will create_editor it.
     s32 window_width = appCreationParams.gui_params.window_width;
     s32 window_height = appCreationParams.gui_params.window_height;
     g_regina = rsl::make_unique<Regina>(window_width, window_height);
@@ -72,12 +79,12 @@ namespace regina
     return true;
   }
   //-------------------------------------------------------------------------
-  void update()
+  void update_editor()
   {
     g_regina->update();
   }
   //-------------------------------------------------------------------------
-  void shutdown()
+  void destroy_editor()
   {
     REX_INFO(LogRegina, "shutting down Regina");
 
@@ -94,9 +101,9 @@ namespace regina
     app_params.gui_params.window_height = 720;
     app_params.gui_params.window_title  = rex::project_name();
 
-    app_params.engine_params.app_init_func     = initialize;
-    app_params.engine_params.app_update_func   = update;
-    app_params.engine_params.app_shutdown_func = shutdown;
+    app_params.engine_params.app_init_func     = create_editor;
+    app_params.engine_params.app_update_func   = update_editor;
+    app_params.engine_params.app_shutdown_func = destroy_editor;
     app_params.create_window                   = true;
 
     return app_params;

@@ -10,16 +10,19 @@ namespace rex
 {
   namespace gfx
   {
-
-
-
-
-
     DEFINE_LOG_CATEGORY(LogGraphics);
 
     // We can access it in the high level graphics api, but the gpu engine is owned by the rhi
     GpuEngine* g_gpu_engine;
     rsl::vector<rsl::unique_ptr<Renderer>> g_renderers;
+
+    namespace internal
+    {
+      Renderer* add_renderer(rsl::unique_ptr<Renderer> renderer)
+      {
+        return g_renderers.emplace_back(rsl::move(renderer)).get();
+      }
+    }
 
     void log_info()
     {
@@ -59,11 +62,6 @@ namespace rex
       g_renderers.clear();
 
       rhi::shutdown();
-    }
-
-    void add_renderer(rsl::unique_ptr<Renderer> renderer)
-    {
-      g_renderers.emplace_back(rsl::move(renderer));
     }
 
     void render()

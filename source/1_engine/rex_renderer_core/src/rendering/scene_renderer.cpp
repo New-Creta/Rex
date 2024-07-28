@@ -13,10 +13,14 @@
 #include "rex_renderer_core/system/shader_library.h"
 #include "rex_renderer_core/scenegraph/scene.h"
 
+#include "rex_engine/diagnostics/log.h"
+
 namespace rex
 {
 	namespace gfx
 	{
+		DEFINE_LOG_CATEGORY(LogSceneRenderer);
+
 		SceneRenderer::SceneRenderer()
 		{
 			init_gpu_resources();
@@ -105,7 +109,7 @@ namespace rex
 			geo_pass_desc.pso_desc.blend_state; // Nothing to set
 
 			// Define the depth stencil settings
-			geo_pass_desc.pso_desc.depth_stencil_state; // Nothing to set 
+			geo_pass_desc.pso_desc.depth_stencil_state.depth_enable = true;
 
 			// Define the raster state
 			geo_pass_desc.pso_desc.raster_state; // Nothing to set
@@ -133,7 +137,7 @@ namespace rex
 			// update constant buffer
 			PerInstanceData per_instance_data{};
 			per_instance_data.world = transform.world_mat();
-			per_instance_data.worldviewproj = per_instance_data.world * m_per_view_data.view_perspective;
+			per_instance_data.worldviewproj = per_instance_data.world * m_per_view_data.view_proj;
 			s32 offset = 0; // this should grow over time
 
 			auto copy_ctx = new_copy_ctx();
@@ -148,33 +152,9 @@ namespace rex
 
 		void SceneRenderer::update_view_data(RenderContext* ctx, const Camera& camera)
 		{
-			m_per_view_data.view = camera.view_mat();
-			m_per_view_data.view = glm::transpose(m_per_view_data.view);
-			m_per_view_data.perspective = camera.projection_mat();
-			m_per_view_data.view = glm::transpose(m_per_view_data.view);
-
-			m_per_view_data.view_perspective = m_per_view_data.view * m_per_view_data.perspective;
-
-			glm::vec3 eye_pos_w;
-			eye_pos_w.x = 15.0f * sinf(0.2f * glm::pi<f32>()) * cosf(1.5f * glm::pi<f32>());
-			eye_pos_w.y = 15.0f * cosf(0.2f * glm::pi<f32>());
-			eye_pos_w.z = 35.0f * sinf(0.2f * glm::pi<f32>()) * sinf(1.5f * glm::pi<f32>());
-
-			const glm::vec3 pos = glm::vec3(eye_pos_w.x, eye_pos_w.y, eye_pos_w.z);
-			const glm::vec3 target = glm::vec3(0.0f, 0.0f, 0.0f);
-			const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-			glm::mat4 view = glm::lookAt(pos, target, up);
-			view = glm::transpose(view); // DirectX backend ( so we have to transpose, expects row major matrices )
-
-			glm::mat4 proj = glm::perspectiveFov(0.25f * glm::pi<f32>(), 1280.0f, 720.0f, 0.1f, 1000.0f);
-			proj = glm::transpose(proj); // DirectX backend ( so we have to transpose, expects row major matrices )
-
-			const glm::mat4 view_proj = view * proj;
-
-			m_per_view_data.view = view;
-			m_per_view_data.perspective = proj;
-			m_per_view_data.view_perspective = view_proj;
+			m_per_view_data.view = glm::transpose(camera.view_mat());
+			m_per_view_data.proj = glm::transpose(camera.projection_mat());
+			m_per_view_data.view_proj = m_per_view_data.view * m_per_view_data.proj;
 
 			s32 offset = 0;
 			auto copy_ctx = new_copy_ctx();

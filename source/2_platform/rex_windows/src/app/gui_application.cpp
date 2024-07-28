@@ -262,6 +262,9 @@ namespace rex
         // When the renderer is initialized we can show the window
         m_window->show();
 
+        // Add the imgui renderer, which is our main UI renderer for the moment
+        gfx::add_renderer(rsl::make_unique<gfx::ImGuiRenderer>(m_window->primary_display_handle()));
+
         return true;
       }
       rsl::unique_ptr<Window> create_window()
@@ -323,9 +326,6 @@ namespace rex
         gfx::init(user_data);
 
         REX_WARN_ONCE(LogWindows, "Create the viewport manager here");
-
-        // Add the imgui renderer, which is our main UI renderer for the moment
-        gfx::add_renderer(rsl::make_unique<gfx::ImGuiRenderer>(m_window->primary_display_handle()));
 
         return true;
       }

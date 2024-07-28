@@ -28,8 +28,11 @@ namespace rex
     }
     s64 UploadBuffer::inc_offset(s64 size, s32 alignment)
     {
-      s64 old_offset = m_offset;
+      // First we align the offset to the value where the data actually got written,
+      // only then we cache the old offset as otherwise we'd get graphics API warnings
+      // that the offset is not aligned
       m_offset = align(m_offset, alignment);
+      s64 old_offset = m_offset;
       m_offset += size;
       return old_offset;
     }

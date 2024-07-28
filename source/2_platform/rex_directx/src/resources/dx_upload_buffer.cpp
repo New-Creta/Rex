@@ -41,8 +41,14 @@ namespace rex
     // Write data on cpu side, it returns the offset into the upload buffer where data was written to
     s64 DxUploadBuffer::write_texture_data_from_cpu(const void* data, s32 width, s32 height, TextureFormat format)
     {
+      // It's possible we lose bytes here as texture, who need to be aligned and buffers who don't need to be aligned
+      // are written to the same buffer. If you write buffers first and only afterwards you write textures
+      // you lose data between the padding.
+      // Perhaps we can fix this by writing buffers at the end and textures at the front
+      REX_STATIC_WARNING("Look into more optimal upload buffer usage");
+
       // Write the data into our mapped memory
-      s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
+      s32 alignment = D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT;
       s32 pitch_size = d3d::texture_pitch_size(width, format);
       s64 total_size = static_cast<s64>(pitch_size) * height;
       REX_ASSERT_X(can_fit_alloc(total_size, alignment), "Upload buffer overflow. Would write more into the upload buffer than is supported");

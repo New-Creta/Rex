@@ -536,7 +536,7 @@ namespace rex
         pso_desc.SampleMask             = UINT_MAX;
         pso_desc.PrimitiveTopologyType  = d3d::to_dx12(desc.primitive_topology);
         pso_desc.NumRenderTargets       = 1;
-        pso_desc.RTVFormats[0]          = DXGI_FORMAT_R8G8B8A8_UNORM;
+        pso_desc.RTVFormats[0]          = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
         pso_desc.SampleDesc.Count       = 1;
         pso_desc.SampleDesc.Quality     = 0;
         pso_desc.DSVFormat              = DXGI_FORMAT_UNKNOWN; // DXGI_FORMAT_D24_UNORM_S8_UINT;

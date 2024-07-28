@@ -21,8 +21,8 @@ namespace rex
 		struct PerViewData
 		{
 			glm::mat4 view;
-			glm::mat4 perspective;
-			glm::mat4 view_perspective;
+			glm::mat4 proj;
+			glm::mat4 view_proj;
 		};
 
 		// This is just stub data, as we'll have multiple passes, we'll have data for those

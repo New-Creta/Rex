@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.IO;
 using Sharpmake;
 using System.Text;
+using System.Threading;
 
 // THE CODE GENERATION SYSTEM
 // Some code in the engine gets auto generated.
@@ -71,7 +72,7 @@ public static class CodeGeneration
 {
   static private Dictionary<string, CodeGen.TypeToGenerate> TypesToGenerate = new Dictionary<string, CodeGen.TypeToGenerate>();
   static private Dictionary<string, CodeGen.UnknownTypeConfig> UnknownTypesToGenerate = new Dictionary<string, CodeGen.UnknownTypeConfig>();
-  static private object MemberAccessLock = new object();
+  static private ReaderWriterLock MemberAccessLock = new ReaderWriterLock();
 
   // Reads the generation config file and processes it
   public static void ReadGenerationFile(string projectName, string filePath)
@@ -122,8 +123,7 @@ public static class CodeGeneration
     {
       // Sharpmake runs multithreaded, so we need to make sure we use a mutex here
       // Otherwise generation might fail because of a data race.
-
-      lock (MemberAccessLock)
+      MemberAccessLock.AcquireWriterLock(500);
       {
         // If we already have an enum for this, add the content to 
         if (TypesToGenerate.ContainsKey(key))
@@ -141,6 +141,7 @@ public static class CodeGeneration
         // Add the content to the unknown type in the dict
         UnknownTypesToGenerate[key].AddContent(projectName, content);
       }
+      MemberAccessLock.ReleaseWriterLock();
     }
   }
 
@@ -152,7 +153,7 @@ public static class CodeGeneration
     string filepath = typeDefine.RootElement.GetProperty("Filepath").GetString();
 
     // Add remaining unknown types with the same key to the enum settings
-    lock (MemberAccessLock)
+    MemberAccessLock.AcquireWriterLock(500);
     {
       // Create the type that needs to get generated
       TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));
@@ -167,6 +168,7 @@ public static class CodeGeneration
         }
       }
     }
+    MemberAccessLock.ReleaseWriterLock();
   }
 
   // Process an array type
@@ -184,7 +186,7 @@ public static class CodeGeneration
     }
 
     // Add remaining unknown types with the same key to the enum settings
-    lock (MemberAccessLock)
+    MemberAccessLock.AcquireWriterLock(500);
     {
       // Create the type that needs to get generated
       TypesToGenerate.Add(key, new CodeGen.ArrayToGenerate(elementType, name, filepath, includes, projectName, content));
@@ -199,6 +201,7 @@ public static class CodeGeneration
         }
       }
     }
+    MemberAccessLock.ReleaseWriterLock();
   }
 
   // go over the dict holding the types to generate and generate all of them
