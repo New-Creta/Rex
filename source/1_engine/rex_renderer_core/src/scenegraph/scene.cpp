@@ -10,13 +10,19 @@ namespace rex
 {
 	namespace gfx
 	{
-		void Scene::render(SceneRenderer& renderer, const Camera& camera)
+		void Scene::submit_geo_to_renderer(SceneRenderer* renderer)
 		{
-			renderer.begin_scene(camera);
+			REX_ASSERT_X(renderer != nullptr, "Renderer is nullptr. Cannot submit geometry");
 
-			render_static_meshes(renderer);
+			auto entities = m_registry.view<TransformComponent, StaticMeshComponent>();
 
-			renderer.end_scene();
+			for (auto entity : entities)
+			{
+				auto& smc = entities.get<StaticMeshComponent>(entity);
+				auto& transform = entities.get<TransformComponent>(entity);
+
+				renderer->submit_static_mesh(transform, smc.static_mesh());
+			}
 		}
 
 		Entity Scene::create_empty_entity(rsl::string_view name)
@@ -27,19 +33,5 @@ namespace rex
 
 			return entity;
 		}
-
-		void Scene::render_static_meshes(SceneRenderer& renderer)
-		{
-			auto entities = m_registry.view<TransformComponent, StaticMeshComponent>();
-
-			for (auto entity : entities)
-			{
-				auto& smc = entities.get<StaticMeshComponent>(entity);
-				auto& transform = entities.get<TransformComponent>(entity);
-
-				renderer.submit_static_mesh(transform, smc.static_mesh());
-			}
-		}
-
 	}
 }

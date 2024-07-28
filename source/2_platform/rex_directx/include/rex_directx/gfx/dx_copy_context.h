@@ -33,10 +33,13 @@ namespace rex
       void transition_buffer(Texture2D* resource, ResourceState state);
 
       // Update a constant buffer's data on the gpu
+      void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size) override;
       void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
       // Update a vertex buffer's data on the gpu
+      void update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size) override;
       void update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
       // Update a index buffer's data on the gpu
+      void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size) override;
       void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
       // Update a texture's data on the gpu
       void update_texture2d(Texture2D* texture, const void* data) override;

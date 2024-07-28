@@ -64,6 +64,11 @@ namespace rex
     }
 
     // Update a constant buffer's data on the gpu
+    void DxCopyContext::update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size)
+    {
+      s32 offset = 0;
+      update_buffer(buffer, data, size, offset);
+    }
     void DxCopyContext::update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxConstantBuffer* dx_constant_buffer = d3d::to_dx12(buffer);
@@ -71,6 +76,11 @@ namespace rex
       update_buffer(dx_constant_buffer->dx_object(), data, size, offset);
     }
     // Update a vertex buffer's data on the gpu
+    void DxCopyContext::update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size)
+    {
+      s32 offset = 0;
+      update_buffer(buffer, data, size, offset);
+    }
     void DxCopyContext::update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxVertexBuffer* dx_vertex_buffer = d3d::to_dx12(buffer);
@@ -78,6 +88,11 @@ namespace rex
       update_buffer(dx_vertex_buffer->dx_object(), data, size, offset);
     }
     // Update a index buffer's data on the gpu
+    void DxCopyContext::update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size)
+    {
+      s32 offset = 0;
+      update_buffer(buffer, data, size, offset);
+    }
     void DxCopyContext::update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxIndexBuffer* dx_index_buffer = d3d::to_dx12(buffer);

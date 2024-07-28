@@ -17,12 +17,9 @@ namespace rex
 		public:
 			virtual ~Scene() = default;
 
-			void render(SceneRenderer& renderer, const Camera& camera);
+			void submit_geo_to_renderer(SceneRenderer* renderer);
 
 			Entity create_empty_entity(rsl::string_view name = "Empty");
-
-		private:
-			void render_static_meshes(SceneRenderer& renderer);
 
 		private:
 			entt::registry m_registry;

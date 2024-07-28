@@ -22,6 +22,7 @@ namespace rex
 		DEFINE_LOG_CATEGORY(LogSceneRenderer);
 
 		SceneRenderer::SceneRenderer()
+			: m_scene_data()
 		{
 			init_gpu_resources();
 			init_render_passes();
@@ -32,27 +33,27 @@ namespace rex
 			// Nothing to implement
 		}
 
-		void SceneRenderer::set_scene(Scene* scene)
+		void SceneRenderer::update_scene_data(const SceneData& sceneData)
 		{
-			m_active_scene = scene;
-		}
-		void SceneRenderer::set_camera(Camera* camera)
-		{
-			m_active_camera = camera;
+			m_scene_data = sceneData;
 		}
 
 		void SceneRenderer::render()
 		{
-			m_active_scene->render(*this, *m_active_camera);
+			begin_scene();
+
+			m_scene_data.scene->submit_geo_to_renderer(this);
+
+			end_scene();
 		}
 
-		void SceneRenderer::begin_scene(const Camera& camera)
+		void SceneRenderer::begin_scene()
 		{
 			m_current_ctx = m_geometry_pass->begin();
 
 			// 1. Update the per view data.
 			// This data consistss of data that's specified to the view (eg. camera)
-			update_view_data(m_current_ctx.get(), camera);
+			update_view_data(m_current_ctx.get());
 
 			// 2. Update the data per render pass
 			// We currently only have a single render pass so this is not a concern for us right now
@@ -66,14 +67,19 @@ namespace rex
 			// 4. Update the per instance data
 			// Each object may have data that's specific to each instance of that object (eg. world matrix)
 			//update_instance_data(render_ctx.get());			
+
+			// Bind the previously set resources to the pipeline
+			bind_resources();
 		}
 
 		void SceneRenderer::end_scene()
 		{
 			s32 instance_constant_buffer_param_idx = 0;
-			m_current_ctx->set_constant_buffer(instance_constant_buffer_param_idx, m_per_instance_cb.get());
-			for (DrawList& drawlist : m_draw_lists)
+			for (s32 i = 0; i < m_draw_lists.size(); ++i)
 			{
+				const DrawList& drawlist = m_draw_lists[i];
+
+				m_current_ctx->set_constant_buffer(instance_constant_buffer_param_idx, drawlist.cb);
 				m_current_ctx->set_vertex_buffer(drawlist.vb);
 
 				// submit index buffer
@@ -91,7 +97,12 @@ namespace rex
 			m_per_view_cb = rhi::create_constant_buffer(sizeof(PerViewData));
 			m_per_pass_cb = rhi::create_constant_buffer(sizeof(PerPassData));
 			m_per_material_cb = rhi::create_constant_buffer(1_kib);
-			m_per_instance_cb = rhi::create_constant_buffer(sizeof(PerInstanceData) * 100);
+			s32 num_instances_supported = 100;
+			m_per_instance_cbs.reserve(num_instances_supported);
+			for (s32 i = 0; i < num_instances_supported; ++i)
+			{
+				m_per_instance_cbs.push_back(rhi::create_constant_buffer(sizeof(PerInstanceData)));
+			}
 		}
 
 		void SceneRenderer::init_render_passes()
@@ -135,39 +146,31 @@ namespace rex
 		void SceneRenderer::submit_static_mesh(const TransformComponent& transform, const StaticMesh& mesh)
 		{
 			// update constant buffer
+			s32 constant_buffer_idx = m_draw_lists.size();
+
 			PerInstanceData per_instance_data{};
 			per_instance_data.world = transform.world_mat();
 			per_instance_data.worldviewproj = per_instance_data.world * m_per_view_data.view_proj;
-			s32 offset = 0; // this should grow over time
 
 			auto copy_ctx = new_copy_ctx();
-			copy_ctx->update_buffer(m_per_instance_cb.get(), &per_instance_data, sizeof(per_instance_data), offset);
+			copy_ctx->update_buffer(m_per_instance_cbs[constant_buffer_idx].get(), &per_instance_data, sizeof(per_instance_data));
 			auto sync_info = copy_ctx->execute_on_gpu();
 
 			DrawList draw_list{};
 			draw_list.vb = mesh.vb();
 			draw_list.ib = mesh.ib();
+			draw_list.cb = m_per_instance_cbs[constant_buffer_idx].get();
 			m_draw_lists.push_back(draw_list);
 		}
 
-		void SceneRenderer::update_view_data(RenderContext* ctx, const Camera& camera)
+		void SceneRenderer::update_view_data(RenderContext* ctx)
 		{
-			m_per_view_data.view = glm::transpose(camera.view_mat());
-			m_per_view_data.proj = glm::transpose(camera.projection_mat());
+			m_per_view_data.view = glm::transpose(m_scene_data.camera->view_mat());
+			m_per_view_data.proj = glm::transpose(m_scene_data.camera->projection_mat());
 			m_per_view_data.view_proj = m_per_view_data.view * m_per_view_data.proj;
 
-			s32 offset = 0;
 			auto copy_ctx = new_copy_ctx();
-			copy_ctx->update_buffer(m_per_view_cb.get(), &m_per_view_data, sizeof(m_per_view_data), offset);
-
-			s32 per_view_cb_param_idx = 1;
-			ctx->set_constant_buffer(per_view_cb_param_idx, m_per_view_cb.get());
-
-			Viewport viewport = { 0.0f, 0.0f, 1280.0f, 720.0f, 0.0f, 1.0f };
-			ctx->set_viewport(viewport);
-
-			ScissorRect rect = { 0, 0, 1280, 720 };
-			ctx->set_scissor_rect(rect);
+			copy_ctx->update_buffer(m_per_view_cb.get(), &m_per_view_data, sizeof(m_per_view_data));
 		}
 
 		void SceneRenderer::update_pass_data(RenderContext* ctx)
@@ -183,6 +186,20 @@ namespace rex
 		void SceneRenderer::update_instance_data(RenderContext* ctx)
 		{
 
+		}
+
+		void SceneRenderer::bind_resources()
+		{
+			s32 per_view_cb_param_idx = 1;
+			m_current_ctx->set_constant_buffer(per_view_cb_param_idx, m_per_view_cb.get());
+
+			f32 viewport_width = static_cast<f32>(m_scene_data.viewport_width);
+			f32 viewport_height = static_cast<f32>(m_scene_data.viewport_height);
+			Viewport viewport = { 0.0f, 0.0f, viewport_width, viewport_height, 0.0f, 1.0f };
+			m_current_ctx->set_viewport(viewport);
+
+			ScissorRect rect = { 0, 0, 1280, 720 };
+			m_current_ctx->set_scissor_rect(rect);
 		}
 	}
 }

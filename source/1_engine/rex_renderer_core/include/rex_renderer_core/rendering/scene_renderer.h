@@ -2,6 +2,8 @@
 
 #include "rex_renderer_core/resources/constant_buffer.h"
 
+#include "rex_std/vector.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -35,6 +37,7 @@ namespace rex
 		{
 			VertexBuffer* vb;
 			IndexBuffer* ib;
+			ConstantBuffer* cb;
 		};
 
 		struct PerInstanceData
@@ -43,18 +46,25 @@ namespace rex
 			glm::mat4 worldviewproj;
 		};
 
+		struct SceneData
+		{
+			Scene* scene;
+			const Camera* camera;
+			s32 viewport_width;
+			s32 viewport_height;
+		};
+
 		class SceneRenderer : public Renderer
 		{
 		public:
 			SceneRenderer();
 
 			void new_frame() override;
-
-			void set_scene(Scene* scene);
-			void set_camera(Camera* camera);
 			void render() override;
 
-			void begin_scene(const Camera& camera);
+			void update_scene_data(const SceneData& sceneData);
+
+			void begin_scene();
 			void end_scene();
 
 			void submit_static_mesh(const TransformComponent& transform, const StaticMesh& mesh);
@@ -65,19 +75,20 @@ namespace rex
 
 			void init_geometry_render_pass();
 
-			void update_view_data(RenderContext* ctx, const Camera& camera);
+			void update_view_data(RenderContext* ctx);
 			void update_pass_data(RenderContext* ctx);
 			void update_material_data(RenderContext* ctx);
 			void update_instance_data(RenderContext* ctx);
 
+			void bind_resources();
+
 		private:
-			Scene* m_active_scene;
-			Camera* m_active_camera;
+			SceneData m_scene_data;
 
 			rsl::unique_ptr<ConstantBuffer> m_per_view_cb;
 			rsl::unique_ptr<ConstantBuffer> m_per_pass_cb;
 			rsl::unique_ptr<ConstantBuffer> m_per_material_cb;
-			rsl::unique_ptr<ConstantBuffer> m_per_instance_cb;
+			rsl::vector<rsl::unique_ptr<ConstantBuffer>> m_per_instance_cbs;
 
 			PerViewData m_per_view_data;
 

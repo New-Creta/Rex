@@ -26,6 +26,12 @@ namespace rex
 				return m_registry->emplace<Component>(m_entity_handle, rsl::forward<Args>(args)...);
 			}
 
+			template <typename Component>
+			Component& component()
+			{
+				return m_registry->get<Component>(m_entity_handle);
+			}
+
 		private:
 			entt::entity m_entity_handle;
 			entt::registry* m_registry;

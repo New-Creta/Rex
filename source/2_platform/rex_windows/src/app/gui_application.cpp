@@ -263,7 +263,7 @@ namespace rex
         m_window->show();
 
         // Add the imgui renderer, which is our main UI renderer for the moment
-        gfx::add_renderer(rsl::make_unique<gfx::ImGuiRenderer>(m_window->primary_display_handle()));
+        gfx::add_renderer<gfx::ImGuiRenderer>(m_window->primary_display_handle());
 
         return true;
       }

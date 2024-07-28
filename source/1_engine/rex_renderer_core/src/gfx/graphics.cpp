@@ -18,9 +18,9 @@ namespace rex
 
     namespace internal
     {
-      Renderer* add_renderer(rsl::unique_ptr<Renderer> renderer)
+      void add_renderer(rsl::unique_ptr<Renderer> renderer)
       {
-        return g_renderers.emplace_back(rsl::move(renderer)).get();
+        g_renderers.emplace_back(rsl::move(renderer));
       }
     }
 

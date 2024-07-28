@@ -35,7 +35,7 @@ namespace rex
 
     namespace internal
     {
-      Renderer* add_renderer(rsl::unique_ptr<Renderer> renderer);
+      void add_renderer(rsl::unique_ptr<Renderer> renderer);
     }
 
     // Log the basic info about the graphics hardware of the current machine
@@ -46,10 +46,15 @@ namespace rex
     // Shutdown the graphics engine, no rendering support from here on out
     void shutdown();
 
-    template <typename T>
-    T* add_renderer(rsl::unique_ptr<T> renderer)
+    template <typename T, typename ... Args>
+    T* add_renderer(Args&& ... args)
     {
-      return static_cast<T*>(internal::add_renderer(rsl::move(renderer)));
+      rsl::unique_ptr<T> renderer = rsl::make_unique<T>(rsl::forward<Args>(args)...);
+
+      T* result = renderer.get();
+      internal::add_renderer(rsl::move(renderer));
+
+      return result;
     }
 
     // Render a single frame by going over all the renderers

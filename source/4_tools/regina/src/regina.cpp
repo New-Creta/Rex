@@ -36,32 +36,37 @@ namespace regina
   public:
     Regina(s32 windowWidth, s32 windowHeight)
       : m_scene_camera(rsl::DegAngle(45.0f), windowWidth, windowHeight, 0.1f, 1000.0f)
+      , m_scene_viewport_width(windowWidth)
+      , m_scene_viewport_height(windowHeight)
     {
       m_scene = rsl::make_unique<regina::CubeScene>();
-      
-      init_scene_renderer();
+      m_scene_renderer = rex::gfx::add_renderer<rex::gfx::SceneRenderer>();
     }
 
     void update()
     {
+      update_scene_renderer();
+
       ImGui::ShowDemoWindow();
     }
 
   private:
-    void init_scene_renderer()
+    void update_scene_renderer()
     {
-      auto scene_renderer = rsl::make_unique<rex::gfx::SceneRenderer>();
-      scene_renderer->set_scene(m_scene.get());
-      scene_renderer->set_camera(&m_scene_camera);
-
-      // Pass of the render to the graphics framework so it can manage it
-      m_scene_renderer = rex::gfx::add_renderer(rsl::move(scene_renderer));
+      rex::gfx::SceneData scene_data{};
+      scene_data.scene = m_scene.get();
+      scene_data.camera = &m_scene_camera;
+      scene_data.viewport_width = m_scene_viewport_width;
+      scene_data.viewport_height = m_scene_viewport_height;
+      m_scene_renderer->update_scene_data(scene_data);
     }
 
   private:
     rsl::unique_ptr<rex::gfx::Scene> m_scene;
     rex::gfx::SceneRenderer* m_scene_renderer;
     rex::gfx::Camera m_scene_camera;
+    s32 m_scene_viewport_width;
+    s32 m_scene_viewport_height;
   };
 
   rsl::unique_ptr<Regina> g_regina;

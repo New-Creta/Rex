@@ -31,7 +31,7 @@
   },
   "entt": {
     "name": "rex_entt",
-    "url": "https://github.com/skypjack/entt",
+    "url": "https://github.com/RisingLiberty/rex_entt",
     "tag": "v3.13.2",
     "storage": "~/source/0_thirdparty"
   }
