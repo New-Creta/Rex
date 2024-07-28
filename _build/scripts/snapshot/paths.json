@@ -1,0 +1,37 @@
+{
+    "engine_paths": [
+        "~/_build",
+        "~/config/rex",
+        "~/data/rex",
+        "~/data/rexengineautotest",
+        "~/data/rexenginefuzzytest",
+        "~/data/rexengineunittest",
+        "~/data/rexunittest",
+        "~/source/1_engine",
+        "~/source/2_platform",
+        "~/source/.clang-format",
+        "~/source/.clang-tidy_first_pass",
+        "~/source/.clang-tidy_second_pass",
+        "~/source/iwyu.imp",
+        "~/source/post_build.py",
+        "~/tests/1_engine",
+        "~/tests/.clang-format",
+        "~/tests/.clang-tidy_first_pass",
+        "~/tests/.clang-tidy_second_pass",
+        "~/tests/iwyu.imp",
+        "~/tests/post_build.py",
+        "~/_rex.py",
+        "~/.gitignore",
+        "~/generate_project_files.bat",
+        "~/LICENSE",
+        "~/README.md",
+        "~/rex.version",
+        "~/validate.bat"
+    ],
+    "editor_paths": [
+        "~/config/regina",
+        "~/data/regina",
+        "~/source/4_tools/regina",
+        "~/tests/4_tools/regina_auto_test"
+    ]
+}
