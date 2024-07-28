@@ -130,16 +130,18 @@ public static class CodeGeneration
         {
           TypesToGenerate[key].AddContent(projectName, content);
         }
-
-        // The type for this key is not known yet, we need to add it to the dict of unknown types
-        // If the key doesn't exist yet in that dict, we need to add it first
-        else if (!UnknownTypesToGenerate.ContainsKey(key))
+        else
         {
-          UnknownTypesToGenerate.Add(key, new CodeGen.UnknownTypeConfig());
-        }
+          // The type for this key is not known yet, we need to add it to the dict of unknown types
+          // If the key doesn't exist yet in that dict, we need to add it first
+          if (!UnknownTypesToGenerate.ContainsKey(key))
+          {
+            UnknownTypesToGenerate.Add(key, new CodeGen.UnknownTypeConfig());
+          }
 
-        // Add the content to the unknown type in the dict
-        UnknownTypesToGenerate[key].AddContent(projectName, content);
+          // Add the content to the unknown type in the dict
+          UnknownTypesToGenerate[key].AddContent(projectName, content);
+        }
       }
       MemberAccessLock.ReleaseWriterLock();
     }
