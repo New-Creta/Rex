@@ -6,6 +6,9 @@ namespace rex
 {
 	namespace gfx
 	{
+    const s32 g_material_register_space = 0;
+    const s32 g_renderpass_register_space = 1;
+
     DxShaderPipelineParameters::DxShaderPipelineParameters(const ShaderPipelineReflection& shaderPipelineReflection)
     {
       // For every shader in the pipeline add its parameters to the shader pipeline
@@ -19,7 +22,7 @@ namespace rex
       return m_root_parameters;
     }
 
-    void DxShaderPipelineParameters::add_to_view_range(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, s32 startRegister, s32 lastRegister, D3D12_DESCRIPTOR_RANGE_TYPE type)
+    void DxShaderPipelineParameters::add_to_view_range(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, s32 startRegister, s32 lastRegister, s32 registerSpace, D3D12_DESCRIPTOR_RANGE_TYPE type)
     {
       s32 num_views_in_range = lastRegister - startRegister;
 
@@ -30,28 +33,39 @@ namespace rex
         ranges.back().NumDescriptors = num_views_in_range;
         ranges.back().OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
         ranges.back().RangeType = type;
-        ranges.back().RegisterSpace = 0;
+        ranges.back().RegisterSpace = registerSpace;
       }
     }
 
     void DxShaderPipelineParameters::add_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources, D3D12_DESCRIPTOR_RANGE_TYPE type)
     {
       s32 start_register = 0;
-      s32 current_register = start_register;
+      s32 expected_register = start_register;
       s32 resource_register = -1;
-
+      s32 register_space = 0;
+      s32 expected_register_space = 0;
       for (const auto& resource : resources)
       {
         resource_register = resource.shader_register;
-        if (resource_register != current_register)
+        register_space = resource.register_space;
+        if (resource_register != expected_register || register_space != expected_register_space)
         {
           // Submit new range
-          add_to_view_range(ranges, start_register, current_register, type);
+          add_to_view_range(ranges, start_register, expected_register, expected_register, type);
           start_register = resource_register;
+          register_space = expected_register_space;
         }
-        ++current_register;
+
+        switch (register_space)
+        {
+        case g_material_register_space: m_material_parameters.emplace_back(resource.name, -1, resource.shader_register, resource.resource_type); break;
+        case g_renderpass_register_space: m_renderpass_parameters.emplace_back(resource.name, -1, resource.shader_register, resource.resource_type); break;
+        default: REX_ASSERT("Invalid shader registe space: {}", register_space);
+        }
+
+        ++expected_register;
       }
-      add_to_view_range(ranges, start_register, current_register, type);
+      add_to_view_range(ranges, start_register, expected_register, expected_register_space, type);
     }
 
     void DxShaderPipelineParameters::add_to_pipeline_parameters(const ShaderSignature& signature, ShaderVisibility shaderVis)
@@ -67,12 +81,17 @@ namespace rex
       // - textures
       // - samplers
 
-      UINT register_space = 0;
-
       // 2. Sort out all the views
       for (const auto& cb : signature.constant_buffers())
       {
-        m_root_parameters.emplace_back().InitAsConstantBufferView(cb.shader_register, register_space, visibility);
+        m_root_parameters.emplace_back().InitAsConstantBufferView(cb.shader_register, cb.regiser_space, visibility);
+        switch (cb.regiser_space)
+        {
+        case g_material_register_space:       m_material_parameters.emplace_back(cb.name, cb.size, cb.shader_register, ShaderParameterType::ConstantBuffer);    break;
+        case g_renderpass_register_space:     m_renderpass_parameters.emplace_back(cb.name, cb.size, cb.shader_register, ShaderParameterType::ConstantBuffer);  break;
+        default: REX_ASSERT("Unknown shader register space: {}", cb.regiser_space); break;
+        }
+
       }
 
       // 3. Sort out all the view tables

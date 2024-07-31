@@ -73,6 +73,7 @@ namespace rex
       case D3D_SIT_CBUFFER:
         bound_resource.name = resource_desc.Name;
         bound_resource.shader_register = resource_desc.BindPoint;
+        bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
         bound_resource.resource_type = BoundResourceType::ConstantBuffer;
         break;
@@ -80,6 +81,7 @@ namespace rex
       {
         bound_resource.name = resource_desc.Name;
         bound_resource.shader_register = resource_desc.BindPoint;
+        bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
         bound_resource.resource_type = BoundResourceType::Texture;
         break;
@@ -88,6 +90,7 @@ namespace rex
       {
         bound_resource.name = resource_desc.Name;
         bound_resource.shader_register = resource_desc.BindPoint;
+        bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
         bound_resource.resource_type = BoundResourceType::Sampler;
         break;
@@ -121,7 +124,12 @@ namespace rex
       return version_str;
     }
 
-    card32 get_constant_buffer_register(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cb_refl)
+    struct ShaderRegisterInfo
+    {
+      s32 index;
+      s32 space;
+    };
+    ShaderRegisterInfo get_constant_buffer_register_info(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cb_refl)
     {
       D3D12_SHADER_BUFFER_DESC cb_desc;
       DX_CALL(cb_refl->GetDesc(&cb_desc));
@@ -129,16 +137,24 @@ namespace rex
       D3D12_SHADER_INPUT_BIND_DESC input_desc;
       DX_CALL(refl->GetResourceBindingDescByName(cb_desc.Name, &input_desc));
 
-      return input_desc.BindPoint;
+      ShaderRegisterInfo reg_info{};
+      reg_info.index = input_desc.BindPoint;
+      reg_info.space = input_desc.Space;
+
+      return reg_info;
     }
+
     CBufferReflDesc reflect_constant_buffer(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cbReflection)
     {
       D3D12_SHADER_BUFFER_DESC shader_buffer_desc{};
       cbReflection->GetDesc(&shader_buffer_desc);
 
+      ShaderRegisterInfo reg_info = get_constant_buffer_register_info(refl, cbReflection);
+
       CBufferReflDesc cb_ref{};
       cb_ref.name = shader_buffer_desc.Name;
-      cb_ref.shader_register = get_constant_buffer_register(refl, cbReflection);
+      cb_ref.shader_register = reg_info.index;
+      cb_ref.regiser_space = reg_info.space;
       cb_ref.size = shader_buffer_desc.Size;
       s32 num_vars = shader_buffer_desc.Variables;
       for (s32 var_idx = 0; var_idx < num_vars; ++var_idx)

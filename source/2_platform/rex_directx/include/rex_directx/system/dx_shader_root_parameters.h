@@ -26,12 +26,15 @@ namespace rex
 
 		private:
 			void add_to_pipeline_parameters(const ShaderSignature& signature, ShaderVisibility shaderVis);
-			void add_to_view_range(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, s32 startRegister, s32 lastRegister, D3D12_DESCRIPTOR_RANGE_TYPE type);
+			void add_to_view_range(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, s32 startRegister, s32 lastRegister, s32 registerSpace, D3D12_DESCRIPTOR_RANGE_TYPE type);
 			void add_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources, D3D12_DESCRIPTOR_RANGE_TYPE type);
 
 		private:
 			// Cached root signature parameters
 			rsl::vector<CD3DX12_ROOT_PARAMETER> m_root_parameters;
+
+			rsl::vector<ShaderParameter> m_material_parameters;
+			rsl::vector<ShaderParameter> m_renderpass_parameters;
 
 			// The view ranges need to stick around as they don't get copied into the root signature directly
 			// Instead a pointer to them is given, so if we'd allocate them locally, they'd be destroyed by the time they're used
