@@ -22,6 +22,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "regina/sample_scene2.h"
 #include "regina/sample_scene.h"
 #include "regina/cube_scene.h"
 
@@ -39,7 +40,7 @@ namespace regina
       , m_scene_viewport_width(windowWidth)
       , m_scene_viewport_height(windowHeight)
     {
-      m_scene = rsl::make_unique<regina::CubeScene>();
+      m_scene = rsl::make_unique<regina::SampleScene2>();
       m_scene_renderer = rex::gfx::add_renderer<rex::gfx::SceneRenderer>();
     }
 
@@ -48,6 +49,8 @@ namespace regina
       update_scene_renderer();
 
       ImGui::ShowDemoWindow();
+
+      ImGui::DragFloat3("Light Direction", &m_light_direction.r, 0.01f);
     }
 
   private:
@@ -58,6 +61,7 @@ namespace regina
       scene_data.camera = &m_scene_camera;
       scene_data.viewport_width = m_scene_viewport_width;
       scene_data.viewport_height = m_scene_viewport_height;
+      scene_data.light_direction = m_light_direction;
       m_scene_renderer->update_scene_data(scene_data);
     }
 
@@ -67,6 +71,7 @@ namespace regina
     rex::gfx::Camera m_scene_camera;
     s32 m_scene_viewport_width;
     s32 m_scene_viewport_height;
+    glm::vec3 m_light_direction;
   };
 
   rsl::unique_ptr<Regina> g_regina;

@@ -27,10 +27,9 @@ namespace rex
 			glm::mat4 view_proj;
 		};
 
-		// This is just stub data, as we'll have multiple passes, we'll have data for those
-		struct PerPassData
+		struct PerSceneData
 		{
-
+			glm::vec3 light_direction;
 		};
 
 		struct DrawList
@@ -48,10 +47,11 @@ namespace rex
 
 		struct SceneData
 		{
-			Scene* scene;
-			const Camera* camera;
-			s32 viewport_width;
-			s32 viewport_height;
+			Scene* scene;								// The active scene we're rendering
+			const Camera* camera;				// The camera we're using to render the scene
+			s32 viewport_width;					// The width of the viewport
+			s32 viewport_height;				// The height of the viewport
+			glm::vec3 light_direction;	// The light direction of the scene
 		};
 
 		class SceneRenderer : public Renderer
@@ -75,28 +75,32 @@ namespace rex
 
 			void init_geometry_render_pass();
 
-			void update_view_data(RenderContext* ctx);
-			void update_pass_data(RenderContext* ctx);
-			void update_material_data(RenderContext* ctx);
-			void update_instance_data(RenderContext* ctx);
+			void upload_scene_data();
 
 			void bind_resources();
 
+			void geometry_pass();
+
 		private:
+			// Data coming in from the runtime about the scene, this is not processed yet
 			SceneData m_scene_data;
-
-			rsl::unique_ptr<ConstantBuffer> m_per_view_cb;
-			rsl::unique_ptr<ConstantBuffer> m_per_pass_cb;
-			rsl::unique_ptr<ConstantBuffer> m_per_material_cb;
-			rsl::vector<rsl::unique_ptr<ConstantBuffer>> m_per_instance_cbs;
-
+			// Structure that directly maps onto the shader structure holding the scene data
+			PerSceneData m_per_scene_data;
 			PerViewData m_per_view_data;
 
+			// The GPU resources we use to hold data for the different constant buffers
+			rsl::unique_ptr<ConstantBuffer> m_cb_scene_data;
+			rsl::unique_ptr<ConstantBuffer> m_cb_view_data;
+			rsl::vector<rsl::unique_ptr<ConstantBuffer>> m_per_instance_cbs;
+
+			// Render passes of the scene renderer
 			rsl::unique_ptr<RenderPass> m_geometry_pass;
 
+			// Data holding the buffers required for drawing a single piece of geometry
 			rsl::vector<DrawList> m_draw_lists;
+
+			// Current context used for recording gpu commands
 			rex::ScopedPoolObject<RenderContext> m_current_ctx;
-			rex::ScopedPoolObject<SyncInfo> m_last_copy_sync_info;
 		};
 	}
 }

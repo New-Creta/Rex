@@ -1,10 +1,10 @@
-cbuffer cbPerObject : register(b0)
+cbuffer PerInstance : register(b0)
 {
   float4x4 gWorld;
   float4x4 gWorldViewProj;
 };
 
-cbuffer cbView : register(b1)
+cbuffer ViewData : register(b1)
 {
   float4x4 gView;
   float4x4 gProj;

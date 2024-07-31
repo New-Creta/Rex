@@ -16,20 +16,14 @@ namespace rex
     //  - POSITION
     //-----------------------------------------------------------------------
     VertexPos::VertexPos()
-        : m_position(0.0f)
+        : position (0.0f)
     {
     }
 
     //-----------------------------------------------------------------------
     VertexPos::VertexPos(const glm::vec3& position)
-        : m_position(position)
+        : position (position)
     {
-    }
-
-    //-----------------------------------------------------------------------
-    const glm::vec3& VertexPos::position() const
-    {
-      return m_position;
     }
 
     //-----------------------------------------------------------------------
@@ -50,7 +44,7 @@ namespace rex
     bool operator==(const VertexPos& v1, const VertexPos& v2)
     {
       // clang-format off
-            return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z;
+            return v1.position == v2.position;
       // clang-format on
     }
     //-----------------------------------------------------------------------
@@ -67,28 +61,18 @@ namespace rex
     //  - COLOR
     //-----------------------------------------------------------------------
     VertexPosCol::VertexPosCol()
-        : m_position(0.0f)
-        , m_color(0.0f, 0.0f, 0.0f, 1.0f)
+        : position (0.0f)
+        , color(0.0f, 0.0f, 0.0f, 1.0f)
     {
     }
 
     //-----------------------------------------------------------------------
     VertexPosCol::VertexPosCol(const glm::vec3& position, const glm::vec4& color)
-        : m_position(position)
-        , m_color(color)
+        : position (position)
+        , color(color)
     {
     }
 
-    //-----------------------------------------------------------------------
-    const glm::vec3& VertexPosCol::position() const
-    {
-      return m_position;
-    }
-    //-----------------------------------------------------------------------
-    const glm::vec4& VertexPosCol::color() const
-    {
-      return m_color;
-    }
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosCol::layout()
     {
@@ -111,7 +95,7 @@ namespace rex
     bool operator==(const VertexPosCol& v1, const VertexPosCol& v2)
     {
       // clang-format off
-            return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.color().x == v2.color().x && v1.color().y == v2.color().y && v1.color().z == v2.color().z && v1.color().a == v2.color().a;
+            return v1.position == v2.position && v1.color == v2.color;
       // clang-format on
     }
     //-----------------------------------------------------------------------
@@ -129,35 +113,20 @@ namespace rex
     //  - COLOR
     //-----------------------------------------------------------------------
     VertexPosNormCol::VertexPosNormCol()
-        : m_position(0.0f)
-        , m_normal(0.0f)
-        , m_color(0.0f, 0.0f, 0.0f, 1.0f)
+        : position (0.0f)
+        , normal(0.0f)
+        , color(0.0f, 0.0f, 0.0f, 1.0f)
     {
     }
 
     //-----------------------------------------------------------------------
     VertexPosNormCol::VertexPosNormCol(const glm::vec3& position, const glm::vec3& normal, const glm::vec4& color)
-        : m_position(position)
-        , m_normal(normal)
-        , m_color(color)
+        : position (position)
+        , normal(normal)
+        , color(color)
     {
     }
 
-    //-----------------------------------------------------------------------
-    const glm::vec3& VertexPosNormCol::position() const
-    {
-      return m_position;
-    }
-    //-----------------------------------------------------------------------
-    const glm::vec3& VertexPosNormCol::normal() const
-    {
-      return m_normal;
-    }
-    //-----------------------------------------------------------------------
-    const glm::vec4& VertexPosNormCol::color() const
-    {
-      return m_color;
-    }
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosNormCol::layout()
     {
@@ -184,7 +153,7 @@ namespace rex
     bool operator==(const VertexPosNormCol& v1, const VertexPosNormCol& v2)
     {
       // clang-format off
-      return v1.position() == v2.position() && v1.normal() == v2.normal() && v1.color() == v2.color();
+      return v1.position == v2.position && v1.normal == v2.normal && v1.color == v2.color;
       // clang-format on
     }
     //-----------------------------------------------------------------------
@@ -201,28 +170,18 @@ namespace rex
     //  - UV
     //-----------------------------------------------------------------------
     VertexPosTex::VertexPosTex()
-        : m_position(0.0f)
-        , m_uv(0.0f)
+        : position (0.0f)
+        , uv(0.0f)
     {
     }
 
     //-----------------------------------------------------------------------
     VertexPosTex::VertexPosTex(const glm::vec3& position, const glm::vec2& uv)
-        : m_position(position)
-        , m_uv(uv)
+        : position (position)
+        , uv(uv)
     {
     }
 
-    //-----------------------------------------------------------------------
-    const glm::vec3& VertexPosTex::position() const
-    {
-      return m_position;
-    }
-    //-----------------------------------------------------------------------
-    const glm::vec2& VertexPosTex::uv() const
-    {
-      return m_uv;
-    }
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosTex::layout()
     {
@@ -245,7 +204,7 @@ namespace rex
     bool operator==(const VertexPosTex& v1, const VertexPosTex& v2)
     {
       // clang-format off
-            return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.uv().x == v2.uv().x && v1.uv().y == v2.uv().y;
+            return v1.position == v2.position && v1.uv == v2.uv;
       // clang-format on
     }
     //-----------------------------------------------------------------------
@@ -263,35 +222,20 @@ namespace rex
     //  - UV
     //-----------------------------------------------------------------------
     VertexPosColTex::VertexPosColTex()
-        : m_position(0.0f)
-        , m_color(0.0f, 0.0f, 0.0f, 1.0f)
-        , m_uv(0.0f)
+        : position (0.0f)
+        , color(0.0f, 0.0f, 0.0f, 1.0f)
+        , uv(0.0f)
     {
     }
 
     //-----------------------------------------------------------------------
     VertexPosColTex::VertexPosColTex(const glm::vec3& position, const glm::vec4& color, const glm::vec2& uv)
-        : m_position(position)
-        , m_color(color)
-        , m_uv(uv)
+        : position (position)
+        , color(color)
+        , uv(uv)
     {
     }
 
-    //-----------------------------------------------------------------------
-    const glm::vec3& VertexPosColTex::position() const
-    {
-      return m_position;
-    }
-    //-----------------------------------------------------------------------
-    const glm::vec4& VertexPosColTex::color() const
-    {
-      return m_color;
-    }
-    //-------------------------------------------------------------------------
-    const glm::vec2& VertexPosColTex::uv() const
-    {
-      return m_uv;
-    }
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosColTex::layout()
     {
@@ -318,7 +262,7 @@ namespace rex
     bool operator==(const VertexPosColTex& v1, const VertexPosColTex& v2)
     {
       // clang-format off
-            return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.color().x == v2.color().x && v1.color().y == v2.color().y && v1.color().z == v2.color().z && v1.color().a == v2.color().a && v1.uv().x == v2.uv().x && v1.uv().y == v2.uv().y;
+            return v1.position == v2.position && v1.color == v2.color && v1.uv == v2.uv;
       // clang-format on
     }
     //-----------------------------------------------------------------------
@@ -336,35 +280,20 @@ namespace rex
     //  - UV
     //-----------------------------------------------------------------------
     VertexPosNormTex::VertexPosNormTex()
-        : m_position(0.0f)
-        , m_normal(0.0f)
-        , m_uv(0.0f)
+        : position (0.0f)
+        , normal(0.0f)
+        , uv(0.0f)
     {
     }
 
     //-----------------------------------------------------------------------
     VertexPosNormTex::VertexPosNormTex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& uv)
-        : m_position(position)
-        , m_normal(normal)
-        , m_uv(uv)
+        : position (position)
+        , normal(normal)
+        , uv(uv)
     {
     }
 
-    //-----------------------------------------------------------------------
-    const glm::vec3& VertexPosNormTex::position() const
-    {
-      return m_position;
-    }
-    //-----------------------------------------------------------------------
-    const glm::vec3& VertexPosNormTex::normal() const
-    {
-      return m_normal;
-    }
-    //-------------------------------------------------------------------------
-    const glm::vec2& VertexPosNormTex::uv() const
-    {
-      return m_uv;
-    }
     //-----------------------------------------------------------------------
     InputLayoutDesc VertexPosNormTex::layout()
     {
@@ -391,7 +320,7 @@ namespace rex
     bool operator==(const VertexPosNormTex& v1, const VertexPosNormTex& v2)
     {
       // clang-format off
-            return v1.position().x == v2.position().x && v1.position().y == v2.position().y && v1.position().z == v2.position().z && v1.normal().x == v2.normal().x && v1.normal().y == v2.normal().y && v1.normal().z == v2.normal().z && v1.uv().x == v2.uv().x && v1.uv().y == v2.uv().y;
+            return v1.position == v2.position && v1.normal == v2.normal && v1.uv == v2.uv;
       // clang-format on
     }
     //-----------------------------------------------------------------------

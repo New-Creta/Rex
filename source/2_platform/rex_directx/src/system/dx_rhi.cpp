@@ -282,6 +282,7 @@ namespace rex
       rsl::unique_ptr<VertexBuffer>         create_vertex_buffer(s32 numVertices, s32 vertexSize)
       {
         s32 total_size = numVertices * vertexSize;
+        REX_ASSERT_X(total_size > 0, "Trying to allocate a gpu resource of size 0, this is not allowed");
         wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_buffer(total_size);
 
         d3d::set_debug_name_for(d3d_buffer.Get(), "Vertex Buffer");
@@ -354,19 +355,14 @@ namespace rex
         // - textures
         // - samplers
 
-        DxShaderRootParameters vs_root_params(shaderPipelineReflection.vs, ShaderVisibility::Vertex);
-        DxShaderRootParameters ps_root_params(shaderPipelineReflection.ps, ShaderVisibility::Pixel);
-
-        rsl::vector<CD3DX12_ROOT_PARAMETER> root_parameters(rsl::Capacity(vs_root_params.count() + ps_root_params.count()));
-        rsl::copy(vs_root_params.params().cbegin(), vs_root_params.params().cend(), rsl::back_inserter(root_parameters));
-        rsl::copy(ps_root_params.params().cbegin(), ps_root_params.params().cend(), rsl::back_inserter(root_parameters));
+        DxShaderPipelineParameters pipeline_parameters(shaderPipelineReflection);
 
         // A root signature is an array of root parameters.
         REX_WARN(LogDxRhi, "Use versioned root signature here");
         REX_WARN(LogDxRhi, "Investigate if we can use static samplers here as well..");
         CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
-          root_parameters.size(),
-          root_parameters.data(),
+          pipeline_parameters.params().size(),
+          pipeline_parameters.params().data(),
           0,          // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
           nullptr,    // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
           D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -396,7 +392,7 @@ namespace rex
           return nullptr;
         }
 
-        return rsl::make_unique<DxRootSignature>(root_signature, rsl::move(root_parameters));
+        return rsl::make_unique<DxRootSignature>(root_signature, pipeline_parameters.params());
       }
       rsl::unique_ptr<RootSignature>        create_root_signature(const RootSignatureDesc& desc)
       {

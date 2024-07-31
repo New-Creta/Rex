@@ -18,6 +18,7 @@
 
 namespace rex
 {
+  DEFINE_LOG_CATEGORY(LogCoreApp);
 
   namespace globals
   {
@@ -139,6 +140,9 @@ namespace rex
   void CoreApplication::update()
   {
     globals::g_frame_info.update();
+
+    REX_INFO(LogCoreApp, "FPS: {}", globals::g_frame_info.fps().get());
+
     platform_update();
   }
   //--------------------------------------------------------------------------------------------

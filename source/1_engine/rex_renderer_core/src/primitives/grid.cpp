@@ -1,12 +1,14 @@
 #include "rex_renderer_core/primitives/grid.h"
 
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
   {
     namespace mesh_factory
     {
-      MeshData16 create_grid(f32 width, f32 depth, s16 m, s16 n)
+      StaticMesh create_grid(f32 width, f32 depth, s16 m, s16 n)
       {
         MeshData16 mesh_data;
 
@@ -66,7 +68,10 @@ namespace rex
           }
         }
 
-        return mesh_data;
+        rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(mesh_data.vertices().data(), mesh_data.vertices().size(), mesh_data.vertex_size());
+        rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(mesh_data.indices().data(), mesh_data.indices().size(), IndexBufferFormat::Uint16);
+
+        return StaticMesh(rsl::move(vb), rsl::move(ib));
       }
     } // namespace mesh_factory
   }

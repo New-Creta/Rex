@@ -49,54 +49,70 @@ namespace rex
 
 		void SceneRenderer::begin_scene()
 		{
-			m_current_ctx = m_geometry_pass->begin();
+			// I would also consider combining the per global data to per scene data or even combine both of those to per view data. 
+			// You don't really need that kind of granularity for performance reasons at least. 
+			// The main reason of splitting is to reduce expensive descriptor updates, but descriptor updates per view costs nothing.
+
+			// Update the various constant buffers defined by the scene renderer
+
+			// Global data
+			// time,
+			// ..
+			// m_sp_global->set("DeltaTime", ...);
+
+			// Update per scene data
+			// lights,
+			// ..
+			// m_sp_per_scene->set("LightDirection", ...);
+
+			// Update per view data
+			// view,
+			// proj,
+			// viewproj,
+			// ..
+			// m_sp_per_view->set("View", ...);
+			// m_sp_per_view->set("Proj", ...);
+			// m_sp_per_view->set("ViewProj", ...);
+
+			// Other forms of data
+			// ..
+
+			//m_current_ctx = m_geometry_pass->begin();
 
 			// 1. Update the per view data.
-			// This data consistss of data that's specified to the view (eg. camera)
-			update_view_data(m_current_ctx.get());
+			// This data consists of data that's specified to the view (eg. camera)
+			//upload_view_data(m_current_ctx.get());
+
+			upload_scene_data();
 
 			// 2. Update the data per render pass
 			// We currently only have a single render pass so this is not a concern for us right now
-			update_pass_data(m_current_ctx.get());
+			//update_pass_data(m_current_ctx.get());
 
 			// 3. Update the data per material
 			// Each object in the scene will have their own material
 			// We need to make sure all our object's texture views are uploaded to the gpu (eg. textures)
-			update_material_data(m_current_ctx.get());
+			//update_material_data(m_current_ctx.get());
 
 			// 4. Update the per instance data
 			// Each object may have data that's specific to each instance of that object (eg. world matrix)
 			//update_instance_data(render_ctx.get());			
 
 			// Bind the previously set resources to the pipeline
-			bind_resources();
+			//bind_resources();
 		}
 
+		// flush the drawlist to the gpu
 		void SceneRenderer::end_scene()
 		{
-			s32 instance_constant_buffer_param_idx = 0;
-			for (s32 i = 0; i < m_draw_lists.size(); ++i)
-			{
-				const DrawList& drawlist = m_draw_lists[i];
-
-				m_current_ctx->set_constant_buffer(instance_constant_buffer_param_idx, drawlist.cb);
-				m_current_ctx->set_vertex_buffer(drawlist.vb);
-
-				// submit index buffer
-				m_current_ctx->set_index_buffer(drawlist.ib);
-
-				m_current_ctx->draw_indexed(drawlist.ib->count(), 0, 0, 0);
-			}
-
-			m_current_ctx.return_to_pool();
-			m_draw_lists.clear();
+			geometry_pass();
 		}
 
 		void SceneRenderer::init_gpu_resources()
 		{
-			m_per_view_cb = rhi::create_constant_buffer(sizeof(PerViewData));
-			m_per_pass_cb = rhi::create_constant_buffer(sizeof(PerPassData));
-			m_per_material_cb = rhi::create_constant_buffer(1_kib);
+			m_cb_view_data = rhi::create_constant_buffer(sizeof(PerViewData));
+			m_cb_scene_data = rhi::create_constant_buffer(sizeof(PerSceneData));
+
 			s32 num_instances_supported = 100;
 			m_per_instance_cbs.reserve(num_instances_supported);
 			for (s32 i = 0; i < num_instances_supported; ++i)
@@ -123,7 +139,7 @@ namespace rex
 			geo_pass_desc.pso_desc.depth_stencil_state.depth_enable = true;
 
 			// Define the raster state
-			geo_pass_desc.pso_desc.raster_state; // Nothing to set
+			geo_pass_desc.pso_desc.raster_state.fill_mode; // Nothing to set
 
 			// Define the input layout
 			geo_pass_desc.pso_desc.input_layout = 
@@ -141,8 +157,12 @@ namespace rex
 			geo_pass_desc.pso_desc.primitive_topology = PrimitiveTopologyType::Triangle;
 
 			m_geometry_pass = rsl::make_unique<RenderPass>(geo_pass_desc);
+			m_geometry_pass->set("ViewData", m_cb_view_data.get());
+			m_geometry_pass->set("SceneData", m_cb_scene_data.get());
 		}
 
+		// This gets called from the client and doesn't directly render anything
+		// Instead it cached what needs to be rendered, the actually rendering happens elsewhere
 		void SceneRenderer::submit_static_mesh(const TransformComponent& transform, const StaticMesh& mesh)
 		{
 			// update constant buffer
@@ -154,7 +174,6 @@ namespace rex
 
 			auto copy_ctx = new_copy_ctx();
 			copy_ctx->update_buffer(m_per_instance_cbs[constant_buffer_idx].get(), &per_instance_data, sizeof(per_instance_data));
-			auto sync_info = copy_ctx->execute_on_gpu();
 
 			DrawList draw_list{};
 			draw_list.vb = mesh.vb();
@@ -163,43 +182,78 @@ namespace rex
 			m_draw_lists.push_back(draw_list);
 		}
 
-		void SceneRenderer::update_view_data(RenderContext* ctx)
+		void SceneRenderer::upload_scene_data()
 		{
 			m_per_view_data.view = glm::transpose(m_scene_data.camera->view_mat());
 			m_per_view_data.proj = glm::transpose(m_scene_data.camera->projection_mat());
 			m_per_view_data.view_proj = m_per_view_data.view * m_per_view_data.proj;
+			m_per_scene_data.light_direction = m_scene_data.light_direction;
 
 			auto copy_ctx = new_copy_ctx();
-			copy_ctx->update_buffer(m_per_view_cb.get(), &m_per_view_data, sizeof(m_per_view_data));
+			copy_ctx->update_buffer(m_cb_view_data.get(), &m_per_view_data, sizeof(m_per_view_data));
+			copy_ctx->update_buffer(m_cb_scene_data.get(), &m_per_scene_data, sizeof(m_per_scene_data));
 		}
 
-		void SceneRenderer::update_pass_data(RenderContext* ctx)
+		void SceneRenderer::geometry_pass()
 		{
-			// Nothing to implement yet
-		}
+			// geometry_pass()
 
-		void SceneRenderer::update_material_data(RenderContext* ctx)
-		{
+			// within the geometry pass the following should happen for each object
+			// s32 per_object_slot = m_geometry_pass->slot("PerInstance");
 
-		}
+			// ctx->set_constant_buffer(per_object_slot, drawlist.cb)
+			// ctx->set_vertex_buffer(drawlist.vb);
+			// ctx->set_index_buffer(drawlist.ib);
 
-		void SceneRenderer::update_instance_data(RenderContext* ctx)
-		{
+			// bind the index buffer
+			// draw
 
-		}
-
-		void SceneRenderer::bind_resources()
-		{
-			s32 per_view_cb_param_idx = 1;
-			m_current_ctx->set_constant_buffer(per_view_cb_param_idx, m_per_view_cb.get());
-
+			m_current_ctx = m_geometry_pass->bind_resources();
 			f32 viewport_width = static_cast<f32>(m_scene_data.viewport_width);
 			f32 viewport_height = static_cast<f32>(m_scene_data.viewport_height);
 			Viewport viewport = { 0.0f, 0.0f, viewport_width, viewport_height, 0.0f, 1.0f };
 			m_current_ctx->set_viewport(viewport);
 
-			ScissorRect rect = { 0, 0, 1280, 720 };
+			ScissorRect rect = { 0, 0, viewport_width, viewport_height };
 			m_current_ctx->set_scissor_rect(rect);
+			s32 per_instance_slot = m_geometry_pass->slot("PerInstance");
+
+			for (s32 i = 0; i < m_draw_lists.size(); ++i)
+			{
+				const DrawList& drawlist = m_draw_lists[i];
+
+				m_current_ctx->set_constant_buffer(per_instance_slot, drawlist.cb);
+				m_current_ctx->set_vertex_buffer(drawlist.vb);
+
+				// submit index buffer
+				m_current_ctx->set_index_buffer(drawlist.ib);
+
+				m_current_ctx->draw_indexed(drawlist.ib->count(), 0, 0, 0);
+			}
+
+			m_current_ctx.return_to_pool();
+			m_draw_lists.clear();
+			
+		}
+
+		void SceneRenderer::bind_resources()
+		{
+			// This should be done in the geometry pass
+			// It should look something like this
+			// for (auto& shader_param : m_shader_params)
+			// {
+			//   shader_param->bind_to(ctx);
+			//	 // Within the above call, the following will happen
+			//   ctx->set_constant_buffer(m_slot, m_gpu_resource);
+			// }
+
+			//m_current_ctx->set_constant_buffer(m_per_scene_data->slot(), m_per_scene_data);
+			//m_current_ctx->set_constant_buffer(m_per_view_data->slot(), m_per_view_data);
+
+			//s32 per_view_cb_for_vs_param_idx = 1;
+			//s32 per_view_cb_for_ps_param_idx = 2;
+			//m_current_ctx->set_constant_buffer(per_view_cb_for_vs_param_idx, m_per_view_cb.get());
+			//m_current_ctx->set_constant_buffer(per_view_cb_for_ps_param_idx, m_per_view_cb.get());
 		}
 	}
 }

@@ -19,7 +19,7 @@ namespace rex
 
 			void submit_geo_to_renderer(SceneRenderer* renderer);
 
-			Entity create_empty_entity(rsl::string_view name = "Empty");
+			Entity add_entity(rsl::string_view name = "Empty");
 
 		private:
 			entt::registry m_registry;

@@ -106,7 +106,7 @@ namespace rex
         m_delta_time.update();
         m_fps.update();
 
-        cap_frame_rate();
+        //cap_frame_rate();
       }
       void draw()
       {
@@ -355,7 +355,6 @@ namespace rex
 
       rsl::function<bool(const ApplicationCreationParams&)> m_on_initialize;
       rsl::function<void()> m_on_update;
-      rsl::function<void()> m_on_draw;
       rsl::function<void()> m_on_shutdown;
 
       ApplicationCreationParams m_app_creation_params;

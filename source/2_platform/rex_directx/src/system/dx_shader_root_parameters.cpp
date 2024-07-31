@@ -6,8 +6,56 @@ namespace rex
 {
 	namespace gfx
 	{
-		DxShaderRootParameters::DxShaderRootParameters(const ShaderSignature& signature, ShaderVisibility shaderVis)
-		{
+    DxShaderPipelineParameters::DxShaderPipelineParameters(const ShaderPipelineReflection& shaderPipelineReflection)
+    {
+      // For every shader in the pipeline add its parameters to the shader pipeline
+      // If a duplicate is found, update an existing's visibility to be visible to all shaders
+      add_to_pipeline_parameters(shaderPipelineReflection.vs, ShaderVisibility::Vertex);
+      add_to_pipeline_parameters(shaderPipelineReflection.ps, ShaderVisibility::Pixel);
+    }
+
+    const rsl::vector<CD3DX12_ROOT_PARAMETER>& DxShaderPipelineParameters::params() const
+    {
+      return m_root_parameters;
+    }
+
+    void DxShaderPipelineParameters::add_to_view_range(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, s32 startRegister, s32 lastRegister, D3D12_DESCRIPTOR_RANGE_TYPE type)
+    {
+      s32 num_views_in_range = lastRegister - startRegister;
+
+      if (num_views_in_range > 0)
+      {
+        ranges.emplace_back();
+        ranges.back().BaseShaderRegister = startRegister;
+        ranges.back().NumDescriptors = num_views_in_range;
+        ranges.back().OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+        ranges.back().RangeType = type;
+        ranges.back().RegisterSpace = 0;
+      }
+    }
+
+    void DxShaderPipelineParameters::add_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources, D3D12_DESCRIPTOR_RANGE_TYPE type)
+    {
+      s32 start_register = 0;
+      s32 current_register = start_register;
+      s32 resource_register = -1;
+
+      for (const auto& resource : resources)
+      {
+        resource_register = resource.shader_register;
+        if (resource_register != current_register)
+        {
+          // Submit new range
+          add_to_view_range(ranges, start_register, current_register, type);
+          start_register = resource_register;
+        }
+        ++current_register;
+      }
+      add_to_view_range(ranges, start_register, current_register, type);
+    }
+
+    void DxShaderPipelineParameters::add_to_pipeline_parameters(const ShaderSignature& signature, ShaderVisibility shaderVis)
+    {
       D3D12_SHADER_VISIBILITY visibility = d3d::to_dx12(shaderVis);
 
       // 1. Constants (not able to retrieve this from reflection yet)
@@ -28,8 +76,8 @@ namespace rex
       }
 
       // 3. Sort out all the view tables
-      init_ranges(m_texture_ranges, signature.textures(), D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
-      init_ranges(m_sampler_ranges, signature.samplers(), D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
+      add_ranges(m_texture_ranges, signature.textures(), D3D12_DESCRIPTOR_RANGE_TYPE_SRV);
+      add_ranges(m_sampler_ranges, signature.samplers(), D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER);
 
       // Submit the ranges to the descriptor table
       if (m_texture_ranges.size() > 0)
@@ -40,50 +88,6 @@ namespace rex
       {
         m_root_parameters.emplace_back().InitAsDescriptorTable(m_sampler_ranges.size(), m_sampler_ranges.data(), visibility);
       }
-		}
-
-    const rsl::vector<CD3DX12_ROOT_PARAMETER>& DxShaderRootParameters::params() const
-    {
-      return m_root_parameters;
-    }
-    s32 DxShaderRootParameters::count() const
-    {
-      return m_root_parameters.size();
-    }
-
-    void DxShaderRootParameters::add_to_view_range(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, s32 startRegister, s32 lastRegister, D3D12_DESCRIPTOR_RANGE_TYPE type)
-    {
-      s32 num_views_in_range = lastRegister - startRegister;
-
-      if (num_views_in_range > 0)
-      {
-        ranges.emplace_back();
-        ranges.back().BaseShaderRegister = startRegister;
-        ranges.back().NumDescriptors = num_views_in_range;
-        ranges.back().OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
-        ranges.back().RangeType = type;
-        ranges.back().RegisterSpace = 0;
-      }
-    }
-
-    void DxShaderRootParameters::init_ranges(rsl::vector<D3D12_DESCRIPTOR_RANGE>& ranges, const rsl::vector<BoundResourceReflection>& resources, D3D12_DESCRIPTOR_RANGE_TYPE type)
-    {
-      s32 start_register = 0;
-      s32 current_register = start_register;
-      s32 resource_register = -1;
-
-      for (const auto& resource : resources)
-      {
-        resource_register = resource.shader_register;
-        if (resource_register != current_register)
-        {
-          // Submit new range
-          add_to_view_range(ranges, start_register, current_register, type);
-          start_register = resource_register;
-        }
-        ++current_register;
-      }
-      add_to_view_range(ranges, start_register, current_register, type);
     }
 
 	}

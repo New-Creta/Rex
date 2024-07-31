@@ -25,7 +25,7 @@ namespace rex
     {
       InputLayoutDesc input_layout;
       ShaderPipeline shader_pipeline;
-      PrimitiveTopologyType primitive_topology = PrimitiveTopologyType::Triangle;
+      PrimitiveTopologyType primitive_topology = PrimitiveTopologyType::Triangle; // This is used for geometry, hull or domain shaders
       RasterStateDesc raster_state;
       BlendDesc blend_state;
       DepthStencilDesc depth_stencil_state;

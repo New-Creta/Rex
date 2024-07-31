@@ -1,3 +1,8 @@
+cbuffer SceneData : register(b0) 
+{
+    float3 gLightDirection;
+};
+
 struct VertexOut
 {
   float4 PosH : SV_POSITION;
@@ -7,11 +12,8 @@ struct VertexOut
 
 float4 main(VertexOut pin) : SV_Target
 {
-  float3 light_direction = float3(-0.577f, -0.577f, 0.577f);
-
-  float diffuseStrength = dot(pin.normal, -light_direction);
+  float diffuseStrength = dot(pin.normal, -gLightDirection);
   diffuseStrength = saturate(diffuseStrength + 0.3f);
-
   float3 color_rgb = pin.Color.rgb * diffuseStrength;
 
   return float4(color_rgb, 1.0f);

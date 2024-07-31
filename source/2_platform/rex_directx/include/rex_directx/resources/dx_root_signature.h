@@ -19,7 +19,7 @@ namespace rex
     class DxRootSignature : public RootSignature
     {
     public:
-      DxRootSignature(const wrl::ComPtr<ID3D12RootSignature>& rootSignature, rsl::vector<CD3DX12_ROOT_PARAMETER>&& rootParameters);
+      DxRootSignature(const wrl::ComPtr<ID3D12RootSignature>& rootSignature, const rsl::vector<CD3DX12_ROOT_PARAMETER>& rootParameters);
 
       // Return the parameter index in the root signature for the textures of the shader
       s32 param_idx_for_textures(ShaderType type) override;

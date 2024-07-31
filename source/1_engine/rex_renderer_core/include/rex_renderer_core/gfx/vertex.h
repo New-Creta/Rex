@@ -31,12 +31,10 @@ namespace rex
       VertexPos();
       explicit VertexPos(const glm::vec3& position);
 
-      const glm::vec3& position() const;
-
       static InputLayoutDesc layout();
 
-    private:
-      glm::vec3 m_position;
+    public:
+      glm::vec3 position;
     };
 
     bool operator==(const VertexPos& v1, const VertexPos& v2);
@@ -55,14 +53,11 @@ namespace rex
       VertexPosCol();
       VertexPosCol(const glm::vec3& position, const glm::vec4& color);
 
-      const glm::vec3& position() const;
-      const glm::vec4& color() const;
-
       static InputLayoutDesc layout();
 
-    private:
-      glm::vec3 m_position;
-      glm::vec4 m_color;
+    public:
+      glm::vec3 position;
+      glm::vec4 color;
     };
 
     bool operator==(const VertexPosCol& v1, const VertexPosCol& v2);
@@ -82,16 +77,12 @@ namespace rex
       VertexPosNormCol();
       VertexPosNormCol(const glm::vec3& position, const glm::vec3& norm, const glm::vec4& color);
 
-      const glm::vec3& position() const;
-      const glm::vec3& normal() const;
-      const glm::vec4& color() const;
-
       static InputLayoutDesc layout();
 
-    private:
-      glm::vec3 m_position;
-      glm::vec3 m_normal;
-      glm::vec4 m_color;
+    public:
+      glm::vec3 position;
+      glm::vec3 normal;
+      glm::vec4 color;
     };
 
     bool operator==(const VertexPosNormCol& v1, const VertexPosNormCol& v2);
@@ -110,14 +101,11 @@ namespace rex
       VertexPosTex();
       VertexPosTex(const glm::vec3& position, const glm::vec2& uv);
 
-      const glm::vec3& position() const;
-      const glm::vec2& uv() const;
-
       static InputLayoutDesc layout();
 
-    private:
-      glm::vec3 m_position;
-      glm::vec2 m_uv;
+    public:
+      glm::vec3 position;
+      glm::vec2 uv;
     };
 
     bool operator==(const VertexPosTex& v1, const VertexPosTex& v2);
@@ -137,16 +125,12 @@ namespace rex
       VertexPosColTex();
       VertexPosColTex(const glm::vec3& position, const glm::vec4& color, const glm::vec2& uv);
 
-      const glm::vec3& position() const;
-      const glm::vec4& color() const;
-      const glm::vec2& uv() const;
-
       static InputLayoutDesc layout();
 
-    private:
-      glm::vec3 m_position;
-      glm::vec4 m_color;
-      glm::vec2 m_uv;
+    public:
+      glm::vec3 position;
+      glm::vec4 color;
+      glm::vec2 uv;
     };
 
     bool operator==(const VertexPosColTex& v1, const VertexPosColTex& v2);
@@ -166,16 +150,12 @@ namespace rex
       VertexPosNormTex();
       VertexPosNormTex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& uv);
 
-      const glm::vec3& position() const;
-      const glm::vec3& normal() const;
-      const glm::vec2& uv() const;
-
       static InputLayoutDesc layout();
 
-    private:
-      glm::vec3 m_position;
-      glm::vec3 m_normal;
-      glm::vec2 m_uv;
+    public:
+      glm::vec3 position;
+      glm::vec3 normal;
+      glm::vec2 uv;
     };
 
     bool operator==(const VertexPosNormTex& v1, const VertexPosNormTex& v2);

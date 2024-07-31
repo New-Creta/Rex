@@ -66,9 +66,14 @@ namespace rex
         void resize_indices(s32 num);
 
         // Return the vertex buffer
+        rsl::vector<VertexPosNormCol>& vertices();
         const rsl::vector<VertexPosNormCol>& vertices() const;
         // Return the index buffer
+        rsl::vector<index_type>& indices();
         const rsl::vector<index_type>& indices() const;
+
+        // Return the size of a single vertex
+        s32 vertex_size() const;
 
       private:
         rsl::vector<VertexPosNormCol> m_vertices;
@@ -180,6 +185,12 @@ namespace rex
 
       //-----------------------------------------------------------------------
       template <typename T>
+      rsl::vector<VertexPosNormCol>& MeshData<T>::vertices()
+      {
+        return m_vertices;
+      }
+      //-----------------------------------------------------------------------
+      template <typename T>
       const rsl::vector<VertexPosNormCol>& MeshData<T>::vertices() const
       {
         return m_vertices;
@@ -187,9 +198,23 @@ namespace rex
 
       //-----------------------------------------------------------------------
       template <typename T>
+      rsl::vector<typename MeshData<T>::index_type>& MeshData<T>::indices()
+      {
+        return m_indices;
+      }
+      //-----------------------------------------------------------------------
+      template <typename T>
       const rsl::vector<typename MeshData<T>::index_type>& MeshData<T>::indices() const
       {
         return m_indices;
+      }
+
+      //-----------------------------------------------------------------------
+      template <typename T>
+      s32 MeshData<T>::vertex_size() const
+      {
+        using vertex_type = typename decltype(m_vertices)::value_type;
+        return sizeof(vertex_type);
       }
 
       //-----------------------------------------------------------------------
@@ -212,11 +237,11 @@ namespace rex
         //       v1
         //       *
         //      / \
-          	//     /   \
-          	//  m0*-----*m1
+        //     /   \
+        //  m0*-----*m1
         //   / \   / \
-          	//  /   \ /   \
-          	// *-----*-----*
+        //  /   \ /   \
+        // *-----*-----*
         // v0    m2     v2
 
         // Loop through each triangle in the input mesh.

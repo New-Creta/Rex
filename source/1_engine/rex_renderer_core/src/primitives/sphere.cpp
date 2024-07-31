@@ -2,13 +2,15 @@
 
 #include "rex_std/numbers.h"
 
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
   {
     namespace mesh_factory
   {
-    MeshData16 create_sphere(f32 radius, u16 sliceCount, u16 stackCount)
+    StaticMesh create_sphere(f32 radius, u16 sliceCount, u16 stackCount)
     {
       MeshData16 mesh_data;
 
@@ -115,11 +117,13 @@ namespace rex
         mesh_data.add_index(base_index + i + 1);
       }
 
-      return mesh_data;
+      rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(mesh_data.vertices().data(), mesh_data.vertices().size(), mesh_data.vertex_size());
+      rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(mesh_data.indices().data(), mesh_data.indices().size(), IndexBufferFormat::Uint16);
+
+      return StaticMesh(rsl::move(vb), rsl::move(ib));
     }
 
-    template <typename U16>
-    MeshData<U16> create_geo_sphere(f32 radius, u32 numSubdivisions)
+    StaticMesh create_geo_sphere(f32 radius, u32 numSubdivisions)
     {
       MeshData<u16> mesh_data;
 
@@ -162,7 +166,7 @@ namespace rex
       for(u32 i = 0; i < mesh_data.vertices().size(); ++i)
       {
         // Project onto unit sphere.
-        glm::vec3 n = glm::normalize(&mesh_data.vertices()[i].position);
+        glm::vec3 n = glm::normalize(mesh_data.vertices()[i].position);
 
         // Project onto sphere.
         glm::vec3 p = radius * n;
@@ -181,19 +185,23 @@ namespace rex
 
         f32 phi = acosf(mesh_data.vertices()[i].position.y / radius);
 
-        mesh_data.vertices()[i].uv.x = theta / glm::two_pi<f32>();
-        mesh_data.vertices()[i].uv.y = phi / glm::pi<f32>();
+        // Enable again when we support uv and tangent
+        //mesh_data.vertices()[i].uv.x = theta / glm::two_pi<f32>();
+        //mesh_data.vertices()[i].uv.y = phi / glm::pi<f32>();
 
-        // Partial derivative of P with respect to theta
-        mesh_data.vertices()[i].tangent.x = -radius * sinf(phi) * sinf(theta);
-        mesh_data.vertices()[i].tangent.y = 0.0f;
-        mesh_data.vertices()[i].tangent.z = +radius * sinf(phi) * cosf(theta);
+        //// Partial derivative of P with respect to theta
+        //mesh_data.vertices()[i].tangent.x = -radius * sinf(phi) * sinf(theta);
+        //mesh_data.vertices()[i].tangent.y = 0.0f;
+        //mesh_data.vertices()[i].tangent.z = +radius * sinf(phi) * cosf(theta);
 
-        glm::vec3 u16                   = mesh_data.vertices()[i].tangent;
-        mesh_data.vertices()[i].tangent = glm::normalize(u16);
+        //glm::vec3 u16                   = mesh_data.vertices()[i].tangent;
+        //mesh_data.vertices()[i].tangent = glm::normalize(u16);
       }
 
-      return mesh_data;
+      rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(mesh_data.vertices().data(), mesh_data.vertices().size(), mesh_data.vertex_size());
+      rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(mesh_data.indices().data(), mesh_data.indices().size(), IndexBufferFormat::Uint16);
+
+      return StaticMesh(rsl::move(vb), rsl::move(ib));
     }
   } // namespace mesh_factory
   }

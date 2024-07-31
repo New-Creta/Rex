@@ -25,7 +25,7 @@ namespace rex
 			}
 		}
 
-		Entity Scene::create_empty_entity(rsl::string_view name)
+		Entity Scene::add_entity(rsl::string_view name)
 		{
 			entt::entity entt_handle = m_registry.create();
 			Entity entity(m_registry, entt_handle, name);
