@@ -341,21 +341,17 @@ namespace rex
       rsl::unique_ptr<RootSignature>        create_root_signature(const ShaderPipeline& pipeline)
       {
         ShaderPipelineReflection reflection = reflect_shader_pipeline(pipeline);
-        return create_root_signature(reflection);
-      }
 
-      rsl::unique_ptr<RootSignature>        create_root_signature(const ShaderPipelineReflection& shaderPipelineReflection)
-      {
         // 1. Constants (not able to retrieve this from reflection yet)
-        // 2. View 
-        // - constant buffer, 
-        // - SRV/UAV pointing to structured buffers or byte address buffers, 
-        // - raytracing acceleration structures
-        // 3. View Table
-        // - textures
-        // - samplers
+                // 2. View 
+                // - constant buffer, 
+                // - SRV/UAV pointing to structured buffers or byte address buffers, 
+                // - raytracing acceleration structures
+                // 3. View Table
+                // - textures
+                // - samplers
 
-        DxShaderPipelineParameters pipeline_parameters(shaderPipelineReflection);
+        DxShaderPipelineParameters pipeline_parameters(reflection);
 
         // A root signature is an array of root parameters.
         REX_WARN(LogDxRhi, "Use versioned root signature here");
@@ -393,107 +389,6 @@ namespace rex
         }
 
         return rsl::make_unique<DxRootSignature>(root_signature, pipeline_parameters.params());
-      }
-      rsl::unique_ptr<RootSignature>        create_root_signature(const RootSignatureDesc& desc)
-      {
-        // Root parameter can be a table, root descriptor or root constants.
-        auto root_parameters = rsl::vector<CD3DX12_ROOT_PARAMETER>(rsl::Capacity(desc.views.count()));
-
-        // First initialize all the constants
-        for (s32 i = 0; i < desc.constants.count(); ++i)
-        {
-          const auto& param = desc.constants[i];
-
-          D3D12_SHADER_VISIBILITY visibility = d3d::to_dx12(param.visibility);
-          root_parameters.emplace_back().InitAsConstants(param.num_32bits, param.reg, param.reg_space, visibility);
-        }
-
-        // Then initialize all the descriptors (aka views)
-        for (s32 i = 0; i < desc.views.count(); ++i)
-        {
-          const auto& param = desc.views[i];
-
-          D3D12_SHADER_VISIBILITY visibility = d3d::to_dx12(param.visibility);
-          switch (param.type)
-          {
-          case ShaderViewType::ConstantBufferView: root_parameters.emplace_back().InitAsConstantBufferView(param.reg, param.reg_space, visibility); break;
-          case ShaderViewType::ShaderResourceView: root_parameters.emplace_back().InitAsShaderResourceView(param.reg, param.reg_space, visibility); break;
-          case ShaderViewType::UnorderedAccessView: root_parameters.emplace_back().InitAsUnorderedAccessView(param.reg, param.reg_space, visibility); break;
-          }
-        }
-
-        // Then initialize all the descriptor tables, which is a list of descriptor ranges
-        rsl::vector<D3D12_DESCRIPTOR_RANGE> ranges;
-        for (s32 i = 0; i < desc.desc_tables.count(); ++i)
-        {
-          const auto& table = desc.desc_tables[i];
-          D3D12_SHADER_VISIBILITY visibility = d3d::to_dx12(table.visibility);
-          for (s32 range_idx = 0; range_idx < table.ranges.count(); ++range_idx)
-          {
-            ranges.push_back(d3d::to_dx12(table.ranges[range_idx]));
-          }
-
-          root_parameters.emplace_back().InitAsDescriptorTable(ranges.size(), ranges.data(), visibility);
-        }
-
-        // Then initialize all the samplers
-        auto root_samplers = rsl::vector<D3D12_STATIC_SAMPLER_DESC>(rsl::Capacity(desc.samplers.count()));
-        for (s32 i = 0; i < desc.samplers.count(); ++i)
-        {
-          const auto& sampler = desc.samplers[i];
-
-          D3D12_STATIC_SAMPLER_DESC sampler_desc{};
-          sampler_desc.Filter = d3d::to_dx12(sampler.filtering);
-          sampler_desc.AddressU = d3d::to_dx12(sampler.address_mode_u);
-          sampler_desc.AddressV = d3d::to_dx12(sampler.address_mode_v);
-          sampler_desc.AddressW = d3d::to_dx12(sampler.address_mode_w);
-          sampler_desc.MipLODBias = sampler.mip_lod_bias;
-          sampler_desc.MaxAnisotropy = sampler.max_anisotropy;
-          sampler_desc.ComparisonFunc = d3d::to_dx12(sampler.comparison_func);
-          sampler_desc.BorderColor = d3d::to_dx12(sampler.border_color);
-          sampler_desc.MinLOD = sampler.min_lod;
-          sampler_desc.MaxLOD = sampler.max_lod;
-          sampler_desc.ShaderRegister = sampler.shader_register;
-          sampler_desc.RegisterSpace = sampler.register_space;
-          sampler_desc.ShaderVisibility = d3d::to_dx12(sampler.shader_visibility);
-          root_samplers.emplace_back(sampler_desc);
-        }
-
-        // A root signature is an array of root parameters.
-        REX_WARN(LogDxRhi, "Use versioned root signature here");
-        CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
-          root_parameters.size(),
-          root_parameters.data(),
-          root_samplers.size(),
-          root_samplers.data(),
-          D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-        // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
-        wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
-        wrl::ComPtr<ID3DBlob> error_blob = nullptr;
-
-        HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
-        if (error_blob != nullptr)
-        {
-          REX_ERROR(LogDxRhi, "{}", (char*)error_blob->GetBufferPointer());
-          return nullptr;
-        }
-
-        if (DX_FAILED(hr))
-        {
-          REX_ERROR(LogDxRhi, "Failed to serialize root signature");
-          return nullptr;
-        }
-
-        wrl::ComPtr<ID3D12RootSignature> root_signature;
-        if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
-        {
-          HR_CALL(g_rhi_resources->device->dx_object()->GetDeviceRemovedReason());
-          REX_ERROR(LogDxRhi, "Failed to create root signature");
-          return nullptr;
-        }
-
-        return rsl::make_unique<DxRootSignature>(root_signature, rsl::move(root_parameters));
       }
       rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, TextureFormat format)
       {

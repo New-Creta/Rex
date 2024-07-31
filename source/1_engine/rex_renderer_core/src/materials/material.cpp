@@ -26,7 +26,7 @@ namespace rex
 
       m_input_layout_desc = create_input_layout_desc_from_reflection(shader_pipeline_reflection.vs.input_params());
 
-      m_root_signature = rhi::create_root_signature(shader_pipeline_reflection);
+      m_root_signature = rhi::create_root_signature(m_shader_pipeline);
       m_raster_state = matConstructSettings.raster_state;
       m_blend = matConstructSettings.blend;
       m_depth_stencil = matConstructSettings.depth_stencil;
