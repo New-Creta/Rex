@@ -4,8 +4,9 @@ namespace rex
 {
   namespace gfx
   {
-    ConstantBuffer::ConstantBuffer(rsl::memory_size size)
+    ConstantBuffer::ConstantBuffer(ResourceView* view, rsl::memory_size size)
       : Buffer(size)
+      , m_view(view)
     {}
   }
 }

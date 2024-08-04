@@ -1,3 +1,5 @@
+#include "defines.hlsl"
+
 cbuffer SceneData : register(b0, RENDER_PASS_REGISTER_SPACE) 
 {
     float3 gLightDirection;

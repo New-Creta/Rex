@@ -83,6 +83,7 @@ namespace rex
       virtual void set_pipeline_state(PipelineState* pso) = 0;
       // Set the graphics root descriptor table of the context
       virtual void set_graphics_root_descriptor_table(s32 paramIdx, u64 id) = 0;
+      virtual void set_graphics_root_descriptor_table(s32 paramIdx, ResourceView* startView) = 0;
       // Set the constant buffer of the context at a given index
       virtual void set_constant_buffer(s32 paramIdx, ConstantBuffer* cb) = 0;
 

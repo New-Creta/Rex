@@ -30,11 +30,14 @@ namespace rex
 			render_ctx->set_root_signature(m_pso->root_signature());
 			render_ctx->set_primitive_topology(PrimitiveTopology::TriangleList); // should become part of the material
 
+			auto copy_ctx = new_copy_ctx();
 			for (auto& [name, param] : m_shader_parameters)
 			{
 				if (param.resource())
 				{
-					render_ctx->set_constant_buffer(param.slot(), static_cast<ConstantBuffer*>(param.resource()));
+					rsl::vector<ResourceView*> views = { static_cast<ConstantBuffer*>(param.resource())->resource_view() };
+					auto start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
+					render_ctx->set_graphics_root_descriptor_table(param.slot(), start_handle.get());
 				}
 			}
 

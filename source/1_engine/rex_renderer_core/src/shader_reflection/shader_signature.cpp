@@ -29,6 +29,11 @@ namespace rex
 		{
 			return m_desc.output_params;
 		}
+		// The constant buffers of the shader in resource format
+		const rsl::vector<BoundResourceReflection>& ShaderSignature::constant_buffers_resources() const
+		{
+			return m_desc.bound_resources.constant_buffers;
+		}
 		// The textures of the shader
 		const rsl::vector<BoundResourceReflection>& ShaderSignature::textures() const
 		{

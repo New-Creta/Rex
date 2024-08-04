@@ -218,11 +218,16 @@ namespace rex
 			m_current_ctx->set_scissor_rect(rect);
 			s32 per_instance_slot = m_geometry_pass->slot("PerInstance");
 
+			auto copy_ctx = new_copy_ctx();
+
 			for (s32 i = 0; i < m_draw_lists.size(); ++i)
 			{
 				const DrawList& drawlist = m_draw_lists[i];
 
-				m_current_ctx->set_constant_buffer(per_instance_slot, drawlist.cb);
+				rsl::vector<ResourceView*> views = { drawlist.cb->resource_view() };
+				auto start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
+
+				m_current_ctx->set_graphics_root_descriptor_table(per_instance_slot, start_handle.get());
 				m_current_ctx->set_vertex_buffer(drawlist.vb);
 
 				// submit index buffer
@@ -230,6 +235,8 @@ namespace rex
 
 				m_current_ctx->draw_indexed(drawlist.ib->count(), 0, 0, 0);
 			}
+
+			copy_ctx->execute_on_gpu();
 
 			m_current_ctx.return_to_pool();
 			m_draw_lists.clear();

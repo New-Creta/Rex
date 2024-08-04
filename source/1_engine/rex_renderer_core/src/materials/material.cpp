@@ -6,6 +6,8 @@
 #include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/materials/material_system.h"
 
+#include "rex_renderer_core/shader_reflection/shader_pipeline_reflection.h"
+
 namespace rex
 {
   namespace gfx
@@ -17,13 +19,12 @@ namespace rex
       , m_primitive_topology(PrimitiveTopology::TriangleList)
       , m_root_signature()
       , m_blend_factor()
+      , m_param_name_to_view_idx()
     {
-      // We calculate the shader reflection so we know which parameters this material needs
-      ShaderPipelineReflection shader_pipeline_reflection = reflect_shader_pipeline(m_shader_pipeline);
+      // We calculate the shader reflection so we know which parameters this material needs      
+      init();
 
-      init_parameters_from_shader_signature(ShaderType::Vertex, shader_pipeline_reflection.vs);
-      init_parameters_from_shader_signature(ShaderType::Pixel, shader_pipeline_reflection.ps);
-
+      auto shader_pipeline_reflection = reflect_shader_pipeline(m_shader_pipeline);
       m_input_layout_desc = create_input_layout_desc_from_reflection(shader_pipeline_reflection.vs.input_params());
 
       m_root_signature = rhi::create_root_signature(m_shader_pipeline);
@@ -32,31 +33,68 @@ namespace rex
       m_depth_stencil = matConstructSettings.depth_stencil;
     }
 
-    void Material::init_parameters_from_shader_signature(ShaderType type, const ShaderSignature& signature)
+    void Material::init()
     {
-      for (const BoundResourceReflection& texture : signature.textures())
+      ShaderPipelineParameters parameters(m_shader_pipeline);
+      m_param_name_to_view_idx = parameters.material_params();
+
+      for (const auto& [name, param] : m_param_name_to_view_idx)
       {
-        REX_ASSERT_X(!m_textures.contains(texture.name), "{} is already found in the material parameters, you like have a parameter in your shader with the same name, this is not supported. Shader: {}", rsl::enum_refl::enum_name(type));
-        TextureMaterialParameter tex_param(texture.name, type, texture.shader_register);
-        m_textures.emplace(texture.name, rsl::move(tex_param));
+        switch (param.type)
+        {
+        case DescriptorRangeType::ConstantBufferView:   m_constant_buffers.emplace_back(param.shader_type); break;
+        case DescriptorRangeType::ShaderResourceView:   m_textures.emplace_back(param.shader_type); break;
+        case DescriptorRangeType::Sampler:              m_samplers.emplace_back(param.shader_type); break;
+        }
+
+        m_param_binding_indices[param.shader_type] = parameters.shader_param_binding_slots(param.shader_type);
+      }
+    }
+
+    void Material::set(rsl::string_view name, ConstantBuffer* constantBuffer)
+    {
+      s32 idx = index_of_param(name);
+      m_constant_buffers[idx].set_resource(constantBuffer);
+    }
+    void Material::set(rsl::string_view name, Texture2D* texture)
+    {
+      s32 idx = index_of_param(name);
+      m_textures[idx].set_resource(texture);
+    }
+    void Material::set(rsl::string_view name, Sampler2D* sampler)
+    {
+      s32 idx = index_of_param(name);
+      m_samplers[idx].set_resource(sampler);
+    }
+
+    rsl::unordered_map<ShaderType, ShaderResources> Material::shader_resources()
+    {
+      rsl::unordered_map<ShaderType, ShaderResources> shader_resources{};
+
+      for (auto& cb : m_constant_buffers)
+      {
+        shader_resources[cb.type()].constant_buffers.push_back(static_cast<ConstantBuffer*>(cb.resource()));
+      }
+      for (auto& texture : m_textures)
+      {
+        shader_resources[texture.type()].textures.push_back(static_cast<Texture2D*>(texture.resource()));
+      }
+      for (auto& sampler : m_samplers)
+      {
+        shader_resources[sampler.type()].samplers.push_back(static_cast<Sampler2D*>(sampler.resource()));
       }
 
-      for (const BoundResourceReflection& sampler : signature.samplers())
+      for (auto& [shader_type, resources] : shader_resources)
       {
-        REX_ASSERT_X(!m_samplers.contains(sampler.name), "{} is already found in the material parameters, you like have a parameter in your shader with the same name, this is not supported. Shader: {}", rsl::enum_refl::enum_name(type));
-        SamplerMaterialParameter sampler_param(sampler.name, type, sampler.shader_register);
-        m_samplers.emplace(sampler.name, rsl::move(sampler_param));
+        resources.cb_slot = m_param_binding_indices.at(shader_type).material_cbs;
+        resources.srv_slot = m_param_binding_indices.at(shader_type).material_textures;
+        resources.sampler_slot = m_param_binding_indices.at(shader_type).material_samplers;
       }
+
+      return shader_resources;
     }
 
-    void Material::set_texture(rsl::string_view name, Texture2D* texture)
-    {
-      m_textures.at(name).set(texture);
-    }
-    void Material::set_sampler(rsl::string_view name, Sampler2D* sampler)
-    {
-      m_samplers.at(name).set(sampler);
-    }
+
     void Material::set_blend_factor(const BlendFactor& blendFactor)
     {
       m_blend_factor = blendFactor;
@@ -75,38 +113,43 @@ namespace rex
       return m_blend_factor;
     }
 
-    AllShaderResources Material::resources_for_shader(ShaderType type)
+    s32 Material::index_of_param(rsl::string_view name)
     {
-      AllShaderResources resources{};
-
-      for (auto& texture : m_textures)
-      {
-        if (texture.value.shader_type() != type)
-        {
-          continue;
-        }
-
-        resources.textures.push_back(&texture.value);
-      }
-      for (auto& sampler : m_samplers)
-      {
-        if (sampler.value.shader_type() != type)
-        {
-          continue;
-        }
-
-        // It's possible a static sampler was provided and its therefore not a member of the material
-        if (sampler.value.sampler())
-        {
-          resources.samplers.push_back(&sampler.value);
-        }
-      }
-
-      resources.textures_root_param_idx = m_root_signature->param_idx_for_textures(type);
-      resources.samplers_root_param_idx = m_root_signature->param_idx_for_samplers(type);
-
-      return resources;
+      return m_param_name_to_view_idx.at(name).idx;
     }
+
+    //ShaderResourceView Material::resources_for_shader(ShaderType type)
+    //{
+    //  ShaderResourceView resources{};
+
+    //  for (auto& texture : m_textures)
+    //  {
+    //    if (texture.value.shader_type() != type)
+    //    {
+    //      continue;
+    //    }
+
+    //    resources.textures.push_back(&texture.value);
+    //  }
+    //  for (auto& sampler : m_samplers)
+    //  {
+    //    if (sampler.value.shader_type() != type)
+    //    {
+    //      continue;
+    //    }
+
+    //    // It's possible a static sampler was provided and its therefore not a member of the material
+    //    if (sampler.value.sampler())
+    //    {
+    //      resources.samplers.push_back(&sampler.value);
+    //    }
+    //  }
+
+    //  resources.textures_root_param_idx = m_root_signature->param_idx_for_textures(type);
+    //  resources.samplers_root_param_idx = m_root_signature->param_idx_for_samplers(type);
+
+    //  return resources;
+    //}
 
     void Material::fill_pso_desc(PipelineStateDesc& desc)
     {
@@ -124,6 +167,18 @@ namespace rex
       REX_ASSERT_X(inputLayout->validate_desc(m_input_layout_desc), "Input layout is not compatible with material");
     }
 
+    void Material::bind_resources(RenderContext* ctx)
+    {
+      // Any resource that's not set by the render pass should be set by the material
+      //for (const auto& parameter : m_shader_parameters)
+      //{
+      //  // pure virtual function which will bind the parameter to the ctx based on the type of the parameter
+      //  parameter->bind(ctx);
+      //}
+
+
+
+    }
 
   }
 }

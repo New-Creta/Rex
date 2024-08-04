@@ -6,14 +6,14 @@ namespace rex
 	{
 		namespace shader_reflection_cache
 		{
-			ShaderPipelineReflection load(const ShaderPipeline& shaderPipeline)
-			{
-				
-			}
-			ShaderSignature load(const Shader* shader)
-			{
+			//ShaderPipelineReflection load(const ShaderPipeline& shaderPipeline)
+			//{
+			//	
+			//}
+			//ShaderSignature load(const Shader* shader)
+			//{
 
-			}
+			//}
 		}
 	}
 }

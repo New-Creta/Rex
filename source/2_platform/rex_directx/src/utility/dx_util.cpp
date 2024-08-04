@@ -33,6 +33,9 @@
 #include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/system/graphics_engine.h"
 
+#include "rex_renderer_core/shader_reflection/shader_pipeline_reflection.h"
+#include "rex_directx/system/dx_shader_root_parameters.h"
+
 namespace rex
 {
   namespace gfx
@@ -748,6 +751,40 @@ namespace rex
       DxPipelineState* to_dx12(PipelineState* pso)
       {
         return static_cast<DxPipelineState*>(pso);
+      }
+      DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters)
+      {
+        DxShaderPipelineParameters2 dx_params{};
+        
+        auto append_view_tables = [&](const rsl::vector<ViewTable>& tables)
+        {
+          for (const auto& view_table : tables)
+          {
+            rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_range = dx_params.ranges.emplace_back();
+            for (const auto& view_range : view_table.ranges)
+            {
+              D3D12_DESCRIPTOR_RANGE& dx_range = desc_range.emplace_back();
+              dx_range.BaseShaderRegister = view_range.base_register;
+              dx_range.NumDescriptors = view_range.num_views;
+              dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+              dx_range.RangeType = to_dx12(view_range.type);
+              dx_range.RegisterSpace = view_range.register_space;
+            }
+            dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_range.size(), desc_range.data(), to_dx12(view_table.visibility));
+          }
+        };
+
+        const rsl::unordered_map<ShaderType, rsl::vector<ViewTable>>& view_tables = parameters.view_tables_per_shader();
+        if (view_tables.contains(ShaderType::Vertex))
+        {
+          append_view_tables(view_tables.at(ShaderType::Vertex));
+        }
+        if (view_tables.contains(ShaderType::Pixel))
+        {
+          append_view_tables(view_tables.at(ShaderType::Pixel));
+        }
+
+        return dx_params;
       }
 
       const DxShader* to_dx12(const Shader* shader)

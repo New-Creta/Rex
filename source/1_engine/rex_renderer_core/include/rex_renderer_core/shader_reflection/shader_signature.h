@@ -14,8 +14,9 @@ namespace rex
 	{
 		struct BoundResources
 		{
-			rsl::vector<BoundResourceReflection> textures; // Holds all the textures of the shader
-			rsl::vector<BoundResourceReflection> samplers; // Holds all the samplers of the shader
+			rsl::vector<BoundResourceReflection> constant_buffers;  // Holds all the textures of the shader
+			rsl::vector<BoundResourceReflection> textures;					// Holds all the textures of the shader
+			rsl::vector<BoundResourceReflection> samplers;					// Holds all the samplers of the shader
 		};
 		struct ShaderSignatureDesc
 		{
@@ -44,6 +45,8 @@ namespace rex
 			const rsl::vector<ShaderParamReflection>& input_params() const;
 			// The output parameters of the shader
 			const rsl::vector<ShaderParamReflection>& output_params() const;
+			// The constant buffers of the shader in resource format
+			const rsl::vector<BoundResourceReflection>& constant_buffers_resources() const;
 			// The textures of the shader
 			const rsl::vector<BoundResourceReflection>& textures() const;
 			// The samplers of the shader

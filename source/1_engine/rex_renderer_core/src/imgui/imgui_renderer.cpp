@@ -195,8 +195,8 @@ namespace rex
       m_material = load_material(material_path);
       REX_ASSERT_X(m_material != nullptr, "Failed to load imgui material");
 
-      m_material->set_texture("fonts_texture", m_fonts_texture.get());
-      m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
+      m_material->set("fonts_texture", m_fonts_texture.get());
+      m_material->set("fonts_sampler", m_fonts_sampler.get());
       m_material->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
 
       //m_material->validate_input_layout(m_input_layout.get());

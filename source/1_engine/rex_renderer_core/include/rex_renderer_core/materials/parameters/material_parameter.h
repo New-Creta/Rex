@@ -41,13 +41,16 @@ namespace rex
 			// The shader type this parameter belongs to
 			ShaderType shader_type() const;
 			// Return the wrapped resource object
-			virtual Resource* resource() = 0;
+			Resource* resource();
+
+			void set_resource(Resource* resource);
 
 		private:
 			rsl::string m_name;							// name of the parameter
 			s32 m_shader_register;					// register of the paraneter
 			ShaderType m_shader_type;				// type of shader it belongs to
 			MaterialParameterType m_type;		// type if the parameter itself
+			Resource* m_resource;
 		};
 	}
 }

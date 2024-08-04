@@ -19,9 +19,5 @@ namespace rex
 		{
 			return m_sampler;
 		}
-		Resource* SamplerMaterialParameter::resource()
-		{
-			return m_sampler;
-		}
 	}
 }

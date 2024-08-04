@@ -16,8 +16,6 @@ namespace rex
 			void set(Texture2D* texture);
 			// Return the stored texture for this parameter
 			Texture2D* texture();
-			// Return the wrapped resource
-			Resource* resource() override;
 
 		private:
 			Texture2D* m_texture;

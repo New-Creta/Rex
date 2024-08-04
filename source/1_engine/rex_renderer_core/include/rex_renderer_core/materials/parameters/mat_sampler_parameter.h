@@ -6,6 +6,8 @@ namespace rex
 {
 	namespace gfx
 	{
+		class Resource;
+
 		// A texture material parameter is a material parameter specifically used for samplers
 		class SamplerMaterialParameter : public MaterialParameter
 		{
@@ -16,8 +18,6 @@ namespace rex
 			void set(Sampler2D* sampler);
 			// Return the stored sampler for this parameter
 			Sampler2D* sampler();
-			// Return the wrapped resource object
-			Resource* resource() override;
 
 		private:
 			Sampler2D* m_sampler;

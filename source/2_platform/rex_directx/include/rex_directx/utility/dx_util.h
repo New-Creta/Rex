@@ -73,6 +73,7 @@ namespace rex
     class Fence;
     class ConstantBuffer;
     class RenderTarget;
+    class ShaderPipelineParameters;
 
     // DirectX classes
     class DxCommandQueue;
@@ -91,6 +92,7 @@ namespace rex
     class DxUploadBuffer;
     class DxRenderTarget;
     class DxPipelineState;
+    struct DxShaderPipelineParameters2;
 
     namespace d3d
     {
@@ -202,6 +204,7 @@ namespace rex
       DxUploadBuffer* to_dx12(UploadBuffer* uploadBuffer);
       DxRenderTarget* to_dx12(RenderTarget* renderTarget);
       DxPipelineState* to_dx12(PipelineState* pso);
+      DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters);
 
       const DxShader* to_dx12(const Shader* shader);
 

@@ -19,10 +19,6 @@ namespace rex
 		{
 			return m_texture;
 		}
-		Resource* TextureMaterialParameter::resource()
-		{
-			return m_texture;
-		}
 
 	}
 }

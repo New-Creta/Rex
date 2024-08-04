@@ -77,7 +77,12 @@ namespace rex
       ctx.set_viewport(frameCtx.viewport());
       ctx.set_vertex_buffer(frameCtx.vertex_buffer());
       ctx.set_index_buffer(frameCtx.index_buffer());
-      ctx.set_constant_buffer(s_constant_buffer_param_idx, frameCtx.constant_buffer());
+
+      auto copy_ctx = new_copy_ctx();
+      rsl::vector<ResourceView*> views = { frameCtx.constant_buffer()->resource_view() };
+      auto start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
+
+      ctx.set_graphics_root_descriptor_table(s_constant_buffer_param_idx, start_handle.get());
     }
 
     // Draw the current viewport

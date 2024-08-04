@@ -42,7 +42,7 @@ namespace rex
         return S_OK;
       }
 
-      rsl::unordered_map<void*, memory::Blob>   m_include_map;
+      rsl::unordered_map<const void*, memory::Blob>   m_include_map;
     };
 
     wrl::ComPtr<ID3DBlob> ShaderCompiler::compile_shader(const CompileShaderDesc& desc) // NOLINT(readability-convert-member-functions-to-static)

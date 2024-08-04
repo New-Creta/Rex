@@ -154,7 +154,7 @@ namespace rex
       CBufferReflDesc cb_ref{};
       cb_ref.name = shader_buffer_desc.Name;
       cb_ref.shader_register = reg_info.index;
-      cb_ref.regiser_space = reg_info.space;
+      cb_ref.register_space = reg_info.space;
       cb_ref.size = shader_buffer_desc.Size;
       s32 num_vars = shader_buffer_desc.Variables;
       for (s32 var_idx = 0; var_idx < num_vars; ++var_idx)
@@ -228,6 +228,10 @@ namespace rex
         else if (bound_resource.resource_type == BoundResourceType::Sampler)
         {
           bound_resources.samplers.push_back(bound_resource);
+        }
+        else if (bound_resource.resource_type == BoundResourceType::ConstantBuffer)
+        {
+          bound_resources.constant_buffers.push_back(bound_resource);
         }
       }
 

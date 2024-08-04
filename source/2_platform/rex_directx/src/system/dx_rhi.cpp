@@ -63,6 +63,7 @@
 #include "rex_renderer_core/materials/material_system.h"
 #include "rex_renderer_core/system/input_layout_cache.h"
 #include "rex_renderer_core/system/root_signature_cache.h"
+#include "rex_renderer_core/shader_reflection/shader_pipeline_reflection.h"
 
 namespace rex
 {
@@ -340,7 +341,8 @@ namespace rex
       }
       rsl::unique_ptr<RootSignature>        create_root_signature(const ShaderPipeline& pipeline)
       {
-        ShaderPipelineReflection reflection = reflect_shader_pipeline(pipeline);
+        //ShaderPipelineReflection reflection = reflect_shader_pipeline(pipeline);
+        ShaderPipelineParameters parameters(pipeline);
 
         // 1. Constants (not able to retrieve this from reflection yet)
                 // 2. View 
@@ -351,14 +353,14 @@ namespace rex
                 // - textures
                 // - samplers
 
-        DxShaderPipelineParameters pipeline_parameters(reflection);
+        DxShaderPipelineParameters2 dx_pipeline_parameters = d3d::to_dx12(parameters);
 
         // A root signature is an array of root parameters.
         REX_WARN(LogDxRhi, "Use versioned root signature here");
         REX_WARN(LogDxRhi, "Investigate if we can use static samplers here as well..");
         CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
-          pipeline_parameters.params().size(),
-          pipeline_parameters.params().data(),
+          dx_pipeline_parameters.root_parameters.size(),
+          dx_pipeline_parameters.root_parameters.data(),
           0,          // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
           nullptr,    // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
           D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
@@ -388,7 +390,7 @@ namespace rex
           return nullptr;
         }
 
-        return rsl::make_unique<DxRootSignature>(root_signature, pipeline_parameters.params());
+        return rsl::make_unique<DxRootSignature>(root_signature, dx_pipeline_parameters.root_parameters);
       }
       rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, TextureFormat format)
       {
@@ -509,7 +511,7 @@ namespace rex
         CompileShaderDesc compile_vs_desc{};
         compile_vs_desc.shader_source_code = sourceCode;
         compile_vs_desc.shader_entry_point = "main";
-        compile_vs_desc.shader_feature_target = "vs_5_0";
+        compile_vs_desc.shader_feature_target = "vs_5_1";
         compile_vs_desc.shader_name = shaderName;
         compile_vs_desc.shader_type = ShaderType::Vertex;
         wrl::ComPtr<ID3DBlob> compiled_vs_blob = compile_shader(compile_vs_desc);
@@ -531,7 +533,7 @@ namespace rex
         CompileShaderDesc compile_ps_desc{};
         compile_ps_desc.shader_source_code = sourceCode;
         compile_ps_desc.shader_entry_point = "main";
-        compile_ps_desc.shader_feature_target = "ps_5_0";
+        compile_ps_desc.shader_feature_target = "ps_5_1";
         compile_ps_desc.shader_name = shaderName;
         compile_ps_desc.shader_type = ShaderType::Pixel;
         wrl::ComPtr<ID3DBlob> compiled_ps_blob = compile_shader(compile_ps_desc);

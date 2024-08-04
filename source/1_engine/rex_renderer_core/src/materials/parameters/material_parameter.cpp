@@ -32,5 +32,14 @@ namespace rex
 		{
 			return m_shader_type;
 		}
+		Resource* MaterialParameter::resource()
+		{
+			return m_resource;
+		}
+		void MaterialParameter::set_resource(Resource* resource)
+		{
+			m_resource = resource;
+		}
+
 	}
 }
