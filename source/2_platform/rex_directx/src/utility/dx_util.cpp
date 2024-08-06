@@ -26,6 +26,7 @@
 #include "rex_directx/resources/dx_render_target.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/system/dx_view_heap.h"
+#include "rex_renderer_core/system/view_table.h"
 
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
 
@@ -683,6 +684,18 @@ namespace rex
 
         return sampler_desc;
       }
+      D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(ShaderResourceType type)
+      {
+        switch (type)
+        {
+        case rex::gfx::ShaderResourceType::ConstantBuffer:    return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+        case rex::gfx::ShaderResourceType::Texture:           return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+        case rex::gfx::ShaderResourceType::Sampler:           return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+        }
+
+        return invalid_obj<D3D12_DESCRIPTOR_RANGE_TYPE>();
+      }
+
 
 
       // ------------------------------------
@@ -752,38 +765,85 @@ namespace rex
       {
         return static_cast<DxPipelineState*>(pso);
       }
-      DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters)
+      //DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters)
+      //{
+      //  DxShaderPipelineParameters2 dx_params{};
+      //  
+      //  dx_params.root_parameters.resize(parameters.num());
+      //  for (s32 i = 0; i < parameters.num(); ++i)
+      //  {
+      //    const ShaderParameter2* param = parameters[i];
+      //    rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_ranges = dx_params.ranges.emplace_back();
+      //    for (const auto& view_range : param->ranges)
+      //    {
+      //      D3D12_DESCRIPTOR_RANGE& dx_range = desc_ranges.emplace_back();
+      //      dx_range.BaseShaderRegister                 = view_range.base_register;
+      //      dx_range.NumDescriptors                     = view_range.num_views;
+      //      dx_range.OffsetInDescriptorsFromTableStart  = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+      //      dx_range.RangeType                          = to_dx12(view_range.type);
+      //      dx_range.RegisterSpace                      = view_range.register_space;
+      //    }
+      //    dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_ranges.size(), desc_ranges.data(), to_dx12(param->visibility));
+      //  }
+
+      //  //const auto& material_params = parameters.params(ShaderParameterBinding::Material);
+      //  //const auto& renderpass_params = parameters.params(ShaderParameterBinding::RenderPass);
+      //  //dx_params.root_parameters.resize(material_params.resources.size() + renderpass_params.resources.size());
+      //  //for (const auto& param : material_params.resources)
+      //  //{
+      //  //  dx_params.root_parameters[param.slot].InitAsDescriptorTable(param)
+      //  //}
+
+      //  //auto append_view_tables = [&](const rsl::vector<ViewTable>& tables)
+      //  //{
+      //  //  for (const auto& view_table : tables)
+      //  //  {
+      //  //    rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_range = dx_params.ranges.emplace_back();
+      //  //    for (const auto& view_range : view_table.ranges)
+      //  //    {
+      //  //      D3D12_DESCRIPTOR_RANGE& dx_range = desc_range.emplace_back();
+      //  //      dx_range.BaseShaderRegister = view_range.base_register;
+      //  //      dx_range.NumDescriptors = view_range.num_views;
+      //  //      dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+      //  //      dx_range.RangeType = to_dx12(view_range.type);
+      //  //      dx_range.RegisterSpace = view_range.register_space;
+      //  //    }
+      //  //    dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_range.size(), desc_range.data(), to_dx12(view_table.visibility));
+      //  //  }
+      //  //};
+
+      //  //const rsl::unordered_map<ShaderType, rsl::vector<ViewTable>>& view_tables = parameters.view_tables_per_shader();
+      //  //if (view_tables.contains(ShaderType::Vertex))
+      //  //{
+      //  //  append_view_tables(view_tables.at(ShaderType::Vertex));
+      //  //}
+      //  //if (view_tables.contains(ShaderType::Pixel))
+      //  //{
+      //  //  append_view_tables(view_tables.at(ShaderType::Pixel));
+      //  //}
+
+      //  return dx_params;
+      //}
+      DxShaderPipelineParameters2 to_dx12(const rsl::vector<ViewTable>& parameters)
       {
         DxShaderPipelineParameters2 dx_params{};
-        
-        auto append_view_tables = [&](const rsl::vector<ViewTable>& tables)
+
+        dx_params.root_parameters.reserve(parameters.size());
+        for (const ViewTable& param : parameters)
         {
-          for (const auto& view_table : tables)
+          rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_ranges = dx_params.ranges.emplace_back();
+          for (const auto& view_range : param.ranges)
           {
-            rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_range = dx_params.ranges.emplace_back();
-            for (const auto& view_range : view_table.ranges)
-            {
-              D3D12_DESCRIPTOR_RANGE& dx_range = desc_range.emplace_back();
-              dx_range.BaseShaderRegister = view_range.base_register;
-              dx_range.NumDescriptors = view_range.num_views;
-              dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
-              dx_range.RangeType = to_dx12(view_range.type);
-              dx_range.RegisterSpace = view_range.register_space;
-            }
-            dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_range.size(), desc_range.data(), to_dx12(view_table.visibility));
+            D3D12_DESCRIPTOR_RANGE& dx_range = desc_ranges.emplace_back();
+            dx_range.BaseShaderRegister = view_range.base_register;
+            dx_range.NumDescriptors = view_range.num_views;
+            dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+            dx_range.RangeType = to_dx12(view_range.type);
+            dx_range.RegisterSpace = view_range.register_space;
           }
-        };
-
-        const rsl::unordered_map<ShaderType, rsl::vector<ViewTable>>& view_tables = parameters.view_tables_per_shader();
-        if (view_tables.contains(ShaderType::Vertex))
-        {
-          append_view_tables(view_tables.at(ShaderType::Vertex));
+          dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_ranges.size(), desc_ranges.data(), to_dx12(param.visibility));
         }
-        if (view_tables.contains(ShaderType::Pixel))
-        {
-          append_view_tables(view_tables.at(ShaderType::Pixel));
-        }
-
+       
         return dx_params;
       }
 

@@ -255,60 +255,68 @@ namespace rex
       // and are sorted in the way they're expected by the root signature
       /*material->bind_resource();*/
 
-
-      rsl::unordered_map<ShaderType, ShaderResources> shader_resources_map = material->shader_resources();
-
+      rsl::vector<ShaderResource> shader_resources = material->shader_resources();
       auto copy_ctx = new_copy_ctx();
-      rsl::vector<ResourceView*> views;
-      for (auto& [shader_type, shader_resources] : shader_resources_map)
+      for (const auto& shader_resource : shader_resources)
       {
-        if (!shader_resources.constant_buffers.empty())
+        rsl::unique_ptr<ResourceView> start_handle;
+        switch (shader_resource.type())
         {
-          views.clear();
-          rsl::transform(shader_resources.constant_buffers.begin(), shader_resources.constant_buffers.end(), rsl::back_inserter(views),
-            [](ConstantBuffer* cb)
-            {
-              DxConstantBuffer* dx_cb = d3d::to_dx12(cb);
-              return dx_cb->view();
-            });
-
-          rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
-          s32 slot = shader_resources.cb_slot;
-          m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
+        case ShaderResourceType::ConstantBuffer: start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, shader_resource.views()); break;
+        case ShaderResourceType::Texture:        start_handle = copy_ctx->copy_views(ViewHeapType::ShaderResourceView, shader_resource.views()); break;
+        case ShaderResourceType::Sampler:        start_handle = copy_ctx->copy_views(ViewHeapType::Sampler, shader_resource.views());            break;
         }
-        if (!shader_resources.textures.empty())
-        {
-          views.clear();
-          rsl::transform(shader_resources.textures.begin(), shader_resources.textures.end(), rsl::back_inserter(views),
-            [](Texture2D* texture)
-            {
-              DxTexture2D* dx_texture = d3d::to_dx12(texture);
-              return dx_texture->view();
-            });
-          rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::ShaderResourceView, views);
-          s32 slot = shader_resources.srv_slot;
-          m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
-        }
-        if (!shader_resources.samplers.empty())
-        {
-          views.clear();
-          rsl::transform(shader_resources.samplers.begin(), shader_resources.samplers.end(), rsl::back_inserter(views),
-            [](Sampler2D* sampler)
-            {
-              DxSampler2D* dx_sampler = d3d::to_dx12(sampler);
-              return dx_sampler->view();
-            });
-          rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::Sampler, views);
-          s32 slot = shader_resources.sampler_slot;
-          m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
-        }
+        m_cmd_list->SetGraphicsRootDescriptorTable(shader_resource.slot(), d3d::to_dx12(start_handle.get())->gpu_handle());
       }
 
+      //rsl::vector<ShaderResource> shader_resources_map = material->shader_resources();
 
+      //auto copy_ctx = new_copy_ctx();
+      //rsl::vector<ResourceView*> views;
+      //for (auto& [shader_type, shader_resources] : shader_resources_map)
+      //{
+      //  if (!shader_resources.constant_buffers.empty())
+      //  {
+      //    views.clear();
+      //    rsl::transform(shader_resources.constant_buffers.begin(), shader_resources.constant_buffers.end(), rsl::back_inserter(views),
+      //      [](ConstantBuffer* cb)
+      //      {
+      //        DxConstantBuffer* dx_cb = d3d::to_dx12(cb);
+      //        return dx_cb->view();
+      //      });
 
+      //    rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
+      //    s32 slot = shader_resources.cb_slot;
+      //    m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
+      //  }
+      //  if (!shader_resources.textures.empty())
+      //  {
+      //    views.clear();
+      //    rsl::transform(shader_resources.textures.begin(), shader_resources.textures.end(), rsl::back_inserter(views),
+      //      [](Texture2D* texture)
+      //      {
+      //        DxTexture2D* dx_texture = d3d::to_dx12(texture);
+      //        return dx_texture->view();
+      //      });
+      //    rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::ShaderResourceView, views);
+      //    s32 slot = shader_resources.srv_slot;
+      //    m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
+      //  }
+      //  if (!shader_resources.samplers.empty())
+      //  {
+      //    views.clear();
+      //    rsl::transform(shader_resources.samplers.begin(), shader_resources.samplers.end(), rsl::back_inserter(views),
+      //      [](Sampler2D* sampler)
+      //      {
+      //        DxSampler2D* dx_sampler = d3d::to_dx12(sampler);
+      //        return dx_sampler->view();
+      //      });
+      //    rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::Sampler, views);
+      //    s32 slot = shader_resources.sampler_slot;
+      //    m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
+      //  }
+      //}
 
-      bind_resources_for_shader(material, ShaderType::Vertex);
-      bind_resources_for_shader(material, ShaderType::Pixel);
     }
 
     // Return the wrapped directx commandlist
@@ -353,24 +361,7 @@ namespace rex
         m_cmd_list->ResourceBarrier(1, &barrier);
       }
     }
-    // Bind resources for a specific shader type
-    void DxRenderContext::bind_resources_for_shader(Material* material, ShaderType type)
-    {
 
-      
-
-      // 1. Split textures and samplers of material based on shader visibility
-      //ShaderResourceView shader_resources = material->resources_for_shader(type);
-
-      //// 2. Copy textures and samplers into descriptor heap that's visible in shaders, make sure they're sorted based on shader register
-      //rsl::vector<ResourceView*> texture_views = sort_material_parameters<DxTexture2D>(shader_resources.textures);
-      //rsl::vector<ResourceView*> sampler_views = sort_material_parameters<DxSampler2D>(shader_resources.samplers);
-
-      //// 3. Copy the earlier cached gpu handle descriptors into the shader visible heap
-      //auto copy_ctx = new_copy_ctx();
-      //bind_material_resources(copy_ctx.get(), texture_views, ViewHeapType::ResourceView, shader_resources.textures_root_param_idx);
-      //bind_material_resources(copy_ctx.get(), sampler_views, ViewHeapType::Sampler, shader_resources.samplers_root_param_idx);
-    }
     // Bind material resources to the root signature parameter index provided
     void DxRenderContext::bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, ViewHeapType type, s32 paramIdx)
     {

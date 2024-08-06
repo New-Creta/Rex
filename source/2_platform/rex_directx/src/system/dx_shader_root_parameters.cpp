@@ -242,14 +242,14 @@ namespace rex
   //    SplittedResources splitted_samplers = split_resources(signature.samplers());
 
   //    // Create ranges who's values are supposed to be set by a material
-  //    rsl::vector<ViewRange> material_cb_ranges = create_cb_view_ranges(splitted_cbs.material_cbs, m_material_param_name_to_idx);
-  //    rsl::vector<ViewRange> material_texture_ranges = create_resource_view_ranges(splitted_textures.material_resources, m_material_param_name_to_idx);
-  //    rsl::vector<ViewRange> material_sampler_ranges = create_resource_view_ranges(splitted_samplers.material_resources, m_material_param_name_to_idx);
+  //    rsl::vector<ViewRange> material_cb_ranges = create_cb_view_ranges(splitted_cbs.material_cbs, m_material_param_name_to_offset_from_start);
+  //    rsl::vector<ViewRange> material_texture_ranges = create_resource_view_ranges(splitted_textures.material_resources, m_material_param_name_to_offset_from_start);
+  //    rsl::vector<ViewRange> material_sampler_ranges = create_resource_view_ranges(splitted_samplers.material_resources, m_material_param_name_to_offset_from_start);
 
   //    // Create ranges who's values are supposed to be set by a renderpass
-  //    rsl::vector<ViewRange> renderpass_cb_ranges = create_cb_view_ranges(splitted_cbs.renderpass_cbs, m_renderpass_param_name_to_idx);
-  //    rsl::vector<ViewRange> renderpass_texture_ranges = create_resource_view_ranges(splitted_textures.renderpass_resources, m_renderpass_param_name_to_idx);
-  //    rsl::vector<ViewRange> renderpass_sampler_ranges = create_resource_view_ranges(splitted_samplers.renderpass_resources, m_renderpass_param_name_to_idx);
+  //    rsl::vector<ViewRange> renderpass_cb_ranges = create_cb_view_ranges(splitted_cbs.renderpass_cbs, m_renderpass_param_name_to_offset_from_start);
+  //    rsl::vector<ViewRange> renderpass_texture_ranges = create_resource_view_ranges(splitted_textures.renderpass_resources, m_renderpass_param_name_to_offset_from_start);
+  //    rsl::vector<ViewRange> renderpass_sampler_ranges = create_resource_view_ranges(splitted_samplers.renderpass_resources, m_renderpass_param_name_to_offset_from_start);
 
   //    // At this point the ranges are created and we have a cache pointing from name to the index within each range
   //    // Now we can create the actual tables which will hold the ranges

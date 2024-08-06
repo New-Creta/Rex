@@ -60,7 +60,9 @@ namespace rex
     struct RasterStateDesc;
     enum class ShaderType;
     enum class ShaderVisibility;
+    enum class ShaderResourceType;
     class IsColorNormalized;
+    struct ViewTable;
 
     class ConstantBuffer;
     class IndexBuffer;
@@ -184,6 +186,7 @@ namespace rex
       D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(ViewHeapType type);
       D3D12_PRIMITIVE_TOPOLOGY_TYPE to_dx12(PrimitiveTopologyType type);
       D3D12_SAMPLER_DESC to_dx12(const ShaderSamplerDesc& desc);
+      D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(ShaderResourceType type);
 
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes
@@ -204,7 +207,8 @@ namespace rex
       DxUploadBuffer* to_dx12(UploadBuffer* uploadBuffer);
       DxRenderTarget* to_dx12(RenderTarget* renderTarget);
       DxPipelineState* to_dx12(PipelineState* pso);
-      DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters);
+      //DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters);
+      DxShaderPipelineParameters2 to_dx12(const rsl::vector<ViewTable>& parameters);
 
       const DxShader* to_dx12(const Shader* shader);
 

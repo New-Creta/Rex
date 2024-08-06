@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rex_engine/engine/defines.h"
+#include "rex_renderer_core/system/shader_type.h"
+#include "rex_engine/engine/invalid_object.h"
 
 namespace rex
 {
@@ -19,5 +21,20 @@ namespace rex
 
       All = Vertex | Pixel | Geometry | Hull | Domain | Amplification | Mesh // all shaders have access to this resource
     };
+    constexpr ShaderVisibility shader_type_to_visibility(ShaderType type)
+    {
+      switch (type)
+      {
+      case rex::gfx::ShaderType::Vertex:            return ShaderVisibility::Vertex;
+      case rex::gfx::ShaderType::Pixel:             return ShaderVisibility::Pixel;
+      case rex::gfx::ShaderType::Geometry:          return ShaderVisibility::Geometry;
+      case rex::gfx::ShaderType::Hull:              return ShaderVisibility::Hull;
+      case rex::gfx::ShaderType::Domain:            return ShaderVisibility::Domain;
+      case rex::gfx::ShaderType::Amplification:     return ShaderVisibility::Amplification;
+      case rex::gfx::ShaderType::Mesh:              return ShaderVisibility::Mesh;
+      }
+
+      return invalid_obj<ShaderVisibility>();
+    }
   }
 }

@@ -5,6 +5,8 @@
 #include "rex_std/functional.h"
 #include "rex_std/unordered_map.h"
 
+#include "rex_renderer_core/shader_reflection/shader_reflection_cache.h"
+
 namespace rex
 {
 	namespace gfx
@@ -21,7 +23,8 @@ namespace rex
 					return it->value.get();
 				}
 
-				rsl::unique_ptr<RootSignature> root_sig = rhi::create_root_signature(pipeline);
+				ShaderPipelineReflection2& reflection = shader_reflection_cache::load(pipeline);
+				rsl::unique_ptr<RootSignature> root_sig = rhi::create_root_signature(reflection.parameters);
 				return g_root_sig_cache.emplace(pipeline, rsl::move(root_sig)).inserted_element->value.get();
 			}
 		}

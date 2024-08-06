@@ -75,7 +75,7 @@ namespace rex
         bound_resource.shader_register = resource_desc.BindPoint;
         bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
-        bound_resource.resource_type = BoundResourceType::ConstantBuffer;
+        bound_resource.resource_type = ShaderResourceType::ConstantBuffer;
         break;
       case D3D_SIT_TEXTURE:
       {
@@ -83,7 +83,7 @@ namespace rex
         bound_resource.shader_register = resource_desc.BindPoint;
         bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
-        bound_resource.resource_type = BoundResourceType::Texture;
+        bound_resource.resource_type = ShaderResourceType::Texture;
         break;
       }
       case D3D_SIT_SAMPLER:
@@ -92,7 +92,7 @@ namespace rex
         bound_resource.shader_register = resource_desc.BindPoint;
         bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
-        bound_resource.resource_type = BoundResourceType::Sampler;
+        bound_resource.resource_type = ShaderResourceType::Sampler;
         break;
       }
       default: REX_ASSERT("Invalid bound resource type");
@@ -221,15 +221,15 @@ namespace rex
       for (card32 i = 0; i < numBoundResources; ++i)
       {
         auto bound_resource = reflect_bound_resource(refl, i, type);
-        if (bound_resource.resource_type == BoundResourceType::Texture)
+        if (bound_resource.resource_type == ShaderResourceType::Texture)
         {
           bound_resources.textures.push_back(bound_resource);
         }
-        else if (bound_resource.resource_type == BoundResourceType::Sampler)
+        else if (bound_resource.resource_type == ShaderResourceType::Sampler)
         {
           bound_resources.samplers.push_back(bound_resource);
         }
-        else if (bound_resource.resource_type == BoundResourceType::ConstantBuffer)
+        else if (bound_resource.resource_type == ShaderResourceType::ConstantBuffer)
         {
           bound_resources.constant_buffers.push_back(bound_resource);
         }

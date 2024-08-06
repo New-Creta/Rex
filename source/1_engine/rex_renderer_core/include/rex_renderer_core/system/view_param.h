@@ -8,11 +8,25 @@ namespace rex
 {
 	namespace gfx
 	{
+		class ResourceView;
+
+		struct ViewOffset
+		{
+			s32 range_offset;
+			s32 offset_within_range;
+		};
+
 		struct ViewParam
 		{
-			s32 idx;
-			DescriptorRangeType type;
-			ShaderType shader_type;
+			ViewParam(s32 slot, ViewOffset viewOffset)
+				: slot(slot)
+				, view_offset(viewOffset)
+				, view(nullptr)
+			{}
+
+			s32 slot;
+			ViewOffset view_offset;
+			ResourceView* view;
 		};
 	}
 }

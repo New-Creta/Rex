@@ -71,8 +71,8 @@ namespace rex
 		//private:
 
 		//	rsl::vector<ViewTable> m_view_tables;
-		//	rsl::unordered_map<rsl::string, s32> m_material_param_name_to_idx;
-		//	rsl::unordered_map<rsl::string, s32> m_renderpass_param_name_to_idx;
+		//	rsl::unordered_map<rsl::string, s32> m_material_param_name_to_offset_from_start;
+		//	rsl::unordered_map<rsl::string, s32> m_renderpass_param_name_to_offset_from_start;
 
 
 

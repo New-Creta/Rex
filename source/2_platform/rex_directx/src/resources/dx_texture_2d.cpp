@@ -5,7 +5,7 @@ namespace rex
   namespace gfx
   {
     DxTexture2D::DxTexture2D(const wrl::ComPtr<ID3D12Resource>& texture, DxResourceView handle, s32 width, s32 height, TextureFormat format)
-      : Texture2D(width, height, format)
+      : Texture2D(&m_view, width, height, format)
       , m_resource(texture)
       , m_view(handle)
     {}

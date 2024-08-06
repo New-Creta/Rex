@@ -22,13 +22,16 @@
 #include "rex_renderer_core/system/param_binding_indices.h"
 #include "rex_renderer_core/system/view_param.h"
 
+#include "rex_renderer_core/system/shader_parameters_store.h"
+
 namespace rex
 {
   namespace gfx
   {
     struct MaterialConstructSettings;
     struct ViewParam;
-    struct ParamBindingIndices;
+    struct ParamBindingSlots;
+    struct ShaderResource;
 
     // Holds the collection of all the resources for a single shader
     struct ShaderResourceView
@@ -48,13 +51,6 @@ namespace rex
       DepthStencilDesc depth_stencil;	// the depth stencil settings that'll be stored inside the material
     };
 
-		enum class ShaderParameterType2
-		{
-			ConstantBuffer,
-			Texture2D,
-			Sampler2D
-		};
-
     struct ShaderResources
     {
       rsl::vector<ConstantBuffer*> constant_buffers;
@@ -64,6 +60,12 @@ namespace rex
       s32 cb_slot;
       s32 srv_slot;
       s32 sampler_slot;
+    };
+
+    struct ShaderBinding
+    {
+      s32 slot;
+      s32 sub_slot;
     };
 
     class MaterialParameter2
@@ -103,7 +105,7 @@ namespace rex
       void set(rsl::string_view name, Texture2D* texture);
       void set(rsl::string_view name, Sampler2D* sampler);
 
-      rsl::unordered_map<ShaderType, ShaderResources> shader_resources();
+      rsl::vector<ShaderResource> shader_resources();
 
       // Set the blend factor of the material
       void set_blend_factor(const BlendFactor& blendFactor);
@@ -121,51 +123,25 @@ namespace rex
       // Fill in the pso desc with data that's stored in the material
       void fill_pso_desc(PipelineStateDesc& desc);
 
-      // Validate an input layout if it can be used with this material
-      void validate_input_layout(InputLayout* inputLayout);
-
-      void bind_resources(RenderContext* ctx);
-
-    protected:
-      s32 index_of_param(rsl::string_view name);
-
     private:
-      void init();
+      void init(const MaterialConstructSettings& matConstructSettings);
 
       // Initialize the parameters of the material based on the resources of a shader signature
       void init_parameters_from_shader_signature(ShaderType type, const ShaderSignature& signature);
 
     private:
-      // The parameters that will be tied directly to the shader
-      // This holds a list of views or view tables
-      //rsl::vector<ShaderParameter*> m_shader_parameters;
+      rsl::unique_ptr<ShaderParametersStore> m_parameters_store;
+      //rsl::vector<ShaderResource> m_shader_resources;
 
-      // The material parameters that are exposed to the user
-      // They're an indirection from the shader parameters
-      //rsl::unordered_map<rsl::string, rsl::unique_ptr<MaterialParameter>> m_material_parameters;
-
-
+      // To make parameters easily accessible to users, we have a map from name of parameter to their view idx
+      // This view idx is the index within the parameter container that the param type belongs to
       rsl::unordered_map<rsl::string, ViewParam> m_param_name_to_view_idx;
-      rsl::unordered_map<ShaderType, ParamBindingIndices> m_param_binding_indices;
-      rsl::vector<MaterialParameter2> m_constant_buffers;
-      rsl::vector<MaterialParameter2> m_textures;
-      rsl::vector<MaterialParameter2> m_samplers;
 
 
-
-
-      // All texture parameters of the material
-      //rsl::unordered_map<rsl::string, TextureMaterialParameter> m_textures;
-      // All sampler parameters of the material
-      //rsl::unordered_map<rsl::string, SamplerMaterialParameter> m_samplers;
-
-
-      //rsl::unordered_map<rsl::string, rsl::unique_ptr<ShaderParameter>> m_shader_parameters;
-
-
-
-
-
+      rsl::unordered_map<ShaderType, ParamBindingSlots> m_param_binding_slots;
+      rsl::vector<MaterialParameter2> m_constant_buffer_params;
+      rsl::vector<MaterialParameter2> m_texture_params;
+      rsl::vector<MaterialParameter2> m_sampler_params;
 
       // The primitive topology of the material
       PrimitiveTopology m_primitive_topology;
@@ -178,8 +154,6 @@ namespace rex
       BlendDesc m_blend;
       // The depth stencil settings of the material
       DepthStencilDesc m_depth_stencil;
-      // The input layout desc of the material, used for validating other input layouts
-      InputLayoutDesc m_input_layout_desc;
       // The blend factor of the material
       BlendFactor m_blend_factor;
       // The shader pipeline of the material

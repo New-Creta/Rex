@@ -21,10 +21,10 @@ namespace rex
 		{
 			ConstantBuffer
 		};
-		class ShaderParameter
+		class ShaderParameter3
 		{
 		public:
-			ShaderParameter(s32 slot, ShdrParamType type)
+			ShaderParameter3(s32 slot, ShdrParamType type)
 				: m_slot(slot)
 				, m_resource(nullptr)
 				, m_type(type)
@@ -71,7 +71,7 @@ namespace rex
 			rsl::unique_ptr<PipelineState> m_pso;
 			rsl::unique_ptr<RootSignature> m_root_signature;
 
-			rsl::unordered_map<rsl::string, ShaderParameter> m_shader_parameters;
+			rsl::unordered_map<rsl::string, ShaderParameter3> m_shader_parameters;
 		};
 	}
 }

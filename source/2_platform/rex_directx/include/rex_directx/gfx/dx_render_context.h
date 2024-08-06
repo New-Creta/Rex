@@ -88,8 +88,6 @@ namespace rex
     private:
       // Transition a buffer into a new resource state
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
-      // Bind resources for a specific shader type
-      void bind_resources_for_shader(Material* material, ShaderType type);
 
       // Sort the resources of a material based on their shader register and stored their views in an array
       template <typename Resource, typename Param>

@@ -16,11 +16,11 @@ namespace rex
 			s32 param_idx = 0;
 			for (const auto& cb : reflection.vs.constant_buffers())
 			{
-				m_shader_parameters.emplace(cb.name, ShaderParameter(param_idx++, ShdrParamType::ConstantBuffer));
+				m_shader_parameters.emplace(cb.name, ShaderParameter3(param_idx++, ShdrParamType::ConstantBuffer));
 			}
 			for (const auto& cb : reflection.ps.constant_buffers())
 			{
-				m_shader_parameters.emplace(cb.name, ShaderParameter(param_idx++, ShdrParamType::ConstantBuffer));
+				m_shader_parameters.emplace(cb.name, ShaderParameter3(param_idx++, ShdrParamType::ConstantBuffer));
 			}
 		}
 
