@@ -78,6 +78,7 @@ namespace rex
       ctx.set_vertex_buffer(frameCtx.vertex_buffer());
       ctx.set_index_buffer(frameCtx.index_buffer());
 
+      REX_STATIC_WARNING("ImGui Constant Buffer binding needs to get cleaned up");
       auto copy_ctx = new_copy_ctx();
       rsl::vector<ResourceView*> views = { frameCtx.constant_buffer()->resource_view() };
       auto start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);

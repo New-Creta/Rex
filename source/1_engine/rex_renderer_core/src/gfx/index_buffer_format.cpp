@@ -15,8 +15,8 @@ namespace rex
       case IndexBufferFormat::Uint32:
         return 4;
       default:
-        REX_ASSERT("Unknown index format");
-        return 0;
+        REX_ASSERT("Unknown index format, cannot determine its size");
+        return -1;
       }
     }
   }

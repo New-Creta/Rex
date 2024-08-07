@@ -14,6 +14,8 @@
 #include "rex_renderer_core/imgui/imgui_viewport.h"
 #include "rex_renderer_core/imgui/imgui_window_render_params.h"
 
+#include "rex_renderer_core/system/shader_library.h"
+
 #include "rex_renderer_core/materials/material_system.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
@@ -125,7 +127,6 @@ namespace rex
     {
       init_font_texture();
       init_font_sampler();
-      init_input_layout();
       init_material();
       init_pso();
     }
@@ -171,21 +172,6 @@ namespace rex
       desc.shader_visibility = ShaderVisibility::Pixel;
 
       m_fonts_sampler = rhi::create_sampler2d(desc);
-    }
-    // Initialize the input layout that'll be used by all ImGui rendering
-    void ImGuiRenderer::init_input_layout()
-    {
-      // Input layout is hardcoded as the vertices are also hardcoded
-      // The material is responsible for validating that the input layout is correct with the shader
-
-      //InputLayoutDesc input_layout_desc;
-      //input_layout_desc.input_layout =
-      //{
-      //  InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 0, 0 },
-      //  InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 8, 0 },
-      //  InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertex, 0, 0, 16, 0 }
-      //};
-      //m_input_layout = rhi::create_input_layout(rsl::move(input_layout_desc));
     }
     // Initialize the material that'll be used by all ImGui rendering
     void ImGuiRenderer::init_material()

@@ -43,7 +43,6 @@ namespace rex
       void init_font_texture();
       void init_font_sampler();
       void init_material();
-      void init_input_layout();
       void init_pso();
 
       // destroy imgui
@@ -52,7 +51,6 @@ namespace rex
     private:
       rsl::unique_ptr<Texture2D> m_fonts_texture;          // The fonts texture, the data comes from imgui
       rsl::unique_ptr<Sampler2D> m_fonts_sampler;          // The sampler for the fonts texture
-      //rsl::unique_ptr<InputLayout> m_input_layout;         // The input layout used by imgui
       rsl::unique_ptr<PipelineState> m_pipeline_state;     // The pipeline state used by imgui
       rsl::unique_ptr<Material> m_material;                // The material used by imgui
     };

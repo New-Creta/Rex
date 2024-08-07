@@ -6,6 +6,7 @@ namespace rex
 	{
 		StaticMeshComponent::StaticMeshComponent(StaticMesh&& mesh)
 			: m_mesh(rsl::move(mesh))
+			, m_material(nullptr)
 		{}
 
 		void StaticMeshComponent::set_material(Material* material)
