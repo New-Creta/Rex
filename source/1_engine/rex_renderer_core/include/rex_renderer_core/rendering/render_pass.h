@@ -11,6 +11,13 @@ namespace rex
 {
 	namespace gfx
 	{
+		struct DrawList
+		{
+			VertexBuffer* vb;
+			IndexBuffer* ib;
+			ConstantBuffer* cb;
+		};
+
 		struct RenderPassDesc
 		{
 			rsl::string_view name;

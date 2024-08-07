@@ -32,13 +32,6 @@ namespace rex
 			glm::vec3 light_direction;
 		};
 
-		struct DrawList
-		{
-			VertexBuffer* vb;
-			IndexBuffer* ib;
-			ConstantBuffer* cb;
-		};
-
 		struct PerInstanceData
 		{
 			glm::mat4 world;
