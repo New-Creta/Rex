@@ -51,8 +51,7 @@ namespace rex
     {
     public:
       Internal(CoreApplication* appInstance, ApplicationCreationParams&& appCreationParams)
-          : m_platform_creation_params(*appCreationParams.platform_params)
-          , m_engine_params(rsl::move(appCreationParams.engine_params))
+          : m_app_creation_params(rsl::move(appCreationParams))
           , m_app_instance(appInstance)
           , m_app_name(appCreationParams.gui_params.window_title)
       {
@@ -60,11 +59,11 @@ namespace rex
 
         // we're always assigning something to the pointers here to avoid branch checking every update
         // I've profiled this and always having a function wins here.
-        m_on_initialize = m_engine_params.app_init_func ? rsl::move(m_engine_params.app_init_func) : [&]() { return true; };
+        m_on_initialize = m_app_creation_params.engine_params.app_init_func ? rsl::move(m_app_creation_params.engine_params.app_init_func) : [&](const ApplicationCreationParams&) { return true; };
 
-        m_on_update = m_engine_params.app_update_func ? rsl::move(m_engine_params.app_update_func) : [&]() {};
+        m_on_update = m_app_creation_params.engine_params.app_update_func ? rsl::move(m_app_creation_params.engine_params.app_update_func) : [&]() {};
 
-        m_on_shutdown = m_engine_params.app_shutdown_func ? rsl::move(m_engine_params.app_shutdown_func) : [&]() {};
+        m_on_shutdown = m_app_creation_params.engine_params.app_shutdown_func ? rsl::move(m_app_creation_params.engine_params.app_shutdown_func) : [&]() {};
       }
 
       bool initialize()
@@ -79,7 +78,7 @@ namespace rex
           SetConsoleTitleA(m_app_name.data());
         }
 
-        return m_on_initialize();
+        return m_on_initialize(m_app_creation_params);
       }
 
       void update()
@@ -105,12 +104,11 @@ namespace rex
       }
 
     private:
-      PlatformCreationParams m_platform_creation_params;
-      EngineParams m_engine_params;
       CoreApplication* m_app_instance;
       rsl::string m_app_name;
+      ApplicationCreationParams m_app_creation_params;
 
-      rsl::function<bool()> m_on_initialize;
+      rsl::function<bool(const ApplicationCreationParams&)> m_on_initialize;
       rsl::function<void()> m_on_update;
       rsl::function<void()> m_on_shutdown;
 

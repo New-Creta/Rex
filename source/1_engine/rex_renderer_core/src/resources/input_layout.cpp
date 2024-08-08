@@ -53,19 +53,33 @@ namespace rex
       return invalid_obj<ShaderSemantic>();
     }
 
-    VertexBufferFormat to_vertex_input_format(ShaderParameterType type)
+    VertexBufferFormat to_vertex_input_format(ShaderArithmeticType type)
     {
       switch (type)
       {
-      case rex::gfx::ShaderParameterType::Uint:       return VertexBufferFormat::Uint;
-      case rex::gfx::ShaderParameterType::Float:      return VertexBufferFormat::Float;
-      case rex::gfx::ShaderParameterType::Float2:     return VertexBufferFormat::Float2;
-      case rex::gfx::ShaderParameterType::Float3:     return VertexBufferFormat::Float3;
-      case rex::gfx::ShaderParameterType::Float4:     return VertexBufferFormat::Float4;
+      case rex::gfx::ShaderArithmeticType::Uint:       return VertexBufferFormat::Uint;
+      case rex::gfx::ShaderArithmeticType::Float:      return VertexBufferFormat::Float;
+      case rex::gfx::ShaderArithmeticType::Float2:     return VertexBufferFormat::Float2;
+      case rex::gfx::ShaderArithmeticType::Float3:     return VertexBufferFormat::Float3;
+      case rex::gfx::ShaderArithmeticType::Float4:     return VertexBufferFormat::Float4;
       default: break;
       }
 
       return invalid_obj<VertexBufferFormat>();
+    }
+
+    bool operator==(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs)
+    {
+      if (lhs.size() != rhs.size())
+      {
+        return false;
+      }
+
+      return rsl::memcmp(lhs.data(), rhs.data(), lhs.size() * sizeof(lhs[0])) == 0;
+    }
+    bool operator!=(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs)
+    {
+      return !(lhs == rhs);
     }
 
 		InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderParamReflection>& shaderInputParams)
@@ -78,7 +92,7 @@ namespace rex
       {
         input_element_descriptions[i].semantic = shader_semantic_type(shaderInputParams[i].semantic_name);
         input_element_descriptions[i].format = to_vertex_input_format(shaderInputParams[i].type);
-        input_element_descriptions[i].input_slot_class = InputLayoutClassification::PerVertexData; // This is hardcoded, I wonder if there's a way around that..
+        input_element_descriptions[i].input_slot_class = InputLayoutClassification::PerVertex; // This is hardcoded, I wonder if there's a way around that..
         input_element_descriptions[i].semantic_index = shaderInputParams[i].semantic_index;
         input_element_descriptions[i].input_slot = 0;
         input_element_descriptions[i].aligned_byte_offset = byte_offset;
@@ -90,9 +104,9 @@ namespace rex
       return InputLayoutDesc{ input_element_descriptions };
 		}
 
-    InputLayout::InputLayout(s32 vertexSize, InputLayoutDesc&& desc)
+    InputLayout::InputLayout(s32 vertexSize, const InputLayoutDesc& desc)
       : m_vertex_size(vertexSize)
-      , m_desc(rsl::move(desc))
+      , m_desc(desc)
     {}
 
     s32 InputLayout::vertex_size() const
@@ -103,25 +117,25 @@ namespace rex
     // Validate a given descriptor and see if it can be used with this input layout
     bool InputLayout::validate_desc(const InputLayoutDesc& desc)
     {
-      if (desc.input_layout.size() != m_desc.input_layout.size())
+      if (desc.size() != m_desc.size())
       {
         return false;
       }
 
-      for (const auto& elem : desc.input_layout)
+      for (const auto& elem : desc)
       {
-        auto it = rsl::find_if(m_desc.input_layout.cbegin(), m_desc.input_layout.cend(),
+        auto it = rsl::find_if(m_desc.cbegin(), m_desc.cend(),
           [&](const InputLayoutElementDesc& myElem)
           {
             return elem.semantic == myElem.semantic;
           });
 
-        if (it == m_desc.input_layout.cend())
+        if (it == m_desc.cend())
         {
           return false;
         }
 
-        ShaderParameterType format = it->format;
+        ShaderArithmeticType format = it->format;
         if (!is_convertible_shader_param_type(format, elem.format))
         {
           return false;

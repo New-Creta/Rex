@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_std/memory.h"
 #include "rex_std/string_view.h"
 

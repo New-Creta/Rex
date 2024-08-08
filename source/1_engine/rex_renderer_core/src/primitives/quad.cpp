@@ -2,36 +2,36 @@
 
 #include "rex_renderer_core/gfx/vertex.h"
 
+#include "rex_renderer_core/gfx/rhi.h"
+
 namespace rex
 {
   namespace gfx
   {
     namespace mesh_factory
     {
-      MeshData16 create_quad(f32 x, f32 y, f32 w, f32 h, f32 depth)
+      StaticMesh create_quad(f32 w, f32 h)
       {
-        MeshData16 mesh_data;
-
         rsl::vector<VertexPosNormCol> vertices(4_size);
 
         // Position coordinates specified in NDC space.
         vertices[0] = VertexPosNormCol(
-          glm::vec3(x, y - h, depth),
+          glm::vec3(0, -h, 0),
           glm::vec3(0.0f, 0.0f, -1.0f),
           glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
         vertices[1] = VertexPosNormCol(
-          glm::vec3(x, y, depth),
+          glm::vec3(0, 0, 0),
           glm::vec3(0.0f, 0.0f, -1.0f),
           glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
         vertices[2] = VertexPosNormCol(
-          glm::vec3(x + w, y, depth),
+          glm::vec3(w, 0, 0),
           glm::vec3(0.0f, 0.0f, -1.0f),
           glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
         vertices[3] = VertexPosNormCol(
-          glm::vec3(x + w, y - h, depth),
+          glm::vec3(w, -h, 0),
           glm::vec3(0.0f, 0.0f, -1.0f),
           glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
@@ -44,7 +44,10 @@ namespace rex
         indices[4] = 2;
         indices[5] = 3;
 
-        return mesh_data;
+        rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(vertices.data(), vertices.size(), sizeof(vertices[0]));
+        rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(indices.data(), indices.size(), IndexBufferFormat::Uint16);
+
+        return StaticMesh(rsl::move(vb), rsl::move(ib));
       }
     }
   }

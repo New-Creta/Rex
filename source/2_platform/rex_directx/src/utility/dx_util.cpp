@@ -26,12 +26,15 @@
 #include "rex_directx/resources/dx_render_target.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/system/dx_view_heap.h"
+#include "rex_renderer_core/system/view_table.h"
 
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
 
 #include "rex_renderer_core/materials/material_system.h"
 #include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/system/graphics_engine.h"
+
+#include "rex_directx/system/dx_shader_root_parameters.h"
 
 namespace rex
 {
@@ -201,57 +204,57 @@ namespace rex
         switch (format)
         {
           // 4 component types
-        case ShaderParameterType::Float4:        return DXGI_FORMAT_R32G32B32A32_FLOAT;
-        case ShaderParameterType::Uint4:         return DXGI_FORMAT_R32G32B32A32_UINT;
-        case ShaderParameterType::Int4:          return DXGI_FORMAT_R32G32B32A32_SINT;
+        case ShaderArithmeticType::Float4:        return DXGI_FORMAT_R32G32B32A32_FLOAT;
+        case ShaderArithmeticType::Uint4:         return DXGI_FORMAT_R32G32B32A32_UINT;
+        case ShaderArithmeticType::Int4:          return DXGI_FORMAT_R32G32B32A32_SINT;
         
-        case ShaderParameterType::Half4:         return DXGI_FORMAT_R16G16B16A16_FLOAT;
-        case ShaderParameterType::Ushort4:       return DXGI_FORMAT_R16G16B16A16_UINT;
-        case ShaderParameterType::Short4:        return DXGI_FORMAT_R16G16B16A16_SINT;
+        case ShaderArithmeticType::Half4:         return DXGI_FORMAT_R16G16B16A16_FLOAT;
+        case ShaderArithmeticType::Ushort4:       return DXGI_FORMAT_R16G16B16A16_UINT;
+        case ShaderArithmeticType::Short4:        return DXGI_FORMAT_R16G16B16A16_SINT;
         
-        case ShaderParameterType::UChar4:        return DXGI_FORMAT_R8G8B8A8_UINT;
-        case ShaderParameterType::UChar4Norm:    return DXGI_FORMAT_R8G8B8A8_UNORM;
-        case ShaderParameterType::Char4:         return DXGI_FORMAT_R8G8B8A8_SINT;
-        case ShaderParameterType::Char4Norm:     return DXGI_FORMAT_R8G8B8A8_SNORM;
+        case ShaderArithmeticType::UChar4:        return DXGI_FORMAT_R8G8B8A8_UINT;
+        case ShaderArithmeticType::UChar4Norm:    return DXGI_FORMAT_R8G8B8A8_UNORM;
+        case ShaderArithmeticType::Char4:         return DXGI_FORMAT_R8G8B8A8_SINT;
+        case ShaderArithmeticType::Char4Norm:     return DXGI_FORMAT_R8G8B8A8_SNORM;
 
           // 3 component types
-        case ShaderParameterType::Float3:        return DXGI_FORMAT_R32G32B32_FLOAT; 
-        case ShaderParameterType::Uint3:         return DXGI_FORMAT_R32G32B32_UINT;
-        case ShaderParameterType::Int3:          return DXGI_FORMAT_R32G32B32_SINT;
+        case ShaderArithmeticType::Float3:        return DXGI_FORMAT_R32G32B32_FLOAT; 
+        case ShaderArithmeticType::Uint3:         return DXGI_FORMAT_R32G32B32_UINT;
+        case ShaderArithmeticType::Int3:          return DXGI_FORMAT_R32G32B32_SINT;
 
           // 2 component types
-        case ShaderParameterType::Float2:        return DXGI_FORMAT_R32G32_FLOAT;
-        case ShaderParameterType::Uint2:         return DXGI_FORMAT_R32G32_UINT;
-        case ShaderParameterType::Int2:          return DXGI_FORMAT_R32G32_SINT;
+        case ShaderArithmeticType::Float2:        return DXGI_FORMAT_R32G32_FLOAT;
+        case ShaderArithmeticType::Uint2:         return DXGI_FORMAT_R32G32_UINT;
+        case ShaderArithmeticType::Int2:          return DXGI_FORMAT_R32G32_SINT;
 
-        case ShaderParameterType::Half2:         return DXGI_FORMAT_R16G16_FLOAT;
-        case ShaderParameterType::Ushort2:       return DXGI_FORMAT_R16G16_UINT;
-        case ShaderParameterType::Ushort2Norm:   return DXGI_FORMAT_R16G16_UNORM;
-        case ShaderParameterType::Short2:        return DXGI_FORMAT_R16G16_SINT;
-        case ShaderParameterType::Short2Norm:    return DXGI_FORMAT_R16G16_SNORM;
+        case ShaderArithmeticType::Half2:         return DXGI_FORMAT_R16G16_FLOAT;
+        case ShaderArithmeticType::Ushort2:       return DXGI_FORMAT_R16G16_UINT;
+        case ShaderArithmeticType::Ushort2Norm:   return DXGI_FORMAT_R16G16_UNORM;
+        case ShaderArithmeticType::Short2:        return DXGI_FORMAT_R16G16_SINT;
+        case ShaderArithmeticType::Short2Norm:    return DXGI_FORMAT_R16G16_SNORM;
 
-        case ShaderParameterType::UChar2:        return DXGI_FORMAT_R8G8_UINT;
-        case ShaderParameterType::UChar2Norm:    return DXGI_FORMAT_R8G8_UNORM;
-        case ShaderParameterType::Char2:         return DXGI_FORMAT_R8G8_SINT;
-        case ShaderParameterType::Char2Norm:     return DXGI_FORMAT_R8G8_SNORM;
+        case ShaderArithmeticType::UChar2:        return DXGI_FORMAT_R8G8_UINT;
+        case ShaderArithmeticType::UChar2Norm:    return DXGI_FORMAT_R8G8_UNORM;
+        case ShaderArithmeticType::Char2:         return DXGI_FORMAT_R8G8_SINT;
+        case ShaderArithmeticType::Char2Norm:     return DXGI_FORMAT_R8G8_SNORM;
 
           // 1 component types
-        case ShaderParameterType::Float:         return DXGI_FORMAT_R32_FLOAT;
-        case ShaderParameterType::Uint:          return DXGI_FORMAT_R32_UINT;
-        case ShaderParameterType::Int:           return DXGI_FORMAT_R32_SINT;
+        case ShaderArithmeticType::Float:         return DXGI_FORMAT_R32_FLOAT;
+        case ShaderArithmeticType::Uint:          return DXGI_FORMAT_R32_UINT;
+        case ShaderArithmeticType::Int:           return DXGI_FORMAT_R32_SINT;
 
-        case ShaderParameterType::Half:          return DXGI_FORMAT_R16_FLOAT;
-        case ShaderParameterType::Ushort:        return DXGI_FORMAT_R16_UINT;
-        case ShaderParameterType::UshortNorm:    return DXGI_FORMAT_R16_UNORM;
-        case ShaderParameterType::Short:         return DXGI_FORMAT_R16_SINT;
-        case ShaderParameterType::ShortNorm:     return DXGI_FORMAT_R16_SNORM;
+        case ShaderArithmeticType::Half:          return DXGI_FORMAT_R16_FLOAT;
+        case ShaderArithmeticType::Ushort:        return DXGI_FORMAT_R16_UINT;
+        case ShaderArithmeticType::UshortNorm:    return DXGI_FORMAT_R16_UNORM;
+        case ShaderArithmeticType::Short:         return DXGI_FORMAT_R16_SINT;
+        case ShaderArithmeticType::ShortNorm:     return DXGI_FORMAT_R16_SNORM;
 
-        case ShaderParameterType::UChar:         return DXGI_FORMAT_R8_SINT;
-        case ShaderParameterType::UCharNorm:     return DXGI_FORMAT_R8_SNORM;
-        case ShaderParameterType::Char:          return DXGI_FORMAT_R8_UINT;
-        case ShaderParameterType::CharNorm:      return DXGI_FORMAT_R8_UNORM;
+        case ShaderArithmeticType::UChar:         return DXGI_FORMAT_R8_SINT;
+        case ShaderArithmeticType::UCharNorm:     return DXGI_FORMAT_R8_SNORM;
+        case ShaderArithmeticType::Char:          return DXGI_FORMAT_R8_UINT;
+        case ShaderArithmeticType::CharNorm:      return DXGI_FORMAT_R8_UNORM;
 
-        case ShaderParameterType::Bool:          return DXGI_FORMAT_R1_UNORM;
+        case ShaderArithmeticType::Bool:          return DXGI_FORMAT_R1_UNORM;
 
         default: break;
         }
@@ -299,8 +302,8 @@ namespace rex
       {
         switch (classification)
         {
-        case InputLayoutClassification::PerVertexData: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-        case InputLayoutClassification::PerInstanceData: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+        case InputLayoutClassification::PerVertex: return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+        case InputLayoutClassification::PerInstance: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
         default: break;
         }
 
@@ -680,6 +683,18 @@ namespace rex
 
         return sampler_desc;
       }
+      D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(ShaderParameterType type)
+      {
+        switch (type)
+        {
+        case rex::gfx::ShaderParameterType::ConstantBuffer:    return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+        case rex::gfx::ShaderParameterType::Texture:           return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+        case rex::gfx::ShaderParameterType::Sampler:           return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+        }
+
+        return invalid_obj<D3D12_DESCRIPTOR_RANGE_TYPE>();
+      }
+
 
 
       // ------------------------------------
@@ -749,6 +764,98 @@ namespace rex
       {
         return static_cast<DxPipelineState*>(pso);
       }
+      //DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters)
+      //{
+      //  DxShaderPipelineParameters2 dx_params{};
+      //  
+      //  dx_params.root_parameters.resize(parameters.num());
+      //  for (s32 i = 0; i < parameters.num(); ++i)
+      //  {
+      //    const ShaderParameterDeclaration* param = parameters[i];
+      //    rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_ranges = dx_params.ranges.emplace_back();
+      //    for (const auto& view_range : param->ranges)
+      //    {
+      //      D3D12_DESCRIPTOR_RANGE& dx_range = desc_ranges.emplace_back();
+      //      dx_range.BaseShaderRegister                 = view_range.base_register;
+      //      dx_range.NumDescriptors                     = view_range.num_views;
+      //      dx_range.OffsetInDescriptorsFromTableStart  = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+      //      dx_range.RangeType                          = to_dx12(view_range.type);
+      //      dx_range.RegisterSpace                      = view_range.register_space;
+      //    }
+      //    dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_ranges.size(), desc_ranges.data(), to_dx12(param->visibility));
+      //  }
+
+      //  //const auto& material_params = parameters.params(ShaderParameterBinding::Material);
+      //  //const auto& renderpass_params = parameters.params(ShaderParameterBinding::RenderPass);
+      //  //dx_params.root_parameters.resize(material_params.resources.size() + renderpass_params.resources.size());
+      //  //for (const auto& param : material_params.resources)
+      //  //{
+      //  //  dx_params.root_parameters[param.slot].InitAsDescriptorTable(param)
+      //  //}
+
+      //  //auto append_view_tables = [&](const rsl::vector<ShaderParameterDeclaration>& tables)
+      //  //{
+      //  //  for (const auto& view_table : tables)
+      //  //  {
+      //  //    rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_range = dx_params.ranges.emplace_back();
+      //  //    for (const auto& view_range : view_table.ranges)
+      //  //    {
+      //  //      D3D12_DESCRIPTOR_RANGE& dx_range = desc_range.emplace_back();
+      //  //      dx_range.BaseShaderRegister = view_range.base_register;
+      //  //      dx_range.NumDescriptors = view_range.num_views;
+      //  //      dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+      //  //      dx_range.RangeType = to_dx12(view_range.type);
+      //  //      dx_range.RegisterSpace = view_range.register_space;
+      //  //    }
+      //  //    dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_range.size(), desc_range.data(), to_dx12(view_table.visibility));
+      //  //  }
+      //  //};
+
+      //  //const rsl::unordered_map<ShaderType, rsl::vector<ShaderParameterDeclaration>>& view_tables = parameters.view_tables_per_shader();
+      //  //if (view_tables.contains(ShaderType::Vertex))
+      //  //{
+      //  //  append_view_tables(view_tables.at(ShaderType::Vertex));
+      //  //}
+      //  //if (view_tables.contains(ShaderType::Pixel))
+      //  //{
+      //  //  append_view_tables(view_tables.at(ShaderType::Pixel));
+      //  //}
+
+      //  return dx_params;
+      //}
+      DxShaderPipelineParameters2 to_dx12(const rsl::vector<ShaderParameterDeclaration>& parameters)
+      {
+        DxShaderPipelineParameters2 dx_params{};
+
+        dx_params.root_parameters.reserve(parameters.size());
+        for (const ShaderParameterDeclaration& param : parameters)
+        {
+          // Constant buffers are expected to be bound inline
+          if (param.type == ShaderParameterType::ConstantBuffer)
+          {
+            REX_ASSERT_X(param.ranges.size() == 1, "Constant buffer are expected to be bound independantly and not in ranges");
+            const ViewRangeDeclaration& view_range = param.ranges.front();
+            dx_params.root_parameters.emplace_back().InitAsConstantBufferView(view_range.base_register, view_range.register_space, to_dx12(param.visibility));
+          }
+          // All other type of parameters are expected to be tied within ranges
+          else
+          {
+            rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_ranges = dx_params.ranges.emplace_back();
+            for (const auto& view_range : param.ranges)
+            {
+              D3D12_DESCRIPTOR_RANGE& dx_range = desc_ranges.emplace_back();
+              dx_range.BaseShaderRegister = view_range.base_register;
+              dx_range.NumDescriptors = view_range.num_views;
+              dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+              dx_range.RangeType = to_dx12(view_range.type);
+              dx_range.RegisterSpace = view_range.register_space;
+            }
+            dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_ranges.size(), desc_ranges.data(), to_dx12(param.visibility));
+          }
+        }
+       
+        return dx_params;
+      }
 
       const DxShader* to_dx12(const Shader* shader)
       {
@@ -792,80 +899,80 @@ namespace rex
       // ------------------------------------
       // Return from Directx -> REX
       // ------------------------------------
-      ShaderParameterType from_dx12_shader_param_type(DXGI_FORMAT format)
+      ShaderArithmeticType from_dx12_shader_param_type(DXGI_FORMAT format)
       {
         switch (format)
         {
           // 4 component types
-        case DXGI_FORMAT_R32G32B32A32_FLOAT:      return ShaderParameterType::Float4;
+        case DXGI_FORMAT_R32G32B32A32_FLOAT:      return ShaderArithmeticType::Float4;
 
-        case DXGI_FORMAT_R32G32B32A32_UINT:       return ShaderParameterType::Uint4;
+        case DXGI_FORMAT_R32G32B32A32_UINT:       return ShaderArithmeticType::Uint4;
 
-        case DXGI_FORMAT_R32G32B32A32_SINT:       return ShaderParameterType::Int4;
+        case DXGI_FORMAT_R32G32B32A32_SINT:       return ShaderArithmeticType::Int4;
         
-        case DXGI_FORMAT_R16G16B16A16_FLOAT:      return ShaderParameterType::Half4;
+        case DXGI_FORMAT_R16G16B16A16_FLOAT:      return ShaderArithmeticType::Half4;
         
-        case DXGI_FORMAT_R16G16B16A16_UNORM:      return ShaderParameterType::Ushort4Norm;
-        case DXGI_FORMAT_R16G16B16A16_UINT:       return ShaderParameterType::Ushort4;
-        case DXGI_FORMAT_R16G16B16A16_SNORM:      return ShaderParameterType::Short4Norm;
-        case DXGI_FORMAT_R16G16B16A16_SINT:       return ShaderParameterType::Short4;
+        case DXGI_FORMAT_R16G16B16A16_UNORM:      return ShaderArithmeticType::Ushort4Norm;
+        case DXGI_FORMAT_R16G16B16A16_UINT:       return ShaderArithmeticType::Ushort4;
+        case DXGI_FORMAT_R16G16B16A16_SNORM:      return ShaderArithmeticType::Short4Norm;
+        case DXGI_FORMAT_R16G16B16A16_SINT:       return ShaderArithmeticType::Short4;
         
-        case DXGI_FORMAT_R8G8B8A8_UNORM:          return ShaderParameterType::UChar4Norm;
-        case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:     return ShaderParameterType::UChar4Norm;
-        case DXGI_FORMAT_R8G8B8A8_UINT:           return ShaderParameterType::UChar4;
-        case DXGI_FORMAT_R8G8B8A8_SNORM:          return ShaderParameterType::Char4Norm;
-        case DXGI_FORMAT_R8G8B8A8_SINT:           return ShaderParameterType::Char4;
-        case DXGI_FORMAT_B8G8R8A8_UNORM:          return ShaderParameterType::UChar4Norm;
-        case DXGI_FORMAT_B8G8R8X8_UNORM:          return ShaderParameterType::UChar4Norm;
-        case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:     return ShaderParameterType::UChar4Norm;
-        case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:     return ShaderParameterType::UChar4Norm;
+        case DXGI_FORMAT_R8G8B8A8_UNORM:          return ShaderArithmeticType::UChar4Norm;
+        case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:     return ShaderArithmeticType::UChar4Norm;
+        case DXGI_FORMAT_R8G8B8A8_UINT:           return ShaderArithmeticType::UChar4;
+        case DXGI_FORMAT_R8G8B8A8_SNORM:          return ShaderArithmeticType::Char4Norm;
+        case DXGI_FORMAT_R8G8B8A8_SINT:           return ShaderArithmeticType::Char4;
+        case DXGI_FORMAT_B8G8R8A8_UNORM:          return ShaderArithmeticType::UChar4Norm;
+        case DXGI_FORMAT_B8G8R8X8_UNORM:          return ShaderArithmeticType::UChar4Norm;
+        case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:     return ShaderArithmeticType::UChar4Norm;
+        case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:     return ShaderArithmeticType::UChar4Norm;
 
           // 3 component types
-        case DXGI_FORMAT_R32G32B32_FLOAT:         return ShaderParameterType::Float3;
-        case DXGI_FORMAT_R32G32B32_UINT:          return ShaderParameterType::Uint3;
-        case DXGI_FORMAT_R32G32B32_SINT:          return ShaderParameterType::Int3;
+        case DXGI_FORMAT_R32G32B32_FLOAT:         return ShaderArithmeticType::Float3;
+        case DXGI_FORMAT_R32G32B32_UINT:          return ShaderArithmeticType::Uint3;
+        case DXGI_FORMAT_R32G32B32_SINT:          return ShaderArithmeticType::Int3;
 
           // 2 component types
-        case DXGI_FORMAT_R32G32_FLOAT:            return ShaderParameterType::Float2;
+        case DXGI_FORMAT_R32G32_FLOAT:            return ShaderArithmeticType::Float2;
 
-        case DXGI_FORMAT_R32G32_UINT:             return ShaderParameterType::Uint2;
-        case DXGI_FORMAT_R32G32_SINT:             return ShaderParameterType::Int2;
+        case DXGI_FORMAT_R32G32_UINT:             return ShaderArithmeticType::Uint2;
+        case DXGI_FORMAT_R32G32_SINT:             return ShaderArithmeticType::Int2;
 
-        case DXGI_FORMAT_R16G16_FLOAT:            return ShaderParameterType::Half2;
-        case DXGI_FORMAT_R16G16_UNORM:            return ShaderParameterType::Ushort2Norm;
-        case DXGI_FORMAT_R16G16_UINT:             return ShaderParameterType::Ushort2;
-        case DXGI_FORMAT_R16G16_SNORM:            return ShaderParameterType::Short2Norm;
-        case DXGI_FORMAT_R16G16_SINT:             return ShaderParameterType::Short2;
+        case DXGI_FORMAT_R16G16_FLOAT:            return ShaderArithmeticType::Half2;
+        case DXGI_FORMAT_R16G16_UNORM:            return ShaderArithmeticType::Ushort2Norm;
+        case DXGI_FORMAT_R16G16_UINT:             return ShaderArithmeticType::Ushort2;
+        case DXGI_FORMAT_R16G16_SNORM:            return ShaderArithmeticType::Short2Norm;
+        case DXGI_FORMAT_R16G16_SINT:             return ShaderArithmeticType::Short2;
 
-        case DXGI_FORMAT_R8G8_UNORM:              return ShaderParameterType::UChar2Norm;
-        case DXGI_FORMAT_R8G8_UINT:               return ShaderParameterType::UChar2;
-        case DXGI_FORMAT_R8G8_SNORM:              return ShaderParameterType::Char2Norm;
-        case DXGI_FORMAT_R8G8_SINT:               return ShaderParameterType::Char2;
+        case DXGI_FORMAT_R8G8_UNORM:              return ShaderArithmeticType::UChar2Norm;
+        case DXGI_FORMAT_R8G8_UINT:               return ShaderArithmeticType::UChar2;
+        case DXGI_FORMAT_R8G8_SNORM:              return ShaderArithmeticType::Char2Norm;
+        case DXGI_FORMAT_R8G8_SINT:               return ShaderArithmeticType::Char2;
 
           // 1 component types
-        case DXGI_FORMAT_D32_FLOAT:               return ShaderParameterType::Float;
-        case DXGI_FORMAT_R32_FLOAT:               return ShaderParameterType::Float;
-        case DXGI_FORMAT_R32_UINT:                return ShaderParameterType::Uint;
-        case DXGI_FORMAT_R32_SINT:                return ShaderParameterType::Int;
+        case DXGI_FORMAT_D32_FLOAT:               return ShaderArithmeticType::Float;
+        case DXGI_FORMAT_R32_FLOAT:               return ShaderArithmeticType::Float;
+        case DXGI_FORMAT_R32_UINT:                return ShaderArithmeticType::Uint;
+        case DXGI_FORMAT_R32_SINT:                return ShaderArithmeticType::Int;
 
-        case DXGI_FORMAT_R16_FLOAT:               return ShaderParameterType::Half;
-        case DXGI_FORMAT_D16_UNORM:               return ShaderParameterType::UshortNorm;
-        case DXGI_FORMAT_R16_UNORM:               return ShaderParameterType::UshortNorm;
-        case DXGI_FORMAT_R16_UINT:                return ShaderParameterType::Ushort;
-        case DXGI_FORMAT_R16_SNORM:               return ShaderParameterType::ShortNorm;
-        case DXGI_FORMAT_R16_SINT:                return ShaderParameterType::Short;
+        case DXGI_FORMAT_R16_FLOAT:               return ShaderArithmeticType::Half;
+        case DXGI_FORMAT_D16_UNORM:               return ShaderArithmeticType::UshortNorm;
+        case DXGI_FORMAT_R16_UNORM:               return ShaderArithmeticType::UshortNorm;
+        case DXGI_FORMAT_R16_UINT:                return ShaderArithmeticType::Ushort;
+        case DXGI_FORMAT_R16_SNORM:               return ShaderArithmeticType::ShortNorm;
+        case DXGI_FORMAT_R16_SINT:                return ShaderArithmeticType::Short;
 
-        case DXGI_FORMAT_R8_UNORM:                return ShaderParameterType::UCharNorm;
-        case DXGI_FORMAT_R8_UINT:                 return ShaderParameterType::UChar;
-        case DXGI_FORMAT_R8_SNORM:                return ShaderParameterType::CharNorm;
-        case DXGI_FORMAT_R8_SINT:                 return ShaderParameterType::Char;
-        case DXGI_FORMAT_A8_UNORM:                return ShaderParameterType::CharNorm;
-        case DXGI_FORMAT_R1_UNORM:                return ShaderParameterType::Bool;
+        case DXGI_FORMAT_R8_UNORM:                return ShaderArithmeticType::UCharNorm;
+        case DXGI_FORMAT_R8_UINT:                 return ShaderArithmeticType::UChar;
+        case DXGI_FORMAT_R8_SNORM:                return ShaderArithmeticType::CharNorm;
+        case DXGI_FORMAT_R8_SINT:                 return ShaderArithmeticType::Char;
+        case DXGI_FORMAT_A8_UNORM:                return ShaderArithmeticType::CharNorm;
+        case DXGI_FORMAT_R1_UNORM:                return ShaderArithmeticType::Bool;
 
         default: break;
         }
 
-        return invalid_obj<ShaderParameterType>();
+        return invalid_obj<ShaderArithmeticType>();
       }
 
       TextureFormat from_dx12(DXGI_FORMAT type)

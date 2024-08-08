@@ -64,6 +64,11 @@ namespace rex
     }
 
     // Update a constant buffer's data on the gpu
+    void DxCopyContext::update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size)
+    {
+      s32 offset = 0;
+      update_buffer(buffer, data, size, offset);
+    }
     void DxCopyContext::update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxConstantBuffer* dx_constant_buffer = d3d::to_dx12(buffer);
@@ -71,6 +76,11 @@ namespace rex
       update_buffer(dx_constant_buffer->dx_object(), data, size, offset);
     }
     // Update a vertex buffer's data on the gpu
+    void DxCopyContext::update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size)
+    {
+      s32 offset = 0;
+      update_buffer(buffer, data, size, offset);
+    }
     void DxCopyContext::update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxVertexBuffer* dx_vertex_buffer = d3d::to_dx12(buffer);
@@ -78,6 +88,11 @@ namespace rex
       update_buffer(dx_vertex_buffer->dx_object(), data, size, offset);
     }
     // Update a index buffer's data on the gpu
+    void DxCopyContext::update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size)
+    {
+      s32 offset = 0;
+      update_buffer(buffer, data, size, offset);
+    }
     void DxCopyContext::update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
       DxIndexBuffer* dx_index_buffer = d3d::to_dx12(buffer);
@@ -106,7 +121,6 @@ namespace rex
       footprint.Footprint.Depth = 1;
       footprint.Footprint.RowPitch = d3d::texture_pitch_size(width, format);
       footprint.Offset = write_offset;
-
       CD3DX12_TEXTURE_COPY_LOCATION src_loc(upload_buffer_lock.upload_buffer()->dx_object(), footprint);
       m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);
     }

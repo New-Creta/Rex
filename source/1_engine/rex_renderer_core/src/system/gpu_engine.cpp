@@ -52,9 +52,10 @@ namespace rex
       auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "New Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
+      render_ctx->execute_on_gpu(WaitForFinish::yes);
 
       // EMpty out the view heaps so that new views can be copied into it
-      m_shader_visible_descriptor_heap_pool.at(ViewHeapType::AllShaderResources)->clear();
+      m_shader_visible_descriptor_heap_pool.at(ViewHeapType::ResourceView)->clear();
       m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Sampler)->clear();
     }
     // Present the new frame to the main window
@@ -154,10 +155,10 @@ namespace rex
     {
       init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::RenderTargetView, IsShaderVisible::no);
       init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::DepthStencilView, IsShaderVisible::no);
-      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::AllShaderResources, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::ResourceView, IsShaderVisible::no);
       init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::Sampler, IsShaderVisible::no);
 
-      init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::AllShaderResources, IsShaderVisible::yes);
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::ResourceView, IsShaderVisible::yes);
       init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::Sampler, IsShaderVisible::yes);
     }
     void GpuEngine::init_desc_heap(ViewHeapPool& descHeapPool, ViewHeapType descHeapType, IsShaderVisible isShaderVisible)

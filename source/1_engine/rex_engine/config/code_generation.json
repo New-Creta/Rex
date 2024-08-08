@@ -17,6 +17,7 @@
     "Content": [
       "Logs /*Folder where all logs go*/",
       "EngineSettings /*Root directory of engine settings*/",
+      "EngineMaterials /*Root directory of engine settings*/",
       "EngineRoot /*Root directory of engine files*/",
       "ProjectRoot /*Root directory of the current project*/",
       "SessionsRoot /*Root directory of all sessions*/",

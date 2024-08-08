@@ -161,17 +161,35 @@ namespace rex
       m_cmd_list->SetPipelineState(dx_pso->dx_object());
     }
     // Set the graphics root descriptor table of the context
-    void DxRenderContext::set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id)
+    void DxRenderContext::bind_view_table(s32 paramIdx, UINT64 id)
     {
       D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
       texture_handle.ptr = id;
 
       m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, texture_handle);
     }
-    // Set the constant buffer of the context at a given index
-    void DxRenderContext::set_constant_buffer(s32 paramIdx, ConstantBuffer* cb)
+    void DxRenderContext::bind_view_table(s32 paramIdx, ResourceView* startView)
     {
-      DxConstantBuffer* dx_cb = d3d::to_dx12(cb);
+      DxResourceView* dx_start_view = d3d::to_dx12(startView);
+      m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, dx_start_view->gpu_handle());
+    }
+    void DxRenderContext::bind_constant_buffer(s32 paramIdx, u64 gpuAddress)
+    {
+      m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, gpuAddress);
+    }
+    void DxRenderContext::bind_shader_resource(s32 paramIdx, u64 gpuAddress)
+    {
+      m_cmd_list->SetGraphicsRootShaderResourceView(paramIdx, gpuAddress);
+    }
+    void DxRenderContext::bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress)
+    {
+      m_cmd_list->SetGraphicsRootUnorderedAccessView(paramIdx, gpuAddress);
+    }
+
+    // Set the constant buffer of the context at a given index
+    void DxRenderContext::set_constant_buffer(s32 paramIdx, Resource* cb)
+    {
+      DxConstantBuffer* dx_cb = static_cast<DxConstantBuffer*>(cb);
       m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, dx_cb->dx_object()->GetGPUVirtualAddress());
     }
     // Set the blend factor of the context
@@ -242,8 +260,18 @@ namespace rex
 
       // Textures
       // Samplers
-      bind_resources_for_shader(material, ShaderType::Vertex);
-      bind_resources_for_shader(material, ShaderType::Pixel);
+
+      // Sort the materials based on their slot and register
+      // Some might be in tables and they'll use the slot of those
+      // This is to make sure that when we copy the descriptors in a heap
+      // that's accessible by the GPU, all views are continious in memory
+      // and are sorted in the way they're expected by the root signature
+
+      const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = material->shader_params();
+      for (const auto& shader_resource : shader_params)
+      {
+        shader_resource->bind_to(this);
+      }
     }
 
     // Return the wrapped directx commandlist
@@ -288,26 +316,13 @@ namespace rex
         m_cmd_list->ResourceBarrier(1, &barrier);
       }
     }
-    // Bind resources for a specific shader type
-    void DxRenderContext::bind_resources_for_shader(Material* material, ShaderType type)
-    {
-      // 1. Split textures and samplers of material based on shader visibility
-      AllShaderResources shader_resources = material->resources_for_shader(type);
 
-      // 2. Copy textures and samplers into descriptor heap that's visible in shaders, make sure they're sorted based on shader register
-      rsl::vector<ResourceView*> texture_views = sort_material_parameters<DxTexture2D>(shader_resources.textures);
-      rsl::vector<ResourceView*> sampler_views = sort_material_parameters<DxSampler2D>(shader_resources.samplers);
-
-      // 3. Copy the earlier cached gpu handle descriptors into the shader visible heap
-      auto copy_ctx = new_copy_ctx();
-      bind_material_resources(copy_ctx.get(), texture_views, ViewHeapType::AllShaderResources, shader_resources.textures_root_param_idx);
-      bind_material_resources(copy_ctx.get(), sampler_views, ViewHeapType::Sampler, shader_resources.samplers_root_param_idx);
-    }
     // Bind material resources to the root signature parameter index provided
     void DxRenderContext::bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, ViewHeapType type, s32 paramIdx)
     {
       if (!views.empty())
       {
+        // Copy all view into a continious block of memory on the GPU
         rsl::unique_ptr<ResourceView> start_sampler_handle = copyCtx->copy_views(type, views);
         if (paramIdx != -1)
         {

@@ -39,10 +39,13 @@ namespace rex
       rsl::unique_ptr<ResourceView> copy_views(ViewHeapType heapType, const rsl::vector<ResourceView*>& views);
 
       // Update a constant buffer's data
+      virtual void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size) = 0;
       virtual void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
       // Update a vertex buffer's data
+      virtual void update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size) = 0;
       virtual void update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
       // Update a index buffer's data
+      virtual void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size) = 0;
       virtual void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
       // Update a texture's data
       virtual void update_texture2d(Texture2D* texture, const void* data) = 0;

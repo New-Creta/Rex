@@ -1,4 +1,6 @@
-cbuffer PerWidgetData : register(b0) 
+#include "defines.hlsl"
+
+cbuffer PerWidgetData : register(b0, RENDER_PASS_REGISTER_SPACE) 
 {
   float4x4 ProjectionMatrix; 
 };

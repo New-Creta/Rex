@@ -38,7 +38,7 @@
 #include "rex_renderer_core/system/shader_elements.h"
 #include "rex_renderer_core/shader_reflection/shader_class_type.h"
 #include "rex_renderer_core/shader_reflection/shader_variable_type.h"
-#include "rex_renderer_core/shader_reflection/shader_param_type.h"
+#include "rex_renderer_core/shader_reflection/shader_arithmetic_type.h"
 #include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_std/bonus/utility.h"
@@ -60,7 +60,9 @@ namespace rex
     struct RasterStateDesc;
     enum class ShaderType;
     enum class ShaderVisibility;
+    enum class ShaderParameterType;
     class IsColorNormalized;
+    struct ShaderParameterDeclaration;
 
     class ConstantBuffer;
     class IndexBuffer;
@@ -73,6 +75,7 @@ namespace rex
     class Fence;
     class ConstantBuffer;
     class RenderTarget;
+    class ShaderPipelineParameters;
 
     // DirectX classes
     class DxCommandQueue;
@@ -91,6 +94,7 @@ namespace rex
     class DxUploadBuffer;
     class DxRenderTarget;
     class DxPipelineState;
+    struct DxShaderPipelineParameters2;
 
     namespace d3d
     {
@@ -182,6 +186,7 @@ namespace rex
       D3D12_DESCRIPTOR_HEAP_TYPE to_dx12(ViewHeapType type);
       D3D12_PRIMITIVE_TOPOLOGY_TYPE to_dx12(PrimitiveTopologyType type);
       D3D12_SAMPLER_DESC to_dx12(const ShaderSamplerDesc& desc);
+      D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(ShaderParameterType type);
 
       // ------------------------------------
       // Converts from generic REX classes -> DirectX REX classes
@@ -202,6 +207,8 @@ namespace rex
       DxUploadBuffer* to_dx12(UploadBuffer* uploadBuffer);
       DxRenderTarget* to_dx12(RenderTarget* renderTarget);
       DxPipelineState* to_dx12(PipelineState* pso);
+      //DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters);
+      DxShaderPipelineParameters2 to_dx12(const rsl::vector<ShaderParameterDeclaration>& parameters);
 
       const DxShader* to_dx12(const Shader* shader);
 
@@ -218,7 +225,7 @@ namespace rex
       // ------------------------------------
       // Return from Directx -> REX
       // ------------------------------------
-      ShaderParameterType from_dx12_shader_param_type(DXGI_FORMAT format);
+      ShaderArithmeticType from_dx12_shader_param_type(DXGI_FORMAT format);
       TextureFormat from_dx12(DXGI_FORMAT type);
       ShaderClassType from_dx12(D3D_SHADER_VARIABLE_CLASS type);
       ShaderVariableType from_dx12(D3D_SHADER_VARIABLE_TYPE type);

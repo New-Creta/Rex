@@ -5,7 +5,8 @@ namespace rex
 	namespace gfx
 	{
 		DxSampler2D::DxSampler2D(const DxResourceView& resourceView)
-			: m_resource_view(resourceView)
+			: Sampler2D(&m_resource_view)
+			, m_resource_view(resourceView)
 		{}
 
 		// Return a view to the object on the gpu

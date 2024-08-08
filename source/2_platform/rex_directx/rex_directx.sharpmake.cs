@@ -41,6 +41,7 @@ public class RexDirectX : PlatformProject
         conf.add_public_define("REX_ENABLE_DEBUG_RESOURCE_NAMES");
         conf.add_public_define("REX_ENABLE_GFX_DEBUGGING");
         conf.add_public_define("REX_ENABLE_DXGI_DEBUG_LAYER");
+        conf.add_public_define("REX_ENABLE_DEBUG_SHADER_COMPILATION");
         break;
       case Config.release:
         break;

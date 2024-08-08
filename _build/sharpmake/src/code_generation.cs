@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.IO;
 using Sharpmake;
 using System.Text;
+using System.Threading;
 
 // THE CODE GENERATION SYSTEM
 // Some code in the engine gets auto generated.
@@ -71,7 +72,7 @@ public static class CodeGeneration
 {
   static private Dictionary<string, CodeGen.TypeToGenerate> TypesToGenerate = new Dictionary<string, CodeGen.TypeToGenerate>();
   static private Dictionary<string, CodeGen.UnknownTypeConfig> UnknownTypesToGenerate = new Dictionary<string, CodeGen.UnknownTypeConfig>();
-  static private object MemberAccessLock = new object();
+  static private ReaderWriterLock MemberAccessLock = new ReaderWriterLock();
 
   // Reads the generation config file and processes it
   public static void ReadGenerationFile(string projectName, string filePath)
@@ -122,25 +123,27 @@ public static class CodeGeneration
     {
       // Sharpmake runs multithreaded, so we need to make sure we use a mutex here
       // Otherwise generation might fail because of a data race.
-
-      lock (MemberAccessLock)
+      MemberAccessLock.AcquireWriterLock(500);
       {
         // If we already have an enum for this, add the content to 
         if (TypesToGenerate.ContainsKey(key))
         {
           TypesToGenerate[key].AddContent(projectName, content);
         }
-
-        // The type for this key is not known yet, we need to add it to the dict of unknown types
-        // If the key doesn't exist yet in that dict, we need to add it first
-        else if (!UnknownTypesToGenerate.ContainsKey(key))
+        else
         {
-          UnknownTypesToGenerate.Add(key, new CodeGen.UnknownTypeConfig());
-        }
+          // The type for this key is not known yet, we need to add it to the dict of unknown types
+          // If the key doesn't exist yet in that dict, we need to add it first
+          if (!UnknownTypesToGenerate.ContainsKey(key))
+          {
+            UnknownTypesToGenerate.Add(key, new CodeGen.UnknownTypeConfig());
+          }
 
-        // Add the content to the unknown type in the dict
-        UnknownTypesToGenerate[key].AddContent(projectName, content);
+          // Add the content to the unknown type in the dict
+          UnknownTypesToGenerate[key].AddContent(projectName, content);
+        }
       }
+      MemberAccessLock.ReleaseWriterLock();
     }
   }
 
@@ -151,19 +154,23 @@ public static class CodeGeneration
     string className = typeDefine.RootElement.GetProperty("ClassName").GetString();
     string filepath = typeDefine.RootElement.GetProperty("Filepath").GetString();
 
-    // Create the type that needs to get generated
-    TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));    
-
     // Add remaining unknown types with the same key to the enum settings
-    if (UnknownTypesToGenerate.ContainsKey(key))
+    MemberAccessLock.AcquireWriterLock(500);
     {
-      CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
-      foreach (string project in unknownType.ProjectToContent.Keys)
+      // Create the type that needs to get generated
+      TypesToGenerate.Add(key, new CodeGen.EnumToGenerate(className, filepath, projectName, content));
+
+      if (UnknownTypesToGenerate.ContainsKey(key))
       {
-        List<string> unknownTypeContent = unknownType.ProjectToContent[project];
-        TypesToGenerate[key].AddContent(project, unknownTypeContent);
+        CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
+        foreach (string project in unknownType.ProjectToContent.Keys)
+        {
+          List<string> unknownTypeContent = unknownType.ProjectToContent[project];
+          TypesToGenerate[key].AddContent(project, unknownTypeContent);
+        }
       }
     }
+    MemberAccessLock.ReleaseWriterLock();
   }
 
   // Process an array type
@@ -180,19 +187,23 @@ public static class CodeGeneration
       includes = JsonSerializer.Deserialize<List<string>>(includesElement.ToString());
     }
 
-    // Create the type that needs to get generated
-    TypesToGenerate.Add(key, new CodeGen.ArrayToGenerate(elementType, name, filepath, includes, projectName, content));
-
     // Add remaining unknown types with the same key to the enum settings
-    if (UnknownTypesToGenerate.ContainsKey(key))
+    MemberAccessLock.AcquireWriterLock(500);
     {
-      CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
-      foreach (string project in unknownType.ProjectToContent.Keys)
+      // Create the type that needs to get generated
+      TypesToGenerate.Add(key, new CodeGen.ArrayToGenerate(elementType, name, filepath, includes, projectName, content));
+
+      if (UnknownTypesToGenerate.ContainsKey(key))
       {
-        List<string> unknownTypeContent = unknownType.ProjectToContent[project];
-        TypesToGenerate[key].AddContent(project, unknownTypeContent);
+        CodeGen.UnknownTypeConfig unknownType = UnknownTypesToGenerate[key];
+        foreach (string project in unknownType.ProjectToContent.Keys)
+        {
+          List<string> unknownTypeContent = unknownType.ProjectToContent[project];
+          TypesToGenerate[key].AddContent(project, unknownTypeContent);
+        }
       }
     }
+    MemberAccessLock.ReleaseWriterLock();
   }
 
   // go over the dict holding the types to generate and generate all of them

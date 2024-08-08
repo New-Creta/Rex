@@ -7,15 +7,15 @@
 
 namespace rex
 {
+  struct ApplicationCreationParams;
   struct EngineParams
   {
-    using init_func     = rsl::function<bool()>;
+    using init_func     = rsl::function<bool(const ApplicationCreationParams& appCreationParams)>;
     using update_func   = rsl::function<void()>;
     using shutdown_func = rsl::function<void()>;
 
     init_func app_init_func         = nullptr;
     update_func app_update_func     = nullptr;
-    update_func app_draw_func       = nullptr;
     shutdown_func app_shutdown_func = nullptr;
   };
 

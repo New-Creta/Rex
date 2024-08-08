@@ -6,6 +6,8 @@
 
 namespace pokemon
 {
+  class Map;
+
   // High level information on a level.
   class LevelInfo
   {
@@ -35,5 +37,6 @@ namespace pokemon
   private:
     rsl::string m_name;
     rsl::vector<rsl::string> m_map_names;
+    rsl::unique_ptr<Map> m_current_map;
   };
 }

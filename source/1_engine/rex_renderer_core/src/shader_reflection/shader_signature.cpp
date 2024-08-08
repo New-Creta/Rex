@@ -29,6 +29,11 @@ namespace rex
 		{
 			return m_desc.output_params;
 		}
+		// The constant buffers of the shader in resource format
+		const rsl::vector<BoundResourceReflection>& ShaderSignature::constant_buffers_resources() const
+		{
+			return m_desc.bound_resources.constant_buffers;
+		}
 		// The textures of the shader
 		const rsl::vector<BoundResourceReflection>& ShaderSignature::textures() const
 		{
@@ -40,14 +45,14 @@ namespace rex
 			return m_desc.bound_resources.samplers;
 		}
 
-		ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline)
-		{
-			ShaderPipelineReflection refl{};
+		//ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline)
+		//{
+		//	ShaderPipelineReflection refl{};
 
-			refl.vs = rex::gfx::rhi::reflect_shader(shaderPipeline.vs.get());
-			refl.ps = rex::gfx::rhi::reflect_shader(shaderPipeline.ps.get());
+		//	refl.vs = rex::gfx::rhi::reflect_shader(shaderPipeline.vs);
+		//	refl.ps = rex::gfx::rhi::reflect_shader(shaderPipeline.ps);
 
-			return refl;
-		}
+		//	return refl;
+		//}
 	}
 }

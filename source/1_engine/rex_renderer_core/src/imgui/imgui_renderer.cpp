@@ -14,6 +14,8 @@
 #include "rex_renderer_core/imgui/imgui_viewport.h"
 #include "rex_renderer_core/imgui/imgui_window_render_params.h"
 
+#include "rex_renderer_core/system/shader_library.h"
+
 #include "rex_renderer_core/materials/material_system.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
@@ -92,9 +94,10 @@ namespace rex
       io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable gamepad controls
       io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable docking
       io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable multi-viewport / Platform windows
+      io.ConfigFlags |= ImGuiConfigFlags_IsSRGB; // We're rendering in sRGBs
 
       // Enable dark mode
-      ImGui::StyleColorsDark();
+      ImGui::StyleColorsDarkSRGB();
 
       // We support multiple viewport, having imgui widget in their own windows when dragged outside of the main window
       ImGuiStyle& style = ImGui::GetStyle();
@@ -124,7 +127,6 @@ namespace rex
     {
       init_font_texture();
       init_font_sampler();
-      init_input_layout();
       init_material();
       init_pso();
     }
@@ -171,21 +173,6 @@ namespace rex
 
       m_fonts_sampler = rhi::create_sampler2d(desc);
     }
-    // Initialize the input layout that'll be used by all ImGui rendering
-    void ImGuiRenderer::init_input_layout()
-    {
-      // Input layout is hardcoded as the vertices are also hardcoded
-      // The material is responsible for validating that the input layout is correct with the shader
-
-      InputLayoutDesc input_layout_desc;
-      input_layout_desc.input_layout =
-      {
-        InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 0, 0 },
-        InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertexData, 0, 0, 8, 0 },
-        InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertexData, 0, 0, 16, 0 }
-      };
-      m_input_layout = rhi::create_input_layout(rsl::move(input_layout_desc));
-    }
     // Initialize the material that'll be used by all ImGui rendering
     void ImGuiRenderer::init_material()
     {
@@ -194,16 +181,20 @@ namespace rex
       m_material = load_material(material_path);
       REX_ASSERT_X(m_material != nullptr, "Failed to load imgui material");
 
-      m_material->set_texture("fonts_texture", m_fonts_texture.get());
-      m_material->set_sampler("fonts_sampler", m_fonts_sampler.get());
+      m_material->set("fonts_texture", m_fonts_texture.get());
+      m_material->set("fonts_sampler", m_fonts_sampler.get());
       m_material->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
-
-      m_material->validate_input_layout(m_input_layout.get());
     }
     // Initialize the pso based on the the gpu resources
     void ImGuiRenderer::init_pso()
     {
-      m_pipeline_state = rhi::create_pso(m_input_layout.get(), m_material.get());
+      InputLayoutDesc input_layout_desc =
+      {
+        InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 0, 0 },
+        InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 8, 0 },
+        InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertex, 0, 0, 16, 0 }
+      };
+      m_pipeline_state = rhi::create_pso(input_layout_desc, m_material.get());
     }
 
     // Destroy all viewports used by ImGui

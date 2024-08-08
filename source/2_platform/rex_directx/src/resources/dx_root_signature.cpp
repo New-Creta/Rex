@@ -4,9 +4,9 @@ namespace rex
 {
   namespace gfx
   {
-    DxRootSignature::DxRootSignature(const wrl::ComPtr<ID3D12RootSignature>& rootSignature, rsl::vector<CD3DX12_ROOT_PARAMETER>&& rootParameters)
+    DxRootSignature::DxRootSignature(const wrl::ComPtr<ID3D12RootSignature>& rootSignature, const rsl::vector<CD3DX12_ROOT_PARAMETER>& rootParameters)
       : m_root_signature(rootSignature)
-      , m_root_parameters(rsl::move(rootParameters))
+      , m_root_parameters(rootParameters)
     {
       for (s32 idx = 0; idx < m_root_parameters.size(); ++idx)
       {

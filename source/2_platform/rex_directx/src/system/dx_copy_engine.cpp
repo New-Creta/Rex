@@ -32,7 +32,7 @@ namespace rex
     // Initialize all the resources required for the compute engine
     void DxCopyEngine::init()
     {
-      m_upload_buffer = rhi::create_upload_buffer(100_mib);
+      m_upload_buffer = rhi::create_upload_buffer(1_mib);
     }
 
     // Prepare a new frame

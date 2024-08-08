@@ -31,7 +31,7 @@ namespace rex
       REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_RTV, "Trying to create a render target view from a view heap that's not configured to create render target views");
 
       D3D12_RENDER_TARGET_VIEW_DESC rtv_desc {};
-      rtv_desc.Format        = DXGI_FORMAT_R8G8B8A8_UNORM;
+      rtv_desc.Format        = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
       rtv_desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
       DxResourceView rtv_handle = new_free_handle();
@@ -111,6 +111,11 @@ namespace rex
 
       for (ResourceView* view : views)
       {
+        if (view == nullptr)
+        {
+          continue;
+        }
+
         DxResourceView* src_handle = d3d::to_dx12(view);
         m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), src_handle->cpu_handle(), m_view_heap_type);
         (*free_handle)++;

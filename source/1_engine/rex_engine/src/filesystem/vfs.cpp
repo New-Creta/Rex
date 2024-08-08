@@ -489,7 +489,7 @@ namespace rex
 
     void mount(MountingPoint root, rsl::string_view path)
     {
-      rsl::string full_path = vfs::create_full_path(path);
+      rsl::string full_path = vfs::abs_path(path);
 
       REX_ASSERT_X(!g_mounted_roots.contains(root), "root {} is already mapped. currently mapped to '{}'", rsl::enum_refl::enum_name(root), g_mounted_roots.at(root));
       g_mounted_roots[root] = full_path;
@@ -614,7 +614,7 @@ namespace rex
     bool is_dir(rsl::string_view path)
     {
       path = path::remove_quotes(path);
-      rsl::string fullpath = create_full_path(path);
+      rsl::string fullpath = abs_path(path);
       
       return directory::exists(fullpath);
     }
@@ -628,11 +628,11 @@ namespace rex
     bool is_file(rsl::string_view path)
     {
       path = path::remove_quotes(path);
-      rsl::string fullpath = create_full_path(path);
+      rsl::string fullpath = abs_path(path);
 
       return file::exists(fullpath);
     }
-    rsl::string create_full_path(MountingPoint root, rsl::string_view path)
+    rsl::string abs_path(MountingPoint root, rsl::string_view path)
     {
       REX_ASSERT_X(g_vfs_state_controller.has_state(VfsState::Running), "Trying to use vfs before it's initialized");
       REX_ASSERT_X(!path::is_absolute(path), "Passed an absolute path into a function that doesn't allow absolute paths");
@@ -641,7 +641,7 @@ namespace rex
 
       return path::join(g_mounted_roots.at(root), path);
     }
-    rsl::string create_full_path(rsl::string_view path)
+    rsl::string abs_path(rsl::string_view path)
     {
       path = path::remove_quotes(path);
 
@@ -673,7 +673,7 @@ namespace rex
 
     rsl::vector<rsl::string> files_in_dir(rsl::string_view path)
     {
-      const rsl::string full_path = vfs::create_full_path(path);
+      const rsl::string full_path = vfs::abs_path(path);
 
       return directory::list_files(full_path);
     }

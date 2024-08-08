@@ -53,9 +53,14 @@ namespace rex
       // Set the pipeline state of the context
       void set_pipeline_state(PipelineState* pso) override;
       // Set the graphics root descriptor table of the context
-      void set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id) override;
+      void bind_view_table(s32 paramIdx, UINT64 id) override;
+      void bind_view_table(s32 paramIdx, ResourceView* startCb) override;
       // Set the constant buffer of the context at a given index
-      void set_constant_buffer(s32 paramIdx, ConstantBuffer* cb) override;
+      void bind_constant_buffer(s32 paramIdx, u64 gpuAddress) override;
+      void bind_shader_resource(s32 paramIdx, u64 gpuAddress) override;
+      void bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress) override;
+
+      void set_constant_buffer(s32 paramIdx, Resource* startView) override;
       // Set the blend factor of the context
       void set_blend_factor(const f32 blendFactor[4]) override;
       // Set the blend factor of the context
@@ -85,8 +90,6 @@ namespace rex
     private:
       // Transition a buffer into a new resource state
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
-      // Bind resources for a specific shader type
-      void bind_resources_for_shader(Material* material, ShaderType type);
 
       // Sort the resources of a material based on their shader register and stored their views in an array
       template <typename Resource, typename Param>

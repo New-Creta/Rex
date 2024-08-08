@@ -1,4 +1,7 @@
 #include "rex_renderer_core/primitives/cylinder.h"
+#include <glm/gtc/constants.hpp>
+
+#include "rex_renderer_core/gfx/rhi.h"
 
 namespace rex
 {
@@ -86,7 +89,7 @@ namespace rex
         }
       } // namespace internal
 
-      MeshData16 create_cylinder(f32 bottomRadius, f32 topRadius, f32 height, u16 sliceCount, u16 stackCount)
+      StaticMesh create_cylinder(f32 bottomRadius, f32 topRadius, f32 height, u16 sliceCount, u16 stackCount)
       {
         MeshData16 mesh_data;
 
@@ -170,10 +173,10 @@ namespace rex
           }
         }
 
-        internal::build_cylinder_top_cap(topRadius, height, sliceCount, mesh_data);
-        internal::build_cylinder_bottom_cap(bottomRadius, height, sliceCount, mesh_data);
+        rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(mesh_data.vertices().data(), mesh_data.vertices().size(), mesh_data.vertex_size());
+        rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(mesh_data.indices().data(), mesh_data.indices().size(), IndexBufferFormat::Uint16);
 
-        return mesh_data;
+        return StaticMesh(rsl::move(vb), rsl::move(ib));
       }
     } // namespace mesh_factory
   }

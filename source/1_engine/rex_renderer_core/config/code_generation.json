@@ -1,7 +1,12 @@
 {
-    "MemoryTags": {
-        "Content": [
-            "Renderer"
-        ]
-    }
+  "MemoryTags": {
+    "Content": [
+      "Renderer"
+    ]
+  },
+  "MountingPoints": {
+    "Content": [
+      "EngineShaders"
+    ]
+  }
 }

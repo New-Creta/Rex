@@ -33,6 +33,11 @@ namespace rex
   {
     class PipelineState;
 
+    namespace internal
+    {
+      void add_renderer(rsl::unique_ptr<Renderer> renderer);
+    }
+
     // Log the basic info about the graphics hardware of the current machine
     void log_info();
 
@@ -41,9 +46,16 @@ namespace rex
     // Shutdown the graphics engine, no rendering support from here on out
     void shutdown();
 
-    // Add a renderer to the queue.
-    // All renderers get processed when render() is called
-    void add_renderer(rsl::unique_ptr<Renderer> renderer);
+    template <typename T, typename ... Args>
+    T* add_renderer(Args&& ... args)
+    {
+      rsl::unique_ptr<T> renderer = rsl::make_unique<T>(rsl::forward<Args>(args)...);
+
+      T* result = renderer.get();
+      internal::add_renderer(rsl::move(renderer));
+
+      return result;
+    }
 
     // Render a single frame by going over all the renderers
     void render();

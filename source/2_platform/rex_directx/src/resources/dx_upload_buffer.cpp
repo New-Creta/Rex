@@ -31,25 +31,27 @@ namespace rex
       // Write the data into our mapped memory
       REX_ASSERT_X(can_fit_alloc(size, alignment), "Upload buffer overflow. Would write more into the upload buffer than is supported");
 
-      rsl::byte* start = (rsl::byte*)m_mapped_data + current_offset(); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
+      dec_buffer_offset(size);
+
+      rsl::byte* start = (rsl::byte*)m_mapped_data + current_buffer_offset(); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast, google-readability-casting)
       start = align(start, alignment);
       rsl::memcpy(start, data, size);
 
-      return inc_offset(size, alignment);
+      return current_buffer_offset();
     }
 
     // Write data on cpu side, it returns the offset into the upload buffer where data was written to
     s64 DxUploadBuffer::write_texture_data_from_cpu(const void* data, s32 width, s32 height, TextureFormat format)
     {
       // Write the data into our mapped memory
-      s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
+      s32 alignment = D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT;
       s32 pitch_size = d3d::texture_pitch_size(width, format);
       s64 total_size = static_cast<s64>(pitch_size) * height;
       REX_ASSERT_X(can_fit_alloc(total_size, alignment), "Upload buffer overflow. Would write more into the upload buffer than is supported");
 
       // Texture data needs to get written 1 row at a time
       const char* src = (const char*)data;
-      rsl::byte* dst = (rsl::byte*)m_mapped_data + current_offset();
+      rsl::byte* dst = (rsl::byte*)m_mapped_data + current_texture_offset();
       dst = align(dst, alignment);
       for (s32 y = 0; y < height; ++y)
       {
@@ -58,7 +60,7 @@ namespace rex
         dst += pitch_size;
       }
 
-      return inc_offset(total_size, alignment);
+      return inc_texture_offsset(total_size, alignment);
     }
 
     ID3D12Resource* DxUploadBuffer::dx_object()
