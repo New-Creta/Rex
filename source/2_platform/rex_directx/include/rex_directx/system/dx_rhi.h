@@ -5,9 +5,7 @@
 #include "rex_directx/dxgi/includes.h"
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/resource_management/resource_slot.h"
 #include "rex_renderer_core/system/gpu_description.h"
-#include "rex_renderer_core/resource_management/resource_pool.h"
 
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_debug_interface.h"

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_renderer_core/scenegraph/scene.h"
-#include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/materials/material.h"
 
 #include "glm/glm.hpp"

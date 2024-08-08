@@ -1,6 +1,6 @@
 #include "defines.hlsl"
 
-cbuffer PerInstance : register(b0, MATERIAL_REGISTER_SPACE)
+cbuffer PerInstance : register(b0, RENDER_PASS_REGISTER_SPACE)
 {
   float4x4 gWorld;
   float4x4 gWorldViewProj;

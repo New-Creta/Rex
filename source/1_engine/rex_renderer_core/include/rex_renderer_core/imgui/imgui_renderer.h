@@ -15,6 +15,7 @@ namespace rex
   namespace gfx
   {
     class Texture2D;
+    class Sampler2D;
     class InputLayout;
     class PipelineState;
     class Shader;

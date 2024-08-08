@@ -30,6 +30,7 @@ namespace rex
 				ViewTableBuilder(s32 registerSpace, ShaderResourceType expectedResourceType)
 					: m_start_register(0)
 					, m_expected_register(0)
+					, m_total_num_views(0)
 					, m_expected_register_space(registerSpace)
 					, m_expected_resource_type(expectedResourceType)
 				{}
@@ -57,7 +58,7 @@ namespace rex
 				ViewTable build(s32 slot, ShaderVisibility visibility)
 				{
 					add_new_range();
-					return ViewTable(slot, rsl::move(m_ranges), visibility);
+					return ViewTable(slot, rsl::move(m_ranges), m_total_num_views, m_expected_resource_type, visibility);
 				}
 
 			private:
@@ -66,6 +67,7 @@ namespace rex
 					s32 num_views = m_expected_register - m_start_register;
 					if (num_views > 0)
 					{
+						m_total_num_views += num_views;
 						m_ranges.emplace_back(m_start_register, num_views, m_expected_resource_type, m_expected_register_space);
 					}
 				}
@@ -74,6 +76,7 @@ namespace rex
 				s32 m_start_register;
 				s32 m_expected_register;
 				s32 m_expected_register_space;
+				s32 m_total_num_views;
 				ShaderResourceType m_expected_resource_type;
 				rsl::vector<ViewRange> m_ranges;
 			};
@@ -140,19 +143,63 @@ namespace rex
 					// However, it is possible that resource registers are not continious
 					// in which case we split the resources of in another range
 
+					rsl::vector<BoundResourceReflection> cb_views;
+					rsl::vector<BoundResourceReflection> other_views;
+
+					for (const BoundResourceReflection& resource : resources)
+					{
+						switch (resource.resource_type)
+						{
+						case ShaderResourceType::ConstantBuffer: cb_views.push_back(resource); break;
+						default: other_views.push_back(resource); break;
+						}
+					}
+
+					add_view_binding(param_store_desc, cb_views, type, expectedRegisterSpace, visibility);
+					add_view_table_binding(param_store_desc, other_views, type, expectedRegisterSpace, visibility);
+				}
+				void add_view_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<BoundResourceReflection>& resources, ShaderResourceType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
+				{
+					if (resources.empty())
+					{
+						return;
+					}
+
+					// As we're processing a single view and not putting it in a table
+					for (s32 i = 0; i < resources.size(); ++i)
+					{
+						s32 slot = m_reflection_result.parameters.size();
+						s32 idx = paramStoreDesc->shader_resource_descs.size();
+
+						const BoundResourceReflection& resource = resources[i];
+						ViewOffset view_offset{};
+						paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
+						ViewRange view_range = ViewRange(resource.shader_register, 1, type, resource.register_space);
+						const auto& view_table = m_reflection_result.parameters.emplace_back(ViewTable(slot, { view_range }, 1, type, visibility));
+						paramStoreDesc->shader_resource_descs.push_back(ShaderResourceDesc{ type, slot, view_table.total_num_views });
+					}
+
+				}
+				void add_view_table_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<BoundResourceReflection>& resources, ShaderResourceType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
+				{
+					if (resources.empty())
+					{
+						return;
+					}
+
 					ViewTableBuilder view_table_builder(expectedRegisterSpace, type);
 					s32 slot = m_reflection_result.parameters.size();
-					s32 idx = param_store_desc->shader_resource_descs.size();
+					s32 idx = paramStoreDesc->shader_resource_descs.size();
 
 					for (s32 i = 0; i < resources.size(); ++i)
 					{
 						const BoundResourceReflection& resource = resources[i];
 						ViewOffset view_offset = view_table_builder.add_resource(slot, resource);
-						param_store_desc->param_map.emplace(resource.name, ShaderParameterLocation{ idx, view_offset });
+						paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
 					}
 
 					const auto& view_table = m_reflection_result.parameters.emplace_back(view_table_builder.build(slot, visibility));
-					param_store_desc->shader_resource_descs.push_back(ShaderResourceDesc{ type, slot, view_table.ranges.size() });
+					paramStoreDesc->shader_resource_descs.push_back(ShaderResourceDesc{ type, slot, view_table.total_num_views });
 				}
 
 			private:

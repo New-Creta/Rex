@@ -174,9 +174,9 @@ namespace rex
       m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, dx_start_view->gpu_handle());
     }
     // Set the constant buffer of the context at a given index
-    void DxRenderContext::set_constant_buffer(s32 paramIdx, ConstantBuffer* cb)
+    void DxRenderContext::set_constant_buffer(s32 paramIdx, Resource* cb)
     {
-      DxConstantBuffer* dx_cb = d3d::to_dx12(cb);
+      DxConstantBuffer* dx_cb = static_cast<DxConstantBuffer*>(cb);
       m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, dx_cb->dx_object()->GetGPUVirtualAddress());
     }
     // Set the blend factor of the context
@@ -253,9 +253,8 @@ namespace rex
       // This is to make sure that when we copy the descriptors in a heap
       // that's accessible by the GPU, all views are continious in memory
       // and are sorted in the way they're expected by the root signature
-      /*material->bind_resource();*/
 
-      rsl::vector<ShaderResource> shader_resources = material->shader_resources();
+      const rsl::vector<ShaderResource>& shader_resources = material->shader_resources();
       auto copy_ctx = new_copy_ctx();
       for (const auto& shader_resource : shader_resources)
       {
@@ -268,55 +267,6 @@ namespace rex
         }
         m_cmd_list->SetGraphicsRootDescriptorTable(shader_resource.slot(), d3d::to_dx12(start_handle.get())->gpu_handle());
       }
-
-      //rsl::vector<ShaderResource> shader_resources_map = material->shader_resources();
-
-      //auto copy_ctx = new_copy_ctx();
-      //rsl::vector<ResourceView*> views;
-      //for (auto& [shader_type, shader_resources] : shader_resources_map)
-      //{
-      //  if (!shader_resources.constant_buffers.empty())
-      //  {
-      //    views.clear();
-      //    rsl::transform(shader_resources.constant_buffers.begin(), shader_resources.constant_buffers.end(), rsl::back_inserter(views),
-      //      [](ConstantBuffer* cb)
-      //      {
-      //        DxConstantBuffer* dx_cb = d3d::to_dx12(cb);
-      //        return dx_cb->view();
-      //      });
-
-      //    rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
-      //    s32 slot = shader_resources.cb_slot;
-      //    m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
-      //  }
-      //  if (!shader_resources.textures.empty())
-      //  {
-      //    views.clear();
-      //    rsl::transform(shader_resources.textures.begin(), shader_resources.textures.end(), rsl::back_inserter(views),
-      //      [](Texture2D* texture)
-      //      {
-      //        DxTexture2D* dx_texture = d3d::to_dx12(texture);
-      //        return dx_texture->view();
-      //      });
-      //    rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::ShaderResourceView, views);
-      //    s32 slot = shader_resources.srv_slot;
-      //    m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
-      //  }
-      //  if (!shader_resources.samplers.empty())
-      //  {
-      //    views.clear();
-      //    rsl::transform(shader_resources.samplers.begin(), shader_resources.samplers.end(), rsl::back_inserter(views),
-      //      [](Sampler2D* sampler)
-      //      {
-      //        DxSampler2D* dx_sampler = d3d::to_dx12(sampler);
-      //        return dx_sampler->view();
-      //      });
-      //    rsl::unique_ptr<ResourceView> start_handle = copy_ctx->copy_views(ViewHeapType::Sampler, views);
-      //    s32 slot = shader_resources.sampler_slot;
-      //    m_cmd_list->SetGraphicsRootDescriptorTable(slot, d3d::to_dx12(start_handle.get())->gpu_handle());
-      //  }
-      //}
-
     }
 
     // Return the wrapped directx commandlist

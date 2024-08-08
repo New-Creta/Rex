@@ -832,16 +832,25 @@ namespace rex
         for (const ViewTable& param : parameters)
         {
           rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_ranges = dx_params.ranges.emplace_back();
-          for (const auto& view_range : param.ranges)
+          if (param.type == ShaderResourceType::ConstantBuffer)
           {
-            D3D12_DESCRIPTOR_RANGE& dx_range = desc_ranges.emplace_back();
-            dx_range.BaseShaderRegister = view_range.base_register;
-            dx_range.NumDescriptors = view_range.num_views;
-            dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
-            dx_range.RangeType = to_dx12(view_range.type);
-            dx_range.RegisterSpace = view_range.register_space;
+            REX_ASSERT_X(param.ranges.size() == 1, "A constant buffer is not expected to be in a table");
+            const ViewRange& view_range = param.ranges.front();
+            dx_params.root_parameters.emplace_back().InitAsConstantBufferView(view_range.base_register, view_range.register_space, to_dx12(param.visibility));
           }
-          dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_ranges.size(), desc_ranges.data(), to_dx12(param.visibility));
+          else
+          {
+            for (const auto& view_range : param.ranges)
+            {
+              D3D12_DESCRIPTOR_RANGE& dx_range = desc_ranges.emplace_back();
+              dx_range.BaseShaderRegister = view_range.base_register;
+              dx_range.NumDescriptors = view_range.num_views;
+              dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
+              dx_range.RangeType = to_dx12(view_range.type);
+              dx_range.RegisterSpace = view_range.register_space;
+            }
+            dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_ranges.size(), desc_ranges.data(), to_dx12(param.visibility));
+          }
         }
        
         return dx_params;

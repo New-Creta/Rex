@@ -163,7 +163,7 @@ namespace rex
       }
 
       // Project vertices onto sphere and scale.
-      for(u32 i = 0; i < mesh_data.vertices().size(); ++i)
+      for(s32 i = 0; i < mesh_data.vertices().size(); ++i)
       {
         // Project onto unit sphere.
         glm::vec3 n = glm::normalize(mesh_data.vertices()[i].position);
@@ -183,7 +183,7 @@ namespace rex
           theta += glm::two_pi<f32>();
         }
 
-        f32 phi = acosf(mesh_data.vertices()[i].position.y / radius);
+        //f32 phi = acosf(mesh_data.vertices()[i].position.y / radius);
 
         // Enable again when we support uv and tangent
         //mesh_data.vertices()[i].uv.x = theta / glm::two_pi<f32>();

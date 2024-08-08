@@ -9,6 +9,7 @@ namespace rex
 	{
 		struct ShaderParameterLocation
 		{
+			s32 slot;
 			s32 idx;
 			ViewOffset view_offset;
 		};

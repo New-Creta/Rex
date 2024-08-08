@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rex_renderer_core/scenegraph/scene.h"
-#include "rex_renderer_core/resources/mesh.h"
 #include "rex_renderer_core/materials/material.h"
 
 namespace regina
@@ -17,7 +16,6 @@ namespace regina
     void build_geometry();
 
   private:
-    rsl::unique_ptr<rex::gfx::Mesh> m_cube_mesh;
     rsl::unique_ptr<rex::gfx::Material> m_cube_material;
     ;
   };

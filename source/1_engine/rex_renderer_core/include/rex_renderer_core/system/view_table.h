@@ -25,13 +25,17 @@ namespace rex
 
 		struct ViewTable
 		{
-			ViewTable(s32 slot, rsl::vector<ViewRange>&& ranges, ShaderVisibility shaderVis)
+			ViewTable(s32 slot, rsl::vector<ViewRange>&& ranges, s32 totalNumViews, ShaderResourceType type, ShaderVisibility shaderVis)
 				: slot(slot)
 				, ranges(rsl::move(ranges))
+				, type(type)
+				, total_num_views(totalNumViews)
 				, visibility(shaderVis)
 			{}
 
 			s32 slot;
+			s32 total_num_views;
+			ShaderResourceType type;
 			rsl::vector<ViewRange> ranges;
 			ShaderVisibility visibility;
 		};

@@ -111,6 +111,11 @@ namespace rex
 
       for (ResourceView* view : views)
       {
+        if (view == nullptr)
+        {
+          continue;
+        }
+
         DxResourceView* src_handle = d3d::to_dx12(view);
         m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), src_handle->cpu_handle(), m_view_heap_type);
         (*free_handle)++;

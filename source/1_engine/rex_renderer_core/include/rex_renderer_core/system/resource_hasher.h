@@ -11,15 +11,13 @@
 #include "rex_renderer_core/resources/index_buffer.h"
 #include "rex_renderer_core/resources/constant_buffer.h"
 
-#include "rex_renderer_core/resource_management/resource_slot.h"
-
 namespace rex
 {
   namespace gfx
   {
-    ResourceID hash_resource_desc(const ClearStateDesc& desc);
-    ResourceID hash_resource_desc(const CompileShaderDesc& desc);
-    ResourceID hash_resource_desc(const InputLayoutDesc& desc);
-    ResourceID hash_resource_desc(const RasterStateDesc& desc);
+    //ResourceID hash_resource_desc(const ClearStateDesc& desc);
+    //ResourceID hash_resource_desc(const CompileShaderDesc& desc);
+    //ResourceID hash_resource_desc(const InputLayoutDesc& desc);
+    //ResourceID hash_resource_desc(const RasterStateDesc& desc);
   }
 }

@@ -12,6 +12,7 @@ namespace rex
 		// The resource that's bound to the shader
 		enum class ShaderResourceType
 		{
+			Undefined,
 			ConstantBuffer,
 			Texture,
 			Sampler

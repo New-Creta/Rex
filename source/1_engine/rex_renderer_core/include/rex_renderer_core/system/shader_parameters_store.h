@@ -57,6 +57,8 @@ namespace rex
 			void set(rsl::string_view name, Texture2D* texture);
 			void set(rsl::string_view name, Sampler2D* sampler);
 
+			ShaderParameterLocation location(rsl::string_view name) const;
+
 			const rsl::vector<ShaderResource>& params() const;
 
 		private:

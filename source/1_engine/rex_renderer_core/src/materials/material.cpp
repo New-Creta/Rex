@@ -7,9 +7,6 @@
 #include "rex_renderer_core/materials/material_system.h"
 
 #include "rex_renderer_core/shader_reflection/shader_pipeline_reflection.h"
-#include "rex_renderer_core/shader_reflection/shader_parameter_store_cache.h"
-#include "rex_renderer_core/shader_reflection/shader_param_lookup_cache.h"
-
 #include "rex_renderer_core/shader_reflection/shader_reflection_cache.h"
 
 namespace rex
@@ -18,33 +15,24 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogMaterial);
 
-    Material::Material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
+    Material::Material(ShaderPipeline&& shaderPipeline, const MaterialDesc& matDesc)
       : m_shader_pipeline(rsl::move(shaderPipeline))
       , m_primitive_topology(PrimitiveTopology::TriangleList)
       , m_root_signature()
       , m_blend_factor()
-      , m_param_name_to_view_idx()
     {
-      init(matConstructSettings);
+      init(matDesc);
     }
 
-    void Material::init(const MaterialConstructSettings& matConstructSettings)
+    void Material::init(const MaterialDesc& matDesc)
     {
-      m_raster_state = matConstructSettings.raster_state;
-      m_blend = matConstructSettings.blend;
-      m_depth_stencil = matConstructSettings.depth_stencil;
+      m_raster_state = matDesc.raster_state;
+      m_blend = matDesc.blend;
+      m_depth_stencil = matDesc.depth_stencil;
 
       ShaderPipelineReflection2& reflection = shader_reflection_cache::load(m_shader_pipeline);
-      
-
-      //ShaderPipelineParameters& parameters = shader_parameters_cache::load(m_shader_pipeline);
       m_root_signature = rhi::create_root_signature(reflection.parameters);
       m_parameters_store = rsl::make_unique<ShaderParametersStore>(reflection.material_param_store_desc);
-      //ShaderPipelineBindings mat_bindings = parameters.params(ShaderParameterBinding::Material);
-      //m_shader_resources = mat_bindings.resources;
-      //m_parameters_store = rsl::make_unique<ShaderParametersStore>(mat_bindings.view_map);
-
-      //m_parameters_store = shader_parameter_store_cache::load(m_shader_pipeline, ShaderParameterBinding::Material);
     }
 
     void Material::set(rsl::string_view name, ConstantBuffer* constantBuffer)
@@ -64,7 +52,6 @@ namespace rex
     {
       return m_parameters_store->params();
     }
-
 
     void Material::set_blend_factor(const BlendFactor& blendFactor)
     {

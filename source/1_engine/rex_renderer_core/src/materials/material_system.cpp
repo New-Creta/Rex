@@ -15,6 +15,7 @@
 #include "rex_engine/string/stringid.h"
 #include "rex_engine/text_processing/json.h"
 
+#include "rex_renderer_core/shader_reflection/bound_resource_reflection.h"
 #include "rex_std/string.h"
 
 namespace rex
@@ -88,9 +89,9 @@ namespace rex
 			return desc;
 		}
 
-		MaterialConstructSettings load_mat_construct_settings_from_json(const json& jsonBlob)
+		MaterialDesc load_mat_construct_settings_from_json(const json& jsonBlob)
 		{
-			MaterialConstructSettings mat_construct_settings{};
+			MaterialDesc mat_construct_settings{};
 			if (jsonBlob.contains("blend_state"))
 			{
 				mat_construct_settings.blend = load_blend_state(jsonBlob["blend_state"]);
@@ -116,11 +117,11 @@ namespace rex
 				rsl::string_view type = param["type"];
 				rsl::hash_result type_hash = rsl::comp_hash(type);
 
-				MaterialParameterType param_type = MaterialParameterType::Undefined;
+				ShaderResourceType param_type = ShaderResourceType::Undefined;
 				switch (type_hash)
 				{
-				case "texture"_sid: param_type = MaterialParameterType::Texture; break;
-				case "sampler"_sid: param_type = MaterialParameterType::Sampler; break;
+				case "texture"_sid: param_type = ShaderResourceType::Texture; break;
+				case "sampler"_sid: param_type = ShaderResourceType::Sampler; break;
 				default: REX_ASSERT("Invalid material param type {}", quoted(type)); break;
 				}
 
@@ -131,8 +132,8 @@ namespace rex
 				// However, to get around the compiler errors, we implement it as this for now
 				switch (param_type)
 				{
-				case rex::gfx::MaterialParameterType::Texture: break; // material->set_texture(name, rhi::create_texture2d(path).get());
-				case rex::gfx::MaterialParameterType::Sampler: break; // material->set_sampler(name, rhi::create_sampler2d(path).get());
+				case rex::gfx::ShaderResourceType::Texture: break; // material->set_texture(name, rhi::create_texture2d(path).get());
+				case rex::gfx::ShaderResourceType::Sampler: break; // material->set_sampler(name, rhi::create_sampler2d(path).get());
 				default: break;
 				}
 			}
@@ -174,7 +175,7 @@ namespace rex
 			shader_pipeline.ps = shader_lib::load(pixel_shader, ShaderType::Pixel);
 
 			// Load additional settings for the material's initialization if they're available
-			MaterialConstructSettings mat_construct_settings = load_mat_construct_settings_from_json(json_blob);
+			MaterialDesc mat_construct_settings = load_mat_construct_settings_from_json(json_blob);
 
 			// Create the material object
 			rsl::unique_ptr<Material> material = rhi::create_material(rsl::move(shader_pipeline), mat_construct_settings);

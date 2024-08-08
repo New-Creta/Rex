@@ -41,7 +41,7 @@ namespace rex
 		void ShaderParametersStore::set(rsl::string_view name, ConstantBuffer* cb)
 		{
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
-			m_shader_resources[loc.idx].update_view(loc.view_offset, cb->resource_view());
+			m_shader_resources[loc.idx].update_view(loc.view_offset, reinterpret_cast<ResourceView*>(cb));
 		}
 		void ShaderParametersStore::set(rsl::string_view name, Texture2D* texture)
 		{
@@ -52,6 +52,10 @@ namespace rex
 		{
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
 			m_shader_resources[loc.idx].update_view(loc.view_offset, sampler->resource_view());
+		}
+		ShaderParameterLocation ShaderParametersStore::location(rsl::string_view name) const
+		{
+			return m_param_to_location_lookup->at(name);
 		}
 
 		const rsl::vector<ShaderResource>& ShaderParametersStore::params() const

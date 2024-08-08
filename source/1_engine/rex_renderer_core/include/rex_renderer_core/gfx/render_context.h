@@ -85,7 +85,7 @@ namespace rex
       virtual void set_graphics_root_descriptor_table(s32 paramIdx, u64 id) = 0;
       virtual void set_graphics_root_descriptor_table(s32 paramIdx, ResourceView* startView) = 0;
       // Set the constant buffer of the context at a given index
-      virtual void set_constant_buffer(s32 paramIdx, ConstantBuffer* cb) = 0;
+      virtual void set_constant_buffer(s32 paramIdx, Resource* resource) = 0;
 
       // Draw an indexed primitive
       virtual void draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation) = 0;

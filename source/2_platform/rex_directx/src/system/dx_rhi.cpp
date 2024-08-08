@@ -506,7 +506,7 @@ namespace rex
         auto texture = rsl::make_unique<DxTexture2D>(resource, desc_handle, width, height, format);
         return texture;
       }
-      rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size)
+      rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size, rsl::string_view debugName)
       {
         // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
         rsl::memory_size aligned_size = align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
@@ -514,7 +514,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
         DxResourceView desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
 
-        d3d::set_debug_name_for(d3d_constant_buffer.Get(), "Constant Buffer");
+        d3d::set_debug_name_for(d3d_constant_buffer.Get(), debugName.empty() ? "Constant Buffer" : debugName);
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
       }
@@ -603,9 +603,9 @@ namespace rex
         return nullptr;
       }
 
-      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialConstructSettings& matConstructSettings)
+      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialDesc& matDesc)
       {
-        return rsl::make_unique<Material>(rsl::move(shaderPipeline), matConstructSettings);
+        return rsl::make_unique<Material>(rsl::move(shaderPipeline), matDesc);
       }
       rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc)
       {

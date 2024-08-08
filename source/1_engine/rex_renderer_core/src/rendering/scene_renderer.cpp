@@ -110,14 +110,14 @@ namespace rex
 
 		void SceneRenderer::init_gpu_resources()
 		{
-			m_cb_view_data = rhi::create_constant_buffer(sizeof(PerViewData));
-			m_cb_scene_data = rhi::create_constant_buffer(sizeof(PerSceneData));
+			m_cb_view_data = rhi::create_constant_buffer(sizeof(PerViewData), "PerViewData");
+			m_cb_scene_data = rhi::create_constant_buffer(sizeof(PerSceneData), "PerSceneData");
 
 			s32 num_instances_supported = 100;
 			m_per_instance_cbs.reserve(num_instances_supported);
 			for (s32 i = 0; i < num_instances_supported; ++i)
 			{
-				m_per_instance_cbs.push_back(rhi::create_constant_buffer(sizeof(PerInstanceData)));
+				m_per_instance_cbs.push_back(rhi::create_constant_buffer(sizeof(PerInstanceData), "PerInstanceData"));
 			}
 		}
 
@@ -208,12 +208,16 @@ namespace rex
 			// bind the index buffer
 			// draw
 
-			m_current_ctx = m_geometry_pass->bind_resources();
+			m_current_ctx = new_render_ctx();
+			m_geometry_pass->bind_resources(m_current_ctx.get());
 			f32 viewport_width = static_cast<f32>(m_scene_data.viewport_width);
 			f32 viewport_height = static_cast<f32>(m_scene_data.viewport_height);
 			Viewport viewport = { 0.0f, 0.0f, viewport_width, viewport_height, 0.0f, 1.0f };
 			m_current_ctx->set_viewport(viewport);
 
+			// There's a bug here as the per instance data is not updated together with the view data
+			// As the per instance and per view data is tied to the same slot and expected to be updated together
+			// When we copy the per instance data over, we overwrite the per view data
 			ScissorRect rect = { 0, 0, viewport_width, viewport_height };
 			m_current_ctx->set_scissor_rect(rect);
 			s32 per_instance_slot = m_geometry_pass->slot("PerInstance");
@@ -224,10 +228,10 @@ namespace rex
 			{
 				const DrawList& drawlist = m_draw_lists[i];
 
-				rsl::vector<ResourceView*> views = { drawlist.cb->resource_view() };
-				auto start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
+				//rsl::vector<ResourceView*> views = { drawlist.cb->resource_view() };
+				//auto start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
 
-				m_current_ctx->set_graphics_root_descriptor_table(per_instance_slot, start_handle.get());
+				m_current_ctx->set_constant_buffer(per_instance_slot, drawlist.cb);
 				m_current_ctx->set_vertex_buffer(drawlist.vb);
 
 				// submit index buffer
