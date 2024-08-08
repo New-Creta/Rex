@@ -3,6 +3,7 @@
 
 #include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/system/gpu_description.h"
+#include "rex_renderer_core/system/root_signature_cache.h"
 
 #include "rex_std/bonus/utility.h"
 
@@ -60,6 +61,7 @@ namespace rex
     void shutdown()
     {
       g_renderers.clear();
+      root_signature_cache::clear();
 
       rhi::shutdown();
     }

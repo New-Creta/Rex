@@ -10,6 +10,7 @@ namespace rex
 		namespace root_signature_cache
 		{
 			RootSignature* load(const ShaderPipeline& pipeline);
+			void clear();
 		}
 	}
 }

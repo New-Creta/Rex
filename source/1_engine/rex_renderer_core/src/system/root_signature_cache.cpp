@@ -27,6 +27,11 @@ namespace rex
 				rsl::unique_ptr<RootSignature> root_sig = rhi::create_root_signature(reflection.parameters);
 				return g_root_sig_cache.emplace(pipeline, rsl::move(root_sig)).inserted_element->value.get();
 			}
+
+			void clear()
+			{
+				g_root_sig_cache.clear();
+			}
 		}
 	}
 }
