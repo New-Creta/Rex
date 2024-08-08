@@ -11,13 +11,13 @@ namespace rex
 		ShaderParametersStore::ShaderParametersStore(const ShaderParametersStoreDesc& desc)
 			: m_param_to_location_lookup(&desc.param_map)
 		{
-			m_shader_resources.reserve(desc.shader_resource_descs.size());
+			m_shader_parameters.reserve(desc.shader_resource_descs.size());
 			for (ShaderParameterDesc shaderResourceDesc : desc.shader_resource_descs)
 			{
 				switch (shaderResourceDesc.type)
 				{
-				case ShaderParameterType::ConstantBuffer: m_shader_resources.push_back(rsl::make_unique<ViewShaderParam>(shaderResourceDesc)); break;
-				default: m_shader_resources.push_back(rsl::make_unique<ViewTableShaderParam>(shaderResourceDesc)); break;
+				case ShaderParameterType::ConstantBuffer: m_shader_parameters.push_back(rsl::make_unique<ViewShaderParam>(shaderResourceDesc)); break;
+				default: m_shader_parameters.push_back(rsl::make_unique<ViewTableShaderParam>(shaderResourceDesc)); break;
 				}
 			}
 		}
@@ -25,17 +25,17 @@ namespace rex
 		void ShaderParametersStore::set(rsl::string_view name, ConstantBuffer* cb)
 		{
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
-			m_shader_resources[loc.idx]->update_view(loc.view_offset, cb);
+			m_shader_parameters[loc.idx]->update_view(loc.view_offset, cb);
 		}
 		void ShaderParametersStore::set(rsl::string_view name, Texture2D* texture)
 		{
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
-			m_shader_resources[loc.idx]->update_view(loc.view_offset, texture);
+			m_shader_parameters[loc.idx]->update_view(loc.view_offset, texture);
 		}
 		void ShaderParametersStore::set(rsl::string_view name, Sampler2D* sampler)
 		{
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
-			m_shader_resources[loc.idx]->update_view(loc.view_offset, sampler);
+			m_shader_parameters[loc.idx]->update_view(loc.view_offset, sampler);
 		}
 		ShaderParameterLocation ShaderParametersStore::location(rsl::string_view name) const
 		{
@@ -44,7 +44,7 @@ namespace rex
 
 		const rsl::vector<rsl::unique_ptr<ShaderParameter>>& ShaderParametersStore::params() const
 		{
-			return m_shader_resources;
+			return m_shader_parameters;
 		}
 	}
 }

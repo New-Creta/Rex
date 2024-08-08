@@ -18,9 +18,13 @@ namespace rex
     public:
       Texture2D(ResourceView* view, s32 width, s32 height, TextureFormat format);
 
+      // Return the width of the texture
       s32 width() const;
+      // Return the height of the texture
       s32 height() const;
+      // Return the format of the texture
       TextureFormat format() const;
+      // Return the resource view of the texture
       ResourceView* resource_view();
 
     private:

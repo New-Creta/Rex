@@ -18,71 +18,72 @@ namespace rex
 			Bool,				// bool - 1 bit - 1 component
 
 			Uint,				// unsigned integer - 32 bits - 1 component
-			Uint2,			// unsigned integer - 32 bits - 2 component
-			Uint3,			// unsigned integer - 32 bits - 3 component
-			Uint4,			// unsigned integer - 32 bits - 4 component
+			Uint2,				// unsigned integer - 32 bits - 2 component
+			Uint3,				// unsigned integer - 32 bits - 3 component
+			Uint4,				// unsigned integer - 32 bits - 4 component
 
 			Ushort,				// unsigned integer - 16 bits - 1 component
 			Ushort2,			// unsigned integer - 16 bits - 2 component
 			Ushort3,			// unsigned integer - 16 bits - 3 component
 			Ushort4,			// unsigned integer - 16 bits - 4 component
 
-			UshortNorm,				// unsigned integer - 16 bits - 1 component
-			Ushort2Norm,			// unsigned integer - 16 bits - 2 component
-			Ushort3Norm,			// unsigned integer - 16 bits - 3 component
-			Ushort4Norm,			// unsigned integer - 16 bits - 4 component
+			UshortNorm,			// unsigned integer - 16 bits - 1 component
+			Ushort2Norm,		// unsigned integer - 16 bits - 2 component
+			Ushort3Norm,		// unsigned integer - 16 bits - 3 component
+			Ushort4Norm,		// unsigned integer - 16 bits - 4 component
 
-			UChar,		  // unsigned integer - 8 bits - 1 component
-			UChar2,			// unsigned integer - 8 bits - 2 component
-			UChar3,			// unsigned integer - 8 bits - 3 component
-			UChar4,			// unsigned integer - 8 bits - 4 component
+			UChar,		  		// unsigned integer - 8 bits - 1 component
+			UChar2,				// unsigned integer - 8 bits - 2 component
+			UChar3,				// unsigned integer - 8 bits - 3 component
+			UChar4,				// unsigned integer - 8 bits - 4 component
 
-			UCharNorm,		  // unsigned integer - 8 bits - 1 component
+			UCharNorm,		  	// unsigned integer - 8 bits - 1 component
 			UChar2Norm,			// unsigned integer - 8 bits - 2 component
 			UChar3Norm,			// unsigned integer - 8 bits - 3 component
 			UChar4Norm,			// unsigned integer - 8 bits - 4 component
 
-			Int,				// signed integer		- 32 bits - 1 component
-			Int2,				// signed integer		- 32 bits - 2 component
-			Int3,				// signed integer		- 32 bits - 3 component
-			Int4,				// signed integer		- 32 bits - 4 component
+			Int,				// signed integer	- 32 bits - 1 component
+			Int2,				// signed integer	- 32 bits - 2 component
+			Int3,				// signed integer	- 32 bits - 3 component
+			Int4,				// signed integer	- 32 bits - 4 component
 
-			Short,			// unsigned integer - 16 bits - 1 component
-			Short2,			// unsigned integer - 16 bits - 2 component
-			Short3,			// unsigned integer - 16 bits - 3 component
-			Short4,			// unsigned integer - 16 bits - 4 component
+			Short,				// unsigned integer - 16 bits - 1 component
+			Short2,				// unsigned integer - 16 bits - 2 component
+			Short3,				// unsigned integer - 16 bits - 3 component
+			Short4,				// unsigned integer - 16 bits - 4 component
 
 			ShortNorm,			// unsigned integer - 16 bits - 1 component
 			Short2Norm,			// unsigned integer - 16 bits - 2 component
 			Short3Norm,			// unsigned integer - 16 bits - 3 component
 			Short4Norm,			// unsigned integer - 16 bits - 4 component
 
-			Char,			  // unsigned integer - 8 bits - 1 component
-			Char2,			// unsigned integer - 8 bits - 2 component
-			Char3,			// unsigned integer - 8 bits - 3 component
-			Char4,			// unsigned integer - 8 bits - 4 component
+			Char,			  	// unsigned integer - 8 bits - 1 component
+			Char2,				// unsigned integer - 8 bits - 2 component
+			Char3,				// unsigned integer - 8 bits - 3 component
+			Char4,				// unsigned integer - 8 bits - 4 component
 
-			CharNorm,			  // unsigned integer - 8 bits - 1 component
+			CharNorm,			// unsigned integer - 8 bits - 1 component
 			Char2Norm,			// unsigned integer - 8 bits - 2 component
 			Char3Norm,			// unsigned integer - 8 bits - 3 component
 			Char4Norm,			// unsigned integer - 8 bits - 4 component
 
-			Half,				// float						- 16 bits - 1 component
-			Half2,			// float						- 16 bits - 2 component
-			Half3,			// float						- 16 bits - 3 component
-			Half4,			// float						- 16 bits - 4 component
+			Half,				// float			- 16 bits - 1 component
+			Half2,				// float			- 16 bits - 2 component
+			Half3,				// float			- 16 bits - 3 component
+			Half4,				// float			- 16 bits - 4 component
 
-			Float,			// float						- 32 bits - 1 component
-			Float2,			// float						- 32 bits - 2 component
-			Float3,			// float						- 32 bits - 3 component
-			Float4,			// float						- 32 bits - 4 component
+			Float,				// float			- 32 bits - 1 component
+			Float2,				// float			- 32 bits - 2 component
+			Float3,				// float			- 32 bits - 3 component
+			Float4,				// float			- 32 bits - 4 component
 
-			Double,			// float						- 64 bits - 1 component
-			Double2,		// float						- 64 bits - 2 component
-			Double3,		// float						- 64 bits - 3 component
-			Double4,		// float						- 64 bits - 4 component
+			Double,				// float			- 64 bits - 1 component
+			Double2,			// float			- 64 bits - 2 component
+			Double3,			// float			- 64 bits - 3 component
+			Double4,			// float			- 64 bits - 4 component
 		};
 
+		// The possible scalar types supported by a shader
 		enum class ScalarType
 		{
 			Unknown,

@@ -64,7 +64,7 @@ namespace rex
 					return res.inserted_element->value.get();
 				}
 
-				Shader* get(rsl::string_view name)
+				Shader* load(rsl::string_view name)
 				{
 					auto it = m_shader_map.find(name);
 					return it != m_shader_map.end()
@@ -87,7 +87,7 @@ namespace rex
 				return instance().load(path, type);
 			}
 			
-			Shader* get(rsl::string_view name)
+			Shader* load(rsl::string_view name)
 			{
 				return instance().get(name);
 			}

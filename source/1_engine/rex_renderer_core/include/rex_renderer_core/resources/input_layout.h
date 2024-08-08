@@ -10,9 +10,10 @@ namespace rex
 {
   namespace gfx
   {
+    // A semantic is a Direct X thing, which used to determine where to put vertex data
     enum class ShaderSemantic
     {
-      // Shader between vertex and pixel shader
+      // Shared between vertex and pixel shader
       Color,                  // Diffuse or specular color
       Position,               // Position of a vertex
       PSize,                  // Point size
@@ -31,12 +32,15 @@ namespace rex
       TessFactor              // Tesselation factor
     };
 
+    // Shader semantic are case sensitive, so we can't use reflection to get its name
     rsl::string_view shader_semantic_name(ShaderSemantic semantic);
-    ShaderSemantic shader_semantic_type(rsl::string_view semantic);
+    // ShaderSemantic shader_semantic_type(rsl::string_view semantic);
 
+    // This structure describe a single element in the input layout
+    // Most members default initialization is fine and you only need to initialize semantic and the format
     struct InputLayoutElementDesc
     {
-      ShaderSemantic semantic;
+      ShaderSemantic semantic;                                                              // The semantic of the element, mainly used by DirectX
       VertexBufferFormat format;                                                            // The format of the element data
       InputLayoutClassification input_slot_class = InputLayoutClassification::PerVertex;    // A value that identifies the input data class for a single input. 
       s32 semantic_index = 0;                                                               // The semantic index for the element. A semantic index modifies a semantic, with an integer index number. eg NORMAL1
@@ -51,7 +55,7 @@ namespace rex
     bool operator!=(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs);
 
     // Using shader reflection's input parameters, create an input layout description.
-    InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderParamReflection>& shaderInputParams);
+    // InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderIODeclaration>& shaderInputParams);
 
     // Base class for the input layout, only used as an interface
     class InputLayout

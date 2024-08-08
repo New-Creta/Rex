@@ -1,6 +1,5 @@
 #pragma once
 
-#include "rex_engine/engine/invalid_object.h"
 #include "rex_renderer_core/shader_reflection/shader_arithmetic_type.h"
 
 namespace rex

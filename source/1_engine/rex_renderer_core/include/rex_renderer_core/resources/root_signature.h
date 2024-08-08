@@ -8,14 +8,6 @@ namespace rex
 {
   namespace gfx
   {
-    class Shader;
-
-    struct RootSignatureDesc2
-    {
-      Shader* vs;
-      Shader* ps;
-    };
-
     // A root signature holds all the parameters for every shader type bound to a pipeline.
     // It only specifies the type, not the actual data
     // for example:
@@ -39,17 +31,15 @@ namespace rex
     // .. other pixel shader code ..
     //
     //
-    // The above would result in a root signature defining
-    // a constant buffer, a sampler and a texture 2d as its parameters.
+    // The above would result in a root signature as followed
+    // [0] - constant buffer view - register 0 - vertex visibility
+    // [1] - shader resource view - register 0 - pixel visibility
+    // [2] - sampler              - register 0 - pixel visibility
+    //
     class RootSignature
     {
     public:
       virtual ~RootSignature() = default;
-
-      // Return the parameter index that's used for the textures for the shader of a given type
-      virtual s32 param_idx_for_textures(ShaderType type) = 0;
-      // Return the parameter index that's used for the samplers for the shader of a given type
-      virtual s32 param_idx_for_samplers(ShaderType type) = 0;
     };
   }
 }

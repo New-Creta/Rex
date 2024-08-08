@@ -11,20 +11,21 @@
 // Consider the following scenario
 // Note: DirectX requires 512 byte alignment for texture data
 //
-//  +----------------------------------------------------------------------------------------------+
+//  +------------------------------------------------------------------------------------------------------------+
 //  |              |             |                |              |             |                |                |
 //  |   256 byte   | 256 unused  |  1KiB texture  |   256 byte   | 256 unused  |  1KiB texture  |     Unused     |
 //  |  buffer data |    data     |       data     |  buffer data |    data     |       data     |      data      |
 //  |              |             |                |              |             |                |                |
-//  +----------------------------------------------------------------------------------------------+
-//                      ^                                              ^
-//                      |                                              |
-//                      +----------------------+-----------------------+
+//  +------------------------------------------------------------------------------------------------------------+
+//                        ^                                             ^
+//                        |                                             |
+//                        +--------------------+------------------------+
 //                                             |
 //                                             |
 //                                512 bytes that are unused
 //
-// As textures width and height are always powers of 2, they'll likely be 512 byte aligned, even when compressed using BC7 (please correct this comment if this isn't the case)
+// As textures width and height are always powers of 2 (but not necessarily equal to each other), 
+// they'll likely be 512 byte aligned, even when compressed using BC7 (please correct this comment if this isn't the case)
 // As such, we can remove the wasted padding space by allocating textures to 1 end and buffers to the other.
 // We chose to allocate buffers at the end and textures at the front, if this causes performance issues due to caching, this can be re-evaluated
 // With buffers at the back the above example looks like this

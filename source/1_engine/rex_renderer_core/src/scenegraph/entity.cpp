@@ -13,5 +13,10 @@ namespace rex
 			, m_registry(&registry)
 			, m_name(name)
 		{}
+
+		rsl::string_view Entity::name() const
+		{
+			return m_name;
+		}
 	}
 }

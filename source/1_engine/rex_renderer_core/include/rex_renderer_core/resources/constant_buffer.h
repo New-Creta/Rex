@@ -16,14 +16,10 @@ namespace rex
     public:
       ConstantBuffer(u64 gpuAddress, ResourceView* view, rsl::memory_size size);
 
-      ResourceView* resource_view()
-      {
-        return m_view;
-      }
-      u64 gpu_address() const
-      {
-        return m_gpu_address;
-      }
+      // Return the resource view of a constant buffer
+      ResourceView* resource_view();
+      // Return the gpu address of a constant buffer
+      u64 gpu_address() const;
 
     private:
       ResourceView* m_view;

@@ -9,7 +9,7 @@ namespace rex
 	namespace gfx
 	{
 		// Reflection of a constant buffer, specified in a shader
-		struct CBufferReflDesc
+		struct ConstantBufferDeclaration
 		{
 			rsl::tiny_stack_string name;								// The name of the constant buffer in the shader
 			s32 size;																		// The size in bytes of the constant buffer

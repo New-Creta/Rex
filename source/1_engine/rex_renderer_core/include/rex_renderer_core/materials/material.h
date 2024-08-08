@@ -38,73 +38,25 @@ namespace rex
       DepthStencilDesc depth_stencil;	// the depth stencil settings that'll be stored inside the material
     };
 
-    struct ShaderResources
-    {
-      rsl::vector<ConstantBuffer*> constant_buffers;
-      rsl::vector<Texture2D*> textures;
-      rsl::vector<Sampler2D*> samplers;
-
-      s32 cb_slot;
-      s32 srv_slot;
-      s32 sampler_slot;
-    };
-
-    struct ShaderBinding
-    {
-      s32 slot;
-      s32 sub_slot;
-    };
-
-    class MaterialParameter2
-    {
-    public:
-      MaterialParameter2(ShaderType type)
-        : m_type(type)
-      {}
-
-      void set_resource(Resource* resource)
-      {
-        m_resource = resource;
-      }
-
-      Resource* resource()
-      {
-        return m_resource;
-      }
-
-      ShaderType type() const
-      {
-        return m_type;
-      }
-
-    private:
-      Resource* m_resource;
-      ShaderType m_type;
-    };
-
     // A material is an object combining all shaders and the parameters that can be set on them
     class Material
     {
     public:
-      Material(ShaderPipeline&& shaderPipeline, const MaterialDesc& matDesc);
+      Material(const ShaderPipeline& shaderPipeline, const MaterialDesc& matDesc);
 
       // Set a material parameter to a new resource
       void set(rsl::string_view name, ConstantBuffer* constantBuffer);
       void set(rsl::string_view name, Texture2D* texture);
       void set(rsl::string_view name, Sampler2D* sampler);
 
-      // Return all resources of a material
+      // Return all shader parameters of a material
       const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params() const;
 
       // Set the blend factor of the material
       void set_blend_factor(const BlendFactor& blendFactor);
 
-      // Return the primitive topology of this material
-      PrimitiveTopology primitive_topology() const;
-      // Return the root signature of this material
-      RootSignature* root_signature();
-      // Return the blend factor of this material
-      BlendFactor blend_factor();
+      // Bind a material to a render ctx
+      void bind_to(RenderContext* ctx);
 
       // Fill in the pso desc with data that's stored in the material
       void fill_pso_desc(PipelineStateDesc& desc);

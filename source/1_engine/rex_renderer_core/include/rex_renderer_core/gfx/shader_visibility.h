@@ -8,6 +8,8 @@ namespace rex
 {
   namespace gfx
   {
+    REX_STATIC_WARNING("Combine shader type with shader visibility");
+
     // shader visibility is used to indicate which shader type has access to the specified resource
     enum class ShaderVisibility
     {
@@ -21,6 +23,7 @@ namespace rex
 
       All = Vertex | Pixel | Geometry | Hull | Domain | Amplification | Mesh // all shaders have access to this resource
     };
+    // Convert a shader type enum to the shader visibility flag it belongs to
     constexpr ShaderVisibility shader_type_to_visibility(ShaderType type)
     {
       switch (type)

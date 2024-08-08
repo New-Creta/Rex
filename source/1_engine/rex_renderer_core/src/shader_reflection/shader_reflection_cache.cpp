@@ -14,14 +14,14 @@ namespace rex
 	{
 		namespace shader_reflection_cache
 		{
-			rsl::unordered_map<ShaderPipeline, ShaderPipelineReflection2> g_reflection_cache_lookup;
+			rsl::unordered_map<ShaderPipeline, ShaderPipelineReflection> g_reflection_cache_lookup;
 			const s32 g_renderpass_register_space = 0;
 			const s32 g_material_register_space = 1;
 
 			struct SplittedResources
 			{
-				rsl::vector<BoundResourceReflection> material_resources;
-				rsl::vector<BoundResourceReflection> renderpass_resources;
+				rsl::vector<ShaderResourceDeclaration> material_resources;
+				rsl::vector<ShaderResourceDeclaration> renderpass_resources;
 			};
 
 			class ViewTableBuilder
@@ -35,7 +35,7 @@ namespace rex
 					, m_expected_resource_type(expectedResourceType)
 				{}
 
-				ViewOffset add_resource(s32 slot, const BoundResourceReflection& resource)
+				ViewOffset add_resource(s32 slot, const ShaderResourceDeclaration& resource)
 				{
 					REX_ASSERT_X(resource.register_space == m_expected_register_space, "Invalid register space for resource. expected: {} actual: {} resource: {}", m_expected_register, resource.register_space, resource.name);
 					REX_ASSERT_X(resource.resource_type == m_expected_resource_type, "Invalid resource type for resource. expected: {}, actual: {}, resource: {}", rsl::enum_refl::enum_name(m_expected_resource_type), rsl::enum_refl::enum_name(resource.resource_type), resource.name);
@@ -100,13 +100,13 @@ namespace rex
 					add_bindings(splitted_samplers.renderpass_resources, ShaderParameterType::Sampler, g_renderpass_register_space, visibility);
 				}
 
-				ShaderPipelineReflection2 build()
+				ShaderPipelineReflection build()
 				{
 					return rsl::move(m_reflection_result);
 				}
 
 			private:
-				SplittedResources split_resources(const rsl::vector<BoundResourceReflection> resources)
+				SplittedResources split_resources(const rsl::vector<ShaderResourceDeclaration> resources)
 				{
 					SplittedResources splitted_resources{};
 
@@ -122,7 +122,7 @@ namespace rex
 
 					return splitted_resources;
 				}
-				void add_bindings(const rsl::vector<BoundResourceReflection>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
+				void add_bindings(const rsl::vector<ShaderResourceDeclaration>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
 				{
 					// The resources holds a list of each individual resource of a certain type, in a shader
 					// We need to combine them into a set of ranges that are continious, based on register
@@ -143,10 +143,10 @@ namespace rex
 					// However, it is possible that resource registers are not continious
 					// in which case we split the resources of in another range
 
-					rsl::vector<BoundResourceReflection> cb_views;
-					rsl::vector<BoundResourceReflection> other_views;
+					rsl::vector<ShaderResourceDeclaration> cb_views;
+					rsl::vector<ShaderResourceDeclaration> other_views;
 
-					for (const BoundResourceReflection& resource : resources)
+					for (const ShaderResourceDeclaration& resource : resources)
 					{
 						switch (resource.resource_type)
 						{
@@ -158,7 +158,7 @@ namespace rex
 					add_view_binding(param_store_desc, cb_views, type, expectedRegisterSpace, visibility);
 					add_view_table_binding(param_store_desc, other_views, type, expectedRegisterSpace, visibility);
 				}
-				void add_view_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<BoundResourceReflection>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
+				void add_view_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<ShaderResourceDeclaration>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
 				{
 					if (resources.empty())
 					{
@@ -171,7 +171,7 @@ namespace rex
 						s32 slot = m_reflection_result.parameters.size();
 						s32 idx = paramStoreDesc->shader_resource_descs.size();
 
-						const BoundResourceReflection& resource = resources[i];
+						const ShaderResourceDeclaration& resource = resources[i];
 						ViewOffset view_offset{};
 						paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
 						ViewRangeDeclaration view_range = ViewRangeDeclaration(resource.shader_register, 1, type, resource.register_space);
@@ -180,7 +180,7 @@ namespace rex
 					}
 
 				}
-				void add_view_table_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<BoundResourceReflection>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
+				void add_view_table_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<ShaderResourceDeclaration>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
 				{
 					if (resources.empty())
 					{
@@ -193,7 +193,7 @@ namespace rex
 
 					for (s32 i = 0; i < resources.size(); ++i)
 					{
-						const BoundResourceReflection& resource = resources[i];
+						const ShaderResourceDeclaration& resource = resources[i];
 						ViewOffset view_offset = view_table_builder.add_resource(slot, resource);
 						paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
 					}
@@ -203,10 +203,42 @@ namespace rex
 				}
 
 			private:
-				ShaderPipelineReflection2 m_reflection_result;
+				ShaderPipelineReflection m_reflection_result;
 			};
 
-			ShaderPipelineReflection2& load(const ShaderPipeline& pipeline)
+			gfx::ShaderSignature reflect_shader(const gfx::Shader* shader)
+			{
+				REX_ASSERT_X(shader, "Cannot create reflection data on a null shader");
+
+				// Create the shader reflection object
+				const gfx::DxShader* dx_shader = d3d::to_dx12(shader);
+				const void* byte_code = dx_shader->dx_bytecode().pShaderBytecode;
+				s32 byte_count = static_cast<s32>(dx_shader->dx_bytecode().BytecodeLength);
+				wrl::ComPtr<ID3D12ShaderReflection> reflection_object;
+				DX_CALL(D3DReflect(byte_code, byte_count, IID_PPV_ARGS(reflection_object.GetAddressOf())));
+
+				// Get the description of the shader
+				D3D12_SHADER_DESC shader_desc;
+				DX_CALL(reflection_object->GetDesc(&shader_desc));
+
+				s32 num_constant_buffers = shader_desc.ConstantBuffers;
+				s32 num_input_params = shader_desc.InputParameters;
+				s32 num_output_params = shader_desc.OutputParameters;
+				s32 num_bound_resources = shader_desc.ShaderResourceDeclarations;
+
+				ShaderSignatureDesc desc{};
+
+				desc.shader_version = convert_shader_version_to_string(shader_desc.Version);
+				desc.constant_buffers = reflect_constant_buffers(reflection_object.Get(), num_constant_buffers);
+				desc.input_params = reflect_input_params(reflection_object.Get(), num_input_params);
+				desc.output_params = reflect_output_params(reflection_object.Get(), num_output_params);
+				desc.bound_resources = reflect_bound_resources(reflection_object.Get(), num_bound_resources, shader->type());
+				desc.type = shader->type();
+
+				return ShaderSignature(rsl::move(desc));
+			}
+
+			ShaderPipelineReflection& load(const ShaderPipeline& pipeline)
 			{
 				if (g_reflection_cache_lookup.contains(pipeline))
 				{
@@ -214,10 +246,10 @@ namespace rex
 				}
 
 				ShaderPipelineReflectionBuilder builder{};
-				builder.process_shader(rhi::reflect_shader(pipeline.vs), ShaderVisibility::Vertex);
-				builder.process_shader(rhi::reflect_shader(pipeline.ps), ShaderVisibility::Pixel);
+				builder.process_shader(reflect_shader(pipeline.vs), ShaderVisibility::Vertex);
+				builder.process_shader(reflect_shader(pipeline.ps), ShaderVisibility::Pixel);
 
-				ShaderPipelineReflection2 reflection = builder.build();
+				ShaderPipelineReflection reflection = builder.build();
 				auto result = g_reflection_cache_lookup.emplace(pipeline, rsl::move(reflection));
 				return result.inserted_element->value;
 			}

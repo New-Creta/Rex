@@ -13,7 +13,7 @@ namespace rex
 {
 	namespace gfx
 	{
-		struct ShaderPipelineReflection2
+		struct ShaderPipelineReflection
 		{
 			// This holds the parameters that are needed for the shader pipeline, but does not hold any data for them
 			// It just lists the expectedtype of resources that are expected to be bound and what slots they'll be bound to
@@ -27,7 +27,7 @@ namespace rex
 
 		namespace shader_reflection_cache
 		{
-			ShaderPipelineReflection2& load(const ShaderPipeline& pipeline);
+			ShaderPipelineReflection& load(const ShaderPipeline& pipeline);
 		}
 	}
 }

@@ -9,8 +9,10 @@ namespace rex
 	{
 		namespace shader_lib
 		{
+			// Load a shader from the cache, given a filepath and shader type
 			Shader* load(rsl::string_view path, ShaderType type);
-			Shader* get(rsl::string_view name);
+			// Load a shader from the cache, given a shader name
+			Shader* load(rsl::string_view name);
 		}
 	}
 }

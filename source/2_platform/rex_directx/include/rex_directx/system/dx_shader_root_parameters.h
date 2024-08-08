@@ -13,8 +13,8 @@ namespace rex
 {
 	namespace gfx
 	{
-		struct BoundResourceReflection;
-		struct CBufferReflDesc;
+		struct ShaderResourceDeclaration;
+		struct ConstantBufferDeclaration;
 
 		struct DxShaderPipelineParameters2
 		{

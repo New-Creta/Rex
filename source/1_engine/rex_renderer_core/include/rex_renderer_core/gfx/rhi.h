@@ -52,7 +52,6 @@ namespace rex
   {
     struct Info;
     struct MaterialDesc;
-    DEFINE_YES_NO_ENUM(IsColorNormalized);
 
     // All logic inside the "api" namespace is only declared
     // The definition of these functions and/or classes are found in the graphics API specific rhi code.
@@ -82,16 +81,13 @@ namespace rex
 
       // Resource creation
       rsl::unique_ptr<RenderTarget> create_render_target(s32 width, s32 height, TextureFormat format);
-      rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize);
-      rsl::unique_ptr<VertexBuffer> create_vertex_buffer(const void* data, s32 numVertices, s32 vertexSize);
-      rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format);
-      rsl::unique_ptr<IndexBuffer> create_index_buffer(const void* data, s32 numIndices, IndexBufferFormat format);
+      rsl::unique_ptr<VertexBuffer> create_vertex_buffer(s32 numVertices, s32 vertexSize, const void* data = nullptr);
+      rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format, const void* data = nullptr);
       rsl::unique_ptr<RootSignature> create_root_signature(const rsl::vector<ShaderParameterDeclaration>& parameters);
-      //rsl::unique_ptr<RootSignature> create_root_signature(const ShaderPipelineParameters& parameters);
       rsl::unique_ptr<PipelineState> create_pso(const InputLayoutDesc& inputLayoutDesc, Material* material);
       rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc);
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, TextureFormat format, const void* data = nullptr);
-      rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size, rsl::string_view debugName = "");
+      rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size);
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_vertex_shader(const memory::Blob& byteBlob);
@@ -99,7 +95,7 @@ namespace rex
       rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
       rsl::unique_ptr<Material> create_material(rsl::string_view path);
-      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialDesc& matDesc);
+      rsl::unique_ptr<Material> create_material(const ShaderPipeline& shaderPipeline, const MaterialDesc& matDesc);
       rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
     }
   } // namespace gfx

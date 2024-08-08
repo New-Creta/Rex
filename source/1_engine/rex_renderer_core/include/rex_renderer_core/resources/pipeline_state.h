@@ -23,12 +23,12 @@ namespace rex
     // A descriptor describing the pipeline state to be constructed
     struct PipelineStateDesc
     {
-      InputLayoutDesc input_layout;
-      ShaderPipeline shader_pipeline;
+      InputLayoutDesc input_layout;                                               // The input layout that'll be used by the pipeline
+      ShaderPipeline shader_pipeline;                                             // The shader pipeline holds all the shaders that'll be used by the PSO
       PrimitiveTopologyType primitive_topology = PrimitiveTopologyType::Triangle; // This is used for geometry, hull or domain shaders
-      RasterStateDesc raster_state;
-      BlendDesc blend_state;
-      DepthStencilDesc depth_stencil_state;
+      RasterStateDesc raster_state;                                               // The raster state that'll be used by the pipeline      
+      BlendDesc blend_state;                                                      // The blend state that'll be used by the pipeline
+      DepthStencilDesc depth_stencil_state;                                       // The depth stencil state that'll be used by the pipeline
     };
 
     // Base class for the pipeline state, just acts as an interface
@@ -46,6 +46,9 @@ namespace rex
       }
 
     private:
+      // The root signature holds which parameters are used by the shader
+      // The gfx API pipeline state uses it to verify itself on construction, but doesn't store it internally
+      // So we have to store it ourselves and manually set it when the pso gets bound
       RootSignature* m_root_signature;
     };
   } // namespace gfx

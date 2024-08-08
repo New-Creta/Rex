@@ -9,7 +9,9 @@ namespace rex
 	{
 		namespace root_signature_cache
 		{
+			// Load a root signature from the cache, or store a new one
 			RootSignature* load(const ShaderPipeline& pipeline);
+			// Clear the cache
 			void clear();
 		}
 	}

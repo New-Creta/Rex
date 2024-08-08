@@ -15,32 +15,32 @@ namespace rex
 		}
 
 		// The constant buffers of the shader
-		const rsl::vector<CBufferReflDesc>& ShaderSignature::constant_buffers() const
+		const rsl::vector<ConstantBufferDeclaration>& ShaderSignature::constant_buffers() const
 		{
 			return m_desc.constant_buffers;
 		}
 		// The input parameters of the shader
-		const rsl::vector<ShaderParamReflection>& ShaderSignature::input_params() const
+		const rsl::vector<ShaderIODeclaration>& ShaderSignature::input_params() const
 		{
 			return m_desc.input_params;
 		}
 		// The output parameters of the shader
-		const rsl::vector<ShaderParamReflection>& ShaderSignature::output_params() const
+		const rsl::vector<ShaderIODeclaration>& ShaderSignature::output_params() const
 		{
 			return m_desc.output_params;
 		}
 		// The constant buffers of the shader in resource format
-		const rsl::vector<BoundResourceReflection>& ShaderSignature::constant_buffers_resources() const
+		const rsl::vector<ShaderResourceDeclaration>& ShaderSignature::constant_buffers_resources() const
 		{
 			return m_desc.bound_resources.constant_buffers;
 		}
 		// The textures of the shader
-		const rsl::vector<BoundResourceReflection>& ShaderSignature::textures() const
+		const rsl::vector<ShaderResourceDeclaration>& ShaderSignature::textures() const
 		{
 			return m_desc.bound_resources.textures;
 		}
 		// The samplers of the shader
-		const rsl::vector<BoundResourceReflection>& ShaderSignature::samplers() const
+		const rsl::vector<ShaderResourceDeclaration>& ShaderSignature::samplers() const
 		{
 			return m_desc.bound_resources.samplers;
 		}

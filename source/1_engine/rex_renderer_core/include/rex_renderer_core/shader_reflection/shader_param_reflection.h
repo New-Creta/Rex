@@ -10,12 +10,12 @@ namespace rex
 	namespace gfx
 	{
 		// Reflection of a shader parameter, either input our out of a shader
-		struct ShaderParamReflection
+		struct ShaderIODeclaration
 		{
 			rsl::tiny_stack_string semantic_name;		// The name of the shader parameter
-			s32 semantic_index;											// The index of the semantic used for the parameter
-			ShaderArithmeticType type;								// The type of the parameter
-			s32 size;																// The size in bytes of the parameter
+			s32 semantic_index;							// The index of the semantic used for the parameter
+			ShaderArithmeticType type;					// The type of the parameter
+			s32 size;									// The size in bytes of the parameter
 		};
 	}
 }

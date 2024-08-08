@@ -35,6 +35,7 @@ namespace rex
 
     namespace internal
     {
+      // Internal call to add the renderer to the list of renderers
       void add_renderer(rsl::unique_ptr<Renderer> renderer);
     }
 
@@ -46,6 +47,7 @@ namespace rex
     // Shutdown the graphics engine, no rendering support from here on out
     void shutdown();
 
+    // Construct a new renderer and add it to the list of renderers we should call
     template <typename T, typename ... Args>
     T* add_renderer(Args&& ... args)
     {

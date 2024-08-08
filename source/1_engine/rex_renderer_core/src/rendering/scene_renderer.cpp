@@ -246,25 +246,5 @@ namespace rex
 			m_draw_lists.clear();
 			
 		}
-
-		void SceneRenderer::bind_resources()
-		{
-			// This should be done in the geometry pass
-			// It should look something like this
-			// for (auto& shader_param : m_shader_params)
-			// {
-			//   shader_param->bind_to(ctx);
-			//	 // Within the above call, the following will happen
-			//   ctx->set_constant_buffer(m_slot, m_gpu_resource);
-			// }
-
-			//m_current_ctx->set_constant_buffer(m_per_scene_data->slot(), m_per_scene_data);
-			//m_current_ctx->set_constant_buffer(m_per_view_data->slot(), m_per_view_data);
-
-			//s32 per_view_cb_for_vs_param_idx = 1;
-			//s32 per_view_cb_for_ps_param_idx = 2;
-			//m_current_ctx->set_constant_buffer(per_view_cb_for_vs_param_idx, m_per_view_cb.get());
-			//m_current_ctx->set_constant_buffer(per_view_cb_for_ps_param_idx, m_per_view_cb.get());
-		}
 	}
 }

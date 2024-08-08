@@ -15,7 +15,7 @@ struct VertexOut
 float4 main(VertexOut pin) : SV_Target
 {
   float diffuseStrength = dot(pin.normal, -gLightDirection);
-  diffuseStrength = saturate(diffuseStrength + 0.3f);
+  diffuseStrength = saturate(diffuseStrength);
   float3 color_rgb = pin.Color.rgb * diffuseStrength;
 
   return float4(color_rgb, 1.0f);

@@ -12,18 +12,19 @@ namespace rex
 {
 	namespace gfx
 	{
-		struct BoundResources
+		// Holds a list of resources that are needed for a resource
+		struct ShaderResourceDeclarations
 		{
-			rsl::vector<BoundResourceReflection> constant_buffers;  // Holds all the constant buffers of the shader
-			rsl::vector<BoundResourceReflection> textures;					// Holds all the textures of the shader
-			rsl::vector<BoundResourceReflection> samplers;					// Holds all the samplers of the shader
+			rsl::vector<ShaderResourceDeclaration> constant_buffers;  // Holds all the constant buffers of the shader
+			rsl::vector<ShaderResourceDeclaration> textures;					// Holds all the textures of the shader
+			rsl::vector<ShaderResourceDeclaration> samplers;					// Holds all the samplers of the shader
 		};
 		struct ShaderSignatureDesc
 		{
-			rsl::vector<CBufferReflDesc> constant_buffers;			// Holds all the constant buffers of the shader
-			rsl::vector<ShaderParamReflection>   input_params;	// Holds all the input parameters of the shader
-			rsl::vector<ShaderParamReflection>   output_params;	// Holds all the output parameters of the shader
-			BoundResources bound_resources;											// Holds all bound resources of the shader
+			rsl::vector<ConstantBufferDeclaration> constant_buffers;			// Holds all the constant buffers of the shader
+			rsl::vector<ShaderIODeclaration>   input_params;	// Holds all the input parameters of the shader
+			rsl::vector<ShaderIODeclaration>   output_params;	// Holds all the output parameters of the shader
+			ShaderResourceDeclarations bound_resources;											// Holds all bound resources of the shader
 			rsl::tiny_stack_string shader_version;							// The version of the shader
 			ShaderType type;																		// The type of the shader
 		};
@@ -39,35 +40,20 @@ namespace rex
 			ShaderType shader_type() const;
 
 			// The constant buffers of the shader
-			const rsl::vector<CBufferReflDesc>& constant_buffers() const;
+			const rsl::vector<ConstantBufferDeclaration>& constant_buffers() const;
 			// The input parameters of the shader
-			const rsl::vector<ShaderParamReflection>& input_params() const;
+			const rsl::vector<ShaderIODeclaration>& input_params() const;
 			// The output parameters of the shader
-			const rsl::vector<ShaderParamReflection>& output_params() const;
+			const rsl::vector<ShaderIODeclaration>& output_params() const;
 			// The constant buffers of the shader in resource format
-			const rsl::vector<BoundResourceReflection>& constant_buffers_resources() const;
+			const rsl::vector<ShaderResourceDeclaration>& constant_buffers_resources() const;
 			// The textures of the shader
-			const rsl::vector<BoundResourceReflection>& textures() const;
+			const rsl::vector<ShaderResourceDeclaration>& textures() const;
 			// The samplers of the shader
-			const rsl::vector<BoundResourceReflection>& samplers() const;
+			const rsl::vector<ShaderResourceDeclaration>& samplers() const;
 
 		private:
 			ShaderSignatureDesc m_desc;
 		};
-
-		//// Holds shader reflection data of each shader in the pipeleine
-		//struct ShaderPipelineReflection
-		//{
-		//	ShaderSignature vs;
-		//	ShaderSignature ps;
-		//};
-		//// Given a shader pipeline, create reflection data for each shader within the pipeline
-		//ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline);
-
-		namespace rhi
-		{
-			// Create reflection data of a single shader
-			gfx::ShaderSignature reflect_shader(const gfx::Shader* shader);
-		}
 	}
 }

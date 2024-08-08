@@ -24,6 +24,11 @@ namespace rex
 				auto layout = rhi::create_input_layout(desc);
 				return g_cached_layouts.emplace(desc, rsl::move(layout)).inserted_element->value.get();
 			}
+
+			void clear()
+			{
+				g_cached_layouts.clear();
+			}
 		}
 	}
 }

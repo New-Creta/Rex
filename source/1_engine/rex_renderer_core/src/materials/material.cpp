@@ -29,7 +29,7 @@ namespace rex
       m_blend = matDesc.blend;
       m_depth_stencil = matDesc.depth_stencil;
 
-      ShaderPipelineReflection2& reflection = shader_reflection_cache::load(m_shader_pipeline);
+      ShaderPipelineReflection& reflection = shader_reflection_cache::load(m_shader_pipeline);
       m_root_signature = rhi::create_root_signature(reflection.parameters);
       m_parameters_store = rsl::make_unique<ShaderParametersStore>(reflection.material_param_store_desc);
     }

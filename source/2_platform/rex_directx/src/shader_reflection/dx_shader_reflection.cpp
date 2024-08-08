@@ -34,11 +34,11 @@ namespace rex
     // Based on the component mask and its precision, create the correct shader parameter type for uints
     ShaderArithmeticType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision);
 
-    ShaderParamReflection reflect_shader_input_parameter(ID3D12ShaderReflection* refl, s32 idx)
+    ShaderIODeclaration reflect_shader_input_parameter(ID3D12ShaderReflection* refl, s32 idx)
     {
       D3D12_SIGNATURE_PARAMETER_DESC param_desc;
       DX_CALL(refl->GetInputParameterDesc(idx, &param_desc));
-      ShaderParamReflection input_param{};
+      ShaderIODeclaration input_param{};
 
       input_param.semantic_name = param_desc.SemanticName;
       input_param.semantic_index = param_desc.SemanticIndex;
@@ -47,11 +47,11 @@ namespace rex
 
       return input_param;
     }
-    ShaderParamReflection reflect_shader_output_parameter(ID3D12ShaderReflection* refl, s32 idx)
+    ShaderIODeclaration reflect_shader_output_parameter(ID3D12ShaderReflection* refl, s32 idx)
     {
       D3D12_SIGNATURE_PARAMETER_DESC param_desc;
       DX_CALL(refl->GetOutputParameterDesc(idx, &param_desc));
-      ShaderParamReflection output_param{};
+      ShaderIODeclaration output_param{};
 
       output_param.semantic_name = param_desc.SemanticName;
       output_param.semantic_index = param_desc.SemanticIndex;
@@ -61,12 +61,12 @@ namespace rex
       return output_param;
     }
 
-    BoundResourceReflection reflect_bound_resource(ID3D12ShaderReflection* refl, s32 idx, ShaderType type)
+    ShaderResourceDeclaration reflect_bound_resource(ID3D12ShaderReflection* refl, s32 idx, ShaderType type)
     {
       D3D12_SHADER_INPUT_BIND_DESC resource_desc;
       DX_CALL(refl->GetResourceBindingDesc(idx, &resource_desc));
 
-      BoundResourceReflection bound_resource{};
+      ShaderResourceDeclaration bound_resource{};
 
       switch (resource_desc.Type)
       {
@@ -144,14 +144,14 @@ namespace rex
       return reg_info;
     }
 
-    CBufferReflDesc reflect_constant_buffer(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cbReflection)
+    ConstantBufferDeclaration reflect_constant_buffer(ID3D12ShaderReflection* refl, ID3D12ShaderReflectionConstantBuffer* cbReflection)
     {
       D3D12_SHADER_BUFFER_DESC shader_buffer_desc{};
       cbReflection->GetDesc(&shader_buffer_desc);
 
       ShaderRegisterInfo reg_info = get_constant_buffer_register_info(refl, cbReflection);
 
-      CBufferReflDesc cb_ref{};
+      ConstantBufferDeclaration cb_ref{};
       cb_ref.name = shader_buffer_desc.Name;
       cb_ref.shader_register = reg_info.index;
       cb_ref.register_space = reg_info.space;
@@ -176,9 +176,9 @@ namespace rex
 
       return cb_ref;
     }
-    rsl::vector<CBufferReflDesc> reflect_constant_buffers(ID3D12ShaderReflection* refl, s32 numConstantBuffers)
+    rsl::vector<ConstantBufferDeclaration> reflect_constant_buffers(ID3D12ShaderReflection* refl, s32 numConstantBuffers)
     {
-      rsl::vector<CBufferReflDesc> constant_buffers;
+      rsl::vector<ConstantBufferDeclaration> constant_buffers;
       constant_buffers.reserve(numConstantBuffers);
 
       for (card32 i = 0; i < numConstantBuffers; ++i)
@@ -189,9 +189,9 @@ namespace rex
 
       return constant_buffers;
     }
-    rsl::vector<ShaderParamReflection> reflect_input_params(ID3D12ShaderReflection* refl, s32 numInputParams)
+    rsl::vector<ShaderIODeclaration> reflect_input_params(ID3D12ShaderReflection* refl, s32 numInputParams)
     {
-      rsl::vector<ShaderParamReflection> input_params;
+      rsl::vector<ShaderIODeclaration> input_params;
       input_params.reserve(numInputParams);
 
       for (card32 i = 0; i < numInputParams; ++i)
@@ -201,9 +201,9 @@ namespace rex
 
       return input_params;
     }
-    rsl::vector<ShaderParamReflection> reflect_output_params(ID3D12ShaderReflection* refl, s32 numOutputParams)
+    rsl::vector<ShaderIODeclaration> reflect_output_params(ID3D12ShaderReflection* refl, s32 numOutputParams)
     {
-      rsl::vector<ShaderParamReflection> output_params;
+      rsl::vector<ShaderIODeclaration> output_params;
       output_params.reserve(numOutputParams);
 
       for (card32 i = 0; i < numOutputParams; ++i)
@@ -214,9 +214,9 @@ namespace rex
       return output_params;
     }
 
-    BoundResources reflect_bound_resources(ID3D12ShaderReflection* refl, s32 numBoundResources, ShaderType type)
+    ShaderResourceDeclarations reflect_bound_resources(ID3D12ShaderReflection* refl, s32 numBoundResources, ShaderType type)
     {
-      BoundResources bound_resources{};
+      ShaderResourceDeclarations bound_resources{};
 
       for (card32 i = 0; i < numBoundResources; ++i)
       {
@@ -283,41 +283,6 @@ namespace rex
 
       REX_ASSERT("Invalid component mask");
       return ShaderArithmeticType::Unknown;
-    }
-
-    namespace rhi
-    {
-      gfx::ShaderSignature reflect_shader(const gfx::Shader* shader)
-      {
-        REX_ASSERT_X(shader, "Cannot create reflection data on a null shader");
-
-        // Create the shader reflection object
-        const gfx::DxShader* dx_shader = d3d::to_dx12(shader);
-        const void* byte_code = dx_shader->dx_bytecode().pShaderBytecode;
-        s32 byte_count = static_cast<s32>(dx_shader->dx_bytecode().BytecodeLength);
-        wrl::ComPtr<ID3D12ShaderReflection> reflection_object;
-        DX_CALL(D3DReflect(byte_code, byte_count, IID_PPV_ARGS(reflection_object.GetAddressOf())));
-
-        // Get the description of the shader
-        D3D12_SHADER_DESC shader_desc;
-        DX_CALL(reflection_object->GetDesc(&shader_desc));
-
-        s32 num_constant_buffers = shader_desc.ConstantBuffers;
-        s32 num_input_params = shader_desc.InputParameters;
-        s32 num_output_params = shader_desc.OutputParameters;
-        s32 num_bound_resources = shader_desc.BoundResources;
-
-        ShaderSignatureDesc desc{};
-
-        desc.shader_version = convert_shader_version_to_string(shader_desc.Version);
-        desc.constant_buffers = reflect_constant_buffers(reflection_object.Get(), num_constant_buffers);
-        desc.input_params = reflect_input_params(reflection_object.Get(), num_input_params);
-        desc.output_params = reflect_output_params(reflection_object.Get(), num_output_params);
-        desc.bound_resources = reflect_bound_resources(reflection_object.Get(), num_bound_resources, shader->type());
-        desc.type = shader->type();
-
-        return ShaderSignature(rsl::move(desc));
-      }
     }
   }
 }

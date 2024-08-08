@@ -12,12 +12,18 @@ namespace rex
 {
 	namespace gfx
 	{
+		// This class is equivalent to Unreal's actor class and Unity's gameobject
+		// It's the class used to reference an object in the world
+		// However the class itself is empty and components are added to it
 		class Entity
 		{
 		public:
+			// Construct an empty entity
 			Entity();
+			// Construct an entity with a given name
 			Entity(entt::registry& registry, entt::entity entity, rsl::string_view name);
 
+			// Add a new component to an entity
 			template <typename Component, typename ... Args>
 			Component& add_component(Args&&... args)
 			{
@@ -26,16 +32,20 @@ namespace rex
 				return m_registry->emplace<Component>(m_entity_handle, rsl::forward<Args>(args)...);
 			}
 
+			// Get a component from an entity
 			template <typename Component>
 			Component& component()
 			{
 				return m_registry->get<Component>(m_entity_handle);
 			}
+			
+			// Return the name of the entity
+			rsl::string_view name() const;
 
 		private:
-			entt::entity m_entity_handle;
-			entt::registry* m_registry;
-			rsl::string m_name;
+			entt::entity m_entity_handle;	// The entity handle which is what entt needs to operate on the entity
+			entt::registry* m_registry;		// The registry the entity is stored in
+			rsl::string m_name;				// The name of the entity
 		};
 	}
 }

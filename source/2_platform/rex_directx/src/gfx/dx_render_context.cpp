@@ -214,13 +214,6 @@ namespace rex
       m_cmd_list->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
 
-    // Bind a texture to the context
-    void DxRenderContext::bind_texture(s32 rootParamIdx, Texture2D* texture)
-    {
-      DxTexture2D* dx_texture = d3d::to_dx12(texture);
-      m_cmd_list->SetGraphicsRootDescriptorTable(rootParamIdx, dx_texture->view()->gpu_handle());
-    
-    }
     // Bind a material to the context
     void DxRenderContext::bind_material(Material* material)
     {
