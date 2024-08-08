@@ -268,18 +268,9 @@ namespace rex
       // and are sorted in the way they're expected by the root signature
 
       const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = material->shader_params();
-      //auto copy_ctx = new_copy_ctx();
       for (const auto& shader_resource : shader_params)
       {
         shader_resource->bind_to(this);
-        //rsl::unique_ptr<ResourceView> start_handle;
-        //switch (shader_resource.type())
-        //{
-        //case ShaderParameterType::ConstantBuffer: start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, shader_resource.views()); break;
-        //case ShaderParameterType::Texture:        start_handle = copy_ctx->copy_views(ViewHeapType::ShaderResourceView, shader_resource.views()); break;
-        //case ShaderParameterType::Sampler:        start_handle = copy_ctx->copy_views(ViewHeapType::Sampler, shader_resource.views());            break;
-        //}
-        //m_cmd_list->SetGraphicsRootDescriptorTable(shader_resource.slot(), d3d::to_dx12(start_handle.get())->gpu_handle());
       }
     }
 
