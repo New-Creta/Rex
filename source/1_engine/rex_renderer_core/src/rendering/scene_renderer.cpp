@@ -144,9 +144,9 @@ namespace rex
 			// Define the input layout
 			geo_pass_desc.pso_desc.input_layout = 
 			{
-				{ ShaderSemantic::Position, ShaderParameterType::Float3    },
-				{ ShaderSemantic::Normal,   ShaderParameterType::Float3    },
-				{ ShaderSemantic::Color,    ShaderParameterType::Float4    } 
+				{ ShaderSemantic::Position, ShaderArithmeticType::Float3    },
+				{ ShaderSemantic::Normal,   ShaderArithmeticType::Float3    },
+				{ ShaderSemantic::Color,    ShaderArithmeticType::Float4    } 
 			};
 
 			// Define the shaders

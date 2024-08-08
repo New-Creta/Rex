@@ -4,11 +4,12 @@ namespace rex
 {
   namespace gfx
   {
-    Texture2D::Texture2D(ResourceView* view, s32 width, s32 height, TextureFormat format)
+    Texture2D::Texture2D(u64 gpuAddress, ResourceView* view, s32 width, s32 height, TextureFormat format)
       : m_width(width)
       , m_height(height)
       , m_format(format)
       , m_view(view)
+      , m_gpu_address(gpuAddress)
     {}
 
     s32 Texture2D::width() const
@@ -27,5 +28,10 @@ namespace rex
     {
       return m_view;
     }
+    u64 Texture2D::gpu_address() const
+    {
+      return m_gpu_address;
+    }
+
   }
 }

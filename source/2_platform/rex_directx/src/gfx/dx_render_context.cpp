@@ -161,18 +161,31 @@ namespace rex
       m_cmd_list->SetPipelineState(dx_pso->dx_object());
     }
     // Set the graphics root descriptor table of the context
-    void DxRenderContext::set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id)
+    void DxRenderContext::bind_view_table(s32 paramIdx, UINT64 id)
     {
       D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
       texture_handle.ptr = id;
 
       m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, texture_handle);
     }
-    void DxRenderContext::set_graphics_root_descriptor_table(s32 paramIdx, ResourceView* startView)
+    void DxRenderContext::bind_view_table(s32 paramIdx, ResourceView* startView)
     {
       DxResourceView* dx_start_view = d3d::to_dx12(startView);
       m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, dx_start_view->gpu_handle());
     }
+    void DxRenderContext::bind_constant_buffer(s32 paramIdx, u64 gpuAddress)
+    {
+      m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, gpuAddress);
+    }
+    void DxRenderContext::bind_shader_resource(s32 paramIdx, u64 gpuAddress)
+    {
+      m_cmd_list->SetGraphicsRootShaderResourceView(paramIdx, gpuAddress);
+    }
+    void DxRenderContext::bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress)
+    {
+      m_cmd_list->SetGraphicsRootUnorderedAccessView(paramIdx, gpuAddress);
+    }
+
     // Set the constant buffer of the context at a given index
     void DxRenderContext::set_constant_buffer(s32 paramIdx, Resource* cb)
     {
@@ -254,18 +267,19 @@ namespace rex
       // that's accessible by the GPU, all views are continious in memory
       // and are sorted in the way they're expected by the root signature
 
-      const rsl::vector<ShaderResource>& shader_resources = material->shader_resources();
-      auto copy_ctx = new_copy_ctx();
-      for (const auto& shader_resource : shader_resources)
+      const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = material->shader_params();
+      //auto copy_ctx = new_copy_ctx();
+      for (const auto& shader_resource : shader_params)
       {
-        rsl::unique_ptr<ResourceView> start_handle;
-        switch (shader_resource.type())
-        {
-        case ShaderResourceType::ConstantBuffer: start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, shader_resource.views()); break;
-        case ShaderResourceType::Texture:        start_handle = copy_ctx->copy_views(ViewHeapType::ShaderResourceView, shader_resource.views()); break;
-        case ShaderResourceType::Sampler:        start_handle = copy_ctx->copy_views(ViewHeapType::Sampler, shader_resource.views());            break;
-        }
-        m_cmd_list->SetGraphicsRootDescriptorTable(shader_resource.slot(), d3d::to_dx12(start_handle.get())->gpu_handle());
+        shader_resource->bind_to(this);
+        //rsl::unique_ptr<ResourceView> start_handle;
+        //switch (shader_resource.type())
+        //{
+        //case ShaderParameterType::ConstantBuffer: start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, shader_resource.views()); break;
+        //case ShaderParameterType::Texture:        start_handle = copy_ctx->copy_views(ViewHeapType::ShaderResourceView, shader_resource.views()); break;
+        //case ShaderParameterType::Sampler:        start_handle = copy_ctx->copy_views(ViewHeapType::Sampler, shader_resource.views());            break;
+        //}
+        //m_cmd_list->SetGraphicsRootDescriptorTable(shader_resource.slot(), d3d::to_dx12(start_handle.get())->gpu_handle());
       }
     }
 

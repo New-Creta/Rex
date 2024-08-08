@@ -5,7 +5,7 @@ namespace rex
   namespace gfx
   {
     DxConstantBuffer::DxConstantBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view, rsl::memory_size size)
-      : ConstantBuffer(&m_view, size)
+      : ConstantBuffer(resource->GetGPUVirtualAddress(), &m_view, size)
       , m_resource(resource)
       , m_view(view)
     {}

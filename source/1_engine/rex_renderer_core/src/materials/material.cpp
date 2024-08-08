@@ -6,7 +6,6 @@
 #include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/materials/material_system.h"
 
-#include "rex_renderer_core/shader_reflection/shader_pipeline_reflection.h"
 #include "rex_renderer_core/shader_reflection/shader_reflection_cache.h"
 
 namespace rex
@@ -48,7 +47,7 @@ namespace rex
       m_parameters_store->set(name, sampler);
     }
 
-    rsl::vector<ShaderResource> Material::shader_resources()
+    const rsl::vector<rsl::unique_ptr<ShaderParameter>>& Material::shader_params() const
     {
       return m_parameters_store->params();
     }

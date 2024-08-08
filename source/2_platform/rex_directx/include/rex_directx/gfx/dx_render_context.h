@@ -53,9 +53,13 @@ namespace rex
       // Set the pipeline state of the context
       void set_pipeline_state(PipelineState* pso) override;
       // Set the graphics root descriptor table of the context
-      void set_graphics_root_descriptor_table(s32 paramIdx, UINT64 id) override;
-      void set_graphics_root_descriptor_table(s32 paramIdx, ResourceView* startCb) override;
+      void bind_view_table(s32 paramIdx, UINT64 id) override;
+      void bind_view_table(s32 paramIdx, ResourceView* startCb) override;
       // Set the constant buffer of the context at a given index
+      void bind_constant_buffer(s32 paramIdx, u64 gpuAddress) override;
+      void bind_shader_resource(s32 paramIdx, u64 gpuAddress) override;
+      void bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress) override;
+
       void set_constant_buffer(s32 paramIdx, Resource* startView) override;
       // Set the blend factor of the context
       void set_blend_factor(const f32 blendFactor[4]) override;
@@ -74,8 +78,6 @@ namespace rex
 
       // Return the wrapped directx commandlist
       ID3D12GraphicsCommandList* dx_cmdlist();
-
-      //void bind_parameter(ShaderParameter* parameter);
 
     protected:
       // Reset the wrapped commandlist and its allocater

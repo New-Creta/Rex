@@ -8,57 +8,41 @@ namespace rex
 {
 	namespace gfx
 	{
-		ShaderParameter::ShaderParameter(ShaderParameterType2 type, ShaderType owningShaderType)
-			: m_type(type)
-			, m_owning_shader_type(owningShaderType)
-			, m_resource(nullptr)
-		{
-		}
-
-		void ShaderParameter::set_resource(Resource* resource)
-		{
-			m_resource = resource;
-		}
-		Resource* ShaderParameter::resource()
-		{
-			return m_resource;
-		}
-		ShaderType ShaderParameter::owning_shader_type() const
-		{
-			return m_owning_shader_type;
-		}
-
 		ShaderParametersStore::ShaderParametersStore(const ShaderParametersStoreDesc& desc)
 			: m_param_to_location_lookup(&desc.param_map)
 		{
 			m_shader_resources.reserve(desc.shader_resource_descs.size());
-			for (ShaderResourceDesc shaderResourceDesc : desc.shader_resource_descs)
+			for (ShaderParameterDesc shaderResourceDesc : desc.shader_resource_descs)
 			{
-				m_shader_resources.emplace_back(shaderResourceDesc);
+				switch (shaderResourceDesc.type)
+				{
+				case ShaderParameterType::ConstantBuffer: m_shader_resources.push_back(rsl::make_unique<ViewShaderParam>(shaderResourceDesc)); break;
+				default: m_shader_resources.push_back(rsl::make_unique<ViewTableShaderParam>(shaderResourceDesc)); break;
+				}
 			}
 		}
 
 		void ShaderParametersStore::set(rsl::string_view name, ConstantBuffer* cb)
 		{
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
-			m_shader_resources[loc.idx].update_view(loc.view_offset, reinterpret_cast<ResourceView*>(cb));
+			m_shader_resources[loc.idx]->update_view(loc.view_offset, cb);
 		}
 		void ShaderParametersStore::set(rsl::string_view name, Texture2D* texture)
 		{
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
-			m_shader_resources[loc.idx].update_view(loc.view_offset, texture->resource_view());
+			m_shader_resources[loc.idx]->update_view(loc.view_offset, texture);
 		}
 		void ShaderParametersStore::set(rsl::string_view name, Sampler2D* sampler)
 		{
 			ShaderParameterLocation loc = m_param_to_location_lookup->at(name);
-			m_shader_resources[loc.idx].update_view(loc.view_offset, sampler->resource_view());
+			m_shader_resources[loc.idx]->update_view(loc.view_offset, sampler);
 		}
 		ShaderParameterLocation ShaderParametersStore::location(rsl::string_view name) const
 		{
 			return m_param_to_location_lookup->at(name);
 		}
 
-		const rsl::vector<ShaderResource>& ShaderParametersStore::params() const
+		const rsl::vector<rsl::unique_ptr<ShaderParameter>>& ShaderParametersStore::params() const
 		{
 			return m_shader_resources;
 		}

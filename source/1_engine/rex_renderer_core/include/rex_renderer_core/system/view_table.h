@@ -8,9 +8,9 @@ namespace rex
 {
 	namespace gfx
 	{
-		struct ViewRange
+		struct ViewRangeDeclaration
 		{
-			ViewRange(s32 baseRegister, s32 numViews, ShaderResourceType type, s32 registerSpace)
+			ViewRangeDeclaration(s32 baseRegister, s32 numViews, ShaderParameterType type, s32 registerSpace)
 				: base_register(baseRegister)
 				, num_views(numViews)
 				, type(type)
@@ -19,13 +19,13 @@ namespace rex
 
 			s32 base_register;
 			s32 num_views;
-			ShaderResourceType type;
+			ShaderParameterType type;
 			s32 register_space;
 		};
 
-		struct ViewTable
+		struct ShaderParameterDeclaration
 		{
-			ViewTable(s32 slot, rsl::vector<ViewRange>&& ranges, s32 totalNumViews, ShaderResourceType type, ShaderVisibility shaderVis)
+			ShaderParameterDeclaration(s32 slot, rsl::vector<ViewRangeDeclaration>&& ranges, s32 totalNumViews, ShaderParameterType type, ShaderVisibility shaderVis)
 				: slot(slot)
 				, ranges(rsl::move(ranges))
 				, type(type)
@@ -35,10 +35,10 @@ namespace rex
 
 			s32 slot;
 			s32 total_num_views;
-			ShaderResourceType type;
-			rsl::vector<ViewRange> ranges;
+			ShaderParameterType type;
+			rsl::vector<ViewRangeDeclaration> ranges;
 			ShaderVisibility visibility;
 		};
-		using ShaderParameter2 = ViewTable;
+		using ShaderParameterDeclaration = ShaderParameterDeclaration;
 	}
 }

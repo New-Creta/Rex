@@ -21,32 +21,10 @@ namespace rex
 			ctx->set_root_signature(m_pso->root_signature());
 			ctx->set_primitive_topology(PrimitiveTopology::TriangleList);
 
-			const rsl::vector<ShaderResource>& shader_resources = m_parameters_store->params();
-			auto copy_ctx = new_copy_ctx();
-			for (const auto& shader_resource : shader_resources)
+			const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = m_parameters_store->params();
+			for (const auto& shader_resource : shader_params)
 			{
-				rsl::unique_ptr<ResourceView> start_handle;
-				switch (shader_resource.type())
-				{
-				case ShaderResourceType::ConstantBuffer: 
-				{// Constant buffers are bound using gpu virtual address
-					//start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, shader_resource.views()); 
-					ConstantBuffer* cb = reinterpret_cast<ConstantBuffer*>(shader_resource.views()[0]);
-					if (cb)
-					{
-						ctx->set_constant_buffer(shader_resource.slot(), cb);
-					}
-					break;
-				}
-				case ShaderResourceType::Texture:        
-					start_handle = copy_ctx->copy_views(ViewHeapType::ShaderResourceView, shader_resource.views());
-					ctx->set_graphics_root_descriptor_table(shader_resource.slot(), start_handle.get());
-					break;
-				case ShaderResourceType::Sampler:        
-					start_handle = copy_ctx->copy_views(ViewHeapType::Sampler, shader_resource.views());            
-					ctx->set_graphics_root_descriptor_table(shader_resource.slot(), start_handle.get());
-					break;
-				}
+				shader_resource->bind_to(ctx);
 			}
 		}
 

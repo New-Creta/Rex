@@ -86,7 +86,7 @@ namespace rex
       rsl::unique_ptr<VertexBuffer> create_vertex_buffer(const void* data, s32 numVertices, s32 vertexSize);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(s32 numIndices, IndexBufferFormat format);
       rsl::unique_ptr<IndexBuffer> create_index_buffer(const void* data, s32 numIndices, IndexBufferFormat format);
-      rsl::unique_ptr<RootSignature> create_root_signature(const rsl::vector<ViewTable>& parameters);
+      rsl::unique_ptr<RootSignature> create_root_signature(const rsl::vector<ShaderParameterDeclaration>& parameters);
       //rsl::unique_ptr<RootSignature> create_root_signature(const ShaderPipelineParameters& parameters);
       rsl::unique_ptr<PipelineState> create_pso(const InputLayoutDesc& inputLayoutDesc, Material* material);
       rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc);

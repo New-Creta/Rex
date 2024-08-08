@@ -27,7 +27,7 @@ namespace rex
 			class ViewTableBuilder
 			{
 			public:
-				ViewTableBuilder(s32 registerSpace, ShaderResourceType expectedResourceType)
+				ViewTableBuilder(s32 registerSpace, ShaderParameterType expectedResourceType)
 					: m_start_register(0)
 					, m_expected_register(0)
 					, m_total_num_views(0)
@@ -55,10 +55,10 @@ namespace rex
 					return view_offset;
 				}
 
-				ViewTable build(s32 slot, ShaderVisibility visibility)
+				ShaderParameterDeclaration build(s32 slot, ShaderVisibility visibility)
 				{
 					add_new_range();
-					return ViewTable(slot, rsl::move(m_ranges), m_total_num_views, m_expected_resource_type, visibility);
+					return ShaderParameterDeclaration(slot, rsl::move(m_ranges), m_total_num_views, m_expected_resource_type, visibility);
 				}
 
 			private:
@@ -77,8 +77,8 @@ namespace rex
 				s32 m_expected_register;
 				s32 m_expected_register_space;
 				s32 m_total_num_views;
-				ShaderResourceType m_expected_resource_type;
-				rsl::vector<ViewRange> m_ranges;
+				ShaderParameterType m_expected_resource_type;
+				rsl::vector<ViewRangeDeclaration> m_ranges;
 			};
 
 			class ShaderPipelineReflectionBuilder
@@ -91,13 +91,13 @@ namespace rex
 					SplittedResources splitted_textures = split_resources(signature.textures());
 					SplittedResources splitted_samplers = split_resources(signature.samplers());
 
-					add_bindings(splitted_cbs.material_resources, ShaderResourceType::ConstantBuffer, g_material_register_space, visibility);
-					add_bindings(splitted_textures.material_resources, ShaderResourceType::Texture, g_material_register_space, visibility);
-					add_bindings(splitted_samplers.material_resources, ShaderResourceType::Sampler, g_material_register_space, visibility);
+					add_bindings(splitted_cbs.material_resources, ShaderParameterType::ConstantBuffer, g_material_register_space, visibility);
+					add_bindings(splitted_textures.material_resources, ShaderParameterType::Texture, g_material_register_space, visibility);
+					add_bindings(splitted_samplers.material_resources, ShaderParameterType::Sampler, g_material_register_space, visibility);
 
-					add_bindings(splitted_cbs.renderpass_resources, ShaderResourceType::ConstantBuffer, g_renderpass_register_space, visibility);
-					add_bindings(splitted_textures.renderpass_resources, ShaderResourceType::Texture, g_renderpass_register_space, visibility);
-					add_bindings(splitted_samplers.renderpass_resources, ShaderResourceType::Sampler, g_renderpass_register_space, visibility);
+					add_bindings(splitted_cbs.renderpass_resources, ShaderParameterType::ConstantBuffer, g_renderpass_register_space, visibility);
+					add_bindings(splitted_textures.renderpass_resources, ShaderParameterType::Texture, g_renderpass_register_space, visibility);
+					add_bindings(splitted_samplers.renderpass_resources, ShaderParameterType::Sampler, g_renderpass_register_space, visibility);
 				}
 
 				ShaderPipelineReflection2 build()
@@ -122,7 +122,7 @@ namespace rex
 
 					return splitted_resources;
 				}
-				void add_bindings(const rsl::vector<BoundResourceReflection>& resources, ShaderResourceType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
+				void add_bindings(const rsl::vector<BoundResourceReflection>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
 				{
 					// The resources holds a list of each individual resource of a certain type, in a shader
 					// We need to combine them into a set of ranges that are continious, based on register
@@ -150,7 +150,7 @@ namespace rex
 					{
 						switch (resource.resource_type)
 						{
-						case ShaderResourceType::ConstantBuffer: cb_views.push_back(resource); break;
+						case ShaderParameterType::ConstantBuffer: cb_views.push_back(resource); break;
 						default: other_views.push_back(resource); break;
 						}
 					}
@@ -158,7 +158,7 @@ namespace rex
 					add_view_binding(param_store_desc, cb_views, type, expectedRegisterSpace, visibility);
 					add_view_table_binding(param_store_desc, other_views, type, expectedRegisterSpace, visibility);
 				}
-				void add_view_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<BoundResourceReflection>& resources, ShaderResourceType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
+				void add_view_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<BoundResourceReflection>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
 				{
 					if (resources.empty())
 					{
@@ -174,13 +174,13 @@ namespace rex
 						const BoundResourceReflection& resource = resources[i];
 						ViewOffset view_offset{};
 						paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
-						ViewRange view_range = ViewRange(resource.shader_register, 1, type, resource.register_space);
-						const auto& view_table = m_reflection_result.parameters.emplace_back(ViewTable(slot, { view_range }, 1, type, visibility));
-						paramStoreDesc->shader_resource_descs.push_back(ShaderResourceDesc{ type, slot, view_table.total_num_views });
+						ViewRangeDeclaration view_range = ViewRangeDeclaration(resource.shader_register, 1, type, resource.register_space);
+						const auto& view_table = m_reflection_result.parameters.emplace_back(ShaderParameterDeclaration(slot, { view_range }, 1, type, visibility));
+						paramStoreDesc->shader_resource_descs.push_back(ShaderParameterDesc{ type, slot, view_table.total_num_views });
 					}
 
 				}
-				void add_view_table_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<BoundResourceReflection>& resources, ShaderResourceType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
+				void add_view_table_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<BoundResourceReflection>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
 				{
 					if (resources.empty())
 					{
@@ -199,7 +199,7 @@ namespace rex
 					}
 
 					const auto& view_table = m_reflection_result.parameters.emplace_back(view_table_builder.build(slot, visibility));
-					paramStoreDesc->shader_resource_descs.push_back(ShaderResourceDesc{ type, slot, view_table.total_num_views });
+					paramStoreDesc->shader_resource_descs.push_back(ShaderParameterDesc{ type, slot, view_table.total_num_views });
 				}
 
 			private:

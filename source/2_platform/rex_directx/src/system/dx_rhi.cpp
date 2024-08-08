@@ -63,7 +63,6 @@
 #include "rex_renderer_core/materials/material_system.h"
 #include "rex_renderer_core/system/input_layout_cache.h"
 #include "rex_renderer_core/system/root_signature_cache.h"
-#include "rex_renderer_core/shader_reflection/shader_pipeline_reflection.h"
 
 namespace rex
 {
@@ -339,7 +338,7 @@ namespace rex
 
         return ib;
       }
-      rsl::unique_ptr<RootSignature> create_root_signature(const rsl::vector<ViewTable>& parameters)
+      rsl::unique_ptr<RootSignature> create_root_signature(const rsl::vector<ShaderParameterDeclaration>& parameters)
       {
         DxShaderPipelineParameters2 dx_pipeline_parameters = d3d::to_dx12(parameters);
 
@@ -380,48 +379,6 @@ namespace rex
 
         return rsl::make_unique<DxRootSignature>(root_signature, dx_pipeline_parameters.root_parameters);
       }
-
-      //rsl::unique_ptr<RootSignature> create_root_signature(const ShaderPipelineParameters& parameters)
-      //{
-      //  DxShaderPipelineParameters2 dx_pipeline_parameters = d3d::to_dx12(parameters);
-
-      //  // A root signature is an array of root parameters.
-      //  REX_WARN(LogDxRhi, "Use versioned root signature here");
-      //  REX_WARN(LogDxRhi, "Investigate if we can use static samplers here as well..");
-      //  CD3DX12_ROOT_SIGNATURE_DESC root_sig_desc(
-      //    dx_pipeline_parameters.root_parameters.size(),
-      //    dx_pipeline_parameters.root_parameters.data(),
-      //    0,          // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
-      //    nullptr,    // As we're creating the root signature from reflection, we cannot infer the static samplers at the moment
-      //    D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-      //  // Create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
-      //  wrl::ComPtr<ID3DBlob> serialized_root_sig = nullptr;
-      //  wrl::ComPtr<ID3DBlob> error_blob = nullptr;
-
-      //  HRESULT hr = D3D12SerializeRootSignature(&root_sig_desc, D3D_ROOT_SIGNATURE_VERSION_1, serialized_root_sig.GetAddressOf(), error_blob.GetAddressOf());
-      //  if (error_blob != nullptr)
-      //  {
-      //    REX_ERROR(LogDxRhi, "{}", (char*)error_blob->GetBufferPointer());
-      //    return nullptr;
-      //  }
-
-      //  if (DX_FAILED(hr))
-      //  {
-      //    REX_ERROR(LogDxRhi, "Failed to serialize root signature");
-      //    return nullptr;
-      //  }
-
-      //  wrl::ComPtr<ID3D12RootSignature> root_signature;
-      //  if (DX_FAILED(g_rhi_resources->device->dx_object()->CreateRootSignature(0, serialized_root_sig->GetBufferPointer(), serialized_root_sig->GetBufferSize(), IID_PPV_ARGS(&root_signature))))
-      //  {
-      //    HR_CALL(g_rhi_resources->device->dx_object()->GetDeviceRemovedReason());
-      //    REX_ERROR(LogDxRhi, "Failed to create root signature");
-      //    return nullptr;
-      //  }
-
-      //  return rsl::make_unique<DxRootSignature>(root_signature, dx_pipeline_parameters.root_parameters);
-      //}
 
       rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, TextureFormat format)
       {

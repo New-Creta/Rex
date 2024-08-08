@@ -82,10 +82,14 @@ namespace rex
       // Set the pipeline state of the context
       virtual void set_pipeline_state(PipelineState* pso) = 0;
       // Set the graphics root descriptor table of the context
-      virtual void set_graphics_root_descriptor_table(s32 paramIdx, u64 id) = 0;
-      virtual void set_graphics_root_descriptor_table(s32 paramIdx, ResourceView* startView) = 0;
+      virtual void bind_view_table(s32 paramIdx, u64 id) = 0;
+      virtual void bind_view_table(s32 paramIdx, ResourceView* startView) = 0;
       // Set the constant buffer of the context at a given index
       virtual void set_constant_buffer(s32 paramIdx, Resource* resource) = 0;
+
+      virtual void bind_constant_buffer(s32 paramIdx, u64 gpuAddress) = 0;
+      virtual void bind_shader_resource(s32 paramIdx, u64 gpuAddress) = 0;
+      virtual void bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress) = 0;
 
       // Draw an indexed primitive
       virtual void draw_indexed(s32 indexCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation) = 0;

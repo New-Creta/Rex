@@ -53,15 +53,15 @@ namespace rex
       return invalid_obj<ShaderSemantic>();
     }
 
-    VertexBufferFormat to_vertex_input_format(ShaderParameterType type)
+    VertexBufferFormat to_vertex_input_format(ShaderArithmeticType type)
     {
       switch (type)
       {
-      case rex::gfx::ShaderParameterType::Uint:       return VertexBufferFormat::Uint;
-      case rex::gfx::ShaderParameterType::Float:      return VertexBufferFormat::Float;
-      case rex::gfx::ShaderParameterType::Float2:     return VertexBufferFormat::Float2;
-      case rex::gfx::ShaderParameterType::Float3:     return VertexBufferFormat::Float3;
-      case rex::gfx::ShaderParameterType::Float4:     return VertexBufferFormat::Float4;
+      case rex::gfx::ShaderArithmeticType::Uint:       return VertexBufferFormat::Uint;
+      case rex::gfx::ShaderArithmeticType::Float:      return VertexBufferFormat::Float;
+      case rex::gfx::ShaderArithmeticType::Float2:     return VertexBufferFormat::Float2;
+      case rex::gfx::ShaderArithmeticType::Float3:     return VertexBufferFormat::Float3;
+      case rex::gfx::ShaderArithmeticType::Float4:     return VertexBufferFormat::Float4;
       default: break;
       }
 
@@ -135,7 +135,7 @@ namespace rex
           return false;
         }
 
-        ShaderParameterType format = it->format;
+        ShaderArithmeticType format = it->format;
         if (!is_convertible_shader_param_type(format, elem.format))
         {
           return false;

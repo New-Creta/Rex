@@ -28,7 +28,7 @@ namespace rex
     struct MaterialDesc;
     struct ViewParam;
     struct ParamBindingSlots;
-    class ShaderResource;
+    class ShaderParameter;
 
     // Material construct settings are a wrapper around all the settings a material needs to store
     struct MaterialDesc
@@ -94,7 +94,7 @@ namespace rex
       void set(rsl::string_view name, Sampler2D* sampler);
 
       // Return all resources of a material
-      rsl::vector<ShaderResource> shader_resources();
+      const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params() const;
 
       // Set the blend factor of the material
       void set_blend_factor(const BlendFactor& blendFactor);

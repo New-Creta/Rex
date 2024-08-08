@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rex_renderer_core/resources/buffer.h"
+#include "rex_engine/engine/types.h"
 
 namespace rex
 {
@@ -13,15 +14,20 @@ namespace rex
     class ConstantBuffer : public Buffer
     {
     public:
-      ConstantBuffer(ResourceView* view, rsl::memory_size size);
+      ConstantBuffer(u64 gpuAddress, ResourceView* view, rsl::memory_size size);
 
       ResourceView* resource_view()
       {
         return m_view;
       }
+      u64 gpu_address() const
+      {
+        return m_gpu_address;
+      }
 
     private:
       ResourceView* m_view;
+      u64 m_gpu_address;
     };
   } // namespace gfx
 } // namespace rex

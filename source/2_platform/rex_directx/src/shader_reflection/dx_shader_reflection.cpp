@@ -28,11 +28,11 @@ namespace rex
     using D3D_SIGNATURE_PARAMETER_DESC = D3D12_SIGNATURE_PARAMETER_DESC;
 
     // Based on the component type, mask and precision, create a shader parameter type
-    ShaderParameterType shader_param_type(D3D_REGISTER_COMPONENT_TYPE componentType, s32 componentMask, D3D_MIN_PRECISION precision);
+    ShaderArithmeticType shader_arithmetic_type(D3D_REGISTER_COMPONENT_TYPE componentType, s32 componentMask, D3D_MIN_PRECISION precision);
     // Based on the component mask, create the correct shader parameter type for floats
-    ShaderParameterType component_mask_to_float(s32 componentMask);
+    ShaderArithmeticType component_mask_to_float(s32 componentMask);
     // Based on the component mask and its precision, create the correct shader parameter type for uints
-    ShaderParameterType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision);
+    ShaderArithmeticType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision);
 
     ShaderParamReflection reflect_shader_input_parameter(ID3D12ShaderReflection* refl, s32 idx)
     {
@@ -42,7 +42,7 @@ namespace rex
 
       input_param.semantic_name = param_desc.SemanticName;
       input_param.semantic_index = param_desc.SemanticIndex;
-      input_param.type = shader_param_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
+      input_param.type = shader_arithmetic_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
       input_param.size = format_byte_size(input_param.type);
 
       return input_param;
@@ -55,7 +55,7 @@ namespace rex
 
       output_param.semantic_name = param_desc.SemanticName;
       output_param.semantic_index = param_desc.SemanticIndex;
-      output_param.type = shader_param_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
+      output_param.type = shader_arithmetic_type(param_desc.ComponentType, param_desc.Mask, param_desc.MinPrecision);
       output_param.size = format_byte_size(output_param.type);
 
       return output_param;
@@ -75,7 +75,7 @@ namespace rex
         bound_resource.shader_register = resource_desc.BindPoint;
         bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
-        bound_resource.resource_type = ShaderResourceType::ConstantBuffer;
+        bound_resource.resource_type = ShaderParameterType::ConstantBuffer;
         break;
       case D3D_SIT_TEXTURE:
       {
@@ -83,7 +83,7 @@ namespace rex
         bound_resource.shader_register = resource_desc.BindPoint;
         bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
-        bound_resource.resource_type = ShaderResourceType::Texture;
+        bound_resource.resource_type = ShaderParameterType::Texture;
         break;
       }
       case D3D_SIT_SAMPLER:
@@ -92,7 +92,7 @@ namespace rex
         bound_resource.shader_register = resource_desc.BindPoint;
         bound_resource.register_space = resource_desc.Space;
         bound_resource.shader_type = type;
-        bound_resource.resource_type = ShaderResourceType::Sampler;
+        bound_resource.resource_type = ShaderParameterType::Sampler;
         break;
       }
       default: REX_ASSERT("Invalid bound resource type");
@@ -221,15 +221,15 @@ namespace rex
       for (card32 i = 0; i < numBoundResources; ++i)
       {
         auto bound_resource = reflect_bound_resource(refl, i, type);
-        if (bound_resource.resource_type == ShaderResourceType::Texture)
+        if (bound_resource.resource_type == ShaderParameterType::Texture)
         {
           bound_resources.textures.push_back(bound_resource);
         }
-        else if (bound_resource.resource_type == ShaderResourceType::Sampler)
+        else if (bound_resource.resource_type == ShaderParameterType::Sampler)
         {
           bound_resources.samplers.push_back(bound_resource);
         }
-        else if (bound_resource.resource_type == ShaderResourceType::ConstantBuffer)
+        else if (bound_resource.resource_type == ShaderParameterType::ConstantBuffer)
         {
           bound_resources.constant_buffers.push_back(bound_resource);
         }
@@ -238,7 +238,7 @@ namespace rex
       return bound_resources;
     }
 
-    ShaderParameterType shader_param_type(D3D_REGISTER_COMPONENT_TYPE componentType, s32 componentMask, D3D_MIN_PRECISION precision)
+    ShaderArithmeticType shader_arithmetic_type(D3D_REGISTER_COMPONENT_TYPE componentType, s32 componentMask, D3D_MIN_PRECISION precision)
     {
       switch (componentType)
       {
@@ -247,42 +247,42 @@ namespace rex
       case D3D_REGISTER_COMPONENT_FLOAT32: return component_mask_to_float(componentMask); break;
       }
 
-      return invalid_obj<ShaderParameterType>();
+      return invalid_obj<ShaderArithmeticType>();
     }
-    ShaderParameterType component_mask_to_float(s32 componentMask)
+    ShaderArithmeticType component_mask_to_float(s32 componentMask)
     {
       if (componentMask & 8)
-        return ShaderParameterType::Float4;
+        return ShaderArithmeticType::Float4;
       if (componentMask & 4)
-        return ShaderParameterType::Float3;
+        return ShaderArithmeticType::Float3;
       if (componentMask & 2)
-        return ShaderParameterType::Float2;
+        return ShaderArithmeticType::Float2;
       if (componentMask & 1)
-        return ShaderParameterType::Float;
+        return ShaderArithmeticType::Float;
 
       REX_ASSERT("Invalid component mask");
-      return ShaderParameterType::Unknown;
+      return ShaderArithmeticType::Unknown;
     }
-    ShaderParameterType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision)
+    ShaderArithmeticType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision)
     {
       if (componentMask & 3)
       {
         if (precision == D3D_MIN_PRECISION_UINT_16)
         {
-          return ShaderParameterType::Ushort2;
+          return ShaderArithmeticType::Ushort2;
         }
         else if (precision == D3D_MIN_PRECISION_DEFAULT)
         {
-          return ShaderParameterType::Uint2;
+          return ShaderArithmeticType::Uint2;
         }
       }
       if (componentMask & 1)
       {
-        return ShaderParameterType::Uint;
+        return ShaderArithmeticType::Uint;
       }
 
       REX_ASSERT("Invalid component mask");
-      return ShaderParameterType::Unknown;
+      return ShaderArithmeticType::Unknown;
     }
 
     namespace rhi

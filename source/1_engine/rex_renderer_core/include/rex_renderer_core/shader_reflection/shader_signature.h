@@ -55,14 +55,14 @@ namespace rex
 			ShaderSignatureDesc m_desc;
 		};
 
-		// Holds shader reflection data of each shader in the pipeleine
-		struct ShaderPipelineReflection
-		{
-			ShaderSignature vs;
-			ShaderSignature ps;
-		};
-		// Given a shader pipeline, create reflection data for each shader within the pipeline
-		ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline);
+		//// Holds shader reflection data of each shader in the pipeleine
+		//struct ShaderPipelineReflection
+		//{
+		//	ShaderSignature vs;
+		//	ShaderSignature ps;
+		//};
+		//// Given a shader pipeline, create reflection data for each shader within the pipeline
+		//ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline);
 
 		namespace rhi
 		{
