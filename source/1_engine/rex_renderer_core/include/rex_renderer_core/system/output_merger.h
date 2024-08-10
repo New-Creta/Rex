@@ -18,6 +18,6 @@ namespace rex
 			DepthStencilDesc depth_stencil_state;	// the depth stencil settings that'll be stored inside the material
 		};
 
-		OutputMergerDesc load_output_merger_from_json(const json::json& jsonBlob);
+		OutputMergerDesc load_output_merger_from_json(const rex::json::json& jsonBlob);
 	}
 }

@@ -6,7 +6,7 @@ namespace rex
 {
 	namespace gfx
 	{
-		BlendDesc load_blend_state(const json::json& blendState)
+		BlendDesc load_blend_state(const rex::json::json& blendState)
 		{
 			BlendDesc desc{};
 

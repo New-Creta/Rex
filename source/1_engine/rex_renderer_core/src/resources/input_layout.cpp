@@ -45,10 +45,10 @@ namespace rex
       return !(lhs == rhs);
     }
 
-    InputLayoutDesc load_input_layout_from_json(const json::json& json)
+    InputLayoutDesc load_input_layout_from_json(const rex::json::json& json)
     {
       InputLayoutDesc desc;
-      desc.reserve(json.size());
+      desc.reserve(static_cast<s32>(json.size()));
       for (const auto& json_elem : json)
       {
         auto& elem = desc.emplace_back();

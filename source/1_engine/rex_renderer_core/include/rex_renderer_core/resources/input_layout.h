@@ -54,7 +54,7 @@ namespace rex
     using InputLayoutDesc = rsl::vector<InputLayoutElementDesc>;
     bool operator==(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs);
     bool operator!=(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs);
-    InputLayoutDesc load_input_layout_from_json(const json::json& json);
+    InputLayoutDesc load_input_layout_from_json(const rex::json::json& json);
 
     // Using shader reflection's input parameters, create an input layout description.
     // InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderIODeclaration>& shaderInputParams);
