@@ -22,8 +22,6 @@
 
 #include "rex_engine/diagnostics/log.h"
 
-DEFINE_LOG_CATEGORY(LogJson);
-
 /****************************************************************************\
  * Note on documentation: The source files contain links to the online      *
  * documentation of the public API at https://json.nlohmann.me. This URL    *
@@ -35,6 +33,8 @@ DEFINE_LOG_CATEGORY(LogJson);
 
 #ifndef INCLUDE_NLOHMANN_JSON_HPP_
 #define INCLUDE_NLOHMANN_JSON_HPP_
+
+DEFINE_LOG_CATEGORY(LogJson);
 
 #include <algorithm> // all_of, find, for_each
 #include <cstddef> // nullptr_t, ptrdiff, size_t
@@ -6642,7 +6642,7 @@ contiguous_bytes_input_adapter input_adapter(CharT b)
     return input_adapter(ptr, ptr + length);
 }
 
-auto input_adapter(rsl::string_view input)
+REX_FORCE_INLINE auto input_adapter(rsl::string_view input)
 {
   return input_adapter(input.begin(), input.end());
 }

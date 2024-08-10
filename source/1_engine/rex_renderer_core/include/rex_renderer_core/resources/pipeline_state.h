@@ -7,6 +7,7 @@
 #include "rex_renderer_core/resources/depth_stencil_state.h"
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/system/shader_pipeline.h"
+#include "rex_renderer_core/system/output_merger.h"
 
 #include "rex_renderer_core/gfx/primitive_topology.h"
 
@@ -26,9 +27,7 @@ namespace rex
       InputLayoutDesc input_layout;                                               // The input layout that'll be used by the pipeline
       ShaderPipeline shader_pipeline;                                             // The shader pipeline holds all the shaders that'll be used by the PSO
       PrimitiveTopologyType primitive_topology = PrimitiveTopologyType::Triangle; // This is used for geometry, hull or domain shaders
-      RasterStateDesc raster_state;                                               // The raster state that'll be used by the pipeline      
-      BlendDesc blend_state;                                                      // The blend state that'll be used by the pipeline
-      DepthStencilDesc depth_stencil_state;                                       // The depth stencil state that'll be used by the pipeline
+      OutputMergerDesc output_merger;                                             // The output merger configuration that'll be used by the pipeline
     };
 
     // Base class for the pipeline state, just acts as an interface

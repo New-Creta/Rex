@@ -17,7 +17,7 @@
 #include "rex_renderer_core/resources/root_signature.h"
 #include "rex_renderer_core/resources/blend_state.h"
 #include "rex_renderer_core/gfx/render_context.h"
-
+#include "rex_renderer_core/system/output_merger.h"
 
 #include "rex_renderer_core/system/shader_parameters_store.h"
 
@@ -33,16 +33,15 @@ namespace rex
     // Material construct settings are a wrapper around all the settings a material needs to store
     struct MaterialDesc
     {
-      RasterStateDesc raster_state;   // the rasterizer settings that'll be stored inside the material
-      BlendDesc blend;								// the blend settings that'll be stored inside the material
-      DepthStencilDesc depth_stencil;	// the depth stencil settings that'll be stored inside the material
+      ShaderPipeline shader_pipeline; // The shader pipeline to be used by the material
+      OutputMergerDesc output_merger; // The configuration of the output merger of a material
     };
 
     // A material is an object combining all shaders and the parameters that can be set on them
     class Material
     {
     public:
-      Material(const ShaderPipeline& shaderPipeline, const MaterialDesc& matDesc);
+      Material(const MaterialDesc& matDesc);
 
       // Set a material parameter to a new resource
       void set(rsl::string_view name, ConstantBuffer* constantBuffer);
@@ -58,9 +57,6 @@ namespace rex
       // Bind a material to a render ctx
       void bind_to(RenderContext* ctx);
 
-      // Fill in the pso desc with data that's stored in the material
-      void fill_pso_desc(PipelineStateDesc& desc);
-
     private:
       // Initialize the material based on the desc
       void init(const MaterialDesc& matDesc);
@@ -74,12 +70,8 @@ namespace rex
       // The root signature of the material
       RootSignature* m_root_signature;
 
-      // The rasterizer settings of the material, belongs to the output merger
-      RasterStateDesc m_raster_state;
-      // The blend settings of the material, belongs to the output merger
-      BlendDesc m_blend;
-      // The depth stencil settings of the material, belongs to the output merger
-      DepthStencilDesc m_depth_stencil;
+      // The output merger settings of the material
+      OutputMergerDesc m_output_merger;
       // The blend factor of the material, belongs to the output merger
       BlendFactor m_blend_factor;
       // The shader pipeline of the material

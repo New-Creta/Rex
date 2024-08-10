@@ -60,6 +60,7 @@
 
 #include "rex_engine/images/stb_image.h"
 #include "rex_renderer_core/materials/material_system.h"
+#include "rex_renderer_core/rendering/render_pass.h"
 #include "rex_renderer_core/system/input_layout_cache.h"
 #include "rex_renderer_core/system/root_signature_cache.h"
 
@@ -365,12 +366,13 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         return create_render_target(d3d_texture);
       }
-      rsl::unique_ptr<PipelineState>        create_pso(const InputLayoutDesc& inputLayoutDesc, Material* material)
+      rsl::unique_ptr<PipelineState> create_pso(const InputLayoutDesc& inputLayoutDesc, const MaterialDesc& matDesc)
       {
         PipelineStateDesc desc{};
-
-        material->fill_pso_desc(desc);
         desc.input_layout = inputLayoutDesc;
+        desc.output_merger = matDesc.output_merger;
+        desc.shader_pipeline = matDesc.shader_pipeline;
+        desc.primitive_topology = PrimitiveTopologyType::Triangle;
 
         return create_pso(desc);
       }
@@ -391,9 +393,9 @@ namespace rex
         pso_desc.pRootSignature         = d3d::to_dx12(root_signature)->dx_object();
         pso_desc.VS                     = d3d::to_dx12(desc.shader_pipeline.vs)->dx_bytecode();
         pso_desc.PS                     = d3d::to_dx12(desc.shader_pipeline.ps)->dx_bytecode();
-        pso_desc.RasterizerState        = d3d::to_dx12(desc.raster_state);
-        pso_desc.BlendState             = d3d::to_dx12(desc.blend_state);
-        pso_desc.DepthStencilState      = d3d::to_dx12(desc.depth_stencil_state);
+        pso_desc.RasterizerState        = d3d::to_dx12(desc.output_merger.raster_state);
+        pso_desc.BlendState             = d3d::to_dx12(desc.output_merger.blend_state);
+        pso_desc.DepthStencilState      = d3d::to_dx12(desc.output_merger.depth_stencil_state);
         pso_desc.SampleMask             = UINT_MAX;
         pso_desc.PrimitiveTopologyType  = d3d::to_dx12(desc.primitive_topology);
         pso_desc.NumRenderTargets       = 1;
@@ -432,7 +434,7 @@ namespace rex
 
         return texture;
       }
-      rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size)
+      rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size, rsl::string_view debugName)
       {
         // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
         rsl::memory_size aligned_size = align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
@@ -440,7 +442,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
         DxResourceView desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
 
-        d3d::set_debug_name_for(d3d_constant_buffer.Get(), "Constant Buffer");
+        d3d::set_debug_name_for(d3d_constant_buffer.Get(), debugName);
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
       }
@@ -529,9 +531,9 @@ namespace rex
         return nullptr;
       }
 
-      rsl::unique_ptr<Material> create_material(const ShaderPipeline& shaderPipeline, const MaterialDesc& matDesc)
+      rsl::unique_ptr<Material> create_material(const MaterialDesc& matDesc)
       {
-        return rsl::make_unique<Material>(shaderPipeline, matDesc);
+        return rsl::make_unique<Material>(matDesc);
       }
       rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc)
       {

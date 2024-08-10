@@ -12,11 +12,6 @@ namespace rex
 	{
 		using namespace nlohmann;
 
-		auto parse(memory::BlobView blob)
-		{
-			auto start = blob.data();
-			auto end = blob.data() + blob.size();
-			return nlohmann::json::parse(start, end, nullptr, false);
-		}
+		json::json parse(memory::BlobView blob);
 	}
 }

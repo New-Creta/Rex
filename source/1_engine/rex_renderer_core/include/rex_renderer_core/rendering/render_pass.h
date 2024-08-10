@@ -6,6 +6,7 @@
 #include "rex_renderer_core/system/shader_parameters_store.h"
 
 #include "rex_std/string.h"
+#include "rex_std/memory.h"
 #include "rex_engine/engine/types.h"
 
 namespace rex
@@ -50,11 +51,18 @@ namespace rex
 			// Return the slot of a renderpass parameter
 			s32 slot(rsl::string_view name) const;
 
+			// Set the blend factor of the material
+			void set_blend_factor(const BlendFactor& blendFactor);
+
 		private:
 			rsl::tiny_stack_string m_name;								// The name of the renderpass
 			rsl::unique_ptr<ShaderParametersStore> m_parameters_store;	// The store holding all renderpass parameters
+			// The blend factor of the material, belongs to the output merger
+			BlendFactor m_blend_factor;
 
 			rsl::unique_ptr<PipelineState> m_pso;						// The pipeline state of the renderpass
 		};
+
+		rsl::unique_ptr<RenderPass> load_from_json_path(rsl::string_view filepath);
 	}
 }

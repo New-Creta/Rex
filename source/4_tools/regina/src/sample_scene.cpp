@@ -67,10 +67,10 @@ namespace regina
     cylinder_entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(cylinder)).set_material(m_primitive_material.get());
 
     sphere_entity.component<rex::gfx::TransformComponent>().translation = pos;
-    sphere_entity.component<rex::gfx::TransformComponent>().translation.y = 1.5f;
+    sphere_entity.component<rex::gfx::TransformComponent>().translation.y = 3.5f;
 
     cylinder_entity.component<rex::gfx::TransformComponent>().translation = pos;
-    cylinder_entity.component<rex::gfx::TransformComponent>().translation.y = 3.5f;
+    cylinder_entity.component<rex::gfx::TransformComponent>().translation.y = 1.5f;
   }
 
 

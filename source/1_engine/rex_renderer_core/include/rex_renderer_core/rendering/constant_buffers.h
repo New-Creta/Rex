@@ -5,9 +5,9 @@
 
 namespace rex
 {
-    namespace gfx
-    {
-        // This struct matches the constant buffer in the shader that holds per view data
+	namespace gfx
+	{
+		// This struct matches the constant buffer in the shader that holds per view data
 		struct PerViewData
 		{
 			glm::mat4 view;
@@ -27,5 +27,5 @@ namespace rex
 			glm::mat4 world;
 			glm::mat4 worldviewproj;
 		};
-    }
+	}
 }

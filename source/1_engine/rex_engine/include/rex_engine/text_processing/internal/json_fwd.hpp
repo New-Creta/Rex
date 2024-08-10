@@ -9,11 +9,19 @@
 #ifndef INCLUDE_NLOHMANN_JSON_FWD_HPP_
 #define INCLUDE_NLOHMANN_JSON_FWD_HPP_
 
-#include <cstdint> // int64_t, uint64_t
-#include <map> // map
-#include <memory> // allocator
-#include <string> // string
-#include <vector> // vector
+#include "rex_std/string.h"
+#include "rex_std/string_view.h"
+#include "rex_std/map.h"
+#include "rex_std/utility.h"
+#include "rex_std/unordered_map.h"
+#include "rex_std/array.h"
+#include "rex_std/vector.h"
+#include "rex_std/forward_list.h"
+#include "rex_std/valarray.h"
+#include "rex_std/ios.h"
+#include "rex_std/iostream.h"
+#include "rex_std/streambuf.h"
+#include "rex_std/functional.h"
 
 // #include <nlohmann/detail/abi_macros.hpp>
 //     __ _____ _____ _____
@@ -138,16 +146,16 @@ struct adl_serializer;
 /// a class to store JSON values
 /// @sa https://json.nlohmann.me/api/basic_json/
 template<template<typename U, typename V, typename... Args> class ObjectType =
-         std::map,
-         template<typename U, typename... Args> class ArrayType = std::vector,
-         class StringType = std::string, class BooleanType = bool,
-         class NumberIntegerType = std::int64_t,
-         class NumberUnsignedType = std::uint64_t,
+         rsl::map,
+         template<typename U, typename... Args> class ArrayType = rsl::vector,
+         class StringType = rsl::string, class BooleanType = bool,
+         class NumberIntegerType = rsl::int64,
+         class NumberUnsignedType = rsl::uint64,
          class NumberFloatType = double,
-         template<typename U> class AllocatorType = std::allocator,
+         class AllocatorType = rsl::allocator,
          template<typename T, typename SFINAE = void> class JSONSerializer =
          adl_serializer,
-         class BinaryType = std::vector<std::uint8_t>, // cppcheck-suppress syntaxError
+         class BinaryType = rsl::vector<rsl::uint8>, // cppcheck-suppress syntaxError
          class CustomBaseClass = void>
 class basic_json;
 

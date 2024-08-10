@@ -138,7 +138,8 @@ namespace rex
     // it only repoints the allocating start back to the beginning of the heap
     void DxViewHeap::clear()
     {
-      m_num_used_views = 0;
+      // We always have 1 view in user for the null view
+      m_num_used_views = 1;
     }
 
     // Return a handle pointing to the start of the view heap

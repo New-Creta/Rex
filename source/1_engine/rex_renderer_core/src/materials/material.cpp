@@ -15,8 +15,8 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogMaterial);
 
-    Material::Material(const ShaderPipeline& shaderPipeline, const MaterialDesc& matDesc)
-      : m_shader_pipeline(shaderPipeline)
+    Material::Material(const MaterialDesc& matDesc)
+      : m_shader_pipeline(matDesc.shader_pipeline)
       , m_primitive_topology(PrimitiveTopology::TriangleList)
       , m_root_signature()
       , m_blend_factor()
@@ -26,9 +26,7 @@ namespace rex
 
     void Material::init(const MaterialDesc& matDesc)
     {
-      m_raster_state = matDesc.raster_state;
-      m_blend = matDesc.blend;
-      m_depth_stencil = matDesc.depth_stencil;
+      m_output_merger = matDesc.output_merger;
 
       ShaderPipelineReflection& reflection = shader_reflection_cache::load(m_shader_pipeline);
       m_root_signature = root_signature_cache::load(m_shader_pipeline);
@@ -64,15 +62,6 @@ namespace rex
       {
         shader_resource->bind_to(ctx);
       }
-    }
-
-    void Material::fill_pso_desc(PipelineStateDesc& desc)
-    {
-      desc.primitive_topology = to_topology_type(m_primitive_topology);
-      desc.shader_pipeline = m_shader_pipeline;
-      desc.raster_state = m_raster_state;
-      desc.blend_state = m_blend;
-      desc.depth_stencil_state = m_depth_stencil;
     }
   }
 }

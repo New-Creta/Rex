@@ -1,6 +1,9 @@
 {
+    "name": "ImGui RenderPass",
     "vertex_shader": "rex/shaders/imgui/hlsl/imgui_vertex.hlsl",
     "pixel_shader": "rex/shaders/imgui/hlsl/imgui_pixel.hlsl",
+    "output_merger":
+    {
     "blend_state":
     {
         "enable_alpha_to_coverage":false,
@@ -50,4 +53,23 @@
             "stencil_func":"Always"
         }
     }
+    },
+    "input_layout":
+    [
+        {
+            "semantic":"Position",
+            "format": "Float2",
+            "classification": "PerVertex"
+        },
+        {
+            "semantic":"TexCoord",
+            "format": "Float2",
+            "classification": "PerVertex"
+        },
+        {
+            "semantic":"Color",
+            "format": "UChar4Norm",
+            "classification": "PerVertex"
+        }
+    ]
 }

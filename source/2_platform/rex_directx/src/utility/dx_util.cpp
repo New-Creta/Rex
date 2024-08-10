@@ -623,7 +623,6 @@ namespace rex
         switch (type)
         {
         case ViewHeapType::ConstantBuffer:  return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        case ViewHeapType::Texture2D:       return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         case ViewHeapType::RenderTarget:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         case ViewHeapType::DepthStencil:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
         case ViewHeapType::Sampler:         return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;

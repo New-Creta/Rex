@@ -64,17 +64,19 @@ namespace rex
 
 		void SceneRenderer::init_gpu_resources()
 		{
-			m_cb_view_data = rhi::create_constant_buffer(sizeof(PerViewData));
-			m_cb_scene_data = rhi::create_constant_buffer(sizeof(PerSceneData));
+			m_cb_view_data = rhi::create_constant_buffer(sizeof(PerViewData), "Per View Data");
+			m_cb_scene_data = rhi::create_constant_buffer(sizeof(PerSceneData), "Per Scene Data");
 
 			// The number of objects per scene currently has a hard limit
 			// If we hit this limit we can upscale it or come up with a different strategy
 			// of how to store per instance data for objects and uploading it to the GPU
 			// Perhaps a ring buffer will suffice here
 			m_per_instance_cbs.reserve(s_max_number_of_objects_per_scene);
+			rsl::fmt_stack_string debugName;
 			for (s32 i = 0; i < s_max_number_of_objects_per_scene; ++i)
 			{
-				m_per_instance_cbs.push_back(rhi::create_constant_buffer(sizeof(PerInstanceData)));
+				debugName = rsl::format("Per Instance Data {}", i);
+				m_per_instance_cbs.push_back(rhi::create_constant_buffer(sizeof(PerInstanceData), debugName));
 			}
 		}
 
@@ -90,13 +92,15 @@ namespace rex
 
 			// Pipeline State
 			// Define the the blend settings
-			geo_pass_desc.pso_desc.blend_state; // Nothing to set
+			geo_pass_desc.pso_desc.output_merger.blend_state; // Nothing to set
 
 			// Define the depth stencil settings
-			geo_pass_desc.pso_desc.depth_stencil_state.depth_enable = true;
+			geo_pass_desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
+			geo_pass_desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
+			geo_pass_desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Less;
 
 			// Define the raster state
-			geo_pass_desc.pso_desc.raster_state.fill_mode; // Nothing to set
+			geo_pass_desc.pso_desc.output_merger.raster_state.fill_mode; // Nothing to set
 
 			// Define the input layout
 			geo_pass_desc.pso_desc.input_layout = 

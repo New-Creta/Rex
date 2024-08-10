@@ -7,7 +7,7 @@
 #include "rex_renderer_core/system/resource_state_tracker.h"
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/rendering/renderer.h"
-#include "rex_renderer_core/materials/material.h"
+#include "rex_renderer_core/rendering/render_pass.h"
 
 
 namespace rex
@@ -43,8 +43,7 @@ namespace rex
       // GPU resource initialization
       void init_font_texture();
       void init_font_sampler();
-      void init_material();
-      void init_pso();
+      void init_renderpass();
 
       // destroy imgui
       void destroy_viewports();
@@ -52,8 +51,7 @@ namespace rex
     private:
       rsl::unique_ptr<Texture2D> m_fonts_texture;          // The fonts texture, the data comes from imgui
       rsl::unique_ptr<Sampler2D> m_fonts_sampler;          // The sampler for the fonts texture
-      rsl::unique_ptr<PipelineState> m_pipeline_state;     // The pipeline state used by imgui
-      rsl::unique_ptr<Material> m_material;                // The material used by imgui
+      rsl::unique_ptr<RenderPass> m_imgui_renderpass;      // The render pass used by imgui
     };
 
     // Perform platform specific imgui initialization, this is not defined here.

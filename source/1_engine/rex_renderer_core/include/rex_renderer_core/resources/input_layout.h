@@ -6,6 +6,8 @@
 #include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
 #include "rex_std/string_view.h"
 
+#include "rex_engine/text_processing/json.h"
+
 namespace rex
 {
   namespace gfx
@@ -52,6 +54,7 @@ namespace rex
     using InputLayoutDesc = rsl::vector<InputLayoutElementDesc>;
     bool operator==(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs);
     bool operator!=(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs);
+    InputLayoutDesc load_input_layout_from_json(const json::json& json);
 
     // Using shader reflection's input parameters, create an input layout description.
     // InputLayoutDesc create_input_layout_desc_from_reflection(const rsl::vector<ShaderIODeclaration>& shaderInputParams);

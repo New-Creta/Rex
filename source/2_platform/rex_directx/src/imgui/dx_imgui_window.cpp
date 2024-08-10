@@ -8,6 +8,8 @@
 #include "rex_renderer_core/gfx/graphics.h"
 #include "rex_renderer_core/gfx/render_context.h"
 
+#include "rex_renderer_core/rendering/render_pass.h"
+
 namespace rex
 {
   namespace gfx
@@ -33,7 +35,7 @@ namespace rex
 
     void ImGuiWindow::render(ClearRenderTarget clearRenderTarget, ImGuiWindowRenderParams* renderParams)
     {
-      auto render_ctx = gfx::new_render_ctx(renderParams->pso);
+      auto render_ctx = gfx::new_render_ctx();
 
       // Render the imgui viewport directly on the back buffer
       RenderTarget* render_target = m_swapchain->current_buffer();
@@ -46,9 +48,9 @@ namespace rex
         render_ctx->clear_render_target(render_target, m_clear_state.get());
       }
 
-      render_ctx->bind_material(renderParams->material);
+      renderParams->render_pass->bind_to(render_ctx.get());
 
-      m_viewport.render(*render_ctx.get());
+      m_viewport.render(render_ctx.get(), renderParams->render_pass);
       render_ctx->transition_buffer(render_target, ResourceState::Present);
     }
 

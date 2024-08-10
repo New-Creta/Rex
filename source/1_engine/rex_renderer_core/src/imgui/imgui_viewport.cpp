@@ -8,6 +8,7 @@
 #include "rex_renderer_core/resources/constant_buffer.h"
 
 #include "rex_renderer_core/gfx/graphics.h"
+#include "rex_renderer_core/rendering/render_pass.h"
 
 #include "rex_engine/diagnostics/log.h"
 
@@ -22,7 +23,7 @@ namespace rex
     }
 
     // Render the viewport using the given render context to queue gpu commands to
-    void RexImGuiViewport::render(RenderContext& renderContext)
+    void RexImGuiViewport::render(RenderContext* renderContext, RenderPass* renderPass)
     {
       ImDrawData* draw_data = m_imgui_viewport->DrawData;
 
@@ -39,10 +40,11 @@ namespace rex
       ScopedPoolObject<SyncInfo> sync_info = frame_ctx.update_data(draw_data);
 
       // Wait for the data to be updated on the gpu before we start executing render commands
-      renderContext.stall(*sync_info);
+      renderContext->stall(*sync_info);
 
       // Setup the render state, prepare it for rendering
-      setup_render_state(renderContext, frame_ctx);
+      s32 slot = renderPass->slot("PerWidgetData");
+      setup_render_state(renderContext, frame_ctx, slot);
 
       // Draw all the primitives
       draw(renderContext, draw_data);
@@ -67,23 +69,23 @@ namespace rex
     }
 
     // Setup the render state of the viewport, it for rendering
-    void RexImGuiViewport::setup_render_state(RenderContext& ctx, ImGuiFrameContext& frameCtx)
+    void RexImGuiViewport::setup_render_state(RenderContext* ctx, ImGuiFrameContext& frameCtx, s32 constantBufferSlot)
     {
       // Transition our buffers into a state so they can be used by the render pipeline
-      ctx.transition_buffer(frameCtx.vertex_buffer(), ResourceState::VertexAndConstantBuffer);
-      ctx.transition_buffer(frameCtx.index_buffer(), ResourceState::IndexBuffer);
-      ctx.transition_buffer(frameCtx.constant_buffer(), ResourceState::VertexAndConstantBuffer);
+      ctx->transition_buffer(frameCtx.vertex_buffer(), ResourceState::VertexAndConstantBuffer);
+      ctx->transition_buffer(frameCtx.index_buffer(), ResourceState::IndexBuffer);
+      ctx->transition_buffer(frameCtx.constant_buffer(), ResourceState::VertexAndConstantBuffer);
 
-      ctx.set_viewport(frameCtx.viewport());
-      ctx.set_vertex_buffer(frameCtx.vertex_buffer());
-      ctx.set_index_buffer(frameCtx.index_buffer());
+      ctx->set_viewport(frameCtx.viewport());
+      ctx->set_vertex_buffer(frameCtx.vertex_buffer());
+      ctx->set_index_buffer(frameCtx.index_buffer());
 
       REX_STATIC_WARNING("ImGui Constant Buffer binding needs to get cleaned up");
-      ctx.bind_constant_buffer(s_constant_buffer_param_idx, frameCtx.constant_buffer());
+      ctx->bind_constant_buffer(constantBufferSlot, frameCtx.constant_buffer());
     }
 
     // Draw the current viewport
-    void RexImGuiViewport::draw(RenderContext& ctx, ImDrawData* drawData)
+    void RexImGuiViewport::draw(RenderContext* ctx, ImDrawData* drawData)
     {
       s32 global_vtx_offset = 0;
       s32 global_idx_offset = 0;
@@ -110,8 +112,8 @@ namespace rex
           rect.right = clip_max.x;
           rect.bottom = clip_max.y;
 
-          ctx.set_scissor_rect(rect);
-          ctx.draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
+          ctx->set_scissor_rect(rect);
+          ctx->draw_indexed_instanced(pcmd->ElemCount, 1, pcmd->IdxOffset + global_idx_offset, pcmd->VtxOffset + global_vtx_offset, 0);
         }
         global_idx_offset += cmd_list->IdxBuffer.Size;
         global_vtx_offset += cmd_list->VtxBuffer.Size;

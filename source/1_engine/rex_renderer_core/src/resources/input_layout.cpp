@@ -4,6 +4,7 @@
 
 #include "rex_engine/engine/invalid_object.h"
 #include "rex_engine/string/stringid.h"
+#include "rex_std/bonus/utility.h"
 
 namespace rex
 {
@@ -42,6 +43,21 @@ namespace rex
     bool operator!=(const InputLayoutDesc& lhs, const InputLayoutDesc& rhs)
     {
       return !(lhs == rhs);
+    }
+
+    InputLayoutDesc load_input_layout_from_json(const json::json& json)
+    {
+      InputLayoutDesc desc;
+      desc.reserve(json.size());
+      for (const auto& json_elem : json)
+      {
+        auto& elem = desc.emplace_back();
+        elem.semantic = rsl::enum_refl::enum_cast<ShaderSemantic>(rsl::string_view(json_elem["semantic"])).value();
+        elem.format = rsl::enum_refl::enum_cast<VertexBufferFormat>(rsl::string_view(json_elem["format"])).value();
+        elem.input_slot_class = rsl::enum_refl::enum_cast<InputLayoutClassification>(rsl::string_view(json_elem["classification"])).value();
+      }
+
+      return desc;
     }
 
     InputLayout::InputLayout(s32 vertexSize, const InputLayoutDesc& desc)

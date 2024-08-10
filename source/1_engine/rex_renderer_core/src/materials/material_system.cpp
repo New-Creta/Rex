@@ -25,91 +25,6 @@ namespace rex
 		DEFINE_LOG_CATEGORY(LogMaterialSystem);
 		using json = nlohmann::json;
 
-		BlendDesc load_blend_state(const json& blendState)
-		{
-			BlendDesc desc{};
-
-			desc.enable_alpha_to_coverage = blendState["enable_alpha_to_coverage"];
-			desc.independent_blend_state = blendState["independent_blend_state"];
-			const rsl::vector<json>& render_targets = blendState["render_targets"];
-
-			for (s32 i = 0; i < render_targets.size(); ++i)
-			{
-				desc.render_target[i].blend_enable						  = render_targets[i]["blend_enable"];
-				desc.render_target[i].src_blend									= rsl::enum_refl::enum_cast<Blend>(rsl::string_view(render_targets[i]["src_blend"])).value();
-				desc.render_target[i].dst_blend									= rsl::enum_refl::enum_cast<Blend>(rsl::string_view(render_targets[i]["dst_blend"])).value();
-				desc.render_target[i].blend_op									= rsl::enum_refl::enum_cast<BlendOp>(rsl::string_view(render_targets[i]["blend_op"])).value();
-				desc.render_target[i].src_blend_alpha					  = rsl::enum_refl::enum_cast<Blend>(rsl::string_view(render_targets[i]["src_blend_alpha"])).value();
-				desc.render_target[i].dst_blend_alpha					  = rsl::enum_refl::enum_cast<Blend>(rsl::string_view(render_targets[i]["dst_blend_alpha"])).value();
-				desc.render_target[i].blend_op_alpha						= rsl::enum_refl::enum_cast<BlendOp>(rsl::string_view(render_targets[i]["blend_op_alpha"])).value();
-				desc.render_target[i].render_target_write_mask  = rsl::enum_refl::enum_cast<RenderTargetWriteMask>(rsl::string_view(render_targets[i]["render_target_write_mask"])).value();
-			}
-
-			return desc;
-		}
-
-		RasterStateDesc load_raster_state(const json& rasterState)
-		{
-			RasterStateDesc desc{};
-
-			desc.fill_mode = rsl::enum_refl::enum_cast<FillMode>(rsl::string_view(rasterState["fill_mode"])).value();
-			desc.cull_mode = rsl::enum_refl::enum_cast<CullMode>(rsl::string_view(rasterState["cull_mode"])).value();
-			desc.front_ccw = rasterState["front_ccw"];
-			desc.depth_bias = rasterState["depth_bias"];
-			desc.depth_bias_clamp = rasterState["depth_bias_clamp"];
-			desc.sloped_scale_depth_bias = rasterState["sloped_scale_depth_bias"];
-			desc.depth_clip_enable = rasterState["depth_clip_enable"];
-			desc.multisample_enable = rasterState["multisample_enable"];
-			desc.aa_lines_enable = rasterState["aa_lines_enable"];
-			desc.forced_sample_count = rasterState["forced_sample_count"];
-
-			return desc;
-		}
-
-		DepthStencilDesc load_depth_stencil(const json& depthStencil)
-		{
-			DepthStencilDesc desc{};
-
-			desc.depth_enable = depthStencil["depth_enable"];
-			desc.depth_write_mask = rsl::enum_refl::enum_cast<DepthWriteMask>(rsl::string_view(depthStencil["depth_write_mask"])).value();
-			desc.depth_func = rsl::enum_refl::enum_cast<ComparisonFunc>(rsl::string_view(depthStencil["depth_func"])).value();
-			desc.stencil_enable = depthStencil["stencil_enable"];
-
-			desc.front_face.stencil_depth_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["front_face"]["depth_fail_op"])).value();
-			desc.front_face.stencil_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["front_face"]["stencil_fail_op"])).value();
-			desc.front_face.stencil_func = rsl::enum_refl::enum_cast<ComparisonFunc>(rsl::string_view(depthStencil["front_face"]["stencil_func"])).value();
-			desc.front_face.stencil_pass_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["front_face"]["stencil_pass_op"])).value();
-
-			desc.back_face.stencil_depth_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["back_face"]["depth_fail_op"])).value();
-			desc.back_face.stencil_fail_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["back_face"]["stencil_fail_op"])).value();
-			desc.back_face.stencil_func = rsl::enum_refl::enum_cast<ComparisonFunc>(rsl::string_view(depthStencil["back_face"]["stencil_func"])).value();
-			desc.back_face.stencil_pass_op = rsl::enum_refl::enum_cast<StencilOp>(rsl::string_view(depthStencil["back_face"]["stencil_pass_op"])).value();
-
-
-			return desc;
-		}
-
-		MaterialDesc load_mat_construct_settings_from_json(const json& jsonBlob)
-		{
-			MaterialDesc mat_construct_settings{};
-			if (jsonBlob.contains("blend_state"))
-			{
-				mat_construct_settings.blend = load_blend_state(jsonBlob["blend_state"]);
-			}
-
-			if (jsonBlob.contains("raster_state"))
-			{
-				mat_construct_settings.raster_state = load_raster_state(jsonBlob["raster_state"]);
-			}
-
-			if (jsonBlob.contains("depth_stencil"))
-			{
-				mat_construct_settings.depth_stencil = load_depth_stencil(jsonBlob["depth_stencil"]);
-			}
-
-			return mat_construct_settings;
-		}
-
 		void init_material_parameters(Material* /*material*/, const json& parametersBlob)
 		{
 			for (const auto& param : parametersBlob)
@@ -170,15 +85,15 @@ namespace rex
 			rsl::string_view pixel_shader = json_blob["pixel_shader"].get<rsl::string_view>();
 
 			// Process material content so we can create a material object out of it
-			ShaderPipeline shader_pipeline{};
-			shader_pipeline.vs = shader_lib::load(vertex_shader, ShaderType::Vertex);
-			shader_pipeline.ps = shader_lib::load(pixel_shader, ShaderType::Pixel);
+			MaterialDesc mat_desc{};
+			mat_desc.shader_pipeline.vs = shader_lib::load(vertex_shader, ShaderType::Vertex);
+			mat_desc.shader_pipeline.ps = shader_lib::load(pixel_shader, ShaderType::Pixel);
 
 			// Load additional settings for the material's initialization if they're available
-			MaterialDesc mat_construct_settings = load_mat_construct_settings_from_json(json_blob);
+			mat_desc.output_merger = load_output_merger_from_json(json_blob);
 
 			// Create the material object
-			rsl::unique_ptr<Material> material = rhi::create_material(rsl::move(shader_pipeline), mat_construct_settings);
+			rsl::unique_ptr<Material> material = rhi::create_material(mat_desc);
 
 			// Load in the parameters values from the material
 			init_material_parameters(material.get(), json_blob["parameters"]); // infinite loop here when inserting into json

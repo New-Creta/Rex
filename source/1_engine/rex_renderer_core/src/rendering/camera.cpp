@@ -4,8 +4,8 @@ namespace rex
 {
 	namespace gfx
 	{
-		Camera::Camera(rsl::DegAngle fov, f32 width, f32 height, f32 near, f32 far, ProjectionMode projectionMode)
-			: m_position(0, 5, -5) 
+		Camera::Camera(const glm::vec3& pos, rsl::DegAngle fov, f32 width, f32 height, f32 near, f32 far, ProjectionMode projectionMode)
+			: m_position(pos) 
 			, m_forward(glm::vec3() - m_position) // Always looking at center
 			, m_view(glm::translate(glm::mat4(1.0f), m_position))
 			, m_projection()
@@ -26,7 +26,7 @@ namespace rex
 			return m_forward;
 		}
 
-		const glm::mat4& Camera::view_mat() const
+		glm::mat4 Camera::view_mat() const
 		{
 			const glm::vec3 target = m_position + m_forward;
 			const glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);

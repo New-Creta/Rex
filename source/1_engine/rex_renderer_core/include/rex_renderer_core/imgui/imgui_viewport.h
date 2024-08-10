@@ -12,6 +12,7 @@ namespace rex
   namespace gfx
   {
     class RenderContext;
+    class RenderPass;
 
     // A viewport is a single standalone imgui widget with one or more widgets inside of it. (eg. the demo window is a viewport)
     class RexImGuiViewport
@@ -20,7 +21,7 @@ namespace rex
       RexImGuiViewport(ImGuiViewport* imguiViewport);
 
       // Render the viewport using the given render context to queue gpu commands to
-      void render(RenderContext& renderContext);
+      void render(RenderContext* renderContext, RenderPass* renderPass);
 
     private:
       // Get the current frame context to use to render the viewport
@@ -29,14 +30,12 @@ namespace rex
       void advance_frame_ctx();
 
       // Setup the render state of the viewport, it for rendering
-      void setup_render_state(RenderContext& ctx, ImGuiFrameContext& frameCtx);
+      void setup_render_state(RenderContext* ctx, ImGuiFrameContext& frameCtx, s32 constantBufferSlot);
       // Draw the current viewport
-      void draw(RenderContext& ctx, ImDrawData* drawData);
+      void draw(RenderContext* ctx, ImDrawData* drawData);
 
     private:
       ImGuiViewport* m_imgui_viewport;
-      // The constant buffer is the first parameter in the root signature
-      constexpr static s32 s_constant_buffer_param_idx = 0;
 
       // There's no special reason for using 3, it's mainly because the main window is also tripple buffered
       // If this causes any issus, just change it

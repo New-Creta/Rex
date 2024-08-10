@@ -16,8 +16,6 @@
 
 #include "rex_renderer_core/system/shader_library.h"
 
-#include "rex_renderer_core/materials/material_system.h"
-
 #include "rex_renderer_core/gfx/graphics.h"
 
 #include "imgui/imgui.h"
@@ -56,7 +54,7 @@ namespace rex
     {
       ImGui::Render();
 
-      auto render_ctx = gfx::new_render_ctx(m_pipeline_state.get());
+      auto render_ctx = gfx::new_render_ctx();
 
       // As the imgui renderer main viewport is the main window of the application
       // we use the main window as render target, which is the default render target
@@ -65,16 +63,15 @@ namespace rex
       ImGuiViewport* main_viewport = ImGui::GetMainViewport();
       if (RexImGuiViewport* rex_viewport = (RexImGuiViewport*)main_viewport->RendererUserData)
       {
-        render_ctx->bind_material(m_material.get());
-        rex_viewport->render(*render_ctx);
+        m_imgui_renderpass->bind_to(render_ctx.get());
+        rex_viewport->render(render_ctx.get(), m_imgui_renderpass.get());
       }
 
       // Update and render the imgui windows if any
       if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
       {
         ImGuiWindowRenderParams render_params{};
-        render_params.pso = m_pipeline_state.get();
-        render_params.material = m_material.get();
+        render_params.render_pass = m_imgui_renderpass.get();
 
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault(nullptr, &render_params);
@@ -127,8 +124,7 @@ namespace rex
     {
       init_font_texture();
       init_font_sampler();
-      init_material();
-      init_pso();
+      init_renderpass();
     }
 
     // Initialize the main imgui viewport, which is pointing to the application's main window
@@ -174,27 +170,12 @@ namespace rex
       m_fonts_sampler = rhi::create_sampler2d(desc);
     }
     // Initialize the material that'll be used by all ImGui rendering
-    void ImGuiRenderer::init_material()
+    void ImGuiRenderer::init_renderpass()
     {
-      // Load the material from disk and initialize it with the parameters loaded at runtime
-      rsl::string material_path = path::join(vfs::engine_root(), "materials", "imgui.material");
-      m_material = load_material(material_path);
-      REX_ASSERT_X(m_material != nullptr, "Failed to load imgui material");
-
-      m_material->set("fonts_texture", m_fonts_texture.get());
-      m_material->set("fonts_sampler", m_fonts_sampler.get());
-      m_material->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
-    }
-    // Initialize the pso based on the the gpu resources
-    void ImGuiRenderer::init_pso()
-    {
-      InputLayoutDesc input_layout_desc =
-      {
-        InputLayoutElementDesc { ShaderSemantic::Position,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 0, 0 },
-        InputLayoutElementDesc { ShaderSemantic::TexCoord,  VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 8, 0 },
-        InputLayoutElementDesc { ShaderSemantic::Color, VertexBufferFormat::UChar4Norm, InputLayoutClassification::PerVertex, 0, 0, 16, 0 }
-      };
-      m_pipeline_state = rhi::create_pso(input_layout_desc, m_material.get());
+      m_imgui_renderpass = load_from_json_path(path::join(vfs::mount_path(MountingPoint::EngineRenderPasses), "imgui.render_pass"));
+      m_imgui_renderpass->set("fonts_texture", m_fonts_texture.get());
+      m_imgui_renderpass->set("fonts_sampler", m_fonts_sampler.get());
+      m_imgui_renderpass->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });
     }
 
     // Destroy all viewports used by ImGui

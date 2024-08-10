@@ -6,7 +6,8 @@
   },
   "MountingPoints": {
     "Content": [
-      "EngineShaders"
+      "EngineShaders",
+      "EngineRenderPasses"
     ]
   }
 }
