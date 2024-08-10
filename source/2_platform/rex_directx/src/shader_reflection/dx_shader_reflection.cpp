@@ -284,5 +284,40 @@ namespace rex
       REX_ASSERT("Invalid component mask");
       return ShaderArithmeticType::Unknown;
     }
+
+    namespace api
+    {
+      gfx::ShaderSignature reflect_shader(const gfx::Shader* shader)
+			{
+				REX_ASSERT_X(shader, "Cannot create reflection data on a null shader");
+
+				// Create the shader reflection object
+				const gfx::DxShader* dx_shader = d3d::to_dx12(shader);
+				const void* byte_code = dx_shader->dx_bytecode().pShaderBytecode;
+				s32 byte_count = static_cast<s32>(dx_shader->dx_bytecode().BytecodeLength);
+				wrl::ComPtr<ID3D12ShaderReflection> reflection_object;
+				DX_CALL(D3DReflect(byte_code, byte_count, IID_PPV_ARGS(reflection_object.GetAddressOf())));
+
+				// Get the description of the shader
+				D3D12_SHADER_DESC shader_desc;
+				DX_CALL(reflection_object->GetDesc(&shader_desc));
+
+				s32 num_constant_buffers = shader_desc.ConstantBuffers;
+				s32 num_input_params = shader_desc.InputParameters;
+				s32 num_output_params = shader_desc.OutputParameters;
+				s32 num_bound_resources = shader_desc.BoundResources;
+
+				ShaderSignatureDesc desc{};
+
+				desc.shader_version = convert_shader_version_to_string(shader_desc.Version);
+				desc.constant_buffers = reflect_constant_buffers(reflection_object.Get(), num_constant_buffers);
+				desc.input_params = reflect_input_params(reflection_object.Get(), num_input_params);
+				desc.output_params = reflect_output_params(reflection_object.Get(), num_output_params);
+				desc.bound_resources = reflect_bound_resources(reflection_object.Get(), num_bound_resources, shader->type());
+				desc.type = shader->type();
+
+				return ShaderSignature(rsl::move(desc));
+			}
+    }
   }
 }

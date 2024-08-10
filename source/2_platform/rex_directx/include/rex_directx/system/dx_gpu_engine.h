@@ -49,7 +49,7 @@ namespace rex
       // Create a constant buffer view pointing for a given resource
       DxResourceView create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
       // Create a sampler2D and store it on the gpu
-      rsl::unique_ptr<DxSampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
+      rsl::unique_ptr<DxSampler2D> create_sampler2d(const SamplerDesc& desc);
 
       // Compile a shader written in HLSL
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);

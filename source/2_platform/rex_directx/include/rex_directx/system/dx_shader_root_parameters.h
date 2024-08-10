@@ -4,8 +4,6 @@
 
 #include "rex_std/vector.h"
 #include "rex_engine/engine/types.h"
-#include "rex_std/unordered_map.h"
-#include "rex_std/bonus/string.h"
 
 #include "rex_renderer_core/resources/resource.h"
 
@@ -16,13 +14,13 @@ namespace rex
 		struct ShaderResourceDeclaration;
 		struct ConstantBufferDeclaration;
 
-		struct DxShaderPipelineParameters2
+		struct DxShaderPipelineParameters
 		{
+			// The root parameters that will be used to initialize the root signature			
 			rsl::vector<CD3DX12_ROOT_PARAMETER> root_parameters;
+			// As the root parameters could contain descriptor tables, who don't own the range pointers
+			// We have a separate member that owns these ranges, referenced by the root parameters
 			rsl::vector<rsl::vector<D3D12_DESCRIPTOR_RANGE>> ranges;
-
-			rsl::vector<D3D12_DESCRIPTOR_RANGE> material_ranges;
-			rsl::vector<D3D12_DESCRIPTOR_RANGE> renderpass_ranges;
 		};
 	}
 }

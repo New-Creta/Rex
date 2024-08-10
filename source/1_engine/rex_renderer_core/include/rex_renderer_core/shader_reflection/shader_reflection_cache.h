@@ -3,8 +3,9 @@
 #include "rex_renderer_core/system/shader_pipeline.h"
 #include "rex_std/string.h"
 
-#include "rex_renderer_core/system/view_table.h"
-#include "rex_renderer_core/system/view_param.h"
+#include "rex_renderer_core/system/shader_param_declaration.h"
+#include "rex_renderer_core/shader_reflection/shader_signature.h"
+
 #include "rex_renderer_core/system/shader_parameter_location.h"
 
 #include "rex_renderer_core/system/shader_parameters_store.h"
@@ -13,6 +14,11 @@ namespace rex
 {
 	namespace gfx
 	{
+		namespace api
+		{
+			gfx::ShaderSignature reflect_shader(const gfx::Shader* shader);
+		}
+
 		struct ShaderPipelineReflection
 		{
 			// This holds the parameters that are needed for the shader pipeline, but does not hold any data for them
@@ -27,6 +33,7 @@ namespace rex
 
 		namespace shader_reflection_cache
 		{
+			// Load reflection from the cache, create new one if one isn't cached already
 			ShaderPipelineReflection& load(const ShaderPipeline& pipeline);
 		}
 	}

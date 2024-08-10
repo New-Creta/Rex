@@ -15,7 +15,7 @@ namespace rex
 			m_parameters_store = rsl::make_unique<ShaderParametersStore>(reflection.renderpass_param_store_desc);
 		}
 
-		void RenderPass::bind_resources(RenderContext* ctx)
+		void RenderPass::bind_to(RenderContext* ctx)
 		{
 			ctx->set_pipeline_state(m_pso.get());
 			ctx->set_root_signature(m_pso->root_signature());

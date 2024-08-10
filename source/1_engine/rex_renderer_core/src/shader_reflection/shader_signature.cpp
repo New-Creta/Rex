@@ -44,15 +44,5 @@ namespace rex
 		{
 			return m_desc.bound_resources.samplers;
 		}
-
-		//ShaderPipelineReflection reflect_shader_pipeline(const ShaderPipeline& shaderPipeline)
-		//{
-		//	ShaderPipelineReflection refl{};
-
-		//	refl.vs = rex::gfx::rhi::reflect_shader(shaderPipeline.vs);
-		//	refl.ps = rex::gfx::rhi::reflect_shader(shaderPipeline.ps);
-
-		//	return refl;
-		//}
 	}
 }

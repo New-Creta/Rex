@@ -5,8 +5,6 @@
 
 #include "rex_renderer_core/resources/constant_buffer.h"
 
-#include "rex_std/vector.h"
-
 namespace rex
 {
   namespace gfx
@@ -16,7 +14,9 @@ namespace rex
     public:
       DxConstantBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view, rsl::memory_size size);
 
+      // Return the wrapped dx object
       ID3D12Resource* dx_object();
+      // Return the view to the wrapped dx object      
       DxResourceView* view();
 
     private:

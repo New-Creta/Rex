@@ -26,7 +26,7 @@
 #include "rex_directx/resources/dx_render_target.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/system/dx_view_heap.h"
-#include "rex_renderer_core/system/view_table.h"
+#include "rex_renderer_core/system/shader_param_declaration.h"
 
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
 
@@ -570,29 +570,7 @@ namespace rex
 
         return invalid_obj<D3D12_STENCIL_OP>();
       }
-      D3D12_DESCRIPTOR_RANGE to_dx12(ViewRangeDesc range)
-      {
-        D3D12_DESCRIPTOR_RANGE range_desc{};
-        range_desc.BaseShaderRegister = range.base_shader_register;
-        range_desc.NumDescriptors = range.num_descriptors;
-        range_desc.OffsetInDescriptorsFromTableStart = range.offset_in_descriptors_from_table_start;
-        range_desc.RangeType = to_dx12(range.type);
-        range_desc.RegisterSpace = range.register_space;
 
-        return range_desc;
-      }
-      D3D12_DESCRIPTOR_RANGE_TYPE to_dx12(DescriptorRangeType type)
-      {
-        switch (type)
-        {
-        case DescriptorRangeType::ConstantBufferView:   return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-        case DescriptorRangeType::ShaderResourceView:   return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-        case DescriptorRangeType::UnorderedAccessView:  return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-        case DescriptorRangeType::Sampler:              return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
-        }
-
-        return invalid_obj<D3D12_DESCRIPTOR_RANGE_TYPE>();
-      }
       D3D12_RESOURCE_STATES to_dx12(ResourceState state)
       {
         switch (state)
@@ -644,10 +622,11 @@ namespace rex
       {
         switch (type)
         {
-        case ViewHeapType::ConstantBufferView:  return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        case ViewHeapType::RenderTargetView:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        case ViewHeapType::DepthStencilView:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-        case ViewHeapType::Sampler:             return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        case ViewHeapType::ConstantBuffer:  return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        case ViewHeapType::Texture2D:       return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        case ViewHeapType::RenderTarget:    return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        case ViewHeapType::DepthStencil:    return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        case ViewHeapType::Sampler:         return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
         }
 
         return invalid_obj<D3D12_DESCRIPTOR_HEAP_TYPE>();
@@ -664,7 +643,7 @@ namespace rex
 
         return invalid_obj<D3D12_PRIMITIVE_TOPOLOGY_TYPE>();
       }
-      D3D12_SAMPLER_DESC to_dx12(const ShaderSamplerDesc& desc)
+      D3D12_SAMPLER_DESC to_dx12(const SamplerDesc& desc)
       {
         D3D12_SAMPLER_DESC sampler_desc{};
         sampler_desc.Filter = d3d::to_dx12(desc.filtering);
@@ -764,68 +743,9 @@ namespace rex
       {
         return static_cast<DxPipelineState*>(pso);
       }
-      //DxShaderPipelineParameters2 to_dx12(const ShaderPipelineParameters& parameters)
-      //{
-      //  DxShaderPipelineParameters2 dx_params{};
-      //  
-      //  dx_params.root_parameters.resize(parameters.num());
-      //  for (s32 i = 0; i < parameters.num(); ++i)
-      //  {
-      //    const ShaderParameterDeclaration* param = parameters[i];
-      //    rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_ranges = dx_params.ranges.emplace_back();
-      //    for (const auto& view_range : param->ranges)
-      //    {
-      //      D3D12_DESCRIPTOR_RANGE& dx_range = desc_ranges.emplace_back();
-      //      dx_range.BaseShaderRegister                 = view_range.base_register;
-      //      dx_range.NumDescriptors                     = view_range.num_views;
-      //      dx_range.OffsetInDescriptorsFromTableStart  = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
-      //      dx_range.RangeType                          = to_dx12(view_range.type);
-      //      dx_range.RegisterSpace                      = view_range.register_space;
-      //    }
-      //    dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_ranges.size(), desc_ranges.data(), to_dx12(param->visibility));
-      //  }
-
-      //  //const auto& material_params = parameters.params(ShaderParameterBinding::Material);
-      //  //const auto& renderpass_params = parameters.params(ShaderParameterBinding::RenderPass);
-      //  //dx_params.root_parameters.resize(material_params.resources.size() + renderpass_params.resources.size());
-      //  //for (const auto& param : material_params.resources)
-      //  //{
-      //  //  dx_params.root_parameters[param.slot].InitAsDescriptorTable(param)
-      //  //}
-
-      //  //auto append_view_tables = [&](const rsl::vector<ShaderParameterDeclaration>& tables)
-      //  //{
-      //  //  for (const auto& view_table : tables)
-      //  //  {
-      //  //    rsl::vector<D3D12_DESCRIPTOR_RANGE>& desc_range = dx_params.ranges.emplace_back();
-      //  //    for (const auto& view_range : view_table.ranges)
-      //  //    {
-      //  //      D3D12_DESCRIPTOR_RANGE& dx_range = desc_range.emplace_back();
-      //  //      dx_range.BaseShaderRegister = view_range.base_register;
-      //  //      dx_range.NumDescriptors = view_range.num_views;
-      //  //      dx_range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // We pack all our view tables together, so we can just follow from where we left of
-      //  //      dx_range.RangeType = to_dx12(view_range.type);
-      //  //      dx_range.RegisterSpace = view_range.register_space;
-      //  //    }
-      //  //    dx_params.root_parameters.emplace_back().InitAsDescriptorTable(desc_range.size(), desc_range.data(), to_dx12(view_table.visibility));
-      //  //  }
-      //  //};
-
-      //  //const rsl::unordered_map<ShaderType, rsl::vector<ShaderParameterDeclaration>>& view_tables = parameters.view_tables_per_shader();
-      //  //if (view_tables.contains(ShaderType::Vertex))
-      //  //{
-      //  //  append_view_tables(view_tables.at(ShaderType::Vertex));
-      //  //}
-      //  //if (view_tables.contains(ShaderType::Pixel))
-      //  //{
-      //  //  append_view_tables(view_tables.at(ShaderType::Pixel));
-      //  //}
-
-      //  return dx_params;
-      //}
-      DxShaderPipelineParameters2 to_dx12(const rsl::vector<ShaderParameterDeclaration>& parameters)
+      DxShaderPipelineParameters to_dx12(const rsl::vector<ShaderParameterDeclaration>& parameters)
       {
-        DxShaderPipelineParameters2 dx_params{};
+        DxShaderPipelineParameters dx_params{};
 
         dx_params.root_parameters.reserve(parameters.size());
         for (const ShaderParameterDeclaration& param : parameters)
@@ -899,7 +819,7 @@ namespace rex
       // ------------------------------------
       // Return from Directx -> REX
       // ------------------------------------
-      ShaderArithmeticType from_dx12_shader_param_type(DXGI_FORMAT format)
+      ShaderArithmeticType from_dx12_shader_arithmetic_type(DXGI_FORMAT format)
       {
         switch (format)
         {

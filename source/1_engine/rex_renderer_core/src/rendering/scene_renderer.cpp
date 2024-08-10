@@ -40,84 +40,41 @@ namespace rex
 
 		void SceneRenderer::render()
 		{
-			begin_scene();
+			upload_scene_data();
 
 			m_scene_data.scene->submit_geo_to_renderer(this);
 
-			end_scene();
-		}
-
-		void SceneRenderer::begin_scene()
-		{
-			// I would also consider combining the per global data to per scene data or even combine both of those to per view data. 
-			// You don't really need that kind of granularity for performance reasons at least. 
-			// The main reason of splitting is to reduce expensive descriptor updates, but descriptor updates per view costs nothing.
-
-			// Update the various constant buffers defined by the scene renderer
-
-			// Global data
-			// time,
-			// ..
-			// m_sp_global->set("DeltaTime", ...);
-
-			// Update per scene data
-			// lights,
-			// ..
-			// m_sp_per_scene->set("LightDirection", ...);
-
-			// Update per view data
-			// view,
-			// proj,
-			// viewproj,
-			// ..
-			// m_sp_per_view->set("View", ...);
-			// m_sp_per_view->set("Proj", ...);
-			// m_sp_per_view->set("ViewProj", ...);
-
-			// Other forms of data
-			// ..
-
-			//m_current_ctx = m_geometry_pass->begin();
-
-			// 1. Update the per view data.
-			// This data consists of data that's specified to the view (eg. camera)
-			//upload_view_data(m_current_ctx.get());
-
-			upload_scene_data();
-
-			// 2. Update the data per render pass
-			// We currently only have a single render pass so this is not a concern for us right now
-			//update_pass_data(m_current_ctx.get());
-
-			// 3. Update the data per material
-			// Each object in the scene will have their own material
-			// We need to make sure all our object's texture views are uploaded to the gpu (eg. textures)
-			//update_material_data(m_current_ctx.get());
-
-			// 4. Update the per instance data
-			// Each object may have data that's specific to each instance of that object (eg. world matrix)
-			//update_instance_data(render_ctx.get());			
-
-			// Bind the previously set resources to the pipeline
-			//bind_resources();
+			flush_draw_lists();
 		}
 
 		// flush the drawlist to the gpu
-		void SceneRenderer::end_scene()
+		void SceneRenderer::flush_draw_lists()
 		{
+			m_current_ctx = new_render_ctx();
+			f32 viewport_width = static_cast<f32>(m_scene_data.viewport_width);
+			f32 viewport_height = static_cast<f32>(m_scene_data.viewport_height);
+			Viewport viewport = { 0.0f, 0.0f, viewport_width, viewport_height, 0.0f, 1.0f };
+			m_current_ctx->set_viewport(viewport);
+
+			ScissorRect rect = { 0, 0, viewport_width, viewport_height };
+			m_current_ctx->set_scissor_rect(rect);
+
 			geometry_pass();
 		}
 
 		void SceneRenderer::init_gpu_resources()
 		{
-			m_cb_view_data = rhi::create_constant_buffer(sizeof(PerViewData), "PerViewData");
-			m_cb_scene_data = rhi::create_constant_buffer(sizeof(PerSceneData), "PerSceneData");
+			m_cb_view_data = rhi::create_constant_buffer(sizeof(PerViewData));
+			m_cb_scene_data = rhi::create_constant_buffer(sizeof(PerSceneData));
 
-			s32 num_instances_supported = 100;
-			m_per_instance_cbs.reserve(num_instances_supported);
-			for (s32 i = 0; i < num_instances_supported; ++i)
+			// The number of objects per scene currently has a hard limit
+			// If we hit this limit we can upscale it or come up with a different strategy
+			// of how to store per instance data for objects and uploading it to the GPU
+			// Perhaps a ring buffer will suffice here
+			m_per_instance_cbs.reserve(s_max_number_of_objects_per_scene);
+			for (s32 i = 0; i < s_max_number_of_objects_per_scene; ++i)
 			{
-				m_per_instance_cbs.push_back(rhi::create_constant_buffer(sizeof(PerInstanceData), "PerInstanceData"));
+				m_per_instance_cbs.push_back(rhi::create_constant_buffer(sizeof(PerInstanceData)));
 			}
 		}
 
@@ -165,8 +122,10 @@ namespace rex
 		// Instead it cached what needs to be rendered, the actually rendering happens elsewhere
 		void SceneRenderer::submit_static_mesh(const TransformComponent& transform, const StaticMesh& mesh)
 		{
-			// update constant buffer
+			// For every static mesh, we use one of the pre allocated constant buffers
+			// and upload its transform data into it
 			s32 constant_buffer_idx = m_draw_lists.size();
+			REX_ASSERT_X(constant_buffer_idx < m_per_instance_cbs.size(), "Reached max number of static meshes in a scene. Max: {}", m_per_instance_cbs.size());
 
 			PerInstanceData per_instance_data{};
 			per_instance_data.world = transform.world_mat();
@@ -178,7 +137,7 @@ namespace rex
 			DrawList draw_list{};
 			draw_list.vb = mesh.vb();
 			draw_list.ib = mesh.ib();
-			draw_list.cb = m_per_instance_cbs[constant_buffer_idx].get();
+			draw_list.per_instance_cb = m_per_instance_cbs[constant_buffer_idx].get();
 			m_draw_lists.push_back(draw_list);
 		}
 
@@ -196,53 +155,21 @@ namespace rex
 
 		void SceneRenderer::geometry_pass()
 		{
-			// geometry_pass()
-
-			// within the geometry pass the following should happen for each object
-			// s32 per_object_slot = m_geometry_pass->slot("PerInstance");
-
-			// ctx->set_constant_buffer(per_object_slot, drawlist.cb)
-			// ctx->set_vertex_buffer(drawlist.vb);
-			// ctx->set_index_buffer(drawlist.ib);
-
-			// bind the index buffer
-			// draw
-
-			m_current_ctx = new_render_ctx();
-			m_geometry_pass->bind_resources(m_current_ctx.get());
-			f32 viewport_width = static_cast<f32>(m_scene_data.viewport_width);
-			f32 viewport_height = static_cast<f32>(m_scene_data.viewport_height);
-			Viewport viewport = { 0.0f, 0.0f, viewport_width, viewport_height, 0.0f, 1.0f };
-			m_current_ctx->set_viewport(viewport);
-
-			// There's a bug here as the per instance data is not updated together with the view data
-			// As the per instance and per view data is tied to the same slot and expected to be updated together
-			// When we copy the per instance data over, we overwrite the per view data
-			ScissorRect rect = { 0, 0, viewport_width, viewport_height };
-			m_current_ctx->set_scissor_rect(rect);
+			m_geometry_pass->bind_to(m_current_ctx.get());
 			s32 per_instance_slot = m_geometry_pass->slot("PerInstance");
-
-			auto copy_ctx = new_copy_ctx();
 
 			for (s32 i = 0; i < m_draw_lists.size(); ++i)
 			{
 				const DrawList& drawlist = m_draw_lists[i];
 
-				//rsl::vector<ResourceView*> views = { drawlist.cb->resource_view() };
-				//auto start_handle = copy_ctx->copy_views(ViewHeapType::ConstantBufferView, views);
-
-				m_current_ctx->set_constant_buffer(per_instance_slot, drawlist.cb);
+				m_current_ctx->bind_constant_buffer(per_instance_slot, drawlist.per_instance_cb);
 				m_current_ctx->set_vertex_buffer(drawlist.vb);
-
-				// submit index buffer
 				m_current_ctx->set_index_buffer(drawlist.ib);
 
 				m_current_ctx->draw_indexed(drawlist.ib->count(), 0, 0, 0);
 			}
 
-			copy_ctx->execute_on_gpu();
-
-			m_current_ctx.return_to_pool();
+			m_current_ctx->execute_on_gpu();
 			m_draw_lists.clear();
 			
 		}

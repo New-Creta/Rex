@@ -45,7 +45,6 @@
 #include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
 #include "rex_renderer_core/gfx/viewport.h"
 #include "rex_renderer_core/gfx/scissor_rect.h"
-#include "rex_renderer_core/system/resource_hasher.h"
 
 #include "rex_std/bonus/utility.h"
 
@@ -279,17 +278,7 @@ namespace rex
 
       // Resource creation
       // -------------------------------------------
-      rsl::unique_ptr<VertexBuffer>         create_vertex_buffer(s32 numVertices, s32 vertexSize)
-      {
-        s32 total_size = numVertices * vertexSize;
-        REX_ASSERT_X(total_size > 0, "Trying to allocate a gpu resource of size 0, this is not allowed");
-        wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_buffer(total_size);
-
-        d3d::set_debug_name_for(d3d_buffer.Get(), "Vertex Buffer");
-
-        return rsl::make_unique<DxVertexBuffer>(d3d_buffer, numVertices, vertexSize);
-      }
-      rsl::unique_ptr<VertexBuffer> create_vertex_buffer(const void* data, s32 numVertices, s32 vertexSize)
+      rsl::unique_ptr<VertexBuffer>         create_vertex_buffer(s32 numVertices, s32 vertexSize, const void* data)
       {
         s32 total_size = numVertices * vertexSize;
         wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_buffer(total_size);
@@ -308,16 +297,7 @@ namespace rex
 
         return vb;
       }
-
-      rsl::unique_ptr<IndexBuffer>          create_index_buffer(s32 numIndices, IndexBufferFormat format)
-      {
-        s32 index_size = index_format_size(format);
-        s32 total_size = numIndices * index_size;
-        wrl::ComPtr<ID3D12Resource> buffer = g_gpu_engine->allocate_buffer(total_size);
-        d3d::set_debug_name_for(buffer.Get(), "Index Buffer");
-        return rsl::make_unique<DxIndexBuffer>(buffer, numIndices, format);
-      }
-      rsl::unique_ptr<IndexBuffer> create_index_buffer(const void* data, s32 numIndices, IndexBufferFormat format)
+      rsl::unique_ptr<IndexBuffer>          create_index_buffer(s32 numIndices, IndexBufferFormat format, const void* data)
       {
         s32 index_size = index_format_size(format);
         s32 total_size = numIndices * index_size;
@@ -338,9 +318,9 @@ namespace rex
 
         return ib;
       }
-      rsl::unique_ptr<RootSignature> create_root_signature(const rsl::vector<ShaderParameterDeclaration>& parameters)
+      rsl::unique_ptr<RootSignature>        create_root_signature(const rsl::vector<ShaderParameterDeclaration>& parameters)
       {
-        DxShaderPipelineParameters2 dx_pipeline_parameters = d3d::to_dx12(parameters);
+        DxShaderPipelineParameters dx_pipeline_parameters = d3d::to_dx12(parameters);
 
         // A root signature is an array of root parameters.
         REX_WARN(LogDxRhi, "Use versioned root signature here");
@@ -377,7 +357,7 @@ namespace rex
           return nullptr;
         }
 
-        return rsl::make_unique<DxRootSignature>(root_signature, dx_pipeline_parameters.root_parameters);
+        return rsl::make_unique<DxRootSignature>(root_signature);
       }
 
       rsl::unique_ptr<RenderTarget>         create_render_target(s32 width, s32 height, TextureFormat format)
@@ -452,18 +432,7 @@ namespace rex
 
         return texture;
       }
-      rsl::unique_ptr<Texture2D>            create_texture2d(const wrl::ComPtr<ID3D12Resource>& resource)
-      {
-        DxResourceView desc_handle = g_gpu_engine->create_texture2d_srv(resource.Get());
-
-        s32 width = static_cast<s32>(resource->GetDesc().Width);
-        s32 height = static_cast<s32>(resource->GetDesc().Height);
-        TextureFormat format = d3d::from_dx12(resource->GetDesc().Format);
-
-        auto texture = rsl::make_unique<DxTexture2D>(resource, desc_handle, width, height, format);
-        return texture;
-      }
-      rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size, rsl::string_view debugName)
+      rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size)
       {
         // 1) Create the resource on the gpu that'll hold the data of the vertex buffer
         rsl::memory_size aligned_size = align(size.size_in_bytes(), D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
@@ -471,7 +440,7 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_constant_buffer = g_gpu_engine->allocate_buffer(aligned_size);
         DxResourceView desc_handle = g_gpu_engine->create_cbv(d3d_constant_buffer.Get(), aligned_size);
 
-        d3d::set_debug_name_for(d3d_constant_buffer.Get(), debugName.empty() ? "Constant Buffer" : debugName);
+        d3d::set_debug_name_for(d3d_constant_buffer.Get(), "Constant Buffer");
 
         return rsl::make_unique<DxConstantBuffer>(d3d_constant_buffer, desc_handle, size);
       }
@@ -560,11 +529,11 @@ namespace rex
         return nullptr;
       }
 
-      rsl::unique_ptr<Material> create_material(ShaderPipeline&& shaderPipeline, const MaterialDesc& matDesc)
+      rsl::unique_ptr<Material> create_material(const ShaderPipeline& shaderPipeline, const MaterialDesc& matDesc)
       {
-        return rsl::make_unique<Material>(rsl::move(shaderPipeline), matDesc);
+        return rsl::make_unique<Material>(shaderPipeline, matDesc);
       }
-      rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc)
+      rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc)
       {
         return g_gpu_engine->create_sampler2d(desc);
       }

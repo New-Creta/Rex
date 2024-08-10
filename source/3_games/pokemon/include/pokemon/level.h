@@ -4,10 +4,10 @@
 #include "rex_std/string_view.h"
 #include "rex_std/vector.h"
 
+#include "pokemon/map.h"
+
 namespace pokemon
 {
-  class Map;
-
   // High level information on a level.
   class LevelInfo
   {

@@ -86,8 +86,8 @@ namespace rex
 			ViewHeapType target_view_heap_type;
 			switch (type())
 			{
-			case ShaderParameterType::ConstantBuffer: target_view_heap_type = ViewHeapType::ConstantBufferView; break;
-			case ShaderParameterType::Texture: target_view_heap_type = ViewHeapType::ShaderResourceView; break;
+			case ShaderParameterType::ConstantBuffer: target_view_heap_type = ViewHeapType::ConstantBuffer; break;
+			case ShaderParameterType::Texture: target_view_heap_type = ViewHeapType::Texture2D; break;
 			case ShaderParameterType::Sampler: target_view_heap_type = ViewHeapType::Sampler; break;
 			default: REX_ASSERT("Invalid shader parameter type"); break;
 			}

@@ -27,6 +27,5 @@ namespace rex
     {
       return m_view;
     }
-
   }
 }

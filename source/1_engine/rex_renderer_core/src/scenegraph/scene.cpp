@@ -27,6 +27,7 @@ namespace rex
 
 		Entity Scene::add_entity(rsl::string_view name)
 		{
+			// Every entity needs a transform component anyway, so we add it by default
 			entt::entity entt_handle = m_registry.create();
 			Entity entity(m_registry, entt_handle, name);
 			entity.add_component<TransformComponent>();

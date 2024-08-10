@@ -1,6 +1,5 @@
 #include "rex_directx/system/dx_view_heap.h"
 
-
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_engine/memory/pointer_math.h"
@@ -88,7 +87,7 @@ namespace rex
     }
 
     // Create a 2D texture sampler
-    rsl::unique_ptr<DxSampler2D> DxViewHeap::create_sampler2d(const ShaderSamplerDesc& desc)
+    rsl::unique_ptr<DxSampler2D> DxViewHeap::create_sampler2d(const SamplerDesc& desc)
     {
       REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, "Trying to create a sampler from a view heap that's not configured to create samplers");
 
@@ -109,15 +108,18 @@ namespace rex
 
       rsl::unique_ptr<DxResourceView> free_handle = rsl::make_unique<DxResourceView>(new_free_handle(views.size()));
 
+      CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_handle;
       for (ResourceView* view : views)
       {
-        if (view == nullptr)
+        cpu_handle = m_null_view.cpu_handle();
+        // It's possible a null view is provided if the parameter has not been set yet
+        if (view != nullptr)
         {
-          continue;
+          DxResourceView* src_handle = d3d::to_dx12(view);
+          cpu_handle = src_handle->cpu_handle();
         }
 
-        DxResourceView* src_handle = d3d::to_dx12(view);
-        m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), src_handle->cpu_handle(), m_view_heap_type);
+        m_device->CopyDescriptorsSimple(1, free_handle->cpu_handle(), cpu_handle, m_view_heap_type);
         (*free_handle)++;
       }
 
@@ -159,6 +161,19 @@ namespace rex
       }
 
       return DxResourceView(cpu_handle, gpu_handle, m_view_heap_type, m_view_size);
+    }
+    // Create a handle pointing to no resource
+    void DxViewHeap::init_null_handle()
+    {
+      m_null_view = new_free_handle();
+      switch (m_view_heap_type)
+      {
+      case D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV:    m_device->CreateShaderResourceView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_SHADER_RESOURCE_VIEW_DESC>, m_null_view);
+      case D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER:        m_device->CreateSampler(rsl::Nullptr<const D3D12_SAMPLER_DESC>, m_null_view);
+      case D3D12_DESCRIPTOR_HEAP_TYPE_RTV:            m_device->CreateRenderTargetView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_RENDER_TARGET_VIEW_DESC>, m_null_view);
+      case D3D12_DESCRIPTOR_HEAP_TYPE_DSV:            m_device->CreateDepthStencilView(rsl::Nullptr<ID3D12Resource>, rsl::Nullptr<const D3D12_DEPTH_STENCIL_VIEW_DESC>, m_null_view);
+      default: break;
+      }
     }
 
   } // namespace gfx

@@ -13,6 +13,8 @@ namespace rex
 			Shader* load(rsl::string_view path, ShaderType type);
 			// Load a shader from the cache, given a shader name
 			Shader* load(rsl::string_view name);
+			// Clear the cache
+			void clear();
 		}
 	}
 }

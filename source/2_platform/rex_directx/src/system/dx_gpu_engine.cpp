@@ -54,19 +54,19 @@ namespace rex
     // Create a render target view for a given resource
     DxResourceView DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
-      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::RenderTargetView))->create_rtv(texture.Get());
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::RenderTarget))->create_rtv(texture.Get());
     }
     // Create a shader resource view pointing to a 2D texture
     DxResourceView DxGpuEngine::create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture)
     {
-      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::ShaderResourceView))->create_texture2d_srv(texture.Get());
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::Texture2D))->create_texture2d_srv(texture.Get());
     }
     // Create a constant buffer view pointing for a given resource
     DxResourceView DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
     {
-      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::ConstantBufferView))->create_cbv(resource.Get(), size);
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::ConstantBuffer))->create_cbv(resource.Get(), size);
     }
-    rsl::unique_ptr<DxSampler2D> DxGpuEngine::create_sampler2d(const ShaderSamplerDesc& desc)
+    rsl::unique_ptr<DxSampler2D> DxGpuEngine::create_sampler2d(const SamplerDesc& desc)
     {
       return d3d::to_dx12(cpu_desc_heap(ViewHeapType::Sampler))->create_sampler2d(desc);
     }

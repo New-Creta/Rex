@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/system/view_param.h"
+#include "rex_renderer_core/system/shader_parameter_location.h"
 
 namespace rex
 {

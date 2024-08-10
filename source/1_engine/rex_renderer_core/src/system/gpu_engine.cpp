@@ -55,7 +55,7 @@ namespace rex
       render_ctx->execute_on_gpu(WaitForFinish::yes);
 
       // EMpty out the view heaps so that new views can be copied into it
-      m_shader_visible_descriptor_heap_pool.at(ViewHeapType::ResourceView)->clear();
+      m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Texture2D)->clear();
       m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Sampler)->clear();
     }
     // Present the new frame to the main window
@@ -153,12 +153,12 @@ namespace rex
     // Initialize the descriptor heaps which keep track of all descriptors to various resources
     void GpuEngine::init_desc_heaps()
     {
-      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::RenderTargetView, IsShaderVisible::no);
-      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::DepthStencilView, IsShaderVisible::no);
-      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::ResourceView, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::RenderTarget, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::DepthStencil, IsShaderVisible::no);
+      init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::Texture2D, IsShaderVisible::no);
       init_desc_heap(m_cpu_descriptor_heap_pool, ViewHeapType::Sampler, IsShaderVisible::no);
 
-      init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::ResourceView, IsShaderVisible::yes);
+      init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::Texture2D, IsShaderVisible::yes);
       init_desc_heap(m_shader_visible_descriptor_heap_pool, ViewHeapType::Sampler, IsShaderVisible::yes);
     }
     void GpuEngine::init_desc_heap(ViewHeapPool& descHeapPool, ViewHeapType descHeapType, IsShaderVisible isShaderVisible)
@@ -170,7 +170,7 @@ namespace rex
     {
       ContextResetData reset_data{};
       reset_data.pso = pso;
-      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(ViewHeapType::ShaderResourceView);
+      reset_data.shader_visible_srv_desc_heap = shader_visible_desc_heap(ViewHeapType::Texture2D);
       reset_data.shader_visible_sampler_desc_heap = shader_visible_desc_heap(ViewHeapType::Sampler);
       reset_data.current_backbuffer_rt = m_swapchain->current_buffer();
 

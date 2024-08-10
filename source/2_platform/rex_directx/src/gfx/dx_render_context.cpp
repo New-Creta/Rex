@@ -160,38 +160,32 @@ namespace rex
       DxPipelineState* dx_pso = d3d::to_dx12(pso);
       m_cmd_list->SetPipelineState(dx_pso->dx_object());
     }
-    // Set the graphics root descriptor table of the context
-    void DxRenderContext::bind_view_table(s32 paramIdx, UINT64 id)
-    {
-      D3D12_GPU_DESCRIPTOR_HANDLE texture_handle = {};
-      texture_handle.ptr = id;
-
-      m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, texture_handle);
-    }
+    // Set a view table of the context
     void DxRenderContext::bind_view_table(s32 paramIdx, ResourceView* startView)
     {
       DxResourceView* dx_start_view = d3d::to_dx12(startView);
       m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, dx_start_view->gpu_handle());
     }
+    // Bind a constant buffer to the context
     void DxRenderContext::bind_constant_buffer(s32 paramIdx, u64 gpuAddress)
     {
       m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, gpuAddress);
     }
+    void DxRenderContext::bind_constant_buffer(s32 paramIdx, ConstantBuffer* constantBuffer)
+    {
+      m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, constantBuffer->gpu_address());
+    }
+    // Bind a shader resource to the context
     void DxRenderContext::bind_shader_resource(s32 paramIdx, u64 gpuAddress)
     {
       m_cmd_list->SetGraphicsRootShaderResourceView(paramIdx, gpuAddress);
     }
+    // Bind a unordered access buffer to the context
     void DxRenderContext::bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress)
     {
       m_cmd_list->SetGraphicsRootUnorderedAccessView(paramIdx, gpuAddress);
     }
 
-    // Set the constant buffer of the context at a given index
-    void DxRenderContext::set_constant_buffer(s32 paramIdx, Resource* cb)
-    {
-      DxConstantBuffer* dx_cb = static_cast<DxConstantBuffer*>(cb);
-      m_cmd_list->SetGraphicsRootConstantBufferView(paramIdx, dx_cb->dx_object()->GetGPUVirtualAddress());
-    }
     // Set the blend factor of the context
     void DxRenderContext::set_blend_factor(const f32 blendFactor[4])
     {
@@ -217,54 +211,7 @@ namespace rex
     // Bind a material to the context
     void DxRenderContext::bind_material(Material* material)
     {
-      // The following is stored in a material and should be bound when a material gets bound
-
-      // Primitive topology
-      set_primitive_topology(material->primitive_topology());
-            
-      // Root signature
-      set_root_signature(material->root_signature());
-      
-      // Blend settings
-      set_blend_factor(material->blend_factor());
-
-      // All textures and samplers descriptors for a material are expected to be continuously stored in memory
-      // This means that the following needs to be true
-      // Let's say we need to bind 5 textures, with the first texture being at address 0x0000 (start of the descriptor heap)
-      // If a SRV descriptor is 128 bytes in memory, then the textures need to have the following layout in the descriptor heap
-      // texture 0 - 0x0000 == 000
-      // texture 1 - 0x0080 == 128
-      // texture 2 - 0x0100 == 256
-      // texture 3 - 0x0180 == 384
-      // texture 4 - 0x0200 == 512
-
-      // A root signature can have 2 kinds of parameters
-      // 1. constants
-      // Constants are NOT bound by materials, but are bound by the renderer instead
-      // Constants themselves have different categories as well (per scene, per view, per object, per instance, ..)
-      // I won't go into much detail here as it's explained in the renderer
-      // 
-      // 2. resources
-      // Resources are bound by materials. These are mostly textures and samplers.
-      // textures and samplers need to be put in descriptor tables in DirectX.
-      // A material can have multiple descriptor tables as they're often tied to shader type
-      // Therefore we need to loop over all the material's descriptor tables aka "tied resources"
-      // and bind them, linking them to the root parameter idx they were originally created for
-
-      // Textures
-      // Samplers
-
-      // Sort the materials based on their slot and register
-      // Some might be in tables and they'll use the slot of those
-      // This is to make sure that when we copy the descriptors in a heap
-      // that's accessible by the GPU, all views are continious in memory
-      // and are sorted in the way they're expected by the root signature
-
-      const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = material->shader_params();
-      for (const auto& shader_resource : shader_params)
-      {
-        shader_resource->bind_to(this);
-      }
+      material->bind_to(this);
     }
 
     // Return the wrapped directx commandlist
@@ -309,20 +256,5 @@ namespace rex
         m_cmd_list->ResourceBarrier(1, &barrier);
       }
     }
-
-    // Bind material resources to the root signature parameter index provided
-    void DxRenderContext::bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, ViewHeapType type, s32 paramIdx)
-    {
-      if (!views.empty())
-      {
-        // Copy all view into a continious block of memory on the GPU
-        rsl::unique_ptr<ResourceView> start_sampler_handle = copyCtx->copy_views(type, views);
-        if (paramIdx != -1)
-        {
-          m_cmd_list->SetGraphicsRootDescriptorTable(paramIdx, d3d::to_dx12(start_sampler_handle.get())->gpu_handle());
-        }
-      }
-    }
-
   }
 }

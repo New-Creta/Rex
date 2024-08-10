@@ -38,8 +38,8 @@ namespace rex
             4, 0, 3, 4, 3, 7
         };
 
-        rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(v.data(), v.size(), sizeof(v[0]));
-        rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(i.data(), i.size(), IndexBufferFormat::Uint16);
+        rsl::unique_ptr<VertexBuffer> vb = rhi::create_vertex_buffer(v.size(), sizeof(v[0]), v.data());
+        rsl::unique_ptr<IndexBuffer> ib = rhi::create_index_buffer(i.size(), IndexBufferFormat::Uint16, i.data());
 
         return StaticMesh(rsl::move(vb), rsl::move(ib));
       }

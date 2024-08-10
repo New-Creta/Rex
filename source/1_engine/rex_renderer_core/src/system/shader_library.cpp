@@ -38,7 +38,7 @@ namespace rex
 					rsl::string_view name = shader_name(path);
 
 					// If shader is cached already, just return that one
-					Shader* cached_shader = get(name);
+					Shader* cached_shader = load(name);
 					if (cached_shader)
 					{
 						return cached_shader;
@@ -72,6 +72,11 @@ namespace rex
 						: nullptr;
 				}
 
+				void clear()
+				{
+					m_shader_map.clear();
+				}
+
 			private:
 				rsl::unordered_map<rsl::tiny_stack_string, rsl::unique_ptr<Shader>> m_shader_map;
 			};
@@ -89,7 +94,12 @@ namespace rex
 			
 			Shader* load(rsl::string_view name)
 			{
-				return instance().get(name);
+				return instance().load(name);
+			}
+
+			void clear()
+			{
+				instance().clear();
 			}
 		}
 	}

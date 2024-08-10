@@ -11,6 +11,7 @@ namespace rex
     class ShaderCompiler
     {
     public:
+      // Compile a single shader
       wrl::ComPtr<ID3DBlob> compile_shader(const CompileShaderDesc& desc);
     };
   } // namespace gfx

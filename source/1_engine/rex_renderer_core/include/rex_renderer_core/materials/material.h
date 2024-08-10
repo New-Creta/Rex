@@ -17,7 +17,7 @@
 #include "rex_renderer_core/resources/root_signature.h"
 #include "rex_renderer_core/resources/blend_state.h"
 #include "rex_renderer_core/gfx/render_context.h"
-#include "rex_renderer_core/system/view_param.h"
+
 
 #include "rex_renderer_core/system/shader_parameters_store.h"
 
@@ -72,15 +72,15 @@ namespace rex
       // The primitive topology of the material
       PrimitiveTopology m_primitive_topology;
       // The root signature of the material
-      rsl::unique_ptr<RootSignature> m_root_signature;
+      RootSignature* m_root_signature;
 
-      // The rasterizer settings of the material
+      // The rasterizer settings of the material, belongs to the output merger
       RasterStateDesc m_raster_state;
-      // The blend settings of the material
+      // The blend settings of the material, belongs to the output merger
       BlendDesc m_blend;
-      // The depth stencil settings of the material
+      // The depth stencil settings of the material, belongs to the output merger
       DepthStencilDesc m_depth_stencil;
-      // The blend factor of the material
+      // The blend factor of the material, belongs to the output merger
       BlendFactor m_blend_factor;
       // The shader pipeline of the material
       ShaderPipeline m_shader_pipeline;

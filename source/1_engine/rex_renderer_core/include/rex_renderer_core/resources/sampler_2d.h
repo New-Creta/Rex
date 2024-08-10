@@ -1,6 +1,11 @@
 #pragma once
 
 #include "rex_renderer_core/resources/resource.h"
+#include "rex_renderer_core/gfx/sampler_filtering.h"
+#include "rex_renderer_core/gfx/texture_address_mode.h"
+#include "rex_renderer_core/gfx/border_color.h"
+#include "rex_renderer_core/gfx/comparison_func.h"
+#include "rex_renderer_core/gfx/shader_visibility.h"
 
 namespace rex
 {

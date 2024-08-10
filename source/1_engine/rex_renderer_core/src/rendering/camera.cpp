@@ -13,7 +13,7 @@ namespace rex
 			switch (m_projection_mode)
 			{
 				case ProjectionMode::Perspective: m_projection = glm::perspectiveFov(glm::radians(fov.get()), width, height, near, far); break;
-				case ProjectionMode::Ortographic: m_projection_mode = glm::orthographic(); break;
+				case ProjectionMode::Ortographic: m_projection = glm::orthoLH_ZO(0.0f, width, 0.0f, height, near, far); break;
 			}
 		}
 

@@ -75,7 +75,7 @@ namespace console_app_example
     REX_INFO(LogConsoleApp, "Total of {} allocations", stats.allocation_headers.size());
   }
 
-  bool initialize()
+  bool initialize(const rex::ApplicationCreationParams& appCreationParams)
   {
     return true;
   }

@@ -83,10 +83,9 @@ namespace rex
       virtual void set_pipeline_state(PipelineState* pso) = 0;
       // Set the graphics root descriptor table of the context
       virtual void bind_view_table(s32 paramIdx, ResourceView* startView) = 0;
-      // Set the constant buffer of the context at a given index
-      virtual void set_constant_buffer(s32 paramIdx, Resource* resource) = 0;
       // Bind a constant buffer to the pipeline, tied to a param slot
       virtual void bind_constant_buffer(s32 paramIdx, u64 gpuAddress) = 0;
+      virtual void bind_constant_buffer(s32 paramIdx, ConstantBuffer* constantBuffer) = 0;
       // Bind a shader resource to the pipeline, tied to a param slot
       virtual void bind_shader_resource(s32 paramIdx, u64 gpuAddress) = 0;
       // Bind an unordered access to the pipeline, tied to a param slot

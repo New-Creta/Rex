@@ -34,7 +34,6 @@ namespace rex
 
     // Shader semantic are case sensitive, so we can't use reflection to get its name
     rsl::string_view shader_semantic_name(ShaderSemantic semantic);
-    // ShaderSemantic shader_semantic_type(rsl::string_view semantic);
 
     // This structure describe a single element in the input layout
     // Most members default initialization is fine and you only need to initialize semantic and the format

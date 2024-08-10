@@ -8,7 +8,7 @@
 #include "rex_renderer_core/gfx/rhi.h"
 #include "rex_renderer_core/resources/texture_2d.h"
 #include "rex_renderer_core/gfx/texture_format.h"
-#include "rex_renderer_core/system/shader_elements.h"
+
 
 #include "rex_renderer_core/imgui/imgui_frame_context.h"
 #include "rex_renderer_core/imgui/imgui_viewport.h"
@@ -156,7 +156,7 @@ namespace rex
     void ImGuiRenderer::init_font_sampler()
     {
       // Sampler is currently hardcoded
-      ShaderSamplerDesc desc{};
+      SamplerDesc desc{};
       desc.filtering = SamplerFiltering::MinMagMipLinear;
       desc.address_mode_u = TextureAddressMode::Wrap;
       desc.address_mode_v = TextureAddressMode::Wrap;

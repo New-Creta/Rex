@@ -7,6 +7,9 @@
 #include "rex_engine/filesystem/path.h"
 #include "rex_engine/filesystem/file.h"
 
+#include "rex_std/vector.h"
+#include "rex_std/string_view.h"
+
 #include <d3dcompiler.h>
 
 namespace rex
@@ -15,34 +18,57 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogShaderCompiler);
 
-    class RexIncluder final : public ID3DInclude
+    // This includes class allows the possibility of including files in shader code
+    // This is useful if you want to share code between shaders
+    class RexIncluder : public ID3DInclude
     {
     public:
-      ~RexIncluder()
+      RexIncluder(rsl::vector<rsl::string_view>&& includePaths)
+        : m_include_paths(rsl::move(includePaths))
       {
       }
 
-      STDMETHOD(Open)(D3D_INCLUDE_TYPE IncludeType, LPCSTR filename, LPCVOID pParentData, LPCVOID* ppData, uint32* pBytes) override
+      // Loop over the include paths and find the first valid path
+      rsl::string find_file(rsl::string_view filename)
       {
-        rsl::string include_path = path::join(vfs::mount_path(MountingPoint::EngineShaders), filename);
+        auto it = rsl::find_if(m_include_paths.cbegin(), m_include_paths.cend(),
+        [&](rsl::string_view includePath)
+        {
+          return file::exists(path::join(includePath, filename));
+        });
+
+        return it != m_include_paths.cend()
+        ? path::join(*it, filename)
+        : rsl::string("");
+      }
+
+      STDMETHOD(Open)(D3D_INCLUDE_TYPE includeType, LPCSTR filename, LPCVOID parentData, LPCVOID* dataDoublePtr, uint32* bytesDoublePtr) override
+      {
+        rsl::string include_path = find_file(rsl::string_view(filename));
+        if (include_path.empty())
+        {
+          return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+        }
+
         memory::Blob include_file_content = file::read_file(include_path);
 
-        *ppData = include_file_content.data();
-        *pBytes = include_file_content.size();
+        *dataDoublePtr = include_file_content.data();
+        *bytesDoublePtr = include_file_content.size();
 
-        m_include_map.emplace(*ppData, rsl::move(include_file_content));
+        m_include_map.emplace(*dataDoublePtr, rsl::move(include_file_content));
 
         return S_OK;
       }
 
-      STDMETHOD(Close)(LPCVOID pData) override
+      STDMETHOD(Close)(LPCVOID data) override
       {
-        m_include_map.erase(pData);
+        m_include_map.erase(data);
 
         return S_OK;
       }
 
       rsl::unordered_map<const void*, memory::Blob>   m_include_map;
+      rsl::vector<rsl::string_view> m_include_paths;
     };
 
     wrl::ComPtr<ID3DBlob> ShaderCompiler::compile_shader(const CompileShaderDesc& desc) // NOLINT(readability-convert-member-functions-to-static)
@@ -57,7 +83,9 @@ namespace rex
       wrl::ComPtr<ID3DBlob> byte_code = nullptr;
       wrl::ComPtr<ID3DBlob> errors    = nullptr;
 
-      RexIncluder includer;
+      RexIncluder includer({
+        vfs::mount_path(MountingPoint::EngineShaders)
+      });
 
       // clang-format off
       hr = D3DCompile2(

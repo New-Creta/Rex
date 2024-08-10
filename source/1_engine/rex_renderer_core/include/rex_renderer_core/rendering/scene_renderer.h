@@ -57,8 +57,6 @@ namespace rex
 
 			// Upload the scene data to the gpu
 			void upload_scene_data();
-			// Begin rendering a scene and prepping the data on the gpu
-			void begin_scene();
 			// Go over the pending draw list, through ever pass, and render it to the screen
 			void flush_draw_lists();
 
@@ -85,6 +83,9 @@ namespace rex
 
 			// Current context used for recording gpu commands
 			rex::ScopedPoolObject<RenderContext> m_current_ctx;
+
+			// Max number of objects we support in a single scene
+			constexpr static s32 s_max_number_of_objects_per_scene = 100;
 		};
 	}
 }

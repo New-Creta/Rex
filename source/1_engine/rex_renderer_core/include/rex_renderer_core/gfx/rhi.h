@@ -7,7 +7,7 @@
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/index_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
-#include "rex_renderer_core/system/shader_elements.h"
+
 #include "rex_renderer_core/resources/pipeline_state.h"
 #include "rex_renderer_core/resources/raster_state.h"
 #include "rex_renderer_core/resources/shader.h"
@@ -38,7 +38,7 @@
 #include "rex_renderer_core/system/shader_pipeline.h"
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
 #include "rex_renderer_core/shader_reflection/shader_param_reflection.h"
-#include "rex_renderer_core/system/view_table.h"
+#include "rex_renderer_core/system/shader_param_declaration.h"
 
 namespace rex
 {
@@ -94,9 +94,8 @@ namespace rex
       rsl::unique_ptr<Shader> create_pixel_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");
       rsl::unique_ptr<Shader> create_pixel_shader(const memory::Blob& byteBlob);
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
-      rsl::unique_ptr<Material> create_material(rsl::string_view path);
       rsl::unique_ptr<Material> create_material(const ShaderPipeline& shaderPipeline, const MaterialDesc& matDesc);
-      rsl::unique_ptr<Sampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
+      rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc);
     }
   } // namespace gfx
 } // namespace rex

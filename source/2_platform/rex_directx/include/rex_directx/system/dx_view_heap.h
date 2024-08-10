@@ -3,6 +3,7 @@
 #include "rex_renderer_core/system/view_heap.h"
 #include "rex_directx/system/dx_resource_view.h"
 #include "rex_std/bonus/memory.h"
+#include "rex_directx/utility/dx_util.h"
 
 namespace rex
 {
@@ -10,6 +11,7 @@ namespace rex
   {
     class Resource;
     class IsShaderVisible;
+    struct SamplerDesc;
 
     // CPU writeable/readable table based on shader visible flag
     // For more info, visit: https://learn.microsoft.com/en-us/windows/win32/direct3d12/non-shader-visible-descriptor-heaps?redirectedfrom=MSDN
@@ -41,7 +43,7 @@ namespace rex
       DxResourceView create_texture2d_srv(ID3D12Resource* resource);
 
       // Create a 2D texture sampler
-      rsl::unique_ptr<DxSampler2D> create_sampler2d(const ShaderSamplerDesc& desc);
+      rsl::unique_ptr<DxSampler2D> create_sampler2d(const SamplerDesc& desc);
 
       // Copy the given views into this heap
       rsl::unique_ptr<ResourceView> copy_views(const rsl::vector<ResourceView*>& views) override;
@@ -60,6 +62,8 @@ namespace rex
       DxResourceView new_free_handle(s32 numDescriptors = 1);
       // Return a handle pointing to the start of the descriptor heap
       DxResourceView my_start_handle();
+      // Create a handle pointing to no resource
+      void init_null_handle();
 
     private:
       wrl::ComPtr<ID3D12DescriptorHeap> m_view_heap;
@@ -69,6 +73,7 @@ namespace rex
       s32 m_num_views;
       s32 m_num_used_views;
       bool m_is_shader_visible;
+      DxResourceView m_null_view;
     };
   } // namespace gfx
 } // namespace rex

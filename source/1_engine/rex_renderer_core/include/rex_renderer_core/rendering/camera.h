@@ -14,7 +14,7 @@ namespace rex
 		{
 			Perspective,
 			Ortographic
-		}
+		};
 
 		// A basic camera class
 		class Camera

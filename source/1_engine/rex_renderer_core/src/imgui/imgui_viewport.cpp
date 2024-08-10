@@ -79,7 +79,7 @@ namespace rex
       ctx.set_index_buffer(frameCtx.index_buffer());
 
       REX_STATIC_WARNING("ImGui Constant Buffer binding needs to get cleaned up");
-      ctx.set_constant_buffer(s_constant_buffer_param_idx, frameCtx.constant_buffer());
+      ctx.bind_constant_buffer(s_constant_buffer_param_idx, frameCtx.constant_buffer());
     }
 
     // Draw the current viewport

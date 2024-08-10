@@ -53,14 +53,13 @@ namespace rex
       // Set the pipeline state of the context
       void set_pipeline_state(PipelineState* pso) override;
       // Set the graphics root descriptor table of the context
-      void bind_view_table(s32 paramIdx, UINT64 id) override;
       void bind_view_table(s32 paramIdx, ResourceView* startCb) override;
       // Set the constant buffer of the context at a given index
-      void bind_constant_buffer(s32 paramIdx, u64 gpuAddress) override;
+      void bind_constant_buffer(s32 paramIdx, u64 constantBuffer) override;
+      void bind_constant_buffer(s32 paramIdx, ConstantBuffer* constantBuffer) override;
       void bind_shader_resource(s32 paramIdx, u64 gpuAddress) override;
       void bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress) override;
 
-      void set_constant_buffer(s32 paramIdx, Resource* startView) override;
       // Set the blend factor of the context
       void set_blend_factor(const f32 blendFactor[4]) override;
       // Set the blend factor of the context
@@ -71,8 +70,6 @@ namespace rex
       // Draw instances of indexed primitive
       void draw_indexed_instanced(s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation) override;
 
-      // Bind a texture to the context
-      void bind_texture(s32 rootParamIdx, Texture2D* texture) override;
       // Bind a material to the context
       void bind_material(Material* material) override;
 
@@ -90,35 +87,7 @@ namespace rex
     private:
       // Transition a buffer into a new resource state
       void transition_buffer(Resource* resource, ID3D12Resource* d3d_resource, ResourceState state);
-
-      // Sort the resources of a material based on their shader register and stored their views in an array
-      template <typename Resource, typename Param>
-      rsl::vector<ResourceView*> sort_material_parameters(rsl::vector<Param*>& params)
-      {
-        rsl::vector<ResourceView*> views;
-
-        // Sort the textures based on their shader register
-        rsl::sort(params.begin(), params.end(),
-          [](const Param* lhs, const Param* rhs)
-          {
-            return lhs->shader_register() < rhs->shader_register();
-          });
-
-        // copy the texture gpu handles into a separate array
-        views.resize(params.size());
-        rsl::transform(params.cbegin(), params.cend(), views.begin(),
-          [](Param* resource)
-          {
-            Resource* dx_resource = static_cast<Resource*>(resource->resource());
-            return dx_resource->view();
-          });
-
-        // Return the result
-        return views;
-      }
-      // Bind material resources to the root signature parameter index provided
-      void bind_material_resources(CopyContext* copyCtx, const rsl::vector<ResourceView*>& views, ViewHeapType type, s32 paramIdx);
-
+      
     private:
       wrl::ComPtr<ID3D12GraphicsCommandList> m_cmd_list;
       rsl::string_view m_profile_event_name;

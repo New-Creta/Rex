@@ -40,7 +40,7 @@ namespace rex
 			RenderPass(const RenderPassDesc& desc);
 
 			// Bind the resources of the render pass to a render context
-			void bind_resources(RenderContext* ctx);
+			void bind_to(RenderContext* ctx);
 			
 			// Set renderpass parameter to a new resource
 			void set(rsl::string_view name, ConstantBuffer* constantBuffer);

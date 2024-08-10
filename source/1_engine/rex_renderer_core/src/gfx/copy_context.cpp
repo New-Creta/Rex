@@ -24,7 +24,7 @@ namespace rex
     {
       switch (heapType)
       {
-      case rex::gfx::ViewHeapType::ResourceView:    return copy_texture_views_to_shaders(views);
+      case rex::gfx::ViewHeapType::Texture2D:       return copy_texture_views_to_shaders(views);
       case rex::gfx::ViewHeapType::Sampler:         return copy_sampler_views_to_shaders(views);
       default: break;
       }

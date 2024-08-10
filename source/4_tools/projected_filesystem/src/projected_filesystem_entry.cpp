@@ -21,7 +21,7 @@ namespace proj_fs
     return fs.get();
   }
 
-  bool initialize()
+  bool initialize(const rex::ApplicationCreationParams& appCreationParams)
   {
     projected_fs();
 
