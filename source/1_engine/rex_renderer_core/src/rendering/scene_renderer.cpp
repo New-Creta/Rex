@@ -14,6 +14,7 @@
 #include "rex_renderer_core/scenegraph/scene.h"
 
 #include "rex_engine/diagnostics/log.h"
+#include "rex_renderer_core/system/gpu_engine.h"
 
 namespace rex
 {
@@ -116,6 +117,16 @@ namespace rex
 
 			// Define the primitive topology
 			geo_pass_desc.pso_desc.primitive_topology = PrimitiveTopologyType::Triangle;
+
+			// Define the framebuffer attachments
+			geo_pass_desc.framebuffer_desc.attachment_descs.emplace_back(/*use_swapchain*/true);
+			geo_pass_desc.framebuffer_desc.attachment_descs.emplace_back(gfx::swapchain_width(), gfx::swapchain_height(), TextureFormat::Depth32);
+
+			geo_pass_desc.pso_desc.dsv_format = TextureFormat::Depth32;
+
+			geo_pass_desc.clear_state_desc = ClearStateDesc{};
+			geo_pass_desc.clear_state_desc.value().depth = 1.0f;
+			geo_pass_desc.clear_state_desc.value().flags.add_state(ClearBits::ClearDepthBuffer);
 
 			m_geometry_pass = rsl::make_unique<RenderPass>(geo_pass_desc);
 			m_geometry_pass->set("ViewData", m_cb_view_data.get());

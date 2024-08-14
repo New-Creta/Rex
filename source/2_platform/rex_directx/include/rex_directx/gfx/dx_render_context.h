@@ -37,11 +37,13 @@ namespace rex
       void transition_buffer(Texture2D* resource, ResourceState state) override;
       // Transition a render target's resource state
       void transition_buffer(RenderTarget* resource, ResourceState state) override;
+      void transition_buffer(DepthStencilBuffer* resource, ResourceState state) override;
 
       // Set the render target of the context
-      void set_render_target(RenderTarget* renderTarget) override;
+      void set_render_target(RenderTarget* colorRenderTarget, ResourceView* depthRenderTarget) override;
+      // 
       // Clear the render target of the context
-      void clear_render_target(RenderTarget* renderTarget, ClearState* clearState) override;
+      void clear_render_target(RenderTarget* renderTarget, ClearState* clearState, ResourceView* depthRenderTarget) override;
       // Set the vertex buffer of the context
       void set_vertex_buffer(VertexBuffer* vb) override;
       // Set the index buffer of the context

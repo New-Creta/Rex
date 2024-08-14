@@ -172,7 +172,63 @@ namespace rex
     // Initialize the material that'll be used by all ImGui rendering
     void ImGuiRenderer::init_renderpass()
     {
-      m_imgui_renderpass = load_from_json_path(path::join(vfs::mount_path(MountingPoint::EngineRenderPasses), "imgui.render_pass"));
+      RenderPassDesc imgui_pass_desc{};
+
+      imgui_pass_desc.name = "ImGui Pass";
+
+      // blend state
+      BlendDesc& blend_state = imgui_pass_desc.pso_desc.output_merger.blend_state;
+      blend_state.enable_alpha_to_coverage = false;
+      blend_state.independent_blend_state = false;
+      blend_state.render_target[0].blend_enable = true;
+      blend_state.render_target[0].src_blend = Blend::SrcAlpha;
+      blend_state.render_target[0].dst_blend = Blend::InvSrc1Alpha;
+      blend_state.render_target[0].blend_op = BlendOp::Add;
+      blend_state.render_target[0].src_blend_alpha = Blend::One;
+      blend_state.render_target[0].dst_blend_alpha = Blend::InvSrcAlpha;
+      blend_state.render_target[0].blend_op_alpha = BlendOp::Add;
+      blend_state.render_target[0].render_target_write_mask = RenderTargetWriteMask::All;
+
+      // raster state
+      RasterStateDesc& raster_state = imgui_pass_desc.pso_desc.output_merger.raster_state;
+      raster_state.fill_mode = FillMode::Solid;
+      raster_state.cull_mode = CullMode::None;
+      raster_state.front_ccw = false;
+      raster_state.depth_bias = 0;
+      raster_state.depth_bias_clamp = 0.0f;
+      raster_state.sloped_scale_depth_bias = 0.0f;
+      raster_state.depth_clip_enable = true;
+      raster_state.multisample_enable = false;
+      raster_state.aa_lines_enable = false;
+      raster_state.forced_sample_count = 0;
+
+      // depth stencil
+      DepthStencilDesc& depth_stencil_state = imgui_pass_desc.pso_desc.output_merger.depth_stencil_state;
+      depth_stencil_state.depth_enable = false;
+      depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
+      depth_stencil_state.depth_func = ComparisonFunc::Always;
+      depth_stencil_state.stencil_enable = false;
+      depth_stencil_state.front_face.stencil_fail_op = StencilOp::Keep;
+      depth_stencil_state.front_face.stencil_depth_fail_op = StencilOp::Keep;
+      depth_stencil_state.front_face.stencil_pass_op = StencilOp::Keep;
+      depth_stencil_state.front_face.stencil_func = ComparisonFunc::Less;
+      depth_stencil_state.back_face = depth_stencil_state.front_face;
+
+      // frame buffers
+      imgui_pass_desc.framebuffer_desc.attachment_descs.emplace_back(/*use_swapchain*/true);
+
+      imgui_pass_desc.pso_desc.shader_pipeline.vs = shader_lib::load(path::join(vfs::mount_path(MountingPoint::EngineShaders), "imgui", "hlsl", "imgui_vertex.hlsl"), ShaderType::Vertex);
+      imgui_pass_desc.pso_desc.shader_pipeline.ps = shader_lib::load(path::join(vfs::mount_path(MountingPoint::EngineShaders), "imgui", "hlsl", "imgui_pixel.hlsl"), ShaderType::Pixel);
+
+      imgui_pass_desc.pso_desc.input_layout = 
+      {
+        InputLayoutElementDesc{ ShaderSemantic::Position,  VertexBufferFormat::Float2},
+        InputLayoutElementDesc{ ShaderSemantic::TexCoord,  VertexBufferFormat::Float2},
+        InputLayoutElementDesc{ ShaderSemantic::Color, VertexBufferFormat::UChar4Norm}
+      };
+
+
+      m_imgui_renderpass = rsl::make_unique<RenderPass>(imgui_pass_desc);
       m_imgui_renderpass->set("fonts_texture", m_fonts_texture.get());
       m_imgui_renderpass->set("fonts_sampler", m_fonts_sampler.get());
       m_imgui_renderpass->set_blend_factor({ 0.0f, 0.0f, 0.0f, 0.0f });

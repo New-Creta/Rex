@@ -28,6 +28,7 @@
 #include "rex_directx/resources/dx_pixel_shader.h"
 #include "rex_directx/resources/dx_pipeline_state.h"
 #include "rex_directx/resources/dx_render_target.h"
+#include "rex_directx/resources/dx_depth_stencil_buffer.h"
 
 #include "rex_directx/gfx/dx_copy_context.h"
 #include "rex_renderer_core/gfx/graphics.h"
@@ -400,9 +401,9 @@ namespace rex
         pso_desc.PrimitiveTopologyType  = d3d::to_dx12(desc.primitive_topology);
         pso_desc.NumRenderTargets       = 1;
         pso_desc.RTVFormats[0]          = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+        pso_desc.DSVFormat              = d3d::to_dx12(desc.dsv_format);
         pso_desc.SampleDesc.Count       = 1;
         pso_desc.SampleDesc.Quality     = 0;
-        pso_desc.DSVFormat              = DXGI_FORMAT_UNKNOWN; // DXGI_FORMAT_D24_UNORM_S8_UINT;
 
         wrl::ComPtr<ID3D12PipelineState> pso;
         DX_CALL(g_rhi_resources->device->dx_object()->CreateGraphicsPipelineState(&pso_desc, IID_PPV_ARGS(&pso)));
@@ -433,6 +434,15 @@ namespace rex
         }
 
         return texture;
+      }
+      rsl::unique_ptr<DepthStencilBuffer> create_depth_stencil_buffer(s32 width, s32 height, TextureFormat format)
+      {
+        wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_depth_stencil(width, height, format);
+        DxResourceView desc_handle = g_gpu_engine->create_dsv(d3d_texture.Get());
+
+        auto ds_buffer = rsl::make_unique<DxDepthStencilBuffer>(d3d_texture, desc_handle, width, height, format);
+
+        return ds_buffer;
       }
       rsl::unique_ptr<ConstantBuffer>       create_constant_buffer(rsl::memory_size size, rsl::string_view debugName)
       {

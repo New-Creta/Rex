@@ -25,6 +25,7 @@
 #include "rex_directx/resources/dx_pipeline_state.h"
 #include "rex_directx/resources/dx_render_target.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
+#include "rex_directx/resources/dx_depth_stencil_buffer.h"
 #include "rex_directx/system/dx_view_heap.h"
 #include "rex_renderer_core/system/shader_param_declaration.h"
 
@@ -277,8 +278,11 @@ namespace rex
       {
         switch (format)
         {
+        case TextureFormat::Unknown: return DXGI_FORMAT_UNKNOWN;
         case TextureFormat::Unorm4Srgb: return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
         case TextureFormat::Unorm4: return DXGI_FORMAT_R8G8B8A8_UNORM;
+        case TextureFormat::Depth32: return DXGI_FORMAT_D32_FLOAT;
+        case TextureFormat::Depth24Stencil8: return DXGI_FORMAT_D24_UNORM_S8_UINT;
         default: break;
         }
         REX_ASSERT("Unsupported vertex buffer format given");
@@ -738,6 +742,10 @@ namespace rex
       {
         return static_cast<DxRenderTarget*>(renderTarget);
       }
+      DxDepthStencilBuffer* to_dx12(DepthStencilBuffer* depthStencilBuffer)
+      {
+        return static_cast<DxDepthStencilBuffer*>(depthStencilBuffer);
+      }
       DxPipelineState* to_dx12(PipelineState* pso)
       {
         return static_cast<DxPipelineState*>(pso);
@@ -898,7 +906,7 @@ namespace rex
       {
         switch (type)
         {
-        case DXGI_FORMAT_UNKNOWN: return TextureFormat::None;
+        case DXGI_FORMAT_UNKNOWN: return TextureFormat::Unknown;
 
         case DXGI_FORMAT_R8G8B8A8_UNORM:        return TextureFormat::Unorm4;
         case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:   return TextureFormat::Unorm4Srgb;

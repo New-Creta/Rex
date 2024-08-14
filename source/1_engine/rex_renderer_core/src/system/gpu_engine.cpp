@@ -176,7 +176,5 @@ namespace rex
 
       return reset_data;
     }
-
-
   }
 }

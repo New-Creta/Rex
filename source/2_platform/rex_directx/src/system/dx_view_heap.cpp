@@ -39,14 +39,14 @@ namespace rex
       return rtv_handle;
     }
     // Create a depth stencil view and return a handle pointing to it
-    DxResourceView DxViewHeap::create_dsv(ID3D12Resource* resource, DXGI_FORMAT format)
+    DxResourceView DxViewHeap::create_dsv(ID3D12Resource* resource)
     {
       REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_DSV, "Trying to create a depth stencil view from a view heap that's not configured to create depth stencil views");
 
       D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc {};
       dsv_desc.Flags         = D3D12_DSV_FLAG_NONE;
       dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-      dsv_desc.Format        = format;
+      dsv_desc.Format        = resource->GetDesc().Format;
 
       DxResourceView dsv_handle = new_free_handle();
       m_device->CreateDepthStencilView(resource, &dsv_desc, dsv_handle);

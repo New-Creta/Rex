@@ -34,6 +34,7 @@
 #include "rex_renderer_core/resources/constant_buffer.h"
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/resources/upload_buffer.h"
+#include "rex_renderer_core/resources/depth_stencil_buffer.h"
 #include "rex_renderer_core/materials/material.h"
 #include "rex_renderer_core/system/shader_pipeline.h"
 #include "rex_renderer_core/shader_reflection/shader_signature.h"
@@ -88,6 +89,7 @@ namespace rex
       rsl::unique_ptr<PipelineState> create_pso(const InputLayoutDesc& inputLayoutDesc, const MaterialDesc& matDesc);
       rsl::unique_ptr<PipelineState> create_pso(const PipelineStateDesc& desc);
       rsl::unique_ptr<Texture2D> create_texture2d(s32 width, s32 height, TextureFormat format, const void* data = nullptr);
+      rsl::unique_ptr<DepthStencilBuffer> create_depth_stencil_buffer(s32 width, s32 height, TextureFormat format);
       rsl::unique_ptr<ConstantBuffer> create_constant_buffer(rsl::memory_size size, rsl::string_view debugName = "Constant Buffer");
       rsl::unique_ptr<InputLayout> create_input_layout(const InputLayoutDesc& desc);
       rsl::unique_ptr<Shader> create_vertex_shader(rsl::string_view sourceCode, rsl::string_view shaderName = "");

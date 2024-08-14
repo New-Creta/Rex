@@ -9,6 +9,7 @@
 #include "rex_directx/resources/dx_pipeline_state.h"
 #include "rex_directx/resources/dx_texture_2d.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
+#include "rex_directx/resources/dx_depth_stencil_buffer.h"
 #include "rex_renderer_core/resources/clear_state.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_directx/system/dx_command_allocator.h"
@@ -90,15 +91,28 @@ namespace rex
       DxRenderTarget* dx_rt = d3d::to_dx12(resource);
       transition_buffer(resource, dx_rt->dx_object(), state);
     }
+    void DxRenderContext::transition_buffer(DepthStencilBuffer* resource, ResourceState state)
+    {
+      DxDepthStencilBuffer* dx_ds = d3d::to_dx12(resource);
+      transition_buffer(resource, dx_ds->dx_object(), state);
+    }
 
     // Set the render target of the context
-    void DxRenderContext::set_render_target(RenderTarget* renderTarget)
+    void DxRenderContext::set_render_target(RenderTarget* colorRenderTarget, ResourceView* depthRenderTarget)
     {
-      DxRenderTarget* dx_render_target = d3d::to_dx12(renderTarget);
-      m_cmd_list->OMSetRenderTargets(1, &dx_render_target->view().cpu_handle(), true, nullptr);
+      DxRenderTarget* dx_color_render_target = d3d::to_dx12(colorRenderTarget);
+      if (depthRenderTarget)
+      {
+        DxResourceView* dx_depth_render_target = d3d::to_dx12(depthRenderTarget);
+        m_cmd_list->OMSetRenderTargets(1, &dx_color_render_target->view().cpu_handle(), true, &dx_depth_render_target->cpu_handle());
+      }
+      else
+      {
+			  m_cmd_list->OMSetRenderTargets(1, &dx_color_render_target->view().cpu_handle(), true, nullptr);
+      }
     }
     // Clear the render target of the context
-    void DxRenderContext::clear_render_target(RenderTarget* renderTarget, ClearState* clearState)
+    void DxRenderContext::clear_render_target(RenderTarget* renderTarget, ClearState* clearState, ResourceView* depthRenderTarget)
     {
       auto& clear_flags = clearState->get()->flags;
       if (clear_flags.has_state(ClearBits::ClearColorBuffer))
@@ -113,8 +127,8 @@ namespace rex
         d3d_clear_flags |= clear_flags.has_state(ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
         d3d_clear_flags |= clear_flags.has_state(ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
-        //DxResourceView dsv = internal::get()->swapchain->depth_stencil_view();
-        //internal::get()->command_list->get()->ClearDepthStencilView(dsv.get(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clear_state->get()->depth, clear_state->get()->stencil, 0, nullptr);
+        DxResourceView* dsv = d3d::to_dx12(depthRenderTarget);
+        m_cmd_list->ClearDepthStencilView(dsv->cpu_handle(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clearState->get()->depth, clearState->get()->stencil, 0, nullptr);
       }
     }
     // Set the vertex buffer of the context

@@ -12,7 +12,7 @@ namespace rex
 
 			desc.enable_alpha_to_coverage = blendState["enable_alpha_to_coverage"];
 			desc.independent_blend_state = blendState["independent_blend_state"];
-			const rsl::vector<json::json>& render_targets = blendState["render_targets"];
+			const rsl::vector<rex::json::json>& render_targets = blendState["render_targets"];
 
 			for (s32 i = 0; i < render_targets.size(); ++i)
 			{

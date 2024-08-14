@@ -55,6 +55,24 @@ namespace rex
       return texture;
     }
 
+    wrl::ComPtr<ID3D12Resource> ResourceHeap::create_depth_stencil_buffer(DXGI_FORMAT format, s32 width, s32 height)
+    {
+      CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
+      desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+      const D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
+      REX_ASSERT_X(can_fit_allocation(alloc_info), "Trying to allocate {} bytes which would overrun resource heap of {} bytes", alloc_info.SizeInBytes, m_memory_limit);
+
+      wrl::ComPtr<ID3D12Resource> texture;
+      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&texture))))
+      {
+        REX_ERROR(LogResourceHeap, "Failed to create 2D texture");
+        return nullptr;
+      }
+
+      m_used_memory += static_cast<s64>(alloc_info.SizeInBytes);
+      return texture;
+    }
+
     bool ResourceHeap::can_fit_allocation(const D3D12_RESOURCE_ALLOCATION_INFO& alloc_info) const
     {
       return static_cast<s64>(m_used_memory.size_in_bytes() + alloc_info.SizeInBytes) < m_memory_limit;

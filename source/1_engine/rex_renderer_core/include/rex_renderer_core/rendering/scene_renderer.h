@@ -10,6 +10,7 @@
 #include "rex_renderer_core/rendering/constant_buffers.h"
 #include "rex_renderer_core/rendering/render_pass.h"
 #include "rex_renderer_core/rendering/renderer.h"
+#include "rex_renderer_core/resources/texture_2d.h"
 
 namespace rex
 {

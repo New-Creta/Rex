@@ -108,5 +108,18 @@ namespace rex
     {
       return g_gpu_engine->new_compute_ctx(pso, eventName);
     }
+
+    RenderTarget* swapchain_rt()
+    {
+      return g_gpu_engine->current_backbuffer_rt();
+    }
+    s32 swapchain_width()
+    {
+      return g_gpu_engine->current_backbuffer_rt()->width();
+    }
+    s32 swapchain_height()
+    {
+      return g_gpu_engine->current_backbuffer_rt()->height();
+    }
   }
 }

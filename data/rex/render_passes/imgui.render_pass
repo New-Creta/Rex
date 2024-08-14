@@ -71,5 +71,18 @@
             "format": "UChar4Norm",
             "classification": "PerVertex"
         }
+    ],
+    "frame_buffer_attachments":
+    [
+        {
+            "format": "swapchain_color",
+            "width": "swapchain_width",
+            "height": "swapchain_height"
+        },
+        {
+            "format": "d24s8",
+            "width": "swapchain_width",
+            "height": "swapchain_height"
+        },
     ]
 }

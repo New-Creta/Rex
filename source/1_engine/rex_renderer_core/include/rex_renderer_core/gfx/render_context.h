@@ -39,6 +39,7 @@ namespace rex
     class UploadBuffer;
     class Texture2D;
     class Material;
+    class DepthStencilBuffer;
 
     class RenderContext : public GraphicsContext
     {
@@ -63,10 +64,11 @@ namespace rex
       virtual void transition_buffer(Texture2D* resource, ResourceState state) = 0;
       // Transition a render target's resource state
       virtual void transition_buffer(RenderTarget* resource, ResourceState state) = 0;
+      virtual void transition_buffer(DepthStencilBuffer* resource, ResourceState state) = 0;
       // Set the render target of the context
-      virtual void set_render_target(RenderTarget* renderTarget) = 0;
+      virtual void set_render_target(RenderTarget* colorRenderTarget, ResourceView* depthRenderTarget = nullptr) = 0;
       // Clear the render target of the context
-      virtual void clear_render_target(RenderTarget* renderTarget, ClearState* clearState) = 0;
+      virtual void clear_render_target(RenderTarget* renderTarget, ClearState* clearState, ResourceView* depthRenderTarget = nullptr) = 0;
       // Set the vertex buffer of the context
       virtual void set_vertex_buffer(VertexBuffer* vb) = 0;
       // Set the index buffer of the context

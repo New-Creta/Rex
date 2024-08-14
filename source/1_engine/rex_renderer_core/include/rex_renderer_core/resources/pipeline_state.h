@@ -10,6 +10,7 @@
 #include "rex_renderer_core/system/output_merger.h"
 
 #include "rex_renderer_core/gfx/primitive_topology.h"
+#include "rex_renderer_core/gfx/texture_format.h"
 
 #include "rex_std/vector.h"
 
@@ -28,6 +29,7 @@ namespace rex
       ShaderPipeline shader_pipeline;                                             // The shader pipeline holds all the shaders that'll be used by the PSO
       PrimitiveTopologyType primitive_topology = PrimitiveTopologyType::Triangle; // This is used for geometry, hull or domain shaders
       OutputMergerDesc output_merger;                                             // The output merger configuration that'll be used by the pipeline
+      TextureFormat dsv_format = TextureFormat::Unknown;
     };
 
     // Base class for the pipeline state, just acts as an interface

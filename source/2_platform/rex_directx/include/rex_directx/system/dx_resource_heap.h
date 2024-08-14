@@ -19,6 +19,7 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> create_buffer(rsl::memory_size size, s32 alignment = 0);
       // Create a new 2D texture on the gpu
       wrl::ComPtr<ID3D12Resource> create_texture2d(DXGI_FORMAT format, s32 width, s32 height);
+      wrl::ComPtr<ID3D12Resource> create_depth_stencil_buffer(DXGI_FORMAT format, s32 width, s32 height);
 
     private:
       // Verify if the heap has enough space for a new allocation

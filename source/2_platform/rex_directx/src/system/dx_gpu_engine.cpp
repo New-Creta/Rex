@@ -50,6 +50,11 @@ namespace rex
       DXGI_FORMAT d3d_format = d3d::to_dx12(format);
       return m_heap->create_texture2d(d3d_format, width, height);
     }
+    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_depth_stencil(s32 width, s32 height, TextureFormat format)
+    {
+      DXGI_FORMAT d3d_format = d3d::to_dx12(format);
+      return m_heap->create_depth_stencil_buffer(d3d_format, width, height);
+    }
 
     // Create a render target view for a given resource
     DxResourceView DxGpuEngine::create_rtv(const wrl::ComPtr<ID3D12Resource>& texture)
@@ -65,6 +70,10 @@ namespace rex
     DxResourceView DxGpuEngine::create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
     {
       return d3d::to_dx12(cpu_desc_heap(ViewHeapType::ConstantBuffer))->create_cbv(resource.Get(), size);
+    }
+    DxResourceView DxGpuEngine::create_dsv(const wrl::ComPtr<ID3D12Resource>& resource)
+    {
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::DepthStencil))->create_dsv(resource.Get());
     }
     rsl::unique_ptr<DxSampler2D> DxGpuEngine::create_sampler2d(const SamplerDesc& desc)
     {

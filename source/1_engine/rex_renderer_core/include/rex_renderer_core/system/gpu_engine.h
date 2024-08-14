@@ -105,6 +105,5 @@ namespace rex
       ViewHeapPool m_shader_visible_descriptor_heap_pool; // Pool of descriptor heaps per type
       ResourceStateTracker m_resource_state_tracker; // The global tracker of resource states
     };
-
   }
 }
