@@ -29,7 +29,7 @@ namespace rex
 			return desc;
 		}
 
-		RasterStateDesc load_raster_state(const json::json& rasterState)
+		RasterStateDesc load_raster_state(const rex::json::json& rasterState)
 		{
 			RasterStateDesc desc{};
 
