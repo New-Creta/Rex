@@ -62,8 +62,12 @@ namespace rex
       const D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
       REX_ASSERT_X(can_fit_allocation(alloc_info), "Trying to allocate {} bytes which would overrun resource heap of {} bytes", alloc_info.SizeInBytes, m_memory_limit);
 
+      D3D12_CLEAR_VALUE clear_value{};
+      clear_value.DepthStencil.Depth = 1.0f;
+      clear_value.Format = format;
+
       wrl::ComPtr<ID3D12Resource> texture;
-      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&texture))))
+      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, &clear_value, IID_PPV_ARGS(&texture))))
       {
         REX_ERROR(LogResourceHeap, "Failed to create 2D texture");
         return nullptr;
