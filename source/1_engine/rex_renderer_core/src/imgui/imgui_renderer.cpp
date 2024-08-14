@@ -182,7 +182,7 @@ namespace rex
       blend_state.independent_blend_state = false;
       blend_state.render_target[0].blend_enable = true;
       blend_state.render_target[0].src_blend = Blend::SrcAlpha;
-      blend_state.render_target[0].dst_blend = Blend::InvSrc1Alpha;
+      blend_state.render_target[0].dst_blend = Blend::InvSrcAlpha;
       blend_state.render_target[0].blend_op = BlendOp::Add;
       blend_state.render_target[0].src_blend_alpha = Blend::One;
       blend_state.render_target[0].dst_blend_alpha = Blend::InvSrcAlpha;

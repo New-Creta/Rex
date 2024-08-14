@@ -47,7 +47,7 @@ namespace rex
 			return desc;
 		}
 
-		DepthStencilDesc load_depth_stencil(const json::json& depthStencil)
+		DepthStencilDesc load_depth_stencil(const rex::json::json& depthStencil)
 		{
 			DepthStencilDesc desc{};
 
@@ -70,7 +70,7 @@ namespace rex
 			return desc;
 		}
 
-		OutputMergerDesc load_output_merger_from_json(const json::json& jsonBlob)
+		OutputMergerDesc load_output_merger_from_json(const rex::json::json& jsonBlob)
 		{
 			OutputMergerDesc output_merger_desc{};
 			if (jsonBlob.contains("blend_state"))
