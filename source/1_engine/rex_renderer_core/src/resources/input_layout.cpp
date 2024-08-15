@@ -45,21 +45,6 @@ namespace rex
       return !(lhs == rhs);
     }
 
-    InputLayoutDesc load_input_layout_from_json(const rex::json::json& json)
-    {
-      InputLayoutDesc desc;
-      desc.reserve(static_cast<s32>(json.size()));
-      for (const auto& json_elem : json)
-      {
-        auto& elem = desc.emplace_back();
-        elem.semantic = rsl::enum_refl::enum_cast<ShaderSemantic>(rsl::string_view(json_elem["semantic"])).value();
-        elem.format = rsl::enum_refl::enum_cast<VertexBufferFormat>(rsl::string_view(json_elem["format"])).value();
-        elem.input_slot_class = rsl::enum_refl::enum_cast<InputLayoutClassification>(rsl::string_view(json_elem["classification"])).value();
-      }
-
-      return desc;
-    }
-
     InputLayout::InputLayout(s32 vertexSize, const InputLayoutDesc& desc)
       : m_vertex_size(vertexSize)
       , m_desc(desc)

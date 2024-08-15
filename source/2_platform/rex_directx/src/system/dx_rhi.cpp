@@ -435,12 +435,14 @@ namespace rex
 
         return texture;
       }
-      rsl::unique_ptr<DepthStencilBuffer> create_depth_stencil_buffer(s32 width, s32 height, TextureFormat format)
+      rsl::unique_ptr<DepthStencilBuffer> create_depth_stencil_buffer(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc)
       {
-        wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_depth_stencil(width, height, format);
+        REX_ASSERT_X(clearStateDesc.flags.has_state(ClearBits::ClearDepthBuffer) || clearStateDesc.flags.has_state(ClearBits::ClearStencilBuffer), "Using a clear state for a depth stencil buffer, but depth or stencil bits are not enabled");
+
+        wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_depth_stencil(width, height, format, clearStateDesc);
         DxResourceView desc_handle = g_gpu_engine->create_dsv(d3d_texture.Get());
 
-        auto ds_buffer = rsl::make_unique<DxDepthStencilBuffer>(d3d_texture, desc_handle, width, height, format);
+        auto ds_buffer = rsl::make_unique<DxDepthStencilBuffer>(d3d_texture, desc_handle, width, height, format, clearStateDesc);
 
         return ds_buffer;
       }

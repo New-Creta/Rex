@@ -2,6 +2,7 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/resources/resource.h"
+#include "rex_renderer_core/resources/clear_state.h"
 
 namespace rex
 {
@@ -12,15 +13,17 @@ namespace rex
     class RenderTarget : public Resource
     {
     public:
-      RenderTarget(s32 width, s32 height);
+      RenderTarget(s32 width, s32 height, const ClearStateDesc& clearState);
       virtual ~RenderTarget() = default;
 
       s32 width() const;
       s32 height() const;
+      const ClearStateDesc& clear_state() const;
 
     private:
       s32 m_width;
       s32 m_height;
+      ClearStateDesc m_clear_state;
     };
   }
 }

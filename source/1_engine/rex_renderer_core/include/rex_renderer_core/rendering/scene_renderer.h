@@ -62,7 +62,7 @@ namespace rex
 			void flush_draw_lists();
 
 			// Perform the geometry pass
-			void geometry_pass();
+			void geometry_pass(RenderContext* ctx);
 
 		private:
 			// Data coming in from the runtime about the scene, this is not processed yet
@@ -81,9 +81,6 @@ namespace rex
 
 			// Data holding the buffers required for drawing a single piece of geometry
 			rsl::vector<DrawList> m_draw_lists;
-
-			// Current context used for recording gpu commands
-			rex::ScopedPoolObject<RenderContext> m_current_ctx;
 
 			// Max number of objects we support in a single scene
 			constexpr static s32 s_max_number_of_objects_per_scene = 100;

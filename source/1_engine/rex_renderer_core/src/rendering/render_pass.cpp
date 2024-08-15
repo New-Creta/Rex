@@ -16,58 +16,6 @@ namespace rex
 	{
 		DEFINE_LOG_CATEGORY(LogRenderPass);
 
-		FrameBuffer::FrameBuffer(const FrameBufferDesc& desc)
-		{
-			for (const auto& attachment_desc : desc.attachment_descs)
-			{
-				if (attachment_desc.use_swapchain)
-				{
-					m_attachments.emplace_back(attachment_desc.use_swapchain);
-				}
-				else if (attachment_desc.resource_view)
-				{
-					m_attachments.emplace_back(attachment_desc.resource_view);
-				}
-				else
-				{
-					REX_ASSERT_X(m_depth_stencil_buffer == nullptr, "You can only create 1 depth stencil buffer per framebuffer");
-					m_depth_stencil_buffer = rhi::create_depth_stencil_buffer(attachment_desc.width, attachment_desc.height, attachment_desc.format);
-					m_attachments.emplace_back(m_depth_stencil_buffer->resource_view());
-				}
-			}
-		}
-
-		void FrameBuffer::bind_to(RenderContext* ctx, ClearState* clearState)
-		{
-			ResourceView* depth_resource_view = nullptr;
-			if (m_depth_stencil_buffer)
-			{
-				ctx->transition_buffer(m_depth_stencil_buffer.get(), ResourceState::DepthWrite);
-				depth_resource_view = m_depth_stencil_buffer->resource_view();
-			}
-
-			if (m_attachments.front().use_swapchain)
-			{
-				ctx->set_render_target(swapchain_rt(), depth_resource_view);
-			}
-			else
-			{
-				ctx->set_render_target(m_render_targets.front(), depth_resource_view);
-			}
-
-			if (clearState)
-			{
-				if (m_attachments.front().use_swapchain)
-				{
-					ctx->clear_render_target(swapchain_rt(), clearState, depth_resource_view);
-				}
-				else
-				{
-					ctx->clear_render_target(m_render_targets.front(), clearState, depth_resource_view);
-				}
-			}
-		}
-
 		RenderPass::RenderPass(const RenderPassDesc& desc)
 			: m_name(desc.name)
 		{
@@ -75,10 +23,6 @@ namespace rex
 			ShaderPipelineReflection& reflection = shader_reflection_cache::load(desc.pso_desc.shader_pipeline);
 			m_parameters_store = rsl::make_unique<ShaderParametersStore>(reflection.renderpass_param_store_desc);
 			m_framebuffer = rsl::make_unique<FrameBuffer>(desc.framebuffer_desc);
-			if (desc.clear_state_desc.has_value())
-			{
-				m_clear_state = rsl::make_unique<ClearState>(desc.clear_state_desc.value());
-			}
 		}
 
 		void RenderPass::bind_to(RenderContext* ctx)
@@ -88,7 +32,7 @@ namespace rex
 			ctx->set_primitive_topology(PrimitiveTopology::TriangleList);
 			ctx->set_blend_factor(m_blend_factor);
 
-			m_framebuffer->bind_to(ctx, m_clear_state.get());
+			m_framebuffer->bind_to(ctx);
 
 			const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = m_parameters_store->params();
 			for (const auto& shader_resource : shader_params)

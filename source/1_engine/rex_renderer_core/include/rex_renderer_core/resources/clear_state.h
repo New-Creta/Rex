@@ -24,21 +24,9 @@ namespace rex
       StateController<ClearBits> flags {};
     };
 
-    // A resource representing which buffers to clear and how to clear them
-    class ClearState
-    {
-    public:
-      explicit ClearState(const ClearStateDesc& cs)
-        : m_clear_state(cs)
-      {}
-
-      ClearStateDesc* get()
-      {
-        return &m_clear_state;
-      }
-
-    private:
-      ClearStateDesc m_clear_state;
-    };
+    ClearStateDesc default_rtv_clear_state();
+    ClearStateDesc default_depth_clear_state();
+    ClearStateDesc default_stencil_clear_state();
+    ClearStateDesc default_dsv_clear_state();
   } // namespace gfx
 } // namespace rex

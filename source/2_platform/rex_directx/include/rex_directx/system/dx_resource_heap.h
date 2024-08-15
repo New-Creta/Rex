@@ -4,6 +4,8 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/memory.h"
 
+#include "rex_renderer_core/resources/clear_state.h"
+
 struct D3D12_RESOURCE_ALLOCATION_INFO;
 
 namespace rex
@@ -19,7 +21,7 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> create_buffer(rsl::memory_size size, s32 alignment = 0);
       // Create a new 2D texture on the gpu
       wrl::ComPtr<ID3D12Resource> create_texture2d(DXGI_FORMAT format, s32 width, s32 height);
-      wrl::ComPtr<ID3D12Resource> create_depth_stencil_buffer(DXGI_FORMAT format, s32 width, s32 height);
+      wrl::ComPtr<ID3D12Resource> create_depth_stencil_buffer(DXGI_FORMAT format, s32 width, s32 height, const ClearStateDesc& clearStateDesc);
 
     private:
       // Verify if the heap has enough space for a new allocation

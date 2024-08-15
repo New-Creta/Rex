@@ -51,16 +51,16 @@ namespace rex
 		// flush the drawlist to the gpu
 		void SceneRenderer::flush_draw_lists()
 		{
-			m_current_ctx = new_render_ctx();
+			auto current_ctx = new_render_ctx();
 			f32 viewport_width = static_cast<f32>(m_scene_data.viewport_width);
 			f32 viewport_height = static_cast<f32>(m_scene_data.viewport_height);
 			Viewport viewport = { 0.0f, 0.0f, viewport_width, viewport_height, 0.0f, 1.0f };
-			m_current_ctx->set_viewport(viewport);
+			current_ctx->set_viewport(viewport);
 
 			ScissorRect rect = { 0, 0, viewport_width, viewport_height };
-			m_current_ctx->set_scissor_rect(rect);
+			current_ctx->set_scissor_rect(rect);
 
-			geometry_pass();
+			geometry_pass(current_ctx.get());
 		}
 
 		void SceneRenderer::init_gpu_resources()
@@ -119,14 +119,10 @@ namespace rex
 			geo_pass_desc.pso_desc.primitive_topology = PrimitiveTopologyType::Triangle;
 
 			// Define the framebuffer attachments
-			geo_pass_desc.framebuffer_desc.attachment_descs.emplace_back(/*use_swapchain*/true);
-			geo_pass_desc.framebuffer_desc.attachment_descs.emplace_back(gfx::swapchain_width(), gfx::swapchain_height(), TextureFormat::Depth32);
+			geo_pass_desc.framebuffer_desc.emplace_back(/*use_swapchain*/true);
+			geo_pass_desc.framebuffer_desc.emplace_back(gfx::swapchain_width(), gfx::swapchain_height(), TextureFormat::Depth32, default_depth_clear_state());
 
 			geo_pass_desc.pso_desc.dsv_format = TextureFormat::Depth32;
-
-			geo_pass_desc.clear_state_desc = ClearStateDesc{};
-			geo_pass_desc.clear_state_desc.value().depth = 1.0f;
-			geo_pass_desc.clear_state_desc.value().flags.add_state(ClearBits::ClearDepthBuffer);
 
 			m_geometry_pass = rsl::make_unique<RenderPass>(geo_pass_desc);
 			m_geometry_pass->set("ViewData", m_cb_view_data.get());
@@ -168,23 +164,23 @@ namespace rex
 			copy_ctx->update_buffer(m_cb_scene_data.get(), &m_per_scene_data, sizeof(m_per_scene_data));
 		}
 
-		void SceneRenderer::geometry_pass()
+		void SceneRenderer::geometry_pass(RenderContext* ctx)
 		{
-			m_geometry_pass->bind_to(m_current_ctx.get());
+			m_geometry_pass->bind_to(ctx);
 			s32 per_instance_slot = m_geometry_pass->slot("PerInstance");
 
 			for (s32 i = 0; i < m_draw_lists.size(); ++i)
 			{
 				const DrawList& drawlist = m_draw_lists[i];
 
-				m_current_ctx->bind_constant_buffer(per_instance_slot, drawlist.per_instance_cb);
-				m_current_ctx->set_vertex_buffer(drawlist.vb);
-				m_current_ctx->set_index_buffer(drawlist.ib);
+				ctx->bind_constant_buffer(per_instance_slot, drawlist.per_instance_cb);
+				ctx->set_vertex_buffer(drawlist.vb);
+				ctx->set_index_buffer(drawlist.ib);
 
-				m_current_ctx->draw_indexed(drawlist.ib->count(), 0, 0, 0);
+				ctx->draw_indexed(drawlist.ib->count(), 0, 0, 0);
 			}
 
-			m_current_ctx->execute_on_gpu();
+			ctx->execute_on_gpu();
 			m_draw_lists.clear();
 			
 		}

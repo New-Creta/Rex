@@ -80,7 +80,6 @@ namespace rex
       ctx->set_vertex_buffer(frameCtx.vertex_buffer());
       ctx->set_index_buffer(frameCtx.index_buffer());
 
-      REX_STATIC_WARNING("ImGui Constant Buffer binding needs to get cleaned up");
       ctx->bind_constant_buffer(constantBufferSlot, frameCtx.constant_buffer());
     }
 

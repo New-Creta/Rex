@@ -58,10 +58,6 @@ namespace rex
       void bind_to(RenderContext* ctx);
 
     private:
-      // Initialize the material based on the desc
-      void init(const MaterialDesc& matDesc);
-
-    private:
       // The backend storage for all material parameters
       rsl::unique_ptr<ShaderParametersStore> m_parameters_store;
 

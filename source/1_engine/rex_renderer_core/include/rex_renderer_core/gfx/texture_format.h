@@ -19,5 +19,8 @@ namespace rex
     // Get the byte size of a given format
     s32 format_byte_size(TextureFormat format);
 
+    // Return if the format is used for a depth stencil buffer
+    bool is_depth_format(TextureFormat format);
+
   } // namespace gfx
 } // namespace rex

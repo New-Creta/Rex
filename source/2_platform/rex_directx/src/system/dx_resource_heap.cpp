@@ -55,7 +55,7 @@ namespace rex
       return texture;
     }
 
-    wrl::ComPtr<ID3D12Resource> ResourceHeap::create_depth_stencil_buffer(DXGI_FORMAT format, s32 width, s32 height)
+    wrl::ComPtr<ID3D12Resource> ResourceHeap::create_depth_stencil_buffer(DXGI_FORMAT format, s32 width, s32 height, const ClearStateDesc& clearStateDesc)
     {
       CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
       desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
@@ -64,11 +64,12 @@ namespace rex
       REX_ASSERT_X(can_fit_allocation(alloc_info), "Trying to allocate {} bytes which would overrun resource heap of {} bytes", alloc_info.SizeInBytes, m_memory_limit);
 
       D3D12_CLEAR_VALUE clear_value{};
-      clear_value.DepthStencil.Depth = 1.0f;
+      clear_value.DepthStencil.Depth = clearStateDesc.depth;
+      clear_value.DepthStencil.Stencil = clearStateDesc.stencil;
       clear_value.Format = format;
 
       wrl::ComPtr<ID3D12Resource> texture;
-      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_COMMON, &clear_value, IID_PPV_ARGS(&texture))))
+      if (DX_FAILED(m_device->CreatePlacedResource(m_heap.Get(), m_used_memory, &desc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &clear_value, IID_PPV_ARGS(&texture))))
       {
         REX_ERROR(LogResourceHeap, "Failed to create 2D texture");
         return nullptr;

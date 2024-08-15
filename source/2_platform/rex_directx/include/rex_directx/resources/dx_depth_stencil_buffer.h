@@ -12,7 +12,7 @@ namespace rex
 		class DxDepthStencilBuffer : public DepthStencilBuffer
 		{
 		public:
-			DxDepthStencilBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view, s32 width, s32 height, TextureFormat format);
+			DxDepthStencilBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view, s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc);
 
 			ID3D12Resource* dx_object();
 			DxResourceView* view();

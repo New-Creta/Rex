@@ -25,9 +25,17 @@ namespace rex
 		DEFINE_LOG_CATEGORY(LogMaterialSystem);
 		using json = nlohmann::json;
 
-		void init_material_parameters(Material* /*material*/, const json& parametersBlob)
+		void init_material_parameters(Material* /*material*/, const json& jsonBlob)
 		{
-			for (const auto& param : parametersBlob)
+			rsl::string_view parameters_key = "parameters";
+			if (jsonBlob.contains(parameters_key))
+			{
+				return;
+			}
+
+			const auto& parameters_blob = jsonBlob[parameters_key];
+
+			for (const auto& param : parameters_blob)
 			{
 				rsl::string_view type = param["type"];
 				rsl::hash_result type_hash = rsl::comp_hash(type);
@@ -96,7 +104,7 @@ namespace rex
 			rsl::unique_ptr<Material> material = rhi::create_material(mat_desc);
 
 			// Load in the parameters values from the material
-			init_material_parameters(material.get(), json_blob["parameters"]); // infinite loop here when inserting into json
+			init_material_parameters(material.get(), json_blob); // infinite loop here when inserting into json
 
 			return material;
 		}

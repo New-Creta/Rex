@@ -4,8 +4,8 @@ namespace rex
 {
 	namespace gfx
 	{
-		DxDepthStencilBuffer::DxDepthStencilBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view, s32 width, s32 height, TextureFormat format)
-			: DepthStencilBuffer(&m_view, width, height, format)
+		DxDepthStencilBuffer::DxDepthStencilBuffer(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView view, s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc)
+			: DepthStencilBuffer(&m_view, width, height, format, clearStateDesc)
 			, m_resource(resource)
 			, m_view(view)
 		{

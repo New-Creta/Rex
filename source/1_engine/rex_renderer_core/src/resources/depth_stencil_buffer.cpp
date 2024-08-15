@@ -4,11 +4,12 @@ namespace rex
 {
 	namespace gfx
 	{
-		DepthStencilBuffer::DepthStencilBuffer(ResourceView* view, s32 width, s32 height, TextureFormat format)
+		DepthStencilBuffer::DepthStencilBuffer(ResourceView* view, s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc)
 			: m_width(width)
 			, m_height(height)
 			, m_format(format)
 			, m_view(view)
+			, m_clear_state(clearStateDesc)
 		{
 
 		}
@@ -28,6 +29,10 @@ namespace rex
 		ResourceView* DepthStencilBuffer::resource_view()
 		{
 			return m_view;
+		}
+		const ClearStateDesc& DepthStencilBuffer::clear_state() const
+		{
+			return m_clear_state;
 		}
 
 	}

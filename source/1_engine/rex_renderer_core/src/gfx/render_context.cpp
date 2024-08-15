@@ -10,6 +10,15 @@ namespace rex
       : GraphicsContext(owningEngine, GraphicsEngineType::Render)
     {
     }
+    void RenderContext::set_render_target(RenderTarget* colorRenderTarget)
+    {
+      set_render_target(colorRenderTarget, nullptr);
+    }
+    void RenderContext::clear_render_target(RenderTarget* renderTarget)
+    {
+      clear_render_target(renderTarget, nullptr);
+    }
+
     // Reset the engine specific context
     void RenderContext::type_specific_reset(const ContextResetData& resetData)
     {

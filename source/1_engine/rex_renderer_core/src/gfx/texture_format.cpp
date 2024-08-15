@@ -21,5 +21,16 @@ namespace rex
 
       return -1;
 		}
+
+    bool is_depth_format(TextureFormat format)
+    {
+      switch (format)
+      {
+      case rex::gfx::TextureFormat::Depth32:
+      case rex::gfx::TextureFormat::Depth24Stencil8: return true;
+      default: return false;
+      }
+    }
+
 	}
 }

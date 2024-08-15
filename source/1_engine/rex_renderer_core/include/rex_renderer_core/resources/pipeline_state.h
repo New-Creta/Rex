@@ -12,8 +12,6 @@
 #include "rex_renderer_core/gfx/primitive_topology.h"
 #include "rex_renderer_core/gfx/texture_format.h"
 
-#include "rex_std/vector.h"
-
 namespace rex
 {
   namespace gfx
@@ -54,8 +52,3 @@ namespace rex
     };
   } // namespace gfx
 } // namespace rex
-
-namespace rsl
-{
-
-} // namespace rsl

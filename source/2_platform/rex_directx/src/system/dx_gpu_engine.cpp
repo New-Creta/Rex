@@ -50,10 +50,10 @@ namespace rex
       DXGI_FORMAT d3d_format = d3d::to_dx12(format);
       return m_heap->create_texture2d(d3d_format, width, height);
     }
-    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_depth_stencil(s32 width, s32 height, TextureFormat format)
+    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_depth_stencil(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc)
     {
       DXGI_FORMAT d3d_format = d3d::to_dx12(format);
-      return m_heap->create_depth_stencil_buffer(d3d_format, width, height);
+      return m_heap->create_depth_stencil_buffer(d3d_format, width, height, clearStateDesc);
     }
 
     // Create a render target view for a given resource

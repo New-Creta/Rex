@@ -41,7 +41,8 @@ namespace rex
       wrl::ComPtr<ID3D12Resource> allocate_buffer(rsl::memory_size size);
       // Allocate a 2D buffer on the gpu, returning a DirectX resource
       wrl::ComPtr<ID3D12Resource> allocate_texture2d(s32 width, s32 height, TextureFormat format);
-      wrl::ComPtr<ID3D12Resource> allocate_depth_stencil(s32 width, s32 height, TextureFormat format);
+      // Allocate a 2D buffer on the gpu, used for depth stencil testing
+      wrl::ComPtr<ID3D12Resource> allocate_depth_stencil(s32 width, s32 height, TextureFormat format, const ClearStateDesc& clearStateDesc);
 
       // Create a render target view for a given resource
       DxResourceView create_rtv(const wrl::ComPtr<ID3D12Resource>& texture);

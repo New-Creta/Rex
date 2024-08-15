@@ -43,6 +43,14 @@ namespace rex
     {
       REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_DSV, "Trying to create a depth stencil view from a view heap that's not configured to create depth stencil views");
 
+      // Valid formats for depth stencil view
+      // https://learn.microsoft.com/en-us/windows/win32/api/d3d12/ns-d3d12-d3d12_depth_stencil_view_desc
+      // DXGI_FORMAT_D16_UNORM
+      // DXGI_FORMAT_D24_UNORM_S8_UINT
+      // DXGI_FORMAT_D32_FLOAT
+      // DXGI_FORMAT_D32_FLOAT_S8X24_UINT
+      // DXGI_FORMAT_UNKNOWN
+
       D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc {};
       dsv_desc.Flags         = D3D12_DSV_FLAG_NONE;
       dsv_desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;

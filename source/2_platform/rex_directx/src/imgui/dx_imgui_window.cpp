@@ -42,7 +42,7 @@ namespace rex
 
       renderParams->render_pass->bind_to(render_ctx.get());
 
-      // Overwrite the render pass's default render target to the render target of this Window's swapchain
+      // Overwrite the render pass's default render target to the render target of this window's swapchain
       render_ctx->transition_buffer(render_target, ResourceState::RenderTarget);
       render_ctx->set_render_target(render_target);
 

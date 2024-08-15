@@ -21,11 +21,6 @@ namespace rex
       , m_root_signature()
       , m_blend_factor()
     {
-      init(matDesc);
-    }
-
-    void Material::init(const MaterialDesc& matDesc)
-    {
       m_output_merger = matDesc.output_merger;
 
       ShaderPipelineReflection& reflection = shader_reflection_cache::load(m_shader_pipeline);
