@@ -6,8 +6,8 @@ namespace rex
 {
   namespace gfx
   {
-    DxRenderTarget::DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView descHandle)
-      : RenderTarget(static_cast<s32>(resource->GetDesc().Width), static_cast<s32>(resource->GetDesc().Height))
+    DxRenderTarget::DxRenderTarget(const wrl::ComPtr<ID3D12Resource>& resource, DxResourceView descHandle, const ClearStateDesc* clearState)
+      : RenderTarget(static_cast<s32>(resource->GetDesc().Width), static_cast<s32>(resource->GetDesc().Height), clearState)
       , m_resource(resource)
       , m_view(descHandle)
     {}

@@ -25,12 +25,6 @@ namespace rex
 
       const s32 width = static_cast<s32>(viewport->Size.x);
       const s32 height = static_cast<s32>(viewport->Size.y);
-
-      ClearStateDesc desc{};
-      desc.rgba = rsl::colors::LightSteelBlue;
-      desc.flags.add_state(ClearBits::ClearColorBuffer);
-
-      m_clear_state = rsl::make_unique<ClearState>(desc);
     }
 
     void ImGuiWindow::render(ClearRenderTarget clearRenderTarget, ImGuiWindowRenderParams* renderParams)
@@ -48,7 +42,7 @@ namespace rex
 
       if (clearRenderTarget)
       {
-        render_ctx->clear_render_target(render_target, m_clear_state.get());
+        render_ctx->clear_render_target(render_target);
       }
 
       m_viewport.render(render_ctx.get(), renderParams->render_pass);

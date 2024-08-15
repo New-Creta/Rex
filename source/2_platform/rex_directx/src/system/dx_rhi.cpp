@@ -557,7 +557,7 @@ namespace rex
       rsl::unique_ptr<RenderTarget> create_render_target(wrl::ComPtr<ID3D12Resource>& resource)
       {
         DxResourceView rtv = g_gpu_engine->create_rtv(resource.Get());
-        return rsl::make_unique<DxRenderTarget>(resource, rtv);
+        return rsl::make_unique<DxRenderTarget>(resource, rtv, default_rtv_clear_state());
       }
       wrl::ComPtr<ID3DBlob>                 compile_shader(const CompileShaderDesc& desc)
       {

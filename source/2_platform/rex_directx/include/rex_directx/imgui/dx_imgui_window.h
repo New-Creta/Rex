@@ -47,7 +47,6 @@ namespace rex
 
     private:
       rsl::unique_ptr<Swapchain> m_swapchain;
-      rsl::unique_ptr<ClearState> m_clear_state;
       RexImGuiViewport m_viewport;
     };
   }

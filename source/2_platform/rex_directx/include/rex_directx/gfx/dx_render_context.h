@@ -58,7 +58,7 @@ namespace rex
       // Set the graphics root descriptor table of the context
       void bind_view_table(s32 paramIdx, ResourceView* startCb) override;
       // Set the constant buffer of the context at a given index
-      void bind_constant_buffer(s32 paramIdx, u64 constantBuffer) override;
+      void bind_constant_buffer(s32 paramIdx, u64 gpuAddress) override;
       void bind_constant_buffer(s32 paramIdx, ConstantBuffer* constantBuffer) override;
       void bind_shader_resource(s32 paramIdx, u64 gpuAddress) override;
       void bind_unordered_access_buffer(s32 paramIdx, u64 gpuAddress) override;
