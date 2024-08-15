@@ -69,8 +69,11 @@ namespace rex
     // Create a new context used for queueing compute commands on the gpu
     ScopedPoolObject<ComputeContext> new_compute_ctx(PipelineState* pso = nullptr, rsl::string_view eventName = "");
 
+    // Return the current render target of the swapchain
     RenderTarget* swapchain_rt();
+    // Return the width of the render target of the swapchain
     s32 swapchain_width();
+    // Return the height of the render target of the swapchain
     s32 swapchain_height();
 
   }

@@ -59,6 +59,7 @@ namespace rex
     {
       CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(format, width, height);
       desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+      desc.MipLevels = 1;
       const D3D12_RESOURCE_ALLOCATION_INFO alloc_info = m_device->GetResourceAllocationInfo(0, 1, &desc);
       REX_ASSERT_X(can_fit_allocation(alloc_info), "Trying to allocate {} bytes which would overrun resource heap of {} bytes", alloc_info.SizeInBytes, m_memory_limit);
 

@@ -9,6 +9,8 @@
 #include "rex_renderer_core/imgui/imgui_device.h"
 #include "rex_renderer_core/imgui/imgui_window_render_params.h"
 
+#include "rex_renderer_core/rendering/render_pass.h"
+
 #include "imgui/imgui.h"
 
 
@@ -49,6 +51,7 @@ namespace rex
       rsl::unique_ptr<Swapchain> m_swapchain;
       rsl::unique_ptr<ClearState> m_clear_state;
       RexImGuiViewport m_viewport;
+      rsl::unique_ptr<RenderPass> m_render_pass;
     };
   }
 }
