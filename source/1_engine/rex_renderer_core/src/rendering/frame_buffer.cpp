@@ -54,7 +54,7 @@ namespace rex
 			return m_clear_state_desc;
 		}
 
-		FrameBufferAttachment::FrameBufferAttachment(RenderTarget* resourceView)
+		ColorBufferAttachment::ColorBufferAttachment(RenderTarget* resourceView)
 			: m_render_target(resourceView)
 		{}
 		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(DepthStencilBuffer* depthStencilBuffer)
@@ -63,15 +63,15 @@ namespace rex
 		}
 
 
-		FrameBufferAttachment::FrameBufferAttachment(SwapchainFrameBufferHandle)
+		ColorBufferAttachment::ColorBufferAttachment(SwapchainFrameBufferHandle)
 			: m_use_swapchain(true)
 		{}
 
-		RenderTarget* FrameBufferAttachment::render_target() const
+		RenderTarget* ColorBufferAttachment::render_target() const
 		{
 			return m_render_target;
 		}
-		bool FrameBufferAttachment::use_swapchain() const
+		bool ColorBufferAttachment::use_swapchain() const
 		{
 			return m_use_swapchain;
 		}

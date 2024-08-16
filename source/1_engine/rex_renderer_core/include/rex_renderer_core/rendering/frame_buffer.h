@@ -46,11 +46,11 @@ namespace rex
 			ClearStateDesc m_clear_state_desc;
 		};
 
-		class FrameBufferAttachment
+		class ColorBufferAttachment
 		{
 		public:
-			FrameBufferAttachment(RenderTarget* resourceView);
-			FrameBufferAttachment(SwapchainFrameBufferHandle);
+			ColorBufferAttachment(RenderTarget* resourceView);
+			ColorBufferAttachment(SwapchainFrameBufferHandle);
 
 			// Returns the render target of the attachment
 			RenderTarget* render_target() const;
@@ -77,7 +77,7 @@ namespace rex
 
 		private:
 			constexpr static s32 s_max_num_rendertargets = 8;
-			rsl::vector<FrameBufferAttachment> m_attachments;
+			rsl::vector<ColorBufferAttachment> m_attachments;
 			rsl::unique_ptr<DepthStencilBuffer> m_depth_stencil_buffer;
 		};
 	}
