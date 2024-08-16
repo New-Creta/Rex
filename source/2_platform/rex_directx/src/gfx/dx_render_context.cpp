@@ -117,7 +117,7 @@ namespace rex
       REX_ASSERT_X(renderTarget, "Trying to clear a nullptr rendertarget");
 
 			DxRenderTarget* dx_render_target = d3d::to_dx12(renderTarget);
-			m_cmd_list->ClearRenderTargetView(dx_render_target->view(), renderTarget->clear_state()->rgba.data(), 0, nullptr);
+			m_cmd_list->ClearRenderTargetView(dx_render_target->view(), renderTarget->clear_state().rgba.data(), 0, nullptr);
 
       if (depthRenderTarget)
       {
@@ -126,7 +126,7 @@ namespace rex
         d3d_clear_flags |= depthRenderTarget->clear_state().flags.has_state(ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
 
         DxResourceView* dsv = d3d::to_dx12(depthRenderTarget->resource_view());
-        m_cmd_list->ClearDepthStencilView(dsv->cpu_handle(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, clearState->get()->depth, clearState->get()->stencil, 0, nullptr);
+        m_cmd_list->ClearDepthStencilView(dsv->cpu_handle(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, depthRenderTarget->clear_state().depth, depthRenderTarget->clear_state().stencil, 0, nullptr);
       }
     }
     void DxRenderContext::clear_depth_stencil_target(DepthStencilBuffer* depthRenderTarget)

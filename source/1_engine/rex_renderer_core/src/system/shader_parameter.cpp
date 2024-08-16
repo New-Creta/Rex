@@ -38,11 +38,11 @@ namespace rex
 		{
 			update_view(offset, cb->gpu_address());
 		}
-		void ViewShaderParam::update_view(ViewOffset offset, Texture2D* texture)
+		void ViewShaderParam::update_view(ViewOffset, Texture2D*)
 		{
 			REX_ASSERT("Textures cannot be tied to an inline view. They need to be tied to a view table");
 		}
-		void ViewShaderParam::update_view(ViewOffset offset, Sampler2D* sampler)
+		void ViewShaderParam::update_view(ViewOffset, Sampler2D*)
 		{
 			REX_ASSERT("Samplers cannot be tied to an inline view. They need to be tied to a view table");
 		}

@@ -35,7 +35,6 @@ namespace rex
       init_resource_heap();
       init_desc_heaps();
       init_sub_engines();
-      init_clear_state();
       init_swapchain();
       init_imgui();
     }
@@ -51,7 +50,7 @@ namespace rex
 
       auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "New Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
-      render_ctx->clear_render_target(current_backbuffer_rt(), m_clear_state_resource.get());
+      render_ctx->clear_render_target(current_backbuffer_rt());
       render_ctx->execute_on_gpu(WaitForFinish::yes);
 
       // EMpty out the view heaps so that new views can be copied into it
@@ -117,14 +116,6 @@ namespace rex
       return m_shader_visible_descriptor_heap_pool.at(descHeapType).get();
     }
 
-    // Initialize the clear state which is used to clear the backbuffer with
-    void GpuEngine::init_clear_state()
-    {
-      ClearStateDesc desc{};
-      desc.rgba = rsl::colors::LightSteelBlue;
-      desc.flags.add_state(ClearBits::ClearColorBuffer);
-      m_clear_state_resource = rsl::make_unique<ClearState>(desc);
-    }
     // Initialize the swapchain which is used for presenting to the main window
     void GpuEngine::init_swapchain()
     {

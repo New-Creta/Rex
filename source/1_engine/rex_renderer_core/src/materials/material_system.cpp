@@ -28,7 +28,7 @@ namespace rex
 		void init_material_parameters(Material* /*material*/, const json& jsonBlob)
 		{
 			rsl::string_view parameters_key = "parameters";
-			if (jsonBlob.contains(parameters_key))
+			if (!jsonBlob.contains(parameters_key))
 			{
 				return;
 			}

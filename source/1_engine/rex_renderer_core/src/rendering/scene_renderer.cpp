@@ -119,7 +119,7 @@ namespace rex
 			geo_pass_desc.pso_desc.primitive_topology = PrimitiveTopologyType::Triangle;
 
 			// Define the framebuffer attachments
-			geo_pass_desc.framebuffer_desc.emplace_back(/*use_swapchain*/true);
+			geo_pass_desc.framebuffer_desc.emplace_back(swapchain_frame_buffer_handle());
 			geo_pass_desc.framebuffer_desc.emplace_back(gfx::swapchain_width(), gfx::swapchain_height(), TextureFormat::Depth32, default_depth_clear_state());
 
 			geo_pass_desc.pso_desc.dsv_format = TextureFormat::Depth32;

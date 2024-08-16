@@ -77,8 +77,6 @@ namespace rex
     private:
       using ViewHeapPool = rsl::unordered_map<ViewHeapType, rsl::unique_ptr<ViewHeap>>;
 
-      // Initialize the clear state which is used to clear the backbuffer with
-      void init_clear_state();
       // Initialize the swapchain which is used for presenting to the main window
       void init_swapchain();
       // Initialize the sub engine, bringing them up and ready, to be used in the graphics pipeline
@@ -97,7 +95,6 @@ namespace rex
       rsl::unique_ptr<RenderEngine> m_render_engine;    // The render engine is the high level graphics engine responsible for queueing render commands
       rsl::unique_ptr<ComputeEngine> m_compute_engine;  // The render engine is the high level graphics engine responsible for queueing compute commands
       rsl::unique_ptr<CopyEngine> m_copy_engine;        // The render engine is the high level graphics engine responsible for queueing copy commands
-      rsl::unique_ptr<ClearState> m_clear_state_resource; // The clear state resource that's used to clear the backbuffer with
       s32 m_max_frames_in_flight;                       // The maximum number of we can have in flight for rendering.
       void* m_primary_display_handle;                   // The display handle to render to (HWND on Windows)
       s32 m_frame_idx;                                  // The current frame index

@@ -49,13 +49,8 @@ namespace rex
 		class FrameBufferAttachment
 		{
 		public:
-			FrameBufferAttachment(RenderTarget* resourceView)
-				: m_render_target(resourceView)
-			{}
-
-			FrameBufferAttachment(SwapchainFrameBufferHandle)
-				: m_use_swapchain(true)
-			{}
+			FrameBufferAttachment(RenderTarget* resourceView);
+			FrameBufferAttachment(SwapchainFrameBufferHandle);
 
 			// Returns the render target of the attachment
 			RenderTarget* render_target() const;
