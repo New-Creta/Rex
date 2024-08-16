@@ -74,7 +74,7 @@ namespace rex
       void draw_indexed_instanced(s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation) override;
 
       // Bind a material to the context
-      void bind_material(Material* material) override;
+      bool bind_material(Material* material) override;
 
       // Return the wrapped directx commandlist
       ID3D12GraphicsCommandList* dx_cmdlist();

@@ -33,11 +33,15 @@ namespace rex
 			ctx->set_blend_factor(m_blend_factor);
 
 			m_framebuffer->bind_to(ctx);
+			bind_params_to_pipeline(ctx);
+		}
 
-			const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = m_parameters_store->params();
-			for (const auto& shader_resource : shader_params)
+		void RenderPass::bind_material(RenderContext* ctx, Material* material)
+		{
+			bool changed_pgo = ctx->bind_material(material);
+			if (changed_pgo)
 			{
-				shader_resource->bind_to(ctx);
+				bind_params_to_pipeline(ctx);
 			}
 		}
 
@@ -61,6 +65,15 @@ namespace rex
 		void RenderPass::set_blend_factor(const BlendFactor& blendFactor)
 		{
 			m_blend_factor = blendFactor;
+		}
+
+		void RenderPass::bind_params_to_pipeline(RenderContext* ctx)
+		{
+			const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = m_parameters_store->params();
+			for (const auto& shader_resource : shader_params)
+			{
+				shader_resource->bind_to(ctx);
+			}
 		}
 
 	}

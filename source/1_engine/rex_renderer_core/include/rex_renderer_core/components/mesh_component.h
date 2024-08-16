@@ -17,6 +17,9 @@ namespace rex
 			// Change the material of the component to another one
 			void set_material(Material* material);
 
+			// Return the material of the static mesh
+			Material* material();
+
 			// Return the static mesh that's held by the component
 			const StaticMesh& static_mesh() const;
 

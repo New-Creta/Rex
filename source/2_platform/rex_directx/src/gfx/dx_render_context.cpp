@@ -232,9 +232,10 @@ namespace rex
     }
 
     // Bind a material to the context
-    void DxRenderContext::bind_material(Material* material)
+    bool DxRenderContext::bind_material(Material* material)
     {
       material->bind_to(this);
+      return true;
     }
 
     // Return the wrapped directx commandlist

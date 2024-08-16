@@ -41,6 +41,8 @@ namespace rex
 
 			// Bind the resources of the render pass to a render context
 			void bind_to(RenderContext* ctx);
+			// Bind a material to the renderpass, possibly overwriting the PSO of the render pass
+			void bind_material(RenderContext* ctx, Material* material);
 			
 			// Set renderpass parameter to a new resource
 			void set(rsl::string_view name, ConstantBuffer* constantBuffer);
@@ -52,6 +54,9 @@ namespace rex
 
 			// Set the blend factor of the material
 			void set_blend_factor(const BlendFactor& blendFactor);
+
+		private:
+			void bind_params_to_pipeline(RenderContext* ctx);
 
 		private:
 			rsl::tiny_stack_string m_name;															// The name of the renderpass

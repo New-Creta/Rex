@@ -21,6 +21,8 @@
 #include "rex_renderer_core/components/mesh_component.h"
 #include "rex_renderer_core/components/transform_component.h"
 
+#include "rex_engine/images/stb_image.h"
+
 namespace regina
 {
   SampleScene::SampleScene()
@@ -36,6 +38,32 @@ namespace regina
   {
     m_primitive_material = rex::gfx::load_material(rex::vfs::abs_path(rex::MountingPoint::EngineMaterials, "default.material"));
 
+    s32 x, y, channels;
+    stbi_uc* data = stbi_load("D:\\Engines\\Rex\\data\\Pokemon\\Kanto\\old\\cerulean_city.png", &x, &y, &channels, 4);
+    m_pokemon_texture = rex::gfx::rhi::create_texture2d(x, y, rex::gfx::TextureFormat::Unorm4, data);
+
+    // Sampler is currently hardcoded
+    rex::gfx::SamplerDesc desc{};
+    desc.filtering = rex::gfx::SamplerFiltering::MinMagMipLinear;
+    desc.address_mode_u = rex::gfx::TextureAddressMode::Wrap;
+    desc.address_mode_v = rex::gfx::TextureAddressMode::Wrap;
+    desc.address_mode_w = rex::gfx::TextureAddressMode::Wrap;
+    desc.mip_lod_bias = 0.0f;
+    desc.max_anisotropy = 0;
+    desc.comparison_func = rex::gfx::ComparisonFunc::Always;
+    desc.border_color = rex::gfx::BorderColor::TransparentBlack;
+    desc.min_lod = 0.0f;
+    desc.max_lod = 0.0f;
+    desc.shader_register = 0;
+    desc.register_space = 0;
+    desc.shader_visibility = rex::gfx::ShaderVisibility::Pixel;
+
+    m_pokemon_sampler = rex::gfx::rhi::create_sampler2d(desc);
+
+    m_pokemon_material = rex::gfx::load_material(rex::vfs::abs_path(rex::MountingPoint::EngineMaterials, "pokemon.material"));
+    m_pokemon_material->set("default_sampler", m_pokemon_sampler.get());
+    m_pokemon_material->set("default_texture", m_pokemon_texture.get());
+
     auto box      = rex::gfx::mesh_factory::create_box(1.5f, 1.5f, 1.5f);
     rex::gfx::Entity box_entity = add_entity();
     box_entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(box)).set_material(m_primitive_material.get());
@@ -43,7 +71,7 @@ namespace regina
 
     auto grid     = rex::gfx::mesh_factory::create_grid(20.0f, 30.0f, 60, 40);
     rex::gfx::Entity grid_entity = add_entity();
-    grid_entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(grid)).set_material(m_primitive_material.get());
+    grid_entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(grid)).set_material(m_pokemon_material.get());
 
     // Spheres and Cylinders
     for(s32 i = 0; i < 5; ++i)

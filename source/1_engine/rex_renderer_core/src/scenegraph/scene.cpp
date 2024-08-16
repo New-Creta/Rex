@@ -21,7 +21,7 @@ namespace rex
 				auto& smc = entities.get<StaticMeshComponent>(entity);
 				auto& transform = entities.get<TransformComponent>(entity);
 
-				renderer->submit_static_mesh(transform, smc.static_mesh());
+				renderer->submit_static_mesh(transform, smc.static_mesh(), smc.material());
 			}
 		}
 

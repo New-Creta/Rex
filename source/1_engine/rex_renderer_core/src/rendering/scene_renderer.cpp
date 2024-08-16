@@ -131,7 +131,7 @@ namespace rex
 
 		// This gets called from the client and doesn't directly render anything
 		// Instead it cached what needs to be rendered, the actually rendering happens elsewhere
-		void SceneRenderer::submit_static_mesh(const TransformComponent& transform, const StaticMesh& mesh)
+		void SceneRenderer::submit_static_mesh(const TransformComponent& transform, const StaticMesh& mesh, Material* material)
 		{
 			// For every static mesh, we use one of the pre allocated constant buffers
 			// and upload its transform data into it
@@ -148,6 +148,7 @@ namespace rex
 			DrawList draw_list{};
 			draw_list.vb = mesh.vb();
 			draw_list.ib = mesh.ib();
+			draw_list.material = material;
 			draw_list.per_instance_cb = m_per_instance_cbs[constant_buffer_idx].get();
 			m_draw_lists.push_back(draw_list);
 		}
@@ -174,6 +175,7 @@ namespace rex
 			{
 				const DrawList& drawlist = m_draw_lists[i];
 
+				m_geometry_pass->bind_material(ctx, drawlist.material);
 				ctx->bind_constant_buffer(per_instance_slot, drawlist.per_instance_cb);
 				ctx->set_vertex_buffer(drawlist.vb);
 				ctx->set_index_buffer(drawlist.ib);

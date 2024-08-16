@@ -45,7 +45,7 @@ namespace rex
 			void update_scene_data(const SceneData& sceneData);
 
 			// Submit a static mesh to the renderer
-			void submit_static_mesh(const TransformComponent& transform, const StaticMesh& mesh);
+			void submit_static_mesh(const TransformComponent& transform, const StaticMesh& mesh, Material* material);
 
 		private:
 			// Initialize the gpu resources required by the renderer
