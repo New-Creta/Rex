@@ -62,6 +62,11 @@ namespace rex
 			}
 		}
 
+		rsl::unique_ptr<Material> load_material(const PipelineStateDesc& desc)
+		{
+			return rsl::make_unique<Material>(desc);
+		}
+
 		rsl::unique_ptr<Material> load_material(rsl::string_view filepath)
 		{
 			REX_VERBOSE(LogMaterialSystem, "Loading material {}", quoted(filepath));

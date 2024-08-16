@@ -105,6 +105,63 @@ namespace rex
     }
 
     //-----------------------------------------------------------------------
+// VERTEX POS COL
+//
+// ATTRIBUTES:
+//  - POSITION
+//  - COLOR
+//  - UV
+//-----------------------------------------------------------------------
+    VertexPosColUv::VertexPosColUv()
+      : position(0.0f)
+      , color(0.0f, 0.0f, 0.0f, 1.0f)
+    {
+    }
+
+    //-----------------------------------------------------------------------
+    VertexPosColUv::VertexPosColUv(const glm::vec3& position, const glm::vec4& color, const glm::vec2& uv)
+      : position(position)
+      , color(color)
+      , uv(uv)
+    {
+    }
+
+    //-----------------------------------------------------------------------
+    InputLayoutDesc VertexPosColUv::layout()
+    {
+      InputLayoutDesc desc
+      {
+        InputLayoutElementDesc
+        {
+          ShaderSemantic::Position,  VertexBufferFormat::Float3, InputLayoutClassification::PerVertex, 0, 0, 0, 0
+        },
+        InputLayoutElementDesc
+        {
+          ShaderSemantic::Color, VertexBufferFormat::Float4, InputLayoutClassification::PerVertex, 0, 0, 12, 0
+        },
+        InputLayoutElementDesc
+        {
+          ShaderSemantic::TexCoord, VertexBufferFormat::Float2, InputLayoutClassification::PerVertex, 0, 0, 28, 0
+        }
+      };
+
+      return desc;
+    }
+
+    //-----------------------------------------------------------------------
+    bool operator==(const VertexPosColUv& v1, const VertexPosColUv& v2)
+    {
+      // clang-format off
+      return v1.position == v2.position && v1.color == v2.color;
+      // clang-format on
+    }
+    //-----------------------------------------------------------------------
+    bool operator!=(const VertexPosColUv& v1, const VertexPosColUv& v2)
+    {
+      return !(v1 == v2);
+    }
+
+    //-----------------------------------------------------------------------
     // VERTEX POS COL
     //
     // ATTRIBUTES:

@@ -11,7 +11,10 @@ namespace rex
 {
 	namespace gfx
 	{
+		struct PipelineStateDesc;
+
 		// Load a material from disk, given a filepath
+		rsl::unique_ptr<Material> load_material(const PipelineStateDesc& desc);
 		rsl::unique_ptr<Material> load_material(rsl::string_view filepath);
 	}
 }

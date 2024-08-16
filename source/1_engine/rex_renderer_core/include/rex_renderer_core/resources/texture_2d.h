@@ -17,10 +17,7 @@ namespace rex
     {
     public:
       Texture2D(ResourceView* view, s32 width, s32 height, TextureFormat format);
-      ~Texture2D() override
-      {
 
-      }
       // Return the width of the texture
       s32 width() const;
       // Return the height of the texture

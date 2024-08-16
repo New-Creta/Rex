@@ -34,13 +34,14 @@ namespace rex
     struct MaterialDesc
     {
       ShaderPipeline shader_pipeline; // The shader pipeline to be used by the material
-      OutputMergerDesc output_merger; // The configuration of the output merger of a material
+      OutputMergerDesc output_merger;
     };
 
     // A material is an object combining all shaders and the parameters that can be set on them
     class Material
     {
     public:
+      Material(const PipelineStateDesc& desc);
       Material(const MaterialDesc& matDesc);
 
       // Set a material parameter to a new resource
@@ -65,6 +66,8 @@ namespace rex
       PrimitiveTopology m_primitive_topology;
       // The root signature of the material
       RootSignature* m_root_signature;
+
+      rsl::unique_ptr<PipelineState> m_pso;
 
       // The output merger settings of the material
       OutputMergerDesc m_output_merger;

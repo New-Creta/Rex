@@ -15,6 +15,19 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogMaterial);
 
+    Material::Material(const PipelineStateDesc& desc)
+      : m_shader_pipeline(desc.shader_pipeline)
+      , m_primitive_topology(PrimitiveTopology::TriangleList)
+      , m_root_signature()
+      , m_blend_factor()
+    {
+      m_output_merger = desc.output_merger;
+
+      ShaderPipelineReflection& reflection = shader_reflection_cache::load(m_shader_pipeline);
+      m_pso = rhi::create_pso(desc);
+      m_root_signature = m_pso->root_signature();
+      m_parameters_store = rsl::make_unique<ShaderParametersStore>(reflection.material_param_store_desc);
+    }
     Material::Material(const MaterialDesc& matDesc)
       : m_shader_pipeline(matDesc.shader_pipeline)
       , m_primitive_topology(PrimitiveTopology::TriangleList)
@@ -48,6 +61,10 @@ namespace rex
 
     void Material::bind_to(RenderContext* ctx)
     {
+      if (m_pso.get())
+      {
+        ctx->set_pipeline_state(m_pso.get());
+      }
       ctx->set_primitive_topology(m_primitive_topology);
       ctx->set_root_signature(m_root_signature);
       ctx->set_blend_factor(m_blend_factor);

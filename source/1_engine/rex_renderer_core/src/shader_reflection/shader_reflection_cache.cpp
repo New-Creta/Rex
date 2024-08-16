@@ -91,13 +91,13 @@ namespace rex
 					SplittedResources splitted_textures = split_resources(signature.textures());
 					SplittedResources splitted_samplers = split_resources(signature.samplers());
 
-					add_bindings(splitted_cbs.material_resources, ShaderParameterType::ConstantBuffer, g_material_register_space, visibility);
-					add_bindings(splitted_textures.material_resources, ShaderParameterType::Texture, g_material_register_space, visibility);
-					add_bindings(splitted_samplers.material_resources, ShaderParameterType::Sampler, g_material_register_space, visibility);
-
 					add_bindings(splitted_cbs.renderpass_resources, ShaderParameterType::ConstantBuffer, g_renderpass_register_space, visibility);
 					add_bindings(splitted_textures.renderpass_resources, ShaderParameterType::Texture, g_renderpass_register_space, visibility);
 					add_bindings(splitted_samplers.renderpass_resources, ShaderParameterType::Sampler, g_renderpass_register_space, visibility);
+
+					add_bindings(splitted_cbs.material_resources, ShaderParameterType::ConstantBuffer, g_material_register_space, visibility);
+					add_bindings(splitted_textures.material_resources, ShaderParameterType::Texture, g_material_register_space, visibility);
+					add_bindings(splitted_samplers.material_resources, ShaderParameterType::Sampler, g_material_register_space, visibility);
 				}
 
 				ShaderPipelineReflection build()

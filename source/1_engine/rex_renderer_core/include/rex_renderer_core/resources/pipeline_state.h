@@ -27,7 +27,7 @@ namespace rex
       ShaderPipeline shader_pipeline;                                             // The shader pipeline holds all the shaders that'll be used by the PSO
       PrimitiveTopologyType primitive_topology = PrimitiveTopologyType::Triangle; // This is used for geometry, hull or domain shaders
       OutputMergerDesc output_merger;                                             // The output merger configuration that'll be used by the pipeline
-      TextureFormat dsv_format = TextureFormat::Unknown;
+      TextureFormat dsv_format = TextureFormat::Unknown;                          // The depth stencil format to be used for the graphics pipeline
     };
 
     // Base class for the pipeline state, just acts as an interface

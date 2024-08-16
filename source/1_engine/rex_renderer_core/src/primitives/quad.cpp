@@ -12,28 +12,28 @@ namespace rex
     {
       StaticMesh create_quad(f32 w, f32 h)
       {
-        rsl::vector<VertexPosNormCol> vertices(4_size);
+        rsl::vector<VertexPosColUv> vertices(4_size);
 
         // Position coordinates specified in NDC space.
-        vertices[0] = VertexPosNormCol(
+        vertices[0] = VertexPosColUv(
           glm::vec3(0, -h, 0),
-          glm::vec3(0.0f, 0.0f, -1.0f),
-          glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+          glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+          glm::vec2(0.0f, 1.0f));
 
-        vertices[1] = VertexPosNormCol(
+        vertices[1] = VertexPosColUv(
           glm::vec3(0, 0, 0),
-          glm::vec3(0.0f, 0.0f, -1.0f),
-          glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+          glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+          glm::vec2(0.0f, 0.0f));
 
-        vertices[2] = VertexPosNormCol(
+        vertices[2] = VertexPosColUv(
           glm::vec3(w, 0, 0),
-          glm::vec3(0.0f, 0.0f, -1.0f),
-          glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+          glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+          glm::vec2(1.0f, 0.0f));
 
-        vertices[3] = VertexPosNormCol(
+        vertices[3] = VertexPosColUv(
           glm::vec3(w, -h, 0),
-          glm::vec3(0.0f, 0.0f, -1.0f),
-          glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+          glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+          glm::vec2(1.0f, 1.0f));
 
         rsl::vector<u16> indices(6_size);
         indices[0] = 0;

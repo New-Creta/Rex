@@ -174,6 +174,7 @@ namespace rex
 			for (s32 i = 0; i < m_draw_lists.size(); ++i)
 			{
 				const DrawList& drawlist = m_draw_lists[i];
+				m_geometry_pass->bind_to(ctx);
 
 				m_geometry_pass->bind_material(ctx, drawlist.material);
 				ctx->bind_constant_buffer(per_instance_slot, drawlist.per_instance_cb);
