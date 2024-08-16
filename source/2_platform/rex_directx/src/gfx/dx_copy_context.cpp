@@ -119,7 +119,7 @@ namespace rex
       footprint.Footprint.Width = width;
       footprint.Footprint.Height = height;
       footprint.Footprint.Depth = 1;
-      footprint.Footprint.RowPitch = d3d::texture_pitch_size(width, format);
+      footprint.Footprint.RowPitch = d3d::aligned_texture_pitch_size(width, format);
       footprint.Offset = write_offset;
       CD3DX12_TEXTURE_COPY_LOCATION src_loc(upload_buffer_lock.upload_buffer()->dx_object(), footprint);
       m_cmd_list->CopyTextureRegion(&dst_loc, 0, 0, 0, &src_loc, nullptr);

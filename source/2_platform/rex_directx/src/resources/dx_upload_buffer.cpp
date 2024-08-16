@@ -46,7 +46,8 @@ namespace rex
       // Write the data into our mapped memory
       s32 alignment = D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT;
       s32 pitch_size = d3d::texture_pitch_size(width, format);
-      s64 total_size = static_cast<s64>(pitch_size) * height;
+      s32 aligned_pitch_size = d3d::aligned_texture_pitch_size(width, format);
+      s64 total_size = static_cast<s64>(aligned_pitch_size) * height;
       REX_ASSERT_X(can_fit_alloc(total_size, alignment), "Upload buffer overflow. Would write more into the upload buffer than is supported");
 
       // Texture data needs to get written 1 row at a time
@@ -57,7 +58,7 @@ namespace rex
       {
         rsl::memcpy(dst, src, pitch_size);
         src += pitch_size;
-        dst += pitch_size;
+        dst += aligned_pitch_size;
       }
 
       return inc_texture_offsset(total_size, alignment);

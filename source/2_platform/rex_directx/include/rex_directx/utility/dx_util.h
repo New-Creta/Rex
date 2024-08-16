@@ -146,6 +146,8 @@ namespace rex
 
       // Get the pitch size of a texture for a given format
       s32 texture_pitch_size(s32 width, TextureFormat format);
+      // Get the aligned pitch size of a texture for a given format
+      s32 aligned_texture_pitch_size(s32 width, TextureFormat format);
       // Get the total texture size in memory
       s32 total_texture_size(s32 width, s32 height, TextureFormat format);
       // Get the byte size of a given format

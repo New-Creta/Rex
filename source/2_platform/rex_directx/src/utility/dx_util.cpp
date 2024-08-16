@@ -58,6 +58,14 @@ namespace rex
       {
         s32 format_size = format_byte_size(format);
         s32 pitch_size = width * format_size;
+        
+        return pitch_size;
+      }
+
+      s32 aligned_texture_pitch_size(s32 width, TextureFormat format)
+      {
+        s32 format_size = format_byte_size(format);
+        s32 pitch_size = width * format_size;
         s32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT;
         pitch_size = align(pitch_size, alignment);
 
