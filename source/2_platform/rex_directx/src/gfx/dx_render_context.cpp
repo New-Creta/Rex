@@ -132,6 +132,12 @@ namespace rex
     void DxRenderContext::clear_depth_stencil_target(DepthStencilBuffer* depthRenderTarget)
     {
       REX_ASSERT_X(depthRenderTarget, "Trying to clear a nullptr depth render target");
+      s32 d3d_clear_flags = 0;
+      d3d_clear_flags |= depthRenderTarget->clear_state().flags.has_state(ClearBits::ClearDepthBuffer) ? D3D12_CLEAR_FLAG_DEPTH : 0;
+      d3d_clear_flags |= depthRenderTarget->clear_state().flags.has_state(ClearBits::ClearStencilBuffer) ? D3D12_CLEAR_FLAG_STENCIL : 0;
+
+      DxResourceView* dsv = d3d::to_dx12(depthRenderTarget->resource_view());
+      m_cmd_list->ClearDepthStencilView(dsv->cpu_handle(), (D3D12_CLEAR_FLAGS)d3d_clear_flags, depthRenderTarget->clear_state().depth, depthRenderTarget->clear_state().stencil, 0, nullptr);
 
     }
     // Set the vertex buffer of the context

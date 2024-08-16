@@ -157,6 +157,7 @@ namespace rex
 			m_per_view_data.view = glm::transpose(m_scene_data.camera->view_mat());
 			m_per_view_data.proj = glm::transpose(m_scene_data.camera->projection_mat());
 			m_per_view_data.view_proj = m_per_view_data.view * m_per_view_data.proj;
+
 			m_per_scene_data.light_direction = m_scene_data.light_direction;
 
 			auto copy_ctx = new_copy_ctx();

@@ -109,8 +109,12 @@ namespace rex
 		{
 			if (m_attachments.front().use_swapchain())
 			{
+				// As the swapchain's back buffer gets cleared on a new frame, we don't have to clear it here
 				ctx->set_render_target(swapchain_rt(), m_depth_stencil_buffer.get());
-				ctx->clear_render_target(swapchain_rt(), m_depth_stencil_buffer.get());
+				if (m_depth_stencil_buffer.get())
+				{
+					ctx->clear_depth_stencil_target(m_depth_stencil_buffer.get());
+				}
 			}
 			else
 			{
