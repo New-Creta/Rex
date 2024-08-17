@@ -171,6 +171,8 @@ namespace rex
 			m_geometry_pass->bind_to(ctx);
 			s32 per_instance_slot = m_geometry_pass->slot("PerInstance");
 
+			m_geometry_pass->sort_draw_lists(m_draw_lists);
+
 			// Loop over all draw lists
 			for (s32 i = 0; i < m_draw_lists.size(); ++i)
 			{
@@ -179,6 +181,7 @@ namespace rex
 				// Create a new PSO for a draw list if it's required
 				// Assign new PSO to pipeline and set its render pass parameters
 				m_geometry_pass->bind_material(ctx, drawlist.material);
+
 				ctx->bind_constant_buffer(per_instance_slot, drawlist.per_instance_cb);
 				ctx->set_vertex_buffer(drawlist.vb);
 				ctx->set_index_buffer(drawlist.ib);

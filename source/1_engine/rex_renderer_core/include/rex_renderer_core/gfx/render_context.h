@@ -105,10 +105,6 @@ namespace rex
       // Draw instances of indexed primitive
       virtual void draw_indexed_instanced(s32 indexCountPerInstance, s32 instanceCount, s32 startIndexLocation, s32 baseVertexLocation, s32 startInstanceLocation) = 0;
 
-      // Bind a material to the context
-      // Returns true if the pgo has changed
-      virtual bool bind_material(Material* material) = 0;
-
     protected:
       void type_specific_reset(const ContextResetData& resetData);
     };

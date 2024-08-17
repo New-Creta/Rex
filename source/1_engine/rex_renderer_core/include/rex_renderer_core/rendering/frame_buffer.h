@@ -30,6 +30,7 @@ namespace rex
 			FrameBufferAttachmentDesc(RenderTarget* renderTarget);
 			FrameBufferAttachmentDesc(DepthStencilBuffer* depthStencilBuffer);
 
+			// Getters
 			bool use_swapchain() const;
 			RenderTarget* render_target() const;
 			s32 width() const;

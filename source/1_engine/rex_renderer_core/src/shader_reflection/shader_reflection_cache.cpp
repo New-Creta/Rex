@@ -206,7 +206,7 @@ namespace rex
 				ShaderPipelineReflection m_reflection_result;
 			};
 
-			ShaderPipelineReflection& load(const ShaderPipeline& pipeline)
+			const ShaderPipelineReflection& load(const ShaderPipeline& pipeline)
 			{
 				if (g_reflection_cache_lookup.contains(pipeline))
 				{

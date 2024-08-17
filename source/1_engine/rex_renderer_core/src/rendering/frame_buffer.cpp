@@ -97,7 +97,7 @@ namespace rex
 					}
 					else
 					{
-						// To implement						
+						REX_ASSERT("To implement");
 					}
 				}
 			}

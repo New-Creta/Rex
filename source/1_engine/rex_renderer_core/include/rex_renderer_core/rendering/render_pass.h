@@ -22,6 +22,7 @@ namespace rex
 	{
 		class Texture2D;
 		class Sampler2D;
+		struct DrawList;
 		
 		// A descriptor on how to initialize the render pass
 		struct RenderPassDesc
@@ -62,7 +63,12 @@ namespace rex
 			// Set the blend factor of the material
 			void set_blend_factor(const BlendFactor& blendFactor);
 
+			// Sort the draw list based on matching shader pipeline or not
+			// This is to prepare it for rendering, and reducing the number of PSO switches
+			void sort_draw_lists(rsl::vector<DrawList>& drawList);
+
 		private:
+			// Bind parameters of a store to the render pipeline
 			void bind_params_to_pipeline(ShaderParametersStore* paramStore, RenderContext* ctx);
 
 		private:
@@ -74,7 +80,9 @@ namespace rex
 
 			rsl::unique_ptr<PipelineState> m_pso;												// The pipeline state of the renderpass
 			PipelineStateDesc m_pso_desc;																// The description of the PSO used for the render pass
-			rsl::unordered_map<Material*, MaterialPipelineState> m_material_to_pipeline_state;
+
+			// A look up for params store for materials that differ in shader pipeline from the render pass
+			rsl::unordered_map<Material*, MaterialPipelineState> m_material_to_pipeline_state;	
 		};
 	}
 }

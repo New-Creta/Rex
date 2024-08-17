@@ -5,7 +5,6 @@
 #include "rex_renderer_core/resources/input_layout.h"
 #include "rex_renderer_core/resources/buffer.h"
 #include "rex_std/bonus/memory.h"
-#include "rex_renderer_core/resources/input_layout.h"
 
 namespace rex
 {
@@ -26,7 +25,6 @@ namespace rex
     private:
       s32 m_num_vertices;
       s32 m_vertex_size;
-      rsl::unique_ptr<InputLayout> m_input_layout;
     };
 
   } // namespace gfx

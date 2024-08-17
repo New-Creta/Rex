@@ -231,13 +231,6 @@ namespace rex
       m_cmd_list->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
 
-    // Bind a material to the context
-    bool DxRenderContext::bind_material(Material* material)
-    {
-      material->bind_to(this);
-      return true;
-    }
-
     // Return the wrapped directx commandlist
     ID3D12GraphicsCommandList* DxRenderContext::dx_cmdlist()
     {

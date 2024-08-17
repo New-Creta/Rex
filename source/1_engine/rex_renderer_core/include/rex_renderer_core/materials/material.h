@@ -34,13 +34,15 @@ namespace rex
     struct MaterialDesc
     {
       ShaderPipeline shader_pipeline; // The shader pipeline to be used by the material
-      OutputMergerDesc output_merger;
     };
 
+    // structure holding meta data about render pass overwriting
+    // Materials are allowed to differ in shader pipeline from their render passes
+    // But these do need to be tracked by the render pass themselves
     struct MaterialPsoOverwrite
     {
       bool is_overwritten;
-      PipelineStateDesc pso_desc;
+      ShaderPipeline shader_pipeline;
     };
 
     // A material is an object combining all shaders and the parameters that can be set on them
@@ -63,23 +65,25 @@ namespace rex
       // Bind a material to a render ctx
       void bind_to(RenderContext* ctx);
 
+      // Check if the material has the specified shader pipeline
+      bool uses_shader_pipeline(const ShaderPipeline& pipeline) const;
+
+      // Create the PSO which would overwrite the one of the render pass
+      // Often this doesn't do anything but if a material gets created
+      // with a different set of shaders than the render pass its used in
+      // this function will create a cusom pso for the material
       MaterialPsoOverwrite load_pso_overwrite(const PipelineStateDesc& psoDesc);
 
     private:
       // The backend storage for all material parameters
       rsl::unique_ptr<ShaderParametersStore> m_parameters_store;
 
-      // The primitive topology of the material
-      PrimitiveTopology m_primitive_topology;
-      // The root signature of the material
-      RootSignature* m_root_signature;
-
+      // The pso of the material
+      // It's possible this is null, it only gets created
+      // if the shaders for the material differ than the ones of the renderpass
+      // in which the material is used
       rsl::unique_ptr<PipelineState> m_pso;
 
-      // The output merger settings of the material
-      OutputMergerDesc m_output_merger;
-      // The blend factor of the material, belongs to the output merger
-      BlendFactor m_blend_factor;
       // The shader pipeline of the material
       ShaderPipeline m_shader_pipeline;
     };

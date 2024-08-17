@@ -34,7 +34,7 @@ namespace rex
 		namespace shader_reflection_cache
 		{
 			// Load reflection from the cache, create new one if one isn't cached already
-			ShaderPipelineReflection& load(const ShaderPipeline& pipeline);
+			const ShaderPipelineReflection& load(const ShaderPipeline& pipeline);
 		}
 	}
 }

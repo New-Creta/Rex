@@ -159,6 +159,8 @@ namespace rex
             // Return all parameters stored in the store
             const rsl::vector<rsl::unique_ptr<ShaderParameter>>& params() const;
 
+            // Copy all parameters from another store into this store.
+            // Only parameters that are named in this store are copied from the other
             void copy_params_from(const ShaderParametersStore* other);
 
         private:
