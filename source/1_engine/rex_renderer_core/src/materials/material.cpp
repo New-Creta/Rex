@@ -15,19 +15,6 @@ namespace rex
   {
     DEFINE_LOG_CATEGORY(LogMaterial);
 
-    Material::Material(const PipelineStateDesc& desc)
-      : m_shader_pipeline(desc.shader_pipeline)
-      , m_primitive_topology(PrimitiveTopology::TriangleList)
-      , m_root_signature()
-      , m_blend_factor()
-    {
-      m_output_merger = desc.output_merger;
-
-      ShaderPipelineReflection& reflection = shader_reflection_cache::load(m_shader_pipeline);
-      m_pso = rhi::create_pso(desc);
-      m_root_signature = m_pso->root_signature();
-      m_parameters_store = rsl::make_unique<ShaderParametersStore>(reflection.material_param_store_desc);
-    }
     Material::Material(const MaterialDesc& matDesc)
       : m_shader_pipeline(matDesc.shader_pipeline)
       , m_primitive_topology(PrimitiveTopology::TriangleList)
@@ -75,5 +62,19 @@ namespace rex
         shader_resource->bind_to(ctx);
       }
     }
+
+    MaterialPsoOverwrite Material::load_pso_overwrite(const PipelineStateDesc& psoDesc)
+    {
+      MaterialPsoOverwrite result{};
+      if (m_shader_pipeline != psoDesc.shader_pipeline)
+      {
+        result.is_overwritten = true;
+        result.pso_desc = psoDesc;
+        result.pso_desc.shader_pipeline = m_shader_pipeline;
+      }
+
+      return result;
+    }
+
   }
 }

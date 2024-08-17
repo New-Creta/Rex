@@ -46,5 +46,28 @@ namespace rex
 		{
 			return m_shader_parameters;
 		}
+
+		// Copy all parameters from another store into this store.
+		// Only parameters that are named in this store are copied from the other
+		void ShaderParametersStore::copy_params_from(const ShaderParametersStore* other)
+		{
+			for (const auto& [param_name, param_loc] : *m_param_to_location_lookup)
+			{
+				auto param_loc_in_other = other->m_param_to_location_lookup->at(param_name);
+				const ShaderParameter* shader_param = other->m_shader_parameters[param_loc_in_other.idx].get();
+				switch (shader_param->type())
+				{
+				case ShaderParameterType::ConstantBuffer: 
+				{
+					const ViewShaderParam& view_param = static_cast<const ViewShaderParam&>(*shader_param);
+					m_shader_parameters[param_loc.idx] = rsl::make_unique<ViewShaderParam>(view_param); 
+					break;
+				}
+				default: 
+					const ViewTableShaderParam& view_table_param = static_cast<const ViewTableShaderParam&>(*shader_param);
+					m_shader_parameters[param_loc.idx] = rsl::make_unique<ViewTableShaderParam>(view_table_param); break;
+				}
+			}
+		}
 	}
 }

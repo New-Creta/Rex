@@ -12,6 +12,7 @@
 #include "rex_std/string.h"
 #include "rex_std/memory.h"
 #include "rex_std/optional.h"
+#include "rex_std/unordered_map.h"
 #include "rex_engine/engine/types.h"
 #include "rex_renderer_core/rendering/frame_buffer.h"
 
@@ -28,6 +29,12 @@ namespace rex
 			rsl::string_view name;			// The name of the render pass, mainly for debugging purposes
 			PipelineStateDesc pso_desc;		// The pso desc that'll be used to create the pso for this render pass
 			FrameBufferDesc framebuffer_desc; // The framebuffer desc that'll be used to create the framebuffer for this render pass
+		};
+
+		struct MaterialPipelineState
+		{
+			rsl::unique_ptr<ShaderParametersStore> parameter_store;
+			rsl::unique_ptr<PipelineState> pso;
 		};
 
 		// A render pass acts like the "material" for the render pipeline
@@ -56,7 +63,7 @@ namespace rex
 			void set_blend_factor(const BlendFactor& blendFactor);
 
 		private:
-			void bind_params_to_pipeline(RenderContext* ctx);
+			void bind_params_to_pipeline(ShaderParametersStore* paramStore, RenderContext* ctx);
 
 		private:
 			rsl::tiny_stack_string m_name;															// The name of the renderpass
@@ -66,6 +73,8 @@ namespace rex
 			BlendFactor m_blend_factor;																	// The blend factor used by the render pass
 
 			rsl::unique_ptr<PipelineState> m_pso;												// The pipeline state of the renderpass
+			PipelineStateDesc m_pso_desc;																// The description of the PSO used for the render pass
+			rsl::unordered_map<Material*, MaterialPipelineState> m_material_to_pipeline_state;
 		};
 	}
 }

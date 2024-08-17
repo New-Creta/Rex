@@ -71,7 +71,7 @@ namespace regina
   void SampleScene2::create_grid(const glm::vec3& pos)
   {
     rex::gfx::Entity entity = add_entity();
-    rex::gfx::StaticMesh mesh = rex::gfx::mesh_factory::create_grid(20.0f, 30.0f, 60, 40);
+    rex::gfx::StaticMesh mesh = rex::gfx::mesh_factory::create_grid(10, 30, 2.0f);
     rex::gfx::StaticMeshComponent& smc = entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(mesh));
     entity.component<rex::gfx::TransformComponent>().translation = pos;
     smc.set_material(m_primitive_material.get());

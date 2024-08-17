@@ -17,14 +17,14 @@ struct VertexIn
 {
   float3 PosL : POSITION;
   float3 Normal : NORMAL;
-  float4 Color : COLOR;
+  float2 Uv : TEXCOORD0;
 };
 
 struct VertexOut
 {
   float4 PosH : SV_POSITION;
-  float4 Color : COLOR;
-  float3 normal : NORMAL;
+  float3 Normal : NORMAL;
+  float2 Uv : TEXCOORD0;
 };
 
 VertexOut main(VertexIn vin)
@@ -34,11 +34,12 @@ VertexOut main(VertexIn vin)
   // Transform to homogeneous clip space.
   float4 posW = mul(float4(vin.PosL, 1.0f), gWorld);
   vout.PosH = mul(posW, gViewProj);
+  
+  // Transform the normal into world space
+  vout.Normal = normalize(mul(vin.Normal, (float3x3)gWorld));
 
-  vout.normal = normalize(mul(vin.Normal, (float3x3)gWorld));
-
-  // Just pass vertex color into the pixel shader.
-  vout.Color = vin.Color;
+  // Pass the other values straight to the pixel shader
+  vout.Uv = vin.Uv;
 
   return vout;
 }

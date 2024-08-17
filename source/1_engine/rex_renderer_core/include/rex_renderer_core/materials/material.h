@@ -37,11 +37,16 @@ namespace rex
       OutputMergerDesc output_merger;
     };
 
+    struct MaterialPsoOverwrite
+    {
+      bool is_overwritten;
+      PipelineStateDesc pso_desc;
+    };
+
     // A material is an object combining all shaders and the parameters that can be set on them
     class Material
     {
     public:
-      Material(const PipelineStateDesc& desc);
       Material(const MaterialDesc& matDesc);
 
       // Set a material parameter to a new resource
@@ -57,6 +62,8 @@ namespace rex
 
       // Bind a material to a render ctx
       void bind_to(RenderContext* ctx);
+
+      MaterialPsoOverwrite load_pso_overwrite(const PipelineStateDesc& psoDesc);
 
     private:
       // The backend storage for all material parameters

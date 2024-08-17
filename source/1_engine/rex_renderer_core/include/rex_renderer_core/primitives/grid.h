@@ -9,8 +9,33 @@ namespace rex
   {
     namespace mesh_factory
     {
-      // Create a single grid mesh
-      StaticMesh create_grid(f32 width, f32 depth, s16 m, s16 n);
+      //  <------------------- cellsPerLine ------------------->
+      // +-----------------+-----------------+-----------------+ 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // +-----------------+-----------------+-----------------+ 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | ^
+      // +-----------------+-----------------+-----------------+ lineWidth
+      // |                 |                 |                 | v
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // |                 |                 |                 | 
+      // +-----------------+-----------------+-----------------+ 
+      //                    <-- cellSize -->      
+      // 
+      // Create a single grid mesh                                                         
+      StaticMesh create_grid(s16 cellSize, s32 cellsPerLine, f32 lineWidth);
     } // namespace mesh_factory
   }
 } // namespace rex

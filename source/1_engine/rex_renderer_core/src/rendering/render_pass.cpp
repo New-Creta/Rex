@@ -19,6 +19,7 @@ namespace rex
 		RenderPass::RenderPass(const RenderPassDesc& desc)
 			: m_name(desc.name)
 		{
+			m_pso_desc = desc.pso_desc;
 			m_pso = rhi::create_pso(desc.pso_desc);
 			ShaderPipelineReflection& reflection = shader_reflection_cache::load(desc.pso_desc.shader_pipeline);
 			m_parameters_store = rsl::make_unique<ShaderParametersStore>(reflection.renderpass_param_store_desc);
@@ -33,16 +34,32 @@ namespace rex
 			ctx->set_blend_factor(m_blend_factor);
 
 			m_framebuffer->bind_to(ctx);
-			bind_params_to_pipeline(ctx);
+			bind_params_to_pipeline(m_parameters_store.get(), ctx);
 		}
 
 		void RenderPass::bind_material(RenderContext* ctx, Material* material)
 		{
-			bool changed_pgo = ctx->bind_material(material);
-			if (changed_pgo)
+			MaterialPsoOverwrite pso_overwrite_result = material->load_pso_overwrite(m_pso_desc);
+
+			if (pso_overwrite_result.is_overwritten)
 			{
-				bind_params_to_pipeline(ctx);
+				if (!m_material_to_pipeline_state.contains(material))
+				{
+					// It's possible the slots have change if a new PSO was bound
+					// So we need calcualte the new slot positions and bind those
+
+					MaterialPipelineState mat_pipeline_state{};
+					mat_pipeline_state.pso = rhi::create_pso(pso_overwrite_result.pso_desc);
+					ShaderPipelineReflection& reflection = shader_reflection_cache::load(pso_overwrite_result.pso_desc.shader_pipeline);
+					mat_pipeline_state.parameter_store = rsl::make_unique<ShaderParametersStore>(reflection.renderpass_param_store_desc);
+					mat_pipeline_state.parameter_store->copy_params_from(m_parameters_store.get());
+					auto res = m_material_to_pipeline_state.emplace(material, rsl::move(mat_pipeline_state));
+				}
+
+				bind_params_to_pipeline(m_material_to_pipeline_state.at(material).parameter_store.get(), ctx);
 			}
+
+			material->bind_to(ctx);
 		}
 
 		void RenderPass::set(rsl::string_view name, ConstantBuffer* constantBuffer)
@@ -67,12 +84,12 @@ namespace rex
 			m_blend_factor = blendFactor;
 		}
 
-		void RenderPass::bind_params_to_pipeline(RenderContext* ctx)
+		void RenderPass::bind_params_to_pipeline(ShaderParametersStore* paramsStore, RenderContext* ctx)
 		{
-			const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = m_parameters_store->params();
-			for (const auto& shader_resource : shader_params)
+			const rsl::vector<rsl::unique_ptr<ShaderParameter>>& shader_params = paramsStore->params();
+			for (const auto& param : shader_params)
 			{
-				shader_resource->bind_to(ctx);
+				param->bind_to(ctx);
 			}
 		}
 

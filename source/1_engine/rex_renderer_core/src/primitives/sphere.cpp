@@ -21,8 +21,8 @@ namespace rex
       // Poles: note that there will be texture coordinate distortion as there is
       // not a unique point on the texture map to assign to the pole when mapping
       // a rectangular texture onto a sphere.
-      const VertexPosNormCol top_vertex(glm::vec3(0.0f, +radius, 0.0f), glm::vec3(0.0f, +1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-      const VertexPosNormCol bottom_vertex(glm::vec3(0.0f, -radius, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+      const VertexPosNormTex top_vertex(glm::vec3(0.0f, +radius, 0.0f), glm::vec3(0.0f, +1.0f, 0.0f), glm::vec2(1.0f, 0.0f));
+      const VertexPosNormTex bottom_vertex(glm::vec3(0.0f, -radius, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f));
 
       mesh_data.add_vertex(top_vertex);
 
@@ -56,8 +56,9 @@ namespace rex
           const glm::vec3 p = position;
           const glm::vec3 normal  = glm::normalize(p);
           const glm::vec4 col(normal, 1.0f);
+          const glm::vec2 uv(0.0f, 1.0f);
 
-          const VertexPosNormCol v(position, normal, col);
+          const VertexPosNormTex v(position, normal, uv);
 
           mesh_data.add_vertex(v);
         }

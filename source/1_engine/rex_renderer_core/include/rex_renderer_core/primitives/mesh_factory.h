@@ -15,7 +15,7 @@ namespace rex
     {
       // calculate the mid point of a vertex.
       // all elements of the vertex are halved, position is the middle point between the 2
-      VertexPosNormCol mid_point(const VertexPosNormCol& v0, const VertexPosNormCol& v1);
+      VertexPosNormTex mid_point(const VertexPosNormTex& v0, const VertexPosNormTex& v1);
 
       // A mesh data object is simply a wrapper around a vertex and index buffer.
       template <typename T>
@@ -27,15 +27,15 @@ namespace rex
         // Create a default mesh data object with no vertices nor indices
         MeshData();
         // Create a mesh data object with given vertices and indices
-        MeshData(rsl::vector<VertexPosNormCol>&& vertices, rsl::vector<index_type>&& indices);
+        MeshData(rsl::vector<VertexPosNormTex>&& vertices, rsl::vector<index_type>&& indices);
 
         // Overwrite the existing vertices of a MeshData object
-        void assign_vertices(const VertexPosNormCol* vertices, u32 numVerticess);
+        void assign_vertices(const VertexPosNormTex* vertices, u32 numVerticess);
         // Overwrite the existing indices of a MeshData object
         void assign_indices(const index_type* indices, u32 numIndices);
 
         // Add a single vertex to the internal vertex buffer
-        void add_vertex(const VertexPosNormCol& v);
+        void add_vertex(const VertexPosNormTex& v);
         // Add a single index to the internal index buffer
         void add_index(index_type i);
 
@@ -66,8 +66,8 @@ namespace rex
         void resize_indices(s32 num);
 
         // Return the vertex buffer
-        rsl::vector<VertexPosNormCol>& vertices();
-        const rsl::vector<VertexPosNormCol>& vertices() const;
+        rsl::vector<VertexPosNormTex>& vertices();
+        const rsl::vector<VertexPosNormTex>& vertices() const;
         // Return the index buffer
         rsl::vector<index_type>& indices();
         const rsl::vector<index_type>& indices() const;
@@ -76,7 +76,7 @@ namespace rex
         s32 vertex_size() const;
 
       private:
-        rsl::vector<VertexPosNormCol> m_vertices;
+        rsl::vector<VertexPosNormTex> m_vertices;
         rsl::vector<index_type> m_indices;
       };
 
@@ -89,7 +89,7 @@ namespace rex
 
       //-----------------------------------------------------------------------
       template <typename T>
-      MeshData<T>::MeshData(rsl::vector<VertexPosNormCol>&& vertices, rsl::vector<MeshData<T>::index_type>&& indices)
+      MeshData<T>::MeshData(rsl::vector<VertexPosNormTex>&& vertices, rsl::vector<MeshData<T>::index_type>&& indices)
         : m_vertices(rsl::move(vertices))
         , m_indices(rsl::move(indices))
       {
@@ -97,7 +97,7 @@ namespace rex
 
       //-----------------------------------------------------------------------
       template <typename T>
-      void MeshData<T>::assign_vertices(const VertexPosNormCol* vertices, u32 numVertices)
+      void MeshData<T>::assign_vertices(const VertexPosNormTex* vertices, u32 numVertices)
       {
         m_vertices.assign(&vertices[0], &vertices[numVertices]);
       }
@@ -111,7 +111,7 @@ namespace rex
 
       //-----------------------------------------------------------------------
       template <typename T>
-      void MeshData<T>::add_vertex(const VertexPosNormCol& v)
+      void MeshData<T>::add_vertex(const VertexPosNormTex& v)
       {
         m_vertices.push_back(v);
       }
@@ -143,7 +143,7 @@ namespace rex
       {
         auto it = m_vertices.begin();
         rsl::advance(it, idx);
-        m_vertices.insert(it, VertexPosNormCol{ pos, norm, col });
+        m_vertices.insert(it, VertexPosNormTex{ pos, norm, col });
       }
 
       //-----------------------------------------------------------------------
@@ -185,13 +185,13 @@ namespace rex
 
       //-----------------------------------------------------------------------
       template <typename T>
-      rsl::vector<VertexPosNormCol>& MeshData<T>::vertices()
+      rsl::vector<VertexPosNormTex>& MeshData<T>::vertices()
       {
         return m_vertices;
       }
       //-----------------------------------------------------------------------
       template <typename T>
-      const rsl::vector<VertexPosNormCol>& MeshData<T>::vertices() const
+      const rsl::vector<VertexPosNormTex>& MeshData<T>::vertices() const
       {
         return m_vertices;
       }
@@ -249,18 +249,18 @@ namespace rex
         for (s32 i = 0; i < num_tris; ++i)
         {
           // Retrieve vertices of the current triangle.
-          const VertexPosNormCol& v0 = meshData.vertices()[meshData.indices()[i * 3 + 0]];
-          const VertexPosNormCol& v1 = meshData.vertices()[meshData.indices()[i * 3 + 1]];
-          const VertexPosNormCol& v2 = meshData.vertices()[meshData.indices()[i * 3 + 2]];
+          const VertexPosNormTex& v0 = meshData.vertices()[meshData.indices()[i * 3 + 0]];
+          const VertexPosNormTex& v1 = meshData.vertices()[meshData.indices()[i * 3 + 1]];
+          const VertexPosNormTex& v2 = meshData.vertices()[meshData.indices()[i * 3 + 2]];
 
           //
           // Generate the midpoints.
           //
 
           // Calculate midpoints of triangle edges.
-          const VertexPosNormCol m0 = mid_point(v0, v1);
-          const VertexPosNormCol m1 = mid_point(v1, v2);
-          const VertexPosNormCol m2 = mid_point(v0, v2);
+          const VertexPosNormTex m0 = mid_point(v0, v1);
+          const VertexPosNormTex m1 = mid_point(v1, v2);
+          const VertexPosNormTex m2 = mid_point(v0, v2);
 
           //
           // Add new geometry.

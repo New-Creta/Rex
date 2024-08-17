@@ -41,7 +41,7 @@ namespace regina
     m_primitive_material = rex::gfx::load_material(rex::vfs::abs_path(rex::MountingPoint::EngineMaterials, "default.material"));
 
     s32 x, y, channels;
-    stbi_uc* data = stbi_load("D:\\Engines\\Rex\\data\\Pokemon\\Kanto\\old\\cerulean_city_rby.png", &x, &y, &channels, 4);
+    stbi_uc* data = stbi_load("D:\\Engines\\Rex\\data\\Pokemon\\Map\\Kanto\\old\\celadon_city.png", &x, &y, &channels, 4);
     m_pokemon_texture = rex::gfx::rhi::create_texture2d(x, y, rex::gfx::TextureFormat::Unorm4, data);
 
     // Sampler is currently hardcoded
@@ -62,38 +62,40 @@ namespace regina
 
     m_pokemon_sampler = rex::gfx::rhi::create_sampler2d(desc);
 
-    rex::gfx::PipelineStateDesc pso_desc{};
-    // Pipeline State
-    // Define the the blend settings
-    pso_desc.output_merger.blend_state; // Nothing to set
+    //
 
-    // Define the depth stencil settings
-    pso_desc.output_merger.depth_stencil_state.depth_enable = true;
-    pso_desc.output_merger.depth_stencil_state.depth_write_mask = rex::gfx::DepthWriteMask::DepthWriteMaskAll;
-    pso_desc.output_merger.depth_stencil_state.depth_func = rex::gfx::ComparisonFunc::Less;
+    //rex::gfx::PipelineStateDesc pso_desc{};
+    //// Pipeline State
+    //// Define the the blend settings
+    //pso_desc.output_merger.blend_state; // Nothing to set
 
-    // Define the raster state
-    pso_desc.output_merger.raster_state.fill_mode; // Nothing to set
+    //// Define the depth stencil settings
+    //pso_desc.output_merger.depth_stencil_state.depth_enable = true;
+    //pso_desc.output_merger.depth_stencil_state.depth_write_mask = rex::gfx::DepthWriteMask::DepthWriteMaskAll;
+    //pso_desc.output_merger.depth_stencil_state.depth_func = rex::gfx::ComparisonFunc::Less;
 
-    // Define the input layout
-    pso_desc.input_layout =
-    {
-      { rex::gfx::ShaderSemantic::Position, rex::gfx::ShaderArithmeticType::Float3    },
-      { rex::gfx::ShaderSemantic::Color,   rex::gfx::ShaderArithmeticType::Float4   },
-      { rex::gfx::ShaderSemantic::TexCoord,    rex::gfx::ShaderArithmeticType::Float2    }
-    };
+    //// Define the raster state
+    //pso_desc.output_merger.raster_state.fill_mode; // Nothing to set
 
-    // Define the shaders
-    pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::load(rex::vfs::abs_path(rex::MountingPoint::EngineShaders, "texture_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
-    pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::load(rex::vfs::abs_path(rex::MountingPoint::EngineShaders, "texture_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
+    //// Define the input layout
+    //pso_desc.input_layout =
+    //{
+    //  { rex::gfx::ShaderSemantic::Position, rex::gfx::ShaderArithmeticType::Float3    },
+    //  { rex::gfx::ShaderSemantic::Color,   rex::gfx::ShaderArithmeticType::Float4   },
+    //  { rex::gfx::ShaderSemantic::TexCoord,    rex::gfx::ShaderArithmeticType::Float2    }
+    //};
 
-    // Define the primitive topology
-    pso_desc.primitive_topology = rex::gfx::PrimitiveTopologyType::Triangle;
-    pso_desc.dsv_format = rex::gfx::TextureFormat::Depth32;
+    //// Define the shaders
+    //pso_desc.shader_pipeline.vs = rex::gfx::shader_lib::load(rex::vfs::abs_path(rex::MountingPoint::EngineShaders, "texture_vertex.hlsl"), rex::gfx::ShaderType::Vertex);
+    //pso_desc.shader_pipeline.ps = rex::gfx::shader_lib::load(rex::vfs::abs_path(rex::MountingPoint::EngineShaders, "texture_pixel.hlsl"), rex::gfx::ShaderType::Pixel);
+
+    //// Define the primitive topology
+    //pso_desc.primitive_topology = rex::gfx::PrimitiveTopologyType::Triangle;
+    //pso_desc.dsv_format = rex::gfx::TextureFormat::Depth32;
     
-    m_pokemon_material = rex::gfx::load_material(pso_desc);
-    m_pokemon_material->set("default_sampler", m_pokemon_sampler.get());
-    m_pokemon_material->set("default_texture", m_pokemon_texture.get());
+    //m_pokemon_material = rex::gfx::load_material(rex::vfs::abs_path(rex::MountingPoint::EngineMaterials, "pokemon.material"));
+    m_primitive_material->set("default_sampler", m_pokemon_sampler.get());
+    m_primitive_material->set("default_texture", m_pokemon_texture.get());
 
     auto box      = rex::gfx::mesh_factory::create_box(1.5f, 1.5f, 1.5f);
     rex::gfx::Entity box_entity = add_entity();
@@ -101,9 +103,11 @@ namespace regina
     box_entity.component<rex::gfx::TransformComponent>().scale *= 2.0f;
 
     auto quad     = rex::gfx::mesh_factory::create_quad(10.0f, 10.0f);
-    rex::gfx::Entity grid_entity = add_entity();
-    grid_entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(quad)).set_material(m_pokemon_material.get());
-    grid_entity.component<rex::gfx::TransformComponent>().translation += 2.0f;
+    rex::gfx::Entity quad_entity = add_entity();
+    quad_entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(quad)).set_material(m_primitive_material.get());
+    quad_entity.component<rex::gfx::TransformComponent>().translation.z -= 2.0f;
+    quad_entity.component<rex::gfx::TransformComponent>().translation.x -= 5.0f;
+    quad_entity.component<rex::gfx::TransformComponent>().translation.y += 5.0f;
 
     // Spheres and Cylinders
     for(s32 i = 0; i < 5; ++i)

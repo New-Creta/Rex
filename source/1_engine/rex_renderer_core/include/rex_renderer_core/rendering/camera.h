@@ -32,6 +32,13 @@ namespace rex
 			// Return the projection matrix of the camera
 			const glm::mat4& projection_mat() const;
 
+			// Switch the projection mode of the camera
+			void switch_mode(ProjectionMode newMode);
+
+		private:
+			// Calculate the projection matrix based on the current camera settings
+			void calc_proj_matrix();
+
 		private:
 			glm::vec3 m_position;
 			glm::vec3 m_forward;
@@ -39,6 +46,11 @@ namespace rex
 			glm::mat4 m_view;
 			glm::mat4 m_projection;
 
+			f32 m_width;
+			f32 m_height;
+			f32 m_near;
+			f32 m_far;
+			rsl::DegAngle m_fov;
 			ProjectionMode m_projection_mode;
 		};
 	}

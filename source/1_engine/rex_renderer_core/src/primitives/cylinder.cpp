@@ -33,13 +33,13 @@ namespace rex
             const f32 u = x / height + 0.5f;
             const f32 v = z / height + 0.5f;
 
-            meshData.add_vertex(VertexPosNormCol(glm::vec3(x, y, z), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+            meshData.add_vertex(VertexPosNormTex(glm::vec3(x, y, z), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)));
           }
 
-          // Cap center VertexPosNormCol.
-          meshData.add_vertex(VertexPosNormCol(glm::vec3(0.0f, y, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+          // Cap center VertexPosNormTex.
+          meshData.add_vertex(VertexPosNormTex(glm::vec3(0.0f, y, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)));
 
-          // Index of center VertexPosNormCol.
+          // Index of center VertexPosNormTex.
           const u16 center_index = static_cast<u16>(meshData.vertices().size()) - 1;
 
           for (s32 i = 0; i < sliceCount; ++i)
@@ -71,13 +71,13 @@ namespace rex
             const f32 u = x / height + 0.5f;
             const f32 v = z / height + 0.5f;
 
-            meshData.add_vertex(VertexPosNormCol(glm::vec3(x, y, z), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+            meshData.add_vertex(VertexPosNormTex(glm::vec3(x, y, z), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f)));
           }
 
-          // Cap center VertexPosNormCol.
-          meshData.add_vertex(VertexPosNormCol(glm::vec3(0.0f, y, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
+          // Cap center VertexPosNormTex.
+          meshData.add_vertex(VertexPosNormTex(glm::vec3(0.0f, y, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f)));
 
-          // Cache the index of center VertexPosNormCol.
+          // Cache the index of center VertexPosNormTex.
           const u16 center_index = static_cast<u16>(meshData.vertices().size()) - 1;
 
           for (s32 i = 0; i < sliceCount; ++i)
@@ -150,11 +150,11 @@ namespace rex
             const glm::vec3 normal = n;
             const glm::vec4 col(normal, 1.0f);
 
-            mesh_data.add_vertex(VertexPosNormCol(position, normal, col));
+            mesh_data.add_vertex(VertexPosNormTex(position, normal, col));
           }
         }
 
-        // Add one because we duplicate the first and last VertexPosNormCol per ring
+        // Add one because we duplicate the first and last VertexPosNormTex per ring
         // since the texture coordinates are different.
         const s32 ring_vertex_count = static_cast<s32>(sliceCount) + 1;
 
@@ -178,6 +178,7 @@ namespace rex
 
         return StaticMesh(rsl::move(vb), rsl::move(ib));
       }
+
     } // namespace mesh_factory
   }
 } // namespace rex

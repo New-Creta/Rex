@@ -64,31 +64,6 @@ namespace rex
     bool operator!=(const VertexPosCol& v1, const VertexPosCol& v2);
 
     //-----------------------------------------------------------------------
-    // VERTEX POS COL UV
-    //
-    // ATTRIBUTES:
-    //  - POSITION
-    //  - COLOR
-    //  - UV
-    //-----------------------------------------------------------------------
-    class VertexPosColUv
-    {
-    public:
-      VertexPosColUv();
-      VertexPosColUv(const glm::vec3& position, const glm::vec4& color, const glm::vec2& uv);
-
-      static InputLayoutDesc layout();
-
-    public:
-      glm::vec3 position;
-      glm::vec4 color;
-      glm::vec2 uv;
-    };
-
-    bool operator==(const VertexPosCol& v1, const VertexPosCol& v2);
-    bool operator!=(const VertexPosCol& v1, const VertexPosCol& v2);
-
-    //-----------------------------------------------------------------------
     // VERTEX POS COL
     //
     // ATTRIBUTES:
@@ -185,5 +160,6 @@ namespace rex
 
     bool operator==(const VertexPosNormTex& v1, const VertexPosNormTex& v2);
     bool operator!=(const VertexPosNormTex& v1, const VertexPosNormTex& v2);
+
   } // namespace gfx
 } // namespace rex

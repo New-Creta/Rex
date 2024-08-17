@@ -646,6 +646,7 @@ namespace rex
       {
         switch (type)
         {
+        case rex::gfx::PrimitiveTopologyType::Undefined:  return D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED;
         case rex::gfx::PrimitiveTopologyType::Point:      return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
         case rex::gfx::PrimitiveTopologyType::Line:       return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
         case rex::gfx::PrimitiveTopologyType::Triangle:   return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;

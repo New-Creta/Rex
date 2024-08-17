@@ -159,6 +159,8 @@ namespace rex
             // Return all parameters stored in the store
             const rsl::vector<rsl::unique_ptr<ShaderParameter>>& params() const;
 
+            void copy_params_from(const ShaderParametersStore* other);
+
         private:
             // To make parameters easily accessible to users, we have a map from name of parameter to their view idx
             // This view idx is the index within the parameter container that the param type belongs to

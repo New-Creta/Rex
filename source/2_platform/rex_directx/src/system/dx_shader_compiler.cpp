@@ -105,8 +105,7 @@ namespace rex
       {
         REX_ERROR(LogShaderCompiler, "{}", (char*)errors->GetBufferPointer()); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
       }
-
-      if(DX_FAILED(hr))
+      else if(DX_FAILED(hr))
       {
         REX_ERROR(LogShaderCompiler, "Failed to compile shader");
       }

@@ -39,6 +39,11 @@ namespace regina
       : m_scene_camera(glm::vec3(0.0f, 5.0f, -20.0f), rsl::DegAngle(45.0f), windowWidth, windowHeight, 0.1f, 1000.0f)
       , m_scene_viewport_width(windowWidth)
       , m_scene_viewport_height(windowHeight)
+      , m_width(windowWidth)
+      , m_height(windowHeight)
+      , m_near(0.1f)
+      , m_far(1000.0f)
+      , m_fov(glm::radians(45.0f))
     {
       m_scene = rsl::make_unique<regina::SampleScene>();
       m_scene_renderer = rex::gfx::add_renderer<rex::gfx::SceneRenderer>();
@@ -51,6 +56,17 @@ namespace regina
       update_scene_renderer();
 
       ImGui::ShowDemoWindow();
+
+      static bool orto_cam = false;
+      ImGui::Checkbox("Orthographic Camera", &orto_cam);
+      if (orto_cam)
+      {
+        m_scene_camera.switch_mode(rex::gfx::ProjectionMode::Ortographic);
+      }
+      else
+      {
+        m_scene_camera.switch_mode(rex::gfx::ProjectionMode::Perspective);
+      }
 
       ImGui::DragFloat3("Light Direction", &m_light_direction.r, 0.01f);
     }
@@ -74,6 +90,12 @@ namespace regina
     s32 m_scene_viewport_width;
     s32 m_scene_viewport_height;
     glm::vec3 m_light_direction;
+
+    f32 m_width;
+    f32 m_height;
+    f32 m_near;
+    f32 m_far;
+    f32 m_fov;
   };
 
   rsl::unique_ptr<Regina> g_regina;

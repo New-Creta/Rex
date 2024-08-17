@@ -18,6 +18,7 @@ namespace rex
 
     enum class PrimitiveTopologyType
     {
+      Undefined,
       Point,        
       Line,
       Triangle,
