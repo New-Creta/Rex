@@ -12,7 +12,7 @@ namespace pokemon
 
   rsl::unique_ptr<GameSession> g_game_session;
 
-  bool initialise(const rex::ApplicationCreationParams& appCreationParams)
+  bool initialise(const rex::ApplicationCreationParams& /*appCreationParams*/)
   {
     g_game_session = rsl::make_unique<GameSession>();
 

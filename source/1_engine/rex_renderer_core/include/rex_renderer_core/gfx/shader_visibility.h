@@ -35,6 +35,7 @@ namespace rex
       case rex::gfx::ShaderType::Domain:            return ShaderVisibility::Domain;
       case rex::gfx::ShaderType::Amplification:     return ShaderVisibility::Amplification;
       case rex::gfx::ShaderType::Mesh:              return ShaderVisibility::Mesh;
+      default: break;
       }
 
       return invalid_obj<ShaderVisibility>();

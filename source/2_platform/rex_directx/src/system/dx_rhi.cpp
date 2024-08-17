@@ -367,16 +367,6 @@ namespace rex
         wrl::ComPtr<ID3D12Resource> d3d_texture = g_gpu_engine->allocate_texture2d(width, height, format);
         return create_render_target(d3d_texture);
       }
-      rsl::unique_ptr<PipelineState> create_pso(const InputLayoutDesc& inputLayoutDesc, const MaterialDesc& matDesc)
-      {
-        PipelineStateDesc desc{};
-        desc.input_layout = inputLayoutDesc;
-        desc.output_merger = matDesc.output_merger;
-        desc.shader_pipeline = matDesc.shader_pipeline;
-        desc.primitive_topology = PrimitiveTopologyType::Triangle;
-
-        return create_pso(desc);
-      }
       rsl::unique_ptr<PipelineState>        create_pso(const PipelineStateDesc& desc)
       {
         REX_ASSERT_X(desc.shader_pipeline.vs, "No vertex shader specified for the pso");
@@ -538,7 +528,7 @@ namespace rex
         return rsl::make_unique<DxUploadBuffer>(d3d_upload_buffer);
       }
 
-      rsl::unique_ptr<Material> create_material(rsl::string_view path)
+      rsl::unique_ptr<Material> create_material(rsl::string_view /*path*/)
       {
         return nullptr;
       }

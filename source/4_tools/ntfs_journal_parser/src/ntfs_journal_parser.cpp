@@ -11,7 +11,7 @@
 
 namespace ntfs_journal
 {
-  bool initialize(const rex::ApplicationCreationParams& appCreationParams)
+  bool initialize(const rex::ApplicationCreationParams& /*appCreationParams*/)
   {
     return true;
   }

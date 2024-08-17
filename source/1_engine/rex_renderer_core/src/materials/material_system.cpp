@@ -97,9 +97,6 @@ namespace rex
 			mat_desc.shader_pipeline.vs = shader_lib::load(vertex_shader, ShaderType::Vertex);
 			mat_desc.shader_pipeline.ps = shader_lib::load(pixel_shader, ShaderType::Pixel);
 
-			// Load additional settings for the material's initialization if they're available
-			mat_desc.output_merger = load_output_merger_from_json(json_blob);
-
 			// Create the material object
 			rsl::unique_ptr<Material> material = rhi::create_material(mat_desc);
 

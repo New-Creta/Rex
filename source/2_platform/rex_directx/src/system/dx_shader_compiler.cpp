@@ -42,7 +42,7 @@ namespace rex
         : rsl::string("");
       }
 
-      STDMETHOD(Open)(D3D_INCLUDE_TYPE includeType, LPCSTR filename, LPCVOID parentData, LPCVOID* dataDoublePtr, uint32* bytesDoublePtr) override
+      STDMETHOD(Open)(D3D_INCLUDE_TYPE /*includeType*/, LPCSTR filename, LPCVOID /*parentData*/, LPCVOID* dataDoublePtr, uint32* bytesDoublePtr) override
       {
         rsl::string include_path = find_file(rsl::string_view(filename));
         if (include_path.empty())
@@ -53,7 +53,7 @@ namespace rex
         memory::Blob include_file_content = file::read_file(include_path);
 
         *dataDoublePtr = include_file_content.data();
-        *bytesDoublePtr = include_file_content.size();
+        *bytesDoublePtr = static_cast<uint32>(include_file_content.size());
 
         m_include_map.emplace(*dataDoublePtr, rsl::move(include_file_content));
 

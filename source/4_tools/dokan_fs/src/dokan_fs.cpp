@@ -1713,7 +1713,7 @@ namespace dokan_fs
     return dokan_operations;
   }
 
-  bool initialize(const rex::ApplicationCreationParams& appCreationParams)
+  bool initialize(const rex::ApplicationCreationParams& /*appCreationParams*/)
   {
     if (!setup_ctrl_handler())
     {

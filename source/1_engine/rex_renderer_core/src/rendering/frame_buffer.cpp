@@ -57,7 +57,7 @@ namespace rex
 		ColorBufferAttachment::ColorBufferAttachment(RenderTarget* resourceView)
 			: m_render_target(resourceView)
 		{}
-		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(DepthStencilBuffer* depthStencilBuffer)
+		FrameBufferAttachmentDesc::FrameBufferAttachmentDesc(DepthStencilBuffer* /*depthStencilBuffer*/)
 		{
 			REX_ASSERT("To implement");
 		}

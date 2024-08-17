@@ -681,6 +681,7 @@ namespace rex
         case rex::gfx::ShaderParameterType::ConstantBuffer:    return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
         case rex::gfx::ShaderParameterType::Texture:           return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
         case rex::gfx::ShaderParameterType::Sampler:           return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+        default: break;
         }
 
         return invalid_obj<D3D12_DESCRIPTOR_RANGE_TYPE>();

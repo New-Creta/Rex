@@ -35,7 +35,7 @@ namespace rex
 					, m_expected_resource_type(expectedResourceType)
 				{}
 
-				ViewOffset add_resource(s32 slot, const ShaderResourceDeclaration& resource)
+				ViewOffset add_resource(const ShaderResourceDeclaration& resource)
 				{
 					REX_ASSERT_X(resource.register_space == m_expected_register_space, "Invalid register space for resource. expected: {} actual: {} resource: {}", m_expected_register, resource.register_space, resource.name);
 					REX_ASSERT_X(resource.resource_type == m_expected_resource_type, "Invalid resource type for resource. expected: {}, actual: {}, resource: {}", rsl::enum_refl::enum_name(m_expected_resource_type), rsl::enum_refl::enum_name(resource.resource_type), resource.name);
@@ -160,6 +160,8 @@ namespace rex
 				}
 				void add_view_binding(ShaderParametersStoreDesc* paramStoreDesc, const rsl::vector<ShaderResourceDeclaration>& resources, ShaderParameterType type, s32 expectedRegisterSpace, ShaderVisibility visibility)
 				{
+					REX_UNUSED_PARAM(expectedRegisterSpace);
+
 					if (resources.empty())
 					{
 						return;
@@ -172,6 +174,7 @@ namespace rex
 						s32 idx = paramStoreDesc->shader_resource_descs.size();
 
 						const ShaderResourceDeclaration& resource = resources[i];
+						REX_ASSERT_X(resource.register_space == expectedRegisterSpace, "Unexpected register space of resource. space: {} expected: {}", resource.register_space, expectedRegisterSpace);
 						ViewOffset view_offset{};
 						paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
 						ViewRangeDeclaration view_range = ViewRangeDeclaration(resource.shader_register, 1, type, resource.register_space);
@@ -194,7 +197,7 @@ namespace rex
 					for (s32 i = 0; i < resources.size(); ++i)
 					{
 						const ShaderResourceDeclaration& resource = resources[i];
-						ViewOffset view_offset = view_table_builder.add_resource(slot, resource);
+						ViewOffset view_offset = view_table_builder.add_resource(resource);
 						paramStoreDesc->param_map.emplace(resource.name, ShaderParameterLocation{ slot, idx, view_offset });
 					}
 

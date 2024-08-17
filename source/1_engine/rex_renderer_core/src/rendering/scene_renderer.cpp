@@ -92,16 +92,11 @@ namespace rex
 			geo_pass_desc.name = "Geometry Pass";
 
 			// Pipeline State
-			// Define the the blend settings
-			geo_pass_desc.pso_desc.output_merger.blend_state; // Nothing to set
 
 			// Define the depth stencil settings
 			geo_pass_desc.pso_desc.output_merger.depth_stencil_state.depth_enable = true;
 			geo_pass_desc.pso_desc.output_merger.depth_stencil_state.depth_write_mask = DepthWriteMask::DepthWriteMaskAll;
 			geo_pass_desc.pso_desc.output_merger.depth_stencil_state.depth_func = ComparisonFunc::Less;
-
-			// Define the raster state
-			geo_pass_desc.pso_desc.output_merger.raster_state.fill_mode; // Nothing to set
 
 			// Define the input layout
 			geo_pass_desc.pso_desc.input_layout = 

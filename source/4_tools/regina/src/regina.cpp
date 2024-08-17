@@ -36,14 +36,9 @@ namespace regina
   {
   public:
     Regina(s32 windowWidth, s32 windowHeight)
-      : m_scene_camera(glm::vec3(0.0f, 5.0f, -20.0f), rsl::DegAngle(45.0f), windowWidth, windowHeight, 0.1f, 1000.0f)
+      : m_scene_camera(glm::vec3(0.0f, 5.0f, -20.0f), rsl::DegAngle(45.0f), static_cast<f32>(windowWidth), static_cast<f32>(windowHeight), 0.1f, 1000.0f)
       , m_scene_viewport_width(windowWidth)
       , m_scene_viewport_height(windowHeight)
-      , m_width(windowWidth)
-      , m_height(windowHeight)
-      , m_near(0.1f)
-      , m_far(1000.0f)
-      , m_fov(glm::radians(45.0f))
     {
       m_scene = rsl::make_unique<regina::SampleScene>();
       m_scene_renderer = rex::gfx::add_renderer<rex::gfx::SceneRenderer>();
@@ -90,12 +85,6 @@ namespace regina
     s32 m_scene_viewport_width;
     s32 m_scene_viewport_height;
     glm::vec3 m_light_direction;
-
-    f32 m_width;
-    f32 m_height;
-    f32 m_near;
-    f32 m_far;
-    f32 m_fov;
   };
 
   rsl::unique_ptr<Regina> g_regina;
