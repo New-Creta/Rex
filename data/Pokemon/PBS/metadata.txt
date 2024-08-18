@@ -1,0 +1,1522 @@
+﻿[000]
+PlayerA=POKEMONTRAINER_Red,trchar000,boy_bike,boy_surf_offset,boy_run,boy_dive_offset,boy_fish_offset,boy_fishsurf_offset
+PlayerB=POKEMONTRAINER_Leaf,trchar001,girl_bike,girl_surf_offset,girl_run,girl_dive_offset,girl_fish_offset,girl_fishsurf_offset
+PlayerC=POKEMONTRAINER_Brendan,trchar002,boy_bike,boy_surf_offset,boy_run,boy_dive_offset,boy_fish_offset,boy_fishsurf_offset
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+SurfBGM=frlg_surf.ogg
+BicycleBGM=frlg_cycling.ogg
+Home=82,7,5,8
+WildBattleBGM=frlg_wildpoke.ogg
+[001]
+# Intro
+[002]
+# Lappet Town
+MapPosition=0,13,12
+Outdoor=true
+ShowArea=true
+[003]
+# \PN's house
+BattleBack=IndoorB
+MapPosition=0,13,12
+HealingSpot=2,8,8
+[004]
+# Pokémon Lab
+MapPosition=0,13,12
+ShowArea=false
+[005]
+# Route 1
+MapPosition=0,13,11
+Outdoor=true
+ShowArea=true
+[006]
+# Kurt's house
+MapPosition=0,13,11
+[007]
+# Cedolan City
+MapSize=2,11
+MapPosition=0,13,10
+Outdoor=true
+ShowArea=true
+[008]
+# Daisy's house
+MapPosition=0,13,12
+[009]
+# Cedolan City Poké Center
+MapPosition=0,14,10
+HealingSpot=8,17,11
+[010]
+# Cedolan Gym
+BattleBack=IndoorB
+MapPosition=0,13,10
+[011]
+# Pokémon Institute
+MapPosition=0,14,10
+[012]
+# Cedolan City Condo
+MapPosition=0,14,10
+[013]
+# Game Corner
+MapPosition=0,14,10
+[014]
+# Cedolan Dept. 1F
+MapPosition=0,13,10
+[015]
+# Cedolan Dept. 2F
+MapPosition=0,13,10
+[016]
+# Cedolan Dept. 3F
+MapPosition=0,13,10
+[017]
+# Cedolan Dept. 4F
+MapPosition=0,13,10
+[018]
+# Cedolan Dept. 5F
+MapPosition=0,13,10
+[019]
+# Cedolan Dept. Rooftop
+MapPosition=0,13,10
+[020]
+# Cedolan Dept. Elevator
+MapPosition=0,13,10
+[021]
+# Route 2
+MapSize=1,11
+Weather=Rain,50
+MapPosition=0,14,8
+Outdoor=true
+ShowArea=true
+[023]
+# Lerucean Town
+MapPosition=0,15,8
+Outdoor=true
+ShowArea=true
+[024]
+# Lerucean Town Poké Center
+MapPosition=0,15,8
+HealingSpot=23,11,15
+[025]
+# Lerucean Town Mart
+MapPosition=0,15,8
+[026]
+# Pokémon Fan Club
+MapPosition=0,15,8
+[027]
+# Pokémon Day Care
+MapPosition=0,15,8
+[028]
+# Natural Park
+BattleBack=Forest
+MapPosition=0,16,8
+Outdoor=true
+ShowArea=true
+[029]
+# Natural Park Entrance
+Bicycle=true
+MapPosition=0,16,8
+[030]
+# Natural Park Pavillion
+MapPosition=0,16,8
+[031]
+# Route 3
+MapSize=2,1101
+MapPosition=0,14,6
+Outdoor=true
+ShowArea=true
+[032]
+# VERMILION CITY
+Bicycle=true
+MapPosition=2,15,11
+Outdoor=true
+ShowArea=true
+[033]
+# Vermilion City Poké Center
+MapPosition=2,15,11
+Outdoor=false
+[034]
+# Ice Cave
+BattleBack=IndoorC
+Bicycle=true
+MapPosition=0,15,6
+[035]
+# Ingido Plateau
+MapPosition=0,13,6
+Outdoor=true
+ShowArea=true
+[036]
+# Pokémon League
+MapPosition=0,13,6
+HealingSpot=35,17,7
+[037]
+# Pokémon League
+BattleBack=EliteA
+MapPosition=0,13,6
+[038]
+# Hall of Fame
+MapPosition=0,13,6
+[039]
+# Route 4
+MapSize=2,11
+MapPosition=0,11,6
+Outdoor=true
+ShowArea=true
+[040]
+# Route 4
+MapPosition=0,11,6
+Outdoor=true
+BicycleAlways=true
+ShowArea=true
+[041]
+# Route 5
+MapSize=1,111
+MapPosition=0,11,7
+Outdoor=true
+BicycleAlways=true
+ShowArea=true
+[042]
+# Vermilion City Mart
+MapPosition=2,15,11
+Outdoor=false
+[043]
+# Pokémon Fan Club
+MapPosition=2,15,11
+Outdoor=false
+[044]
+# Route 6
+MapSize=2,11
+MapPosition=0,11,10
+Outdoor=true
+ShowArea=true
+[045]
+# Route 6
+MapPosition=0,11,10
+Outdoor=true
+BicycleAlways=true
+ShowArea=true
+[046]
+# Cycling Road gate
+Bicycle=true
+MapPosition=0,12,6
+[047]
+# Route 7
+MapSize=2,11
+BattleBack=Mountain
+Weather=Rain,0
+MapPosition=0,15,10
+Outdoor=true
+ShowArea=true
+[048]
+# Vermilion City House 1
+MapPosition=2,15,11
+Outdoor=false
+[049]
+# Rock Cave
+Bicycle=true
+MapPosition=0,16,10
+[050]
+# Rock Cave
+BattleBack=CaveDark
+Bicycle=true
+MapPosition=0,16,10
+DarkMap=true
+[051]
+# Dungeon
+Bicycle=true
+Dungeon=true
+MapPosition=0,16,10
+[052]
+# Battle Frontier
+MapPosition=0,17,10
+Outdoor=true
+ShowArea=true
+[053]
+# Battle Frontier Poké Center
+MapPosition=0,17,10
+HealingSpot=52,17,14
+[054]
+# Battle Frontier Mart
+MapPosition=0,17,10
+[055]
+# Battle Tower
+MapPosition=0,17,10
+HealingSpot=52,30,10
+[056]
+# Battle Tower arena
+BattleBack=EliteA
+MapPosition=0,17,10
+[057]
+# Stadium Cup lobby
+MapPosition=0,17,10
+[058]
+# Battle Palace
+MapPosition=0,17,10
+[059]
+# Battle Palace arena
+BattleBack=EliteD
+MapPosition=0,17,10
+[060]
+# Battle Arena
+MapPosition=0,17,10
+[061]
+# Battle Arena arena
+BattleBack=EliteB
+MapPosition=0,17,10
+[062]
+# Battle Factory
+MapPosition=0,17,10
+[063]
+# Battle Factory intro corridor
+MapPosition=0,17,10
+[064]
+# Battle Factory arena
+BattleBack=EliteC
+MapPosition=0,17,10
+[065]
+# Battle Factory corridor
+MapPosition=0,17,10
+[066]
+# Safari Zone
+MapPosition=0,12,12
+Outdoor=true
+ShowArea=true
+[067]
+# Safari Zone gate
+MapPosition=0,12,12
+[068]
+# Safari Zone
+BattleBack=Forest
+MapPosition=0,12,12
+SafariMap=true
+Outdoor=true
+ShowArea=true
+[069]
+# Route 8
+DiveMap=70
+MapPosition=0,13,13
+Outdoor=true
+ShowArea=true
+[070]
+# Underwater
+MapPosition=0,13,13
+[071]
+# Harbour
+MapPosition=0,13,13
+[072]
+# Daroxy Island
+Weather=Storm,50
+MapPosition=0,18,17
+Outdoor=true
+ShowArea=true
+[073]
+# Faraday Island
+MapPosition=0,22,16
+Outdoor=true
+ShowArea=true
+[074]
+# Cycling Road gate
+Bicycle=true
+MapPosition=0,12,10
+[075]
+# Tiall Region
+MapPosition=1,13,16
+Outdoor=true
+[076]
+# Vermilion City House 2
+MapPosition=2,15,11
+Outdoor=false
+[077]
+# Vermilion City House 3
+MapPosition=2,15,11
+Outdoor=false
+[078]
+# Vermilion City Gym
+MapPosition=2,15,11
+Outdoor=false
+[079]
+# PALLET TOWN
+Bicycle=true
+MapPosition=2,5,13
+Outdoor=true
+ShowArea=true
+[080]
+# Pokémon Lab
+Bicycle=false
+MapPosition=2,5,13
+Outdoor=false
+[081]
+# Daisy's house
+MapPosition=2,5,13
+Outdoor=false
+[082]
+# \PN's house
+MapPosition=2,5,13
+Outdoor=false
+[083]
+# CELADON CITY
+Bicycle=true
+MapPosition=2,12,8
+Outdoor=true
+ShowArea=true
+[084]
+# Celadon City Poke Center
+MapPosition=2,12,8
+Outdoor=false
+[085]
+# Game Corner
+MapPosition=2,12,8
+Outdoor=false
+[086]
+# Celadon Dept. 1F
+MapPosition=2,12,8
+Outdoor=false
+[087]
+# Celadon Dept. 2F
+MapPosition=2,12,8
+Outdoor=false
+[088]
+# Celadon Dept. 3F
+MapPosition=2,12,8
+Outdoor=false
+[089]
+# Celadon Dept. 4F
+MapPosition=2,12,8
+Outdoor=false
+[090]
+# Celadon Dept. 5F
+MapPosition=2,12,8
+Outdoor=false
+[091]
+# Celadon Dept. Rooftop
+MapPosition=2,12,8
+Outdoor=true
+[092]
+# Celadon Dept. Elevator
+MapPosition=2,12,8
+Outdoor=false
+[093]
+# Route 11
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[097]
+# LAVENDER TOWN
+Bicycle=true
+MapPosition=2,19,8
+Outdoor=true
+ShowArea=true
+[098]
+# ROUTE 6
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,15,9
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[099]
+# ROUTE 7
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,14,8
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[100]
+# SAFFRON CITY
+Bicycle=true
+MapPosition=2,15,8
+Outdoor=true
+ShowArea=true
+[101]
+# West Saffron gate
+MapPosition=2,14,8
+Outdoor=false
+[102]
+# South Saffron gate
+MapPosition=2,15,9
+Outdoor=false
+[103]
+# ROUTE 1
+BattleBack=Field
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,5,12
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[104]
+# VIRIDIAN CITY
+Bicycle=true
+MapPosition=2,5,10
+Outdoor=true
+ShowArea=true
+[105]
+# CINNABAR ISLAND
+Bicycle=true
+MapPosition=2,5,16
+Outdoor=true
+ShowArea=true
+[106]
+# ROUTE 2
+BattleBack=Field
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,5,7
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[107]
+# ROUTE 2 
+MapPosition=2,5,8
+Outdoor=false
+[108]
+# PEWTER CITY
+Bicycle=true
+MapPosition=2,5,6
+Outdoor=true
+ShowArea=true
+[109]
+# Pewter Gym
+MapPosition=2,5,6
+Outdoor=false
+[110]
+# Viridian City Poké Center
+MapPosition=2,5,10
+Outdoor=false
+[111]
+# Viridian City Mart
+MapPosition=2,5,10
+Outdoor=false
+[112]
+# CERULEAN CITY
+Bicycle=true
+MapPosition=2,15,5
+Outdoor=true
+ShowArea=true
+[113]
+# Saffron City Poke Center
+MapPosition=2,15,8
+Outdoor=false
+[114]
+# Lavender Town Poke Center
+MapPosition=2,19,8
+Outdoor=false
+[115]
+# Pewter City Mart
+MapPosition=2,5,6
+Outdoor=false
+[116]
+# Cerulean City Poké Center
+MapPosition=2,15,5
+Outdoor=false
+[117]
+# Cinnabar Island Poké Center
+MapPosition=2,5,16
+Outdoor=false
+[118]
+# Cinnabar Island Mart
+MapPosition=2,5,16
+Outdoor=false
+[119]
+# ROUTE 4
+MapPosition=2,9,5
+Outdoor=false
+[120]
+# Cerulean City Mart
+MapPosition=2,15,5
+Outdoor=false
+[121]
+# Lavender Town Mart
+MapPosition=2,19,8
+Outdoor=false
+[122]
+# Saffron City Mart
+MapPosition=2,15,8
+Outdoor=false
+[123]
+# Cerulean City Gym
+MapPosition=2,15,5
+Outdoor=false
+[124]
+# ROUTE 21
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[125]
+# INDIGO PLATEAU
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,3,5
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[127]
+# Blue sea left
+[128]
+# ROUTE 19
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[129]
+# FUCHSIA CITY
+Bicycle=true
+MapPosition=2,13,14
+Outdoor=true
+ShowArea=true
+[131]
+# ROUTE 17
+Outdoor=true
+BicycleAlways=true
+ShowArea=true
+[132]
+# ROUTE 16
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[133]
+# ROUTE 18 CYCLE
+Outdoor=true
+BicycleAlways=true
+ShowArea=true
+[134]
+# ROUTE 16 cycle
+Outdoor=true
+BicycleAlways=true
+ShowArea=true
+[135]
+# Route 15
+[136]
+# ROUTE 24
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[137]
+# ROUTE 25
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[138]
+# Cerulean filler
+Outdoor=true
+[139]
+# ROUTE 3
+BattleBack=Field
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,7,6
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[140]
+# Route 4
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[141]
+# Route 3 filler 2
+Outdoor=true
+[142]
+# ROUTE 5
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,15,7
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[143]
+# VIRIDIAN FOREST
+BattleBack=Forest
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,5,8
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[144]
+# Viridian Forest Entrance
+MapPosition=2,5,8
+[145]
+# Viridian Forest Exit
+MapPosition=2,5,8
+[146]
+# ROUTE 2
+BattleBack=Field
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,5,9
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[147]
+# Route 3 filler
+Outdoor=true
+[148]
+# ROUTE 4
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,11,5
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[153]
+# Route 2
+[192]
+# North Saffron gate
+MapPosition=2,15,7
+Outdoor=false
+[193]
+# ROUTE 8
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,16,8
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[194]
+# ROUTE 9
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,16,5
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[195]
+# Route 10
+[196]
+# Route 12
+Outdoor=false
+[197]
+# ROUTE 13
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[198]
+# ROUTE 14
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[200]
+# ROUTE 22
+BattleBack=Field
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,4,10
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[201]
+# ROUTE 4
+Bicycle=true
+MapPosition=2,9,5
+Outdoor=true
+ShowArea=true
+[202]
+# ROUTE 10
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,19,5
+Outdoor=true
+ShowArea=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[203]
+# Route 10 Lavender
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,19,7
+Outdoor=true
+ShowArea=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[204]
+# ROUTE 12 lavender
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[205]
+# ROUTE 12
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[206]
+# ROUTE 18
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[207]
+# ROUTE 15 left
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[208]
+# ROUTE 15 right
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[209]
+# ROUTE 20 Left
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[210]
+# ROUTE 20 Right
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[212]
+# Route 10 Lavender filler
+Outdoor=true
+[214]
+# ROUTE 11 left
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,17,11
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[215]
+# ROUTE 11 right
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,18,11
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[221]
+# Viridian City House 1
+MapPosition=2,5,10
+Outdoor=false
+[222]
+# Viridian City House 2
+MapPosition=2,5,10
+Outdoor=false
+[223]
+# Pewter City House 1
+MapPosition=2,5,6
+Outdoor=false
+[224]
+# Pewter City House 2
+MapPosition=2,5,6
+Outdoor=false
+[225]
+# Cerulean City House 1
+MapPosition=2,15,5
+Outdoor=false
+[226]
+# Cerulean City House 2
+MapPosition=2,15,5
+Outdoor=false
+[227]
+# Cerulean City House 3
+MapPosition=2,15,5
+Outdoor=false
+[228]
+# Cerulean City House 4
+MapPosition=2,15,5
+Outdoor=false
+[229]
+# Cerulean City Ruined House
+MapPosition=2,15,5
+Outdoor=false
+[230]
+# Lavender Town House 1
+MapPosition=2,19,8
+Outdoor=false
+[231]
+# Lavender Town House 2
+MapPosition=2,19,8
+Outdoor=false
+[232]
+# Lavender Town Mr. Fuji's House
+MapPosition=2,19,8
+Outdoor=false
+[233]
+# Fuchsia City Poke Center
+MapPosition=2,13,14
+Outdoor=false
+[234]
+# Fuchsia City Mart
+MapPosition=2,13,14
+Outdoor=false
+[235]
+# Fuchsia City House 1
+MapPosition=2,13,14
+Outdoor=false
+[236]
+# Fuchsia City House 2
+MapPosition=2,13,14
+Outdoor=false
+[237]
+# Fuchsia City House 3
+MapPosition=2,13,14
+Outdoor=false
+[254]
+# MT. MOON
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,10,5
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[255]
+[256]
+# Pokemon League 1
+BattleBack=EliteA
+MapPosition=2,3,5
+Outdoor=false
+[260]
+#  LITTLEROOT TOWN
+Bicycle=true
+MapPosition=1,5,13
+Outdoor=true
+ShowArea=true
+[262]
+# Sandgem Town
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[263]
+# SLATEPORT CITY NC
+Bicycle=true
+MapPosition=1,9,12
+Outdoor=true
+ShowArea=true
+[264]
+# MAUVILLE CITY
+Bicycle=true
+MapPosition=1,9,8
+Outdoor=true
+ShowArea=true
+[267]
+# ROUTE 101
+Bicycle=true
+MapPosition=1,5,12
+Outdoor=true
+WildBattleBGM=hoenn_wildpoke.mp3
+ShowArea=true
+[268]
+# ROUTE 102
+Bicycle=true
+MapPosition=1,4,11
+Outdoor=true
+WildBattleBGM=hoenn_wildpoke.mp3
+ShowArea=true
+[269]
+# ROUTE 103
+Bicycle=true
+MapPosition=1,6,10
+Outdoor=true
+WildBattleBGM=hoenn_wildpoke.mp3
+ShowArea=true
+[270]
+# ROUTE 104
+Bicycle=true
+MapPosition=1,1,10
+Outdoor=true
+ShowArea=true
+[271]
+# ROUTE 105
+MapPosition=1,1,13
+Outdoor=true
+[272]
+# ROUTE 106
+MapPosition=1,2,15
+Outdoor=true
+[273]
+# ROUTE 107
+MapPosition=1,4,16
+Outdoor=true
+[274]
+# ROUTE 108
+MapPosition=1,6,16
+Outdoor=true
+[275]
+# ROUTE 109
+MapPosition=1,9,14
+Outdoor=true
+[276]
+# ROUTE 110
+MapPosition=1,9,10
+Outdoor=true
+WildBattleBGM=hoenn_wildpoke.mp3
+[277]
+# VERDANTURF TOWN
+Bicycle=true
+MapPosition=1,5,8
+Outdoor=true
+ShowArea=true
+[278]
+# OLDALE TOWN
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[279]
+# PETALBURG CITY
+Bicycle=true
+MapPosition=1,2,11
+Outdoor=true
+ShowArea=true
+[280]
+# RUSTBORO CITY
+Bicycle=true
+MapPosition=1,1,7
+Outdoor=true
+ShowArea=true
+[281]
+# DEWFORD TOWN NC
+Bicycle=true
+MapPosition=1,3,16
+Outdoor=true
+ShowArea=true
+[282]
+# LAVARIDGE TOWN NC
+MapPosition=1,6,5
+[283]
+# FORTREE CITY
+MapPosition=1,13,2
+[284]
+# LILYCOVE CITY
+Bicycle=true
+MapPosition=1,19,5
+Outdoor=true
+ShowArea=true
+[285]
+# MOSSDEEP CITY NC
+MapPosition=1,25,7
+[286]
+# PACIFIDLOG TOWN
+MapPosition=1,18,12
+Outdoor=true
+ShowArea=true
+[287]
+# EVER GRANDE CITY NC
+Bicycle=true
+MapPosition=1,28,10
+Outdoor=true
+ShowArea=true
+[291]
+# Birch's lab
+Bicycle=false
+MapPosition=1,5,13
+[292]
+# Brendan's House
+MapPosition=1,5,13
+[293]
+# LITTLEROOT TOWN (2)
+MapPosition=1,5,13
+[294]
+# May's House
+MapPosition=1,5,13
+[295]
+# LITTLEROOT TOWN (4)
+MapPosition=1,5,13
+[296]
+# OLDALE TOWN (3)
+MapPosition=1,5,11
+[297]
+# OLDALE TOWN (4)
+MapPosition=1,5,11
+[298]
+# OLDALE TOWN (5)
+MapPosition=1,5,11
+[299]
+# OLDALE TOWN (1)
+MapPosition=1,5,11
+[300]
+# OLDALE TOWN (2)
+MapPosition=1,5,11
+[301]
+# Slateport Harbor
+MapPosition=1,9,12
+[307]
+# Twinleaf Town
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[309]
+# Route 201
+BattleBack=
+WildVictoryME=sinnoh_wildvictory.mp3
+WildBattleBGM=sinnoh_wildpoke.mp3
+ShowArea=true
+[313]
+# Elite Four Pokemon Center
+MapPosition=1,28,10
+[314]
+# Sidney's Room
+MapPosition=1,28,10
+[315]
+# Phoebe's Room
+MapPosition=1,28,10
+[316]
+# Glacia's Room
+MapPosition=1,28,10
+[317]
+# Drake's Room
+MapPosition=1,28,10
+[318]
+# Champion's Room
+MapPosition=1,28,10
+[319]
+# To Sidney
+MapPosition=1,28,10
+[320]
+# To Phoebe
+MapPosition=1,28,10
+[321]
+# To Glacia
+MapPosition=1,28,10
+[322]
+# To Drake
+MapPosition=1,28,10
+[323]
+# To Champion
+MapPosition=1,28,10
+[325]
+# PETALBURG WOODS 
+MapPosition=1,1,10
+[326]
+# RUSTURF TUNNEL
+MapPosition=1,5,7
+[331]
+# DEWFORD TOWN (1)
+MapPosition=1,3,16
+[332]
+# DEWFORD TOWN (5)
+MapPosition=1,3,16
+[333]
+# DEWFORD TOWN (6)
+MapPosition=1,3,16
+[334]
+# NEW BARK TOWN
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[338]
+# CHERRYGROVE CITY
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[340]
+# ROUTE 29
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[345]
+# ROUTE 30
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[347]
+# ROUTE 31
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[349]
+# MAHOGANY TOWN
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[351]
+# ROUTE 44
+Bicycle=true
+Outdoor=true
+ShowArea=true
+[367]
+# Pewter City Poké Center
+MapPosition=2,5,6
+Outdoor=false
+[368]
+# Route 10 Poke Center
+MapPosition=2,19,5
+Outdoor=false
+[370]
+# Saffron City House 1
+MapPosition=2,15,8
+Outdoor=false
+[371]
+# Saffron City House 2
+MapPosition=2,15,8
+Outdoor=false
+[372]
+# Fuchsia City Warden House
+MapPosition=2,13,14
+Outdoor=false
+[374]
+# Pokémon League
+MapPosition=2,3,5
+Outdoor=false
+[375]
+# Pokemon League 2
+BattleBack=EliteC
+MapPosition=2,3,5
+Outdoor=false
+[376]
+# Pokemon League 3
+BattleBack=EliteD
+MapPosition=2,3,5
+Outdoor=false
+[377]
+# Pokemon League 4
+BattleBack=EliteB
+MapPosition=2,3,5
+Outdoor=false
+[378]
+# Pokemon League Champion
+BattleBack=Champion
+MapPosition=2,3,5
+Outdoor=false
+[379]
+# Hall of Fame
+MapPosition=2,3,5
+Outdoor=false
+[380]
+# ROUTE 2
+MapPosition=2,5,7
+Outdoor=false
+[381]
+# Kanto Daycare
+MapPosition=2,15,7
+Outdoor=false
+[382]
+# Underground path entrance
+MapPosition=2,15,7
+Outdoor=false
+[383]
+# Underground path exit
+MapPosition=2,15,9
+Outdoor=false
+[384]
+# Viridian Gym
+MapPosition=2,5,10
+Outdoor=false
+[385]
+# Celadon Gym
+MapPosition=2,12,8
+Outdoor=false
+[386]
+# Cinnabar Island Gym
+MapPosition=2,5,16
+Outdoor=false
+[387]
+# Saffron City Gym
+MapPosition=2,15,8
+Outdoor=false
+[388]
+# FUCHSIA CITY GYM
+MapPosition=2,13,14
+Outdoor=false
+[389]
+# Saffron Fighting Dojo
+MapPosition=2,15,8
+Outdoor=false
+[395]
+# Underground path N-S
+MapPosition=2,15,8
+Outdoor=false
+[396]
+# Underground path entrance
+MapPosition=2,16,8
+Outdoor=false
+[397]
+# Underground path exit
+MapPosition=2,14,8
+Outdoor=false
+[398]
+# Underground path E-W
+MapPosition=2,15,8
+Outdoor=false
+[399]
+# East Saffron gate
+MapPosition=2,16,8
+Outdoor=false
+[400]
+# MT. MOON
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,10,5
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[401]
+# MT. MOON
+Bicycle=true
+TrainerVictoryME=frlg_trainervictory.ogg
+WildVictoryME=frlg_wildvictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+MapPosition=2,10,5
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[402]
+# Pewter Museum 1F
+MapPosition=2,5,6
+Outdoor=false
+[403]
+# Pewter Museum 2F
+MapPosition=2,5,6
+Outdoor=false
+[404]
+# Cerulean Bike Shop
+MapPosition=2,15,5
+Outdoor=false
+[405]
+# Pokemon Lab
+MapPosition=2,5,16
+Outdoor=false
+[406]
+# Pokemon Lab room 1
+MapPosition=2,5,16
+Outdoor=false
+[407]
+# Pokemon Lab room 2
+MapPosition=2,5,16
+Outdoor=false
+[408]
+# Pokemon Lab room 3
+MapPosition=2,5,16
+Outdoor=false
+[421]
+# Safari zone 1
+WildVictoryME=frlg_wildvictory.ogg
+SafariMap=true
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+ShowArea=true
+[422]
+# Safari zone 2
+WildVictoryME=frlg_wildvictory.ogg
+SafariMap=true
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+[425]
+# Route 11 gate
+MapPosition=2,18,11
+Outdoor=false
+[426]
+# Route 11 gate upstairs
+MapPosition=2,18,11
+Outdoor=false
+[433]
+# S.S. Anne 2F
+Outdoor=false
+[436]
+# S.S. Anne Deck
+TrainerVictoryME=frlg_trainervictory.ogg
+TrainerBattleBGM=Trainer Battle GBA.mp3
+Outdoor=true
+[437]
+# Green room 1
+Outdoor=false
+[438]
+# Green room 2
+Outdoor=false
+[439]
+# Green room 3
+Outdoor=false
+[440]
+# Green room 4
+Outdoor=false
+[441]
+# Green room 5
+Outdoor=false
+[442]
+# Green room 6
+Outdoor=false
+[443]
+# Green room 7
+TrainerVictoryME=frlg_trainervictory.ogg
+TrainerBattleBGM=frlg_trainerbattle.ogg
+[444]
+# S.S. Anne Dock
+SnapEdges=false
+MapPosition=2,15,11
+Outdoor=true
+[446]
+# Safari zone 3
+WildVictoryME=frlg_wildvictory.ogg
+SafariMap=true
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+[447]
+# Safari zone 4
+WildVictoryME=frlg_wildvictory.ogg
+SafariMap=true
+Outdoor=true
+WildBattleBGM=frlg_wildpoke.ogg
+[448]
+# Rest house 1
+SafariMap=true
+[449]
+# Rest house 2
+SafariMap=true
+[450]
+# Rest house 3
+SafariMap=true
+[451]
+# Rest house 4
+SafariMap=true
+[452]
+# Surf House
+SafariMap=true
+[453]
+# Safari Zone gate
+MapPosition=2,13,14
+Outdoor=false
+[467]
+# Route 23 up
+Bicycle=true
+MapPosition=2,3,8
+Outdoor=true
+ShowArea=true
+[472]
+# Celadon Mansion 1F
+MapPosition=2,12,8
+Outdoor=false
+[473]
+# Celadon Mansion 2F
+MapPosition=2,12,8
+Outdoor=false
+[474]
+# Celadon Mansion 3F
+MapPosition=2,12,8
+Outdoor=false
+[475]
+# Celadon Mansion Rooftop
+MapPosition=2,12,8
+Outdoor=true
+[476]
+# Power Plant
+BattleBack=IndoorA
+Bicycle=false
+WildVictoryME=frlg_wildvictory.ogg
+MapPosition=2,19,6
+Outdoor=false
+ShowArea=false
+WildBattleBGM=frlg_wildpoke.ogg
+[477]
+# Celadon Mansion Secret Room
+MapPosition=2,12,8
+Outdoor=false
+[483]
+# Saffron City Fan Club
+MapPosition=2,15,8
+Outdoor=false
+[484]
+# Pokémon Lab (Post-Brock)
+MapPosition=2,5,13
+Outdoor=false
+[496]
+# Celadon Restaurant
+MapPosition=2,12,8
+Outdoor=false
+[497]
+# Celadon Hotel
+MapPosition=2,12,8
+Outdoor=false
+[498]
+# Celadon City House
+MapPosition=2,12,8
+Outdoor=false
+[499]
+# Copycat House 1F
+MapPosition=2,15,8
+Outdoor=false
+[500]
+# Copycat House 2F
+MapPosition=2,15,8
+Outdoor=false

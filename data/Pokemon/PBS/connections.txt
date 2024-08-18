@@ -1,0 +1,302 @@
+# Route 5 (41) - Route 4 (40)
+41,North,0,40,South,0
+# Route 5 (41) - Route 6 (45)
+41,South,6,45,North,0
+# CELADON CITY (83) - ROUTE 16 (132)
+83,West,2,132,East,0
+# CELADON CITY (83) - ROUTE 7 (99)
+83,East,2,99,West,0
+# ROUTE 17 (131) - ROUTE 18 CYCLE (133)
+131,South,6,133,North,0
+# ROUTE 17 (131) - ROUTE 16 cycle (134)
+131,North,0,134,South,0
+# Extra trees (311) - Route 201 (309)
+311,North,0,309,South,64
+# Sandgem Town (262) - Route 201 (309)
+262,West,3,309,East,0
+# Twinleaf Town (307) - Route 201 (309)
+307,North,0,309,South,24
+# Sandgem Town (262) - Extra trees (311)
+262,West,32,311,East,0
+# Twinleaf Town (307) - Sandgem Town (262)
+307,North,66,262,South,0
+# ROUTE 109 (275) - ROUTE 103 (269)
+275,West,0,269,East,100
+# MAUVILLE CITY (264) - ROUTE 103 (269)
+264,West,80,269,East,0
+# ROUTE 110 (276) - ROUTE 103 (269)
+276,West,60,269,East,0
+# Route 102 Fillertreestop (289) - ROUTE 103 (269)
+289,East,0,269,West,7
+# OLDALE TOWN (278) - ROUTE 103 (269)
+278,North,0,269,South,6
+# Route 102 Fillertreesdown (290) - ROUTE 103 (269)
+290,East,0,269,West,42
+# ROUTE 102 (268) - ROUTE 103 (269)
+268,North,44,269,South,0
+# ROUTE 108 (274) - ROUTE 109 (275)
+274,East,0,275,West,42
+# SLATEPORT CITY NC (263) - ROUTE 109 (275)
+263,South,6,275,North,0
+# ROUTE 110 (276) - MAUVILLE CITY (264)
+276,North,0,264,South,0
+# ROUTE 108 (274) - MAUVILLE CITY (264)
+274,East,0,264,West,222
+# ROUTE 106 (272) - DEWFORD TOWN NC (281)
+272,South,60,281,North,0
+# ROUTE 107 (273) - DEWFORD TOWN NC (281)
+273,West,0,281,East,0
+# ROUTE 105 (271) - ROUTE 104 (270)
+271,North,0,270,South,0
+# ROUTE 101 (267) - ROUTE 104 (270)
+267,North,0,270,South,114
+# PETALBURG CITY (279) - ROUTE 104 (270)
+279,West,0,270,East,46
+# Route 102 Fillertreesdown (290) - ROUTE 104 (270)
+290,North,0,270,South,70
+# ROUTE 108 (274) - ROUTE 110 (276)
+274,East,0,276,West,202
+# SLATEPORT CITY NC (263) - ROUTE 110 (276)
+263,North,6,276,South,0
+# ROUTE 106 (272) - ROUTE 105 (271)
+272,North,0,271,South,0
+# OLDALE TOWN (278) - ROUTE 105 (271)
+278,South,0,271,North,120
+# PETALBURG CITY (279) - ROUTE 105 (271)
+279,West,34,271,East,0
+# ROUTE 102 (268) - ROUTE 105 (271)
+268,South,0,271,North,70
+# ROUTE 101 (267) -  LITTLEROOT TOWN (260)
+267,South,0,260,North,2
+# Route 102 Fillertreesdown (290) -  LITTLEROOT TOWN (260)
+290,South,42,260,North,0
+# ROUTE 107 (273) - ROUTE 106 (272)
+273,West,0,272,East,20
+# ROUTE 108 (274) - ROUTE 106 (272)
+274,North,0,272,South,140
+# ROUTE 101 (267) - Route 102 Fillertreestop (289)
+267,West,0,289,East,35
+# OLDALE TOWN (278) - Route 102 Fillertreestop (289)
+278,North,0,289,South,50
+# PETALBURG CITY (279) - Route 102 Fillertreestop (289)
+279,East,0,289,West,1
+# ROUTE 102 (268) - Route 102 Fillertreestop (289)
+268,North,0,289,South,0
+# OLDALE TOWN (278) - ROUTE 101 (267)
+278,South,0,267,North,6
+# Route 102 Fillertreesdown (290) - ROUTE 101 (267)
+290,East,0,267,West,0
+# ROUTE 102 (268) - ROUTE 101 (267)
+268,South,44,267,North,0
+# Route 102 Fillertreesdown (290) - OLDALE TOWN (278)
+290,North,50,278,South,0
+# ROUTE 102 (268) - OLDALE TOWN (278)
+268,East,0,278,West,0
+# ROUTE 108 (274) - ROUTE 107 (273)
+274,West,0,273,East,0
+# Route 102 Fillertreesdown (290) - PETALBURG CITY (279)
+290,West,0,279,East,34
+# ROUTE 102 (268) - PETALBURG CITY (279)
+268,West,0,279,East,14
+# ROUTE 102 (268) - Route 102 Fillertreesdown (290)
+268,South,0,290,North,0
+# ROUTE 30 (345) - ROUTE 31 (347)
+345,North,0,347,South,16
+# ROUTE 30 (345) - CHERRYGROVE CITY (338)
+345,South,0,338,North,14
+# ROUTE 29 (340) - CHERRYGROVE CITY (338)
+340,West,4,338,East,0
+# ROUTE 29 (340) - NEW BARK TOWN (334)
+340,East,1,334,West,0
+# ROUTE 29 (340) - ROUTE 30 (345)
+340,West,0,345,East,57
+# ROUTE 44 (351) - MAHOGANY TOWN (349)
+351,West,0,349,East,0
+# ROUTE 22 (200) - VIRIDIAN CITY (104)
+200,East,0,104,West,6
+# ROUTE 2 Entr (146) - VIRIDIAN CITY (104)
+146,South,2,104,North,0
+# ROUTE 1 (103) - VIRIDIAN CITY (104)
+103,North,0,104,South,6
+# Blue sea left (127) - ROUTE 20 Left (209)
+127,South,0,209,North,6
+# CINNABAR ISLAND (105) - ROUTE 20 Left (209)
+105,East,0,209,West,0
+# ROUTE 21 (124) - ROUTE 20 Left (209)
+124,South,30,209,North,0
+# CINNABAR ISLAND (105) - Blue sea left (127)
+105,North,36,127,South,0
+# PALLET TOWN (79) - Blue sea left (127)
+79,East,80,127,West,0
+# ROUTE 21 (124) - Blue sea left (127)
+124,East,60,127,West,0
+# ROUTE 21 (124) - CINNABAR ISLAND (105)
+124,South,0,105,North,0
+# ROUTE 1 (103) - ROUTE 22 (200)
+103,North,0,200,South,59
+# ROUTE 21 (124) - PALLET TOWN (79)
+124,North,0,79,South,0
+# ROUTE 1 (103) - PALLET TOWN (79)
+103,South,0,79,North,0
+# ROUTE 19 (128) - ROUTE 20 Right (210)
+128,West,40,210,East,0
+# Blue sea right (211) - ROUTE 20 Right (210)
+211,South,0,210,North,6
+# Blue sea right (211) - ROUTE 19 (128)
+211,East,0,128,West,0
+# ROUTE 18 (206) - ROUTE 19 (128)
+206,South,72,128,North,0
+# FUCHSIA CITY (129) - ROUTE 19 (128)
+129,South,12,128,North,0
+# ROUTE 15 left (207) - ROUTE 19 (128)
+207,West,41,128,East,0
+# ROUTE 18 (206) - Blue sea right (211)
+206,South,0,211,North,42
+# FUCHSIA CITY (129) - Blue sea right (211)
+129,South,0,211,North,102
+# ROUTE 15 left (207) - Blue sea right (211)
+207,South,0,211,North,150
+# FUCHSIA CITY (129) - ROUTE 18 (206)
+129,West,0,206,East,0
+# ROUTE 15 left (207) - FUCHSIA CITY (129)
+207,West,0,129,East,0
+# ROUTE 14 (198) - Route 14 water filler (220)
+198,East,24,220,West,0
+# ROUTE 13 (197) - Route 14 water filler (220)
+197,South,0,220,North,0
+# ROUTE 12 (205) - ROUTE 14 (198)
+205,South,0,198,North,72
+# Route 14 grass filler 1 (218) - ROUTE 14 (198)
+218,South,8,198,North,0
+# Route 14 grass filler 2 (219) - ROUTE 14 (198)
+219,East,0,198,West,0
+# ROUTE 15 right (208) - ROUTE 14 (198)
+208,East,0,198,West,39
+# ROUTE 13 (197) - ROUTE 14 (198)
+197,West,0,198,East,0
+# ROUTE 12 (205) - ROUTE 11 right (215)
+205,West,51,215,East,0
+# Route 14 grass filler 2 (219) - ROUTE 11 right (215)
+219,East,0,215,West,69
+# ROUTE 15 right (208) - ROUTE 11 right (215)
+208,East,0,215,West,108
+# Route 14 grass filler 1 (218) - ROUTE 12 (205)
+218,East,0,205,West,105
+# Route 14 grass filler 2 (219) - ROUTE 12 (205)
+219,North,92,205,South,0
+# ROUTE 13 (197) - ROUTE 12 (205)
+197,North,48,205,South,0
+# Route 14 grass filler 2 (219) - Route 14 grass filler 1 (218)
+219,North,12,218,South,0
+# ROUTE 13 (197) - Route 14 grass filler 1 (218)
+197,North,0,218,South,32
+# ROUTE 15 right (208) - Route 14 grass filler 2 (219)
+208,North,52,219,South,0
+# VERMILION CITY (32) - ROUTE 11 left (214)
+32,East,1,214,West,0
+# VERMILION CITY (32) - ROUTE 6 (98)
+32,North,3,98,South,0
+# ROUTE 8 (193) - Route 10 Lavender (203)
+193,East,0,203,West,76
+# Route 10 Lavender filler (212) - Route 10 Lavender (203)
+212,East,0,203,West,46
+# LAVENDER TOWN (97) - Route 10 Lavender (203)
+97,North,0,203,South,0
+# Route 12 lavender filler (213) - Route 10 Lavender (203)
+213,East,0,203,West,105
+# ROUTE 8 (193) - ROUTE 12 lavender (204)
+193,East,24,204,West,0
+# Route 10 Lavender filler (212) - ROUTE 12 lavender (204)
+212,East,54,204,West,0
+# LAVENDER TOWN (97) - ROUTE 12 lavender (204)
+97,South,0,204,North,0
+# Route 12 lavender filler (213) - ROUTE 12 lavender (204)
+213,East,0,204,West,5
+# Route 10 Lavender filler (212) - ROUTE 8 (193)
+212,South,0,193,North,53
+# LAVENDER TOWN (97) - ROUTE 8 (193)
+97,West,0,193,East,4
+# Route 12 lavender filler (213) - ROUTE 8 (193)
+213,North,0,193,South,43
+# LAVENDER TOWN (97) - Route 10 Lavender filler (212)
+97,West,0,212,East,34
+# Route 12 lavender filler (213) - LAVENDER TOWN (97)
+213,East,0,97,West,25
+# Cerulean filler (138) - ROUTE 25 (137)
+138,North,0,137,South,0
+# ROUTE 24 (136) - ROUTE 25 (137)
+136,East,0,137,West,1
+# CERULEAN CITY (112) - ROUTE 4 Cer (148)
+112,West,0,148,East,4
+# ROUTE 24 (136) - ROUTE 4 Cer (148)
+136,West,39,148,East,0
+# ROUTE 5 (142) - ROUTE 4 Cer (148)
+142,West,0,148,East,44
+# CERULEAN CITY (112) - Cerulean filler (138)
+112,North,36,138,South,0
+# ROUTE 24 (136) - Cerulean filler (138)
+136,East,23,138,West,0
+# CERULEAN CITY (112) - ROUTE 9 (194)
+112,East,5,194,West,0
+# ROUTE 10 (202) - ROUTE 9 (194)
+202,West,0,194,East,0
+# ROUTE 5 (142) - ROUTE 9 (194)
+142,East,0,194,West,35
+# ROUTE 24 (136) - CERULEAN CITY (112)
+136,South,0,112,North,0
+# ROUTE 5 (142) - CERULEAN CITY (112)
+142,North,0,112,South,0
+# Route 6 (44) - Route 1 (5)
+44,South,43,5,North,0
+# Safari Zone (66) - Route 1 (5)
+66,North,18,5,South,0
+# Cedolan City (7) - Route 1 (5)
+7,South,0,5,North,2
+# Lappet Town (2) - Route 1 (5)
+2,North,0,5,South,4
+# Cedolan City (7) - Route 6 (44)
+7,West,5,44,East,0
+# Lappet Town (2) - Safari Zone (66)
+2,West,0,66,East,0
+# Route 8 (69) - Safari Zone (66)
+69,North,0,66,South,10
+# Ingido Plateau (35) - Route 4 (39)
+35,West,11,39,East,0
+# Cedolan City (7) - Lerucean Town (23)
+7,East,0,23,West,78
+# Route 3 (31) - Lerucean Town (23)
+31,South,32,23,North,0
+# Route 2 (21) - Lerucean Town (23)
+21,East,0,23,West,1
+# Route 7 (47) - Cedolan City (7)
+47,West,0,7,East,0
+# Route 2 (21) - Cedolan City (7)
+21,South,0,7,North,21
+# Route 3 (31) - Ingido Plateau (35)
+31,West,0,35,East,10
+# Route 8 (69) - Lappet Town (2)
+69,North,12,2,South,0
+# Route 7 (47) - Battle Frontier (52)
+47,East,8,52,West,0
+# Route 2 (21) - Route 7 (47)
+21,East,77,47,West,0
+# ROUTE 4 (201) - ROUTE 3 (139)
+201,South,0,139,North,60
+# Route 3 filler 2 (141) - ROUTE 3 (139)
+141,West,0,139,East,0
+# PEWTER CITY (108) - ROUTE 3 (139)
+108,East,17,139,West,0
+# Route 3 filler (147) - ROUTE 3 (139)
+147,South,0,139,North,0
+# PEWTER CITY (108) - ROUTE 2 Exit (106)
+108,South,2,106,North,0
+# Route 3 filler 2 (141) - ROUTE 4 (201)
+141,North,0,201,South,24
+# Route 3 filler (147) - ROUTE 4 (201)
+147,East,1,201,West,0
+# Route 3 filler (147) - Route 3 filler 2 (141)
+147,South,84,141,North,0
+# Route 3 filler (147) - PEWTER CITY (108)
+147,West,8,108,East,0
+# INDIGO PLATEAU (125) - Route 23 up (467)
+125,South,0,467,North,4
