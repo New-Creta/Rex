@@ -62,7 +62,7 @@ namespace rex
 			{
 				// Calculate the dimension of the near plane
 				f32 h = glm::cos(0.5f * fov_rad) / glm::sin(0.5f * fov_rad);
-				f32 w = h * m_height / m_width;
+				f32 w = 2 * h * m_height / m_width;
 				f32 left = -w;
 				f32 right = w;
 				f32 top = -h;
