@@ -45,7 +45,7 @@ namespace rex
 
     void DxSwapchain::present()
     {
-      m_swapchain->Present(0, rsl::no_flags());
+      m_swapchain->Present(1, rsl::no_flags());
       
       // It's possible a windows error gets set because the driver wants to do something weird
       win::clear_win_errors();

@@ -51,7 +51,7 @@ namespace rex
       auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "New Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::RenderTarget);
       render_ctx->clear_render_target(current_backbuffer_rt());
-      render_ctx->execute_on_gpu(WaitForFinish::yes);
+      render_ctx->execute_on_gpu();
 
       // EMpty out the view heaps so that new views can be copied into it
       m_shader_visible_descriptor_heap_pool.at(ViewHeapType::Texture2D)->clear();
@@ -62,7 +62,7 @@ namespace rex
     {
       auto render_ctx = new_render_ctx(rsl::Nullptr<PipelineState>, "End Frame");
       render_ctx->transition_buffer(current_backbuffer_rt(), ResourceState::Present);
-      render_ctx->execute_on_gpu(WaitForFinish::yes);
+      render_ctx->execute_on_gpu();
 
       m_swapchain->present();
     }

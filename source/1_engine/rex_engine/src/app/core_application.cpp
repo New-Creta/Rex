@@ -13,6 +13,7 @@
 #include "rex_std/bonus/utility.h"
 
 #include "rex_engine/diagnostics/log.h"
+#include "rex_engine/profiling/instrumentor.h"
 
 #include <cstdlib>
 
@@ -141,6 +142,8 @@ namespace rex
   {
     globals::g_frame_info.update();
 
+    REX_INFO(LogCoreApp, "DT: {}", globals::g_frame_info.delta_time().to_milliseconds());
+
     platform_update();
   }
   //--------------------------------------------------------------------------------------------
@@ -162,6 +165,8 @@ namespace rex
 
     while(is_running())
     {
+      REX_PROFILE_FUNCTION();
+
       update();
 
       if(m_app_state.has_state(ApplicationState::MarkedForDestroy))

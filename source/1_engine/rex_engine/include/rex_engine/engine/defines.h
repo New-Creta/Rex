@@ -17,7 +17,7 @@
 
 //-------------------------------------------------------------------------
 // Func signature
-#define REX_FUNC_SIG = RSL_FUNC_SIGNATURE
+#define REX_FUNC_SIG RSL_FUNC_SIGNATURE
 
 //-------------------------------------------------------------------------
 // Static messaging

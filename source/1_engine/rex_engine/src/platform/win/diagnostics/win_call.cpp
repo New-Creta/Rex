@@ -43,6 +43,9 @@ rsl::string_view rex::win::WinCall::error_message() const
 
 void rex::win::check_for_win_errors(rsl::string_view file, rsl::string_view function, card32 lineNr)
 {
+  REX_UNUSED_PARAM(file);
+  REX_UNUSED_PARAM(function);
+  REX_UNUSED_PARAM(lineNr);
 #ifdef REX_SUPRESS_PRE_CHECK_WINDOWS_ERRORS
   clear_win_errors();
 #else
