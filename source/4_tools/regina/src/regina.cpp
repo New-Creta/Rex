@@ -17,6 +17,8 @@
 #include "rex_windows/app/gui_application.h"
 #include "rex_windows/engine/platform_creation_params.h"
 
+#include "rex_engine/memory/memory_tracking.h"
+
 #include "rex_renderer_core/rendering/scene_renderer.h"
 #include "rex_renderer_core/rendering/camera.h"
 
@@ -61,6 +63,11 @@ namespace regina
       else
       {
         m_scene_camera.switch_mode(rex::gfx::ProjectionMode::Perspective);
+      }
+
+      if (ImGui::Button("Dump mem states"))
+      {
+        rex::mem_tracker().dump_stats_to_file("mem_stats.txt");
       }
 
       ImGui::DragFloat3("Light Direction", &m_light_direction.r, 0.01f);
