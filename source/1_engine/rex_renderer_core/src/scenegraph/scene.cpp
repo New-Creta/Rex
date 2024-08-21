@@ -34,5 +34,10 @@ namespace rex
 
 			return entity;
 		}
+
+		void Scene::remove_entity(Entity& entity)
+		{
+			m_registry.destroy(entity.handle());
+		}
 	}
 }

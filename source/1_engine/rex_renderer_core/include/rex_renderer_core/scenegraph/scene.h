@@ -5,6 +5,8 @@
 #include "rex_std/string_view.h"
 #include "entt/entt.hpp"
 
+
+
 namespace rex
 {
 	namespace gfx
@@ -23,6 +25,8 @@ namespace rex
 			// Add a new entity to the scene.
 			// This entity has a transform component added automatically
 			Entity add_entity(rsl::string_view name = "Empty");
+
+			void remove_entity(Entity& entity);
 
 		private:
 			entt::registry m_registry;  // the entity registery is owned by the scene

@@ -42,6 +42,8 @@ namespace rex
 			// Return the name of the entity
 			rsl::string_view name() const;
 
+			entt::entity handle();
+
 		private:
 			entt::entity m_entity_handle;	// The entity handle which is what entt needs to operate on the entity
 			entt::registry* m_registry;		// The registry the entity is stored in

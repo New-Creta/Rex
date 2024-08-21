@@ -18,5 +18,11 @@ namespace rex
 		{
 			return m_name;
 		}
+
+		entt::entity Entity::handle()
+		{
+			return m_entity_handle;
+		}
+
 	}
 }
