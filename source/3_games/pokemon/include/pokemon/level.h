@@ -9,13 +9,6 @@
 namespace pokemon
 {
   // High level information on a level.
-  struct LevelInfo
-  {
-    rsl::string name;
-    rsl::string background;
-    rsl::vector<rsl::string> connections;
-    glm::vec3 pos;
-  };
 
   // A level a high level section of the game
   // for example: front end, in game, credits, options

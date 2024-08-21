@@ -38,7 +38,7 @@ namespace regina
   {
   public:
     Regina(s32 windowWidth, s32 windowHeight)
-      : m_scene_camera(glm::vec3(0.0f, 5.0f, -20.0f), rsl::DegAngle(45.0f), static_cast<f32>(windowWidth), static_cast<f32>(windowHeight), 0.1f, 1000.0f)
+      : m_scene_camera(glm::vec3(0.0f, 5.0f, -20.0f), rsl::deg_angle(45.0f), static_cast<f32>(windowWidth), static_cast<f32>(windowHeight), 0.1f, 1000.0f)
       , m_scene_viewport_width(windowWidth)
       , m_scene_viewport_height(windowHeight)
     {

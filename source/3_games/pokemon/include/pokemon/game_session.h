@@ -5,7 +5,7 @@
 #include "rex_std/string_view.h"
 #include "rex_std/unordered_map.h"
 
-#include "pokemon/map.h"
+#include "pokemon/poke_map.h"
 
 #include "rex_renderer_core/rendering/camera.h"
 #include "rex_renderer_core/rendering/scene_renderer.h"
@@ -22,12 +22,12 @@ namespace pokemon
     void update();
 
   private:
+    void initialize_common_resources();
     void initialise_world();
 
     rsl::unique_ptr<Map> load_map(rsl::string_view filepath);
 
   private:
-    rsl::vector<LevelInfo> m_levels_info;
     rsl::unique_ptr<Map> m_current_map;
     
     rsl::unique_ptr<rex::gfx::Scene> m_scene;

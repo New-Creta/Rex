@@ -1,6 +1,6 @@
 {
     "name":"Kanto",
-    "levels":[
+    "chunks":[
     {
         "name":"pallet_town",
         "background":"map/kanto/old/pallet_town.png",

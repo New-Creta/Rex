@@ -20,7 +20,7 @@ namespace rex
 		class Camera
 		{
 		public:
-			Camera(const glm::vec3& pos, rsl::DegAngle fov, f32 width, f32 height, f32 near, f32 far, ProjectionMode projectionMode = ProjectionMode::Perspective);
+			Camera(const glm::vec3& pos, rsl::deg_angle fov, f32 width, f32 height, f32 near, f32 far, ProjectionMode projectionMode = ProjectionMode::Perspective);
 
 			// Return the position of the camera
 			const glm::vec3& position() const;
@@ -50,7 +50,7 @@ namespace rex
 			f32 m_height;
 			f32 m_near;
 			f32 m_far;
-			rsl::DegAngle m_fov;
+			rsl::deg_angle m_fov;
 			ProjectionMode m_projection_mode;
 		};
 	}

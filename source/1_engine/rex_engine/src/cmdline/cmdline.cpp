@@ -252,7 +252,7 @@ namespace rex
 #endif
     }
 
-    void log_cmdline()
+    void print()
     {
       if(g_cmd_line.length() > 0)
       {
@@ -274,11 +274,6 @@ namespace rex
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg)
     {
       return g_cmd_line_args->get_argument(arg);
-    }
-
-    rsl::string_view get()
-    {
-      return g_cmd_line;
     }
 
   } // namespace cmdline
