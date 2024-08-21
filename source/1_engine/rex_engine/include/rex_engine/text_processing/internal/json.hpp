@@ -19,6 +19,7 @@
 #include "rex_std/iostream.h"
 #include "rex_std/streambuf.h"
 #include "rex_std/functional.h"
+#include "rex_std/iterator.h"
 
 #include "rex_engine/diagnostics/log.h"
 
@@ -19602,7 +19603,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// a type to represent differences between iterators
     using difference_type = rsl::ptrdiff;
     /// a type to represent container sizes
-    using size_type = rsl::size_t;
+    using size_type = s32;
 
     /// the allocator type
     using allocator_type = AllocatorType;
