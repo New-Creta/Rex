@@ -23,7 +23,7 @@ namespace pokemon
 
   void update()
   {
-    ImGui::ShowDemoWindow();
+    g_game_session->update();
   }
 
   void shutdown()
