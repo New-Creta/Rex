@@ -13,8 +13,8 @@ namespace rex
 		// This is added to every object by default
 		struct TransformComponent
 		{
-			glm::vec3 translation;							// Where in the world is it located
-			glm::vec3 rotation;								// What's the rotation of the object
+			glm::vec3 translation{};							// Where in the world is it located
+			glm::vec3 rotation{};								// What's the rotation of the object
 			glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);	// What's the scale of the object
 			
 			// Convert the transform of an object to a world matrix
