@@ -1,0 +1,291 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: The intermediate directory (Debug Cairo\) contains files shared from another project (fltkjpeg.vcxproj, fltkpng.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+          1 file(s) copied.
+  case.c
+  fl_call_main.c
+  fl_utf.c
+  flstring.c
+  is_right2left.c
+  is_spacing.c
+  numericsort.c
+  scandir.c
+  vsnprintf.c
+  Generating Code...
+  filename_absolute.cxx
+  filename_expand.cxx
+  filename_ext.cxx
+  filename_isdir.cxx
+  filename_list.cxx
+  filename_match.cxx
+  filename_setext.cxx
+  Fl.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_abort.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_add_idle.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Adjuster.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_arc.cxx
+  fl_arci.cxx
+  Fl_arg.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_ask.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Bitmap.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Box.cxx
+  fl_boxtype.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Browser.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Browser_.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Generating Code...
+  Compiling...
+  Fl_Browser_load.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Button.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Cairo.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Chart.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Check_Browser.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Check_Button.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Choice.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Clock.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_color.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Color_Chooser.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_compose.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Copy_Surface.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Counter.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_cursor.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_curve.cxx
+  Fl_Device.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Dial.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_diamond_box.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_display.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_dnd.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Generating Code...
+  Compiling...
+  Fl_Double_Window.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_draw.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_draw_image.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_draw_pixmap.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_engraved_label.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_File_Browser.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_File_Chooser.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_File_Chooser2.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_file_dir.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_File_Icon.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_File_Input.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_font.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_get_key.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_get_system_colors.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_grab.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Group.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_gtk.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_gleam.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Help_View.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Image.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Generating Code...
+  Compiling...
+  Fl_Image_Surface.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Input.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Input_.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_labeltype.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Light_Button.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_line_style.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_lock.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Menu.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Menu_.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Menu_add.cxx
+  Fl_Menu_Bar.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Menu_Button.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Menu_global.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Menu_Window.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Multi_Label.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Native_File_Chooser.cxx
+  fl_open_uri.cxx
+  fl_oval_box.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_overlay.cxx
+  fl_overlay_visual.cxx
+  Generating Code...
+  Compiling...
+  Fl_Overlay_Window.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_own_colormap.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Pack.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Paged_Device.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Pixmap.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_plastic.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Positioner.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_PostScript.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Preferences.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Printer.cxx
+  Fl_Progress.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_read_image.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_rect.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Repeat_Button.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Return_Button.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Roller.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_round_box.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Round_Button.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_rounded_box.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Scroll.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Generating Code...
+  Compiling...
+  fl_scroll_area.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Scrollbar.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_set_font.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_set_fonts.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_shadow_box.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Shared_Image.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_shortcut.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_show_colormap.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Single_Window.cxx
+  Fl_Slider.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_symbols.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Table.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Table_Row.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Tabs.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Text_Buffer.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Text_Display.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Text_Editor.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Tile.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Tiled_Image.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Tooltip.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Generating Code...
+  Compiling...
+  Fl_Tree.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Tree_Item.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Tree_Item_Array.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Tree_Prefs.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_utf8.cxx
+  Fl_Valuator.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Value_Input.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Value_Output.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Value_Slider.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  fl_vertex.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_visual.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Widget.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Window.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Window_fullscreen.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Window_hotspot.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Window_iconize.cxx
+  Fl_Window_shape.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Fl_Wizard.cxx
+  Fl_x.cxx
+  Fl_XBM_Image.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Generating Code...
+  Compiling...
+  Fl_XPM_Image.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  ps_image.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  screen_xywh.cxx
+S:\Downloads\polished-map-master\lib\fltk-1.3.7\FL\Fl_Cairo.H(32,11): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+  Generating Code...
