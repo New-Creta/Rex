@@ -7,7 +7,7 @@
 #include "rex_engine/engine/types.h"
 
 
-#include "rex_renderer_core/system/swapchain.h"
+#include "rex_engine/gfx/system/swapchain.h"
 
 #include <dxgi1_4.h>
 

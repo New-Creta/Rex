@@ -1,7 +1,7 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_directx/utility/d3dx12.h"
 
-#include "rex_renderer_core/gfx/index_buffer_format.h"
+#include "rex_engine/gfx/core/index_buffer_format.h"
 #include "rex_engine/memory/pointer_math.h"
 #include "rex_engine/engine/invalid_object.h"
 
@@ -27,13 +27,13 @@
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
 #include "rex_directx/system/dx_view_heap.h"
-#include "rex_renderer_core/system/shader_param_declaration.h"
+#include "rex_engine/gfx/system/shader_param_declaration.h"
 
-#include "rex_renderer_core/shader_reflection/shader_signature.h"
+#include "rex_engine/gfx/shader_reflection/shader_signature.h"
 
-#include "rex_renderer_core/materials/material_system.h"
-#include "rex_renderer_core/gfx/rhi.h"
-#include "rex_renderer_core/system/graphics_engine.h"
+#include "rex_engine/gfx/materials/material_system.h"
+#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/system/graphics_engine.h"
 
 #include "rex_directx/system/dx_shader_root_parameters.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_renderer_core/resources/vertex_buffer.h"
+#include "rex_engine/gfx/resources/vertex_buffer.h"
 
 #include "rex_directx/utility/dx_util.h"
 

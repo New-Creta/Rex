@@ -2,7 +2,7 @@
 
 #include "rex_directx/utility/dx_util.h"
 #include "rex_engine/engine/types.h"
-#include "rex_renderer_core/system/fence.h"
+#include "rex_engine/gfx/system/fence.h"
 #include "rex_engine/threading/thread_event.h"
 
 namespace rex

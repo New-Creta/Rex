@@ -3,24 +3,25 @@
 #include "rex_engine/images/stb_image.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/path.h"
-#include "rex_renderer_core/materials/material_system.h"
-#include "rex_renderer_core/gfx/rhi.h"
-#include "rex_renderer_core/components/mesh_component.h"
-#include "rex_renderer_core/components/transform_component.h"
-#include "rex_renderer_core/primitives/mesh_factory.h"
-#include "rex_renderer_core/primitives/quad.h"
+#include "rex_engine/gfx/materials/material_system.h"
+#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/components/mesh_component.h"
+#include "rex_engine/components/transform_component.h"
+#include "rex_engine/gfx/primitives/mesh_factory.h"
+#include "rex_engine/gfx/primitives/quad.h"
 
 namespace pokemon
 {
-	Chunk::Chunk(rex::gfx::Entity& entity, rsl::string_view name, rsl::string_view background, glm::vec3 pos)
+	Chunk::Chunk(rex::gfx::Entity entity, rsl::string_view name, rsl::string_view background, glm::vec3 pos)
 		: m_entity(entity)
 		, m_pos(pos)
 	{
 		rsl::string background_path = rex::path::join(rex::vfs::project_root(), background);
-		m_material = rsl::make_unique<ChunkMaterial>(background_path);
+		//asset_manager::load
+		//m_material = rsl::make_unique<ChunkMaterial>(background_path);
 
-		auto quad = rex::gfx::mesh_factory::create_quad(width, height);
-		m_entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(quad)).set_material(m_material.get());
+		//auto quad = rex::gfx::mesh_factory::create_quad(width, height);
+		//m_entity.add_component<rex::gfx::StaticMeshComponent>(rsl::move(quad)).set_material(m_material.get());
 
 		m_material = rex::gfx::load_material(rex::vfs::abs_path(rex::MountingPoint::EngineMaterials, "default.material"));
 		s32 x, y, channels;

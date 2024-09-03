@@ -1,0 +1,42 @@
+#include "pokemon/tileset.h"
+
+#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/images/stb_image.h"
+#include "rex_engine/engine/object_pool.h"
+
+namespace pokemon
+{
+	TileSet::TileSet(rsl::unique_ptr<rex::gfx::Texture2D> texture)
+		: m_texture(rsl::move(texture))
+	{}
+
+	rsl::shared_ptr<TileSet> load_tileset(rsl::string_view filepath)
+	{
+		// A tileset in OG pokemon was stored in 2bpp format.
+		// However, storing them as PNGs with 2bit depth actually reduces them in size on disk due to compression
+		// Therefore we don't need to do any building of of the bytes for a pixel as we can just them from the PNG
+		s32 width, height, channels;
+		u8* png_data = stbi_load(filepath.data(), &width, &height, &channels, 0);
+
+		// We do have to convert the single byte that's loaded into a proper format for the GPU
+		// As the value of a pixel is the value shared amongst all color components
+		// with a fully opaque alpha channel, this is easy enough
+		s32 num_pixels = width * height;
+		rsl::vector<rsl::Rgba> pixels;
+		pixels.reserve(num_pixels);
+
+		rsl::Rgba pixel{};
+		// To avoid setting the following in every iteration, just set it here, it's always the same anyway
+		pixel.alpha = 255;
+		for (s32 i = 0; i < num_pixels; ++i)
+		{
+			pixel.red = png_data[i];
+			pixel.green = png_data[i];
+			pixel.blue = png_data[i];
+			pixels.push_back(pixel);
+		}
+
+		return rex::load_object<TileSet>(rex::gfx::rhi::create_texture2d(width, height, rex::gfx::TextureFormat::Unorm4, pixels.data()));
+	}
+
+}

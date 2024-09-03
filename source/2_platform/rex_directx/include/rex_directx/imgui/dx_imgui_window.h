@@ -1,13 +1,13 @@
 #pragma once
 
 #include "rex_directx/system/dx_swapchain.h"
-#include "rex_renderer_core/resources/root_signature.h"
-#include "rex_renderer_core/resources/pipeline_state.h"
-#include "rex_renderer_core/resources/constant_buffer.h"
-#include "rex_renderer_core/resources/clear_state.h"
-#include "rex_renderer_core/imgui/imgui_viewport.h"
-#include "rex_renderer_core/imgui/imgui_device.h"
-#include "rex_renderer_core/imgui/imgui_window_render_params.h"
+#include "rex_engine/gfx/resources/root_signature.h"
+#include "rex_engine/gfx/resources/pipeline_state.h"
+#include "rex_engine/gfx/resources/constant_buffer.h"
+#include "rex_engine/gfx/resources/clear_state.h"
+#include "rex_engine/gfx/imgui/imgui_viewport.h"
+#include "rex_engine/gfx/imgui/imgui_device.h"
+#include "rex_engine/gfx/imgui/imgui_window_render_params.h"
 
 #include "imgui/imgui.h"
 

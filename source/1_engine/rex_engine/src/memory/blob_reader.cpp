@@ -17,6 +17,13 @@ namespace rex
     }
 
     //-------------------------------------------------------------------------
+    void BlobReader::read(void* dst, rsl::memory_size size)
+    {
+      m_blob.read_bytes(dst, size, m_read_offset);
+      m_read_offset += size;
+    }
+
+    //-------------------------------------------------------------------------
     s32 BlobReader::skip(rsl::memory_size amount)
     {
       m_read_offset += amount;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_renderer_core/gfx/graphics.h"
-#include "rex_renderer_core/gfx/copy_context.h"
-#include "rex_renderer_core/system/copy_engine.h"
+#include "rex_engine/gfx/graphics.h"
+#include "rex_engine/gfx/system/copy_context.h"
+#include "rex_engine/gfx/system/copy_engine.h"
 
 #include "rex_directx/utility/dx_util.h"
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rex_renderer_core/gfx/index_buffer_format.h"
+#include "rex_engine/gfx/core/index_buffer_format.h"
 
-#include "rex_renderer_core/resources/index_buffer.h"
+#include "rex_engine/gfx/resources/index_buffer.h"
 #include "rex_directx/utility/dx_util.h"
 
 namespace rex

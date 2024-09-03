@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/resources/upload_buffer.h"
+#include "rex_engine/gfx/resources/upload_buffer.h"
 
 namespace rex
 {

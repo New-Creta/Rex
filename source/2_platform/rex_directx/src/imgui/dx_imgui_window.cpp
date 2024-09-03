@@ -5,10 +5,10 @@
 #include "rex_directx/system/dx_rhi.h"
 #include "rex_directx/gfx/dx_render_context.h"
 
-#include "rex_renderer_core/gfx/graphics.h"
-#include "rex_renderer_core/gfx/render_context.h"
+#include "rex_engine/gfx/graphics.h"
+#include "rex_engine/gfx/system/render_context.h"
 
-#include "rex_renderer_core/rendering/render_pass.h"
+#include "rex_engine/gfx/rendering/render_pass.h"
 
 namespace rex
 {

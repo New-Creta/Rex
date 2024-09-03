@@ -5,8 +5,8 @@
 #include "rex_engine/engine/types.h"
 #include "rex_engine/threading/thread_event.h"
 
-#include "rex_renderer_core/system/command_queue.h"
-#include "rex_renderer_core/gfx/graphics_context.h"
+#include "rex_engine/gfx/system/command_queue.h"
+#include "rex_engine/gfx/system/graphics_context.h"
 
 namespace rex
 {

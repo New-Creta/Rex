@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/resources/input_layout.h"
+#include "rex_engine/gfx/resources/input_layout.h"
 
 #include "rex_engine/engine/types.h"
 

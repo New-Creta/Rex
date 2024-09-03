@@ -6,11 +6,11 @@
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/frameinfo/deltatime.h"
 #include "rex_engine/frameinfo/frameinfo.h"
-#include "rex_renderer_core/gfx/depth_info.h"
-#include "rex_renderer_core/rendering/renderer.h"
-#include "rex_renderer_core/gfx/vertex.h"
-#include "rex_renderer_core/gfx/scissor_rect.h"
-#include "rex_renderer_core/gfx/viewport.h"
+#include "rex_engine/gfx/core/depth_info.h"
+#include "rex_engine/gfx/rendering/renderer.h"
+#include "rex_engine/gfx/core/vertex.h"
+#include "rex_engine/gfx/core/scissor_rect.h"
+#include "rex_engine/gfx/core/viewport.h"
 #include "rex_std/bonus/math/color.h"
 #include "rex_std/bonus/memory/memory_size.h"
 #include "rex_std/string.h"
@@ -19,8 +19,8 @@
 
 #include "rex_engine/memory/memory_tracking.h"
 
-#include "rex_renderer_core/rendering/scene_renderer.h"
-#include "rex_renderer_core/rendering/camera.h"
+#include "rex_engine/gfx/rendering/scene_renderer.h"
+#include "rex_engine/components/camera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

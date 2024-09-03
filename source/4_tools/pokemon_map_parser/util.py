@@ -1,5 +1,6 @@
 import array
 import os
+import math
 from tile import Tile
 from block import Block
 from PIL import Image
@@ -67,30 +68,22 @@ def serialize_tile_row(px_vals):
 
     even_byte = 0
     odd_byte = 0
-    num_hues = 4
     byte_max = 256
+    hues = [
+        (1, 1),
+        (1, 0),
+        (0, 1),
+        (0, 0)
+    ]
+
     for i in range(0, len(px_vals)):
         px = px_vals[i]
-        high = 0
-        low = 0
         if not all_same_value(px):
             raise Exception('Pixel is not gray scale')
         v = px[0]
-        hue = v / (byte_max / num_hues)
-        if hue == _white_hue:
-            high = 0
-            low = 0
-        if hue == _light_hue:
-            high = 0
-            low = 1
-        if hue == _dark_hue:
-            high = 1
-            low = 0
-        if hue == _black_hue:
-            high = 1
-            low = 1
-
-        even_byte |= (high << 7 - i)
-        odd_byte |= (low << 7 - i)
+        hue_idx = int(v / (byte_max / len(hues)))
+        high, low = hues[hue_idx]
+        even_byte |= (low << 7 - i)
+        odd_byte |= (high << 7 - i)
         
     return even_byte, odd_byte

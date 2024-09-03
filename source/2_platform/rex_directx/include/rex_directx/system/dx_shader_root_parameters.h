@@ -5,7 +5,7 @@
 #include "rex_std/vector.h"
 #include "rex_engine/engine/types.h"
 
-#include "rex_renderer_core/resources/resource.h"
+#include "rex_engine/gfx/resources/resource.h"
 
 namespace rex
 {

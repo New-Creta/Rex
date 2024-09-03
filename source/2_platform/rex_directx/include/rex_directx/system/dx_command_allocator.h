@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/system/command_allocator.h"
+#include "rex_engine/gfx/system/command_allocator.h"
 
 namespace rex
 {

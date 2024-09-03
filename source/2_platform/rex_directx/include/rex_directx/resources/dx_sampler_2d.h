@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_renderer_core/resources/sampler_2d.h"
+#include "rex_engine/gfx/resources/sampler_2d.h"
 
 #include "rex_directx/system/dx_resource_view.h"
 

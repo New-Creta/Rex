@@ -3,13 +3,13 @@
 #include "rex_directx/utility/dx_util.h"
 
 
-#include "rex_renderer_core/resources/blend_state.h"
-#include "rex_renderer_core/resources/depth_stencil_state.h"
+#include "rex_engine/gfx/resources/blend_state.h"
+#include "rex_engine/gfx/resources/depth_stencil_state.h"
 
 #include "rex_directx/resources/dx_input_layout.h"
 #include "rex_directx/resources/dx_vertex_shader.h"
 #include "rex_directx/resources/dx_pixel_shader.h"
-#include "rex_renderer_core/resources/pipeline_state.h"
+#include "rex_engine/gfx/resources/pipeline_state.h"
 
 namespace rex
 {

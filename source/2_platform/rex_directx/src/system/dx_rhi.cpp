@@ -21,7 +21,7 @@
 #include "rex_directx/system/dx_feature_shader_model.h"
 #include "rex_directx/system/dx_fence.h"
 #include "rex_directx/resources/dx_constant_buffer.h"
-#include "rex_renderer_core/gfx/graphics_context.h"
+#include "rex_engine/gfx/system/graphics_context.h"
 
 #include "rex_directx/resources/dx_input_layout.h"
 #include "rex_directx/resources/dx_vertex_shader.h"
@@ -31,7 +31,7 @@
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
 
 #include "rex_directx/gfx/dx_copy_context.h"
-#include "rex_renderer_core/gfx/graphics.h"
+#include "rex_engine/gfx/graphics.h"
 
 #include "rex_directx/resources/dx_root_signature.h"
 
@@ -43,9 +43,9 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/engine/casting.h"
 
-#include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
-#include "rex_renderer_core/gfx/viewport.h"
-#include "rex_renderer_core/gfx/scissor_rect.h"
+#include "rex_engine/gfx/core/renderer_output_window_user_data.h"
+#include "rex_engine/gfx/core/viewport.h"
+#include "rex_engine/gfx/core/scissor_rect.h"
 
 #include "rex_std/bonus/utility.h"
 
@@ -60,10 +60,10 @@
 #include "rex_directx/resources/dx_sampler_2d.h"
 
 #include "rex_engine/images/stb_image.h"
-#include "rex_renderer_core/materials/material_system.h"
-#include "rex_renderer_core/rendering/render_pass.h"
-#include "rex_renderer_core/system/input_layout_cache.h"
-#include "rex_renderer_core/system/root_signature_cache.h"
+#include "rex_engine/gfx/materials/material_system.h"
+#include "rex_engine/gfx/rendering/render_pass.h"
+#include "rex_engine/gfx/system/input_layout_cache.h"
+#include "rex_engine/gfx/system/root_signature_cache.h"
 
 namespace rex
 {

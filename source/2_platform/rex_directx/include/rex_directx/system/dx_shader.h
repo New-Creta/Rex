@@ -2,7 +2,7 @@
 
 #include "rex_directx/utility/dx_util.h"
 
-#include "rex_renderer_core/resources/shader.h"
+#include "rex_engine/gfx/resources/shader.h"
 
 namespace rex
 {

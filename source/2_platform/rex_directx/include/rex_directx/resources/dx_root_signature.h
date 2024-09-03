@@ -4,7 +4,7 @@
 
 #include "rex_directx/utility/dx_util.h"
 
-#include "rex_renderer_core/resources/root_signature.h"
+#include "rex_engine/gfx/resources/root_signature.h"
 
 namespace rex
 {

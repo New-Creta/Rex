@@ -16,7 +16,7 @@ namespace rex
     void log_pre_init_results()
     {
       // Now log the commandline we started the app with
-      cmdline::log_cmdline();
+      cmdline::print();
 
       // Log early on if any sanitization is enabled
       // This is useful to have in the log file to make sure that correct sanitization is enabled when testing

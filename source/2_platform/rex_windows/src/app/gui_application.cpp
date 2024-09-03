@@ -9,10 +9,10 @@
 #include "rex_engine/frameinfo/fps.h"
 #include "rex_engine/memory/global_allocator.h"
 #include "rex_engine/platform/win/win_com_library.h"
-#include "rex_renderer_core/gfx/depth_info.h"
-#include "rex_renderer_core/gfx/renderer_output_window_user_data.h"
-#include "rex_renderer_core/gfx/rhi.h"
-#include "rex_renderer_core/gfx/graphics.h"
+#include "rex_engine/gfx/core/depth_info.h"
+#include "rex_engine/gfx/core/renderer_output_window_user_data.h"
+#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/graphics.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/functional.h"
 #include "rex_std/math.h"
@@ -32,9 +32,9 @@
 #include "rex_engine/event_system/events/app/quit_app.h"
 #include "rex_engine/settings/settings.h"
 
-#include "rex_renderer_core/imgui/imgui_renderer.h"
+#include "rex_engine/gfx/imgui/imgui_renderer.h"
 
-#include "rex_renderer_core/gfx/graphics.h"
+#include "rex_engine/gfx/graphics.h"
 #include "rex_engine/diagnostics/debug.h"
 #include "rex_engine/memory/tracked_allocator.h"
 

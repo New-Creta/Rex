@@ -21,13 +21,13 @@ namespace rex
 
     void init(rsl::string_view cmdLine);
     void shutdown();
+    // Print all possible commandline args a user can specify
     void print_args();
-    void log_cmdline();
+    // This is used to print the entire commandline
+    void print();
 
     // This is used to scan if a certain argument is specified
     rsl::optional<rsl::string_view> get_argument(rsl::string_view arg);
 
-    // This is used to print the entire commandline
-    void print();
   } // namespace cmdline
 } // namespace rex

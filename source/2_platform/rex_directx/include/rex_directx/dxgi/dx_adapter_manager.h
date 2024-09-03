@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rex_directx/dxgi/dx_adapter.h"
-#include "rex_renderer_core/system/gpu_scorer.h"
+#include "rex_engine/gfx/system/gpu_scorer.h"
 #include "rex_std/vector.h"
 
 namespace rex

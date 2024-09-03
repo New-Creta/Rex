@@ -1,0 +1,20 @@
+{
+    "name":"Pallet Town",
+    "tileset":"tilesets/overworld.png",
+    "blockset":"blocksets/overworld.bst",
+    "blocks":"map_blocks/PalletTown.blk",
+    "width":10,
+    "height":9,
+    "connections": [
+        {
+            "direction": "North",
+            "map": "maps/route_1.json",
+            "offset": 0
+        },
+        {
+            "direction": "South",
+            "map": "maps/route_21.json",
+            "offset": 0
+        }
+    ]
+}

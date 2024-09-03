@@ -5,7 +5,7 @@
 #include "rex_engine/memory/pointer_math.h"
 
 #include "rex_directx/resources/dx_sampler_2d.h"
-#include "rex_renderer_core/system/gpu_engine.h"
+#include "rex_engine/gfx/system/gpu_engine.h"
 
 namespace rex
 {

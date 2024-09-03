@@ -2,8 +2,8 @@
 
 #include "rex_directx/dxgi/dx_adapter.h"
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/gfx/rhi.h"
-#include "rex_renderer_core/gfx/info.h"
+#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/gfx/core/info.h"
 
 namespace rex
 {

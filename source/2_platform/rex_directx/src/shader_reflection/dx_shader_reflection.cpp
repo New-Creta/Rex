@@ -11,7 +11,7 @@
 #include "rex_std/bonus/string.h"
 #include "rex_engine/diagnostics/assert.h"
 
-#include "rex_renderer_core/shader_reflection/shader_signature.h"
+#include "rex_engine/gfx/shader_reflection/shader_signature.h"
 namespace rex
 {
   namespace gfx

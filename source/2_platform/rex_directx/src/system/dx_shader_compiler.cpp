@@ -1,7 +1,7 @@
 #include "rex_directx/system/dx_shader_compiler.h"
 
 #include "rex_directx/diagnostics/dx_call.h"
-#include "rex_renderer_core/system/compile_shader.h"
+#include "rex_engine/gfx/system/compile_shader.h"
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/filesystem/vfs.h"
 #include "rex_engine/filesystem/path.h"

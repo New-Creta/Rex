@@ -1,9 +1,9 @@
 #include "rex_directx/imgui/dx_imgui_window.h"
-#include "rex_renderer_core/imgui/imgui_window.h"
+#include "rex_engine/gfx/imgui/imgui_window.h"
 #include "rex_engine/memory/global_allocator.h"
 
-#include "rex_renderer_core/imgui/imgui_device.h"
-#include "rex_renderer_core/imgui/imgui_window_render_params.h"
+#include "rex_engine/gfx/imgui/imgui_device.h"
+#include "rex_engine/gfx/imgui/imgui_window_render_params.h"
 
 namespace rex
 {

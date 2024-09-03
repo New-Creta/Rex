@@ -1,11 +1,11 @@
 #pragma once
 
-#include "rex_renderer_core/gfx/rhi.h"
+#include "rex_engine/gfx/system/rhi.h"
 
 #include "rex_directx/dxgi/includes.h"
 #include "rex_directx/dxgi/factory.h"
 #include "rex_directx/utility/dx_util.h"
-#include "rex_renderer_core/system/gpu_description.h"
+#include "rex_engine/gfx/core/gpu_description.h"
 
 #include "rex_directx/system/dx_device.h"
 #include "rex_directx/system/dx_debug_interface.h"

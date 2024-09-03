@@ -3,7 +3,7 @@
 #include "rex_directx/utility/dx_util.h"
 #include "rex_directx/system/dx_view_heap.h"
 
-#include "rex_renderer_core/resources/render_target.h"
+#include "rex_engine/gfx/resources/render_target.h"
 
 namespace rex
 {

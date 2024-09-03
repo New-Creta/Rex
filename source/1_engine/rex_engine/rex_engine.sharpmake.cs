@@ -28,6 +28,8 @@ public class RexEngine : EngineProject
 
     conf.AddPublicDependency<RexStd>(target, DependencySetting.Default);
     conf.AddPublicDependency<GLM>(target, DependencySetting.Default);
+    conf.AddPublicDependency<IMGUI>(target, DependencySetting.Default);
+    conf.AddPublicDependency<Entt>(target, DependencySetting.Default);
   }
 
   protected override void SetupConfigRules(RexConfiguration conf, RexTarget target)

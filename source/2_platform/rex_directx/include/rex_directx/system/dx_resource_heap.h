@@ -4,7 +4,7 @@
 #include "rex_engine/engine/types.h"
 #include "rex_std/bonus/memory.h"
 
-#include "rex_renderer_core/resources/clear_state.h"
+#include "rex_engine/gfx/resources/clear_state.h"
 
 struct D3D12_RESOURCE_ALLOCATION_INFO;
 

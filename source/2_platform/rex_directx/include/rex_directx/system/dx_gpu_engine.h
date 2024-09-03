@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_renderer_core/system/gpu_engine.h"
+#include "rex_engine/gfx/system/gpu_engine.h"
 
 #include "rex_directx/utility/dx_util.h"
 

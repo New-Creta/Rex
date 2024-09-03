@@ -21,6 +21,9 @@ namespace rex
       template <typename T>
       T read();
 
+      // Read a number of bytes out of the blob and store it in dst
+      void read(void* dst, rsl::memory_size size);
+
       // Skip a certain amount of bytes
       // it returns the read offset after the skip has been applied
       s32 skip(rsl::memory_size amount);

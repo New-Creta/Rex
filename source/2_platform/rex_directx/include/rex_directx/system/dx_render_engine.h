@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_renderer_core/system/render_engine.h"
+#include "rex_engine/gfx/system/render_engine.h"
 #include "rex_directx/gfx/dx_render_context.h"
 #include "rex_directx/system/dx_rhi.h"
 

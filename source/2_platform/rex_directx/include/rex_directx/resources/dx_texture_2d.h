@@ -2,9 +2,9 @@
 
 #include "rex_directx/system/dx_view_heap.h"
 
-#include "rex_renderer_core/resources/texture_2d.h"
+#include "rex_engine/gfx/resources/texture_2d.h"
 
-#include "rex_renderer_core/system/resource_view.h"
+#include "rex_engine/gfx/system/resource_view.h"
 
 namespace rex
 {

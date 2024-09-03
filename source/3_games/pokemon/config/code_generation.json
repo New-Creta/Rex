@@ -13,7 +13,8 @@
   },
   "MountingPoints": {
     "Content": [
-      "Maps"
+      "Maps",
+      "Tilesets"
     ]
   }
 }

@@ -1,13 +1,19 @@
 #pragma once
 
 #include "rex_std/string_view.h"
-#include "rex_renderer_core/scenegraph/scene.h"
+#include "rex_engine/gfx/scenegraph/scene.h"
 #include "rex_std/unordered_map.h"
 #include "pokemon/chunk.h"
 
-#include "rex_renderer_core/scenegraph/entity.h"
+#include "rex_engine/entities/entity.h"
 
 #include "rex_engine/text_processing/json.h"
+#include "pokemon/chunk_component.h"
+#include "pokemon/tileset.h"
+#include "pokemon/blockset.h"
+#include "pokemon/map_blocks.h"
+
+#include "rex_std/bonus/math.h"
 
 #include "glm/glm.hpp"
 
@@ -21,6 +27,13 @@ namespace rex
 
 namespace pokemon
 {
+  struct MapConnection
+  {
+    rsl::string map;
+    Direction direction;
+    s32 offset;
+  };
+
   // A map is a section for the in game level
   // a game consists of multiple levels
   // a level consists of 1 or more maps
@@ -37,15 +50,43 @@ namespace pokemon
   public: 
     Map(rex::gfx::Scene* scene, const rex::json::json& jsonBlob);
 
+    MapConnection* north_connection();
+    MapConnection* east_connection();
+    MapConnection* south_connection();
+    MapConnection* west_connection();
+
+    // the player position is always relative to the top left of the map
+    void load_viewable_blocks(rsl::pointi8 playerPosition);
+
     // Load the player into a particular chunk with a given name
-    void load_chunk(rsl::string_view name);
+    void set_player_chunk(rsl::string_view name);
 
   private:
-    rsl::string m_name;
-    rsl::unordered_map<rsl::string, ChunkInfo> m_level_infos;
-    const ChunkInfo* m_current_chunk_info;
-    rex::gfx::Scene* m_scene;
+    void load_connections(const rex::json::json& jsonBlob);
 
-    rsl::vector<Chunk> m_active_chunks;
+    void load_all_tilesets(rsl::string_view tilesetsPath);
+
+    void load_all_chunks(const rex::json::json& jsonBlob);
+    bool is_current_player_chunk(rsl::string_view name) const;
+
+  private:
+    rsl::unique_ptr<MapConnection> m_north_connection;
+    rsl::unique_ptr<MapConnection> m_east_connection;
+    rsl::unique_ptr<MapConnection> m_south_connection;
+    rsl::unique_ptr<MapConnection> m_west_connection;
+
+    rsl::shared_ptr<TileSet> m_tileset;
+    rsl::shared_ptr<BlockSet> m_blockset;
+    rsl::shared_ptr<MapBlocks> m_blocks;
+    s8 m_width;
+    s8 m_height;
+
+    rsl::string m_name;
+    rex::gfx::Scene* m_scene;
+    rsl::vector<rex::gfx::Entity> m_chunks;
+    rex::gfx::Entity m_player_chunk;
+    rsl::vector<ChunkComponent*> m_active_chunk_components;
+    rsl::vector<rsl::unique_ptr<TileSet>> m_tilesets;
+
   };
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "rex_renderer_core/resources/depth_stencil_buffer.h"
-#include "rex_renderer_core/system/resource_view.h"
+#include "rex_engine/gfx/resources/depth_stencil_buffer.h"
+#include "rex_engine/gfx/system/resource_view.h"
 
 #include "rex_directx/system/dx_view_heap.h"
 

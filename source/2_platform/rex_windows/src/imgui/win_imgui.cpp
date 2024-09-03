@@ -1,8 +1,8 @@
-#include "rex_renderer_core/imgui/imgui_renderer.h"
+#include "rex_engine/gfx/imgui/imgui_renderer.h"
 
 #include "imgui/platform/win/imgui_impl_win32.h"
 
-#include "rex_renderer_core/imgui/imgui_window.h"
+#include "rex_engine/gfx/imgui/imgui_window.h"
 #include "rex_windows/imgui/win_imgui.h"
 
 #include <Windows.h>

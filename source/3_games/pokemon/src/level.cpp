@@ -8,7 +8,7 @@
 #include "rex_engine/text_processing/ini_processor.h"
 #include "rex_engine/filesystem/vfs.h"
 
-#include "pokemon/map.h"
+#include "pokemon/poke_map.h"
 
 namespace pokemon
 {

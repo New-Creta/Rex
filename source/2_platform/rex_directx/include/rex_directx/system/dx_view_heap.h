@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rex_renderer_core/system/view_heap.h"
+#include "rex_engine/gfx/system/view_heap.h"
 #include "rex_directx/system/dx_resource_view.h"
 #include "rex_std/bonus/memory.h"
 #include "rex_directx/utility/dx_util.h"
