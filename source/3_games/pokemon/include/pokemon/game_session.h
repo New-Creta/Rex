@@ -11,6 +11,8 @@
 #include "rex_engine/gfx/rendering/scene_renderer.h"
 #include "glm/glm.hpp"
 
+#include "rex_std/bonus/math/point.h"
+
 namespace pokemon
 {
   // A game session is an object that holds the current state of the game
@@ -39,5 +41,7 @@ namespace pokemon
     s32 m_scene_viewport_width;
     s32 m_scene_viewport_height;
     glm::vec3 m_light_direction;
+
+    rsl::point<s8> m_player_block_pos;
   };
 }

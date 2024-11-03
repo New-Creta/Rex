@@ -62,12 +62,15 @@ namespace pokemon
     void set_player_chunk(rsl::string_view name);
 
   private:
-    void load_connections(const rex::json::json& jsonBlob);
-
     void load_all_tilesets(rsl::string_view tilesetsPath);
 
     void load_all_chunks(const rex::json::json& jsonBlob);
     bool is_current_player_chunk(rsl::string_view name) const;
+
+    rsl::unique_array<rsl::byte> allocate_map_texture_memory(const rex::json::json& jsonblob);
+    void fill_texture_with_padding_tile(const rex::json::json& jsonBlob, rsl::byte* textureMemory, s32 numTiles);
+    void fill_texture_with_map(const rex::json::json& jsonBlob, rsl::byte* textureMemory);
+    void fill_texture_with_connections(const rex::json::json& jsonBlob, rsl::byte* textureMemory);
 
   private:
     rsl::unique_ptr<MapConnection> m_north_connection;

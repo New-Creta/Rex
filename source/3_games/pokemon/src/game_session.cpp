@@ -13,61 +13,75 @@
 
 #include "pokemon/save_file.h"
 #include "rex_std/bonus/math.h"
+#include "rex_std/bonus/math/point.h"
 
 namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogGameSession);
 
-  void render_north_connection_block(Coordinate coord)
+  rsl::point<s8> square_to_block(rsl::point<s8> square)
   {
-    Coordinate connection_coord = coord;
+    rsl::point<s8> block{};
+    block.x = square.x / 2;
+    block.y = square.y / 2;
+    return block;
+  }
+
+  void render_map_block(rsl::point<s8> block)
+  {
+
+  }
+
+  void render_north_connection_block(rsl::point<s8> coord, MapConnection* connection)
+  {
+    rsl::point<s8> connection_coord = coord;
     connection_coord.y -= 1; // provide an additional offset or square -1 would be mapped on block 0
     if (!connection)
     {
       return render_border_block(connection_coord);
     }
 
-    Coordinate offset_block{};
+    rsl::point<s8> offset_block{};
     offset_block.x += connection->offset();
     offset_block.y += connection->height();
     render_connection_block(connection, offset_block);
   }
-  void render_south_connection_block(Coordinate coord)
+  void render_south_connection_block(rsl::point<s8> coord, MapConnection* connection)
   {
-    Coordinate connection_coord = coord;
+    rsl::point<s8> connection_coord = coord;
     if (!connection)
     {
       return render_border_block(connection_coord);
     }
 
-    Coordinate offset_block{};
+    rsl::point<s8> offset_block{};
     offset_block.x += connection->offset();
     offset_block.y -= m_current_map->height();
     render_connection_block(connection, offset_block);
   }
-  void render_east_connection_block(Coordinate coord)
+  void render_east_connection_block(rsl::point<s8> coord, MapConnection* connection)
   {
-    Coordinate connection_coord = coord;
+    rsl::point<s8> connection_coord = coord;
     if (!connection)
     {
       return render_border_block(connection_coord);
     }
 
-    Coordinate offset_block{};
+    rsl::point<s8> offset_block{};
     offset_block.x -= m_current_map->width();
     offset_block.y += connection->offset();
     render_connection_block(connection, offset_block);
   }
-  void render_west_connection_block(Coordinate coord, ChunkConnection* connection)
+  void render_west_connection_block(rsl::point<s8> coord, MapConnection* connection)
   {
-    Coordinate connection_coord = coord;
+    rsl::point<s8> connection_coord = coord;
     connection_coord.x -= 1; // provide an additional offset or square -1 would be mapped on block 0
     if (!connection)
     {
       return render_border_block(connection_coord);
     }
 
-    Coordinate offset_block{};
+    rsl::point<s8> offset_block{};
     offset_block.x += connection->width();
     offset_block.y += connection->offset();
     render_connection_block(connection, offset_block);
@@ -145,66 +159,59 @@ namespace pokemon
     // The player's position is always relative to the top left of the screen.
     // Squares are 2x2 tiles. The player is always in square (4, 4)
     // This means the player's block is always (2,2)
-    s32 squares_to_render_on_x = 10;
-    s32 squares_to_render_on_y = 9;
-    Coordinate player_block_pos{}; // in squares
-    Coordinate top_left_coord{}; // in squares
-    top_left_coord.x = player_block_pos.x - squares_to_render_on_x / 2;
-    top_left_coord.y = player_block_pos.y - squares_to_render_on_y / 2;
-    
-    for (s32 row = 0; row < m_current_map->height(); row += 2)
+    rsl::point<s8> top_left_offset_from_player{ -2, -2 };
+    const s8 blocks_to_render_on_x = 6;
+    const s8 blocks_to_render_on_y = 5;
+    const s8 num_blocks_to_render = blocks_to_render_on_x * blocks_to_render_on_y;
+    rsl::point<s8> current_render_coord = m_player_block_pos - top_left_offset_from_player;
+    rsl::array<s8, num_blocks_to_render> blocks_indices_to_render;
+    for (s32 row = 0; row < blocks_to_render_on_y; ++row)
     {
-      for (s32 column = 0; column < m_current_map->width(); column += 2)
+      current_render_coord.x = 0;
+      current_render_coord.y++;
+      for (s32 column = 0; column < blocks_to_render_on_x; ++column)
       {
-        // The block coordinate we have to render
-        Coordinate current_square{};
-        current_square.x = top_left_coord.x + column;
-        current_square.y = top_left_coord.y + row;
+        s8 idx_into_block_arr = row * blocks_to_render_on_x + column;
+        s8 block_idx = m_current_map->block_idx_at(current_render_coord);
+        blocks_indices_to_render[idx_into_block_arr] = block_idx
 
-        // if it falls within the map dimension, lookup the block and render it
-        Coordinate current_block{};
-        if (block_within_map_dimension(current_square))
-        {
-          current_block.x = current_square.x / 2;
-          current_block.y = current_square.y / 2;
-          render_map_block(current_block);
-          continue;
-        }
-        // If not render either the block of the connected map or the border block
-        else
-        {
-          auto render_connection_block_or_border_block = [&](ChunkConnection* connection, Coordinate offset)
-          {
-            if (!connection)
-            {
-              render_border_block(current_square);
-              return;
-            }
-            
-            // look up the block ID of "offset" coordinate in the connection map
-            // and render that one at the location of "current_block"
-          };
+        //// if it falls within the map dimension, lookup the block and render it
+        //if (block_within_map_dimension(current_render_coord))
+        //{
+        //  blocks_indices_to_render = m_current_map->block_at(current_render_coord);
+        //  render_map_block(current_render_coord);
+        //}
+        //// If not render either the block of the connected map or the border block
+        //else
+        //{
+        //  MapConnection* target_connection = nullptr;
+        //  if (current_render_coord.x < 0)
+        //  {
+        //    target_connection = m_current_map->west_connection();
+        //    render_west_connection_block(current_render_coord, target_connection);
+        //  }
+        //  else if (current_render_coord.x >= target_connection->width())
+        //  {
+        //    target_connection = m_current_map->east_connection();
+        //    render_east_connection_block(current_render_coord, target_connection);
+        //  }
+        //  if (current_render_coord.y < 0)
+        //  {
+        //    target_connection = m_current_map->north_connection();
+        //    render_north_connection_block(current_render_coord, target_connection);
+        //  }
+        //  else if (current_render_coord.y >= m_current_map->height())
+        //  {
+        //    target_connection = m_current_map->south_connection();
+        //    render_south_connection_block(current_render_coord, target_connection);
+        //  }
+        //}
 
-          ChunkConnection* target_connection = nullptr;
-          if (current_square.x < 0)
-          {
-            render_west_connection_block(current_square);
-          }
-          else if (current_square.x >= target_connection->width())
-          {
-            render_east_connection_block(current_square);
-          }
-          if (current_square.y < 0)
-          {
-            render_north_connection_block();
-          }
-          else if (current_square.y >= m_current_map->height())
-          {
-            render_south_connection_block();
-          }
-        }
+        current_render_coord.x++;
       }
     }
+
+    m_renderer->update_block_indices(blocks_indices_to_render);
 
     // If the player is no longer located in the current map
     // update the state so the player is now 
@@ -240,12 +247,15 @@ namespace pokemon
 
   rsl::unique_ptr<Map> GameSession::load_map(rsl::string_view filepath)
   {
+    // Always check if the map exists, you never know, it might not..
     if (!rex::vfs::is_file(filepath))
     {
       REX_ERROR(LogGameSession, "Failed to load map. Filepath doesn't exist. filepath: {}", filepath);
       return nullptr;
     }
 
+    // Load the json of the map into memory and parse it
+    // Check if it's a valid json as again, you never know, it might not be
     rex::json::json map_json = rex::json::read_from_file(filepath);
     if (map_json.is_discarded())
     {
@@ -253,6 +263,8 @@ namespace pokemon
       return nullptr;
     }
 
+    // If all of the above is correct, we should have a proper json format in memory now
+    // Pass this to the constructor of the map and let it take care of the next steps
     return rsl::make_unique<Map>(m_scene.get(), map_json);
   }
 }
