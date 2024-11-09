@@ -352,8 +352,8 @@ public abstract class BasicCPPProject : Project
     }
 
     // We always add the include folder of the project to its include paths
-    conf.IncludePaths.Add($@"{SourceRootPath}\include");
-    conf.IncludePrivatePaths.Add($@"{SourceRootPath}\include_private");
+    AddPublicIncludeIfExists(conf, $@"{SourceRootPath}\include");
+    AddPrivateIncludeIfExists(conf, $@"{SourceRootPath}\include_private");
   }
   // Setup rules that need to be defined based on optimization settings
   // This usually means adding or removing defines, but other options are available as well.
@@ -746,6 +746,22 @@ public abstract class BasicCPPProject : Project
     conf.UseRelativePdbPath = false;
     conf.LinkerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.LinkerPdbSuffix}.pdb");
     conf.CompilerPdbFilePath = Path.Combine(conf.TargetPath, $"{Name}_{target.ProjectConfigurationName}_{target.Compiler}{conf.CompilerPdbSuffix}.pdb");
+  }
+
+  // Add the include path to the configuration, if the path exists
+  private void AddPublicIncludeIfExists(RexConfiguration conf, string path)
+  {
+    if (Directory.Exists(path))
+    {
+      conf.IncludePaths.Add(path);
+    }
+  }
+  private void AddPrivateIncludeIfExists(RexConfiguration conf, string path)
+  {
+    if (Directory.Exists(path))
+    {
+      conf.IncludePrivatePaths.Add(path);
+    }
   }
 }
 
