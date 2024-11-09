@@ -5,9 +5,10 @@
 
 namespace rex
 {
+	class Object;
 	namespace internal
 	{
-		class Object* track_object(rsl::unique_ptr<Object> object);
+		Object* track_object(rsl::unique_ptr<Object> object);
 	}
 
 	class Object
@@ -20,7 +21,7 @@ namespace rex
 	rsl::shared_ptr<Object> load_object(Args&& ... args)
 	{
 		rsl::shared_ptr<Object> object = rsl::make_shared<Object>(rsl::forward<Args>(args)...);;
-		internal::track_object(rsl::weak_ptr<Object>(object));
+		//internal::track_object(rsl::weak_ptr<Object>(object));
 		return object;
 	}
 }

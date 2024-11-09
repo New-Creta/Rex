@@ -13,3 +13,6 @@ https://github.com/pret/pokeheartgold
 https://github.com/pret/pokefirered
 https://www.spriters-resource.com/game_boy_gbc/pokemongoldsilver/sheet/60234/
 https://www.youtube.com/watch?app=desktop&v=SK7XT0DWqtE
+
+Programmer - Nick De Breuck
+Programmer - Dave De Breuck

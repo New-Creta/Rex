@@ -2,16 +2,10 @@
 
 #include "rex_engine/text_processing/json.h"
 
+#include "pokemon/poke_structs.h"
+
 namespace pokemon
 {
-	enum class Direction
-	{
-		North,
-		East,
-		South,
-		West
-	};
-
 	class ChunkConnection
 	{
 	public:

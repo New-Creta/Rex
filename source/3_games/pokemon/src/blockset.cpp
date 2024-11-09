@@ -49,6 +49,7 @@ namespace pokemon
       blocks.emplace_back(blob_memory);
     }
 
-    return rex::load_object<BlockSet>(rsl::move(blocks));
+    return nullptr;
+    //return rex::load_object<BlockSet>(rsl::move(blocks));
 	}
 }

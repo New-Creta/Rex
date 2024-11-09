@@ -12,7 +12,8 @@ namespace pokemon
     rex::json::json json_blob = rex::json::parse(file_content);
 
     current_map.assign(json_blob["map"].get<rsl::string_view>());
-    current_chunk.assign(json_blob["chunk"].get<rsl::string_view>());
+    position.x = json_blob["position"]["x"];
+    position.y = json_blob["position"]["x"];
   }
 
 }

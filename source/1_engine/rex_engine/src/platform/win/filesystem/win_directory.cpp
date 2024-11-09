@@ -278,7 +278,7 @@ namespace rex
       {
         const s32 length = rsl::strlen(ffd.cFileName);
         const rsl::string_view name(ffd.cFileName, length);
-        const rsl::string full_filename = path::join(path, name);
+        rsl::string full_filename = path::join(path, name);
         if(file::exists(full_filename))
         {
           result.push_back(rsl::move(full_filename));

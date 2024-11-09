@@ -24,13 +24,16 @@ namespace pokemon
       return nullptr;
     }
 
-    s32 file_size = rex::file::size(filepath);
-    s32 num_blocks = file_size;
-    rsl::vector<s8> content;
-    content.resize(num_blocks);
-    rex::vfs::read_file(content.data(), content.size());
+    auto blob = rex::vfs::read_file(filepath);
 
-    return rex::load_object<MapBlocks>(rsl::move(content));
+    //s32 file_size = rex::file::size(filepath);
+    //s32 num_blocks = file_size;
+    //rsl::vector<s8> content;
+    //content.resize(num_blocks);
+    //rex::vfs::read_file(content.data(), content.size());
 
+    //return rex::load_object<MapBlocks>(rsl::move(content));
+
+    return nullptr;
 	}
 }

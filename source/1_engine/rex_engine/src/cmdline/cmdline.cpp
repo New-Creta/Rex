@@ -4,6 +4,7 @@
 #include "rex_engine/diagnostics/assert.h"
 #include "rex_engine/diagnostics/log.h"
 #include "rex_engine/diagnostics/logging/log_macros.h"
+#include "rex_engine/text_processing/text_processing.h"
 #include "rex_std/bonus/hashtable.h"
 #include "rex_std/bonus/types.h"
 #include "rex_std/bonus/utility.h"
@@ -143,10 +144,7 @@ namespace rex
           value = arg.substr(equal_pos + 1);
 
           // Remove the quote at the beginning if it starts with one
-          if(value.starts_with('"'))
-          {
-            value = value.substr(1);
-          }
+          value = remove_quotes(value);
         }
         // if the argument is of type -EnableSomething
         else

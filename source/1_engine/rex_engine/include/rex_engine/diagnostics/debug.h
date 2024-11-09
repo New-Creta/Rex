@@ -28,6 +28,9 @@ namespace rex
   // Log if any sanitization is enabled by the compiler
   void log_sanitization();
 
+  // same as regular abort, but if debugger is attached, it'll break
+  void abort(rsl::string_view msg);
+
 } // namespace rex
 
 #ifdef REX_PLATFORM_WINDOWS

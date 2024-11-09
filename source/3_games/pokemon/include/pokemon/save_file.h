@@ -3,6 +3,8 @@
 #include "rex_std/string.h"
 #include "rex_std/string_view.h"
 
+#include "rex_std/bonus/math/point.h"
+
 namespace pokemon
 {
   struct SaveFile
@@ -12,6 +14,6 @@ namespace pokemon
 
   public:
     rsl::string current_map;
-    rsl::string current_chunk;
+    rsl::pointi8 position;
   };
 }

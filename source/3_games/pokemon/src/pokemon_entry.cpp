@@ -23,7 +23,7 @@ namespace pokemon
 
   void update()
   {
-    g_game_session->update();
+    //g_game_session->update();
   }
 
   void shutdown()

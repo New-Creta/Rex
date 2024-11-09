@@ -131,7 +131,8 @@ namespace rex
           return;
         }
 
-        rsl::big_stack_string buf;
+        static rsl::string buf;
+        buf.clear();
         rsl::vformat_to(rsl::back_inserter(buf), fmt, rsl::make_format_args(rsl::forward<Args>(args)...));
 
         const details::LogMsg log_msg(loc, m_name, lvl, rsl::string_view(buf.data(), buf.size()));

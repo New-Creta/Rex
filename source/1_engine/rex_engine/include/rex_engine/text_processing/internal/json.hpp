@@ -22,6 +22,7 @@
 #include "rex_std/iterator.h"
 
 #include "rex_engine/diagnostics/log.h"
+#include "rex_engine/diagnostics/assert.h"
 
 /****************************************************************************\
  * Note on documentation: The source files contain links to the online      *
@@ -2539,7 +2540,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
     #define JSON_INTERNAL_CATCH(exception) catch(exception)
 #else
     #include <cstdlib>
-    #define JSON_THROW(exception) rsl::abort()
+    #define JSON_THROW(exception) REX_ASSERT("JSON ERROR!")
     #define JSON_TRY if(true)
     #define JSON_CATCH(exception) if(false)
     #define JSON_INTERNAL_CATCH(exception) if(false)
@@ -2568,7 +2569,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
 // allow overriding assert
 #if !defined(JSON_ASSERT)
     #include <cassert> // assert
-    #define JSON_ASSERT(x) assert(x)
+    #define JSON_ASSERT(x) REX_ASSERT_X(x, "JSON ERROR!")
 #endif
 
 // allow to access some private functions (needed by the test suite)
