@@ -68,7 +68,7 @@ namespace rex
       const T& read(rsl::memory_size offset = 0_bytes) const;
 
       // Read x amount of bytes from the underlying buffer at a certain offset and copy them into a desintation
-      void* read_bytes(void* dst, rsl::memory_size inSize, rsl::memory_size inOffset) const;
+      void* read_bytes(void* dst, rsl::memory_size inSize, rsl::memory_size inOffset = 0) const;
 
       // Write x amount of bytes into the underlying buffer, starting from a certain offset
       void write(const void* inData, rsl::memory_size inSize, rsl::memory_size inOffset = 0_bytes);
