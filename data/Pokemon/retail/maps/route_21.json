@@ -1,14 +1,14 @@
 {
     "name":"Route 21",
-    "map_blocks":"map_blocks/Route21.blk",
-    "blockset":"blockset/overworld.json",
+    "map_blocks":"Pokemon/retail/map_blocks/Route21.blk",
+    "blockset":"Pokemon/retail/blockset/overworld.json",
     "width":10,
     "height":45,
     "border_block_idx": 67,
     "connections": [
         {
             "direction": "North",
-            "map": "maps/pallet_town.json",
+            "map": "Pokemon/retail/maps/pallet_town.json",
             "offset": 0
         }
     ]

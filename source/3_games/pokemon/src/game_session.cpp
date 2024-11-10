@@ -50,8 +50,6 @@ namespace pokemon
         rex::memory::Blob file_content = rex::vfs::read_file(mapPath);
         rex::json::json json_blob = rex::json::parse(file_content);
         load_map(map.get(), json_blob);
-
-				map->fully_loaded = true;
       }
       g_maps.emplace(mapPath, rsl::move(map));
     }
@@ -96,25 +94,33 @@ namespace pokemon
   void load_map(MapObject* mapObject, const rex::json::json& jsonBlob)
   {
     // Connections
-    mapObject->connections.reserve(jsonBlob["connections"].size());
-    for (const auto& connection_json : jsonBlob["connections"])
+    if (jsonBlob.contains("connections"))
     {
-      MapConnection& connection = mapObject->connections.emplace_back();
-      connection.direction = rsl::enum_refl::enum_cast<Direction>(connection_json["direction"].get<rsl::string_view>()).value();
-      connection.map = find_map_without_connections(connection_json["map"]);
-      connection.offset = connection_json["offset"]; // is in squares (2x2 tiles)
+      mapObject->connections.reserve(jsonBlob["connections"].size());
+      for (const auto& connection_json : jsonBlob["connections"])
+      {
+        MapConnection& connection = mapObject->connections.emplace_back();
+        connection.direction = rsl::enum_refl::enum_cast<Direction>(connection_json["direction"].get<rsl::string_view>()).value();
+        connection.map = find_map_without_connections(connection_json["map"]);
+        connection.offset = connection_json["offset"]; // is in squares (2x2 tiles)
+      }
     }
 
     // Wrap events
-    mapObject->wrap_events.reserve(jsonBlob["wraps"].size());
-    for (const auto& wrap_json : jsonBlob["wraps"])
+    if (jsonBlob.contains("wraps"))
     {
-      WrapEvent& wrap_event = mapObject->wrap_events.emplace_back();
-      wrap_event.x = wrap_json["x"];
-      wrap_event.y = wrap_json["y"];
-      wrap_event.dst_map_id = wrap_json["dst_map_id"];
-      wrap_event.dst_warp_id = wrap_json["dst_warp_id"];
+      mapObject->wrap_events.reserve(jsonBlob["wraps"].size());
+      for (const auto& wrap_json : jsonBlob["wraps"])
+      {
+        WrapEvent& wrap_event = mapObject->wrap_events.emplace_back();
+        wrap_event.x = wrap_json["x"];
+        wrap_event.y = wrap_json["y"];
+        wrap_event.dst_map_id = wrap_json["dst_map_id"];
+        wrap_event.dst_warp_id = wrap_json["dst_warp_id"];
+      }
     }
+
+    mapObject->fully_loaded = true;
   }
 
   rsl::unique_ptr<MapObject> load_map(rsl::string_view mapPath)
