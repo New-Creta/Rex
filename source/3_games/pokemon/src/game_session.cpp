@@ -18,11 +18,32 @@
 
 #include "rex_std/unordered_map.h"
 
+#include "rex_engine/gfx/system/rhi.h"
+#include "rex_engine/images/stb_image.h"
+
 namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogGameSession);
 
   rsl::unordered_map<rsl::string_view, rsl::unique_ptr<MapObject>> g_maps;
+  rsl::unordered_map<rsl::string_view, rsl::unique_array<u8>> g_map_blocks;
+
+  rsl::unique_array<u8> load_blockset(rsl::string_view mapBlocksFilePath)
+  {
+    rex::memory::Blob blob = rex::vfs::read_file(mapBlocksFilePath);
+    return blob.release_as_array<u8>();
+  }
+
+  const rsl::unique_array<u8>& find_map_blocks(rsl::string_view mapBlockFilePath)
+  {
+    if (!g_map_blocks.contains(mapBlockFilePath))
+    {
+      rsl::unique_array<u8> blockset = load_blockset(mapBlockFilePath);
+      return g_map_blocks.emplace(mapBlockFilePath, rsl::move(blockset)).inserted_element->value;
+    }
+
+    return g_map_blocks.at(mapBlockFilePath);
+  }
 
   MapObject* find_map(rsl::string_view mapPath);
   MapObject* find_map_without_connections(rsl::string_view mapPath);
@@ -51,7 +72,7 @@ namespace pokemon
         rex::json::json json_blob = rex::json::parse(file_content);
         load_map(map.get(), json_blob);
       }
-      g_maps.emplace(mapPath, rsl::move(map));
+      return g_maps.emplace(mapPath, rsl::move(map)).inserted_element->value.get();
     }
 
     return g_maps.at(mapPath).get();
@@ -62,7 +83,7 @@ namespace pokemon
     {
       rsl::unique_ptr<MapObject> map_object = load_map_header_only(mapPath);
       map_object->fully_loaded = false;
-      g_maps.emplace(mapPath, rsl::move(map_object));
+      return g_maps.emplace(mapPath, rsl::move(map_object)).inserted_element->value.get();
     }
 
     return g_maps.at(mapPath).get();
@@ -165,220 +186,351 @@ namespace pokemon
     }
   }
 
-  rect rect_for_direction(MapObject* mapObject, Direction direction)
+
+
+  namespace map_matrix
   {
-    s8 padding = 3;
+    s8 g_padding = 3;
 
-    s8 width = mapObject->map_header.width;
-    s8 height = mapObject->map_header.height;
-
-    s8 total_width = mapObject->map_header.width + (2 * padding);
-    s8 total_height = mapObject->map_header.height + (2 * padding);
-
-    rect res{};
-    switch (direction)
+    // Returns the rect in which a connection, specified by a direction, will populate its blocks in
+    rect rect_for_direction(MapObject* mapObject, Direction direction)
     {
-    case pokemon::Direction::North:
-      res.top_left.x = 0;
-      res.top_left.y = 0;
-      res.bottom_right.x = total_width;
-      res.bottom_right.y = padding;
-      break;
-    case pokemon::Direction::East:
-      res.top_left.x = total_width - padding;
-      res.top_left.y = 0;
-      res.bottom_right.x = total_width;
-      res.bottom_right.y = total_height;
-      break;
-    case pokemon::Direction::South:
-      res.top_left.x = 0;
-      res.top_left.y = total_height - padding;
-      res.bottom_right.x = total_width;
-      res.bottom_right.y = total_height;
-      break;
-    case pokemon::Direction::West:
-      res.top_left.x = 0;
-      res.top_left.y = 0;
-      res.bottom_right.x = padding;
-      res.bottom_right.y = total_height;
-      break;
-    }
+      // The width/height of the map plane is the width/height of the map + padding on each side
+      s8 total_width = mapObject->map_header.width + (2 * g_padding);
+      s8 total_height = mapObject->map_header.height + (2 * g_padding);
 
-    return res;
-  }
-
-  rsl::vector<u8> load_blockset(rsl::string_view mapBlocksFilePath)
-  {
-    rex::memory::Blob blob = rex::vfs::read_file(mapBlocksFilePath);
-    rsl::vector<u8> content;
-    content.resize(blob.size());
-    blob.read_bytes(content.data(), content.size());
-
-    return content;
-  }
-
-  rect rect_for_connection(MapObject* map, const MapConnection& conn)
-  {
-    rect res{};
-
-    s8 padding = 3;
-		
-    s8 mid_point_x = padding + ((map->map_header.width / 2) + conn.offset);
-    s8 mid_point_y = padding + ((map->map_header.height / 2) + conn.offset);
-
-    s8 start = 0;
-    s8 end = 0;
-    if (conn.direction == Direction::North || conn.direction == Direction::South)
-    {
-			start = rsl::clamp_min(mid_point_x - (conn.map->map_header.width / 2) + conn.offset, 0);
-			end = start + rsl::min(map->map_header.width + padding, static_cast<s32>(conn.map->map_header.width));
-    }
-    else
-    {
-			start = rsl::clamp_min(mid_point_y - (conn.map->map_header.height / 2) + conn.offset, 0);
-			end = start + rsl::min(map->map_header.height + padding, static_cast<s32>(conn.map->map_header.height));
-    }
-    
-
-    switch (conn.direction)
-    {
-    case Direction::North:
-    {
-      res.top_left.x = start;
-      res.top_left.y = 0;
-      res.bottom_right.x = end;
-      res.bottom_right.y = res.top_left.y + padding;
-    break;
-    }
-    case Direction::East:
-    { 
-      res.top_left.x = map->map_header.width + padding;
-      res.top_left.y = start;
-      res.bottom_right.x = res.top_left.x + padding;
-      res.bottom_right.y = end;
-      break;
-    }
-    case Direction::South:
-    {
-      res.top_left.x = start;
-      res.top_left.y = map->map_header.height + padding;
-      res.bottom_right.x = end;
-      res.bottom_right.y = res.top_left.y + padding;
-      break;
-    }
-    case Direction::West:
-    {
-      res.top_left.x = 0;
-      res.top_left.y = start;
-      res.bottom_right.x = res.top_left.x + padding;
-      res.bottom_right.y = end;
-      break;
-    }
-    }
-
-    return res;
-  }
-
-  void create_map_plane_block_matrix(MapObject* mapObject)
-  {
-    s8 padding = 3;
-
-    s8 width = mapObject->map_header.width;
-    s8 height = mapObject->map_header.height;
-
-    s8 total_width = mapObject->map_header.width + (2 * padding);
-    s8 total_height = mapObject->map_header.height + (2 * padding);
-
-
-    rsl::unique_array<s8> map_matrix = rsl::make_unique<s8[]>(total_width * total_height);
-
-    // Fill the entire map with -1, these are invalid block indices
-    rsl::fill_n(map_matrix.get(), map_matrix.count(), mapObject->map_header.border_block_idx);
-    
-    // Overwrite the rect of the connection with connection blocks
-    for (const MapConnection& conn : mapObject->connections)
-    {
-      rect rect = rect_for_connection(mapObject, conn);
-
-      rsl::vector<u8> blocks = load_blockset(conn.map->map_header.map_blocks);
-
-      rsl::pointi8 top_left_start_in_map = {};
+      rect res{};
       
-      s8 conn_midpoint_x = conn.map->map_header.width / 2;
-      s8 conn_midpoint_y = conn.map->map_header.height / 2;
+      // The rect of a direction corresponds to the full length of the edge of the map plane
+      // going 3 blocks deep into the map
+      // NORTH - the top 3 rows of the map plane
+      // EAST - the right 3 columns of the map plane
+      // SOUTH - the bottom 3 rows of the map plane
+      // WEST - the left 3 columns of the map plane
+
+      switch (direction)
+      {
+      case pokemon::Direction::North:
+        res.top_left.x = 0;
+        res.top_left.y = 0;
+        res.bottom_right.x = total_width;
+        res.bottom_right.y = g_padding;
+        break;
+      case pokemon::Direction::East:
+        res.top_left.x = total_width - g_padding;
+        res.top_left.y = 0;
+        res.bottom_right.x = total_width;
+        res.bottom_right.y = total_height;
+        break;
+      case pokemon::Direction::South:
+        res.top_left.x = 0;
+        res.top_left.y = total_height - g_padding;
+        res.bottom_right.x = total_width;
+        res.bottom_right.y = total_height;
+        break;
+      case pokemon::Direction::West:
+        res.top_left.x = 0;
+        res.top_left.y = 0;
+        res.bottom_right.x = g_padding;
+        res.bottom_right.y = total_height;
+        break;
+      }
+
+      return res;
+    }
+
+    // Returns the rect in which the connection map should be drawn
+    rect rect_for_connection(MapObject* map, const MapConnection& conn)
+    {
+      // Maps are always center aligned, their midpoint shifts depending on the connection offset
+      s8 mid_point_x = g_padding + ((map->map_header.width / 2) + conn.offset);
+      s8 mid_point_y = g_padding + ((map->map_header.height / 2) + conn.offset);
 
       s8 start = 0;
       s8 end = 0;
+      // The formula to calculate the start is the same for each direction, just takes different input
+      // depending on the connection's direction
       if (conn.direction == Direction::North || conn.direction == Direction::South)
       {
-        s8 mid_point_x = conn.map->map_header.width / 2 - conn.offset;
-        s8 offset_from_mid = padding + (mapObject->map_header.width / 2) - rect.top_left.x;
-        start = mid_point_x - offset_from_mid;
+        start = rsl::clamp_min(mid_point_x - (conn.map->map_header.width / 2) + conn.offset, 0);
+        end = start + rsl::min(map->map_header.width + g_padding, static_cast<s32>(conn.map->map_header.width));
       }
       else
       {
-        s8 mid_point_y = conn.map->map_header.height / 2 - conn.offset;
-        s8 offset_from_mid = padding + (mapObject->map_header.height / 2) - rect.top_left.y;
-        start = mid_point_y - offset_from_mid;
+        start = rsl::clamp_min(mid_point_y - (conn.map->map_header.height / 2) + conn.offset, 0);
+        end = start + rsl::min(map->map_header.height + g_padding, static_cast<s32>(conn.map->map_header.height));
       }
+
+      // Fill in the rect based on the direction of the connection
+      rect res{};
 
       switch (conn.direction)
       {
       case Direction::North:
-        top_left_start_in_map.x = start;
-        top_left_start_in_map.y = conn.map->map_header.height - padding;
+        res.top_left.x = start;
+        res.top_left.y = 0;
+        res.bottom_right.x = end;
+        res.bottom_right.y = res.top_left.y + g_padding;
         break;
       case Direction::East:
-        top_left_start_in_map.x = 0;
+        res.top_left.x = map->map_header.width + g_padding;
+        res.top_left.y = start;
+        res.bottom_right.x = res.top_left.x + g_padding;
+        res.bottom_right.y = end;
         break;
       case Direction::South:
-        top_left_start_in_map.x = start;
-        top_left_start_in_map.y = 0;
+        res.top_left.x = start;
+        res.top_left.y = map->map_header.height + g_padding;
+        res.bottom_right.x = end;
+        res.bottom_right.y = res.top_left.y + g_padding;
         break;
       case Direction::West:
-        top_left_start_in_map.x = conn.map->map_header.width - padding;
+        res.top_left.x = 0;
+        res.top_left.y = start;
+        res.bottom_right.x = res.top_left.x + g_padding;
+        res.bottom_right.y = end;
         break;
       }
 
-      rsl::vector<u8> conn_map_blocks = load_blockset(conn.map->map_header.map_blocks);
-      for (s8 y = rect.top_left.y, conn_y = top_left_start_in_map.y; y < rect.bottom_right.y; ++y, ++conn_y)
-      {
-        for (s8 x = rect.top_left.x, conn_x = top_left_start_in_map.x; x < rect.bottom_right.x; ++x, ++conn_x)
-        {
-          s16 conn_indx = conn_y * conn.map->map_header.width + conn_x;
-          s8 blockIdx = conn_map_blocks[conn_indx];
+      return res;
+    }
 
-          s16 index = (y * total_width) + x;
-          map_matrix[index] = blockIdx;
+    rsl::pointi8 map_to_abs(rsl::pointi8 coord)
+    {
+      rsl::pointi8 res{};
+
+      res.x = coord.x + g_padding;
+      res.y = coord.y + g_padding;
+
+      return res;
+    }
+    rsl::pointi8 abs_to_map(rsl::pointi8 coord)
+    {
+      rsl::pointi8 res{};
+
+      res.x = coord.x - g_padding;
+      res.y = coord.y - g_padding;
+
+      return res;
+    }
+
+    rsl::pointi8 project_point_to_conn(MapObject* mapObject, const MapConnection& conn, rsl::pointi8 coord)
+    {
+      s8 conn_midpoint_x = conn.map->map_header.width / 2;
+      s8 conn_midpoint_y = conn.map->map_header.height / 2;
+
+      s8 projected_point = 0;
+      if (conn.direction == Direction::North || conn.direction == Direction::South)
+      {
+        s8 mid_point_x = conn.map->map_header.width / 2 - conn.offset;
+        s8 offset_from_mid = g_padding + (mapObject->map_header.width / 2) - coord.x;
+        projected_point = mid_point_x - offset_from_mid;
+      }
+      else
+      {
+        s8 mid_point_y = conn.map->map_header.height / 2 - conn.offset;
+        s8 offset_from_mid = g_padding + (mapObject->map_header.height / 2) - coord.y;
+        projected_point = mid_point_y - offset_from_mid;
+      }
+
+      rsl::pointi8 res{};
+
+      switch (conn.direction)
+      {
+      case Direction::North:
+        res.x = projected_point;
+        res.y = conn.map->map_header.height - g_padding;
+        break;
+      case Direction::East:
+        res.x = 0;
+        res.y = projected_point;
+        break;
+      case Direction::South:
+        res.x = projected_point;
+        res.y = 0;
+        break;
+      case Direction::West:
+        res.x = conn.map->map_header.width - g_padding;
+        res.y = projected_point;
+        break;
+      }
+
+      return res;
+    }
+
+    class MapMatrix
+    {
+    public:
+      MapMatrix(MapObject* mapObject)
+      {
+        m_total_width = mapObject->map_header.width + (2 * g_padding);
+        m_total_height = mapObject->map_header.height + (2 * g_padding);
+
+        m_data = allocate_data();
+        init_data(mapObject->map_header.border_block_idx);
+        
+        fill_connections(mapObject);
+        fill_inner_map(mapObject);
+      }
+
+      s8 width() const
+      {
+        return m_total_width;
+      }
+      s8 height() const
+      {
+        return m_total_height;
+      }
+
+      s8 index_at(s8 x, s8 y) const
+      {
+        return m_data[y * m_total_width + x];
+      }
+
+    private:
+      rsl::unique_array<s8> allocate_data()
+      {
+        return rsl::make_unique<s8[]>(m_total_width * m_total_height);
+      }
+
+      void init_data(s8 borderBlockIdx)
+      {
+        rsl::fill_n(m_data.get(), m_data.count(), borderBlockIdx);
+      }
+      void fill_connections(MapObject* mapObject)
+      {
+        for (const MapConnection& conn : mapObject->connections)
+        {
+          rect rect = rect_for_connection(mapObject, conn);
+          rsl::pointi8 top_left_conn = project_point_to_conn(mapObject, conn, rect.top_left);
+
+          const rsl::unique_array<u8>& conn_map_blocks = find_map_blocks(conn.map->map_header.map_blocks);
+          for (s8 y = rect.top_left.y, conn_y = top_left_conn.y; y < rect.bottom_right.y; ++y, ++conn_y)
+          {
+            for (s8 x = rect.top_left.x, conn_x = top_left_conn.x; x < rect.bottom_right.x; ++x, ++conn_x)
+            {
+              s16 conn_indx = conn_y * conn.map->map_header.width + conn_x;
+              s8 blockIdx = conn_map_blocks[conn_indx];
+
+              s16 index = (y * m_total_width) + x;
+              m_data[index] = blockIdx;
+            }
+          }
         }
       }
-    }
-
-    // Fill in the inner map
-    s16 index = 0;
-    rsl::vector<u8> map_blocks = load_blockset(mapObject->map_header.map_blocks);
-    for (s8 y = padding; y < total_height - padding; ++y)
-    {
-      for (s8 x = padding; x < total_width - padding; ++x)
+      void fill_inner_map(MapObject* mapObject)
       {
-        s16 map_matrix_index = y * total_width + x;
-        map_matrix[map_matrix_index] = map_blocks[index++];
-      }
-    }
-
-    // Log the map to the console
-    for (s8 y = 0; y < total_height; ++y)
-    {
-      rsl::string msg;
-      for (s8 x = 0; x < total_width; ++x)
-      {
-        s16 idx = y * total_width + x;
-        msg += rsl::format("{} ", map_matrix[idx]);
+        s16 index = 0;
+        const rsl::unique_array<u8>& map_blocks = find_map_blocks(mapObject->map_header.map_blocks);
+        for (s8 y = g_padding; y < m_total_height - g_padding; ++y)
+        {
+          for (s8 x = g_padding; x < m_total_width - g_padding; ++x)
+          {
+            s16 map_matrix_index = y * m_total_width + x;
+            m_data[map_matrix_index] = map_blocks[index++];
+          }
+        }
       }
 
-      REX_INFO(LogGameSession, msg);
-    }
+
+    private:
+      rsl::unique_array<s8> m_data;
+      s8 m_total_width;
+      s8 m_total_height;
+    };
   }
+
+  class MapPlane
+  {
+  public:
+    MapPlane(const MapObject* mapObject, const map_matrix::MapMatrix& mapMatrix)
+    {
+      s8 block_width_px = 8 * 4; // 4 * tile width
+      s8 block_height_px = 8 * 4; // 4 * tile height
+
+      s16 width = mapMatrix.width() * block_width_px;
+      s16 height = mapMatrix.height() * block_height_px;
+
+      
+      // Load the tileset into memory
+      s32 tileset_width, tileset_height, num_channels;
+      rex::memory::Blob file_content = rex::vfs::read_file(mapObject->map_header.blockset);
+      rex::json::json blockset_json = rex::json::parse(file_content);
+      rsl::string_view tileset = blockset_json["tileset"];
+      stbi_uc* tileset_data = stbi_load(tileset.data(), &tileset_width, &tileset_height, &num_channels, 0);
+
+      rex::memory::Blob blockset_data = rex::vfs::read_file(blockset_json["blockset"]);
+      rsl::unique_array<u8> blockset = blockset_data.release_as_array<u8>();
+
+      // Allocate the map plane data. The pixel data will copied into this, before its sent to the gpu
+      m_texture_data = rsl::make_unique<rsl::Rgba[]>(width * height);
+
+      // Go over every block and assign the data of the tile to it
+      const s8 num_indices_per_block = 16;
+      rsl::array<s8, num_indices_per_block> block_indices;
+      for (s8 y = 0; y < mapMatrix.height(); ++y)
+      {
+        for (s8 x = 0; x < mapMatrix.width(); ++x)
+        {
+          s32 blockset_index = mapMatrix.index_at(x, y);
+          blockset_index *= num_indices_per_block;
+          rsl::memcpy(block_indices.data(), &blockset[blockset_index], num_indices_per_block);
+
+          // Tiles are stored different in the png than the layout expects
+          // layout expects tiles to be stored row by row, which is technically true
+          // but you have a lot of padding in between
+          // 1 byte is used per pixel
+          for (s8 idx = 0; idx < block_indices.size(); ++idx)
+          {
+            s32 tile_idx = block_indices[idx];
+            s32 tx = tile_idx % 16;
+            s32 ty = tile_idx / 16;
+            s32 tile_data_start = 8 * ty * tileset_width + (tx * 8);
+
+            for (s8 idx2 = 0; idx2 < 8; ++idx2)
+            {
+              stbi_uc* tile_row_data = tileset_data + tile_data_start + (idx2 * tileset_width);
+
+              // copy the tile row data into the right place in the texture memory
+              // first calculate the top left coordinate of the block
+              s32 block_top_left_offset = y * 32 * width + (x * 32);
+
+              // then calculate the top left coordinate of the current tile we're processing
+              s32 tile_offset_x = idx % 4; // tiles per block row
+              s32 tile_offset_y = idx / 4; // tiles per block column
+              s32 tile_top_left_idx = block_top_left_offset + (tile_offset_x * 8) + (tile_offset_y * 8 * width);
+
+              // then calculate the position within the tile that we're drawing
+              s32 tile_pixel_offset_y = idx2;
+              s32 tile_pixel_offset = tile_top_left_idx + (idx2 * width);
+
+              REX_ASSERT_X(m_texture_data.get() + 7 <= m_texture_data.get() + m_texture_data.byte_size(), "Would write outside of texture boundary");
+              REX_ASSERT_X(tile_row_data + 7 <= tileset_data + (tileset_width * tileset_height * num_channels), "Would read outside of texture boundary");
+
+              //rsl::memcpy(m_texture_data.get() + tile_pixel_offset, tile_row_data, 8);
+              for (s8 i = 0; i < 8; ++i)
+              {
+                rsl::Rgba& data = m_texture_data[tile_pixel_offset++];
+                f32 color = tile_row_data[i];
+								data.red    = color;
+								data.green  = color;
+								data.blue   = color;
+                data.alpha  = 255;
+              }
+            }
+          }
+        }
+      }
+
+      // Pass this data over to create the texture
+      
+      m_map_texture = rex::gfx::rhi::create_texture2d(width, height, rex::gfx::TextureFormat::Unorm4, m_texture_data.get());
+    }
+
+  private:
+    rsl::unique_array<rsl::Rgba> m_texture_data;
+    rsl::unique_ptr<rex::gfx::Texture2D> m_map_texture;
+  };
 
   GameSession::GameSession()
   {
@@ -393,10 +545,11 @@ namespace pokemon
     // Load the map the player is currently located in
     m_active_map = load_map(startup_save_file.current_map);
 
-    create_map_plane_block_matrix(m_active_map.get());
+    // Convert the map to a map matrix, holding the block index in every block
+    map_matrix::MapMatrix map_matrix(m_active_map.get());
 
-
-
+    // Create the map plane out of the map matrix, this is thre graphical representation of the map
+    MapPlane map_plane(m_active_map.get(), map_matrix);
 
 
     // Pass the map to the renderer so it can start preparing it

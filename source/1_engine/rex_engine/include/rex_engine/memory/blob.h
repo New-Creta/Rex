@@ -5,6 +5,8 @@
 #include "rex_std/memory.h"
 #include "rex_std/string_view.h"
 
+#include "rex_engine/diagnostics/assert.h"
+
 namespace rex
 {
   namespace memory
@@ -72,6 +74,29 @@ namespace rex
 
       // Write x amount of bytes into the underlying buffer, starting from a certain offset
       void write(const void* inData, rsl::memory_size inSize, rsl::memory_size inOffset = 0_bytes);
+
+      // Return the internal data as another unique array and release it
+      // Useful when you want to avoid reallocating the data
+      template <typename T>
+      rsl::unique_array<T> release_as_array()
+      {
+        REX_ASSERT_X(m_data.count() % sizeof(T) == 0, "You can't release a blob if you can't fit all the data in the resulting array");
+
+        s32 count = m_data.count();
+        T* data_ptr = reinterpret_cast<T*>(m_data.release());
+        return rsl::unique_array<T>(data_ptr, count / sizeof(T));
+      }
+      // Return the internal data as reinterpreted as something else
+      // Useful when you want to avoid reallocating the data
+      template <typename T>
+      rsl::unique_array<T> release_as()
+      {
+        static_assert(rsl::is_pod_v<T>, "only pod classes are allowed to be released from blobs");
+        REX_ASSERT_X(m_data.count() == sizeof(T), "Release blob content to a type is only allowed if the size of the type is the same as the size of the blob");
+
+        T* data_ptr = reinterpret_cast<T*>(m_data.release());
+        return *data_ptr;
+      }
 
     private:
       rsl::unique_array<rsl::byte> m_data;
