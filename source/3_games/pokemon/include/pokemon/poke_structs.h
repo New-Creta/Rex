@@ -13,11 +13,11 @@ namespace pokemon
 	};
 
 	struct MapHeader;
-	struct MapObject;
+	struct MapData;
 
 	struct MapConnection
 	{
-		MapObject* map;
+		MapData* map;
 		Direction direction;
 		s8 offset;
 	};
@@ -72,15 +72,15 @@ namespace pokemon
 
 	struct MapHeader
 	{
-		rsl::string name;
-		rsl::string map_blocks;
-		rsl::string blockset;
+		rsl::string name;					// name of the map
+		rsl::string map_blocks;		// path to the map blocks
+		rsl::string blockset;			// path to the blockset metadata
 		s8 width;		// represented in block count
 		s8 height;	// represented in block count
 		s8 border_block_idx; // Index of the block used for the border if no connection blocks are present
 	};
 
-	struct MapObject
+	struct MapData
 	{
 		MapHeader map_header;
 		rsl::vector<MapConnection> connections;

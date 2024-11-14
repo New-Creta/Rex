@@ -21,11 +21,17 @@
 #include "rex_engine/gfx/system/rhi.h"
 #include "rex_engine/images/stb_image.h"
 
+#include "pokemon/block.h"
+#include "pokemon/blockset.h"
+#include "pokemon/tileset.h"
+
+#include "rex_engine/profiling/instrumentor.h"
+
 namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogGameSession);
 
-  rsl::unordered_map<rsl::string_view, rsl::unique_ptr<MapObject>> g_maps;
+  rsl::unordered_map<rsl::string_view, rsl::unique_ptr<MapData>> g_maps;
   rsl::unordered_map<rsl::string_view, rsl::unique_array<u8>> g_map_blocks;
 
   rsl::unique_array<u8> load_blockset(rsl::string_view mapBlocksFilePath)
@@ -45,43 +51,43 @@ namespace pokemon
     return g_map_blocks.at(mapBlockFilePath);
   }
 
-  MapObject* find_map(rsl::string_view mapPath);
-  MapObject* find_map_without_connections(rsl::string_view mapPath);
+  MapData* find_map(rsl::string_view mapPath);
+  MapData* find_map_without_connections(rsl::string_view mapPath);
 
   MapHeader load_map_header(const rex::json::json& jsonBlob);
   MapHeader load_map_header(rsl::string_view mapPath);
 
-  void load_map(MapObject* mapObject, const rex::json::json& jsonBlob);
-  rsl::unique_ptr<MapObject> load_map(rsl::string_view mapPath);
-  rsl::unique_ptr<MapObject> load_map_header_only(rsl::string_view mapPath);
+  void load_map_data(MapData* mapObject, const rex::json::json& jsonBlob);
+  rsl::unique_ptr<MapData> load_map_data(rsl::string_view mapPath);
+  rsl::unique_ptr<MapData> load_map_header_only(rsl::string_view mapPath);
 
 
 
 
-  MapObject* find_map(rsl::string_view mapPath)
+  MapData* find_map(rsl::string_view mapPath)
   {
     if (!g_maps.contains(mapPath))
     {
-      rsl::unique_ptr<MapObject> map = load_map(mapPath);
+      rsl::unique_ptr<MapData> map_data = load_map_data(mapPath);
       
       // If the map wasn't fully loaded (eg. it was loaded as a connection)
       // We need to load it fully now
-      if (!map->fully_loaded)
+      if (!map_data->fully_loaded)
       {
         rex::memory::Blob file_content = rex::vfs::read_file(mapPath);
         rex::json::json json_blob = rex::json::parse(file_content);
-        load_map(map.get(), json_blob);
+        load_map_data(map_data.get(), json_blob);
       }
-      return g_maps.emplace(mapPath, rsl::move(map)).inserted_element->value.get();
+      return g_maps.emplace(mapPath, rsl::move(map_data)).inserted_element->value.get();
     }
 
     return g_maps.at(mapPath).get();
   }
-  MapObject* find_map_without_connections(rsl::string_view mapPath)
+  MapData* find_map_without_connections(rsl::string_view mapPath)
   {
     if (!g_maps.contains(mapPath))
     {
-      rsl::unique_ptr<MapObject> map_object = load_map_header_only(mapPath);
+      rsl::unique_ptr<MapData> map_object = load_map_header_only(mapPath);
       map_object->fully_loaded = false;
       return g_maps.emplace(mapPath, rsl::move(map_object)).inserted_element->value.get();
     }
@@ -112,7 +118,7 @@ namespace pokemon
     return load_map_header(json_blob);
   }
 
-  void load_map(MapObject* mapObject, const rex::json::json& jsonBlob)
+  void load_map_data(MapData* mapObject, const rex::json::json& jsonBlob)
   {
     // Connections
     if (jsonBlob.contains("connections"))
@@ -144,25 +150,25 @@ namespace pokemon
     mapObject->fully_loaded = true;
   }
 
-  rsl::unique_ptr<MapObject> load_map(rsl::string_view mapPath)
+  rsl::unique_ptr<MapData> load_map_data(rsl::string_view mapPath)
   {
     rex::memory::Blob file_content = rex::vfs::read_file(mapPath);
     rex::json::json json_blob = rex::json::parse(file_content);
 
-    rsl::unique_ptr<MapObject> map_object = rsl::make_unique<MapObject>();
+    rsl::unique_ptr<MapData> map_object = rsl::make_unique<MapData>();
     map_object->map_header = load_map_header(json_blob);
 
-    load_map(map_object.get(), json_blob);
+    load_map_data(map_object.get(), json_blob);
 
     return map_object;
   }
-  rsl::unique_ptr<MapObject> load_map_header_only(rsl::string_view mapPath)
+  rsl::unique_ptr<MapData> load_map_header_only(rsl::string_view mapPath)
   {
     rex::memory::Blob file_content = rex::vfs::read_file(mapPath);
     rex::json::json json_blob = rex::json::parse(file_content);
 
     REX_ASSERT_X(!json_blob.is_discarded(), "Invalid map json file. {}", rex::quoted(mapPath))
-    rsl::unique_ptr<MapObject> map_object = rsl::make_unique<MapObject>();
+    rsl::unique_ptr<MapData> map_object = rsl::make_unique<MapData>();
     map_object->map_header = load_map_header(json_blob);
 
     return map_object;
@@ -193,7 +199,7 @@ namespace pokemon
     s8 g_padding = 3;
 
     // Returns the rect in which a connection, specified by a direction, will populate its blocks in
-    rect rect_for_direction(MapObject* mapObject, Direction direction)
+    rect rect_for_direction(const MapData* mapObject, Direction direction)
     {
       // The width/height of the map plane is the width/height of the map + padding on each side
       s8 total_width = mapObject->map_header.width + (2 * g_padding);
@@ -240,7 +246,7 @@ namespace pokemon
     }
 
     // Returns the rect in which the connection map should be drawn
-    rect rect_for_connection(MapObject* map, const MapConnection& conn)
+    rect rect_for_connection(const MapData* map, const MapConnection& conn)
     {
       // Maps are always center aligned, their midpoint shifts depending on the connection offset
       s8 mid_point_x = g_padding + ((map->map_header.width / 2) + conn.offset);
@@ -314,7 +320,7 @@ namespace pokemon
       return res;
     }
 
-    rsl::pointi8 project_point_to_conn(MapObject* mapObject, const MapConnection& conn, rsl::pointi8 coord)
+    rsl::pointi8 project_point_to_conn(const MapData* mapObject, const MapConnection& conn, rsl::pointi8 coord)
     {
       s8 conn_midpoint_x = conn.map->map_header.width / 2;
       s8 conn_midpoint_y = conn.map->map_header.height / 2;
@@ -361,7 +367,7 @@ namespace pokemon
     class MapMatrix
     {
     public:
-      MapMatrix(MapObject* mapObject)
+      MapMatrix(const MapData* mapObject)
       {
         m_total_width = mapObject->map_header.width + (2 * g_padding);
         m_total_height = mapObject->map_header.height + (2 * g_padding);
@@ -397,7 +403,7 @@ namespace pokemon
       {
         rsl::fill_n(m_data.get(), m_data.count(), borderBlockIdx);
       }
-      void fill_connections(MapObject* mapObject)
+      void fill_connections(const MapData* mapObject)
       {
         for (const MapConnection& conn : mapObject->connections)
         {
@@ -418,7 +424,7 @@ namespace pokemon
           }
         }
       }
-      void fill_inner_map(MapObject* mapObject)
+      void fill_inner_map(const MapData* mapObject)
       {
         s16 index = 0;
         const rsl::unique_array<u8>& map_blocks = find_map_blocks(mapObject->map_header.map_blocks);
@@ -443,7 +449,7 @@ namespace pokemon
   class MapPlane
   {
   public:
-    MapPlane(const MapObject* mapObject, const map_matrix::MapMatrix& mapMatrix)
+    MapPlane(const MapData* mapObject, const map_matrix::MapMatrix& mapMatrix)
     {
       s8 block_width_px = 8 * 4; // 4 * tile width
       s8 block_height_px = 8 * 4; // 4 * tile height
@@ -532,6 +538,450 @@ namespace pokemon
     rsl::unique_ptr<rex::gfx::Texture2D> m_map_texture;
   };
 
+  class Map
+  {
+  public:
+    Map()
+    {
+
+    }
+
+  private:
+    rsl::unique_ptr<rex::gfx::Texture2D> m_texture;
+  };
+
+  class MapGenerator
+  {
+  public:
+    Map generate(const MapData* mapData, const map_matrix::MapMatrix& mapMatrix)
+    {
+      // Calculate the dimensions of the texture
+      s16 width = mapMatrix.width() * Block::width_px();
+      s16 height = mapMatrix.height() * Block::height_px();
+
+      // Allocate the memory to fill in the texture data
+      m_texture_data = rsl::make_unique<rsl::Rgba[]>(width * height);
+
+      // Load the tileset and blockset into memory
+      rex::json::json blockset_json = rex::json::read_from_file(mapData->map_header.blockset);
+      BlockSet blockset = load_blockset(blockset_json["blockset"]);
+      TileSet tileset = load_tileset(blockset_json["tileset"]);
+
+      // Fill in the texture data
+      fill_texture_data(mapMatrix, blockset, tileset);
+
+      return Map(nullptr);
+
+      //rsl::string_view tileset = blockset_json["tileset"];
+
+      //s32 tileset_width, tileset_height, num_channels;
+      //stbi_uc* tileset_data = stbi_load(tileset.data(), &tileset_width, &tileset_height, &num_channels, 0);
+
+      //rex::memory::Blob blockset_data = rex::vfs::read_file(blockset_json["blockset"]);
+      //rsl::unique_array<u8> blockset = blockset_data.release_as_array<u8>();
+
+      //// Allocate the map plane data. The pixel data will copied into this, before its sent to the gpu
+
+      //// Go over every block and assign the data of the tile to it
+      //const s8 num_indices_per_block = 16;
+      //rsl::array<s8, num_indices_per_block> block_indices;
+      //for (s8 y = 0; y < mapMatrix.height(); ++y)
+      //{
+      //  for (s8 x = 0; x < mapMatrix.width(); ++x)
+      //  {
+      //    s32 blockset_index = mapMatrix.index_at(x, y);
+      //    blockset_index *= num_indices_per_block;
+      //    rsl::memcpy(block_indices.data(), &blockset[blockset_index], num_indices_per_block);
+
+      //    // Tiles are stored different in the png than the layout expects
+      //    // layout expects tiles to be stored row by row, which is technically true
+      //    // but you have a lot of padding in between
+      //    // 1 byte is used per pixel
+      //    for (s8 idx = 0; idx < block_indices.size(); ++idx)
+      //    {
+      //      s32 tile_idx = block_indices[idx];
+      //      s32 tx = tile_idx % 16;
+      //      s32 ty = tile_idx / 16;
+      //      s32 tile_data_start = 8 * ty * tileset_width + (tx * 8);
+
+      //      for (s8 idx2 = 0; idx2 < 8; ++idx2)
+      //      {
+      //        stbi_uc* tile_row_data = tileset_data + tile_data_start + (idx2 * tileset_width);
+
+      //        // copy the tile row data into the right place in the texture memory
+      //        // first calculate the top left coordinate of the block
+      //        s32 block_top_left_offset = y * 32 * width + (x * 32);
+
+      //        // then calculate the top left coordinate of the current tile we're processing
+      //        s32 tile_offset_x = idx % 4; // tiles per block row
+      //        s32 tile_offset_y = idx / 4; // tiles per block column
+      //        s32 tile_top_left_idx = block_top_left_offset + (tile_offset_x * 8) + (tile_offset_y * 8 * width);
+
+      //        // then calculate the position within the tile that we're drawing
+      //        s32 tile_pixel_offset_y = idx2;
+      //        s32 tile_pixel_offset = tile_top_left_idx + (idx2 * width);
+
+      //        REX_ASSERT_X(texture_data.get() + 7 <= texture_data.get() + texture_data.byte_size(), "Would write outside of texture boundary");
+      //        REX_ASSERT_X(tile_row_data + 7 <= tileset_data + (tileset_width * tileset_height * num_channels), "Would read outside of texture boundary");
+
+      //        //rsl::memcpy(m_texture_data.get() + tile_pixel_offset, tile_row_data, 8);
+      //        for (s8 i = 0; i < 8; ++i)
+      //        {
+      //          rsl::Rgba& data = texture_data[tile_pixel_offset++];
+      //          f32 color = tile_row_data[i];
+      //          data.red = color;
+      //          data.green = color;
+      //          data.blue = color;
+      //          data.alpha = 255;
+      //        }
+      //      }
+      //    }
+      //  }
+      //}
+
+      //// Pass this data over to create the texture
+      //rsl::unique_ptr<rex::gfx::Texture2D> map_texture = rex::gfx::rhi::create_texture2d(width, height, rex::gfx::TextureFormat::Unorm4, texture_data.get());
+    }
+
+  private:
+    // Calculate the offset inside the texture where the first pixel of the tile is located
+    s32 calc_tile_offset_into_texture(s32 tileIdx)
+    {
+      constexpr s8 pixel_size = 1;
+      constexpr s32 tileset_width_px = 128;
+      constexpr s8 num_tiles_per_row = 16;
+
+      s32 tx = tileIdx % num_tiles_per_row;
+      s32 ty = tileIdx / num_tiles_per_row;
+      s32 tile_offset = Tile::height_px() * ty * (tileset_width_px * pixel_size) + (tx * Tile::width_px());
+
+      return tile_offset;
+    }
+
+    rsl::Rgba* calc_dst_in_map_texture(rsl::pointi8 mapCoord, s16 mapWidthPx, s8 tileIdxInBlock, s8 tileRow)
+    {
+      // first calculate the top left coordinate of the block
+      s32 block_top_left_offset = mapCoord.y * Block::height_px() * mapWidthPx + (mapCoord.x * Block::width_px());
+
+      // then calculate the top left coordinate of the current tile we're processing
+      s32 tile_offset_x = tileIdxInBlock % Block::num_tiles_per_row();
+      s32 tile_offset_y = tileIdxInBlock / Block::num_tiles_per_row();
+      s32 tile_top_left_idx = block_top_left_offset + (tile_offset_x * 8) + (tile_offset_y * 8 * mapWidthPx);
+
+      // then calculate the position within the tile that we're drawing
+      s32 tile_pixel_offset_y = tileRow;
+      s32 tile_pixel_offset = tile_top_left_idx + (tileRow * mapWidthPx);
+
+      return m_texture_data.get() + tile_pixel_offset;
+    }
+
+    void fill_block(rsl::pointi8 mapCoord, s16 mapWidthPx, const Block& block, const TileSet& tileset)
+    {
+      for (s8 tile_idx_in_block = 0; tile_idx_in_block < block.num_tiles(); ++tile_idx_in_block)
+      {
+        u8 tile_idx = block.index_at(tile_idx_in_block);
+
+				// Load each pixel row of the tile
+        for (s8 tile_row = 0; tile_row < Tile::height_px(); ++tile_row)
+        {
+          const u8* tile_row_data_src = tileset.tile_pixel_row(tile_idx, tile_row);
+          rsl::Rgba* tile_row_data_dst = calc_dst_in_map_texture(mapCoord, mapWidthPx, tile_idx_in_block, tile_row);
+                 
+          REX_ASSERT_X(m_texture_data.get() + 7 <= m_texture_data.get() + m_texture_data.byte_size(), "Would write outside of texture boundary");
+          //REX_ASSERT_X(tile_row_data_src + 7 <= tileset_data + (tileset_width * tileset_height * num_channels), "Would read outside of texture boundary");
+
+          //rsl::memcpy(m_texture_data.get() + tile_pixel_offset, tile_row_data, 8);
+          for (s8 i = 0; i < 8; ++i)
+          {
+            rsl::Rgba& data = *tile_row_data_dst;
+            u8 color = tile_row_data_src[i];
+            data.red = color;
+            data.green = color;
+            data.blue = color;
+            data.alpha = 255;
+          }
+
+					// Calcualte the offset within the map texture where the pixel row should be copied to
+
+					// Assign the rgba values for every pixel within the row
+
+
+          //stbi_uc* tile_row_data = tileset_data + tile_data_start + (idx2 * tileset_width);
+
+          //// copy the tile row data into the right place in the texture memory
+          //// first calculate the top left coordinate of the block
+          //s32 block_top_left_offset = y * 32 * width + (x * 32);
+
+          //// then calculate the top left coordinate of the current tile we're processing
+          //s32 tile_offset_x = idx % 4; // tiles per block row
+          //s32 tile_offset_y = idx / 4; // tiles per block column
+          //s32 tile_top_left_idx = block_top_left_offset + (tile_offset_x * 8) + (tile_offset_y * 8 * width);
+
+          //// then calculate the position within the tile that we're drawing
+          //s32 tile_pixel_offset_y = idx2;
+          //s32 tile_pixel_offset = tile_top_left_idx + (idx2 * width);
+
+
+        }
+
+      }
+    }
+
+    void fill_texture_data(const map_matrix::MapMatrix& mapMatrix, const BlockSet& blockset, const TileSet& tileset)
+    {
+      // Go over each cell in the map matrix, and fill in the tiles of the corresponding block of that cell
+      rex::ScopedTimer scoped_timer("map generation");
+
+      for (s8 y = 0; y < mapMatrix.height(); ++y)
+      {
+        for (s8 x = 0; x < mapMatrix.width(); ++x)
+        {
+          s32 blockset_index = mapMatrix.index_at(x, y);
+          const Block& block = blockset.block(blockset_index);
+          fill_block({ x, y }, mapMatrix.width() * Block::width_px(), block, tileset);
+
+          //blockset_index *= num_indices_per_block;
+          //rsl::memcpy(block_indices.data(), &blockset[blockset_index], num_indices_per_block);
+
+          // Tiles are stored different in the png than the layout expects
+          // layout expects tiles to be stored row by row, which is technically true
+          // but you have a lot of padding in between
+          // 1 byte is used per pixel
+          for (s8 idx = 0; idx < block_indices.size(); ++idx)
+          {
+            s32 tile_idx = block_indices[idx];
+            s32 tx = tile_idx % 16;
+            s32 ty = tile_idx / 16;
+            s32 tile_data_start = 8 * ty * tileset_width + (tx * 8);
+
+            for (s8 idx2 = 0; idx2 < 8; ++idx2)
+            {
+              stbi_uc* tile_row_data = tileset_data + tile_data_start + (idx2 * tileset_width);
+
+              // copy the tile row data into the right place in the texture memory
+              // first calculate the top left coordinate of the block
+              s32 block_top_left_offset = y * 32 * width + (x * 32);
+
+              // then calculate the top left coordinate of the current tile we're processing
+              s32 tile_offset_x = idx % 4; // tiles per block row
+              s32 tile_offset_y = idx / 4; // tiles per block column
+              s32 tile_top_left_idx = block_top_left_offset + (tile_offset_x * 8) + (tile_offset_y * 8 * width);
+
+              // then calculate the position within the tile that we're drawing
+              s32 tile_pixel_offset_y = idx2;
+              s32 tile_pixel_offset = tile_top_left_idx + (idx2 * width);
+
+              REX_ASSERT_X(texture_data.get() + 7 <= texture_data.get() + texture_data.byte_size(), "Would write outside of texture boundary");
+              REX_ASSERT_X(tile_row_data + 7 <= tileset_data + (tileset_width * tileset_height * num_channels), "Would read outside of texture boundary");
+
+              //rsl::memcpy(m_texture_data.get() + tile_pixel_offset, tile_row_data, 8);
+              for (s8 i = 0; i < 8; ++i)
+              {
+                rsl::Rgba& data = texture_data[tile_pixel_offset++];
+                f32 color = tile_row_data[i];
+                data.red = color;
+                data.green = color;
+                data.blue = color;
+                data.alpha = 255;
+              }
+            }
+          }
+        }
+      }
+
+      auto ns = scoped_timer.stop();
+      REX_INFO(LogGameSession, "Map generation took {} ns", scoped_timer.ns);
+    }
+
+  private:
+    rsl::unique_array<rsl::Rgba> m_texture_data;
+  };
+
+
+
+
+
+  Map load_map(rsl::string_view filepath)
+  {
+    // Load the map data, this is loading the first bits of information from disk
+    // This will determine what we need to load later on
+    rsl::unique_ptr<MapData> map_object = load_map_data(filepath);
+
+    // Create the map matrix, which is a matrix of the map, with the padding, holding a block index in each cell
+    map_matrix::MapMatrix map_matrix(map_object.get());
+
+    // Based on the map matrix, fill in the pixel of a texture, that comes from overlaying the matrix on the texture
+    MapTextureData map_texture_data(map_object.get(), map_matrix);
+
+    s8 block_width_px = 8 * 4; // 4 * tile width
+    s8 block_height_px = 8 * 4; // 4 * tile height
+
+    s16 width = map_matrix.width() * block_width_px;
+    s16 height = map_matrix.height() * block_height_px;
+
+
+    // Load the tileset into memory
+    s32 tileset_width, tileset_height, num_channels;
+    rex::memory::Blob file_content = rex::vfs::read_file(map->map_header.blockset);
+    rex::json::json blockset_json = rex::json::parse(file_content);
+    rsl::string_view tileset = blockset_json["tileset"];
+    stbi_uc* tileset_data = stbi_load(tileset.data(), &tileset_width, &tileset_height, &num_channels, 0);
+
+    rex::memory::Blob blockset_data = rex::vfs::read_file(blockset_json["blockset"]);
+    rsl::unique_array<u8> blockset = blockset_data.release_as_array<u8>();
+
+    // Allocate the map plane data. The pixel data will copied into this, before its sent to the gpu
+    rsl::unique_array<rsl::Rgba> texture_data = rsl::make_unique<rsl::Rgba[]>(width * height);
+
+    // Go over every block and assign the data of the tile to it
+    const s8 num_indices_per_block = 16;
+    rsl::array<s8, num_indices_per_block> block_indices;
+    for (s8 y = 0; y < map_matrix.height(); ++y)
+    {
+      for (s8 x = 0; x < map_matrix.width(); ++x)
+      {
+        s32 blockset_index = map_matrix.index_at(x, y);
+        blockset_index *= num_indices_per_block;
+        rsl::memcpy(block_indices.data(), &blockset[blockset_index], num_indices_per_block);
+
+        // Tiles are stored different in the png than the layout expects
+        // layout expects tiles to be stored row by row, which is technically true
+        // but you have a lot of padding in between
+        // 1 byte is used per pixel
+        for (s8 idx = 0; idx < block_indices.size(); ++idx)
+        {
+          s32 tile_idx = block_indices[idx];
+          s32 tx = tile_idx % 16;
+          s32 ty = tile_idx / 16;
+          s32 tile_data_start = 8 * ty * tileset_width + (tx * 8);
+
+          for (s8 idx2 = 0; idx2 < 8; ++idx2)
+          {
+            stbi_uc* tile_row_data = tileset_data + tile_data_start + (idx2 * tileset_width);
+
+            // copy the tile row data into the right place in the texture memory
+            // first calculate the top left coordinate of the block
+            s32 block_top_left_offset = y * 32 * width + (x * 32);
+
+            // then calculate the top left coordinate of the current tile we're processing
+            s32 tile_offset_x = idx % 4; // tiles per block row
+            s32 tile_offset_y = idx / 4; // tiles per block column
+            s32 tile_top_left_idx = block_top_left_offset + (tile_offset_x * 8) + (tile_offset_y * 8 * width);
+
+            // then calculate the position within the tile that we're drawing
+            s32 tile_pixel_offset_y = idx2;
+            s32 tile_pixel_offset = tile_top_left_idx + (idx2 * width);
+
+            REX_ASSERT_X(texture_data.get() + 7 <= texture_data.get() + texture_data.byte_size(), "Would write outside of texture boundary");
+            REX_ASSERT_X(tile_row_data + 7 <= tileset_data + (tileset_width * tileset_height * num_channels), "Would read outside of texture boundary");
+
+            //rsl::memcpy(m_texture_data.get() + tile_pixel_offset, tile_row_data, 8);
+            for (s8 i = 0; i < 8; ++i)
+            {
+              rsl::Rgba& data = texture_data[tile_pixel_offset++];
+              f32 color = tile_row_data[i];
+              data.red = color;
+              data.green = color;
+              data.blue = color;
+              data.alpha = 255;
+            }
+          }
+        }
+      }
+    }
+
+    // Pass this data over to create the texture
+    rsl::unique_ptr<rex::gfx::Texture2D> map_texture = rex::gfx::rhi::create_texture2d(width, height, rex::gfx::TextureFormat::Unorm4, texture_data.get());
+
+
+    return Map();
+  }
+
+  rsl::unique_ptr<rex::gfx::Texture2D> create_texture_for_map(const MapData* map)
+  {
+    map_matrix::MapMatrix map_matrix(map);
+    
+    s8 block_width_px = 8 * 4; // 4 * tile width
+    s8 block_height_px = 8 * 4; // 4 * tile height
+
+    s16 width = map_matrix.width() * block_width_px;
+    s16 height = map_matrix.height() * block_height_px;
+
+
+    // Load the tileset into memory
+    s32 tileset_width, tileset_height, num_channels;
+    rex::memory::Blob file_content = rex::vfs::read_file(map->map_header.blockset);
+    rex::json::json blockset_json = rex::json::parse(file_content);
+    rsl::string_view tileset = blockset_json["tileset"];
+    stbi_uc* tileset_data = stbi_load(tileset.data(), &tileset_width, &tileset_height, &num_channels, 0);
+
+    rex::memory::Blob blockset_data = rex::vfs::read_file(blockset_json["blockset"]);
+    rsl::unique_array<u8> blockset = blockset_data.release_as_array<u8>();
+
+    // Allocate the map plane data. The pixel data will copied into this, before its sent to the gpu
+    rsl::unique_array<rsl::Rgba> texture_data = rsl::make_unique<rsl::Rgba[]>(width * height);
+
+    // Go over every block and assign the data of the tile to it
+    const s8 num_indices_per_block = 16;
+    rsl::array<s8, num_indices_per_block> block_indices;
+    for (s8 y = 0; y < map_matrix.height(); ++y)
+    {
+      for (s8 x = 0; x < map_matrix.width(); ++x)
+      {
+        s32 blockset_index = map_matrix.index_at(x, y);
+        blockset_index *= num_indices_per_block;
+        rsl::memcpy(block_indices.data(), &blockset[blockset_index], num_indices_per_block);
+
+        // Tiles are stored different in the png than the layout expects
+        // layout expects tiles to be stored row by row, which is technically true
+        // but you have a lot of padding in between
+        // 1 byte is used per pixel
+        for (s8 idx = 0; idx < block_indices.size(); ++idx)
+        {
+          s32 tile_idx = block_indices[idx];
+          s32 tx = tile_idx % 16;
+          s32 ty = tile_idx / 16;
+          s32 tile_data_start = 8 * ty * tileset_width + (tx * 8);
+
+          for (s8 idx2 = 0; idx2 < 8; ++idx2)
+          {
+            stbi_uc* tile_row_data = tileset_data + tile_data_start + (idx2 * tileset_width);
+
+            // copy the tile row data into the right place in the texture memory
+            // first calculate the top left coordinate of the block
+            s32 block_top_left_offset = y * 32 * width + (x * 32);
+
+            // then calculate the top left coordinate of the current tile we're processing
+            s32 tile_offset_x = idx % 4; // tiles per block row
+            s32 tile_offset_y = idx / 4; // tiles per block column
+            s32 tile_top_left_idx = block_top_left_offset + (tile_offset_x * 8) + (tile_offset_y * 8 * width);
+
+            // then calculate the position within the tile that we're drawing
+            s32 tile_pixel_offset_y = idx2;
+            s32 tile_pixel_offset = tile_top_left_idx + (idx2 * width);
+
+            REX_ASSERT_X(texture_data.get() + 7 <= texture_data.get() + texture_data.byte_size(), "Would write outside of texture boundary");
+            REX_ASSERT_X(tile_row_data + 7 <= tileset_data + (tileset_width * tileset_height * num_channels), "Would read outside of texture boundary");
+
+            //rsl::memcpy(m_texture_data.get() + tile_pixel_offset, tile_row_data, 8);
+            for (s8 i = 0; i < 8; ++i)
+            {
+              rsl::Rgba& data = texture_data[tile_pixel_offset++];
+              f32 color = tile_row_data[i];
+              data.red = color;
+              data.green = color;
+              data.blue = color;
+              data.alpha = 255;
+            }
+          }
+        }
+      }
+    }
+
+    // Pass this data over to create the texture
+    return rex::gfx::rhi::create_texture2d(width, height, rex::gfx::TextureFormat::Unorm4, texture_data.get());
+  }
+
   GameSession::GameSession()
   {
 		// We don't want any assets, script, resource, to magically load in another one, all of this needs to be explicitly defined in data, not in code.
@@ -544,6 +994,8 @@ namespace pokemon
 
     // Load the map the player is currently located in
     m_active_map = load_map(startup_save_file.current_map);
+
+    rsl::unique_ptr<rex::gfx::Texture2D> map_texture = create_texture_for_map(m_active_map.get());
 
     // Convert the map to a map matrix, holding the block index in every block
     map_matrix::MapMatrix map_matrix(m_active_map.get());

@@ -56,6 +56,6 @@ namespace pokemon
     SaveFile load_startup_savefile() const;
 
   private:
-    rsl::unique_ptr<MapObject> m_active_map;
+    rsl::unique_ptr<MapData> m_active_map;
   };
 }
