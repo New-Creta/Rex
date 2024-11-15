@@ -3,6 +3,11 @@
 
 namespace pokemon
 {
+	void Block::set(s8 idx)
+	{
+		m_tile_indices.fill(idx);
+	}
+
 	s8 Block::index_at(s8 idx) const
 	{
 		return m_tile_indices[idx];

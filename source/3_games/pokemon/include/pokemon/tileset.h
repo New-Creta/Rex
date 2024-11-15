@@ -40,5 +40,5 @@ namespace pokemon
     constexpr static s8 s_height_px = 8;
   };
 
-	rsl::shared_ptr<TileSet> load_tileset(rsl::string_view filepath);
+	//rsl::shared_ptr<TileSet> load_tileset(rsl::string_view filepath);
 }

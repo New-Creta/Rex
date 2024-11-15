@@ -2,12 +2,26 @@
 
 #include "rex_engine/engine/types.h"
 #include "rex_std/array.h"
+#include "pokemon/tileset.h"
+#include "rex_std/algorithm.h"
 
 namespace pokemon
 {
 	class Block
 	{
+	private:
+		constexpr static s8 s_num_indices = 16;
+		constexpr static s8 s_num_tiles_per_row = 4;
+		constexpr static s8 s_num_tiles_per_column = 4;
+
 	public:
+		Block()
+		{
+			rsl::fill_n(m_tile_indices.begin(), m_tile_indices.end(), -1);
+		}
+
+		void set(s8 idx);
+
 		s8 index_at(s8 idx) const;
 		s8 index_at(s8 x, s8 y) const;
 
@@ -41,10 +55,6 @@ namespace pokemon
 		}
 
 	private:
-		constexpr static s8 s_num_indices = 16;
-		constexpr static s8 s_num_tiles_per_row = 4;
-		constexpr static s8 s_num_tiles_per_column = 4;
-
 		rsl::array<s8, s_num_indices> m_tile_indices;
 	};
 }

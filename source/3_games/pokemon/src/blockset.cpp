@@ -14,14 +14,14 @@ namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogBlockSet);
 
-  Block::Block(const tile_indices& tileIndices)
-    : m_tile_indices(rsl::move(tileIndices))
-  {}
+  //Block::Block(const tile_indices& tileIndices)
+  //  : m_tile_indices(rsl::move(tileIndices))
+  //{}
 
-  const Block::tile_indices& Block::indices() const
-  {
-    return m_tile_indices;
-  }
+  //const Block::tile_indices& Block::indices() const
+  //{
+  //  return m_tile_indices;
+  //}
 
   const Block& BlockSet::block(s8 idx) const
   {
@@ -46,7 +46,7 @@ namespace pokemon
     for (s32 block_idx = 0; block_idx < num_blocks; ++block_idx)
     {
       reader.read(blob_memory.data(), blob_memory.size());
-      blocks.emplace_back(blob_memory);
+      blocks.emplace_back(Block(blob_memory));
     }
 
     return nullptr;
