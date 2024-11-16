@@ -12,17 +12,16 @@ namespace pokemon
 
 	const u8* TileSet::tile_pixel_row(u8 tileIdx, s8 pxRow) const
 	{
-		constexpr s32 tileset_width_px = 128;
 		const u8* tile_data_start = tile_data(tileIdx);
 		
-		return tile_data_start + (pxRow * tileset_width_px);
+		return tile_data_start + (pxRow * s_tileset_width_px);
 	}
 	const u8* TileSet::tile_data(u8 tileIdx) const
 	{
 		constexpr s8 num_tiles_per_row = s_tileset_width_px / Tile::width_px();;
 
 		s32 tx = tileIdx % num_tiles_per_row;
-		s32 ty = tileIdx % num_tiles_per_row;
+		s32 ty = tileIdx / num_tiles_per_row;
 
 		s32 tile_offset = Tile::height_px() * ty * (s_tileset_width_px * s_tile_pixel_byte_size) + (tx * Tile::width_px());
 

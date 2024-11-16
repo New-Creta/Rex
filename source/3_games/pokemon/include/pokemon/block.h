@@ -15,23 +15,23 @@ namespace pokemon
 		constexpr static s8 s_num_tiles_per_column = 4;
 
 	public:
-		Block()
-		{
-			rsl::fill_n(m_tile_indices.begin(), m_tile_indices.end(), -1);
-		}
+		using indices_array = rsl::array<u8, s_num_indices>;
 
-		void set(s8 idx);
+		Block();
+		Block(const indices_array& tileIndices);
 
-		s8 index_at(s8 idx) const;
-		s8 index_at(s8 x, s8 y) const;
+		void set_all(s8 idx);
 
-		rsl::random_access_iterator<s8> begin();
-		rsl::const_random_access_iterator<s8> begin() const;
-		rsl::const_random_access_iterator<s8> cbegin() const;
+		u8 index_at(s8 idx) const;
+		u8 index_at(s8 x, s8 y) const;
 
-		rsl::random_access_iterator<s8> end();
-		rsl::const_random_access_iterator<s8> end() const;
-		rsl::const_random_access_iterator<s8> cend() const;
+		rsl::random_access_iterator<u8> begin();
+		rsl::const_random_access_iterator<u8> begin() const;
+		rsl::const_random_access_iterator<u8> cbegin() const;
+
+		rsl::random_access_iterator<u8> end();
+		rsl::const_random_access_iterator<u8> end() const;
+		rsl::const_random_access_iterator<u8> cend() const;
 
 		constexpr static s8 num_tiles()
 		{
@@ -55,6 +55,6 @@ namespace pokemon
 		}
 
 	private:
-		rsl::array<s8, s_num_indices> m_tile_indices;
+		indices_array m_tile_indices;
 	};
 }

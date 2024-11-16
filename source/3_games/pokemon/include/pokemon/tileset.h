@@ -17,8 +17,8 @@ namespace pokemon
     const u8* tile_data(u8 tileIdx) const;
 
   private:
-    constexpr static s8 s_tileset_width_px = 128;
-    constexpr static s8 s_tile_pixel_byte_size = 1;
+    constexpr static s16 s_tileset_width_px = 128;
+    constexpr static s16 s_tile_pixel_byte_size = 1;
 
     const u8* m_tileset_data;
   };
@@ -26,18 +26,18 @@ namespace pokemon
   class Tile
   {
   public:
-    static constexpr s8 width_px()
+    static constexpr s16 width_px()
     {
       return s_width_px;
     }
-    static constexpr s8 height_px()
+    static constexpr s16 height_px()
     {
       return s_height_px;
     }
 
   private:
-    constexpr static s8 s_width_px = 8;
-    constexpr static s8 s_height_px = 8;
+    constexpr static s16 s_width_px = 8;
+    constexpr static s16 s_height_px = 8;
   };
 
 	//rsl::shared_ptr<TileSet> load_tileset(rsl::string_view filepath);

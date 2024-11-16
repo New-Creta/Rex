@@ -10,10 +10,12 @@ namespace pokemon
 	class BlockSet
 	{
 	public:
+		BlockSet(rsl::unique_array<Block> blocks);
+
 		const Block& block(s8 idx) const;
 
 	private:
-		rsl::vector<Block> m_blocks;
+		rsl::unique_array<Block> m_blocks;
 	};
 
 	rsl::shared_ptr<BlockSet> load_blockset(rsl::string_view filepath);

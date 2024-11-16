@@ -31,8 +31,11 @@ namespace pokemon
 {
   DEFINE_LOG_CATEGORY(LogGameSession);
 
+  // This holds the information about the map, width, height, blockset to use, ...
   rsl::unordered_map<rsl::string_view, rsl::unique_ptr<MapData>> g_maps;
-  rsl::unordered_map<rsl::string_view, rsl::shared_ptr<BlockSet>> g_map_blocks;
+
+  // This holds the map blcoks themselves, as in the block indices themselves
+  rsl::unordered_map<rsl::string_view, rsl::unique_array<u8>> g_map_blocks;
 
   MapData* find_map(rsl::string_view mapPath);
   MapData* find_map_without_connections(rsl::string_view mapPath);
@@ -44,15 +47,15 @@ namespace pokemon
   rsl::unique_ptr<MapData> load_map_data(rsl::string_view mapPath);
   rsl::unique_ptr<MapData> load_map_header_only(rsl::string_view mapPath);
 
-  const BlockSet* find_map_blocks(rsl::string_view mapBlockFilePath)
+  const rsl::unique_array<u8>& find_map_blocks(const MapHeader& mapHeader)
   {
-    if (!g_map_blocks.contains(mapBlockFilePath))
+    if (!g_map_blocks.contains(mapHeader.map_blocks))
     {
-      MapData* map_data = find_map(mapBlockFilePath);
-      return g_map_blocks.emplace(mapBlockFilePath, rsl::move(map_data)).inserted_element->value.get();
+      rex::memory::Blob file_content = rex::vfs::read_file(mapHeader.map_blocks);
+      return g_map_blocks.emplace(mapHeader.map_blocks, rsl::unique_array<u8>(file_content.release_as_array<u8>())).inserted_element->value;
     }
 
-    return g_map_blocks.at(mapBlockFilePath).get();
+    return g_map_blocks.at(mapHeader.map_blocks);
   }
 
   MapData* find_map(rsl::string_view mapPath)
@@ -362,7 +365,7 @@ namespace pokemon
         m_total_width = mapObject->map_header.width + (2 * g_padding);
         m_total_height = mapObject->map_header.height + (2 * g_padding);
 
-        m_blocks = rsl::make_unique<Block[]>(m_total_width * m_total_height);
+        m_block_indices = rsl::make_unique<u8[]>(m_total_width * m_total_height);
         init_blocks(mapObject->map_header.border_block_idx);
         
         fill_connections(mapObject);
@@ -378,18 +381,15 @@ namespace pokemon
         return m_total_height;
       }
 
-      const Block& index_at(s8 x, s8 y) const
+      u8 index_at(s8 x, s8 y) const
       {
-        return m_blocks[y * m_total_width + x];
+        return m_block_indices[y * m_total_width + x];
       }
 
     private:
       void init_blocks(s8 borderBlockIdx)
       {
-        for (Block& block : m_blocks)
-        {
-          block.set(borderBlockIdx);
-        }
+        rsl::fill_n(m_block_indices.begin(), m_block_indices.count(), borderBlockIdx);
       }
       void fill_connections(const MapData* mapObject)
       {
@@ -403,7 +403,7 @@ namespace pokemon
           rsl::pointi8 top_left_conn = project_point_to_conn(mapObject, conn, rect.top_left);
 
           // Load the map blocks of the connection so we can assign the right block index to the map matrix
-          const BlockSet* conn_map_blocks = find_map_blocks(conn.map->map_header.map_blocks);
+          const rsl::unique_array<u8>& conn_map_blocks = find_map_blocks(conn.map->map_header);
 
           // Go over the blocks of the connection and assign the block index to the map matrix
           for (s8 y = rect.top_left.y, conn_y = top_left_conn.y; y < rect.bottom_right.y; ++y, ++conn_y)
@@ -411,10 +411,10 @@ namespace pokemon
             for (s8 x = rect.top_left.x, conn_x = top_left_conn.x; x < rect.bottom_right.x; ++x, ++conn_x)
             {
               s16 conn_idx = conn_y * conn.map->map_header.width + conn_x;
-              const Block& block = conn_map_blocks->block(conn_idx);
+              u8 block_idx = conn_map_blocks[conn_idx];
 
               s16 index = (y * m_total_width) + x;
-              m_blocks[index].set(block);
+              m_block_indices[index] = block_idx;
             }
           }
         }
@@ -422,20 +422,20 @@ namespace pokemon
       void fill_inner_map(const MapData* mapObject)
       {
         s16 index = 0;
-        const BlockSet* map_blocks = find_map_blocks(mapObject->map_header.map_blocks);
+        const rsl::unique_array<u8>& map_blocks = find_map_blocks(mapObject->map_header);
         for (s8 y = g_padding; y < m_total_height - g_padding; ++y)
         {
           for (s8 x = g_padding; x < m_total_width - g_padding; ++x)
           {
             s16 map_matrix_index = y * m_total_width + x;
-            m_blocks[map_matrix_index].set(map_blocks->block(index++));
+            m_block_indices[map_matrix_index] = map_blocks[index++];
           }
         }
       }
 
 
     private:
-      rsl::unique_array<Block> m_blocks;
+      rsl::unique_array<u8> m_block_indices;
       s8 m_total_width;
       s8 m_total_height;
     };
@@ -567,7 +567,7 @@ namespace pokemon
       rsl::shared_ptr<BlockSet> blockset = load_blockset(blockset_json["blockset"]);
       rsl::string_view tileset_filepath = blockset_json["tileset"];
       s32 tileset_width, tileset_height, num_channels;
-      const u8* tileset_data = stbi_load(tileset_filepath.data(), &tileset_width, &tileset_height, &num_channels, 0);
+      u8* tileset_data = stbi_load(tileset_filepath.data(), &tileset_width, &tileset_height, &num_channels, 0);
 
       // Fill in the texture data
       TileSet tileset(tileset_data);
@@ -691,14 +691,15 @@ namespace pokemon
         {
           const u8* tile_row_data_src = tileset.tile_pixel_row(tile_idx, tile_row);
           rsl::Rgba* tile_row_data_dst = calc_dst_in_map_texture(mapCoord, mapWidthPx, tile_idx_in_block, tile_row);
-                 
+          // 0x000002003C43AFD0 - 0x000002003C43E030 // 12384
+
           REX_ASSERT_X(m_texture_data.get() + 7 <= m_texture_data.get() + m_texture_data.byte_size(), "Would write outside of texture boundary");
           //REX_ASSERT_X(tile_row_data_src + 7 <= tileset_data + (tileset_width * tileset_height * num_channels), "Would read outside of texture boundary");
 
           //rsl::memcpy(m_texture_data.get() + tile_pixel_offset, tile_row_data, 8);
           for (s8 i = 0; i < 8; ++i)
           {
-            rsl::Rgba& data = *tile_row_data_dst;
+            rsl::Rgba& data = tile_row_data_dst[i];
             u8 color = tile_row_data_src[i];
             data.red = color;
             data.green = color;
@@ -741,8 +742,8 @@ namespace pokemon
       {
         for (s8 x = 0; x < mapMatrix.width(); ++x)
         {
-          const Block& block = mapMatrix.index_at(x, y);
-          fill_block({ x, y }, mapMatrix.width() * Block::width_px(), block, tileset);
+          u8 block_idx = mapMatrix.index_at(x, y);
+          fill_block({ x, y }, mapMatrix.width() * Block::width_px(), blockset->block(block_idx), tileset);
 
           //blockset_index *= num_indices_per_block;
           //rsl::memcpy(block_indices.data(), &blockset[blockset_index], num_indices_per_block);
@@ -794,7 +795,7 @@ namespace pokemon
       }
 
       auto ns = scoped_timer.stop();
-      REX_INFO(LogGameSession, "Map generation took {} ns", ns);
+      REX_INFO(LogGameSession, "Map generation took {} ns", ns.count());
     }
 
   private:
