@@ -12,7 +12,7 @@ namespace pokemon
 	public:
 		BlockSet(rsl::unique_array<Block> blocks);
 
-		const Block& block(s8 idx) const;
+		const Block& block(s32 idx) const;
 
 	private:
 		rsl::unique_array<Block> m_blocks;

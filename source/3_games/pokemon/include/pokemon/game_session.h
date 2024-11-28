@@ -55,6 +55,8 @@ namespace pokemon
   private:
     SaveFile load_startup_savefile() const;
 
+    void init_map(const SaveFile& startupSaveFile);
+
   private:
     rsl::unique_ptr<MapData> m_active_map;
   };

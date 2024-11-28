@@ -72,12 +72,12 @@ namespace pokemon
 
 	struct MapHeader
 	{
-		rsl::string name;					// name of the map
-		rsl::string map_blocks;		// path to the map blocks
-		rsl::string blockset;			// path to the blockset metadata
-		s8 width;		// represented in block count
-		s8 height;	// represented in block count
-		s8 border_block_idx; // Index of the block used for the border if no connection blocks are present
+		rsl::string name;											// name of the map
+		rsl::string map_blocks_filepath;			// path to the map blocks
+		rsl::string map_render_data_filepath;	// path to metadata for rendering (eg blockset)
+		s8 width;															// represented in block count
+		s8 height;														// represented in block count
+		s8 border_block_idx;									// Index of the block used for the border if no connection blocks are present
 	};
 
 	struct MapData

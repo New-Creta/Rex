@@ -10,9 +10,9 @@ namespace pokemon
 	class Block
 	{
 	private:
-		constexpr static s8 s_num_indices = 16;
 		constexpr static s8 s_num_tiles_per_row = 4;
 		constexpr static s8 s_num_tiles_per_column = 4;
+		constexpr static s8 s_num_indices = s_num_tiles_per_row * s_num_tiles_per_column;
 
 	public:
 		using indices_array = rsl::array<u8, s_num_indices>;
@@ -53,7 +53,10 @@ namespace pokemon
 		{
 			return s_num_tiles_per_row * Tile::height_px();
 		}
-
+		constexpr static s8 major_dimension()
+		{
+			return num_tiles_per_row();
+		}
 	private:
 		indices_array m_tile_indices;
 	};

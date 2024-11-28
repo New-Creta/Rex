@@ -153,4 +153,11 @@ namespace rex
 
     return rsl::string(buffer.data(), static_cast<count_t>(converted_chars)); // NOLINT(readability-redundant-string-cstr)
   }
+
+  // returns true if the character after the string view is '\0'
+  bool is_null_terminated(rsl::string_view string)
+  {
+    return string[string.length()] == '\0';
+  }
+
 } // namespace rex

@@ -59,7 +59,6 @@
 #include "rex_directx/system/dx_shader_root_parameters.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
 
-#include "rex_engine/images/stb_image.h"
 #include "rex_engine/gfx/materials/material_system.h"
 #include "rex_engine/gfx/rendering/render_pass.h"
 #include "rex_engine/gfx/system/input_layout_cache.h"

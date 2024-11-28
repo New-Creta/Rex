@@ -29,7 +29,7 @@ namespace pokemon
 
   }
 
-  const Block& BlockSet::block(s8 idx) const
+  const Block& BlockSet::block(s32 idx) const
   {
     return m_blocks[idx];
   }

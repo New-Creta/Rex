@@ -1,7 +1,6 @@
 #include "pokemon/tileset.h"
 
 #include "rex_engine/gfx/system/rhi.h"
-#include "rex_engine/images/stb_image.h"
 #include "rex_engine/engine/object_pool.h"
 
 namespace pokemon
