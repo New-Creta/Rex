@@ -20,6 +20,10 @@
 
 #include "rex_engine/gfx/system/rhi.h"
 #include "rex_engine/images/image_loader.h"
+#include "rex_engine/memory/array_view.h"
+
+#include "rex_engine/gfx/resources/vertex_buffer.h"
+#include "rex_engine/gfx/resources/index_buffer.h"
 
 #include "pokemon/block.h"
 #include "pokemon/blockset.h"
@@ -343,7 +347,7 @@ namespace pokemon
     class MapMatrix
     {
     public:
-      MapMatrix(const MapData* mapObject)
+      MapMatrix(const MapData* mapObject, const BlockSet* blockset)
       {
         m_total_width = mapObject->map_header.width + (2 * g_padding);
         m_total_height = mapObject->map_header.height + (2 * g_padding);
@@ -353,19 +357,33 @@ namespace pokemon
         
         fill_connections(mapObject);
         fill_inner_map(mapObject);
+
+        fill_tile_cache(blockset);
       }
 
-      s32 width() const
+      s32 width_in_blocks() const
       {
         return m_total_width;
       }
-      s32 height() const
+      s32 height_in_blocks() const
       {
         return m_total_height;
       }
-      s32 major_dimension() const
+      s32 major_dimension_in_blocks() const
       {
-        return width();
+        return width_in_blocks();
+      }
+      s32 width_in_tiles() const
+      {
+        return width_in_blocks() * Block::num_tiles_per_row();
+      }
+      s32 height_in_tiles() const
+      {
+        return height_in_blocks() * Block::num_tiles_per_column();
+      }
+      s32 major_dimension_in_tiles() const
+      {
+        return width_in_blocks() * Block::num_tiles_per_row();
       }
 
       s32 index_at(s32 idx) const
@@ -430,8 +448,39 @@ namespace pokemon
         }
       }
 
+      void fill_tile_cache(const BlockSet* blockset)
+      {
+        m_tile_cache = rsl::make_unique<u8[]>(width_in_tiles() * height_in_tiles());
+        for (s32 y = 0; y < height_in_blocks(); ++y)
+        {
+          for (s32 x = 0; x < width_in_blocks(); ++x)
+          {
+            s32 index_in_map_matrix = map_matrix::coord_to_index(x, y, major_dimension_in_blocks());
+            s32 block_idx = index_at(index_in_map_matrix);
+
+            const Block& block = blockset->block(block_idx);
+
+            for (s32 ty = 0; ty < Block::num_tiles_per_row(); ++ty)
+            {
+              for (s32 tx = 0; tx < Block::num_tiles_per_column(); ++tx)
+              {
+                s8 index_in_block = map_matrix::coord_to_index(tx, ty, Block::major_dimension());
+                u8 tile_idx = block.index_at(index_in_block);
+
+                u8 ttx = x * Block::num_tiles_per_column() + tx;
+                u8 tty = y * Block::num_tiles_per_row() + ty;
+
+                s32 idx = map_matrix::coord_to_index(ttx, tty, width_in_blocks() * Block::num_tiles_per_column());
+                m_tile_cache[idx] = tile_idx;
+              }
+            }
+          }
+        }
+      }
+
     private:
       rsl::unique_array<u8> m_block_indices;
+      rsl::unique_array<u8> m_tile_cache;
       s8 m_total_width;
       s8 m_total_height;
     };
@@ -450,9 +499,87 @@ namespace pokemon
     rsl::unique_ptr<rex::gfx::Texture2D> m_texture;
   };
 
+  struct TileRendererDesc
+  {
+    s32 width_in_tiles;
+    s32 height_in_tiles;
+    rex::gfx::Texture2D* tileset_texture;
+  };
+  struct TileVertex
+  {
+    rsl::point<f32> pos;
+    rsl::point<f32> uv;
+  };
+  struct TileWVP
+  {
+    f32 wvp[4][4];
+  };
+
+
   class TileRenderer
   {
+  public:
+    TileRenderer(const TileRendererDesc& desc)
+      : m_width(desc.width_in_tiles)
+      , m_height(desc.height_in_tiles)
+      , m_tileset_texture(desc.tileset_texture)
+    {
+      m_tiles_vb_cpu = rsl::make_unique<TileVertex[]>(expected_num_vertices());
+      m_tiles_ib_cpu = rsl::make_unique<u16[]>(expected_num_indices());
 
+      m_tiles_vb_gpu = rex::gfx::rhi::create_vertex_buffer(expected_num_vertices(), sizeof(TileVertex));
+      m_tiles_ib_gpu = rex::gfx::rhi::create_index_buffer(expected_num_indices(), rex::gfx::IndexBufferFormat::Uint16);
+    }
+
+    void update_tileset_texture(const rex::gfx::Texture2D* texture);
+    void update_dimension(s32 width, s32 height);
+
+    void render(const rex::ArrayView<TileVertex>& vertices, const rex::ArrayView<TileWVP>& tileWvps)
+    {
+      REX_ASSERT_X(vertices.count() == expected_num_vertices(), "Invalid number of vertices, got: {}, expected: {}", vertices.count(), expected_num_vertices());
+      REX_ASSERT_X(tileWvps.count() == expected_num_wvps(), "Invalid number of wvps, got: {}, expected: {}", tileWvps.count(), expected_num_wvps());
+
+      // Update the vertex buffer with the vertices
+      // Update the wvps buffer with the wvps
+      auto copy_ctx = rex::gfx::new_copy_ctx();
+
+      copy_ctx->update_buffer(m_tiles_vb_gpu.get(), vertices.data(), vertices.count() * sizeof(TileVertex));
+      //copy_ctx->update_buffer(m_tiles_ib_gpu.get(), )
+
+    }
+
+  private:
+    s32 expected_num_vertices() const
+    {
+      constexpr s32 num_vertices_per_tile = 4;
+      return m_width * m_height * num_vertices_per_tile;
+    }
+    s32 expected_num_tiles() const
+    {
+      return m_width * m_height;
+    }
+    s32 expected_num_wvps() const
+    {
+      return expected_num_tiles();
+    }
+    s32 expected_num_indices() const
+    {
+      constexpr s32 num_indices_per_tile = 6;
+      return expected_num_tiles() * num_indices_per_tile;
+    }
+
+  private:
+    s32 m_width; // width in tiles
+    s32 m_height; // height in tiles
+    rex::gfx::Texture2D* m_tileset_texture;
+
+    // Create tiles vertex buffer and wvp buffer in the renderer
+    // these get updated every frame
+    rsl::unique_ptr<rex::gfx::VertexBuffer> m_tiles_vb_gpu;
+    rsl::unique_ptr<rex::gfx::IndexBuffer> m_tiles_ib_gpu;
+
+    rsl::unique_array<TileVertex> m_tiles_vb_cpu;
+    rsl::unique_array<u16> m_tiles_ib_cpu;
   };
 
   rsl::unique_ptr<rex::gfx::Texture2D> create_tileset_texture(rsl::string_view filepath)
@@ -509,77 +636,43 @@ namespace pokemon
       // 360 x 16 = 5760
       // This means we can render the viewport using only 28 800 bytes, at least for the map itself, excluding the player sprite and NPCs
 
-      // Create the map matrix, which is a matrix of the map, with the padding, holding a block index in each cell
-      map_matrix::MapMatrix map_matrix(mapData);
-
       // Load the map render data, which is the tileset and blockset into memory
       MapRenderData map_render_data = load_map_render_data(mapData->map_header.map_render_data_filepath);
 
+      // Create the map matrix, which is a matrix of the map, with the padding, holding a block index in each cell
+      map_matrix::MapMatrix map_matrix(mapData, map_render_data.blockset.get());
 
-      // Fill in the tiles cache
-      s32 num_tiles_width = map_matrix.width() * Block::num_tiles_per_column();
-      s32 num_tiles_height = map_matrix.height()* Block::num_tiles_per_row();
-      rsl::unique_array<u8> tile_indices_cache = rsl::make_unique<u8[]>(num_tiles_width * num_tiles_height);
-      for (s32 y = 0; y < map_matrix.height(); ++y)
-      {
-        for (s32 x = 0; x < map_matrix.width(); ++x)
-        {
-          s32 index_in_map_matrix = map_matrix::coord_to_index(x, y, map_matrix.major_dimension());
-          s32 block_idx = map_matrix.index_at(index_in_map_matrix);
-          
-          const Block& block = map_render_data.blockset->block(block_idx);
-
-          for (s32 ty = 0; ty < Block::num_tiles_per_row(); ++ty)
-          {
-            for (s32 tx = 0; tx < Block::num_tiles_per_column(); ++tx)
-            {
-              s8 index_in_block = map_matrix::coord_to_index(tx, ty, Block::major_dimension());
-              u8 tile_idx = block.index_at(index_in_block);
-
-              u8 ttx = x * Block::num_tiles_per_column() + tx;
-              u8 tty = y * Block::num_tiles_per_row() + ty;
-
-              s32 idx = map_matrix::coord_to_index(ttx, tty, map_matrix.width() * Block::num_tiles_per_column());
-              tile_indices_cache[idx] = tile_idx;
-            }
-          }
-        }
-      }
-
-      // Create the tileset texture
-      rsl::unique_ptr<rex::gfx::Texture2D> tileset_texture = create_tileset_texture(tileset_filepath);
-
-      struct TileVertex
-      {
-        rsl::point<f32> pos;
-        rsl::point<f32> uv;
-      };
-      struct TileWVP
-      {
-        f32 wvp[4][4];
-      };
-      s32 num_tiles_per_row = (map_matrix.width() * Block::num_tiles_per_column());
-      s32 num_tiles_per_column = (map_matrix.width() * Block::num_tiles_per_row());
-      s32 num_tiles = num_tiles_per_row * num_tiles_per_column;
+      s32 num_tiles = map_matrix.width_in_tiles() * map_matrix.height_in_tiles();
       s32 num_vertices_per_tile = 4;
       rsl::unique_array<TileVertex> tiles_vb = rsl::make_unique<TileVertex[]>(num_vertices_per_tile * num_tiles);
       rsl::unique_array<TileWVP> tile_wvps = rsl::make_unique<TileWVP[]>(num_tiles);
-      
-      //TileRendererDesc tile_renderer_desc{};
-      //tile_renderer_desc.num_rows = num_tiles_per_column;
-      //tile_renderer_desc.num_columns = num_tiles_per_row;
-      //tile_renderer_desc.tileset_texture = rsl::move(tileset_texture);
-      //
 
-      //TileRenderer tile_renderer()
+      TileRendererDesc tile_renderer_desc{};
+      tile_renderer_desc.width_in_tiles = map_matrix.width_in_tiles();
+      tile_renderer_desc.height_in_tiles = map_matrix.height_in_tiles();
+      tile_renderer_desc.tileset_texture = map_render_data.tileset.get();
 
-      //// Fill in the texture data
-      //TileSet tileset(tileset_data);
-      //fill_texture_data(map_matrix, blockset.get(), tileset);
+      TileRenderer tile_renderer(tile_renderer_desc);
+
+
+      // Tile rendering pipeline
+      // 1. Calculate top left tile based on player position
+      rsl::pointi8 player_pos = { 5,5 };
+      // 2. Use map matrix to get the tile matrix
+      const rex::ArrayView<u8>& tile_matrix = map_matrix.update_tile_matrix(player_pos);
+      // 3. Convert the tile matrix into a list of vertices and wvps
+      TileMatrixRenderData tile_matrix_render_data = convert_to_render_data(tile_matrix);
+      // 4. Pass the vertices and wvps to the rnederer
+      tile_renderer.render(tile_matrix);
+
+
+
+
+      tile_renderer.render();
 
       // Calculate the dimensions of the texture
-      s16 width = map_matrix.width() * Block::width_px();
-      s16 height = map_matrix.height() * Block::height_px();
+      s16 width = map_matrix.width_in_blocks() * Block::width_px();
+      s16 height = map_matrix.height_in_blocks() * Block::height_px();
 
       // Allocate the memory to fill in the texture data
       m_texture_data = rsl::make_unique<rsl::Rgba[]>(width * height);

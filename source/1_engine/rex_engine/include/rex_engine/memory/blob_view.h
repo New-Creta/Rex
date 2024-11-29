@@ -63,6 +63,5 @@ namespace rex
     {
       return reinterpret_cast<const T*>(m_data);
     }
-
   } // namespace memory
 } // namespace rex
