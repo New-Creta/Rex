@@ -29,7 +29,10 @@ namespace rex
 
       // Pixel shader
       Fog,                    // Vertex fog
-      TessFactor              // Tesselation factor
+      TessFactor,             // Tesselation factor
+
+      // Vertex shader
+      InstanceMatrix
     };
 
     // Shader semantic are case sensitive, so we can't use reflection to get its name

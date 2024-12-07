@@ -26,6 +26,7 @@ namespace rex
       case rex::gfx::ShaderSemantic::TexCoord:      return "TEXCOORD";
       case rex::gfx::ShaderSemantic::Fog:           return "FOG";
       case rex::gfx::ShaderSemantic::TessFactor:    return "TESSFACTOR";
+      case rex::gfx::ShaderSemantic::InstanceMatrix:    return "InstMatrix";
       }
 
       return "";

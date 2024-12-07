@@ -25,7 +25,7 @@ namespace rex
       // Return the format of the texture
       TextureFormat format() const;
       // Return the resource view of the texture
-      ResourceView* resource_view();
+      const ResourceView* resource_view() const;
 
     private:
       s32 m_width;

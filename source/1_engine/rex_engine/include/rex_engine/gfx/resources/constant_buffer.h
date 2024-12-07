@@ -17,7 +17,7 @@ namespace rex
       ConstantBuffer(u64 gpuAddress, ResourceView* view, rsl::memory_size size);
 
       // Return the resource view of a constant buffer
-      ResourceView* resource_view();
+      const ResourceView* resource_view() const;
       // Return the gpu address of a constant buffer
       u64 gpu_address() const;
 

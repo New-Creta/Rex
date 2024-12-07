@@ -5,7 +5,7 @@ namespace rex
   namespace gfx
   {
     IndexBuffer::IndexBuffer(s32 indexCount, IndexBufferFormat format)
-      : Buffer(indexCount * index_byte_size())
+      : Buffer(indexCount * index_format_size(format))
       , m_index_count(indexCount)
       , m_format(format)
     {
@@ -19,14 +19,7 @@ namespace rex
     // Return the size of a single index
     s32 IndexBuffer::index_byte_size() const
     {
-      switch (m_format)
-      {
-      case IndexBufferFormat::Uint16: return 2;
-      case IndexBufferFormat::Uint32: return 4;
-      default: break;
-      }
-
-      return -1;
+      return index_format_size(m_format);
     }
     // Return the total size of the buffer
     s32 IndexBuffer::total_size() const

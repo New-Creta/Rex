@@ -13,7 +13,7 @@ namespace pokemon
     SaveFile(rsl::string_view filepath);
 
   public:
-    rsl::string current_map;
+    rsl::string current_map_filepath;
     rsl::pointi8 position;
   };
 }

@@ -49,6 +49,8 @@ namespace rex
       void set_render_target(RenderTarget* colorRenderTarget);
       // Calls the graphics API clear_render_target function with a null depth stencil buffer
       void clear_render_target(RenderTarget* renderTarget);
+      // Set the vertex buffer of the context, always assigned to input slot 0
+      void set_vertex_buffer(VertexBuffer* vb);
 
       // Implemented by Graphics API specific derived classes
       // ----------------------------------------------------------------
@@ -77,7 +79,7 @@ namespace rex
       // Clears the depth stencil target of the context
       virtual void clear_depth_stencil_target(DepthStencilBuffer* depthRenderTarget) = 0;
       // Set the vertex buffer of the context
-      virtual void set_vertex_buffer(VertexBuffer* vb) = 0;
+      virtual void set_vertex_buffer(VertexBuffer* vb, s32 startSlot) = 0;
       // Set the index buffer of the context
       virtual void set_index_buffer(IndexBuffer* ib) = 0;
       // Set the primitive topology of the context

@@ -43,9 +43,9 @@ namespace rex
 			ShaderParameterType type() const;
 
 			// Update a certain resource within the shader parameter (it's possible there's only 1)
-			virtual void update_view(ViewOffset offset, ConstantBuffer* cb) = 0;
-			virtual void update_view(ViewOffset offset, Texture2D* texture) = 0;
-			virtual void update_view(ViewOffset offset, Sampler2D* sampler) = 0;
+			virtual void update_view(ViewOffset offset, const ConstantBuffer* cb) = 0;
+			virtual void update_view(ViewOffset offset, const Texture2D* texture) = 0;
+			virtual void update_view(ViewOffset offset, const Sampler2D* sampler) = 0;
 
 			// Bind the shader parameter to a render context
 			virtual void bind_to(RenderContext* ctx) const = 0;
@@ -62,9 +62,9 @@ namespace rex
 			ViewShaderParam(const ShaderParameterDesc& desc);
 
 			// Update a certain resource within the shader parameter, guaranteed there's only 1
-			void update_view(ViewOffset offset, ConstantBuffer* cb) override;
-			void update_view(ViewOffset offset, Texture2D* texture) override;
-			void update_view(ViewOffset offset, Sampler2D* sampler) override;
+			void update_view(ViewOffset offset, const ConstantBuffer* cb) override;
+			void update_view(ViewOffset offset, const Texture2D* texture) override;
+			void update_view(ViewOffset offset, const Sampler2D* sampler) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;
@@ -86,19 +86,19 @@ namespace rex
 			ViewTableShaderParam(const ShaderParameterDesc& desc);
 
 			// Update a certain resource within the shader parameter (it's possible there's only 1)
-			void update_view(ViewOffset offset, ConstantBuffer* cb) override;
-			void update_view(ViewOffset offset, Texture2D* texture) override;
-			void update_view(ViewOffset offset, Sampler2D* sampler) override;
+			void update_view(ViewOffset offset, const ConstantBuffer* cb) override;
+			void update_view(ViewOffset offset, const Texture2D* texture) override;
+			void update_view(ViewOffset offset, const Sampler2D* sampler) override;
 
 			// Bind the shader parameter to a render context
 			void bind_to(RenderContext* ctx) const override;
 
 		private:
 			// Update a certain resource within the shader parameter (it's possible there's only 1)
-			void update_view(ViewOffset offset, ResourceView* view);
+			void update_view(ViewOffset offset, const ResourceView* view);
 
 		private:
-			rsl::vector<ResourceView*> m_views;
+			rsl::vector<const ResourceView*> m_views;
 		};
 
 	}

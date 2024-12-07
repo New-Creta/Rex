@@ -46,7 +46,7 @@ namespace rex
       rsl::unique_ptr<DxSampler2D> create_sampler2d(const SamplerDesc& desc);
 
       // Copy the given views into this heap
-      rsl::unique_ptr<ResourceView> copy_views(const rsl::vector<ResourceView*>& views) override;
+      rsl::unique_ptr<ResourceView> copy_views(const rsl::vector<const ResourceView*>& views) override;
 
       // Return the internal wrapped descriptor heap
       ID3D12DescriptorHeap* dx_object();

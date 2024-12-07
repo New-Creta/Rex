@@ -881,3 +881,23 @@
 //	}
 //
 //}
+
+#include "pokemon/poke_map.h"
+
+namespace pokemon
+{
+	Map::Map(MapMatrix&& mapMatrix, MapRenderData&& mapRenderData)
+		: m_map_matrix(rsl::move(mapMatrix))
+		, m_map_render_data(rsl::move(mapRenderData))
+	{}
+
+	const MapMatrix& Map::map_matrix() const
+	{
+		return m_map_matrix;
+	}
+	const MapRenderData& Map::render_data() const
+	{
+		return m_map_render_data;
+	}
+
+}

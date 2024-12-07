@@ -18,5 +18,5 @@ namespace pokemon
 		rsl::unique_array<Block> m_blocks;
 	};
 
-	rsl::shared_ptr<BlockSet> load_blockset(rsl::string_view filepath);
+	rsl::unique_ptr<BlockSet> load_blockset(rsl::string_view filepath);
 }

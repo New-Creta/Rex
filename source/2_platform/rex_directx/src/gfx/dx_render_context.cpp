@@ -141,7 +141,7 @@ namespace rex
 
     }
     // Set the vertex buffer of the context
-    void DxRenderContext::set_vertex_buffer(VertexBuffer* vb)
+    void DxRenderContext::set_vertex_buffer(VertexBuffer* vb, s32 startSlot)
     {
       DxVertexBuffer* dx_vb = d3d::to_dx12(vb);
 
@@ -150,7 +150,7 @@ namespace rex
       view.SizeInBytes = narrow_cast<s32>(vb->size().size_in_bytes());
       view.StrideInBytes = static_cast<UINT>(vb->vertex_size());
 
-      m_cmd_list->IASetVertexBuffers(0, 1, &view);
+      m_cmd_list->IASetVertexBuffers(startSlot, 1, &view);
     }
     // Set the index buffer of the context
     void DxRenderContext::set_index_buffer(IndexBuffer* ib)

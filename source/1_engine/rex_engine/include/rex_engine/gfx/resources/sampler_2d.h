@@ -40,7 +40,7 @@ namespace rex
 			virtual ~Sampler2D() = default;
 
 			// Return the resource view of a sampler
-			ResourceView* resource_view()
+			const ResourceView* resource_view() const
 			{
 				return m_view;
 			}

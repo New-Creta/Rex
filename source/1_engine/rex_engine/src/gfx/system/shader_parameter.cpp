@@ -34,15 +34,15 @@ namespace rex
 			: ShaderParameter(desc)
 			, m_gpu_address(0)
 		{}
-		void ViewShaderParam::update_view(ViewOffset offset, ConstantBuffer* cb)
+		void ViewShaderParam::update_view(ViewOffset offset, const ConstantBuffer* cb)
 		{
 			update_view(offset, cb->gpu_address());
 		}
-		void ViewShaderParam::update_view(ViewOffset, Texture2D*)
+		void ViewShaderParam::update_view(ViewOffset, const Texture2D*)
 		{
 			REX_ASSERT("Textures cannot be tied to an inline view. They need to be tied to a view table");
 		}
-		void ViewShaderParam::update_view(ViewOffset, Sampler2D*)
+		void ViewShaderParam::update_view(ViewOffset, const Sampler2D*)
 		{
 			REX_ASSERT("Samplers cannot be tied to an inline view. They need to be tied to a view table");
 		}
@@ -69,15 +69,15 @@ namespace rex
 		{
 			m_views.resize(desc.num_views);
 		}
-		void ViewTableShaderParam::update_view(ViewOffset offset, ConstantBuffer* cb)
+		void ViewTableShaderParam::update_view(ViewOffset offset, const ConstantBuffer* cb)
 		{
 			update_view(offset, cb->resource_view());
 		}
-		void ViewTableShaderParam::update_view(ViewOffset offset, Texture2D* texture)
+		void ViewTableShaderParam::update_view(ViewOffset offset, const Texture2D* texture)
 		{
 			update_view(offset, texture->resource_view());
 		}
-		void ViewTableShaderParam::update_view(ViewOffset offset, Sampler2D* sampler)
+		void ViewTableShaderParam::update_view(ViewOffset offset, const Sampler2D* sampler)
 		{
 			update_view(offset, sampler->resource_view());
 		}
@@ -97,7 +97,7 @@ namespace rex
 			ctx->bind_view_table(slot(), start_handle.get());
 		}
 
-		void ViewTableShaderParam::update_view(ViewOffset offset, ResourceView* view)
+		void ViewTableShaderParam::update_view(ViewOffset offset, const ResourceView* view)
 		{
 			s32 abs_offset = offset.range_offset * offset.offset_within_range;
 			m_views[abs_offset] = view;

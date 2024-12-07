@@ -12,15 +12,15 @@ namespace rex
       : GraphicsContext(owningEngine, GraphicsEngineType::Copy)
     {}
 
-    rsl::unique_ptr<ResourceView> CopyContext::copy_texture_views_to_shaders(const rsl::vector<ResourceView*>& views)
+    rsl::unique_ptr<ResourceView> CopyContext::copy_texture_views_to_shaders(const rsl::vector<const ResourceView*>& views)
     {
       return copy_views(m_shader_visible_srv_heap, views);
     }
-    rsl::unique_ptr<ResourceView> CopyContext::copy_sampler_views_to_shaders(const rsl::vector<ResourceView*>& views)
+    rsl::unique_ptr<ResourceView> CopyContext::copy_sampler_views_to_shaders(const rsl::vector<const ResourceView*>& views)
     {
       return copy_views(m_shader_visible_sampler_heap, views);
     }
-    rsl::unique_ptr<ResourceView> CopyContext::copy_views(ViewHeapType heapType, const rsl::vector<ResourceView*>& views)
+    rsl::unique_ptr<ResourceView> CopyContext::copy_views(ViewHeapType heapType, const rsl::vector<const ResourceView*>& views)
     {
       switch (heapType)
       {
@@ -38,7 +38,7 @@ namespace rex
       m_shader_visible_sampler_heap = resetData.shader_visible_sampler_desc_heap;
     }
 
-    rsl::unique_ptr<ResourceView> CopyContext::copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors)
+    rsl::unique_ptr<ResourceView> CopyContext::copy_views(ViewHeap* dstHeap, const rsl::vector<const ResourceView*>& descriptors)
     {
       return dstHeap->copy_views(descriptors);
     }

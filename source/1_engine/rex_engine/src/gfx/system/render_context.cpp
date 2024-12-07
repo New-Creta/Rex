@@ -18,6 +18,10 @@ namespace rex
     {
       clear_render_target(renderTarget, nullptr);
     }
+    void RenderContext::set_vertex_buffer(VertexBuffer* vb)
+    {
+      set_vertex_buffer(vb, 0);
+    }
 
     // Reset the engine specific context
     void RenderContext::type_specific_reset(const ContextResetData& resetData)

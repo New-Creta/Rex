@@ -34,7 +34,7 @@ namespace pokemon
     return m_blocks[idx];
   }
 
-	rsl::shared_ptr<BlockSet> load_blockset(rsl::string_view filepath)
+	rsl::unique_ptr<BlockSet> load_blockset(rsl::string_view filepath)
 	{
     if (!rex::vfs::is_file(filepath))
     {
@@ -54,7 +54,7 @@ namespace pokemon
       blocks[block_idx] = Block(blob_memory);
     }
 
-    return rsl::make_shared<BlockSet>(rsl::move(blocks));
+    return rsl::make_unique<BlockSet>(rsl::move(blocks));
     //return rex::load_object<BlockSet>(rsl::move(blocks));
 	}
 }

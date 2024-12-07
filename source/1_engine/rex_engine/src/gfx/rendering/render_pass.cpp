@@ -66,15 +66,15 @@ namespace rex
 			material->bind_to(ctx);
 		}
 
-		void RenderPass::set(rsl::string_view name, ConstantBuffer* constantBuffer)
+		void RenderPass::set(rsl::string_view name, const ConstantBuffer* constantBuffer)
 		{
 			m_parameters_store->set(name, constantBuffer);
 		}
-		void RenderPass::set(rsl::string_view name, Texture2D* texture)
+		void RenderPass::set(rsl::string_view name, const Texture2D* texture)
 		{
 			m_parameters_store->set(name, texture);
 		}
-		void RenderPass::set(rsl::string_view name, Sampler2D* sampler)
+		void RenderPass::set(rsl::string_view name, const Sampler2D* sampler)
 		{
 			m_parameters_store->set(name, sampler);
 		}

@@ -53,9 +53,9 @@ namespace rex
 			void bind_material(RenderContext* ctx, Material* material);
 			
 			// Set renderpass parameter to a new resource
-			void set(rsl::string_view name, ConstantBuffer* constantBuffer);
-			void set(rsl::string_view name, Texture2D* texture);
-			void set(rsl::string_view name, Sampler2D* sampler);
+			void set(rsl::string_view name, const ConstantBuffer* constantBuffer);
+			void set(rsl::string_view name, const Texture2D* texture);
+			void set(rsl::string_view name, const Sampler2D* sampler);
 
 			// Return the slot of a renderpass parameter
 			s32 slot(rsl::string_view name) const;

@@ -23,7 +23,7 @@ namespace rex
     {
       return m_format;
     }
-    ResourceView* Texture2D::resource_view()
+    const ResourceView* Texture2D::resource_view() const
     {
       return m_view;
     }

@@ -16,7 +16,7 @@ namespace rex
       virtual ~ViewHeap() = default;
 
       // Copy the given views into this heap
-      virtual rsl::unique_ptr<ResourceView> copy_views(const rsl::vector<ResourceView*>& views) = 0;
+      virtual rsl::unique_ptr<ResourceView> copy_views(const rsl::vector<const ResourceView*>& views) = 0;
 
       // Reset the descriptor heap
       // This will cause new descriptor to be allocated from the beginning of the heap

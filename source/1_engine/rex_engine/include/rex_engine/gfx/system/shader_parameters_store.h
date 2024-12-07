@@ -149,9 +149,9 @@ namespace rex
             ShaderParametersStore(const ShaderParametersStoreDesc& desc);
 
             // Set a resource to a new value
-            void set(rsl::string_view name, ConstantBuffer* cb);
-            void set(rsl::string_view name, Texture2D* texture);
-            void set(rsl::string_view name, Sampler2D* sampler);
+            void set(rsl::string_view name, const ConstantBuffer* cb);
+            void set(rsl::string_view name, const Texture2D* texture);
+            void set(rsl::string_view name, const Sampler2D* sampler);
 
             // Return the location of a resource
             ShaderParameterLocation location(rsl::string_view name) const;

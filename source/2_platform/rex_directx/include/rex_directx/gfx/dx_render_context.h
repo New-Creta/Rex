@@ -46,7 +46,7 @@ namespace rex
       // Clears the depth stencil target of the context
       void clear_depth_stencil_target(DepthStencilBuffer* depthRenderTarget) override;
       // Set the vertex buffer of the context
-      void set_vertex_buffer(VertexBuffer* vb) override;
+      void set_vertex_buffer(VertexBuffer* vb, s32 startSlot) override;
       // Set the index buffer of the context
       void set_index_buffer(IndexBuffer* ib) override;
       // Set the primitive topology of the context

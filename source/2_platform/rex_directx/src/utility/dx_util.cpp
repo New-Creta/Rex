@@ -728,6 +728,10 @@ namespace rex
       {
         return static_cast<DxResourceView*>(resourceView);
       }
+      const DxResourceView* to_dx12(const ResourceView* resourceView)
+      {
+        return static_cast<const DxResourceView*>(resourceView);
+      }
       DxFence* to_dx12(Fence* fence)
       {
         return static_cast<DxFence*>(fence);

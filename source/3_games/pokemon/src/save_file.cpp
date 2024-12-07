@@ -11,7 +11,7 @@ namespace pokemon
     rex::memory::Blob file_content = rex::vfs::read_file(filepath);
     rex::json::json json_blob = rex::json::parse(file_content);
 
-    current_map.assign(json_blob["map"].get<rsl::string_view>());
+    current_map_filepath.assign(json_blob["map"].get<rsl::string_view>());
     position.x = json_blob["position"]["x"];
     position.y = json_blob["position"]["x"];
   }

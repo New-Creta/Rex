@@ -202,6 +202,7 @@ namespace rex
       DxViewHeap* to_dx12(ViewHeap* descHeap);
       DxSampler2D* to_dx12(Sampler2D* sampler);
       DxResourceView* to_dx12(ResourceView* resourceView);
+      const DxResourceView* to_dx12(const ResourceView* resourceView);
       DxFence* to_dx12(Fence* fence);
       DxConstantBuffer* to_dx12(ConstantBuffer* constantBuffer);
       DxVertexBuffer* to_dx12(VertexBuffer* vertexBuffer);

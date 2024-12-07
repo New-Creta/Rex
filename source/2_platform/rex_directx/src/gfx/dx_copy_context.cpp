@@ -71,6 +71,7 @@ namespace rex
     }
     void DxCopyContext::update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
+      REX_ASSERT_X(size.size_in_bytes() + offset <= buffer->size().size_in_bytes(), "Would write outside of the bounds of a resource.");
       DxConstantBuffer* dx_constant_buffer = d3d::to_dx12(buffer);
       transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(dx_constant_buffer->dx_object(), data, size, offset);
@@ -83,6 +84,7 @@ namespace rex
     }
     void DxCopyContext::update_buffer(VertexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
+      REX_ASSERT_X(size.size_in_bytes() + offset <= buffer->size().size_in_bytes(), "Would write outside of the bounds of a resource.");
       DxVertexBuffer* dx_vertex_buffer = d3d::to_dx12(buffer);
       transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(dx_vertex_buffer->dx_object(), data, size, offset);
@@ -95,6 +97,7 @@ namespace rex
     }
     void DxCopyContext::update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset)
     {
+      REX_ASSERT_X(size.size_in_bytes() + offset <= buffer->size().size_in_bytes(), "Would write outside of the bounds of a resource.");
       DxIndexBuffer* dx_index_buffer = d3d::to_dx12(buffer);
       transition_buffer(buffer, ResourceState::CopyDest);
       update_buffer(dx_index_buffer->dx_object(), data, size, offset);

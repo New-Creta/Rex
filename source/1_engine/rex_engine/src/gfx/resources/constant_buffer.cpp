@@ -9,7 +9,7 @@ namespace rex
       , m_gpu_address(gpuAddress)
       , m_view(view)
     {}
-    ResourceView* ConstantBuffer::resource_view()
+    const ResourceView* ConstantBuffer::resource_view() const
     {
       return m_view;
     }

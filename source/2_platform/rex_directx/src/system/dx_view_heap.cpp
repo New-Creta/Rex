@@ -107,7 +107,7 @@ namespace rex
     }
 
     // Copy the given views into this heap
-    rsl::unique_ptr<ResourceView> DxViewHeap::copy_views(const rsl::vector<ResourceView*>& views)
+    rsl::unique_ptr<ResourceView> DxViewHeap::copy_views(const rsl::vector<const ResourceView*>& views)
     {
       if (views.empty())
       {
@@ -117,13 +117,13 @@ namespace rex
       rsl::unique_ptr<DxResourceView> free_handle = rsl::make_unique<DxResourceView>(new_free_handle(views.size()));
 
       CD3DX12_CPU_DESCRIPTOR_HANDLE cpu_handle;
-      for (ResourceView* view : views)
+      for (const ResourceView* view : views)
       {
         cpu_handle = m_null_view.cpu_handle();
         // It's possible a null view is provided if the parameter has not been set yet
         if (view != nullptr)
         {
-          DxResourceView* src_handle = d3d::to_dx12(view);
+          const DxResourceView* src_handle = d3d::to_dx12(view);
           cpu_handle = src_handle->cpu_handle();
         }
 

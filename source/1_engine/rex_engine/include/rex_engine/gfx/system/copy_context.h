@@ -32,11 +32,11 @@ namespace rex
       CopyContext(gfx::GraphicsEngine* owningEngine);
 
       // Copy texture views into a heap that's accessible to shaders
-      rsl::unique_ptr<ResourceView> copy_texture_views_to_shaders(const rsl::vector<ResourceView*>& views);
+      rsl::unique_ptr<ResourceView> copy_texture_views_to_shaders(const rsl::vector<const ResourceView*>& views);
       // Copy sampler views into a heap that's accessible to shaders
-      rsl::unique_ptr<ResourceView> copy_sampler_views_to_shaders(const rsl::vector<ResourceView*>& views);
+      rsl::unique_ptr<ResourceView> copy_sampler_views_to_shaders(const rsl::vector<const ResourceView*>& views);
       // Copy views into a heap that's accessible to shaders
-      rsl::unique_ptr<ResourceView> copy_views(ViewHeapType heapType, const rsl::vector<ResourceView*>& views);
+      rsl::unique_ptr<ResourceView> copy_views(ViewHeapType heapType, const rsl::vector<const ResourceView*>& views);
 
       // Update a constant buffer's data
       virtual void update_buffer(ConstantBuffer* buffer, const void* data, rsl::memory_size size) = 0;
@@ -56,7 +56,7 @@ namespace rex
 
     private:
       // Copy views into a heap that's accessible to shaders
-      rsl::unique_ptr<ResourceView> copy_views(ViewHeap* dstHeap, const rsl::vector<ResourceView*>& descriptors);
+      rsl::unique_ptr<ResourceView> copy_views(ViewHeap* dstHeap, const rsl::vector<const ResourceView*>& descriptors);
 
     private:
       ViewHeap* m_shader_visible_srv_heap;      // the srv view heap that's accessible to shaders
