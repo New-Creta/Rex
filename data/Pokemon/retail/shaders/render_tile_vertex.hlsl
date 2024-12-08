@@ -1,11 +1,19 @@
 #include "defines.hlsl"
 
+cbuffer TextureData : register(b0, RENDER_PASS_REGISTER_SPACE) 
+{
+  int tiles_per_row;
+  float inv_texture_width;
+  float inv_texture_height;
+};
+
 struct VertexIn
 {
   float2 PosL : POSITION;             // The position of the vertex in local space
   float2 Uv : TEXCOORD0;              // The UV of the vertex
 
   float4x4 WVP : InstMatrix;         // The WVP matrix of the vertex
+  uint TileIdx : InstTileOffset;      // The index of the tile in the texture
 };
 
 struct VertexOut
@@ -14,6 +22,16 @@ struct VertexOut
   float2 Uv : TEXCOORD0;
 };
 
+int2 calc_tile_coord(uint tileIdx)
+{
+  uint2 coord;
+
+  coord.x = tileIdx % tiles_per_row;
+  coord.y = tileIdx / tiles_per_row;
+
+  return coord;
+}
+
 VertexOut main(VertexIn vin)
 {
   VertexOut vout;
@@ -21,8 +39,17 @@ VertexOut main(VertexIn vin)
   // Transform to homogeneous clip space.
   vout.PosH = mul(float4(vin.PosL, 0.0f, 1.0f), vin.WVP);
 
-  // Pass the other values straight to the pixel shader
-  vout.Uv = vin.Uv;
+  // Calculate the UV from the tile index
+  int2 tile_coord = calc_tile_coord(vin.TileIdx);
+
+  int tile_width_px = 8;
+  int tile_height_px = 8;
+
+  float2 tile_uv_start;
+  tile_uv_start.x = tile_width_px * tile_coord.x * inv_texture_width;
+  tile_uv_start.y = tile_height_px * tile_coord.y * inv_texture_height;
+
+  vout.Uv = vin.Uv + tile_uv_start;
 
   return vout;
 }

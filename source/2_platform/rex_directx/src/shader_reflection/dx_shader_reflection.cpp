@@ -33,6 +33,8 @@ namespace rex
     ShaderArithmeticType component_mask_to_float(s32 componentMask);
     // Based on the component mask and its precision, create the correct shader parameter type for uints
     ShaderArithmeticType component_mask_to_uint(s32 componentMask, D3D_MIN_PRECISION precision);
+    // Based on the component mask and its precision, create the correct shader parameter type for uints
+    ShaderArithmeticType component_mask_to_sint(s32 componentMask, D3D_MIN_PRECISION precision);
 
     ShaderIODeclaration reflect_shader_input_parameter(ID3D12ShaderReflection* refl, s32 idx)
     {
@@ -243,6 +245,7 @@ namespace rex
       switch (componentType)
       {
       default: REX_ASSERT("Invalid component type"); break;
+      case D3D_REGISTER_COMPONENT_SINT32:  return component_mask_to_sint(componentType, precision); break;
       case D3D_REGISTER_COMPONENT_UINT32:  return component_mask_to_uint(componentType, precision); break;
       case D3D_REGISTER_COMPONENT_FLOAT32: return component_mask_to_float(componentMask); break;
       }
@@ -279,6 +282,27 @@ namespace rex
       if (componentMask & 1)
       {
         return ShaderArithmeticType::Uint;
+      }
+
+      REX_ASSERT("Invalid component mask");
+      return ShaderArithmeticType::Unknown;
+    }
+    ShaderArithmeticType component_mask_to_sint(s32 componentMask, D3D_MIN_PRECISION precision)
+    {
+      if (componentMask & 3)
+      {
+        if (precision == D3D_MIN_PRECISION_SINT_16)
+        {
+          return ShaderArithmeticType::Short2;
+        }
+        else if (precision == D3D_MIN_PRECISION_DEFAULT)
+        {
+          return ShaderArithmeticType::Int2;
+        }
+      }
+      if (componentMask & 1)
+      {
+        return ShaderArithmeticType::Int;
       }
 
       REX_ASSERT("Invalid component mask");

@@ -33,11 +33,20 @@ namespace pokemon
     rsl::point<f32> pos;
     rsl::point<f32> uv;
   };
-  struct TileWVP
+  struct TileReadonlyInstanceData
   {
     glm::mat4 wvp;
   };
-
+  struct TileMutableInstanceData
+  {
+    s32 tile_idx;
+  };
+  struct TextureData
+  {
+    s32 tiles_per_row;
+    f32 inv_texture_width;
+    f32 inv_texture_height;
+  };
 
   class TileRenderer : public rex::gfx::Renderer
   {
@@ -59,11 +68,12 @@ namespace pokemon
     s32 expected_num_indices() const;
 
     void init();
+    void init_vb();
     void init_instance_vb();
     void init_ib();
+    void init_cb();
     void init_renderpass();
 
-    void update_cpu_vertex_buffer();
     void upload_vertex_buffer();
 
   private:
@@ -73,15 +83,14 @@ namespace pokemon
     const BlockSet* m_blockset; // The blockset to use to retrieve the tileset indices from
 
     // Tiles vertex buffers and index buffer
-    rsl::unique_ptr<rex::gfx::VertexBuffer> m_tiles_vb_gpu;
-    rsl::unique_ptr<rex::gfx::VertexBuffer> m_tiles_instances_vb_gpu;
-    rsl::unique_ptr<rex::gfx::IndexBuffer> m_tiles_ib_gpu;
-
-    // This is the only data that needs to get updated per frame
-    rsl::unique_array<TileVertex> m_tiles_vb_cpu;
+    rsl::unique_ptr<rex::gfx::VertexBuffer> m_tiles_vb_gpu; // This holds the 4 vertices used to make up a plane
+    rsl::unique_ptr<rex::gfx::VertexBuffer> m_tiles_instances_immutable_vb_gpu; // This holds the matrices for the tiles. This never changes at runtime
+    rsl::unique_ptr<rex::gfx::VertexBuffer> m_tiles_instances_vb_gpu; // This holds the tile indices. The UV coordinates are created from this
+    rsl::unique_ptr<rex::gfx::IndexBuffer> m_tiles_ib_gpu; // This holds the indices for every tile. This never changes at runtime
+    rsl::unique_ptr<rex::gfx::ConstantBuffer> m_constant_buffer;
 
     // The tile cache is like a map matrix but it holds indices on a tile level instead of block level
-    rsl::unique_array<u8> m_tile_cache;
+    rsl::unique_array<s32> m_tile_cache;
 
     // The render pass which holds all the information needed to render a single frame
     rsl::unique_ptr<rex::gfx::RenderPass> m_render_pass;

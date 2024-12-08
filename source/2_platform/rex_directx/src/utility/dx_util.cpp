@@ -124,6 +124,8 @@ namespace rex
 
         case DXGI_FORMAT_R24G8_TYPELESS:
         case DXGI_FORMAT_D24_UNORM_S8_UINT:
+        case DXGI_FORMAT_R32_SINT:
+        case DXGI_FORMAT_R32_UINT:
           return 4;
 
         case DXGI_FORMAT_R8G8_TYPELESS:

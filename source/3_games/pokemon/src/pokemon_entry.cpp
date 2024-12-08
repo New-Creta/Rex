@@ -40,7 +40,7 @@ namespace rex
   {
     rex::ApplicationCreationParams app_params(platformParams);
 
-    app_params.gui_params.window_width = 1280;
+    app_params.gui_params.window_width = 720;
     app_params.gui_params.window_height = 720;
     app_params.gui_params.window_title = "Pokemon: Rex";
 

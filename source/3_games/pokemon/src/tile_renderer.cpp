@@ -29,7 +29,6 @@ namespace pokemon
   void TileRenderer::render()
   {
     // Update the vertex buffer with the latest data
-    update_cpu_vertex_buffer();
     upload_vertex_buffer();
 
     auto render_ctx = rex::gfx::new_render_ctx();
@@ -41,8 +40,10 @@ namespace pokemon
 
     render_ctx->set_viewport(m_viewport);
     render_ctx->set_vertex_buffer(m_tiles_vb_gpu.get(), 0);
-    render_ctx->set_vertex_buffer(m_tiles_instances_vb_gpu.get(), 1);
+    render_ctx->set_vertex_buffer(m_tiles_instances_immutable_vb_gpu.get(), 1);
+    render_ctx->set_vertex_buffer(m_tiles_instances_vb_gpu.get(), 2);
     render_ctx->set_index_buffer(m_tiles_ib_gpu.get());
+    render_ctx->bind_constant_buffer(m_render_pass->slot("TextureData"), m_constant_buffer.get());
 
     render_ctx->set_scissor_rect(m_scissor_rect);
 
@@ -120,20 +121,19 @@ namespace pokemon
 
   void TileRenderer::init()
   {
-    // This is the only data that needs to get updated per frame
-    m_tiles_vb_cpu = rsl::make_unique<TileVertex[]>(expected_num_vertices());
-
     // GPU vertex and index buffers
-    m_tiles_vb_gpu = rex::gfx::rhi::create_vertex_buffer(expected_num_vertices(), sizeof(TileVertex));
-    m_tiles_instances_vb_gpu = rex::gfx::rhi::create_vertex_buffer(expected_num_tiles(), sizeof(TileWVP));
+    m_tiles_vb_gpu = rex::gfx::rhi::create_vertex_buffer(4, sizeof(TileVertex));
+    m_tiles_instances_immutable_vb_gpu = rex::gfx::rhi::create_vertex_buffer(expected_num_tiles(), sizeof(TileReadonlyInstanceData));
+    m_tiles_instances_vb_gpu = rex::gfx::rhi::create_vertex_buffer(expected_num_tiles(), sizeof(TileMutableInstanceData));
     m_tiles_ib_gpu = rex::gfx::rhi::create_index_buffer(expected_num_indices(), rex::gfx::IndexBufferFormat::Uint16);
+    m_constant_buffer = rex::gfx::rhi::create_constant_buffer(sizeof(TextureData));
 
     // The tile cache is like a map matrix but it holds indices on a tile level instead of block level
-    m_tile_cache = rsl::make_unique<u8[]>(m_width * m_height);
+    m_tile_cache = rsl::make_unique<s32[]>(m_width * m_height);
 
     m_viewport.top_left_x = 0.0f;
     m_viewport.top_left_y = 0.0f;
-    m_viewport.width = 1280.0f;
+    m_viewport.width = 720.0f;
     m_viewport.height = 720.0f;
 
     m_scissor_rect.right = m_viewport.width;
@@ -142,13 +142,31 @@ namespace pokemon
     // The vertex buffer for instances and index buffer never change. 
     // Only the vertices itself do, well their UV coordinate
     // So we can initialize the immutable buffers early on to save on runtime
+    init_vb();
     init_instance_vb();
     init_ib();
+    init_cb();
     init_renderpass();
+  }
+  void TileRenderer::init_vb()
+  {
+    f32 uv_width = static_cast<f32>(constants::g_tile_width_px) / m_tileset_texture->width();
+    f32 uv_height = static_cast<f32>(constants::g_tile_height_px) / m_tileset_texture->height();
+
+    rsl::array<TileVertex, 4> tile_vertices{};
+    tile_vertices[0] = TileVertex{rsl::point<f32>(0, 0), rsl::point<f32>(0.0f, 0.0f)}; // top left
+    tile_vertices[1] = TileVertex{rsl::point<f32>(2, 0), rsl::point<f32>(uv_width, 0.0f)};  // top right
+    tile_vertices[2] = TileVertex{rsl::point<f32>(0, -2), rsl::point<f32>(0.0f, uv_height)}; // bottom left
+    tile_vertices[3] = TileVertex{rsl::point<f32>(2, -2), rsl::point<f32>(uv_width, uv_height)}; // bottom right
+
+    auto copy_ctx = rex::gfx::new_copy_ctx();
+    copy_ctx->update_buffer(m_tiles_vb_gpu.get(), tile_vertices.data(), tile_vertices.size() * sizeof(TileVertex));
+    copy_ctx->execute_on_gpu(rex::gfx::WaitForFinish::yes);
+
   }
   void TileRenderer::init_instance_vb()
   {
-    rsl::unique_array<TileWVP> tile_wvps = rsl::make_unique<TileWVP[]>(expected_num_tiles());
+    rsl::unique_array<TileReadonlyInstanceData> tile_wvps = rsl::make_unique<TileReadonlyInstanceData[]>(expected_num_tiles());
 
     constexpr f32 inv_tile_screen_width = 1.0f / constants::g_screen_width_in_tiles;
     constexpr f32 inv_tile_screen_height = 1.0f / constants::g_screen_height_in_tiles;
@@ -170,11 +188,11 @@ namespace pokemon
     }
 
     auto copy_ctx = rex::gfx::new_copy_ctx();
-    copy_ctx->update_buffer(m_tiles_instances_vb_gpu.get(), tile_wvps.get(), tile_wvps.byte_size());
+    copy_ctx->update_buffer(m_tiles_instances_immutable_vb_gpu.get(), tile_wvps.get(), tile_wvps.byte_size());
     copy_ctx->execute_on_gpu(rex::gfx::WaitForFinish::yes);
     
     auto render_ctx = rex::gfx::new_render_ctx();
-    render_ctx->transition_buffer(m_tiles_instances_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
+    render_ctx->transition_buffer(m_tiles_instances_immutable_vb_gpu.get(), rex::gfx::ResourceState::VertexAndConstantBuffer);
   }
   void TileRenderer::init_ib()
   {
@@ -202,6 +220,17 @@ namespace pokemon
     auto render_ctx = rex::gfx::new_render_ctx();
     render_ctx->transition_buffer(m_tiles_ib_gpu.get(), rex::gfx::ResourceState::IndexBuffer);
   }
+  void TileRenderer::init_cb()
+  {
+    TextureData texture_data{};
+    texture_data.tiles_per_row = m_tileset_texture->width() / constants::g_tile_width_px;
+    texture_data.inv_texture_width = 1.0f / m_tileset_texture->width();
+    texture_data.inv_texture_height = 1.0f / m_tileset_texture->height();
+
+    auto copy_ctx = rex::gfx::new_copy_ctx();
+    copy_ctx->update_buffer(m_constant_buffer.get(), &texture_data, sizeof(texture_data));
+    copy_ctx->execute_on_gpu(rex::gfx::WaitForFinish::yes);
+  }
 
   void TileRenderer::init_renderpass()
   {
@@ -227,7 +256,8 @@ namespace pokemon
       rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::InstanceMatrix, rex::gfx::VertexBufferFormat::Float4, rex::gfx::InputLayoutClassification::PerInstance, 0, 1, -1, 1 }, // WVPs
       rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::InstanceMatrix, rex::gfx::VertexBufferFormat::Float4, rex::gfx::InputLayoutClassification::PerInstance, 1, 1, -1, 1 }, // WVPs
       rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::InstanceMatrix, rex::gfx::VertexBufferFormat::Float4, rex::gfx::InputLayoutClassification::PerInstance, 2, 1, -1, 1 }, // WVPs
-      rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::InstanceMatrix, rex::gfx::VertexBufferFormat::Float4, rex::gfx::InputLayoutClassification::PerInstance, 3, 1, -1, 1 } // WVPs
+      rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::InstanceMatrix, rex::gfx::VertexBufferFormat::Float4, rex::gfx::InputLayoutClassification::PerInstance, 3, 1, -1, 1 }, // WVPs
+      rex::gfx::InputLayoutElementDesc{ rex::gfx::ShaderSemantic::InstanceIndex, rex::gfx::VertexBufferFormat::Uint, rex::gfx::InputLayoutClassification::PerInstance, 0, 2, -1, 1 } // Tile index
     };
 
     // Sampler is currently hardcoded
@@ -251,58 +281,13 @@ namespace pokemon
     m_render_pass = rsl::make_unique<rex::gfx::RenderPass>(render_pass_desc);
     m_render_pass->set("tile_texture", m_tileset_texture);
     m_render_pass->set("default_sampler", m_fonts_sampler.get());
-
-  }
-
-  void TileRenderer::update_cpu_vertex_buffer()
-  {
-    f32 uv_width = static_cast<f32>(constants::g_tile_width_px) / m_tileset_texture->width();
-    f32 uv_height = static_cast<f32>(constants::g_tile_height_px) / m_tileset_texture->height();
-
-    s32 tiles_per_row = m_tileset_texture->width() / constants::g_tile_width_px;
-
-    // Technically we can allow the position of the vertices to be set at initialization time
-    // As they don't change during runtime
-
-    for (s32 idx = 0; idx < m_tile_cache.count(); ++idx)
-    {
-      u8 tile_index = m_tile_cache[idx];
-      rsl::pointi8 coord = coords::index_to_coord(tile_index, tiles_per_row);
-
-      constexpr s32 num_vertices_per_tile = 4;
-      s32 vb_idx = num_vertices_per_tile * idx;
-
-      // Top Left Vertex
-      TileVertex& top_left_vtx = m_tiles_vb_cpu[vb_idx + 0];
-      top_left_vtx.pos = { -1, 1 };
-      top_left_vtx.uv.x = (coord.x * constants::g_tile_width_px) / static_cast<f32>(m_tileset_texture->width());
-      top_left_vtx.uv.y = (coord.y * constants::g_tile_height_px) / static_cast<f32>(m_tileset_texture->height());
-
-      // Top Right Vertex
-      TileVertex& top_right_vtx = m_tiles_vb_cpu[vb_idx + 1];
-      top_right_vtx.pos = { 1, 1 };
-      top_right_vtx.uv = top_left_vtx.uv;
-      top_right_vtx.uv.x += uv_width;
-
-      // Bottom Left Vertex
-      TileVertex& bottom_left_vtx = m_tiles_vb_cpu[vb_idx + 2];
-      bottom_left_vtx.pos = { -1, -1 };
-      bottom_left_vtx.uv = top_left_vtx.uv;
-      bottom_left_vtx.uv.y += uv_height;
-
-      // Bottom Right Vertex
-      TileVertex& bottom_right_vtx = m_tiles_vb_cpu[vb_idx + 3];
-      bottom_right_vtx.pos = { 1, -1 };
-      bottom_right_vtx.uv = top_left_vtx.uv;
-      bottom_right_vtx.uv.x += uv_width;
-      bottom_right_vtx.uv.y += uv_height;
-    }
+    m_render_pass->set("TextureData", m_constant_buffer.get());
   }
 
   void TileRenderer::upload_vertex_buffer()
   {
     auto copy_ctx = rex::gfx::new_copy_ctx();
-    copy_ctx->update_buffer(m_tiles_vb_gpu.get(), m_tiles_vb_cpu.get(), m_tiles_vb_cpu.byte_size());
+    copy_ctx->update_buffer(m_tiles_instances_vb_gpu.get(), m_tile_cache.get(), m_tile_cache.byte_size());
     copy_ctx->execute_on_gpu(rex::gfx::WaitForFinish::yes);
   }
 }

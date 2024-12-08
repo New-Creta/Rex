@@ -32,7 +32,8 @@ namespace rex
       TessFactor,             // Tesselation factor
 
       // Vertex shader
-      InstanceMatrix
+      InstanceMatrix,
+      InstanceIndex
     };
 
     // Shader semantic are case sensitive, so we can't use reflection to get its name

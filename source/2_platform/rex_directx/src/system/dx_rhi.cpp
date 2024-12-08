@@ -284,6 +284,7 @@ namespace rex
         s32 total_size = numVertices * vertexSize;
         wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_buffer(total_size);
         auto vb = rsl::make_unique<DxVertexBuffer>(d3d_buffer, numVertices, vertexSize);
+        d3d::set_debug_name_for(d3d_buffer.Get(), "Vertex Buffer");
 
         if (data)
         {
