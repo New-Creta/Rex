@@ -1,10 +1,10 @@
 #include "defines.hlsl"
 
-cbuffer TextureData : register(b0, RENDER_PASS_REGISTER_SPACE) 
+cbuffer TileTextureMetaData : register(b0, RENDER_PASS_REGISTER_SPACE) 
 {
   int tiles_per_row;
-  float inv_texture_width;
-  float inv_texture_height;
+  float inv_width;
+  float inv_height;
 };
 
 struct VertexIn
@@ -46,8 +46,8 @@ VertexOut main(VertexIn vin)
   int tile_height_px = 8;
 
   float2 tile_uv_start;
-  tile_uv_start.x = tile_width_px * tile_coord.x * inv_texture_width;
-  tile_uv_start.y = tile_height_px * tile_coord.y * inv_texture_height;
+  tile_uv_start.x = tile_width_px * tile_coord.x * inv_width;
+  tile_uv_start.y = tile_height_px * tile_coord.y * inv_height;
 
   vout.Uv = vin.Uv + tile_uv_start;
 

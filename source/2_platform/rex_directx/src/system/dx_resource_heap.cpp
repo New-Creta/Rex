@@ -34,6 +34,9 @@ namespace rex
         return nullptr;
       }
 
+      // Your application can forgo using GetResourceAllocationInfo for buffer resources (D3D12_RESOURCE_DIMENSION_BUFFER). 
+      // Buffers have the same size on all adapters, which is merely the smallest multiple of 64KB that's greater or equal to D3D12_RESOURCE_DESC::Width.
+      // See: https://learn.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12device-getresourceallocationinfo(uint_uint_constd3d12_resource_desc)#:~:text=Your%20application%20can%20forgo%20using%20GetResourceAllocationInfo%20for%20buffer%20resources%20(D3D12_RESOURCE_DIMENSION_BUFFER).%20Buffers%20have%20the%20same%20size%20on%20all%20adapters%2C%20which%20is%20merely%20the%20smallest%20multiple%20of%2064KB%20that%27s%20greater%20or%20equal%20to%20D3D12_RESOURCE_DESC%3A%3AWidth.
       m_used_memory += static_cast<s64>(alloc_info.SizeInBytes);
       return buffer;
     }

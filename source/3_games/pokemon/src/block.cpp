@@ -22,9 +22,9 @@ namespace pokemon
 	{
 		return m_tile_indices[idx];
 	}
-	u8 Block::index_at(s8 x, s8 y) const
+	u8 Block::index_at(rsl::pointi8 coord) const
 	{
-		s8 idx = y * s_num_tiles_per_row + x;
+		s8 idx = coord.y * s_num_tiles_per_row + coord.x;
 		return m_tile_indices[idx];
 	}
 

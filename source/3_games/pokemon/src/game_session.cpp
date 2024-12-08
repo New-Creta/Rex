@@ -92,7 +92,7 @@ namespace pokemon
 	void GameSession::update()
 	{
 		TileCoord player_position{};
-		player_position.x = 23;
+		player_position.x = 31;
 		player_position.y = 24;
 		m_tile_renderer->update_tile_data(m_active_map->map_matrix(), player_position);
 	}

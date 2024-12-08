@@ -5,6 +5,8 @@
 #include "pokemon/tileset.h"
 #include "rex_std/algorithm.h"
 
+#include "rex_std/bonus/math/point.h"
+
 namespace pokemon
 {
 	class Block
@@ -23,7 +25,7 @@ namespace pokemon
 		void set_all(s8 idx);
 
 		u8 index_at(s8 idx) const;
-		u8 index_at(s8 x, s8 y) const;
+		u8 index_at(rsl::pointi8 coord) const;
 
 		rsl::random_access_iterator<u8> begin();
 		rsl::const_random_access_iterator<u8> begin() const;
