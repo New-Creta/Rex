@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using Sharpmake;
 
 public class Utils
 {
@@ -47,5 +48,22 @@ public class Utils
   public static string GetClangToolsOutputFolder(RexConfiguration config)
   {
     return Path.Combine(config.ProjectPath, "clang_tools");
+  }
+
+  // Returns true if the given path falls under the root
+  public static bool IsPartOfRoot(string root, string path)
+  {
+    string relativePath = Util.PathGetRelative(root, path);
+    string[] pathTokens = relativePath.Split(Path.DirectorySeparatorChar);
+    return pathTokens.Length == 0 || pathTokens[0] != "..";
+  }
+
+  // Return a filter path for shaders. The filter path is the relative path from the shaders directory
+  public static string DataFilterPath(string projectSourceRoot, string projectShaderPath, string relativeFilePath)
+  {
+    string absPath = Path.GetFullPath(Path.Combine(projectSourceRoot, relativeFilePath));
+    string relativeFromShaders = Util.PathGetRelative(projectShaderPath, absPath, true);
+
+    return Path.GetDirectoryName(Path.Combine("data", relativeFromShaders));
   }
 }

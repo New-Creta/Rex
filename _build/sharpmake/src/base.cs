@@ -140,6 +140,9 @@ public abstract class BasicCPPProject : Project
   // indicates if the project creates a compiler DB for itself
   protected bool ClangToolsEnabled = true;
 
+  // The path where you can find the text based data for this project, if there is any
+  protected string DataPath = null;
+
   public BasicCPPProject() : base(typeof(RexTarget), typeof(RexConfiguration))
   {
     LoadToolPaths();
@@ -147,12 +150,37 @@ public abstract class BasicCPPProject : Project
     ClangToolsEnabled = ProjectGen.Settings.ClangToolsEnabled;
 
     ResourceFilesExtensions.Add(".json");
+    ResourceFilesExtensions.Add(".ini");
+    ResourceFilesExtensions.Add(".hlsl");
   }
 
   // Legacy function and should be removed
   public string GenerateName(string name)
   {
     return name;
+  }
+
+  // This gets called by Sharpmake to resolve filters for files
+  public override bool ResolveFilterPathForFile(string relativeFilePath, out string filterPath)
+  {
+    filterPath = "";
+
+    if (!string.IsNullOrEmpty(DataPath))
+    {
+      string fileExtension = Path.GetExtension(relativeFilePath);
+      if (ResourceFilesExtensions.Contains(fileExtension))
+      {
+        // If the file does not exist under the source root path, we assume it's a data file
+        // the relative path is from the source root directory, so if it starts with the double dots, it means it's not under there
+        if (relativeFilePath.StartsWith("..") || !File.Exists(Path.Combine(SourceRootPath, relativeFilePath)))
+        {
+          filterPath = Utils.DataFilterPath(SourceRootPath, DataPath, relativeFilePath);
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   // This gets called before any configuration gets performed
@@ -170,6 +198,9 @@ public abstract class BasicCPPProject : Project
     // We read the code generation file in the pre config step
     // so it's only done once (Configure is called for every target)
     ReadCodeGenerationConfigFile();
+
+    // Setup the data paths so they're added to the project, if there are any
+    SetupDataPaths();
   }
 
   // This is called by Sharpmake and acts as the configure entry point.
@@ -761,6 +792,14 @@ public abstract class BasicCPPProject : Project
     if (Directory.Exists(path))
     {
       conf.IncludePrivatePaths.Add(path);
+    }
+  }
+  // Make sharpmake aware of the shader paths
+  private void SetupDataPaths()
+  {
+    if (!string.IsNullOrEmpty(DataPath))
+    {
+      AdditionalSourceRootPaths.Add(DataPath);
     }
   }
 }

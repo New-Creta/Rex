@@ -11,6 +11,7 @@ public class RexEngine : EngineProject
     Name = "RexEngine";
     GenerateTargets();
 
+    // Add the root where all sources can be found under
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     SourceRootPath = ThisFileFolder;
 
@@ -20,6 +21,8 @@ public class RexEngine : EngineProject
     SourceFilesExcludeRegex.Add("unix/*");
     //// Only needs to happen on Linux
     //SourceFilesExcludeRegex.Add("win/*");
+
+    DataPath = Path.Combine(Globals.Root, "data", "rex");
   }
 
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)

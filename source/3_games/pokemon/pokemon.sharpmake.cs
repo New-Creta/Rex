@@ -13,6 +13,8 @@ public class PokemonProject : GameProject
 
     string ThisFileFolder = Path.GetDirectoryName(Utils.CurrentFile());
     SourceRootPath = ThisFileFolder;
+
+    DataPath = Path.Combine(Globals.Root, "data", "pokemon", "retail");
   }
 
   protected override void SetupLibDependencies(RexConfiguration conf, RexTarget target)
