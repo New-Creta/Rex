@@ -181,13 +181,17 @@ namespace pokemon
 
       // Create the world matrix from the world position
       glm::mat4 world(1.0f);
-      glm::vec3 pos{ -1, 1, 0 };
+      glm::vec3 pos{ -1, 1, 0 }; // Top left position
+
+      // Offset the tile from the top left position
       pos.x += coord.x * tile_width * inv_tile_screen_width;
       pos.y -= coord.y * tile_height * inv_tile_screen_height;
+
+      // create the world matrix, putting the tile at the right position and at the right scale
       world = glm::translate(world, pos);
 			world = glm::scale(world, glm::vec3(inv_tile_screen_width, inv_tile_screen_height, 1.0f));
       tile_world_matrices[i].world = world;
-      tile_world_matrices[i].world = glm::transpose(tile_world_matrices[i].world);
+      tile_world_matrices[i].world = glm::transpose(tile_world_matrices[i].world); // of course we're using directx, so we always have to transpose our matrices
     }
 
     m_tiles_instances_immutable_vb_gpu = rex::gfx::rhi::create_vertex_buffer(num_tiles(), sizeof(TileReadonlyInstanceData));
@@ -204,10 +208,12 @@ namespace pokemon
     constexpr s32 num_indices_per_tile = 6;
     rsl::unique_array<u16> tiles_ib_cpu = rsl::make_unique<u16[]>(num_indices_per_tile);
 
+    // first triangle
     tiles_ib_cpu[0] = 0;
     tiles_ib_cpu[1] = 1;
     tiles_ib_cpu[2] = 2;
 
+    // second triangle
     tiles_ib_cpu[3] = 1;
     tiles_ib_cpu[4] = 3;
     tiles_ib_cpu[5] = 2;
