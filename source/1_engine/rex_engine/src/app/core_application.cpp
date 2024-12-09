@@ -142,8 +142,6 @@ namespace rex
   {
     globals::g_frame_info.update();
 
-    REX_INFO(LogCoreApp, "DT: {}", globals::g_frame_info.delta_time().to_milliseconds());
-
     platform_update();
   }
   //--------------------------------------------------------------------------------------------

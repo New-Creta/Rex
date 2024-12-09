@@ -39,6 +39,9 @@
 
 #include "rex_engine/profiling/instrumentor.h"
 
+#include "rex_engine/event_system/event_system.h"
+#include "rex_engine/event_system/events/input/key_down.h"
+
 namespace pokemon
 {
 	DEFINE_LOG_CATEGORY(LogGameSession);
@@ -87,14 +90,14 @@ namespace pokemon
 
 		m_active_map = init_map(startup_save_file);
 		m_tile_renderer = init_tile_renderer(m_active_map->map_matrix(), m_active_map->render_data());
+		m_player_position = startup_save_file.position;
+
+		init_input();
 	}
 
 	void GameSession::update()
 	{
-		TileCoord player_position{};
-		player_position.x = 31;
-		player_position.y = 24;
-		m_tile_renderer->update_tile_data(m_active_map->map_matrix(), player_position);
+		m_tile_renderer->update_tile_data(m_active_map->map_matrix(), m_player_position);
 	}
 
 	SaveFile GameSession::load_startup_savefile() const
@@ -152,5 +155,28 @@ namespace pokemon
 		tile_renderer_desc.blockset = mapRenderData.blockset.get();
 
 		return rex::gfx::add_renderer<TileRenderer>(tile_renderer_desc);
+	}
+
+	void GameSession::init_input()
+	{
+		rex::event_system().subscribe<rex::KeyDown>(
+			[this](const rex::KeyDown& ev)
+			{
+				switch (ev.key())
+				{
+				case rex::KeyCode::W:
+					m_player_position.y -= 1;
+					break;
+				case rex::KeyCode::S:
+					m_player_position.y += 1;
+					break;
+				case rex::KeyCode::A:
+					m_player_position.x -= 1;
+					break;
+				case rex::KeyCode::D:
+					m_player_position.x += 1;
+					break;
+				}
+			});
 	}
 }

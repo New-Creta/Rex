@@ -149,6 +149,8 @@ namespace pokemon
     constexpr s32 num_vertices_per_tile = 4;
 
     rsl::array<TileVertex, num_vertices_per_tile> tile_vertices{};
+    // A single tile starts from the top left and spans the entire screen
+    // NDC coordinates for a screen go from -1 to 1, meaning that width and height should be of a unit of 2
     tile_vertices[0] = TileVertex{rsl::point<f32>(0, 0), rsl::point<f32>(0.0f, 0.0f)};            // top left
     tile_vertices[1] = TileVertex{rsl::point<f32>(2, 0), rsl::point<f32>(uv_width, 0.0f)};        // top right
     tile_vertices[2] = TileVertex{rsl::point<f32>(0, -2), rsl::point<f32>(0.0f, uv_height)};      // bottom left
@@ -168,6 +170,9 @@ namespace pokemon
     constexpr f32 inv_tile_screen_width = 1.0f / constants::g_screen_width_in_tiles;
     constexpr f32 inv_tile_screen_height = 1.0f / constants::g_screen_height_in_tiles;
 
+    constexpr s32 tile_width = 2;
+    constexpr s32 tile_height = 2;
+
     s32 tile_count = num_tiles();
     for (s32 i = 0; i < tile_count; ++i)
     {
@@ -177,8 +182,8 @@ namespace pokemon
       // Create the world matrix from the world position
       glm::mat4 world(1.0f);
       glm::vec3 pos{ -1, 1, 0 };
-      pos.x += coord.x * 2 * inv_tile_screen_width;
-      pos.y -= coord.y * 2 * inv_tile_screen_height;
+      pos.x += coord.x * tile_width * inv_tile_screen_width;
+      pos.y -= coord.y * tile_height * inv_tile_screen_height;
       world = glm::translate(world, pos);
 			world = glm::scale(world, glm::vec3(inv_tile_screen_width, inv_tile_screen_height, 1.0f));
       tile_world_matrices[i].world = world;

@@ -5,6 +5,8 @@
 
 #include "rex_std/bonus/math/point.h"
 
+#include "pokemon/map_coordinates.h"
+
 namespace pokemon
 {
   struct SaveFile
@@ -14,6 +16,6 @@ namespace pokemon
 
   public:
     rsl::string current_map_filepath;
-    rsl::pointi8 position;
+    TileCoord position;
   };
 }
