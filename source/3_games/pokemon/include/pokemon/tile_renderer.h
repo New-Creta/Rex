@@ -22,14 +22,7 @@
 
 namespace pokemon
 {
-  struct TileRendererDesc
-  {
-    s32 width_in_tiles;
-    s32 height_in_tiles;
-    const rex::gfx::Texture2D* tileset_texture;
-    const BlockSet* blockset;
-  };
-  
+ 
   // Vertex used for every tile
   struct TileVertex
   {
@@ -37,10 +30,6 @@ namespace pokemon
     rsl::point<f32> uv;
   };
 
-  struct TileReadonlyInstanceData
-  {
-    glm::mat4 world;
-  };
   struct TileMutableInstanceData
   {
     s8 tile_idx;
@@ -58,6 +47,14 @@ namespace pokemon
     f32 inv_tile_screen_height;  // the inverse of the height of a single tile on the screen
   };
 
+  struct TileRendererDesc
+  {
+    s32 width_in_tiles;
+    s32 height_in_tiles;
+    const rex::gfx::Texture2D* tileset_texture;
+    const BlockSet* blockset;
+  };
+
   class TileRenderer : public rex::gfx::Renderer
   {
   public:
@@ -66,9 +63,12 @@ namespace pokemon
     void new_frame() override;
     void render() override;
 
+    // Update the tileset we're using to render
     void update_tileset_texture(const rex::gfx::Texture2D* texture);
+    // Update the number of tiles we render on screen
     void update_dimension(s32 width, s32 height);
 
+    // Update the tile data itself
     void update_tile_data(const MapMatrix& mapMatrix, TileCoord playerPos);
 
   private:
@@ -76,13 +76,13 @@ namespace pokemon
 
     void init();
     void init_per_vertex_vb();
-    void init_per_instance_immutable_vb();
+    void init_tile_indices_buffer();
     void init_ib();
     void init_cb();
     void init_renderpass();
     void init_sampler();
 
-    void upload_vertex_buffer();
+    void upload_tile_indices_buffer();
 
   private:
     s32 m_width;                                  // width in tiles
@@ -92,8 +92,6 @@ namespace pokemon
 
     // Tiles vertex buffers and index buffer
     rsl::unique_ptr<rex::gfx::VertexBuffer>   m_tiles_vb_gpu;                     // This holds the 4 vertices used to make up a plane
-    //rsl::unique_ptr<rex::gfx::VertexBuffer>   m_tiles_instances_immutable_vb_gpu; // This holds the matrices for the tiles. This never changes at runtime
-    //rsl::unique_ptr<rex::gfx::VertexBuffer>   m_tiles_instances_writeable_vb_gpu; // This holds the tile index per instance. The UV coordinates are created from this
     rsl::unique_ptr<rex::gfx::IndexBuffer>    m_tiles_ib_gpu;                     // This holds the indices for every tile. This never changes at runtime
     rsl::unique_ptr<rex::gfx::ConstantBuffer> m_tile_renderer_cb;                 // This holds the extra metadata the shader needs to calculate the UVs for each instance
     rsl::unique_ptr<rex::gfx::UnorderedAccessBuffer> m_tile_indices_buffer;       // This holds the tile index within the texture for every tile on screen, starting from the top left

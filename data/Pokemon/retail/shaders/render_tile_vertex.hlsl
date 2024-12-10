@@ -1,5 +1,8 @@
 #include "defines.hlsl"
 
+// This buffers holds the indices of each tile in the texture.
+// Using this information, we can calculate the UV for each vertex
+// Each index is only 1 byte, so you need to use bit shifting to unpack it
 ByteAddressBuffer TileIndexBuffer : register(t0, RENDER_PASS_REGISTER_SPACE);
 
 // Every constant buffer needs to be 256 byte aligned
@@ -22,9 +25,7 @@ struct VertexIn
   float2 PosL : POSITION;       // The position of the vertex in local space
   float2 Uv : TEXCOORD0;        // The UV of the vertex
 
-  uint instanceId : SV_InstanceID;
-  //float4x4 WVP : InstMatrix;   // The WVP matrix of the vertex
-  //uint TileIdx : InstTileOffset; // The index of the tile in the texture
+  uint instanceId : SV_InstanceID;  // The instance the vertex belongs to
 };
 
 struct VertexOut
@@ -33,6 +34,7 @@ struct VertexOut
   float2 Uv : TEXCOORD0;
 };
 
+// Convert a index into a 2D coordinate.
 uint2 index_to_coord(uint tileIdx, uint width)
 {
   uint2 coord;
@@ -72,7 +74,7 @@ VertexOut main(VertexIn vin)
   uint tile_idx = result >> bit_offset;
   tile_idx &= 0x000000FF;
 
-  // Calculate the UV from the tile index
+  // Calculate the 2D coordinate of the tile in the texture
   uint2 tex_tile_coord = index_to_coord(tile_idx, texture_tiles_per_row);
   
   int tile_width_px = 8;
