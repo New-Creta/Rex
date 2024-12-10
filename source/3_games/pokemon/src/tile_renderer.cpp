@@ -77,6 +77,16 @@ namespace pokemon
 
   void TileRenderer::update_tile_data(const MapMatrix& mapMatrix, TileCoord playerPos)
 	{
+    s32 tiles_per_row = m_tileset_texture->width() / constants::g_tile_width_px;
+    f32 inv_texture_width = 1.0f / m_tileset_texture->width();
+    f32 inv_texture_height = 1.0f / m_tileset_texture->height();
+
+    rsl::sort(m_tile_cache.begin(), m_tile_cache.end());
+    auto x = rsl::unique(m_tile_cache.begin(), m_tile_cache.end());
+    auto d = rsl::distance(m_tile_cache.begin(), x);
+
+    REX_INFO(LogTileRenderer, "Unique tile indices: {}", d);
+
     // Calculate the first block from which we should start drawing
     TileCoord top_left = coords::player_pos_to_screen_top_left(playerPos);
 
@@ -105,7 +115,17 @@ namespace pokemon
         u8 tile_idx = block.index_at(coord_rel_to_block);
 
         // Store the tile index in the cache
-        m_tile_cache[current_tile_in_cache_idx++] = tile_idx;
+        m_tile_cache[current_tile_in_cache_idx] = tile_idx;
+        rsl::pointi8 tile_coord = coords::index_to_coord(tile_idx, tiles_per_row);
+
+        // Top left coordinate in UV space of the tile to be rendered
+        glm::vec2 tile_uv_start{};
+        tile_uv_start.x = constants::g_tile_width_px * tile_coord.x * inv_texture_width;
+        tile_uv_start.y = constants::g_tile_height_px * tile_coord.y * inv_texture_height;
+
+        //m_tile_coords[current_tile_in_cache_idx] = tile_uv_start;
+
+        current_tile_in_cache_idx++;
       }
     }
 	}
