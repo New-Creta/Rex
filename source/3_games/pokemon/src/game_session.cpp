@@ -177,6 +177,16 @@ namespace pokemon
 					m_player_position.x += 1;
 					break;
 				}
+
+				rsl::pointi8 min_player_pos = constants::player_render_position_top_left;
+				rsl::pointi8 max_player_pos = constants::player_render_position_bottom_right;
+
+				m_player_position.x = rsl::clamp_min(m_player_position.x, min_player_pos.x);
+				m_player_position.y = rsl::clamp_min(m_player_position.y, min_player_pos.y);
+
+				m_player_position.x = rsl::clamp_max(static_cast<s32>(m_player_position.x), m_active_map->map_matrix().width_in_tiles() - max_player_pos.x);
+				m_player_position.y = rsl::clamp_max(static_cast<s32>(m_player_position.y), m_active_map->map_matrix().height_in_tiles() - max_player_pos.y);
+
 			});
 	}
 }

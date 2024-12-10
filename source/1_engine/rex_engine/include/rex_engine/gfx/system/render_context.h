@@ -39,6 +39,7 @@ namespace rex
     class Texture2D;
     class Material;
     class DepthStencilBuffer;
+    class UnorderedAccessBuffer;
 
     class RenderContext : public GraphicsContext
     {
@@ -70,6 +71,8 @@ namespace rex
       virtual void transition_buffer(Texture2D* resource, ResourceState state) = 0;
       // Transition a render target's resource state
       virtual void transition_buffer(RenderTarget* resource, ResourceState state) = 0;
+      // Transition an unordered access buffer's resource state
+      virtual void transition_buffer(UnorderedAccessBuffer* resource, ResourceState state) = 0;
       // Transition a depth stencil buffer's resource state
       virtual void transition_buffer(DepthStencilBuffer* resource, ResourceState state) = 0;
       // Set the render target of the context

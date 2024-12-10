@@ -70,6 +70,10 @@ namespace rex
 		{
 			m_parameters_store->set(name, constantBuffer);
 		}
+		void RenderPass::set(rsl::string_view name, const UnorderedAccessBuffer* unorderedAccessBuffer)
+		{
+			m_parameters_store->set(name, unorderedAccessBuffer);
+		}
 		void RenderPass::set(rsl::string_view name, const Texture2D* texture)
 		{
 			m_parameters_store->set(name, texture);

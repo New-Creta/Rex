@@ -11,8 +11,8 @@ namespace pokemon
 			// The player is always in tile coord {8, 8};
 
 			TileCoord screen_top_left = coord;
-			screen_top_left.x -= constants::player_render_position.x;
-			screen_top_left.y -= constants::player_render_position.y;
+			screen_top_left.x -= constants::player_render_position_top_left.x;
+			screen_top_left.y -= constants::player_render_position_top_left.y;
 
 			return screen_top_left;
 		}

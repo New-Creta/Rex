@@ -76,6 +76,23 @@ namespace rex
 
       return cbv_handle;
     }
+    // Create a unordered access buffer view and return a handle pointing to it
+    DxResourceView DxViewHeap::create_uav(ID3D12Resource* resource, rsl::memory_size size)
+    {
+      REX_ASSERT_X(m_view_heap_type == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, "Trying to create a unordered access view from a view heap that's not configured to create unordered access views");
+
+      D3D12_UNORDERED_ACCESS_VIEW_DESC uav_desc{};
+      uav_desc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+      uav_desc.Buffer.FirstElement = 0;
+      uav_desc.Format = DXGI_FORMAT_R32_UINT;
+      uav_desc.Buffer.NumElements = size / sizeof(d3d::format_byte_size(uav_desc.Format));
+
+      DxResourceView uav_handle = new_free_handle();
+      m_device->CreateUnorderedAccessView(resource, nullptr, &uav_desc, uav_handle);
+
+      return uav_handle;
+    }
+
     // Create a shader resource view pointing to a texture and return a handle pointing to this view
     DxResourceView DxViewHeap::create_texture2d_srv(ID3D12Resource* resource)
     {

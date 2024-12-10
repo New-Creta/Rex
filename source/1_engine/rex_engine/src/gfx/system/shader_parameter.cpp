@@ -1,6 +1,7 @@
 #include "rex_engine/gfx/system/shader_parameter.h"
 
 #include "rex_engine/gfx/resources/constant_buffer.h"
+#include "rex_engine/gfx/resources/unordered_access_buffer.h"
 #include "rex_engine/gfx/resources/texture_2d.h"
 #include "rex_engine/gfx/resources/sampler_2d.h"
 
@@ -38,6 +39,10 @@ namespace rex
 		{
 			update_view(offset, cb->gpu_address());
 		}
+		void ViewShaderParam::update_view(ViewOffset offset, const UnorderedAccessBuffer* uab)
+		{
+			update_view(offset, uab->gpu_address());
+		}
 		void ViewShaderParam::update_view(ViewOffset, const Texture2D*)
 		{
 			REX_ASSERT("Textures cannot be tied to an inline view. They need to be tied to a view table");
@@ -73,6 +78,10 @@ namespace rex
 		{
 			update_view(offset, cb->resource_view());
 		}
+		void ViewTableShaderParam::update_view(ViewOffset offset, const UnorderedAccessBuffer* uab)
+		{
+			update_view(offset, uab->resource_view());
+		}
 		void ViewTableShaderParam::update_view(ViewOffset offset, const Texture2D* texture)
 		{
 			update_view(offset, texture->resource_view());
@@ -86,6 +95,8 @@ namespace rex
 			ViewHeapType target_view_heap_type;
 			switch (type())
 			{
+			case ShaderParameterType::ByteAddress: target_view_heap_type = ViewHeapType::ByteAddress; break;
+			case ShaderParameterType::UnorderedAccessView: target_view_heap_type = ViewHeapType::UnorderedAccess; break;
 			case ShaderParameterType::ConstantBuffer: target_view_heap_type = ViewHeapType::ConstantBuffer; break;
 			case ShaderParameterType::Texture: target_view_heap_type = ViewHeapType::Texture2D; break;
 			case ShaderParameterType::Sampler: target_view_heap_type = ViewHeapType::Sampler; break;

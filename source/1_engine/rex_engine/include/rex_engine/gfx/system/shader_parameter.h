@@ -8,6 +8,7 @@ namespace rex
 	namespace gfx
 	{
 		class ConstantBuffer;
+		class UnorderedAccessBuffer;
 		class Texture2D;
 		class Sampler2D;
 		class ResourceView;
@@ -19,7 +20,9 @@ namespace rex
 			Undefined,
 			ConstantBuffer,
 			Texture,
-			Sampler
+			Sampler,
+			ByteAddress,
+			UnorderedAccessView
 		};
 
 		// A descriptor describing the parameter that's bound to the shader
@@ -44,6 +47,7 @@ namespace rex
 
 			// Update a certain resource within the shader parameter (it's possible there's only 1)
 			virtual void update_view(ViewOffset offset, const ConstantBuffer* cb) = 0;
+			virtual void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) = 0;
 			virtual void update_view(ViewOffset offset, const Texture2D* texture) = 0;
 			virtual void update_view(ViewOffset offset, const Sampler2D* sampler) = 0;
 
@@ -63,6 +67,7 @@ namespace rex
 
 			// Update a certain resource within the shader parameter, guaranteed there's only 1
 			void update_view(ViewOffset offset, const ConstantBuffer* cb) override;
+			void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) override;
 			void update_view(ViewOffset offset, const Texture2D* texture) override;
 			void update_view(ViewOffset offset, const Sampler2D* sampler) override;
 
@@ -87,6 +92,7 @@ namespace rex
 
 			// Update a certain resource within the shader parameter (it's possible there's only 1)
 			void update_view(ViewOffset offset, const ConstantBuffer* cb) override;
+			void update_view(ViewOffset offset, const UnorderedAccessBuffer* uab) override;
 			void update_view(ViewOffset offset, const Texture2D* texture) override;
 			void update_view(ViewOffset offset, const Sampler2D* sampler) override;
 

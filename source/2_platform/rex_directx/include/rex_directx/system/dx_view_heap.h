@@ -39,6 +39,8 @@ namespace rex
       DxResourceView create_dsv(ID3D12Resource* resource);
       // Create a constant buffer view and return a handle pointing to it
       DxResourceView create_cbv(ID3D12Resource* resource, rsl::memory_size size);
+      // Create a unordered access buffer view and return a handle pointing to it
+      DxResourceView create_uav(ID3D12Resource* resource, rsl::memory_size size);
       // Create a shader resource view pointing to a texture and return a handle pointing to this view
       DxResourceView create_texture2d_srv(ID3D12Resource* resource);
 

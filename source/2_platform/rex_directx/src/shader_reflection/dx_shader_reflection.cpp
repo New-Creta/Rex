@@ -79,6 +79,13 @@ namespace rex
         bound_resource.shader_type = type;
         bound_resource.resource_type = ShaderParameterType::ConstantBuffer;
         break;
+      case D3D_SIT_BYTEADDRESS:
+        bound_resource.name = resource_desc.Name;
+        bound_resource.shader_register = resource_desc.BindPoint;
+        bound_resource.register_space = resource_desc.Space;
+        bound_resource.shader_type = type;
+        bound_resource.resource_type = ShaderParameterType::ByteAddress;
+        break;
       case D3D_SIT_TEXTURE:
       {
         bound_resource.name = resource_desc.Name;
@@ -223,18 +230,24 @@ namespace rex
       for (card32 i = 0; i < numBoundResources; ++i)
       {
         auto bound_resource = reflect_bound_resource(refl, i, type);
-        if (bound_resource.resource_type == ShaderParameterType::Texture)
+        switch (bound_resource.resource_type)
         {
+        case ShaderParameterType::Texture:
           bound_resources.textures.push_back(bound_resource);
-        }
-        else if (bound_resource.resource_type == ShaderParameterType::Sampler)
-        {
+          break;
+        case ShaderParameterType::Sampler:
           bound_resources.samplers.push_back(bound_resource);
-        }
-        else if (bound_resource.resource_type == ShaderParameterType::ConstantBuffer)
-        {
+          break;
+        case ShaderParameterType::ConstantBuffer:
           bound_resources.constant_buffers.push_back(bound_resource);
-        }
+          break;
+        case ShaderParameterType::ByteAddress:
+          bound_resources.byte_address_buffers.push_back(bound_resource);
+          break;
+        default:
+          REX_ASSERT("Unknown shader parameter type");
+          break;
+        }        
       }
 
       return bound_resources;

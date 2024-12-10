@@ -39,6 +39,6 @@ namespace pokemon
   private:
     rsl::unique_ptr<Map> m_active_map;
     TileRenderer* m_tile_renderer;
-    TileCoord m_player_position;
+    TileCoord m_player_position; // player position in tiles
   };
 }

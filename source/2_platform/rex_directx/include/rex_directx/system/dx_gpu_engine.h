@@ -39,6 +39,8 @@ namespace rex
 
       // Allocate a 1D buffer on the gpu, returning a DirectX resource
       wrl::ComPtr<ID3D12Resource> allocate_buffer(rsl::memory_size size);
+      // Allocate a 1D buffer on the gpu that allows for unordered access, returning a DirectX resource
+      wrl::ComPtr<ID3D12Resource> allocate_unordered_access_buffer(rsl::memory_size size);
       // Allocate a 2D buffer on the gpu, returning a DirectX resource
       wrl::ComPtr<ID3D12Resource> allocate_texture2d(s32 width, s32 height, TextureFormat format);
       // Allocate a 2D buffer on the gpu, used for depth stencil testing
@@ -50,8 +52,11 @@ namespace rex
       DxResourceView create_texture2d_srv(const wrl::ComPtr<ID3D12Resource>& texture);
       // Create a constant buffer view pointing for a given resource
       DxResourceView create_cbv(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
-      // Create a render target view for a given resource
+      // Create a depth stencil view for a given resource
       DxResourceView create_dsv(const wrl::ComPtr<ID3D12Resource>& texture);
+      // Create a unordered access view for a given resource
+      DxResourceView create_uav(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size);
+
       // Create a sampler2D and store it on the gpu
       rsl::unique_ptr<DxSampler2D> create_sampler2d(const SamplerDesc& desc);
 

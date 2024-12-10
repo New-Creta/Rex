@@ -35,6 +35,7 @@
 #include "rex_engine/gfx/resources/input_layout.h"
 #include "rex_engine/gfx/resources/upload_buffer.h"
 #include "rex_engine/gfx/resources/depth_stencil_buffer.h"
+#include "rex_engine/gfx/resources/unordered_access_buffer.h"
 #include "rex_engine/gfx/materials/material.h"
 #include "rex_engine/gfx/system/shader_pipeline.h"
 #include "rex_engine/gfx/shader_reflection/shader_signature.h"
@@ -97,6 +98,7 @@ namespace rex
       rsl::unique_ptr<UploadBuffer> create_upload_buffer(rsl::memory_size size);
       rsl::unique_ptr<Material> create_material(const MaterialDesc& matDesc);
       rsl::unique_ptr<Sampler2D> create_sampler2d(const SamplerDesc& desc);
+      rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data = nullptr);
     }
   } // namespace gfx
 } // namespace rex

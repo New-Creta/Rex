@@ -31,6 +31,8 @@ namespace rex
       void transition_buffer(VertexBuffer* resource, ResourceState state) override;
       // Transition an index buffer's resource state
       void transition_buffer(IndexBuffer* resource, ResourceState state) override;
+      // Transition an unordered access buffer's resource state
+      void transition_buffer(UnorderedAccessBuffer* resource, ResourceState state) override;
       // Transition a upload buffer's resource state
       void transition_buffer(UploadBuffer* resource, ResourceState state) override;
       // Transition a texture's resource state

@@ -29,6 +29,16 @@ namespace rex
 		{
 			return m_desc.output_params;
 		}
+		// The byte address buffers of the shader in resource format
+		const rsl::vector<ShaderResourceDeclaration>& ShaderSignature::byte_address_buffers_resources() const
+		{
+			return m_desc.bound_resources.byte_address_buffers;
+		}
+		// The unordered access buffers of the shader in resource format
+		const rsl::vector<ShaderResourceDeclaration>& ShaderSignature::unordered_access_buffers_resources() const
+		{
+			return m_desc.bound_resources.unordered_access_buffers;
+		}
 		// The constant buffers of the shader in resource format
 		const rsl::vector<ShaderResourceDeclaration>& ShaderSignature::constant_buffers_resources() const
 		{

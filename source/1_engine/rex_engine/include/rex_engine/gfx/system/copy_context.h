@@ -23,6 +23,7 @@ namespace rex
     class ConstantBuffer;
     class VertexBuffer;
     class IndexBuffer;
+    class UnorderedAccessBuffer;
     class Texture2D;
 
     // A copy context is used for copying commands but cannot be used for other commands
@@ -47,6 +48,9 @@ namespace rex
       // Update a index buffer's data
       virtual void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size) = 0;
       virtual void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
+      // Update an unordered access buffer's data
+      virtual void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size) = 0;
+      virtual void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) = 0;
       // Update a texture's data
       virtual void update_texture2d(Texture2D* texture, const void* data) = 0;
 

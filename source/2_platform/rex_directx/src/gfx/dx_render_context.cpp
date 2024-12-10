@@ -10,6 +10,7 @@
 #include "rex_directx/resources/dx_texture_2d.h"
 #include "rex_directx/resources/dx_sampler_2d.h"
 #include "rex_directx/resources/dx_depth_stencil_buffer.h"
+#include "rex_directx/resources/dx_unordered_access_buffer.h"
 #include "rex_engine/gfx/resources/clear_state.h"
 #include "rex_engine/engine/casting.h"
 #include "rex_directx/system/dx_command_allocator.h"
@@ -72,6 +73,12 @@ namespace rex
     {
       DxIndexBuffer* dx_index_buffer = d3d::to_dx12(resource);
       transition_buffer(resource, dx_index_buffer->dx_object(), state);
+    }
+    // Transition an index buffer's resource state
+    void DxRenderContext::transition_buffer(UnorderedAccessBuffer* resource, ResourceState state)
+    {
+      DxUnorderedAccessBuffer* dx_unordered_access_buffer = d3d::to_dx12(resource);
+      transition_buffer(resource, dx_unordered_access_buffer->dx_object(), state);
     }
     // Transition a upload buffer's resource state
     void DxRenderContext::transition_buffer(UploadBuffer* resource, ResourceState state)

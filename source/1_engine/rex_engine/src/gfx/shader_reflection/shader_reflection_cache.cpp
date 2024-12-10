@@ -87,14 +87,20 @@ namespace rex
 				void process_shader(const ShaderSignature& signature, ShaderVisibility visibility)
 				{
 					// Split of the shader parameters by register space
+					SplittedResources splitted_babs = split_resources(signature.byte_address_buffers_resources());
+					SplittedResources splitted_uabs = split_resources(signature.unordered_access_buffers_resources());
 					SplittedResources splitted_cbs = split_resources(signature.constant_buffers_resources());
 					SplittedResources splitted_textures = split_resources(signature.textures());
 					SplittedResources splitted_samplers = split_resources(signature.samplers());
 
+					add_bindings(splitted_babs.renderpass_resources, ShaderParameterType::ByteAddress, g_renderpass_register_space, visibility);
+					add_bindings(splitted_uabs.renderpass_resources, ShaderParameterType::UnorderedAccessView, g_renderpass_register_space, visibility);
 					add_bindings(splitted_cbs.renderpass_resources, ShaderParameterType::ConstantBuffer, g_renderpass_register_space, visibility);
 					add_bindings(splitted_textures.renderpass_resources, ShaderParameterType::Texture, g_renderpass_register_space, visibility);
 					add_bindings(splitted_samplers.renderpass_resources, ShaderParameterType::Sampler, g_renderpass_register_space, visibility);
 
+					add_bindings(splitted_babs.material_resources, ShaderParameterType::ByteAddress, g_material_register_space, visibility);
+					add_bindings(splitted_uabs.material_resources, ShaderParameterType::UnorderedAccessView, g_material_register_space, visibility);
 					add_bindings(splitted_cbs.material_resources, ShaderParameterType::ConstantBuffer, g_material_register_space, visibility);
 					add_bindings(splitted_textures.material_resources, ShaderParameterType::Texture, g_material_register_space, visibility);
 					add_bindings(splitted_samplers.material_resources, ShaderParameterType::Sampler, g_material_register_space, visibility);

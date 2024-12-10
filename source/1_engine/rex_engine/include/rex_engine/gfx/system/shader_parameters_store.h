@@ -14,9 +14,9 @@ namespace rex
     {
         //
         //	+-----------------------------------------+-----------------------------------------+
-        //  |										  |											|
-        //  |		Vertex Shader Parameters		  |		Pixel Shader Parameters				|
-        //  |										  | 										|
+        //  |										                      |           									        		|
+        //  |		Vertex Shader Parameters		          |		Pixel Shader Parameters		        		|
+        //  |										                      | 					            			        		|
         //	+-----------------------------------------+-----------------------------------------+
         //    [0] constant buffer 1x (cb_a)						[2] textures 2x (texture_a, texture_b)
         //    [1] constant buffer 1x (cb_b)						[3] samplers 2x (sampler_a, sampler_b)
@@ -26,20 +26,20 @@ namespace rex
         //  
         //	          +-------------------------+
         //            |                         |
-        //      [0]   |	     VIEW TO CB_A		|
-        //            |							|
+        //      [0]   |	     VIEW TO CB_A		    |
+        //            |							            |
         //	          +-------------------------+
-        //            |							|
-        //      [1]   |	     VIEW TO CB_B		|
-        //            |							|
+        //            |							            |
+        //      [1]   |	     VIEW TO CB_B		    |
+        //            |							            |
         //	          +-------------------------+-------------------------+
-        //            |							|						  |
-        //      [2]   |	  VIEW TO TEXTURE_A		|	VIEW TO TEXTURE_B	  |
-        //            |							|						  |
+        //            |							            |						              |
+        //      [2]   |	  VIEW TO TEXTURE_A		  |	VIEW TO TEXTURE_B	      |
+        //            |							            |						              |
         //	          +-------------------------+-------------------------+
-        //            |							|						  |
-        //      [3]   |   VIEW TO SAMPLER_A		|	VIEW TO SAMPLER_B	  |
-        //            |							|						  |
+        //            |           							|						              |
+        //      [3]   |   VIEW TO SAMPLER_A		  |	VIEW TO SAMPLER_B	      |
+        //            |						            	|           						  |
         //	          +-------------------------+-------------------------+
         //    
         //                     [0]                        [1]
@@ -82,20 +82,20 @@ namespace rex
         //
         //	                  +-------------------------+
         //                    |                         |
-        //      [0]           |	     VIEW TO CB_A		|   Single view, so no need to copy over view as the resource is bound directly
-        //                    |							|
+        //      [0]           |	     VIEW TO CB_A		    |   Single view, so no need to copy over view as the resource is bound directly
+        //                    |							            |
         //	                  +-------------------------+
-        //                    |							|
-        //      [1]           |	     VIEW TO CB_B		|   Single view, so no need to copy over view as the resource is bound directly
-        //                    |							|
+        //                    |						            	|
+        //      [1]           |	     VIEW TO CB_B	    	|   Single view, so no need to copy over view as the resource is bound directly
+        //                    |						            	|
         //	                  +-------------------------+-------------------------+
-        //                    |							|						  |
-        //      [2]  +--------|	  VIEW TO TEXTURE_A		|	VIEW TO TEXTURE_B	  |------+
-        //           |        |							|						  |      |
+        //                    |				            			|						              |
+        //      [2]  +--------|	  VIEW TO TEXTURE_A		  |	VIEW TO TEXTURE_B	      |------+
+        //           |        |							            |						              |      |
         //	         |        +-------------------------+-------------------------+      |
-        //           |        |							|						  |      |
-        //      [3]  |   +----|   VIEW TO SAMPLER_A		|	VIEW TO SAMPLER_B	  |------+----+
-        //           |   |    |							|						  |      |    |
+        //           |        |							            |						              |      |
+        //      [3]  |   +----|   VIEW TO SAMPLER_A		  |	VIEW TO SAMPLER_B	      |------+----+
+        //           |   |    |							            |						              |      |    |
         //	         |   |    +-------------------------+-------------------------+      |    |
         //  +--------+---+                                                               |    |
         //  |        |                 [0]                        [1]                    |    |
@@ -121,6 +121,7 @@ namespace rex
         //
 
         class ConstantBuffer;
+        class UnorderedAccessBuffer;
         class Texture2D;
         class Sampler2D;
 
@@ -150,6 +151,7 @@ namespace rex
 
             // Set a resource to a new value
             void set(rsl::string_view name, const ConstantBuffer* cb);
+            void set(rsl::string_view name, const UnorderedAccessBuffer* cb);
             void set(rsl::string_view name, const Texture2D* texture);
             void set(rsl::string_view name, const Sampler2D* sampler);
 

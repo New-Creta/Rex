@@ -21,6 +21,7 @@
 #include "rex_directx/system/dx_feature_shader_model.h"
 #include "rex_directx/system/dx_fence.h"
 #include "rex_directx/resources/dx_constant_buffer.h"
+#include "rex_directx/resources/dx_unordered_access_buffer.h"
 #include "rex_engine/gfx/system/graphics_context.h"
 
 #include "rex_directx/resources/dx_input_layout.h"
@@ -546,6 +547,27 @@ namespace rex
       {
         return g_gpu_engine->create_sampler2d(desc);
       }
+      rsl::unique_ptr<UnorderedAccessBuffer> create_unordered_access_buffer(rsl::memory_size size, const void* data)
+      {
+        wrl::ComPtr<ID3D12Resource> d3d_buffer = g_gpu_engine->allocate_unordered_access_buffer(size);
+        d3d::set_debug_name_for(d3d_buffer.Get(), "Unordered Access Buffer");
+        DxResourceView desc_handle = g_gpu_engine->create_uav(d3d_buffer.Get(), size);
+
+        auto uab = rsl::make_unique<DxUnorderedAccessBuffer>(d3d_buffer, desc_handle, size);
+
+        if (data)
+        {
+          auto copy_context = gfx::new_copy_ctx();
+          copy_context->update_buffer(uab.get(), data, size, 0);
+          auto sync_info = copy_context->execute_on_gpu();
+
+          auto render_context = gfx::new_render_ctx();
+          render_context->stall(*sync_info.get());
+        }
+
+        return uab;
+      }
+
 
       // API Specific functions
       // -------------------------------------------

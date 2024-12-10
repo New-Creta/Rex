@@ -44,6 +44,11 @@ namespace rex
     {
       return m_heap->create_buffer(size);
     }
+    // Allocate a 1D buffer on the gpu that allows for unordered access, returning a DirectX resource
+    wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_unordered_access_buffer(rsl::memory_size size)
+    {
+      return m_heap->create_unordered_access_buffer(size);
+    }
     // Allocate a 2D buffer on the gpu, returning a DirectX resource
     wrl::ComPtr<ID3D12Resource> DxGpuEngine::allocate_texture2d(s32 width, s32 height, TextureFormat format)
     {
@@ -75,6 +80,11 @@ namespace rex
     {
       return d3d::to_dx12(cpu_desc_heap(ViewHeapType::DepthStencil))->create_dsv(resource.Get());
     }
+    DxResourceView DxGpuEngine::create_uav(const wrl::ComPtr<ID3D12Resource>& resource, rsl::memory_size size)
+    {
+      return d3d::to_dx12(cpu_desc_heap(ViewHeapType::UnorderedAccess))->create_uav(resource.Get(), size);
+    }
+
     rsl::unique_ptr<DxSampler2D> DxGpuEngine::create_sampler2d(const SamplerDesc& desc)
     {
       return d3d::to_dx12(cpu_desc_heap(ViewHeapType::Sampler))->create_sampler2d(desc);

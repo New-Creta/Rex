@@ -29,6 +29,8 @@ namespace rex
       void transition_buffer(IndexBuffer* resource, ResourceState state);
       // Transition a upload buffer to a new resource state
       void transition_buffer(UploadBuffer* resource, ResourceState state);
+      // Transition an unordered access buffer to a new resource state
+      void transition_buffer(UnorderedAccessBuffer* resource, ResourceState state);
       // Transition a texture to a new resource state
       void transition_buffer(Texture2D* resource, ResourceState state);
 
@@ -41,6 +43,10 @@ namespace rex
       // Update a index buffer's data on the gpu
       void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size) override;
       void update_buffer(IndexBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
+      // Update an unordered access buffer's data
+      void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size) override;
+      void update_buffer(UnorderedAccessBuffer* buffer, const void* data, rsl::memory_size size, s32 offset) override;
+
       // Update a texture's data on the gpu
       void update_texture2d(Texture2D* texture, const void* data) override;
 

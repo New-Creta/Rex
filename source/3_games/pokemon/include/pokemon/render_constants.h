@@ -28,8 +28,6 @@ namespace pokemon
 		constexpr u8 g_block_height_px = g_num_tiles_per_block_column * g_tile_height_px;
 		constexpr u8 g_block_size_px = g_block_width_px * g_block_height_px;
 
-		constexpr rsl::pointi8 player_render_position = { 8,8 };
-
 		constexpr u8 g_screen_width = 160;
 		constexpr u8 g_screen_height = 144;
 
@@ -41,5 +39,12 @@ namespace pokemon
 
 		constexpr u8 g_screen_width_in_blocks = g_screen_width / g_block_width_px;
 		constexpr u8 g_screen_height_in_blocks = g_screen_height / g_block_height_px;
+
+		constexpr rsl::pointi8 player_render_position_top_left = { 8,8 };
+		constexpr rsl::pointi8 player_render_position_bottom_right = 
+		{ 
+			g_screen_width_in_tiles - player_render_position_top_left.x,
+			g_screen_height_in_tiles - player_render_position_top_left.y 
+		};
 	}
 }

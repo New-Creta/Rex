@@ -15,6 +15,8 @@ namespace rex
 		// Holds a list of resources that are needed for a resource
 		struct ShaderResourceDeclarations
 		{
+			rsl::vector<ShaderResourceDeclaration> byte_address_buffers;  // Holds all the unordered access buffers of the shader
+			rsl::vector<ShaderResourceDeclaration> unordered_access_buffers;  // Holds all the unordered access buffers of the shader
 			rsl::vector<ShaderResourceDeclaration> constant_buffers;  // Holds all the constant buffers of the shader
 			rsl::vector<ShaderResourceDeclaration> textures;					// Holds all the textures of the shader
 			rsl::vector<ShaderResourceDeclaration> samplers;					// Holds all the samplers of the shader
@@ -45,6 +47,10 @@ namespace rex
 			const rsl::vector<ShaderIODeclaration>& input_params() const;
 			// The output parameters of the shader
 			const rsl::vector<ShaderIODeclaration>& output_params() const;
+			// The byte address buffers of the shader in resource format
+			const rsl::vector<ShaderResourceDeclaration>& byte_address_buffers_resources() const;
+			// The unordered access buffers of the shader in resource format
+			const rsl::vector<ShaderResourceDeclaration>& unordered_access_buffers_resources() const;
 			// The constant buffers of the shader in resource format
 			const rsl::vector<ShaderResourceDeclaration>& constant_buffers_resources() const;
 			// The textures of the shader
