@@ -103,7 +103,7 @@ namespace pokemon
 	SaveFile GameSession::load_startup_savefile() const
 	{
 		// The startup save file is located at the root directory of the project
-		rsl::string startup_save_filepath(rex::cmdline::get_argument("StartupSaveFile").value_or(rex::path::join(rex::vfs::project_root(), "startup_save_file.json")));
+		rsl::string startup_save_filepath(rex::cmdline::get_argument("StartupSaveFile").value_or(rex::path::join(rex::vfs::project_root(), "retail", "startup_save_file.json")));
 		REX_ASSERT_X(rex::file::exists(startup_save_filepath), "startup save filepath does not exist.");
 		return SaveFile(startup_save_filepath);
 	}
