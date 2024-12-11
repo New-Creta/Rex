@@ -7,6 +7,7 @@
 #include "rex_std/string.h"
 #include "rex_std/array.h"
 #include "rex_std/bonus/memory.h"
+#include "rex_std/bonus/utility.h"
 
 #define USE_SP_ALTPLATFORM_INFO_V1 0
 #define USE_SP_ALTPLATFORM_INFO_V3 1
@@ -27,6 +28,52 @@
 namespace rex
 {
 	DEFINE_LOG_CATEGORY(LogVideoDriver);
+
+	bool get_device_description(HDEVINFO devInfoHandle, SP_DEVINFO_DATA& deviceInfoData, rsl::Out<rsl::wbig_stack_string> out)
+	{
+		DWORD data_type = 0;
+		bool res = SetupDiGetDevicePropertyW(devInfoHandle, &deviceInfoData, &DEVPKEY_Device_DriverDesc, &data_type, (PBYTE)out.get().data(), out.get().max_size(), nullptr, 0);
+		out.get().reset_null_termination_offset();
+
+		return res;
+	}
+
+	bool get_device_driver_reg_key(HDEVINFO devInfoHandle, SP_DEVINFO_DATA& deviceInfoData, rsl::Out<rsl::wbig_stack_string> out)
+	{
+		DWORD data_type = 0;
+		bool res = SetupDiGetDevicePropertyW(devInfoHandle, &deviceInfoData, &DEVPKEY_Device_Driver, &data_type, (PBYTE)out.get().data(), out.get().max_size(), nullptr, 0);
+		out.get().reset_null_termination_offset();
+
+		return res;
+	}
+
+	bool get_provider_name(HDEVINFO devInfoHandle, SP_DEVINFO_DATA& deviceInfoData, rsl::Out<rsl::wbig_stack_string> out)
+	{
+		DWORD data_type = 0;
+		bool res = SetupDiGetDevicePropertyW(devInfoHandle, &deviceInfoData, &DEVPKEY_Device_DriverProvider, &data_type, (PBYTE)out.get().data(), out.get().max_size(), nullptr, 0);
+		out.get().reset_null_termination_offset();
+
+		return res;
+	}
+
+	bool get_internal_driver_version(HDEVINFO devInfoHandle, SP_DEVINFO_DATA& deviceInfoData, rsl::Out<rsl::wbig_stack_string> out)
+	{
+		DWORD data_type = 0;
+		bool res = SetupDiGetDevicePropertyW(devInfoHandle, &deviceInfoData, &DEVPKEY_Device_DriverVersion, &data_type, (PBYTE)out.get().data(), out.get().max_size(), nullptr, 0);
+		out.get().reset_null_termination_offset();
+
+		return res;
+	}
+
+	bool get_driver_date(HDEVINFO devInfoHandle, SP_DEVINFO_DATA& deviceInfoData, rsl::Out<SYSTEMTIME> out)
+	{
+		DWORD data_type = 0;
+		FILETIME file_time;
+		bool res = SetupDiGetDevicePropertyW(devInfoHandle, &deviceInfoData, &DEVPKEY_Device_DriverDate, &data_type, (PBYTE)&file_time, sizeof(FILETIME), nullptr, 0);
+		FileTimeToSystemTime(&file_time, &out.get());
+
+		return res;
+	}
 
 	VideoDriverInfo query_video_driver(rsl::string_view deviceName)
 	{
@@ -52,11 +99,8 @@ namespace rex
 
 		for (int32 idx = 0; SetupDiEnumDeviceInfo(dev_info_handle, idx, &device_info_data); idx++)
 		{
-			// Get the device description, check if it matches the queried device name
-			if (SetupDiGetDevicePropertyW(dev_info_handle, &device_info_data, &DEVPKEY_Device_DriverDesc, &data_type,
-				(PBYTE)buffer.data(), buffer.max_size(), nullptr, 0))
+			if (get_device_description(dev_info_handle, device_info_data, rsl::Out(buffer)))
 			{
-				buffer.reset_null_termination_offset();
 				if (wide_device_name == buffer.to_view())
 				{
 					driver_info.device_description = rsl::to_string(buffer);
@@ -64,10 +108,8 @@ namespace rex
 					buffer.clear();
 
 					// Retrieve the registry key for this device for 3rd party data
-					if (SetupDiGetDevicePropertyW(dev_info_handle, &device_info_data, &DEVPKEY_Device_Driver, &data_type,
-						(PBYTE)buffer.data(), buffer.max_size(), nullptr, 0))
+					if (get_device_driver_reg_key(dev_info_handle, device_info_data, rsl::Out(buffer)))
 					{
-						buffer.reset_null_termination_offset();
 						const tchar* ptr = buffer.data();
 						registry_key.assign(buffer.data(), buffer.size());
 						buffer.clear();
@@ -94,10 +136,8 @@ namespace rex
 		}
 
 		// Get the provider name
-		if (SetupDiGetDevicePropertyW(dev_info_handle, &device_info_data, &DEVPKEY_Device_DriverProvider, &data_type,
-			(PBYTE)buffer.data(), buffer.max_size(), nullptr, 0))
+		if (get_provider_name(dev_info_handle, device_info_data, rsl::Out(buffer)))
 		{
-			buffer.reset_null_termination_offset();
 			driver_info.provider_name = rsl::to_string(buffer);
 			buffer.clear();
 		}
@@ -105,11 +145,10 @@ namespace rex
 		{
 			REX_INFO(LogVideoDriver, "Failed to find provider name");
 		}
+
 		// Get the internal driver version
-		if (SetupDiGetDevicePropertyW(dev_info_handle, &device_info_data, &DEVPKEY_Device_DriverVersion, &data_type,
-			(PBYTE)buffer.data(), buffer.max_size(), nullptr, 0))
+		if (get_internal_driver_version(dev_info_handle, device_info_data, rsl::Out(buffer)))
 		{
-			buffer.reset_null_termination_offset();
 			driver_info.internal_driver_version = rsl::to_string(buffer);
 			buffer.clear();
 		}
@@ -117,13 +156,11 @@ namespace rex
 		{
 			REX_INFO(LogVideoDriver, "Failed to find internal driver version");
 		}
+
 		// Get the driver date
-		FILETIME file_time;
-		if (SetupDiGetDevicePropertyW(dev_info_handle, &device_info_data, &DEVPKEY_Device_DriverDate, &data_type,
-			(PBYTE)&file_time, sizeof(FILETIME), nullptr, 0))
+		SYSTEMTIME system_time;
+		if (get_driver_date(dev_info_handle, device_info_data, rsl::Out(system_time)))
 		{
-			SYSTEMTIME system_time;
-			FileTimeToSystemTime(&file_time, &system_time);
 			driver_info.driver_date.assign(rsl::format("{} {} {}", system_time.wDay, rex::month_nr_to_name(system_time.wMonth), system_time.wYear));
 		}
 		else
